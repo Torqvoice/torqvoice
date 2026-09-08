@@ -5,7 +5,6 @@ import path from 'path'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { db } from '@/lib/db'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { readStoredTemplate } from '../Schema/emailTemplateSchema'
 import {
   EMAIL_ASSET_CATEGORIES,
   type EmailTemplate,
@@ -23,11 +22,11 @@ import {
  * or a template deleted. Rather than trusting every one of those paths to
  * remember, the sweep runs after each save and delete and removes any file
  * in the organisation's email folders that no saved template refers to. A
- * file younger than an hour is spared, since it may belong to a draft that
+ * file younger than a day is spared, since it may belong to a draft that
  * is still open in another tab.
  */
 
-const GRACE_MS = 60 * 60 * 1000
+const GRACE_MS = 24 * 60 * 60 * 1000
 
 /**
  * The absolute address a sent mail fetches a stored upload from, or nothing.
@@ -51,6 +50,17 @@ export async function emailAssetUrl(
   return `${getAppBaseUrl()}${emailAssetPublicPath(storedUrl)}`
 }
 
+/** The uploads a template refers to that are not on disk, for refusing a save. */
+export async function missingAssets(
+  organizationId: string,
+  template: Pick<EmailTemplate, 'blocks' | 'theme'>
+): Promise<string[]> {
+  const urls = await assetUrlsFor(organizationId, template)
+  return Object.entries(urls)
+    .filter(([, url]) => !url)
+    .map(([stored]) => stored)
+}
+
 /** Every upload a template refers to, resolved to what a mail can fetch. */
 export async function assetUrlsFor(
   organizationId: string,
@@ -65,16 +75,32 @@ export async function assetUrlsFor(
   return out
 }
 
-/** Every upload any saved template of the organisation still refers to. */
+/**
+ * Every upload any saved template of the organisation still refers to.
+ *
+ * Read off the raw JSON rather than through the lenient reader: a block a
+ * future release cannot parse is dropped by the reader, and its picture must
+ * not be swept for that. Any string anywhere in the row that looks like one
+ * of our upload URLs counts.
+ */
 async function referencedAssets(organizationId: string): Promise<Set<string>> {
   const rows = await db.emailTemplate.findMany({
     where: { organizationId },
-    select: { kind: true, name: true, subject: true, blocks: true, theme: true },
+    select: { blocks: true, theme: true },
   })
   const referenced = new Set<string>()
+  const walk = (value: unknown) => {
+    if (typeof value === 'string') {
+      if (parseEmailAssetUrl(value)) referenced.add(value)
+    } else if (Array.isArray(value)) {
+      value.forEach(walk)
+    } else if (value && typeof value === 'object') {
+      Object.values(value).forEach(walk)
+    }
+  }
   for (const row of rows) {
-    const template = readStoredTemplate(row)
-    if (template) for (const asset of templateAssets(template)) referenced.add(asset)
+    walk(row.blocks)
+    walk(row.theme)
   }
   return referenced
 }

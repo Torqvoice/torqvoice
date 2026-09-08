@@ -139,6 +139,53 @@ export function richToPlain(doc: RichDoc): string {
  * through `fill`. A link whose address still holds a tag afterwards had no
  * value for it; the words stay and the link goes, the same rule as a button.
  */
+/**
+ * A tag that was typed across two formattings, "{customer" in bold and
+ * "_name}" plain, is two text nodes to the editor and one tag to the
+ * person. Before filling, each such tag is pulled whole into the node it
+ * starts in, so it fills like any other and the validator and the mail
+ * agree on what the block says.
+ */
+export function joinSplitTags(doc: RichDoc): RichDoc {
+  const joinRun = (nodes: RichNode[]): RichNode[] => {
+    const out = nodes.map((node) => ({ ...node }))
+    const texts: { index: number; start: number }[] = []
+    let all = ''
+    out.forEach((node, index) => {
+      if (node.type === 'text') {
+        texts.push({ index, start: all.length })
+        all += node.text
+      } else {
+        // Anything that is not text breaks the run: a tag cannot span it.
+        all += '\u0000'
+      }
+    })
+    for (const match of all.matchAll(/\{(\w+)\}/g)) {
+      const from = match.index ?? 0
+      const to = from + match[0].length
+      const first = texts.findLast((t) => t.start <= from)
+      const last = texts.findLast((t) => t.start < to)
+      if (!first || !last || first.index === last.index) continue
+      // Move the whole tag into the first node and cut it out of the rest.
+      const firstNode = out[first.index] as Extract<RichNode, { type: 'text' }>
+      firstNode.text = firstNode.text.slice(0, from - first.start) + match[0]
+      for (const t of texts) {
+        if (t.index <= first.index || t.index > last.index) continue
+        const node = out[t.index] as Extract<RichNode, { type: 'text' }>
+        const cut = Math.min(node.text.length, Math.max(0, to - t.start))
+        node.text = node.text.slice(cut)
+      }
+    }
+    return out.filter((node) => node.type !== 'text' || node.text.length > 0)
+  }
+  const walk = (node: RichNode): RichNode => {
+    if (!('content' in node) || !node.content) return node
+    const content = node.content.map(walk)
+    return { ...node, content: node.type === 'paragraph' ? joinRun(content) : content }
+  }
+  return { type: 'doc', content: doc.content?.map(walk) }
+}
+
 export function mapRichText(doc: RichDoc, fill: (text: string) => string): RichDoc {
   const marks = (list: RichMark[] | undefined): RichMark[] | undefined => {
     if (!list) return list
@@ -158,7 +205,7 @@ export function mapRichText(doc: RichDoc, fill: (text: string) => string): RichD
     if ('content' in node && node.content) return { ...node, content: node.content.map(walk) }
     return node
   }
-  return { type: 'doc', content: doc.content?.map(walk) }
+  return { type: 'doc', content: joinSplitTags(doc).content?.map(walk) }
 }
 
 /** Every link address in the tree, for tag checks alongside the words. */

@@ -2197,6 +2197,7 @@
     "unknownTags": "Questi tag non esistono per questo tipo di email: {tags}",
     "missingTags": "Questa email deve includere {tags}",
     "subjectRequired": "L'oggetto non può essere vuoto",
+    "invalidTemplate": "Un testo è troppo lungo o un campo ha un valore non valido.",
     "leaveTitle": "Uscire senza salvare?",
     "leaveBody": "Le modifiche a questo modello non sono state salvate. Andranno perse.",
     "leaveConfirm": "Esci",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Anteprima a larghezza desktop",
     "mobileTooltip": "Anteprima a larghezza telefono",
     "htmlViewTooltip": "Mostra l'email HTML",
+    "previewWidth": "Larghezza dell'anteprima",
+    "previewView": "Vista dell'anteprima",
     "textViewTooltip": "Mostra la versione in testo semplice",
     "inboxNow": "Adesso",
     "inboxNoSender": "La tua officina",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Sfondo",
       "panelColor": "Pannelli",
       "invalidColor": "Un colore non è un valore esadecimale valido",
+      "hexLabel": "{label} in esadecimale",
       "typography": "Tipografia",
       "font": "Carattere",
       "fontHint": "Solo caratteri che ogni client di posta ha già. I web font non vengono caricati dalla maggior parte di essi.",
@@ -2258,7 +2262,7 @@
       "title": "Salva questo modello",
       "body": "Dai un nome al modello per ritrovarlo nella galleria. Salvandolo diventa anche quello con cui si invia questo tipo di email.",
       "placeholder": "Nome del modello",
-      "nameExists": "Esiste già un modello con questo nome; salvando lo aggiorni.",
+      "nameExists": "Esiste già un modello con questo nome. Scegli un altro nome.",
       "save": "Salva modello",
       "update": "Aggiorna modello"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "L'immagine deve essere inferiore a 10 MB",
       "uploadFailed": "Impossibile caricare l'immagine"
     },
-    "dragHandle": "Trascina per riordinare"
+    "dragHandle": "Trascina per riordinare",
+    "dragHandleKeyboard": "Trascina, o usa i tasti freccia, per spostare questo blocco",
+    "tagDoesNotFit": "Il tag non entra in questo campo."
   }
 }

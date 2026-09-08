@@ -121,7 +121,9 @@ function resolveBlock(
       // future release might carry a tag this code cannot fill at all; a
       // button pointing at "{share_link}" is worse than no button.
       if (!href || !label || href.includes('{')) return null
-      return { type: 'button', label, href, align: block.align ?? 'left' }
+      const safe = safeHref(href)
+      if (!safe) return null
+      return { type: 'button', label, href: safe, align: block.align ?? 'left' }
     }
 
     case 'document_summary': {

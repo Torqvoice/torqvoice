@@ -2197,6 +2197,7 @@
     "unknownTags": "Diese Tags gibt es für diese Art von E-Mail nicht: {tags}",
     "missingTags": "Diese E-Mail muss {tags} enthalten",
     "subjectRequired": "Der Betreff darf nicht leer sein",
+    "invalidTemplate": "Ein Text ist zu lang oder ein Feld hat einen ungültigen Wert.",
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an dieser Vorlage wurden nicht gespeichert. Sie gehen verloren.",
     "leaveConfirm": "Verlassen",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Vorschau in Desktop-Breite",
     "mobileTooltip": "Vorschau in Handy-Breite",
     "htmlViewTooltip": "HTML-E-Mail anzeigen",
+    "previewWidth": "Vorschaubreite",
+    "previewView": "Vorschauansicht",
     "textViewTooltip": "Nur-Text-Version anzeigen",
     "inboxNow": "Jetzt",
     "inboxNoSender": "Ihre Werkstatt",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Hintergrund",
       "panelColor": "Felder",
       "invalidColor": "Eine Farbe ist kein gültiger Hex-Wert",
+      "hexLabel": "{label} als Hex",
       "typography": "Typografie",
       "font": "Schrift",
       "fontHint": "Nur Schriften, die jedes Mailprogramm schon hat. Webfonts werden von den meisten nicht geladen.",
@@ -2258,7 +2262,7 @@
       "title": "Diese Vorlage speichern",
       "body": "Geben Sie der Vorlage einen Namen, unter dem Sie sie in der Galerie wiederfinden. Speichern macht sie zugleich zu der Vorlage, mit der diese Art von E-Mail gesendet wird.",
       "placeholder": "Name der Vorlage",
-      "nameExists": "Eine Vorlage mit diesem Namen existiert; Speichern aktualisiert sie.",
+      "nameExists": "Eine Vorlage mit diesem Namen gibt es bereits. Wählen Sie einen anderen Namen.",
       "save": "Vorlage speichern",
       "update": "Vorlage aktualisieren"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "Das Bild muss kleiner als 10 MB sein",
       "uploadFailed": "Bild konnte nicht hochgeladen werden"
     },
-    "dragHandle": "Zum Verschieben ziehen"
+    "dragHandle": "Zum Verschieben ziehen",
+    "dragHandleKeyboard": "Ziehen Sie diesen Block oder verschieben Sie ihn mit den Pfeiltasten",
+    "tagDoesNotFit": "Das Tag passt nicht in dieses Feld."
   }
 }

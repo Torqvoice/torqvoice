@@ -4,7 +4,7 @@ import { FileText, KeyRound, Loader2, MessageSquare, Trash2 } from 'lucide-react
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -97,19 +97,39 @@ function KindRow({
   const format = useFormatter()
   const router = useRouter()
   const confirm = useConfirm()
+  // The card whose request is out, then the card whose answer the page is
+  // still catching up with: a card stays dimmed from the click until the
+  // refreshed props have arrived, so nothing on it can be pressed twice.
   const [busy, setBusy] = useState<string | null>(null)
+  const [settling, setSettling] = useState<string | null>(null)
+  const [refreshing, startRefresh] = useTransition()
+  // Deleted rows leave the grid at once rather than when the refresh lands.
+  const [removed, setRemoved] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!refreshing) setSettling(null)
+  }, [refreshing])
+
+  const shown = saved.filter((template) => !removed.includes(template.id))
+  const working = (key: string) => busy === key || (refreshing && settling === key)
 
   // A saved id that no longer matches a row sends with the preset, which is
   // what the resolver does too; the preset card says so.
-  const presetInUse = activeId === null || !saved.some((template) => template.id === activeId)
+  const presetInUse = activeId === null || !shown.some((template) => template.id === activeId)
+
+  const refresh = (key: string) => {
+    setSettling(key)
+    startRefresh(() => router.refresh())
+  }
 
   const apply = async (id: string | null, name: string) => {
-    setBusy(id ?? 'preset')
+    const key = id ?? 'preset'
+    setBusy(key)
     try {
       const result = await applyEmailTemplate(kind, id)
       if (!result.success) throw new Error(result.error)
       toast.success(t('defaultSet', { name }))
-      router.refresh()
+      refresh(key)
     } catch {
       toast.error(t('couldNotSetDefault'))
     } finally {
@@ -130,7 +150,8 @@ function KindRow({
       const result = await deleteEmailTemplate(template.id)
       if (!result.success) throw new Error(result.error)
       toast.success(t('deleted', { name: template.name }))
-      router.refresh()
+      setRemoved((prev) => [...prev, template.id])
+      refresh(template.id)
     } catch {
       toast.error(t('couldNotDelete'))
     } finally {
@@ -151,6 +172,7 @@ function KindRow({
           name={t('builtIn')}
           meta={preset.name}
           inUse={presetInUse}
+          pending={working('preset')}
           action={
             !presetInUse && (
               <Button
@@ -158,18 +180,19 @@ function KindRow({
                 variant="outline"
                 size="sm"
                 className="mt-2 h-7 text-xs"
-                disabled={busy === 'preset'}
+                disabled={working('preset')}
                 onClick={() => void apply(null, t('builtIn'))}
               >
-                {busy === 'preset' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                {working('preset') && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
                 {t('useBuiltIn')}
               </Button>
             )
           }
         />
 
-        {saved.map((template) => {
+        {shown.map((template) => {
           const inUse = activeId === template.id
+          const pending = working(template.id)
           return (
             <TemplateCard
               key={template.id}
@@ -181,8 +204,8 @@ function KindRow({
                 date: format.dateTime(new Date(template.updatedAt), { dateStyle: 'medium' }),
               })}
               inUse={inUse}
+              pending={pending}
               onDelete={() => void remove(template)}
-              deleting={busy === template.id}
               action={
                 !inUse && (
                   <Button
@@ -190,10 +213,10 @@ function KindRow({
                     variant="outline"
                     size="sm"
                     className="mt-2 h-7 text-xs"
-                    disabled={busy === template.id}
+                    disabled={pending}
                     onClick={() => void apply(template.id, template.name)}
                   >
-                    {busy === template.id && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                    {pending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
                     {t('setDefault')}
                   </Button>
                 )
@@ -213,9 +236,9 @@ function TemplateCard({
   name,
   meta,
   inUse,
+  pending = false,
   action,
   onDelete,
-  deleting,
 }: {
   href: string
   template: EmailTemplate
@@ -223,16 +246,19 @@ function TemplateCard({
   name: string
   meta: string
   inUse: boolean
+  /** A request about this card is out, or the page has not caught up with its answer yet. */
+  pending?: boolean
   action?: React.ReactNode
   onDelete?: () => void
-  deleting?: boolean
 }) {
   const t = useTranslations('settings.emailTemplates')
   return (
     <div
+      aria-busy={pending || undefined}
       className={cn(
-        'relative flex flex-col rounded-lg border p-3 text-left transition-colors hover:bg-muted',
-        inUse && 'border-primary'
+        'relative flex flex-col rounded-lg border p-3 text-left transition-[opacity,background-color] hover:bg-muted',
+        inUse && 'border-primary',
+        pending && 'pointer-events-none opacity-50'
       )}
     >
       {inUse && (
@@ -246,15 +272,22 @@ function TemplateCard({
           variant="outline"
           size="icon-xs"
           onClick={onDelete}
-          disabled={deleting}
+          disabled={pending}
           title={t('delete')}
           aria-label={t('delete')}
           className="absolute left-2 top-2 z-10 size-7 rounded-full text-destructive shadow hover:bg-destructive/10 hover:text-destructive"
         >
-          {deleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
+          {pending ? <Loader2 className="animate-spin" /> : <Trash2 />}
         </Button>
       )}
-      <Link href={href} target="_blank" rel="noopener" className="block">
+      <Link
+        href={href}
+        target="_blank"
+        rel="noopener"
+        tabIndex={pending ? -1 : undefined}
+        aria-disabled={pending || undefined}
+        className="block"
+      >
         <EmailThumbnail template={template} sample={sample} className="border border-border" />
         <p className="mt-2 truncate text-xs font-medium">{name}</p>
         <p className="truncate text-[11px] leading-tight text-muted-foreground">{meta}</p>

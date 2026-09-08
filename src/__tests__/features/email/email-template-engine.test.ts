@@ -14,7 +14,12 @@ import { fillTags, missingTags, tagsUsed, unknownTags } from '@/features/email/L
 import { renderEmailHtml } from '@/features/email/Render/renderEmailHtml'
 import { renderEmailText } from '@/features/email/Render/renderEmailText'
 import { readStoredTemplate } from '@/features/email/Schema/emailTemplateSchema'
-import { plainToRich, richDocSchema, richToPlain } from '@/features/email/Lib/richText'
+import {
+  joinSplitTags,
+  plainToRich,
+  richDocSchema,
+  richToPlain,
+} from '@/features/email/Lib/richText'
 import { emailLogoPublicPath, templateAssets } from '@/features/email/Lib/emailTemplate'
 import { normalizeHref } from '@/features/email/Lib/links'
 
@@ -80,6 +85,24 @@ describe('presets', () => {
     expect(stored?.theme.primaryColor).toBe('#123456')
     // A colour that is not a colour costs that colour, not the whole theme.
     expect(stored?.theme.textColor).toBe('#111827')
+  })
+
+  it('gives up on a row it cannot use at all, so the preset answers', () => {
+    expect(
+      readStoredTemplate({
+        kind: 'invoice_sent',
+        name: 'x',
+        subject: 's',
+        blocks: 'nope',
+        theme: {},
+      })
+    ).toBeNull()
+    expect(
+      readStoredTemplate({ kind: 'hologram', name: 'x', subject: 's', blocks: [], theme: {} })
+    ).toBeNull()
+    expect(
+      readStoredTemplate({ kind: 'invoice_sent', name: 'x', subject: 's', blocks: [], theme: null })
+    ).toBeNull()
   })
 
   it('knows what the active-template setting points at', () => {
@@ -567,5 +590,67 @@ describe('image block', () => {
       '/api/protected/files/org1/email-logos/l.png',
       stored,
     ])
+  })
+})
+
+describe('tags split across formatting', () => {
+  const split = {
+    type: 'doc' as const,
+    content: [
+      {
+        type: 'paragraph' as const,
+        content: [
+          { type: 'text' as const, text: 'Hi {custo', marks: [{ type: 'bold' as const }] },
+          { type: 'text' as const, text: 'mer_name}, welcome' },
+        ],
+      },
+    ],
+  }
+
+  it('makes the tag whole before filling', () => {
+    const joined = joinSplitTags(split)
+    expect(richToPlain(joined)).toBe('Hi {customer_name}, welcome')
+    const template = preset('invoice_sent')
+    template.blocks = [{ id: 'p', type: 'paragraph', content: split }]
+    const html = renderEmailHtml(buildEmailSpec(template, invoiceInput))
+    expect(html).toContain('Alex Carter')
+    expect(html).not.toContain('{custo')
+  })
+
+  it('fills a required link that was typed across two formattings', () => {
+    const template = preset('portal_signin')
+    template.blocks = [
+      {
+        id: 'p',
+        type: 'paragraph',
+        content: {
+          type: 'doc',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                { type: 'text', text: '{signin', marks: [{ type: 'italic' }] },
+                { type: 'text', text: '_link}' },
+              ],
+            },
+          ],
+        },
+      },
+    ]
+    const values = tagValuesFor('portal_signin', { signinLink: 'https://x/s' }, { workshop })
+    const text = renderEmailText(buildEmailSpec(template, { values }))
+    expect(text).toContain('https://x/s')
+    expect(text).not.toContain('{signin')
+  })
+})
+
+describe('button address', () => {
+  it('refuses an address that is not a link, in both halves of the mail', () => {
+    const template = preset('invoice_sent')
+    // eslint-disable-next-line no-script-url
+    template.blocks = [{ id: 'b', type: 'button', label: 'Go', href: 'javascript:alert(1)' }]
+    const spec = buildEmailSpec(template, invoiceInput)
+    expect(spec.blocks).toEqual([])
+    expect(renderEmailText(spec)).not.toContain('javascript')
   })
 })

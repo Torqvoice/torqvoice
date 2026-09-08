@@ -9,6 +9,22 @@ export type PreviewView = 'html' | 'text'
 
 const WIDTHS: Record<PreviewWidth, number> = { desktop: EMAIL_DESIGN_WIDTH, mobile: 375 }
 
+/** How long a pause in typing is before the frame is rewritten. */
+const CANVAS_SETTLE_MS = 80
+
+/**
+ * The value once it has stopped changing for `delay`. The first value is
+ * taken at once, so the frame has a document from its first paint.
+ */
+function useSettled<T>(value: T, delay: number): T {
+  const [settled, setSettled] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return settled
+}
+
 /**
  * The mail as the customer meets it: a row in an inbox, then the message.
  *
@@ -48,6 +64,9 @@ export function EmailPreview({
   const t = useTranslations('settings.emailTemplates')
   const px = WIDTHS[width]
   const initial = (from.trim()[0] ?? '?').toUpperCase()
+  // The inbox row and the text view follow every keystroke; the frame, which
+  // reloads a whole document on each change, waits for the typing to pause.
+  const canvasHtml = useSettled(html, CANVAS_SETTLE_MS)
 
   return (
     <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
@@ -78,8 +97,8 @@ export function EmailPreview({
 
           {view === 'html' ? (
             <MailCanvas
-              title={subject}
-              html={html}
+              title={subject.trim() || t('htmlView')}
+              html={canvasHtml}
               width={px}
               selected={selected}
               onSelect={onSelect}

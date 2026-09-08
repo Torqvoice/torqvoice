@@ -2197,6 +2197,7 @@
     "unknownTags": "These tags do not exist for this kind of email: {tags}",
     "missingTags": "This email has to include {tags}",
     "subjectRequired": "The subject cannot be empty",
+    "invalidTemplate": "Some text is too long or a field has an invalid value.",
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this template have not been saved. They will be lost.",
     "leaveConfirm": "Leave",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Preview at desktop width",
     "mobileTooltip": "Preview at phone width",
     "htmlViewTooltip": "Show the HTML email",
+    "previewWidth": "Preview width",
+    "previewView": "Preview view",
     "textViewTooltip": "Show the plain-text version",
     "inboxNow": "Now",
     "inboxNoSender": "Your workshop",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Background",
       "panelColor": "Panels",
       "invalidColor": "A colour is not a valid hex value",
+      "hexLabel": "{label} as hex",
       "typography": "Typography",
       "font": "Font",
       "fontHint": "Only fonts every mail client already has. Web fonts are not loaded by most of them.",
@@ -2258,7 +2262,7 @@
       "title": "Save this template",
       "body": "Give the template a name to find it by in the gallery. Saving also makes it the one this kind of email sends with.",
       "placeholder": "Template name",
-      "nameExists": "A template with this name exists; saving updates it.",
+      "nameExists": "A template with this name already exists. Choose another name.",
       "save": "Save template",
       "update": "Update template"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "The image must be under 10 MB",
       "uploadFailed": "Could not upload the picture"
     },
-    "dragHandle": "Drag to reorder"
+    "dragHandle": "Drag to reorder",
+    "dragHandleKeyboard": "Drag, or use the arrow keys, to move this block",
+    "tagDoesNotFit": "The tag does not fit in this field."
   }
 }

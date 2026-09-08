@@ -2197,6 +2197,7 @@
     "unknownTags": "Disse taggene finnes ikke for denne typen e-post: {tags}",
     "missingTags": "Denne e-posten må inneholde {tags}",
     "subjectRequired": "Emnet kan ikke være tomt",
+    "invalidTemplate": "En tekst er for lang, eller et felt har en ugyldig verdi.",
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene dine i denne malen er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Forhåndsvis i skrivebordsbredde",
     "mobileTooltip": "Forhåndsvis i mobilbredde",
     "htmlViewTooltip": "Vis HTML-e-posten",
+    "previewWidth": "Bredde på forhåndsvisning",
+    "previewView": "Visning av forhåndsvisning",
     "textViewTooltip": "Vis ren tekst-versjonen",
     "inboxNow": "Nå",
     "inboxNoSender": "Verkstedet ditt",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Bakgrunn",
       "panelColor": "Felt",
       "invalidColor": "En farge er ikke en gyldig hex-verdi",
+      "hexLabel": "{label} som hex",
       "typography": "Typografi",
       "font": "Skrift",
       "fontHint": "Bare skrifter alle e-postklienter allerede har. De fleste laster ikke webfonter.",
@@ -2258,7 +2262,7 @@
       "title": "Lagre denne malen",
       "body": "Gi malen et navn å finne den igjen på i galleriet. Lagring gjør den også til malen denne typen e-post sendes med.",
       "placeholder": "Navn på mal",
-      "nameExists": "En mal med dette navnet finnes; lagring oppdaterer den.",
+      "nameExists": "En mal med dette navnet finnes allerede. Velg et annet navn.",
       "save": "Lagre mal",
       "update": "Oppdater mal"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "Bildet må være under 10 MB",
       "uploadFailed": "Kunne ikke laste opp bildet"
     },
-    "dragHandle": "Dra for å endre rekkefølge"
+    "dragHandle": "Dra for å endre rekkefølge",
+    "dragHandleKeyboard": "Dra, eller bruk piltastene, for å flytte denne blokken",
+    "tagDoesNotFit": "Taggen får ikke plass i dette feltet."
   }
 }

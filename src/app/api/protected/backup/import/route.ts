@@ -501,6 +501,23 @@ export async function POST(request: NextRequest) {
           (t) =>
             typeof t.id === 'string' && typeof t.name === 'string' && typeof t.kind === 'string'
         )
+        // Uploads travel under this organisation's id, so every stored
+        // upload URL is rewritten the way logo settings are.
+        const rewriteAssets = (value: unknown): unknown => {
+          if (typeof value === 'string' && value.startsWith('/api/protected/files/')) {
+            return rewriteFileUrl(value, ctx.organizationId) ?? value
+          }
+          if (Array.isArray(value)) return value.map(rewriteAssets)
+          if (value && typeof value === 'object') {
+            return Object.fromEntries(
+              Object.entries(value as Record<string, unknown>).map(([k, v]) => [
+                k,
+                rewriteAssets(v),
+              ])
+            )
+          }
+          return value
+        }
         await tx.emailTemplate.createMany({
           data: rows.map((t) => ({
             id: t.id as string,
@@ -508,8 +525,8 @@ export async function POST(request: NextRequest) {
             kind: t.kind as string,
             name: t.name as string,
             subject: (t.subject as string) || '',
-            blocks: (t.blocks ?? []) as Prisma.InputJsonValue,
-            theme: (t.theme ?? {}) as Prisma.InputJsonValue,
+            blocks: rewriteAssets(t.blocks ?? []) as Prisma.InputJsonValue,
+            theme: rewriteAssets(t.theme ?? {}) as Prisma.InputJsonValue,
             createdAt: toSafeDate(t.createdAt as string),
             updatedAt: toSafeDate(t.updatedAt as string),
           })),

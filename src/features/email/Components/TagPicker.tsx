@@ -3,6 +3,7 @@
 import type { Editor } from '@tiptap/react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -30,6 +31,7 @@ export type TagTarget =
  * and four paragraphs would otherwise show the same forty chips five times.
  */
 export function useTagTargets() {
+  const t = useTranslations('settings.emailTemplates')
   const targets = useRef(new Map<string, TagTarget>())
   const [focused, setFocused] = useState<string | null>(null)
 
@@ -52,7 +54,14 @@ export function useTagTargets() {
       const el = target.element
       const start = el.selectionStart ?? el.value.length
       const end = el.selectionEnd ?? start
-      target.setValue(el.value.slice(0, start) + token + el.value.slice(end))
+      const next = el.value.slice(0, start) + token + el.value.slice(end)
+      // The field's limit is the server's limit. A tag cut short is not a
+      // tag, so one that does not fit is refused whole rather than trimmed.
+      if (el.maxLength > 0 && next.length > el.maxLength) {
+        toast.error(t('tagDoesNotFit'))
+        return
+      }
+      target.setValue(next)
       // React writes the new value on the next render; the cursor goes after
       // the tag once it has.
       requestAnimationFrame(() => {
@@ -61,7 +70,7 @@ export function useTagTargets() {
         el.setSelectionRange(at, at)
       })
     },
-    [focused]
+    [focused, t]
   )
 
   return { register, setFocused, insert }

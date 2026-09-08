@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { Input } from '@/components/ui/input'
 import { Slider as UiSlider } from '@/components/ui/slider'
@@ -83,16 +84,19 @@ export function Slider({
 }
 
 export function Choice<T extends string>({
+  label,
   options,
   value,
   onChange,
 }: {
+  /** What the choice is about, for a screen reader; the options say the rest. */
+  label: string
   options: { value: T; label: string }[]
   value: T
   onChange: (value: T) => void
 }) {
   return (
-    <div className="flex gap-0.5 rounded-md bg-muted p-0.5">
+    <div role="group" aria-label={label} className="flex gap-0.5 rounded-md bg-muted p-0.5">
       {options.map((option) => {
         const active = value === option.value
         return (
@@ -132,6 +136,7 @@ export function ColorField({
   value: string
   onChange: (value: string) => void
 }) {
+  const t = useTranslations('settings.emailTemplates')
   const valid = HEX_COLOR.test(value)
   return (
     <div className="flex items-center gap-2.5">
@@ -148,7 +153,7 @@ export function ColorField({
         onChange={(e) => onChange(e.target.value.trim())}
         maxLength={7}
         spellCheck={false}
-        aria-label={`${label} hex`}
+        aria-label={t('theme.hexLabel', { label })}
         aria-invalid={!valid}
         className="h-7 w-[76px] px-1.5 font-mono text-[11.5px] md:text-[11.5px]"
       />

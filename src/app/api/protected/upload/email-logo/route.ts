@@ -4,9 +4,7 @@ import { NextResponse } from 'next/server'
 import path from 'path'
 import sharp from 'sharp'
 import { EMAIL_LOGO_CATEGORY, EMAIL_LOGO_MAX_WIDTH } from '@/features/email/Lib/emailTemplate'
-import { getAuthContext } from '@/lib/get-auth-context'
-import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { getCachedMembership } from '@/lib/cached-session'
+import { guardEmailUpload } from '@/features/email/Lib/emailUploadAccess.server'
 
 /**
  * A logo for the email templates, uploaded on its own rather than borrowed
@@ -19,22 +17,13 @@ import { getCachedMembership } from '@/lib/cached-session'
  * written as PNG so transparency survives. What the template stores is the
  * protected URL; the public route serves the same file to mail clients.
  */
-export async function POST(request: Request) {
-  const ctx = await getAuthContext()
-  if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+/** More pixels than this and the decode alone would eat a gigabyte; no email needs it. */
+const MAX_INPUT_PIXELS = 40_000_000
 
-  const isOwnerOrAdmin = ctx.role === 'owner' || ctx.role === 'admin' || ctx.role === 'super_admin'
-  if (!isOwnerOrAdmin) {
-    const membership = await getCachedMembership(ctx.userId)
-    if (membership?.roleId) {
-      const permissions = membership.customRole?.permissions ?? []
-      const canEdit = hasPermission(permissions, {
-        action: PermissionAction.UPDATE,
-        subject: PermissionSubject.SETTINGS,
-      })
-      if (!canEdit) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-  }
+export async function POST(request: Request) {
+  const guard = await guardEmailUpload(request)
+  if ('response' in guard) return guard.response
+  const { ctx } = guard
 
   const formData = await request.formData()
   const file = formData.get('file')
@@ -50,7 +39,7 @@ export async function POST(request: Request) {
 
   try {
     const source = Buffer.from(await file.arrayBuffer())
-    const image = sharp(source, { failOn: 'error' }).rotate()
+    const image = sharp(source, { failOn: 'error', limitInputPixels: MAX_INPUT_PIXELS }).rotate()
     const meta = await image.metadata()
     if (!meta.width || !meta.height) {
       return NextResponse.json({ error: 'Not an image we can read' }, { status: 400 })

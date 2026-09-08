@@ -2197,6 +2197,7 @@
     "unknownTags": "Šios žymės šio tipo laiškui neegzistuoja: {tags}",
     "missingTags": "Šiame laiške turi būti {tags}",
     "subjectRequired": "Tema negali būti tuščia",
+    "invalidTemplate": "Kai kuris tekstas per ilgas arba laukelyje netinkama reikšmė.",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Jūsų šio šablono pakeitimai neišsaugoti. Jie bus prarasti.",
     "leaveConfirm": "Išeiti",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Peržiūra kompiuterio pločiu",
     "mobileTooltip": "Peržiūra telefono pločiu",
     "htmlViewTooltip": "Rodyti HTML laišką",
+    "previewWidth": "Peržiūros plotis",
+    "previewView": "Peržiūros rodinys",
     "textViewTooltip": "Rodyti paprasto teksto versiją",
     "inboxNow": "Dabar",
     "inboxNoSender": "Jūsų dirbtuvės",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Fonas",
       "panelColor": "Laukai",
       "invalidColor": "Spalva nėra tinkama šešioliktainė reikšmė",
+      "hexLabel": "{label} šešioliktaine reikšme",
       "typography": "Tipografika",
       "font": "Šriftas",
       "fontHint": "Tik šriftai, kuriuos jau turi kiekviena pašto programa. Dauguma jų neįkelia žiniatinklio šriftų.",
@@ -2258,7 +2262,7 @@
       "title": "Išsaugoti šį šabloną",
       "body": "Suteikite šablonui pavadinimą, pagal kurį rasite jį galerijoje. Išsaugojus jis taip pat tampa šablonu, su kuriuo siunčiamas šio tipo laiškas.",
       "placeholder": "Šablono pavadinimas",
-      "nameExists": "Šablonas tokiu pavadinimu jau yra; išsaugojus jis bus atnaujintas.",
+      "nameExists": "Šablonas tokiu pavadinimu jau yra. Pasirinkite kitą pavadinimą.",
       "save": "Išsaugoti šabloną",
       "update": "Atnaujinti šabloną"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "Paveikslėlis turi būti mažesnis nei 10 MB",
       "uploadFailed": "Nepavyko įkelti paveikslėlio"
     },
-    "dragHandle": "Tempkite, kad pertvarkytumėte"
+    "dragHandle": "Tempkite, kad pertvarkytumėte",
+    "dragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte šį bloką",
+    "tagDoesNotFit": "Žymė netelpa į šį laukelį."
   }
 }

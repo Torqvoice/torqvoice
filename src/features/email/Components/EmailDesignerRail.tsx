@@ -2,7 +2,13 @@
 
 import { Eye, EyeOff, GripVertical, Palette, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -138,6 +144,25 @@ export function EmailDesignerRail({
     setDrag(null)
   }
 
+  /**
+   * The keyboard's reorder: one step up or down from where the block is.
+   * `onMove` counts the target with the block taken out, so a step of one
+   * is a step of one there too.
+   */
+  const step = (id: string, index: number, direction: -1 | 1) => {
+    const to = index + direction
+    if (to < 0 || to >= blocks.length) return
+    onMove(id, to)
+  }
+
+  /** Alt with an arrow moves the block from anywhere in its row; the grip needs no Alt. */
+  const arrowOf = (event: ReactKeyboardEvent, needsAlt: boolean): -1 | 1 | 0 => {
+    if (needsAlt && !event.altKey) return 0
+    if (event.key === 'ArrowUp') return -1
+    if (event.key === 'ArrowDown') return 1
+    return 0
+  }
+
   useEffect(() => {
     if (!drag) return
     const onKey = (event: KeyboardEvent) => {
@@ -224,9 +249,26 @@ export function EmailDesignerRail({
               {slotShown === index && <DropLine />}
               <div
                 data-rail-block={block.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={active}
                 onClick={() => onSelect(block.id)}
+                onKeyDown={(event) => {
+                  const direction = arrowOf(event, true)
+                  if (direction) {
+                    event.preventDefault()
+                    step(block.id, index, direction)
+                    return
+                  }
+                  // Enter or Space on a button inside the row is that button's.
+                  if (event.target !== event.currentTarget) return
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onSelect(block.id)
+                  }
+                }}
                 className={cn(
-                  'group flex cursor-pointer items-center gap-1.5 rounded-md py-1.5 pr-1.5 pl-1 transition-[opacity,transform,background-color] duration-150',
+                  'group flex cursor-pointer items-center gap-1.5 rounded-md py-1.5 pr-1.5 pl-1 outline-none transition-[opacity,transform,background-color] duration-150 focus-visible:ring-2 focus-visible:ring-ring',
                   active
                     ? 'bg-primary/10 text-foreground ring-1 ring-primary/40'
                     : 'hover:bg-accent hover:text-accent-foreground',
@@ -236,15 +278,24 @@ export function EmailDesignerRail({
               >
                 <span
                   role="button"
-                  aria-label={t('dragHandle')}
+                  tabIndex={0}
+                  aria-label={t('dragHandleKeyboard')}
                   title={t('dragHandle')}
                   onPointerDown={(event) => onGrab(event, block.id)}
                   onPointerMove={onDragMove}
                   onPointerUp={onDrop}
                   onPointerCancel={cancelDrag}
+                  onLostPointerCapture={cancelDrag}
                   onClick={(event) => event.stopPropagation()}
+                  onKeyDown={(event) => {
+                    const direction = arrowOf(event, false)
+                    if (!direction) return
+                    event.preventDefault()
+                    event.stopPropagation()
+                    step(block.id, index, direction)
+                  }}
                   className={cn(
-                    'flex h-6 w-5 flex-none touch-none items-center justify-center rounded text-muted-foreground/50 transition-colors hover:bg-accent hover:text-foreground',
+                    'flex h-6 w-5 flex-none touch-none items-center justify-center rounded text-muted-foreground/50 outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
                     lifted ? 'cursor-grabbing' : 'cursor-grab'
                   )}
                 >
@@ -278,6 +329,7 @@ export function EmailDesignerRail({
                     visible ? 'text-muted-foreground' : 'text-muted-foreground/50'
                   )}
                   title={visible ? t('blockShownHint') : t('blockHiddenHint')}
+                  aria-label={visible ? t('blockShownHint') : t('blockHiddenHint')}
                 >
                   {visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>

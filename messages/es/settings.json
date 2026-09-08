@@ -2197,6 +2197,7 @@
     "unknownTags": "Estas etiquetas no existen para este tipo de correo: {tags}",
     "missingTags": "Este correo tiene que incluir {tags}",
     "subjectRequired": "El asunto no puede estar vacío",
+    "invalidTemplate": "Algún texto es demasiado largo o un campo tiene un valor no válido.",
     "leaveTitle": "¿Salir sin guardar?",
     "leaveBody": "Los cambios en esta plantilla no se han guardado. Se perderán.",
     "leaveConfirm": "Salir",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Vista previa en ancho de escritorio",
     "mobileTooltip": "Vista previa en ancho de móvil",
     "htmlViewTooltip": "Mostrar el correo HTML",
+    "previewWidth": "Ancho de la vista previa",
+    "previewView": "Modo de vista previa",
     "textViewTooltip": "Mostrar la versión de texto sin formato",
     "inboxNow": "Ahora",
     "inboxNoSender": "Tu taller",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Fondo",
       "panelColor": "Paneles",
       "invalidColor": "Un color no es un valor hexadecimal válido",
+      "hexLabel": "{label} en hexadecimal",
       "typography": "Tipografía",
       "font": "Fuente",
       "fontHint": "Solo fuentes que todos los clientes de correo ya tienen. La mayoría no carga fuentes web.",
@@ -2258,7 +2262,7 @@
       "title": "Guardar esta plantilla",
       "body": "Dale un nombre a la plantilla para encontrarla en la galería. Al guardarla también pasa a ser la que usa este tipo de correo.",
       "placeholder": "Nombre de la plantilla",
-      "nameExists": "Ya existe una plantilla con este nombre; al guardar se actualizará.",
+      "nameExists": "Ya existe una plantilla con este nombre. Elige otro nombre.",
       "save": "Guardar plantilla",
       "update": "Actualizar plantilla"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "La imagen debe pesar menos de 10 MB",
       "uploadFailed": "No se pudo subir la imagen"
     },
-    "dragHandle": "Arrastra para reordenar"
+    "dragHandle": "Arrastra para reordenar",
+    "dragHandleKeyboard": "Arrastra, o usa las teclas de flecha, para mover este bloque",
+    "tagDoesNotFit": "La etiqueta no cabe en este campo."
   }
 }

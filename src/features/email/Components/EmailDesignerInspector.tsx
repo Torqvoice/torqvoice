@@ -472,6 +472,57 @@ const LOGO_MAX_BYTES = 4 * 1024 * 1024
 const IMAGE_ACCEPT = LOGO_ACCEPT
 const IMAGE_MAX_BYTES = 10 * 1024 * 1024
 
+/**
+ * An upload that outlives its panel. Discard, or picking another block,
+ * unmounts the fields while the request is out; the answer must then be
+ * dropped rather than written into whatever the template has become. The
+ * request itself is aborted, and `cancelled` covers the window between the
+ * cleanup and the rejection reaching the caller.
+ */
+function useUploadGuard() {
+  const cancelled = useRef(false)
+  const controller = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    cancelled.current = false
+    return () => {
+      cancelled.current = true
+      controller.current?.abort()
+    }
+  }, [])
+
+  /** A signal for the next upload; an earlier one still out is abandoned. */
+  const begin = useCallback(() => {
+    controller.current?.abort()
+    const next = new AbortController()
+    controller.current = next
+    cancelled.current = false
+    return next.signal
+  }, [])
+
+  return { begin, isCancelled: () => cancelled.current }
+}
+
+/** Sends one file to an upload route and returns the URL it was stored under. */
+async function postUpload(
+  route: string,
+  file: File,
+  signal: AbortSignal,
+  fallbackError: string
+): Promise<string> {
+  const body = new FormData()
+  body.append('file', file)
+  const response = await fetch(route, { method: 'POST', body, signal })
+  const json = (await response.json().catch(() => null)) as {
+    url?: string
+    error?: string
+  } | null
+  if (!response.ok || !json?.url) {
+    throw new Error(json?.error || fallbackError)
+  }
+  return json.url
+}
+
 /** Left, centre or right, for a block that sits across the mail. */
 function AlignChoice({
   value,
@@ -483,6 +534,7 @@ function AlignChoice({
   const t = useTranslations('settings.emailTemplates')
   return (
     <Choice
+      label={t('logo.position')}
       value={value}
       onChange={onChange}
       options={BLOCK_ALIGNS.map((align) => ({ value: align, label: t(`toolbar.align.${align}`) }))}
@@ -506,6 +558,7 @@ function LogoFields({
   const t = useTranslations('settings.emailTemplates')
   const input = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const guard = useUploadGuard()
   const src = emailLogoPublicPath(theme.logoUrl)
 
   const upload = async (file: File) => {
@@ -514,19 +567,18 @@ function LogoFields({
       return
     }
     setUploading(true)
+    const signal = guard.begin()
     try {
-      const body = new FormData()
-      body.append('file', file)
-      const response = await fetch('/api/protected/upload/email-logo', { method: 'POST', body })
-      const json = (await response.json().catch(() => null)) as {
-        url?: string
-        error?: string
-      } | null
-      if (!response.ok || !json?.url) {
-        throw new Error(json?.error || t('logo.uploadFailed'))
-      }
-      onTheme({ logoUrl: json.url, showLogo: true })
+      const url = await postUpload(
+        '/api/protected/upload/email-logo',
+        file,
+        signal,
+        t('logo.uploadFailed')
+      )
+      if (guard.isCancelled()) return
+      onTheme({ logoUrl: url, showLogo: true })
     } catch (error) {
+      if (guard.isCancelled()) return
       toast.error(error instanceof Error && error.message ? error.message : t('logo.uploadFailed'))
     } finally {
       setUploading(false)
@@ -632,6 +684,7 @@ function ImageFields({
   const t = useTranslations('settings.emailTemplates')
   const input = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const guard = useUploadGuard()
   const src = emailImagePublicPath(block.src)
   const width = block.width ?? EMAIL_IMAGE_MAX_WIDTH
 
@@ -641,19 +694,18 @@ function ImageFields({
       return
     }
     setUploading(true)
+    const signal = guard.begin()
     try {
-      const body = new FormData()
-      body.append('file', file)
-      const response = await fetch('/api/protected/upload/email-image', { method: 'POST', body })
-      const json = (await response.json().catch(() => null)) as {
-        url?: string
-        error?: string
-      } | null
-      if (!response.ok || !json?.url) {
-        throw new Error(json?.error || t('image.uploadFailed'))
-      }
-      onBlock(block.id, { src: json.url })
+      const url = await postUpload(
+        '/api/protected/upload/email-image',
+        file,
+        signal,
+        t('image.uploadFailed')
+      )
+      if (guard.isCancelled()) return
+      onBlock(block.id, { src: url })
     } catch (error) {
+      if (guard.isCancelled()) return
       toast.error(error instanceof Error && error.message ? error.message : t('image.uploadFailed'))
     } finally {
       setUploading(false)

@@ -2197,6 +2197,7 @@
     "unknownTags": "Ces balises n'existent pas pour ce type d'e-mail : {tags}",
     "missingTags": "Cet e-mail doit contenir {tags}",
     "subjectRequired": "L'objet ne peut pas être vide",
+    "invalidTemplate": "Un texte est trop long ou un champ contient une valeur non valide.",
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Vos modifications de ce modèle n'ont pas été enregistrées. Elles seront perdues.",
     "leaveConfirm": "Quitter",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Aperçu en largeur ordinateur",
     "mobileTooltip": "Aperçu en largeur téléphone",
     "htmlViewTooltip": "Afficher l'e-mail HTML",
+    "previewWidth": "Largeur de l'aperçu",
+    "previewView": "Mode d'aperçu",
     "textViewTooltip": "Afficher la version en texte brut",
     "inboxNow": "Maintenant",
     "inboxNoSender": "Votre atelier",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Fond",
       "panelColor": "Panneaux",
       "invalidColor": "Une couleur n'est pas une valeur hexadécimale valide",
+      "hexLabel": "{label} en hexadécimal",
       "typography": "Typographie",
       "font": "Police",
       "fontHint": "Seulement des polices que chaque client mail possède déjà. La plupart ne chargent pas les polices web.",
@@ -2258,7 +2262,7 @@
       "title": "Enregistrer ce modèle",
       "body": "Donnez un nom au modèle pour le retrouver dans la galerie. L'enregistrer en fait aussi le modèle avec lequel ce type d'e-mail est envoyé.",
       "placeholder": "Nom du modèle",
-      "nameExists": "Un modèle porte déjà ce nom ; l'enregistrement le mettra à jour.",
+      "nameExists": "Un modèle porte déjà ce nom. Choisissez un autre nom.",
       "save": "Enregistrer le modèle",
       "update": "Mettre à jour le modèle"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "L'image doit faire moins de 10 Mo",
       "uploadFailed": "Impossible d'importer l'image"
     },
-    "dragHandle": "Glisser pour réorganiser"
+    "dragHandle": "Glisser pour réorganiser",
+    "dragHandleKeyboard": "Glisser, ou utiliser les touches fléchées, pour déplacer ce bloc",
+    "tagDoesNotFit": "La balise ne tient pas dans ce champ."
   }
 }

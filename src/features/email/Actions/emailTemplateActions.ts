@@ -11,14 +11,17 @@ import { EMAIL_KINDS, type EmailKind, kindSpec } from '../Lib/emailKinds'
 import {
   activeTemplateId,
   activeTemplateSettingKey,
+  parseEmailAssetUrl,
   type SavedEmailTemplate,
+  templateAssets,
   templateText,
 } from '../Lib/emailTemplate'
 import { getOrgFromAddress, sendOrgMail } from '@/lib/email'
 import { missingTags, unknownTags } from '../Lib/tags'
 import { buildTemplatedMail } from '../Lib/sendTemplatedMail'
 import { sampleContextFor } from '../Lib/emailContext'
-import { sweepEmailAssets } from '../Lib/emailAssets.server'
+import { missingAssets, sweepEmailAssets } from '../Lib/emailAssets.server'
+import { requireFeature } from '@/lib/features'
 import {
   emailKindSchema,
   type SaveEmailTemplateInput,
@@ -120,22 +123,37 @@ export async function saveEmailTemplate(input: SaveEmailTemplateInput) {
         )
       }
 
+      // A template may only point at this organisation's own uploads.
+      const foreign = templateAssets(data).find(
+        (asset) => parseEmailAssetUrl(asset)?.organizationId !== organizationId
+      )
+      if (foreign) throw new Error('This template refers to an upload that is not yours')
+      // An upload that has gone, swept or never finished, must not be saved
+      // into a template that would then send without it.
+      const missing = await missingAssets(organizationId, data)
+      if (missing.length)
+        throw new Error('A picture in this template is no longer available. Upload it again.')
+
+      const byName = await db.emailTemplate.findFirst({
+        where: {
+          organizationId,
+          kind: data.kind,
+          name: { equals: data.name, mode: 'insensitive' },
+        },
+        select: { id: true },
+      })
       let target = data.id
         ? await db.emailTemplate.findFirst({
             where: { id: data.id, organizationId, kind: data.kind },
             select: { id: true },
           })
         : null
-      if (!target) {
-        target = await db.emailTemplate.findFirst({
-          where: {
-            organizationId,
-            kind: data.kind,
-            name: { equals: data.name, mode: 'insensitive' },
-          },
-          select: { id: true },
-        })
+      // Renaming one template onto another's name would leave two with the
+      // same name and the gallery unable to tell them apart.
+      if (target && byName && byName.id !== target.id) {
+        throw new Error('A template with this name already exists')
       }
+      if (!target) target = byName
 
       const blocks = data.blocks as unknown as Prisma.InputJsonValue
       const theme = data.theme as Prisma.InputJsonValue
@@ -190,6 +208,7 @@ export async function applyEmailTemplate(kind: string, id: string | null) {
     async ({ userId, organizationId }) => {
       demoGuard()
       const parsedKind = emailKindSchema.parse(kind)
+      if (id !== null) rowIdSchema.parse(id)
       const key = activeTemplateSettingKey(parsedKind)
 
       if (id === null) {
@@ -236,6 +255,7 @@ export async function deleteEmailTemplate(id: string) {
   return withAuth(
     async ({ organizationId }) => {
       demoGuard()
+      rowIdSchema.parse(id)
       const row = await db.emailTemplate.findFirst({
         where: { id, organizationId },
         select: { id: true, name: true, kind: true },
@@ -269,6 +289,8 @@ export async function deleteEmailTemplate(id: string) {
 }
 
 const testRecipientSchema = z.string().trim().email()
+/** Prisma drops an undefined filter, which would make findFirst return any row. */
+const rowIdSchema = z.string().min(1).max(64)
 
 /**
  * Sends the template being edited to an address of the editor's choosing,
@@ -280,6 +302,15 @@ export async function sendTestEmail(input: SaveEmailTemplateInput, recipientEmai
   return withAuth(
     async ({ userId, organizationId }) => {
       demoGuard()
+      // The same gates as a real send: the plan allows email, and the
+      // workshop has not switched it off.
+      await requireFeature(organizationId, 'smtp')
+      const enabled = await db.appSetting.findUnique({
+        where: { organizationId_key: { organizationId, key: 'workshop.emailEnabled' } },
+        select: { value: true },
+      })
+      if (enabled?.value === 'false')
+        throw new Error('Email sending is disabled. Enable it in Settings.')
       const data = saveEmailTemplateSchema.parse(input)
       const to = testRecipientSchema.parse(recipientEmail)
       const sender = await db.user.findUnique({ where: { id: userId }, select: { name: true } })

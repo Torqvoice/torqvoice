@@ -2197,6 +2197,7 @@
     "unknownTags": "Estas tags não existem para este tipo de e-mail: {tags}",
     "missingTags": "Este e-mail precisa incluir {tags}",
     "subjectRequired": "O assunto não pode ficar vazio",
+    "invalidTemplate": "Algum texto é longo demais ou um campo tem um valor inválido.",
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste modelo não foram salvas. Elas serão perdidas.",
     "leaveConfirm": "Sair",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Pré-visualizar na largura de computador",
     "mobileTooltip": "Pré-visualizar na largura de celular",
     "htmlViewTooltip": "Mostrar o e-mail HTML",
+    "previewWidth": "Largura da pré-visualização",
+    "previewView": "Modo de pré-visualização",
     "textViewTooltip": "Mostrar a versão em texto simples",
     "inboxNow": "Agora",
     "inboxNoSender": "Sua oficina",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Fundo",
       "panelColor": "Painéis",
       "invalidColor": "Uma cor não é um valor hexadecimal válido",
+      "hexLabel": "{label} em hexadecimal",
       "typography": "Tipografia",
       "font": "Fonte",
       "fontHint": "Apenas fontes que todo cliente de e-mail já tem. A maioria não carrega fontes da web.",
@@ -2258,7 +2262,7 @@
       "title": "Salvar este modelo",
       "body": "Dê um nome ao modelo para encontrá-lo na galeria. Salvar também faz dele o modelo com que este tipo de e-mail é enviado.",
       "placeholder": "Nome do modelo",
-      "nameExists": "Já existe um modelo com este nome; salvar vai atualizá-lo.",
+      "nameExists": "Já existe um modelo com este nome. Escolha outro nome.",
       "save": "Salvar modelo",
       "update": "Atualizar modelo"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "A imagem deve ter menos de 10 MB",
       "uploadFailed": "Não foi possível enviar a imagem"
     },
-    "dragHandle": "Arraste para reordenar"
+    "dragHandle": "Arraste para reordenar",
+    "dragHandleKeyboard": "Arraste, ou use as teclas de seta, para mover este bloco",
+    "tagDoesNotFit": "A tag não cabe neste campo."
   }
 }

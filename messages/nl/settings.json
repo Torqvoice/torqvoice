@@ -2197,6 +2197,7 @@
     "unknownTags": "Deze tags bestaan niet voor dit soort e-mail: {tags}",
     "missingTags": "Deze e-mail moet {tags} bevatten",
     "subjectRequired": "Het onderwerp mag niet leeg zijn",
+    "invalidTemplate": "Een tekst is te lang of een veld heeft een ongeldige waarde.",
     "leaveTitle": "Verlaten zonder op te slaan?",
     "leaveBody": "Uw wijzigingen aan dit sjabloon zijn niet opgeslagen. Ze gaan verloren.",
     "leaveConfirm": "Verlaten",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Voorbeeld op desktopbreedte",
     "mobileTooltip": "Voorbeeld op telefoonbreedte",
     "htmlViewTooltip": "De HTML-e-mail tonen",
+    "previewWidth": "Voorbeeldbreedte",
+    "previewView": "Voorbeeldweergave",
     "textViewTooltip": "De platte-tekstversie tonen",
     "inboxNow": "Nu",
     "inboxNoSender": "Uw werkplaats",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Achtergrond",
       "panelColor": "Kaders",
       "invalidColor": "Een kleur is geen geldige hexwaarde",
+      "hexLabel": "{label} als hex",
       "typography": "Typografie",
       "font": "Lettertype",
       "fontHint": "Alleen lettertypen die elk e-mailprogramma al heeft. Webfonts worden door de meeste niet geladen.",
@@ -2258,7 +2262,7 @@
       "title": "Dit sjabloon opslaan",
       "body": "Geef het sjabloon een naam om het in de galerij terug te vinden. Opslaan maakt het ook het sjabloon waarmee dit soort e-mail wordt verzonden.",
       "placeholder": "Naam van het sjabloon",
-      "nameExists": "Er bestaat al een sjabloon met deze naam; opslaan werkt het bij.",
+      "nameExists": "Er bestaat al een sjabloon met deze naam. Kies een andere naam.",
       "save": "Sjabloon opslaan",
       "update": "Sjabloon bijwerken"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "De afbeelding moet kleiner zijn dan 10 MB",
       "uploadFailed": "Kon de afbeelding niet uploaden"
     },
-    "dragHandle": "Sleep om te herschikken"
+    "dragHandle": "Sleep om te herschikken",
+    "dragHandleKeyboard": "Sleep, of gebruik de pijltjestoetsen, om dit blok te verplaatsen",
+    "tagDoesNotFit": "De tag past niet in dit veld."
   }
 }

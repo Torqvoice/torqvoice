@@ -360,6 +360,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
  */
 export const UPLOAD_CATEGORIES: readonly string[] = [
   'logos',
+  'email-logos',
+  'email-images',
   'vehicles',
   'inventory',
   'services',

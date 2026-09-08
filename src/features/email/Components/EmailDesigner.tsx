@@ -54,7 +54,7 @@ import {
 import { missingTags, unknownTags } from '../Lib/tags'
 import { renderEmailHtml } from '../Render/renderEmailHtml'
 import { renderEmailText } from '../Render/renderEmailText'
-import type { SaveEmailTemplateInput } from '../Schema/emailTemplateSchema'
+import { type SaveEmailTemplateInput, saveEmailTemplateSchema } from '../Schema/emailTemplateSchema'
 import { HEX_COLOR } from './EmailDesignerControls'
 import { EmailDesignerInspector } from './EmailDesignerInspector'
 import { EmailDesignerRail } from './EmailDesignerRail'
@@ -91,6 +91,13 @@ const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 const same = (a: EmailTemplate, b: EmailTemplate) => JSON.stringify(a) === JSON.stringify(b)
 
 /**
+ * The save action's own sentences, written for the workshop; anything else
+ * it answers with is a validation path or an internal message and is shown
+ * as a plain "could not save".
+ */
+const HUMAN_SAVE_ERROR = /^(?:This template|A template|A picture)\b/
+
+/**
  * The email designer: one kind of mail, its blocks on the left, the mail in
  * the middle, the words and the look on the right.
  *
@@ -104,7 +111,7 @@ export function EmailDesigner({
   preset,
   initialSaved,
   savedNames,
-  activeId,
+  activeId: initialActiveId,
   sample,
   userEmail,
 }: {
@@ -136,6 +143,9 @@ export function EmailDesigner({
   const [view, setView] = useState<PreviewView>('html')
   const [saving, setSaving] = useState(false)
   const [names, setNames] = useState(savedNames)
+  // Every save makes its row the one this kind sends with, so the badge
+  // follows the last save rather than what the page opened on.
+  const [activeId, setActiveId] = useState(initialActiveId)
 
   const [naming, setNaming] = useState<'first' | 'copy' | null>(null)
   const [name, setName] = useState('')
@@ -198,8 +208,28 @@ export function EmailDesigner({
     if (THEME_COLORS.some((key) => !HEX_COLOR.test(String(template.theme[key])))) {
       list.push(t('theme.invalidColor'))
     }
+    // The same check the server runs, so a field over its limit disables
+    // Save here rather than coming back as a raw validation path. Faults
+    // the lines above already name are not counted twice.
+    const parsed = saveEmailTemplateSchema.safeParse({
+      kind,
+      name: template.name || preset.name,
+      subject: template.subject,
+      blocks: template.blocks,
+      theme: template.theme,
+    })
+    if (!parsed.success) {
+      const explained = parsed.error.issues.every(
+        (issue) =>
+          (issue.path[0] === 'subject' && !template.subject.trim()) ||
+          (issue.path[0] === 'theme' &&
+            THEME_COLORS.includes(issue.path[1] as keyof EmailTheme) &&
+            issue.path.length === 2)
+      )
+      if (!explained) list.push(t('invalidTemplate'))
+    }
     return list
-  }, [template, spec, t])
+  }, [template, spec, t, kind, preset.name])
 
   const patchBlock = useCallback((id: string, patch: Partial<EmailBlock>) => {
     setTemplate((prev) => ({
@@ -208,12 +238,16 @@ export function EmailDesigner({
     }))
   }, [])
 
+  // Shown is the absence of the key, not `visible: true`: hiding a block and
+  // showing it again has to read as no change against the baseline.
   const toggleBlock = useCallback((id: string) => {
     setTemplate((prev) => ({
       ...prev,
-      blocks: prev.blocks.map((block) =>
-        block.id === id ? { ...block, visible: block.visible === false } : block
-      ),
+      blocks: prev.blocks.map((block) => {
+        if (block.id !== id) return block
+        const { visible, ...rest } = block
+        return visible === false ? rest : { ...rest, visible: false }
+      }),
     }))
   }, [])
 
@@ -304,7 +338,7 @@ export function EmailDesigner({
    * one this kind sends with, which is what the server does on save.
    */
   const save = async (mode: 'update' | 'first' | 'copy', nameOverride?: string) => {
-    if (problems.length) return
+    if (problems.length || saving) return
     if (mode !== 'update' && !nameOverride) {
       setName(mode === 'first' ? template.name || preset.name : '')
       setNaming(mode)
@@ -313,6 +347,10 @@ export function EmailDesigner({
     const id = mode === 'update' ? saved?.id : undefined
     const templateName = mode === 'update' ? (saved?.name ?? template.name) : (nameOverride ?? '')
 
+    // What went over the wire. Anything typed while the request was out is
+    // newer than the answer and stays; only an untouched template takes the
+    // saved copy, so the editor and the template never disagree.
+    const sent = template
     setSaving(true)
     try {
       const result = await saveEmailTemplate(inputFor(templateName, id))
@@ -322,15 +360,18 @@ export function EmailDesigner({
       const row = result.data
       const next = stripSaved(row)
       setSaved(row)
-      setTemplate(clone(next))
+      setActiveId(row.id)
       setBaseline(clone(next))
+      setTemplate((prev) => (prev === sent ? clone(next) : prev))
       setNames((prev) => [{ id: row.id, name: row.name }, ...prev.filter((n) => n.id !== row.id)])
+      setNaming(null)
       if (row.id !== saved?.id) {
         router.replace(`/email-designer?kind=${kind}&template=${row.id}`)
       }
       toast.success(t('saved', { name: row.name }))
     } catch (error) {
-      toast.error(error instanceof Error && error.message ? error.message : t('couldNotSave'))
+      const message = error instanceof Error ? error.message : ''
+      toast.error(HUMAN_SAVE_ERROR.test(message) ? message : t('couldNotSave'))
     } finally {
       setSaving(false)
     }
@@ -425,6 +466,7 @@ export function EmailDesigner({
 
           <div className="flex items-center gap-2">
             <IconToggleGroup
+              label={t('previewWidth')}
               value={width}
               onChange={setWidth}
               options={[
@@ -433,6 +475,7 @@ export function EmailDesigner({
               ]}
             />
             <IconToggleGroup
+              label={t('previewView')}
               value={view}
               onChange={setView}
               options={[
@@ -460,7 +503,7 @@ export function EmailDesigner({
               type="button"
               variant="outline"
               size="sm"
-              disabled={problems.length > 0}
+              disabled={saving || problems.length > 0}
               onClick={() => {
                 setTestEmail(userEmail)
                 setTestOpen(true)
@@ -475,6 +518,7 @@ export function EmailDesigner({
                 variant="ghost"
                 size="sm"
                 title={t('deleteTemplate')}
+                disabled={saving}
                 onClick={() => void remove()}
                 className="text-destructive hover:bg-destructive/10 hover:text-destructive"
               >
@@ -484,7 +528,13 @@ export function EmailDesigner({
 
             <Separator orientation="vertical" className="mx-1 h-5!" />
 
-            <Button type="button" variant="outline" size="sm" disabled={!dirty} onClick={discard}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={!dirty || saving}
+              onClick={discard}
+            >
               <RotateCcw /> {t('discard')}
             </Button>
 
@@ -553,7 +603,14 @@ export function EmailDesigner({
         />
       </div>
 
-      <Dialog open={naming !== null} onOpenChange={(open) => !open && setNaming(null)}>
+      {/* The dialog stays open until the save has answered: a failed save
+          keeps the typed name where it was, a successful one closes it. */}
+      <Dialog
+        open={naming !== null}
+        onOpenChange={(open) => {
+          if (!open && !saving) setNaming(null)
+        }}
+      >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{t('nameDialog.title')}</DialogTitle>
@@ -563,8 +620,7 @@ export function EmailDesigner({
             onSubmit={(e) => {
               e.preventDefault()
               const mode = naming
-              if (!mode || !name.trim()) return
-              setNaming(null)
+              if (!mode || !name.trim() || nameTaken || saving) return
               void save(mode, name.trim())
             }}
           >
@@ -573,17 +629,25 @@ export function EmailDesigner({
               onChange={(e) => setName(e.target.value)}
               placeholder={t('nameDialog.placeholder')}
               maxLength={60}
+              aria-invalid={nameTaken}
               autoFocus
             />
             {nameTaken && (
-              <p className="mt-2 text-xs text-muted-foreground">{t('nameDialog.nameExists')}</p>
+              <p role="alert" className="mt-2 text-xs text-destructive">
+                {t('nameDialog.nameExists')}
+              </p>
             )}
             <DialogFooter className="mt-4">
-              <Button type="button" variant="outline" onClick={() => setNaming(null)}>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={saving}
+                onClick={() => setNaming(null)}
+              >
                 {t('cancel')}
               </Button>
-              <Button type="submit" disabled={!name.trim()}>
-                {nameTaken ? t('nameDialog.update') : t('nameDialog.save')}
+              <Button type="submit" disabled={!name.trim() || nameTaken || saving}>
+                {saving ? t('saving') : t('nameDialog.save')}
               </Button>
             </DialogFooter>
           </form>
@@ -631,16 +695,23 @@ export function EmailDesigner({
  * control on the bar.
  */
 function IconToggleGroup<T extends string>({
+  label,
   value,
   onChange,
   options,
 }: {
+  /** What the group as a whole chooses, for a screen reader. */
+  label: string
   value: T
   onChange: (value: T) => void
   options: { value: T; label: string; icon: ReactNode }[]
 }) {
   return (
-    <div role="group" className="flex h-8 items-center gap-0.5 rounded-md bg-muted p-0.5">
+    <div
+      role="group"
+      aria-label={label}
+      className="flex h-8 items-center gap-0.5 rounded-md bg-muted p-0.5"
+    >
       {options.map((option) => {
         const active = option.value === value
         return (

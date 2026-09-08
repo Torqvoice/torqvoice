@@ -2197,6 +2197,7 @@
     "unknownTags": "Te tagi nie istnieją dla tego rodzaju e-maila: {tags}",
     "missingTags": "Ten e-mail musi zawierać {tags}",
     "subjectRequired": "Temat nie może być pusty",
+    "invalidTemplate": "Jakiś tekst jest za długi lub pole ma nieprawidłową wartość.",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Twoje zmiany w tym szablonie nie zostały zapisane. Zostaną utracone.",
     "leaveConfirm": "Wyjdź",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Podgląd w szerokości komputera",
     "mobileTooltip": "Podgląd w szerokości telefonu",
     "htmlViewTooltip": "Pokaż wiadomość HTML",
+    "previewWidth": "Szerokość podglądu",
+    "previewView": "Widok podglądu",
     "textViewTooltip": "Pokaż wersję w zwykłym tekście",
     "inboxNow": "Teraz",
     "inboxNoSender": "Twój warsztat",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Tło",
       "panelColor": "Panele",
       "invalidColor": "Kolor nie jest prawidłową wartością szesnastkową",
+      "hexLabel": "{label} szesnastkowo",
       "typography": "Typografia",
       "font": "Czcionka",
       "fontHint": "Tylko czcionki, które każdy program pocztowy już ma. Większość z nich nie ładuje czcionek webowych.",
@@ -2258,7 +2262,7 @@
       "title": "Zapisz ten szablon",
       "body": "Nadaj szablonowi nazwę, po której znajdziesz go w galerii. Zapisanie sprawia też, że ten rodzaj e-maila będzie z nim wysyłany.",
       "placeholder": "Nazwa szablonu",
-      "nameExists": "Szablon o tej nazwie już istnieje; zapis go zaktualizuje.",
+      "nameExists": "Szablon o tej nazwie już istnieje. Wybierz inną nazwę.",
       "save": "Zapisz szablon",
       "update": "Zaktualizuj szablon"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "Obraz musi mieć mniej niż 10 MB",
       "uploadFailed": "Nie udało się przesłać obrazu"
     },
-    "dragHandle": "Przeciągnij, aby zmienić kolejność"
+    "dragHandle": "Przeciągnij, aby zmienić kolejność",
+    "dragHandleKeyboard": "Przeciągnij lub użyj klawiszy strzałek, aby przenieść ten blok",
+    "tagDoesNotFit": "Tag nie mieści się w tym polu."
   }
 }

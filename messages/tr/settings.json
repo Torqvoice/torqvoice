@@ -2197,6 +2197,7 @@
     "unknownTags": "Bu etiketler bu e-posta türü için yok: {tags}",
     "missingTags": "Bu e-posta {tags} içermeli",
     "subjectRequired": "Konu boş olamaz",
+    "invalidTemplate": "Bir metin çok uzun ya da bir alanda geçersiz bir değer var.",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu şablondaki değişiklikleriniz kaydedilmedi. Kaybolacaklar.",
     "leaveConfirm": "Çık",
@@ -2219,6 +2220,8 @@
     "desktopTooltip": "Masaüstü genişliğinde önizle",
     "mobileTooltip": "Telefon genişliğinde önizle",
     "htmlViewTooltip": "HTML e-postayı göster",
+    "previewWidth": "Önizleme genişliği",
+    "previewView": "Önizleme görünümü",
     "textViewTooltip": "Düz metin sürümünü göster",
     "inboxNow": "Şimdi",
     "inboxNoSender": "Atölyeniz",
@@ -2238,6 +2241,7 @@
       "backgroundColor": "Arka plan",
       "panelColor": "Paneller",
       "invalidColor": "Bir renk geçerli bir onaltılık değer değil",
+      "hexLabel": "{label} onaltılık olarak",
       "typography": "Tipografi",
       "font": "Yazı tipi",
       "fontHint": "Yalnızca her e-posta istemcisinde zaten bulunan yazı tipleri. Çoğu web yazı tiplerini yüklemez.",
@@ -2258,7 +2262,7 @@
       "title": "Bu şablonu kaydet",
       "body": "Şablona galeride bulabileceğiniz bir ad verin. Kaydetmek onu aynı zamanda bu e-posta türünün gönderildiği şablon yapar.",
       "placeholder": "Şablon adı",
-      "nameExists": "Bu adda bir şablon var; kaydetmek onu günceller.",
+      "nameExists": "Bu adda bir şablon zaten var. Başka bir ad seçin.",
       "save": "Şablonu kaydet",
       "update": "Şablonu güncelle"
     },
@@ -2338,6 +2342,8 @@
       "tooLarge": "Görsel 10 MB'den küçük olmalıdır",
       "uploadFailed": "Görsel yüklenemedi"
     },
-    "dragHandle": "Yeniden sıralamak için sürükleyin"
+    "dragHandle": "Yeniden sıralamak için sürükleyin",
+    "dragHandleKeyboard": "Bu bloğu taşımak için sürükleyin ya da ok tuşlarını kullanın",
+    "tagDoesNotFit": "Etiket bu alana sığmıyor."
   }
 }
