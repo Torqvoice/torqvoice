@@ -2,20 +2,12 @@ import { NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
 import { db } from '@/lib/db'
 import { rateLimit } from '@/lib/rate-limit'
-import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { MAGIC_LINK_DURATION } from '@/lib/customer-session'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getAppBaseUrl } from '@/lib/app-url'
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
+import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
   const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
@@ -84,25 +76,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     const appUrl = getAppBaseUrl()
 
     const magicLinkUrl = `${appUrl}/portal/${orgParam}/auth/verify?token=${token}`
-    const fromAddress = await getOrgFromAddress(orgId)
 
-    // Plain, left-aligned email. We include the magic link both as a
-    // clickable anchor and as a raw URL on its own line so customers can
-    // copy/paste it if the auto-link does not work in their mail client.
-    const escapedName = escapeHtml(customer.name)
-    const escapedOrg = escapeHtml(org.name)
-    const escapedUrl = escapeHtml(magicLinkUrl)
+    // The customer has no workshop cookie to read a language from, so the
+    // browser that asked for the link decides, unless the workshop forces one.
+    const locale = await resolveCustomerLocale(orgId, request.headers.get('accept-language'))
 
-    await sendOrgMail(orgId, {
-      from: fromAddress,
+    await sendTemplatedMail(orgId, {
+      kind: 'portal_signin',
       to: email,
-      subject: `Sign in to ${org.name} portal`,
-      html: `<div style="font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif; font-size: 15px; color: #0f172a; line-height: 1.55;">
-<p>Hi ${escapedName},</p>
-<p>Use the link below to sign in to the ${escapedOrg} customer portal:</p>
-<p><a href="${escapedUrl}">${escapedUrl}</a></p>
-<p>This link expires in 15 minutes. If you didn't request this, you can ignore this email.</p>
-</div>`,
+      locale,
+      context: { customerName: customer.name, signinLink: magicLinkUrl },
     })
 
     return NextResponse.json({ success: true })

@@ -1,0 +1,51 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Invoice",
+      "subject": "Invoice {document_number} from {workshop_name}",
+      "heading": "Invoice {document_number}",
+      "intro": "Hi {customer_name},\n\nThank you for choosing us. Your invoice is ready.",
+      "button": "View invoice",
+      "outro": "Any questions, just reply to this email."
+    },
+    "quote_sent": {
+      "name": "Quote",
+      "subject": "Quote {document_number} from {workshop_name}",
+      "heading": "Quote {document_number}",
+      "intro": "Hi {customer_name},\n\nHere is the quote you asked for. Let us know if you would like us to go ahead.",
+      "button": "View quote",
+      "outro": "Any questions, just reply to this email."
+    },
+    "inspection_sent": {
+      "name": "Inspection report",
+      "subject": "Inspection report from {workshop_name}",
+      "heading": "Vehicle inspection report",
+      "intro": "Hi {customer_name},\n\nWe have finished the inspection. The report is ready for you.",
+      "button": "View report",
+      "outro": "Any questions, just reply to this email."
+    },
+    "message": {
+      "name": "Customer message",
+      "subject": "Message from {workshop_name}",
+      "intro": "Hi {customer_name},",
+      "outro": "Any questions, just reply to this email."
+    },
+    "portal_signin": {
+      "name": "Portal sign-in",
+      "subject": "Sign in to {workshop_name}",
+      "heading": "Sign in to your customer portal",
+      "intro": "Hi {customer_name},\n\nUse the button below to sign in to the {workshop_name} customer portal.",
+      "button": "Sign in",
+      "linkFallback": "If the button does not work, copy this link into your browser:\n{signin_link}",
+      "outro": "This link expires in 15 minutes. If you did not ask for it, you can ignore this email."
+    }
+  },
+  "attachmentNote": "A PDF copy is attached to this email.",
+  "summary": {
+    "reference": "Reference",
+    "vehicle": "Vehicle",
+    "total": "Total",
+    "balance": "Balance due",
+    "due": "Due"
+  }
+}

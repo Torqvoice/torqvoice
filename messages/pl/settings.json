@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Przypomnienia o przeglądzie",
         "description": "Link do rezerwacji, czas trwania i wyprzedzenie"
+      },
+      "emailTemplates": {
+        "title": "Szablony e-mail",
+        "description": "Co mówią e-maile z fakturą, ofertą i raportem"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,327 @@
     "timeZoneDetected": "Strefa czasowa jest ustawiona na automatyczną w Lokalizacji, więc serwer używa {zone}, strefy ostatnio widzianej w przeglądarce, która zapisała ustawienia. Wybierz strefę warsztatu jawnie, aby godziny rezerwacji nigdy nie zależały od tego, kto zapisał ostatni.",
     "timeZoneExplicit": "Godziny rezerwacji i otwarcia są odczytywane w strefie {zone}.",
     "timeZoneChange": "Zmień w Lokalizacji"
+  },
+  "emailTemplates": {
+    "title": "Szablony e-mail",
+    "description": "Co mówią e-maile wysyłane przez Twój warsztat i jak wyglądają. Każdy rodzaj e-maila ma wbudowany szablon; zaprojektuj własny, aby zmienić treść, kolory i bloki, z których się składa.",
+    "lockedDescription": "Projektuj e-maile wysyłane przez Twój warsztat: zmieniaj treść, dodawaj lub usuwaj bloki i dopasuj kolory do swojej marki.",
+    "groups": {
+      "documents": "Dokumenty",
+      "messages": "Wiadomości",
+      "portal": "Portal klienta"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Faktura wysłana",
+        "description": "Wysyłany, gdy faktura trafia do klienta e-mailem, z załączonym PDF lub linkiem do jej podglądu."
+      },
+      "quote_sent": {
+        "name": "Wycena wysłana",
+        "description": "Wysyłany, gdy wycena trafia do klienta e-mailem."
+      },
+      "inspection_sent": {
+        "name": "Raport z przeglądu wysłany",
+        "description": "Wysyłany, gdy raport z przeglądu trafia do klienta e-mailem."
+      },
+      "message": {
+        "name": "Wiadomość do klienta",
+        "description": "Wiadomość do klienta: powiadomienie ze zlecenia, raport o stanie, zaproszenie na rozmowę wideo lub zaplanowane przypomnienie."
+      },
+      "portal_signin": {
+        "name": "Logowanie do portalu",
+        "description": "Link logowania, o który klient prosi w portalu klienta."
+      }
+    },
+    "blocks": {
+      "header": "Nagłówek strony",
+      "heading": "Nagłówek",
+      "paragraph": "Akapit",
+      "callout": "Wyróżnienie",
+      "button": "Przycisk",
+      "document_summary": "Podsumowanie dokumentu",
+      "attachment_note": "Uwaga o załączniku",
+      "image": "Obraz",
+      "divider": "Linia oddzielająca",
+      "spacer": "Odstęp",
+      "contact_footer": "Stopka kontaktowa"
+    },
+    "blockNotes": {
+      "header": "Twoje logo lub nazwa warsztatu, gdy nie ma logo albo jest wyłączone. Prześlij logo i ustaw jego rozmiar tutaj; kolory i czcionki znajdziesz w sekcji Temat i motyw.",
+      "contact_footer": "Nazwa, adres, telefon i e-mail Twojego warsztatu, pobrane z ustawień w sekcji Firma. Uzupełnij je tam, aby zmienić, co jest tu drukowane.",
+      "divider": "Cienka linia między dwoma blokami. Jest pomijana, gdy otwierałaby lub zamykała e-mail.",
+      "callout": "Wyróżniony panel z kolorową krawędzią. Dobry na najważniejsze słowa, na przykład samą wiadomość.",
+      "attachment_note": "Drukowana tylko wtedy, gdy do e-maila dołączony jest PDF.",
+      "button": "Link to zwykle tag, na przykład link do udostępnienia. Przycisk, którego link nie ma wartości, jest pomijany w e-mailu.",
+      "document_summary": "Panel z kluczowymi kwotami dokumentu. Wiersze bez niczego do pokazania są pomijane.",
+      "image": "Obrazy są przy przesyłaniu kompresowane i skalowane do wiadomości e-mail. Obrazy, które nie są już używane, są usuwane przy zapisie szablonu.",
+      "summaryUnused": "Ten rodzaj e-maila nie ma dokumentu, więc podsumowanie niczego nie drukuje."
+    },
+    "tagGroups": {
+      "workshop": "Warsztat",
+      "customer": "Klient",
+      "vehicle": "Pojazd",
+      "document": "Dokument",
+      "message": "Wiadomość",
+      "portal": "Portal"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Nazwa warsztatu",
+        "description": "Nazwa Twojego warsztatu."
+      },
+      "workshop_phone": {
+        "label": "Telefon warsztatu",
+        "description": "Numer telefonu z ustawień w sekcji Firma."
+      },
+      "workshop_email": {
+        "label": "E-mail warsztatu",
+        "description": "Adres e-mail z ustawień w sekcji Firma."
+      },
+      "workshop_address": {
+        "label": "Adres warsztatu",
+        "description": "Adres z ustawień w sekcji Firma, w tylu wierszach, ile ma."
+      },
+      "current_user": {
+        "label": "Nazwa nadawcy",
+        "description": "Imię i nazwisko osoby wysyłającej e-mail."
+      },
+      "customer_name": {
+        "label": "Nazwa klienta",
+        "description": "Nazwa klienta, do którego trafia e-mail."
+      },
+      "vehicle": {
+        "label": "Pojazd",
+        "description": "Rocznik, marka i model pojazdu."
+      },
+      "plate": {
+        "label": "Numer rejestracyjny",
+        "description": "Numer rejestracyjny pojazdu."
+      },
+      "mileage": {
+        "label": "Przebieg",
+        "description": "Przebieg zapisany przy pojeździe."
+      },
+      "document_number": {
+        "label": "Numer dokumentu",
+        "description": "Numer faktury lub wyceny."
+      },
+      "document_title": {
+        "label": "Tytuł dokumentu",
+        "description": "Tytuł zlecenia lub dokumentu."
+      },
+      "total": {
+        "label": "Razem",
+        "description": "Suma dokumentu w jego walucie."
+      },
+      "balance_due": {
+        "label": "Do zapłaty",
+        "description": "Ile pozostaje do zapłaty z dokumentu po wpłatach."
+      },
+      "due_date": {
+        "label": "Termin płatności",
+        "description": "Data, do której należy zapłacić."
+      },
+      "share_link": {
+        "label": "Link do udostępnienia",
+        "description": "Link, który klient może otworzyć, aby zobaczyć dokument online."
+      },
+      "message": {
+        "label": "Wiadomość",
+        "description": "Wiadomość napisana do tego e-maila lub notatka dodana do dokumentu."
+      },
+      "signin_link": {
+        "label": "Link logowania",
+        "description": "Link, który loguje klienta do portalu. Wygasa po krótkim czasie."
+      },
+      "portal_link": {
+        "label": "Link do portalu",
+        "description": "Link do portalu klienta."
+      }
+    },
+    "optionalTag": "Nie każdy e-mail ma wartość dla tego tagu. Gdy jest pusty, słowa wokół niego są porządkowane.",
+    "summaryRows": {
+      "reference": "Numer",
+      "vehicle": "Pojazd",
+      "total": "Razem",
+      "balance": "Do zapłaty",
+      "due": "Termin płatności"
+    },
+    "builtIn": "Wbudowany",
+    "inUse": "W użyciu",
+    "useBuiltIn": "Użyj wbudowanego",
+    "setDefault": "Ustaw jako domyślny",
+    "defaultSet": "Wysyłanie odbywa się teraz z „{name}”",
+    "couldNotSetDefault": "Nie udało się zmienić używanego szablonu",
+    "updatedOn": "Zaktualizowano {date}",
+    "delete": "Usuń",
+    "deleteTitle": "Usuń szablon",
+    "deleteConfirm": "Usunąć szablon „{name}”? Jeśli jest w użyciu, e-maile wracają do wbudowanego szablonu.",
+    "deleteTemplate": "Usuń ten szablon",
+    "deleted": "Usunięto „{name}”",
+    "couldNotDelete": "Nie udało się usunąć szablonu",
+    "backToSettings": "Wróć do ustawień",
+    "unsaved": "(niezapisane)",
+    "save": "Zapisz",
+    "saving": "Zapisywanie…",
+    "savedState": "Zapisano",
+    "saved": "Zapisano „{name}”",
+    "couldNotSave": "Nie udało się zapisać",
+    "saveAsNew": "Zapisz jako nowy",
+    "discard": "Odrzuć zmiany",
+    "sendTest": "Wyślij test",
+    "cancel": "Anuluj",
+    "problems": "{count, plural, one {# problem} few {# problemy} many {# problemów} other {# problemu}}",
+    "unknownTags": "Te tagi nie istnieją dla tego rodzaju e-maila: {tags}",
+    "missingTags": "Ten e-mail musi zawierać {tags}",
+    "subjectRequired": "Temat nie może być pusty",
+    "invalidTemplate": "Jakiś tekst jest za długi lub pole ma nieprawidłową wartość.",
+    "leaveTitle": "Wyjść bez zapisywania?",
+    "leaveBody": "Twoje zmiany w tym szablonie nie zostały zapisane. Zostaną utracone.",
+    "leaveConfirm": "Wyjdź",
+    "subjectAndTheme": "Temat i motyw",
+    "settingsSubtitle": "Dotyczy całego e-maila",
+    "blocksTitle": "Bloki",
+    "addBlock": "Dodaj blok",
+    "removeBlock": "Usuń blok",
+    "removeBlockLast": "Ostatniego bloku nie można usunąć",
+    "blockEmpty": "pusty",
+    "blockEmptyHint": "Jest pokazywany, ale nie ma w nim jeszcze nic do wydrukowania.",
+    "blockShownHint": "Widoczny w e-mailu. Kliknij, aby go ukryć.",
+    "blockHiddenHint": "Ukryty w e-mailu. Kliknij, aby go pokazać.",
+    "railHint": "Przeciągnij blok za uchwyt, aby go przenieść. Linia pokazuje, gdzie trafi. Kliknij blok, aby edytować jego treść po prawej.",
+    "resizeHint": "Przeciągnij, aby zmienić rozmiar panelu. Kliknij dwukrotnie, aby przywrócić.",
+    "desktop": "Komputer",
+    "mobile": "Telefon",
+    "htmlView": "HTML",
+    "textView": "Zwykły tekst",
+    "desktopTooltip": "Podgląd w szerokości komputera",
+    "mobileTooltip": "Podgląd w szerokości telefonu",
+    "htmlViewTooltip": "Pokaż wiadomość HTML",
+    "previewWidth": "Szerokość podglądu",
+    "previewView": "Widok podglądu",
+    "textViewTooltip": "Pokaż wersję w zwykłym tekście",
+    "inboxNow": "Teraz",
+    "inboxNoSender": "Twój warsztat",
+    "inboxNoSubject": "(brak tematu)",
+    "subject": "Temat",
+    "text": "Tekst",
+    "buttonLabel": "Tekst przycisku",
+    "buttonHref": "Link",
+    "spacerHeight": "Wysokość",
+    "tagsTitle": "Tagi",
+    "tagsHint": "Kliknij tag, aby wstawić go w miejscu kursora w polu, w którym ostatnio pisałeś.",
+    "theme": {
+      "colors": "Kolory",
+      "primaryColor": "Główny",
+      "textColor": "Tekst",
+      "mutedColor": "Tekst wyciszony",
+      "backgroundColor": "Tło",
+      "panelColor": "Panele",
+      "invalidColor": "Kolor nie jest prawidłową wartością szesnastkową",
+      "hexLabel": "{label} szesnastkowo",
+      "typography": "Typografia",
+      "font": "Czcionka",
+      "fontHint": "Tylko czcionki, które każdy program pocztowy już ma. Większość z nich nie ładuje czcionek webowych.",
+      "fonts": {
+        "system": "Systemowa",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Kształty",
+      "buttonRadius": "Rogi przycisku",
+      "showLogo": "Pokaż logo",
+      "showLogoHint": "Przy wyłączonym logo nagłówek drukuje zamiast niego nazwę warsztatu."
+    },
+    "nameDialog": {
+      "title": "Zapisz ten szablon",
+      "body": "Nadaj szablonowi nazwę, po której znajdziesz go w galerii. Zapisanie sprawia też, że ten rodzaj e-maila będzie z nim wysyłany.",
+      "placeholder": "Nazwa szablonu",
+      "nameExists": "Szablon o tej nazwie już istnieje. Wybierz inną nazwę.",
+      "save": "Zapisz szablon",
+      "update": "Zaktualizuj szablon"
+    },
+    "testDialog": {
+      "title": "Wyślij testowy e-mail",
+      "body": "E-mail jest wysyłany z przykładowymi danymi, aby zobaczyć go w prawdziwym programie pocztowym.",
+      "placeholder": "Adres e-mail",
+      "send": "Wyślij",
+      "sending": "Wysyłanie…",
+      "sentTitle": "Testowy e-mail wysłany",
+      "sentBody": "Sprawdź skrzynkę {email}. Dotarcie może zająć minutę.",
+      "failedTitle": "Nie udało się wysłać testowego e-maila",
+      "failedBody": "Sprawdź dostawcę e-mail w sekcji Dostawcy i spróbuj ponownie."
+    },
+    "toolbar": {
+      "bold": "Pogrubienie",
+      "italic": "Kursywa",
+      "underline": "Podkreślenie",
+      "strike": "Przekreślenie",
+      "link": "Link",
+      "linkUrl": "Adres linku",
+      "linkPlaceholder": "https://... lub {share_link}",
+      "linkHint": "Adres internetowy lub tag taki jak {share_link}, który jest wypełniany przy wysyłce wiadomości.",
+      "linkApply": "Zastosuj",
+      "linkRemove": "Usuń link",
+      "bulletList": "Lista punktowana",
+      "orderedList": "Lista numerowana",
+      "align": {
+        "left": "Wyrównaj do lewej",
+        "center": "Wyśrodkuj",
+        "right": "Wyrównaj do prawej"
+      },
+      "size": {
+        "label": "Rozmiar tekstu",
+        "default": "Rozmiar domyślny",
+        "small": "Mały",
+        "normal": "Normalny",
+        "large": "Duży",
+        "extraLarge": "Bardzo duży"
+      },
+      "color": {
+        "label": "Kolor tekstu",
+        "text": "Kolor tekstu motywu",
+        "muted": "Kolor wyciszony motywu",
+        "primary": "Kolor główny motywu",
+        "default": "Domyślny",
+        "hex": "Kolor szesnastkowy",
+        "apply": "Zastosuj"
+      },
+      "clear": "Wyczyść formatowanie"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Nie przesłano logo. Nagłówek drukuje nazwę warsztatu.",
+      "upload": "Prześlij logo",
+      "replace": "Zastąp logo",
+      "remove": "Usuń",
+      "uploading": "Przesyłanie…",
+      "width": "Szerokość logo",
+      "hint": "Niezależne od logo firmy. Przy przesyłaniu jest przycinane i przygotowywane do wiadomości e-mail. PNG, JPEG lub WebP do 4 MB.",
+      "position": "Położenie",
+      "tooLarge": "Obraz musi mieć mniej niż 4 MB",
+      "uploadFailed": "Nie udało się przesłać logo"
+    },
+    "image": {
+      "empty": "Nie przesłano obrazu. Blok nic nie drukuje, dopóki go nie ma.",
+      "upload": "Prześlij obraz",
+      "replace": "Zastąp obraz",
+      "remove": "Usuń",
+      "uploading": "Przesyłanie…",
+      "alt": "Opis",
+      "altHint": "Odczytywany na głos czytelnikom, którzy nie widzą obrazu, i wyświetlany podczas jego ładowania. PNG, JPEG lub WebP do 10 MB.",
+      "width": "Szerokość",
+      "widthHint": "600 px to pełna szerokość wiadomości e-mail. Węższe obrazy ustawiają się tam, gdzie wskazuje Położenie.",
+      "link": "Link",
+      "linkHint": "Opcjonalnie. Otwiera się po kliknięciu obrazu; działa tu też tag, na przykład link do udostępnienia.",
+      "tooLarge": "Obraz musi mieć mniej niż 10 MB",
+      "uploadFailed": "Nie udało się przesłać obrazu"
+    },
+    "dragHandle": "Przeciągnij, aby zmienić kolejność",
+    "dragHandleKeyboard": "Przeciągnij lub użyj klawiszy strzałek, aby przenieść ten blok",
+    "tagDoesNotFit": "Tag nie mieści się w tym polu."
   }
 }

@@ -1,0 +1,51 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Sąskaita",
+      "subject": "Sąskaita {document_number} iš {workshop_name}",
+      "heading": "Sąskaita {document_number}",
+      "intro": "Sveiki, {customer_name},\n\ndėkojame, kad pasirinkote mus. Jūsų sąskaita paruošta.",
+      "button": "Peržiūrėti sąskaitą",
+      "outro": "Jei turite klausimų, tiesiog atsakykite į šį laišką."
+    },
+    "quote_sent": {
+      "name": "Pasiūlymas",
+      "subject": "Pasiūlymas {document_number} iš {workshop_name}",
+      "heading": "Pasiūlymas {document_number}",
+      "intro": "Sveiki, {customer_name},\n\nsiunčiame jūsų prašytą pasiūlymą. Praneškite, jei norite, kad pradėtume darbus.",
+      "button": "Peržiūrėti pasiūlymą",
+      "outro": "Jei turite klausimų, tiesiog atsakykite į šį laišką."
+    },
+    "inspection_sent": {
+      "name": "Apžiūros ataskaita",
+      "subject": "Apžiūros ataskaita iš {workshop_name}",
+      "heading": "Transporto priemonės apžiūros ataskaita",
+      "intro": "Sveiki, {customer_name},\n\napžiūrą baigėme. Ataskaita jums paruošta.",
+      "button": "Peržiūrėti ataskaitą",
+      "outro": "Jei turite klausimų, tiesiog atsakykite į šį laišką."
+    },
+    "message": {
+      "name": "Žinutė klientui",
+      "subject": "Žinutė iš {workshop_name}",
+      "intro": "Sveiki, {customer_name},",
+      "outro": "Jei turite klausimų, tiesiog atsakykite į šį laišką."
+    },
+    "portal_signin": {
+      "name": "Prisijungimas prie portalo",
+      "subject": "Prisijunkite prie {workshop_name}",
+      "heading": "Prisijunkite prie savo klientų portalo",
+      "intro": "Sveiki, {customer_name},\n\nspustelėkite žemiau esantį mygtuką, kad prisijungtumėte prie {workshop_name} klientų portalo.",
+      "button": "Prisijungti",
+      "linkFallback": "Jei mygtukas neveikia, nukopijuokite šią nuorodą į savo naršyklę:\n{signin_link}",
+      "outro": "Ši nuoroda galioja 15 minučių. Jei jos neprašėte, galite nekreipti dėmesio į šį laišką."
+    }
+  },
+  "attachmentNote": "Prie šio laiško pridėta PDF kopija.",
+  "summary": {
+    "reference": "Nuoroda",
+    "vehicle": "Transporto priemonė",
+    "total": "Iš viso",
+    "balance": "Mokėtinas likutis",
+    "due": "Apmokėti iki"
+  }
+}

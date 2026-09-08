@@ -29,6 +29,13 @@ export interface SendMailOptions {
   replyTo?: string
   subject: string
   html: string
+  /**
+   * The plain-text half of the mail. A message with no text part scores worse
+   * with spam filters, and some people read mail as text on purpose. Every
+   * provider below takes one; the document mails generate theirs from the
+   * same spec the HTML comes from, so the two cannot disagree.
+   */
+  text?: string
   attachments?: {
     filename: string
     content: Buffer
@@ -204,6 +211,7 @@ async function sendViaSmtpWithSettings(
     replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
+    text: options.text,
     attachments: options.attachments?.map((a) => ({
       filename: a.filename,
       content: a.content,
@@ -257,6 +265,7 @@ async function sendViaResendWithSettings(
     replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
+    text: options.text,
     attachments: options.attachments?.map((a) => ({
       filename: a.filename,
       content: a.content,
@@ -290,6 +299,7 @@ async function sendViaPostmarkWithSettings(
       ReplyTo: options.replyTo,
       Subject: options.subject,
       HtmlBody: options.html,
+      TextBody: options.text,
       Attachments: options.attachments.map((a) => ({
         Name: a.filename,
         Content: a.content.toString('base64'),
@@ -304,6 +314,7 @@ async function sendViaPostmarkWithSettings(
       ReplyTo: options.replyTo,
       Subject: options.subject,
       HtmlBody: options.html,
+      TextBody: options.text,
     })
   }
 }
@@ -341,6 +352,7 @@ async function sendViaMailgunWithSettings(
     ...(options.replyTo && { 'h:Reply-To': options.replyTo }),
     subject: options.subject,
     html: options.html,
+    ...(options.text && { text: options.text }),
     ...(options.attachments?.length && {
       attachment: options.attachments.map((a) => ({
         filename: a.filename,
@@ -384,6 +396,7 @@ async function sendViaSendGridWithSettings(
     replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
+    ...(options.text && { text: options.text }),
   }
 
   if (options.attachments?.length) {
@@ -425,6 +438,7 @@ async function sendViaSesWithSettings(
     replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
+    text: options.text,
     attachments: options.attachments?.map((a) => ({
       filename: a.filename,
       content: a.content,

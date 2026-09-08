@@ -48,6 +48,8 @@ export async function GET(
     'inventory',
     'services',
     'logos',
+    'email-logos',
+    'email-images',
     'quotes',
     'portal',
     'tire-hotel',

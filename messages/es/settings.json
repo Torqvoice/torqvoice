@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Recordatorios de inspección",
         "description": "Enlace de reserva, duración y antelación"
+      },
+      "emailTemplates": {
+        "title": "Plantillas de correo",
+        "description": "Lo que dicen tus correos de factura, presupuesto e informe"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,327 @@
     "timeZoneDetected": "La zona horaria está en automático en Localización, así que el servidor usa {zone}, la última vista en un navegador que guardó ajustes. Elige la zona del taller explícitamente para que las horas de reserva nunca dependan de quién guardó último.",
     "timeZoneExplicit": "Las horas de reserva y el horario se leen en {zone}.",
     "timeZoneChange": "Cambiar en Localización"
+  },
+  "emailTemplates": {
+    "title": "Plantillas de correo",
+    "description": "Lo que dicen los correos que envía tu taller y cómo se ven. Cada tipo de correo tiene una plantilla integrada; diseña la tuya para cambiar el texto, los colores y los bloques que la componen.",
+    "lockedDescription": "Diseña los correos que envía tu taller: cambia el texto, añade o quita bloques y ajusta los colores a tu marca.",
+    "groups": {
+      "documents": "Documentos",
+      "messages": "Mensajes",
+      "portal": "Portal del cliente"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Factura enviada",
+        "description": "Se envía cuando una factura va a un cliente por correo, con el PDF adjunto o un enlace para verla."
+      },
+      "quote_sent": {
+        "name": "Presupuesto enviado",
+        "description": "Se envía cuando un presupuesto va a un cliente por correo."
+      },
+      "inspection_sent": {
+        "name": "Informe de inspección enviado",
+        "description": "Se envía cuando un informe de inspección va a un cliente por correo."
+      },
+      "message": {
+        "name": "Mensaje al cliente",
+        "description": "Un mensaje escrito a un cliente: una notificación desde una orden de trabajo, un informe de estado, una invitación a videollamada o un recordatorio programado."
+      },
+      "portal_signin": {
+        "name": "Acceso al portal",
+        "description": "El enlace de acceso que un cliente solicita en el portal del cliente."
+      }
+    },
+    "blocks": {
+      "header": "Cabecera",
+      "heading": "Título",
+      "paragraph": "Párrafo",
+      "callout": "Destacado",
+      "button": "Botón",
+      "document_summary": "Resumen del documento",
+      "attachment_note": "Nota de adjunto",
+      "image": "Imagen",
+      "divider": "Separador",
+      "spacer": "Espacio",
+      "contact_footer": "Pie de contacto"
+    },
+    "blockNotes": {
+      "header": "Tu logotipo, o el nombre del taller cuando no hay logotipo o está desactivado. Sube el logotipo y ajusta su tamaño aquí; los colores y las fuentes están en Asunto y tema.",
+      "contact_footer": "El nombre, la dirección, el teléfono y el correo de tu taller, tomados de los ajustes de Empresa. Rellénalos allí para cambiar lo que se imprime aquí.",
+      "divider": "Una línea fina entre dos bloques. Se omite cuando abriría o cerraría el correo.",
+      "callout": "Un panel resaltado con un borde de color. Ideal para las palabras que más importan, como el propio mensaje.",
+      "attachment_note": "Solo se imprime cuando el correo lleva un PDF adjunto.",
+      "button": "El enlace suele ser una etiqueta, como el enlace para compartir. Un botón cuyo enlace no tiene valor se omite del correo.",
+      "document_summary": "Un panel con las cifras clave del documento. Las filas sin nada que mostrar se omiten.",
+      "image": "Las imágenes se comprimen y redimensionan para el correo al subirlas. Las imágenes que ya no se usan se eliminan al guardar la plantilla.",
+      "summaryUnused": "Este tipo de correo no tiene documento, así que el resumen no imprime nada."
+    },
+    "tagGroups": {
+      "workshop": "Taller",
+      "customer": "Cliente",
+      "vehicle": "Vehículo",
+      "document": "Documento",
+      "message": "Mensaje",
+      "portal": "Portal"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Nombre del taller",
+        "description": "El nombre de tu taller."
+      },
+      "workshop_phone": {
+        "label": "Teléfono del taller",
+        "description": "El número de teléfono de los ajustes de Empresa."
+      },
+      "workshop_email": {
+        "label": "Correo del taller",
+        "description": "La dirección de correo de los ajustes de Empresa."
+      },
+      "workshop_address": {
+        "label": "Dirección del taller",
+        "description": "La dirección de los ajustes de Empresa, en tantas líneas como tenga."
+      },
+      "current_user": {
+        "label": "Nombre del remitente",
+        "description": "El nombre de la persona que envía el correo."
+      },
+      "customer_name": {
+        "label": "Nombre del cliente",
+        "description": "El nombre del cliente al que va el correo."
+      },
+      "vehicle": {
+        "label": "Vehículo",
+        "description": "Año, marca y modelo del vehículo."
+      },
+      "plate": {
+        "label": "Matrícula",
+        "description": "El número de matrícula del vehículo."
+      },
+      "mileage": {
+        "label": "Kilometraje",
+        "description": "El kilometraje registrado en el vehículo."
+      },
+      "document_number": {
+        "label": "Número de documento",
+        "description": "El número de la factura o del presupuesto."
+      },
+      "document_title": {
+        "label": "Título del documento",
+        "description": "El título del trabajo o del documento."
+      },
+      "total": {
+        "label": "Total",
+        "description": "El total del documento, en su moneda."
+      },
+      "balance_due": {
+        "label": "Saldo pendiente",
+        "description": "Lo que aún se debe del documento tras los pagos."
+      },
+      "due_date": {
+        "label": "Fecha de vencimiento",
+        "description": "La fecha en que vence el pago."
+      },
+      "share_link": {
+        "label": "Enlace para compartir",
+        "description": "Un enlace que el cliente puede abrir para ver el documento en línea."
+      },
+      "message": {
+        "label": "Mensaje",
+        "description": "El mensaje escrito para este correo, o la nota añadida al documento."
+      },
+      "signin_link": {
+        "label": "Enlace de acceso",
+        "description": "El enlace que da acceso al cliente al portal. Caduca al poco tiempo."
+      },
+      "portal_link": {
+        "label": "Enlace del portal",
+        "description": "Un enlace al portal del cliente."
+      }
+    },
+    "optionalTag": "No todos los correos tienen un valor para esta etiqueta. Cuando está vacía, las palabras que la rodean se ordenan.",
+    "summaryRows": {
+      "reference": "Referencia",
+      "vehicle": "Vehículo",
+      "total": "Total",
+      "balance": "Saldo pendiente",
+      "due": "Fecha de vencimiento"
+    },
+    "builtIn": "Integrada",
+    "inUse": "En uso",
+    "useBuiltIn": "Usar la integrada",
+    "setDefault": "Establecer como predeterminada",
+    "defaultSet": "Ahora se envía con «{name}»",
+    "couldNotSetDefault": "No se pudo cambiar la plantilla en uso",
+    "updatedOn": "Actualizada el {date}",
+    "delete": "Eliminar",
+    "deleteTitle": "Eliminar plantilla",
+    "deleteConfirm": "¿Eliminar la plantilla «{name}»? Si está en uso, los correos vuelven a la plantilla integrada.",
+    "deleteTemplate": "Eliminar esta plantilla",
+    "deleted": "«{name}» eliminada",
+    "couldNotDelete": "No se pudo eliminar la plantilla",
+    "backToSettings": "Volver a ajustes",
+    "unsaved": "(sin guardar)",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "savedState": "Guardado",
+    "saved": "«{name}» guardada",
+    "couldNotSave": "No se pudo guardar",
+    "saveAsNew": "Guardar como nueva",
+    "discard": "Descartar cambios",
+    "sendTest": "Enviar prueba",
+    "cancel": "Cancelar",
+    "problems": "{count, plural, one {# problema} other {# problemas}}",
+    "unknownTags": "Estas etiquetas no existen para este tipo de correo: {tags}",
+    "missingTags": "Este correo tiene que incluir {tags}",
+    "subjectRequired": "El asunto no puede estar vacío",
+    "invalidTemplate": "Algún texto es demasiado largo o un campo tiene un valor no válido.",
+    "leaveTitle": "¿Salir sin guardar?",
+    "leaveBody": "Los cambios en esta plantilla no se han guardado. Se perderán.",
+    "leaveConfirm": "Salir",
+    "subjectAndTheme": "Asunto y tema",
+    "settingsSubtitle": "Se aplica a todo el correo",
+    "blocksTitle": "Bloques",
+    "addBlock": "Añadir bloque",
+    "removeBlock": "Quitar bloque",
+    "removeBlockLast": "El último bloque no se puede quitar",
+    "blockEmpty": "vacío",
+    "blockEmptyHint": "Se muestra, pero todavía no hay nada que imprimir en él.",
+    "blockShownHint": "Visible en el correo. Haz clic para ocultarlo.",
+    "blockHiddenHint": "Oculto en el correo. Haz clic para mostrarlo.",
+    "railHint": "Arrastra un bloque por su asa para moverlo. La línea muestra dónde quedará. Haz clic en un bloque para editar su texto a la derecha.",
+    "resizeHint": "Arrastra para cambiar el tamaño del panel. Haz doble clic para restablecerlo.",
+    "desktop": "Escritorio",
+    "mobile": "Móvil",
+    "htmlView": "HTML",
+    "textView": "Texto sin formato",
+    "desktopTooltip": "Vista previa en ancho de escritorio",
+    "mobileTooltip": "Vista previa en ancho de móvil",
+    "htmlViewTooltip": "Mostrar el correo HTML",
+    "previewWidth": "Ancho de la vista previa",
+    "previewView": "Modo de vista previa",
+    "textViewTooltip": "Mostrar la versión de texto sin formato",
+    "inboxNow": "Ahora",
+    "inboxNoSender": "Tu taller",
+    "inboxNoSubject": "(sin asunto)",
+    "subject": "Asunto",
+    "text": "Texto",
+    "buttonLabel": "Texto del botón",
+    "buttonHref": "Enlace",
+    "spacerHeight": "Altura",
+    "tagsTitle": "Etiquetas",
+    "tagsHint": "Haz clic en una etiqueta para insertarla donde está el cursor en el campo en el que escribiste por última vez.",
+    "theme": {
+      "colors": "Colores",
+      "primaryColor": "Principal",
+      "textColor": "Texto",
+      "mutedColor": "Texto atenuado",
+      "backgroundColor": "Fondo",
+      "panelColor": "Paneles",
+      "invalidColor": "Un color no es un valor hexadecimal válido",
+      "hexLabel": "{label} en hexadecimal",
+      "typography": "Tipografía",
+      "font": "Fuente",
+      "fontHint": "Solo fuentes que todos los clientes de correo ya tienen. La mayoría no carga fuentes web.",
+      "fonts": {
+        "system": "Sistema",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Formas",
+      "buttonRadius": "Esquinas del botón",
+      "showLogo": "Mostrar logotipo",
+      "showLogoHint": "Con el logotipo desactivado, la cabecera imprime el nombre del taller en su lugar."
+    },
+    "nameDialog": {
+      "title": "Guardar esta plantilla",
+      "body": "Dale un nombre a la plantilla para encontrarla en la galería. Al guardarla también pasa a ser la que usa este tipo de correo.",
+      "placeholder": "Nombre de la plantilla",
+      "nameExists": "Ya existe una plantilla con este nombre. Elige otro nombre.",
+      "save": "Guardar plantilla",
+      "update": "Actualizar plantilla"
+    },
+    "testDialog": {
+      "title": "Enviar un correo de prueba",
+      "body": "El correo se envía con datos de ejemplo, para que puedas verlo en un cliente de correo real.",
+      "placeholder": "Dirección de correo",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "sentTitle": "Correo de prueba enviado",
+      "sentBody": "Revisa la bandeja de entrada de {email}. Puede tardar un minuto en llegar.",
+      "failedTitle": "No se pudo enviar el correo de prueba",
+      "failedBody": "Revisa el proveedor de correo en Proveedores e inténtalo de nuevo."
+    },
+    "toolbar": {
+      "bold": "Negrita",
+      "italic": "Cursiva",
+      "underline": "Subrayado",
+      "strike": "Tachado",
+      "link": "Enlace",
+      "linkUrl": "Dirección del enlace",
+      "linkPlaceholder": "https://... o {share_link}",
+      "linkHint": "Una dirección web o una etiqueta como {share_link} que se rellena al enviar el correo.",
+      "linkApply": "Aplicar",
+      "linkRemove": "Quitar enlace",
+      "bulletList": "Lista con viñetas",
+      "orderedList": "Lista numerada",
+      "align": {
+        "left": "Alinear a la izquierda",
+        "center": "Centrar",
+        "right": "Alinear a la derecha"
+      },
+      "size": {
+        "label": "Tamaño del texto",
+        "default": "Tamaño predeterminado",
+        "small": "Pequeño",
+        "normal": "Normal",
+        "large": "Grande",
+        "extraLarge": "Muy grande"
+      },
+      "color": {
+        "label": "Color del texto",
+        "text": "Color de texto del tema",
+        "muted": "Color atenuado del tema",
+        "primary": "Color principal del tema",
+        "default": "Predeterminado",
+        "hex": "Color hexadecimal",
+        "apply": "Aplicar"
+      },
+      "clear": "Quitar formato"
+    },
+    "logo": {
+      "title": "Logotipo",
+      "empty": "No hay ningún logotipo subido. La cabecera imprime el nombre del taller.",
+      "upload": "Subir logotipo",
+      "replace": "Reemplazar logotipo",
+      "remove": "Quitar",
+      "uploading": "Subiendo…",
+      "width": "Ancho del logotipo",
+      "hint": "Independiente del logotipo de la empresa. Al subirlo se recorta y se prepara para el correo. PNG, JPEG o WebP de hasta 4 MB.",
+      "position": "Posición",
+      "tooLarge": "La imagen debe pesar menos de 4 MB",
+      "uploadFailed": "No se pudo subir el logotipo"
+    },
+    "image": {
+      "empty": "No hay ninguna imagen subida. El bloque no imprime nada hasta que haya una.",
+      "upload": "Subir imagen",
+      "replace": "Reemplazar imagen",
+      "remove": "Quitar",
+      "uploading": "Subiendo…",
+      "alt": "Descripción",
+      "altHint": "Se lee en voz alta a los lectores que no pueden ver la imagen y se muestra mientras se carga. PNG, JPEG o WebP de hasta 10 MB.",
+      "width": "Ancho",
+      "widthHint": "600 px es el ancho completo del correo. Las imágenes más estrechas se colocan donde indica Posición.",
+      "link": "Enlace",
+      "linkHint": "Opcional. Se abre al hacer clic en la imagen; aquí también sirve una etiqueta como el enlace para compartir.",
+      "tooLarge": "La imagen debe pesar menos de 10 MB",
+      "uploadFailed": "No se pudo subir la imagen"
+    },
+    "dragHandle": "Arrastra para reordenar",
+    "dragHandleKeyboard": "Arrastra, o usa las teclas de flecha, para mover este bloque",
+    "tagDoesNotFit": "La etiqueta no cabe en este campo."
   }
 }

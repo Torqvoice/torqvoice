@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Inspection reminders",
         "description": "Booking link, duration and lead time"
+      },
+      "emailTemplates": {
+        "title": "Email templates",
+        "description": "What your invoice, quote and report emails say"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,327 @@
     "timeZoneDetected": "Timezone is on automatic under Localization, so the server uses {zone}, the zone last seen in a browser that saved settings. Choose the workshop's zone explicitly so booking times never depend on who saved last.",
     "timeZoneExplicit": "Booking times and opening hours are read in {zone}.",
     "timeZoneChange": "Change under Localization"
+  },
+  "emailTemplates": {
+    "title": "Email templates",
+    "description": "What the emails your workshop sends say and how they look. Each kind of email has a built-in template; design your own to change the wording, the colours and the blocks it is made of.",
+    "lockedDescription": "Design the emails your workshop sends: change the wording, add or remove blocks, and match the colours to your brand.",
+    "groups": {
+      "documents": "Documents",
+      "messages": "Messages",
+      "portal": "Customer portal"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Invoice sent",
+        "description": "Sent when an invoice goes to a customer by email, with the PDF attached or a link to view it."
+      },
+      "quote_sent": {
+        "name": "Quote sent",
+        "description": "Sent when a quote goes to a customer by email."
+      },
+      "inspection_sent": {
+        "name": "Inspection report sent",
+        "description": "Sent when an inspection report goes to a customer by email."
+      },
+      "message": {
+        "name": "Customer message",
+        "description": "A message written to a customer: a notification from a work order, a status report, a video call invitation or a scheduled reminder."
+      },
+      "portal_signin": {
+        "name": "Portal sign-in",
+        "description": "The sign-in link a customer asks for on the customer portal."
+      }
+    },
+    "blocks": {
+      "header": "Header",
+      "heading": "Heading",
+      "paragraph": "Paragraph",
+      "callout": "Callout",
+      "button": "Button",
+      "document_summary": "Document summary",
+      "attachment_note": "Attachment note",
+      "image": "Image",
+      "divider": "Divider",
+      "spacer": "Spacer",
+      "contact_footer": "Contact footer"
+    },
+    "blockNotes": {
+      "header": "Your logo, or the workshop name when there is no logo or it is switched off. Upload and size the logo here; colours and fonts live under Subject and theme.",
+      "contact_footer": "Your workshop name, address, phone and email, taken from Company settings. Fill them in there to change what this prints.",
+      "divider": "A thin line between two blocks. It is left out when it would open or close the email.",
+      "callout": "A highlighted panel with a coloured edge. Good for the words that matter most, such as the message itself.",
+      "attachment_note": "Only printed when a PDF is attached to the email.",
+      "button": "The link is usually a tag such as the share link. A button whose link has no value is left out of the email.",
+      "document_summary": "A panel with the key figures of the document. Rows with nothing to show are left out.",
+      "image": "Pictures are compressed and resized for email when uploaded. Pictures no longer used are removed when the template is saved.",
+      "summaryUnused": "This kind of email has no document, so the summary prints nothing."
+    },
+    "tagGroups": {
+      "workshop": "Workshop",
+      "customer": "Customer",
+      "vehicle": "Vehicle",
+      "document": "Document",
+      "message": "Message",
+      "portal": "Portal"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Workshop name",
+        "description": "The name of your workshop."
+      },
+      "workshop_phone": {
+        "label": "Workshop phone",
+        "description": "The phone number from Company settings."
+      },
+      "workshop_email": {
+        "label": "Workshop email",
+        "description": "The email address from Company settings."
+      },
+      "workshop_address": {
+        "label": "Workshop address",
+        "description": "The address from Company settings, on as many lines as it has."
+      },
+      "current_user": {
+        "label": "Sender name",
+        "description": "The name of the person sending the email."
+      },
+      "customer_name": {
+        "label": "Customer name",
+        "description": "The name of the customer the email goes to."
+      },
+      "vehicle": {
+        "label": "Vehicle",
+        "description": "Year, make and model of the vehicle."
+      },
+      "plate": {
+        "label": "Registration plate",
+        "description": "The registration number of the vehicle."
+      },
+      "mileage": {
+        "label": "Mileage",
+        "description": "The mileage recorded on the vehicle."
+      },
+      "document_number": {
+        "label": "Document number",
+        "description": "The number of the invoice or quote."
+      },
+      "document_title": {
+        "label": "Document title",
+        "description": "The title of the job or document."
+      },
+      "total": {
+        "label": "Total",
+        "description": "The total of the document, in its currency."
+      },
+      "balance_due": {
+        "label": "Balance due",
+        "description": "What is still owed on the document after payments."
+      },
+      "due_date": {
+        "label": "Due date",
+        "description": "The date the payment is due."
+      },
+      "share_link": {
+        "label": "Share link",
+        "description": "A link the customer can open to view the document online."
+      },
+      "message": {
+        "label": "Message",
+        "description": "The message written for this email, or the note added to the document."
+      },
+      "signin_link": {
+        "label": "Sign-in link",
+        "description": "The link that signs the customer in to the portal. It expires after a short while."
+      },
+      "portal_link": {
+        "label": "Portal link",
+        "description": "A link to the customer portal."
+      }
+    },
+    "optionalTag": "Not every email has a value for this tag. When it is blank, the words around it are tidied up.",
+    "summaryRows": {
+      "reference": "Reference",
+      "vehicle": "Vehicle",
+      "total": "Total",
+      "balance": "Balance due",
+      "due": "Due date"
+    },
+    "builtIn": "Built-in",
+    "inUse": "In use",
+    "useBuiltIn": "Use built-in",
+    "setDefault": "Set as default",
+    "defaultSet": "Now sending with \"{name}\"",
+    "couldNotSetDefault": "Could not change the template in use",
+    "updatedOn": "Updated {date}",
+    "delete": "Delete",
+    "deleteTitle": "Delete template",
+    "deleteConfirm": "Delete the template \"{name}\"? If it is in use, emails go back to the built-in template.",
+    "deleteTemplate": "Delete this template",
+    "deleted": "Deleted \"{name}\"",
+    "couldNotDelete": "Could not delete the template",
+    "backToSettings": "Back to settings",
+    "unsaved": "(unsaved)",
+    "save": "Save",
+    "saving": "Saving…",
+    "savedState": "Saved",
+    "saved": "Saved \"{name}\"",
+    "couldNotSave": "Could not save",
+    "saveAsNew": "Save as new",
+    "discard": "Discard changes",
+    "sendTest": "Send test",
+    "cancel": "Cancel",
+    "problems": "{count, plural, one {# problem} other {# problems}}",
+    "unknownTags": "These tags do not exist for this kind of email: {tags}",
+    "missingTags": "This email has to include {tags}",
+    "subjectRequired": "The subject cannot be empty",
+    "invalidTemplate": "Some text is too long or a field has an invalid value.",
+    "leaveTitle": "Leave without saving?",
+    "leaveBody": "Your changes to this template have not been saved. They will be lost.",
+    "leaveConfirm": "Leave",
+    "subjectAndTheme": "Subject and theme",
+    "settingsSubtitle": "Applies to the whole email",
+    "blocksTitle": "Blocks",
+    "addBlock": "Add block",
+    "removeBlock": "Remove block",
+    "removeBlockLast": "The last block cannot be removed",
+    "blockEmpty": "empty",
+    "blockEmptyHint": "Shown, but there is nothing in it to print yet.",
+    "blockShownHint": "Shown in the email. Click to hide it.",
+    "blockHiddenHint": "Hidden from the email. Click to show it.",
+    "railHint": "Drag a block by its handle to move it. The line shows where it will land. Click a block to edit its words on the right.",
+    "resizeHint": "Drag to resize the panel. Double-click to reset.",
+    "desktop": "Desktop",
+    "mobile": "Mobile",
+    "htmlView": "HTML",
+    "textView": "Plain text",
+    "desktopTooltip": "Preview at desktop width",
+    "mobileTooltip": "Preview at phone width",
+    "htmlViewTooltip": "Show the HTML email",
+    "previewWidth": "Preview width",
+    "previewView": "Preview view",
+    "textViewTooltip": "Show the plain-text version",
+    "inboxNow": "Now",
+    "inboxNoSender": "Your workshop",
+    "inboxNoSubject": "(no subject)",
+    "subject": "Subject",
+    "text": "Text",
+    "buttonLabel": "Button text",
+    "buttonHref": "Link",
+    "spacerHeight": "Height",
+    "tagsTitle": "Tags",
+    "tagsHint": "Click a tag to insert it where the cursor is in the field you last typed in.",
+    "theme": {
+      "colors": "Colours",
+      "primaryColor": "Primary",
+      "textColor": "Text",
+      "mutedColor": "Muted text",
+      "backgroundColor": "Background",
+      "panelColor": "Panels",
+      "invalidColor": "A colour is not a valid hex value",
+      "hexLabel": "{label} as hex",
+      "typography": "Typography",
+      "font": "Font",
+      "fontHint": "Only fonts every mail client already has. Web fonts are not loaded by most of them.",
+      "fonts": {
+        "system": "System",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Shapes",
+      "buttonRadius": "Button corners",
+      "showLogo": "Show logo",
+      "showLogoHint": "With the logo off, the header prints the workshop name instead."
+    },
+    "nameDialog": {
+      "title": "Save this template",
+      "body": "Give the template a name to find it by in the gallery. Saving also makes it the one this kind of email sends with.",
+      "placeholder": "Template name",
+      "nameExists": "A template with this name already exists. Choose another name.",
+      "save": "Save template",
+      "update": "Update template"
+    },
+    "testDialog": {
+      "title": "Send a test email",
+      "body": "The email is sent with sample data, so you can see it in a real mail client.",
+      "placeholder": "Email address",
+      "send": "Send",
+      "sending": "Sending…",
+      "sentTitle": "Test email sent",
+      "sentBody": "Check the inbox of {email}. It may take a minute to arrive.",
+      "failedTitle": "Could not send the test email",
+      "failedBody": "Check the email provider under Providers and try again."
+    },
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strike": "Strikethrough",
+      "link": "Link",
+      "linkUrl": "Link address",
+      "linkPlaceholder": "https://... or {share_link}",
+      "linkHint": "A web address, or a tag such as {share_link} that is filled in when the email is sent.",
+      "linkApply": "Apply",
+      "linkRemove": "Remove link",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list",
+      "align": {
+        "left": "Align left",
+        "center": "Align centre",
+        "right": "Align right"
+      },
+      "size": {
+        "label": "Text size",
+        "default": "Default size",
+        "small": "Small",
+        "normal": "Normal",
+        "large": "Large",
+        "extraLarge": "Extra large"
+      },
+      "color": {
+        "label": "Text colour",
+        "text": "Theme text colour",
+        "muted": "Theme muted colour",
+        "primary": "Theme primary colour",
+        "default": "Default",
+        "hex": "Hex colour",
+        "apply": "Apply"
+      },
+      "clear": "Clear formatting"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "No logo uploaded. The header prints the workshop name.",
+      "upload": "Upload logo",
+      "replace": "Replace logo",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "width": "Logo width",
+      "hint": "Separate from the company logo. It is trimmed and prepared for email when uploaded. PNG, JPEG or WebP up to 4 MB.",
+      "tooLarge": "The image must be under 4 MB",
+      "uploadFailed": "Could not upload the logo",
+      "position": "Position"
+    },
+    "image": {
+      "empty": "No picture uploaded. The block prints nothing until there is one.",
+      "upload": "Upload picture",
+      "replace": "Replace picture",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "alt": "Description",
+      "altHint": "Read aloud to readers who cannot see the picture, and shown while it loads. PNG, JPEG or WebP up to 10 MB.",
+      "width": "Width",
+      "widthHint": "600 px is the full width of the email. Narrower pictures sit where Position says.",
+      "link": "Link",
+      "linkHint": "Optional. Opens when the picture is clicked; a tag such as the share link works here too.",
+      "tooLarge": "The image must be under 10 MB",
+      "uploadFailed": "Could not upload the picture"
+    },
+    "dragHandle": "Drag to reorder",
+    "dragHandleKeyboard": "Drag, or use the arrow keys, to move this block",
+    "tagDoesNotFit": "The tag does not fit in this field."
   }
 }

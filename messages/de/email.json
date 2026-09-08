@@ -1,0 +1,51 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Rechnung",
+      "subject": "Rechnung {document_number} von {workshop_name}",
+      "heading": "Rechnung {document_number}",
+      "intro": "Hallo {customer_name},\n\nvielen Dank, dass Sie sich für uns entschieden haben. Ihre Rechnung ist fertig.",
+      "button": "Rechnung ansehen",
+      "outro": "Bei Fragen antworten Sie einfach auf diese E-Mail."
+    },
+    "quote_sent": {
+      "name": "Angebot",
+      "subject": "Angebot {document_number} von {workshop_name}",
+      "heading": "Angebot {document_number}",
+      "intro": "Hallo {customer_name},\n\nhier ist das gewünschte Angebot. Geben Sie uns einfach Bescheid, wenn wir loslegen sollen.",
+      "button": "Angebot ansehen",
+      "outro": "Bei Fragen antworten Sie einfach auf diese E-Mail."
+    },
+    "inspection_sent": {
+      "name": "Prüfbericht",
+      "subject": "Prüfbericht von {workshop_name}",
+      "heading": "Fahrzeugprüfbericht",
+      "intro": "Hallo {customer_name},\n\nwir haben die Prüfung abgeschlossen. Der Bericht liegt für Sie bereit.",
+      "button": "Bericht ansehen",
+      "outro": "Bei Fragen antworten Sie einfach auf diese E-Mail."
+    },
+    "message": {
+      "name": "Kundennachricht",
+      "subject": "Nachricht von {workshop_name}",
+      "intro": "Hallo {customer_name},",
+      "outro": "Bei Fragen antworten Sie einfach auf diese E-Mail."
+    },
+    "portal_signin": {
+      "name": "Portal-Anmeldung",
+      "subject": "Anmelden bei {workshop_name}",
+      "heading": "Melden Sie sich in Ihrem Kundenportal an",
+      "intro": "Hallo {customer_name},\n\nüber die Schaltfläche unten melden Sie sich im Kundenportal von {workshop_name} an.",
+      "button": "Anmelden",
+      "linkFallback": "Falls die Schaltfläche nicht funktioniert, kopieren Sie diesen Link in Ihren Browser:\n{signin_link}",
+      "outro": "Dieser Link ist 15 Minuten gültig. Falls Sie ihn nicht angefordert haben, können Sie diese E-Mail ignorieren."
+    }
+  },
+  "attachmentNote": "Eine PDF-Kopie ist dieser E-Mail beigefügt.",
+  "summary": {
+    "reference": "Referenz",
+    "vehicle": "Fahrzeug",
+    "total": "Gesamt",
+    "balance": "Offener Betrag",
+    "due": "Fällig"
+  }
+}

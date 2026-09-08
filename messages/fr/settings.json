@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Rappels de contrôle",
         "description": "Lien de réservation, durée et délai"
+      },
+      "emailTemplates": {
+        "title": "Modèles d'e-mail",
+        "description": "Ce que disent vos e-mails de facture, devis et rapport"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,327 @@
     "timeZoneDetected": "Le fuseau horaire est en automatique sous Localisation, le serveur utilise donc {zone}, le dernier fuseau vu dans un navigateur ayant enregistré les paramètres. Choisissez explicitement le fuseau de l'atelier pour que les horaires de réservation ne dépendent jamais de qui a enregistré en dernier.",
     "timeZoneExplicit": "Les horaires de réservation et d'ouverture sont lus en {zone}.",
     "timeZoneChange": "Modifier sous Localisation"
+  },
+  "emailTemplates": {
+    "title": "Modèles d'e-mail",
+    "description": "Ce que disent les e-mails envoyés par votre atelier et leur apparence. Chaque type d'e-mail a un modèle intégré ; créez le vôtre pour changer le texte, les couleurs et les blocs qui le composent.",
+    "lockedDescription": "Concevez les e-mails envoyés par votre atelier : changez le texte, ajoutez ou retirez des blocs et accordez les couleurs à votre marque.",
+    "groups": {
+      "documents": "Documents",
+      "messages": "Messages",
+      "portal": "Portail client"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Facture envoyée",
+        "description": "Envoyé quand une facture part chez un client par e-mail, avec le PDF en pièce jointe ou un lien pour la consulter."
+      },
+      "quote_sent": {
+        "name": "Devis envoyé",
+        "description": "Envoyé quand un devis part chez un client par e-mail."
+      },
+      "inspection_sent": {
+        "name": "Rapport d'inspection envoyé",
+        "description": "Envoyé quand un rapport d'inspection part chez un client par e-mail."
+      },
+      "message": {
+        "name": "Message au client",
+        "description": "Un message écrit à un client : une notification depuis un ordre de travail, un rapport d'état, une invitation à un appel vidéo ou un rappel programmé."
+      },
+      "portal_signin": {
+        "name": "Connexion au portail",
+        "description": "Le lien de connexion qu'un client demande sur le portail client."
+      }
+    },
+    "blocks": {
+      "header": "En-tête",
+      "heading": "Titre",
+      "paragraph": "Paragraphe",
+      "callout": "Encadré",
+      "button": "Bouton",
+      "document_summary": "Résumé du document",
+      "attachment_note": "Note de pièce jointe",
+      "image": "Image",
+      "divider": "Séparateur",
+      "spacer": "Espace",
+      "contact_footer": "Pied de page contact"
+    },
+    "blockNotes": {
+      "header": "Votre logo, ou le nom de l'atelier quand il n'y a pas de logo ou qu'il est désactivé. Importez et dimensionnez le logo ici ; les couleurs et les polices se trouvent sous Objet et thème.",
+      "contact_footer": "Le nom, l'adresse, le téléphone et l'e-mail de votre atelier, repris des paramètres Entreprise. Renseignez-les là-bas pour changer ce qui s'imprime ici.",
+      "divider": "Une ligne fine entre deux blocs. Elle est omise quand elle ouvrirait ou fermerait l'e-mail.",
+      "callout": "Un panneau mis en avant avec un bord coloré. Idéal pour les mots qui comptent le plus, comme le message lui-même.",
+      "attachment_note": "Imprimé seulement quand un PDF est joint à l'e-mail.",
+      "button": "Le lien est généralement une balise, comme le lien de partage. Un bouton dont le lien n'a pas de valeur est omis de l'e-mail.",
+      "document_summary": "Un panneau avec les chiffres clés du document. Les lignes sans rien à afficher sont omises.",
+      "image": "Les images sont compressées et redimensionnées pour l'e-mail lors de l'import. Les images qui ne sont plus utilisées sont supprimées à l'enregistrement du modèle.",
+      "summaryUnused": "Ce type d'e-mail n'a pas de document, le résumé n'imprime donc rien."
+    },
+    "tagGroups": {
+      "workshop": "Atelier",
+      "customer": "Client",
+      "vehicle": "Véhicule",
+      "document": "Document",
+      "message": "Message",
+      "portal": "Portail"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Nom de l'atelier",
+        "description": "Le nom de votre atelier."
+      },
+      "workshop_phone": {
+        "label": "Téléphone de l'atelier",
+        "description": "Le numéro de téléphone des paramètres Entreprise."
+      },
+      "workshop_email": {
+        "label": "E-mail de l'atelier",
+        "description": "L'adresse e-mail des paramètres Entreprise."
+      },
+      "workshop_address": {
+        "label": "Adresse de l'atelier",
+        "description": "L'adresse des paramètres Entreprise, sur autant de lignes qu'elle en compte."
+      },
+      "current_user": {
+        "label": "Nom de l'expéditeur",
+        "description": "Le nom de la personne qui envoie l'e-mail."
+      },
+      "customer_name": {
+        "label": "Nom du client",
+        "description": "Le nom du client destinataire de l'e-mail."
+      },
+      "vehicle": {
+        "label": "Véhicule",
+        "description": "Année, marque et modèle du véhicule."
+      },
+      "plate": {
+        "label": "Immatriculation",
+        "description": "Le numéro d'immatriculation du véhicule."
+      },
+      "mileage": {
+        "label": "Kilométrage",
+        "description": "Le kilométrage relevé sur le véhicule."
+      },
+      "document_number": {
+        "label": "Numéro du document",
+        "description": "Le numéro de la facture ou du devis."
+      },
+      "document_title": {
+        "label": "Titre du document",
+        "description": "Le titre de l'intervention ou du document."
+      },
+      "total": {
+        "label": "Total",
+        "description": "Le total du document, dans sa devise."
+      },
+      "balance_due": {
+        "label": "Solde dû",
+        "description": "Ce qui reste dû sur le document après les paiements."
+      },
+      "due_date": {
+        "label": "Date d'échéance",
+        "description": "La date à laquelle le paiement est dû."
+      },
+      "share_link": {
+        "label": "Lien de partage",
+        "description": "Un lien que le client peut ouvrir pour consulter le document en ligne."
+      },
+      "message": {
+        "label": "Message",
+        "description": "Le message écrit pour cet e-mail, ou la note ajoutée au document."
+      },
+      "signin_link": {
+        "label": "Lien de connexion",
+        "description": "Le lien qui connecte le client au portail. Il expire au bout d'un court délai."
+      },
+      "portal_link": {
+        "label": "Lien du portail",
+        "description": "Un lien vers le portail client."
+      }
+    },
+    "optionalTag": "Tous les e-mails n'ont pas de valeur pour cette balise. Quand elle est vide, les mots autour sont remis en ordre.",
+    "summaryRows": {
+      "reference": "Référence",
+      "vehicle": "Véhicule",
+      "total": "Total",
+      "balance": "Solde dû",
+      "due": "Date d'échéance"
+    },
+    "builtIn": "Intégré",
+    "inUse": "Utilisé",
+    "useBuiltIn": "Utiliser le modèle intégré",
+    "setDefault": "Définir par défaut",
+    "defaultSet": "Envoi désormais avec « {name} »",
+    "couldNotSetDefault": "Impossible de changer le modèle utilisé",
+    "updatedOn": "Mis à jour le {date}",
+    "delete": "Supprimer",
+    "deleteTitle": "Supprimer le modèle",
+    "deleteConfirm": "Supprimer le modèle « {name} » ? S'il est utilisé, les e-mails reviennent au modèle intégré.",
+    "deleteTemplate": "Supprimer ce modèle",
+    "deleted": "« {name} » supprimé",
+    "couldNotDelete": "Impossible de supprimer le modèle",
+    "backToSettings": "Retour aux paramètres",
+    "unsaved": "(non enregistré)",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "savedState": "Enregistré",
+    "saved": "« {name} » enregistré",
+    "couldNotSave": "Enregistrement impossible",
+    "saveAsNew": "Enregistrer comme nouveau",
+    "discard": "Annuler les modifications",
+    "sendTest": "Envoyer un test",
+    "cancel": "Annuler",
+    "problems": "{count, plural, one {# problème} other {# problèmes}}",
+    "unknownTags": "Ces balises n'existent pas pour ce type d'e-mail : {tags}",
+    "missingTags": "Cet e-mail doit contenir {tags}",
+    "subjectRequired": "L'objet ne peut pas être vide",
+    "invalidTemplate": "Un texte est trop long ou un champ contient une valeur non valide.",
+    "leaveTitle": "Quitter sans enregistrer ?",
+    "leaveBody": "Vos modifications de ce modèle n'ont pas été enregistrées. Elles seront perdues.",
+    "leaveConfirm": "Quitter",
+    "subjectAndTheme": "Objet et thème",
+    "settingsSubtitle": "S'applique à tout l'e-mail",
+    "blocksTitle": "Blocs",
+    "addBlock": "Ajouter un bloc",
+    "removeBlock": "Retirer le bloc",
+    "removeBlockLast": "Le dernier bloc ne peut pas être retiré",
+    "blockEmpty": "vide",
+    "blockEmptyHint": "Affiché, mais il n'a encore rien à imprimer.",
+    "blockShownHint": "Visible dans l'e-mail. Cliquez pour le masquer.",
+    "blockHiddenHint": "Masqué dans l'e-mail. Cliquez pour l'afficher.",
+    "railHint": "Glissez un bloc par sa poignée pour le déplacer. La ligne indique où il sera placé. Cliquez sur un bloc pour modifier son texte à droite.",
+    "resizeHint": "Glissez pour redimensionner le panneau. Double-cliquez pour réinitialiser.",
+    "desktop": "Ordinateur",
+    "mobile": "Mobile",
+    "htmlView": "HTML",
+    "textView": "Texte brut",
+    "desktopTooltip": "Aperçu en largeur ordinateur",
+    "mobileTooltip": "Aperçu en largeur téléphone",
+    "htmlViewTooltip": "Afficher l'e-mail HTML",
+    "previewWidth": "Largeur de l'aperçu",
+    "previewView": "Mode d'aperçu",
+    "textViewTooltip": "Afficher la version en texte brut",
+    "inboxNow": "Maintenant",
+    "inboxNoSender": "Votre atelier",
+    "inboxNoSubject": "(sans objet)",
+    "subject": "Objet",
+    "text": "Texte",
+    "buttonLabel": "Texte du bouton",
+    "buttonHref": "Lien",
+    "spacerHeight": "Hauteur",
+    "tagsTitle": "Balises",
+    "tagsHint": "Cliquez sur une balise pour l'insérer à la position du curseur dans le dernier champ où vous avez saisi du texte.",
+    "theme": {
+      "colors": "Couleurs",
+      "primaryColor": "Principale",
+      "textColor": "Texte",
+      "mutedColor": "Texte atténué",
+      "backgroundColor": "Fond",
+      "panelColor": "Panneaux",
+      "invalidColor": "Une couleur n'est pas une valeur hexadécimale valide",
+      "hexLabel": "{label} en hexadécimal",
+      "typography": "Typographie",
+      "font": "Police",
+      "fontHint": "Seulement des polices que chaque client mail possède déjà. La plupart ne chargent pas les polices web.",
+      "fonts": {
+        "system": "Système",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Formes",
+      "buttonRadius": "Angles du bouton",
+      "showLogo": "Afficher le logo",
+      "showLogoHint": "Logo désactivé, l'en-tête imprime le nom de l'atelier à la place."
+    },
+    "nameDialog": {
+      "title": "Enregistrer ce modèle",
+      "body": "Donnez un nom au modèle pour le retrouver dans la galerie. L'enregistrer en fait aussi le modèle avec lequel ce type d'e-mail est envoyé.",
+      "placeholder": "Nom du modèle",
+      "nameExists": "Un modèle porte déjà ce nom. Choisissez un autre nom.",
+      "save": "Enregistrer le modèle",
+      "update": "Mettre à jour le modèle"
+    },
+    "testDialog": {
+      "title": "Envoyer un e-mail de test",
+      "body": "L'e-mail est envoyé avec des données d'exemple, pour que vous puissiez le voir dans un vrai client mail.",
+      "placeholder": "Adresse e-mail",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "sentTitle": "E-mail de test envoyé",
+      "sentBody": "Vérifiez la boîte de réception de {email}. Il peut mettre une minute à arriver.",
+      "failedTitle": "Impossible d'envoyer l'e-mail de test",
+      "failedBody": "Vérifiez le fournisseur d'e-mail sous Fournisseurs et réessayez."
+    },
+    "toolbar": {
+      "bold": "Gras",
+      "italic": "Italique",
+      "underline": "Souligné",
+      "strike": "Barré",
+      "link": "Lien",
+      "linkUrl": "Adresse du lien",
+      "linkPlaceholder": "https://... ou {share_link}",
+      "linkHint": "Une adresse web, ou une balise comme {share_link} qui est remplie à l'envoi de l'e-mail.",
+      "linkApply": "Appliquer",
+      "linkRemove": "Retirer le lien",
+      "bulletList": "Liste à puces",
+      "orderedList": "Liste numérotée",
+      "align": {
+        "left": "Aligner à gauche",
+        "center": "Centrer",
+        "right": "Aligner à droite"
+      },
+      "size": {
+        "label": "Taille du texte",
+        "default": "Taille par défaut",
+        "small": "Petit",
+        "normal": "Normal",
+        "large": "Grand",
+        "extraLarge": "Très grand"
+      },
+      "color": {
+        "label": "Couleur du texte",
+        "text": "Couleur de texte du thème",
+        "muted": "Couleur atténuée du thème",
+        "primary": "Couleur principale du thème",
+        "default": "Par défaut",
+        "hex": "Couleur hexadécimale",
+        "apply": "Appliquer"
+      },
+      "clear": "Effacer la mise en forme"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Aucun logo importé. L'en-tête imprime le nom de l'atelier.",
+      "upload": "Importer un logo",
+      "replace": "Remplacer le logo",
+      "remove": "Retirer",
+      "uploading": "Import en cours…",
+      "width": "Largeur du logo",
+      "hint": "Indépendant du logo de l'entreprise. Il est rogné et préparé pour l'e-mail lors de l'import. PNG, JPEG ou WebP jusqu'à 4 Mo.",
+      "position": "Position",
+      "tooLarge": "L'image doit faire moins de 4 Mo",
+      "uploadFailed": "Impossible d'importer le logo"
+    },
+    "image": {
+      "empty": "Aucune image importée. Le bloc n'imprime rien tant qu'il n'y en a pas.",
+      "upload": "Importer une image",
+      "replace": "Remplacer l'image",
+      "remove": "Retirer",
+      "uploading": "Import en cours…",
+      "alt": "Description",
+      "altHint": "Lue à voix haute aux lecteurs qui ne peuvent pas voir l'image, et affichée pendant son chargement. PNG, JPEG ou WebP jusqu'à 10 Mo.",
+      "width": "Largeur",
+      "widthHint": "600 px correspond à la pleine largeur de l'e-mail. Les images plus étroites se placent selon la Position.",
+      "link": "Lien",
+      "linkHint": "Facultatif. S'ouvre au clic sur l'image ; une balise comme le lien de partage fonctionne aussi ici.",
+      "tooLarge": "L'image doit faire moins de 10 Mo",
+      "uploadFailed": "Impossible d'importer l'image"
+    },
+    "dragHandle": "Glisser pour réorganiser",
+    "dragHandleKeyboard": "Glisser, ou utiliser les touches fléchées, pour déplacer ce bloc",
+    "tagDoesNotFit": "La balise ne tient pas dans ce champ."
   }
 }

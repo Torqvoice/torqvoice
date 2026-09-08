@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Apžiūros priminimai",
         "description": "Rezervacijos nuoroda, trukmė ir terminas"
+      },
+      "emailTemplates": {
+        "title": "El. laiškų šablonai",
+        "description": "Ką rašo sąskaitų, pasiūlymų ir ataskaitų laiškai"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,327 @@
     "timeZoneDetected": "Laiko juosta nustatyta automatiškai skiltyje Lokalizacija, todėl serveris naudoja {zone} – paskutinę naršyklėje matytą juostą išsaugant nustatymus. Pasirinkite dirbtuvių juostą aiškiai, kad rezervacijos laikai niekada nepriklausytų nuo to, kas išsaugojo paskutinis.",
     "timeZoneExplicit": "Rezervacijos ir darbo laikai skaitomi {zone} juostoje.",
     "timeZoneChange": "Keisti skiltyje Lokalizacija"
+  },
+  "emailTemplates": {
+    "title": "El. laiškų šablonai",
+    "description": "Ką rašo jūsų dirbtuvių siunčiami laiškai ir kaip jie atrodo. Kiekvienas laiško tipas turi įtaisytą šabloną; sukurkite savą, kad pakeistumėte tekstą, spalvas ir blokus, iš kurių jis sudarytas.",
+    "lockedDescription": "Kurkite dirbtuvių siunčiamus laiškus: keiskite tekstą, pridėkite ar šalinkite blokus ir priderinkite spalvas prie savo prekės ženklo.",
+    "groups": {
+      "documents": "Dokumentai",
+      "messages": "Žinutės",
+      "portal": "Klientų portalas"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Sąskaita išsiųsta",
+        "description": "Siunčiamas, kai sąskaita klientui išsiunčiama el. paštu, su pridėtu PDF arba nuoroda peržiūrėti."
+      },
+      "quote_sent": {
+        "name": "Pasiūlymas išsiųstas",
+        "description": "Siunčiamas, kai pasiūlymas klientui išsiunčiamas el. paštu."
+      },
+      "inspection_sent": {
+        "name": "Apžiūros ataskaita išsiųsta",
+        "description": "Siunčiamas, kai apžiūros ataskaita klientui išsiunčiama el. paštu."
+      },
+      "message": {
+        "name": "Žinutė klientui",
+        "description": "Klientui rašoma žinutė: pranešimas iš darbo užsakymo, būsenos ataskaita, kvietimas į vaizdo skambutį arba suplanuotas priminimas."
+      },
+      "portal_signin": {
+        "name": "Prisijungimas prie portalo",
+        "description": "Prisijungimo nuoroda, kurios klientas paprašo klientų portale."
+      }
+    },
+    "blocks": {
+      "header": "Antraštinė dalis",
+      "heading": "Antraštė",
+      "paragraph": "Pastraipa",
+      "callout": "Išskirtas laukas",
+      "button": "Mygtukas",
+      "document_summary": "Dokumento santrauka",
+      "attachment_note": "Pastaba apie priedą",
+      "image": "Paveikslėlis",
+      "divider": "Skirtukas",
+      "spacer": "Tarpas",
+      "contact_footer": "Kontaktų poraštė"
+    },
+    "blockNotes": {
+      "header": "Jūsų logotipas arba dirbtuvių pavadinimas, kai logotipo nėra arba jis išjungtas. Įkelkite logotipą ir nustatykite jo dydį čia; spalvos ir šriftai yra skiltyje Tema ir dizainas.",
+      "contact_footer": "Jūsų dirbtuvių pavadinimas, adresas, telefonas ir el. paštas iš skilties Įmonė nustatymų. Užpildykite juos ten, kad pakeistumėte, kas čia spausdinama.",
+      "divider": "Plona linija tarp dviejų blokų. Praleidžiama, jei ji pradėtų ar užbaigtų laišką.",
+      "callout": "Išskirtas laukas su spalvotu kraštu. Tinka svarbiausiems žodžiams, pavyzdžiui, pačiai žinutei.",
+      "attachment_note": "Spausdinama tik tada, kai prie laiško pridėtas PDF.",
+      "button": "Nuoroda paprastai yra žymė, pavyzdžiui, bendrinimo nuoroda. Mygtukas, kurio nuoroda neturi reikšmės, laiške praleidžiamas.",
+      "document_summary": "Laukas su pagrindiniais dokumento skaičiais. Eilutės, kuriose nėra ko rodyti, praleidžiamos.",
+      "image": "Įkeliami paveikslėliai suspaudžiami ir sumažinami el. laiškui. Nebenaudojami paveikslėliai pašalinami išsaugant šabloną.",
+      "summaryUnused": "Šio tipo laiškas neturi dokumento, todėl santrauka nieko nespausdina."
+    },
+    "tagGroups": {
+      "workshop": "Dirbtuvės",
+      "customer": "Klientas",
+      "vehicle": "Transporto priemonė",
+      "document": "Dokumentas",
+      "message": "Žinutė",
+      "portal": "Portalas"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Dirbtuvių pavadinimas",
+        "description": "Jūsų dirbtuvių pavadinimas."
+      },
+      "workshop_phone": {
+        "label": "Dirbtuvių telefonas",
+        "description": "Telefono numeris iš skilties Įmonė nustatymų."
+      },
+      "workshop_email": {
+        "label": "Dirbtuvių el. paštas",
+        "description": "El. pašto adresas iš skilties Įmonė nustatymų."
+      },
+      "workshop_address": {
+        "label": "Dirbtuvių adresas",
+        "description": "Adresas iš skilties Įmonė nustatymų, tiek eilučių, kiek jis turi."
+      },
+      "current_user": {
+        "label": "Siuntėjo vardas",
+        "description": "Laišką siunčiančio asmens vardas."
+      },
+      "customer_name": {
+        "label": "Kliento vardas",
+        "description": "Kliento, kuriam siunčiamas laiškas, vardas."
+      },
+      "vehicle": {
+        "label": "Transporto priemonė",
+        "description": "Transporto priemonės metai, markė ir modelis."
+      },
+      "plate": {
+        "label": "Valstybinis numeris",
+        "description": "Transporto priemonės registracijos numeris."
+      },
+      "mileage": {
+        "label": "Rida",
+        "description": "Transporto priemonės užfiksuota rida."
+      },
+      "document_number": {
+        "label": "Dokumento numeris",
+        "description": "Sąskaitos arba pasiūlymo numeris."
+      },
+      "document_title": {
+        "label": "Dokumento pavadinimas",
+        "description": "Darbo arba dokumento pavadinimas."
+      },
+      "total": {
+        "label": "Iš viso",
+        "description": "Dokumento suma jo valiuta."
+      },
+      "balance_due": {
+        "label": "Likutis",
+        "description": "Kiek pagal dokumentą dar liko sumokėti po mokėjimų."
+      },
+      "due_date": {
+        "label": "Apmokėjimo data",
+        "description": "Data, iki kurios reikia sumokėti."
+      },
+      "share_link": {
+        "label": "Bendrinimo nuoroda",
+        "description": "Nuoroda, kurią klientas gali atidaryti ir peržiūrėti dokumentą internete."
+      },
+      "message": {
+        "label": "Žinutė",
+        "description": "Šiam laiškui parašyta žinutė arba prie dokumento pridėta pastaba."
+      },
+      "signin_link": {
+        "label": "Prisijungimo nuoroda",
+        "description": "Nuoroda, kuri prijungia klientą prie portalo. Ji greitai nustoja galioti."
+      },
+      "portal_link": {
+        "label": "Portalo nuoroda",
+        "description": "Nuoroda į klientų portalą."
+      }
+    },
+    "optionalTag": "Ne kiekvienas laiškas turi šios žymės reikšmę. Kai ji tuščia, aplinkiniai žodžiai sutvarkomi.",
+    "summaryRows": {
+      "reference": "Nuoroda",
+      "vehicle": "Transporto priemonė",
+      "total": "Iš viso",
+      "balance": "Likutis",
+      "due": "Apmokėjimo data"
+    },
+    "builtIn": "Įtaisytas",
+    "inUse": "Naudojamas",
+    "useBuiltIn": "Naudoti įtaisytą",
+    "setDefault": "Nustatyti numatytuoju",
+    "defaultSet": "Dabar siunčiama su „{name}“",
+    "couldNotSetDefault": "Nepavyko pakeisti naudojamo šablono",
+    "updatedOn": "Atnaujinta {date}",
+    "delete": "Ištrinti",
+    "deleteTitle": "Ištrinti šabloną",
+    "deleteConfirm": "Ištrinti šabloną „{name}“? Jei jis naudojamas, laiškai grįžta prie įtaisyto šablono.",
+    "deleteTemplate": "Ištrinti šį šabloną",
+    "deleted": "Ištrinta „{name}“",
+    "couldNotDelete": "Nepavyko ištrinti šablono",
+    "backToSettings": "Grįžti į nustatymus",
+    "unsaved": "(neišsaugota)",
+    "save": "Išsaugoti",
+    "saving": "Išsaugoma…",
+    "savedState": "Išsaugota",
+    "saved": "Išsaugota „{name}“",
+    "couldNotSave": "Nepavyko išsaugoti",
+    "saveAsNew": "Išsaugoti kaip naują",
+    "discard": "Atmesti pakeitimus",
+    "sendTest": "Siųsti bandomąjį",
+    "cancel": "Atšaukti",
+    "problems": "{count, plural, one {# problema} few {# problemos} many {# problemos} other {# problemų}}",
+    "unknownTags": "Šios žymės šio tipo laiškui neegzistuoja: {tags}",
+    "missingTags": "Šiame laiške turi būti {tags}",
+    "subjectRequired": "Tema negali būti tuščia",
+    "invalidTemplate": "Kai kuris tekstas per ilgas arba laukelyje netinkama reikšmė.",
+    "leaveTitle": "Išeiti neišsaugojus?",
+    "leaveBody": "Jūsų šio šablono pakeitimai neišsaugoti. Jie bus prarasti.",
+    "leaveConfirm": "Išeiti",
+    "subjectAndTheme": "Tema ir dizainas",
+    "settingsSubtitle": "Taikoma visam laiškui",
+    "blocksTitle": "Blokai",
+    "addBlock": "Pridėti bloką",
+    "removeBlock": "Šalinti bloką",
+    "removeBlockLast": "Paskutinio bloko pašalinti negalima",
+    "blockEmpty": "tuščias",
+    "blockEmptyHint": "Rodomas, bet jame kol kas nėra ko spausdinti.",
+    "blockShownHint": "Matomas laiške. Spustelėkite, kad paslėptumėte.",
+    "blockHiddenHint": "Paslėptas laiške. Spustelėkite, kad parodytumėte.",
+    "railHint": "Tempkite bloką už rankenėlės, kad jį perkeltumėte. Linija rodo, kur jis atsidurs. Spustelėkite bloką, kad dešinėje redaguotumėte jo tekstą.",
+    "resizeHint": "Tempkite, kad pakeistumėte skydelio dydį. Spustelėkite du kartus, kad atstatytumėte.",
+    "desktop": "Kompiuteris",
+    "mobile": "Mobilusis",
+    "htmlView": "HTML",
+    "textView": "Paprastas tekstas",
+    "desktopTooltip": "Peržiūra kompiuterio pločiu",
+    "mobileTooltip": "Peržiūra telefono pločiu",
+    "htmlViewTooltip": "Rodyti HTML laišką",
+    "previewWidth": "Peržiūros plotis",
+    "previewView": "Peržiūros rodinys",
+    "textViewTooltip": "Rodyti paprasto teksto versiją",
+    "inboxNow": "Dabar",
+    "inboxNoSender": "Jūsų dirbtuvės",
+    "inboxNoSubject": "(be temos)",
+    "subject": "Tema",
+    "text": "Tekstas",
+    "buttonLabel": "Mygtuko tekstas",
+    "buttonHref": "Nuoroda",
+    "spacerHeight": "Aukštis",
+    "tagsTitle": "Žymės",
+    "tagsHint": "Spustelėkite žymę, kad įterptumėte ją ten, kur yra žymeklis lauke, kuriame paskutinį kartą rašėte.",
+    "theme": {
+      "colors": "Spalvos",
+      "primaryColor": "Pagrindinė",
+      "textColor": "Tekstas",
+      "mutedColor": "Prislopintas tekstas",
+      "backgroundColor": "Fonas",
+      "panelColor": "Laukai",
+      "invalidColor": "Spalva nėra tinkama šešioliktainė reikšmė",
+      "hexLabel": "{label} šešioliktaine reikšme",
+      "typography": "Tipografika",
+      "font": "Šriftas",
+      "fontHint": "Tik šriftai, kuriuos jau turi kiekviena pašto programa. Dauguma jų neįkelia žiniatinklio šriftų.",
+      "fonts": {
+        "system": "Sisteminis",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Formos",
+      "buttonRadius": "Mygtuko kampai",
+      "showLogo": "Rodyti logotipą",
+      "showLogoHint": "Išjungus logotipą, antraštinėje dalyje vietoj jo spausdinamas dirbtuvių pavadinimas."
+    },
+    "nameDialog": {
+      "title": "Išsaugoti šį šabloną",
+      "body": "Suteikite šablonui pavadinimą, pagal kurį rasite jį galerijoje. Išsaugojus jis taip pat tampa šablonu, su kuriuo siunčiamas šio tipo laiškas.",
+      "placeholder": "Šablono pavadinimas",
+      "nameExists": "Šablonas tokiu pavadinimu jau yra. Pasirinkite kitą pavadinimą.",
+      "save": "Išsaugoti šabloną",
+      "update": "Atnaujinti šabloną"
+    },
+    "testDialog": {
+      "title": "Siųsti bandomąjį laišką",
+      "body": "Laiškas siunčiamas su pavyzdiniais duomenimis, kad galėtumėte pamatyti jį tikroje pašto programoje.",
+      "placeholder": "El. pašto adresas",
+      "send": "Siųsti",
+      "sending": "Siunčiama…",
+      "sentTitle": "Bandomasis laiškas išsiųstas",
+      "sentBody": "Patikrinkite {email} pašto dėžutę. Laiškas gali ateiti per minutę.",
+      "failedTitle": "Nepavyko išsiųsti bandomojo laiško",
+      "failedBody": "Patikrinkite el. pašto tiekėją skiltyje Tiekėjai ir bandykite dar kartą."
+    },
+    "toolbar": {
+      "bold": "Paryškintas",
+      "italic": "Kursyvas",
+      "underline": "Pabrauktas",
+      "strike": "Perbrauktas",
+      "link": "Nuoroda",
+      "linkUrl": "Nuorodos adresas",
+      "linkPlaceholder": "https://... arba {share_link}",
+      "linkHint": "Žiniatinklio adresas arba žymė, pvz. {share_link}, kuri užpildoma siunčiant laišką.",
+      "linkApply": "Taikyti",
+      "linkRemove": "Šalinti nuorodą",
+      "bulletList": "Sąrašas su ženkleliais",
+      "orderedList": "Numeruotas sąrašas",
+      "align": {
+        "left": "Lygiuoti kairėje",
+        "center": "Centruoti",
+        "right": "Lygiuoti dešinėje"
+      },
+      "size": {
+        "label": "Teksto dydis",
+        "default": "Numatytasis dydis",
+        "small": "Mažas",
+        "normal": "Įprastas",
+        "large": "Didelis",
+        "extraLarge": "Labai didelis"
+      },
+      "color": {
+        "label": "Teksto spalva",
+        "text": "Temos teksto spalva",
+        "muted": "Temos prislopinta spalva",
+        "primary": "Temos pagrindinė spalva",
+        "default": "Numatytoji",
+        "hex": "Šešioliktainė spalva",
+        "apply": "Taikyti"
+      },
+      "clear": "Šalinti formatavimą"
+    },
+    "logo": {
+      "title": "Logotipas",
+      "empty": "Logotipas neįkeltas. Antraštinėje dalyje spausdinamas dirbtuvių pavadinimas.",
+      "upload": "Įkelti logotipą",
+      "replace": "Pakeisti logotipą",
+      "remove": "Šalinti",
+      "uploading": "Įkeliama…",
+      "width": "Logotipo plotis",
+      "hint": "Atskiras nuo įmonės logotipo. Įkeliant jis apkarpomas ir paruošiamas el. laiškui. PNG, JPEG arba WebP iki 4 MB.",
+      "position": "Padėtis",
+      "tooLarge": "Paveikslėlis turi būti mažesnis nei 4 MB",
+      "uploadFailed": "Nepavyko įkelti logotipo"
+    },
+    "image": {
+      "empty": "Paveikslėlis neįkeltas. Blokas nieko nespausdina, kol jo nėra.",
+      "upload": "Įkelti paveikslėlį",
+      "replace": "Pakeisti paveikslėlį",
+      "remove": "Šalinti",
+      "uploading": "Įkeliama…",
+      "alt": "Aprašymas",
+      "altHint": "Perskaitomas balsu skaitytojams, kurie negali matyti paveikslėlio, ir rodomas, kol jis įkeliamas. PNG, JPEG arba WebP iki 10 MB.",
+      "width": "Plotis",
+      "widthHint": "600 px yra visas el. laiško plotis. Siauresni paveikslėliai dedami ten, kur nurodo Padėtis.",
+      "link": "Nuoroda",
+      "linkHint": "Neprivaloma. Atidaroma spustelėjus paveikslėlį; čia tinka ir žymė, pavyzdžiui, bendrinimo nuoroda.",
+      "tooLarge": "Paveikslėlis turi būti mažesnis nei 10 MB",
+      "uploadFailed": "Nepavyko įkelti paveikslėlio"
+    },
+    "dragHandle": "Tempkite, kad pertvarkytumėte",
+    "dragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte šį bloką",
+    "tagDoesNotFit": "Žymė netelpa į šį laukelį."
   }
 }
