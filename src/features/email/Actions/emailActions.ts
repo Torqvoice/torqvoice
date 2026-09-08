@@ -2,7 +2,6 @@
 
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
-import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { withAuth } from '@/lib/with-auth'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -28,7 +27,15 @@ import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { randomUUID } from 'crypto'
-import { buildDocumentEmailHtml, resolveAttachPdf } from '@/features/email/Lib/documentEmail'
+import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
+import type { VehicleContext } from '@/features/email/Lib/emailContext'
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
+
+/** Whoever pressed send, for a template that signs off with a name. */
+async function senderName(userId: string): Promise<string | null> {
+  const user = await db.user.findUnique({ where: { id: userId }, select: { name: true } })
+  return user?.name ?? null
+}
 
 async function getWorkshopSettings(organizationId: string) {
   const [settings, org] = await Promise.all([
@@ -46,7 +53,6 @@ async function getWorkshopSettings(organizationId: string) {
             'quote.logo',
             'workshop.currencyCode',
             'workshop.currencyFormat',
-            'workshop.emailFromName',
             'workshop.emailEnabled',
             'invoice.primaryColor',
             'invoice.backgroundColor',
@@ -119,7 +125,7 @@ export async function sendQuoteEmail(input: {
   attachPdf?: boolean
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       await requireFeature(organizationId, 'smtp')
 
@@ -150,7 +156,6 @@ export async function sendQuoteEmail(input: {
       const currencyCode = settings['workshop.currencyCode'] || 'USD'
       const currencyFormat: 'symbol' | 'code' =
         settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
 
       const pick = (key: string) => settings[`quote.${key}`] || settings[`invoice.${key}`]
       const template = {
@@ -209,30 +214,25 @@ export async function sendQuoteEmail(input: {
       }
       const publicLink = token ? `${getAppBaseUrl()}/share/quote/${organizationId}/${token}` : null
 
-      const from = await getOrgFromAddress(organizationId)
-
-      await sendOrgMail(organizationId, {
-        from,
+      await sendTemplatedMail(organizationId, {
+        kind: 'quote_sent',
         to: recipientEmail,
-        subject: `Quote ${quoteNum} - ${quote.title}`,
-        html: buildDocumentEmailHtml({
-          heading: `Quote ${quoteNum}`,
-          subject: 'quote',
-          link: publicLink,
-          linkLabel: 'View Quote Online',
-          attached: attachPdf,
+        attached: attachPdf,
+        attachments: pdfBuffer ? [{ filename: `${quoteNum}.pdf`, content: pdfBuffer }] : undefined,
+        context: {
+          customerName: quote.customer?.name,
+          vehicle: quote.vehicle,
+          currentUser: await senderName(userId),
           message,
-          fromName,
-          phone: settings['workshop.phone'],
-        }),
-        attachments: pdfBuffer
-          ? [
-              {
-                filename: `${quoteNum}.pdf`,
-                content: pdfBuffer,
-              },
-            ]
-          : undefined,
+          document: {
+            number: quoteNum,
+            title: quote.title,
+            total: quote.totalAmount,
+            currencyCode,
+            currencyFormat,
+          },
+          shareLink: publicLink,
+        },
       })
 
       // Stamps sentAt and moves a draft to "sent" (accepted and converted
@@ -254,12 +254,21 @@ export async function sendQuoteEmail(input: {
   )
 }
 
+/**
+ * A free-text message to a customer: a status update, a report link, a video
+ * call invitation. The words are the caller's; the mail around them is the
+ * workshop's "message" template. The customer and vehicle are optional
+ * because not every caller has them, and a template that names the car
+ * simply leaves the gap when they are absent.
+ */
 export async function sendNotificationEmail(input: {
   recipientEmail: string
   subject: string
   body: string
+  customerName?: string | null
+  vehicle?: VehicleContext | null
 }) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ organizationId, userId }) => {
     demoGuard()
     await requireFeature(organizationId, 'smtp')
 
@@ -268,22 +277,16 @@ export async function sendNotificationEmail(input: {
       throw new Error('Email sending is disabled. Enable it in Settings.')
     }
 
-    const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
-    const from = await getOrgFromAddress(organizationId)
-
-    await sendOrgMail(organizationId, {
-      from,
+    await sendTemplatedMail(organizationId, {
+      kind: 'message',
       to: input.recipientEmail,
       subject: input.subject,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <p style="white-space: pre-line;">${input.body}</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="color: #666; font-size: 14px;">
-            ${fromName}${settings['workshop.phone'] ? ` · ${settings['workshop.phone']}` : ''}
-          </p>
-        </div>
-      `,
+      context: {
+        message: input.body,
+        customerName: input.customerName,
+        vehicle: input.vehicle,
+        currentUser: await senderName(userId),
+      },
     })
 
     return { sent: true }
@@ -298,7 +301,7 @@ export async function sendInvoiceEmail(input: {
   attachPdf?: boolean
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       await requireFeature(organizationId, 'smtp')
 
@@ -323,11 +326,11 @@ export async function sendInvoiceEmail(input: {
       if (!assembly) throw new Error('Service record not found')
       const { record } = assembly
 
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
+      // One language for the PDF's labels and the mail around it.
+      const locale = await resolveCustomerLocale(organizationId, null)
 
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {
-        const locale = await resolveCustomerLocale(organizationId, null)
         const labels = await loadPrintLabels(locale, assembly.labelSettings)
         const element = React.createElement(InvoicePDF, {
           data: assembly.data,
@@ -356,30 +359,30 @@ export async function sendInvoiceEmail(input: {
         ? `${getAppBaseUrl()}/share/invoice/${organizationId}/${token}`
         : null
 
-      const from = await getOrgFromAddress(organizationId)
-
-      await sendOrgMail(organizationId, {
-        from,
+      await sendTemplatedMail(organizationId, {
+        kind: 'invoice_sent',
         to: recipientEmail,
-        subject: `Invoice ${invoiceNum} - ${record.title}`,
-        html: buildDocumentEmailHtml({
-          heading: `Invoice ${invoiceNum}`,
-          subject: 'invoice',
-          link: publicLink,
-          linkLabel: 'View Invoice Online',
-          attached: attachPdf,
-          message,
-          fromName,
-          phone: settings['workshop.phone'],
-        }),
+        locale,
+        attached: attachPdf,
         attachments: pdfBuffer
-          ? [
-              {
-                filename: `${invoiceNum}.pdf`,
-                content: pdfBuffer,
-              },
-            ]
+          ? [{ filename: `${invoiceNum}.pdf`, content: pdfBuffer }]
           : undefined,
+        context: {
+          customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
+          vehicle: assembly.data.vehicle,
+          currentUser: await senderName(userId),
+          message,
+          document: {
+            number: invoiceNum,
+            title: record.title,
+            total: record.totalAmount > 0 ? record.totalAmount : record.cost,
+            paid: assembly.paymentSummary?.totalPaid,
+            dueDate: record.invoiceDueDate,
+            currencyCode: assembly.invoiceSettings.currencyCode,
+            currencyFormat: assembly.invoiceSettings.currencyFormat,
+          },
+          shareLink: publicLink,
+        },
       })
 
       await markInvoiceSent(serviceRecordId, organizationId, { alreadyIssued: true })
@@ -412,7 +415,7 @@ export async function sendInspectionEmail(input: {
   attachPdf?: boolean
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       await requireFeature(organizationId, 'smtp')
 
@@ -451,7 +454,6 @@ export async function sendInspectionEmail(input: {
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       const logoDataUri = await loadLogoDataUri(settings['workshop.logo'])
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
 
       const template = {
         primaryColor: settings['invoice.primaryColor'] || '#d97706',
@@ -510,30 +512,18 @@ export async function sendInspectionEmail(input: {
         ? `${getAppBaseUrl()}/share/inspection/${organizationId}/${token}`
         : null
 
-      const from = await getOrgFromAddress(organizationId)
-
-      await sendOrgMail(organizationId, {
-        from,
+      await sendTemplatedMail(organizationId, {
+        kind: 'inspection_sent',
         to: recipientEmail,
-        subject: `Vehicle Inspection - ${vehicleName}`,
-        html: buildDocumentEmailHtml({
-          heading: 'Vehicle Inspection Report',
-          subject: `inspection report for your ${vehicleName}`,
-          link: publicLink,
-          linkLabel: 'View Inspection Online',
-          attached: attachPdf,
+        attached: attachPdf,
+        attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
+        context: {
+          customerName: inspection.vehicle.customer?.name,
+          vehicle: inspection.vehicle,
+          currentUser: await senderName(userId),
           message,
-          fromName,
-          phone: settings['workshop.phone'],
-        }),
-        attachments: pdfBuffer
-          ? [
-              {
-                filename: fileName,
-                content: pdfBuffer,
-              },
-            ]
-          : undefined,
+          shareLink: publicLink,
+        },
       })
 
       return { sent: true, inspectionId, recipientEmail }

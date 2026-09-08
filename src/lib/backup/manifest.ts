@@ -61,6 +61,15 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 88,
   },
+  // Email templates likewise: the setting that names the one in use is in
+  // settings, so the rows travel with it.
+  {
+    model: 'EmailTemplate',
+    key: 'emailTemplates',
+    option: 'settings',
+    restore: 'replace',
+    clearOrder: 88,
+  },
   // What issued invoices were issued with. Service records point at these
   // with Restrict, so they clear only after every service record has.
   {

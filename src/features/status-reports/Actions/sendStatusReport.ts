@@ -102,6 +102,16 @@ export async function sendStatusReport(input: unknown) {
             recipientEmail: customer.email as string,
             subject: t('emailSubject', { vehicle: vehicleName }),
             body: messageBody,
+            customerName: customer.name,
+            vehicle: vehicle
+              ? {
+                  year: vehicle.year,
+                  make: vehicle.make,
+                  model: vehicle.model,
+                  licensePlate: vehicle.licensePlate,
+                  mileage: vehicle.mileage,
+                }
+              : null,
           })
         )
       }

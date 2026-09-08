@@ -1,0 +1,51 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Facture",
+      "subject": "Facture {document_number} de {workshop_name}",
+      "heading": "Facture {document_number}",
+      "intro": "Bonjour {customer_name},\n\nMerci de nous avoir fait confiance. Votre facture est prête.",
+      "button": "Voir la facture",
+      "outro": "Pour toute question, il vous suffit de répondre à cet e-mail."
+    },
+    "quote_sent": {
+      "name": "Devis",
+      "subject": "Devis {document_number} de {workshop_name}",
+      "heading": "Devis {document_number}",
+      "intro": "Bonjour {customer_name},\n\nVoici le devis que vous nous avez demandé. Dites-nous si vous souhaitez que nous procédions aux travaux.",
+      "button": "Voir le devis",
+      "outro": "Pour toute question, il vous suffit de répondre à cet e-mail."
+    },
+    "inspection_sent": {
+      "name": "Rapport d'inspection",
+      "subject": "Rapport d'inspection de {workshop_name}",
+      "heading": "Rapport d'inspection du véhicule",
+      "intro": "Bonjour {customer_name},\n\nNous avons terminé l'inspection. Le rapport est à votre disposition.",
+      "button": "Voir le rapport",
+      "outro": "Pour toute question, il vous suffit de répondre à cet e-mail."
+    },
+    "message": {
+      "name": "Message au client",
+      "subject": "Message de {workshop_name}",
+      "intro": "Bonjour {customer_name},",
+      "outro": "Pour toute question, il vous suffit de répondre à cet e-mail."
+    },
+    "portal_signin": {
+      "name": "Connexion au portail",
+      "subject": "Connectez-vous à {workshop_name}",
+      "heading": "Connectez-vous à votre espace client",
+      "intro": "Bonjour {customer_name},\n\nUtilisez le bouton ci-dessous pour vous connecter à l'espace client de {workshop_name}.",
+      "button": "Se connecter",
+      "linkFallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :\n{signin_link}",
+      "outro": "Ce lien expire dans 15 minutes. Si vous n'en avez pas fait la demande, vous pouvez ignorer cet e-mail."
+    }
+  },
+  "attachmentNote": "Une copie PDF est jointe à cet e-mail.",
+  "summary": {
+    "reference": "Référence",
+    "vehicle": "Véhicule",
+    "total": "Total",
+    "balance": "Solde dû",
+    "due": "Échéance"
+  }
+}

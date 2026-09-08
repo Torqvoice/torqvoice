@@ -440,6 +440,7 @@ export async function POST(request: NextRequest) {
         ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
         AppSetting: () => tx.appSetting.deleteMany({ where: { organizationId } }),
         DocumentDesign: () => tx.documentDesign.deleteMany({ where: { organizationId } }),
+        EmailTemplate: () => tx.emailTemplate.deleteMany({ where: { organizationId } }),
         DocumentDesignSnapshot: () =>
           tx.documentDesignSnapshot.deleteMany({ where: { organizationId } }),
         DocumentAssetSnapshot: () =>
@@ -492,6 +493,27 @@ export async function POST(request: NextRequest) {
           })),
         })
         for (const d of rows) designIds.add(d.id as string)
+      }
+      // Email templates: the setting that names the one in use came back with
+      // settings, so the rows it points at have to come back with their ids.
+      if (data.emailTemplates?.length) {
+        const rows = (data.emailTemplates as Record<string, unknown>[]).filter(
+          (t) =>
+            typeof t.id === 'string' && typeof t.name === 'string' && typeof t.kind === 'string'
+        )
+        await tx.emailTemplate.createMany({
+          data: rows.map((t) => ({
+            id: t.id as string,
+            organizationId: ctx.organizationId,
+            kind: t.kind as string,
+            name: t.name as string,
+            subject: (t.subject as string) || '',
+            blocks: (t.blocks ?? []) as Prisma.InputJsonValue,
+            theme: (t.theme ?? {}) as Prisma.InputJsonValue,
+            createdAt: toSafeDate(t.createdAt as string),
+            updatedAt: toSafeDate(t.updatedAt as string),
+          })),
+        })
       }
       const designSnapshotIds = new Set<string>()
       if (data.documentDesignSnapshots?.length) {

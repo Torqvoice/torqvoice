@@ -94,6 +94,7 @@ describe('audit summaries', () => {
     // production because nobody tests in Lithuanian.
     const sample: Record<string, string | number> = {
       name: 'X',
+      kind: 'invoice',
       id: 'X',
       ref: 'X',
       code: 'X',

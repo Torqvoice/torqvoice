@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "HU-Erinnerungen",
         "description": "Buchungslink, Dauer und Vorlauf"
+      },
+      "emailTemplates": {
+        "title": "E-Mail-Vorlagen",
+        "description": "Was Ihre E-Mails zu Rechnung, Angebot und Bericht sagen"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,321 @@
     "timeZoneDetected": "Die Zeitzone steht unter Lokalisierung auf automatisch, daher nutzt der Server {zone}, die zuletzt in einem Browser gesehene Zone. Wählen Sie die Zone der Werkstatt ausdrücklich, damit Buchungszeiten nie davon abhängen, wer zuletzt gespeichert hat.",
     "timeZoneExplicit": "Buchungszeiten und Öffnungszeiten werden in {zone} gelesen.",
     "timeZoneChange": "Unter Lokalisierung ändern"
+  },
+  "emailTemplates": {
+    "title": "E-Mail-Vorlagen",
+    "description": "Was die E-Mails Ihrer Werkstatt sagen und wie sie aussehen. Jede Art von E-Mail hat eine eingebaute Vorlage; gestalten Sie Ihre eigene, um Wortlaut, Farben und die Blöcke zu ändern, aus denen sie besteht.",
+    "lockedDescription": "Gestalten Sie die E-Mails Ihrer Werkstatt: Ändern Sie den Wortlaut, fügen Sie Blöcke hinzu oder entfernen Sie sie, und passen Sie die Farben an Ihre Marke an.",
+    "groups": {
+      "documents": "Dokumente",
+      "messages": "Nachrichten",
+      "portal": "Kundenportal"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Rechnung gesendet",
+        "description": "Wird gesendet, wenn eine Rechnung per E-Mail an einen Kunden geht, mit angehängtem PDF oder einem Link zum Ansehen."
+      },
+      "quote_sent": {
+        "name": "Angebot gesendet",
+        "description": "Wird gesendet, wenn ein Angebot per E-Mail an einen Kunden geht."
+      },
+      "inspection_sent": {
+        "name": "Prüfbericht gesendet",
+        "description": "Wird gesendet, wenn ein Prüfbericht per E-Mail an einen Kunden geht."
+      },
+      "message": {
+        "name": "Kundennachricht",
+        "description": "Eine Nachricht an einen Kunden, geschrieben aus einem Auftrag oder seinem Profil."
+      },
+      "portal_signin": {
+        "name": "Portal-Anmeldung",
+        "description": "Der Anmeldelink, den ein Kunde im Kundenportal anfordert."
+      }
+    },
+    "blocks": {
+      "header": "Kopfbereich",
+      "heading": "Überschrift",
+      "paragraph": "Absatz",
+      "callout": "Hinweisfeld",
+      "button": "Schaltfläche",
+      "document_summary": "Dokumentübersicht",
+      "attachment_note": "Anhangshinweis",
+      "image": "Bild",
+      "divider": "Trennlinie",
+      "spacer": "Abstand",
+      "contact_footer": "Kontaktfußzeile"
+    },
+    "blockNotes": {
+      "header": "Ihr Logo oder der Werkstattname, wenn es kein Logo gibt oder es ausgeschaltet ist. Laden Sie das Logo hier hoch und legen Sie seine Größe fest; Farben und Schriften finden Sie unter Betreff und Design.",
+      "contact_footer": "Name, Adresse, Telefon und E-Mail Ihrer Werkstatt aus den Einstellungen unter Unternehmen. Tragen Sie sie dort ein, um zu ändern, was hier gedruckt wird.",
+      "divider": "Eine dünne Linie zwischen zwei Blöcken. Sie entfällt, wenn sie die E-Mail eröffnen oder abschließen würde.",
+      "callout": "Ein hervorgehobenes Feld mit farbigem Rand. Gut für die wichtigsten Worte, etwa die Nachricht selbst.",
+      "attachment_note": "Wird nur gedruckt, wenn der E-Mail ein PDF angehängt ist.",
+      "button": "Der Link ist meist ein Tag wie der Freigabelink. Eine Schaltfläche, deren Link keinen Wert hat, entfällt in der E-Mail.",
+      "document_summary": "Ein Feld mit den Eckdaten des Dokuments. Zeilen ohne Inhalt entfallen.",
+      "image": "Bilder werden beim Hochladen komprimiert und für E-Mails verkleinert. Nicht mehr verwendete Bilder werden beim Speichern der Vorlage entfernt.",
+      "summaryUnused": "Diese Art von E-Mail hat kein Dokument, die Übersicht druckt also nichts."
+    },
+    "tagGroups": {
+      "workshop": "Werkstatt",
+      "customer": "Kunde",
+      "vehicle": "Fahrzeug",
+      "document": "Dokument",
+      "message": "Nachricht",
+      "portal": "Portal"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Werkstattname",
+        "description": "Der Name Ihrer Werkstatt."
+      },
+      "workshop_phone": {
+        "label": "Werkstatt-Telefon",
+        "description": "Die Telefonnummer aus den Einstellungen unter Unternehmen."
+      },
+      "workshop_email": {
+        "label": "Werkstatt-E-Mail",
+        "description": "Die E-Mail-Adresse aus den Einstellungen unter Unternehmen."
+      },
+      "workshop_address": {
+        "label": "Werkstattadresse",
+        "description": "Die Adresse aus den Einstellungen unter Unternehmen, auf so vielen Zeilen, wie sie hat."
+      },
+      "current_user": {
+        "label": "Absendername",
+        "description": "Der Name der Person, die die E-Mail sendet."
+      },
+      "customer_name": {
+        "label": "Kundenname",
+        "description": "Der Name des Kunden, an den die E-Mail geht."
+      },
+      "vehicle": {
+        "label": "Fahrzeug",
+        "description": "Baujahr, Marke und Modell des Fahrzeugs."
+      },
+      "plate": {
+        "label": "Kennzeichen",
+        "description": "Das amtliche Kennzeichen des Fahrzeugs."
+      },
+      "mileage": {
+        "label": "Kilometerstand",
+        "description": "Der beim Fahrzeug erfasste Kilometerstand."
+      },
+      "document_number": {
+        "label": "Dokumentnummer",
+        "description": "Die Nummer der Rechnung oder des Angebots."
+      },
+      "document_title": {
+        "label": "Dokumenttitel",
+        "description": "Der Titel des Auftrags oder Dokuments."
+      },
+      "total": {
+        "label": "Gesamtbetrag",
+        "description": "Der Gesamtbetrag des Dokuments in seiner Währung."
+      },
+      "balance_due": {
+        "label": "Offener Betrag",
+        "description": "Was nach Zahlungen auf dem Dokument noch offen ist."
+      },
+      "due_date": {
+        "label": "Fälligkeitsdatum",
+        "description": "Das Datum, an dem die Zahlung fällig ist."
+      },
+      "share_link": {
+        "label": "Freigabelink",
+        "description": "Ein Link, über den der Kunde das Dokument online ansehen kann."
+      },
+      "message": {
+        "label": "Nachricht",
+        "description": "Die für diese E-Mail geschriebene Nachricht oder die dem Dokument hinzugefügte Notiz."
+      },
+      "signin_link": {
+        "label": "Anmeldelink",
+        "description": "Der Link, der den Kunden im Portal anmeldet. Er läuft nach kurzer Zeit ab."
+      },
+      "portal_link": {
+        "label": "Portallink",
+        "description": "Ein Link zum Kundenportal."
+      }
+    },
+    "optionalTag": "Nicht jede E-Mail hat einen Wert für dieses Tag. Bleibt es leer, werden die Worte darum herum bereinigt.",
+    "summaryRows": {
+      "reference": "Referenz",
+      "vehicle": "Fahrzeug",
+      "total": "Gesamtbetrag",
+      "balance": "Offener Betrag",
+      "due": "Fälligkeitsdatum"
+    },
+    "builtIn": "Eingebaut",
+    "inUse": "In Verwendung",
+    "useBuiltIn": "Eingebaute verwenden",
+    "setDefault": "Als Standard festlegen",
+    "defaultSet": "Wird jetzt mit „{name}“ gesendet",
+    "couldNotSetDefault": "Die verwendete Vorlage konnte nicht geändert werden",
+    "updatedOn": "Aktualisiert am {date}",
+    "delete": "Löschen",
+    "deleteTitle": "Vorlage löschen",
+    "deleteConfirm": "Die Vorlage „{name}“ löschen? Ist sie in Verwendung, greifen E-Mails wieder auf die eingebaute Vorlage zurück.",
+    "deleteTemplate": "Diese Vorlage löschen",
+    "deleted": "„{name}“ gelöscht",
+    "couldNotDelete": "Die Vorlage konnte nicht gelöscht werden",
+    "backToSettings": "Zurück zu den Einstellungen",
+    "unsaved": "(nicht gespeichert)",
+    "save": "Speichern",
+    "saving": "Wird gespeichert…",
+    "savedState": "Gespeichert",
+    "saved": "„{name}“ gespeichert",
+    "couldNotSave": "Speichern nicht möglich",
+    "saveAsNew": "Als neue speichern",
+    "discard": "Änderungen verwerfen",
+    "sendTest": "Test senden",
+    "cancel": "Abbrechen",
+    "problems": "{count, plural, one {# Problem} other {# Probleme}}",
+    "unknownTags": "Diese Tags gibt es für diese Art von E-Mail nicht: {tags}",
+    "missingTags": "Diese E-Mail muss {tags} enthalten",
+    "subjectRequired": "Der Betreff darf nicht leer sein",
+    "leaveTitle": "Ohne Speichern verlassen?",
+    "leaveBody": "Ihre Änderungen an dieser Vorlage wurden nicht gespeichert. Sie gehen verloren.",
+    "leaveConfirm": "Verlassen",
+    "subjectAndTheme": "Betreff und Design",
+    "settingsSubtitle": "Gilt für die ganze E-Mail",
+    "blocksTitle": "Blöcke",
+    "addBlock": "Block hinzufügen",
+    "removeBlock": "Block entfernen",
+    "removeBlockLast": "Der letzte Block kann nicht entfernt werden",
+    "blockEmpty": "leer",
+    "blockEmptyHint": "Wird angezeigt, hat aber noch nichts zu drucken.",
+    "blockShownHint": "In der E-Mail sichtbar. Klicken, um ihn auszublenden.",
+    "blockHiddenHint": "Aus der E-Mail ausgeblendet. Klicken, um ihn anzuzeigen.",
+    "railHint": "Ziehen Sie einen Block an seinem Griff, um ihn zu verschieben. Die Linie zeigt, wo er landet. Klicken Sie einen Block an, um rechts seinen Text zu bearbeiten.",
+    "resizeHint": "Ziehen, um die Größe des Bereichs zu ändern. Doppelklick setzt sie zurück.",
+    "desktop": "Desktop",
+    "mobile": "Mobil",
+    "htmlView": "HTML",
+    "textView": "Nur Text",
+    "desktopTooltip": "Vorschau in Desktop-Breite",
+    "mobileTooltip": "Vorschau in Handy-Breite",
+    "htmlViewTooltip": "HTML-E-Mail anzeigen",
+    "textViewTooltip": "Nur-Text-Version anzeigen",
+    "inboxNow": "Jetzt",
+    "inboxNoSender": "Ihre Werkstatt",
+    "inboxNoSubject": "(kein Betreff)",
+    "subject": "Betreff",
+    "text": "Text",
+    "buttonLabel": "Schaltflächentext",
+    "buttonHref": "Link",
+    "spacerHeight": "Höhe",
+    "tagsTitle": "Tags",
+    "tagsHint": "Klicken Sie ein Tag an, um es an der Cursorposition in dem Feld einzufügen, in das Sie zuletzt getippt haben.",
+    "theme": {
+      "colors": "Farben",
+      "primaryColor": "Primär",
+      "textColor": "Text",
+      "mutedColor": "Gedämpfter Text",
+      "backgroundColor": "Hintergrund",
+      "panelColor": "Felder",
+      "invalidColor": "Eine Farbe ist kein gültiger Hex-Wert",
+      "typography": "Typografie",
+      "font": "Schrift",
+      "fontHint": "Nur Schriften, die jedes Mailprogramm schon hat. Webfonts werden von den meisten nicht geladen.",
+      "fonts": {
+        "system": "System",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Formen",
+      "buttonRadius": "Schaltflächenecken",
+      "showLogo": "Logo anzeigen",
+      "showLogoHint": "Ist das Logo aus, druckt der Kopfbereich stattdessen den Werkstattnamen."
+    },
+    "nameDialog": {
+      "title": "Diese Vorlage speichern",
+      "body": "Geben Sie der Vorlage einen Namen, unter dem Sie sie in der Galerie wiederfinden. Speichern macht sie zugleich zu der Vorlage, mit der diese Art von E-Mail gesendet wird.",
+      "placeholder": "Name der Vorlage",
+      "nameExists": "Eine Vorlage mit diesem Namen existiert; Speichern aktualisiert sie.",
+      "save": "Vorlage speichern",
+      "update": "Vorlage aktualisieren"
+    },
+    "testDialog": {
+      "title": "Test-E-Mail senden",
+      "body": "Die E-Mail wird mit Beispieldaten gesendet, damit Sie sie in einem echten Mailprogramm sehen können.",
+      "placeholder": "E-Mail-Adresse",
+      "send": "Senden",
+      "sending": "Wird gesendet…",
+      "sentTitle": "Test-E-Mail gesendet",
+      "sentBody": "Prüfen Sie den Posteingang von {email}. Es kann eine Minute dauern, bis sie ankommt.",
+      "failedTitle": "Test-E-Mail konnte nicht gesendet werden",
+      "failedBody": "Prüfen Sie den E-Mail-Anbieter unter Anbieter und versuchen Sie es erneut."
+    },
+    "toolbar": {
+      "bold": "Fett",
+      "italic": "Kursiv",
+      "underline": "Unterstrichen",
+      "strike": "Durchgestrichen",
+      "link": "Link",
+      "linkUrl": "Linkadresse",
+      "linkPlaceholder": "https://... oder {share_link}",
+      "linkHint": "Eine Webadresse oder ein Tag wie {share_link}, das beim Senden der E-Mail ausgefüllt wird.",
+      "linkApply": "Übernehmen",
+      "linkRemove": "Link entfernen",
+      "bulletList": "Aufzählung",
+      "orderedList": "Nummerierte Liste",
+      "align": {
+        "left": "Linksbündig",
+        "center": "Zentriert",
+        "right": "Rechtsbündig"
+      },
+      "size": {
+        "label": "Textgröße",
+        "default": "Standardgröße",
+        "small": "Klein",
+        "normal": "Normal",
+        "large": "Groß",
+        "extraLarge": "Sehr groß"
+      },
+      "color": {
+        "label": "Textfarbe",
+        "text": "Textfarbe des Themas",
+        "muted": "Gedämpfte Farbe des Themas",
+        "primary": "Primärfarbe des Themas",
+        "default": "Standard",
+        "hex": "Hex-Farbe",
+        "apply": "Übernehmen"
+      },
+      "clear": "Formatierung entfernen"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Kein Logo hochgeladen. Der Kopfbereich druckt den Werkstattnamen.",
+      "upload": "Logo hochladen",
+      "replace": "Logo ersetzen",
+      "remove": "Entfernen",
+      "uploading": "Wird hochgeladen…",
+      "width": "Logobreite",
+      "hint": "Unabhängig vom Firmenlogo. Es wird beim Hochladen zugeschnitten und für E-Mails aufbereitet. PNG, JPEG oder WebP bis 4 MB.",
+      "position": "Position",
+      "tooLarge": "Das Bild muss kleiner als 4 MB sein",
+      "uploadFailed": "Logo konnte nicht hochgeladen werden"
+    },
+    "image": {
+      "empty": "Kein Bild hochgeladen. Der Block druckt nichts, solange keines vorhanden ist.",
+      "upload": "Bild hochladen",
+      "replace": "Bild ersetzen",
+      "remove": "Entfernen",
+      "uploading": "Wird hochgeladen…",
+      "alt": "Beschreibung",
+      "altHint": "Wird Lesern vorgelesen, die das Bild nicht sehen können, und während des Ladens angezeigt. PNG, JPEG oder WebP bis 10 MB.",
+      "width": "Breite",
+      "widthHint": "600 px ist die volle Breite der E-Mail. Schmalere Bilder stehen dort, wo es unter Position festgelegt ist.",
+      "link": "Link",
+      "linkHint": "Optional. Wird beim Klick auf das Bild geöffnet; ein Tag wie der Freigabelink funktioniert hier ebenfalls.",
+      "tooLarge": "Das Bild muss kleiner als 10 MB sein",
+      "uploadFailed": "Bild konnte nicht hochgeladen werden"
+    },
+    "dragHandle": "Zum Verschieben ziehen"
   }
 }

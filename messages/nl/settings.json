@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Keuringsherinneringen",
         "description": "Boekingslink, duur en aanlooptijd"
+      },
+      "emailTemplates": {
+        "title": "E-mailsjablonen",
+        "description": "Wat je e-mails voor factuur, offerte en rapport zeggen"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,321 @@
     "timeZoneDetected": "De tijdzone staat op automatisch onder Lokalisatie, dus de server gebruikt {zone}, de zone die het laatst is gezien in een browser die instellingen opsloeg. Kies de zone van de werkplaats expliciet zodat boekingstijden nooit afhangen van wie het laatst opsloeg.",
     "timeZoneExplicit": "Boekingstijden en openingstijden worden gelezen in {zone}.",
     "timeZoneChange": "Wijzigen onder Lokalisatie"
+  },
+  "emailTemplates": {
+    "title": "E-mailsjablonen",
+    "description": "Wat de e-mails van uw werkplaats zeggen en hoe ze eruitzien. Elk soort e-mail heeft een ingebouwd sjabloon; ontwerp uw eigen sjabloon om de tekst, de kleuren en de blokken waaruit het bestaat te wijzigen.",
+    "lockedDescription": "Ontwerp de e-mails die uw werkplaats verstuurt: wijzig de tekst, voeg blokken toe of verwijder ze, en stem de kleuren af op uw huisstijl.",
+    "groups": {
+      "documents": "Documenten",
+      "messages": "Berichten",
+      "portal": "Klantportaal"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Factuur verzonden",
+        "description": "Wordt verzonden wanneer een factuur per e-mail naar een klant gaat, met de pdf als bijlage of een link om hem te bekijken."
+      },
+      "quote_sent": {
+        "name": "Offerte verzonden",
+        "description": "Wordt verzonden wanneer een offerte per e-mail naar een klant gaat."
+      },
+      "inspection_sent": {
+        "name": "Inspectierapport verzonden",
+        "description": "Wordt verzonden wanneer een inspectierapport per e-mail naar een klant gaat."
+      },
+      "message": {
+        "name": "Klantbericht",
+        "description": "Een bericht aan een klant, geschreven vanuit een werkorder of het klantprofiel."
+      },
+      "portal_signin": {
+        "name": "Portaalaanmelding",
+        "description": "De aanmeldlink die een klant aanvraagt op het klantportaal."
+      }
+    },
+    "blocks": {
+      "header": "Koptekst",
+      "heading": "Kop",
+      "paragraph": "Alinea",
+      "callout": "Kader",
+      "button": "Knop",
+      "document_summary": "Documentoverzicht",
+      "attachment_note": "Bijlagenotitie",
+      "image": "Afbeelding",
+      "divider": "Scheidingslijn",
+      "spacer": "Witruimte",
+      "contact_footer": "Contactvoettekst"
+    },
+    "blockNotes": {
+      "header": "Uw logo, of de naam van de werkplaats wanneer er geen logo is of het is uitgeschakeld. Upload het logo en stel de grootte hier in; kleuren en lettertypen staan onder Onderwerp en thema.",
+      "contact_footer": "De naam, het adres, het telefoonnummer en het e-mailadres van uw werkplaats, overgenomen uit de instellingen onder Bedrijf. Vul ze daar in om te wijzigen wat hier wordt afgedrukt.",
+      "divider": "Een dunne lijn tussen twee blokken. Hij wordt weggelaten als hij de e-mail zou openen of afsluiten.",
+      "callout": "Een uitgelicht kader met een gekleurde rand. Geschikt voor de woorden die het meest tellen, zoals het bericht zelf.",
+      "attachment_note": "Wordt alleen afgedrukt wanneer een pdf aan de e-mail is toegevoegd.",
+      "button": "De link is meestal een tag, zoals de deellink. Een knop waarvan de link geen waarde heeft, wordt uit de e-mail weggelaten.",
+      "document_summary": "Een kader met de kerngetallen van het document. Rijen zonder iets om te tonen worden weggelaten.",
+      "image": "Afbeeldingen worden bij het uploaden gecomprimeerd en verkleind voor e-mail. Afbeeldingen die niet meer worden gebruikt, worden verwijderd wanneer de sjabloon wordt opgeslagen.",
+      "summaryUnused": "Dit soort e-mail heeft geen document, dus het overzicht drukt niets af."
+    },
+    "tagGroups": {
+      "workshop": "Werkplaats",
+      "customer": "Klant",
+      "vehicle": "Voertuig",
+      "document": "Document",
+      "message": "Bericht",
+      "portal": "Portaal"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Naam werkplaats",
+        "description": "De naam van uw werkplaats."
+      },
+      "workshop_phone": {
+        "label": "Telefoon werkplaats",
+        "description": "Het telefoonnummer uit de instellingen onder Bedrijf."
+      },
+      "workshop_email": {
+        "label": "E-mail werkplaats",
+        "description": "Het e-mailadres uit de instellingen onder Bedrijf."
+      },
+      "workshop_address": {
+        "label": "Adres werkplaats",
+        "description": "Het adres uit de instellingen onder Bedrijf, op zoveel regels als het heeft."
+      },
+      "current_user": {
+        "label": "Naam afzender",
+        "description": "De naam van de persoon die de e-mail verstuurt."
+      },
+      "customer_name": {
+        "label": "Naam klant",
+        "description": "De naam van de klant aan wie de e-mail is gericht."
+      },
+      "vehicle": {
+        "label": "Voertuig",
+        "description": "Bouwjaar, merk en model van het voertuig."
+      },
+      "plate": {
+        "label": "Kenteken",
+        "description": "Het kenteken van het voertuig."
+      },
+      "mileage": {
+        "label": "Kilometerstand",
+        "description": "De kilometerstand die bij het voertuig is vastgelegd."
+      },
+      "document_number": {
+        "label": "Documentnummer",
+        "description": "Het nummer van de factuur of offerte."
+      },
+      "document_title": {
+        "label": "Documenttitel",
+        "description": "De titel van de opdracht of het document."
+      },
+      "total": {
+        "label": "Totaal",
+        "description": "Het totaal van het document, in zijn valuta."
+      },
+      "balance_due": {
+        "label": "Openstaand bedrag",
+        "description": "Wat na betalingen nog openstaat op het document."
+      },
+      "due_date": {
+        "label": "Vervaldatum",
+        "description": "De datum waarop de betaling verschuldigd is."
+      },
+      "share_link": {
+        "label": "Deellink",
+        "description": "Een link die de klant kan openen om het document online te bekijken."
+      },
+      "message": {
+        "label": "Bericht",
+        "description": "Het bericht dat voor deze e-mail is geschreven, of de notitie die aan het document is toegevoegd."
+      },
+      "signin_link": {
+        "label": "Aanmeldlink",
+        "description": "De link waarmee de klant zich aanmeldt op het portaal. Hij verloopt na korte tijd."
+      },
+      "portal_link": {
+        "label": "Portaallink",
+        "description": "Een link naar het klantportaal."
+      }
+    },
+    "optionalTag": "Niet elke e-mail heeft een waarde voor deze tag. Als hij leeg is, worden de woorden eromheen opgeruimd.",
+    "summaryRows": {
+      "reference": "Referentie",
+      "vehicle": "Voertuig",
+      "total": "Totaal",
+      "balance": "Openstaand bedrag",
+      "due": "Vervaldatum"
+    },
+    "builtIn": "Ingebouwd",
+    "inUse": "In gebruik",
+    "useBuiltIn": "Ingebouwd sjabloon gebruiken",
+    "setDefault": "Als standaard instellen",
+    "defaultSet": "Verzendt nu met \"{name}\"",
+    "couldNotSetDefault": "Het sjabloon in gebruik kon niet worden gewijzigd",
+    "updatedOn": "Bijgewerkt {date}",
+    "delete": "Verwijderen",
+    "deleteTitle": "Sjabloon verwijderen",
+    "deleteConfirm": "Het sjabloon \"{name}\" verwijderen? Als het in gebruik is, vallen e-mails terug op het ingebouwde sjabloon.",
+    "deleteTemplate": "Dit sjabloon verwijderen",
+    "deleted": "\"{name}\" verwijderd",
+    "couldNotDelete": "Het sjabloon kon niet worden verwijderd",
+    "backToSettings": "Terug naar instellingen",
+    "unsaved": "(niet opgeslagen)",
+    "save": "Opslaan",
+    "saving": "Opslaan…",
+    "savedState": "Opgeslagen",
+    "saved": "\"{name}\" opgeslagen",
+    "couldNotSave": "Opslaan mislukt",
+    "saveAsNew": "Opslaan als nieuw",
+    "discard": "Wijzigingen verwerpen",
+    "sendTest": "Test verzenden",
+    "cancel": "Annuleren",
+    "problems": "{count, plural, one {# probleem} other {# problemen}}",
+    "unknownTags": "Deze tags bestaan niet voor dit soort e-mail: {tags}",
+    "missingTags": "Deze e-mail moet {tags} bevatten",
+    "subjectRequired": "Het onderwerp mag niet leeg zijn",
+    "leaveTitle": "Verlaten zonder op te slaan?",
+    "leaveBody": "Uw wijzigingen aan dit sjabloon zijn niet opgeslagen. Ze gaan verloren.",
+    "leaveConfirm": "Verlaten",
+    "subjectAndTheme": "Onderwerp en thema",
+    "settingsSubtitle": "Geldt voor de hele e-mail",
+    "blocksTitle": "Blokken",
+    "addBlock": "Blok toevoegen",
+    "removeBlock": "Blok verwijderen",
+    "removeBlockLast": "Het laatste blok kan niet worden verwijderd",
+    "blockEmpty": "leeg",
+    "blockEmptyHint": "Wordt getoond, maar er staat nog niets in om af te drukken.",
+    "blockShownHint": "Zichtbaar in de e-mail. Klik om te verbergen.",
+    "blockHiddenHint": "Verborgen in de e-mail. Klik om te tonen.",
+    "railHint": "Sleep een blok aan de greep om het te verplaatsen. De lijn laat zien waar het terechtkomt. Klik op een blok om rechts de tekst te bewerken.",
+    "resizeHint": "Sleep om het paneel te vergroten of te verkleinen. Dubbelklik om te herstellen.",
+    "desktop": "Desktop",
+    "mobile": "Mobiel",
+    "htmlView": "HTML",
+    "textView": "Platte tekst",
+    "desktopTooltip": "Voorbeeld op desktopbreedte",
+    "mobileTooltip": "Voorbeeld op telefoonbreedte",
+    "htmlViewTooltip": "De HTML-e-mail tonen",
+    "textViewTooltip": "De platte-tekstversie tonen",
+    "inboxNow": "Nu",
+    "inboxNoSender": "Uw werkplaats",
+    "inboxNoSubject": "(geen onderwerp)",
+    "subject": "Onderwerp",
+    "text": "Tekst",
+    "buttonLabel": "Knoptekst",
+    "buttonHref": "Link",
+    "spacerHeight": "Hoogte",
+    "tagsTitle": "Tags",
+    "tagsHint": "Klik op een tag om hem in te voegen op de cursorpositie in het veld waarin u het laatst typte.",
+    "theme": {
+      "colors": "Kleuren",
+      "primaryColor": "Primair",
+      "textColor": "Tekst",
+      "mutedColor": "Gedempte tekst",
+      "backgroundColor": "Achtergrond",
+      "panelColor": "Kaders",
+      "invalidColor": "Een kleur is geen geldige hexwaarde",
+      "typography": "Typografie",
+      "font": "Lettertype",
+      "fontHint": "Alleen lettertypen die elk e-mailprogramma al heeft. Webfonts worden door de meeste niet geladen.",
+      "fonts": {
+        "system": "Systeem",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Vormen",
+      "buttonRadius": "Knophoeken",
+      "showLogo": "Logo tonen",
+      "showLogoHint": "Met het logo uit drukt de koptekst in plaats daarvan de naam van de werkplaats af."
+    },
+    "nameDialog": {
+      "title": "Dit sjabloon opslaan",
+      "body": "Geef het sjabloon een naam om het in de galerij terug te vinden. Opslaan maakt het ook het sjabloon waarmee dit soort e-mail wordt verzonden.",
+      "placeholder": "Naam van het sjabloon",
+      "nameExists": "Er bestaat al een sjabloon met deze naam; opslaan werkt het bij.",
+      "save": "Sjabloon opslaan",
+      "update": "Sjabloon bijwerken"
+    },
+    "testDialog": {
+      "title": "Een test-e-mail verzenden",
+      "body": "De e-mail wordt verzonden met voorbeeldgegevens, zodat u hem in een echt e-mailprogramma kunt bekijken.",
+      "placeholder": "E-mailadres",
+      "send": "Verzenden",
+      "sending": "Verzenden…",
+      "sentTitle": "Test-e-mail verzonden",
+      "sentBody": "Controleer het postvak van {email}. Het kan een minuut duren voordat hij aankomt.",
+      "failedTitle": "De test-e-mail kon niet worden verzonden",
+      "failedBody": "Controleer de e-mailprovider onder Providers en probeer het opnieuw."
+    },
+    "toolbar": {
+      "bold": "Vet",
+      "italic": "Cursief",
+      "underline": "Onderstrepen",
+      "strike": "Doorhalen",
+      "link": "Link",
+      "linkUrl": "Linkadres",
+      "linkPlaceholder": "https://... of {share_link}",
+      "linkHint": "Een webadres, of een tag zoals {share_link} die wordt ingevuld wanneer de e-mail wordt verzonden.",
+      "linkApply": "Toepassen",
+      "linkRemove": "Link verwijderen",
+      "bulletList": "Opsommingslijst",
+      "orderedList": "Genummerde lijst",
+      "align": {
+        "left": "Links uitlijnen",
+        "center": "Centreren",
+        "right": "Rechts uitlijnen"
+      },
+      "size": {
+        "label": "Tekstgrootte",
+        "default": "Standaardgrootte",
+        "small": "Klein",
+        "normal": "Normaal",
+        "large": "Groot",
+        "extraLarge": "Extra groot"
+      },
+      "color": {
+        "label": "Tekstkleur",
+        "text": "Tekstkleur van het thema",
+        "muted": "Gedempte kleur van het thema",
+        "primary": "Primaire kleur van het thema",
+        "default": "Standaard",
+        "hex": "Hexkleur",
+        "apply": "Toepassen"
+      },
+      "clear": "Opmaak wissen"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Geen logo geüpload. De koptekst drukt de naam van de werkplaats af.",
+      "upload": "Logo uploaden",
+      "replace": "Logo vervangen",
+      "remove": "Verwijderen",
+      "uploading": "Uploaden…",
+      "width": "Logobreedte",
+      "hint": "Los van het bedrijfslogo. Het wordt bij het uploaden bijgesneden en voor e-mail voorbereid. PNG, JPEG of WebP tot 4 MB.",
+      "position": "Positie",
+      "tooLarge": "De afbeelding moet kleiner zijn dan 4 MB",
+      "uploadFailed": "Kon het logo niet uploaden"
+    },
+    "image": {
+      "empty": "Geen afbeelding geüpload. Het blok drukt niets af totdat er een is.",
+      "upload": "Afbeelding uploaden",
+      "replace": "Afbeelding vervangen",
+      "remove": "Verwijderen",
+      "uploading": "Uploaden…",
+      "alt": "Beschrijving",
+      "altHint": "Wordt voorgelezen aan lezers die de afbeelding niet kunnen zien en getoond terwijl hij laadt. PNG, JPEG of WebP tot 10 MB.",
+      "width": "Breedte",
+      "widthHint": "600 px is de volledige breedte van de e-mail. Smallere afbeeldingen staan waar Positie aangeeft.",
+      "link": "Link",
+      "linkHint": "Optioneel. Wordt geopend wanneer op de afbeelding wordt geklikt; een tag zoals de deellink werkt hier ook.",
+      "tooLarge": "De afbeelding moet kleiner zijn dan 10 MB",
+      "uploadFailed": "Kon de afbeelding niet uploaden"
+    },
+    "dragHandle": "Sleep om te herschikken"
   }
 }

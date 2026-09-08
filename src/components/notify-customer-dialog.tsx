@@ -27,6 +27,17 @@ interface NotifyCustomerDialogProps {
     email: string | null
     phone: string | null
   }
+  /**
+   * The car the message is about, when there is one. The email template can
+   * name it; a counter sale has none and the template leaves the gap.
+   */
+  vehicle?: {
+    year?: number | null
+    make?: string | null
+    model?: string | null
+    licensePlate?: string | null
+    mileage?: number | null
+  } | null
   defaultMessage: string
   emailSubject: string
   smsEnabled: boolean
@@ -39,6 +50,7 @@ export function NotifyCustomerDialog({
   open,
   onOpenChange,
   customer,
+  vehicle,
   defaultMessage,
   emailSubject,
   smsEnabled,
@@ -92,6 +104,16 @@ export function NotifyCustomerDialog({
         recipientEmail: customer.email!,
         subject: emailSubject,
         body: message,
+        customerName: customer.name,
+        vehicle: vehicle
+          ? {
+              year: vehicle.year,
+              make: vehicle.make,
+              model: vehicle.model,
+              licensePlate: vehicle.licensePlate,
+              mileage: vehicle.mileage,
+            }
+          : null,
       })
       if (res.success) results.push(t('emailSent'))
       else toast.error(res.error || t('failedEmail'))

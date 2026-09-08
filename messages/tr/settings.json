@@ -138,6 +138,10 @@
       "inspectionReminders": {
         "title": "Muayene hatırlatmaları",
         "description": "Randevu bağlantısı, süre ve öncelik"
+      },
+      "emailTemplates": {
+        "title": "E-posta şablonları",
+        "description": "Fatura, teklif ve rapor e-postalarınızın metni"
       }
     },
     "pro": "PRO"
@@ -2019,5 +2023,321 @@
     "timeZoneDetected": "Saat dilimi Yerelleştirme altında otomatik olduğundan sunucu, ayarları kaydeden bir tarayıcıda son görülen {zone} dilimini kullanıyor. Randevu saatlerinin son kaydeden kişiye bağlı olmaması için atölyenin dilimini açıkça seçin.",
     "timeZoneExplicit": "Randevu saatleri ve çalışma saatleri {zone} diliminde okunur.",
     "timeZoneChange": "Yerelleştirme altında değiştir"
+  },
+  "emailTemplates": {
+    "title": "E-posta şablonları",
+    "description": "Atölyenizin gönderdiği e-postaların metni ve görünümü. Her e-posta türünün yerleşik bir şablonu vardır; metni, renkleri ve oluştuğu blokları değiştirmek için kendi şablonunuzu tasarlayın.",
+    "lockedDescription": "Atölyenizin gönderdiği e-postaları tasarlayın: metni değiştirin, blok ekleyin veya kaldırın ve renkleri markanıza uydurun.",
+    "groups": {
+      "documents": "Belgeler",
+      "messages": "Mesajlar",
+      "portal": "Müşteri portalı"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Fatura gönderildi",
+        "description": "Bir fatura e-postayla müşteriye gittiğinde, PDF ekli veya görüntüleme bağlantısıyla gönderilir."
+      },
+      "quote_sent": {
+        "name": "Teklif gönderildi",
+        "description": "Bir teklif e-postayla müşteriye gittiğinde gönderilir."
+      },
+      "inspection_sent": {
+        "name": "Muayene raporu gönderildi",
+        "description": "Bir muayene raporu e-postayla müşteriye gittiğinde gönderilir."
+      },
+      "message": {
+        "name": "Müşteri mesajı",
+        "description": "Bir iş emrinden veya müşterinin profilinden müşteriye yazılan mesaj."
+      },
+      "portal_signin": {
+        "name": "Portal girişi",
+        "description": "Müşterinin müşteri portalında istediği giriş bağlantısı."
+      }
+    },
+    "blocks": {
+      "header": "Üst bilgi",
+      "heading": "Başlık",
+      "paragraph": "Paragraf",
+      "callout": "Vurgu kutusu",
+      "button": "Düğme",
+      "document_summary": "Belge özeti",
+      "attachment_note": "Ek notu",
+      "image": "Görsel",
+      "divider": "Ayırıcı",
+      "spacer": "Boşluk",
+      "contact_footer": "İletişim alt bilgisi"
+    },
+    "blockNotes": {
+      "header": "Logonuz veya logo yoksa ya da kapatılmışsa atölye adı. Logoyu buradan yükleyin ve boyutlandırın; renkler ve yazı tipleri Konu ve tema altındadır.",
+      "contact_footer": "Şirket ayarlarından alınan atölye adınız, adresiniz, telefonunuz ve e-postanız. Burada yazdırılanı değiştirmek için bunları orada doldurun.",
+      "divider": "İki blok arasında ince bir çizgi. E-postayı açacak veya kapatacaksa atlanır.",
+      "callout": "Renkli kenarlı vurgulu bir panel. Mesajın kendisi gibi en önemli sözler için uygundur.",
+      "attachment_note": "Yalnızca e-postaya bir PDF eklendiğinde yazdırılır.",
+      "button": "Bağlantı genellikle paylaşım bağlantısı gibi bir etikettir. Bağlantısında değer olmayan düğme e-postadan çıkarılır.",
+      "document_summary": "Belgenin temel rakamlarını içeren bir panel. Gösterecek bir şeyi olmayan satırlar atlanır.",
+      "image": "Görseller yüklenirken e-posta için sıkıştırılır ve yeniden boyutlandırılır. Artık kullanılmayan görseller şablon kaydedildiğinde kaldırılır.",
+      "summaryUnused": "Bu e-posta türünün belgesi yoktur, bu yüzden özet hiçbir şey yazdırmaz."
+    },
+    "tagGroups": {
+      "workshop": "Atölye",
+      "customer": "Müşteri",
+      "vehicle": "Araç",
+      "document": "Belge",
+      "message": "Mesaj",
+      "portal": "Portal"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Atölye adı",
+        "description": "Atölyenizin adı."
+      },
+      "workshop_phone": {
+        "label": "Atölye telefonu",
+        "description": "Şirket ayarlarındaki telefon numarası."
+      },
+      "workshop_email": {
+        "label": "Atölye e-postası",
+        "description": "Şirket ayarlarındaki e-posta adresi."
+      },
+      "workshop_address": {
+        "label": "Atölye adresi",
+        "description": "Şirket ayarlarındaki adres, kaç satırsa o kadar satırda."
+      },
+      "current_user": {
+        "label": "Gönderen adı",
+        "description": "E-postayı gönderen kişinin adı."
+      },
+      "customer_name": {
+        "label": "Müşteri adı",
+        "description": "E-postanın gittiği müşterinin adı."
+      },
+      "vehicle": {
+        "label": "Araç",
+        "description": "Aracın yılı, markası ve modeli."
+      },
+      "plate": {
+        "label": "Plaka",
+        "description": "Aracın plaka numarası."
+      },
+      "mileage": {
+        "label": "Kilometre",
+        "description": "Araçta kayıtlı kilometre."
+      },
+      "document_number": {
+        "label": "Belge numarası",
+        "description": "Faturanın veya teklifin numarası."
+      },
+      "document_title": {
+        "label": "Belge başlığı",
+        "description": "İşin veya belgenin başlığı."
+      },
+      "total": {
+        "label": "Toplam",
+        "description": "Belgenin kendi para birimindeki toplamı."
+      },
+      "balance_due": {
+        "label": "Kalan bakiye",
+        "description": "Ödemelerden sonra belgede hâlâ borç olan tutar."
+      },
+      "due_date": {
+        "label": "Vade tarihi",
+        "description": "Ödemenin vadesinin dolduğu tarih."
+      },
+      "share_link": {
+        "label": "Paylaşım bağlantısı",
+        "description": "Müşterinin belgeyi çevrimiçi görüntülemek için açabileceği bağlantı."
+      },
+      "message": {
+        "label": "Mesaj",
+        "description": "Bu e-posta için yazılan mesaj veya belgeye eklenen not."
+      },
+      "signin_link": {
+        "label": "Giriş bağlantısı",
+        "description": "Müşteriyi portala giriş yaptıran bağlantı. Kısa süre sonra geçerliliğini yitirir."
+      },
+      "portal_link": {
+        "label": "Portal bağlantısı",
+        "description": "Müşteri portalına bağlantı."
+      }
+    },
+    "optionalTag": "Her e-postada bu etiket için bir değer yoktur. Boş olduğunda çevresindeki sözcükler düzenlenir.",
+    "summaryRows": {
+      "reference": "Referans",
+      "vehicle": "Araç",
+      "total": "Toplam",
+      "balance": "Kalan bakiye",
+      "due": "Vade tarihi"
+    },
+    "builtIn": "Yerleşik",
+    "inUse": "Kullanımda",
+    "useBuiltIn": "Yerleşik olanı kullan",
+    "setDefault": "Varsayılan yap",
+    "defaultSet": "Artık \"{name}\" ile gönderiliyor",
+    "couldNotSetDefault": "Kullanımdaki şablon değiştirilemedi",
+    "updatedOn": "{date} tarihinde güncellendi",
+    "delete": "Sil",
+    "deleteTitle": "Şablonu sil",
+    "deleteConfirm": "\"{name}\" şablonu silinsin mi? Kullanımdaysa e-postalar yerleşik şablona döner.",
+    "deleteTemplate": "Bu şablonu sil",
+    "deleted": "\"{name}\" silindi",
+    "couldNotDelete": "Şablon silinemedi",
+    "backToSettings": "Ayarlara dön",
+    "unsaved": "(kaydedilmedi)",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor…",
+    "savedState": "Kaydedildi",
+    "saved": "\"{name}\" kaydedildi",
+    "couldNotSave": "Kaydedilemedi",
+    "saveAsNew": "Yeni olarak kaydet",
+    "discard": "Değişiklikleri yoksay",
+    "sendTest": "Test gönder",
+    "cancel": "İptal",
+    "problems": "{count, plural, one {# sorun} other {# sorun}}",
+    "unknownTags": "Bu etiketler bu e-posta türü için yok: {tags}",
+    "missingTags": "Bu e-posta {tags} içermeli",
+    "subjectRequired": "Konu boş olamaz",
+    "leaveTitle": "Kaydetmeden çıkılsın mı?",
+    "leaveBody": "Bu şablondaki değişiklikleriniz kaydedilmedi. Kaybolacaklar.",
+    "leaveConfirm": "Çık",
+    "subjectAndTheme": "Konu ve tema",
+    "settingsSubtitle": "Tüm e-posta için geçerlidir",
+    "blocksTitle": "Bloklar",
+    "addBlock": "Blok ekle",
+    "removeBlock": "Bloğu kaldır",
+    "removeBlockLast": "Son blok kaldırılamaz",
+    "blockEmpty": "boş",
+    "blockEmptyHint": "Gösteriliyor, ancak içinde henüz yazdırılacak bir şey yok.",
+    "blockShownHint": "E-postada görünüyor. Gizlemek için tıklayın.",
+    "blockHiddenHint": "E-postada gizli. Göstermek için tıklayın.",
+    "railHint": "Bir bloğu taşımak için tutamacından sürükleyin. Çizgi, nereye yerleşeceğini gösterir. Metnini sağda düzenlemek için bir bloğa tıklayın.",
+    "resizeHint": "Panelin boyutunu değiştirmek için sürükleyin. Sıfırlamak için çift tıklayın.",
+    "desktop": "Masaüstü",
+    "mobile": "Mobil",
+    "htmlView": "HTML",
+    "textView": "Düz metin",
+    "desktopTooltip": "Masaüstü genişliğinde önizle",
+    "mobileTooltip": "Telefon genişliğinde önizle",
+    "htmlViewTooltip": "HTML e-postayı göster",
+    "textViewTooltip": "Düz metin sürümünü göster",
+    "inboxNow": "Şimdi",
+    "inboxNoSender": "Atölyeniz",
+    "inboxNoSubject": "(konu yok)",
+    "subject": "Konu",
+    "text": "Metin",
+    "buttonLabel": "Düğme metni",
+    "buttonHref": "Bağlantı",
+    "spacerHeight": "Yükseklik",
+    "tagsTitle": "Etiketler",
+    "tagsHint": "Bir etiketi, en son yazdığınız alanda imlecin bulunduğu yere eklemek için tıklayın.",
+    "theme": {
+      "colors": "Renkler",
+      "primaryColor": "Ana renk",
+      "textColor": "Metin",
+      "mutedColor": "Soluk metin",
+      "backgroundColor": "Arka plan",
+      "panelColor": "Paneller",
+      "invalidColor": "Bir renk geçerli bir onaltılık değer değil",
+      "typography": "Tipografi",
+      "font": "Yazı tipi",
+      "fontHint": "Yalnızca her e-posta istemcisinde zaten bulunan yazı tipleri. Çoğu web yazı tiplerini yüklemez.",
+      "fonts": {
+        "system": "Sistem",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Şekiller",
+      "buttonRadius": "Düğme köşeleri",
+      "showLogo": "Logoyu göster",
+      "showLogoHint": "Logo kapalıyken üst bilgi bunun yerine atölye adını yazdırır."
+    },
+    "nameDialog": {
+      "title": "Bu şablonu kaydet",
+      "body": "Şablona galeride bulabileceğiniz bir ad verin. Kaydetmek onu aynı zamanda bu e-posta türünün gönderildiği şablon yapar.",
+      "placeholder": "Şablon adı",
+      "nameExists": "Bu adda bir şablon var; kaydetmek onu günceller.",
+      "save": "Şablonu kaydet",
+      "update": "Şablonu güncelle"
+    },
+    "testDialog": {
+      "title": "Test e-postası gönder",
+      "body": "E-posta örnek verilerle gönderilir, böylece onu gerçek bir e-posta istemcisinde görebilirsiniz.",
+      "placeholder": "E-posta adresi",
+      "send": "Gönder",
+      "sending": "Gönderiliyor…",
+      "sentTitle": "Test e-postası gönderildi",
+      "sentBody": "{email} gelen kutusunu kontrol edin. Ulaşması bir dakika sürebilir.",
+      "failedTitle": "Test e-postası gönderilemedi",
+      "failedBody": "Sağlayıcılar altındaki e-posta sağlayıcısını kontrol edin ve yeniden deneyin."
+    },
+    "toolbar": {
+      "bold": "Kalın",
+      "italic": "İtalik",
+      "underline": "Altı çizili",
+      "strike": "Üstü çizili",
+      "link": "Bağlantı",
+      "linkUrl": "Bağlantı adresi",
+      "linkPlaceholder": "https://... veya {share_link}",
+      "linkHint": "Bir web adresi veya e-posta gönderilirken doldurulan {share_link} gibi bir etiket.",
+      "linkApply": "Uygula",
+      "linkRemove": "Bağlantıyı kaldır",
+      "bulletList": "Madde işaretli liste",
+      "orderedList": "Numaralı liste",
+      "align": {
+        "left": "Sola hizala",
+        "center": "Ortala",
+        "right": "Sağa hizala"
+      },
+      "size": {
+        "label": "Metin boyutu",
+        "default": "Varsayılan boyut",
+        "small": "Küçük",
+        "normal": "Normal",
+        "large": "Büyük",
+        "extraLarge": "Çok büyük"
+      },
+      "color": {
+        "label": "Metin rengi",
+        "text": "Temanın metin rengi",
+        "muted": "Temanın soluk rengi",
+        "primary": "Temanın ana rengi",
+        "default": "Varsayılan",
+        "hex": "Onaltılık renk",
+        "apply": "Uygula"
+      },
+      "clear": "Biçimlendirmeyi temizle"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Logo yüklenmedi. Üst bilgi atölye adını yazdırır.",
+      "upload": "Logo yükle",
+      "replace": "Logoyu değiştir",
+      "remove": "Kaldır",
+      "uploading": "Yükleniyor…",
+      "width": "Logo genişliği",
+      "hint": "Şirket logosundan bağımsızdır. Yüklenirken kırpılır ve e-posta için hazırlanır. En fazla 4 MB PNG, JPEG veya WebP.",
+      "position": "Konum",
+      "tooLarge": "Görsel 4 MB'den küçük olmalıdır",
+      "uploadFailed": "Logo yüklenemedi"
+    },
+    "image": {
+      "empty": "Görsel yüklenmedi. Bir görsel eklenene kadar blok hiçbir şey yazdırmaz.",
+      "upload": "Görsel yükle",
+      "replace": "Görseli değiştir",
+      "remove": "Kaldır",
+      "uploading": "Yükleniyor…",
+      "alt": "Açıklama",
+      "altHint": "Görseli göremeyen okuyuculara sesli okunur ve görsel yüklenirken gösterilir. En fazla 10 MB PNG, JPEG veya WebP.",
+      "width": "Genişlik",
+      "widthHint": "600 px e-postanın tam genişliğidir. Daha dar görseller Konum alanında belirtilen yere yerleşir.",
+      "link": "Bağlantı",
+      "linkHint": "İsteğe bağlı. Görsele tıklandığında açılır; paylaşım bağlantısı gibi bir etiket de burada kullanılabilir.",
+      "tooLarge": "Görsel 10 MB'den küçük olmalıdır",
+      "uploadFailed": "Görsel yüklenemedi"
+    },
+    "dragHandle": "Yeniden sıralamak için sürükleyin"
   }
 }

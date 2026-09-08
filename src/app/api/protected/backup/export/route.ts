@@ -92,6 +92,16 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  if (options.settings) {
+    queries.push(
+      db.emailTemplate
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.emailTemplates = result
+        })
+    )
+  }
+
   if (options.customers) {
     queries.push(
       db.customer.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {

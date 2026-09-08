@@ -622,6 +622,7 @@ export function ServicePageClient({
             open={actions.showPaymentNotifyDialog}
             onOpenChange={actions.setShowPaymentNotifyDialog}
             customer={customer}
+            vehicle={record.vehicle}
             defaultMessage={actions.paymentNotifyMessage}
             emailSubject={t('invoice.emailSubject')}
             smsEnabled={smsEnabled}
@@ -633,6 +634,7 @@ export function ServicePageClient({
             open={showNotifyDialog}
             onOpenChange={setShowNotifyDialog}
             customer={customer}
+            vehicle={record.vehicle}
             defaultMessage={notifyMessage}
             emailSubject={t('invoice.statusEmailSubject')}
             smsEnabled={smsEnabled}
