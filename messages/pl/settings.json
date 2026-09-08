@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Wiadomość do klienta",
-        "description": "Wiadomość do klienta napisana ze zlecenia lub z jego profilu."
+        "description": "Wiadomość do klienta: powiadomienie ze zlecenia, raport o stanie, zaproszenie na rozmowę wideo lub zaplanowane przypomnienie."
       },
       "portal_signin": {
         "name": "Logowanie do portalu",

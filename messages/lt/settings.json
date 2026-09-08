@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Žinutė klientui",
-        "description": "Žinutė klientui, parašyta iš darbo užsakymo arba jo profilio."
+        "description": "Klientui rašoma žinutė: pranešimas iš darbo užsakymo, būsenos ataskaita, kvietimas į vaizdo skambutį arba suplanuotas priminimas."
       },
       "portal_signin": {
         "name": "Prisijungimas prie portalo",

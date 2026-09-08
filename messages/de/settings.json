@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Kundennachricht",
-        "description": "Eine Nachricht an einen Kunden, geschrieben aus einem Auftrag oder seinem Profil."
+        "description": "Eine Nachricht an einen Kunden: eine Benachrichtigung aus einem Auftrag, ein Statusbericht, eine Videoanruf-Einladung oder eine geplante Erinnerung."
       },
       "portal_signin": {
         "name": "Portal-Anmeldung",

@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Klantbericht",
-        "description": "Een bericht aan een klant, geschreven vanuit een werkorder of het klantprofiel."
+        "description": "Een bericht aan een klant: een melding vanuit een werkorder, een statusrapport, een uitnodiging voor een videogesprek of een geplande herinnering."
       },
       "portal_signin": {
         "name": "Portaalaanmelding",

@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Mensaje al cliente",
-        "description": "Un mensaje escrito a un cliente desde una orden de trabajo o desde su perfil."
+        "description": "Un mensaje escrito a un cliente: una notificación desde una orden de trabajo, un informe de estado, una invitación a videollamada o un recordatorio programado."
       },
       "portal_signin": {
         "name": "Acceso al portal",

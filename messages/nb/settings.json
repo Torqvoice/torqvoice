@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Kundemelding",
-        "description": "En melding skrevet til en kunde fra en arbeidsordre eller kundens profil."
+        "description": "En melding skrevet til en kunde: et varsel fra en arbeidsordre, en statusrapport, en videosamtaleinvitasjon eller en planlagt påminnelse."
       },
       "portal_signin": {
         "name": "Portalinnlogging",

@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Customer message",
-        "description": "A message written to a customer from a work order or their profile."
+        "description": "A message written to a customer: a notification from a work order, a status report, a video call invitation or a scheduled reminder."
       },
       "portal_signin": {
         "name": "Portal sign-in",

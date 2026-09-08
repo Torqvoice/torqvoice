@@ -2048,7 +2048,7 @@
       },
       "message": {
         "name": "Müşteri mesajı",
-        "description": "Bir iş emrinden veya müşterinin profilinden müşteriye yazılan mesaj."
+        "description": "Bir müşteriye yazılan mesaj: bir iş emrinden bildirim, durum raporu, görüntülü görüşme daveti veya planlanmış hatırlatma."
       },
       "portal_signin": {
         "name": "Portal girişi",
