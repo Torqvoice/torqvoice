@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Cada una conserva el diseño, el logotipo, los datos del taller, el cliente, el vehículo y los hallazgos con los que se imprime ahora. No se puede deshacer, y las facturas siguen editables o bloqueadas para edición exactamente como hoy.",
     "freezeProgress": "Bloqueadas {done} de {total}",
     "freezeDone": "{count, plural, one {# factura bloqueada} other {# facturas bloqueadas}}",
-    "freezeFailed": "No se pudieron bloquear las facturas"
+    "freezeFailed": "No se pudieron bloquear las facturas",
+    "sectionSending": "Envío",
+    "attachPdfLabel": "Adjuntar el PDF a los correos",
+    "attachPdfHint": "El valor predeterminado para cada factura, presupuesto e inspección que envíes por correo. Activado: el cliente recibe el PDF adjunto. Desactivado: recibe un enlace al documento y el contador de visitas te dice cuándo lo abrió, para que puedas insistir con los que nadie ha mirado. Puedes cambiarlo para un envío concreto en el diálogo de compartir."
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",

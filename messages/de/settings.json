@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Jede behält das Design, das Logo, die Werkstattangaben, den Kunden, das Fahrzeug und die Befunde, mit denen sie jetzt gedruckt wird. Das kann nicht rückgängig gemacht werden; die Rechnungen bleiben genau so bearbeitbar oder für die Bearbeitung gesperrt wie heute.",
     "freezeProgress": "{done} von {total} gesperrt",
     "freezeDone": "{count, plural, one {# Rechnung} other {# Rechnungen}} gesperrt",
-    "freezeFailed": "Rechnungen konnten nicht gesperrt werden"
+    "freezeFailed": "Rechnungen konnten nicht gesperrt werden",
+    "sectionSending": "Versand",
+    "attachPdfLabel": "PDF an E-Mails anhängen",
+    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",

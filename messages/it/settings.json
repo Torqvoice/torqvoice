@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Ciascuna conserva il design, il logo, i dati dell'officina, il cliente, il veicolo e i rilievi con cui si stampa adesso. Non si può annullare, e le fatture restano modificabili o bloccate in modifica esattamente come oggi.",
     "freezeProgress": "Bloccate {done} di {total}",
     "freezeDone": "{count, plural, one {# fattura bloccata} other {# fatture bloccate}}",
-    "freezeFailed": "Impossibile bloccare le fatture"
+    "freezeFailed": "Impossibile bloccare le fatture",
+    "sectionSending": "Invio",
+    "attachPdfLabel": "Allega il PDF alle email",
+    "attachPdfHint": "L'impostazione predefinita per ogni fattura, preventivo e controllo che invii via email. Attivo: il cliente riceve il PDF in allegato. Disattivo: riceve invece un link al documento e il contatore delle visualizzazioni indica quando lo ha aperto, così puoi sollecitare quelli che nessuno ha guardato. Puoi cambiarlo per un singolo invio nella finestra di condivisione."
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",

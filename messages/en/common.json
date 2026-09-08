@@ -100,5 +100,7 @@
     "title": "PDF preview",
     "preview": "Preview",
     "failed": "Could not generate the PDF preview."
-  }
+  },
+  "attachPdf": "Attach PDF",
+  "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it."
 }

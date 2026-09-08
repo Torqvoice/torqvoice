@@ -8,13 +8,18 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, Mail, Send } from 'lucide-react'
 import { useGlassModal } from '@/components/glass-modal'
+import { AttachPdfOption, useAttachPdf } from '@/features/email/Components/AttachPdfOption'
 
 interface SendEmailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   defaultEmail?: string
   entityLabel: string
-  onSend: (email: string, message?: string) => Promise<{ success: boolean; error?: string }>
+  onSend: (
+    email: string,
+    message?: string,
+    attachPdf?: boolean
+  ) => Promise<{ success: boolean; error?: string }>
 }
 
 export function SendEmailDialog({
@@ -28,12 +33,13 @@ export function SendEmailDialog({
   const [sending, setSending] = useState(false)
   const [email, setEmail] = useState(defaultEmail)
   const [message, setMessage] = useState('')
+  const [attachPdf, setAttachPdf] = useAttachPdf(open)
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
     setSending(true)
-    const result = await onSend(email, message || undefined)
+    const result = await onSend(email, message || undefined, attachPdf)
     if (result.success) {
       modal.open('success', 'Email Sent', `${entityLabel} has been sent to ${email}`)
       onOpenChange(false)
@@ -75,6 +81,11 @@ export function SendEmailDialog({
               rows={3}
             />
           </div>
+          <AttachPdfOption
+            id="attach-pdf-send"
+            checked={attachPdf}
+            onCheckedChange={setAttachPdf}
+          />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel

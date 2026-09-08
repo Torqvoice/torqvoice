@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Each one keeps the design, logo, workshop details, customer, vehicle and findings it prints with right now. This cannot be undone, and the invoices stay editable or locked for editing exactly as they are today.",
     "freezeProgress": "Locked {done} of {total}",
     "freezeDone": "{count, plural, one {# invoice} other {# invoices}} locked",
-    "freezeFailed": "Could not lock the invoices"
+    "freezeFailed": "Could not lock the invoices",
+    "sectionSending": "Sending",
+    "attachPdfLabel": "Attach the PDF to emails",
+    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

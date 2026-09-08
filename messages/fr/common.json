@@ -100,5 +100,7 @@
     "title": "Aperçu du PDF",
     "preview": "Aperçu",
     "failed": "Impossible de générer l'aperçu du PDF."
-  }
+  },
+  "attachPdf": "Joindre le PDF",
+  "attachPdfHint": "Désactivez pour envoyer un lien à la place, afin de voir quand le client l'ouvre."
 }
