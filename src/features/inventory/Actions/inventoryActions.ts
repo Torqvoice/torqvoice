@@ -70,7 +70,7 @@ export async function getInventoryPartsPaginated(params: {
 
         const lowRows = await db.$queryRaw<{ id: string }[]>`
         SELECT "id"
-        FROM "inventory_parts"
+        FROM "public"."inventory_parts"
         WHERE "organizationId" = ${organizationId}
           AND "isArchived" = false
           AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
@@ -467,7 +467,7 @@ export async function applyMarkupToAll(input: unknown) {
 
       // Use raw SQL to avoid Prisma's @updatedAt auto-update which changes sort order
       const result = await db.$executeRaw`
-      UPDATE "inventory_parts"
+      UPDATE "public"."inventory_parts"
       SET "sellPrice" = ROUND(("unitCost" * ${multiplier})::numeric, 2)
       WHERE "organizationId" = ${organizationId}
         AND "isArchived" = false

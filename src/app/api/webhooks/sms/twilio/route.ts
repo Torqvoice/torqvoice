@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
+import { channelSetup, organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { notify } from '@/lib/notify'
+import { publicRequestUrl, verifyTwilioSignature, warnOnce } from '@/lib/webhook-signatures'
 
 export async function POST(request: Request) {
   try {
@@ -25,12 +26,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid org_secret' }, { status: 403 })
     }
 
-    // Parse Twilio form-encoded payload
-    const formData = await request.formData()
-    const from = formData.get('From') as string
-    const to = formData.get('To') as string
-    const body = formData.get('Body') as string
-    const messageSid = formData.get('MessageSid') as string
+    // The exact bytes, since the signature covers them.
+    const raw = await request.text()
+    const formData = new URLSearchParams(raw)
+
+    // The secret in the URL says which workshop this is for; the signature
+    // says it was Twilio who sent it. Twilio signs with the same auth token
+    // the workshop pasted for sending.
+    const setup = await channelSetup(organizationId, 'sms')
+    const authToken =
+      setup?.connectorId === 'twilio-sms' ? setup.credentials.authToken?.trim() : undefined
+    if (authToken) {
+      const valid = verifyTwilioSignature({
+        authToken,
+        url: publicRequestUrl(request.url),
+        params: formData,
+        signature: request.headers.get('x-twilio-signature'),
+      })
+      if (!valid) {
+        console.warn(`[webhook/sms/twilio] Invalid signature for organization ${organizationId}`)
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 403 })
+      }
+    } else {
+      warnOnce(
+        `twilio-sms:${setup?.connectionId ?? organizationId}`,
+        `[webhook/sms/twilio] Connection ${setup?.connectionId ?? '(none)'} of organization ${organizationId} has no Twilio auth token; inbound SMS is accepted on the URL secret alone`
+      )
+    }
+
+    const from = formData.get('From') ?? ''
+    const to = formData.get('To') ?? ''
+    const body = formData.get('Body') ?? ''
+    const messageSid = formData.get('MessageSid') ?? ''
 
     if (!from || !body) {
       return new Response('<?xml version="1.0" encoding="UTF-8"?><Response/>', {

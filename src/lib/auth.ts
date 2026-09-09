@@ -68,14 +68,11 @@ export const auth = betterAuth({
       })
       if (setting?.value !== 'true') return
 
-      // Skip for users with a pending invitation — acceptInvitation will set emailVerified
-      const pendingInvitation = await db.teamInvitation.findFirst({
-        where: {
-          email: user.email,
-          status: 'pending',
-        },
-      })
-      if (pendingInvitation) return
+      // Invited addresses are verified like any other. This used to skip the
+      // mail when a pending invitation existed for the address, relying on
+      // acceptInvitation to mark the user verified; but an invitation only
+      // proves the inviter typed the address, and any admin anywhere could
+      // suppress somebody's verification mail just by inviting them.
 
       // Server-side rate limit: 60 seconds between verification emails per user
       const cooldownKey = `email-verify-cooldown:${user.id}`

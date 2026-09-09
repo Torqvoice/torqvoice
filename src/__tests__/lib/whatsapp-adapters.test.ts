@@ -11,6 +11,7 @@ import { describe, it, expect } from 'vitest'
 import { createHmac } from 'crypto'
 import { buildMetaPayload, metaAdapter } from '@/lib/whatsapp/adapters/meta'
 import { buildTwilioForm, twilioAdapter } from '@/lib/whatsapp/adapters/twilio'
+import { twilioSignature } from '@/lib/webhook-signatures'
 import type { WhatsappContext } from '@/lib/whatsapp/types'
 
 const metaContext: WhatsappContext = {
@@ -262,14 +263,29 @@ describe('twilio payloads', () => {
 })
 
 describe('twilio webhook', () => {
-  function inbound(fields: Record<string, string>, token = 'tok_abc') {
+  // Twilio signs the public URL plus the form with the auth token. Nothing
+  // configures NEXT_PUBLIC_APP_URL here, so the request's own origin is it.
+  function inbound(fields: Record<string, string>, token = 'tok_abc', authToken = 'secret') {
+    const url = `https://app.test/api/webhooks/whatsapp/twilio/org_1?token=${token}`
     const body = new URLSearchParams(fields)
-    return new Request(`https://app.test/api/webhooks/whatsapp/twilio/org_1?token=${token}`, {
+    return new Request(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Twilio-Signature': twilioSignature(authToken, url, fields),
+      },
       body,
     })
   }
+
+  it('rejects a call whose signature was not made with the auth token', async () => {
+    await expect(
+      twilioAdapter.receive(
+        inbound({ From: 'whatsapp:+49176', Body: 'hi' }, 'tok_abc', 'not-the-token'),
+        twilioContext
+      )
+    ).rejects.toThrow(/signature/i)
+  })
 
   it('reads a message and strips the channel prefix off the numbers', async () => {
     const events = await twilioAdapter.receive(

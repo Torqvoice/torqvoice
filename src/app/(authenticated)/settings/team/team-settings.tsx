@@ -58,7 +58,6 @@ function labelKey(subject: string, action: string): string {
   return ACTION_LABEL_OVERRIDES[`${subject}:${action}`] ?? action
 }
 import {
-  Copy,
   Crown,
   Loader2,
   LogOut,
@@ -94,7 +93,6 @@ interface PendingInvitation {
   email: string
   role: string
   roleId: string | null
-  token: string
   customRole: { name: string } | null
   createdAt: Date
   expiresAt: Date
@@ -752,20 +750,6 @@ export function TeamSettings({
                   >
                     {t('team.pending')}
                   </Badge>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground"
-                    title={t('team.copyInviteLink')}
-                    aria-label={t('team.copyInviteLink')}
-                    onClick={() => {
-                      const url = `${window.location.origin}/auth/sign-up?invite=${invitation.token}`
-                      navigator.clipboard.writeText(url)
-                      toast.success(t('team.inviteLinkCopied'))
-                    }}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"

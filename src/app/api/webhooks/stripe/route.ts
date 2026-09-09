@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
 import { paymentProviderFor } from '@/features/integrations/Lib/payments'
+import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
 
 export async function POST(request: Request) {
   try {
@@ -98,7 +99,13 @@ export async function POST(request: Request) {
         select: { id: true, organizationId: true },
       })
 
-      if (record && record.organizationId === orgId) {
+      if (
+        record &&
+        paymentMatchesRecord(
+          { serviceRecordId, organizationId: orgId },
+          { serviceRecordId: record.id, organizationId: record.organizationId ?? '' }
+        )
+      ) {
         await db.payment.create({
           data: {
             amount: (session.amount_total ?? 0) / 100,
