@@ -48,6 +48,8 @@ export async function resendInvitation(input: unknown) {
         email: invitation.email,
         roleLabel: invitation.customRole?.name || invitation.role,
         token,
+        invitedById: invitation.invitedById,
+        expiresAt,
       })
 
       revalidatePath('/settings/team')

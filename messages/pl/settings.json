@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Dokumenty",
       "messages": "Wiadomości",
-      "portal": "Portal klienta"
+      "portal": "Portal klienta",
+      "team": "Zespół"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Logowanie do portalu",
         "description": "Link logowania, o który klient prosi w portalu klienta."
+      },
+      "team_invitation": {
+        "name": "Zaproszenie do zespołu",
+        "description": "Wysyłane do współpracownika zaproszonego do warsztatu, z linkiem tworzącym konto."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Pojazd",
       "document": "Dokument",
       "message": "Wiadomość",
-      "portal": "Portal"
+      "portal": "Portal",
+      "team": "Zespół"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Link do portalu",
         "description": "Link do portalu klienta."
+      },
+      "invite_link": {
+        "label": "Link zaproszenia",
+        "description": "Link tworzący konto i dołączający do zespołu. Przestaje działać po wygaśnięciu zaproszenia."
+      },
+      "role": {
+        "label": "Rola",
+        "description": "Rola, do której zapraszana jest osoba."
+      },
+      "invite_expires": {
+        "label": "Data wygaśnięcia",
+        "description": "Ostatni dzień działania linku zaproszenia."
       }
     },
     "optionalTag": "Nie każdy e-mail ma wartość dla tego tagu. Gdy jest pusty, słowa wokół niego są porządkowane.",

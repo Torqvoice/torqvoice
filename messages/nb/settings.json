@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Dokumenter",
       "messages": "Meldinger",
-      "portal": "Kundeportal"
+      "portal": "Kundeportal",
+      "team": "Team"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Portalinnlogging",
         "description": "Innloggingslenken en kunde ber om på kundeportalen."
+      },
+      "team_invitation": {
+        "name": "Invitasjon til teamet",
+        "description": "Sendes til en kollega du inviterer inn i verkstedet, med lenken som oppretter kontoen."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Kjøretøy",
       "document": "Dokument",
       "message": "Melding",
-      "portal": "Portal"
+      "portal": "Portal",
+      "team": "Team"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Portallenke",
         "description": "En lenke til kundeportalen."
+      },
+      "invite_link": {
+        "label": "Invitasjonslenke",
+        "description": "Lenken som oppretter kontoen og legger personen til i teamet. Den slutter å virke når invitasjonen utløper."
+      },
+      "role": {
+        "label": "Rolle",
+        "description": "Rollen personen inviteres som."
+      },
+      "invite_expires": {
+        "label": "Utløpsdato",
+        "description": "Siste dag invitasjonslenken virker."
       }
     },
     "optionalTag": "Ikke alle e-poster har en verdi for denne taggen. Når den er tom, ryddes ordene rundt den opp.",

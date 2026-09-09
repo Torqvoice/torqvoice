@@ -38,6 +38,15 @@
       "button": "Accedi",
       "linkFallback": "Se il pulsante non funziona, copi questo link nel suo browser:\n{signin_link}",
       "outro": "Questo link scade tra 15 minuti. Se non l'ha richiesto, può ignorare questa email."
+    },
+    "team_invitation": {
+      "name": "Invito nel team",
+      "subject": "Sei stato invitato a unirti a {workshop_name}",
+      "heading": "Unisciti a {workshop_name}",
+      "intro": "Sei stato invitato a unirti a {workshop_name} su Torqvoice come {role}.\n\nUsa il pulsante qui sotto per creare il tuo account e unirti al team.",
+      "button": "Accetta l'invito",
+      "linkFallback": "Se il pulsante non funziona, copia questo link nel tuo browser:\n{invite_link}",
+      "outro": "Questo invito è valido fino al {invite_expires}. Se non lo aspettavi, puoi ignorare questa email."
     }
   },
   "attachmentNote": "Una copia in PDF è allegata a questa email.",

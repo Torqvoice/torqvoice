@@ -63,12 +63,22 @@ export interface PortalSigninEmailContext extends BaseContext {
   signinLink: string
 }
 
+export interface TeamInvitationEmailContext extends BaseContext {
+  /** The sign-up link carrying the invitation token. */
+  inviteLink: string
+  /** The role the person is invited as, in the workshop's own words. */
+  role?: string | null
+  /** When the link stops working. */
+  expiresAt?: Date | string | null
+}
+
 export type EmailContextByKind = {
   invoice_sent: DocumentEmailContext
   quote_sent: DocumentEmailContext
   inspection_sent: DocumentEmailContext
   message: MessageEmailContext
   portal_signin: PortalSigninEmailContext
+  team_invitation: TeamInvitationEmailContext
 }
 
 export type EmailContext<K extends EmailKind = EmailKind> = EmailContextByKind[K]
@@ -125,6 +135,8 @@ export function tagValuesFor<K extends EmailKind>(
   const fmt = doc ? money(doc) : undefined
   const balance = doc ? balanceOf(doc) : null
   const dueDate = asDate(doc?.dueDate)
+  const invitation = context as TeamInvitationEmailContext
+  const inviteExpires = asDate(invitation.expiresAt)
 
   const all: TagValues = {
     workshop_name: text(workshop.name),
@@ -145,6 +157,9 @@ export function tagValuesFor<K extends EmailKind>(
     message: text(base.message),
     signin_link: text((context as PortalSigninEmailContext).signinLink),
     portal_link: text((context as MessageEmailContext).portalLink),
+    invite_link: text(invitation.inviteLink),
+    role: text(invitation.role),
+    invite_expires: inviteExpires ? formatDate(inviteExpires) : undefined,
   }
 
   const values: TagValues = {}
@@ -240,6 +255,13 @@ export function sampleContextFor(kind: EmailKind, currentUser?: string | null): 
   switch (kind) {
     case 'portal_signin':
       return { ...base, signinLink: TAGS.signin_link.sample }
+    case 'team_invitation':
+      return {
+        ...base,
+        inviteLink: TAGS.invite_link.sample,
+        role: TAGS.role.sample,
+        expiresAt: new Date('2026-09-16T12:00:00Z'),
+      }
     case 'message':
       return { ...base, message: TAGS.message.sample, portalLink: TAGS.portal_link.sample }
     default:

@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Dokumente",
       "messages": "Nachrichten",
-      "portal": "Kundenportal"
+      "portal": "Kundenportal",
+      "team": "Team"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Portal-Anmeldung",
         "description": "Der Anmeldelink, den ein Kunde im Kundenportal anfordert."
+      },
+      "team_invitation": {
+        "name": "Team-Einladung",
+        "description": "Geht an eine Kollegin oder einen Kollegen, die Sie in die Werkstatt einladen, mit dem Link, der das Konto anlegt."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Fahrzeug",
       "document": "Dokument",
       "message": "Nachricht",
-      "portal": "Portal"
+      "portal": "Portal",
+      "team": "Team"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Portallink",
         "description": "Ein Link zum Kundenportal."
+      },
+      "invite_link": {
+        "label": "Einladungslink",
+        "description": "Der Link, der das Konto anlegt und dem Team beitritt. Er funktioniert nicht mehr, sobald die Einladung abläuft."
+      },
+      "role": {
+        "label": "Rolle",
+        "description": "Die Rolle, in die die Person eingeladen wird."
+      },
+      "invite_expires": {
+        "label": "Ablaufdatum",
+        "description": "Der letzte Tag, an dem der Einladungslink funktioniert."
       }
     },
     "optionalTag": "Nicht jede E-Mail hat einen Wert für dieses Tag. Bleibt es leer, werden die Worte darum herum bereinigt.",

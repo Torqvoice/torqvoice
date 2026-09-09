@@ -38,6 +38,15 @@
       "button": "Prisijungti",
       "linkFallback": "Jei mygtukas neveikia, nukopijuokite šią nuorodą į savo naršyklę:\n{signin_link}",
       "outro": "Ši nuoroda galioja 15 minučių. Jei jos neprašėte, galite nekreipti dėmesio į šį laišką."
+    },
+    "team_invitation": {
+      "name": "Kvietimas į komandą",
+      "subject": "Esate pakviesti prisijungti prie {workshop_name}",
+      "heading": "Prisijunkite prie {workshop_name}",
+      "intro": "Esate pakviesti prisijungti prie {workshop_name} sistemoje Torqvoice kaip {role}.\n\nPaspauskite mygtuką žemiau, kad susikurtumėte paskyrą ir prisijungtumėte prie komandos.",
+      "button": "Priimti kvietimą",
+      "linkFallback": "Jei mygtukas neveikia, nukopijuokite šią nuorodą į naršyklę:\n{invite_link}",
+      "outro": "Šis kvietimas galioja iki {invite_expires}. Jei jo nesitikėjote, galite nekreipti dėmesio į šį laišką."
     }
   },
   "attachmentNote": "Prie šio laiško pridėta PDF kopija.",

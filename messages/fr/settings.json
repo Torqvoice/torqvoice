@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Documents",
       "messages": "Messages",
-      "portal": "Portail client"
+      "portal": "Portail client",
+      "team": "Équipe"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Connexion au portail",
         "description": "Le lien de connexion qu'un client demande sur le portail client."
+      },
+      "team_invitation": {
+        "name": "Invitation dans l'équipe",
+        "description": "Envoyé à un collègue que vous invitez à rejoindre l'atelier, avec le lien qui crée son compte."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Véhicule",
       "document": "Document",
       "message": "Message",
-      "portal": "Portail"
+      "portal": "Portail",
+      "team": "Équipe"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Lien du portail",
         "description": "Un lien vers le portail client."
+      },
+      "invite_link": {
+        "label": "Lien d'invitation",
+        "description": "Le lien qui crée le compte et rejoint l'équipe. Il cesse de fonctionner à l'expiration de l'invitation."
+      },
+      "role": {
+        "label": "Rôle",
+        "description": "Le rôle auquel la personne est invitée."
+      },
+      "invite_expires": {
+        "label": "Date d'expiration",
+        "description": "Le dernier jour où le lien d'invitation fonctionne."
       }
     },
     "optionalTag": "Tous les e-mails n'ont pas de valeur pour cette balise. Quand elle est vide, les mots autour sont remis en ordre.",

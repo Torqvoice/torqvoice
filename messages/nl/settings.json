@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Documenten",
       "messages": "Berichten",
-      "portal": "Klantportaal"
+      "portal": "Klantportaal",
+      "team": "Team"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Portaalaanmelding",
         "description": "De aanmeldlink die een klant aanvraagt op het klantportaal."
+      },
+      "team_invitation": {
+        "name": "Teamuitnodiging",
+        "description": "Verstuurd naar een collega die u uitnodigt voor de werkplaats, met de link die het account aanmaakt."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Voertuig",
       "document": "Document",
       "message": "Bericht",
-      "portal": "Portaal"
+      "portal": "Portaal",
+      "team": "Team"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Portaallink",
         "description": "Een link naar het klantportaal."
+      },
+      "invite_link": {
+        "label": "Uitnodigingslink",
+        "description": "De link die het account aanmaakt en bij het team voegt. Werkt niet meer zodra de uitnodiging verloopt."
+      },
+      "role": {
+        "label": "Rol",
+        "description": "De rol waarvoor de persoon wordt uitgenodigd."
+      },
+      "invite_expires": {
+        "label": "Vervaldatum",
+        "description": "De laatste dag waarop de uitnodigingslink werkt."
       }
     },
     "optionalTag": "Niet elke e-mail heeft een waarde voor deze tag. Als hij leeg is, worden de woorden eromheen opgeruimd.",

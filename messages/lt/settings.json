@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Dokumentai",
       "messages": "Žinutės",
-      "portal": "Klientų portalas"
+      "portal": "Klientų portalas",
+      "team": "Komanda"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Prisijungimas prie portalo",
         "description": "Prisijungimo nuoroda, kurios klientas paprašo klientų portale."
+      },
+      "team_invitation": {
+        "name": "Kvietimas į komandą",
+        "description": "Siunčiamas kolegai, kurį kviečiate prisijungti prie dirbtuvių, su nuoroda paskyrai sukurti."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Transporto priemonė",
       "document": "Dokumentas",
       "message": "Žinutė",
-      "portal": "Portalas"
+      "portal": "Portalas",
+      "team": "Komanda"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Portalo nuoroda",
         "description": "Nuoroda į klientų portalą."
+      },
+      "invite_link": {
+        "label": "Kvietimo nuoroda",
+        "description": "Nuoroda, kuri sukuria paskyrą ir prijungia prie komandos. Nustoja veikti pasibaigus kvietimo galiojimui."
+      },
+      "role": {
+        "label": "Vaidmuo",
+        "description": "Vaidmuo, kuriam asmuo kviečiamas."
+      },
+      "invite_expires": {
+        "label": "Galiojimo data",
+        "description": "Paskutinė diena, kai kvietimo nuoroda veikia."
       }
     },
     "optionalTag": "Ne kiekvienas laiškas turi šios žymės reikšmę. Kai ji tuščia, aplinkiniai žodžiai sutvarkomi.",

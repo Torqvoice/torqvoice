@@ -38,6 +38,15 @@
       "button": "Anmelden",
       "linkFallback": "Falls die Schaltfläche nicht funktioniert, kopieren Sie diesen Link in Ihren Browser:\n{signin_link}",
       "outro": "Dieser Link ist 15 Minuten gültig. Falls Sie ihn nicht angefordert haben, können Sie diese E-Mail ignorieren."
+    },
+    "team_invitation": {
+      "name": "Team-Einladung",
+      "subject": "Sie sind eingeladen, {workshop_name} beizutreten",
+      "heading": "Werden Sie Teil von {workshop_name}",
+      "intro": "Sie wurden eingeladen, {workshop_name} auf Torqvoice als {role} beizutreten.\n\nKlicken Sie auf die Schaltfläche unten, um Ihr Konto zu erstellen und dem Team beizutreten.",
+      "button": "Einladung annehmen",
+      "linkFallback": "Wenn die Schaltfläche nicht funktioniert, kopieren Sie diesen Link in Ihren Browser:\n{invite_link}",
+      "outro": "Diese Einladung gilt bis {invite_expires}. Wenn Sie sie nicht erwartet haben, können Sie diese E-Mail ignorieren."
     }
   },
   "attachmentNote": "Eine PDF-Kopie ist dieser E-Mail beigefügt.",

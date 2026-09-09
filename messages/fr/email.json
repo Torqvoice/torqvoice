@@ -38,6 +38,15 @@
       "button": "Se connecter",
       "linkFallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :\n{signin_link}",
       "outro": "Ce lien expire dans 15 minutes. Si vous n'en avez pas fait la demande, vous pouvez ignorer cet e-mail."
+    },
+    "team_invitation": {
+      "name": "Invitation dans l'équipe",
+      "subject": "Vous êtes invité à rejoindre {workshop_name}",
+      "heading": "Rejoignez {workshop_name}",
+      "intro": "Vous avez été invité à rejoindre {workshop_name} sur Torqvoice en tant que {role}.\n\nUtilisez le bouton ci-dessous pour créer votre compte et rejoindre l'équipe.",
+      "button": "Accepter l'invitation",
+      "linkFallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :\n{invite_link}",
+      "outro": "Cette invitation est valable jusqu'au {invite_expires}. Si vous ne l'attendiez pas, vous pouvez ignorer cet e-mail."
     }
   },
   "attachmentNote": "Une copie PDF est jointe à cet e-mail.",

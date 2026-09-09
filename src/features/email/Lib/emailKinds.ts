@@ -15,13 +15,19 @@ export const EMAIL_KINDS = [
   'inspection_sent',
   'message',
   'portal_signin',
+  'team_invitation',
 ] as const
 
 export type EmailKind = (typeof EMAIL_KINDS)[number]
 
-export type EmailKindGroup = 'documents' | 'messages' | 'portal'
+export type EmailKindGroup = 'documents' | 'messages' | 'portal' | 'team'
 
-export const EMAIL_KIND_GROUPS: readonly EmailKindGroup[] = ['documents', 'messages', 'portal']
+export const EMAIL_KIND_GROUPS: readonly EmailKindGroup[] = [
+  'documents',
+  'messages',
+  'portal',
+  'team',
+]
 
 export interface EmailKindSpec {
   group: EmailKindGroup
@@ -90,6 +96,15 @@ export const EMAIL_KIND_SPECS: Record<EmailKind, EmailKindSpec> = {
     group: 'portal',
     tags: [...WORKSHOP, ...CUSTOMER, 'signin_link'],
     required: ['signin_link'],
+    hasSummary: false,
+    hasAttachment: false,
+  },
+  // Sent to a colleague, not a customer: the sender is the one inviting,
+  // and the link creates an account rather than opening a document.
+  team_invitation: {
+    group: 'team',
+    tags: [...WORKSHOP, 'invite_link', 'role', 'invite_expires'],
+    required: ['invite_link'],
     hasSummary: false,
     hasAttachment: false,
   },

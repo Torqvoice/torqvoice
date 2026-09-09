@@ -19,7 +19,14 @@
  *   failure a stranger's row deserves.
  */
 
-export type TagGroup = 'workshop' | 'customer' | 'vehicle' | 'document' | 'message' | 'portal'
+export type TagGroup =
+  | 'workshop'
+  | 'customer'
+  | 'vehicle'
+  | 'document'
+  | 'message'
+  | 'portal'
+  | 'team'
 
 export interface TagSpec {
   group: TagGroup
@@ -57,6 +64,10 @@ export const TAGS = {
 
   signin_link: { group: 'portal', sample: 'https://example.com/portal/sign-in/preview' },
   portal_link: { group: 'portal', sample: 'https://example.com/portal/preview', optional: true },
+
+  invite_link: { group: 'team', sample: 'https://example.com/auth/sign-up?invite=preview' },
+  role: { group: 'team', sample: 'Technician' },
+  invite_expires: { group: 'team', sample: '16 Sep 2026' },
 } as const satisfies Record<string, TagSpec>
 
 export type EmailTag = keyof typeof TAGS
@@ -68,6 +79,7 @@ export const TAG_GROUPS: readonly TagGroup[] = [
   'document',
   'message',
   'portal',
+  'team',
 ]
 
 /**

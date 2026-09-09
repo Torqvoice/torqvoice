@@ -38,6 +38,15 @@
       "button": "Zaloguj się",
       "linkFallback": "Jeśli przycisk nie działa, prosimy skopiować ten link do przeglądarki:\n{signin_link}",
       "outro": "Ten link wygasa za 15 minut. Jeśli nie prosili Państwo o niego, można zignorować tę wiadomość."
+    },
+    "team_invitation": {
+      "name": "Zaproszenie do zespołu",
+      "subject": "Zaproszenie do dołączenia do {workshop_name}",
+      "heading": "Dołącz do {workshop_name}",
+      "intro": "Zaproszono Cię do dołączenia do {workshop_name} w Torqvoice jako {role}.\n\nUżyj przycisku poniżej, aby utworzyć konto i dołączyć do zespołu.",
+      "button": "Przyjmij zaproszenie",
+      "linkFallback": "Jeśli przycisk nie działa, skopiuj ten link do przeglądarki:\n{invite_link}",
+      "outro": "Zaproszenie jest ważne do {invite_expires}. Jeśli się go nie spodziewasz, możesz zignorować tę wiadomość."
     }
   },
   "attachmentNote": "Kopia PDF jest załączona do tej wiadomości.",
