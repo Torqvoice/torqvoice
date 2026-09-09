@@ -244,7 +244,13 @@ describe('renderEmailHtml', () => {
     const marked = renderEmailHtml(spec, { marked: true })
     expect(sent).not.toContain('data-block')
     expect(marked).toContain('<style')
-    for (const block of spec.blocks) expect(marked).toContain(`data-block="${block.id}"`)
+    // The rule before a closing footer folds into the card's edge, so it is
+    // the one block that has no row of its own.
+    const closing = spec.blocks[spec.blocks.length - 1]?.type === 'contact_footer'
+    const drawn = spec.blocks.filter(
+      (block, i) => !(closing && i === spec.blocks.length - 2 && block.type === 'divider')
+    )
+    for (const block of drawn) expect(marked).toContain(`data-block="${block.id}"`)
   })
 
   it('keeps a typed line break as a break', () => {
@@ -486,8 +492,10 @@ describe('email logo', () => {
     const html = renderEmailHtml(
       buildEmailSpec(template, { ...invoiceInput, logoUrl: 'https://x/l.png' })
     )
-    expect(html).toContain('<td align="center" style="padding:0 0 20px 0;text-align:center;">')
-    expect(html).toContain('<td align="right" style="padding:6px 0 20px 0;text-align:right;">')
+    expect(html).toContain(
+      '<td align="center" style="padding:0 0 20px 0;text-align:center;border-bottom:1px solid #e6e8ec;">'
+    )
+    expect(html).toContain('<td align="right" style="padding:6px 0 24px 0;text-align:right;">')
   })
 
   it('draws the logo at the width the theme asks for', () => {
