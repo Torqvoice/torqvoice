@@ -21,6 +21,7 @@ import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { assembleInvoicePrint, invoiceNumberOf } from '../Lib/assembleInvoicePrint'
+import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { getAppBaseUrl } from '@/lib/app-url'
 
 export async function buildInvoicePdfBuffer(
@@ -46,16 +47,7 @@ export async function buildInvoicePdfBuffer(
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
-  // Generate Telegram QR if the telegram_qr section is visible in layout
-  let telegramQrDataUri: string | undefined
-  const telegramBotUsername = settingsMap['telegram.botUsername']
-  const telegramQrVisible = layoutConfig.sections.some(
-    (s: { id: string; visible: boolean }) => s.id === 'telegram_qr' && s.visible
-  )
-  if (telegramBotUsername && telegramQrVisible) {
-    const { generateQrDataUri } = await import('@/lib/qr')
-    telegramQrDataUri = await generateQrDataUri(`https://t.me/${telegramBotUsername}`, 200)
-  }
+  const telegramQr = await telegramQrForPrint(orgId, layoutConfig)
 
   const element = React.createElement(InvoicePDF, {
     data: assembly.data,
@@ -66,7 +58,7 @@ export async function buildInvoicePdfBuffer(
     template: assembly.template,
     torqvoiceLogoDataUri,
     portalUrl,
-    telegramQrDataUri,
+    telegramQrDataUri: telegramQr?.dataUri,
     telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
     labels,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
