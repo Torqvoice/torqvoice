@@ -24,6 +24,7 @@ export const SETTING_KEYS = {
   INVOICE_FOOTER_NOTE: 'invoice.footerNote',
   INVOICE_SHOW_BANK_ACCOUNT: 'invoice.showBankAccount',
   INVOICE_SHOW_ORG_NUMBER: 'invoice.showOrgNumber',
+  INVOICE_LINE_ITEMS_INCL_TAX: 'invoice.lineItemsInclTax',
   INVOICE_DUE_DAYS: 'invoice.dueDays',
   /** See src/lib/document-lock.ts for what these freeze and when. */
   INVOICE_LOCK_ENABLED: 'invoice.lockEnabled',
@@ -254,6 +255,7 @@ export const invoiceSettingsSchema = z.object({
   [SETTING_KEYS.INVOICE_FOOTER_NOTE]: z.string().optional(),
   [SETTING_KEYS.INVOICE_SHOW_BANK_ACCOUNT]: z.string().optional(),
   [SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER]: z.string().optional(),
+  [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: z.string().optional(),
   [SETTING_KEYS.INVOICE_DUE_DAYS]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_ENABLED]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: z.string().optional(),

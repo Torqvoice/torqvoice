@@ -118,6 +118,7 @@ export default async function PublicQuotePage({
             'workshop.serviceType',
             'workshop.taxLabel',
             'workshop.orgNumberLabel',
+            'invoice.lineItemsInclTax',
           ],
         },
       },
@@ -200,6 +201,7 @@ export default async function PublicQuotePage({
 
   const spec = buildQuotePrintSpec({
     data: quote,
+    lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     workshop,
     currencyCode,
     currencyFormat,

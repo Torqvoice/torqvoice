@@ -865,6 +865,8 @@
     "modeInclusive": "Brutto",
     "modeExclusiveExample": "Przyklad: 100 + {rate}% podatku = 100 + podatek doliczony.",
     "modeInclusiveExample": "Przyklad: 100 juz zawiera {rate}% podatku — część podatkowa jest obliczana wstecz.",
+    "lineItemsInclTaxLabel": "Pokazuj ceny pozycji z podatkiem na fakturach i wycenach",
+    "lineItemsInclTaxHint": "Zmienia tylko to, co jest drukowane na fakturach i wycenach, w tym ich PDF-y i kopie otwierane przez klientów z linku. Włączone: każda pozycja części i robocizny oraz suma częściowa są pokazywane z podatkiem, a wiersz podatku podaje, ile z tego stanowi podatek. Wyłączone: ceny bez podatku, z podatkiem doliczonym na dole. Zlecenia i wpisywane ceny pozostają bez zmian.",
     "labelLabel": "Etykieta podatku",
     "labelHint": "Własna nazwa wyświetlana na fakturach i ofertach (np. VAT, MwSt.). Pozostaw puste, aby użyć domyślnej zlokalizowanej nazwy.",
     "labelPlaceholder": "VAT",

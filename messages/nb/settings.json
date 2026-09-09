@@ -865,6 +865,8 @@
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Eksempel: 100 + {rate}% avgift = 100 + avgift på toppen.",
     "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs.",
+    "lineItemsInclTaxLabel": "Vis linjepriser inkludert mva på fakturaer og tilbud",
+    "lineItemsInclTaxHint": "Endrer bare det som skrives ut på fakturaer og tilbud, inkludert PDF-ene og kopiene kundene åpner fra en lenke. På: hver dele- og arbeidslinje og delsummen vises inkludert mva, og mva-linjen sier hvor mye av dette som er mva. Av: priser uten mva, med mva lagt til nederst. Arbeidsordrer og prisene du legger inn påvirkes ikke.",
     "labelLabel": "Avgiftsetikett",
     "labelHint": "Tilpasset navn vist på fakturaer og tilbud (f.eks. MVA, GST, MwSt.). La stå tom for å bruke standardverdien.",
     "labelPlaceholder": "MVA",

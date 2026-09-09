@@ -865,6 +865,8 @@
     "modeInclusive": "Inclusief",
     "modeExclusiveExample": "Voorbeeld: 100 + {rate}% belasting = 100 + belasting erbovenop.",
     "modeInclusiveExample": "Voorbeeld: 100 bevat al {rate}% belasting — het belastingdeel wordt teruggerekend.",
+    "lineItemsInclTaxLabel": "Regelprijzen inclusief btw tonen op facturen en offertes",
+    "lineItemsInclTaxHint": "Verandert alleen wat op facturen en offertes wordt afgedrukt, inclusief de PDF's en de kopieën die klanten via een link openen. Aan: elke onderdelen- en arbeidsregel en het subtotaal worden inclusief btw getoond, en de btw-regel vermeldt hoeveel daarvan btw is. Uit: prijzen exclusief btw, met de btw onderaan erbij. Werkorders en de prijzen die u invoert veranderen niet.",
     "labelLabel": "Belastinglabel",
     "labelHint": "Aangepaste naam getoond op facturen en offertes (bijv. Btw, VAT). Leeg laten voor de gelokaliseerde standaardwaarde.",
     "labelPlaceholder": "Btw",

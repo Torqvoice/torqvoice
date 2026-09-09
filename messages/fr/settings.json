@@ -865,6 +865,8 @@
     "modeInclusive": "Inclusif",
     "modeExclusiveExample": "Exemple : 100 + {rate}% de taxe = 100 + taxe en plus.",
     "modeInclusiveExample": "Exemple : 100 inclut déjà {rate}% de taxe — la part de taxe est calculee en sens inverse.",
+    "lineItemsInclTaxLabel": "Afficher les prix des lignes TTC sur les factures et les devis",
+    "lineItemsInclTaxHint": "Ne change que ce qui est imprimé sur les factures et les devis, y compris leurs PDF et les copies que les clients ouvrent depuis un lien. Activé : chaque ligne de pièces et de main-d'œuvre et le sous-total sont affichés TTC, et la ligne de taxe indique la part de taxe incluse. Désactivé : prix HT avec la taxe ajoutée en bas. Les ordres de travail et les prix que vous saisissez ne sont pas modifiés.",
     "labelLabel": "Libellé de taxe",
     "labelHint": "Nom personnalisé affiché sur les factures et devis (p. ex. TVA, GST). Laisser vide pour utiliser le libellé localisé par défaut.",
     "labelPlaceholder": "TVA",
