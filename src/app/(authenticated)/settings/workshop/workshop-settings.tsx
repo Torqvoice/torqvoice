@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
@@ -33,7 +34,7 @@ import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assignTechToUnassignedWorkOrders } from '@/features/workboard/Actions/technicianActions'
-import { Loader2, Ruler, Save, Wrench, Check, ChevronsUpDown, Plus } from 'lucide-react'
+import { Loader2, Percent, Ruler, Save, Wrench, Check, ChevronsUpDown, Plus } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -89,6 +90,12 @@ export function WorkshopSettings({
   )
   const [workDayEnd, setWorkDayEnd] = useState(
     settings[SETTING_KEYS.WORKBOARD_WORK_DAY_END] || '15:00'
+  )
+  const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
+    settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT] || '0'
+  )
+  const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
+    settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
 
   const selectedTechName = technicians.find((t) => t.id === defaultTechnicianId)?.name || ''
@@ -147,6 +154,8 @@ export function WorkshopSettings({
       [SETTING_KEYS.INVENTORY_DEFAULT_UNIT]: defaultUnit.trim(),
       [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
       [SETTING_KEYS.WORKBOARD_WORK_DAY_END]: workDayEnd,
+      [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
+      [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
     })
     setSaving(false)
     router.refresh()
@@ -312,6 +321,53 @@ export function WorkshopSettings({
                 value={workDayEnd}
                 onChange={(e) => setWorkDayEnd(e.target.value)}
               />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Pricing, not paperwork: the markup decides what a part costs the
+              customer, which is settled here on the job, long before an
+              invoice exists. */}
+          <div className="space-y-4">
+            <div className="flex flex-row items-center gap-3">
+              <Percent className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold">{t('workshop.partsMarkupTitle')}</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">{t('workshop.partsMarkupDescription')}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="defaultMarkupPercent">{t('workshop.defaultMarkupPercent')}</Label>
+                <Input
+                  id="defaultMarkupPercent"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  placeholder="0"
+                  value={defaultMarkupPercent}
+                  onChange={(e) => setDefaultMarkupPercent(e.target.value)}
+                  className="w-32"
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('workshop.defaultMarkupPercentHint')}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="markupAppliesToInventory"
+                  className="flex items-center justify-between gap-3"
+                >
+                  <span>{t('workshop.markupAppliesToInventory')}</span>
+                  <Switch
+                    id="markupAppliesToInventory"
+                    checked={markupAppliesToInventory}
+                    onCheckedChange={setMarkupAppliesToInventory}
+                  />
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('workshop.markupAppliesToInventoryHint')}
+                </p>
+              </div>
             </div>
           </div>
 
