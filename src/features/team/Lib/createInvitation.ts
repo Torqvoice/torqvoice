@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { escapeHtml } from '@/features/email/Render/escape'
 import type { InvitableRole } from './invitationRules'
 
 export type CreateInvitationInput = {
@@ -61,22 +62,48 @@ export async function createAndSendInvitation(input: CreateInvitationInput) {
     },
   })
 
-  const from = await getOrgFromAddress(organizationId)
+  try {
+    await sendInvitationMail({
+      organizationId,
+      organizationName,
+      email,
+      roleLabel: customRoleName || role,
+      token,
+    })
+  } catch {
+    // Roll back the invitation record so the admin can retry.
+    await db.teamInvitation.delete({ where: { id: invitation.id } })
+    throw new Error('Failed to send invitation email. Please try again.')
+  }
 
+  return invitation
+}
+
+export type InvitationMailInput = {
+  organizationId: string
+  organizationName: string
+  email: string
+  roleLabel: string
+  token: string
+}
+
+/** The sign-up link, mailed from the workshop's own provider. */
+export async function sendInvitationMail(input: InvitationMailInput): Promise<void> {
+  const { organizationId, organizationName, email, roleLabel, token } = input
+  const from = await getOrgFromAddress(organizationId)
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const signupUrl = `${baseUrl}/auth/sign-up?invite=${token}`
+  const safeOrg = escapeHtml(organizationName)
+  const safeRole = escapeHtml(roleLabel)
 
-  const roleLabel = customRoleName || role
-
-  try {
-    await sendOrgMail(organizationId, {
-      from,
-      to: email,
-      subject: `You've been invited to join ${organizationName} on Torqvoice`,
-      html: `
+  await sendOrgMail(organizationId, {
+    from,
+    to: email,
+    subject: `You've been invited to join ${organizationName} on Torqvoice`,
+    html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
             <h2>Team Invitation</h2>
-            <p>You've been invited to join <strong>${organizationName}</strong> on Torqvoice as a <strong>${roleLabel}</strong>.</p>
+            <p>You've been invited to join <strong>${safeOrg}</strong> on Torqvoice as a <strong>${safeRole}</strong>.</p>
             <p>Click the button below to create your account and join the team:</p>
             <div style="margin: 24px 0;">
               <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
@@ -91,12 +118,5 @@ export async function createAndSendInvitation(input: CreateInvitationInput) {
             </p>
           </div>
         `,
-    })
-  } catch {
-    // Roll back the invitation record so the admin can retry.
-    await db.teamInvitation.delete({ where: { id: invitation.id } })
-    throw new Error('Failed to send invitation email. Please try again.')
-  }
-
-  return invitation
+  })
 }
