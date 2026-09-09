@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { withAuth } from '@/lib/with-auth'
 import { quoteAttachmentSchema } from '../Schema/quoteSchema'
 import { revalidatePath } from 'next/cache'
@@ -22,6 +23,7 @@ export async function addQuoteAttachment(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
       const data = addAttachmentSchema.parse(input)
+      assertOwnUploads(data, organizationId)
 
       const quote = await db.quote.findFirst({
         where: {

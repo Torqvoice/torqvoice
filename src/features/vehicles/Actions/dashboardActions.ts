@@ -43,7 +43,7 @@ export async function getDashboardStats() {
         // minQuantity wins, falling back to the org-wide default when unset.
         db.$queryRaw<{ count: bigint }[]>`
         SELECT COUNT(*) AS count
-        FROM "inventory_parts" p
+        FROM "public"."inventory_parts" p
         WHERE p."organizationId" = ${organizationId}
           AND p."isArchived" = false
           AND COALESCE(NULLIF(p."minQuantity", 0), ${lowStockDefault}) > 0

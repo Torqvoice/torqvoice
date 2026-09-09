@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
@@ -15,6 +17,9 @@ import path from 'path'
 
 // Zip magic bytes: PK\x03\x04
 const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04]
+
+/** Larger than any workshop's backup by a wide margin, and small enough to hold in memory. */
+const MAX_BACKUP_UPLOAD_BYTES = 200 * 1024 * 1024
 
 function isZipBuffer(buffer: ArrayBuffer): boolean {
   const view = new Uint8Array(buffer)
@@ -38,10 +43,12 @@ async function parseBackup(
   }
 
   // For any other content type, read as binary and detect format
+  assertContentLength(request, MAX_BACKUP_UPLOAD_BYTES)
   const buffer = await request.arrayBuffer()
 
   if (isZipBuffer(buffer)) {
     const zip = await JSZip.loadAsync(buffer)
+    assertZipWithinLimits(zip.files)
     const dataJsonFile = zip.file('data.json')
     if (!dataJsonFile) {
       throw new Error('Zip archive does not contain data.json')
@@ -366,6 +373,8 @@ function rewriteFileUrl(url: string | null | undefined, newOrgId: string): strin
 }
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   if (isDemoMode) {
     return NextResponse.json({ error: 'Backup import is disabled on the demo.' }, { status: 403 })
   }
@@ -374,6 +383,10 @@ export async function POST(request: NextRequest) {
 
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // Reading or replacing the whole workshop is an owner's or admin's call.
+  if (!ctx.isAdmin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   let backup: BackupData
@@ -1529,7 +1542,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[backup/import] Error:', error)
-    const message = error instanceof Error ? error.message : 'Import failed'
+    // The detail stays in the log; a Prisma or parser message is not for the browser.
+    console.error('[backup import]', error)
+    const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

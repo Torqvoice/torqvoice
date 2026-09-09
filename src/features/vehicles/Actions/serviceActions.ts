@@ -1068,11 +1068,10 @@ export async function deleteServiceRecord(recordId: string) {
 
       // Clean up attachment files from disk
       for (const attachment of record.attachments) {
-        const filePath = resolveUploadPath(attachment.fileUrl)
         try {
-          await unlink(filePath)
+          await unlink(resolveUploadPath(attachment.fileUrl))
         } catch (err) {
-          console.warn(`[deleteServiceRecord] Failed to delete file "${filePath}":`, err)
+          console.warn(`[deleteServiceRecord] Failed to delete file "${attachment.fileUrl}":`, err)
         }
       }
 
@@ -1130,11 +1129,13 @@ export async function deleteServiceAttachment(attachmentId: string) {
       // the tire set's own uploads, so only the reference goes and the set
       // keeps its file.
       if (attachment.category !== 'tire_hotel') {
-        const filePath = resolveUploadPath(attachment.fileUrl)
         try {
-          await unlink(filePath)
+          await unlink(resolveUploadPath(attachment.fileUrl))
         } catch (err) {
-          console.warn(`[deleteServiceAttachment] Failed to delete file "${filePath}":`, err)
+          console.warn(
+            `[deleteServiceAttachment] Failed to delete file "${attachment.fileUrl}":`,
+            err
+          )
         }
       }
 

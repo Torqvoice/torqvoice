@@ -124,6 +124,15 @@ const SMS: MessagingProvider[] = [
     credentials: [
       text('apiKey', ORG_SMS_KEYS.SMS_VONAGE_API_KEY),
       secret('apiSecret', ORG_SMS_KEYS.SMS_VONAGE_API_SECRET),
+      // Vonage signs every webhook with this; without it the inbound route
+      // can only check the secret in the URL.
+      {
+        key: 'signatureSecret',
+        label: 'signatureSecret',
+        type: 'password',
+        required: false,
+        help: 'signatureSecretHelp',
+      },
       secret('webhookSecret', ORG_SMS_KEYS.SMS_WEBHOOK_SECRET, {
         required: false,
         generated: true,
@@ -141,6 +150,15 @@ const SMS: MessagingProvider[] = [
     capabilities: ['sms.send', 'sms.receive'],
     credentials: [
       secret('apiKey', ORG_SMS_KEYS.SMS_TELNYX_API_KEY),
+      // Telnyx signs every webhook with the account's ed25519 key; without
+      // it the inbound route can only check the secret in the URL.
+      {
+        key: 'webhookPublicKey',
+        label: 'webhookPublicKey',
+        type: 'text',
+        required: false,
+        help: 'webhookPublicKeyHelp',
+      },
       secret('webhookSecret', ORG_SMS_KEYS.SMS_WEBHOOK_SECRET, {
         required: false,
         generated: true,
@@ -222,7 +240,10 @@ const WHATSAPP: MessagingProvider[] = [
       }),
       secret('accessToken', whatsappCredentialKey('meta', 'accessToken')),
       text('verifyToken', whatsappCredentialKey('meta', 'verifyToken')),
-      secret('appSecret', whatsappCredentialKey('meta', 'appSecret'), { required: false }),
+      secret('appSecret', whatsappCredentialKey('meta', 'appSecret'), {
+        required: false,
+        help: 'appSecretHelp',
+      }),
       text('apiVersion', whatsappCredentialKey('meta', 'apiVersion'), { required: false }),
     ],
     settings: [

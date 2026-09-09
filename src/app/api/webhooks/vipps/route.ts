@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paymentProviderFor } from '@/features/integrations/Lib/payments'
+import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
 
 export async function POST(request: Request) {
   try {
@@ -55,6 +56,16 @@ async function processVippsPayment(reference: string, orgId: string, serviceReco
 
   if (!result || !result.paid) {
     return NextResponse.json({ received: true, status: 'not_paid' })
+  }
+
+  // The payment Vipps verified must be the one created for this record. The
+  // metadata in the callback body is the caller's claim; what Vipps returns
+  // with the payment is the truth.
+  if (!paymentMatchesRecord(result, { serviceRecordId, organizationId: orgId })) {
+    console.warn(
+      `[Vipps Webhook] Payment ${reference} was not created for record ${serviceRecordId} of organization ${orgId}; ignoring`
+    )
+    return NextResponse.json({ error: 'Payment does not belong to this record' }, { status: 400 })
   }
 
   // Verify service record exists and belongs to this org

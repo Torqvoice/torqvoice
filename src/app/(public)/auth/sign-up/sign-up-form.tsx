@@ -73,8 +73,11 @@ export function SignUpForm({
       } else if (inviteToken) {
         const acceptResult = await acceptInvitation({ token: inviteToken })
         if (acceptResult.success) {
-          // Invited users have a known email — skip verification, go straight to dashboard
-          router.push(safeRedirectPath(redirectTo))
+          // They are on the team now. Whether they verify their address first
+          // is the same question as for anyone else who just signed up.
+          router.push(
+            emailVerificationRequired ? '/auth/verify-email' : safeRedirectPath(redirectTo)
+          )
           router.refresh()
         } else {
           setError(acceptResult.error || t('errors.invitationFailed'))

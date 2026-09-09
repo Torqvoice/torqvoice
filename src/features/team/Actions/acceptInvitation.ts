@@ -51,7 +51,12 @@ export async function acceptInvitation(input: unknown) {
       return { success: true, data: { accepted: true } }
     }
 
-    // Create membership, mark invitation as accepted, and verify email
+    // Create the membership and mark the invitation as accepted.
+    //
+    // This used to set `emailVerified` on the user as well. An invitation only
+    // proves that the inviter typed this address; it says nothing about who
+    // controls the inbox. Verification stays the job of the verification mail,
+    // which sign-up sends to invited addresses like any other.
     await db.$transaction([
       db.organizationMember.create({
         data: {
@@ -64,10 +69,6 @@ export async function acceptInvitation(input: unknown) {
       db.teamInvitation.update({
         where: { id: invitation.id },
         data: { status: 'accepted' },
-      }),
-      db.user.update({
-        where: { id: session.user.id },
-        data: { emailVerified: true },
       }),
     ])
 
