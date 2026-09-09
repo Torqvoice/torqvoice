@@ -601,7 +601,7 @@
     "sectionSending": "Wysyłka",
     "attachPdfLabel": "Dołączaj PDF do wiadomości e-mail",
     "attachPdfHint": "Domyślne ustawienie dla każdej faktury, oferty i przeglądu wysyłanych e-mailem. Włączone: klient dostaje PDF w załączniku. Wyłączone: dostaje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył, więc możesz przypomnieć się tym, którzy jeszcze nie zajrzeli. Dla pojedynczej wysyłki zmienisz to w oknie udostępniania.",
-    "sectionLinePrices": "Ceny pozycji",
+    "sectionLinePrices": "Ceny pozycji na fakturach i wycenach",
     "lineItemsInclTaxLabel": "Pokazuj ceny pozycji z podatkiem",
     "lineItemsInclTaxHint": "Każda pozycja części i robocizny jest drukowana z podatkiem, a po niej następuje suma częściowa; wiersz podatku podaje wtedy, ile z tego stanowi podatek. Wyłączone drukuje ceny bez podatku i dolicza podatek na dole."
   },

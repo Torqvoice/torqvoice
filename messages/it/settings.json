@@ -601,7 +601,7 @@
     "sectionSending": "Invio",
     "attachPdfLabel": "Allega il PDF alle email",
     "attachPdfHint": "L'impostazione predefinita per ogni fattura, preventivo e controllo che invii via email. Attivo: il cliente riceve il PDF in allegato. Disattivo: riceve invece un link al documento e il contatore delle visualizzazioni indica quando lo ha aperto, così puoi sollecitare quelli che nessuno ha guardato. Puoi cambiarlo per un singolo invio nella finestra di condivisione.",
-    "sectionLinePrices": "Prezzi delle righe",
+    "sectionLinePrices": "Prezzi delle righe su fatture e preventivi",
     "lineItemsInclTaxLabel": "Mostra i prezzi delle righe con imposta inclusa",
     "lineItemsInclTaxHint": "Ogni riga di ricambi e manodopera viene stampata con l'imposta inclusa e segue il subtotale; la riga dell'imposta indica poi quanta parte è imposta. Disattivo stampa i prezzi al netto dell'imposta e aggiunge l'imposta in fondo."
   },

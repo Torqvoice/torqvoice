@@ -601,7 +601,7 @@
     "sectionSending": "Utsending",
     "attachPdfLabel": "Legg ved PDF i e-post",
     "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen.",
-    "sectionLinePrices": "Linjepriser",
+    "sectionLinePrices": "Linjepriser på fakturaer og tilbud",
     "lineItemsInclTaxLabel": "Vis linjepriser inkludert avgift",
     "lineItemsInclTaxHint": "Hver del- og arbeidslinje skrives ut med avgift inkludert, og subtotalen følger; avgiftsraden viser så hvor mye av det som er avgift. Av skriver ut prisene før avgift og legger til avgiften nederst."
   },

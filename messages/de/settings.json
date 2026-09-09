@@ -601,7 +601,7 @@
     "sectionSending": "Versand",
     "attachPdfLabel": "PDF an E-Mails anhängen",
     "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern.",
-    "sectionLinePrices": "Zeilenpreise",
+    "sectionLinePrices": "Zeilenpreise auf Rechnungen und Angeboten",
     "lineItemsInclTaxLabel": "Zeilenpreise inklusive Steuer anzeigen",
     "lineItemsInclTaxHint": "Jede Teile- und Arbeitszeile wird mit enthaltener Steuer gedruckt, darauf folgt die Zwischensumme; die Steuerzeile gibt dann an, wie viel davon Steuer ist. Aus druckt die Preise vor Steuer und rechnet die Steuer unten hinzu."
   },

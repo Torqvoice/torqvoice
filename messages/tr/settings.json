@@ -601,7 +601,7 @@
     "sectionSending": "Gönderim",
     "attachPdfLabel": "E-postalara PDF ekle",
     "attachPdfHint": "E-postayla gönderdiğiniz her fatura, teklif ve kontrol için varsayılan. Açık: müşteri PDF'i ek olarak alır. Kapalı: bunun yerine belgeye bir bağlantı alır ve görüntülenme sayacı ne zaman açtığını gösterir, böylece kimsenin bakmadıklarını takip edebilirsiniz. Tek bir gönderim için bunu paylaşım penceresinde değiştirebilirsiniz.",
-    "sectionLinePrices": "Satır fiyatları",
+    "sectionLinePrices": "Fatura ve tekliflerde satır fiyatları",
     "lineItemsInclTaxLabel": "Satır fiyatlarını vergi dahil göster",
     "lineItemsInclTaxHint": "Her parça ve işçilik satırı vergi dahil yazdırılır ve ardından ara toplam gelir; vergi satırı da bunun ne kadarının vergi olduğunu gösterir. Kapalı, fiyatları vergi hariç yazdırır ve vergiyi en alta ekler."
   },

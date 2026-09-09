@@ -601,7 +601,7 @@
     "sectionSending": "Envio",
     "attachPdfLabel": "Anexar o PDF aos e-mails",
     "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento.",
-    "sectionLinePrices": "Preços das linhas",
+    "sectionLinePrices": "Preços das linhas em faturas e orçamentos",
     "lineItemsInclTaxLabel": "Mostrar preços das linhas com imposto incluso",
     "lineItemsInclTaxHint": "Cada linha de peças e mão de obra é impressa com o imposto incluso, seguida do subtotal; a linha de imposto então informa quanto disso é imposto. Desligado imprime os preços sem imposto e soma o imposto no final."
   },
