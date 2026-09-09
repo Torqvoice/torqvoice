@@ -25,7 +25,16 @@ export const UPLOAD_CATEGORIES = [
 export type UploadCategory = (typeof UPLOAD_CATEGORIES)[number]
 
 const UPLOAD_URL =
-  /^\/api\/protected\/files\/([A-Za-z0-9_-]{1,64})\/([a-z-]{1,32})\/([A-Za-z0-9][A-Za-z0-9._-]{0,200})$/
+  /^\/api\/(?:protected\/)?files\/([A-Za-z0-9_-]{1,64})\/([a-z-]{1,32})\/([A-Za-z0-9][A-Za-z0-9._-]{0,200})$/
+
+/**
+ * The shape files had before uploads were served per organisation: a
+ * category folder under public/uploads and one file name. Nothing left on
+ * disk is written this way any more, but records that still carry one are
+ * sent back whole when their owner edits them, so the shape stays storable.
+ * There is no organisation in it to check; the path resolver contains it.
+ */
+const LEGACY_UPLOAD_URL = /^\/uploads\/([a-z-]{1,32})\/([A-Za-z0-9][A-Za-z0-9._-]{0,200})$/
 
 export interface UploadUrlParts {
   organizationId: string
@@ -42,6 +51,29 @@ export function parseUploadUrl(value: string | null | undefined): UploadUrlParts
     return null
   }
   return { organizationId, category, file }
+}
+
+/** Whether a value is a file of ours in any of the shapes we have stored. */
+export function isStoredUploadUrl(value: string | null | undefined): boolean {
+  if (!value) return false
+  if (parseUploadUrl(value)) return true
+  const legacy = LEGACY_UPLOAD_URL.exec(value)
+  return !!legacy && !legacy[2].includes('..')
+}
+
+/**
+ * Whether a value is a picture on another site: the address a supplier's
+ * catalogue gives for a part. It never reaches the disk, only an <img>, so
+ * the only thing to refuse is a scheme that could run something.
+ */
+export function isRemoteImageUrl(value: string | null | undefined): boolean {
+  if (!value || value.length > 2000) return false
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' || url.protocol === 'http:'
+  } catch {
+    return false
+  }
 }
 
 /** Whether a stored URL names one of this organisation's own uploads. */
@@ -68,15 +100,25 @@ export function assertOwnUploadUrl(
 export const uploadUrlSchema = z
   .string()
   .max(300)
-  .refine((value) => parseUploadUrl(value) !== null, 'Not an upload of this workshop')
+  .refine((value) => isStoredUploadUrl(value), 'Not an upload of this workshop')
 
 /** The same, but an empty string is allowed for "no file". */
 export const optionalUploadUrlSchema = z
   .string()
   .max(300)
+  .refine((value) => value === '' || isStoredUploadUrl(value), 'Not an upload of this workshop')
+
+/**
+ * A picture that may be one of our uploads or live on another site. Part
+ * images are the case: "fetch from supplier" keeps the catalogue's own
+ * address rather than copying the file, and the record is saved with it.
+ */
+export const imageUrlSchema = z
+  .string()
+  .max(2000)
   .refine(
-    (value) => value === '' || parseUploadUrl(value) !== null,
-    'Not an upload of this workshop'
+    (value) => isStoredUploadUrl(value) || isRemoteImageUrl(value),
+    'Not an upload of this workshop or a web address'
   )
 
 const UPLOAD_PREFIXES = ['/api/protected/files/', '/api/files/']

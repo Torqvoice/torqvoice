@@ -4,6 +4,7 @@ import { resolveUploadPath, safeUploadPath, UploadPathError } from '@/lib/resolv
 import {
   assertOwnUploads,
   extensionForType,
+  imageUrlSchema,
   isOwnUploadUrl,
   optionalUploadUrlSchema,
   parseUploadUrl,
@@ -12,6 +13,8 @@ import {
 } from '@/lib/upload-url'
 import { createVehicleSchema } from '@/features/vehicles/Schema/vehicleSchema'
 import { quoteAttachmentSchema } from '@/features/quotes/Schema/quoteSchema'
+import { createInventoryPartSchema } from '@/features/inventory/Schema/inventorySchema'
+import { serviceAttachmentSchema } from '@/features/vehicles/Schema/serviceSchema'
 
 const root = path.join(process.cwd(), 'data', 'uploads')
 
@@ -95,6 +98,44 @@ describe('upload schemas', () => {
     expect(uploadUrlSchema.safeParse('/api/protected/files/../../.env').success).toBe(false)
     expect(uploadUrlSchema.safeParse('').success).toBe(false)
     expect(optionalUploadUrlSchema.safeParse('').success).toBe(true)
+  })
+
+  it('keep accepting the shapes older records were stored with', () => {
+    // A service edit sends every attachment in the category back, including
+    // ones stored before uploads were served per organisation.
+    expect(
+      serviceAttachmentSchema.shape.fileUrl.safeParse('/api/files/a/services/s.pdf').success
+    ).toBe(true)
+    expect(serviceAttachmentSchema.shape.fileUrl.safeParse('/uploads/services/s.pdf').success).toBe(
+      true
+    )
+    expect(uploadUrlSchema.safeParse('/uploads/../.env').success).toBe(false)
+    expect(uploadUrlSchema.safeParse('/uploads/services/../../.env').success).toBe(false)
+    expect(uploadUrlSchema.safeParse('/uploads/services/deep/s.pdf').success).toBe(false)
+  })
+
+  it('let a part picture be a supplier link as well as an upload', () => {
+    const gallery = createInventoryPartSchema.shape.gallery
+    const supplier = 'https://productimages.example.com/v1/Image/product/xlarge/2000035839/2'
+    expect(gallery.safeParse([{ url: supplier }]).success).toBe(true)
+    expect(gallery.safeParse([{ url: 'http://cdn.example.net/thumb?id=1&m=0' }]).success).toBe(true)
+    expect(gallery.safeParse([{ url: '/api/protected/files/a/inventory/p.jpg' }]).success).toBe(
+      true
+    )
+    for (const bad of [
+      'javascript:alert(1)',
+      'data:image/png;base64,AAAA',
+      'file:///etc/passwd',
+      '/api/protected/files/a/inventory/../../.env',
+      'not a url',
+    ]) {
+      expect(imageUrlSchema.safeParse(bad).success, bad).toBe(false)
+    }
+    // Whose upload it is stays a separate question, answered after parsing.
+    expect(() =>
+      assertOwnUploads({ gallery: [{ url: '/api/protected/files/b/inventory/p.jpg' }] }, 'a')
+    ).toThrow(/not an upload of this workshop/)
+    expect(() => assertOwnUploads({ gallery: [{ url: supplier }] }, 'a')).not.toThrow()
   })
 
   it('reach the vehicle image and the quote attachment', () => {
