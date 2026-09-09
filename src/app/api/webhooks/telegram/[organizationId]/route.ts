@@ -98,7 +98,7 @@ export async function POST(
       entityId: message.id,
       entityUrl: customer
         ? `/messages?tab=telegram&customerId=${customer.id}`
-        : '/settings/providers?tab=telegram',
+        : '/settings/integrations',
     })
 
     return NextResponse.json({ ok: true })

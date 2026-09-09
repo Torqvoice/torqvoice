@@ -27,7 +27,6 @@ import {
   Key,
   Layout,
   Mail,
-  MessagesSquare,
   Percent,
   UserCog,
   UsersRound,
@@ -82,7 +81,6 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: 'communications',
     items: [
-      { key: 'providers', href: '/settings/providers', icon: MessagesSquare },
       { key: 'emailTemplates', href: '/settings/email-templates', icon: Mail },
       {
         key: 'customerPortal',

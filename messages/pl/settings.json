@@ -131,10 +131,6 @@
         "title": "Hotel opon",
         "description": "Sezonowe przechowywanie opon"
       },
-      "providers": {
-        "title": "Dostawcy",
-        "description": "E-mail, SMS, WhatsApp i Telegram"
-      },
       "inspectionReminders": {
         "title": "Przypomnienia o przeglądzie",
         "description": "Link do rezerwacji, czas trwania i wyprzedzenie"
@@ -1744,43 +1740,6 @@
     "prepTitle": "Ceny przygotowania",
     "prepHint": "Ile kosztuje każdy rodzaj przygotowania. Puste pole oznacza, że nigdy nie jest fakturowane, co pasuje warsztatom mającym mycie w cenie przechowywania. Wycenione trafiają automatycznie na wycenę i zlecenie.",
     "prepNotCharged": "nie naliczane"
-  },
-  "providers": {
-    "tabs": {
-      "email": "E-mail",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Ustawienia e-mail",
-        "description": "Skonfiguruj wysyłkę SMTP, aby faktury, oferty i powiadomienia wychodziły prosto z warsztatu."
-      },
-      "sms": {
-        "feature": "Wiadomości SMS",
-        "description": "Wysyłaj i odbieraj SMS-y z klientami bezpośrednio w Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "Wiadomości WhatsApp",
-        "description": "Wysyłaj i odbieraj wiadomości WhatsApp, w tym zdjęcia części, bezpośrednio w Torqvoice."
-      },
-      "telegram": {
-        "feature": "Wiadomości Telegram",
-        "description": "Wysyłaj i odbieraj wiadomości Telegram z klientami bezpośrednio w Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
   },
   "designer": {
     "invoice": "Faktura",
