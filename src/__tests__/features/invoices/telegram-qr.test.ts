@@ -66,7 +66,7 @@ describe('telegramQrForPrint', () => {
   })
 
   it('never lets a broken integration cost the document', async () => {
-    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => undefined)
     lookup = async () => {
       throw new Error('catalogue down')
     }
