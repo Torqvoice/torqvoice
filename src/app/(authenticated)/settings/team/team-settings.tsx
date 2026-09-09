@@ -23,6 +23,7 @@ import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { createOrganization, removeMember } from '@/features/team/Actions/teamActions'
 import { cancelInvitation } from '@/features/team/Actions/cancelInvitation'
+import { resendInvitation } from '@/features/team/Actions/resendInvitation'
 import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
@@ -58,11 +59,11 @@ function labelKey(subject: string, action: string): string {
   return ACTION_LABEL_OVERRIDES[`${subject}:${action}`] ?? action
 }
 import {
-  Copy,
   Crown,
   Loader2,
   LogOut,
   Mail,
+  RefreshCw,
   Pencil,
   Plus,
   Shield,
@@ -94,7 +95,6 @@ interface PendingInvitation {
   email: string
   role: string
   roleId: string | null
-  token: string
   customRole: { name: string } | null
   createdAt: Date
   expiresAt: Date
@@ -417,6 +417,21 @@ export function TeamSettings({
       modal.open('error', 'Error', result.error || t('team.failedCreateOrg'))
     }
     setLoading(false)
+  }
+
+  const [resendingId, setResendingId] = useState<string | null>(null)
+  const handleResendInvitation = async (invitation: PendingInvitation) => {
+    setResendingId(invitation.id)
+    try {
+      const result = await resendInvitation({ invitationId: invitation.id })
+      if (!result.success) throw new Error(result.error)
+      toast.success(t('team.invitationResent', { email: invitation.email }))
+      router.refresh()
+    } catch {
+      toast.error(t('team.failedResendInvitation'))
+    } finally {
+      setResendingId(null)
+    }
   }
 
   const handleCancelInvitation = async (invitation: PendingInvitation) => {
@@ -752,20 +767,23 @@ export function TeamSettings({
                   >
                     {t('team.pending')}
                   </Badge>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground"
-                    title={t('team.copyInviteLink')}
-                    aria-label={t('team.copyInviteLink')}
-                    onClick={() => {
-                      const url = `${window.location.origin}/auth/sign-up?invite=${invitation.token}`
-                      navigator.clipboard.writeText(url)
-                      toast.success(t('team.inviteLinkCopied'))
-                    }}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                        disabled={resendingId === invitation.id}
+                        onClick={() => handleResendInvitation(invitation)}
+                        aria-label={t('team.resendInvitation')}
+                      >
+                        <RefreshCw
+                          className={`h-3.5 w-3.5 ${resendingId === invitation.id ? 'animate-spin' : ''}`}
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t('team.resendInvitation')}</TooltipContent>
+                  </Tooltip>
                   <Button
                     variant="ghost"
                     size="icon"

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { extensionForType } from '@/lib/upload-url'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { writeFile, mkdir, unlink, stat } from 'fs/promises'
 import path from 'path'
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
   }
 
   const isVideo = VIDEO_TYPES.includes(file.type)
-  const ext = isVideo ? 'mp4' : file.name.split('.').pop() || 'bin'
+  const ext = isVideo ? 'mp4' : extensionForType(file.type)
   const filename = `${crypto.randomUUID()}.${ext}`
   const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'services')
 

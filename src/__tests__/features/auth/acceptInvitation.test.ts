@@ -134,22 +134,19 @@ describe('acceptInvitation', () => {
     expect(mockTransaction).toHaveBeenCalled()
   })
 
-  it('sets emailVerified to true in the transaction', async () => {
+  it('never marks the address verified on accept', async () => {
+    // The invitation only proves the inviter typed the address. Verification
+    // comes from the mail the sign-up sends, like it does for everyone else.
     mockGetSession.mockResolvedValue(SESSION as any)
     mockFindInvitation.mockResolvedValue(VALID_INVITATION as any)
     mockFindMembership.mockResolvedValue(null)
-    mockTransaction.mockResolvedValue([{}, {}, {}] as any)
+    mockTransaction.mockResolvedValue([{}, {}] as any)
 
     await acceptInvitation({ token: 'tok-abc' })
 
-    // The transaction should be called with an array containing the user.update call
     const transactionArg = mockTransaction.mock.calls[0][0]
-    expect(transactionArg).toHaveLength(3)
-    // Verify db.user.update was called with emailVerified: true
-    expect(db.user.update).toHaveBeenCalledWith({
-      where: { id: SESSION.user.id },
-      data: { emailVerified: true },
-    })
+    expect(transactionArg).toHaveLength(2)
+    expect(db.user.update).not.toHaveBeenCalled()
   })
 
   it('returns error when transaction throws', async () => {

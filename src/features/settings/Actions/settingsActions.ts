@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import type { SettingKey } from '../Schema/settingsSchema'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuardSettingKey } from '@/lib/demo'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { armFeatureHints } from '../Lib/armFeatureHints'
 
 export async function getSetting(key: SettingKey) {
@@ -45,6 +46,7 @@ export async function setSetting(key: SettingKey, value: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
       demoGuardSettingKey(key)
+      assertOwnUploads(value, organizationId)
       await armFeatureHints(db, organizationId, userId, { [key]: value })
       const setting = await db.appSetting.upsert({
         where: { organizationId_key: { organizationId, key } },
@@ -67,6 +69,7 @@ export async function setSettings(entries: Record<string, string>) {
   return withAuth(
     async ({ userId, organizationId }) => {
       for (const key of Object.keys(entries)) demoGuardSettingKey(key)
+      assertOwnUploads(entries, organizationId)
       await armFeatureHints(db, organizationId, userId, entries)
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>

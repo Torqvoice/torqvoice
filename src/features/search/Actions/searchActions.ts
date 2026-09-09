@@ -105,7 +105,7 @@ export async function globalSearch(query: string) {
                 }[]
               >`
             SELECT id, name, email, phone, company
-            FROM customers
+            FROM "public"."customers"
             WHERE "organizationId" = ${organizationId}
               AND REGEXP_REPLACE(phone, '[^0-9]', '', 'g') LIKE ${'%' + digitsOnly + '%'}
             LIMIT 10

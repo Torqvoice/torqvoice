@@ -824,7 +824,7 @@ export async function getIntegrationActivity(connectorId: string) {
                  count(*) FILTER (WHERE status = 'done')::int AS done,
                  count(*) FILTER (WHERE status = 'failed')::int AS failed,
                  count(*) FILTER (WHERE status = 'dead')::int AS dead
-          FROM integration_jobs
+          FROM "public"."integration_jobs"
           WHERE "connectionId" = ${row.id}
           GROUP BY 1, 2, 3
           ORDER BY 4 DESC
