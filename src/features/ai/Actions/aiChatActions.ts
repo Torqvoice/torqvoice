@@ -6,6 +6,7 @@ import { getAiConfig, createClient, completionTuning } from '@/lib/ai'
 import { getLocale } from 'next-intl/server'
 import { localeNames, type Locale } from '@/i18n/config'
 import { workshopTools, executeTool, DB_SCHEMA } from '../tools/workshop-tools'
+import { aiChatInputSchema } from '../Schema/aiChatSchema'
 import { db } from '@/lib/db'
 import type OpenAI from 'openai'
 
@@ -118,9 +119,25 @@ export async function deleteAiChat(chatId: string) {
 
 // ─── Chat with AI ───────────────────────────────────────────────────────────
 
-export async function aiChat(chatId: string | null, messages: ChatMessage[]) {
+export async function aiChat(rawChatId: string | null, rawMessages: ChatMessage[]) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      const { chatId, messages } = aiChatInputSchema.parse({
+        chatId: rawChatId,
+        messages: rawMessages,
+      })
+
+      // A chat id from the client is only honoured when the chat belongs to
+      // this user in this workshop; otherwise messages could be appended to
+      // anyone's chat. Checked before any call or write below.
+      if (chatId) {
+        const owned = await db.aiChat.findFirst({
+          where: { id: chatId, userId, organizationId },
+          select: { id: true },
+        })
+        if (!owned) throw new Error('Chat not found')
+      }
+
       const locale = (await getLocale()) as Locale
       const config = await getAiConfig(organizationId)
       const client = createClient(config)
@@ -129,10 +146,7 @@ export async function aiChat(chatId: string | null, messages: ChatMessage[]) {
 
       const apiMessages: OpenAI.ChatCompletionMessageParam[] = [
         { role: 'system', content: systemPrompt },
-        ...messages.map((m) => ({
-          role: m.role as 'user' | 'assistant',
-          content: m.content,
-        })),
+        ...messages.map((m) => ({ role: m.role, content: m.content })),
       ]
 
       // Tool-calling loop

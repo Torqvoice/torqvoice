@@ -111,7 +111,7 @@ export async function reconcileInventoryForParts(
 
     // Atomic, org-scoped, and returns the post-write balance in one round trip.
     const updated = await tx.$queryRaw<{ quantity: number }[]>`
-      UPDATE "inventory_parts"
+      UPDATE "public"."inventory_parts"
       SET "quantity" = "quantity" - ${decrement}, "updatedAt" = NOW()
       WHERE "id" = ${inventoryPartId} AND "organizationId" = ${organizationId}
       RETURNING "quantity"
@@ -161,9 +161,9 @@ export async function recordAbsoluteStockChange(
   context: StockMovementContext
 ): Promise<boolean> {
   const updated = await tx.$queryRaw<{ quantity: number; delta: number }[]>`
-    UPDATE "inventory_parts" AS p
+    UPDATE "public"."inventory_parts" AS p
     SET "quantity" = ${newQuantity}, "updatedAt" = NOW()
-    FROM "inventory_parts" AS prev
+    FROM "public"."inventory_parts" AS prev
     WHERE p."id" = prev."id"
       AND p."id" = ${inventoryPartId}
       AND p."organizationId" = ${organizationId}

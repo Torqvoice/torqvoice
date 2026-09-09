@@ -105,7 +105,9 @@
     "download": "Scarica",
     "paid": "pagato",
     "partial": "parziale",
-    "unpaid": "non pagato"
+    "unpaid": "non pagato",
+    "back": "Torna alle fatture",
+    "openShared": "Apri la copia condivisa"
   },
   "quotes": {
     "title": "Preventivi",

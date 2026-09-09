@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { uploadUrlSchema } from '@/lib/upload-url'
 
 export const quotePartSchema = z.object({
   partNumber: z.string().optional(),
@@ -35,7 +36,7 @@ export const quoteLaborSchema = z.object({
 
 export const quoteAttachmentSchema = z.object({
   fileName: z.string(),
-  fileUrl: z.string(),
+  fileUrl: uploadUrlSchema,
   fileType: z.string(),
   fileSize: z.number(),
   category: z.enum(['image', 'document']).default('image'),

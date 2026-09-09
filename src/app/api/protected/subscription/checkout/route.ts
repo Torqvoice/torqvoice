@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
 import { db } from '@/lib/db'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
 import { isDemoMode } from '@/lib/demo'
 
@@ -11,19 +10,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'This action is disabled on the demo.' }, { status: 403 })
     }
 
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user?.id) {
+    // The active organisation from the session, and only its owners and
+    // admins: this moves money and changes the plan.
+    const ctx = await getAuthContext()
+    if (!ctx) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const membership = await db.organizationMember.findFirst({
-      where: { userId: session.user.id },
-      select: { organizationId: true },
-    })
-
-    if (!membership?.organizationId) {
-      return NextResponse.json({ error: 'No organization found' }, { status: 400 })
+    if (!ctx.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+    const membership = { organizationId: ctx.organizationId }
 
     const body = await request.json()
     const plan = body.plan as string
@@ -47,10 +43,11 @@ export async function POST(request: Request) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const stripe = await getStripeClient()
+    const user = await db.user.findUnique({ where: { id: ctx.userId }, select: { email: true } })
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      customer_email: session.user.email,
+      customer_email: user?.email ?? undefined,
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: {
         type: 'subscription',
@@ -70,7 +67,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
     console.error('[Subscription Checkout] Error:', error)
-    const message = error instanceof Error ? error.message : 'Checkout failed'
+    console.error('[subscription]', error)
+    const message = 'Checkout failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

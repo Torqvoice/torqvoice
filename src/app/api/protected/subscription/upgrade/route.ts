@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
 import { isDemoMode } from '@/lib/demo'
@@ -11,23 +10,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'This action is disabled on the demo.' }, { status: 403 })
     }
 
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user?.id) {
+    // The active organisation from the session, and only its owners and
+    // admins: this moves money and changes the plan.
+    const ctx = await getAuthContext()
+    if (!ctx) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const membership = await db.organizationMember.findFirst({
-      where: { userId: session.user.id },
-      select: { organizationId: true },
-    })
-
-    if (!membership?.organizationId) {
-      return NextResponse.json({ error: 'No organization found' }, { status: 400 })
+    if (!ctx.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+    const membership = { organizationId: ctx.organizationId }
 
     const body = await request.json()
     const plan = body.plan as string
-    const prorationDate = body.prorationDate as number | undefined
+    // A proration timestamp from the preview a moment ago, or nothing.
+    const rawProration = body.prorationDate
+    const nowSeconds = Math.floor(Date.now() / 1000)
+    const prorationDate =
+      typeof rawProration === 'number' &&
+      Number.isInteger(rawProration) &&
+      rawProration <= nowSeconds &&
+      rawProration >= nowSeconds - 60 * 60
+        ? rawProration
+        : undefined
 
     if (plan !== 'enterprise') {
       return NextResponse.json({ error: 'Can only upgrade to enterprise' }, { status: 400 })
@@ -126,7 +131,7 @@ export async function POST(request: Request) {
         organizationId: membership.organizationId,
         key: 'license.plan',
         value: plan,
-        userId: session.user.id,
+        userId: ctx.userId,
       },
       update: { value: plan },
     })
@@ -134,7 +139,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[Subscription Upgrade] Error:', error)
-    const message = error instanceof Error ? error.message : 'Upgrade failed'
+    console.error('[subscription]', error)
+    const message = 'Upgrade failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

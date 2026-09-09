@@ -37,6 +37,9 @@ export function TaxSettings({
   )
   const [taxInclusive, setTaxInclusive] = useState(settings[SETTING_KEYS.TAX_INCLUSIVE] === 'true')
   const [taxLabel, setTaxLabel] = useState(settings[SETTING_KEYS.TAX_LABEL] || '')
+  const [lineItemsInclTax, setLineItemsInclTax] = useState(
+    settings[SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX] === 'true'
+  )
 
   const handleSave = async () => {
     setSaving(true)
@@ -45,6 +48,7 @@ export function TaxSettings({
       [SETTING_KEYS.DEFAULT_TAX_RATE]: taxEnabled ? defaultTaxRate : '0',
       [SETTING_KEYS.TAX_INCLUSIVE]: String(taxInclusive),
       [SETTING_KEYS.TAX_LABEL]: taxLabel.trim(),
+      [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: String(lineItemsInclTax),
     })
     setSaving(false)
     router.refresh()
@@ -184,6 +188,23 @@ export function TaxSettings({
                         rate: defaultTaxRate || '0',
                       })}
                 </p>
+              </div>
+            )}
+
+            {/* How the sheet shows it, as distinct from how it was entered:
+                a shop may key in prices before tax and still hand the
+                customer lines they can add up to the total they pay. */}
+            {taxEnabled && (
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="lineItemsInclTax">{t('tax.lineItemsInclTaxLabel')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('tax.lineItemsInclTaxHint')}</p>
+                </div>
+                <Switch
+                  id="lineItemsInclTax"
+                  checked={lineItemsInclTax}
+                  onCheckedChange={setLineItemsInclTax}
+                />
               </div>
             )}
 

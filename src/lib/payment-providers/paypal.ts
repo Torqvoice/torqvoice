@@ -139,10 +139,10 @@ export class PayPalProvider implements PaymentProvider {
         const amount = Number.parseFloat(
           data.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value || '0'
         )
-        return { paid: true, amount }
+        return { paid: true, amount, ...paypalAttribution(data) }
       }
 
-      return { paid: false, amount: 0 }
+      return { paid: false, amount: 0, ...paypalAttribution(data) }
     } catch {
       return null
     }
@@ -168,9 +168,27 @@ export class PayPalProvider implements PaymentProvider {
           data.purchase_units?.[0]?.amount?.value ||
           '0'
       )
-      return { paid: true, amount }
+      return { paid: true, amount, ...paypalAttribution(data) }
     }
 
-    return { paid: false, amount: 0 }
+    return { paid: false, amount: 0, ...paypalAttribution(data) }
   }
+}
+
+/**
+ * Who the order was created for, from the custom_id createCheckout wrote as
+ * "serviceRecordId:orgId". A show-order response carries it on the purchase
+ * unit; a capture response carries it on the capture.
+ */
+function paypalAttribution(data: {
+  purchase_units?: Array<{
+    custom_id?: unknown
+    payments?: { captures?: Array<{ custom_id?: unknown }> }
+  }>
+}): { serviceRecordId: string | null; organizationId: string | null } {
+  const unit = data.purchase_units?.[0]
+  const raw = unit?.custom_id ?? unit?.payments?.captures?.[0]?.custom_id
+  if (typeof raw !== 'string') return { serviceRecordId: null, organizationId: null }
+  const [serviceRecordId, organizationId] = raw.split(':')
+  return { serviceRecordId: serviceRecordId || null, organizationId: organizationId || null }
 }

@@ -69,6 +69,8 @@ jobs:
                 BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
                 NEXT_PUBLIC_APP_URL: ${APP_URL}
                 TORQVOICE_MODE: cloud
+                # Staging sits behind Cloudflare like production; see deploy-prod.yml.
+                TRUST_CF_CONNECTING_IP: "true"
                 STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
                 STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
                 STRIPE_PRO_PRICE_ID: ${STRIPE_PRO_PRICE_ID}

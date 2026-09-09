@@ -1,14 +1,16 @@
 'use server'
 
 import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { db } from '@/lib/db'
 import { getStripeClient } from '@/lib/stripe-config'
 import { demoGuard } from '@/lib/demo'
 
 export async function cancelSubscription() {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, isAdmin }) => {
       demoGuard()
+      if (!isAdmin) throw new Error('Only an owner or admin can change the subscription')
       const subscription = await db.subscription.findUnique({
         where: { organizationId },
       })
@@ -31,6 +33,9 @@ export async function cancelSubscription() {
       return { cancelAtPeriodEnd: true }
     },
     {
+      requiredPermissions: [
+        { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
+      ],
       audit: () => ({
         action: 'subscription.cancel',
         entity: 'Subscription',
@@ -42,8 +47,9 @@ export async function cancelSubscription() {
 
 export async function resumeSubscription() {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, isAdmin }) => {
       demoGuard()
+      if (!isAdmin) throw new Error('Only an owner or admin can change the subscription')
       const subscription = await db.subscription.findUnique({
         where: { organizationId },
       })
@@ -66,6 +72,9 @@ export async function resumeSubscription() {
       return { cancelAtPeriodEnd: false }
     },
     {
+      requiredPermissions: [
+        { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
+      ],
       audit: () => ({
         action: 'subscription.resume',
         entity: 'Subscription',

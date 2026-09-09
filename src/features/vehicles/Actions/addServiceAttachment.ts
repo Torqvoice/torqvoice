@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { withAuth } from '@/lib/with-auth'
 import { serviceAttachmentSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
@@ -23,6 +24,7 @@ export async function addServiceAttachment(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
       const data = addAttachmentSchema.parse(input)
+      assertOwnUploads(data, organizationId)
 
       const record = await db.serviceRecord.findFirst({
         where: {

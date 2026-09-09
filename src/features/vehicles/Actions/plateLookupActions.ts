@@ -103,7 +103,7 @@ function toWorkshopVehicle(row: VehicleRow): WorkshopVehicle {
  */
 async function findByPlate(organizationId: string, compact: string): Promise<VehicleRow | null> {
   const ids = await db.$queryRaw<{ id: string }[]>`
-    SELECT id FROM vehicles
+    SELECT id FROM "public"."vehicles"
     WHERE "organizationId" = ${organizationId}
       AND "licensePlate" IS NOT NULL
       AND regexp_replace(upper("licensePlate"), '[^A-Z0-9]', '', 'g') = ${compact}

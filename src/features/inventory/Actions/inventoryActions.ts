@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { withAuth } from '@/lib/with-auth'
 import {
   createInventoryPartSchema,
@@ -69,7 +70,7 @@ export async function getInventoryPartsPaginated(params: {
 
         const lowRows = await db.$queryRaw<{ id: string }[]>`
         SELECT "id"
-        FROM "inventory_parts"
+        FROM "public"."inventory_parts"
         WHERE "organizationId" = ${organizationId}
           AND "isArchived" = false
           AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
@@ -142,6 +143,7 @@ export async function createInventoryPart(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = createInventoryPartSchema.parse(input)
+      assertOwnUploads(data, organizationId)
       const { gallery, ...rest } = data
       const barcode = normalizeBarcode(rest.barcode)
       const part = await withBarcodeConflictMessage(organizationId, barcode, () =>
@@ -199,6 +201,7 @@ export async function updateInventoryPart(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = updateInventoryPartSchema.parse(input)
+      assertOwnUploads(data, organizationId)
       const { id, gallery: galleryData, ...updateData } = data
 
       // Handle gallery updates
@@ -464,7 +467,7 @@ export async function applyMarkupToAll(input: unknown) {
 
       // Use raw SQL to avoid Prisma's @updatedAt auto-update which changes sort order
       const result = await db.$executeRaw`
-      UPDATE "inventory_parts"
+      UPDATE "public"."inventory_parts"
       SET "sellPrice" = ROUND(("unitCost" * ${multiplier})::numeric, 2)
       WHERE "organizationId" = ${organizationId}
         AND "isArchived" = false

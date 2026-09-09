@@ -97,14 +97,16 @@ export default async function PortalInvoicesPage({
                       </span>
                     </div>
                     <div className="mt-3 flex items-center gap-4">
-                      {inv.publicToken && (
-                        <Link
-                          href={`/share/invoice/${orgId}/${inv.publicToken}`}
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {t('view')}
-                        </Link>
-                      )}
+                      <Link
+                        href={
+                          inv.publicToken
+                            ? `/share/invoice/${orgId}/${inv.publicToken}`
+                            : `/portal/${orgId}/invoices/${inv.id}`
+                        }
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {t('view')}
+                      </Link>
                       <a
                         href={`/portal/${orgId}/invoices/${inv.id}/pdf`}
                         download
@@ -165,14 +167,16 @@ export default async function PortalInvoicesPage({
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            {inv.publicToken && (
-                              <Link
-                                href={`/share/invoice/${orgId}/${inv.publicToken}`}
-                                className="text-sm text-primary hover:underline"
-                              >
-                                {t('view')}
-                              </Link>
-                            )}
+                            <Link
+                              href={
+                                inv.publicToken
+                                  ? `/share/invoice/${orgId}/${inv.publicToken}`
+                                  : `/portal/${orgId}/invoices/${inv.id}`
+                              }
+                              className="text-sm text-primary hover:underline"
+                            >
+                              {t('view')}
+                            </Link>
                             <a
                               href={`/portal/${orgId}/invoices/${inv.id}/pdf`}
                               download

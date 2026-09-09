@@ -105,7 +105,9 @@
     "download": "Atsisiųsti",
     "paid": "apmokėta",
     "partial": "dalinai",
-    "unpaid": "neapmokėta"
+    "unpaid": "neapmokėta",
+    "back": "Atgal į sąskaitas",
+    "openShared": "Atidaryti bendrinamą kopiją"
   },
   "quotes": {
     "title": "Pasiūlymai",

@@ -47,6 +47,8 @@ export interface DesignerWorkshop {
   email: string
   slogan: string
   orgNumber: string
+  /** The workshop's own caption for the number; empty means the translated one. */
+  orgNumberLabel?: string
   /** Payment terms from payment settings. Empty prints nothing on the sheet. */
   paymentTerms: string
   logoUrl: string

@@ -28,9 +28,6 @@ export default async function InvoiceSettingsPage() {
   ])
 
   const settings = result.success && result.data ? result.data : {}
-  const unnumberedCustomers = await db.customer.count({
-    where: { organizationId: data.organizationId, customerNumber: null },
-  })
   const customFields =
     customFieldsResult.success && customFieldsResult.data ? customFieldsResult.data : []
   const unfrozenResult = await countUnfrozenInvoices()
@@ -61,7 +58,6 @@ export default async function InvoiceSettingsPage() {
     <InvoiceSettings
       settings={settings}
       workshop={workshop}
-      unnumberedCustomers={unnumberedCustomers}
       unfrozenInvoices={unfrozenInvoices}
       initialInvoiceLayout={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       initialQuoteLayout={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
