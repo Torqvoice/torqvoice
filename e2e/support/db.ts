@@ -2,8 +2,9 @@ import { Client } from 'pg'
 
 /**
  * A look into the database the suite seeded, for the few things a browser
- * cannot see: the token in a reset-password mail that was never delivered,
- * because the test environment has no mail provider.
+ * cannot see: the token in a reset-password or invitation mail that was
+ * never delivered, because the test environment has no mail provider, and
+ * the secret behind a two-factor QR code.
  *
  * Plain pg rather than the app's Prisma client: the tests run in Playwright's
  * process, which has no adapter wired up, and one query does not need one.
@@ -39,5 +40,27 @@ export async function latestResetToken(email: string): Promise<string | null> {
     )
     const identifier = result.rows[0]?.identifier
     return identifier ? identifier.slice('reset-password:'.length) : null
+  })
+}
+
+/** The newest team invitation token for an address: what the mailed sign-up link carries. */
+export async function latestInvitationToken(email: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ token: string }>(
+      `select token from team_invitations where email = $1 order by "createdAt" desc limit 1`,
+      [email]
+    )
+    return result.rows[0]?.token ?? null
+  })
+}
+
+/** The stored (encrypted) TOTP secret of a user, or null when 2FA is not set up. */
+export async function storedTwoFactorSecret(email: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ secret: string }>(
+      `select tf.secret from two_factor tf join users u on u.id = tf."userId" where u.email = $1`,
+      [email]
+    )
+    return result.rows[0]?.secret ?? null
   })
 }

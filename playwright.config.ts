@@ -85,6 +85,10 @@ export default defineConfig({
           // Three sign-ins per ten seconds is right for a workshop and wrong
           // for a suite that signs in on every test.
           AUTH_RATE_LIMIT: 'off',
+          // `next start` also reads the developer's .env, which may say cloud.
+          // Self-hosted unlocks every feature, which is what a suite that
+          // exercises them needs; plan gates are a subject of their own.
+          TORQVOICE_MODE: 'self-hosted',
           TZ: process.env.E2E_TZ ?? 'Europe/Oslo',
         },
       },

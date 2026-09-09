@@ -5,6 +5,22 @@ nothing else. These tests run the built app in a browser against a real
 Postgres, and cover what only breaks once the pieces are assembled: migrations,
 the session cookie, server actions wired to forms, and invoice numbering.
 
+## Layout
+
+```
+e2e/
+  auth.setup.ts        signs in once; every spec starts with that session
+  prepare-db.ts        reset + seed, run ahead of the server
+  support/             helpers specs share: database peeks, TOTP, work order driving
+  specs/
+    auth/              sign-in, sign-up and invitations, account security
+    work-orders/       pricing under each tax setting, quote to invoice
+    smoke/             the build is alive
+```
+
+One folder per area of the app, one file per flow. A new area gets a new folder;
+a helper used by more than one spec goes under `support/`.
+
 ## One-time setup
 
 ```bash
@@ -40,7 +56,7 @@ own image instead, against a server started here:
 export E2E_DATABASE_URL="postgresql://torqvoice:torqvoice@localhost:5432/torqvoice_e2e"
 npx tsx e2e/prepare-db.ts
 DATABASE_URL="$E2E_DATABASE_URL" NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100 \
-  DEMO_MODE=false AUTH_RATE_LIMIT=off npm run start -- --port 3100 &
+  DEMO_MODE=false AUTH_RATE_LIMIT=off TORQVOICE_MODE=self-hosted npm run start -- --port 3100 &
 docker run --rm --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -v "$PWD":/work -w /work \
   -e E2E_BASE_URL=http://127.0.0.1:3100 -e E2E_SKIP_SEED=1 -e E2E_DATABASE_URL \
@@ -68,6 +84,10 @@ database is left alone, which is what you want against a shared environment.
 | `E2E_ALLOW_ANY_DB` | unset | Override the guard on database names |
 | `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | `demo@torqvoice.com` / `demo-e2e-pass` | The login the seed creates and the suite signs in with |
 | `E2E_TZ` | `Europe/Oslo` | Browser and server timezone |
+
+The suite's own server also runs with `TORQVOICE_MODE=self-hosted`, `DEMO_MODE=false` and
+`AUTH_RATE_LIMIT=off`. Pointed at another server, start it the same way or the plan
+limits, demo guards and sign-in limiter get in the way of the tests.
 
 ## Rules that keep this suite worth having
 

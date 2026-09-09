@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
-import { latestResetToken } from '../db'
+import { latestResetToken } from '../../support/db'
 
 /**
  * The front door: signing in, being kept out, signing out, and getting back
