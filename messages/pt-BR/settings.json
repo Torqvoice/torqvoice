@@ -600,7 +600,10 @@
     "freezeFailed": "Não foi possível travar as faturas",
     "sectionSending": "Envio",
     "attachPdfLabel": "Anexar o PDF aos e-mails",
-    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento."
+    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento.",
+    "sectionLinePrices": "Preços das linhas",
+    "lineItemsInclTaxLabel": "Mostrar preços das linhas com imposto incluso",
+    "lineItemsInclTaxHint": "Cada linha de peças e mão de obra é impressa com o imposto incluso, seguida do subtotal; a linha de imposto então informa quanto disso é imposto. Desligado imprime os preços sem imposto e soma o imposto no final."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",

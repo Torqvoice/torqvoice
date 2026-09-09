@@ -176,6 +176,7 @@ function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettin
     footerNote: settingsMap['invoice.footerNote'] || '',
     showBankAccount: settingsMap['invoice.showBankAccount'] === 'true',
     showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
+    lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
     currencyFormat: settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol',

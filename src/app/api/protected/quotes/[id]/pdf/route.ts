@@ -206,6 +206,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     const element = React.createElement(QuotePDF, {
+      lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
       data: quote,
       workshop: {
         name: org?.name || '',

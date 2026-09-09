@@ -600,7 +600,10 @@
     "freezeFailed": "Kon de facturen niet vergrendelen",
     "sectionSending": "Verzenden",
     "attachPdfLabel": "De pdf aan e-mails toevoegen",
-    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster."
+    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster.",
+    "sectionLinePrices": "Regelprijzen",
+    "lineItemsInclTaxLabel": "Regelprijzen inclusief btw tonen",
+    "lineItemsInclTaxHint": "Elke onderdelen- en arbeidsregel wordt inclusief btw afgedrukt, gevolgd door het subtotaal; de btw-regel geeft dan aan hoeveel daarvan btw is. Uit drukt de prijzen exclusief btw af en telt de btw onderaan op."
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",

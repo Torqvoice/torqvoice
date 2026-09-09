@@ -213,6 +213,7 @@ export async function GET(
     const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
     const element = React.createElement(QuotePDF, {
+      lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
       data: quote,
       workshop: {
         name: org?.name || '',

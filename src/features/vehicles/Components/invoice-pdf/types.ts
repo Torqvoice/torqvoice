@@ -124,6 +124,8 @@ export interface InvoiceSettingsProps {
   footerNote?: string
   showBankAccount?: boolean
   showOrgNumber?: boolean
+  /** Print each line with tax included, and say how much of the subtotal is tax. */
+  lineItemsInclTax?: boolean
   dueDays?: number
   currencyCode?: string
   currencyFormat?: 'symbol' | 'code'

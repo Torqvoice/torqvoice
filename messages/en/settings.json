@@ -600,7 +600,10 @@
     "freezeFailed": "Could not lock the invoices",
     "sectionSending": "Sending",
     "attachPdfLabel": "Attach the PDF to emails",
-    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog."
+    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog.",
+    "sectionLinePrices": "Line prices",
+    "lineItemsInclTaxLabel": "Show line prices including tax",
+    "lineItemsInclTaxHint": "Each part and labour line is printed with tax included and the subtotal follows; the tax row then says how much of it is tax. Off prints prices before tax and adds the tax at the bottom."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

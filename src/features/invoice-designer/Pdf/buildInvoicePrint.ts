@@ -120,6 +120,12 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
   const net = (value: number) => netLineTotal(value, taxRate, taxInclusive)
+  // A workshop may print each line with tax in it, the way a consumer
+  // receipt reads: the lines then sum to the subtotal, and the tax row says
+  // how much of that is tax rather than adding it on.
+  const linesInclTax = invoiceSettings?.lineItemsInclTax === true && taxRate > 0
+  const gross = (value: number) => (taxInclusive ? value : value * (1 + taxRate / 100))
+  const shown = linesInclTax ? gross : net
 
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
@@ -233,8 +239,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       qty: String(l.hours),
       unit: l.pricingType === 'service' ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
-      price: money(net(l.rate)),
-      total: money(net(l.total)),
+      price: money(shown(l.rate)),
+      total: money(shown(l.total)),
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
@@ -242,8 +248,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
-      price: money(net(p.unitPrice)),
-      total: money(net(p.total)),
+      price: money(shown(p.unitPrice)),
+      total: money(shown(p.total)),
     })),
   ]
 
@@ -251,8 +257,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     ref: p.partNumber || '-',
     desc: p.name,
     qty: formatQuantity(p.quantity, p.unit),
-    price: money(net(p.unitPrice)),
-    total: money(net(p.total)),
+    price: money(shown(p.unitPrice)),
+    total: money(shown(p.total)),
   }))
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
@@ -261,11 +267,11 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       desc: l.description,
       qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
       rate: isService
-        ? money(net(l.rate))
+        ? money(shown(l.rate))
         : labels.ratePerHour
-          ? fillTemplate(labels.ratePerHour, { rate: money(net(l.rate)) })
-          : `${money(net(l.rate))}/hr`,
-      total: money(net(l.total)),
+          ? fillTemplate(labels.ratePerHour, { rate: money(shown(l.rate)) })
+          : `${money(shown(l.rate))}/hr`,
+      total: money(shown(l.total)),
     }
   })
 
@@ -293,16 +299,22 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const itemsTableVisible = layout.sections.some((s) => s.id === 'items_table' && s.visible)
   const totals: TotalLine[] = []
   if (!itemsTableVisible && data.partItems.length > 0) {
-    totals.push({ label: L('parts', 'Parts'), value: money(net(partsSubtotal)), kind: 'line' })
+    totals.push({ label: L('parts', 'Parts'), value: money(shown(partsSubtotal)), kind: 'line' })
   }
   if (!itemsTableVisible && data.laborItems.length > 0) {
-    totals.push({ label: L('labor', 'Labor'), value: money(net(laborSubtotal)), kind: 'line' })
+    totals.push({ label: L('labor', 'Labor'), value: money(shown(laborSubtotal)), kind: 'line' })
   }
-  const displaySubtotal = net(data.subtotal)
+  const displaySubtotal = shown(data.subtotal)
   if (displaySubtotal > 0) {
-    totals.push({ label: L('subtotal', 'Subtotal'), value: money(displaySubtotal), kind: 'line' })
+    totals.push({
+      label: linesInclTax
+        ? L('subtotalInclTax', 'Subtotal (incl. tax)')
+        : L('subtotal', 'Subtotal'),
+      value: money(displaySubtotal),
+      kind: 'line',
+    })
   }
-  const displayDiscount = net(data.discountAmount ?? 0)
+  const displayDiscount = shown(data.discountAmount ?? 0)
   if (displayDiscount > 0) {
     totals.push({
       label:
@@ -316,8 +328,13 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     })
   }
   if (taxRate > 0) {
+    const rate = { rate: String(taxRate) }
     totals.push({
-      label: labels.tax ? fillTemplate(labels.tax, { rate: String(taxRate) }) : `Tax (${taxRate}%)`,
+      label: linesInclTax
+        ? fillTemplate(L('taxIncluded', 'Includes tax ({rate}%)'), rate)
+        : labels.tax
+          ? fillTemplate(labels.tax, rate)
+          : `Tax (${taxRate}%)`,
       value: money(data.taxAmount),
       kind: 'line',
     })

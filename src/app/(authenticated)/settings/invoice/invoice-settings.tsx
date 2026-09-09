@@ -124,6 +124,9 @@ export function InvoiceSettings({
     settings[SETTING_KEYS.QUOTE_LOCK_TRIGGER] || 'accepted'
   )
   const [attachPdf, setAttachPdf] = useState(settings[SETTING_KEYS.EMAIL_ATTACH_PDF] !== 'false')
+  const [lineItemsInclTax, setLineItemsInclTax] = useState(
+    settings[SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX] === 'true'
+  )
 
   const handleSaveGeneral = async () => {
     setSaving(true)
@@ -141,6 +144,7 @@ export function InvoiceSettings({
       [SETTING_KEYS.QUOTE_LOCK_ENABLED]: quoteLockEnabled ? 'true' : 'false',
       [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: quoteLockTrigger,
       [SETTING_KEYS.EMAIL_ATTACH_PDF]: attachPdf ? 'true' : 'false',
+      [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: lineItemsInclTax ? 'true' : 'false',
     })
     setSaving(false)
     router.refresh()
@@ -367,6 +371,24 @@ export function InvoiceSettings({
                 <Switch id="attachPdf" checked={attachPdf} onCheckedChange={setAttachPdf} />
               </Label>
               <p className="text-xs text-muted-foreground">{t('invoice.attachPdfHint')}</p>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">{t('invoice.sectionLinePrices')}</h3>
+              <Label
+                htmlFor="lineItemsInclTax"
+                className="flex items-center justify-between gap-3 font-normal"
+              >
+                <span className="text-sm">{t('invoice.lineItemsInclTaxLabel')}</span>
+                <Switch
+                  id="lineItemsInclTax"
+                  checked={lineItemsInclTax}
+                  onCheckedChange={setLineItemsInclTax}
+                />
+              </Label>
+              <p className="text-xs text-muted-foreground">{t('invoice.lineItemsInclTaxHint')}</p>
             </div>
 
             <Separator />
