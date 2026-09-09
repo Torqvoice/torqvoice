@@ -600,10 +600,7 @@
     "freezeFailed": "Não foi possível travar as faturas",
     "sectionSending": "Envio",
     "attachPdfLabel": "Anexar o PDF aos e-mails",
-    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento.",
-    "sectionLinePrices": "Preços das linhas em faturas e orçamentos",
-    "lineItemsInclTaxLabel": "Mostrar preços das linhas com imposto incluso",
-    "lineItemsInclTaxHint": "Cada linha de peças e mão de obra é impressa com o imposto incluso, seguida do subtotal; a linha de imposto então informa quanto disso é imposto. Desligado imprime os preços sem imposto e soma o imposto no final."
+    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",
@@ -868,6 +865,8 @@
     "modeInclusive": "Inclusivo",
     "modeExclusiveExample": "Exemplo: 100 + {rate}% de imposto = 100 + imposto por cima.",
     "modeInclusiveExample": "Exemplo: 100 ja inclui {rate}% de imposto — a parte do imposto e calculada de tras para frente.",
+    "lineItemsInclTaxLabel": "Mostrar preços das linhas com imposto incluso",
+    "lineItemsInclTaxHint": "Cada linha de peças e mão de obra é impressa com o imposto incluso, seguida do subtotal; a linha de imposto então informa quanto disso é imposto. Desligado imprime os preços sem imposto e soma o imposto no final.",
     "labelLabel": "Rótulo de imposto",
     "labelHint": "Nome personalizado exibido em faturas e orçamentos (ex. ICMS, IVA). Deixe em branco para usar o padrão traduzido.",
     "labelPlaceholder": "Imposto",

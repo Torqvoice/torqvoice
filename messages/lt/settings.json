@@ -600,10 +600,7 @@
     "freezeFailed": "Nepavyko užrakinti sąskaitų",
     "sectionSending": "Siuntimas",
     "attachPdfLabel": "Prie el. laiškų pridėti PDF",
-    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange.",
-    "sectionLinePrices": "Eilučių kainos sąskaitose ir pasiūlymuose",
-    "lineItemsInclTaxLabel": "Rodyti eilučių kainas su mokesčiu",
-    "lineItemsInclTaxHint": "Kiekviena dalių ir darbo eilutė spausdinama su įskaičiuotu mokesčiu, po jos eina tarpinė suma; mokesčio eilutė tada nurodo, kokią dalį sudaro mokestis. Išjungus kainos spausdinamos be mokesčio, o mokestis pridedamas apačioje."
+    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange."
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -868,6 +865,8 @@
     "modeInclusive": "Su mokesčiu",
     "modeExclusiveExample": "Pavyzdys: 100 + {rate}% mokesčio = 100 + mokestis viršuje.",
     "modeInclusiveExample": "Pavyzdys: 100 jau apima {rate}% mokesčio — mokesčio dalis apskaičiuojama atgal.",
+    "lineItemsInclTaxLabel": "Rodyti eilučių kainas su mokesčiu",
+    "lineItemsInclTaxHint": "Kiekviena dalių ir darbo eilutė spausdinama su įskaičiuotu mokesčiu, po jos eina tarpinė suma; mokesčio eilutė tada nurodo, kokią dalį sudaro mokestis. Išjungus kainos spausdinamos be mokesčio, o mokestis pridedamas apačioje.",
     "labelLabel": "Mokesčio etiketė",
     "labelHint": "Pasirinktinis pavadinimas, rodomas sąskaitose ir pasiūlymuose (pvz. PVM, VAT). Palikite tuščią, kad būtų naudojama lokalizuota numatytoji.",
     "labelPlaceholder": "PVM",

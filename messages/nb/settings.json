@@ -600,10 +600,7 @@
     "freezeFailed": "Kunne ikke låse fakturaene",
     "sectionSending": "Utsending",
     "attachPdfLabel": "Legg ved PDF i e-post",
-    "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen.",
-    "sectionLinePrices": "Linjepriser på fakturaer og tilbud",
-    "lineItemsInclTaxLabel": "Vis linjepriser inkludert avgift",
-    "lineItemsInclTaxHint": "Hver del- og arbeidslinje skrives ut med avgift inkludert, og subtotalen følger; avgiftsraden viser så hvor mye av det som er avgift. Av skriver ut prisene før avgift og legger til avgiften nederst."
+    "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",
@@ -868,6 +865,8 @@
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Eksempel: 100 + {rate}% avgift = 100 + avgift på toppen.",
     "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs.",
+    "lineItemsInclTaxLabel": "Vis linjepriser inkludert avgift",
+    "lineItemsInclTaxHint": "Hver del- og arbeidslinje skrives ut med avgift inkludert, og subtotalen følger; avgiftsraden viser så hvor mye av det som er avgift. Av skriver ut prisene før avgift og legger til avgiften nederst.",
     "labelLabel": "Avgiftsetikett",
     "labelHint": "Tilpasset navn vist på fakturaer og tilbud (f.eks. MVA, GST, MwSt.). La stå tom for å bruke standardverdien.",
     "labelPlaceholder": "MVA",

@@ -600,10 +600,7 @@
     "freezeFailed": "No se pudieron bloquear las facturas",
     "sectionSending": "Envío",
     "attachPdfLabel": "Adjuntar el PDF a los correos",
-    "attachPdfHint": "El valor predeterminado para cada factura, presupuesto e inspección que envíes por correo. Activado: el cliente recibe el PDF adjunto. Desactivado: recibe un enlace al documento y el contador de visitas te dice cuándo lo abrió, para que puedas insistir con los que nadie ha mirado. Puedes cambiarlo para un envío concreto en el diálogo de compartir.",
-    "sectionLinePrices": "Precios de línea en facturas y presupuestos",
-    "lineItemsInclTaxLabel": "Mostrar precios de línea con impuestos incluidos",
-    "lineItemsInclTaxHint": "Cada línea de piezas y mano de obra se imprime con los impuestos incluidos y después viene el subtotal; la fila de impuestos indica entonces qué parte corresponde a impuestos. Desactivado imprime los precios sin impuestos y añade los impuestos al final."
+    "attachPdfHint": "El valor predeterminado para cada factura, presupuesto e inspección que envíes por correo. Activado: el cliente recibe el PDF adjunto. Desactivado: recibe un enlace al documento y el contador de visitas te dice cuándo lo abrió, para que puedas insistir con los que nadie ha mirado. Puedes cambiarlo para un envío concreto en el diálogo de compartir."
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",
@@ -868,6 +865,8 @@
     "modeInclusive": "Inclusivo",
     "modeExclusiveExample": "Ejemplo: 100 + {rate}% impuesto = 100 + impuesto encima.",
     "modeInclusiveExample": "Ejemplo: 100 ya incluye {rate}% impuesto — la parte del impuesto se calcula al inverso.",
+    "lineItemsInclTaxLabel": "Mostrar precios de línea con impuestos incluidos",
+    "lineItemsInclTaxHint": "Cada línea de piezas y mano de obra se imprime con los impuestos incluidos y después viene el subtotal; la fila de impuestos indica entonces qué parte corresponde a impuestos. Desactivado imprime los precios sin impuestos y añade los impuestos al final.",
     "labelLabel": "Etiqueta de impuesto",
     "labelHint": "Nombre personalizado que se muestra en facturas y presupuestos (p. ej. IVA, GST). Dejar vacío para usar el predeterminado localizado.",
     "labelPlaceholder": "IVA",

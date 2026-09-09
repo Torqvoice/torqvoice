@@ -600,10 +600,7 @@
     "freezeFailed": "Rechnungen konnten nicht gesperrt werden",
     "sectionSending": "Versand",
     "attachPdfLabel": "PDF an E-Mails anhängen",
-    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern.",
-    "sectionLinePrices": "Zeilenpreise auf Rechnungen und Angeboten",
-    "lineItemsInclTaxLabel": "Zeilenpreise inklusive Steuer anzeigen",
-    "lineItemsInclTaxHint": "Jede Teile- und Arbeitszeile wird mit enthaltener Steuer gedruckt, darauf folgt die Zwischensumme; die Steuerzeile gibt dann an, wie viel davon Steuer ist. Aus druckt die Preise vor Steuer und rechnet die Steuer unten hinzu."
+    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
@@ -868,6 +865,8 @@
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Beispiel: 100 + {rate}% Steuer = 100 + Steuer obendrauf.",
     "modeInclusiveExample": "Beispiel: 100 enthält bereits {rate}% Steuer — der Steueranteil wird zurückgerechnet.",
+    "lineItemsInclTaxLabel": "Zeilenpreise inklusive Steuer anzeigen",
+    "lineItemsInclTaxHint": "Jede Teile- und Arbeitszeile wird mit enthaltener Steuer gedruckt, darauf folgt die Zwischensumme; die Steuerzeile gibt dann an, wie viel davon Steuer ist. Aus druckt die Preise vor Steuer und rechnet die Steuer unten hinzu.",
     "labelLabel": "Steuerbezeichnung",
     "labelHint": "Benutzerdefinierter Name, der auf Rechnungen und Angeboten angezeigt wird (z.B. MwSt., USt., VAT). Leer lassen für die übersetzte Standardbezeichnung.",
     "labelPlaceholder": "MwSt.",
