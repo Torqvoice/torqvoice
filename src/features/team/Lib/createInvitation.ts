@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto'
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
 import { db } from '@/lib/db'
-import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
-import { escapeHtml } from '@/features/email/Render/escape'
 import type { InvitableRole } from './invitationRules'
 
 export type CreateInvitationInput = {
@@ -69,6 +68,8 @@ export async function createAndSendInvitation(input: CreateInvitationInput) {
       email,
       roleLabel: customRoleName || role,
       token,
+      invitedById,
+      expiresAt,
     })
   } catch {
     // Roll back the invitation record so the admin can retry.
@@ -85,38 +86,31 @@ export type InvitationMailInput = {
   email: string
   roleLabel: string
   token: string
+  /** Whoever is inviting; the template can sign off with their name. */
+  invitedById?: string | null
+  expiresAt?: Date | null
 }
 
-/** The sign-up link, mailed from the workshop's own provider. */
+/**
+ * The sign-up link, mailed from the workshop's own provider through the
+ * workshop's template for invitations, so the wording and look are the
+ * workshop's to change like every other mail it sends.
+ */
 export async function sendInvitationMail(input: InvitationMailInput): Promise<void> {
-  const { organizationId, organizationName, email, roleLabel, token } = input
-  const from = await getOrgFromAddress(organizationId)
+  const { organizationId, email, roleLabel, token, invitedById, expiresAt } = input
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  const signupUrl = `${baseUrl}/auth/sign-up?invite=${token}`
-  const safeOrg = escapeHtml(organizationName)
-  const safeRole = escapeHtml(roleLabel)
+  const inviter = invitedById
+    ? await db.user.findUnique({ where: { id: invitedById }, select: { name: true } })
+    : null
 
-  await sendOrgMail(organizationId, {
-    from,
+  await sendTemplatedMail(organizationId, {
+    kind: 'team_invitation',
     to: email,
-    subject: `You've been invited to join ${organizationName} on Torqvoice`,
-    html: `
-          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-            <h2>Team Invitation</h2>
-            <p>You've been invited to join <strong>${safeOrg}</strong> on Torqvoice as a <strong>${safeRole}</strong>.</p>
-            <p>Click the button below to create your account and join the team:</p>
-            <div style="margin: 24px 0;">
-              <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                Accept Invitation
-              </a>
-            </div>
-            <p style="color: #6b7280; font-size: 14px;">This invitation expires in 7 days.</p>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-            <p style="color: #6b7280; font-size: 12px;">
-              If the button doesn't work, copy and paste this URL into your browser:<br/>
-              <a href="${signupUrl}" style="color: #6b7280;">${signupUrl}</a>
-            </p>
-          </div>
-        `,
+    context: {
+      inviteLink: `${baseUrl}/auth/sign-up?invite=${token}`,
+      role: roleLabel,
+      expiresAt: expiresAt ?? null,
+      currentUser: inviter?.name ?? null,
+    },
   })
 }

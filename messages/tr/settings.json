@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Belgeler",
       "messages": "Mesajlar",
-      "portal": "Müşteri portalı"
+      "portal": "Müşteri portalı",
+      "team": "Ekip"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Portal girişi",
         "description": "Müşterinin müşteri portalında istediği giriş bağlantısı."
+      },
+      "team_invitation": {
+        "name": "Ekip daveti",
+        "description": "Atölyeye davet ettiğiniz bir iş arkadaşına, hesabını oluşturan bağlantıyla gönderilir."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Araç",
       "document": "Belge",
       "message": "Mesaj",
-      "portal": "Portal"
+      "portal": "Portal",
+      "team": "Ekip"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Portal bağlantısı",
         "description": "Müşteri portalına bağlantı."
+      },
+      "invite_link": {
+        "label": "Davet bağlantısı",
+        "description": "Hesabı oluşturan ve ekibe katan bağlantı. Davet süresi dolduğunda çalışmaz."
+      },
+      "role": {
+        "label": "Rol",
+        "description": "Kişinin davet edildiği rol."
+      },
+      "invite_expires": {
+        "label": "Son geçerlilik tarihi",
+        "description": "Davet bağlantısının çalıştığı son gün."
       }
     },
     "optionalTag": "Her e-postada bu etiket için bir değer yoktur. Boş olduğunda çevresindeki sözcükler düzenlenir.",

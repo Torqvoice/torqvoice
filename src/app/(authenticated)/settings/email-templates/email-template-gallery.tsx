@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, KeyRound, Loader2, MessageSquare, Trash2 } from 'lucide-react'
+import { FileText, KeyRound, Loader2, MessageSquare, Trash2, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
@@ -28,6 +28,7 @@ const GROUP_ICONS: Record<EmailKindGroup, typeof FileText> = {
   documents: FileText,
   messages: MessageSquare,
   portal: KeyRound,
+  team: Users,
 }
 
 /**

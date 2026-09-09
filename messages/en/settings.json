@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Documents",
       "messages": "Messages",
-      "portal": "Customer portal"
+      "portal": "Customer portal",
+      "team": "Team"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Portal sign-in",
         "description": "The sign-in link a customer asks for on the customer portal."
+      },
+      "team_invitation": {
+        "name": "Team invitation",
+        "description": "Sent to a colleague you invite to join the workshop, with the link that creates their account."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Vehicle",
       "document": "Document",
       "message": "Message",
-      "portal": "Portal"
+      "portal": "Portal",
+      "team": "Team"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Portal link",
         "description": "A link to the customer portal."
+      },
+      "invite_link": {
+        "label": "Invitation link",
+        "description": "The link that creates the account and joins the team. It stops working when the invitation expires."
+      },
+      "role": {
+        "label": "Role",
+        "description": "The role the person is invited as."
+      },
+      "invite_expires": {
+        "label": "Expiry date",
+        "description": "The last day the invitation link works."
       }
     },
     "optionalTag": "Not every email has a value for this tag. When it is blank, the words around it are tidied up.",

@@ -9,9 +9,10 @@ vi.mock('next/headers', () => ({
   headers: vi.fn().mockResolvedValue(new Headers()),
   cookies: vi.fn().mockResolvedValue({ set: vi.fn(), get: vi.fn() }),
 }))
-vi.mock('@/lib/email', () => ({
-  sendOrgMail: vi.fn().mockResolvedValue(undefined),
-  getOrgFromAddress: vi.fn().mockResolvedValue('shop@example.com'),
+// The invitation leaves through the workshop's template like every other
+// mail; what this file checks is what the send is told, not how it looks.
+vi.mock('@/features/email/Lib/sendTemplatedMail', () => ({
+  sendTemplatedMail: vi.fn().mockResolvedValue({ subject: 'Team invitation' }),
 }))
 vi.mock('@/lib/audit', () => ({ logAudit: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/lib/db', () => ({
@@ -24,7 +25,7 @@ vi.mock('@/lib/db', () => ({
 
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
-import { sendOrgMail } from '@/lib/email'
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
 import { resendInvitation } from '@/features/team/Actions/resendInvitation'
 
 const INVITATION = {
@@ -65,10 +66,15 @@ describe('resendInvitation', () => {
     const expiresAt = update.data.expiresAt as Date
     expect(expiresAt.getTime()).toBeGreaterThan(Date.now() + 6 * 24 * 60 * 60 * 1000)
 
-    const mail = vi.mocked(sendOrgMail).mock.calls[0][1]
+    const [orgId, mail] = vi.mocked(sendTemplatedMail).mock.calls[0]
+    expect(orgId).toBe('org-1')
+    expect(mail.kind).toBe('team_invitation')
     expect(mail.to).toBe('new@example.com')
-    expect(mail.html).toContain(`invite=${update.data.token}`)
-    expect(mail.html).not.toContain('old-token')
+    const context = mail.context as { inviteLink: string; role: string; expiresAt: Date }
+    expect(context.inviteLink).toContain(`invite=${update.data.token}`)
+    expect(context.inviteLink).not.toContain('old-token')
+    expect(context.role).toBe('member')
+    expect(context.expiresAt).toBe(expiresAt)
   })
 
   it("only finds invitations of the caller's own workshop", async () => {
@@ -82,6 +88,6 @@ describe('resendInvitation', () => {
     signIn('member')
     const result = await resendInvitation({ invitationId: 'inv-1' })
     expect(result.success).toBe(false)
-    expect(sendOrgMail).not.toHaveBeenCalled()
+    expect(sendTemplatedMail).not.toHaveBeenCalled()
   })
 })

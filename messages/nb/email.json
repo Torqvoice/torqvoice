@@ -38,6 +38,15 @@
       "button": "Logg inn",
       "linkFallback": "Hvis knappen ikke virker, kan du kopiere denne lenken inn i nettleseren din:\n{signin_link}",
       "outro": "Lenken utløper om 15 minutter. Hvis du ikke ba om den, kan du se bort fra denne e-posten."
+    },
+    "team_invitation": {
+      "name": "Invitasjon til teamet",
+      "subject": "Du er invitert til å bli med i {workshop_name}",
+      "heading": "Bli med i {workshop_name}",
+      "intro": "Du er invitert til å bli med i {workshop_name} på Torqvoice som {role}.\n\nBruk knappen under for å opprette kontoen din og bli med i teamet.",
+      "button": "Godta invitasjonen",
+      "linkFallback": "Hvis knappen ikke virker, kan du kopiere denne lenken inn i nettleseren din:\n{invite_link}",
+      "outro": "Invitasjonen gjelder til {invite_expires}. Hvis du ikke ventet den, kan du se bort fra denne e-posten."
     }
   },
   "attachmentNote": "En PDF-kopi er vedlagt denne e-posten.",

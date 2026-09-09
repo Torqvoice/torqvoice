@@ -54,7 +54,12 @@ function presetBlocks(kind: EmailKind, words: PresetWords, attachmentNote: strin
   if (spec.hasSummary) blocks.push(block({ id: 'summary', type: 'document_summary' }))
 
   if (words.button) {
-    const href = kind === 'portal_signin' ? '{signin_link}' : '{share_link}'
+    const href =
+      kind === 'portal_signin'
+        ? '{signin_link}'
+        : kind === 'team_invitation'
+          ? '{invite_link}'
+          : '{share_link}'
     blocks.push(block({ id: 'cta', type: 'button', label: words.button, href }))
   }
   if (words.linkFallback) {

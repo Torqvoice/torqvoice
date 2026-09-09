@@ -2001,7 +2001,8 @@
     "groups": {
       "documents": "Documentos",
       "messages": "Mensagens",
-      "portal": "Portal do cliente"
+      "portal": "Portal do cliente",
+      "team": "Equipe"
     },
     "kinds": {
       "invoice_sent": {
@@ -2023,6 +2024,10 @@
       "portal_signin": {
         "name": "Acesso ao portal",
         "description": "O link de acesso que um cliente solicita no portal do cliente."
+      },
+      "team_invitation": {
+        "name": "Convite para a equipe",
+        "description": "Enviado a um colega que você convida para a oficina, com o link que cria a conta."
       }
     },
     "blocks": {
@@ -2055,7 +2060,8 @@
       "vehicle": "Veículo",
       "document": "Documento",
       "message": "Mensagem",
-      "portal": "Portal"
+      "portal": "Portal",
+      "team": "Equipe"
     },
     "tags": {
       "workshop_name": {
@@ -2129,6 +2135,18 @@
       "portal_link": {
         "label": "Link do portal",
         "description": "Um link para o portal do cliente."
+      },
+      "invite_link": {
+        "label": "Link do convite",
+        "description": "O link que cria a conta e entra na equipe. Deixa de funcionar quando o convite expira."
+      },
+      "role": {
+        "label": "Função",
+        "description": "A função para a qual a pessoa é convidada."
+      },
+      "invite_expires": {
+        "label": "Data de validade",
+        "description": "O último dia em que o link do convite funciona."
       }
     },
     "optionalTag": "Nem todo e-mail tem um valor para esta tag. Quando ela fica vazia, as palavras ao redor são ajustadas.",

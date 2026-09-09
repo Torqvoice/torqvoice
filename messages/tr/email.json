@@ -38,6 +38,15 @@
       "button": "Giriş yap",
       "linkFallback": "Düğme çalışmazsa bu bağlantıyı tarayıcınıza kopyalayın:\n{signin_link}",
       "outro": "Bu bağlantı 15 dakika içinde geçerliliğini yitirir. Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz."
+    },
+    "team_invitation": {
+      "name": "Ekip daveti",
+      "subject": "{workshop_name} ekibine davet edildiniz",
+      "heading": "{workshop_name} ekibine katılın",
+      "intro": "Torqvoice'ta {workshop_name} ekibine {role} olarak davet edildiniz.\n\nHesabınızı oluşturup ekibe katılmak için aşağıdaki düğmeyi kullanın.",
+      "button": "Daveti kabul et",
+      "linkFallback": "Düğme çalışmazsa bu bağlantıyı tarayıcınıza kopyalayın:\n{invite_link}",
+      "outro": "Bu davet {invite_expires} tarihine kadar geçerlidir. Beklemiyorsanız bu e-postayı yok sayabilirsiniz."
     }
   },
   "attachmentNote": "Bu e-postaya bir PDF kopyası eklenmiştir.",

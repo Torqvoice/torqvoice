@@ -26,6 +26,9 @@ vi.mock('@/lib/email', () => ({
   sendOrgMail: vi.fn(),
   getOrgFromAddress: vi.fn(),
 }))
+vi.mock('@/features/email/Lib/sendTemplatedMail', () => ({
+  sendTemplatedMail: vi.fn().mockResolvedValue({ subject: 'Team invitation' }),
+}))
 
 vi.mock('@/lib/features', () => ({
   getFeatures: vi.fn().mockResolvedValue({ maxUsers: 100 }),
