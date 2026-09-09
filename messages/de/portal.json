@@ -105,7 +105,9 @@
     "download": "Herunterladen",
     "paid": "bezahlt",
     "partial": "teilweise",
-    "unpaid": "unbezahlt"
+    "unpaid": "unbezahlt",
+    "back": "Zurück zu den Rechnungen",
+    "openShared": "Freigegebene Kopie öffnen"
   },
   "quotes": {
     "title": "Angebote",

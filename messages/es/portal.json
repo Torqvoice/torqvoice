@@ -105,7 +105,9 @@
     "download": "Descargar",
     "paid": "pagado",
     "partial": "parcial",
-    "unpaid": "sin pagar"
+    "unpaid": "sin pagar",
+    "back": "Volver a las facturas",
+    "openShared": "Abrir la copia compartida"
   },
   "quotes": {
     "title": "Presupuestos",

@@ -105,7 +105,9 @@
     "download": "Baixar",
     "paid": "pago",
     "partial": "parcial",
-    "unpaid": "não pago"
+    "unpaid": "não pago",
+    "back": "Voltar para faturas",
+    "openShared": "Abrir a cópia compartilhada"
   },
   "quotes": {
     "title": "Orçamentos",
