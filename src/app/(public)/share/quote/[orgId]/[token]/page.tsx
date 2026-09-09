@@ -117,6 +117,7 @@ export default async function PublicQuotePage({
             'quote.layoutConfig',
             'workshop.serviceType',
             'workshop.taxLabel',
+            'workshop.orgNumberLabel',
           ],
         },
       },

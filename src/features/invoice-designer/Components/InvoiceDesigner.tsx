@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
+import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -34,6 +35,7 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   deleteDocumentDesign,
   getDocumentDesignUsage,
@@ -207,9 +209,26 @@ export function InvoiceDesigner({
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
+  // What the organisation number is called on paper ("ABN", "CVR", "VAT
+  // no."). A company fact rather than a design choice, so it is one value
+  // for both documents and is written to the company setting on save, the
+  // same place the company page writes it. Edited here all the same, because
+  // the number is looked at where it prints.
+  const [orgNumberLabel, setOrgNumberLabelState] = useState(companyWorkshop.orgNumberLabel ?? '')
+  const setOrgNumberLabel = useCallback(
+    (next: string) => {
+      setOrgNumberLabelState(next)
+      setDirty((prev) => ({ ...prev, [docType]: true }))
+    },
+    [docType]
+  )
   const workshop = useMemo(
-    () => ({ ...companyWorkshop, logoUrl: template.logoUrl || companyWorkshop.logoUrl || '' }),
-    [companyWorkshop, template.logoUrl]
+    () => ({
+      ...companyWorkshop,
+      logoUrl: template.logoUrl || companyWorkshop.logoUrl || '',
+      orgNumberLabel,
+    }),
+    [companyWorkshop, template.logoUrl, orgNumberLabel]
   )
 
   /**
@@ -220,12 +239,15 @@ export function InvoiceDesigner({
    */
   const printLabels = useMemo<PrintLabels>(() => {
     const pdf = messages.pdf ?? {}
-    return {
-      ...(pdf.invoice ?? {}),
-      ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-      ...(pdf.common ?? {}),
-    }
-  }, [messages, docType])
+    return withOrgNumberLabel(
+      {
+        ...(pdf.invoice ?? {}),
+        ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
+        ...(pdf.common ?? {}),
+      },
+      workshop.orgNumberLabel
+    )
+  }, [messages, docType, workshop.orgNumberLabel])
   const L = useCallback(
     (key: string, fallback: string) => printLabels[key] || fallback,
     [printLabels]
@@ -614,6 +636,7 @@ export function InvoiceDesigner({
           [`${prefix}.headerStyle`]: template.headerStyle,
           [`${prefix}.logoSize`]: String(template.logoSize),
           [`${prefix}.logo`]: template.logoUrl,
+          [SETTING_KEYS.ORG_NUMBER_LABEL]: orgNumberLabel.trim(),
         }),
       ])
       setDirty((prev) => ({ ...prev, [docType]: false }))
@@ -1011,6 +1034,9 @@ export function InvoiceDesigner({
           sloganSet={!!companyWorkshop.slogan?.trim()}
           paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
           documentTitleDefault={data.meta.title}
+          orgNumberLabel={orgNumberLabel}
+          orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
+          onOrgNumberLabel={setOrgNumberLabel}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

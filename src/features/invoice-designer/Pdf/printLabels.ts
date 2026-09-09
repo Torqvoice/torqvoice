@@ -4,6 +4,8 @@
  * routes have always applied.
  */
 
+import { withOrgNumberLabel } from '../Lib/labelOverrides'
+
 type PdfMessages = Record<string, Record<string, string>>
 
 /** Which document's wording wins where the invoice and the quote differ. */
@@ -51,5 +53,5 @@ export async function loadPrintLabels(
     labels.tax = `${customTaxLabel} ({rate}%)`
   }
 
-  return labels
+  return withOrgNumberLabel(labels, settingsMap['workshop.orgNumberLabel'])
 }
