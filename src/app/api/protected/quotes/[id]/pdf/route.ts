@@ -1,3 +1,4 @@
+import { withOrgNumberLabel } from '@/features/invoice-designer/Lib/labelOverrides'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
@@ -91,6 +92,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     if (customTaxLabel) {
       labels.tax = `${customTaxLabel} ({rate}%)`
     }
+    Object.assign(labels, withOrgNumberLabel(labels, settingsMap['workshop.orgNumberLabel']))
 
     let logoDataUri: string | undefined
     const logoPath = documentLogoPath(settingsMap, 'quote')

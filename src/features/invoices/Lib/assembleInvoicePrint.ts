@@ -316,7 +316,11 @@ async function assembleLive(
     logoDataUri,
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
-    labelSettings: { 'workshop.serviceType': serviceType, 'workshop.taxLabel': taxLabel ?? '' },
+    labelSettings: {
+      'workshop.serviceType': serviceType,
+      'workshop.taxLabel': taxLabel ?? '',
+      'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
+    },
   }
 }
 
@@ -384,7 +388,11 @@ function assembleFrozen(
     logoDataUri,
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
-    labelSettings: { 'workshop.serviceType': serviceType, 'workshop.taxLabel': taxLabel ?? '' },
+    labelSettings: {
+      'workshop.serviceType': serviceType,
+      'workshop.taxLabel': taxLabel ?? '',
+      'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
+    },
   }
 }
 

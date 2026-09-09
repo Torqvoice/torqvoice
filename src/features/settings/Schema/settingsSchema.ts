@@ -12,6 +12,7 @@ export const SETTING_KEYS = {
   TAX_ENABLED: 'workshop.taxEnabled',
   TAX_INCLUSIVE: 'workshop.taxInclusive',
   TAX_LABEL: 'workshop.taxLabel',
+  ORG_NUMBER_LABEL: 'workshop.orgNumberLabel',
   INVOICE_PREFIX: 'workshop.invoicePrefix',
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',
   CURRENCY_SYMBOL: 'workshop.currencySymbol',
@@ -227,6 +228,7 @@ export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]
 export const workshopSettingsSchema = z.object({
   [SETTING_KEYS.WORKSHOP_ADDRESS]: z.string().optional(),
   [SETTING_KEYS.WORKSHOP_SLOGAN]: z.string().max(160).optional(),
+  [SETTING_KEYS.ORG_NUMBER_LABEL]: z.string().max(40).optional(),
   [SETTING_KEYS.WORKSHOP_PHONE]: z.string().optional(),
   [SETTING_KEYS.TIMEZONE_DETECTED]: z.string().max(64).optional(),
   [SETTING_KEYS.INSPECTION_DURATION_MINUTES]: z.string().regex(/^\d+$/).optional(),

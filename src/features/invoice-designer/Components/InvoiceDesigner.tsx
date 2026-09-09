@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
+import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -220,12 +221,15 @@ export function InvoiceDesigner({
    */
   const printLabels = useMemo<PrintLabels>(() => {
     const pdf = messages.pdf ?? {}
-    return {
-      ...(pdf.invoice ?? {}),
-      ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-      ...(pdf.common ?? {}),
-    }
-  }, [messages, docType])
+    return withOrgNumberLabel(
+      {
+        ...(pdf.invoice ?? {}),
+        ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
+        ...(pdf.common ?? {}),
+      },
+      workshop.orgNumberLabel
+    )
+  }, [messages, docType, workshop.orgNumberLabel])
   const L = useCallback(
     (key: string, fallback: string) => printLabels[key] || fallback,
     [printLabels]
