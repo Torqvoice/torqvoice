@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
+import { channelSetup, organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { notify } from '@/lib/notify'
+import { verifyTelnyxSignature, warnOnce } from '@/lib/webhook-signatures'
 
 export async function POST(request: Request) {
   try {
@@ -25,8 +26,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid org_secret' }, { status: 403 })
     }
 
+    // The exact bytes, since the signature covers them.
+    const raw = await request.text()
+
+    // The secret in the URL says which workshop this is for; the signature
+    // says it was Telnyx who sent it, when the workshop has pasted the
+    // account's public key.
+    const setup = await channelSetup(organizationId, 'sms')
+    const publicKey =
+      setup?.connectorId === 'telnyx-sms' ? setup.credentials.webhookPublicKey?.trim() : undefined
+    if (publicKey) {
+      const valid = verifyTelnyxSignature({
+        publicKeyBase64: publicKey,
+        timestamp: request.headers.get('telnyx-timestamp'),
+        rawBody: raw,
+        signatureBase64: request.headers.get('telnyx-signature-ed25519'),
+      })
+      if (!valid) {
+        console.warn(`[webhook/sms/telnyx] Invalid signature for organization ${organizationId}`)
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 403 })
+      }
+    } else {
+      warnOnce(
+        `telnyx-sms:${setup?.connectionId ?? organizationId}`,
+        `[webhook/sms/telnyx] Connection ${setup?.connectionId ?? '(none)'} of organization ${organizationId} has no webhook public key; inbound SMS is accepted on the URL secret alone`
+      )
+    }
+
     // Telnyx sends JSON with a data wrapper
-    const payload = (await request.json()) as {
+    const payload = JSON.parse(raw) as {
       data?: {
         event_type?: string
         payload?: {

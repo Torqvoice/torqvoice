@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paymentProviderFor } from '@/features/integrations/Lib/payments'
+import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
 
 export async function POST(request: Request) {
   try {
@@ -57,6 +58,16 @@ async function processPayPalPayment(orderId: string, orgId: string, serviceRecor
 
   if (!result || !result.paid) {
     return NextResponse.json({ received: true, status: 'not_paid' })
+  }
+
+  // The order PayPal verified must be the one created for this record. The
+  // custom_id in the event body is the caller's claim; the one PayPal hands
+  // back with the order is the truth.
+  if (!paymentMatchesRecord(result, { serviceRecordId, organizationId: orgId })) {
+    console.warn(
+      `[PayPal Webhook] Order ${orderId} was not created for record ${serviceRecordId} of organization ${orgId}; ignoring`
+    )
+    return NextResponse.json({ error: 'Order does not belong to this record' }, { status: 400 })
   }
 
   // Verify service record exists and belongs to this org

@@ -50,6 +50,8 @@ export class StripeProvider implements PaymentProvider {
       return {
         paid: session.payment_status === 'paid',
         amount: (session.amount_total ?? 0) / 100,
+        serviceRecordId: session.metadata?.serviceRecordId ?? null,
+        organizationId: session.metadata?.orgId ?? null,
       }
     } catch {
       return null

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { canImportAnything } from '@/features/import/Lib/importAccess.server'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { isDemoMode } from '@/lib/demo'
 import { db } from '@/lib/db'
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
   }
   const ctx = await getAuthContext()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!(await canImportAnything(ctx))) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
   const { organizationId } = ctx
 
   let form: FormData

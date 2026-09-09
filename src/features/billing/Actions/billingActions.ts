@@ -38,9 +38,9 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
         sr."manuallyPaid",
         CASE WHEN sr."manuallyPaid" = true
           THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-          ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+          ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
         END AS paid
-      FROM service_records sr
+      FROM "public"."service_records" sr
       WHERE sr."organizationId" = ${organizationId}
     ) sub
   `)
@@ -116,12 +116,12 @@ export async function getBillingHistory(params: {
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
               THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-              ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+              ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
             END AS paid_amount,
             sr."sentAt" AS sent_at,
             sr."viewCount" AS view_count
-          FROM service_records sr
-          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
+          FROM "public"."service_records" sr
+          LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
           WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
@@ -185,7 +185,7 @@ export async function getBillingHistory(params: {
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
               THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-              ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+              ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
             END AS paid_amount,
             v.id AS vehicle_id,
             v.make AS vehicle_make,
@@ -197,9 +197,9 @@ export async function getBillingHistory(params: {
             sr."sentAt" AS sent_at,
             sr."viewCount" AS view_count,
             sr."lastViewedAt" AS last_viewed_at
-          FROM service_records sr
-          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
-          LEFT JOIN customers c ON c.id = COALESCE(sr."customerId", v."customerId")
+          FROM "public"."service_records" sr
+          LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
+          LEFT JOIN "public"."customers" c ON c.id = COALESCE(sr."customerId", v."customerId")
           WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub

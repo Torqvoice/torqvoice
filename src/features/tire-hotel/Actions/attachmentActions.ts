@@ -1,7 +1,9 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { z } from 'zod'
+import { uploadUrlSchema } from '@/lib/upload-url'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -16,7 +18,7 @@ const attachmentSchema = z.object({
     .array(
       z.object({
         fileName: z.string().trim().min(1).max(255),
-        fileUrl: z.string().trim().min(1).max(500),
+        fileUrl: uploadUrlSchema,
         fileType: z.string().trim().min(1).max(100),
         fileSize: z.coerce.number().int().min(0),
         description: z.string().trim().max(500).optional().or(z.literal('')),
@@ -75,6 +77,7 @@ export async function addTireSetAttachments(input: unknown) {
     async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
       const data = attachmentSchema.parse(input)
+      assertOwnUploads(data, organizationId)
 
       const set = await db.tireSet.findFirst({
         where: { id: data.tireSetId, organizationId },

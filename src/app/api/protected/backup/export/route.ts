@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import JSZip from 'jszip'
@@ -50,6 +51,8 @@ const DEFAULT_OPTIONS: ExportOptions = {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   if (isDemoMode) {
     return NextResponse.json({ error: 'This action is disabled on the demo.' }, { status: 403 })
   }
@@ -58,6 +61,10 @@ export async function POST(request: NextRequest) {
 
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // Reading or replacing the whole workshop is an owner's or admin's call.
+  if (!ctx.isAdmin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   let options: ExportOptions = DEFAULT_OPTIONS
@@ -474,6 +481,8 @@ export async function POST(request: NextRequest) {
  * export as everything else, with every option on.
  */
 export async function GET(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   return POST(
     new NextRequest(request.url, {
       method: 'POST',

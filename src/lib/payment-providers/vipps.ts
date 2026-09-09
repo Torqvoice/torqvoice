@@ -129,9 +129,31 @@ export class VippsProvider implements PaymentProvider {
       return {
         paid,
         amount: (data.amount?.value ?? 0) / 100,
+        ...vippsAttribution(data),
       }
     } catch {
       return null
     }
+  }
+}
+
+function textOrNull(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() ? value.trim() : null
+}
+
+/**
+ * Who a payment was created for. Vipps passes the metadata from
+ * createCheckout through untouched, and the reference we minted carries the
+ * record id as well, which covers a payment made before metadata was sent.
+ */
+function vippsAttribution(data: {
+  metadata?: { serviceRecordId?: unknown; orgId?: unknown }
+  reference?: unknown
+}): { serviceRecordId: string | null; organizationId: string | null } {
+  const reference = textOrNull(data.reference)
+  const fromReference = reference?.match(/^inv-(.+)-\d+$/)?.[1] ?? null
+  return {
+    serviceRecordId: textOrNull(data.metadata?.serviceRecordId) ?? fromReference,
+    organizationId: textOrNull(data.metadata?.orgId),
   }
 }
