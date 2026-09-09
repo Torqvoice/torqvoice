@@ -2149,6 +2149,8 @@
         "description": "Ostatni dzień działania linku zaproszenia."
       }
     },
+    "headerRule": "Linia pod nagłówkiem",
+    "headerRuleHint": "Cienka linia między logo lub nazwą warsztatu a resztą wiadomości.",
     "optionalTag": "Nie każdy e-mail ma wartość dla tego tagu. Gdy jest pusty, słowa wokół niego są porządkowane.",
     "summaryRows": {
       "reference": "Numer",
@@ -2243,8 +2245,8 @@
       },
       "shapes": "Kształty",
       "buttonRadius": "Rogi przycisku",
-      "headerRule": "Linia pod nagłówkiem",
-      "headerRuleHint": "Cienka linia między logo lub nazwą warsztatu a resztą wiadomości.",
+      "topBar": "Kolorowy pasek u góry",
+      "topBarHint": "Wąski pasek w Twoim kolorze głównym wzdłuż górnej krawędzi wiadomości.",
       "showLogo": "Pokaż logo",
       "showLogoHint": "Przy wyłączonym logo nagłówek drukuje zamiast niego nazwę warsztatu."
     },

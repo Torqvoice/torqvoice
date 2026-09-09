@@ -239,12 +239,30 @@ describe('renderEmailHtml', () => {
     expect(out).toContain('#d97706')
   })
 
-  it('draws the rule under the letterhead unless the theme says not to', () => {
+  it('draws the rule under the letterhead unless the header block says not to', () => {
     const ruled = 'border-bottom:1px solid #e6e8ec;"><span'
     expect(renderEmailHtml(spec)).toContain(ruled)
-    const bare = renderEmailHtml({ ...spec, theme: { ...spec.theme, headerRule: false } })
+    const template = preset('invoice_sent')
+    const bare = renderEmailHtml(
+      buildEmailSpec(
+        {
+          ...template,
+          blocks: template.blocks.map((b) => (b.type === 'header' ? { ...b, rule: false } : b)),
+        },
+        invoiceInput
+      )
+    )
     expect(bare).not.toContain(ruled)
     expect(bare).toContain('Bergen Bil')
+  })
+
+  it('draws the colour bar along the top unless the theme says not to', () => {
+    expect(renderEmailHtml(spec)).toContain(
+      'height:5px;line-height:5px;font-size:0;border-radius:10px 10px 0 0;'
+    )
+    const bare = renderEmailHtml({ ...spec, theme: { ...spec.theme, topBar: false } })
+    expect(bare).not.toContain('height:5px;line-height:5px')
+    expect(bare).toContain('border-radius:10px;padding:32px 36px 24px 36px;')
   })
 
   it('marks every row with its block only when asked, for the designer', () => {

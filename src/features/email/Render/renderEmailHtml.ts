@@ -58,7 +58,7 @@ function safeTheme(theme: EmailTheme) {
     panel: color(theme.panelColor, d.panelColor),
     font: EMAIL_FONTS[theme.fontFamily] ?? EMAIL_FONTS[d.fontFamily],
     radius,
-    headerRule: theme.headerRule !== false,
+    topBar: theme.topBar !== false,
   }
 }
 
@@ -106,8 +106,8 @@ function blockHtml(block: SpecBlock, t: SafeTheme, marked: boolean): string {
       // everyone else. The image is inline so the alignment applies to it.
       // A rule under the letterhead, and room after it, so the mark and the
       // heading are not two bold lines fighting over the top of the card.
-      // The theme can take the rule away; the room stays.
-      const rule = t.headerRule ? `border-bottom:1px solid ${RULE};` : ''
+      // The block can take the rule away; the room stays.
+      const rule = block.rule ? `border-bottom:1px solid ${RULE};` : ''
       return (
         row(
           `<td align="${block.align}" style="padding:0 0 20px 0;text-align:${block.align};${rule}">${logo}</td>`
@@ -305,9 +305,11 @@ export function renderEmailHtml(spec: EmailSpec, options: RenderHtmlOptions = {}
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="${WIDTH}" style="width:100%;max-width:${WIDTH}px;">` +
     // The bar: the workshop's colour, five pixels of it, along the top of
     // the card. Enough to be the brand at a glance, not enough to compete
-    // with a logo underneath.
-    `<tr><td bgcolor="${t.primary}" style="background:${t.primary};height:5px;line-height:5px;font-size:0;border-radius:10px 10px 0 0;">&nbsp;</td></tr>` +
-    `<tr><td bgcolor="${t.panel}" style="background:${t.panel};border:1px solid ${RULE};border-top:0;border-radius:0 0 10px 10px;padding:32px 36px 24px 36px;">` +
+    // with a logo underneath. Without it the card is edged all the way round.
+    (t.topBar
+      ? `<tr><td bgcolor="${t.primary}" style="background:${t.primary};height:5px;line-height:5px;font-size:0;border-radius:10px 10px 0 0;">&nbsp;</td></tr>` +
+        `<tr><td bgcolor="${t.panel}" style="background:${t.panel};border:1px solid ${RULE};border-top:0;border-radius:0 0 10px 10px;padding:32px 36px 24px 36px;">`
+      : `<tr><td bgcolor="${t.panel}" style="background:${t.panel};border:1px solid ${RULE};border-radius:10px;padding:32px 36px 24px 36px;">`) +
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">` +
     body +
     `</table></td></tr>` +

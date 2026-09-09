@@ -28,7 +28,14 @@ export interface SpecText {
 }
 
 type SpecBlockBody =
-  | { type: 'header'; workshopName: string; logoUrl?: string; logoWidth: number; align: BlockAlign }
+  | {
+      type: 'header'
+      workshopName: string
+      logoUrl?: string
+      logoWidth: number
+      align: BlockAlign
+      rule: boolean
+    }
   | ({ type: 'heading' } & SpecText)
   | ({ type: 'paragraph' } & SpecText)
   | ({ type: 'callout' } & SpecText)
@@ -103,6 +110,7 @@ function resolveBlock(
         logoUrl: template.theme.showLogo ? input.logoUrl : undefined,
         logoWidth: template.theme.logoWidth,
         align: block.align ?? 'left',
+        rule: block.rule !== false,
       }
 
     case 'heading': {

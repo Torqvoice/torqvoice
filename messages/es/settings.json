@@ -2149,6 +2149,8 @@
         "description": "El último día en que funciona el enlace de invitación."
       }
     },
+    "headerRule": "Línea bajo el encabezado",
+    "headerRuleHint": "Una línea fina entre el logotipo o el nombre del taller y el resto del correo.",
     "optionalTag": "No todos los correos tienen un valor para esta etiqueta. Cuando está vacía, las palabras que la rodean se ordenan.",
     "summaryRows": {
       "reference": "Referencia",
@@ -2243,8 +2245,8 @@
       },
       "shapes": "Formas",
       "buttonRadius": "Esquinas del botón",
-      "headerRule": "Línea bajo el encabezado",
-      "headerRuleHint": "Una línea fina entre el logotipo o el nombre del taller y el resto del correo.",
+      "topBar": "Barra de color arriba",
+      "topBarHint": "Una franja fina en tu color principal a lo largo del borde superior del correo.",
       "showLogo": "Mostrar logotipo",
       "showLogoHint": "Con el logotipo desactivado, la cabecera imprime el nombre del taller en su lugar."
     },

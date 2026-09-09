@@ -289,6 +289,14 @@ function BlockFields({
               value={block.align ?? 'left'}
               onChange={(align) => onBlock(block.id, { align })}
             />
+            <Row label={t('headerRule')}>
+              <Toggle
+                label={t('headerRule')}
+                on={block.rule !== false}
+                onChange={(rule) => onBlock(block.id, { rule })}
+              />
+            </Row>
+            <Note>{t('headerRuleHint')}</Note>
           </Group>
           <Note>{t('blockNotes.header')}</Note>
         </>
@@ -462,14 +470,14 @@ function ThemeFields({
           suffix="px"
           onChange={(buttonRadius) => onTheme({ buttonRadius })}
         />
-        <Row label={t('theme.headerRule')}>
+        <Row label={t('theme.topBar')}>
           <Toggle
-            label={t('theme.headerRule')}
-            on={theme.headerRule !== false}
-            onChange={(headerRule) => onTheme({ headerRule })}
+            label={t('theme.topBar')}
+            on={theme.topBar !== false}
+            onChange={(topBar) => onTheme({ topBar })}
           />
         </Row>
-        <Note>{t('theme.headerRuleHint')}</Note>
+        <Note>{t('theme.topBarHint')}</Note>
       </Group>
     </>
   )

@@ -2149,6 +2149,8 @@
         "description": "O último dia em que o link do convite funciona."
       }
     },
+    "headerRule": "Linha sob o cabeçalho",
+    "headerRuleHint": "Uma linha fina entre o logotipo ou o nome da oficina e o resto do e-mail.",
     "optionalTag": "Nem todo e-mail tem um valor para esta tag. Quando ela fica vazia, as palavras ao redor são ajustadas.",
     "summaryRows": {
       "reference": "Referência",
@@ -2243,8 +2245,8 @@
       },
       "shapes": "Formas",
       "buttonRadius": "Cantos do botão",
-      "headerRule": "Linha sob o cabeçalho",
-      "headerRuleHint": "Uma linha fina entre o logotipo ou o nome da oficina e o resto do e-mail.",
+      "topBar": "Barra colorida no topo",
+      "topBarHint": "Uma faixa fina na sua cor principal ao longo da borda superior do e-mail.",
       "showLogo": "Mostrar logotipo",
       "showLogoHint": "Com o logotipo desativado, o cabeçalho imprime o nome da oficina no lugar."
     },

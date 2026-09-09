@@ -2149,6 +2149,8 @@
         "description": "De laatste dag waarop de uitnodigingslink werkt."
       }
     },
+    "headerRule": "Lijn onder de kop",
+    "headerRuleHint": "Een dunne lijn tussen het logo of de werkplaatsnaam en de rest van de e-mail.",
     "optionalTag": "Niet elke e-mail heeft een waarde voor deze tag. Als hij leeg is, worden de woorden eromheen opgeruimd.",
     "summaryRows": {
       "reference": "Referentie",
@@ -2243,8 +2245,8 @@
       },
       "shapes": "Vormen",
       "buttonRadius": "Knophoeken",
-      "headerRule": "Lijn onder de kop",
-      "headerRuleHint": "Een dunne lijn tussen het logo of de werkplaatsnaam en de rest van de e-mail.",
+      "topBar": "Kleurbalk bovenaan",
+      "topBarHint": "Een smalle band in uw primaire kleur langs de bovenrand van de e-mail.",
       "showLogo": "Logo tonen",
       "showLogoHint": "Met het logo uit drukt de koptekst in plaats daarvan de naam van de werkplaats af."
     },

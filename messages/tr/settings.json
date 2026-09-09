@@ -2149,6 +2149,8 @@
         "description": "Davet bağlantısının çalıştığı son gün."
       }
     },
+    "headerRule": "Başlık altında çizgi",
+    "headerRuleHint": "Logo veya atölye adı ile e-postanın geri kalanı arasında ince bir çizgi.",
     "optionalTag": "Her e-postada bu etiket için bir değer yoktur. Boş olduğunda çevresindeki sözcükler düzenlenir.",
     "summaryRows": {
       "reference": "Referans",
@@ -2243,8 +2245,8 @@
       },
       "shapes": "Şekiller",
       "buttonRadius": "Düğme köşeleri",
-      "headerRule": "Başlık altında çizgi",
-      "headerRuleHint": "Logo veya atölye adı ile e-postanın geri kalanı arasında ince bir çizgi.",
+      "topBar": "Üstte renkli şerit",
+      "topBarHint": "E-postanın üst kenarı boyunca ana renginizde ince bir şerit.",
       "showLogo": "Logoyu göster",
       "showLogoHint": "Logo kapalıyken üst bilgi bunun yerine atölye adını yazdırır."
     },

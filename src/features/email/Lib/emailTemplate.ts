@@ -63,6 +63,11 @@ export interface EmailBlock {
   height?: number
   /** document_summary: which rows to show. Absent shows every row there is. */
   rows?: SummaryRowKey[]
+  /**
+   * header: the rule under the letterhead. Absent counts as on, so a
+   * template saved before the rule existed keeps the look every mail has.
+   */
+  rule?: boolean
 }
 
 /**
@@ -101,11 +106,8 @@ export interface EmailTheme {
   logoWidth: number
   /** Rounded corners on the button; Outlook squares them off regardless. */
   buttonRadius: number
-  /**
-   * The rule under the letterhead. Absent counts as on, so a template saved
-   * before the rule existed keeps the look every mail has now.
-   */
-  headerRule?: boolean
+  /** The bar in the primary colour along the top of the card. Absent counts as on. */
+  topBar?: boolean
 }
 
 export const DEFAULT_EMAIL_THEME: EmailTheme = {
@@ -119,7 +121,7 @@ export const DEFAULT_EMAIL_THEME: EmailTheme = {
   logoUrl: '',
   logoWidth: 140,
   buttonRadius: 6,
-  headerRule: true,
+  topBar: true,
 }
 
 export const EMAIL_LOGO_MIN_WIDTH = 60

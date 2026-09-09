@@ -2149,6 +2149,8 @@
         "description": "Paskutinė diena, kai kvietimo nuoroda veikia."
       }
     },
+    "headerRule": "Linija po antrašte",
+    "headerRuleHint": "Plona linija tarp logotipo ar dirbtuvių pavadinimo ir likusio laiško.",
     "optionalTag": "Ne kiekvienas laiškas turi šios žymės reikšmę. Kai ji tuščia, aplinkiniai žodžiai sutvarkomi.",
     "summaryRows": {
       "reference": "Nuoroda",
@@ -2243,8 +2245,8 @@
       },
       "shapes": "Formos",
       "buttonRadius": "Mygtuko kampai",
-      "headerRule": "Linija po antrašte",
-      "headerRuleHint": "Plona linija tarp logotipo ar dirbtuvių pavadinimo ir likusio laiško.",
+      "topBar": "Spalvota juosta viršuje",
+      "topBarHint": "Plona juosta jūsų pagrindine spalva išilgai viršutinio laiško krašto.",
       "showLogo": "Rodyti logotipą",
       "showLogoHint": "Išjungus logotipą, antraštinėje dalyje vietoj jo spausdinamas dirbtuvių pavadinimas."
     },

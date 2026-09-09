@@ -50,6 +50,7 @@ export const emailBlockSchema = z.object({
   width: z.number().int().min(EMAIL_IMAGE_MIN_WIDTH).max(EMAIL_IMAGE_MAX_WIDTH).optional(),
   height: z.number().int().min(0).max(120).optional(),
   rows: z.array(z.enum(SUMMARY_ROWS)).max(SUMMARY_ROWS.length).optional(),
+  rule: z.boolean().optional(),
 })
 
 export const emailThemeSchema = z.object({
@@ -66,7 +67,7 @@ export const emailThemeSchema = z.object({
     .refine((value) => value === '' || isEmailLogoUrl(value), 'Not an email logo'),
   logoWidth: z.number().int().min(EMAIL_LOGO_MIN_WIDTH).max(EMAIL_LOGO_MAX_WIDTH),
   buttonRadius: z.number().int().min(0).max(32),
-  headerRule: z.boolean().optional(),
+  topBar: z.boolean().optional(),
 })
 
 export const emailKindSchema = z.enum(EMAIL_KINDS)
