@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { extensionForType } from '@/lib/upload-url'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size must be under 5MB' }, { status: 400 })
     }
 
-    const ext = file.name.split('.').pop() || 'jpg'
+    const ext = extensionForType(file.type, 'jpg')
     const filename = `${crypto.randomUUID()}.${ext}`
     const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'inventory')
 

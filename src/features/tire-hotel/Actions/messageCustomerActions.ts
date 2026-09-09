@@ -12,6 +12,7 @@ import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availabl
 import { TIRE_MESSAGE_REASONS } from '../Lib/messageTemplates'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 
+const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.TIRE_HOTEL }]
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 
 const messageSchema = z
@@ -146,6 +147,9 @@ export async function messageCustomerAboutTireSet(input: unknown) {
       }
 
       const override = data.recipient?.trim()
+      if (override && !recipientFitsChannel(data.channel, override)) {
+        throw new Error('That address does not fit the chosen channel')
+      }
       const onFile =
         data.channel === 'email'
           ? set.customer?.email
@@ -201,7 +205,7 @@ export async function messageCustomerAboutTireSet(input: unknown) {
       }
     },
     {
-      requiredPermissions: READ,
+      requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_set.message_customer',
         entity: 'ScheduledMessage',
@@ -214,4 +218,11 @@ export async function messageCustomerAboutTireSet(input: unknown) {
       }),
     }
   )
+}
+
+/** An override address has to be the kind of address the channel delivers to. */
+export function recipientFitsChannel(channel: string, recipient: string): boolean {
+  if (channel === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)
+  if (channel === 'sms' || channel === 'whatsapp') return /^\+?[0-9 ()-]{6,20}$/.test(recipient)
+  return recipient.length <= 64
 }

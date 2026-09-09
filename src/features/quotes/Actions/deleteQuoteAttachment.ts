@@ -22,11 +22,10 @@ export async function deleteQuoteAttachment(attachmentId: string) {
       if (!attachment) throw new Error('Attachment not found')
 
       // Delete file from disk
-      const filePath = resolveUploadPath(attachment.fileUrl)
       try {
-        await unlink(filePath)
+        await unlink(resolveUploadPath(attachment.fileUrl))
       } catch (err) {
-        console.warn(`[deleteQuoteAttachment] Failed to delete file "${filePath}":`, err)
+        console.warn(`[deleteQuoteAttachment] Failed to delete file "${attachment.fileUrl}":`, err)
       }
 
       await db.quoteAttachment.delete({ where: { id: attachmentId } })

@@ -1,6 +1,7 @@
 'use server'
 
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
@@ -226,6 +227,7 @@ export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const { inspectionDueAt, ...data } = createVehicleSchema.parse(input)
+      assertOwnUploads(data, organizationId)
       const timeZone = await workshopTimeZone(organizationId)
       const vehicle = await db.vehicle.create({
         data: {
@@ -263,6 +265,7 @@ export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
       const { id, inspectionDueAt, ...data } = updateVehicleSchema.parse(input)
+      assertOwnUploads(data, organizationId)
 
       // Fetch current record for display/diff
       const before = await db.vehicle.findFirst({

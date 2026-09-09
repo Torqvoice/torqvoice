@@ -268,29 +268,45 @@ export async function sendNotificationEmail(input: {
   customerName?: string | null
   vehicle?: VehicleContext | null
 }) {
-  return withAuth(async ({ organizationId, userId }) => {
-    demoGuard()
-    await requireFeature(organizationId, 'smtp')
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      demoGuard()
+      await requireFeature(organizationId, 'smtp')
 
-    const settings = await getWorkshopSettings(organizationId)
-    if (settings['workshop.emailEnabled'] === 'false') {
-      throw new Error('Email sending is disabled. Enable it in Settings.')
+      const settings = await getWorkshopSettings(organizationId)
+      if (settings['workshop.emailEnabled'] === 'false') {
+        throw new Error('Email sending is disabled. Enable it in Settings.')
+      }
+
+      // The workshop's provider sends to its own customers, not to whoever a
+      // member types in: otherwise this is an open relay under the shop's name.
+      const to = input.recipientEmail.trim()
+      const customer = await db.customer.findFirst({
+        where: { organizationId, email: { equals: to, mode: 'insensitive' } },
+        select: { id: true },
+      })
+      if (!customer) throw new Error('The recipient is not a customer of this workshop')
+
+      await sendTemplatedMail(organizationId, {
+        kind: 'message',
+        to,
+        subject: input.subject,
+        context: {
+          message: input.body,
+          customerName: input.customerName,
+          vehicle: input.vehicle,
+          currentUser: await senderName(userId),
+        },
+      })
+
+      return { sent: true }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
+      ],
     }
-
-    await sendTemplatedMail(organizationId, {
-      kind: 'message',
-      to: input.recipientEmail,
-      subject: input.subject,
-      context: {
-        message: input.body,
-        customerName: input.customerName,
-        vehicle: input.vehicle,
-        currentUser: await senderName(userId),
-      },
-    })
-
-    return { sent: true }
-  })
+  )
 }
 
 export async function sendInvoiceEmail(input: {

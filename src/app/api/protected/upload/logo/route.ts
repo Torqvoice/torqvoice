@@ -4,6 +4,7 @@ import { writeFile, mkdir, unlink } from 'fs/promises'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import { db } from '@/lib/db'
+import { cleanImage } from '@/lib/image-upload.server'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 
 export async function POST(request: Request) {
@@ -21,22 +22,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 })
+    if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+      return NextResponse.json({ error: 'Upload a PNG, JPEG or WebP image' }, { status: 400 })
     }
 
     if (file.size > 2 * 1024 * 1024) {
       return NextResponse.json({ error: 'File size must be under 2MB' }, { status: 400 })
     }
 
-    const ext = file.name.split('.').pop() || 'png'
-    const fileName = `${randomUUID()}.${ext}`
+    // Decoded and re-encoded: the stored file holds pixels and nothing else,
+    // and its extension is what the bytes turned out to be, not the name.
+    let clean: Awaited<ReturnType<typeof cleanImage>>
+    try {
+      clean = await cleanImage(Buffer.from(await file.arrayBuffer()), { maxSide: 1200 })
+    } catch {
+      return NextResponse.json({ error: 'Not an image we can read' }, { status: 400 })
+    }
+
+    const fileName = `${randomUUID()}.${clean.ext}`
     const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'logos')
 
     await mkdir(uploadDir, { recursive: true })
-
-    const buffer = Buffer.from(await file.arrayBuffer())
-    await writeFile(path.join(uploadDir, fileName), buffer)
+    await writeFile(path.join(uploadDir, fileName), clean.data)
 
     const url = `/api/protected/files/${ctx.organizationId}/logos/${fileName}`
 
