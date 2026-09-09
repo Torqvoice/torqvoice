@@ -158,7 +158,6 @@ export const SETTING_KEYS = {
   TELEGRAM_TEMPLATE_STATUS_IN_PROGRESS: 'telegram.template.statusInProgress',
   TELEGRAM_TEMPLATE_STATUS_COMPLETED: 'telegram.template.statusCompleted',
   TELEGRAM_TEMPLATE_PAYMENT_RECEIVED: 'telegram.template.paymentReceived',
-  TELEGRAM_SHOW_QR_ON_INVOICE: 'telegram.showQrOnInvoice',
   PORTAL_ENABLED: 'portal.enabled',
   PORTAL_DESCRIPTION: 'portal.description',
   PORTAL_HOURS: 'portal.hours',

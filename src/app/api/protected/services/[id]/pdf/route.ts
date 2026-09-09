@@ -12,7 +12,7 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
-import { getOrgTelegramBotUsername } from '@/lib/telegram'
+import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getAppBaseUrl } from '@/lib/app-url'
@@ -109,14 +109,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       ? `${appUrl}/portal/${portalSlug || ctx.organizationId}`
       : undefined
 
-    // Generate Telegram QR if the telegram_qr section is visible in layout
-    let telegramQrDataUri: string | undefined
-    const telegramBotUsername = await getOrgTelegramBotUsername(ctx.organizationId)
-    const telegramQrVisible = layoutConfig.sections.some((s) => s.id === 'telegram_qr' && s.visible)
-    if (telegramBotUsername && telegramQrVisible) {
-      const { generateQrDataUri } = await import('@/lib/qr')
-      telegramQrDataUri = await generateQrDataUri(`https://t.me/${telegramBotUsername}`, 200)
-    }
+    const telegramQr = await telegramQrForPrint(ctx.organizationId, layoutConfig)
 
     const element = React.createElement(InvoicePDF, {
       data: assembly.data,
@@ -130,7 +123,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       template: assembly.template,
       torqvoiceLogoDataUri,
       portalUrl,
-      telegramQrDataUri,
+      telegramQrDataUri: telegramQr?.dataUri,
       telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
       labels,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

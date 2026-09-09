@@ -77,6 +77,7 @@ export function InvoiceDesigner({
   workshop: companyWorkshop,
   customFields: serviceCustomFields,
   quoteCustomFields = [],
+  telegramBotLink,
 }: {
   initialDocumentType: DocumentType
   initialView: 'gallery' | 'designer'
@@ -94,6 +95,8 @@ export function InvoiceDesigner({
   workshop: DesignerWorkshop
   customFields: DesignerFieldDef[]
   quoteCustomFields?: DesignerFieldDef[]
+  /** The connected Telegram bot's t.me link, or nothing when no bot is set up. */
+  telegramBotLink?: string
 }) {
   const router = useRouter()
   const t = useTranslations('settings.designer')
@@ -204,8 +207,9 @@ export function InvoiceDesigner({
     const ids: string[] = []
     if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
     if (!companyWorkshop.paymentTerms?.trim()) ids.push('payment_terms')
+    if (!telegramBotLink) ids.push('telegram_qr')
     return new Set(ids)
-  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms])
+  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms, telegramBotLink])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
@@ -274,10 +278,36 @@ export function InvoiceDesigner({
     [docType]
   )
 
+  // The Telegram block draws a real code: the workshop's own bot when one is
+  // connected, a stand-in otherwise, marked as such. Without it the block
+  // drew nothing at all and looked broken the moment it was switched on.
+  // Encoded in the browser, only while the block is on the sheet.
+  const telegramOn = layout.sections.some((s) => s.id === 'telegram_qr' && s.visible)
+  const [telegramQrDataUri, setTelegramQrDataUri] = useState<string>()
+  useEffect(() => {
+    if (!telegramOn) return
+    let cancelled = false
+    const link = telegramBotLink || 'https://t.me/torqvoice'
+    import('qrcode').then((QRCode) =>
+      QRCode.toDataURL(link, { width: 200, margin: 1 }).then((uri) => {
+        if (!cancelled) setTelegramQrDataUri(uri)
+      })
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [telegramOn, telegramBotLink])
+
   /** What a workshop's own sheet says, with the sample standing in for a job. */
   const data: DocumentData = useMemo(
-    () => buildSampleData(workshop, customFields, t, printLabels, docType),
-    [workshop, customFields, t, printLabels, docType]
+    () => ({
+      ...buildSampleData(workshop, customFields, t, printLabels, docType),
+      telegramQr:
+        telegramOn && telegramQrDataUri
+          ? { dataUri: telegramQrDataUri, label: L('telegramConnect', 'Chat with us on Telegram') }
+          : undefined,
+    }),
+    [workshop, customFields, t, printLabels, docType, telegramOn, telegramQrDataUri, L]
   )
 
   const spec = useMemo(
@@ -1037,6 +1067,7 @@ export function InvoiceDesigner({
           orgNumberLabel={orgNumberLabel}
           orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
           onOrgNumberLabel={setOrgNumberLabel}
+          telegramBotLink={telegramBotLink}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

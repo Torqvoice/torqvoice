@@ -326,6 +326,7 @@ export function DesignerInspector({
   orgNumberLabel,
   orgNumberLabelDefault,
   onOrgNumberLabel,
+  telegramBotLink,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -354,6 +355,8 @@ export function DesignerInspector({
   /** The default caption in the reader's language, shown as the placeholder. */
   orgNumberLabelDefault: string
   onOrgNumberLabel: (value: string) => void
+  /** The connected Telegram bot's link; the block is a stand-in without one. */
+  telegramBotLink?: string
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -704,6 +707,29 @@ export function DesignerInspector({
             </Group>
           )}
           {section.id === 'bank_account' && orgNumberLabelGroup}
+
+          {/* The code is only as real as the bot behind it. Connected, the
+              sheet shows the workshop's own link; otherwise a stand-in that
+              prints as nothing, and the way to the integration. */}
+          {section.id === 'telegram_qr' && (
+            <Group title={t('telegramQr')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {telegramBotLink
+                  ? t('telegramQrConnectedHint', {
+                      link: telegramBotLink.replace(/^https?:\/\//, ''),
+                    })
+                  : t('telegramQrPlaceholderHint')}{' '}
+                <a
+                  href="/settings/integrations"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('telegramQrLink')}
+                </a>
+              </p>
+            </Group>
+          )}
 
           {section.id === 'header' && (
             <Group title={t('logo')}>
