@@ -131,10 +131,6 @@
         "title": "Hotel de pneus",
         "description": "Armazenagem sazonal de pneus"
       },
-      "providers": {
-        "title": "Provedores",
-        "description": "E-mail, SMS, WhatsApp e Telegram"
-      },
       "inspectionReminders": {
         "title": "Lembretes de inspeção",
         "description": "Link de agendamento, duração e antecedência"
@@ -1739,43 +1735,6 @@
     "prepTitle": "Preços da preparação",
     "prepHint": "Quanto custa cada tipo de preparação. Deixe em branco e nunca é cobrado, que é o que quer a oficina que inclui a lavagem na armazenagem. Os com preço entram sozinhos no orçamento e na ordem.",
     "prepNotCharged": "não cobrado"
-  },
-  "providers": {
-    "tabs": {
-      "email": "E-mail",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Configurações de e-mail",
-        "description": "Configure o envio SMTP para entregar faturas, orçamentos e avisos direto da sua oficina."
-      },
-      "sms": {
-        "feature": "Mensagens SMS",
-        "description": "Envie e receba SMS com seus clientes direto do Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "Mensagens WhatsApp",
-        "description": "Envie e receba mensagens de WhatsApp, incluindo fotos de peças, direto do Torqvoice."
-      },
-      "telegram": {
-        "feature": "Mensagens Telegram",
-        "description": "Envie e receba mensagens do Telegram com seus clientes direto do Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
   },
   "designer": {
     "invoice": "Fatura",

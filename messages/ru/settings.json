@@ -131,10 +131,6 @@
         "title": "Шинный отель",
         "description": "Сезонное хранение шин"
       },
-      "providers": {
-        "title": "Провайдеры",
-        "description": "Эл. почта, SMS, WhatsApp и Telegram"
-      },
       "inspectionReminders": {
         "title": "Напоминания о техосмотре",
         "description": "Ссылка на запись, длительность и срок"
@@ -1739,43 +1735,6 @@
     "prepTitle": "Цены на подготовку",
     "prepHint": "Сколько стоит каждый вид подготовки. Пустое поле означает, что она никогда не выставляется, как нужно мастерским, у которых мойка входит в хранение. Те, у которых есть цена, попадают в смету и заказ сами.",
     "prepNotCharged": "не выставляется"
-  },
-  "providers": {
-    "tabs": {
-      "email": "Эл. почта",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Настройки почты",
-        "description": "Настройте отправку по SMTP, чтобы счета, сметы и уведомления уходили прямо из мастерской."
-      },
-      "sms": {
-        "feature": "SMS-сообщения",
-        "description": "Отправляйте и получайте SMS от клиентов прямо в Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "Сообщения WhatsApp",
-        "description": "Отправляйте и получайте сообщения WhatsApp, включая фото деталей, прямо в Torqvoice."
-      },
-      "telegram": {
-        "feature": "Сообщения Telegram",
-        "description": "Отправляйте и получайте сообщения Telegram от клиентов прямо в Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
   },
   "designer": {
     "invoice": "Счёт",

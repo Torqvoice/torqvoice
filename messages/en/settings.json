@@ -131,10 +131,6 @@
         "title": "Tire hotel",
         "description": "Seasonal tire storage"
       },
-      "providers": {
-        "title": "Providers",
-        "description": "Email, SMS, WhatsApp & Telegram"
-      },
       "inspectionReminders": {
         "title": "Inspection reminders",
         "description": "Booking link, duration and lead time"
@@ -1739,43 +1735,6 @@
     "prepTitle": "Prep pricing",
     "prepHint": "What each kind of prep costs. Leave one blank and it is never billed, which is what a shop that includes washing in the storage fee wants. Priced ones are added to a quote or work order automatically.",
     "prepNotCharged": "not charged"
-  },
-  "providers": {
-    "tabs": {
-      "email": "Email",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Email Settings",
-        "description": "Configure SMTP email sending to deliver invoices, quotes, and notifications directly from your workshop."
-      },
-      "sms": {
-        "feature": "SMS Messaging",
-        "description": "Send and receive SMS messages with your customers directly from Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "WhatsApp Messaging",
-        "description": "Send and receive WhatsApp messages, including photos of parts, directly from Torqvoice."
-      },
-      "telegram": {
-        "feature": "Telegram Messaging",
-        "description": "Send and receive Telegram messages with your customers directly from Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
   },
   "designer": {
     "invoice": "Invoice",

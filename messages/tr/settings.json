@@ -131,10 +131,6 @@
         "title": "Lastik oteli",
         "description": "Mevsimlik lastik saklama"
       },
-      "providers": {
-        "title": "Sağlayıcılar",
-        "description": "E-posta, SMS, WhatsApp ve Telegram"
-      },
       "inspectionReminders": {
         "title": "Muayene hatırlatmaları",
         "description": "Randevu bağlantısı, süre ve öncelik"
@@ -1739,43 +1735,6 @@
     "prepTitle": "Hazırlık fiyatları",
     "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
     "prepNotCharged": "ücretlendirilmiyor"
-  },
-  "providers": {
-    "tabs": {
-      "email": "E-posta",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "E-posta ayarları",
-        "description": "Faturaların, tekliflerin ve bildirimlerin doğrudan atölyeden gitmesi için SMTP gönderimini ayarlayın."
-      },
-      "sms": {
-        "feature": "SMS mesajlaşma",
-        "description": "Müşterilerinizle SMS'i doğrudan Torqvoice üzerinden gönderip alın."
-      },
-      "whatsapp": {
-        "feature": "WhatsApp mesajlaşma",
-        "description": "Parça fotoğrafları dahil WhatsApp mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
-      },
-      "telegram": {
-        "feature": "Telegram mesajlaşma",
-        "description": "Müşterilerinizle Telegram mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
   },
   "designer": {
     "invoice": "Fatura",
