@@ -7,7 +7,7 @@
  * that has to survive whatever the provider posts back.
  */
 
-import { describe, it, expect } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createHmac } from 'crypto'
 import { buildMetaPayload, metaAdapter } from '@/lib/whatsapp/adapters/meta'
 import { buildTwilioForm, twilioAdapter } from '@/lib/whatsapp/adapters/twilio'
@@ -263,8 +263,13 @@ describe('twilio payloads', () => {
 })
 
 describe('twilio webhook', () => {
-  // Twilio signs the public URL plus the form with the auth token. Nothing
-  // configures NEXT_PUBLIC_APP_URL here, so the request's own origin is it.
+  // Twilio signs the public URL plus the form with the auth token. The
+  // adapter checks against the configured public address, so that address
+  // is pinned to the request's origin here: on a machine with a real one in
+  // the environment, every signature below would be for the wrong host.
+  beforeAll(() => vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://app.test'))
+  afterAll(() => vi.unstubAllEnvs())
+
   function inbound(fields: Record<string, string>, token = 'tok_abc', authToken = 'secret') {
     const url = `https://app.test/api/webhooks/whatsapp/twilio/org_1?token=${token}`
     const body = new URLSearchParams(fields)
