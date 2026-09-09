@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { imageUrlSchema } from '@/lib/upload-url'
 
 export const createInventoryPartSchema = z.object({
   name: z.string().min(1, 'Part name is required'),
@@ -19,7 +20,7 @@ export const createInventoryPartSchema = z.object({
     .array(
       z.object({
         id: z.string().optional(),
-        url: z.string(),
+        url: imageUrlSchema,
         fileName: z.string().optional(),
         description: z.string().optional(),
         sortOrder: z.number().int().default(0),

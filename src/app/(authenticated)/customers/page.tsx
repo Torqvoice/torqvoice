@@ -4,6 +4,7 @@ import { getCustomersPaginated } from '@/features/customers/Actions/customerActi
 import { CustomersClient } from './customers-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { countUnnumberedCustomers } from '@/features/customers/Actions/customerActions'
 
 export default async function CustomersPage({
   searchParams,
@@ -21,13 +22,17 @@ export default async function CustomersPage({
     sortBy: undefined,
     sortOrder: 'desc',
   })
-  const result = await getCustomersPaginated({
-    page: params.page ? parseInt(params.page) : 1,
-    pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
-    search: params.search,
-    sortBy: sort.sortBy,
-    sortOrder: sort.sortOrder,
-  })
+  const [result, unnumberedResult] = await Promise.all([
+    getCustomersPaginated({
+      page: params.page ? parseInt(params.page) : 1,
+      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+      search: params.search,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
+    }),
+    countUnnumberedCustomers(),
+  ])
+  const unnumbered = unnumberedResult.success ? (unnumberedResult.data ?? 0) : 0
 
   if (!result.success || !result.data) {
     const t = await getTranslations('customers.list')
@@ -50,6 +55,7 @@ export default async function CustomersPage({
           search={params.search || ''}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
+          unnumbered={unnumbered}
         />
       </ListPage>
     </>

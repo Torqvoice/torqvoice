@@ -1,8 +1,9 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { safeUploadPath } from '@/lib/resolve-upload-path'
 import { unlink } from 'fs/promises'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -24,8 +25,11 @@ const deleteContentSchema = z.object({
 
 export async function deleteContent(input: unknown) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, isAdmin }) => {
       demoGuard()
+      // Wiping the workshop's records is an owner's or admin's call, whatever
+      // permissions a custom role carries.
+      if (!isAdmin) throw new Error('Only an owner or admin can delete workshop content')
       if (!organizationId) {
         throw new Error('No organization found')
       }
@@ -49,7 +53,8 @@ export async function deleteContent(input: unknown) {
           select: { imageUrl: true },
         })
         for (const v of vehicleImages) {
-          if (v.imageUrl) filesToClean.push(resolveUploadPath(v.imageUrl))
+          const vehiclePath = safeUploadPath(v.imageUrl)
+          if (vehiclePath) filesToClean.push(vehiclePath)
         }
 
         const attachments = await db.serviceAttachment.findMany({
@@ -57,7 +62,8 @@ export async function deleteContent(input: unknown) {
           select: { fileUrl: true },
         })
         for (const att of attachments) {
-          filesToClean.push(resolveUploadPath(att.fileUrl))
+          const attPath = safeUploadPath(att.fileUrl)
+          if (attPath) filesToClean.push(attPath)
         }
 
         await db.vehicle.deleteMany({ where: { organizationId } })
@@ -118,7 +124,8 @@ export async function deleteContent(input: unknown) {
           select: { imageUrl: true },
         })
         for (const part of parts) {
-          if (part.imageUrl) filesToClean.push(resolveUploadPath(part.imageUrl))
+          const partPath = safeUploadPath(part.imageUrl)
+          if (partPath) filesToClean.push(partPath)
         }
 
         await db.inventoryPart.deleteMany({ where: { organizationId } })
@@ -172,6 +179,9 @@ export async function deleteContent(input: unknown) {
       return { deleted }
     },
     {
+      requiredPermissions: [
+        { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
+      ],
       audit: ({ result }) => ({
         action: 'settings.deleteContent',
         entity: 'Organization',
@@ -183,61 +193,66 @@ export async function deleteContent(input: unknown) {
 }
 
 export async function getContentCounts() {
-  return withAuth(async ({ organizationId }) => {
-    if (!organizationId) {
-      return {
-        vehicles: 0,
-        customers: 0,
-        quotes: 0,
-        inventory: 0,
-        inspections: 0,
-        technicians: 0,
-        inspectionTemplates: 0,
-        notifications: 0,
-        smsMessages: 0,
-        scheduledMessages: 0,
-        customFields: 0,
+  return withAuth(
+    async ({ organizationId }) => {
+      if (!organizationId) {
+        return {
+          vehicles: 0,
+          customers: 0,
+          quotes: 0,
+          inventory: 0,
+          inspections: 0,
+          technicians: 0,
+          inspectionTemplates: 0,
+          notifications: 0,
+          smsMessages: 0,
+          scheduledMessages: 0,
+          customFields: 0,
+        }
       }
-    }
 
-    const [
-      vehicles,
-      customers,
-      quotes,
-      inventory,
-      inspections,
-      technicians,
-      inspectionTemplates,
-      notifications,
-      smsMessages,
-      scheduledMessages,
-      customFields,
-    ] = await Promise.all([
-      db.vehicle.count({ where: { organizationId } }),
-      db.customer.count({ where: { organizationId } }),
-      db.quote.count({ where: { organizationId } }),
-      db.inventoryPart.count({ where: { organizationId } }),
-      db.inspection.count({ where: { organizationId } }),
-      db.technician.count({ where: { organizationId } }),
-      db.inspectionTemplate.count({ where: { organizationId } }),
-      db.notification.count({ where: { organizationId } }),
-      db.smsMessage.count({ where: { organizationId } }),
-      db.scheduledMessage.count({ where: { organizationId } }),
-      db.customFieldDefinition.count({ where: { organizationId } }),
-    ])
+      const [
+        vehicles,
+        customers,
+        quotes,
+        inventory,
+        inspections,
+        technicians,
+        inspectionTemplates,
+        notifications,
+        smsMessages,
+        scheduledMessages,
+        customFields,
+      ] = await Promise.all([
+        db.vehicle.count({ where: { organizationId } }),
+        db.customer.count({ where: { organizationId } }),
+        db.quote.count({ where: { organizationId } }),
+        db.inventoryPart.count({ where: { organizationId } }),
+        db.inspection.count({ where: { organizationId } }),
+        db.technician.count({ where: { organizationId } }),
+        db.inspectionTemplate.count({ where: { organizationId } }),
+        db.notification.count({ where: { organizationId } }),
+        db.smsMessage.count({ where: { organizationId } }),
+        db.scheduledMessage.count({ where: { organizationId } }),
+        db.customFieldDefinition.count({ where: { organizationId } }),
+      ])
 
-    return {
-      vehicles,
-      customers,
-      quotes,
-      inventory,
-      inspections,
-      technicians,
-      inspectionTemplates,
-      notifications,
-      smsMessages,
-      scheduledMessages,
-      customFields,
+      return {
+        vehicles,
+        customers,
+        quotes,
+        inventory,
+        inspections,
+        technicians,
+        inspectionTemplates,
+        notifications,
+        smsMessages,
+        scheduledMessages,
+        customFields,
+      }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
     }
-  })
+  )
 }

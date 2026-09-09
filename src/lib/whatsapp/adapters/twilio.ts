@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'crypto'
+import { publicRequestUrl, verifyTwilioSignature } from '@/lib/webhook-signatures'
 import type {
   WhatsappAdapter,
   WhatsappContext,
@@ -148,9 +149,7 @@ export const twilioAdapter: WhatsappAdapter = {
   },
 
   async receive(request, ctx): Promise<WhatsappWebhookEvents> {
-    // Twilio signs with the auth token, but the signature covers the exact
-    // public URL, which a proxy in front of us may rewrite. The shared token
-    // in the webhook URL is what we can check reliably.
+    // The shared token in the URL says which workshop this is for.
     const expected = ctx.credentials.webhookToken
     if (expected) {
       const provided = new URL(request.url).searchParams.get('token') ?? ''
@@ -159,7 +158,29 @@ export const twilioAdapter: WhatsappAdapter = {
       }
     }
 
-    const form = await request.formData()
+    // The exact bytes, since the signature covers them.
+    const raw = await request.text()
+    const form = new URLSearchParams(raw)
+
+    // Twilio signs the public URL plus the form with the auth token the
+    // workshop pasted for sending. The signature covers the URL as Twilio
+    // was given it, so the configured public address stands in for whatever
+    // host the proxy handed us.
+    const authToken = ctx.credentials.authToken?.trim()
+    if (authToken) {
+      const valid = verifyTwilioSignature({
+        authToken,
+        url: publicRequestUrl(request.url),
+        params: form,
+        signature: request.headers.get('x-twilio-signature'),
+      })
+      if (!valid) throw new Error('Invalid webhook signature')
+    } else {
+      console.warn(
+        `[whatsapp/twilio] Organization ${ctx.organizationId} has no Twilio auth token; the webhook is accepted on the URL token alone`
+      )
+    }
+
     const value = (key: string) => {
       const entry = form.get(key)
       return typeof entry === 'string' ? entry : undefined

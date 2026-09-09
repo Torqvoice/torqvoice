@@ -239,6 +239,19 @@ export async function deleteCustomers(customerIds: string[]) {
   )
 }
 
+/** How many customers still have no number: what the list's assign button shows. */
+export async function countUnnumberedCustomers() {
+  return withAuth(
+    async ({ organizationId }) =>
+      db.customer.count({ where: { organizationId, customerNumber: null } }),
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
 /**
  * Assigns sequential numbers to every customer that has none, oldest first,
  * continuing after the highest existing numeric number (min 1001). Customers
@@ -275,7 +288,6 @@ export async function backfillCustomerNumbers() {
       )
 
       revalidatePath('/customers')
-      revalidatePath('/settings/invoice')
       return { assigned: unnumbered.length }
     },
     {

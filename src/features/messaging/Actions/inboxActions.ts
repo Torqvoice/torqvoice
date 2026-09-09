@@ -153,8 +153,8 @@ export async function getInboxThreads(query: InboxQuery = {}) {
               m."body" AS body,
               m."direction" AS direction,
               m."createdAt" AS "createdAt"
-            FROM "sms_messages" m
-            JOIN "customers" c ON c."id" = m."customerId"
+            FROM "public"."sms_messages" m
+            JOIN "public"."customers" c ON c."id" = m."customerId"
             WHERE m."organizationId" = ${organizationId} AND m."customerId" IS NOT NULL
             ORDER BY m."customerId", m."createdAt" DESC
           ) t
@@ -176,8 +176,8 @@ export async function getInboxThreads(query: InboxQuery = {}) {
               m."body" AS body,
               m."direction" AS direction,
               m."createdAt" AS "createdAt"
-            FROM "telegram_messages" m
-            JOIN "customers" c ON c."id" = m."customerId"
+            FROM "public"."telegram_messages" m
+            JOIN "public"."customers" c ON c."id" = m."customerId"
             WHERE m."organizationId" = ${organizationId} AND m."customerId" IS NOT NULL
             ORDER BY m."customerId", m."createdAt" DESC
           ) t
@@ -203,8 +203,8 @@ export async function getInboxThreads(query: InboxQuery = {}) {
               m."mediaType" AS "mediaType",
               m."direction" AS direction,
               m."createdAt" AS "createdAt"
-            FROM "whatsapp_messages" m
-            LEFT JOIN "customers" c ON c."id" = m."customerId"
+            FROM "public"."whatsapp_messages" m
+            LEFT JOIN "public"."customers" c ON c."id" = m."customerId"
             WHERE m."organizationId" = ${organizationId}
             ORDER BY COALESCE(m."customerId", CASE WHEN m."direction" = 'inbound' THEN m."fromNumber" ELSE m."toNumber" END), m."createdAt" DESC
           ) t
@@ -218,21 +218,21 @@ export async function getInboxThreads(query: InboxQuery = {}) {
         `,
           db.$queryRaw<UnreadRow[]>`
           SELECT "customerId" AS identity, COUNT(*)::int AS unread
-          FROM "sms_messages"
+          FROM "public"."sms_messages"
           WHERE "organizationId" = ${organizationId}
             AND "direction" = 'inbound' AND "readAt" IS NULL AND "customerId" IS NOT NULL
           GROUP BY "customerId"
         `,
           db.$queryRaw<UnreadRow[]>`
           SELECT "customerId" AS identity, COUNT(*)::int AS unread
-          FROM "telegram_messages"
+          FROM "public"."telegram_messages"
           WHERE "organizationId" = ${organizationId}
             AND "direction" = 'inbound' AND "readAt" IS NULL AND "customerId" IS NOT NULL
           GROUP BY "customerId"
         `,
           db.$queryRaw<UnreadRow[]>`
           SELECT COALESCE("customerId", "fromNumber") AS identity, COUNT(*)::int AS unread
-          FROM "whatsapp_messages"
+          FROM "public"."whatsapp_messages"
           WHERE "organizationId" = ${organizationId}
             AND "direction" = 'inbound' AND "readAt" IS NULL
           GROUP BY COALESCE("customerId", "fromNumber")

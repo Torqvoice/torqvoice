@@ -148,7 +148,7 @@ export const metaAdapter: WhatsappAdapter = {
       key: 'appSecret',
       label: 'App secret',
       secret: true,
-      help: 'Optional but recommended: lets us reject webhook calls that did not come from Meta.',
+      help: 'Without it, webhook signatures are not checked and anyone who learns the webhook URL can post messages as your customers. Strongly recommended.',
     },
     {
       key: 'apiVersion',

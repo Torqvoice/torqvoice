@@ -1,24 +1,20 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
 
 export async function POST() {
   try {
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user?.id) {
+    // The active organisation from the session, and only its owners and
+    // admins: this moves money and changes the plan.
+    const ctx = await getAuthContext()
+    if (!ctx) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const membership = await db.organizationMember.findFirst({
-      where: { userId: session.user.id },
-      select: { organizationId: true },
-    })
-
-    if (!membership?.organizationId) {
-      return NextResponse.json({ error: 'No organization found' }, { status: 400 })
+    if (!ctx.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+    const membership = { organizationId: ctx.organizationId }
 
     const subscription = await db.subscription.findUnique({
       where: { organizationId: membership.organizationId },
@@ -89,7 +85,8 @@ export async function POST() {
     })
   } catch (error) {
     console.error('[Subscription Upgrade Preview] Error:', error)
-    const message = error instanceof Error ? error.message : 'Preview failed'
+    console.error('[subscription]', error)
+    const message = 'Preview failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

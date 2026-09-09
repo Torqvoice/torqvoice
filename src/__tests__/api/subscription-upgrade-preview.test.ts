@@ -3,19 +3,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const mockSubscriptionsRetrieve = vi.fn()
 const mockInvoicesCreatePreview = vi.fn()
 
-vi.mock('@/lib/auth', () => ({
-  auth: {
-    api: { getSession: vi.fn() },
-  },
-}))
-
-vi.mock('next/headers', () => ({
-  headers: vi.fn().mockResolvedValue(new Headers()),
+vi.mock('@/lib/get-auth-context', () => ({
+  getAuthContext: vi.fn(),
 }))
 
 vi.mock('@/lib/db', () => ({
   db: {
-    organizationMember: { findFirst: vi.fn() },
     subscription: { findUnique: vi.fn() },
   },
 }))
@@ -25,22 +18,24 @@ vi.mock('@/lib/stripe-config', () => ({
   getStripeClient: vi.fn(),
 }))
 
-import { auth } from '@/lib/auth'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
 import { POST } from '@/app/api/protected/subscription/upgrade-preview/route'
 
-const mockGetSession = vi.mocked(auth.api.getSession)
-const mockFindMember = vi.mocked(db.organizationMember.findFirst)
+const mockGetAuthContext = vi.mocked(getAuthContext)
 const mockFindSubscription = vi.mocked(db.subscription.findUnique)
 const mockGetStripeConfig = vi.mocked(getStripeConfig)
 const mockGetStripeClient = vi.mocked(getStripeClient)
 
-function setupAuth() {
-  mockGetSession.mockResolvedValue({
-    user: { id: 'user-1', email: 'user@example.com' },
-  } as any)
-  mockFindMember.mockResolvedValue({ organizationId: 'org-1' } as any)
+function setupAuth(isAdmin = true) {
+  mockGetAuthContext.mockResolvedValue({
+    userId: 'user-1',
+    organizationId: 'org-1',
+    role: isAdmin ? 'owner' : 'member',
+    isAdmin,
+    isSuperAdmin: false,
+  })
 }
 
 function setupStripe() {
@@ -62,9 +57,15 @@ beforeEach(() => {
 
 describe('POST /api/protected/subscription/upgrade-preview', () => {
   it('returns 401 when not authenticated', async () => {
-    mockGetSession.mockResolvedValue(null)
+    mockGetAuthContext.mockResolvedValue(null)
     const res = await POST()
     expect(res.status).toBe(401)
+  })
+
+  it('refuses a member who is not an owner or admin', async () => {
+    setupAuth(false)
+    const res = await POST()
+    expect(res.status).toBe(403)
   })
 
   it('returns 400 when no subscription exists', async () => {

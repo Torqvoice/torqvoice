@@ -176,6 +176,7 @@ function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettin
     footerNote: settingsMap['invoice.footerNote'] || '',
     showBankAccount: settingsMap['invoice.showBankAccount'] === 'true',
     showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
+    lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
     currencyFormat: settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol',
@@ -316,7 +317,11 @@ async function assembleLive(
     logoDataUri,
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
-    labelSettings: { 'workshop.serviceType': serviceType, 'workshop.taxLabel': taxLabel ?? '' },
+    labelSettings: {
+      'workshop.serviceType': serviceType,
+      'workshop.taxLabel': taxLabel ?? '',
+      'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
+    },
   }
 }
 
@@ -384,7 +389,11 @@ function assembleFrozen(
     logoDataUri,
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
-    labelSettings: { 'workshop.serviceType': serviceType, 'workshop.taxLabel': taxLabel ?? '' },
+    labelSettings: {
+      'workshop.serviceType': serviceType,
+      'workshop.taxLabel': taxLabel ?? '',
+      'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
+    },
   }
 }
 

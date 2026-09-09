@@ -1,3 +1,4 @@
+import { withOrgNumberLabel } from '@/features/invoice-designer/Lib/labelOverrides'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -96,6 +97,7 @@ export async function GET(
     if (customTaxLabel) {
       labels.tax = `${customTaxLabel} ({rate}%)`
     }
+    Object.assign(labels, withOrgNumberLabel(labels, settingsMap['workshop.orgNumberLabel']))
 
     let logoDataUri: string | undefined
     const logoPath = documentLogoPath(settingsMap, 'quote')
@@ -211,6 +213,7 @@ export async function GET(
     const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
     const element = React.createElement(QuotePDF, {
+      lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
       data: quote,
       workshop: {
         name: org?.name || '',

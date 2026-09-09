@@ -41,6 +41,7 @@ export function QuotePDF({
   customFields = [],
   labels = {},
   layoutConfig,
+  lineItemsInclTax,
 }: {
   data: QuotePrintData
   workshop?: { name: string; address: string; phone: string; email: string; slogan?: string }
@@ -57,10 +58,12 @@ export function QuotePDF({
   pdfAttachmentNames?: string[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
+  lineItemsInclTax?: boolean
   layoutConfig?: InvoiceLayoutConfig
 }) {
   const spec = buildQuotePrintSpec({
     data,
+    lineItemsInclTax,
     workshop,
     currencyCode,
     currencyFormat,

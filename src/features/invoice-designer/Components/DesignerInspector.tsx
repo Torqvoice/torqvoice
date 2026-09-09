@@ -323,6 +323,9 @@ export function DesignerInspector({
   sloganSet,
   paymentTermsSet,
   documentTitleDefault,
+  orgNumberLabel,
+  orgNumberLabelDefault,
+  onOrgNumberLabel,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -346,6 +349,11 @@ export function DesignerInspector({
   paymentTermsSet: boolean
   /** What the title strip prints when the workshop has not renamed it. */
   documentTitleDefault: string
+  /** What the organisation number is called on paper, empty for the default. */
+  orgNumberLabel: string
+  /** The default caption in the reader's language, shown as the placeholder. */
+  orgNumberLabelDefault: string
+  onOrgNumberLabel: (value: string) => void
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -360,6 +368,25 @@ export function DesignerInspector({
   }
   /** A section's name, or its id spaced out when nothing has named it. */
   const sectionName = (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' '))
+  /**
+   * The caption printed before the organisation number. Offered wherever the
+   * number is looked at, in the header and in the payment panel, and again
+   * with the sheet's own properties, so it is found from whichever side
+   * somebody approaches it. One value: it is the company's, not the block's.
+   */
+  const orgNumberLabelGroup = (
+    <Group title={t('orgNumberLabel')}>
+      <input
+        type="text"
+        maxLength={40}
+        value={orgNumberLabel}
+        placeholder={orgNumberLabelDefault}
+        onChange={(e) => onOrgNumberLabel(e.target.value)}
+        className="h-7 w-full rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+      />
+      <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('orgNumberLabelHint')}</p>
+    </Group>
+  )
   /** The field row being dragged to a new spot in the list, if any. */
   const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
@@ -676,6 +703,7 @@ export function DesignerInspector({
               </p>
             </Group>
           )}
+          {section.id === 'bank_account' && orgNumberLabelGroup}
 
           {section.id === 'header' && (
             <Group title={t('logo')}>
@@ -712,6 +740,7 @@ export function DesignerInspector({
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('logoHint')}</p>
             </Group>
           )}
+          {section.id === 'header' && orgNumberLabelGroup}
 
           {/* The footer prints the same logo when it is switched on below, so
               it offers the same swap rather than sending somebody to the
@@ -1095,6 +1124,8 @@ export function DesignerInspector({
             onChange={(fontSize) => onDocument({ fontSize })}
           />
         </Group>
+
+        {orgNumberLabelGroup}
 
         <Group title={t('page')}>
           <Slider
