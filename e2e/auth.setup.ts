@@ -9,14 +9,14 @@ import { test as setup, expect } from '@playwright/test'
 const AUTH_STATE = 'e2e/.auth/owner.json'
 
 const email = process.env.E2E_USER_EMAIL ?? 'demo@torqvoice.com'
-const password = process.env.E2E_USER_PASSWORD ?? 'demo'
+const password = process.env.E2E_USER_PASSWORD ?? 'demo-e2e-pass'
 
 setup('sign in as the workshop owner', async ({ page, context }) => {
   await page.goto('/auth/sign-in')
 
   await page.locator('#email').fill(email)
   await page.locator('#password').fill(password)
-  await page.getByRole('button', { name: /sign in/i }).click()
+  await page.getByRole('button', { name: 'Sign In', exact: true }).click()
 
   // Landing anywhere outside /auth means the session cookie was accepted.
   await page.waitForURL((url) => !url.pathname.startsWith('/auth'), { timeout: 30_000 })

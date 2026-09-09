@@ -34,7 +34,12 @@ test.describe('quote to invoice', () => {
 
     await page.locator('#new-quote-title').fill(QUOTE_TITLE)
 
-    await page.getByRole('combobox', { name: /select vehicle/i }).click()
+    // The picker is a button in the combobox role whose only name is its
+    // placeholder, so it is found by what it says.
+    await page
+      .getByRole('combobox')
+      .filter({ hasText: /select vehicle/i })
+      .click()
     await page.getByPlaceholder('Select vehicle...').fill('Camry')
     await page.getByRole('option', { name: /Camry/i }).first().click()
 
@@ -48,9 +53,15 @@ test.describe('quote to invoice', () => {
   test('labor priced on the quote reaches the totals', async ({ page }) => {
     await page.goto(quoteUrl)
 
-    await page.getByRole('button', { name: 'Add Labor' }).click()
-
+    // The editor offers the button twice, in the toolbar and as a dashed row
+    // under the list; both add a blank line. A click that lands before React
+    // has hydrated the page does nothing, so the click is retried until the
+    // line is there to type into.
     const description = page.getByPlaceholder('Description *').last()
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Add Labor' }).last().click()
+      await expect(description).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
     await description.fill('Diagnose and replace front brake pads')
 
     const row = rowOf(page, description)
@@ -69,8 +80,14 @@ test.describe('quote to invoice', () => {
   test('the quote converts into a work order', async ({ page }) => {
     await page.goto(quoteUrl)
 
-    await page.getByRole('button', { name: 'Convert to Work Order' }).click()
-    await page.getByRole('button', { name: 'Convert', exact: true }).click()
+    // Retried for the same reason as the add-row clicks: a click before
+    // hydration opens nothing.
+    const confirm = page.getByRole('button', { name: 'Convert', exact: true })
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Convert to Work Order' }).click()
+      await expect(confirm).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+    await confirm.click()
 
     await page.waitForURL(/\/vehicles\/[^/]+\/service\/[^/]+$/)
     workOrderUrl = page.url()
@@ -83,8 +100,11 @@ test.describe('quote to invoice', () => {
   test('parts added to the work order land in an invoice with a number', async ({ page }) => {
     await page.goto(workOrderUrl)
 
-    await page.getByRole('button', { name: 'Add Part' }).click()
     const name = page.getByPlaceholder('Name *').last()
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Add Part' }).last().click()
+      await expect(name).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
     await name.fill(PART_NAME)
 
     const row = rowOf(page, name)
@@ -106,8 +126,12 @@ test.describe('quote to invoice', () => {
 
     const before = await page.getByLabel('Invoice Number').inputValue()
 
-    await page.getByRole('button', { name: 'Mark as Paid' }).click()
-    await expect(page.getByText('Paid', { exact: true }).first()).toBeVisible()
+    // Offered both in the payments panel and under the invoice details.
+    const paid = page.getByText('Paid', { exact: true }).first()
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Mark as Paid' }).first().click()
+      await expect(paid).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
 
     await page.reload()
 

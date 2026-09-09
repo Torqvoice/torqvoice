@@ -14,11 +14,15 @@ test.describe('smoke', () => {
   })
 
   test('the seeded workshop has customers and vehicles', async ({ page }) => {
+    // Lists render a card for phones and a table for wider screens and hide
+    // one of them; the table is the visible one at the desktop size used here.
     await page.goto('/customers')
-    await expect(page.getByText('James Mitchell').first()).toBeVisible()
+    await expect(page.getByRole('table').getByText('James Mitchell').first()).toBeVisible()
 
-    await page.goto('/vehicles')
-    await expect(page.getByText(/Camry/i).first()).toBeVisible()
+    // The vehicle list opens as a grid of cards, each headed by the vehicle's
+    // name; searched, so the one asserted on is on the first page.
+    await page.goto('/vehicles?search=Camry')
+    await expect(page.getByRole('heading', { name: /Camry/i }).first()).toBeVisible()
   })
 
   test('the technician app handshake still answers', async ({ request }) => {

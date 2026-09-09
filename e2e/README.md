@@ -20,11 +20,34 @@ npm run build          # NEXT_PUBLIC_APP_URL must match the base URL below
 npm run test:e2e
 ```
 
-The suite starts `next start` on port 3100 itself, resets `E2E_DATABASE_URL` to
-a clean schema, runs the demo seed, signs in once, and reuses that session.
+The suite resets `E2E_DATABASE_URL` to a clean schema, runs the demo seed,
+starts `next start` on port 3100, signs in once, and reuses that session.
+
+If something is already listening on port 3100, the suite uses it as it is and
+skips the reset, so a second run continues on the data the first one left. Stop
+that server when you want a clean slate.
 
 `npm run test:e2e:ui` opens Playwright's watch mode, which is the sane way to
 write a new spec.
+
+## When Playwright has no browser for your machine
+
+Playwright only ships Chromium for the operating systems it supports; on an
+older Debian, `playwright install` refuses. Run the browser from Playwright's
+own image instead, against a server started here:
+
+```bash
+export E2E_DATABASE_URL="postgresql://torqvoice:torqvoice@localhost:5432/torqvoice_e2e"
+npx tsx e2e/prepare-db.ts
+DATABASE_URL="$E2E_DATABASE_URL" NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100 \
+  DEMO_MODE=false AUTH_RATE_LIMIT=off npm run start -- --port 3100 &
+docker run --rm --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
+  -v "$PWD":/work -w /work \
+  -e E2E_BASE_URL=http://127.0.0.1:3100 -e E2E_SKIP_SEED=1 -e E2E_DATABASE_URL \
+  mcr.microsoft.com/playwright:v1.63.0-noble npx playwright test
+```
+
+The image version must match `@playwright/test` in package.json.
 
 ## Pointing it at something already running
 
@@ -43,7 +66,7 @@ database is left alone, which is what you want against a shared environment.
 | `E2E_BASE_URL` | starts its own server on `127.0.0.1:3100` | Test an existing instance |
 | `E2E_SKIP_SEED` | unset | Leave the database untouched |
 | `E2E_ALLOW_ANY_DB` | unset | Override the guard on database names |
-| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | `demo@torqvoice.com` / `demo` | Seeded login |
+| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | `demo@torqvoice.com` / `demo-e2e-pass` | The login the seed creates and the suite signs in with |
 | `E2E_TZ` | `Europe/Oslo` | Browser and server timezone |
 
 ## Rules that keep this suite worth having
@@ -58,6 +81,9 @@ sign-in from an origin it was not built for.
 
 **Pin the language.** Selectors read visible English. The config sets the
 locale, and the saved session carries a `locale=en` cookie.
+
+**The sign-in rate limit is off on the suite's own server** (`AUTH_RATE_LIMIT=off`). Pointed at
+another server, keep sign-ins in a spec ten seconds apart or the third one is refused.
 
 **Demo mode stays off.** It blocks invites, billing and outbound messages, which
 are behaviours a test should be able to exercise.

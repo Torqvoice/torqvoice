@@ -65,19 +65,26 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `npm run start -- --port ${port}`,
+        // The database first, then the server, in one command: Playwright
+        // starts this before global setup, and a server on an empty schema
+        // fails the readiness check on every page.
+        command: `npx tsx e2e/prepare-db.ts && npm run start -- --port ${port}`,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
         stdout: 'pipe',
         stderr: 'pipe',
         env: {
+          E2E_DATABASE_URL: databaseUrl,
           DATABASE_URL: databaseUrl,
           NEXT_PUBLIC_APP_URL: baseURL,
           BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? 'e2e-secret-not-for-production',
           // Demo mode blocks invites, billing and outbound messages. Tests want
           // the real behaviour, so it stays off.
           DEMO_MODE: 'false',
+          // Three sign-ins per ten seconds is right for a workshop and wrong
+          // for a suite that signs in on every test.
+          AUTH_RATE_LIMIT: 'off',
           TZ: process.env.E2E_TZ ?? 'Europe/Oslo',
         },
       },

@@ -126,6 +126,12 @@ export const auth = betterAuth({
       }
     },
   },
+  // better-auth allows three sign-ins per ten seconds in production. The
+  // end-to-end suite signs in far more often than that, on purpose, so its
+  // server runs with the limiter off. Nothing else sets this variable.
+  rateLimit: {
+    enabled: process.env.NODE_ENV === 'production' && process.env.AUTH_RATE_LIMIT !== 'off',
+  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
