@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
 import { permissionsFor } from '@/features/import/Lib/permissions'
-import { recipientFitsChannel } from '@/features/tire-hotel/Actions/messageCustomerActions'
+import { recipientFitsChannel } from '@/features/tire-hotel/Lib/recipient'
 import { hasAllPermissions } from '@/lib/permissions'
 
 describe('backup archive limits', () => {
