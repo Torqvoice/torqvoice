@@ -2149,6 +2149,8 @@
         "description": "Siste dag invitasjonslenken virker."
       }
     },
+    "headerRule": "Strek under toppen",
+    "headerRuleHint": "En tynn strek mellom logoen eller verkstedsnavnet og resten av e-posten.",
     "optionalTag": "Ikke alle e-poster har en verdi for denne taggen. Når den er tom, ryddes ordene rundt den opp.",
     "summaryRows": {
       "reference": "Referanse",
@@ -2243,6 +2245,8 @@
       },
       "shapes": "Former",
       "buttonRadius": "Knappehjørner",
+      "topBar": "Fargestripe øverst",
+      "topBarHint": "Et smalt bånd i primærfargen din langs toppen av e-posten.",
       "showLogo": "Vis logo",
       "showLogoHint": "Med logoen av skriver toppteksten ut verkstedsnavnet i stedet."
     },

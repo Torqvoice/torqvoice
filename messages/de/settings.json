@@ -2149,6 +2149,8 @@
         "description": "Der letzte Tag, an dem der Einladungslink funktioniert."
       }
     },
+    "headerRule": "Linie unter der Kopfzeile",
+    "headerRuleHint": "Eine dünne Linie zwischen Logo oder Werkstattname und dem Rest der E-Mail.",
     "optionalTag": "Nicht jede E-Mail hat einen Wert für dieses Tag. Bleibt es leer, werden die Worte darum herum bereinigt.",
     "summaryRows": {
       "reference": "Referenz",
@@ -2243,6 +2245,8 @@
       },
       "shapes": "Formen",
       "buttonRadius": "Schaltflächenecken",
+      "topBar": "Farbbalken oben",
+      "topBarHint": "Ein schmales Band in Ihrer Primärfarbe entlang der Oberkante der E-Mail.",
       "showLogo": "Logo anzeigen",
       "showLogoHint": "Ist das Logo aus, druckt der Kopfbereich stattdessen den Werkstattnamen."
     },

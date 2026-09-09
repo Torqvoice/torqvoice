@@ -28,7 +28,14 @@ export interface SpecText {
 }
 
 type SpecBlockBody =
-  | { type: 'header'; workshopName: string; logoUrl?: string; logoWidth: number; align: BlockAlign }
+  | {
+      type: 'header'
+      workshopName: string
+      logoUrl?: string
+      logoWidth: number
+      align: BlockAlign
+      rule: boolean
+    }
   | ({ type: 'heading' } & SpecText)
   | ({ type: 'paragraph' } & SpecText)
   | ({ type: 'callout' } & SpecText)
@@ -47,6 +54,12 @@ export interface EmailSpec {
   subject: string
   theme: EmailTheme
   blocks: SpecBlock[]
+  /**
+   * The line an inbox shows after the subject: the first words of the mail,
+   * so the list says "Your invoice is ready" rather than the workshop's name
+   * a second time.
+   */
+  preheader?: string
 }
 
 export interface EmailSpecInput {
@@ -97,6 +110,7 @@ function resolveBlock(
         logoUrl: template.theme.showLogo ? input.logoUrl : undefined,
         logoWidth: template.theme.logoWidth,
         align: block.align ?? 'left',
+        rule: block.rule !== false,
       }
 
     case 'heading': {
@@ -189,7 +203,26 @@ export function buildEmailSpec(template: EmailTemplate, input: EmailSpecInput): 
     subject: fillTags(template.subject, input.values, kindSpec(template.kind).tags).trim(),
     theme: template.theme,
     blocks: collapseSpacing(blocks),
+    preheader: preheaderOf(blocks),
   }
+}
+
+const PREHEADER_LENGTH = 140
+
+/**
+ * The first paragraph or callout, on one line and cut to what an inbox
+ * shows. The heading is skipped: it usually repeats the subject.
+ */
+function preheaderOf(blocks: SpecBlock[]): string | undefined {
+  for (const block of blocks) {
+    if (block.type !== 'paragraph' && block.type !== 'callout') continue
+    const line = block.text.replace(/\s+/g, ' ').trim()
+    if (!line) continue
+    return line.length > PREHEADER_LENGTH
+      ? `${line.slice(0, PREHEADER_LENGTH - 1).trimEnd()}…`
+      : line
+  }
+  return undefined
 }
 
 /**

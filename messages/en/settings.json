@@ -2149,6 +2149,8 @@
         "description": "The last day the invitation link works."
       }
     },
+    "headerRule": "Rule under the header",
+    "headerRuleHint": "A thin line between the logo or workshop name and the rest of the email.",
     "optionalTag": "Not every email has a value for this tag. When it is blank, the words around it are tidied up.",
     "summaryRows": {
       "reference": "Reference",
@@ -2243,6 +2245,8 @@
       },
       "shapes": "Shapes",
       "buttonRadius": "Button corners",
+      "topBar": "Colour bar at the top",
+      "topBarHint": "A thin band in your primary colour along the top edge of the email.",
       "showLogo": "Show logo",
       "showLogoHint": "With the logo off, the header prints the workshop name instead."
     },

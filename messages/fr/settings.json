@@ -2149,6 +2149,8 @@
         "description": "Le dernier jour où le lien d'invitation fonctionne."
       }
     },
+    "headerRule": "Filet sous l'en-tête",
+    "headerRuleHint": "Un trait fin entre le logo ou le nom de l'atelier et le reste de l'e-mail.",
     "optionalTag": "Tous les e-mails n'ont pas de valeur pour cette balise. Quand elle est vide, les mots autour sont remis en ordre.",
     "summaryRows": {
       "reference": "Référence",
@@ -2243,6 +2245,8 @@
       },
       "shapes": "Formes",
       "buttonRadius": "Angles du bouton",
+      "topBar": "Barre de couleur en haut",
+      "topBarHint": "Une fine bande dans votre couleur principale le long du bord supérieur de l'e-mail.",
       "showLogo": "Afficher le logo",
       "showLogoHint": "Logo désactivé, l'en-tête imprime le nom de l'atelier à la place."
     },

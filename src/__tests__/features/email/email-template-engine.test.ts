@@ -239,12 +239,44 @@ describe('renderEmailHtml', () => {
     expect(out).toContain('#d97706')
   })
 
+  it('draws the rule under the letterhead unless the header block says not to', () => {
+    const ruled = 'border-bottom:1px solid #e6e8ec;"><span'
+    expect(renderEmailHtml(spec)).toContain(ruled)
+    const template = preset('invoice_sent')
+    const bare = renderEmailHtml(
+      buildEmailSpec(
+        {
+          ...template,
+          blocks: template.blocks.map((b) => (b.type === 'header' ? { ...b, rule: false } : b)),
+        },
+        invoiceInput
+      )
+    )
+    expect(bare).not.toContain(ruled)
+    expect(bare).toContain('Bergen Bil')
+  })
+
+  it('draws the colour bar along the top unless the theme says not to', () => {
+    expect(renderEmailHtml(spec)).toContain(
+      'height:5px;line-height:5px;font-size:0;border-radius:10px 10px 0 0;'
+    )
+    const bare = renderEmailHtml({ ...spec, theme: { ...spec.theme, topBar: false } })
+    expect(bare).not.toContain('height:5px;line-height:5px')
+    expect(bare).toContain('border-radius:10px;padding:32px 36px 24px 36px;')
+  })
+
   it('marks every row with its block only when asked, for the designer', () => {
     const sent = renderEmailHtml(spec)
     const marked = renderEmailHtml(spec, { marked: true })
     expect(sent).not.toContain('data-block')
     expect(marked).toContain('<style')
-    for (const block of spec.blocks) expect(marked).toContain(`data-block="${block.id}"`)
+    // The rule before a closing footer folds into the card's edge, so it is
+    // the one block that has no row of its own.
+    const closing = spec.blocks[spec.blocks.length - 1]?.type === 'contact_footer'
+    const drawn = spec.blocks.filter(
+      (block, i) => !(closing && i === spec.blocks.length - 2 && block.type === 'divider')
+    )
+    for (const block of drawn) expect(marked).toContain(`data-block="${block.id}"`)
   })
 
   it('keeps a typed line break as a break', () => {
@@ -486,8 +518,10 @@ describe('email logo', () => {
     const html = renderEmailHtml(
       buildEmailSpec(template, { ...invoiceInput, logoUrl: 'https://x/l.png' })
     )
-    expect(html).toContain('<td align="center" style="padding:0 0 20px 0;text-align:center;">')
-    expect(html).toContain('<td align="right" style="padding:6px 0 20px 0;text-align:right;">')
+    expect(html).toContain(
+      '<td align="center" style="padding:0 0 20px 0;text-align:center;border-bottom:1px solid #e6e8ec;">'
+    )
+    expect(html).toContain('<td align="right" style="padding:6px 0 24px 0;text-align:right;">')
   })
 
   it('draws the logo at the width the theme asks for', () => {

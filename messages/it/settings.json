@@ -2149,6 +2149,8 @@
         "description": "L'ultimo giorno in cui il link di invito funziona."
       }
     },
+    "headerRule": "Linea sotto l'intestazione",
+    "headerRuleHint": "Una linea sottile tra il logo o il nome dell'officina e il resto dell'email.",
     "optionalTag": "Non tutte le email hanno un valore per questo tag. Quando è vuoto, le parole intorno vengono sistemate.",
     "summaryRows": {
       "reference": "Riferimento",
@@ -2243,6 +2245,8 @@
       },
       "shapes": "Forme",
       "buttonRadius": "Angoli del pulsante",
+      "topBar": "Barra colorata in alto",
+      "topBarHint": "Una sottile fascia nel tuo colore principale lungo il bordo superiore dell'email.",
       "showLogo": "Mostra logo",
       "showLogoHint": "Con il logo disattivato, la testata stampa invece il nome dell'officina."
     },
