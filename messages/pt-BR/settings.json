@@ -131,13 +131,13 @@
         "title": "Hotel de pneus",
         "description": "Armazenagem sazonal de pneus"
       },
-      "providers": {
-        "title": "Provedores",
-        "description": "E-mail, SMS, WhatsApp e Telegram"
-      },
       "inspectionReminders": {
         "title": "Lembretes de inspeção",
         "description": "Link de agendamento, duração e antecedência"
+      },
+      "emailTemplates": {
+        "title": "Modelos de e-mail",
+        "description": "O que dizem seus e-mails de fatura, orçamento e relatório"
       }
     },
     "pro": "PRO"
@@ -164,6 +164,9 @@
     "shopNamePlaceholder": "Auto Mecanica Silva",
     "orgNumber": "Número da organização",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Rótulo do número da organização",
+    "orgNumberLabelPlaceholder": "Nº da org.",
+    "orgNumberLabelHint": "Impresso ao lado do número em faturas e orçamentos. Deixe vazio para usar o padrão no seu idioma, ou escreva como ele se chama no seu país, por exemplo CNPJ, NIF ou RUT.",
     "phone": "Telefone",
     "phonePlaceholder": "(11) 91234-5678",
     "email": "E-mail",
@@ -354,10 +357,11 @@
     "failedSendInvitation": "Falha ao enviar o convite",
     "pendingInvitations": "Convites pendentes",
     "invitedAs": "Convidado como {role}",
+    "resendInvitation": "Reenviar o convite",
+    "invitationResent": "Convite reenviado para {email}",
+    "failedResendInvitation": "Falha ao reenviar o convite",
     "expires": "Expira em {date}",
     "pending": "Pendente",
-    "copyInviteLink": "Copiar link de convite",
-    "inviteLinkCopied": "Link de convite copiado para a área de transferência",
     "cancelInvitation": "Cancelar convite",
     "cancelInvitationDescription": "Cancelar o convite para {email}? Eles nao poderao mais usar este link.",
     "invitationCancelled": "Convite cancelado",
@@ -512,6 +516,10 @@
   "invoice": {
     "title": "Layout da fatura",
     "description": "Configure o que aparece nas faturas PDF geradas.",
+    "numberingTitle": "Numeração e prazos",
+    "numberingDescription": "Como faturas e orçamentos são numerados, quando as faturas vencem e por quanto tempo os orçamentos ficam válidos.",
+    "documentsTitle": "Documentos",
+    "documentsDescription": "O que toda fatura e orçamento leva consigo.",
     "tabs": {
       "general": "Geral",
       "layout": "Layout",
@@ -542,12 +550,6 @@
     "customFooter": "Rodapé personalizado da fatura",
     "footerPlaceholder": "Obrigado pela preferência!",
     "footerHint": "Este texto aparece no final de cada fatura",
-    "partsMarkupTitle": "Margem de Peças",
-    "partsMarkupDescription": "Margem aplicada ao custo do fornecedor ao adicionar peças. Apenas interno — o cliente nunca vê o custo ou a margem, somente o preço final.",
-    "defaultMarkupPercent": "Margem Padrão %",
-    "defaultMarkupPercentHint": "Novas peças adicionadas manualmente são pré-preenchidas com esta margem. Deixe em 0 para inserir preços manualmente.",
-    "markupAppliesToInventory": "Aplicar margem a peças do estoque",
-    "markupAppliesToInventoryHint": "Quando ativado, peças selecionadas do estoque também usam custo + margem padrão (substitui o preço de venda do estoque).",
     "saveInvoice": "Salvar configurações da fatura",
     "saved": "Configurações da fatura salvas",
     "layoutDescription": "Personalize a ordem e visibilidade das seções em suas faturas e orçamentos.",
@@ -557,13 +559,6 @@
     "layoutDocQuote": "Orçamento",
     "saveLayout": "Salvar layout",
     "resetLayout": "Redefinir",
-    "sectionCustomers": "Clientes",
-    "assignCustomerNumbers": "Atribuir números de cliente",
-    "assignCustomerNumbersHint": "{count} clientes ainda não têm número. Atribuir números sequenciais (os existentes são mantidos).",
-    "customerNumbersAssigned": "Números atribuídos a {count} clientes",
-    "allCustomersNumbered": "Todos os clientes têm número.",
-    "assignCustomerNumbersConfirmTitle": "Atribuir números de cliente?",
-    "assignCustomerNumbersConfirmDescription": "Os {count} clientes sem número receberão números sequenciais na ordem de criação, continuando após o maior número existente. Clientes que já têm número não são alterados. Os números podem ser editados depois.",
     "layoutColorsHint": "Cores, fontes e o estilo do timbre ficam em Modelos.",
     "goToTemplates": "Abrir Modelos",
     "lockTitle": "Bloqueio de documentos concluídos",
@@ -571,6 +566,8 @@
     "lockWhatItDoes": "O que é bloqueado: peças, mão de obra, quantidades, preços, desconto, imposto, número do documento e data. Excluir o documento também é bloqueado.",
     "lockWhatItAllows": "O que continua funcionando: registrar pagamentos, pagamento online com cartão, mudanças de status, envio e reenvio, anexos e notas internas. Uma fatura bloqueada sempre pode ser paga.",
     "lockUnlockNote": "Proprietários e administradores podem desbloquear um documento específico na página dele quando algo realmente precisa ser corrigido. Todo desbloqueio fica no log de auditoria.",
+    "lockDetailsShow": "O que o bloqueio faz",
+    "lockDetailsHide": "Ocultar",
     "lockInvoicesLabel": "Bloquear faturas",
     "lockTriggerSent": "Assim que a fatura for enviada",
     "lockTriggerPaid": "Assim que a fatura for paga integralmente",
@@ -589,7 +586,10 @@
     "freezeConfirmBody": "Cada uma mantém o design, o logo, os dados da oficina, o cliente, o veículo e as constatações com que é impressa agora. Não pode ser desfeito, e as faturas continuam editáveis ou travadas para edição exatamente como hoje.",
     "freezeProgress": "Travadas {done} de {total}",
     "freezeDone": "{count, plural, one {# fatura travada} other {# faturas travadas}}",
-    "freezeFailed": "Não foi possível travar as faturas"
+    "freezeFailed": "Não foi possível travar as faturas",
+    "sectionSending": "Envio",
+    "attachPdfLabel": "Anexar o PDF aos e-mails",
+    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",
@@ -854,6 +854,8 @@
     "modeInclusive": "Inclusivo",
     "modeExclusiveExample": "Exemplo: 100 + {rate}% de imposto = 100 + imposto por cima.",
     "modeInclusiveExample": "Exemplo: 100 ja inclui {rate}% de imposto — a parte do imposto e calculada de tras para frente.",
+    "lineItemsInclTaxLabel": "Mostrar preços das linhas com impostos em faturas e orçamentos",
+    "lineItemsInclTaxHint": "Altera apenas o que é impresso em faturas e orçamentos, incluindo os PDFs e as cópias que os clientes abrem por link. Ligado: cada linha de peças e mão de obra e o subtotal aparecem com impostos incluídos, e a linha de impostos indica quanto disso é imposto. Desligado: preços sem impostos, com o imposto somado no final. Ordens de serviço e os preços que você digita não mudam.",
     "labelLabel": "Rótulo de imposto",
     "labelHint": "Nome personalizado exibido em faturas e orçamentos (ex. ICMS, IVA). Deixe em branco para usar o padrão traduzido.",
     "labelPlaceholder": "Imposto",
@@ -1039,6 +1041,12 @@
     "addNewTech": "+ Adicionar novo",
     "defaultLaborRate": "Taxa de mao de obra padrão (por hora)",
     "laborRatePlaceholder": "75,00",
+    "partsMarkupTitle": "Margem de Peças",
+    "partsMarkupDescription": "Margem aplicada ao custo do fornecedor ao adicionar peças. Apenas interno. O cliente nunca vê o custo ou a margem, somente o preço final.",
+    "defaultMarkupPercent": "Margem Padrão %",
+    "defaultMarkupPercentHint": "Novas peças adicionadas manualmente são pré-preenchidas com esta margem. Deixe em 0 para inserir preços manualmente.",
+    "markupAppliesToInventory": "Aplicar margem a peças do estoque",
+    "markupAppliesToInventoryHint": "Quando ativado, peças selecionadas do estoque também usam custo + margem padrão (substitui o preço de venda do estoque).",
     "unitsTitle": "Unidades",
     "unitsDescription": "Escolha entre metrico (km, litros) e imperial (milhas, galoes).",
     "unitSystem": "Sistema de unidades",
@@ -1733,43 +1741,6 @@
     "prepHint": "Quanto custa cada tipo de preparação. Deixe em branco e nunca é cobrado, que é o que quer a oficina que inclui a lavagem na armazenagem. Os com preço entram sozinhos no orçamento e na ordem.",
     "prepNotCharged": "não cobrado"
   },
-  "providers": {
-    "tabs": {
-      "email": "E-mail",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Configurações de e-mail",
-        "description": "Configure o envio SMTP para entregar faturas, orçamentos e avisos direto da sua oficina."
-      },
-      "sms": {
-        "feature": "Mensagens SMS",
-        "description": "Envie e receba SMS com seus clientes direto do Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "Mensagens WhatsApp",
-        "description": "Envie e receba mensagens de WhatsApp, incluindo fotos de peças, direto do Torqvoice."
-      },
-      "telegram": {
-        "feature": "Mensagens Telegram",
-        "description": "Envie e receba mensagens do Telegram com seus clientes direto do Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Fatura",
     "quote": "Orçamento",
@@ -1964,8 +1935,14 @@
     "paymentTermsPlaceholderHint": "Nenhuma condição de pagamento definida, então a folha mostra um texto de exemplo que não será impresso.",
     "paymentTermsSetHint": "Suas condições de pagamento vêm das configurações de pagamento.",
     "paymentTermsLink": "Configurações de pagamento",
+    "telegramQr": "Código do Telegram",
+    "telegramQrConnectedHint": "Imprime um código que abre {link}, seu bot do Telegram conectado. Aparece apenas em faturas emitidas depois que o bloco foi ativado.",
+    "telegramQrPlaceholderHint": "Nenhum bot do Telegram está conectado, então a folha mostra um código de exemplo que não será impresso.",
+    "telegramQrLink": "Integrações",
     "titleText": "Texto do título",
     "titleTextHint": "Como este documento se chama. Deixado vazio, imprime o próprio nome no idioma do leitor.",
+    "orgNumberLabel": "Rótulo do número da organização",
+    "orgNumberLabelHint": "Impresso ao lado do número da organização em faturas e orçamentos. Deixe vazio para usar o padrão no seu idioma, ou escreva como ele se chama no seu país, por exemplo CNPJ, NIF ou RUT. Compartilhado com as configurações da empresa.",
     "placeholder": "Exemplo",
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",
@@ -2016,5 +1993,349 @@
     "timeZoneDetected": "O fuso horário está em automático em Localização, então o servidor usa {zone}, o último visto em um navegador que salvou configurações. Escolha o fuso da oficina explicitamente para que os horários de agendamento nunca dependam de quem salvou por último.",
     "timeZoneExplicit": "Horários de agendamento e de funcionamento são lidos em {zone}.",
     "timeZoneChange": "Alterar em Localização"
+  },
+  "emailTemplates": {
+    "title": "Modelos de e-mail",
+    "description": "O que dizem os e-mails que sua oficina envia e como eles ficam. Cada tipo de e-mail tem um modelo integrado; crie o seu para mudar o texto, as cores e os blocos que o compõem.",
+    "lockedDescription": "Crie os e-mails que sua oficina envia: mude o texto, adicione ou remova blocos e combine as cores com a sua marca.",
+    "groups": {
+      "documents": "Documentos",
+      "messages": "Mensagens",
+      "portal": "Portal do cliente",
+      "team": "Equipe"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Fatura enviada",
+        "description": "Enviado quando uma fatura vai para um cliente por e-mail, com o PDF anexado ou um link para visualizá-la."
+      },
+      "quote_sent": {
+        "name": "Orçamento enviado",
+        "description": "Enviado quando um orçamento vai para um cliente por e-mail."
+      },
+      "inspection_sent": {
+        "name": "Relatório de inspeção enviado",
+        "description": "Enviado quando um relatório de inspeção vai para um cliente por e-mail."
+      },
+      "message": {
+        "name": "Mensagem ao cliente",
+        "description": "Uma mensagem escrita a um cliente: uma notificação de uma ordem de serviço, um relatório de status, um convite para videochamada ou um lembrete agendado."
+      },
+      "portal_signin": {
+        "name": "Acesso ao portal",
+        "description": "O link de acesso que um cliente solicita no portal do cliente."
+      },
+      "team_invitation": {
+        "name": "Convite para a equipe",
+        "description": "Enviado a um colega que você convida para a oficina, com o link que cria a conta."
+      }
+    },
+    "blocks": {
+      "header": "Cabeçalho",
+      "heading": "Título",
+      "paragraph": "Parágrafo",
+      "callout": "Destaque",
+      "button": "Botão",
+      "document_summary": "Resumo do documento",
+      "attachment_note": "Nota de anexo",
+      "image": "Imagem",
+      "divider": "Divisor",
+      "spacer": "Espaço",
+      "contact_footer": "Rodapé de contato"
+    },
+    "blockNotes": {
+      "header": "Seu logotipo, ou o nome da oficina quando não há logotipo ou ele está desativado. Envie e dimensione o logotipo aqui; as cores e as fontes ficam em Assunto e tema.",
+      "contact_footer": "Nome, endereço, telefone e e-mail da sua oficina, tirados das configurações de Empresa. Preencha-os lá para mudar o que é impresso aqui.",
+      "divider": "Uma linha fina entre dois blocos. É omitida quando abriria ou fecharia o e-mail.",
+      "callout": "Um painel em destaque com uma borda colorida. Bom para as palavras que mais importam, como a própria mensagem.",
+      "attachment_note": "Impressa apenas quando um PDF é anexado ao e-mail.",
+      "button": "O link costuma ser uma tag, como o link de compartilhamento. Um botão cujo link não tem valor é omitido do e-mail.",
+      "document_summary": "Um painel com os números principais do documento. Linhas sem nada a mostrar são omitidas.",
+      "image": "As imagens são comprimidas e redimensionadas para e-mail ao serem enviadas. Imagens que não são mais usadas são removidas quando o modelo é salvo.",
+      "summaryUnused": "Este tipo de e-mail não tem documento, então o resumo não imprime nada."
+    },
+    "tagGroups": {
+      "workshop": "Oficina",
+      "customer": "Cliente",
+      "vehicle": "Veículo",
+      "document": "Documento",
+      "message": "Mensagem",
+      "portal": "Portal",
+      "team": "Equipe"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Nome da oficina",
+        "description": "O nome da sua oficina."
+      },
+      "workshop_phone": {
+        "label": "Telefone da oficina",
+        "description": "O número de telefone das configurações de Empresa."
+      },
+      "workshop_email": {
+        "label": "E-mail da oficina",
+        "description": "O endereço de e-mail das configurações de Empresa."
+      },
+      "workshop_address": {
+        "label": "Endereço da oficina",
+        "description": "O endereço das configurações de Empresa, em quantas linhas ele tiver."
+      },
+      "current_user": {
+        "label": "Nome do remetente",
+        "description": "O nome da pessoa que envia o e-mail."
+      },
+      "customer_name": {
+        "label": "Nome do cliente",
+        "description": "O nome do cliente a quem o e-mail vai."
+      },
+      "vehicle": {
+        "label": "Veículo",
+        "description": "Ano, marca e modelo do veículo."
+      },
+      "plate": {
+        "label": "Placa",
+        "description": "O número da placa do veículo."
+      },
+      "mileage": {
+        "label": "Quilometragem",
+        "description": "A quilometragem registrada no veículo."
+      },
+      "document_number": {
+        "label": "Número do documento",
+        "description": "O número da fatura ou do orçamento."
+      },
+      "document_title": {
+        "label": "Título do documento",
+        "description": "O título do serviço ou do documento."
+      },
+      "total": {
+        "label": "Total",
+        "description": "O total do documento, na moeda dele."
+      },
+      "balance_due": {
+        "label": "Saldo devedor",
+        "description": "O que ainda falta pagar do documento após os pagamentos."
+      },
+      "due_date": {
+        "label": "Data de vencimento",
+        "description": "A data em que o pagamento vence."
+      },
+      "share_link": {
+        "label": "Link de compartilhamento",
+        "description": "Um link que o cliente pode abrir para ver o documento online."
+      },
+      "message": {
+        "label": "Mensagem",
+        "description": "A mensagem escrita para este e-mail, ou a nota adicionada ao documento."
+      },
+      "signin_link": {
+        "label": "Link de acesso",
+        "description": "O link que conecta o cliente ao portal. Ele expira em pouco tempo."
+      },
+      "portal_link": {
+        "label": "Link do portal",
+        "description": "Um link para o portal do cliente."
+      },
+      "invite_link": {
+        "label": "Link do convite",
+        "description": "O link que cria a conta e entra na equipe. Deixa de funcionar quando o convite expira."
+      },
+      "role": {
+        "label": "Função",
+        "description": "A função para a qual a pessoa é convidada."
+      },
+      "invite_expires": {
+        "label": "Data de validade",
+        "description": "O último dia em que o link do convite funciona."
+      }
+    },
+    "headerRule": "Linha sob o cabeçalho",
+    "headerRuleHint": "Uma linha fina entre o logotipo ou o nome da oficina e o resto do e-mail.",
+    "optionalTag": "Nem todo e-mail tem um valor para esta tag. Quando ela fica vazia, as palavras ao redor são ajustadas.",
+    "summaryRows": {
+      "reference": "Referência",
+      "vehicle": "Veículo",
+      "total": "Total",
+      "balance": "Saldo devedor",
+      "due": "Data de vencimento"
+    },
+    "builtIn": "Integrado",
+    "inUse": "Em uso",
+    "useBuiltIn": "Usar o integrado",
+    "setDefault": "Definir como padrão",
+    "defaultSet": "Agora enviando com \"{name}\"",
+    "couldNotSetDefault": "Não foi possível mudar o modelo em uso",
+    "updatedOn": "Atualizado em {date}",
+    "delete": "Excluir",
+    "deleteTitle": "Excluir modelo",
+    "deleteConfirm": "Excluir o modelo \"{name}\"? Se estiver em uso, os e-mails voltam ao modelo integrado.",
+    "deleteTemplate": "Excluir este modelo",
+    "deleted": "\"{name}\" excluído",
+    "couldNotDelete": "Não foi possível excluir o modelo",
+    "backToSettings": "Voltar às configurações",
+    "unsaved": "(não salvo)",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "savedState": "Salvo",
+    "saved": "\"{name}\" salvo",
+    "couldNotSave": "Não foi possível salvar",
+    "saveAsNew": "Salvar como novo",
+    "discard": "Descartar alterações",
+    "sendTest": "Enviar teste",
+    "cancel": "Cancelar",
+    "problems": "{count, plural, one {# problema} other {# problemas}}",
+    "unknownTags": "Estas tags não existem para este tipo de e-mail: {tags}",
+    "missingTags": "Este e-mail precisa incluir {tags}",
+    "subjectRequired": "O assunto não pode ficar vazio",
+    "invalidTemplate": "Algum texto é longo demais ou um campo tem um valor inválido.",
+    "leaveTitle": "Sair sem salvar?",
+    "leaveBody": "Suas alterações neste modelo não foram salvas. Elas serão perdidas.",
+    "leaveConfirm": "Sair",
+    "subjectAndTheme": "Assunto e tema",
+    "settingsSubtitle": "Vale para o e-mail inteiro",
+    "blocksTitle": "Blocos",
+    "addBlock": "Adicionar bloco",
+    "removeBlock": "Remover bloco",
+    "removeBlockLast": "O último bloco não pode ser removido",
+    "blockEmpty": "vazio",
+    "blockEmptyHint": "Aparece, mas ainda não há nada nele para imprimir.",
+    "blockShownHint": "Visível no e-mail. Clique para ocultar.",
+    "blockHiddenHint": "Oculto no e-mail. Clique para mostrar.",
+    "railHint": "Arraste um bloco pela alça para movê-lo. A linha mostra onde ele vai ficar. Clique em um bloco para editar o texto dele à direita.",
+    "resizeHint": "Arraste para redimensionar o painel. Clique duas vezes para redefinir.",
+    "desktop": "Computador",
+    "mobile": "Celular",
+    "htmlView": "HTML",
+    "textView": "Texto simples",
+    "desktopTooltip": "Pré-visualizar na largura de computador",
+    "mobileTooltip": "Pré-visualizar na largura de celular",
+    "htmlViewTooltip": "Mostrar o e-mail HTML",
+    "previewWidth": "Largura da pré-visualização",
+    "previewView": "Modo de pré-visualização",
+    "textViewTooltip": "Mostrar a versão em texto simples",
+    "inboxNow": "Agora",
+    "inboxNoSender": "Sua oficina",
+    "inboxNoSubject": "(sem assunto)",
+    "subject": "Assunto",
+    "text": "Texto",
+    "buttonLabel": "Texto do botão",
+    "buttonHref": "Link",
+    "spacerHeight": "Altura",
+    "tagsTitle": "Tags",
+    "tagsHint": "Clique em uma tag para inseri-la onde está o cursor no campo em que você digitou por último.",
+    "theme": {
+      "colors": "Cores",
+      "primaryColor": "Principal",
+      "textColor": "Texto",
+      "mutedColor": "Texto suave",
+      "backgroundColor": "Fundo",
+      "panelColor": "Painéis",
+      "invalidColor": "Uma cor não é um valor hexadecimal válido",
+      "hexLabel": "{label} em hexadecimal",
+      "typography": "Tipografia",
+      "font": "Fonte",
+      "fontHint": "Apenas fontes que todo cliente de e-mail já tem. A maioria não carrega fontes da web.",
+      "fonts": {
+        "system": "Sistema",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Formas",
+      "buttonRadius": "Cantos do botão",
+      "topBar": "Barra colorida no topo",
+      "topBarHint": "Uma faixa fina na sua cor principal ao longo da borda superior do e-mail.",
+      "showLogo": "Mostrar logotipo",
+      "showLogoHint": "Com o logotipo desativado, o cabeçalho imprime o nome da oficina no lugar."
+    },
+    "nameDialog": {
+      "title": "Salvar este modelo",
+      "body": "Dê um nome ao modelo para encontrá-lo na galeria. Salvar também faz dele o modelo com que este tipo de e-mail é enviado.",
+      "placeholder": "Nome do modelo",
+      "nameExists": "Já existe um modelo com este nome. Escolha outro nome.",
+      "save": "Salvar modelo",
+      "update": "Atualizar modelo"
+    },
+    "testDialog": {
+      "title": "Enviar um e-mail de teste",
+      "body": "O e-mail é enviado com dados de exemplo, para você vê-lo em um cliente de e-mail de verdade.",
+      "placeholder": "Endereço de e-mail",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "sentTitle": "E-mail de teste enviado",
+      "sentBody": "Verifique a caixa de entrada de {email}. Pode levar um minuto para chegar.",
+      "failedTitle": "Não foi possível enviar o e-mail de teste",
+      "failedBody": "Verifique o provedor de e-mail em Provedores e tente novamente."
+    },
+    "toolbar": {
+      "bold": "Negrito",
+      "italic": "Itálico",
+      "underline": "Sublinhado",
+      "strike": "Tachado",
+      "link": "Link",
+      "linkUrl": "Endereço do link",
+      "linkPlaceholder": "https://... ou {share_link}",
+      "linkHint": "Um endereço web ou uma tag como {share_link}, preenchida quando o e-mail é enviado.",
+      "linkApply": "Aplicar",
+      "linkRemove": "Remover link",
+      "bulletList": "Lista com marcadores",
+      "orderedList": "Lista numerada",
+      "align": {
+        "left": "Alinhar à esquerda",
+        "center": "Centralizar",
+        "right": "Alinhar à direita"
+      },
+      "size": {
+        "label": "Tamanho do texto",
+        "default": "Tamanho padrão",
+        "small": "Pequeno",
+        "normal": "Normal",
+        "large": "Grande",
+        "extraLarge": "Extragrande"
+      },
+      "color": {
+        "label": "Cor do texto",
+        "text": "Cor de texto do tema",
+        "muted": "Cor suave do tema",
+        "primary": "Cor principal do tema",
+        "default": "Padrão",
+        "hex": "Cor hexadecimal",
+        "apply": "Aplicar"
+      },
+      "clear": "Limpar formatação"
+    },
+    "logo": {
+      "title": "Logotipo",
+      "empty": "Nenhum logotipo enviado. O cabeçalho imprime o nome da oficina.",
+      "upload": "Enviar logotipo",
+      "replace": "Substituir logotipo",
+      "remove": "Remover",
+      "uploading": "Enviando…",
+      "width": "Largura do logotipo",
+      "hint": "Separado do logotipo da empresa. Ao ser enviado, ele é recortado e preparado para e-mail. PNG, JPEG ou WebP de até 4 MB.",
+      "position": "Posição",
+      "tooLarge": "A imagem deve ter menos de 4 MB",
+      "uploadFailed": "Não foi possível enviar o logotipo"
+    },
+    "image": {
+      "empty": "Nenhuma imagem enviada. O bloco não imprime nada até que haja uma.",
+      "upload": "Enviar imagem",
+      "replace": "Substituir imagem",
+      "remove": "Remover",
+      "uploading": "Enviando…",
+      "alt": "Descrição",
+      "altHint": "Lida em voz alta para leitores que não conseguem ver a imagem e exibida enquanto ela carrega. PNG, JPEG ou WebP de até 10 MB.",
+      "width": "Largura",
+      "widthHint": "600 px é a largura total do e-mail. Imagens mais estreitas ficam onde Posição indica.",
+      "link": "Link",
+      "linkHint": "Opcional. Abre ao clicar na imagem; uma tag como o link de compartilhamento também funciona aqui.",
+      "tooLarge": "A imagem deve ter menos de 10 MB",
+      "uploadFailed": "Não foi possível enviar a imagem"
+    },
+    "dragHandle": "Arraste para reordenar",
+    "dragHandleKeyboard": "Arraste, ou use as teclas de seta, para mover este bloco",
+    "tagDoesNotFit": "A tag não cabe neste campo."
   }
 }

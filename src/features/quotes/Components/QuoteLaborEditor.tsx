@@ -3,6 +3,7 @@
 import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -46,11 +47,12 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
       className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? 'line-through opacity-50' : ''}`}
     >
       <div className="col-span-2 flex gap-2 sm:col-span-1">
-        <Input
+        <Textarea
           placeholder={tDescriptionPlaceholder}
           value={labor.description}
           onChange={(e) => onUpdate(index, 'description', e.target.value)}
-          className="flex-1"
+          rows={1}
+          className="min-h-9 flex-1 resize-none"
         />
         <button
           type="button"

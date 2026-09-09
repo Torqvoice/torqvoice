@@ -175,6 +175,7 @@ export function WorkOrdersClient({
     email: string | null
     phone: string | null
   } | null>(null)
+  const [notifyVehicle, setNotifyVehicle] = useState<WorkOrder['vehicle']>(null)
   const [notifyMessage, setNotifyMessage] = useState('')
   const [notifyStatus, setNotifyStatus] = useState('')
 
@@ -256,6 +257,7 @@ export function WorkOrdersClient({
         current_user: tplData?.currentUser || '',
       })
       setNotifyCustomer(notifyTarget)
+      setNotifyVehicle(workOrder.vehicle)
       setNotifyMessage(message)
       setNotifyStatus(newStatus)
       setShowNotifyDialog(true)
@@ -621,6 +623,7 @@ export function WorkOrdersClient({
           open={showNotifyDialog}
           onOpenChange={setShowNotifyDialog}
           customer={notifyCustomer}
+          vehicle={notifyVehicle}
           defaultMessage={notifyMessage}
           emailSubject={t('emailSubject', { status: notifyStatus })}
           smsEnabled={smsEnabled}

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { PAYMENT_CONNECTOR_IDS, paymentProviderFor } from '@/features/integrations/Lib/payments'
+import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
 import { rateLimit } from '@/lib/rate-limit'
 import { notify } from '@/lib/notify'
 import { resolvePortalOrg } from '@/lib/portal-slug'
@@ -60,6 +61,18 @@ export async function POST(
 
     if (!result || !result.paid) {
       return NextResponse.json({ verified: false })
+    }
+
+    // A paid order is only this invoice's if it was created for it. Without
+    // this, an order paid on one invoice could be posted against another.
+    if (!paymentMatchesRecord(result, { serviceRecordId: record.id, organizationId: orgId })) {
+      console.warn(
+        `[Verify] ${provider} payment ${externalId} was not created for record ${record.id} of organization ${orgId}; refusing`
+      )
+      return NextResponse.json(
+        { error: 'Payment does not belong to this invoice' },
+        { status: 400 }
+      )
     }
 
     // Idempotent: check if payment with this externalId already exists

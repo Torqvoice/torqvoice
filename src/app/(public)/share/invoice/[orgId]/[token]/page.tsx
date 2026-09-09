@@ -10,8 +10,9 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { getOrgTelegramBotUsername } from '@/lib/telegram'
+import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -111,9 +112,12 @@ export default async function PublicInvoicePage({
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
   const labels = await loadPrintLabels(locale, assembly.labelSettings)
 
-  const torqvoiceLogoDataUri = features.brandingRemoved
-    ? undefined
-    : await getTorqvoiceLogoDataUri()
+  // The Telegram code sits in the sheet, where the PDF prints it, so the
+  // shared copy and the download are the same document.
+  const [torqvoiceLogoDataUri, telegramQr] = await Promise.all([
+    features.brandingRemoved ? undefined : getTorqvoiceLogoDataUri(),
+    telegramQrForPrint(orgId, assembly.layoutConfig),
+  ])
 
   const spec = buildInvoicePrintSpec({
     data: assembly.data,
@@ -123,6 +127,8 @@ export default async function PublicInvoicePage({
     logoDataUri: assembly.logoDataUri,
     template: assembly.template,
     torqvoiceLogoDataUri,
+    telegramQrDataUri: telegramQr?.dataUri,
+    telegramLabel: labels?.telegramConnect,
     labels,
   })
 
@@ -130,17 +136,10 @@ export default async function PublicInvoicePage({
     settingsMap['payment.termsOfSaleUrl'] ||
     (settingsMap['payment.termsOfSale'] ? `/share/terms/${orgId}` : undefined)
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const appUrl = getAppBaseUrl()
   const portalSlug = org?.portalSlug
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
-
-  // The bot follows the Telegram integration, whichever side of the move it
-  // was connected on.
-  const telegramBotUsername = (await getOrgTelegramBotUsername(orgId)) || ''
-  const telegramBotLink = telegramBotUsername ? `https://t.me/${telegramBotUsername}` : undefined
 
   return (
     <InvoiceView
@@ -167,7 +166,6 @@ export default async function PublicInvoicePage({
       layoutConfig={assembly.layoutConfig}
       customFields={assembly.data.customFields}
       findings={assembly.data.findings}
-      telegramBotLink={telegramBotLink}
       serviceType={assembly.serviceType}
       taxLabel={assembly.taxLabel}
     />

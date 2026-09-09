@@ -100,5 +100,7 @@
     "title": "PDF önizleme",
     "preview": "Önizleme",
     "failed": "PDF önizlemesi oluşturulamadı."
-  }
+  },
+  "attachPdf": "PDF ekle",
+  "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz."
 }

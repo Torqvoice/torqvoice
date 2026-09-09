@@ -28,6 +28,9 @@ vi.mock('@/lib/email', () => ({
   sendOrgMail: vi.fn(),
   getOrgFromAddress: vi.fn(),
 }))
+vi.mock('@/features/email/Lib/sendTemplatedMail', () => ({
+  sendTemplatedMail: vi.fn().mockResolvedValue({ subject: 'Team invitation' }),
+}))
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -58,6 +61,7 @@ import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { cookies } from 'next/headers'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { cancelInvitation } from '@/features/team/Actions/cancelInvitation'
@@ -408,7 +412,7 @@ describe('sendInvitation — org scoping and role validation', () => {
   })
 
   it('rolls back the invitation record when the email send fails', async () => {
-    mockSendOrgMail.mockRejectedValue(new Error('SMTP error') as any)
+    vi.mocked(sendTemplatedMail).mockRejectedValueOnce(new Error('SMTP error'))
     vi.mocked(db.teamInvitation.delete).mockResolvedValue({} as any)
 
     const result = await sendInvitation({ email: 'new@example.com', role: 'member' })

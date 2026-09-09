@@ -1,0 +1,60 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Factuur",
+      "subject": "Factuur {document_number} van {workshop_name}",
+      "heading": "Factuur {document_number}",
+      "intro": "Beste {customer_name},\n\nBedankt dat u voor ons heeft gekozen. Uw factuur staat klaar.",
+      "button": "Factuur bekijken",
+      "outro": "Heeft u vragen? Reageer dan gewoon op deze e-mail."
+    },
+    "quote_sent": {
+      "name": "Offerte",
+      "subject": "Offerte {document_number} van {workshop_name}",
+      "heading": "Offerte {document_number}",
+      "intro": "Beste {customer_name},\n\nHierbij de offerte waar u om vroeg. Laat het ons weten als u wilt dat we aan de slag gaan.",
+      "button": "Offerte bekijken",
+      "outro": "Heeft u vragen? Reageer dan gewoon op deze e-mail."
+    },
+    "inspection_sent": {
+      "name": "Inspectierapport",
+      "subject": "Inspectierapport van {workshop_name}",
+      "heading": "Inspectierapport van uw voertuig",
+      "intro": "Beste {customer_name},\n\nWe hebben de inspectie afgerond. Het rapport staat voor u klaar.",
+      "button": "Rapport bekijken",
+      "outro": "Heeft u vragen? Reageer dan gewoon op deze e-mail."
+    },
+    "message": {
+      "name": "Klantbericht",
+      "subject": "Bericht van {workshop_name}",
+      "intro": "Beste {customer_name},",
+      "outro": "Heeft u vragen? Reageer dan gewoon op deze e-mail."
+    },
+    "portal_signin": {
+      "name": "Portaalaanmelding",
+      "subject": "Aanmelden bij {workshop_name}",
+      "heading": "Meld u aan bij uw klantportaal",
+      "intro": "Beste {customer_name},\n\nGebruik de knop hieronder om u aan te melden bij het klantportaal van {workshop_name}.",
+      "button": "Aanmelden",
+      "linkFallback": "Werkt de knop niet? Kopieer dan deze link in uw browser:\n{signin_link}",
+      "outro": "Deze link verloopt over 15 minuten. Heeft u hier niet om gevraagd, dan kunt u deze e-mail negeren."
+    },
+    "team_invitation": {
+      "name": "Teamuitnodiging",
+      "subject": "U bent uitgenodigd om lid te worden van {workshop_name}",
+      "heading": "Word lid van {workshop_name}",
+      "intro": "U bent uitgenodigd om als {role} lid te worden van {workshop_name} op Torqvoice.\n\nGebruik de knop hieronder om uw account aan te maken en lid te worden van het team.",
+      "button": "Uitnodiging accepteren",
+      "linkFallback": "Als de knop niet werkt, kopieer dan deze link in uw browser:\n{invite_link}",
+      "outro": "Deze uitnodiging is geldig tot {invite_expires}. Als u deze niet verwachtte, kunt u deze e-mail negeren."
+    }
+  },
+  "attachmentNote": "Een PDF-kopie is als bijlage bij deze e-mail gevoegd.",
+  "summary": {
+    "reference": "Referentie",
+    "vehicle": "Voertuig",
+    "total": "Totaal",
+    "balance": "Openstaand bedrag",
+    "due": "Vervaldatum"
+  }
+}

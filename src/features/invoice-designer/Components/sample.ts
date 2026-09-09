@@ -135,7 +135,9 @@ export function fieldValues(
     // A made-up customer, the same for every workshop.
     customer_name: 'Alex Carter',
     customer_company: 'Carter Logistics Ltd',
-    customer_address: '12 Harbour Road, Springfield',
+    // Two lines, because a customer address is written on two and the
+    // designer should show what that does to the block before it prints.
+    customer_address: '12 Harbour Road\nSpringfield',
     customer_email: 'alex@example.com',
     customer_phone: '+1 555 0134',
     customer_tax_id: `${L('customerTaxId', 'Tax ID')}: 000 000 000`,

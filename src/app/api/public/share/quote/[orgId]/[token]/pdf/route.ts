@@ -1,3 +1,4 @@
+import { withOrgNumberLabel } from '@/features/invoice-designer/Lib/labelOverrides'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -15,6 +16,7 @@ import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 export async function GET(
   _request: Request,
@@ -95,6 +97,7 @@ export async function GET(
     if (customTaxLabel) {
       labels.tax = `${customTaxLabel} ({rate}%)`
     }
+    Object.assign(labels, withOrgNumberLabel(labels, settingsMap['workshop.orgNumberLabel']))
 
     let logoDataUri: string | undefined
     const logoPath = documentLogoPath(settingsMap, 'quote')
@@ -204,14 +207,13 @@ export async function GET(
       logoSize: Number(settingsMap['quote.logoSize']) || 100,
     }
 
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const appUrl = getAppBaseUrl()
     const portalSlug = org?.portalSlug
     const portalEnabled = settingsMap['portal.enabled'] === 'true'
     const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
     const element = React.createElement(QuotePDF, {
+      lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
       data: quote,
       workshop: {
         name: org?.name || '',

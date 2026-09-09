@@ -19,7 +19,13 @@
     "columnTotal": "Suma",
     "columnPaid": "Opłacone",
     "columnBalance": "Saldo",
-    "noRecords": "Nie znaleziono wpisów rozliczeniowych."
+    "noRecords": "Nie znaleziono wpisów rozliczeniowych.",
+    "columnDelivery": "Dostarczenie",
+    "deliverySent": "Wysłana",
+    "deliveryViewed": "Otwarta",
+    "deliveryViewedOn": "Ostatnio otwarta {date}",
+    "filterUnviewed": "Nieotwarte",
+    "filterUnviewedHint": "Faktury wysłane, ale nigdy nieotwarte"
   },
   "recurring": {
     "title": "Cykliczne",

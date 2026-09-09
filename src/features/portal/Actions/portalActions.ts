@@ -9,6 +9,14 @@ import { sendServiceRequestAlert } from '@/features/portal/Lib/sendServiceReques
 import { withAuth, type ActionResult } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { headers } from 'next/headers'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
+import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { assembleInvoicePrint } from '@/features/invoices/Lib/assembleInvoicePrint'
+import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
+import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getFeatures } from '@/lib/features'
+import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 
 type PortalResult<T = unknown> = {
   success: boolean
@@ -269,6 +277,62 @@ export async function getPortalInvoices() {
       orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
     })
     return invoices
+  })
+}
+
+/**
+ * One invoice as the sheet the customer would be printed, for reading in the
+ * portal without downloading the PDF. The same assembly and spec the PDF and
+ * the shared copy come from, so the three cannot disagree. Only the
+ * customer's own completed records, the same rule as the list.
+ */
+export async function getPortalInvoiceSheet(invoiceId: string) {
+  return withPortalAuth(async ({ customerId, organizationId }) => {
+    const record = await db.serviceRecord.findFirst({
+      where: {
+        id: invoiceId,
+        organizationId,
+        OR: [{ vehicle: { customerId } }, { customerId }],
+        status: 'completed',
+      },
+      select: { id: true, title: true, invoiceNumber: true, publicToken: true },
+    })
+    if (!record) return null
+
+    const assembly = await assembleInvoicePrint(record.id)
+    if (!assembly) return null
+
+    const acceptLanguage = (await headers()).get('accept-language')
+    const locale = await resolveCustomerLocale(organizationId, acceptLanguage)
+    const [labels, features, telegramQr] = await Promise.all([
+      loadPrintLabels(locale, assembly.labelSettings),
+      getFeatures(organizationId),
+      telegramQrForPrint(organizationId, assembly.layoutConfig),
+    ])
+    const torqvoiceLogoDataUri = features.brandingRemoved
+      ? undefined
+      : await getTorqvoiceLogoDataUri()
+
+    const spec = buildInvoicePrintSpec({
+      data: assembly.data,
+      workshop: assembly.workshop,
+      invoiceSettings: assembly.invoiceSettings,
+      paymentSummary: assembly.paymentSummary,
+      logoDataUri: assembly.logoDataUri,
+      template: assembly.template,
+      torqvoiceLogoDataUri,
+      telegramQrDataUri: telegramQr?.dataUri,
+      telegramLabel: labels?.telegramConnect,
+      labels,
+    })
+
+    return {
+      id: record.id,
+      title: record.title,
+      invoiceNumber: record.invoiceNumber,
+      publicToken: record.publicToken,
+      spec,
+    }
   })
 }
 

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
@@ -205,6 +207,8 @@ function getMimeType(filename: string): string {
 // ── API Route ────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   if (isDemoMode) {
     return NextResponse.json({ error: 'Data import is disabled on the demo.' }, { status: 403 })
   }
@@ -213,6 +217,10 @@ export async function POST(request: NextRequest) {
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  // Reading or replacing the whole workshop is an owner's or admin's call.
+  if (!ctx.isAdmin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const { organizationId, userId } = ctx
   const timeZone = await workshopTimeZone(organizationId)
@@ -220,6 +228,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Read zip from request body
+    assertContentLength(request, 200 * 1024 * 1024)
     const arrayBuffer = await request.arrayBuffer()
     const zipBuffer = Buffer.from(arrayBuffer)
 
@@ -232,6 +241,7 @@ export async function POST(request: NextRequest) {
 
     // Extract zip
     const zip = await JSZip.loadAsync(zipBuffer)
+    assertZipWithinLimits(zip.files)
 
     // Find and parse backup.json
     const backupEntry = zip.file('backup.json')
@@ -539,7 +549,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('[import-invoice-ninja] Error:', error)
-    const message = error instanceof Error ? error.message : 'Import failed'
+    console.error('[backup import]', error)
+    const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {
     if (tmpDir) {

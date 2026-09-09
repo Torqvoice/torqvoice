@@ -93,6 +93,8 @@ export interface QuotePrintInput {
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
   layoutConfig?: InvoiceLayoutConfig
+  /** Print each line with tax included, and say how much of the subtotal is tax. */
+  lineItemsInclTax?: boolean
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -140,6 +142,11 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
   const net = (value: number) => netLineTotal(value, taxRate, taxInclusive)
+  // The same choice the invoice offers: lines with tax in them, the subtotal
+  // following, and the tax row saying how much of it is tax.
+  const linesInclTax = input.lineItemsInclTax === true && taxRate > 0
+  const gross = (value: number) => (taxInclusive ? value : value * (1 + taxRate / 100))
+  const shown = linesInclTax ? gross : net
 
   const df = input.dateFormat || DEFAULT_DATE_FORMAT
   const tz = input.timezone || undefined
@@ -203,8 +210,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       qty: String(l.hours),
       unit: l.pricingType === 'service' ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
-      price: money(net(l.rate)),
-      total: money(net(l.total)),
+      price: money(shown(l.rate)),
+      total: money(shown(l.total)),
       excluded: l.excluded,
     })),
     ...data.partItems.map((p, i) => ({
@@ -213,8 +220,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
-      price: money(net(p.unitPrice)),
-      total: money(net(p.total)),
+      price: money(shown(p.unitPrice)),
+      total: money(shown(p.total)),
       excluded: p.excluded,
     })),
   ]
@@ -223,8 +230,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     ref: p.partNumber || '-',
     desc: p.name,
     qty: formatQuantity(p.quantity, p.unit),
-    price: money(net(p.unitPrice)),
-    total: money(net(p.total)),
+    price: money(shown(p.unitPrice)),
+    total: money(shown(p.total)),
     excluded: p.excluded,
   }))
 
@@ -234,11 +241,11 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       desc: l.description,
       qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
       rate: isService
-        ? money(net(l.rate))
+        ? money(shown(l.rate))
         : labels.ratePerHour
-          ? fillTemplate(labels.ratePerHour, { rate: money(net(l.rate)) })
-          : `${money(net(l.rate))}/hr`,
-      total: money(net(l.total)),
+          ? fillTemplate(labels.ratePerHour, { rate: money(shown(l.rate)) })
+          : `${money(shown(l.rate))}/hr`,
+      total: money(shown(l.total)),
       excluded: l.excluded,
     }
   })
@@ -263,15 +270,21 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const itemsTableVisible = layout.sections.some((s) => s.id === 'items_table' && s.visible)
   const totals: TotalLine[] = []
   if (!itemsTableVisible && data.laborItems.length > 0) {
-    totals.push({ label: L('labor', 'Labor'), value: money(net(laborTotal)), kind: 'line' })
+    totals.push({ label: L('labor', 'Labor'), value: money(shown(laborTotal)), kind: 'line' })
   }
   if (!itemsTableVisible && data.partItems.length > 0) {
-    totals.push({ label: L('parts', 'Parts'), value: money(net(partsTotal)), kind: 'line' })
+    totals.push({ label: L('parts', 'Parts'), value: money(shown(partsTotal)), kind: 'line' })
   }
-  if (net(subtotal) > 0) {
-    totals.push({ label: L('subtotal', 'Subtotal'), value: money(net(subtotal)), kind: 'line' })
+  if (shown(subtotal) > 0) {
+    totals.push({
+      label: linesInclTax
+        ? L('subtotalInclTax', 'Subtotal (incl. tax)')
+        : L('subtotal', 'Subtotal'),
+      value: money(shown(subtotal)),
+      kind: 'line',
+    })
   }
-  if (net(discount) > 0) {
+  if (shown(discount) > 0) {
     totals.push({
       label:
         data.discountType === 'percentage'
@@ -279,13 +292,18 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
             ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) })
             : `Discount (${data.discountValue}%)`
           : L('discount', 'Discount'),
-      value: money(-net(discount)),
+      value: money(-shown(discount)),
       kind: 'discount',
     })
   }
   if (taxRate > 0) {
+    const rate = { rate: String(taxRate) }
     totals.push({
-      label: labels.tax ? fillTemplate(labels.tax, { rate: String(taxRate) }) : `Tax (${taxRate}%)`,
+      label: linesInclTax
+        ? fillTemplate(L('taxIncluded', 'Includes tax ({rate}%)'), rate)
+        : labels.tax
+          ? fillTemplate(labels.tax, rate)
+          : `Tax (${taxRate}%)`,
       value: money(taxAmount),
       kind: 'line',
     })

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
@@ -177,6 +179,7 @@ async function extractZipToTempDir(zipBuffer: Buffer): Promise<string> {
   await mkdir(tmpDir, { recursive: true })
 
   const zip = await JSZip.loadAsync(zipBuffer)
+  assertZipWithinLimits(zip.files)
 
   for (const [relativePath, entry] of Object.entries(zip.files)) {
     // Guard against zip-slip: skip any entry whose path escapes tmpDir.
@@ -200,6 +203,8 @@ async function extractZipToTempDir(zipBuffer: Buffer): Promise<string> {
 // ── API Route ────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   if (isDemoMode) {
     return NextResponse.json({ error: 'Data import is disabled on the demo.' }, { status: 403 })
   }
@@ -208,6 +213,10 @@ export async function POST(request: NextRequest) {
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  // Reading or replacing the whole workshop is an owner's or admin's call.
+  if (!ctx.isAdmin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const { organizationId, userId } = ctx
   const timeZone = await workshopTimeZone(organizationId)
@@ -215,6 +224,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Accept the zip as raw binary body
+    assertContentLength(request, 200 * 1024 * 1024)
     const arrayBuffer = await request.arrayBuffer()
     const zipBuffer = Buffer.from(arrayBuffer)
 
@@ -426,7 +436,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('[import-lubelog] Error:', error)
-    const message = error instanceof Error ? error.message : 'Import failed'
+    console.error('[backup import]', error)
+    const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {
     // Clean up temp directory

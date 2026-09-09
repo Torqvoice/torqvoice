@@ -131,13 +131,13 @@
         "title": "Tire hotel",
         "description": "Seasonal tire storage"
       },
-      "providers": {
-        "title": "Providers",
-        "description": "Email, SMS, WhatsApp & Telegram"
-      },
       "inspectionReminders": {
         "title": "Inspection reminders",
         "description": "Booking link, duration and lead time"
+      },
+      "emailTemplates": {
+        "title": "Email templates",
+        "description": "What your invoice, quote and report emails say"
       }
     },
     "pro": "PRO"
@@ -164,6 +164,9 @@
     "shopNamePlaceholder": "Joe's Auto Repair",
     "orgNumber": "Organization Number",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Label for Organization number",
+    "orgNumberLabelPlaceholder": "Org. Number",
+    "orgNumberLabelHint": "Printed next to the number on invoices and quotes. Leave empty for the default in your language, or write what it is called where you are, such as ABN, VAT no. or CVR.",
     "phone": "Phone",
     "phonePlaceholder": "(555) 123-4567",
     "email": "Email",
@@ -354,10 +357,11 @@
     "failedSendInvitation": "Failed to send invitation",
     "pendingInvitations": "Pending Invitations",
     "invitedAs": "Invited as {role}",
+    "resendInvitation": "Send the invitation again",
+    "invitationResent": "Invitation sent again to {email}",
+    "failedResendInvitation": "Could not send the invitation again",
     "expires": "Expires {date}",
     "pending": "Pending",
-    "copyInviteLink": "Copy invite link",
-    "inviteLinkCopied": "Invite link copied to clipboard",
     "cancelInvitation": "Cancel Invitation",
     "cancelInvitationDescription": "Cancel the invitation to {email}? They will no longer be able to use this link to join.",
     "invitationCancelled": "Invitation cancelled",
@@ -512,6 +516,10 @@
   "invoice": {
     "title": "Invoice & Quotes",
     "description": "Configure invoice settings, layout and custom fields.",
+    "numberingTitle": "Numbering and dates",
+    "numberingDescription": "How invoices and quotes are numbered, when invoices fall due and how long quotes stay valid.",
+    "documentsTitle": "Documents",
+    "documentsDescription": "What every invoice and quote carries with it.",
     "tabs": {
       "general": "General",
       "layout": "Layout",
@@ -542,12 +550,6 @@
     "customFooter": "Custom Invoice Footer",
     "footerPlaceholder": "Thank you for your business!",
     "footerHint": "This text appears at the bottom of every invoice",
-    "partsMarkupTitle": "Parts Markup",
-    "partsMarkupDescription": "Markup applied to vendor cost when adding parts. Internal only — the customer never sees the cost or markup, only the final price.",
-    "defaultMarkupPercent": "Default Markup %",
-    "defaultMarkupPercentHint": "New manually-added parts pre-fill with this markup. Leave at 0 to enter prices manually.",
-    "markupAppliesToInventory": "Apply markup to inventory parts",
-    "markupAppliesToInventoryHint": "When enabled, parts picked from inventory also use cost + default markup (overrides the inventory sell price).",
     "saveInvoice": "Save Invoice Settings",
     "saved": "Invoice settings saved",
     "layoutDescription": "Customize the order and visibility of sections in your invoices and quotes.",
@@ -557,13 +559,6 @@
     "layoutDocQuote": "Quote",
     "saveLayout": "Save Layout",
     "resetLayout": "Reset to Default",
-    "sectionCustomers": "Customers",
-    "assignCustomerNumbers": "Assign customer numbers",
-    "assignCustomerNumbersHint": "{count} customers have no number yet. Assign sequential numbers to them (existing numbers are kept).",
-    "customerNumbersAssigned": "Assigned numbers to {count} customers",
-    "allCustomersNumbered": "All customers have a number.",
-    "assignCustomerNumbersConfirmTitle": "Assign customer numbers?",
-    "assignCustomerNumbersConfirmDescription": "This will give sequential numbers to the {count} customers that have no number yet, in the order they were created, continuing after your highest existing number. Customers that already have a number are not changed. Numbers can be edited afterwards.",
     "layoutColorsHint": "Colors, fonts and the header style live in Templates.",
     "goToTemplates": "Open Templates",
     "lockTitle": "Locking finished documents",
@@ -571,6 +566,8 @@
     "lockWhatItDoes": "What it freezes: parts, labour, quantities, prices, discount, tax, the document number and its date. Deleting the document is blocked too.",
     "lockWhatItAllows": "What still works: recording payments, online card payments, status changes, sending and re-sending, attachments and internal notes. A locked invoice can always still be paid.",
     "lockUnlockNote": "Owners and admins can unlock a single document from its own page when something genuinely needs correcting. Every unlock is recorded in the audit log.",
+    "lockDetailsShow": "What locking does",
+    "lockDetailsHide": "Hide",
     "lockInvoicesLabel": "Lock invoices",
     "lockTriggerSent": "Once the invoice is sent",
     "lockTriggerPaid": "Once the invoice is paid in full",
@@ -589,7 +586,10 @@
     "freezeConfirmBody": "Each one keeps the design, logo, workshop details, customer, vehicle and findings it prints with right now. This cannot be undone, and the invoices stay editable or locked for editing exactly as they are today.",
     "freezeProgress": "Locked {done} of {total}",
     "freezeDone": "{count, plural, one {# invoice} other {# invoices}} locked",
-    "freezeFailed": "Could not lock the invoices"
+    "freezeFailed": "Could not lock the invoices",
+    "sectionSending": "Sending",
+    "attachPdfLabel": "Attach the PDF to emails",
+    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",
@@ -854,6 +854,8 @@
     "modeInclusive": "Inclusive",
     "modeExclusiveExample": "Example: $100 + {rate}% tax = $100 + tax on top.",
     "modeInclusiveExample": "Example: $100 entered already includes {rate}% tax — the tax portion is reverse-calculated.",
+    "lineItemsInclTaxLabel": "Show line prices including tax on invoices and quotes",
+    "lineItemsInclTaxHint": "Only changes what is printed on invoices and quotes, including their PDFs and the copies customers open from a link. On, each part and labour line and the subtotal are shown with tax included, and the tax row says how much of it is tax. Off shows prices before tax and adds the tax at the bottom. Work orders and the prices you enter are not affected.",
     "labelLabel": "Tax label",
     "labelHint": "Custom name shown on invoices and quotes (e.g. VAT, GST, MVA, MwSt.). Leave blank to use the localized default.",
     "labelPlaceholder": "VAT",
@@ -1039,6 +1041,12 @@
     "addNewTech": "+ Add New",
     "defaultLaborRate": "Default Labor Rate (per hour)",
     "laborRatePlaceholder": "75.00",
+    "partsMarkupTitle": "Parts Markup",
+    "partsMarkupDescription": "Markup added to the vendor cost when parts go on a job. Internal only. The customer sees the final price, never the cost or the markup.",
+    "defaultMarkupPercent": "Default Markup %",
+    "defaultMarkupPercentHint": "New manually-added parts pre-fill with this markup. Leave at 0 to enter prices manually.",
+    "markupAppliesToInventory": "Apply markup to inventory parts",
+    "markupAppliesToInventoryHint": "When enabled, parts picked from inventory also use cost + default markup (overrides the inventory sell price).",
     "unitsTitle": "Units",
     "unitsDescription": "Choose between metric (km, liters) and imperial (miles, gallons) units.",
     "unitSystem": "Unit System",
@@ -1733,43 +1741,6 @@
     "prepHint": "What each kind of prep costs. Leave one blank and it is never billed, which is what a shop that includes washing in the storage fee wants. Priced ones are added to a quote or work order automatically.",
     "prepNotCharged": "not charged"
   },
-  "providers": {
-    "tabs": {
-      "email": "Email",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Email Settings",
-        "description": "Configure SMTP email sending to deliver invoices, quotes, and notifications directly from your workshop."
-      },
-      "sms": {
-        "feature": "SMS Messaging",
-        "description": "Send and receive SMS messages with your customers directly from Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "WhatsApp Messaging",
-        "description": "Send and receive WhatsApp messages, including photos of parts, directly from Torqvoice."
-      },
-      "telegram": {
-        "feature": "Telegram Messaging",
-        "description": "Send and receive Telegram messages with your customers directly from Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Invoice",
     "quote": "Quote",
@@ -1964,8 +1935,14 @@
     "paymentTermsPlaceholderHint": "No payment terms are set, so the sheet shows a stand-in that will not print.",
     "paymentTermsSetHint": "Your payment terms come from your payment settings.",
     "paymentTermsLink": "Payment settings",
+    "telegramQr": "Telegram code",
+    "telegramQrConnectedHint": "Prints a code that opens {link}, your connected Telegram bot. It only prints on invoices issued after the block was switched on.",
+    "telegramQrPlaceholderHint": "No Telegram bot is connected, so the sheet shows a sample code that will not print.",
+    "telegramQrLink": "Integrations",
     "titleText": "Title text",
     "titleTextHint": "What this document calls itself. Left empty, it prints its own name in the reader's language.",
+    "orgNumberLabel": "Organization number label",
+    "orgNumberLabelHint": "Printed next to your organization number on invoices and quotes. Leave empty for the default in your language, or write what it is called where you are, such as ABN, VAT no. or CVR. Shared with company settings.",
     "placeholder": "Placeholder",
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this design have not been saved. They will be lost.",
@@ -2016,5 +1993,349 @@
     "timeZoneDetected": "Timezone is on automatic under Localization, so the server uses {zone}, the zone last seen in a browser that saved settings. Choose the workshop's zone explicitly so booking times never depend on who saved last.",
     "timeZoneExplicit": "Booking times and opening hours are read in {zone}.",
     "timeZoneChange": "Change under Localization"
+  },
+  "emailTemplates": {
+    "title": "Email templates",
+    "description": "What the emails your workshop sends say and how they look. Each kind of email has a built-in template; design your own to change the wording, the colours and the blocks it is made of.",
+    "lockedDescription": "Design the emails your workshop sends: change the wording, add or remove blocks, and match the colours to your brand.",
+    "groups": {
+      "documents": "Documents",
+      "messages": "Messages",
+      "portal": "Customer portal",
+      "team": "Team"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Invoice sent",
+        "description": "Sent when an invoice goes to a customer by email, with the PDF attached or a link to view it."
+      },
+      "quote_sent": {
+        "name": "Quote sent",
+        "description": "Sent when a quote goes to a customer by email."
+      },
+      "inspection_sent": {
+        "name": "Inspection report sent",
+        "description": "Sent when an inspection report goes to a customer by email."
+      },
+      "message": {
+        "name": "Customer message",
+        "description": "A message written to a customer: a notification from a work order, a status report, a video call invitation or a scheduled reminder."
+      },
+      "portal_signin": {
+        "name": "Portal sign-in",
+        "description": "The sign-in link a customer asks for on the customer portal."
+      },
+      "team_invitation": {
+        "name": "Team invitation",
+        "description": "Sent to a colleague you invite to join the workshop, with the link that creates their account."
+      }
+    },
+    "blocks": {
+      "header": "Header",
+      "heading": "Heading",
+      "paragraph": "Paragraph",
+      "callout": "Callout",
+      "button": "Button",
+      "document_summary": "Document summary",
+      "attachment_note": "Attachment note",
+      "image": "Image",
+      "divider": "Divider",
+      "spacer": "Spacer",
+      "contact_footer": "Contact footer"
+    },
+    "blockNotes": {
+      "header": "Your logo, or the workshop name when there is no logo or it is switched off. Upload and size the logo here; colours and fonts live under Subject and theme.",
+      "contact_footer": "Your workshop name, address, phone and email, taken from Company settings. Fill them in there to change what this prints.",
+      "divider": "A thin line between two blocks. It is left out when it would open or close the email.",
+      "callout": "A highlighted panel with a coloured edge. Good for the words that matter most, such as the message itself.",
+      "attachment_note": "Only printed when a PDF is attached to the email.",
+      "button": "The link is usually a tag such as the share link. A button whose link has no value is left out of the email.",
+      "document_summary": "A panel with the key figures of the document. Rows with nothing to show are left out.",
+      "image": "Pictures are compressed and resized for email when uploaded. Pictures no longer used are removed when the template is saved.",
+      "summaryUnused": "This kind of email has no document, so the summary prints nothing."
+    },
+    "tagGroups": {
+      "workshop": "Workshop",
+      "customer": "Customer",
+      "vehicle": "Vehicle",
+      "document": "Document",
+      "message": "Message",
+      "portal": "Portal",
+      "team": "Team"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Workshop name",
+        "description": "The name of your workshop."
+      },
+      "workshop_phone": {
+        "label": "Workshop phone",
+        "description": "The phone number from Company settings."
+      },
+      "workshop_email": {
+        "label": "Workshop email",
+        "description": "The email address from Company settings."
+      },
+      "workshop_address": {
+        "label": "Workshop address",
+        "description": "The address from Company settings, on as many lines as it has."
+      },
+      "current_user": {
+        "label": "Sender name",
+        "description": "The name of the person sending the email."
+      },
+      "customer_name": {
+        "label": "Customer name",
+        "description": "The name of the customer the email goes to."
+      },
+      "vehicle": {
+        "label": "Vehicle",
+        "description": "Year, make and model of the vehicle."
+      },
+      "plate": {
+        "label": "Registration plate",
+        "description": "The registration number of the vehicle."
+      },
+      "mileage": {
+        "label": "Mileage",
+        "description": "The mileage recorded on the vehicle."
+      },
+      "document_number": {
+        "label": "Document number",
+        "description": "The number of the invoice or quote."
+      },
+      "document_title": {
+        "label": "Document title",
+        "description": "The title of the job or document."
+      },
+      "total": {
+        "label": "Total",
+        "description": "The total of the document, in its currency."
+      },
+      "balance_due": {
+        "label": "Balance due",
+        "description": "What is still owed on the document after payments."
+      },
+      "due_date": {
+        "label": "Due date",
+        "description": "The date the payment is due."
+      },
+      "share_link": {
+        "label": "Share link",
+        "description": "A link the customer can open to view the document online."
+      },
+      "message": {
+        "label": "Message",
+        "description": "The message written for this email, or the note added to the document."
+      },
+      "signin_link": {
+        "label": "Sign-in link",
+        "description": "The link that signs the customer in to the portal. It expires after a short while."
+      },
+      "portal_link": {
+        "label": "Portal link",
+        "description": "A link to the customer portal."
+      },
+      "invite_link": {
+        "label": "Invitation link",
+        "description": "The link that creates the account and joins the team. It stops working when the invitation expires."
+      },
+      "role": {
+        "label": "Role",
+        "description": "The role the person is invited as."
+      },
+      "invite_expires": {
+        "label": "Expiry date",
+        "description": "The last day the invitation link works."
+      }
+    },
+    "headerRule": "Rule under the header",
+    "headerRuleHint": "A thin line between the logo or workshop name and the rest of the email.",
+    "optionalTag": "Not every email has a value for this tag. When it is blank, the words around it are tidied up.",
+    "summaryRows": {
+      "reference": "Reference",
+      "vehicle": "Vehicle",
+      "total": "Total",
+      "balance": "Balance due",
+      "due": "Due date"
+    },
+    "builtIn": "Built-in",
+    "inUse": "In use",
+    "useBuiltIn": "Use built-in",
+    "setDefault": "Set as default",
+    "defaultSet": "Now sending with \"{name}\"",
+    "couldNotSetDefault": "Could not change the template in use",
+    "updatedOn": "Updated {date}",
+    "delete": "Delete",
+    "deleteTitle": "Delete template",
+    "deleteConfirm": "Delete the template \"{name}\"? If it is in use, emails go back to the built-in template.",
+    "deleteTemplate": "Delete this template",
+    "deleted": "Deleted \"{name}\"",
+    "couldNotDelete": "Could not delete the template",
+    "backToSettings": "Back to settings",
+    "unsaved": "(unsaved)",
+    "save": "Save",
+    "saving": "Saving…",
+    "savedState": "Saved",
+    "saved": "Saved \"{name}\"",
+    "couldNotSave": "Could not save",
+    "saveAsNew": "Save as new",
+    "discard": "Discard changes",
+    "sendTest": "Send test",
+    "cancel": "Cancel",
+    "problems": "{count, plural, one {# problem} other {# problems}}",
+    "unknownTags": "These tags do not exist for this kind of email: {tags}",
+    "missingTags": "This email has to include {tags}",
+    "subjectRequired": "The subject cannot be empty",
+    "invalidTemplate": "Some text is too long or a field has an invalid value.",
+    "leaveTitle": "Leave without saving?",
+    "leaveBody": "Your changes to this template have not been saved. They will be lost.",
+    "leaveConfirm": "Leave",
+    "subjectAndTheme": "Subject and theme",
+    "settingsSubtitle": "Applies to the whole email",
+    "blocksTitle": "Blocks",
+    "addBlock": "Add block",
+    "removeBlock": "Remove block",
+    "removeBlockLast": "The last block cannot be removed",
+    "blockEmpty": "empty",
+    "blockEmptyHint": "Shown, but there is nothing in it to print yet.",
+    "blockShownHint": "Shown in the email. Click to hide it.",
+    "blockHiddenHint": "Hidden from the email. Click to show it.",
+    "railHint": "Drag a block by its handle to move it. The line shows where it will land. Click a block to edit its words on the right.",
+    "resizeHint": "Drag to resize the panel. Double-click to reset.",
+    "desktop": "Desktop",
+    "mobile": "Mobile",
+    "htmlView": "HTML",
+    "textView": "Plain text",
+    "desktopTooltip": "Preview at desktop width",
+    "mobileTooltip": "Preview at phone width",
+    "htmlViewTooltip": "Show the HTML email",
+    "previewWidth": "Preview width",
+    "previewView": "Preview view",
+    "textViewTooltip": "Show the plain-text version",
+    "inboxNow": "Now",
+    "inboxNoSender": "Your workshop",
+    "inboxNoSubject": "(no subject)",
+    "subject": "Subject",
+    "text": "Text",
+    "buttonLabel": "Button text",
+    "buttonHref": "Link",
+    "spacerHeight": "Height",
+    "tagsTitle": "Tags",
+    "tagsHint": "Click a tag to insert it where the cursor is in the field you last typed in.",
+    "theme": {
+      "colors": "Colours",
+      "primaryColor": "Primary",
+      "textColor": "Text",
+      "mutedColor": "Muted text",
+      "backgroundColor": "Background",
+      "panelColor": "Panels",
+      "invalidColor": "A colour is not a valid hex value",
+      "hexLabel": "{label} as hex",
+      "typography": "Typography",
+      "font": "Font",
+      "fontHint": "Only fonts every mail client already has. Web fonts are not loaded by most of them.",
+      "fonts": {
+        "system": "System",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Shapes",
+      "buttonRadius": "Button corners",
+      "topBar": "Colour bar at the top",
+      "topBarHint": "A thin band in your primary colour along the top edge of the email.",
+      "showLogo": "Show logo",
+      "showLogoHint": "With the logo off, the header prints the workshop name instead."
+    },
+    "nameDialog": {
+      "title": "Save this template",
+      "body": "Give the template a name to find it by in the gallery. Saving also makes it the one this kind of email sends with.",
+      "placeholder": "Template name",
+      "nameExists": "A template with this name already exists. Choose another name.",
+      "save": "Save template",
+      "update": "Update template"
+    },
+    "testDialog": {
+      "title": "Send a test email",
+      "body": "The email is sent with sample data, so you can see it in a real mail client.",
+      "placeholder": "Email address",
+      "send": "Send",
+      "sending": "Sending…",
+      "sentTitle": "Test email sent",
+      "sentBody": "Check the inbox of {email}. It may take a minute to arrive.",
+      "failedTitle": "Could not send the test email",
+      "failedBody": "Check the email provider under Providers and try again."
+    },
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strike": "Strikethrough",
+      "link": "Link",
+      "linkUrl": "Link address",
+      "linkPlaceholder": "https://... or {share_link}",
+      "linkHint": "A web address, or a tag such as {share_link} that is filled in when the email is sent.",
+      "linkApply": "Apply",
+      "linkRemove": "Remove link",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list",
+      "align": {
+        "left": "Align left",
+        "center": "Align centre",
+        "right": "Align right"
+      },
+      "size": {
+        "label": "Text size",
+        "default": "Default size",
+        "small": "Small",
+        "normal": "Normal",
+        "large": "Large",
+        "extraLarge": "Extra large"
+      },
+      "color": {
+        "label": "Text colour",
+        "text": "Theme text colour",
+        "muted": "Theme muted colour",
+        "primary": "Theme primary colour",
+        "default": "Default",
+        "hex": "Hex colour",
+        "apply": "Apply"
+      },
+      "clear": "Clear formatting"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "No logo uploaded. The header prints the workshop name.",
+      "upload": "Upload logo",
+      "replace": "Replace logo",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "width": "Logo width",
+      "hint": "Separate from the company logo. It is trimmed and prepared for email when uploaded. PNG, JPEG or WebP up to 4 MB.",
+      "tooLarge": "The image must be under 4 MB",
+      "uploadFailed": "Could not upload the logo",
+      "position": "Position"
+    },
+    "image": {
+      "empty": "No picture uploaded. The block prints nothing until there is one.",
+      "upload": "Upload picture",
+      "replace": "Replace picture",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "alt": "Description",
+      "altHint": "Read aloud to readers who cannot see the picture, and shown while it loads. PNG, JPEG or WebP up to 10 MB.",
+      "width": "Width",
+      "widthHint": "600 px is the full width of the email. Narrower pictures sit where Position says.",
+      "link": "Link",
+      "linkHint": "Optional. Opens when the picture is clicked; a tag such as the share link works here too.",
+      "tooLarge": "The image must be under 10 MB",
+      "uploadFailed": "Could not upload the picture"
+    },
+    "dragHandle": "Drag to reorder",
+    "dragHandleKeyboard": "Drag, or use the arrow keys, to move this block",
+    "tagDoesNotFit": "The tag does not fit in this field."
   }
 }

@@ -19,7 +19,13 @@
     "columnTotal": "Total",
     "columnPaid": "Paid",
     "columnBalance": "Balance",
-    "noRecords": "No billing records found."
+    "noRecords": "No billing records found.",
+    "columnDelivery": "Delivery",
+    "deliverySent": "Sent",
+    "deliveryViewed": "Viewed",
+    "deliveryViewedOn": "Last opened {date}",
+    "filterUnviewed": "Not viewed",
+    "filterUnviewedHint": "Invoices that were sent but have never been opened"
   },
   "recurring": {
     "title": "Recurring",

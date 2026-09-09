@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { uploadUrlSchema } from '@/lib/upload-url'
 
 export const servicePartSchema = z.object({
   partNumber: z.string().optional(),
@@ -29,7 +30,7 @@ export const serviceLaborSchema = z.object({
 
 export const serviceAttachmentSchema = z.object({
   fileName: z.string(),
-  fileUrl: z.string(),
+  fileUrl: uploadUrlSchema,
   fileType: z.string(),
   fileSize: z.number(),
   category: z.enum(['image', 'diagnostic', 'document', 'video']).default('diagnostic'),

@@ -14,6 +14,8 @@ import { setTechnicianStanding } from '../Lib/technicianStanding'
 import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 import { getFeatures, getMaxOrganizations, isCloudMode, FeatureGatedError } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
+import { canInvite } from '../Lib/invitationRules'
+import { createAndSendInvitation } from '../Lib/createInvitation'
 
 export async function getOrganization() {
   return withAuth(
@@ -134,17 +136,20 @@ export async function createOrganization(input: unknown) {
 
 export async function inviteMember(input: unknown) {
   return withAuth(
-    async ({ userId, organizationId }) => {
+    async ({ userId, organizationId, role, isAdmin }) => {
+      demoGuard()
       const data = inviteMemberSchema.parse(input)
 
-      // Find caller's org and verify they are owner/admin
+      // Same rule as sendInvitation: admins bring people in, only the owner
+      // hands out admin.
+      const decision = canInvite({ role, isAdmin }, data.role)
+      if (!decision.ok) throw new Error(decision.reason)
+
       const membership = await db.organizationMember.findFirst({
         where: { userId, organizationId },
         include: { organization: true },
       })
-
       if (!membership) throw new Error("You don't belong to an organization")
-      if (membership.role === 'member') throw new Error('Only owners and admins can invite members')
 
       const features = await getFeatures(organizationId)
       const memberCount = await db.organizationMember.count({ where: { organizationId } })
@@ -155,18 +160,35 @@ export async function inviteMember(input: unknown) {
         )
       }
 
-      // Find user by email
+      // Whether this address already has an account decides what happens
+      // next, but it is not something the caller gets told. The answer used
+      // to come back as `userNotFound`, which let anyone with the permission
+      // test addresses against the whole user table. Both paths now return
+      // the same shape; the team page shows the person under members or
+      // under pending, which is all the desk needs.
       const invitedUser = await db.user.findFirst({
         where: { email: data.email },
+        select: { id: true },
       })
-      if (!invitedUser) return { invited: false, userNotFound: true }
 
-      // Check if already a member of this org
+      if (!invitedUser) {
+        await createAndSendInvitation({
+          organizationId,
+          organizationName: membership.organization.name,
+          invitedById: userId,
+          email: data.email,
+          role: data.role,
+          roleId: data.roleId,
+        })
+        revalidatePath('/settings/team')
+        return { invited: true, email: data.email, role: data.role }
+      }
+
       const existingMembership = await db.organizationMember.findFirst({
         where: { userId: invitedUser.id, organizationId },
       })
       if (existingMembership) {
-        throw new Error('This user is already a member')
+        throw new Error('This person is already on the team')
       }
 
       await db.organizationMember.create({
@@ -185,15 +207,12 @@ export async function inviteMember(input: unknown) {
       requiredPermissions: [
         { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
       ],
-      audit: ({ result }) =>
-        result.invited
-          ? {
-              action: 'team.invite',
-              entity: 'OrganizationMember',
-              message: `Invited ${result.email} as ${result.role}`,
-              metadata: { email: result.email, role: result.role },
-            }
-          : null,
+      audit: ({ result }) => ({
+        action: 'team.invite',
+        entity: 'OrganizationMember',
+        message: `Invited ${result.email} as ${result.role}`,
+        metadata: { email: result.email, role: result.role },
+      }),
     }
   )
 }

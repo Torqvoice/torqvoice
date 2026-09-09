@@ -275,10 +275,15 @@ export function CustomerForm({
 
             <div className="space-y-2">
               <Label htmlFor="address">{tc('form.address')}</Label>
-              <Input
+              {/* An address is street, postcode and town, and it prints on
+                  the invoice the way it is typed here. One row until there
+                  is more, so the form does not open with a tall empty box. */}
+              <Textarea
                 id="address"
                 name="address"
                 placeholder={t('addressPlaceholder')}
+                rows={2}
+                className="min-h-9 resize-none"
                 defaultValue={customer?.address ?? defaults?.address ?? ''}
               />
             </div>

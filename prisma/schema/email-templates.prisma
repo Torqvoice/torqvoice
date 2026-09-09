@@ -1,0 +1,32 @@
+/// A template for one kind of mail the workshop sends, saved under a name.
+///
+/// The same idea as DocumentDesign: a workshop keeps several templates for a
+/// kind, and the one that sends is named by the AppSetting
+/// `email.template.<kind>` as `design:<id>`, the way `invoice.activeDesign`
+/// names the sheet. No setting means the built-in preset. Blocks and a theme
+/// rather than a body of HTML, because the renderer turns them into markup a
+/// mail client will honour and a workshop should never have to think about
+/// tables and inline styles.
+///
+/// Nothing is snapshotted. An issued invoice has to reprint identically for
+/// years, which is why its design is frozen; a sent email is already in
+/// somebody's inbox and is never rendered again.
+model EmailTemplate {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// One of EMAIL_KINDS in src/features/email/Lib/emailKinds.ts.
+  kind           String
+  name           String
+  /// The subject line, tags and all.
+  subject        String
+  /// EmailBlock[] as edited.
+  blocks         Json
+  /// EmailTheme: colours, typeface, button shape, logo on or off.
+  theme          Json
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId, kind])
+  @@map("email_templates")
+}

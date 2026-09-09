@@ -6,5 +6,5 @@ import { redirect } from 'next/navigation'
  * providers page explains where it went.
  */
 export default function TelegramSettingsPage() {
-  redirect('/settings/providers?tab=telegram')
+  redirect('/settings/integrations')
 }

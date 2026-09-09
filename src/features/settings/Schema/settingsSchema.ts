@@ -12,6 +12,7 @@ export const SETTING_KEYS = {
   TAX_ENABLED: 'workshop.taxEnabled',
   TAX_INCLUSIVE: 'workshop.taxInclusive',
   TAX_LABEL: 'workshop.taxLabel',
+  ORG_NUMBER_LABEL: 'workshop.orgNumberLabel',
   INVOICE_PREFIX: 'workshop.invoicePrefix',
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',
   CURRENCY_SYMBOL: 'workshop.currencySymbol',
@@ -23,6 +24,7 @@ export const SETTING_KEYS = {
   INVOICE_FOOTER_NOTE: 'invoice.footerNote',
   INVOICE_SHOW_BANK_ACCOUNT: 'invoice.showBankAccount',
   INVOICE_SHOW_ORG_NUMBER: 'invoice.showOrgNumber',
+  INVOICE_LINE_ITEMS_INCL_TAX: 'invoice.lineItemsInclTax',
   INVOICE_DUE_DAYS: 'invoice.dueDays',
   /** See src/lib/document-lock.ts for what these freeze and when. */
   INVOICE_LOCK_ENABLED: 'invoice.lockEnabled',
@@ -37,6 +39,10 @@ export const SETTING_KEYS = {
   QUOTE_VALID_DAYS: 'workshop.quoteValidDays',
   EMAIL_FROM_NAME: 'email.fromName',
   EMAIL_ENABLED: 'email.enabled',
+  /// Whether a document emailed from Torqvoice carries its PDF. Off sends the
+  /// share link instead, which is the only way to learn whether the customer
+  /// opened it.
+  EMAIL_ATTACH_PDF: 'email.attachPdf',
   INVOICE_TEMPLATE: 'invoice.template',
   INVOICE_PRIMARY_COLOR: 'invoice.primaryColor',
   /// Sheet color behind the document. Empty means the paper stays white.
@@ -152,7 +158,6 @@ export const SETTING_KEYS = {
   TELEGRAM_TEMPLATE_STATUS_IN_PROGRESS: 'telegram.template.statusInProgress',
   TELEGRAM_TEMPLATE_STATUS_COMPLETED: 'telegram.template.statusCompleted',
   TELEGRAM_TEMPLATE_PAYMENT_RECEIVED: 'telegram.template.paymentReceived',
-  TELEGRAM_SHOW_QR_ON_INVOICE: 'telegram.showQrOnInvoice',
   PORTAL_ENABLED: 'portal.enabled',
   PORTAL_DESCRIPTION: 'portal.description',
   PORTAL_HOURS: 'portal.hours',
@@ -223,6 +228,7 @@ export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]
 export const workshopSettingsSchema = z.object({
   [SETTING_KEYS.WORKSHOP_ADDRESS]: z.string().optional(),
   [SETTING_KEYS.WORKSHOP_SLOGAN]: z.string().max(160).optional(),
+  [SETTING_KEYS.ORG_NUMBER_LABEL]: z.string().max(40).optional(),
   [SETTING_KEYS.WORKSHOP_PHONE]: z.string().optional(),
   [SETTING_KEYS.TIMEZONE_DETECTED]: z.string().max(64).optional(),
   [SETTING_KEYS.INSPECTION_DURATION_MINUTES]: z.string().regex(/^\d+$/).optional(),
@@ -248,6 +254,7 @@ export const invoiceSettingsSchema = z.object({
   [SETTING_KEYS.INVOICE_FOOTER_NOTE]: z.string().optional(),
   [SETTING_KEYS.INVOICE_SHOW_BANK_ACCOUNT]: z.string().optional(),
   [SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER]: z.string().optional(),
+  [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: z.string().optional(),
   [SETTING_KEYS.INVOICE_DUE_DAYS]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_ENABLED]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: z.string().optional(),

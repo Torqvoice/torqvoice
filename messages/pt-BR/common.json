@@ -100,5 +100,7 @@
     "title": "Pré-visualização do PDF",
     "preview": "Pré-visualização",
     "failed": "Não foi possível gerar a pré-visualização do PDF."
-  }
+  },
+  "attachPdf": "Anexar PDF",
+  "attachPdfHint": "Desligue para enviar um link, assim você vê quando o cliente abre."
 }

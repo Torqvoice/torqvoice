@@ -1,0 +1,60 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Fatura",
+      "subject": "{workshop_name} tarafından {document_number} numaralı fatura",
+      "heading": "Fatura {document_number}",
+      "intro": "Merhaba {customer_name},\n\nBizi tercih ettiğiniz için teşekkür ederiz. Faturanız hazır.",
+      "button": "Faturayı görüntüle",
+      "outro": "Sorularınız olursa bu e-postayı yanıtlamanız yeterli."
+    },
+    "quote_sent": {
+      "name": "Teklif",
+      "subject": "{workshop_name} tarafından {document_number} numaralı teklif",
+      "heading": "Teklif {document_number}",
+      "intro": "Merhaba {customer_name},\n\nİstediğiniz teklif ektedir. Devam etmemizi isterseniz bize haber verin.",
+      "button": "Teklifi görüntüle",
+      "outro": "Sorularınız olursa bu e-postayı yanıtlamanız yeterli."
+    },
+    "inspection_sent": {
+      "name": "Muayene raporu",
+      "subject": "{workshop_name} tarafından muayene raporu",
+      "heading": "Araç muayene raporu",
+      "intro": "Merhaba {customer_name},\n\nMuayeneyi tamamladık. Raporunuz hazır.",
+      "button": "Raporu görüntüle",
+      "outro": "Sorularınız olursa bu e-postayı yanıtlamanız yeterli."
+    },
+    "message": {
+      "name": "Müşteri mesajı",
+      "subject": "{workshop_name} tarafından mesaj",
+      "intro": "Merhaba {customer_name},",
+      "outro": "Sorularınız olursa bu e-postayı yanıtlamanız yeterli."
+    },
+    "portal_signin": {
+      "name": "Portal girişi",
+      "subject": "{workshop_name} hesabınıza giriş yapın",
+      "heading": "Müşteri portalınıza giriş yapın",
+      "intro": "Merhaba {customer_name},\n\n{workshop_name} müşteri portalına giriş yapmak için aşağıdaki düğmeyi kullanın.",
+      "button": "Giriş yap",
+      "linkFallback": "Düğme çalışmazsa bu bağlantıyı tarayıcınıza kopyalayın:\n{signin_link}",
+      "outro": "Bu bağlantı 15 dakika içinde geçerliliğini yitirir. Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz."
+    },
+    "team_invitation": {
+      "name": "Ekip daveti",
+      "subject": "{workshop_name} ekibine davet edildiniz",
+      "heading": "{workshop_name} ekibine katılın",
+      "intro": "Torqvoice'ta {workshop_name} ekibine {role} olarak davet edildiniz.\n\nHesabınızı oluşturup ekibe katılmak için aşağıdaki düğmeyi kullanın.",
+      "button": "Daveti kabul et",
+      "linkFallback": "Düğme çalışmazsa bu bağlantıyı tarayıcınıza kopyalayın:\n{invite_link}",
+      "outro": "Bu davet {invite_expires} tarihine kadar geçerlidir. Beklemiyorsanız bu e-postayı yok sayabilirsiniz."
+    }
+  },
+  "attachmentNote": "Bu e-postaya bir PDF kopyası eklenmiştir.",
+  "summary": {
+    "reference": "Referans",
+    "vehicle": "Araç",
+    "total": "Toplam",
+    "balance": "Kalan borç",
+    "due": "Son ödeme"
+  }
+}

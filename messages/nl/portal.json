@@ -105,7 +105,9 @@
     "download": "Downloaden",
     "paid": "betaald",
     "partial": "gedeeltelijk",
-    "unpaid": "onbetaald"
+    "unpaid": "onbetaald",
+    "back": "Terug naar facturen",
+    "openShared": "Gedeelde kopie openen"
   },
   "quotes": {
     "title": "Offertes",

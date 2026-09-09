@@ -100,5 +100,7 @@
     "title": "Podgląd PDF",
     "preview": "Podgląd",
     "failed": "Nie udało się wygenerować podglądu PDF."
-  }
+  },
+  "attachPdf": "Dołącz PDF",
+  "attachPdfHint": "Wyłącz, aby wysłać zamiast tego link i widzieć, kiedy klient go otworzy."
 }

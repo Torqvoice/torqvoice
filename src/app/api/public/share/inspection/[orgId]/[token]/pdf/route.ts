@@ -12,6 +12,7 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 export async function GET(
   _request: Request,
@@ -124,9 +125,7 @@ export async function GET(
       headerStyle: settingsMap['invoice.headerStyle'] || 'standard',
     }
 
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const appUrl = getAppBaseUrl()
     const portalSlug = org?.portalSlug
     const portalEnabled = settingsMap['portal.enabled'] === 'true'
     const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined

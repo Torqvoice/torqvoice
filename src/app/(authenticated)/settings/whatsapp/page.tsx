@@ -6,5 +6,5 @@ import { redirect } from 'next/navigation'
  * providers page explains where it went.
  */
 export default function WhatsappSettingsPage() {
-  redirect('/settings/providers?tab=whatsapp')
+  redirect('/settings/integrations')
 }

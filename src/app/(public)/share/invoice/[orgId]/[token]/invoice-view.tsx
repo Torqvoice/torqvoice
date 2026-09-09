@@ -13,7 +13,6 @@ import {
   Paperclip,
   X,
 } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
 import { useLocale, useTranslations } from 'next-intl'
@@ -138,12 +137,6 @@ interface CustomField {
   fieldId?: string
 }
 
-function isSectionVisible(config: InvoiceLayoutConfig | undefined, sectionId: string): boolean {
-  if (!config) return true
-  const section = config.sections.find((s) => s.id === sectionId)
-  return section?.visible ?? true
-}
-
 function isFieldVisible(
   config: InvoiceLayoutConfig | undefined,
   sectionId: string,
@@ -238,7 +231,6 @@ export function InvoiceView({
   layoutConfig,
   customFields = [],
   findings = [],
-  telegramBotLink,
   serviceType = 'automotive',
   taxLabel,
 }: {
@@ -266,7 +258,6 @@ export function InvoiceView({
   layoutConfig?: InvoiceLayoutConfig
   customFields?: CustomField[]
   findings?: Array<{ description: string; severity: string; notes: string | null }>
-  telegramBotLink?: string
   serviceType?: 'automotive' | 'marine'
   taxLabel?: string
 }) {
@@ -697,16 +688,6 @@ export function InvoiceView({
       <SpecSheet spec={spec} />
 
       <div className="mt-6 space-y-6 empty:hidden">
-        {telegramBotLink && isSectionVisible(layoutConfig, 'telegram_qr') && (
-          <div className="flex flex-col items-center gap-2 rounded-xl border bg-white p-5 shadow-sm dark:bg-gray-900">
-            <p className="text-sm font-medium text-foreground">{tc('telegramConnect')}</p>
-            <div className="rounded-lg bg-white p-2">
-              <QRCodeSVG value={telegramBotLink} size={100} />
-            </div>
-            <p className="text-center text-xs text-muted-foreground">{tc('telegramScan')}</p>
-          </div>
-        )}
-
         {/* Service Images (not part of layout config sections) */}
         {imageAttachments.length > 0 && (
           <div className="rounded-xl border bg-white p-5 shadow-sm dark:bg-gray-900">
@@ -759,7 +740,9 @@ export function InvoiceView({
                       className="w-full"
                     />
                     {att.description && (
-                      <p className="px-3 py-2 text-sm text-gray-500">{att.description}</p>
+                      <p className="whitespace-pre-line px-3 py-2 text-sm text-gray-500">
+                        {att.description}
+                      </p>
                     )}
                   </div>
                 ))}

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { safeUploadPath } from '@/lib/resolve-upload-path'
 import { unlink, rm } from 'fs/promises'
 import path from 'path'
 import { getStripeClient } from '@/lib/stripe-config'
@@ -24,7 +24,8 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
     select: { fileUrl: true },
   })
   for (const att of attachments) {
-    filePaths.push(resolveUploadPath(att.fileUrl))
+    const attPath = safeUploadPath(att.fileUrl)
+    if (attPath) filePaths.push(attPath)
   }
 
   const inventoryParts = await db.inventoryPart.findMany({
@@ -32,7 +33,8 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
     select: { imageUrl: true },
   })
   for (const part of inventoryParts) {
-    if (part.imageUrl) filePaths.push(resolveUploadPath(part.imageUrl))
+    const partPath = safeUploadPath(part.imageUrl)
+    if (partPath) filePaths.push(partPath)
   }
 
   const vehicles = await db.vehicle.findMany({
@@ -40,7 +42,8 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
     select: { imageUrl: true },
   })
   for (const v of vehicles) {
-    if (v.imageUrl) filePaths.push(resolveUploadPath(v.imageUrl))
+    const vehiclePath = safeUploadPath(v.imageUrl)
+    if (vehiclePath) filePaths.push(vehiclePath)
   }
 
   // Cancel Stripe subscription before deleting org data

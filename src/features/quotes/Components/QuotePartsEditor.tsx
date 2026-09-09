@@ -3,6 +3,7 @@
 import { memo, useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Package, Plus, Trash2 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
@@ -71,12 +72,18 @@ const QuotePartRow = memo(function QuotePartRow({
         onChange={(e) => onUpdate(index, 'partNumber', e.target.value)}
       />
       <div className="relative">
-        <Input
+        {/* A textarea, as on the invoice: a part often needs a second line,
+            and it grows with what is typed rather than starting tall. */}
+        <Textarea
           placeholder={tNamePlaceholder}
           value={part.name}
           onChange={(e) => onUpdate(index, 'name', e.target.value)}
+          rows={1}
           aria-invalid={nameMissing}
-          className={nameMissing ? 'border-destructive focus-visible:ring-destructive' : undefined}
+          className={cn(
+            'min-h-9 w-full resize-none',
+            nameMissing && 'border-destructive focus-visible:ring-destructive'
+          )}
         />
         <PartNameSuggestions
           query={part.name}

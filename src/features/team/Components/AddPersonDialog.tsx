@@ -36,7 +36,6 @@ import { createTechnicianAccount } from '@/features/team/Actions/createTechnicia
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { getWorkshopDialCode } from '@/features/team/Actions/createTechnicianAccount'
 import { getRoles } from '@/features/team/Actions/getRoles'
-import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
 import { TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
@@ -281,19 +280,12 @@ export function AddPersonDialog({
         roleId: custom?.id,
       }
 
-      // Already has an account, so they join immediately. Otherwise an
-      // invitation goes out and they turn up once they accept.
+      // The server decides whether they join straight away (they already
+      // have an account) or get an invitation mail; the answer is not
+      // reported back, the team page simply shows them where they ended up.
       const joined = await inviteMember(payload)
-      if (joined.success && !(joined.data as { userNotFound?: boolean })?.userNotFound) {
-        onChanged()
-        setStep('done')
-        setBusy(false)
-        return
-      }
-
-      const invited = await sendInvitation(payload)
-      if (!invited.success) {
-        setError(invited.error || t('team.failedSendInvitation'))
+      if (!joined.success) {
+        setError(joined.error || t('team.failedSendInvitation'))
         setBusy(false)
         return
       }

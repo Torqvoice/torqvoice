@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
@@ -77,6 +78,7 @@ export async function saveDocumentDesign(input: SaveDesignInput) {
   return withAuth(
     async ({ organizationId }): Promise<SavedDesign> => {
       const data = saveDesignSchema.parse(input)
+      assertOwnUploads(data, organizationId)
       const layout = data.layout as Prisma.InputJsonValue
       const template = data.template as Prisma.InputJsonValue
 
@@ -208,6 +210,7 @@ export async function applyDocumentDesign(id: string) {
       const prefix = documentType
       const layout = { ...mergeWithDefaults(source.layout), version: DESIGNER_LAYOUT_VERSION }
       const t = source.template
+      assertOwnUploads(t.logoUrl, organizationId)
       const entries: Record<string, string> = {
         [`${prefix}.layoutConfig`]: JSON.stringify(invoiceLayoutConfigSchema.parse(layout)),
         [`${prefix}.primaryColor`]: t.primaryColor,

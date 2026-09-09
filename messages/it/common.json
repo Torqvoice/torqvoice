@@ -100,5 +100,7 @@
     "title": "Anteprima PDF",
     "preview": "Anteprima",
     "failed": "Impossibile generare l'anteprima del PDF."
-  }
+  },
+  "attachPdf": "Allega PDF",
+  "attachPdfHint": "Disattiva per inviare invece un link, così vedi quando il cliente lo apre."
 }

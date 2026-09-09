@@ -250,7 +250,7 @@ export function WhatsappConversation({
                   {windowState.hasTemplate ? t('windowClosed') : t('windowBlocked')}
                   {!windowState.hasTemplate && (
                     <Link
-                      href="/settings/providers?tab=whatsapp"
+                      href="/settings/integrations"
                       className="ml-1 font-medium text-primary hover:underline"
                     >
                       {t('windowBlockedAction')}

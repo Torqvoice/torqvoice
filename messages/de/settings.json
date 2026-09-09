@@ -131,13 +131,13 @@
         "title": "Reifenhotel",
         "description": "Saisonale Reifeneinlagerung"
       },
-      "providers": {
-        "title": "Anbieter",
-        "description": "E-Mail, SMS, WhatsApp & Telegram"
-      },
       "inspectionReminders": {
         "title": "HU-Erinnerungen",
         "description": "Buchungslink, Dauer und Vorlauf"
+      },
+      "emailTemplates": {
+        "title": "E-Mail-Vorlagen",
+        "description": "Was Ihre E-Mails zu Rechnung, Angebot und Bericht sagen"
       }
     },
     "pro": "PRO"
@@ -164,6 +164,9 @@
     "shopNamePlaceholder": "Meiers Autowerkstatt",
     "orgNumber": "Organisationsnummer",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Bezeichnung der Organisationsnummer",
+    "orgNumberLabelPlaceholder": "Org.-Nr.",
+    "orgNumberLabelHint": "Wird auf Rechnungen und Angeboten neben der Nummer gedruckt. Leer lassen für die Standardbezeichnung in Ihrer Sprache, oder eintragen, wie sie bei Ihnen heißt, z. B. USt-IdNr., HRB oder UID.",
     "phone": "Telefon",
     "phonePlaceholder": "(555) 123-4567",
     "email": "E-Mail",
@@ -354,10 +357,11 @@
     "failedSendInvitation": "Einladung konnte nicht gesendet werden",
     "pendingInvitations": "Ausstehende Einladungen",
     "invitedAs": "Eingeladen als {role}",
+    "resendInvitation": "Einladung erneut senden",
+    "invitationResent": "Einladung erneut an {email} gesendet",
+    "failedResendInvitation": "Einladung konnte nicht erneut gesendet werden",
     "expires": "Lauft ab {date}",
     "pending": "Ausstehend",
-    "copyInviteLink": "Einladungslink kopieren",
-    "inviteLinkCopied": "Einladungslink in die Zwischenablage kopiert",
     "cancelInvitation": "Einladung stornieren",
     "cancelInvitationDescription": "Einladung an {email} stornieren? Der Link kann dann nicht mehr verwendet werden.",
     "invitationCancelled": "Einladung storniert",
@@ -512,6 +516,10 @@
   "invoice": {
     "title": "Rechnungslayout",
     "description": "Konfigurieren Sie, was auf generierten PDF-Rechnungen erscheint.",
+    "numberingTitle": "Nummerierung und Fristen",
+    "numberingDescription": "Wie Rechnungen und Angebote nummeriert werden, wann Rechnungen fällig sind und wie lange Angebote gelten.",
+    "documentsTitle": "Dokumente",
+    "documentsDescription": "Was jede Rechnung und jedes Angebot mitbringt.",
     "tabs": {
       "general": "Allgemein",
       "layout": "Layout",
@@ -542,12 +550,6 @@
     "customFooter": "Benutzerdefinierte Rechnungsfusszeile",
     "footerPlaceholder": "Vielen Dank für Ihren Auftrag!",
     "footerHint": "Dieser Text erscheint am Ende jeder Rechnung",
-    "partsMarkupTitle": "Teile-Aufschlag",
-    "partsMarkupDescription": "Aufschlag auf den Einkaufspreis beim Hinzufügen von Teilen. Nur intern — der Kunde sieht weder Kosten noch Aufschlag, nur den Endpreis.",
-    "defaultMarkupPercent": "Standard-Aufschlag %",
-    "defaultMarkupPercentHint": "Neue manuell hinzugefügte Teile werden mit diesem Aufschlag vorausgefüllt. Auf 0 lassen, um Preise manuell einzugeben.",
-    "markupAppliesToInventory": "Aufschlag auf Lagerteile anwenden",
-    "markupAppliesToInventoryHint": "Wenn aktiviert, verwenden aus dem Lager gewählte Teile ebenfalls Einkaufspreis + Standard-Aufschlag (überschreibt den Verkaufspreis des Lagers).",
     "saveInvoice": "Rechnungseinstellungen speichern",
     "saved": "Rechnungseinstellungen gespeichert",
     "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
@@ -557,13 +559,6 @@
     "layoutDocQuote": "Angebot",
     "saveLayout": "Layout speichern",
     "resetLayout": "Zurücksetzen",
-    "sectionCustomers": "Kunden",
-    "assignCustomerNumbers": "Kundennummern vergeben",
-    "assignCustomerNumbersHint": "{count} Kunden haben noch keine Nummer. Fortlaufende Nummern vergeben (bestehende bleiben erhalten).",
-    "customerNumbersAssigned": "{count} Kunden nummeriert",
-    "allCustomersNumbered": "Alle Kunden haben eine Nummer.",
-    "assignCustomerNumbersConfirmTitle": "Kundennummern vergeben?",
-    "assignCustomerNumbersConfirmDescription": "Die {count} Kunden ohne Nummer erhalten fortlaufende Nummern in der Reihenfolge ihrer Erstellung, beginnend nach der höchsten vorhandenen Nummer. Kunden mit Nummer bleiben unverändert. Nummern können danach bearbeitet werden.",
     "layoutColorsHint": "Farben, Schriften und der Briefkopf-Stil liegen unter Vorlagen.",
     "goToTemplates": "Vorlagen öffnen",
     "lockTitle": "Abgeschlossene Dokumente sperren",
@@ -571,6 +566,8 @@
     "lockWhatItDoes": "Gesperrt werden: Teile, Arbeit, Mengen, Preise, Rabatt, Steuer, Belegnummer und Datum. Auch das Löschen des Dokuments wird verhindert.",
     "lockWhatItAllows": "Weiterhin möglich: Zahlungen erfassen, Online-Kartenzahlung, Statusänderungen, Versand und erneuter Versand, Anhänge und interne Notizen. Eine gesperrte Rechnung kann immer bezahlt werden.",
     "lockUnlockNote": "Inhaber und Administratoren können ein einzelnes Dokument auf dessen eigener Seite entsperren, wenn wirklich etwas korrigiert werden muss. Jede Entsperrung wird im Audit-Log festgehalten.",
+    "lockDetailsShow": "Was das Sperren bewirkt",
+    "lockDetailsHide": "Ausblenden",
     "lockInvoicesLabel": "Rechnungen sperren",
     "lockTriggerSent": "Sobald die Rechnung versendet ist",
     "lockTriggerPaid": "Sobald die Rechnung vollständig bezahlt ist",
@@ -589,7 +586,10 @@
     "freezeConfirmBody": "Jede behält das Design, das Logo, die Werkstattangaben, den Kunden, das Fahrzeug und die Befunde, mit denen sie jetzt gedruckt wird. Das kann nicht rückgängig gemacht werden; die Rechnungen bleiben genau so bearbeitbar oder für die Bearbeitung gesperrt wie heute.",
     "freezeProgress": "{done} von {total} gesperrt",
     "freezeDone": "{count, plural, one {# Rechnung} other {# Rechnungen}} gesperrt",
-    "freezeFailed": "Rechnungen konnten nicht gesperrt werden"
+    "freezeFailed": "Rechnungen konnten nicht gesperrt werden",
+    "sectionSending": "Versand",
+    "attachPdfLabel": "PDF an E-Mails anhängen",
+    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
@@ -854,6 +854,8 @@
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Beispiel: 100 + {rate}% Steuer = 100 + Steuer obendrauf.",
     "modeInclusiveExample": "Beispiel: 100 enthält bereits {rate}% Steuer — der Steueranteil wird zurückgerechnet.",
+    "lineItemsInclTaxLabel": "Zeilenpreise auf Rechnungen und Angeboten inklusive Steuer anzeigen",
+    "lineItemsInclTaxHint": "Ändert nur, was auf Rechnungen und Angeboten gedruckt wird, einschließlich der PDFs und der Kopien, die Kunden über einen Link öffnen. Ein: Jede Teile- und Arbeitszeile sowie die Zwischensumme werden inklusive Steuer angezeigt, und die Steuerzeile nennt den enthaltenen Steueranteil. Aus: Preise vor Steuer, Steuer wird unten hinzugerechnet. Aufträge und die eingegebenen Preise bleiben unverändert.",
     "labelLabel": "Steuerbezeichnung",
     "labelHint": "Benutzerdefinierter Name, der auf Rechnungen und Angeboten angezeigt wird (z.B. MwSt., USt., VAT). Leer lassen für die übersetzte Standardbezeichnung.",
     "labelPlaceholder": "MwSt.",
@@ -1039,6 +1041,12 @@
     "addNewTech": "+ Neu hinzufügen",
     "defaultLaborRate": "Standard-Stundensatz",
     "laborRatePlaceholder": "75,00",
+    "partsMarkupTitle": "Teile-Aufschlag",
+    "partsMarkupDescription": "Aufschlag auf den Einkaufspreis beim Hinzufügen von Teilen. Nur intern. Der Kunde sieht weder Kosten noch Aufschlag, nur den Endpreis.",
+    "defaultMarkupPercent": "Standard-Aufschlag %",
+    "defaultMarkupPercentHint": "Neue manuell hinzugefügte Teile werden mit diesem Aufschlag vorausgefüllt. Auf 0 lassen, um Preise manuell einzugeben.",
+    "markupAppliesToInventory": "Aufschlag auf Lagerteile anwenden",
+    "markupAppliesToInventoryHint": "Wenn aktiviert, verwenden aus dem Lager gewählte Teile ebenfalls Einkaufspreis + Standard-Aufschlag (überschreibt den Verkaufspreis des Lagers).",
     "unitsTitle": "Einheiten",
     "unitsDescription": "Wählen Sie zwischen metrisch (km, Liter) und imperial (Meilen, Gallonen).",
     "unitSystem": "Einheitensystem",
@@ -1733,43 +1741,6 @@
     "prepHint": "Was jede Art von Vorbereitung kostet. Leer bedeutet, sie wird nie berechnet, was zu Betrieben passt, die das Waschen in der Lagergebühr enthalten haben. Bepreiste werden automatisch auf Angebot und Auftrag gesetzt.",
     "prepNotCharged": "nicht berechnet"
   },
-  "providers": {
-    "tabs": {
-      "email": "E-Mail",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "E-Mail-Einstellungen",
-        "description": "SMTP-Versand einrichten, um Rechnungen, Angebote und Benachrichtigungen direkt aus der Werkstatt zu senden."
-      },
-      "sms": {
-        "feature": "SMS-Nachrichten",
-        "description": "SMS mit Ihren Kunden direkt aus Torqvoice senden und empfangen."
-      },
-      "whatsapp": {
-        "feature": "WhatsApp-Nachrichten",
-        "description": "WhatsApp-Nachrichten samt Fotos von Bauteilen direkt aus Torqvoice senden und empfangen."
-      },
-      "telegram": {
-        "feature": "Telegram-Nachrichten",
-        "description": "Telegram-Nachrichten mit Ihren Kunden direkt aus Torqvoice senden und empfangen."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Rechnung",
     "quote": "Angebot",
@@ -1964,8 +1935,14 @@
     "paymentTermsPlaceholderHint": "Es sind keine Zahlungsbedingungen hinterlegt, daher zeigt das Blatt einen Platzhalter, der nicht gedruckt wird.",
     "paymentTermsSetHint": "Ihre Zahlungsbedingungen stammen aus den Zahlungseinstellungen.",
     "paymentTermsLink": "Zahlungseinstellungen",
+    "telegramQr": "Telegram-Code",
+    "telegramQrConnectedHint": "Druckt einen Code, der {link} öffnet, Ihren verbundenen Telegram-Bot. Er erscheint nur auf Rechnungen, die nach dem Einschalten des Blocks ausgestellt wurden.",
+    "telegramQrPlaceholderHint": "Kein Telegram-Bot ist verbunden, daher zeigt das Blatt einen Beispielcode, der nicht gedruckt wird.",
+    "telegramQrLink": "Integrationen",
     "titleText": "Titeltext",
     "titleTextHint": "Wie sich dieses Dokument nennt. Leer gelassen, druckt es seinen eigenen Namen in der Sprache des Lesers.",
+    "orgNumberLabel": "Bezeichnung der Organisationsnummer",
+    "orgNumberLabelHint": "Wird auf Rechnungen und Angeboten neben Ihrer Organisationsnummer gedruckt. Leer lassen für die Standardbezeichnung in Ihrer Sprache, oder eintragen, wie sie bei Ihnen heißt, z. B. USt-IdNr., HRB oder UID. Gilt auch in den Unternehmenseinstellungen.",
     "placeholder": "Platzhalter",
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
@@ -2016,5 +1993,349 @@
     "timeZoneDetected": "Die Zeitzone steht unter Lokalisierung auf automatisch, daher nutzt der Server {zone}, die zuletzt in einem Browser gesehene Zone. Wählen Sie die Zone der Werkstatt ausdrücklich, damit Buchungszeiten nie davon abhängen, wer zuletzt gespeichert hat.",
     "timeZoneExplicit": "Buchungszeiten und Öffnungszeiten werden in {zone} gelesen.",
     "timeZoneChange": "Unter Lokalisierung ändern"
+  },
+  "emailTemplates": {
+    "title": "E-Mail-Vorlagen",
+    "description": "Was die E-Mails Ihrer Werkstatt sagen und wie sie aussehen. Jede Art von E-Mail hat eine eingebaute Vorlage; gestalten Sie Ihre eigene, um Wortlaut, Farben und die Blöcke zu ändern, aus denen sie besteht.",
+    "lockedDescription": "Gestalten Sie die E-Mails Ihrer Werkstatt: Ändern Sie den Wortlaut, fügen Sie Blöcke hinzu oder entfernen Sie sie, und passen Sie die Farben an Ihre Marke an.",
+    "groups": {
+      "documents": "Dokumente",
+      "messages": "Nachrichten",
+      "portal": "Kundenportal",
+      "team": "Team"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Rechnung gesendet",
+        "description": "Wird gesendet, wenn eine Rechnung per E-Mail an einen Kunden geht, mit angehängtem PDF oder einem Link zum Ansehen."
+      },
+      "quote_sent": {
+        "name": "Angebot gesendet",
+        "description": "Wird gesendet, wenn ein Angebot per E-Mail an einen Kunden geht."
+      },
+      "inspection_sent": {
+        "name": "Prüfbericht gesendet",
+        "description": "Wird gesendet, wenn ein Prüfbericht per E-Mail an einen Kunden geht."
+      },
+      "message": {
+        "name": "Kundennachricht",
+        "description": "Eine Nachricht an einen Kunden: eine Benachrichtigung aus einem Auftrag, ein Statusbericht, eine Videoanruf-Einladung oder eine geplante Erinnerung."
+      },
+      "portal_signin": {
+        "name": "Portal-Anmeldung",
+        "description": "Der Anmeldelink, den ein Kunde im Kundenportal anfordert."
+      },
+      "team_invitation": {
+        "name": "Team-Einladung",
+        "description": "Geht an eine Kollegin oder einen Kollegen, die Sie in die Werkstatt einladen, mit dem Link, der das Konto anlegt."
+      }
+    },
+    "blocks": {
+      "header": "Kopfbereich",
+      "heading": "Überschrift",
+      "paragraph": "Absatz",
+      "callout": "Hinweisfeld",
+      "button": "Schaltfläche",
+      "document_summary": "Dokumentübersicht",
+      "attachment_note": "Anhangshinweis",
+      "image": "Bild",
+      "divider": "Trennlinie",
+      "spacer": "Abstand",
+      "contact_footer": "Kontaktfußzeile"
+    },
+    "blockNotes": {
+      "header": "Ihr Logo oder der Werkstattname, wenn es kein Logo gibt oder es ausgeschaltet ist. Laden Sie das Logo hier hoch und legen Sie seine Größe fest; Farben und Schriften finden Sie unter Betreff und Design.",
+      "contact_footer": "Name, Adresse, Telefon und E-Mail Ihrer Werkstatt aus den Einstellungen unter Unternehmen. Tragen Sie sie dort ein, um zu ändern, was hier gedruckt wird.",
+      "divider": "Eine dünne Linie zwischen zwei Blöcken. Sie entfällt, wenn sie die E-Mail eröffnen oder abschließen würde.",
+      "callout": "Ein hervorgehobenes Feld mit farbigem Rand. Gut für die wichtigsten Worte, etwa die Nachricht selbst.",
+      "attachment_note": "Wird nur gedruckt, wenn der E-Mail ein PDF angehängt ist.",
+      "button": "Der Link ist meist ein Tag wie der Freigabelink. Eine Schaltfläche, deren Link keinen Wert hat, entfällt in der E-Mail.",
+      "document_summary": "Ein Feld mit den Eckdaten des Dokuments. Zeilen ohne Inhalt entfallen.",
+      "image": "Bilder werden beim Hochladen komprimiert und für E-Mails verkleinert. Nicht mehr verwendete Bilder werden beim Speichern der Vorlage entfernt.",
+      "summaryUnused": "Diese Art von E-Mail hat kein Dokument, die Übersicht druckt also nichts."
+    },
+    "tagGroups": {
+      "workshop": "Werkstatt",
+      "customer": "Kunde",
+      "vehicle": "Fahrzeug",
+      "document": "Dokument",
+      "message": "Nachricht",
+      "portal": "Portal",
+      "team": "Team"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Werkstattname",
+        "description": "Der Name Ihrer Werkstatt."
+      },
+      "workshop_phone": {
+        "label": "Werkstatt-Telefon",
+        "description": "Die Telefonnummer aus den Einstellungen unter Unternehmen."
+      },
+      "workshop_email": {
+        "label": "Werkstatt-E-Mail",
+        "description": "Die E-Mail-Adresse aus den Einstellungen unter Unternehmen."
+      },
+      "workshop_address": {
+        "label": "Werkstattadresse",
+        "description": "Die Adresse aus den Einstellungen unter Unternehmen, auf so vielen Zeilen, wie sie hat."
+      },
+      "current_user": {
+        "label": "Absendername",
+        "description": "Der Name der Person, die die E-Mail sendet."
+      },
+      "customer_name": {
+        "label": "Kundenname",
+        "description": "Der Name des Kunden, an den die E-Mail geht."
+      },
+      "vehicle": {
+        "label": "Fahrzeug",
+        "description": "Baujahr, Marke und Modell des Fahrzeugs."
+      },
+      "plate": {
+        "label": "Kennzeichen",
+        "description": "Das amtliche Kennzeichen des Fahrzeugs."
+      },
+      "mileage": {
+        "label": "Kilometerstand",
+        "description": "Der beim Fahrzeug erfasste Kilometerstand."
+      },
+      "document_number": {
+        "label": "Dokumentnummer",
+        "description": "Die Nummer der Rechnung oder des Angebots."
+      },
+      "document_title": {
+        "label": "Dokumenttitel",
+        "description": "Der Titel des Auftrags oder Dokuments."
+      },
+      "total": {
+        "label": "Gesamtbetrag",
+        "description": "Der Gesamtbetrag des Dokuments in seiner Währung."
+      },
+      "balance_due": {
+        "label": "Offener Betrag",
+        "description": "Was nach Zahlungen auf dem Dokument noch offen ist."
+      },
+      "due_date": {
+        "label": "Fälligkeitsdatum",
+        "description": "Das Datum, an dem die Zahlung fällig ist."
+      },
+      "share_link": {
+        "label": "Freigabelink",
+        "description": "Ein Link, über den der Kunde das Dokument online ansehen kann."
+      },
+      "message": {
+        "label": "Nachricht",
+        "description": "Die für diese E-Mail geschriebene Nachricht oder die dem Dokument hinzugefügte Notiz."
+      },
+      "signin_link": {
+        "label": "Anmeldelink",
+        "description": "Der Link, der den Kunden im Portal anmeldet. Er läuft nach kurzer Zeit ab."
+      },
+      "portal_link": {
+        "label": "Portallink",
+        "description": "Ein Link zum Kundenportal."
+      },
+      "invite_link": {
+        "label": "Einladungslink",
+        "description": "Der Link, der das Konto anlegt und dem Team beitritt. Er funktioniert nicht mehr, sobald die Einladung abläuft."
+      },
+      "role": {
+        "label": "Rolle",
+        "description": "Die Rolle, in die die Person eingeladen wird."
+      },
+      "invite_expires": {
+        "label": "Ablaufdatum",
+        "description": "Der letzte Tag, an dem der Einladungslink funktioniert."
+      }
+    },
+    "headerRule": "Linie unter der Kopfzeile",
+    "headerRuleHint": "Eine dünne Linie zwischen Logo oder Werkstattname und dem Rest der E-Mail.",
+    "optionalTag": "Nicht jede E-Mail hat einen Wert für dieses Tag. Bleibt es leer, werden die Worte darum herum bereinigt.",
+    "summaryRows": {
+      "reference": "Referenz",
+      "vehicle": "Fahrzeug",
+      "total": "Gesamtbetrag",
+      "balance": "Offener Betrag",
+      "due": "Fälligkeitsdatum"
+    },
+    "builtIn": "Eingebaut",
+    "inUse": "In Verwendung",
+    "useBuiltIn": "Eingebaute verwenden",
+    "setDefault": "Als Standard festlegen",
+    "defaultSet": "Wird jetzt mit „{name}“ gesendet",
+    "couldNotSetDefault": "Die verwendete Vorlage konnte nicht geändert werden",
+    "updatedOn": "Aktualisiert am {date}",
+    "delete": "Löschen",
+    "deleteTitle": "Vorlage löschen",
+    "deleteConfirm": "Die Vorlage „{name}“ löschen? Ist sie in Verwendung, greifen E-Mails wieder auf die eingebaute Vorlage zurück.",
+    "deleteTemplate": "Diese Vorlage löschen",
+    "deleted": "„{name}“ gelöscht",
+    "couldNotDelete": "Die Vorlage konnte nicht gelöscht werden",
+    "backToSettings": "Zurück zu den Einstellungen",
+    "unsaved": "(nicht gespeichert)",
+    "save": "Speichern",
+    "saving": "Wird gespeichert…",
+    "savedState": "Gespeichert",
+    "saved": "„{name}“ gespeichert",
+    "couldNotSave": "Speichern nicht möglich",
+    "saveAsNew": "Als neue speichern",
+    "discard": "Änderungen verwerfen",
+    "sendTest": "Test senden",
+    "cancel": "Abbrechen",
+    "problems": "{count, plural, one {# Problem} other {# Probleme}}",
+    "unknownTags": "Diese Tags gibt es für diese Art von E-Mail nicht: {tags}",
+    "missingTags": "Diese E-Mail muss {tags} enthalten",
+    "subjectRequired": "Der Betreff darf nicht leer sein",
+    "invalidTemplate": "Ein Text ist zu lang oder ein Feld hat einen ungültigen Wert.",
+    "leaveTitle": "Ohne Speichern verlassen?",
+    "leaveBody": "Ihre Änderungen an dieser Vorlage wurden nicht gespeichert. Sie gehen verloren.",
+    "leaveConfirm": "Verlassen",
+    "subjectAndTheme": "Betreff und Design",
+    "settingsSubtitle": "Gilt für die ganze E-Mail",
+    "blocksTitle": "Blöcke",
+    "addBlock": "Block hinzufügen",
+    "removeBlock": "Block entfernen",
+    "removeBlockLast": "Der letzte Block kann nicht entfernt werden",
+    "blockEmpty": "leer",
+    "blockEmptyHint": "Wird angezeigt, hat aber noch nichts zu drucken.",
+    "blockShownHint": "In der E-Mail sichtbar. Klicken, um ihn auszublenden.",
+    "blockHiddenHint": "Aus der E-Mail ausgeblendet. Klicken, um ihn anzuzeigen.",
+    "railHint": "Ziehen Sie einen Block an seinem Griff, um ihn zu verschieben. Die Linie zeigt, wo er landet. Klicken Sie einen Block an, um rechts seinen Text zu bearbeiten.",
+    "resizeHint": "Ziehen, um die Größe des Bereichs zu ändern. Doppelklick setzt sie zurück.",
+    "desktop": "Desktop",
+    "mobile": "Mobil",
+    "htmlView": "HTML",
+    "textView": "Nur Text",
+    "desktopTooltip": "Vorschau in Desktop-Breite",
+    "mobileTooltip": "Vorschau in Handy-Breite",
+    "htmlViewTooltip": "HTML-E-Mail anzeigen",
+    "previewWidth": "Vorschaubreite",
+    "previewView": "Vorschauansicht",
+    "textViewTooltip": "Nur-Text-Version anzeigen",
+    "inboxNow": "Jetzt",
+    "inboxNoSender": "Ihre Werkstatt",
+    "inboxNoSubject": "(kein Betreff)",
+    "subject": "Betreff",
+    "text": "Text",
+    "buttonLabel": "Schaltflächentext",
+    "buttonHref": "Link",
+    "spacerHeight": "Höhe",
+    "tagsTitle": "Tags",
+    "tagsHint": "Klicken Sie ein Tag an, um es an der Cursorposition in dem Feld einzufügen, in das Sie zuletzt getippt haben.",
+    "theme": {
+      "colors": "Farben",
+      "primaryColor": "Primär",
+      "textColor": "Text",
+      "mutedColor": "Gedämpfter Text",
+      "backgroundColor": "Hintergrund",
+      "panelColor": "Felder",
+      "invalidColor": "Eine Farbe ist kein gültiger Hex-Wert",
+      "hexLabel": "{label} als Hex",
+      "typography": "Typografie",
+      "font": "Schrift",
+      "fontHint": "Nur Schriften, die jedes Mailprogramm schon hat. Webfonts werden von den meisten nicht geladen.",
+      "fonts": {
+        "system": "System",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "shapes": "Formen",
+      "buttonRadius": "Schaltflächenecken",
+      "topBar": "Farbbalken oben",
+      "topBarHint": "Ein schmales Band in Ihrer Primärfarbe entlang der Oberkante der E-Mail.",
+      "showLogo": "Logo anzeigen",
+      "showLogoHint": "Ist das Logo aus, druckt der Kopfbereich stattdessen den Werkstattnamen."
+    },
+    "nameDialog": {
+      "title": "Diese Vorlage speichern",
+      "body": "Geben Sie der Vorlage einen Namen, unter dem Sie sie in der Galerie wiederfinden. Speichern macht sie zugleich zu der Vorlage, mit der diese Art von E-Mail gesendet wird.",
+      "placeholder": "Name der Vorlage",
+      "nameExists": "Eine Vorlage mit diesem Namen gibt es bereits. Wählen Sie einen anderen Namen.",
+      "save": "Vorlage speichern",
+      "update": "Vorlage aktualisieren"
+    },
+    "testDialog": {
+      "title": "Test-E-Mail senden",
+      "body": "Die E-Mail wird mit Beispieldaten gesendet, damit Sie sie in einem echten Mailprogramm sehen können.",
+      "placeholder": "E-Mail-Adresse",
+      "send": "Senden",
+      "sending": "Wird gesendet…",
+      "sentTitle": "Test-E-Mail gesendet",
+      "sentBody": "Prüfen Sie den Posteingang von {email}. Es kann eine Minute dauern, bis sie ankommt.",
+      "failedTitle": "Test-E-Mail konnte nicht gesendet werden",
+      "failedBody": "Prüfen Sie den E-Mail-Anbieter unter Anbieter und versuchen Sie es erneut."
+    },
+    "toolbar": {
+      "bold": "Fett",
+      "italic": "Kursiv",
+      "underline": "Unterstrichen",
+      "strike": "Durchgestrichen",
+      "link": "Link",
+      "linkUrl": "Linkadresse",
+      "linkPlaceholder": "https://... oder {share_link}",
+      "linkHint": "Eine Webadresse oder ein Tag wie {share_link}, das beim Senden der E-Mail ausgefüllt wird.",
+      "linkApply": "Übernehmen",
+      "linkRemove": "Link entfernen",
+      "bulletList": "Aufzählung",
+      "orderedList": "Nummerierte Liste",
+      "align": {
+        "left": "Linksbündig",
+        "center": "Zentriert",
+        "right": "Rechtsbündig"
+      },
+      "size": {
+        "label": "Textgröße",
+        "default": "Standardgröße",
+        "small": "Klein",
+        "normal": "Normal",
+        "large": "Groß",
+        "extraLarge": "Sehr groß"
+      },
+      "color": {
+        "label": "Textfarbe",
+        "text": "Textfarbe des Themas",
+        "muted": "Gedämpfte Farbe des Themas",
+        "primary": "Primärfarbe des Themas",
+        "default": "Standard",
+        "hex": "Hex-Farbe",
+        "apply": "Übernehmen"
+      },
+      "clear": "Formatierung entfernen"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Kein Logo hochgeladen. Der Kopfbereich druckt den Werkstattnamen.",
+      "upload": "Logo hochladen",
+      "replace": "Logo ersetzen",
+      "remove": "Entfernen",
+      "uploading": "Wird hochgeladen…",
+      "width": "Logobreite",
+      "hint": "Unabhängig vom Firmenlogo. Es wird beim Hochladen zugeschnitten und für E-Mails aufbereitet. PNG, JPEG oder WebP bis 4 MB.",
+      "position": "Position",
+      "tooLarge": "Das Bild muss kleiner als 4 MB sein",
+      "uploadFailed": "Logo konnte nicht hochgeladen werden"
+    },
+    "image": {
+      "empty": "Kein Bild hochgeladen. Der Block druckt nichts, solange keines vorhanden ist.",
+      "upload": "Bild hochladen",
+      "replace": "Bild ersetzen",
+      "remove": "Entfernen",
+      "uploading": "Wird hochgeladen…",
+      "alt": "Beschreibung",
+      "altHint": "Wird Lesern vorgelesen, die das Bild nicht sehen können, und während des Ladens angezeigt. PNG, JPEG oder WebP bis 10 MB.",
+      "width": "Breite",
+      "widthHint": "600 px ist die volle Breite der E-Mail. Schmalere Bilder stehen dort, wo es unter Position festgelegt ist.",
+      "link": "Link",
+      "linkHint": "Optional. Wird beim Klick auf das Bild geöffnet; ein Tag wie der Freigabelink funktioniert hier ebenfalls.",
+      "tooLarge": "Das Bild muss kleiner als 10 MB sein",
+      "uploadFailed": "Bild konnte nicht hochgeladen werden"
+    },
+    "dragHandle": "Zum Verschieben ziehen",
+    "dragHandleKeyboard": "Ziehen Sie diesen Block oder verschieben Sie ihn mit den Pfeiltasten",
+    "tagDoesNotFit": "Das Tag passt nicht in dieses Feld."
   }
 }

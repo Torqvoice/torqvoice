@@ -100,5 +100,7 @@
     "title": "PDF peržiūra",
     "preview": "Peržiūra",
     "failed": "Nepavyko sugeneruoti PDF peržiūros."
-  }
+  },
+  "attachPdf": "Pridėti PDF",
+  "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė."
 }

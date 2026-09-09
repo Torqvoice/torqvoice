@@ -105,7 +105,9 @@
     "download": "Pobierz",
     "paid": "zapłacono",
     "partial": "częściowo",
-    "unpaid": "niezapłacono"
+    "unpaid": "niezapłacono",
+    "back": "Powrót do faktur",
+    "openShared": "Otwórz udostępnioną kopię"
   },
   "quotes": {
     "title": "Wyceny",

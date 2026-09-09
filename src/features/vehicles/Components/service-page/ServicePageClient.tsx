@@ -589,11 +589,12 @@ export function ServicePageClient({
         onOpenChange={actions.setShowEmailDialog}
         defaultEmail={customer?.email || ''}
         entityLabel={t('invoice.entityLabel')}
-        onSend={async (email, message) => {
+        onSend={async (email, message, attachPdf) => {
           const result = await sendInvoiceEmail({
             serviceRecordId: record.id,
             recipientEmail: email,
             message,
+            attachPdf,
           })
           // Deliberately not awaited: the email dialog should show "sent" the
           // moment it is, not sit spinning behind the "mark completed"
@@ -621,6 +622,7 @@ export function ServicePageClient({
             open={actions.showPaymentNotifyDialog}
             onOpenChange={actions.setShowPaymentNotifyDialog}
             customer={customer}
+            vehicle={record.vehicle}
             defaultMessage={actions.paymentNotifyMessage}
             emailSubject={t('invoice.emailSubject')}
             smsEnabled={smsEnabled}
@@ -632,6 +634,7 @@ export function ServicePageClient({
             open={showNotifyDialog}
             onOpenChange={setShowNotifyDialog}
             customer={customer}
+            vehicle={record.vehicle}
             defaultMessage={notifyMessage}
             emailSubject={t('invoice.statusEmailSubject')}
             smsEnabled={smsEnabled}

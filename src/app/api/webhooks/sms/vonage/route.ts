@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
+import { channelSetup, organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { notify } from '@/lib/notify'
+import { verifyVonageJwt, warnOnce } from '@/lib/webhook-signatures'
 
 export async function POST(request: Request) {
   try {
@@ -23,8 +24,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid org_secret' }, { status: 403 })
     }
 
+    // The exact bytes, since the token's payload_hash covers them.
+    const raw = await request.text()
+
+    // The secret in the URL says which workshop this is for; the bearer JWT
+    // says it was Vonage who sent it, when the workshop has pasted the
+    // account's signature secret.
+    const setup = await channelSetup(organizationId, 'sms')
+    const signatureSecret =
+      setup?.connectorId === 'vonage-sms' ? setup.credentials.signatureSecret?.trim() : undefined
+    if (signatureSecret) {
+      const authorization = request.headers.get('authorization') ?? ''
+      const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null
+      const valid = verifyVonageJwt({ token, secret: signatureSecret, rawBody: raw })
+      if (!valid) {
+        console.warn(`[webhook/sms/vonage] Invalid signature for organization ${organizationId}`)
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 403 })
+      }
+    } else {
+      warnOnce(
+        `vonage-sms:${setup?.connectionId ?? organizationId}`,
+        `[webhook/sms/vonage] Connection ${setup?.connectionId ?? '(none)'} of organization ${organizationId} has no signature secret; inbound SMS is accepted on the URL secret alone`
+      )
+    }
+
     // Vonage sends JSON
-    const payload = (await request.json()) as {
+    const payload = JSON.parse(raw) as {
       msisdn?: string
       to?: string
       text?: string

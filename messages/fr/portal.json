@@ -105,7 +105,9 @@
     "download": "Télécharger",
     "paid": "payé",
     "partial": "partiel",
-    "unpaid": "impayé"
+    "unpaid": "impayé",
+    "back": "Retour aux factures",
+    "openShared": "Ouvrir la copie partagée"
   },
   "quotes": {
     "title": "Devis",

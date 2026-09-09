@@ -100,5 +100,7 @@
     "title": "PDF-forhåndsvisning",
     "preview": "Forhåndsvisning",
     "failed": "Kunne ikke generere PDF-forhåndsvisningen."
-  }
+  },
+  "attachPdf": "Legg ved PDF",
+  "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den."
 }

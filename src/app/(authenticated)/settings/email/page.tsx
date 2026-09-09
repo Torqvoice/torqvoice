@@ -6,5 +6,5 @@ import { redirect } from 'next/navigation'
  * providers page explains where it went.
  */
 export default function EmailSettingsPage() {
-  redirect('/settings/providers?tab=email')
+  redirect('/settings/integrations')
 }

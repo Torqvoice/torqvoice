@@ -143,6 +143,15 @@ interface SmsMessage {
   toNumber: string
 }
 
+/** An address written on several lines, read back as one. */
+function oneLine(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(', ')
+}
+
 export function CustomerDetailClient({
   customer,
   customers = [],
@@ -352,8 +361,12 @@ export function CustomerDetailClient({
                 )}
                 {customer.address && (
                   <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" />
-                    <span>{customer.address}</span>
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    {/* One line here, whatever it was typed as. This row is a
+                        summary sitting beside the email and the phone, and a
+                        three-line address makes the whole header ragged. The
+                        invoice prints it as written. */}
+                    <span title={customer.address}>{oneLine(customer.address)}</span>
                   </div>
                 )}
                 {customer.taxId && (

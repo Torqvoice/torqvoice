@@ -104,11 +104,18 @@ model Verification {
 }
 
 model TwoFactor {
-  id          String @id @default(cuid())
-  secret      String
-  backupCodes String
-  userId      String @unique
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                      String    @id @default(cuid())
+  secret                  String
+  backupCodes             String
+  userId                  String    @unique
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // better-auth's two-factor plugin writes these three since 1.6: a secret
+  // stays unverified until the first code is entered, and repeated wrong
+  // codes lock the method for a while. Rows from before default to verified,
+  // because those people already proved their app worked.
+  verified                Boolean   @default(true)
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
 
   @@map("two_factor")
 }

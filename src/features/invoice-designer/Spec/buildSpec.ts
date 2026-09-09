@@ -800,21 +800,32 @@ function documentTitle(
   const size = look.fontSize ?? theme.fontSize
   // What the strip is asked to say. A cell also needs something to say: a job
   // with no customer number has no such cell, switch or no switch.
-  const fields = new Set(sectionFields(section))
-  const cells = [
-    fields.has('invoice_number')
-      ? [label(data, 'invoiceNumberLabel', 'Invoice No.'), data.meta.number]
-      : null,
-    data.meta.customerNumber && fields.has('customer_number')
-      ? [label(data, 'customerNumberLabel', 'Customer No.'), data.meta.customerNumber]
-      : null,
-    fields.has('date') ? [label(data, 'dateLabel', 'Date'), data.meta.date] : null,
-    data.meta.due && fields.has('due_date')
-      ? [label(data, 'dueDateLabel', 'Due'), data.meta.due]
-      : null,
-  ].filter(Boolean) as [string, string][]
+  const fields = sectionFields(section)
+  // Each cell as the strip would print it, or nothing when the job has no
+  // such value. Walked in the field list's own order, so dragging a row in
+  // the designer moves the cell on the sheet.
+  const cellFor = (id: string): [string, string] | null => {
+    switch (id) {
+      case 'invoice_number':
+        return [label(data, 'invoiceNumberLabel', 'Invoice No.'), data.meta.number]
+      case 'customer_number':
+        return data.meta.customerNumber
+          ? [label(data, 'customerNumberLabel', 'Customer No.'), data.meta.customerNumber]
+          : null
+      case 'date':
+        return [label(data, 'dateLabel', 'Date'), data.meta.date]
+      case 'due_date':
+        return data.meta.due ? [label(data, 'dueDateLabel', 'Due'), data.meta.due] : null
+      default:
+        return null
+    }
+  }
+  const cells = fields.flatMap((id) => {
+    const cell = cellFor(id)
+    return cell ? [cell] : []
+  })
 
-  const showTitle = fields.has('title')
+  const showTitle = fields.includes('title')
   // Everything switched off is a strip with nothing to print, and an empty
   // block would still take its room and its rule on the sheet.
   if (!showTitle && !cells.length) return null
@@ -1420,8 +1431,18 @@ function paymentBlock(
   theme: DocumentTheme,
   data: DocumentData
 ): Node | null {
-  const fields = new Set(sectionFields(section))
-  const pairs = data.payment.filter((pair) => (pair.id ? fields.has(pair.id) : true))
+  // In the order the designer's field list is in, not the order the document
+  // happens to build its pairs: dragging a row up there has to move it here,
+  // the way it does in every panel.
+  const fields = sectionFields(section)
+  const byId = new Map(data.payment.filter((pair) => pair.id).map((pair) => [pair.id, pair]))
+  const pairs: PaymentPair[] = fields.flatMap((id) => {
+    const pair = byId.get(id)
+    return pair ? [pair] : []
+  })
+  // A pair with no id has no row of its own to drag, so it follows the ones
+  // that do rather than disappearing.
+  pairs.push(...data.payment.filter((pair) => !pair.id))
   // Workshop-defined fields assigned here join as label-over-value pairs.
   // Their lines arrive worded as "Label: value", so split at the first colon.
   for (const entry of customFieldEntries(section, data)) {

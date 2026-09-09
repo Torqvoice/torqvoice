@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
 import { notify } from '@/lib/notify'
+import { safeEqual } from '@/lib/webhook-signatures'
 
 interface TelegramUpdate {
   message?: {
@@ -39,7 +40,7 @@ export async function POST(
       return NextResponse.json({ ok: false }, { status: 500 })
     }
 
-    if (!secret || secret !== secretHeader) {
+    if (!secret || !safeEqual(secret, secretHeader)) {
       return NextResponse.json({ ok: true })
     }
 
@@ -97,7 +98,7 @@ export async function POST(
       entityId: message.id,
       entityUrl: customer
         ? `/messages?tab=telegram&customerId=${customer.id}`
-        : '/settings/providers?tab=telegram',
+        : '/settings/integrations',
     })
 
     return NextResponse.json({ ok: true })
