@@ -2243,6 +2243,8 @@
       },
       "shapes": "Formas",
       "buttonRadius": "Cantos do botão",
+      "headerRule": "Linha sob o cabeçalho",
+      "headerRuleHint": "Uma linha fina entre o logotipo ou o nome da oficina e o resto do e-mail.",
       "showLogo": "Mostrar logotipo",
       "showLogoHint": "Com o logotipo desativado, o cabeçalho imprime o nome da oficina no lugar."
     },

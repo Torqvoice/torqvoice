@@ -58,6 +58,7 @@ function safeTheme(theme: EmailTheme) {
     panel: color(theme.panelColor, d.panelColor),
     font: EMAIL_FONTS[theme.fontFamily] ?? EMAIL_FONTS[d.fontFamily],
     radius,
+    headerRule: theme.headerRule !== false,
   }
 }
 
@@ -105,9 +106,11 @@ function blockHtml(block: SpecBlock, t: SafeTheme, marked: boolean): string {
       // everyone else. The image is inline so the alignment applies to it.
       // A rule under the letterhead, and room after it, so the mark and the
       // heading are not two bold lines fighting over the top of the card.
+      // The theme can take the rule away; the room stays.
+      const rule = t.headerRule ? `border-bottom:1px solid ${RULE};` : ''
       return (
         row(
-          `<td align="${block.align}" style="padding:0 0 20px 0;text-align:${block.align};border-bottom:1px solid ${RULE};">${logo}</td>`
+          `<td align="${block.align}" style="padding:0 0 20px 0;text-align:${block.align};${rule}">${logo}</td>`
         ) + `<tr><td style="height:24px;line-height:24px;font-size:0;">&nbsp;</td></tr>`
       )
     }

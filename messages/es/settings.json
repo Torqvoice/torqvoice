@@ -2243,6 +2243,8 @@
       },
       "shapes": "Formas",
       "buttonRadius": "Esquinas del botón",
+      "headerRule": "Línea bajo el encabezado",
+      "headerRuleHint": "Una línea fina entre el logotipo o el nombre del taller y el resto del correo.",
       "showLogo": "Mostrar logotipo",
       "showLogoHint": "Con el logotipo desactivado, la cabecera imprime el nombre del taller en su lugar."
     },

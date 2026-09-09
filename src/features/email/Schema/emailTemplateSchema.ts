@@ -66,6 +66,7 @@ export const emailThemeSchema = z.object({
     .refine((value) => value === '' || isEmailLogoUrl(value), 'Not an email logo'),
   logoWidth: z.number().int().min(EMAIL_LOGO_MIN_WIDTH).max(EMAIL_LOGO_MAX_WIDTH),
   buttonRadius: z.number().int().min(0).max(32),
+  headerRule: z.boolean().optional(),
 })
 
 export const emailKindSchema = z.enum(EMAIL_KINDS)

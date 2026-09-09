@@ -2243,6 +2243,8 @@
       },
       "shapes": "Formen",
       "buttonRadius": "Schaltflächenecken",
+      "headerRule": "Linie unter der Kopfzeile",
+      "headerRuleHint": "Eine dünne Linie zwischen Logo oder Werkstattname und dem Rest der E-Mail.",
       "showLogo": "Logo anzeigen",
       "showLogoHint": "Ist das Logo aus, druckt der Kopfbereich stattdessen den Werkstattnamen."
     },

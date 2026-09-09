@@ -2243,6 +2243,8 @@
       },
       "shapes": "Formos",
       "buttonRadius": "Mygtuko kampai",
+      "headerRule": "Linija po antrašte",
+      "headerRuleHint": "Plona linija tarp logotipo ar dirbtuvių pavadinimo ir likusio laiško.",
       "showLogo": "Rodyti logotipą",
       "showLogoHint": "Išjungus logotipą, antraštinėje dalyje vietoj jo spausdinamas dirbtuvių pavadinimas."
     },

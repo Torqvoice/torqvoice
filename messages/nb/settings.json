@@ -2243,6 +2243,8 @@
       },
       "shapes": "Former",
       "buttonRadius": "Knappehjørner",
+      "headerRule": "Strek under toppen",
+      "headerRuleHint": "En tynn strek mellom logoen eller verkstedsnavnet og resten av e-posten.",
       "showLogo": "Vis logo",
       "showLogoHint": "Med logoen av skriver toppteksten ut verkstedsnavnet i stedet."
     },

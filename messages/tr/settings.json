@@ -2243,6 +2243,8 @@
       },
       "shapes": "Şekiller",
       "buttonRadius": "Düğme köşeleri",
+      "headerRule": "Başlık altında çizgi",
+      "headerRuleHint": "Logo veya atölye adı ile e-postanın geri kalanı arasında ince bir çizgi.",
       "showLogo": "Logoyu göster",
       "showLogoHint": "Logo kapalıyken üst bilgi bunun yerine atölye adını yazdırır."
     },

@@ -2243,6 +2243,8 @@
       },
       "shapes": "Shapes",
       "buttonRadius": "Button corners",
+      "headerRule": "Rule under the header",
+      "headerRuleHint": "A thin line between the logo or workshop name and the rest of the email.",
       "showLogo": "Show logo",
       "showLogoHint": "With the logo off, the header prints the workshop name instead."
     },

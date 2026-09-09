@@ -462,6 +462,14 @@ function ThemeFields({
           suffix="px"
           onChange={(buttonRadius) => onTheme({ buttonRadius })}
         />
+        <Row label={t('theme.headerRule')}>
+          <Toggle
+            label={t('theme.headerRule')}
+            on={theme.headerRule !== false}
+            onChange={(headerRule) => onTheme({ headerRule })}
+          />
+        </Row>
+        <Note>{t('theme.headerRuleHint')}</Note>
       </Group>
     </>
   )

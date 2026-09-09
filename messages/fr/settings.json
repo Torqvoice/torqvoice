@@ -2243,6 +2243,8 @@
       },
       "shapes": "Formes",
       "buttonRadius": "Angles du bouton",
+      "headerRule": "Filet sous l'en-tête",
+      "headerRuleHint": "Un trait fin entre le logo ou le nom de l'atelier et le reste de l'e-mail.",
       "showLogo": "Afficher le logo",
       "showLogoHint": "Logo désactivé, l'en-tête imprime le nom de l'atelier à la place."
     },
