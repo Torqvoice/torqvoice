@@ -105,7 +105,9 @@
     "download": "Last ned",
     "paid": "betalt",
     "partial": "delbetalt",
-    "unpaid": "ubetalt"
+    "unpaid": "ubetalt",
+    "back": "Tilbake til fakturaer",
+    "openShared": "Åpne den delte kopien"
   },
   "quotes": {
     "title": "Tilbud",
