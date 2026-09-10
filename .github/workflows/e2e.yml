@@ -1,0 +1,77 @@
+name: End-to-end tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push to the same branch makes the run in flight pointless.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: torqvoice
+          POSTGRES_PASSWORD: torqvoice
+          # The name has to carry "e2e" or "test": the harness refuses to reset
+          # a database whose name says nothing about being throwaway.
+          POSTGRES_DB: torqvoice_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Playwright starts the app itself on this port and resets this database
+      # before it does; both come from playwright.config.ts.
+      E2E_DATABASE_URL: postgresql://torqvoice:torqvoice@127.0.0.1:5432/torqvoice_e2e
+      BETTER_AUTH_SECRET: e2e-secret-not-for-production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma generate
+
+      - name: Install the browser
+        run: npx playwright install --with-deps chromium
+
+      # NEXT_PUBLIC_APP_URL is baked into the client bundle, and better-auth
+      # refuses a sign-in from an origin the build was not made for, so it has
+      # to match the base URL the suite uses.
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APP_URL: http://127.0.0.1:3100
+
+      - name: Run the suite
+        run: npm run test:e2e
+
+      - name: Upload the report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore

@@ -16,7 +16,13 @@
     "datesExpiredBack": "Zurück",
     "datesExpiredSetToday": "Auf heute setzen",
     "customFieldsInvalid": "Bitte füllen Sie alle erforderlichen benutzerdefinierten Felder aus",
-    "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"
+    "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden",
+    "problems": {
+      "title": "Der Auftrag braucht einen Titel, bevor er gespeichert werden kann.",
+      "negative": "Mengen, Stunden, Preise und Kosten dürfen nicht negativ sein.",
+      "partName": "Jedes Teil mit Preis braucht einen Namen.",
+      "laborDescription": "Jede Arbeitszeile mit Stunden oder Satz braucht eine Beschreibung."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
+    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Zeilen ohne Beschreibung werden nicht gespeichert."
   },
   "totals": {
     "title": "Summen",

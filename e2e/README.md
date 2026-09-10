@@ -11,10 +11,14 @@ the session cookie, server actions wired to forms, and invoice numbering.
 e2e/
   auth.setup.ts        signs in once; every spec starts with that session
   prepare-db.ts        reset + seed, run ahead of the server
-  support/             helpers specs share: database peeks, TOTP, work order driving
+  mail-sink.ts         a mail server that delivers nothing and keeps everything
+  support/             helpers specs share: reading mail, database peeks, TOTP, work order driving
   specs/
     auth/              sign-in, sign-up and invitations, account security
-    work-orders/       pricing under each tax setting, quote to invoice
+    invoices/          numbering, paying an invoice down, one document four ways
+    work-orders/       pricing under each tax setting, quote to invoice,
+                       the lifecycle of a job, what the editor refuses,
+                       the shape of the page at both breakpoints
     smoke/             the build is alive
 ```
 
@@ -37,7 +41,8 @@ npm run test:e2e
 ```
 
 The suite resets `E2E_DATABASE_URL` to a clean schema, runs the demo seed,
-starts `next start` on port 3100, signs in once, and reuses that session.
+starts the mail sink and `next start` on port 3100, signs in once, and reuses
+that session.
 
 If something is already listening on port 3100, the suite uses it as it is and
 skips the reset, so a second run continues on the data the first one left. Stop
@@ -54,16 +59,24 @@ own image instead, against a server started here:
 
 ```bash
 export E2E_DATABASE_URL="postgresql://torqvoice:torqvoice@localhost:5432/torqvoice_e2e"
+export BETTER_AUTH_SECRET=$(grep -oP '^BETTER_AUTH_SECRET="?\K[^"]+' .env)
 npx tsx e2e/prepare-db.ts
 DATABASE_URL="$E2E_DATABASE_URL" NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100 \
-  DEMO_MODE=false AUTH_RATE_LIMIT=off TORQVOICE_MODE=self-hosted npm run start -- --port 3100 &
+  DEMO_MODE=false AUTH_RATE_LIMIT=off TORQVOICE_MODE=self-hosted \
+  SMTP_HOST=127.0.0.1 SMTP_PORT=1025 SMTP_FROM_EMAIL=workshop@e2e.test \
+  npm run start -- --port 3100 &
 docker run --rm --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -v "$PWD":/work -w /work \
   -e E2E_BASE_URL=http://127.0.0.1:3100 -e E2E_SKIP_SEED=1 -e E2E_DATABASE_URL \
+  -e BETTER_AUTH_SECRET \
   mcr.microsoft.com/playwright:v1.63.0-noble npx playwright test
 ```
 
-The image version must match `@playwright/test` in package.json.
+The image version must match `@playwright/test` in package.json. The secret goes in
+because the two-factor spec decrypts what the server stored, and a server started
+here takes its own from `.env`. The SMTP variables point the server at the mail
+sink, which Playwright starts inside the container; `--network host` is what puts
+them on the same localhost.
 
 ## Pointing it at something already running
 
@@ -71,8 +84,43 @@ The image version must match `@playwright/test` in package.json.
 E2E_BASE_URL=https://staging.torqvoice.com E2E_SKIP_SEED=1 npm run test:e2e
 ```
 
-With `E2E_BASE_URL` set, no server is started. With `E2E_SKIP_SEED=1`, the
+With `E2E_BASE_URL` set, no app server is started. With `E2E_SKIP_SEED=1`, the
 database is left alone, which is what you want against a shared environment.
+
+The mail sink still starts, but a server elsewhere sends its mail elsewhere,
+so the two specs that read mail (the invitation and the password reset) cannot
+pass against a shared environment unless that server is pointed here too.
+
+## The mail sink
+
+Two things a workshop does can only be tested by reading the mail: an
+invitation is a link and nothing else, and the app deletes an invitation it
+could not send. So the harness runs its own mail server, `e2e/mail-sink.ts`.
+It speaks SMTP on port 1025, delivers nothing, keeps what it is given in
+memory, and hands it back over HTTP on port 8025. Playwright starts and stops
+it with everything else, so there is nothing to install or remember.
+
+The app is pointed at it with `SMTP_HOST` and `SMTP_PORT`, which is all it
+takes: SMTP is the default provider, and the seeded workshop configures none
+of its own. A spec reads what was sent through `support/mail.ts`:
+
+```ts
+const mail = await waitForMail('someone@example.com')
+await page.goto(linkIn(mail, /\/auth\/sign-up\?invite=/))
+```
+
+`clearMailbox()` empties it, which is worth doing before an action whose mail
+you are about to read twice in one file.
+
+## In CI
+
+`.github/workflows/e2e.yml` runs the suite on every pull request to main, and on
+demand from the Actions tab. It brings up a `postgres:16-alpine` service holding
+`torqvoice_e2e`, installs Chromium, builds with
+`NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100`, and runs `npm run test:e2e` the same
+way you would here. The HTML report is uploaded as the `playwright-report`
+artifact on every run, so a failure can be opened locally with
+`npx playwright show-report`.
 
 ## Variables
 
@@ -84,6 +132,9 @@ database is left alone, which is what you want against a shared environment.
 | `E2E_ALLOW_ANY_DB` | unset | Override the guard on database names |
 | `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | `demo@torqvoice.com` / `demo-e2e-pass` | The login the seed creates and the suite signs in with |
 | `E2E_TZ` | `Europe/Oslo` | Browser and server timezone |
+| `E2E_SMTP_PORT` | `1025` | Where the mail sink listens for the app |
+| `E2E_MAIL_API_PORT` | `8025` | Where the mail sink answers the specs |
+| `E2E_MAIL_API` | `http://127.0.0.1:8025` | The sink a spec reads from, when it is not the local one |
 
 The suite's own server also runs with `TORQVOICE_MODE=self-hosted`, `DEMO_MODE=false` and
 `AUTH_RATE_LIMIT=off`. Pointed at another server, start it the same way or the plan
@@ -107,6 +158,10 @@ another server, keep sign-ins in a spec ten seconds apart or the third one is re
 
 **Demo mode stays off.** It blocks invites, billing and outbound messages, which
 are behaviours a test should be able to exercise.
+
+**Read the link out of the mail, not out of the database.** A token in a table
+proves nothing about what the person received; the sink is there so a spec can
+follow the address the app actually posted.
 
 **Prefer a role or a stable id over a class.** Where an element has neither, add
 `data-testid` to the component rather than reaching through the DOM.

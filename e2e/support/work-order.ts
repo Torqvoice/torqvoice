@@ -24,9 +24,7 @@ export async function seededVehicleUrl(page: Page, search = 'Camry'): Promise<st
 export async function newWorkOrder(page: Page, vehicleUrl: string, title: string): Promise<string> {
   await page.goto(`${vehicleUrl}/service/new`)
   await page.waitForURL(/\/vehicles\/[^/]+\/service\/[^/]+$/)
-  // The page carries the field twice, one per breakpoint, both with the same
-  // id; only the one for this viewport is visible.
-  const titleField = page.locator('input[placeholder="Oil Change"]:visible')
+  const titleField = page.locator('input[name="title"]')
   await expect(titleField).toBeVisible()
   await titleField.fill(title)
   return page.url()
@@ -35,6 +33,31 @@ export async function newWorkOrder(page: Page, vehicleUrl: string, title: string
 /** The editor row an input belongs to: the nearest ancestor that also holds the given input. */
 function rowContaining(field: Locator, siblingPlaceholder: string): Locator {
   return field.locator(`xpath=ancestor::*[.//input[@placeholder="${siblingPlaceholder}"]][1]`)
+}
+
+/**
+ * The part rows, in the order the editor lists them. One locator per row: the
+ * page used to draw the whole editor twice, once per breakpoint, and every row
+ * came back doubled with half of them impossible to type into.
+ * `specs/work-orders/layout.spec.ts` is what keeps it to one.
+ */
+export function partRows(page: Page): Locator {
+  return page.getByPlaceholder('Name *')
+}
+
+/** The labour rows, likewise. */
+export function laborRows(page: Page): Locator {
+  return page.getByPlaceholder('Description *')
+}
+
+/** The whole row a part field sits in, buttons and figures included. */
+export function partRowOf(nameField: Locator): Locator {
+  return rowContaining(nameField, 'Cost')
+}
+
+/** The whole row a labour field sits in. */
+export function laborRowOf(descriptionField: Locator): Locator {
+  return rowContaining(descriptionField, 'Hours')
 }
 
 export interface PartInput {
@@ -51,11 +74,22 @@ export interface PartInput {
  * them: quantity, cost, markup, unit price.
  */
 export async function addPart(page: Page, part: PartInput): Promise<void> {
-  const name = page.getByPlaceholder('Name *').last()
+  const rows = partRows(page)
+  // Counted first, and waited for: a click before hydration adds nothing, and
+  // a guard that only asked whether some name field was on screen would be
+  // satisfied by the rows already there and type over the last of them.
+  const before = await rows.count()
   await expect(async () => {
+    // An empty list offers the button twice, in the toolbar and as the dashed
+    // row beneath it; once there are rows, only the toolbar one is named.
     await page.getByRole('button', { name: 'Add Part' }).last().click()
-    await expect(name).toBeVisible({ timeout: 2_000 })
+    await expect(rows).toHaveCount(before + 1, { timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
+
+  // The toolbar button puts the new row at the top of the list, which is
+  // where the workshop looks after clicking it; the dashed one appends, and
+  // on an empty list either way leaves the row it made as the only one.
+  const name = rows.first()
   await name.fill(part.name)
 
   const numbers = rowContaining(name, 'Cost').locator('input[type="number"]')
@@ -65,10 +99,9 @@ export async function addPart(page: Page, part: PartInput): Promise<void> {
   if (part.unitPrice !== undefined) await numbers.nth(3).fill(String(part.unitPrice))
 }
 
-/** What the editor worked out as the unit price of the last part line. */
+/** What the editor worked out as the unit price of the part added last. */
 export async function lastPartUnitPrice(page: Page): Promise<string> {
-  const name = page.getByPlaceholder('Name *').last()
-  return rowContaining(name, 'Cost').locator('input[type="number"]').nth(3).inputValue()
+  return partRowOf(partRows(page).first()).locator('input[type="number"]').nth(3).inputValue()
 }
 
 export interface LaborInput {
@@ -79,11 +112,15 @@ export interface LaborInput {
 
 /** Adds an hourly labour line: description, hours, rate. */
 export async function addLabor(page: Page, labor: LaborInput): Promise<void> {
-  const description = page.getByPlaceholder('Description *').last()
+  const rows = laborRows(page)
+  const before = await rows.count()
   await expect(async () => {
     await page.getByRole('button', { name: 'Add Labor' }).last().click()
-    await expect(description).toBeVisible({ timeout: 2_000 })
+    await expect(rows).toHaveCount(before + 1, { timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
+
+  // Added at the top, like a part.
+  const description = rows.first()
   await description.fill(labor.description)
 
   const numbers = rowContaining(description, 'Hours').locator('input[type="number"]')

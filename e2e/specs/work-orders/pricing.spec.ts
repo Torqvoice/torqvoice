@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
+import { setTax } from '../../support/settings'
 import {
   addLabor,
   addPart,
@@ -28,30 +29,6 @@ import {
 test.describe.configure({ mode: 'serial' })
 
 const stamp = Date.now()
-
-interface TaxSetup {
-  enabled: boolean
-  rate?: number
-  inclusive?: boolean
-  label?: string
-}
-
-async function setTax(page: Page, tax: TaxSetup) {
-  await page.goto('/settings/tax')
-  const enable = page.getByRole('switch').first()
-  await expect(enable).toBeVisible()
-  const on = (await enable.getAttribute('aria-checked')) === 'true'
-  if (on !== tax.enabled) await enable.click()
-  if (tax.enabled) {
-    await page.locator('#defaultTaxRate').fill(String(tax.rate ?? 0))
-    await page.locator('#taxLabel').fill(tax.label ?? '')
-    await page
-      .getByRole('button', { name: tax.inclusive ? 'Inclusive' : 'Exclusive', exact: true })
-      .click()
-  }
-  await page.getByRole('button', { name: 'Save Settings', exact: true }).click()
-  await expect(page.getByText('Settings saved', { exact: true })).toBeVisible()
-}
 
 /** The standard job: parts 2 × 150 = 300, labour 1.5 × 400 = 600, before tax or discount 900. */
 async function priceTheJob(page: Page, vehicleUrl: string, title: string): Promise<string> {

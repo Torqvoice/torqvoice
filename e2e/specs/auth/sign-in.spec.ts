@@ -1,15 +1,15 @@
 import { expect, type Page, test } from '@playwright/test'
-import { latestResetToken } from '../../support/db'
+import { clearMailbox, linkIn, waitForMail } from '../../support/mail'
 
 /**
  * The front door: signing in, being kept out, signing out, and getting back
  * in after a forgotten password.
  *
  * Every test here starts signed out, unlike the rest of the suite, because
- * the door is the thing under test. The reset flow reads its token straight
- * from the database: the test environment has no mail provider, so the mail
- * is never delivered, but better-auth stores the token before it tries to
- * send, which is all the browser needs.
+ * the door is the thing under test. The reset flow takes its token out of the
+ * mail the app sent, caught by the harness's mail sink, so a reset that
+ * records a token but never posts it fails here rather than in a support
+ * mailbox.
  */
 
 test.use({ storageState: { cookies: [], origins: [] } })
@@ -30,8 +30,12 @@ async function expectSignedIn(page: Page) {
   await expect(page.locator('#password')).toHaveCount(0)
 }
 
-/** Requests a reset link for the address and returns the token the mail would carry. */
+/** Requests a reset link for the address and returns the token the mail carries. */
 async function requestReset(page: Page, who: string): Promise<string> {
+  // The owner asks for a reset twice in this file. With the box emptied
+  // first, the mail read back is certainly the one this request sent and not
+  // the earlier one, whose token has already been spent.
+  await clearMailbox()
   await page.goto('/auth/forgot-password')
   await page.locator('#email').fill(who)
   await page.getByRole('button', { name: /send reset link/i }).click()
@@ -39,8 +43,15 @@ async function requestReset(page: Page, who: string): Promise<string> {
   // use this form to find out who has an account.
   await expect(page.getByText(/if an account exists with that email/i)).toBeVisible()
 
-  const token = await latestResetToken(who)
-  expect(token, 'better-auth stored a reset token for the address').not.toBeNull()
+  const mail = await waitForMail(who, { subject: /reset your torqvoice password/i })
+  // The mail does not link to the reset page. It links into better-auth's own
+  // endpoint, which checks the token and redirects to the page carrying it, so
+  // following the link is both what the person does and where the token
+  // comes from.
+  await page.goto(linkIn(mail, /\/reset-password\//))
+  await page.waitForURL(/\/auth\/reset-password\?/, { timeout: 30_000 })
+  const token = new URL(page.url()).searchParams.get('token')
+  expect(token, 'the mailed link lands on the reset page with a token').toBeTruthy()
   return token as string
 }
 

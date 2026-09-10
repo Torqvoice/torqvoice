@@ -1,12 +1,13 @@
 import { expect, type Page, test } from '@playwright/test'
-import { latestInvitationToken } from '../../support/db'
+import { linkIn, waitForMail } from '../../support/mail'
 
 /**
  * How people arrive: a stranger who opens a workshop of their own, and a
  * colleague who was invited into one that exists.
  *
- * Both start signed out. The invitation is read from the database, since
- * the test environment delivers no mail.
+ * Both start signed out. The colleague follows the link out of the invitation
+ * mail itself, caught by the harness's mail sink, so the address the app
+ * writes into that mail is under test as much as the sign-up page is.
  */
 
 test.use({ storageState: { cookies: [], origins: [] } })
@@ -34,9 +35,6 @@ test('a new account is walked through onboarding into a workshop of its own', as
 })
 
 test('an invited colleague signs up straight into the workshop', async ({ page, browser }) => {
-  // The app refuses to record an invitation it cannot mail, and the test
-  // environment has no mail provider yet. Needs a mail sink in the harness.
-  test.fixme(true, 'no mail sink in the e2e environment')
   const invitee = `e2e-colleague-${stamp}@example.com`
 
   // The owner sends the invitation from the team page.
@@ -50,11 +48,13 @@ test('an invited colleague signs up straight into the workshop', async ({ page, 
   await expect(ownerPage.getByText(invitee).first()).toBeVisible()
   await owner.close()
 
-  const token = await latestInvitationToken(invitee)
-  expect(token, 'an invitation was recorded for the address').not.toBeNull()
+  // The invitation is a mail with a link in it, and nothing else. An app that
+  // records the invitation but posts a link nobody can follow has failed at
+  // the only part the colleague ever sees.
+  const invitation = await waitForMail(invitee)
+  const link = linkIn(invitation, /\/auth\/sign-up\?invite=/)
 
-  // The colleague follows the mailed link.
-  await page.goto(`/auth/sign-up?invite=${encodeURIComponent(token as string)}`)
+  await page.goto(link)
   await fillSignUp(page, 'E2E Colleague', invitee, `E2e-pass-${stamp}`)
 
   // No onboarding: they land in the workshop that invited them.

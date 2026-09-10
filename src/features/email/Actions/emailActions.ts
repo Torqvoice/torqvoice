@@ -9,7 +9,6 @@ import React from 'react'
 import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
-import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
 import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
@@ -23,7 +22,7 @@ import { requireFeature } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
-import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { renderInvoicePdf } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { randomUUID } from 'crypto'
@@ -347,17 +346,11 @@ export async function sendInvoiceEmail(input: {
 
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {
-        const labels = await loadPrintLabels(locale, assembly.labelSettings)
-        const element = React.createElement(InvoicePDF, {
-          data: assembly.data,
-          workshop: assembly.workshop,
-          invoiceSettings: assembly.invoiceSettings,
-          paymentSummary: assembly.paymentSummary,
-          logoDataUri: assembly.logoDataUri,
-          template: assembly.template,
-          labels,
-        }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
-        pdfBuffer = Buffer.from(await renderToBuffer(element))
+        // The same renderer the download and the share link use, so what is
+        // attached here is the document the customer would have seen either
+        // way. Rendered on its own, this copy went out without the portal
+        // link, the Telegram code and the Torqvoice mark.
+        pdfBuffer = Buffer.from(await renderInvoicePdf(assembly, locale))
       }
       const invoiceNum = invoiceNumberOf(record)
 

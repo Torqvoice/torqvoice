@@ -16,7 +16,13 @@
     "datesExpiredBack": "Tilbake",
     "datesExpiredSetToday": "Sett til i dag",
     "customFieldsInvalid": "Vennligst fyll ut alle obligatoriske egendefinerte felt",
-    "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"
+    "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt",
+    "problems": {
+      "title": "Jobben må ha en tittel før den kan lagres.",
+      "negative": "Antall, timer, priser og kostnader kan ikke være negative.",
+      "partName": "Alle deler med pris må ha et navn.",
+      "laborDescription": "Alle arbeidslinjer med timer eller sats må ha en beskrivelse."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
+    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Rader uten beskrivelse lagres ikke."
   },
   "totals": {
     "title": "Totalt",

@@ -16,7 +16,13 @@
     "datesExpiredBack": "Indietro",
     "datesExpiredSetToday": "Imposta a oggi",
     "customFieldsInvalid": "Compila tutti i campi personalizzati obbligatori",
-    "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati"
+    "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati",
+    "problems": {
+      "title": "Il lavoro deve avere un titolo prima di poter essere salvato.",
+      "negative": "Quantità, ore, prezzi e costi non possono essere negativi.",
+      "partName": "Ogni ricambio con un prezzo deve avere un nome.",
+      "laborDescription": "Ogni riga di manodopera con ore o tariffa deve avere una descrizione."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
+    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Le righe senza descrizione non vengono salvate."
   },
   "totals": {
     "title": "Totali",
