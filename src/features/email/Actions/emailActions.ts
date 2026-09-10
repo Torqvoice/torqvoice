@@ -1,6 +1,5 @@
 'use server'
 
-import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { renderToBuffer } from '@react-pdf/renderer'
@@ -8,21 +7,17 @@ import '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
 import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
-import {
-  mergeWithDefaults,
-  type InvoiceLayoutConfig,
-} from '@/features/settings/Schema/invoiceLayoutSchema'
 import { requireFeature } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { renderInvoicePdf } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
+import { buildQuotePdfBuffer } from '@/features/quotes/Pdf/buildQuotePdfBuffer'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { randomUUID } from 'crypto'
@@ -151,54 +146,22 @@ export async function sendQuoteEmail(input: {
       }
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
-      const logoDataUri = await loadLogoDataUri(documentLogoPath(settings, 'quote'))
+      // One language for the PDF's labels and the mail around it.
+      const locale = await resolveCustomerLocale(organizationId, null)
+      // The mail's own summary of the document quotes a figure, so it needs
+      // the same currency the sheet prints in.
       const currencyCode = settings['workshop.currencyCode'] || 'USD'
       const currencyFormat: 'symbol' | 'code' =
         settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
 
-      const pick = (key: string) => settings[`quote.${key}`] || settings[`invoice.${key}`]
-      const template = {
-        primaryColor: pick('primaryColor') || '#d97706',
-        backgroundColor: pick('backgroundColor') || undefined,
-        textColor: pick('textColor') || undefined,
-        companyTextColor: pick('companyTextColor') || undefined,
-        frameBorderColor: pick('frameBorderColor') || undefined,
-        frameShadow: pick('frameShadow'),
-        frameRadius: Number(pick('frameRadius')) || 0,
-        frameSide: (pick('frameSide') === 'right' ? 'right' : 'left') as 'left' | 'right',
-        fontFamily: pick('fontFamily') || 'Helvetica',
-        showLogo: settings['invoice.showLogo'] !== 'false',
-        showCompanyName: settings['invoice.showCompanyName'] !== 'false',
-        headerStyle: pick('headerStyle') || 'standard',
-        logoSize: Number(pick('logoSize')) || undefined,
-      }
-      let quoteLayoutConfig: InvoiceLayoutConfig | undefined
-      try {
-        quoteLayoutConfig = settings['quote.layoutConfig']
-          ? mergeWithDefaults(JSON.parse(settings['quote.layoutConfig']))
-          : undefined
-      } catch {
-        quoteLayoutConfig = undefined
-      }
-
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {
-        const element = React.createElement(QuotePDF, {
-          data: quote,
-          workshop: {
-            name: settings['workshop.name'] || '',
-            address: settings['workshop.address'] || '',
-            phone: settings['workshop.phone'] || '',
-            email: settings['workshop.email'] || '',
-            slogan: settings['workshop.slogan'] || undefined,
-          },
-          currencyCode,
-          currencyFormat,
-          logoDataUri,
-          template,
-          layoutConfig: quoteLayoutConfig,
-        }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
-        pdfBuffer = Buffer.from(await renderToBuffer(element))
+        // The same builder the download and the share link use. Rendered on
+        // its own, this copy went out with no print labels at all — "Labor"
+        // where the others said "Labor & Services" — and no Torqvoice mark.
+        const rendered = await buildQuotePdfBuffer(quoteId, organizationId, locale)
+        if (!rendered) throw new Error('Quote not found')
+        pdfBuffer = Buffer.from(rendered.buffer)
       }
       const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
 

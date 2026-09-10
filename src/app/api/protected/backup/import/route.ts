@@ -14,6 +14,7 @@ import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
 import { mkdir, rm, writeFile } from 'fs/promises'
 import path from 'path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 // Zip magic bytes: PK\x03\x04
 const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04]
@@ -309,7 +310,7 @@ async function restoreRows(
 }
 
 async function restoreFiles(zip: JSZip, organizationId: string) {
-  const uploadsDir = path.join(process.cwd(), 'data', 'uploads', organizationId)
+  const uploadsDir = path.join(uploadsRoot(), organizationId)
 
   const fileEntries = Object.keys(zip.files).filter(
     (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))

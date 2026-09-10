@@ -22,6 +22,7 @@ e2e/
     work-orders/       pricing under each tax setting, quote to invoice,
                        the lifecycle of a job, what the editor refuses,
                        the shape of the page at both breakpoints
+    quotes/            the quote a customer is handed
     smoke/             the build is alive
 ```
 

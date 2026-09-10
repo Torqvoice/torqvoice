@@ -12,6 +12,7 @@ import path from 'path'
 import os from 'os'
 import JSZip from 'jszip'
 import { resolveWithinDir } from '@/lib/safe-path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -314,7 +315,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Uploads directory for this org
-    const uploadsBase = path.join(process.cwd(), 'data', 'uploads', organizationId)
+    const uploadsBase = path.join(uploadsRoot(), organizationId)
 
     // Maps: IN hashed_id → Torqvoice ID
     const clientIdMap = new Map<string, string>()

@@ -147,8 +147,8 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "switchToHourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
+    "switchToServiceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
     "deleteRow": "Delete row",
     "descriptionMissingHint": "Le righe senza descrizione non vengono salvate."
   },

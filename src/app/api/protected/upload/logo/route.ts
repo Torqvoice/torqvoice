@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto'
 import { db } from '@/lib/db'
 import { cleanImage } from '@/lib/image-upload.server'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 export async function POST(request: Request) {
   try {
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     const fileName = `${randomUUID()}.${clean.ext}`
-    const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'logos')
+    const uploadDir = path.join(uploadsRoot(), ctx.organizationId, 'logos')
 
     await mkdir(uploadDir, { recursive: true })
     await writeFile(path.join(uploadDir, fileName), clean.data)

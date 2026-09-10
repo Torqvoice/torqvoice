@@ -4,6 +4,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
+import { uploadsRoot } from '@/lib/upload-root'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     const ext = extensionForType(file.type, 'jpg')
     const filename = `${crypto.randomUUID()}.${ext}`
-    const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'vehicles')
+    const uploadDir = path.join(uploadsRoot(), ctx.organizationId, 'vehicles')
 
     await mkdir(uploadDir, { recursive: true })
 
