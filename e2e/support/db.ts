@@ -38,6 +38,11 @@ export async function ownerOrganizationId(email = 'demo@torqvoice.com'): Promise
   })
 }
 
+/** The workshop a signed-up account ended up owning, by the address it used. */
+export async function organizationIdFor(email: string): Promise<string> {
+  return ownerOrganizationId(email)
+}
+
 /**
  * Everything a save from the invoice designer writes, as it stands now.
  *
@@ -94,6 +99,81 @@ export async function restoreInvoiceDesignState(state: InvoiceDesignState): Prom
         where "organizationId" = $1 and not (id = any($2::text[]))`,
       [state.organizationId, state.designIds]
     )
+  })
+}
+
+/**
+ * Addresses of the seeded workshop's own records, for the tests that check a
+ * different workshop cannot reach them. Read straight from the database
+ * because the point is to ask for them as an outsider: going through the app
+ * to find them first would need the very access under test.
+ */
+export interface TenantFixtures {
+  organizationId: string
+  vehicleId: string
+  serviceRecordId: string
+  customerId: string
+  quoteId: string
+  /** A stored file URL, as the app writes them into its own rows. */
+  fileUrl: string
+  /**
+   * Words that belong to this workshop and nobody else. A cross-tenant page
+   * can answer 200 and render an empty shell, which is a refusal too, so the
+   * test asks whether any of these reached the screen rather than what the
+   * status code was.
+   */
+  vehiclePlate: string
+  customerName: string
+  quoteNumber: string
+}
+
+export async function seededTenantFixtures(): Promise<TenantFixtures> {
+  const organizationId = await ownerOrganizationId()
+  return withDb(async (db) => {
+    const one = async (sql: string): Promise<string> => {
+      const result = await db.query<{ id: string }>(sql, [organizationId])
+      const id = result.rows[0]?.id
+      if (!id) throw new Error(`the seeded workshop has nothing for: ${sql}`)
+      return id
+    }
+    return {
+      organizationId,
+      vehicleId: await one(
+        `select id from vehicles
+          where "organizationId" = $1 and "licensePlate" is not null and "licensePlate" <> ''
+          limit 1`
+      ),
+      serviceRecordId: await one(
+        `select id from service_records where "organizationId" = $1 order by "createdAt" limit 1`
+      ),
+      customerId: await one(`select id from customers where "organizationId" = $1 limit 1`),
+      quoteId: await one(
+        `select id from quotes
+          where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
+          limit 1`
+      ),
+      fileUrl: await one(
+        `select a."fileUrl" as id
+           from service_attachments a
+           join service_records s on s.id = a."serviceRecordId"
+          where s."organizationId" = $1
+            and a."fileUrl" like '/api/protected/files/%'
+          limit 1`
+      ),
+      vehiclePlate: await one(
+        `select "licensePlate" as id from vehicles
+          where "organizationId" = $1 and "licensePlate" is not null and "licensePlate" <> ''
+          limit 1`
+      ),
+      customerName: await one(
+        `select name as id from customers where "organizationId" = $1 limit 1`
+      ),
+      quoteNumber: await one(
+        `select "quoteNumber" as id from quotes
+          where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
+          limit 1`
+      ),
+    }
   })
 }
 
