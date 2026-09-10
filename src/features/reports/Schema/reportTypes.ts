@@ -219,6 +219,8 @@ export interface TaxByRate {
   taxRate: number
   taxCollected: number
   invoiceCount: number
+  /** Set when the row is one component of a split tax ("GST", "QST"). */
+  name?: string
 }
 
 export interface TaxReport {

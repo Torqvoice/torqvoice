@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { netLineTotal } from '@/lib/tax'
+import { netLineTotal, type TaxComponent } from '@/lib/tax'
+import { taxComponentLabel } from '@/lib/tax-components'
 
 interface TotalsSectionProps {
   partsSubtotal: number
@@ -28,6 +29,8 @@ interface TotalsSectionProps {
   setTaxRate: (rate: number) => void
   taxAmount: number
   taxInclusive: boolean
+  /** One row per tax when the job splits its tax; the rate is then not editable here. */
+  taxComponents?: TaxComponent[] | null
   totalAmount: number
   currencyCode: string
 }
@@ -47,6 +50,7 @@ export function TotalsSection({
   setTaxRate,
   taxAmount,
   taxInclusive,
+  taxComponents,
   totalAmount,
   currencyCode,
 }: TotalsSectionProps) {
@@ -118,7 +122,21 @@ export function TotalsSection({
           )}
         </div>
 
-        {taxEnabled && (
+        {taxEnabled && taxComponents && taxComponents.length > 0 ? (
+          // A split tax is the workshop's, set once in settings: each part
+          // gets its own line here, as it does on the invoice, and the
+          // rate is not a field on the job.
+          taxComponents.map((component) => (
+            <div
+              key={component.name}
+              className="flex items-center justify-between text-sm"
+              data-testid="tax-component-row"
+            >
+              <span className="text-muted-foreground">{taxComponentLabel(component)}</span>
+              <span>{formatCurrency(component.amount, currencyCode)}</span>
+            </div>
+          ))
+        ) : taxEnabled ? (
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">{t('tax')}</span>
@@ -134,7 +152,7 @@ export function TotalsSection({
             </div>
             <span>{formatCurrency(taxAmount, currencyCode)}</span>
           </div>
-        )}
+        ) : null}
 
         <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
           <span>{t('total')}</span>

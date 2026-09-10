@@ -1,4 +1,9 @@
 import { db } from '@/lib/db'
+import {
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
 import { nextAvailableSlot } from '@/features/workboard/Lib/availability'
 import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -36,9 +41,7 @@ export async function createDraftRecord(
             'workshop.invoiceStartNumber',
             'workshop.defaultTechnician',
             'workshop.defaultTechnicianId',
-            'workshop.defaultTaxRate',
-            'workshop.taxEnabled',
-            'workshop.taxInclusive',
+            ...WORKSHOP_TAX_SETTING_KEYS,
             'workboard.workDayStart',
           ],
         },
@@ -126,12 +129,11 @@ export async function createDraftRecord(
     })
   }
 
-  // Apply default tax rate from settings (if tax is enabled).
+  // The workshop's default tax, components included when it splits its tax.
   // Tax-exempt customers always get a 0% rate regardless of org default.
-  const taxEnabled = settingsMap['workshop.taxEnabled'] !== 'false'
-  const defaultTaxRate =
-    taxEnabled && !opts.customerExempt ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0
-  const taxInclusive = settingsMap['workshop.taxInclusive'] === 'true'
+  const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap), {
+    customerExempt: opts.customerExempt,
+  })
 
   /**
    * When a job with no stated time gets booked in.
@@ -188,8 +190,7 @@ export async function createDraftRecord(
       technicianId: resolvedTechId || undefined,
       workBayId: opts.workBayId || undefined,
       invoiceNumber,
-      taxRate: defaultTaxRate,
-      taxInclusive,
+      ...taxFields,
       serviceDate,
       invoiceDate: serviceDate,
       startDateTime: defaultStart,

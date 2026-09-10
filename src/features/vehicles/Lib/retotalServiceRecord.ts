@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
-import { calculateTotals } from '@/lib/tax'
+import { documentTotals } from '@/features/settings/Lib/workshopTax'
 
 /**
  * Re-totals a service record from its line items.
@@ -19,7 +19,13 @@ export async function retotalServiceRecord(
 ): Promise<void> {
   const record = await tx.serviceRecord.findUnique({
     where: { id: serviceRecordId },
-    select: { discountType: true, discountValue: true, taxRate: true, taxInclusive: true },
+    select: {
+      discountType: true,
+      discountValue: true,
+      taxRate: true,
+      taxInclusive: true,
+      taxComponents: true,
+    },
   })
   if (!record) return
 
@@ -36,15 +42,16 @@ export async function retotalServiceRecord(
         ? Math.min(record.discountValue ?? 0, subtotal)
         : 0
 
-  const { taxAmount, totalAmount } = calculateTotals({
+  const { taxAmount, totalAmount, taxComponents } = documentTotals({
     subtotal,
     discountAmount,
     taxRate: record.taxRate,
     taxInclusive: record.taxInclusive,
+    taxComponents: record.taxComponents,
   })
 
   await tx.serviceRecord.update({
     where: { id: serviceRecordId },
-    data: { subtotal, taxAmount, totalAmount },
+    data: { subtotal, taxAmount, totalAmount, taxComponents },
   })
 }

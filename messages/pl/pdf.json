@@ -38,6 +38,7 @@
     "discountPercent": "Rabat ({percent}%)",
     "tax": "Podatek ({rate}%)",
     "taxIncluded": "Podatek wliczony ({rate}%)",
+    "taxIncludedNamed": "Zawiera {name} ({rate}%)",
     "paymentsReceived": "Otrzymane płatności",
     "paidInFull": "ZAPŁACONO W CAŁOŚCI",
     "amountDue": "Kwota do zapłaty",
@@ -72,7 +73,8 @@
     "org": "Org: {org}",
     "qtyOrHours": "Unit / Hours",
     "customFieldsTitle": "Informacje dodatkowe",
-    "telegramConnect": "Napisz do nas na Telegramie"
+    "telegramConnect": "Napisz do nas na Telegramie",
+    "taxRegistrationLabel": "Nr {name}"
   },
   "quote": {
     "title": "WYCENA",
@@ -100,6 +102,7 @@
     "discountPercent": "Rabat ({percent}%)",
     "tax": "Podatek ({rate}%)",
     "taxIncluded": "Podatek wliczony ({rate}%)",
+    "taxIncludedNamed": "Zawiera {name} ({rate}%)",
     "validUntil": "Ważne do: {date}",
     "attachedDocuments": "Załączone dokumenty",
     "attached": "{name} (załączono)",

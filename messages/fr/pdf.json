@@ -38,6 +38,7 @@
     "discountPercent": "Remise ({percent}%)",
     "tax": "Taxe ({rate}%)",
     "taxIncluded": "TTC ({rate}%)",
+    "taxIncludedNamed": "{name} incluse ({rate}%)",
     "paymentsReceived": "Paiements reçus",
     "paidInFull": "ENTIÈREMENT PAYÉ",
     "amountDue": "Montant dû",
@@ -72,7 +73,8 @@
     "org": "Org. : {org}",
     "qtyOrHours": "Unité / Heures",
     "customFieldsTitle": "Informations complémentaires",
-    "telegramConnect": "Discutez avec nous sur Telegram"
+    "telegramConnect": "Discutez avec nous sur Telegram",
+    "taxRegistrationLabel": "N° {name}"
   },
   "quote": {
     "title": "DEVIS",
@@ -100,6 +102,7 @@
     "discountPercent": "Remise ({percent}%)",
     "tax": "Taxe ({rate}%)",
     "taxIncluded": "TTC ({rate}%)",
+    "taxIncludedNamed": "{name} incluse ({rate}%)",
     "validUntil": "Valable jusqu'au : {date}",
     "attachedDocuments": "Documents joints",
     "attached": "{name} (joint)",

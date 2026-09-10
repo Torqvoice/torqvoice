@@ -1,6 +1,8 @@
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { formatQuantity } from '@/lib/format-quantity'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { parseTaxComponents } from '@/lib/tax-components'
+import { taxLines } from './taxLines'
 import {
   getDefaultInvoiceLayout,
   isCustomFieldId,
@@ -38,6 +40,8 @@ export interface QuotePrintData {
   taxRate: number
   taxAmount: number
   taxInclusive?: boolean
+  /** The stored split, when the quote has one; see src/lib/tax-components.ts. */
+  taxComponents?: unknown
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -296,18 +300,16 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       kind: 'discount',
     })
   }
-  if (taxRate > 0) {
-    const rate = { rate: String(taxRate) }
-    totals.push({
-      label: linesInclTax
-        ? fillTemplate(L('taxIncluded', 'Includes tax ({rate}%)'), rate)
-        : labels.tax
-          ? fillTemplate(labels.tax, rate)
-          : `Tax (${taxRate}%)`,
-      value: money(taxAmount),
-      kind: 'line',
+  totals.push(
+    ...taxLines({
+      taxRate,
+      taxAmount,
+      components: parseTaxComponents(data.taxComponents),
+      linesInclTax,
+      labels,
+      money,
     })
-  }
+  )
   totals.push({ label: L('total', 'Total'), value: money(totalAmount), kind: 'total' })
 
   const attachedDocuments = [

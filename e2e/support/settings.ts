@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { fillSettled, settle } from './hydration'
 
 /**
@@ -11,23 +11,61 @@ import { fillSettled, settle } from './hydration'
  * rather than `fill`.
  */
 
+export interface TaxComponentSetup {
+  name: string
+  rate: number
+  registrationNumber?: string
+}
+
 export interface TaxSetup {
   enabled: boolean
   rate?: number
   inclusive?: boolean
   label?: string
+  /**
+   * More than one tax on a document (Québec's GST and QST). Given, the split
+   * switch is turned on and these rows replace the single rate; left out, the
+   * switch is turned off and the workshop is back to one rate.
+   */
+  components?: TaxComponentSetup[]
+}
+
+/** Flips a switch to the wanted state, retried because a click before hydration does nothing. */
+async function setSwitch(toggle: Locator, on: boolean): Promise<void> {
+  await expect(toggle).toBeVisible()
+  await expect(async () => {
+    if ((await toggle.getAttribute('aria-checked')) === String(on)) return
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', String(on))
+  }).toPass()
 }
 
 /** Settings → Tax, saved. */
 export async function setTax(page: Page, tax: TaxSetup): Promise<void> {
   await page.goto('/settings/tax')
-  const enable = page.getByRole('switch').first()
-  await expect(enable).toBeVisible()
-  const on = (await enable.getAttribute('aria-checked')) === 'true'
-  if (on !== tax.enabled) await enable.click()
+  await setSwitch(page.getByRole('switch').first(), tax.enabled)
   if (tax.enabled) {
-    await page.locator('#defaultTaxRate').fill(String(tax.rate ?? 0))
-    await page.locator('#taxLabel').fill(tax.label ?? '')
+    await setSwitch(page.locator('#taxSplit'), Boolean(tax.components))
+    if (tax.components) {
+      const rows = page.getByTestId('tax-component-row')
+      while ((await rows.count()) > tax.components.length) {
+        await rows.last().getByRole('button', { name: 'Remove this tax' }).click()
+      }
+      while ((await rows.count()) < tax.components.length) {
+        await page.getByRole('button', { name: 'Add a tax' }).click()
+      }
+      for (const [i, component] of tax.components.entries()) {
+        await fillSettled(page.locator(`#taxComponentName-${i}`), component.name)
+        await fillSettled(page.locator(`#taxComponentRate-${i}`), String(component.rate))
+        await fillSettled(
+          page.locator(`#taxComponentRegistration-${i}`),
+          component.registrationNumber ?? ''
+        )
+      }
+    } else {
+      await page.locator('#defaultTaxRate').fill(String(tax.rate ?? 0))
+      await page.locator('#taxLabel').fill(tax.label ?? '')
+    }
     await page
       .getByRole('button', { name: tax.inclusive ? 'Inclusive' : 'Exclusive', exact: true })
       .click()

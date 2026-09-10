@@ -38,6 +38,7 @@
     "discountPercent": "İndirim ({percent}%)",
     "tax": "Vergi ({rate}%)",
     "taxIncluded": "KDV dahil (%{rate})",
+    "taxIncludedNamed": "{name} dahil (%{rate})",
     "paymentsReceived": "Alınan Ödemeler",
     "paidInFull": "TAMAMEN ÖDENDİ",
     "amountDue": "Ödenecek Tutar",
@@ -72,7 +73,8 @@
     "org": "Org: {org}",
     "qtyOrHours": "Unit / Hours",
     "customFieldsTitle": "Ek bilgiler",
-    "telegramConnect": "Telegram'dan bize yazın"
+    "telegramConnect": "Telegram'dan bize yazın",
+    "taxRegistrationLabel": "{name} No."
   },
   "quote": {
     "title": "TEKLİF",
@@ -100,6 +102,7 @@
     "discountPercent": "İndirim ({percent}%)",
     "tax": "Vergi ({rate}%)",
     "taxIncluded": "KDV dahil (%{rate})",
+    "taxIncludedNamed": "{name} dahil (%{rate})",
     "validUntil": "Geçerlilik tarihi: {date}",
     "attachedDocuments": "Ekli Belgeler",
     "attached": "{name} (ekli)",

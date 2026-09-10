@@ -38,6 +38,7 @@
     "discountPercent": "Rabatt ({percent}%)",
     "tax": "Mva. ({rate}%)",
     "taxIncluded": "Inkluderer mva ({rate}%)",
+    "taxIncludedNamed": "Inkluderer {name} ({rate}%)",
     "paymentsReceived": "Mottatte betalinger",
     "paidInFull": "FULLT BETALT",
     "amountDue": "Beløp å betale",
@@ -72,7 +73,8 @@
     "org": "Org: {org}",
     "qtyOrHours": "Unit / Hours",
     "customFieldsTitle": "Tilleggsinformasjon",
-    "telegramConnect": "Chat med oss på Telegram"
+    "telegramConnect": "Chat med oss på Telegram",
+    "taxRegistrationLabel": "{name}-nr."
   },
   "quote": {
     "title": "TILBUD",
@@ -100,6 +102,7 @@
     "discountPercent": "Rabatt ({percent}%)",
     "tax": "Mva. ({rate}%)",
     "taxIncluded": "Inkluderer mva ({rate}%)",
+    "taxIncludedNamed": "Inkluderer {name} ({rate}%)",
     "validUntil": "Gyldig til: {date}",
     "attachedDocuments": "Vedlagte dokumenter",
     "attached": "{name} (vedlagt)",

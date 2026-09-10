@@ -1,5 +1,7 @@
 'use client'
 
+import { taxRateLabel } from '@/features/reports/Lib/taxRateLabel'
+
 import { interactiveRow } from '@/lib/interactive-row'
 import { formatQuantity } from '@/lib/format-quantity'
 import { useState, useEffect, useCallback } from 'react'
@@ -1500,8 +1502,10 @@ export default function ReportsClient({
                       </TableHeader>
                       <TableBody>
                         {taxData.byRate.map((row) => (
-                          <TableRow key={row.taxRate}>
-                            <TableCell className="text-sm font-medium">{row.taxRate}%</TableCell>
+                          <TableRow key={`${row.name ?? ''}|${row.taxRate}`}>
+                            <TableCell className="text-sm font-medium">
+                              {taxRateLabel(row)}
+                            </TableCell>
                             <TableCell className="text-right text-sm">
                               {fmtCurrency(row.taxCollected)}
                             </TableCell>

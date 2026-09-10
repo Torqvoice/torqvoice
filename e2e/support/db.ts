@@ -343,3 +343,18 @@ export async function latestAttachmentUrl(serviceRecordId: string): Promise<stri
     return url
   })
 }
+
+/**
+ * Backdates a job's scheduled start to an hour ago. A new work order is
+ * booked into the shop's next free slot, often tomorrow, and the financial
+ * reports run up to the present moment, so a job made by a spec is not in
+ * this year's tax report until it is moved into the past.
+ */
+export async function scheduleServiceRecordInThePast(serviceRecordId: string): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `update service_records set "startDateTime" = now() - interval '1 hour' where id = $1`,
+      [serviceRecordId]
+    )
+  )
+}

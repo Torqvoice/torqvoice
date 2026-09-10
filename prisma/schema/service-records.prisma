@@ -19,6 +19,13 @@ model ServiceRecord {
   taxRate         Float     @default(0)
   taxAmount       Float     @default(0)
   taxInclusive    Boolean   @default(false)
+  /// The taxes this document was totalled with, when the workshop splits
+  /// its tax into more than one (Québec GST and QST, Indian CGST and SGST).
+  /// Null on single-rate documents. taxRate stays the combined rate and
+  /// taxAmount the combined amount, so anything that does not itemise needs
+  /// no change. Shape in src/lib/tax-components.ts; read leniently so an old
+  /// row renders on new code.
+  taxComponents   Json?
   totalAmount     Float     @default(0)
   invoiceNumber   String?
   invoiceDate     DateTime?
@@ -263,11 +270,13 @@ model RecurringInvoice {
   runCount    Int       @default(0)
 
   // Template fields (copied to ServiceRecord on generation)
-  type         String  @default("maintenance")
-  cost         Float   @default(0)
-  taxRate      Float   @default(0)
-  taxInclusive Boolean @default(false)
-  invoiceNotes String?
+  type          String  @default("maintenance")
+  cost          Float   @default(0)
+  taxRate       Float   @default(0)
+  taxInclusive  Boolean @default(false)
+  /// Copied onto each generated invoice, like taxRate. See ServiceRecord.
+  taxComponents Json?
+  invoiceNotes  String?
 
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
