@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
+import { attach } from '../../support/attachments'
 import { BROKEN_PNG, makePdf, pdfContent, TINY_PNG } from '../../support/pdf'
 import {
   addPart,
@@ -34,31 +35,6 @@ let jobUrl = ''
 let vehicleUrl = ''
 /** Pages before anything was attached. */
 let barePages = 0
-
-/** Attaches a file through the tab that takes it, and waits for the list to show it. */
-async function attach(
-  page: Page,
-  tab: 'Images' | 'Documents',
-  file: { name: string; mimeType: string; buffer: Buffer }
-) {
-  // The tab counts what it holds — "Documents (1)" once there is one — so it
-  // is found by what it starts with rather than by its whole name.
-  await expect(async () => {
-    await page.getByRole('button', { name: new RegExp(`^${tab}`) }).click()
-    await expect(page.locator('input[type="file"]').first()).toBeAttached({ timeout: 2_000 })
-  }).toPass({ timeout: 30_000 })
-
-  const accept = tab === 'Images' ? '.jpg,.jpeg,.png,.webp' : '.pdf,.csv,.txt'
-  await page.locator(`input[type="file"][accept="${accept}"]`).setInputFiles(file)
-
-  // A document is listed by name; a photograph is a thumbnail that carries
-  // its name only as the alt text.
-  const arrived =
-    tab === 'Images'
-      ? page.getByRole('img', { name: file.name })
-      : page.getByText(file.name).first()
-  await expect(arrived, `${file.name} reached the job`).toBeVisible({ timeout: 30_000 })
-}
 
 async function workshopCopy(page: Page, url = jobUrl) {
   const id = url.split('/').pop()

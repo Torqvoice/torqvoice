@@ -116,3 +116,26 @@ export async function setWorkshopClock(
   await page.getByRole('button', { name: 'Save Settings', exact: true }).click()
   await expect(page.getByText('Localization settings saved')).toBeVisible({ timeout: 30_000 })
 }
+
+/**
+ * Settings → Payment, the bank account.
+ *
+ * The payment panel on a sheet prints nothing at all unless it has a line to
+ * print, and the seeded workshop has no bank details, no org number and no
+ * terms. A spec that wants the panel has to give it one, and put it back
+ * afterwards: every other sheet in the suite is printed from these settings.
+ */
+export async function setBankAccount(page: Page, account: string): Promise<void> {
+  await page.goto('/settings/payment')
+  await fillSettled(page.locator('#bankAccount'), account)
+  await page.getByRole('button', { name: 'Save Payment Settings', exact: true }).click()
+  await expect(page.getByText('Payment settings saved', { exact: true })).toBeVisible()
+}
+
+/** What the workshop currently has as its bank account, which may be nothing. */
+export async function bankAccount(page: Page): Promise<string> {
+  await page.goto('/settings/payment')
+  const field = page.locator('#bankAccount')
+  await expect(field).toBeVisible()
+  return field.inputValue()
+}

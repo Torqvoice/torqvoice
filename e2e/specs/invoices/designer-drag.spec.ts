@@ -5,6 +5,7 @@ import {
   restoreInvoiceDesignState,
 } from '../../support/db'
 import { settle } from '../../support/hydration'
+import { bankAccount, setBankAccount } from '../../support/settings'
 import { pdfContent } from '../../support/pdf'
 import {
   addLabor,
@@ -37,6 +38,8 @@ const DESIGN_NAME = `E2E drag ${stamp}`
 
 let jobUrl = ''
 let restoreTo: InvoiceDesignState
+/** The bank account as this workshop had it, put back at the end. */
+let restoreBank = ''
 
 async function openDesigner(page: Page) {
   await page.goto('/invoice-designer')
@@ -115,6 +118,13 @@ test.beforeAll(async ({ browser }) => {
   const page = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
   restoreTo = await invoiceDesignState()
 
+  // The payment panel has to have something to print before a test can drag
+  // it. The seeded workshop has no bank details, no org number and no terms,
+  // so the section is dropped from the sheet entirely and the drag has
+  // nothing to prove.
+  restoreBank = await bankAccount(page)
+  if (!restoreBank) await setBankAccount(page, 'NO93 8601 1117 947')
+
   const vehicleUrl = await seededVehicleUrl(page)
   jobUrl = await newWorkOrder(page, vehicleUrl, `E2E drag ${stamp}`)
   await addPart(page, { name: `E2E starter motor ${stamp}`, quantity: 1, unitPrice: 2_100 })
@@ -123,16 +133,22 @@ test.beforeAll(async ({ browser }) => {
   await page.close()
 })
 
-test.afterAll(async () => {
+test.afterAll(async ({ browser }) => {
   if (restoreTo) await restoreInvoiceDesignState(restoreTo)
+  if (!restoreBank) {
+    const page = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
+    await setBankAccount(page, '')
+    await page.close()
+  }
 })
 
 test.describe('dragging in the designer', () => {
   test('a row dragged in the inspector moves on the printed sheet', async ({ page }) => {
     // The vehicle block: its rows are the vehicle, the VIN, the plate and the
     // mileage, and this workshop's data fills enough of them to see an order.
-    // (The payment block is where this went wrong before; the seeded workshop
-    // has no bank details, so that one is pinned in the unit tests instead.)
+    // (The payment block is where this went wrong before; its rows need
+    // bank details the seeded workshop has none of, so the row order there is
+    // pinned in the unit tests instead. What is dragged here is the block.)
     await openDesigner(page)
     await selectSection(page, 'vehicle')
 

@@ -114,8 +114,6 @@ export interface TenantFixtures {
   serviceRecordId: string
   customerId: string
   quoteId: string
-  /** A stored file URL, as the app writes them into its own rows. */
-  fileUrl: string
   /**
    * Words that belong to this workshop and nobody else. A cross-tenant page
    * can answer 200 and render an empty shell, which is a refusal too, so the
@@ -136,33 +134,45 @@ export async function seededTenantFixtures(): Promise<TenantFixtures> {
       if (!id) throw new Error(`the seeded workshop has nothing for: ${sql}`)
       return id
     }
+
+    /**
+     * A vehicle and one of its own jobs, from one row.
+     *
+     * Two queries answered this before, and on a database the suite had been
+     * run against they happened to agree. On a fresh seed they did not, and
+     * the job of one vehicle opened under the id of another draws a page with
+     * nothing on it.
+     *
+     * The organisation comes off the vehicle: `service_records.organizationId`
+     * is nullable and the seed leaves it null, scoping a job by the vehicle it
+     * sits on.
+     */
+    const pair = await db.query<{
+      vehicleId: string
+      serviceRecordId: string
+      licensePlate: string
+    }>(
+      `select v.id as "vehicleId", s.id as "serviceRecordId", v."licensePlate"
+         from service_records s
+         join vehicles v on v.id = s."vehicleId"
+        where coalesce(s."organizationId", v."organizationId") = $1
+          and v."licensePlate" is not null and v."licensePlate" <> ''
+        order by s."createdAt"
+        limit 1`,
+      [organizationId]
+    )
+    const job = pair.rows[0]
+    if (!job) throw new Error('the seeded workshop has no work order on a plated vehicle')
+
     return {
       organizationId,
-      vehicleId: await one(
-        `select id from vehicles
-          where "organizationId" = $1 and "licensePlate" is not null and "licensePlate" <> ''
-          limit 1`
-      ),
-      serviceRecordId: await one(
-        `select id from service_records where "organizationId" = $1 order by "createdAt" limit 1`
-      ),
+      vehicleId: job.vehicleId,
+      serviceRecordId: job.serviceRecordId,
+      vehiclePlate: job.licensePlate,
       customerId: await one(`select id from customers where "organizationId" = $1 limit 1`),
       quoteId: await one(
         `select id from quotes
           where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
-          limit 1`
-      ),
-      fileUrl: await one(
-        `select a."fileUrl" as id
-           from service_attachments a
-           join service_records s on s.id = a."serviceRecordId"
-          where s."organizationId" = $1
-            and a."fileUrl" like '/api/protected/files/%'
-          limit 1`
-      ),
-      vehiclePlate: await one(
-        `select "licensePlate" as id from vehicles
-          where "organizationId" = $1 and "licensePlate" is not null and "licensePlate" <> ''
           limit 1`
       ),
       customerName: await one(
@@ -186,7 +196,12 @@ export async function seededTenantFixtures(): Promise<TenantFixtures> {
 export async function foreignServiceRecordId(organizationId: string): Promise<string> {
   return withDb(async (db) => {
     const result = await db.query<{ id: string }>(
-      `select id from service_records where "organizationId" = $1 order by "createdAt" limit 1`,
+      `select s.id
+         from service_records s
+         join vehicles v on v.id = s."vehicleId"
+        where coalesce(s."organizationId", v."organizationId") = $1
+        order by s."createdAt"
+        limit 1`,
       [organizationId]
     )
     const id = result.rows[0]?.id
@@ -305,4 +320,26 @@ export async function reminderDueDate(title: string): Promise<Date> {
 /** Removes the reminders a spec made, whatever state the page was left in. */
 export async function deleteRemindersTitled(title: string): Promise<void> {
   await withDb((db) => db.query(`delete from reminders where title = $1`, [title]))
+}
+
+/**
+ * The newest file on a work order, as the app stored its address.
+ *
+ * A spec that needs a file belonging to one workshop uploads one and reads it
+ * back here. Looking for a seeded one instead only worked on a database the
+ * attachment spec had already run against.
+ */
+export async function latestAttachmentUrl(serviceRecordId: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ fileUrl: string }>(
+      `select "fileUrl" from service_attachments
+        where "serviceRecordId" = $1 and "fileUrl" like '/api/protected/files/%'
+        order by "createdAt" desc
+        limit 1`,
+      [serviceRecordId]
+    )
+    const url = result.rows[0]?.fileUrl
+    if (!url) throw new Error(`no stored file on work order ${serviceRecordId}`)
+    return url
+  })
 }

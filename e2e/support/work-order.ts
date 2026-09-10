@@ -167,6 +167,19 @@ export async function setDiscount(
 /** The public share link for the open work order, generating it if needed. */
 export async function shareLink(page: Page): Promise<string> {
   await page.getByRole('button', { name: 'Share', exact: true }).click()
+
+  // A document whose invoice date has passed is offered a fresh one before it
+  // goes out. Declined here: a spec that shares a seeded invoice must hand the
+  // customer the document as it stands, not rewrite its dates on the way.
+  const expired = page.getByRole('dialog', { name: /invoice dates expired/i })
+  const asksAboutDates = await expired
+    .waitFor({ state: 'visible', timeout: 3_000 })
+    .then(() => true)
+    .catch(() => false)
+  if (asksAboutDates) {
+    await expired.getByRole('button', { name: /proceed without changes/i }).click()
+  }
+
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()
   const generate = dialog.getByRole('button', { name: /generate public link/i })

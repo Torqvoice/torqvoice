@@ -1,5 +1,11 @@
 import { expect, type Page, test } from '@playwright/test'
-import { organizationIdFor, seededTenantFixtures, type TenantFixtures } from '../../support/db'
+import { attach } from '../../support/attachments'
+import {
+  latestAttachmentUrl,
+  organizationIdFor,
+  seededTenantFixtures,
+  type TenantFixtures,
+} from '../../support/db'
 import { shareLink } from '../../support/work-order'
 
 /**
@@ -33,6 +39,8 @@ const PASSWORD = `E2e-pass-${stamp}`
 let seeded: TenantFixtures
 /** A shared invoice link from the first workshop, for the token tests. */
 let sharedInvoice = ''
+/** A file that genuinely belongs to the first workshop's own job. */
+let theirFileUrl = ''
 
 /** Signs the outsider in, opening their workshop on the first run. */
 async function signInAsOutsider(page: Page) {
@@ -51,6 +59,16 @@ test.beforeAll(async ({ browser }) => {
   const owner = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
   await owner.goto(`/vehicles/${seeded.vehicleId}/service/${seeded.serviceRecordId}`)
   sharedInvoice = await shareLink(owner)
+
+  // And a file of their own, put there rather than looked for: a seeded
+  // workshop has no attachments, so a spec that goes hunting for one only
+  // finds what another spec happened to leave behind.
+  await attach(owner, 'Documents', {
+    name: `e2e-tenancy-${stamp}.txt`,
+    mimeType: 'text/plain',
+    buffer: Buffer.from("One workshop's paperwork."),
+  })
+  theirFileUrl = await latestAttachmentUrl(seeded.serviceRecordId)
   await owner.close()
 })
 
@@ -129,8 +147,8 @@ test.describe('a second workshop', () => {
 
     // Files are served by a path that names the organisation, so this is the
     // one place where guessing an id would be enough if nothing checked.
-    const file = await page.request.get(seeded.fileUrl)
-    expect(file.status(), `${seeded.fileUrl} is refused`).toBeGreaterThanOrEqual(400)
+    const file = await page.request.get(theirFileUrl)
+    expect(file.status(), `${theirFileUrl} is refused`).toBeGreaterThanOrEqual(400)
     expect(file.status()).toBeLessThan(500)
   })
 
