@@ -97,8 +97,8 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "switchToHourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
+    "switchToServiceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total"
   },

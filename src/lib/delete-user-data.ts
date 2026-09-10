@@ -3,6 +3,7 @@ import { safeUploadPath } from '@/lib/resolve-upload-path'
 import { unlink, rm } from 'fs/promises'
 import path from 'path'
 import { getStripeClient } from '@/lib/stripe-config'
+import { uploadsRoot } from './upload-root'
 
 /**
  * Delete an organization completely: cancels its Stripe subscription, deletes
@@ -89,7 +90,7 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
 
   // Try to remove the org upload directory
   try {
-    const orgUploadDir = path.join(process.cwd(), 'data', 'uploads', organizationId)
+    const orgUploadDir = path.join(uploadsRoot(), organizationId)
     await rm(orgUploadDir, { recursive: true, force: true })
   } catch {
     // Directory may not exist

@@ -3,7 +3,23 @@ import type { TireSetBannerData } from '@/features/tire-hotel/Components/TireSet
 export const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
   'in-progress': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  // The status select has offered this since it was added; without an entry
+  // here the badge was the only one on the page with no colour at all.
+  'waiting-parts': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
   completed: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+}
+
+/**
+ * The translation key for a status. The stored values are hyphenated and the
+ * message keys are not, which is why the header badge was printing the raw
+ * value ("in-progress") beside a select that said "In Progress".
+ * Keys live under service.basicInfo.statusOptions.
+ */
+export const statusMessageKeys: Record<string, string> = {
+  pending: 'pending',
+  'in-progress': 'in_progress',
+  'waiting-parts': 'waiting_parts',
+  completed: 'completed',
 }
 
 export const paymentStatusColors: Record<string, string> = {

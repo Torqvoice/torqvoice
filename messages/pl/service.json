@@ -16,7 +16,13 @@
     "datesExpiredBack": "Wstecz",
     "datesExpiredSetToday": "Ustaw na dziś",
     "customFieldsInvalid": "Proszę wypełnić wszystkie wymagane pola niestandardowe",
-    "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"
+    "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych",
+    "problems": {
+      "title": "Zlecenie musi mieć tytuł, zanim będzie można je zapisać.",
+      "negative": "Ilości, godziny, ceny i koszty nie mogą być ujemne.",
+      "partName": "Każda część z ceną musi mieć nazwę.",
+      "laborDescription": "Każda pozycja robocizny z godzinami lub stawką musi mieć opis."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "switchToHourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
+    "switchToServiceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane."
   },
   "totals": {
     "title": "Razem",

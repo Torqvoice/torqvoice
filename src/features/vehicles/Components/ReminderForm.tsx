@@ -15,6 +15,8 @@ import { createReminder, updateReminder } from '../Actions/reminderActions'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { clearableInput } from '@/lib/clearable'
+import { useDateSettings } from '@/components/date-settings-context'
+import { zonedDateInput, zonedTimeInput } from '@/lib/timezone'
 
 interface ReminderData {
   id: string
@@ -34,22 +36,12 @@ interface ReminderFormProps {
   reminder?: ReminderData
 }
 
-function toLocalDateStr(d: Date): string {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
-
-function toLocalTimeStr(d: Date): string {
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-
 export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: ReminderFormProps) {
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
+  const { timezone } = useDateSettings()
   const [loading, setLoading] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -67,10 +59,12 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       setTitle(reminder.title)
       setDescription(reminder.description || '')
       const due = reminder.dueDate ? new Date(reminder.dueDate) : null
-      // Local calendar day, not the UTC one: a reminder at 00:30 must not
-      // open on the day before.
-      setDueDate(due ? toLocalDateStr(due) : '')
-      setDueTime(due && reminder.hasDueTime ? toLocalTimeStr(due) : '')
+      // The workshop's calendar day and clock, because that is how these two
+      // fields are read back on save. Filled from the browser's instead, a
+      // reminder due at 14:00 opened from another zone showed a different
+      // time and was moved by saving the form.
+      setDueDate(due ? zonedDateInput(due, timezone) : '')
+      setDueTime(due && reminder.hasDueTime ? zonedTimeInput(due, timezone) : '')
       setDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : '')
       setNotifyInApp(reminder.notifyInApp ?? true)
       setNotifyEmail(reminder.notifyEmail ?? false)
@@ -83,7 +77,7 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       setNotifyInApp(true)
       setNotifyEmail(false)
     }
-  }, [open, reminder])
+  }, [open, reminder, timezone])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

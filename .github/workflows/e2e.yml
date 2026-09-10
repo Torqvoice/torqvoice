@@ -1,0 +1,114 @@
+name: End-to-end tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push to the same branch makes the run in flight pointless.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: torqvoice
+          POSTGRES_PASSWORD: torqvoice
+          # The name has to carry "e2e" or "test": the harness refuses to reset
+          # a database whose name says nothing about being throwaway.
+          POSTGRES_DB: torqvoice_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U torqvoice -d torqvoice_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Playwright starts the app itself on this port and resets this database
+      # before it does; both come from playwright.config.ts.
+      E2E_DATABASE_URL: postgresql://torqvoice:torqvoice@127.0.0.1:5432/torqvoice_e2e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # A fresh one per run: the sessions it signs live as long as the job, and
+      # a short or guessable value makes better-auth warn on every request.
+      - name: Make a session secret for this run
+        run: echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+
+      - run: npm ci
+
+      - run: npx prisma generate
+
+      # Keyed on the pinned version, because the image tag and this download
+      # have to be the same build.
+      - name: Cache the browser
+        id: browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install the browser
+        run: npx playwright install --with-deps chromium
+
+      # The seed copies bundled vehicle photos when they are in the tree and
+      # downloads fifty of them from Unsplash when they are not, one after
+      # another, which is minutes of a cold run and the flakiest thing in it.
+      # Cached, a warm run copies them off disk instead.
+      - name: Cache the seed's photos
+        uses: actions/cache@v4
+        with:
+          # Where prepare-db.ts points the seed's DATA_ROOT, so a test run
+          # cannot disturb a running instance's own uploads.
+          path: e2e/.data
+          key: seed-photos-${{ hashFiles('prisma/seed_dummy_data.ts') }}
+          restore-keys: |
+            seed-photos-
+
+      # Next reuses its compiler cache across builds when it is given one.
+      - name: Cache the build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ hashFiles('package-lock.json') }}-
+            next-
+
+      # NEXT_PUBLIC_APP_URL is baked into the client bundle, and better-auth
+      # refuses a sign-in from an origin the build was not made for, so it has
+      # to match the base URL the suite uses.
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APP_URL: http://127.0.0.1:3100
+
+      - name: Run the suite
+        run: npm run test:e2e
+
+      - name: Upload the report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore

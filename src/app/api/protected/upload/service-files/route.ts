@@ -6,6 +6,7 @@ import path from 'path'
 import crypto from 'crypto'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
+import { uploadsRoot } from '@/lib/upload-root'
 
 const execFileAsync = promisify(execFile)
 
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
   const isVideo = VIDEO_TYPES.includes(file.type)
   const ext = isVideo ? 'mp4' : extensionForType(file.type)
   const filename = `${crypto.randomUUID()}.${ext}`
-  const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'services')
+  const uploadDir = path.join(uploadsRoot(), ctx.organizationId, 'services')
 
   await mkdir(uploadDir, { recursive: true })
 

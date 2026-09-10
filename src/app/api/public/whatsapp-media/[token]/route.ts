@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { verifyWhatsappMediaToken } from '@/lib/whatsapp/media-link'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Serves one uploaded file to a WhatsApp provider, and only that file.
@@ -52,7 +53,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
   // where we think: resolve it and confirm it lands in this organization's
   // own upload directory before reading anything.
   const absolute = resolveUploadPath(claim.fileUrl)
-  const organizationDir = path.join(process.cwd(), 'data', 'uploads', claim.organizationId)
+  const organizationDir = path.join(uploadsRoot(), claim.organizationId)
   const safe = resolveWithinDir(organizationDir, path.relative(organizationDir, absolute))
   if (!safe) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })

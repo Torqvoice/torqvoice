@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clienti}} impostati su di esso torneranno al design predefinito.",
     "setDefault": "Imposta come predefinito",
     "defaultSet": "«{name}» è ora in uso",
-    "couldNotSetDefault": "Impossibile impostare il design predefinito"
+    "couldNotSetDefault": "Impossibile impostare il design predefinito",
+    "fieldFixedSlot": "Viene sempre stampato nello stesso punto, quindi non può essere spostato."
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

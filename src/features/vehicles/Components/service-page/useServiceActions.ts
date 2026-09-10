@@ -15,6 +15,7 @@ import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { formatCurrency } from '@/lib/format'
+import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
 import type { ServiceDetail } from '../service-detail/types'
 import type { useServiceFormState } from './useServiceFormState'
 
@@ -96,26 +97,36 @@ export function useServiceActions({
       }
     }
 
+    /**
+     * One field by name. There is exactly one of each since the layout stopped
+     * drawing both breakpoints at once; this used to have to walk every
+     * element of that name and pick whichever had an offsetParent, because
+     * `FormData` handed back the hidden copy's value.
+     *
+     * Textareas as well as inputs: read as inputs only, a multi-line field
+     * submitted nothing at all and did it quietly.
+     */
+    const getVisible = (name: string) =>
+      form.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+        `input[name="${name}"], textarea[name="${name}"]`
+      )?.value
+    // What the browser would have refused, said in words it can show. The form
+    // carries noValidate: an autosave goes through requestSubmit, which native
+    // validation stops without a word, and half of these rules — a priced row
+    // with no name — are not things a `required` attribute can express.
+    const problem = findServiceFormProblem({
+      title: getVisible('title') ?? '',
+      partItems,
+      laborItems,
+    })
+    if (problem) {
+      toast.error(t(`page.problems.${problem}`))
+      return
+    }
+
     isSavingRef.current = true
     setLoading(true)
 
-    // Mobile + desktop layouts both render inputs with the same name.
-    // formData.get() returns the first (hidden/stale) one, so read the visible input via offsetParent.
-    // For hidden inputs (offsetParent is always null), take the last one in DOM order.
-    const getVisible = (name: string) => {
-      // Textareas too. This read only ever looked at inputs, so a multi-line
-      // field would have submitted nothing at all and done it quietly.
-      const inputs = Array.from(
-        form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
-          `input[name="${name}"], textarea[name="${name}"]`
-        )
-      )
-      const visible = inputs.find((el) => el.offsetParent !== null)
-      if (visible) return visible.value
-      // All hidden — take last (active layout renders second)
-      const last = inputs[inputs.length - 1]
-      return last?.value ?? (new FormData(form).get(name) as string)
-    }
     // A field the layout does not render at all is left alone; an emptied one
     // is sent so the update action clears it ('' for text, null for mileage).
     const optionalText = (name: string): string | undefined => getVisible(name) ?? undefined

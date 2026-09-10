@@ -1,6 +1,6 @@
 import type { Block, BoxStyle, DocumentSpec, Node, TextStyle } from '../Spec/documentSpec'
 import { BLOCK_GAP, marginOf } from '../Render/layoutEngine'
-import { DEFAULT_LINE_HEIGHT, textHeight, widthOf } from './measure'
+import { DEFAULT_LINE_HEIGHT, lineCount, textHeight } from './measure'
 
 /**
  * How tall each block will print, computed from the spec alone.
@@ -129,12 +129,18 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
           const value = row[column.key]
           if (!value) continue
           const columnWidth = column.width === 'flex' ? flexWidth : column.width
-          const needed = Math.ceil(widthOf(value, cellStyle, inherited.fontSize) / columnWidth)
-          lines = Math.max(lines, Math.max(1, needed))
+          // lineCount and not width-over-width: a part described over three
+          // lines is three lines however narrow each one is, and dividing the
+          // whole run by the column width counted it as one. The table then
+          // measured shorter than it prints, and whatever the engine placed
+          // after it landed on top of the last rows.
+          lines = Math.max(lines, lineCount(value, columnWidth, cellStyle, inherited.fontSize))
         }
         let rowHeight = lines * inherited.fontSize * DEFAULT_LINE_HEIGHT
-        if (node.subKey && row[node.subKey]) {
-          rowHeight += inherited.fontSize * 0.85 * DEFAULT_LINE_HEIGHT
+        const sub = node.subKey ? row[node.subKey] : undefined
+        if (sub) {
+          const subSize = inherited.fontSize * 0.85
+          rowHeight += lineCount(sub, flexWidth, cellStyle, subSize) * subSize * DEFAULT_LINE_HEIGHT
         }
         body += rowHeight + rowPadding * 2 + (node.ruleWidth ?? 0.75)
       }

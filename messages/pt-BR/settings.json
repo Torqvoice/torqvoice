@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clientes}} definidos com ele voltarão ao design padrão.",
     "setDefault": "Definir como padrão",
     "defaultSet": "\"{name}\" está em uso agora",
-    "couldNotSetDefault": "Não foi possível definir o design padrão"
+    "couldNotSetDefault": "Não foi possível definir o design padrão",
+    "fieldFixedSlot": "Sempre é impresso no mesmo lugar, portanto não pode ser movido."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

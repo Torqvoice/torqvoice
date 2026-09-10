@@ -12,6 +12,7 @@ import { updateServiceTimes, updateInspectionTimes } from '../Actions/boardActio
 import { useWorkBoardStore } from '../store/workboardStore'
 import { DurationPicker } from './DurationSlider'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { useDateSettings } from '@/components/date-settings-context'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { getJobDateRange } from '../utils/datetime'
@@ -28,6 +29,8 @@ export function JobDetailPopover({
   onRemove: () => void
 }) {
   const t = useTranslations('workBoard.jobDetail')
+  // The board's own clock: the workshop's, not the viewer's browser.
+  const { timezone } = useDateSettings()
   const store = useWorkBoardStore()
 
   const liveJob = store.jobs.find((j) => j.id === job.id) ?? job
@@ -125,6 +128,7 @@ export function JobDetailPopover({
                 setEndDate(newEnd)
                 saveTimes(d, newEnd)
               }}
+              timeZone={timezone}
               granularity="minute"
               hourCycle={24}
               placeholder={t('startTime')}
@@ -140,6 +144,7 @@ export function JobDetailPopover({
                 setEndDate(d)
                 saveTimes(startDate, d)
               }}
+              timeZone={timezone}
               granularity="minute"
               hourCycle={24}
               placeholder={t('endTime')}

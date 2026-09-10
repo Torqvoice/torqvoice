@@ -6,6 +6,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/__tests__/setup.ts'],
+    // Playwright owns e2e/. Without this, vitest's default glob picks up the
+    // .spec.ts files there and fails on an import it cannot resolve.
+    exclude: ['e2e/**', '**/node_modules/**', '**/dist/**', '**/.next/**'],
   },
   resolve: {
     alias: {

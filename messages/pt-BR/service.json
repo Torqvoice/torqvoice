@@ -16,7 +16,13 @@
     "datesExpiredBack": "Voltar",
     "datesExpiredSetToday": "Definir para hoje",
     "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
-    "customFieldsSaveFailed": "Falha ao salvar campos personalizados"
+    "customFieldsSaveFailed": "Falha ao salvar campos personalizados",
+    "problems": {
+      "title": "A ordem precisa de um título antes de ser salva.",
+      "negative": "Quantidades, horas, preços e custos não podem ser negativos.",
+      "partName": "Toda peça com preço precisa de um nome.",
+      "laborDescription": "Toda linha de mão de obra com horas ou taxa precisa de uma descrição."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "switchToHourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
+    "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Linhas sem descrição não são salvas."
   },
   "totals": {
     "title": "Totais",

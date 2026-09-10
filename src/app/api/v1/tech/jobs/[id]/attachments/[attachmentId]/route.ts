@@ -3,6 +3,7 @@ import path from 'node:path'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Removes a photo from a job.
@@ -47,11 +48,11 @@ export async function DELETE(
       // the technician retrying a deletion that already happened.
       const filename = attachment.fileUrl.split('/').pop()
       if (filename && !filename.includes('..') && !filename.includes('/')) {
-        await unlink(
-          path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'services', filename)
-        ).catch(() => {
-          /* already gone, or never written */
-        })
+        await unlink(path.join(uploadsRoot(), ctx.organizationId, 'services', filename)).catch(
+          () => {
+            /* already gone, or never written */
+          }
+        )
       }
 
       return apiOk({ deleted: true })

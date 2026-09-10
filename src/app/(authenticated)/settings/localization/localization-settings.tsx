@@ -427,9 +427,9 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
         <ReadOnlyWrapper>
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>{t('appearance.dateFormat')}</Label>
+              <Label htmlFor="date-format">{t('appearance.dateFormat')}</Label>
               <Select value={dateFormat} onValueChange={setDateFormat}>
-                <SelectTrigger className="w-64">
+                <SelectTrigger id="date-format" className="w-64">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -443,9 +443,9 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
             </div>
 
             <div className="space-y-2">
-              <Label>{t('appearance.timeFormat')}</Label>
+              <Label htmlFor="time-format">{t('appearance.timeFormat')}</Label>
               <Select value={timeFormat} onValueChange={setTimeFormat}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger id="time-format" className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -456,9 +456,9 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
             </div>
 
             <div className="space-y-2">
-              <Label>{t('workshop.weekStartDay')}</Label>
+              <Label htmlFor="week-start-day">{t('workshop.weekStartDay')}</Label>
               <Select value={weekStartDay} onValueChange={setWeekStartDay}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger id="week-start-day" className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -472,10 +472,13 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
             </div>
 
             <div className="space-y-2">
-              <Label>{t('appearance.timezone')}</Label>
+              {/* Named, so the control announces itself as the timezone and not
+                  as whatever zone it currently holds. */}
+              <Label htmlFor="timezone">{t('appearance.timezone')}</Label>
               <Popover open={timezoneOpen} onOpenChange={setTimezoneOpen}>
                 <PopoverTrigger asChild>
                   <Button
+                    id="timezone"
                     variant="outline"
                     role="combobox"
                     aria-expanded={timezoneOpen}

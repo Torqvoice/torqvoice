@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# Kunde} other {# Kunden}} mit diesem Design fallen auf das Standarddesign zurück.",
     "setDefault": "Als Standard festlegen",
     "defaultSet": "„{name}“ wird jetzt verwendet",
-    "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden"
+    "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden",
+    "fieldFixedSlot": "Wird immer an derselben Stelle gedruckt und kann nicht verschoben werden."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

@@ -15,6 +15,7 @@ import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileSt
 import { copyFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { clearedToNull } from '@/lib/clearable'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
@@ -547,7 +548,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
 
         // Copy attachments from quote to service record
         if (quote.attachments.length > 0) {
-          const quotesDir = path.join(process.cwd(), 'data', 'uploads', organizationId, 'quotes')
+          const quotesDir = path.join(uploadsRoot(), organizationId, 'quotes')
           const servicesDir = path.join(
             process.cwd(),
             'data',
