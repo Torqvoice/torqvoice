@@ -38,8 +38,20 @@ async function dayColumn(page: Page) {
   return columns.first()
 }
 
+/**
+ * A day far enough ahead that nothing is booked on it.
+ *
+ * Today's column is whatever the seed and the other specs have put there, and
+ * a right-click that lands on a chip opens that job's menu instead of the
+ * empty-slot one. The date is a query the calendar already takes.
+ */
+const EMPTY_DAY = (() => {
+  const day = new Date(Date.now() + 45 * 86_400_000)
+  return `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`
+})()
+
 async function openDayView(page: Page) {
-  await page.goto('/calendar')
+  await page.goto(`/calendar?view=day&date=${EMPTY_DAY}`)
   await settle(page)
   // The views have single-key shortcuts, which is both what a service adviser
   // uses all day and the steadiest way in: the switcher itself is a dropdown

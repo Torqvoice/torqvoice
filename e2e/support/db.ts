@@ -358,3 +358,58 @@ export async function scheduleServiceRecordInThePast(serviceRecordId: string): P
     )
   )
 }
+
+/**
+ * Email templates a spec made, gone again, and every kind back on its
+ * built-in preset.
+ *
+ * The gallery's own delete is what a workshop uses and one test walks it, but
+ * a file that fails halfway must not leave the workshop sending mail designed
+ * by a test: the pointer is an `email.template.<kind>` setting, and a
+ * template row it names is what the resolver prefers over the preset.
+ */
+export async function forgetEmailTemplates(namePrefix: string): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(`delete from email_templates where name like $1`, [`${namePrefix}%`])
+    await db.query(
+      `delete from app_settings
+        where key like 'email.template.%'
+          and value not in (select 'design:' || id from email_templates)`
+    )
+  })
+}
+
+/** The names of the templates saved for one kind of mail. */
+export async function emailTemplateNames(kind: string): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ name: string }>(
+      `select name from email_templates where kind = $1 order by "createdAt"`,
+      [kind]
+    )
+    return result.rows.map((row) => row.name)
+  })
+}
+
+/**
+ * Whose car it is, and where to write to them.
+ *
+ * The customer of the vehicle a spec is working on, not the first customer in
+ * the workshop: a message sent from a job goes to the owner of that car, so a
+ * spec waiting on another customer's mailbox waits forever.
+ */
+export async function customerOfVehicle(
+  vehicleId: string
+): Promise<{ name: string; email: string }> {
+  return withDb(async (db) => {
+    const result = await db.query<{ name: string; email: string }>(
+      `select c.name, c.email
+         from vehicles v
+         join customers c on c.id = v."customerId"
+        where v.id = $1`,
+      [vehicleId]
+    )
+    const customer = result.rows[0]
+    if (!customer?.email) throw new Error(`vehicle ${vehicleId} has no customer with an email`)
+    return customer
+  })
+}

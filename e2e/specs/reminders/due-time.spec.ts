@@ -74,7 +74,11 @@ test.afterAll(async ({ browser }) => {
 
 test.describe('a reminder due at a time of day', () => {
   test('is booked at the time the calendar slot named', async ({ page }) => {
-    await page.goto('/calendar')
+    // A day nothing is booked on: a right-click that lands on a chip opens
+    // that job's menu, not the empty slot's.
+    const day = new Date(Date.now() + 45 * 86_400_000)
+    const empty = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`
+    await page.goto(`/calendar?view=day&date=${empty}`)
     await settle(page)
     await expect(async () => {
       await page.keyboard.press('d')

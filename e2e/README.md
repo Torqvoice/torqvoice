@@ -27,6 +27,7 @@ e2e/
                        workshop's own timezone
     inventory/         a stocked part leaves the shelf exactly once
     reminders/         a due time survives being displayed and re-saved
+    email/             the email template designer, and the mail it sends
     tech/              the technician app's API contract
     smoke/             the build is alive
 ```
