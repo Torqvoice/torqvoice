@@ -76,10 +76,25 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function Toggle({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
+function Toggle({
+  on,
+  onChange,
+  testId,
+}: {
+  on: boolean
+  onChange: (on: boolean) => void
+  /** Named where it matters, so a test can reach this one rather than the
+   *  fifth switch in the panel. */
+  testId?: string
+}) {
   return (
     <button
       type="button"
+      // It behaves as a switch, so it says so: screen readers announce the
+      // state, and it can be found by role rather than by shape.
+      role="switch"
+      aria-checked={on}
+      data-testid={testId}
       onClick={() => onChange(!on)}
       className="relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors"
       style={{ background: on ? '#2563eb' : '#d7dade' }}
@@ -547,6 +562,7 @@ export function DesignerInspector({
           <Group title={t('placement')}>
             <Row label={t('visible')}>
               <Toggle
+                testId="section-visible"
                 on={section.visible}
                 onChange={(visible) => onSection(section.id, { visible })}
               />
@@ -576,6 +592,7 @@ export function DesignerInspector({
             {BOXED_ELIGIBLE_SECTIONS.has(section.id) && (
               <Row label={t('drawBox')}>
                 <Toggle
+                  testId="section-boxed"
                   on={section.boxed !== false}
                   onChange={(boxed) => onSection(section.id, { boxed })}
                 />
@@ -584,6 +601,7 @@ export function DesignerInspector({
             {HEADED_SECTIONS.has(section.id) && (
               <Row label={t('showHeading')}>
                 <Toggle
+                  testId="section-heading"
                   on={section.heading !== false}
                   onChange={(heading) => onSection(section.id, { heading })}
                 />
@@ -654,6 +672,7 @@ export function DesignerInspector({
             <Group title={t('titleText')}>
               <input
                 type="text"
+                data-testid="section-title-text"
                 maxLength={60}
                 value={section.text ?? ''}
                 placeholder={documentTitleDefault}
@@ -861,6 +880,7 @@ export function DesignerInspector({
                     </button>
                   )}
                   <Toggle
+                    testId={`field-${field.id}`}
                     on={field.visible}
                     onChange={(visible) =>
                       setFields(

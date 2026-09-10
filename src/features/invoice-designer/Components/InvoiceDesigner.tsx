@@ -973,6 +973,7 @@ export function InvoiceDesigner({
             {rail.map((section) => (
               <div
                 key={section.id}
+                data-testid={`rail-${section.id}`}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('text/plain', section.id)}
                 onDragOver={(e) => e.preventDefault()}
@@ -1008,6 +1009,8 @@ export function InvoiceDesigner({
                 )}
                 <button
                   type="button"
+                  data-testid={`rail-eye-${section.id}`}
+                  aria-pressed={section.visible}
                   onClick={(e) => {
                     e.stopPropagation()
                     patchSection(section.id, { visible: !section.visible })

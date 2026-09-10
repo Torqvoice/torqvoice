@@ -17,7 +17,7 @@ e2e/
   specs/
     auth/              sign-in, sign-up and invitations, account security
     invoices/          numbering, paying an invoice down, one document four ways,
-                       what the job's own files do to it
+                       what the job's own files do to it, the designer
     work-orders/       pricing under each tax setting, quote to invoice,
                        the lifecycle of a job, what the editor refuses,
                        the shape of the page at both breakpoints
