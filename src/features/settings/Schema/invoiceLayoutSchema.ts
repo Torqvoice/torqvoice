@@ -396,6 +396,30 @@ export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
 ])
 
 /** Sections that can be placed in left/right columns */
+/**
+ * Fields the sheet prints in a place of its own, whatever order the list is
+ * in: the company name above the header's details and the logo in its corner,
+ * the word the document calls itself above the title strip's cells, and the
+ * footer's portal line first with its closing note last.
+ *
+ * They are named here so the inspector can decline to offer a drag it cannot
+ * honour. Dragging them did nothing at all, which reads as a broken editor
+ * rather than as a slot that is fixed on purpose.
+ * `src/__tests__/features/invoice-designer/fixed-slot-fields.test.ts` works
+ * out which fields actually ignore their position and holds this list to it,
+ * so the offer and the print can never drift apart.
+ */
+export const FIXED_SLOT_FIELDS: Record<string, readonly string[]> = {
+  header: ['logo', 'company_name'],
+  document_title: ['title'],
+  footer: ['footer_note', 'portal_link', 'logo'],
+}
+
+/** Whether this field prints where the list puts it, or in a slot of its own. */
+export function fieldHasFixedSlot(sectionId: string, fieldId: string): boolean {
+  return (FIXED_SLOT_FIELDS[sectionId] ?? []).includes(fieldId)
+}
+
 export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
   'slogan',
   'totals',

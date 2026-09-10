@@ -992,7 +992,10 @@ export function InvoiceDesigner({
                 <span className="cursor-grab text-[13px] tracking-tighter text-[#b3b7bd]">⠿</span>
                 <span className="flex-1 truncate text-[13.5px]">{sectionName(section.id)}</span>
                 {section.column && (
-                  <span className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]">
+                  <span
+                    data-testid={`rail-column-${section.id}`}
+                    className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]"
+                  >
                     {section.column[0]}
                   </span>
                 )}

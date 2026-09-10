@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# client} other {# clients}} qui y sont associés reviendront au design par défaut.",
     "setDefault": "Définir par défaut",
     "defaultSet": "« {name} » est maintenant utilisé",
-    "couldNotSetDefault": "Impossible de définir le design par défaut"
+    "couldNotSetDefault": "Impossible de définir le design par défaut",
+    "fieldFixedSlot": "S'imprime toujours au même endroit et ne peut pas être déplacé."
   },
   "preview": {
     "title": "Révision des freins et vidange",

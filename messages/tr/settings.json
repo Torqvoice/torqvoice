@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "Buna ayarlı {count, plural, one {# müşteri} other {# müşteri}} varsayılan tasarıma döner.",
     "setDefault": "Varsayılan yap",
     "defaultSet": "\"{name}\" artık kullanımda",
-    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı"
+    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı",
+    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

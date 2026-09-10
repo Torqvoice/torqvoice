@@ -3,6 +3,11 @@
  * Two blocks used to read it as a set and print their rows in the order they
  * happened to build them, so dragging a row in the inspector moved nothing on
  * the sheet.
+ *
+ * Those two are pinned in detail below. The first suite asks the same question
+ * of every section that has a field list, because "dragging does nothing" is
+ * a bug that lives in one block at a time: it was fixed in the payment panel
+ * and the title strip, and nothing was keeping the other five honest.
  */
 import { describe, expect, it } from 'vitest'
 import { buildSampleData } from '@/features/invoice-designer/Components/sample'
@@ -109,4 +114,113 @@ describe('document title strip order', () => {
     expect(printed.indexOf('Invoice No.')).toBeLessThan(printed.indexOf('Date'))
     expect(printed.indexOf('Date')).toBeLessThan(printed.indexOf('Due'))
   })
+})
+
+/**
+ * Every section whose fields the inspector lets a workshop drag.
+ *
+ * One named pair per section, because a section's list is not always one run:
+ * the header joins its details into a single line, the title strip draws its
+ * own word above the cells, and the footer prints its note under everything.
+ * The pair is named; what the pair prints is discovered, so the test does not
+ * depend on the sample data's wording.
+ */
+describe('every section with a field list follows its order', () => {
+  const sectionsWithFields = mergeWithDefaults({}).sections.filter(
+    (section) => (section.fields ?? []).length > 1
+  )
+
+  /**
+   * A workshop with its details filled in. The sample above deliberately
+   * leaves them blank, and a header with no address, telephone or address to
+   * print says nothing about the order it would print them in.
+   */
+  const filled = () =>
+    buildSampleData(
+      {
+        name: 'Shop',
+        address: 'A road',
+        phone: '555',
+        email: 'shop@example.com',
+        logoUrl: null,
+      } as any,
+      [],
+      ((key: string) => key) as any,
+      {},
+      'invoice'
+    )
+
+  const specOf = (sectionId: string, fields: InvoiceFieldConfig[]) => {
+    const layout = mergeWithDefaults({})
+    layout.sections = layout.sections.map((section) =>
+      section.id === sectionId ? { ...section, fields } : section
+    )
+    return buildDocumentSpec(layout, themeOf({} as any, layout), filled())
+  }
+
+  /** Two fields of each section that share one running order. */
+  const ORDERED_PAIRS: Record<string, [string, string]> = {
+    header: ['company_address', 'company_phone'],
+    document_title: ['invoice_number', 'date'],
+    customer: ['customer_name', 'customer_company'],
+    vehicle: ['vehicle_name', 'vin'],
+    service: ['service_title', 'service_type'],
+    bank_account: ['bank_account', 'org_number'],
+    footer: ['company_name', 'company_address'],
+  }
+
+  it('has a pair named for every section that offers a list', () => {
+    // A section that gains a field list has to be given a pair here, rather
+    // than quietly going untested.
+    expect(sectionsWithFields.map((section) => section.id).sort()).toEqual(
+      Object.keys(ORDERED_PAIRS).sort()
+    )
+  })
+
+  /** Everything a section prints, as one string: some sections join their rows. */
+  const printedRun = (sectionId: string, order: string[]) =>
+    texts(
+      blockContent(
+        specOf(
+          sectionId,
+          order.map((id) => ({ id, visible: true }))
+        ),
+        sectionId
+      )
+    ).join('\u0000')
+
+  for (const section of sectionsWithFields) {
+    it(`moves what ${section.id} prints when two of its rows swap`, () => {
+      const all = (section.fields ?? []).map((field) => field.id)
+      const [a, b] = ORDERED_PAIRS[section.id]
+
+      // What each of the two prints, found by leaving the other one out: a
+      // section with a single field switched on can collapse to nothing,
+      // which tells us about neither.
+      const without = (id: string) =>
+        texts(
+          blockContent(
+            specOf(
+              section.id,
+              all.map((field) => ({ id: field, visible: field !== id }))
+            ),
+            section.id
+          )
+        )
+      const withoutB = without(b)
+      const withoutA = without(a)
+      const aWord = withoutB.find((text) => !withoutA.includes(text)) as string
+      const bWord = withoutA.find((text) => !withoutB.includes(text)) as string
+      expect(aWord, `${a} prints something of its own`).toBeTruthy()
+      expect(bWord, `${b} prints something of its own`).toBeTruthy()
+
+      const rest = all.filter((id) => id !== a && id !== b)
+      const asListed = printedRun(section.id, [a, b, ...rest])
+      const swapped = printedRun(section.id, [b, a, ...rest])
+
+      expect(asListed.indexOf(aWord)).toBeLessThan(asListed.indexOf(bWord))
+      // Dragged past each other in the inspector, they print the other way round.
+      expect(swapped.indexOf(bWord)).toBeLessThan(swapped.indexOf(aWord))
+    })
+  }
 })

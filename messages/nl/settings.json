@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klant} other {# klanten}} die erop zijn ingesteld, vallen terug op het standaardontwerp.",
     "setDefault": "Als standaard instellen",
     "defaultSet": "\"{name}\" is nu in gebruik",
-    "couldNotSetDefault": "Kon het standaardontwerp niet instellen"
+    "couldNotSetDefault": "Kon het standaardontwerp niet instellen",
+    "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst."
   },
   "preview": {
     "title": "Remservice en oliewissel",

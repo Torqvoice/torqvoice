@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# customer} other {# customers}} set to it will go back to the default design.",
     "setDefault": "Set as default",
     "defaultSet": "\"{name}\" is now in use",
-    "couldNotSetDefault": "Could not set the default design"
+    "couldNotSetDefault": "Could not set the default design",
+    "fieldFixedSlot": "Always prints in the same place, so it cannot be moved."
   },
   "preview": {
     "title": "Brake Service & Oil Change",

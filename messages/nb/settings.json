@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
     "setDefault": "Bruk som standard",
     "defaultSet": "«{name}» er nå i bruk",
-    "couldNotSetDefault": "Kunne ikke sette standarddesignet"
+    "couldNotSetDefault": "Kunne ikke sette standarddesignet",
+    "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

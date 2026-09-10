@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klient} few {# klientów} many {# klientów} other {# klienta}} z tym projektem wróci do projektu domyślnego.",
     "setDefault": "Ustaw jako domyślny",
     "defaultSet": "„{name}” jest teraz w użyciu",
-    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu"
+    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu",
+    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

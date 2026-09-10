@@ -1952,7 +1952,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klientas} few {# klientai} other {# klientų}}, kuriems jis priskirtas, grįš prie numatytojo dizaino.",
     "setDefault": "Nustatyti kaip numatytąjį",
     "defaultSet": "„{name}“ dabar naudojamas",
-    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino"
+    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino",
+    "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

@@ -13,6 +13,7 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  fieldHasFixedSlot,
   FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
   footerColumnsOf,
@@ -823,14 +824,23 @@ export function DesignerInspector({
               {resolvedFields.map((field) => (
                 <div
                   key={field.id}
-                  draggable
+                  data-testid={`field-row-${field.id}`}
+                  data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
+                  // A field the sheet prints in a place of its own offers no
+                  // drag, and is no place to drop one either: the position it
+                  // would take is not a position the print reads.
+                  draggable={!fieldHasFixedSlot(section.id, field.id)}
                   onDragStart={(e) => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
                     e.dataTransfer.effectAllowed = 'move'
                     setDragFieldId(field.id)
                   }}
                   onDragEnd={() => setDragFieldId(null)}
                   onDragOver={(e) => e.preventDefault()}
-                  onDragEnter={() => dragFieldOver(field.id)}
+                  onDragEnter={() => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
+                    dragFieldOver(field.id)
+                  }}
                   onDrop={(e) => {
                     e.preventDefault()
                     setDragFieldId(null)
@@ -839,9 +849,18 @@ export function DesignerInspector({
                     dragFieldId === field.id ? 'opacity-50' : ''
                   }`}
                 >
-                  <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
-                    ⠿
-                  </span>
+                  {fieldHasFixedSlot(section.id, field.id) ? (
+                    <span
+                      className="select-none text-[13px] leading-none text-[#dcdee2]"
+                      title={t('fieldFixedSlot')}
+                    >
+                      ·
+                    </span>
+                  ) : (
+                    <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
+                      ⠿
+                    </span>
+                  )}
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
