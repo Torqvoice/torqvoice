@@ -11,7 +11,12 @@ import {
   type UpdateRecurringInvoiceInput,
 } from '../Schema/recurringInvoiceSchema'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
-import { calculateTotals } from '@/lib/tax'
+import {
+  documentTotals,
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import { calculateNextRunDate } from '@/lib/cron/recurring-invoices'
 import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
@@ -57,14 +62,24 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
 
       // If the caller didn't explicitly set taxInclusive, inherit the org's
       // current default so new templates match the org's tax mode setting.
+      const taxSettings = await db.appSetting.findMany({
+        where: { organizationId, key: { in: [...WORKSHOP_TAX_SETTING_KEYS] } },
+        select: { key: true, value: true },
+      })
+      const workshopTax = readWorkshopTax(
+        Object.fromEntries(taxSettings.map((s) => [s.key, s.value]))
+      )
       let taxInclusive = parsed.taxInclusive
       if (input && typeof input === 'object' && !('taxInclusive' in input)) {
-        const setting = await db.appSetting.findUnique({
-          where: { organizationId_key: { organizationId, key: 'workshop.taxInclusive' } },
-          select: { value: true },
-        })
-        taxInclusive = setting?.value === 'true'
+        taxInclusive = workshopTax.inclusive
       }
+      // A template at the workshop's own rate carries its components too, so
+      // every invoice it generates prints the split; a hand-set rate is one
+      // figure and stays one.
+      const taxComponents =
+        parsed.taxRate > 0 && parsed.taxRate === workshopTax.rate
+          ? taxFieldsForNewDocument(workshopTax).taxComponents
+          : undefined
 
       // The dates are workshop days: the first run is that day's midnight
       // on its clock, and the end date covers the whole of its last day
@@ -81,6 +96,7 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
           cost: parsed.cost,
           taxRate: parsed.taxRate,
           taxInclusive,
+          taxComponents,
           invoiceNotes: parsed.invoiceNotes,
           templateParts: {
             create: parsed.templateParts.map((p) => ({
@@ -318,11 +334,12 @@ export async function processRecurringInvoices() {
         const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
         const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
         const subtotal = ri.cost + partsSubtotal + laborSubtotal
-        const { taxAmount, totalAmount } = calculateTotals({
+        const { taxAmount, totalAmount, taxComponents } = documentTotals({
           subtotal,
           discountAmount: 0,
           taxRate: ri.taxRate,
           taxInclusive: ri.taxInclusive,
+          taxComponents: ri.taxComponents,
         })
 
         const serviceRecord = await db.$transaction(async (tx) => {
@@ -340,6 +357,7 @@ export async function processRecurringInvoices() {
               subtotal,
               taxRate: ri.taxRate,
               taxInclusive: ri.taxInclusive,
+              taxComponents,
               taxAmount,
               totalAmount,
               invoiceNumber,

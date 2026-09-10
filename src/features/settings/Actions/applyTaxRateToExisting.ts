@@ -5,7 +5,12 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { SETTING_KEYS } from '../Schema/settingsSchema'
-import { calculateTotals } from '@/lib/tax'
+import {
+  documentTotals,
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '../Lib/workshopTax'
 import { getDocumentLockSettings } from '@/lib/document-lock.server'
 import { invoiceLockState, quoteLockState } from '@/lib/document-lock'
 
@@ -25,14 +30,18 @@ export async function applyTaxRateToExisting() {
       const settings = await db.appSetting.findMany({
         where: {
           organizationId,
-          key: { in: [SETTING_KEYS.TAX_ENABLED, SETTING_KEYS.DEFAULT_TAX_RATE] },
+          key: { in: [...WORKSHOP_TAX_SETTING_KEYS] },
         },
       })
       const settingsMap: Record<string, string> = {}
       for (const s of settings) settingsMap[s.key] = s.value
 
-      const taxEnabled = settingsMap[SETTING_KEYS.TAX_ENABLED] !== 'false'
+      const workshopTax = readWorkshopTax(settingsMap)
+      const taxEnabled = workshopTax.enabled
       const defaultTaxRate = Number(settingsMap[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0
+      // The split, when the workshop has one, goes onto each record with the
+      // rate, so a backfilled invoice prints the same lines as a new one.
+      const defaultComponents = taxFieldsForNewDocument(workshopTax).taxComponents
 
       if (!taxEnabled || defaultTaxRate <= 0) {
         throw new Error('Tax must be enabled and the default tax rate must be greater than 0.')
@@ -91,11 +100,12 @@ export async function applyTaxRateToExisting() {
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal: r.subtotal,
             discountAmount: r.discountAmount,
             taxRate: defaultTaxRate,
             taxInclusive: r.taxInclusive,
+            taxComponents: defaultComponents,
           })
           await tx.serviceRecord.update({
             where: { id: r.id },
@@ -103,17 +113,19 @@ export async function applyTaxRateToExisting() {
               taxRate: defaultTaxRate,
               taxAmount,
               totalAmount,
+              taxComponents,
             },
           })
           serviceRecordsUpdated++
         }
 
         for (const q of quotes) {
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal: q.subtotal,
             discountAmount: q.discountAmount,
             taxRate: defaultTaxRate,
             taxInclusive: q.taxInclusive,
+            taxComponents: defaultComponents,
           })
           await tx.quote.update({
             where: { id: q.id },
@@ -121,6 +133,7 @@ export async function applyTaxRateToExisting() {
               taxRate: defaultTaxRate,
               taxAmount,
               totalAmount,
+              taxComponents,
             },
           })
           quotesUpdated++
@@ -268,6 +281,7 @@ export async function convertRecordsToInclusive() {
           discountValue: true,
           discountAmount: true,
           taxRate: true,
+          taxComponents: true,
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
@@ -286,6 +300,7 @@ export async function convertRecordsToInclusive() {
           discountValue: true,
           discountAmount: true,
           taxRate: true,
+          taxComponents: true,
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
@@ -303,11 +318,12 @@ export async function convertRecordsToInclusive() {
           const newDiscountValue =
             r.discountType === 'fixed' ? r.discountValue * factor : r.discountValue
 
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: r.taxRate,
             taxInclusive: true,
+            taxComponents: r.taxComponents,
           })
 
           if (r.taxRate > 0) {
@@ -334,6 +350,7 @@ export async function convertRecordsToInclusive() {
               discountAmount: newDiscountAmount,
               taxAmount,
               totalAmount,
+              taxComponents,
             },
           })
           serviceRecordsUpdated++
@@ -346,11 +363,12 @@ export async function convertRecordsToInclusive() {
           const newDiscountValue =
             q.discountType === 'fixed' ? q.discountValue * factor : q.discountValue
 
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: q.taxRate,
             taxInclusive: true,
+            taxComponents: q.taxComponents,
           })
 
           if (q.taxRate > 0) {
@@ -377,6 +395,7 @@ export async function convertRecordsToInclusive() {
               discountAmount: newDiscountAmount,
               taxAmount,
               totalAmount,
+              taxComponents,
             },
           })
           quotesUpdated++
@@ -440,6 +459,7 @@ export async function convertRecordsToExclusive() {
           discountValue: true,
           discountAmount: true,
           taxRate: true,
+          taxComponents: true,
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
@@ -457,6 +477,7 @@ export async function convertRecordsToExclusive() {
           discountValue: true,
           discountAmount: true,
           taxRate: true,
+          taxComponents: true,
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
@@ -473,11 +494,12 @@ export async function convertRecordsToExclusive() {
           const newDiscountValue =
             r.discountType === 'fixed' ? r.discountValue / factor : r.discountValue
 
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: r.taxRate,
             taxInclusive: false,
+            taxComponents: r.taxComponents,
           })
 
           if (r.taxRate > 0) {
@@ -504,6 +526,7 @@ export async function convertRecordsToExclusive() {
               discountAmount: newDiscountAmount,
               taxAmount,
               totalAmount,
+              taxComponents,
             },
           })
           serviceRecordsUpdated++
@@ -516,11 +539,12 @@ export async function convertRecordsToExclusive() {
           const newDiscountValue =
             q.discountType === 'fixed' ? q.discountValue / factor : q.discountValue
 
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: q.taxRate,
             taxInclusive: false,
+            taxComponents: q.taxComponents,
           })
 
           if (q.taxRate > 0) {
@@ -547,6 +571,7 @@ export async function convertRecordsToExclusive() {
               discountAmount: newDiscountAmount,
               taxAmount,
               totalAmount,
+              taxComponents,
             },
           })
           quotesUpdated++

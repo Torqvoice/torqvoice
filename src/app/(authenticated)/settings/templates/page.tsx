@@ -1,4 +1,5 @@
 import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { readWorkshopTax, WORKSHOP_TAX_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { TemplateSettings } from './template-settings'
 import { getLayoutData } from '@/lib/get-layout-data'
@@ -60,6 +61,7 @@ export default async function TemplatePage() {
       SETTING_KEYS.QUOTE_FONT_FAMILY,
       SETTING_KEYS.QUOTE_HEADER_STYLE,
       SETTING_KEYS.QUOTE_LOGO_SIZE,
+      ...WORKSHOP_TAX_SETTING_KEYS,
       SETTING_KEYS.COMPANY_LOGO,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
       SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
@@ -114,6 +116,8 @@ export default async function TemplatePage() {
     phone: settings[SETTING_KEYS.WORKSHOP_PHONE],
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
     slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN],
+    // Its own taxes too: a split-tax workshop's cards show its GST and QST lines.
+    taxComponents: readWorkshopTax(settings).components,
   }
 
   const smsDefaultMap: Record<string, string> = {

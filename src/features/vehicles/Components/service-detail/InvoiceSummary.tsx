@@ -3,7 +3,8 @@
 import { useTranslations } from 'next-intl'
 import { Separator } from '@/components/ui/separator'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { netLineTotal } from '@/lib/tax'
+import { netLineTotal, type TaxComponent } from '@/lib/tax'
+import { taxComponentLabel } from '@/lib/tax-components'
 
 interface InvoiceSummaryProps {
   hasPartItems: boolean
@@ -17,6 +18,7 @@ interface InvoiceSummaryProps {
   taxRate: number
   taxAmount: number
   taxInclusive: boolean
+  taxComponents?: TaxComponent[] | null
   displayTotal: number
   totalPaid: number
   balanceDue: number
@@ -36,6 +38,7 @@ export function InvoiceSummary({
   taxRate,
   taxAmount,
   taxInclusive,
+  taxComponents,
   displayTotal,
   totalPaid,
   balanceDue,
@@ -86,12 +89,19 @@ export function InvoiceSummary({
             </span>
           </div>
         )}
-        {taxRate > 0 && (
+        {taxComponents && taxComponents.length > 0 ? (
+          taxComponents.map((component) => (
+            <div key={component.name} className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{taxComponentLabel(component)}</span>
+              <span>{formatCurrency(component.amount, currencyCode)}</span>
+            </div>
+          ))
+        ) : taxRate > 0 ? (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{t('tax', { rate: taxRate })}</span>
             <span>{formatCurrency(taxAmount, currencyCode)}</span>
           </div>
-        )}
+        ) : null}
         <Separator />
         <div className="flex justify-between font-bold">
           <span>{t('total')}</span>

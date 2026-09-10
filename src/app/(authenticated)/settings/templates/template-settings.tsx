@@ -1,5 +1,7 @@
 'use client'
 
+import type { TaxComponentDefinition } from '@/lib/tax'
+
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -45,6 +47,7 @@ interface WorkshopPreviewInfo {
   phone?: string
   email?: string
   slogan?: string
+  taxComponents?: TaxComponentDefinition[] | null
 }
 
 const fontMap: Record<string, string> = {

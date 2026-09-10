@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { calculateTotals } from '@/lib/tax'
+import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 
@@ -56,6 +56,7 @@ export async function addPart(args: {
       subtotal: true,
       taxRate: true,
       taxInclusive: true,
+      taxComponents: true,
       discountType: true,
       discountValue: true,
       title: true,
@@ -97,16 +98,17 @@ export async function addPart(args: {
         : record.discountType === 'fixed'
           ? Math.min(record.discountValue ?? 0, subtotal)
           : 0
-    const { taxAmount, totalAmount } = calculateTotals({
+    const { taxAmount, totalAmount, taxComponents } = documentTotals({
       subtotal,
       discountAmount,
       taxRate: record.taxRate,
       taxInclusive: record.taxInclusive,
+      taxComponents: record.taxComponents,
     })
 
     await tx.serviceRecord.update({
       where: { id: record.id },
-      data: { subtotal, taxAmount, totalAmount },
+      data: { subtotal, taxAmount, totalAmount, taxComponents },
     })
 
     // Deduct stock for the newly added line (delta from empty).

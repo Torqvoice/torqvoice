@@ -1,7 +1,7 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
-import { calculateTotals } from '@/lib/tax'
+import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import { shiftWorkshopTime } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -93,11 +93,12 @@ export function processRecurringInvoices() {
           const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
           const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
           const subtotal = ri.cost + partsSubtotal + laborSubtotal
-          const { taxAmount, totalAmount } = calculateTotals({
+          const { taxAmount, totalAmount, taxComponents } = documentTotals({
             subtotal,
             discountAmount: 0,
             taxRate: ri.taxRate,
             taxInclusive: ri.taxInclusive,
+            taxComponents: ri.taxComponents,
           })
 
           await db.$transaction(async (tx) => {
@@ -115,6 +116,7 @@ export function processRecurringInvoices() {
                 subtotal,
                 taxRate: ri.taxRate,
                 taxInclusive: ri.taxInclusive,
+                taxComponents,
                 taxAmount,
                 totalAmount,
                 invoiceNumber,

@@ -38,6 +38,7 @@
     "discountPercent": "Descuento ({percent}%)",
     "tax": "Impuesto ({rate}%)",
     "taxIncluded": "Con impuesto ({rate}%)",
+    "taxIncludedNamed": "Con {name} ({rate}%)",
     "paymentsReceived": "Pagos recibidos",
     "paidInFull": "PAGADO EN SU TOTALIDAD",
     "amountDue": "Monto adeudado",
@@ -72,7 +73,8 @@
     "org": "Org: {org}",
     "qtyOrHours": "Unit / Hours",
     "customFieldsTitle": "Información adicional",
-    "telegramConnect": "Chatea con nosotros en Telegram"
+    "telegramConnect": "Chatea con nosotros en Telegram",
+    "taxRegistrationLabel": "Núm. {name}"
   },
   "quote": {
     "title": "PRESUPUESTO",
@@ -100,6 +102,7 @@
     "discountPercent": "Descuento ({percent}%)",
     "tax": "Impuesto ({rate}%)",
     "taxIncluded": "Con impuesto ({rate}%)",
+    "taxIncludedNamed": "Con {name} ({rate}%)",
     "validUntil": "Válido hasta: {date}",
     "attachedDocuments": "Documentos adjuntos",
     "attached": "{name} (adjunto)",

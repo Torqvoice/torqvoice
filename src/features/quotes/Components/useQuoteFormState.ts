@@ -12,6 +12,7 @@ import {
 } from '@/features/quotes/Actions/quoteActions'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals } from '@/lib/tax'
+import { parseTaxComponents } from '@/lib/tax-components'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
@@ -99,6 +100,9 @@ export function useQuoteFormState({
   )
   const [taxRate, setTaxRate] = useState(quote.taxRate ?? defaultTaxRate)
   const [taxInclusive] = useState<boolean>(quote.taxInclusive ?? false)
+  // The split the quote was created with; the server re-derives the
+  // amounts from it on every save.
+  const [taxComponentDefinitions] = useState(() => parseTaxComponents(quote.taxComponents))
   const [discountType, setDiscountType] = useState<string>(quote.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(quote.discountValue ?? 0)
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
@@ -207,11 +211,16 @@ export function useQuoteFormState({
       : discountType === 'fixed'
         ? Math.min(discountValue, subtotal)
         : 0
-  const { taxAmount, totalAmount } = calculateTotals({
+  const {
+    taxAmount,
+    totalAmount,
+    components: taxComponents,
+  } = calculateTotals({
     subtotal,
     discountAmount,
     taxRate,
     taxInclusive,
+    components: taxComponentDefinitions,
   })
 
   // Cost, markup and price stay consistent with each other; repricePartRow
@@ -491,6 +500,7 @@ export function useQuoteFormState({
     setTaxRate,
     taxEnabled,
     taxInclusive,
+    taxComponents,
     discountType,
     setDiscountType,
     discountValue,

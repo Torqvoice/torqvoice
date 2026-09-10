@@ -38,6 +38,7 @@
     "discountPercent": "Korting ({percent}%)",
     "tax": "BTW ({rate}%)",
     "taxIncluded": "Incl. btw ({rate}%)",
+    "taxIncludedNamed": "Incl. {name} ({rate}%)",
     "paymentsReceived": "Ontvangen betalingen",
     "paidInFull": "VOLLEDIG BETAALD",
     "amountDue": "Te betalen bedrag",
@@ -72,7 +73,8 @@
     "org": "KvK: {org}",
     "qtyOrHours": "Unit / Hours",
     "customFieldsTitle": "Aanvullende informatie",
-    "telegramConnect": "Chat met ons op Telegram"
+    "telegramConnect": "Chat met ons op Telegram",
+    "taxRegistrationLabel": "{name}-nr."
   },
   "quote": {
     "title": "OFFERTE",
@@ -100,6 +102,7 @@
     "discountPercent": "Korting ({percent}%)",
     "tax": "BTW ({rate}%)",
     "taxIncluded": "Incl. btw ({rate}%)",
+    "taxIncludedNamed": "Incl. {name} ({rate}%)",
     "validUntil": "Geldig tot: {date}",
     "attachedDocuments": "Bijgevoegde documenten",
     "attached": "{name} (bijgevoegd)",

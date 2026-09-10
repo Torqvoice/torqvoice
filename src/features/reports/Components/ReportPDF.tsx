@@ -1,4 +1,5 @@
 import { formatQuantity } from '@/lib/format-quantity'
+import { taxRateLabel } from '../Lib/taxRateLabel'
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
 import type {
   RevenueReport,
@@ -457,7 +458,7 @@ export function ReportPDF({
                 ]}
                 widths={[40, 35, 25]}
                 rows={taxData.byRate.map((r) => [
-                  `${r.taxRate}%`,
+                  taxRateLabel(r),
                   fmt(r.taxCollected),
                   String(r.invoiceCount),
                 ])}

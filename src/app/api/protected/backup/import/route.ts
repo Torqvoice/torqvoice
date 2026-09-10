@@ -7,6 +7,7 @@ import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
+import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -139,6 +140,7 @@ async function importServiceRecordTree(
       taxRate: (sr.taxRate as number) || 0,
       taxAmount: (sr.taxAmount as number) || 0,
       taxInclusive: (sr.taxInclusive as boolean) ?? false,
+      taxComponents: taxComponentsForCopy(sr.taxComponents),
       totalAmount: (sr.totalAmount as number) || 0,
       invoiceNumber: (sr.invoiceNumber as string) || null,
       discountType: (sr.discountType as string) || null,
@@ -976,6 +978,7 @@ export async function POST(request: NextRequest) {
               taxRate: (q.taxRate as number) || 0,
               taxAmount: (q.taxAmount as number) || 0,
               taxInclusive: (q.taxInclusive as boolean) ?? false,
+              taxComponents: taxComponentsForCopy(q.taxComponents),
               discountType: (q.discountType as string) || null,
               discountValue: (q.discountValue as number) || 0,
               discountAmount: (q.discountAmount as number) || 0,

@@ -256,6 +256,64 @@ describe('getTaxReport — taxableAmount formula', () => {
   })
 })
 
+describe('getTaxReport — split taxes', () => {
+  it('lists each component of a split tax under its own name', async () => {
+    setupAuth()
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
+      // Québec: 900 net, GST 45 and QST 89.78
+      {
+        serviceDate: new Date('2026-09-01'),
+        startDateTime: new Date('2026-09-01'),
+        subtotal: 900,
+        taxRate: 14.975,
+        taxAmount: 134.78,
+        taxInclusive: false,
+        taxComponents: [
+          { name: 'GST', rate: 5, amount: 45 },
+          { name: 'QST', rate: 9.975, amount: 89.78 },
+        ],
+        totalAmount: 1034.78,
+      },
+      // A second job at the same split: the rows add up, and count both.
+      {
+        serviceDate: new Date('2026-09-02'),
+        startDateTime: new Date('2026-09-02'),
+        subtotal: 100,
+        taxRate: 14.975,
+        taxAmount: 14.98,
+        taxInclusive: false,
+        taxComponents: [
+          { name: 'GST', rate: 5, amount: 5 },
+          { name: 'QST', rate: 9.975, amount: 9.98 },
+        ],
+        totalAmount: 114.98,
+      },
+      // An older single-rate job keeps its own row.
+      {
+        serviceDate: new Date('2026-09-03'),
+        startDateTime: new Date('2026-09-03'),
+        subtotal: 100,
+        taxRate: 5,
+        taxAmount: 5,
+        taxInclusive: false,
+        taxComponents: null,
+        totalAmount: 105,
+      },
+    ] as any)
+
+    const result = await getTaxReport({})
+
+    expect(result.data?.byRate).toEqual([
+      { name: 'GST', taxRate: 5, taxCollected: 50, invoiceCount: 2 },
+      { name: 'QST', taxRate: 9.975, taxCollected: 99.76, invoiceCount: 2 },
+      { taxRate: 5, taxCollected: 5, invoiceCount: 1 },
+    ])
+    // The combined figures are untouched by the split.
+    expect(result.data?.summary.totalTaxCollected).toBeCloseTo(154.76)
+    expect(result.data?.summary.totalInvoices).toBe(3)
+  })
+})
+
 // ---------------------------------------------------------------------------
 // getPartsUsageReport
 // ---------------------------------------------------------------------------

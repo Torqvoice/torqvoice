@@ -1,3 +1,4 @@
+import type { TaxComponent } from '@/lib/tax'
 import type {
   ServiceConcernInput,
   ServicePartInput,
@@ -43,6 +44,8 @@ export interface InitialData {
   taxRate: number
   taxAmount: number
   taxInclusive?: boolean
+  /** The job's stored tax split, when it has one; amounts are recomputed live. */
+  taxComponents?: TaxComponent[] | null
   totalAmount: number
   discountType?: string
   discountValue?: number

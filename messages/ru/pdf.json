@@ -38,6 +38,7 @@
     "discountPercent": "Скидка ({percent}%)",
     "tax": "Налог ({rate}%)",
     "taxIncluded": "С НДС ({rate}%)",
+    "taxIncludedNamed": "С {name} ({rate}%)",
     "paymentsReceived": "Полученные платежи",
     "paidInFull": "ПОЛНОСТЬЮ ОПЛАЧЕНО",
     "amountDue": "К оплате",
@@ -72,7 +73,8 @@
     "org": "Орг: {org}",
     "qtyOrHours": "Услуга / Часы",
     "customFieldsTitle": "Дополнительная информация",
-    "telegramConnect": "Напишите нам в Telegram"
+    "telegramConnect": "Напишите нам в Telegram",
+    "taxRegistrationLabel": "№ {name}"
   },
   "quote": {
     "title": "КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ",
@@ -100,6 +102,7 @@
     "discountPercent": "Скидка ({percent}%)",
     "tax": "Налог ({rate}%)",
     "taxIncluded": "С НДС ({rate}%)",
+    "taxIncludedNamed": "С {name} ({rate}%)",
     "validUntil": "Действительно до: {date}",
     "attachedDocuments": "Прикреплённые документы",
     "attached": "{name} (прикреплено)",
