@@ -177,6 +177,24 @@ export async function seededTenantFixtures(): Promise<TenantFixtures> {
   })
 }
 
+/**
+ * Any work order belonging to a given workshop, for the tests that point one
+ * workshop's credential at another's records. A workshop that has just been
+ * opened has a few of its own from onboarding, which is what makes a
+ * freshly signed-up account a usable target.
+ */
+export async function foreignServiceRecordId(organizationId: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from service_records where "organizationId" = $1 order by "createdAt" limit 1`,
+      [organizationId]
+    )
+    const id = result.rows[0]?.id
+    if (!id) throw new Error(`no work order in organization ${organizationId}`)
+    return id
+  })
+}
+
 /** The stored (encrypted) TOTP secret of a user, or null when 2FA is not set up. */
 export async function storedTwoFactorSecret(email: string): Promise<string | null> {
   return withDb(async (db) => {
@@ -185,5 +203,88 @@ export async function storedTwoFactorSecret(email: string): Promise<string | nul
       [email]
     )
     return result.rows[0]?.secret ?? null
+  })
+}
+
+export interface StockedPart {
+  id: string
+  name: string
+  /** What the ledger says it has on hand right now. */
+  quantity: number
+}
+
+/**
+ * A seeded inventory part with enough on hand to be consumed by a job, and
+ * whose name is distinctive enough to search for in the picker.
+ *
+ * The part is chosen rather than created, because what is under test is the
+ * path a workshop actually walks: pick a stocked part, use it, and watch the
+ * count fall.
+ */
+export async function stockedPart(organizationId: string, atLeast = 10): Promise<StockedPart> {
+  return withDb(async (db) => {
+    const result = await db.query<StockedPart>(
+      `select id, name, quantity
+         from inventory_parts
+        where "organizationId" = $1 and quantity >= $2
+        order by quantity desc, name
+        limit 1`,
+      [organizationId, atLeast]
+    )
+    const part = result.rows[0]
+    if (!part) throw new Error(`no inventory part with ${atLeast} or more on hand`)
+    return { ...part, quantity: Number(part.quantity) }
+  })
+}
+
+/** What one inventory part has on hand. */
+export async function partQuantity(partId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ quantity: number }>(
+      `select quantity from inventory_parts where id = $1`,
+      [partId]
+    )
+    if (!result.rows[0]) throw new Error(`no inventory part ${partId}`)
+    return Number(result.rows[0].quantity)
+  })
+}
+
+/** Set a part's quantity outright, to put the seed back as it was found. */
+export async function setPartQuantity(partId: string, quantity: number): Promise<void> {
+  await withDb((db) =>
+    db.query(`update inventory_parts set quantity = $2 where id = $1`, [partId, quantity])
+  )
+}
+
+export interface StockMovement {
+  delta: number
+  quantityAfter: number
+  reason: string
+  serviceRecordId: string | null
+}
+
+/**
+ * The ledger for one part, oldest first. Every movement is a row: the count on
+ * the part is only ever the running total of these, which is why a spec that
+ * checks stock checks both.
+ */
+export async function stockMovements(
+  partId: string,
+  serviceRecordId?: string
+): Promise<StockMovement[]> {
+  return withDb(async (db) => {
+    const result = await db.query<StockMovement>(
+      `select delta, "quantityAfter", reason, "serviceRecordId"
+         from stock_movements
+        where "inventoryPartId" = $1
+          and ($2::text is null or "serviceRecordId" = $2)
+        order by "createdAt", id`,
+      [partId, serviceRecordId ?? null]
+    )
+    return result.rows.map((row) => ({
+      ...row,
+      delta: Number(row.delta),
+      quantityAfter: Number(row.quantityAfter),
+    }))
   })
 }

@@ -103,8 +103,25 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
-    // Members without a custom role have full access
-    if (membership?.roleId) {
+    if (!membership?.roleId) {
+      /**
+       * A member with no role at all.
+       *
+       * `withAuth` refuses every permissioned action for these accounts, so
+       * offering the whole application would be the sidebar of refusals this
+       * screen was built to replace — and the team page already promises the
+       * opposite in as many words: "Without a role, this member cannot do
+       * anything." An invitation may still be sent without a role, so this
+       * account can be created at any time.
+       *
+       * On an install that already holds one, that person now lands here
+       * instead of on a broken-looking app, and an owner or an admin gives
+       * them a role. That is the same end state the action layer arrived at.
+       */
+      visibleSubjects = []
+      canCreateVehicles = false
+      hasAnyAccess = false
+    } else {
       const userPermissions = membership?.customRole?.permissions ?? []
       visibleSubjects = allSubjects.filter((subject) =>
         hasPermission(userPermissions, {

@@ -131,3 +131,27 @@ export function safeTimeZone(value: string | null | undefined, fallback = 'UTC')
     return fallback
   }
 }
+
+/**
+ * A stand-in Date whose *browser-local* wall clock reads what `date` reads in
+ * `timeZone`. For widgets that work in local time and cannot be told
+ * otherwise: the returned instant is not `date` and must never be stored or
+ * sent anywhere. Seconds are dropped, because the pickers that need this stop
+ * at the minute. Undo it with `fromZonedWallClock`.
+ */
+export function toZonedWallClock(date: Date, timeZone: string): Date {
+  const p = zonedParts(date, timeZone)
+  return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, 0, 0)
+}
+
+/** The instant a local stand-in stands for: its wall clock, read in `timeZone`. */
+export function fromZonedWallClock(local: Date, timeZone: string): Date {
+  return zonedDate(
+    local.getFullYear(),
+    local.getMonth() + 1,
+    local.getDate(),
+    local.getHours(),
+    local.getMinutes(),
+    timeZone
+  )
+}

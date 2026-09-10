@@ -23,6 +23,10 @@ e2e/
                        the lifecycle of a job, what the editor refuses,
                        the shape of the page at both breakpoints
     quotes/            the quote a customer is handed
+    calendar/          a booking keeps the time it was made at, in the
+                       workshop's own timezone
+    inventory/         a stocked part leaves the shelf exactly once
+    tech/              the technician app's API contract
     smoke/             the build is alive
 ```
 
