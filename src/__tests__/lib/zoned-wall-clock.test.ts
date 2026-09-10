@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { fromZonedWallClock, toZonedWallClock, zonedParts } from '@/lib/timezone'
+import {
+  fromZonedWallClock,
+  toZonedWallClock,
+  zonedDateInput,
+  zonedParts,
+  zonedTimeInput,
+} from '@/lib/timezone'
+import { parseWorkshopDateTime } from '@/lib/workshop-datetime'
 
 /**
  * The stand-in a local-time widget is handed.
@@ -48,5 +55,39 @@ describe('a local stand-in for a workshop wall clock', () => {
     const instant = fromZonedWallClock(new Date(2026, 2, 29, 2, 30, 0, 0), 'Europe/Oslo')
     expect(Number.isNaN(instant.getTime())).toBe(false)
     expect(zonedParts(instant, 'Europe/Oslo').day).toBe(29)
+  })
+})
+
+describe('what a date field and a time field are filled with', () => {
+  it("is the workshop's day and clock, not the reader's", () => {
+    // 22:30 UTC is the 11th at 10:30 in Auckland and still the 10th at 15:30
+    // in Los Angeles. Both readings are of the same reminder.
+    const instant = new Date('2026-09-10T22:30:00Z')
+    expect(zonedDateInput(instant, 'Pacific/Auckland')).toBe('2026-09-11')
+    expect(zonedTimeInput(instant, 'Pacific/Auckland')).toBe('10:30')
+    expect(zonedDateInput(instant, 'America/Los_Angeles')).toBe('2026-09-10')
+    expect(zonedTimeInput(instant, 'America/Los_Angeles')).toBe('15:30')
+  })
+
+  it('pads both, so the strings are what the inputs accept', () => {
+    const instant = new Date('2026-01-02T03:04:00Z')
+    expect(zonedDateInput(instant, 'UTC')).toBe('2026-01-02')
+    expect(zonedTimeInput(instant, 'UTC')).toBe('03:04')
+  })
+
+  it('falls back to the browser for a workshop that has never chosen a zone', () => {
+    const instant = new Date(2026, 8, 11, 10, 30, 0, 0)
+    expect(zonedDateInput(instant, '')).toBe('2026-09-11')
+    expect(zonedTimeInput(instant, '')).toBe('10:30')
+  })
+
+  it('round trips through the wall clock the server reads back', () => {
+    // What the form does: fill the two fields, hand them back as one string,
+    // and let the server read that string in the workshop's zone. The
+    // instant has to survive it untouched, which is the whole bug.
+    const zone = 'Pacific/Auckland'
+    const stored = new Date('2026-09-10T22:30:00Z')
+    const typed = `${zonedDateInput(stored, zone)}T${zonedTimeInput(stored, zone)}`
+    expect(parseWorkshopDateTime(typed, zone).getTime()).toBe(stored.getTime())
   })
 })

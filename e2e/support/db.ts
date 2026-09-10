@@ -288,3 +288,21 @@ export async function stockMovements(
     }))
   })
 }
+
+/** When a reminder is due, as the instant that was stored for it. */
+export async function reminderDueDate(title: string): Promise<Date> {
+  return withDb(async (db) => {
+    const result = await db.query<{ dueDate: Date }>(
+      `select "dueDate" from reminders where title = $1 order by "createdAt" desc limit 1`,
+      [title]
+    )
+    const due = result.rows[0]?.dueDate
+    if (!due) throw new Error(`no reminder titled "${title}" with a due date`)
+    return new Date(due)
+  })
+}
+
+/** Removes the reminders a spec made, whatever state the page was left in. */
+export async function deleteRemindersTitled(title: string): Promise<void> {
+  await withDb((db) => db.query(`delete from reminders where title = $1`, [title]))
+}

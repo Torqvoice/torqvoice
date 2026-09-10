@@ -26,6 +26,7 @@ e2e/
     calendar/          a booking keeps the time it was made at, in the
                        workshop's own timezone
     inventory/         a stocked part leaves the shelf exactly once
+    reminders/         a due time survives being displayed and re-saved
     tech/              the technician app's API contract
     smoke/             the build is alive
 ```

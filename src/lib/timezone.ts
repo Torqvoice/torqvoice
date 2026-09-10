@@ -155,3 +155,32 @@ export function fromZonedWallClock(local: Date, timeZone: string): Date {
     timeZone
   )
 }
+
+/**
+ * The date and time a form field should show for a stored instant: the
+ * workshop's wall clock, as `YYYY-MM-DD` and `HH:MM`.
+ *
+ * These exist because a date field and a time field are read straight back as
+ * a wall clock by the server (`toSafeWorkshopDate`), so filling them from the
+ * browser's clock silently moves whatever is being edited. An empty
+ * `timeZone` means the workshop has never chosen one, and then the browser's
+ * own is all there is.
+ */
+export function zonedDateInput(date: Date, timeZone: string): string {
+  if (!timeZone) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+  }
+  const p = zonedParts(date, timeZone)
+  return `${p.year}-${pad(p.month)}-${pad(p.day)}`
+}
+
+/** The same, for a time field. */
+export function zonedTimeInput(date: Date, timeZone: string): string {
+  if (!timeZone) return `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  const p = zonedParts(date, timeZone)
+  return `${pad(p.hour)}:${pad(p.minute)}`
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, '0')
+}

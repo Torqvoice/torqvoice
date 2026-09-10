@@ -57,6 +57,14 @@ export async function getVehicle(vehicleId: string) {
               title: true,
               description: true,
               dueDate: true,
+              // Whether the time of day was chosen, and which channels were
+              // asked for. Left out of this select, the tab showed every
+              // reminder as day-only and its edit form opened with the time
+              // blank and the channels back at their defaults, so saving an
+              // 08:00 email reminder rewrote it to noon with no email.
+              hasDueTime: true,
+              notifyInApp: true,
+              notifyEmail: true,
               dueMileage: true,
               isCompleted: true,
               createdAt: true,
