@@ -12,10 +12,12 @@ e2e/
   auth.setup.ts        signs in once; every spec starts with that session
   prepare-db.ts        reset + seed, run ahead of the server
   mail-sink.ts         a mail server that delivers nothing and keeps everything
-  support/             helpers specs share: reading mail, database peeks, TOTP, work order driving
+  support/             helpers specs share: reading mail, reading a PDF's text,
+                       database peeks, TOTP, work order driving
   specs/
     auth/              sign-in, sign-up and invitations, account security
-    invoices/          numbering, paying an invoice down, one document four ways
+    invoices/          numbering, paying an invoice down, one document four ways,
+                       what the job's own files do to it
     work-orders/       pricing under each tax setting, quote to invoice,
                        the lifecycle of a job, what the editor refuses,
                        the shape of the page at both breakpoints
@@ -121,6 +123,25 @@ demand from the Actions tab. It brings up a `postgres:16-alpine` service holding
 way you would here. The HTML report is uploaded as the `playwright-report`
 artifact on every run, so a failure can be opened locally with
 `npx playwright show-report`.
+
+## Reading a PDF
+
+`support/pdf.ts` turns a PDF into its text (`unpdf`, which is pdf.js underneath), so a
+spec can assert what a customer actually reads rather than that a file arrived:
+
+```ts
+const pdf = await pdfContent(await response.body())
+expect(pdf.flat).toContain('Total $4,312.50')
+expect(pdf.text).toContain('Gates WP-4471\nwith gasket and coolant')
+```
+
+`makePdf(['page one', 'page two'])` builds a small PDF to attach to a job, and
+`TINY_PNG` / `BROKEN_PNG` are a valid photograph and a truncated one.
+
+`flat` collapses all whitespace, for phrases that span a line break in the layout;
+`text` keeps the lines, which is how a multi-line description is checked. `size` is the
+file's own weight — a logo or QR code that goes missing changes nothing about the words,
+so parity checks compare both.
 
 ## Variables
 

@@ -8,6 +8,7 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { renderInvoicePdf } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
+import { isPrintableImage } from '@/features/invoices/Lib/printableImage'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -64,13 +65,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         try {
           const filePath = resolveUploadPath(att.fileUrl)
           const buffer = await readFile(filePath)
-          const base64 = buffer.toString('base64')
-          const mimeType = att.fileType
-          imageAttachments.push({
-            fileName: att.fileName,
-            dataUri: `data:${mimeType};base64,${base64}`,
-            description: att.description || undefined,
-          })
+          // A file the renderer cannot decode throws inside its own stream,
+          // where this try cannot reach it: the request then never answers at
+          // all. Checked first, and listed rather than drawn if it fails.
+          if (!isPrintableImage(buffer, att.fileType)) {
+            otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
+          } else {
+            imageAttachments.push({
+              fileName: att.fileName,
+              dataUri: `data:${att.fileType};base64,${buffer.toString('base64')}`,
+              description: att.description || undefined,
+            })
+          }
         } catch {
           otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
         }
