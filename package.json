@@ -59,7 +59,7 @@
     "next-intl": "^4.14.2",
     "next-themes": "^0.4.6",
     "next-ws": "^2.2.14",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^9.1.1",
     "openai": "^6.27.0",
     "papaparse": "^5.7.0",
     "pdf-lib": "^1.17.1",
