@@ -102,7 +102,14 @@ export default defineConfig({
             E2E_DATABASE_URL: databaseUrl,
             DATABASE_URL: databaseUrl,
             NEXT_PUBLIC_APP_URL: baseURL,
-            BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? 'e2e-secret-not-for-production',
+            // Long and random enough that better-auth does not spend the run
+            // warning about it. Throwaway: it signs sessions for a database
+            // the harness resets, and CI generates its own per run.
+            BETTER_AUTH_SECRET:
+              process.env.BETTER_AUTH_SECRET ?? 'k3Qb8vZ1hN7pXtR2yJm5Ls9CwD4gFa6UeH0iOoT+PbY=',
+            // The schedulers would otherwise tick through the run, writing to
+            // the rows the specs are asserting on.
+            DISABLE_BACKGROUND_JOBS: '1',
             // Demo mode blocks invites, billing and outbound messages. Tests want
             // the real behaviour, so it stays off.
             DEMO_MODE: 'false',

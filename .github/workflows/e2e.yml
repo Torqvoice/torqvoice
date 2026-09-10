@@ -37,7 +37,6 @@ jobs:
       # Playwright starts the app itself on this port and resets this database
       # before it does; both come from playwright.config.ts.
       E2E_DATABASE_URL: postgresql://torqvoice:torqvoice@127.0.0.1:5432/torqvoice_e2e
-      BETTER_AUTH_SECRET: e2e-secret-not-for-production
 
     steps:
       - uses: actions/checkout@v4
@@ -46,6 +45,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      # A fresh one per run: the sessions it signs live as long as the job, and
+      # a short or guessable value makes better-auth warn on every request.
+      - name: Make a session secret for this run
+        run: echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
 
       - run: npm ci
 

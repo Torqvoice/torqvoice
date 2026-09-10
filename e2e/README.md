@@ -34,6 +34,12 @@ e2e/
 One folder per area of the app, one file per flow. A new area gets a new folder;
 a helper used by more than one spec goes under `support/`.
 
+The app the suite starts runs with `DISABLE_BACKGROUND_JOBS=1`. Its schedulers would
+otherwise tick through the run: the due-reminder scan stamps `notifiedAt` on rows a spec
+is asserting on, the message and webhook processors send things, and all of them compete
+for the single CPU a serial suite is using. A spec that needs one of them should call the
+processor directly rather than wait for a timer.
+
 ## One-time setup
 
 ```bash
