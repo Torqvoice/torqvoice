@@ -5,12 +5,19 @@ import { dismissLicenseExpiryBanner } from '@/features/settings/Actions/settings
 
 interface LicenseExpiryInfo {
   daysUntilExpiry: number | null
+  /**
+   * Days until an unrefreshed licence token is no longer trusted, once the
+   * warning threshold is crossed. 0 means branding has already returned.
+   * null when the token is fresh or there is no licence at all.
+   */
+  unverifiedDaysLeft: number | null
   dismissed: boolean
   dismiss: () => void
 }
 
 const LicenseExpiryContext = createContext<LicenseExpiryInfo>({
   daysUntilExpiry: null,
+  unverifiedDaysLeft: null,
   dismissed: false,
   // biome-ignore lint/suspicious/noEmptyBlockStatements: default noop
   dismiss: () => {},
@@ -18,10 +25,12 @@ const LicenseExpiryContext = createContext<LicenseExpiryInfo>({
 
 export function LicenseExpiryProvider({
   daysUntilExpiry,
+  unverifiedDaysLeft,
   dismissed: initialDismissed,
   children,
 }: {
   daysUntilExpiry: number | null
+  unverifiedDaysLeft: number | null
   dismissed: boolean
   children: React.ReactNode
 }) {
@@ -33,7 +42,9 @@ export function LicenseExpiryProvider({
   }
 
   return (
-    <LicenseExpiryContext.Provider value={{ daysUntilExpiry, dismissed, dismiss }}>
+    <LicenseExpiryContext.Provider
+      value={{ daysUntilExpiry, unverifiedDaysLeft, dismissed, dismiss }}
+    >
       {children}
     </LicenseExpiryContext.Provider>
   )

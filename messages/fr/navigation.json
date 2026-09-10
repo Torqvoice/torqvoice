@@ -83,6 +83,9 @@
   "licenseExpiresTomorrow": "Votre licence expire demain.",
   "licenseExpiresDays": "Votre licence expire dans {days} jours.",
   "licenseRenew": "Renouveler",
+  "licenseUnverifiedDays": "Votre licence n'a pas pu être vérifiée. La marque Torqvoice réapparaîtra dans {days} jours si ce serveur ne peut pas joindre torqvoice.com.",
+  "licenseUnverifiedNow": "Votre licence n'a pas pu être vérifiée et la marque Torqvoice est réapparue.",
+  "licenseVerify": "Vérifier",
   "sidebar": {
     "dashboard": "Tableau de bord",
     "clients": "Clients",

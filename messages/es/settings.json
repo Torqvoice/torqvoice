@@ -1239,7 +1239,14 @@
     "validated": "Licencia validada exitosamente",
     "invalid": "Clave de licencia invalida",
     "failedValidate": "Error al validar la licencia",
-    "keyHint": "Cada clave de licencia esta vinculada a esta organización y no puede compartirse entre varias organizaciones."
+    "keyHint": "Cada clave de licencia esta vinculada a esta organización y no puede compartirse entre varias organizaciones.",
+    "expired": "Expirada",
+    "unverified": "Sin verificar",
+    "expiresOn": "Expira: {date}",
+    "unreachable": "No se pudo conectar con torqvoice.com. La licencia guardada en este servidor no ha cambiado.",
+    "unverifiedHint": "Este servidor no ha podido confirmar la licencia con torqvoice.com desde hace {days} días. La marca Torqvoice vuelve tras {max} días sin una comprobación correcta.",
+    "rejected": "torqvoice.com no aceptó esta clave: {reason}",
+    "signedHint": "La validación está firmada por torqvoice.com y se repite a diario, por lo que el servidor necesita acceso saliente a torqvoice.com."
   },
   "about": {
     "title": "Acerca de Torqvoice",

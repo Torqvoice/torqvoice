@@ -1239,7 +1239,14 @@
     "validated": "Lisans başarıyla doğrulandı",
     "invalid": "Geçersiz lisans anahtarı",
     "failedValidate": "Lisans doğrulanamadı",
-    "keyHint": "Her lisans anahtarı bu kuruluşa bağlıdır ve birden fazla kuruluşta paylaşılamaz."
+    "keyHint": "Her lisans anahtarı bu kuruluşa bağlıdır ve birden fazla kuruluşta paylaşılamaz.",
+    "expired": "Süresi doldu",
+    "unverified": "Doğrulanmadı",
+    "expiresOn": "Bitiş: {date}",
+    "unreachable": "torqvoice.com'a ulaşılamadı. Bu sunucuda kayıtlı lisans değişmedi.",
+    "unverifiedHint": "Bu sunucu {days} gündür lisansı torqvoice.com ile doğrulayamıyor. Başarılı bir kontrol olmadan {max} gün sonra Torqvoice markası geri döner.",
+    "rejected": "torqvoice.com bu anahtarı kabul etmedi: {reason}",
+    "signedHint": "Doğrulama torqvoice.com tarafından imzalanır ve her gün yenilenir, bu nedenle sunucunun torqvoice.com'a giden erişimi olmalıdır."
   },
   "about": {
     "title": "Torqvoice Hakkında",

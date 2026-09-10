@@ -1239,7 +1239,14 @@
     "validated": "Lizenz erfolgreich validiert",
     "invalid": "Ungültiger Lizenzschlüssel",
     "failedValidate": "Lizenz konnte nicht validiert werden",
-    "keyHint": "Jeder Lizenzschlüssel ist an diese Organisation gebunden und kann nicht für mehrere Organisationen verwendet werden."
+    "keyHint": "Jeder Lizenzschlüssel ist an diese Organisation gebunden und kann nicht für mehrere Organisationen verwendet werden.",
+    "expired": "Abgelaufen",
+    "unverified": "Nicht überprüft",
+    "expiresOn": "Läuft ab: {date}",
+    "unreachable": "torqvoice.com war nicht erreichbar. Die auf diesem Server gespeicherte Lizenz bleibt unverändert.",
+    "unverifiedHint": "Dieser Server konnte die Lizenz seit {days} Tagen nicht bei torqvoice.com bestätigen. Nach {max} Tagen ohne erfolgreiche Prüfung kehrt das Torqvoice-Branding zurück.",
+    "rejected": "torqvoice.com hat diesen Schlüssel nicht akzeptiert: {reason}",
+    "signedHint": "Die Validierung wird von torqvoice.com signiert und täglich erneuert, daher braucht der Server ausgehenden Zugriff auf torqvoice.com."
   },
   "about": {
     "title": "Uber Torqvoice",

@@ -83,6 +83,9 @@
   "licenseExpiresTomorrow": "Twoja licencja wygasa jutro.",
   "licenseExpiresDays": "Twoja licencja wygasa za {days} dni.",
   "licenseRenew": "Odnów",
+  "licenseUnverifiedDays": "Nie udało się zweryfikować licencji. Oznaczenie Torqvoice wróci za {days} dni, jeśli ten serwer nie połączy się z torqvoice.com.",
+  "licenseUnverifiedNow": "Nie udało się zweryfikować licencji i oznaczenie Torqvoice wróciło.",
+  "licenseVerify": "Zweryfikuj",
   "sidebar": {
     "dashboard": "Pulpit",
     "clients": "Klienci",

@@ -1239,7 +1239,14 @@
     "validated": "Licentie succesvol gevalideerd",
     "invalid": "Ongeldige licentiesleutel",
     "failedValidate": "Licentie valideren mislukt",
-    "keyHint": "Elke licentiesleutel is gekoppeld aan deze organisatie en kan niet worden gedeeld tussen meerdere organisaties."
+    "keyHint": "Elke licentiesleutel is gekoppeld aan deze organisatie en kan niet worden gedeeld tussen meerdere organisaties.",
+    "expired": "Verlopen",
+    "unverified": "Niet geverifieerd",
+    "expiresOn": "Verloopt: {date}",
+    "unreachable": "torqvoice.com was niet bereikbaar. De licentie op deze server is ongewijzigd.",
+    "unverifiedHint": "Deze server kan de licentie al {days} dagen niet bevestigen bij torqvoice.com. Na {max} dagen zonder geslaagde controle keert de Torqvoice-branding terug.",
+    "rejected": "torqvoice.com heeft deze sleutel niet geaccepteerd: {reason}",
+    "signedHint": "De validatie wordt door torqvoice.com ondertekend en dagelijks herhaald, dus de server heeft uitgaande toegang tot torqvoice.com nodig."
   },
   "about": {
     "title": "Over Torqvoice",

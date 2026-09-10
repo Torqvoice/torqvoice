@@ -83,6 +83,9 @@
   "licenseExpiresTomorrow": "Lisensen din utløper i morgen.",
   "licenseExpiresDays": "Lisensen din utløper om {days} dager.",
   "licenseRenew": "Forny",
+  "licenseUnverifiedDays": "Lisensen din kunne ikke bekreftes. Torqvoice-merkingen kommer tilbake om {days} dager med mindre denne serveren når torqvoice.com.",
+  "licenseUnverifiedNow": "Lisensen din kunne ikke bekreftes, og Torqvoice-merkingen er tilbake.",
+  "licenseVerify": "Bekreft",
   "sidebar": {
     "dashboard": "Dashbord",
     "clients": "Klienter",

@@ -7,15 +7,32 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 
+vi.mock('@/lib/license/token', () => ({
+  verifyLicenseToken: vi.fn(),
+}))
+
+vi.mock('@/lib/license/revalidate', () => ({
+  scheduleLicenseSelfHeal: vi.fn(),
+}))
+
 import { db } from '@/lib/db'
 import { getFeatures, PLAN_FEATURES } from '@/lib/features'
+import { verifyLicenseToken } from '@/lib/license/token'
+import { scheduleLicenseSelfHeal } from '@/lib/license/revalidate'
 
 const mockFindUnique = vi.mocked(db.subscription.findUnique)
 const mockFindMany = vi.mocked(db.appSetting.findMany)
+const mockVerify = vi.mocked(verifyLicenseToken)
+const mockSelfHeal = vi.mocked(scheduleLicenseSelfHeal)
+
+function verification(status: 'missing' | 'invalid' | 'expired' | 'stale' | 'valid') {
+  return { status, payload: null, ageDays: null, daysUntilExpiry: null }
+}
 
 beforeEach(() => {
   vi.resetAllMocks()
   vi.unstubAllEnvs()
+  mockVerify.mockReturnValue(verification('missing'))
 })
 
 describe('getFeatures — cloud mode', () => {
@@ -135,32 +152,62 @@ describe('getFeatures — self-hosted mode', () => {
     expect(features.payments).toBe(true)
     expect(features.brandingRemoved).toBe(false)
     expect(features.customPlatformName).toBe(false)
+    expect(mockSelfHeal).not.toHaveBeenCalled()
   })
 
-  it('unlocks branding when license is valid and not expired', async () => {
+  it('unlocks branding only on a verified, fresh, unexpired token', async () => {
+    mockFindMany.mockResolvedValue([
+      { key: 'license.key', value: 'KEY' },
+      { key: 'license.token', value: 'tvl1.x.y' },
+    ] as any)
+    mockVerify.mockReturnValue(verification('valid'))
+    const features = await getFeatures('org-1')
+    expect(mockVerify).toHaveBeenCalledWith('tvl1.x.y', 'org-1')
+    expect(features.brandingRemoved).toBe(true)
+    expect(features.customPlatformName).toBe(true)
+    expect(mockSelfHeal).not.toHaveBeenCalled()
+  })
+
+  it('ignores the legacy license.valid and license.expiresAt rows', async () => {
+    // These are what a self-hoster can edit with one UPDATE. They must not be
+    // read at all, so a forged row is not even a partial input.
     const future = new Date(Date.now() + 86400000).toISOString()
     mockFindMany.mockResolvedValue([
       { key: 'license.valid', value: 'true' },
       { key: 'license.expiresAt', value: future },
     ] as any)
     const features = await getFeatures('org-1')
-    expect(features.brandingRemoved).toBe(true)
-    expect(features.customPlatformName).toBe(true)
+    expect(features.brandingRemoved).toBe(false)
+    const where = mockFindMany.mock.calls[0][0]?.where as { key: { in: string[] } }
+    expect(where.key.in).not.toContain('license.valid')
+    expect(where.key.in).not.toContain('license.expiresAt')
   })
 
-  it('does not unlock branding when license is expired', async () => {
-    const past = new Date(Date.now() - 86400000).toISOString()
+  it.each([
+    'expired',
+    'stale',
+    'invalid',
+  ] as const)('keeps branding when the token is %s', async (status) => {
     mockFindMany.mockResolvedValue([
-      { key: 'license.valid', value: 'true' },
-      { key: 'license.expiresAt', value: past },
+      { key: 'license.key', value: 'KEY' },
+      { key: 'license.token', value: 'tvl1.x.y' },
     ] as any)
+    mockVerify.mockReturnValue(verification(status))
     const features = await getFeatures('org-1')
     expect(features.brandingRemoved).toBe(false)
   })
 
-  it('does not unlock branding when license.valid is false', async () => {
-    mockFindMany.mockResolvedValue([{ key: 'license.valid', value: 'false' }] as any)
-    const features = await getFeatures('org-1')
-    expect(features.brandingRemoved).toBe(false)
+  it('schedules a background refresh when a key is stored without a usable token', async () => {
+    mockFindMany.mockResolvedValue([{ key: 'license.key', value: 'KEY' }] as any)
+    mockVerify.mockReturnValue(verification('missing'))
+    await getFeatures('org-1')
+    expect(mockSelfHeal).toHaveBeenCalledWith('org-1', 'KEY')
+  })
+
+  it('does not schedule a refresh without a key', async () => {
+    mockFindMany.mockResolvedValue([{ key: 'license.token', value: 'tvl1.x.y' }] as any)
+    mockVerify.mockReturnValue(verification('stale'))
+    await getFeatures('org-1')
+    expect(mockSelfHeal).not.toHaveBeenCalled()
   })
 })

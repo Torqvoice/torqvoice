@@ -25,6 +25,11 @@ import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
+import {
+  LICENSE_TOKEN_MAX_AGE_DAYS,
+  LICENSE_TOKEN_WARN_AGE_DAYS,
+  verifyLicenseToken,
+} from '@/lib/license/token'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
@@ -194,30 +199,42 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ? (getManifest(lookupConnection.connectorId)?.name ?? null)
     : null
 
-  // Check license expiry (only for admin/owner with white-label)
+  // Licence notices for admins and owners. Both clocks come off the signed
+  // token: the term itself, and how long since torqvoice.com last confirmed
+  // it. An install with a key but nothing verifiable is told so, too.
   let daysUntilExpiry: number | null = null
+  let unverifiedDaysLeft: number | null = null
   let licenseExpiryDismissed = false
-  if (isOwnerOrAdmin && features.brandingRemoved) {
-    const expirySettings = await db.appSetting.findMany({
+  if (isOwnerOrAdmin && !isCloudMode()) {
+    const licenceSettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,
-        key: { in: ['license.expiresAt', 'license.valid', 'license.expiryDismissed'] },
+        key: { in: ['license.token', 'license.key', 'license.expiryDismissed'] },
       },
       select: { key: true, value: true },
     })
-    const expiryMap = new Map(expirySettings.map((s) => [s.key, s.value]))
-    const expiresAt = expiryMap.get('license.expiresAt')
-    const isValid = expiryMap.get('license.valid')
-    licenseExpiryDismissed = expiryMap.get('license.expiryDismissed') === 'true'
-    if (expiresAt && isValid === 'true') {
-      const diff = new Date(expiresAt).getTime() - Date.now()
-      daysUntilExpiry = Math.ceil(diff / (1000 * 60 * 60 * 24))
+    const licenceMap = new Map(licenceSettings.map((s) => [s.key, s.value]))
+    licenseExpiryDismissed = licenceMap.get('license.expiryDismissed') === 'true'
+    const verification = verifyLicenseToken(licenceMap.get('license.token'), data.organizationId)
+    if (verification.status === 'valid') {
+      daysUntilExpiry = verification.daysUntilExpiry
+      if (verification.ageDays !== null && verification.ageDays >= LICENSE_TOKEN_WARN_AGE_DAYS) {
+        unverifiedDaysLeft = Math.max(0, LICENSE_TOKEN_MAX_AGE_DAYS - verification.ageDays)
+      }
+    } else if (verification.status === 'stale') {
+      unverifiedDaysLeft = 0
+    } else if (verification.status === 'expired') {
+      daysUntilExpiry = verification.daysUntilExpiry
     }
   }
 
   return (
     <ServiceTypeProvider serviceType={data.serviceType}>
-      <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
+      <LicenseExpiryProvider
+        daysUntilExpiry={daysUntilExpiry}
+        unverifiedDaysLeft={unverifiedDaysLeft}
+        dismissed={licenseExpiryDismissed}
+      >
         <WhiteLabelCtaProvider show={showWhiteLabelCta}>
           {/* Accent line along the very top of the viewport — the card hairline at
         page scale: primary on the left, gone by the far edge. Marks where the

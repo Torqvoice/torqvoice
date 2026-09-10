@@ -1,15 +1,27 @@
 'use server'
 
 import { withAuth } from '@/lib/with-auth'
-import { db } from '@/lib/db'
-import { SETTING_KEYS } from '../Schema/settingsSchema'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { demoGuard } from '@/lib/demo'
+import { db } from '@/lib/db'
+import { revalidateLicense } from '@/lib/license/revalidate'
+import type { LicenseTokenStatus } from '@/lib/license/token'
+
+export type ValidateLicenseResult = {
+  /** what the feature gate now sees */
+  status: LicenseTokenStatus
+  valid: boolean
+  plan: string
+  /** false when torqvoice.com could not be reached; the stored token is untouched */
+  reachable: boolean
+  /** torqvoice.com's reason when it answered "not valid" */
+  reason?: string
+}
 
 export async function validateLicense(licenseKey: string) {
   return withAuth(
-    async (ctx) => {
+    async (ctx): Promise<ValidateLicenseResult> => {
       // The demo runs on our licence, not the visitor's, and activating one
       // here would move a real customer's plan onto a shared instance.
       demoGuard()
@@ -18,153 +30,22 @@ export async function validateLicense(licenseKey: string) {
         throw new Error('License key is required')
       }
 
-      let valid = false
-      let plan = 'free'
-      let expiresAt = ''
+      const { remote, verification } = await revalidateLicense(ctx.organizationId, key, ctx.userId)
 
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'}/api/license/validate`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key, organizationId: ctx.organizationId }),
-            signal: AbortSignal.timeout(10000),
-          }
-        )
-
-        if (response.ok) {
-          const data = await response.json()
-          valid = data.valid === true
-          if (valid && data.plan) {
-            plan = data.plan
-          }
-          if (data.expiresAt) {
-            expiresAt = data.expiresAt
-          }
-        }
-      } catch {
-        // API unreachable — fall back to cached result
-        const cached = await db.appSetting.findMany({
-          where: {
-            organizationId: ctx.organizationId,
-            key: {
-              in: [
-                SETTING_KEYS.LICENSE_VALID,
-                SETTING_KEYS.LICENSE_PLAN,
-                SETTING_KEYS.LICENSE_EXPIRES_AT,
-              ],
-            },
-          },
-          select: { key: true, value: true },
-        })
-        for (const setting of cached) {
-          if (setting.key === SETTING_KEYS.LICENSE_VALID) {
-            valid = setting.value === 'true'
-          }
-          if (setting.key === SETTING_KEYS.LICENSE_PLAN) {
-            plan = setting.value
-          }
-          if (setting.key === SETTING_KEYS.LICENSE_EXPIRES_AT) {
-            expiresAt = setting.value
-          }
-        }
-      }
-
-      const now = new Date().toISOString()
-
-      await db.$transaction([
-        db.appSetting.upsert({
-          where: {
-            organizationId_key: {
-              organizationId: ctx.organizationId,
-              key: SETTING_KEYS.LICENSE_KEY,
-            },
-          },
-          update: { value: key },
-          create: {
-            userId: ctx.userId,
-            organizationId: ctx.organizationId,
-            key: SETTING_KEYS.LICENSE_KEY,
-            value: key,
-          },
-        }),
-        db.appSetting.upsert({
-          where: {
-            organizationId_key: {
-              organizationId: ctx.organizationId,
-              key: SETTING_KEYS.LICENSE_VALID,
-            },
-          },
-          update: { value: String(valid) },
-          create: {
-            userId: ctx.userId,
-            organizationId: ctx.organizationId,
-            key: SETTING_KEYS.LICENSE_VALID,
-            value: String(valid),
-          },
-        }),
-        db.appSetting.upsert({
-          where: {
-            organizationId_key: {
-              organizationId: ctx.organizationId,
-              key: SETTING_KEYS.LICENSE_CHECKED_AT,
-            },
-          },
-          update: { value: now },
-          create: {
-            userId: ctx.userId,
-            organizationId: ctx.organizationId,
-            key: SETTING_KEYS.LICENSE_CHECKED_AT,
-            value: now,
-          },
-        }),
-        db.appSetting.upsert({
-          where: {
-            organizationId_key: {
-              organizationId: ctx.organizationId,
-              key: SETTING_KEYS.LICENSE_PLAN,
-            },
-          },
-          update: { value: plan },
-          create: {
-            userId: ctx.userId,
-            organizationId: ctx.organizationId,
-            key: SETTING_KEYS.LICENSE_PLAN,
-            value: plan,
-          },
-        }),
-        ...(expiresAt
-          ? [
-              db.appSetting.upsert({
-                where: {
-                  organizationId_key: {
-                    organizationId: ctx.organizationId,
-                    key: SETTING_KEYS.LICENSE_EXPIRES_AT,
-                  },
-                },
-                update: { value: expiresAt },
-                create: {
-                  userId: ctx.userId,
-                  organizationId: ctx.organizationId,
-                  key: SETTING_KEYS.LICENSE_EXPIRES_AT,
-                  value: expiresAt,
-                },
-              }),
-            ]
-          : []),
-        // Reset expiry dismissed flag so banner can warn again on next cycle
-        db.appSetting.deleteMany({
-          where: {
-            organizationId: ctx.organizationId,
-            key: 'license.expiryDismissed',
-          },
-        }),
-      ])
+      // Let the expiry banner warn again on the next cycle.
+      await db.appSetting.deleteMany({
+        where: { organizationId: ctx.organizationId, key: 'license.expiryDismissed' },
+      })
 
       revalidatePath('/settings')
 
-      return { valid, plan }
+      return {
+        status: verification.status,
+        valid: verification.status === 'valid',
+        plan: verification.payload?.plan ?? remote.plan,
+        reachable: remote.reachable,
+        reason: remote.error,
+      }
     },
     {
       requiredPermissions: [

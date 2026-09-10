@@ -1239,7 +1239,14 @@
     "validated": "License validated successfully",
     "invalid": "Invalid license key",
     "failedValidate": "Failed to validate license",
-    "keyHint": "Each license key is tied to this organization and cannot be shared across multiple organizations."
+    "keyHint": "Each license key is tied to this organization and cannot be shared across multiple organizations.",
+    "expired": "Expired",
+    "unverified": "Unverified",
+    "expiresOn": "Expires: {date}",
+    "unreachable": "torqvoice.com could not be reached. The licence stored on this server is unchanged.",
+    "unverifiedHint": "This server has not been able to confirm the licence with torqvoice.com for {days} days. Torqvoice branding returns after {max} days without a successful check.",
+    "rejected": "torqvoice.com did not accept this key: {reason}",
+    "signedHint": "Validation is signed by torqvoice.com and re-checked daily, so the server needs outbound access to torqvoice.com."
   },
   "about": {
     "title": "About Torqvoice",

@@ -11,32 +11,59 @@ import { Badge } from '@/components/ui/badge'
 import { AppCard } from '@/components/app-card'
 import { ExternalLink, Key, Loader2 } from 'lucide-react'
 import { validateLicense } from '../Actions/validateLicense'
+import {
+  LICENSE_TOKEN_MAX_AGE_DAYS,
+  LICENSE_TOKEN_WARN_AGE_DAYS,
+  type LicenseTokenStatus,
+} from '@/lib/license/token'
+
+const DAY_MS = 24 * 60 * 60 * 1000
 
 export function LicenseSettings({
   initialKey,
-  initialValid,
+  initialStatus,
+  initialExpiresAt,
+  initialIssuedAt,
   initialCheckedAt,
   demoMode = false,
 }: {
   initialKey: string
-  initialValid: boolean
+  initialStatus: LicenseTokenStatus
+  /** from the verified token; empty without one */
+  initialExpiresAt: string
+  /** when torqvoice.com last signed the stored token; empty without one */
+  initialIssuedAt: string
+  /** when this server last tried, reachable or not */
   initialCheckedAt: string
   demoMode?: boolean
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
   const [licenseKey, setLicenseKey] = useState(initialKey)
-  const [licenseValid, setLicenseValid] = useState(initialValid)
+  const [status, setStatus] = useState<LicenseTokenStatus>(initialStatus)
   const [isValidating, setIsValidating] = useState(false)
+
+  const licenseValid = status === 'valid'
+  const issuedAgeDays = initialIssuedAt
+    ? Math.floor((Date.now() - new Date(initialIssuedAt).getTime()) / DAY_MS)
+    : null
+  const showUnverifiedHint =
+    (status === 'valid' || status === 'stale') &&
+    issuedAgeDays !== null &&
+    issuedAgeDays >= LICENSE_TOKEN_WARN_AGE_DAYS
 
   const handleValidateLicense = async () => {
     setIsValidating(true)
     try {
       const result = await validateLicense(licenseKey)
       if (result.success && result.data) {
-        setLicenseValid(result.data.valid)
-        if (result.data.valid) {
+        setStatus(result.data.status)
+        if (!result.data.reachable) {
+          toast.error(t('license.unreachable'))
+        } else if (result.data.valid) {
           toast.success(t('license.validated'))
+        } else if (result.data.reason) {
+          toast.error(t('license.rejected', { reason: result.data.reason }))
         } else {
           toast.error(t('license.invalid'))
         }
@@ -48,6 +75,16 @@ export function LicenseSettings({
       setIsValidating(false)
     }
   }
+
+  const statusBadge = licenseValid ? (
+    <Badge variant="default">{t('license.active')}</Badge>
+  ) : status === 'expired' ? (
+    <Badge variant="destructive">{t('license.expired')}</Badge>
+  ) : status === 'stale' ? (
+    <Badge variant="outline">{t('license.unverified')}</Badge>
+  ) : (
+    <Badge variant="secondary">{t('license.inactive')}</Badge>
+  )
 
   return (
     <div className="space-y-6">
@@ -71,12 +108,13 @@ export function LicenseSettings({
         }
         contentClassName="space-y-4"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Label>{t('license.status')}</Label>
-          {licenseValid ? (
-            <Badge variant="default">{t('license.active')}</Badge>
-          ) : (
-            <Badge variant="secondary">{t('license.inactive')}</Badge>
+          {statusBadge}
+          {initialExpiresAt && (
+            <span className="text-xs text-muted-foreground">
+              {t('license.expiresOn', { date: new Date(initialExpiresAt).toLocaleDateString() })}
+            </span>
           )}
           {initialCheckedAt && (
             <span className="text-xs text-muted-foreground">
@@ -84,6 +122,14 @@ export function LicenseSettings({
             </span>
           )}
         </div>
+        {showUnverifiedHint && issuedAgeDays !== null && (
+          <p className="text-xs text-amber-600">
+            {t('license.unverifiedHint', {
+              days: issuedAgeDays,
+              max: LICENSE_TOKEN_MAX_AGE_DAYS,
+            })}
+          </p>
+        )}
         <div className="flex gap-2">
           <Input
             placeholder={t('license.enterLicenseKey')}
@@ -105,6 +151,7 @@ export function LicenseSettings({
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">{t('license.keyHint')}</p>
+        <p className="text-xs text-muted-foreground">{t('license.signedHint')}</p>
       </AppCard>
     </div>
   )

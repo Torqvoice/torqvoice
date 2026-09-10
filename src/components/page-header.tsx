@@ -187,13 +187,16 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
 export function PageHeader() {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
-  const { daysUntilExpiry, dismissed, dismiss } = useLicenseExpiry()
+  const { daysUntilExpiry, unverifiedDaysLeft, dismissed, dismiss } = useLicenseExpiry()
   // Weeks of warning before a licence lapses, so this waits behind anything
-  // happening right now rather than adding a second bar beneath it.
+  // happening right now rather than adding a second bar beneath it. A licence
+  // that torqvoice.com has not confirmed for a week takes the same slot and
+  // is not dismissable: the fix is on the operator's side of the network.
+  const showUnverifiedNotice = unverifiedDaysLeft !== null
   const showLicenceNotice = useBannerSlot(
     'licence',
     BANNER_PRIORITY.licence,
-    daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed
+    showUnverifiedNotice || (daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed)
   )
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
@@ -307,7 +310,28 @@ export function PageHeader() {
           )}
         </div>
       </header>
-      {showLicenceNotice && daysUntilExpiry !== null && (
+      {showLicenceNotice && showUnverifiedNotice && (
+        <div
+          className={`flex items-center gap-2 px-4 py-2 text-sm ${
+            unverifiedDaysLeft <= 0
+              ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
+              : 'bg-amber-500/10 text-amber-600 border-b border-amber-500/20'
+          }`}
+        >
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>
+            {unverifiedDaysLeft <= 0
+              ? tn('licenseUnverifiedNow')
+              : tn('licenseUnverifiedDays', { days: unverifiedDaysLeft })}
+          </span>
+          <div className="ml-auto flex items-center gap-2 shrink-0">
+            <Link href="/settings/license" className="font-medium underline hover:no-underline">
+              {tn('licenseVerify')}
+            </Link>
+          </div>
+        </div>
+      )}
+      {showLicenceNotice && !showUnverifiedNotice && daysUntilExpiry !== null && (
         <div
           className={`flex items-center gap-2 px-4 py-2 text-sm ${
             daysUntilExpiry <= 0
