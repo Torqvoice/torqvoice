@@ -93,6 +93,17 @@ describe('the sections a default sheet prints', () => {
     expect(printed(spec)).toEqual(DEFAULT_SHEET.filter((other) => other !== id))
   })
 
+  it('accounts for every section the designer offers', () => {
+    // The guard on the two lists above: a section added to the schema
+    // tomorrow is either on the default sheet, and so covered by the
+    // hides-it test, or one of the three known to start off. Neither, and
+    // this fails rather than quietly leaving a block untested.
+    const offByDefault = ['items_table', 'telegram_qr', 'general']
+    expect([...DEFAULT_SHEET, ...offByDefault].sort()).toEqual(
+      BUILTIN_SECTIONS.map((section) => section.id).sort()
+    )
+  })
+
   it('brings the combined items table back when it is switched on', () => {
     // Off by default because the parts and labour tables cover the same
     // ground; the designer warns that they are exclusive.
