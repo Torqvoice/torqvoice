@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Loader2, Send, ChevronUp } from 'lucide-react'
+import { TelegramConnectCard } from './TelegramQrCode'
 import { cn } from '@/lib/utils'
 import {
   sendTelegramToCustomer,
@@ -30,6 +31,13 @@ interface TelegramConversationProps {
   customerId: string
   customerName: string
   telegramChatId: string | null
+  /**
+   * The bot's username, when the caller has it: the customer's page does,
+   * and shows the connect QR in place of the empty state; the inbox only
+   * opens linked chats and leaves it out.
+   */
+  botUsername?: string | null
+  customerEmail?: string | null
   initialMessages: TelegramMessage[]
   initialNextCursor: string | null
   className?: string
@@ -39,6 +47,8 @@ export function TelegramConversation({
   customerId,
   customerName,
   telegramChatId,
+  botUsername,
+  customerEmail,
   initialMessages,
   initialNextCursor,
   className,
@@ -163,10 +173,29 @@ export function TelegramConversation({
   }
 
   if (!telegramChatId) {
+    // Nothing to read yet, so the space shows how to change that: the same
+    // QR and link as the header button, large enough to scan across a desk.
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <Send className="mb-3 h-10 w-10 text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">{t('notLinked')}</p>
+      <div
+        className="flex flex-col items-center justify-center px-4 py-8"
+        data-testid="telegram-not-linked"
+      >
+        {botUsername ? (
+          <>
+            <p className="mb-2 text-center text-sm text-muted-foreground">{t('notLinked')}</p>
+            <TelegramConnectCard
+              botUsername={botUsername}
+              customerId={customerId}
+              customerName={customerName}
+              customerEmail={customerEmail}
+            />
+          </>
+        ) : (
+          <>
+            <Send className="mb-3 h-10 w-10 text-muted-foreground/40" />
+            <p className="text-sm text-muted-foreground">{t('notLinked')}</p>
+          </>
+        )}
       </div>
     )
   }

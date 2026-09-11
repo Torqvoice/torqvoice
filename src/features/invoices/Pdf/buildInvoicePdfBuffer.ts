@@ -33,7 +33,7 @@ import {
   type InvoicePrintAssembly,
   invoiceNumberOf,
 } from '../Lib/assembleInvoicePrint'
-import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
+import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { getAppBaseUrl } from '@/lib/app-url'
 
 /** The job's own files, printed into the workshop's copy only. */
@@ -67,7 +67,11 @@ export async function renderInvoicePdf(
     ? `${getAppBaseUrl()}/portal/${org?.portalSlug || orgId}`
     : undefined
 
-  const telegramQr = await telegramQrForPrint(orgId, layoutConfig)
+  const telegramQr = await telegramQrForPrint(
+    orgId,
+    layoutConfig,
+    documentCustomerId(assembly.record)
+  )
 
   const element = React.createElement(InvoicePDF, {
     data: assembly.data,

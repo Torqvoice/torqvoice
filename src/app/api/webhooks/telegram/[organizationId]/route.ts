@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
+import { BARE_START_REPLY, getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
 import { notify } from '@/lib/notify'
 import { safeEqual } from '@/lib/webhook-signatures'
 
@@ -57,10 +57,15 @@ export async function POST(
     const telegramMessageId = String(msg.message_id)
 
     // Handle /start deep-link command: /start {customerId}
-    if (text.startsWith('/start ')) {
-      const customerId = text.slice(7).trim()
+    if (text === '/start' || text.startsWith('/start ')) {
+      const customerId = text.slice('/start'.length).trim()
       if (customerId) {
         await handleStartCommand(organizationId, chatId, customerId, msg.chat.first_name)
+      } else {
+        // Somebody opened the bot by name rather than through a link that
+        // names them, so there is nobody to link them to. Not a message to
+        // file or to raise a notification for; say what to do instead.
+        await handleBareStart(organizationId, chatId)
       }
       return NextResponse.json({ ok: true })
     }
@@ -106,6 +111,14 @@ export async function POST(
     console.error('[webhook/telegram] Error:', error)
     // Always return 200 to prevent Telegram retries
     return NextResponse.json({ ok: true })
+  }
+}
+
+async function handleBareStart(organizationId: string, chatId: string) {
+  try {
+    await sendTelegramMessage(organizationId, { chatId, text: BARE_START_REPLY })
+  } catch (error) {
+    console.error('[webhook/telegram] Could not answer a bare /start:', error)
   }
 }
 

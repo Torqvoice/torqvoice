@@ -708,6 +708,8 @@ export function CustomerDetailClient({
               <TelegramConversation
                 customerId={customer.id}
                 customerName={customer.name}
+                customerEmail={customer.email}
+                botUsername={telegramBotUsername}
                 telegramChatId={telegramChatId}
                 initialMessages={telegramMessages}
                 initialNextCursor={telegramNextCursor}

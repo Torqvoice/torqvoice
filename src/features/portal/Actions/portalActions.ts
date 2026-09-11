@@ -13,7 +13,7 @@ import { headers } from 'next/headers'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { assembleInvoicePrint } from '@/features/invoices/Lib/assembleInvoicePrint'
-import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
+import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
@@ -307,7 +307,11 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
     const [labels, features, telegramQr] = await Promise.all([
       loadPrintLabels(locale, assembly.labelSettings),
       getFeatures(organizationId),
-      telegramQrForPrint(organizationId, assembly.layoutConfig),
+      telegramQrForPrint(
+        organizationId,
+        assembly.layoutConfig,
+        documentCustomerId(assembly.record)
+      ),
     ])
     const torqvoiceLogoDataUri = features.brandingRemoved
       ? undefined

@@ -68,6 +68,8 @@ const RECORD_INCLUDE = {
   customer: { select: PARTY_SELECT },
   vehicle: {
     select: {
+      // Whose car it is, for the Telegram code that links the scanner to them.
+      customerId: true,
       make: true,
       model: true,
       year: true,

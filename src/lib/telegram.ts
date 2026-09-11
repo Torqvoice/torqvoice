@@ -28,6 +28,14 @@ export async function getOrgTelegramBotUsername(organizationId: string): Promise
 }
 
 /** The secret Telegram signs its webhook calls with. */
+/**
+ * What the bot says to somebody who opened it by name rather than through a
+ * link that names them: there is nobody to link the chat to, so say where
+ * such a link is found.
+ */
+export const BARE_START_REPLY =
+  'To connect this chat to your account, open the Telegram link or scan the QR code on your invoice or in the customer portal.'
+
 export async function getOrgTelegramWebhookSecret(organizationId: string): Promise<string | null> {
   const settings = await channelSettings(organizationId, 'telegram')
   return settings.get(ORG_TELEGRAM_KEYS.TELEGRAM_WEBHOOK_SECRET) || null
