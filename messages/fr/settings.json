@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Interligne",
+      "lineSpacings": {
+        "compact": "Compact",
+        "normal": "Normal",
+        "relaxed": "Aéré"
+      },
+      "paragraphSpacing": "Espacement des paragraphes",
+      "paragraphSpacings": {
+        "tight": "Serré",
+        "normal": "Normal",
+        "loose": "Large"
+      },
+      "spacingHint": "L'interligne est la hauteur de chaque ligne ; l'espacement des paragraphes est l'espace entre les paragraphes et entre les blocs de texte. Entrée commence un nouveau paragraphe, Maj+Entrée une nouvelle ligne dans le même.",
       "shapes": "Formes",
       "buttonRadius": "Angles du bouton",
       "topBar": "Barre de couleur en haut",

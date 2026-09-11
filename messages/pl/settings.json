@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Interlinia",
+      "lineSpacings": {
+        "compact": "Zwarta",
+        "normal": "Normalna",
+        "relaxed": "Luźna"
+      },
+      "paragraphSpacing": "Odstęp między akapitami",
+      "paragraphSpacings": {
+        "tight": "Mały",
+        "normal": "Normalny",
+        "loose": "Duży"
+      },
+      "spacingHint": "Interlinia to wysokość każdego wiersza; odstęp między akapitami to miejsce między akapitami i między blokami tekstu. Enter zaczyna nowy akapit, Shift+Enter nowy wiersz w tym samym.",
       "shapes": "Kształty",
       "buttonRadius": "Rogi przycisku",
       "topBar": "Kolorowy pasek u góry",

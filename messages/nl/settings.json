@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Regelafstand",
+      "lineSpacings": {
+        "compact": "Compact",
+        "normal": "Normaal",
+        "relaxed": "Ruim"
+      },
+      "paragraphSpacing": "Alinea-afstand",
+      "paragraphSpacings": {
+        "tight": "Krap",
+        "normal": "Normaal",
+        "loose": "Ruim"
+      },
+      "spacingHint": "Regelafstand is de hoogte van elke regel; alinea-afstand is de ruimte tussen alinea's en tussen tekstblokken. Enter begint een nieuwe alinea, Shift+Enter een nieuwe regel erbinnen.",
       "shapes": "Vormen",
       "buttonRadius": "Knophoeken",
       "topBar": "Kleurbalk bovenaan",

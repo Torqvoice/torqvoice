@@ -5,6 +5,7 @@ import {
   EMAIL_LOGO_MAX_WIDTH,
   EMAIL_LOGO_MIN_WIDTH,
   type EmailTheme,
+  emailSpacing,
 } from '../Lib/emailTemplate'
 import { safeHref } from '../Lib/links'
 import { escapeHtml } from './escape'
@@ -59,6 +60,7 @@ function safeTheme(theme: EmailTheme) {
     font: EMAIL_FONTS[theme.fontFamily] ?? EMAIL_FONTS[d.fontFamily],
     radius,
     topBar: theme.topBar !== false,
+    spacing: emailSpacing(theme),
   }
 }
 
@@ -80,7 +82,12 @@ function wordsHtml(
   look: { color: string; fontSize: number; lineHeight: number }
 ): string {
   if (!words.rich) return paragraphHtml(words.text)
-  return richToHtml(words.rich, { font: t.font, linkColor: t.primary, ...look })
+  return richToHtml(words.rich, {
+    font: t.font,
+    linkColor: t.primary,
+    paragraphGap: t.spacing.paragraphGap,
+    ...look,
+  })
 }
 
 /** The summary rows that carry money, drawn heavier than the rest. */
@@ -117,19 +124,19 @@ function blockHtml(block: SpecBlock, t: SafeTheme, marked: boolean): string {
 
     case 'heading':
       return row(
-        `<td style="${base}font-size:22px;line-height:1.3;font-weight:700;letter-spacing:-0.2px;color:${t.text};padding:0 0 14px 0;">${wordsHtml(block, t, { color: t.text, fontSize: 22, lineHeight: 1.3 })}</td>`
+        `<td style="${base}font-size:22px;line-height:${t.spacing.heading};font-weight:700;letter-spacing:-0.2px;color:${t.text};padding:0 0 ${t.spacing.blockGap - 2}px 0;">${wordsHtml(block, t, { color: t.text, fontSize: 22, lineHeight: t.spacing.heading })}</td>`
       )
 
     case 'paragraph':
       return row(
-        `<td style="${base}font-size:15px;line-height:1.6;color:${t.text};padding:0 0 16px 0;">${wordsHtml(block, t, { color: t.text, fontSize: 15, lineHeight: 1.6 })}</td>`
+        `<td style="${base}font-size:15px;line-height:${t.spacing.body};color:${t.text};padding:0 0 ${t.spacing.blockGap}px 0;">${wordsHtml(block, t, { color: t.text, fontSize: 15, lineHeight: t.spacing.body })}</td>`
       )
 
     case 'callout':
       return row(
         `<td style="padding:2px 0 20px 0;">` +
           `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="${t.background}" style="background:${t.background};border-left:4px solid ${t.primary};border-radius:6px;">` +
-          `<tr><td style="${base}font-size:15px;line-height:1.6;color:${t.text};padding:16px 18px;">${wordsHtml(block, t, { color: t.text, fontSize: 15, lineHeight: 1.6 })}</td></tr>` +
+          `<tr><td style="${base}font-size:15px;line-height:${t.spacing.body};color:${t.text};padding:16px 18px;">${wordsHtml(block, t, { color: t.text, fontSize: 15, lineHeight: t.spacing.body })}</td></tr>` +
           `</table></td>`
       )
 
@@ -178,7 +185,7 @@ function blockHtml(block: SpecBlock, t: SafeTheme, marked: boolean): string {
 
     case 'attachment_note':
       return row(
-        `<td style="${base}font-size:13px;line-height:1.5;color:${t.muted};padding:0 0 16px 0;">${wordsHtml(block, t, { color: t.muted, fontSize: 13, lineHeight: 1.5 })}</td>`
+        `<td style="${base}font-size:13px;line-height:${t.spacing.small};color:${t.muted};padding:0 0 ${t.spacing.blockGap}px 0;">${wordsHtml(block, t, { color: t.muted, fontSize: 13, lineHeight: t.spacing.small })}</td>`
       )
 
     case 'image': {
@@ -225,7 +232,7 @@ function contactFooterCell(
     ? `<span style="font-weight:600;color:${t.text};">${paragraphHtml(name)}</span>`
     : ''
   const body = [nameHtml, ...rest.map((line) => paragraphHtml(line))].filter(Boolean).join('<br />')
-  return `<td align="${align}" style="font-family:${t.font};font-size:12.5px;line-height:1.6;color:${t.muted};padding:${padding};text-align:${align};">${body}</td>`
+  return `<td align="${align}" style="font-family:${t.font};font-size:12.5px;line-height:${t.spacing.body};color:${t.muted};padding:${padding};text-align:${align};">${body}</td>`
 }
 
 /** A row of the mail; in a preview it also says which block it is. */

@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Line spacing",
+      "lineSpacings": {
+        "compact": "Compact",
+        "normal": "Normal",
+        "relaxed": "Relaxed"
+      },
+      "paragraphSpacing": "Paragraph spacing",
+      "paragraphSpacings": {
+        "tight": "Tight",
+        "normal": "Normal",
+        "loose": "Loose"
+      },
+      "spacingHint": "Line spacing is the height of each line; paragraph spacing is the room between paragraphs and between text blocks. Enter starts a new paragraph, Shift+Enter a new line inside one.",
       "shapes": "Shapes",
       "buttonRadius": "Button corners",
       "topBar": "Colour bar at the top",

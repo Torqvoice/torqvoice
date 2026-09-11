@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Межстрочный интервал",
+      "lineSpacings": {
+        "compact": "Плотный",
+        "normal": "Обычный",
+        "relaxed": "Свободный"
+      },
+      "paragraphSpacing": "Интервал между абзацами",
+      "paragraphSpacings": {
+        "tight": "Узкий",
+        "normal": "Обычный",
+        "loose": "Широкий"
+      },
+      "spacingHint": "Межстрочный интервал — высота каждой строки; интервал между абзацами — расстояние между абзацами и между текстовыми блоками. Enter начинает новый абзац, Shift+Enter — новую строку внутри него.",
       "shapes": "Формы",
       "buttonRadius": "Углы кнопки",
       "topBar": "Цветная полоса сверху",

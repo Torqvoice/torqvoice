@@ -108,6 +108,53 @@ export interface EmailTheme {
   buttonRadius: number
   /** The bar in the primary colour along the top of the card. Absent counts as on. */
   topBar?: boolean
+  /** How tall a line of text is, as a step. Absent counts as normal. */
+  lineSpacing?: EmailLineSpacing
+  /** How much room between paragraphs and text blocks, as a step. Absent counts as normal. */
+  paragraphSpacing?: EmailParagraphSpacing
+}
+
+export const EMAIL_LINE_SPACINGS = ['compact', 'normal', 'relaxed'] as const
+export type EmailLineSpacing = (typeof EMAIL_LINE_SPACINGS)[number]
+
+export const EMAIL_PARAGRAPH_SPACINGS = ['tight', 'normal', 'loose'] as const
+export type EmailParagraphSpacing = (typeof EMAIL_PARAGRAPH_SPACINGS)[number]
+
+/**
+ * What each step means in the mail. Body text is the reference; headings
+ * and small print are scaled from it so the whole mail tightens or opens up
+ * together, and a paragraph's own gap and the room between text blocks
+ * follow the paragraph step.
+ */
+export const EMAIL_LINE_HEIGHTS: Record<EmailLineSpacing, number> = {
+  compact: 1.4,
+  normal: 1.6,
+  relaxed: 1.8,
+}
+
+export const EMAIL_PARAGRAPH_GAPS: Record<
+  EmailParagraphSpacing,
+  { paragraph: number; block: number }
+> = {
+  tight: { paragraph: 4, block: 10 },
+  normal: { paragraph: 10, block: 16 },
+  loose: { paragraph: 16, block: 24 },
+}
+
+/** The spacing a theme asks for, with anything unknown read as normal. */
+export function emailSpacing(theme: Pick<EmailTheme, 'lineSpacing' | 'paragraphSpacing'>) {
+  const line = EMAIL_LINE_HEIGHTS[theme.lineSpacing ?? 'normal'] ?? EMAIL_LINE_HEIGHTS.normal
+  const gaps =
+    EMAIL_PARAGRAPH_GAPS[theme.paragraphSpacing ?? 'normal'] ?? EMAIL_PARAGRAPH_GAPS.normal
+  const scale = line / EMAIL_LINE_HEIGHTS.normal
+  const round = (n: number) => Math.round(n * 100) / 100
+  return {
+    body: line,
+    heading: round(1.3 * scale),
+    small: round(1.5 * scale),
+    paragraphGap: gaps.paragraph,
+    blockGap: gaps.block,
+  }
 }
 
 export const DEFAULT_EMAIL_THEME: EmailTheme = {

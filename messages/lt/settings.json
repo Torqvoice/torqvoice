@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Eilučių tarpai",
+      "lineSpacings": {
+        "compact": "Glaustai",
+        "normal": "Įprastai",
+        "relaxed": "Laisvai"
+      },
+      "paragraphSpacing": "Pastraipų tarpai",
+      "paragraphSpacings": {
+        "tight": "Ankštai",
+        "normal": "Įprastai",
+        "loose": "Plačiai"
+      },
+      "spacingHint": "Eilučių tarpas yra kiekvienos eilutės aukštis; pastraipų tarpas yra vieta tarp pastraipų ir tarp teksto blokų. Enter pradeda naują pastraipą, Shift+Enter – naują eilutę toje pačioje.",
       "shapes": "Formos",
       "buttonRadius": "Mygtuko kampai",
       "topBar": "Spalvota juosta viršuje",

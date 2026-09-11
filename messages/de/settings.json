@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Zeilenabstand",
+      "lineSpacings": {
+        "compact": "Kompakt",
+        "normal": "Normal",
+        "relaxed": "Locker"
+      },
+      "paragraphSpacing": "Absatzabstand",
+      "paragraphSpacings": {
+        "tight": "Eng",
+        "normal": "Normal",
+        "loose": "Weit"
+      },
+      "spacingHint": "Der Zeilenabstand ist die Höhe jeder Zeile; der Absatzabstand ist der Raum zwischen Absätzen und zwischen Textblöcken. Enter beginnt einen neuen Absatz, Umschalt+Enter eine neue Zeile darin.",
       "shapes": "Formen",
       "buttonRadius": "Schaltflächenecken",
       "topBar": "Farbbalken oben",

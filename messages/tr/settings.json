@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Satır aralığı",
+      "lineSpacings": {
+        "compact": "Sıkı",
+        "normal": "Normal",
+        "relaxed": "Geniş"
+      },
+      "paragraphSpacing": "Paragraf aralığı",
+      "paragraphSpacings": {
+        "tight": "Dar",
+        "normal": "Normal",
+        "loose": "Geniş"
+      },
+      "spacingHint": "Satır aralığı her satırın yüksekliğidir; paragraf aralığı paragraflar ve metin blokları arasındaki boşluktur. Enter yeni paragraf, Shift+Enter aynı paragrafta yeni satır başlatır.",
       "shapes": "Şekiller",
       "buttonRadius": "Düğme köşeleri",
       "topBar": "Üstte renkli şerit",
