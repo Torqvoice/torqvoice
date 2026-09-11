@@ -15,7 +15,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const { db, sendTelegramMessage, notify } = vi.hoisted(() => ({
   db: {
     customer: { findFirst: vi.fn(), update: vi.fn() },
-    telegramMessage: { create: vi.fn() },
+    telegramMessage: { create: vi.fn(), updateMany: vi.fn() },
   },
   sendTelegramMessage: vi.fn(),
   notify: vi.fn(),
@@ -52,6 +52,7 @@ describe('the Telegram webhook', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     db.telegramMessage.create.mockResolvedValue({ id: 'msg_1' })
+    db.telegramMessage.updateMany.mockResolvedValue({ count: 0 })
   })
 
   it('links the chat to the customer named in a deep link, and says so', async () => {
@@ -74,6 +75,12 @@ describe('the Telegram webhook', () => {
     )
     expect(db.telegramMessage.create, 'a link is not a message').not.toHaveBeenCalled()
     expect(notify).not.toHaveBeenCalled()
+    // Whatever the chat sent before it was linked is the customer's now,
+    // so it can be seen, read and counted like the rest.
+    expect(db.telegramMessage.updateMany).toHaveBeenCalledWith({
+      where: { organizationId: ORG, chatId: '4242', customerId: null },
+      data: { customerId: 'cust_42' },
+    })
   })
 
   it('tells a stranger who opened the bot by name how to connect, and files nothing', async () => {
@@ -95,6 +102,7 @@ describe('the Telegram webhook', () => {
     await POST(update('/start cust_of_someone_else'), { params })
 
     expect(db.customer.update).not.toHaveBeenCalled()
+    expect(db.telegramMessage.updateMany).not.toHaveBeenCalled()
     expect(sendTelegramMessage).not.toHaveBeenCalled()
   })
 
