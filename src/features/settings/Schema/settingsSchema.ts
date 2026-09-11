@@ -43,6 +43,13 @@ export const SETTING_KEYS = {
   DEFAULT_TECHNICIAN: 'workshop.defaultTechnician',
   DEFAULT_TECHNICIAN_ID: 'workshop.defaultTechnicianId',
   DEFAULT_LABOR_RATE: 'workshop.defaultLaborRate',
+  /**
+   * What a new work order is called before anybody types a title, written
+   * from tags such as {order_number} and {license_plate}. Unset means the
+   * default in src/features/vehicles/Lib/workOrderTitle.ts; saved empty means
+   * the plain "New Service Record" jobs always started as.
+   */
+  WORK_ORDER_TITLE_TEMPLATE: 'workshop.workOrderTitleTemplate',
   QUOTE_PREFIX: 'workshop.quotePrefix',
   QUOTE_VALID_DAYS: 'workshop.quoteValidDays',
   EMAIL_FROM_NAME: 'email.fromName',

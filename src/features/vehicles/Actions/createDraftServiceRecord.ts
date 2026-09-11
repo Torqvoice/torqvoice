@@ -26,7 +26,8 @@ export async function createDraftServiceRecord(
           vehicleId,
           customerId: null,
           customerExempt: vehicle.customer?.taxExempt ?? false,
-          title: 'New Service Record',
+          // Named from the workshop's title template once the number is known.
+          title: null,
           startDateTime,
           endDateTime,
           technicianId,

@@ -16,9 +16,11 @@ export default async function NewServicePage({
   const { id } = await params
   const query = await searchParams
 
-  // Guard: if a pending draft already exists for this vehicle (created within the last 5 seconds),
-  // reuse it instead of creating a duplicate. This prevents double-creation from
-  // Next.js Server Component re-renders.
+  // Guard: if an untouched pending draft already exists for this vehicle
+  // (created within the last 5 seconds, nothing on it yet), reuse it instead
+  // of creating a duplicate. This prevents double-creation from Next.js
+  // Server Component re-renders. The title is not part of the test any more:
+  // it comes from the workshop's template now, not a fixed placeholder.
   let timeZone = 'UTC'
   const existingResult = await withAuth(
     async ({ organizationId }) => {
@@ -29,8 +31,9 @@ export default async function NewServicePage({
           vehicleId: id,
           vehicle: { organizationId },
           status: 'pending',
-          title: 'New Service Record',
           createdAt: { gte: fiveSecondsAgo },
+          partItems: { none: {} },
+          laborItems: { none: {} },
         },
         select: { id: true },
         orderBy: { createdAt: 'desc' },

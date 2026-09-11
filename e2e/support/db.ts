@@ -882,3 +882,60 @@ export async function deleteInboundSms(organizationId: string, body: string): Pr
     )
   )
 }
+
+// ─── Work order titles ───────────────────────────────────────────────────────
+
+/** What a job is called and numbered, straight from its row. */
+export async function serviceRecordNames(
+  serviceRecordId: string
+): Promise<{ title: string; invoiceNumber: string | null }> {
+  return withDb(async (db) => {
+    const result = await db.query<{ title: string; invoiceNumber: string | null }>(
+      `select title, "invoiceNumber" from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    const row = result.rows[0]
+    if (!row) throw new Error(`no work order ${serviceRecordId}`)
+    return row
+  })
+}
+
+/** The words a title template can print about one vehicle and its owner. */
+export async function vehicleFacts(vehicleId: string): Promise<{
+  licensePlate: string | null
+  make: string
+  model: string
+  year: number
+  vin: string | null
+  customerName: string | null
+}> {
+  return withDb(async (db) => {
+    const result = await db.query<{
+      licensePlate: string | null
+      make: string
+      model: string
+      year: number
+      vin: string | null
+      customerName: string | null
+    }>(
+      `select v."licensePlate", v.make, v.model, v.year, v.vin, c.name as "customerName"
+         from vehicles v
+         left join customers c on c.id = v."customerId"
+        where v.id = $1`,
+      [vehicleId]
+    )
+    const row = result.rows[0]
+    if (!row) throw new Error(`no vehicle ${vehicleId}`)
+    return row
+  })
+}
+
+/** Removes a workshop setting so the app falls back to its default for it. */
+export async function forgetWorkshopSetting(organizationId: string, key: string): Promise<void> {
+  await withDb((db) =>
+    db.query(`delete from app_settings where "organizationId" = $1 and key = $2`, [
+      organizationId,
+      key,
+    ])
+  )
+}
