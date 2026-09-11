@@ -140,7 +140,8 @@
         "description": "Fatura, teklif ve rapor e-postalarınızın metni"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Yeni"
   },
   "readOnly": {
     "banner": "Ayarlara yalnızca görüntüleme erişiminiz var. Değişiklik yapmak için bir yöneticiyle iletişime geçin."

@@ -140,7 +140,8 @@
         "description": "Cosa dicono le email di fattura, preventivo e rapporto"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nuovo"
   },
   "readOnly": {
     "banner": "Hai accesso in sola lettura alle impostazioni. Contatta un amministratore per apportare modifiche."

@@ -14,6 +14,8 @@ import { sampleSummaryRows, sampleValuesFor } from '@/features/email/Lib/emailCo
 import { isEmailKind } from '@/features/email/Lib/emailKinds'
 import { loadEmailMessages } from '@/features/email/Lib/emailMessages.server'
 import { presetTemplate } from '@/features/email/Lib/emailPresets'
+import { DismissOnArrival } from '@/components/feature-hint'
+import { EMAIL_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
 
 const SETTINGS_PAGE = '/settings/email-templates'
 
@@ -39,7 +41,7 @@ export default async function EmailDesignerPage({
   const { kind, template: templateId } = await searchParams
   if (!kind || !isEmailKind(kind)) redirect(SETTINGS_PAGE)
 
-  const [settingsResult, organization, user, templatesResult, activeResult, messages] =
+  const [settingsResult, organization, user, templatesResult, activeResult, messages, seenRow] =
     await Promise.all([
       getSettings([
         SETTING_KEYS.WORKSHOP_PHONE,
@@ -54,7 +56,21 @@ export default async function EmailDesignerPage({
       listEmailTemplates(),
       getActiveEmailTemplates(),
       loadEmailMessages(await getLocale()),
+      db.appSetting.findUnique({
+        where: {
+          organizationId_key: {
+            organizationId: data.organizationId,
+            key: SETTING_KEYS.FEATURE_HINTS_SEEN,
+          },
+        },
+        select: { value: true },
+      }),
     ])
+
+  // Somebody is looking at the designer, so the workshop knows it exists. Only
+  // written while the card is still outstanding, to keep a settled announcement
+  // from costing a write on every visit.
+  const announcementLive = !parseHintIds(seenRow?.value).includes(EMAIL_DESIGNER_ANNOUNCEMENT)
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const workshop = {
@@ -78,6 +94,7 @@ export default async function EmailDesignerPage({
   // is dressed in the app's theme, so it brings its own ground.
   return (
     <div className="h-screen bg-background text-foreground">
+      {announcementLive && <DismissOnArrival id={EMAIL_DESIGNER_ANNOUNCEMENT} />}
       <EmailDesigner
         kind={kind}
         preset={presetTemplate(kind, messages)}

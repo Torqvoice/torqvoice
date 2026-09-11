@@ -11,5 +11,10 @@
     "title": "Fakturaene er bygget om",
     "body": "Bestem oppsett, farger og skrifter på fakturaer og tilbud i den nye designeren, under Maler.",
     "cta": "Åpne Maler"
+  },
+  "email-designer": {
+    "title": "E-postene dine har fått nytt utseende",
+    "body": "Kunde-e-poster går nå ut med et renere design. Endre farger, tekst og oppsett i den nye designeren, under E-postmaler.",
+    "cta": "Åpne E-postmaler"
   }
 }

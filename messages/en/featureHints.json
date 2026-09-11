@@ -11,5 +11,10 @@
     "title": "Invoices have been overhauled",
     "body": "Set the layout, colours and fonts for your invoices and quotes in the new designer, under Templates.",
     "cta": "Open Templates"
+  },
+  "email-designer": {
+    "title": "Your emails have a new look",
+    "body": "Customer emails now go out on a cleaner design. Change colours, wording and layout in the new designer, under Email templates.",
+    "cta": "Open Email templates"
   }
 }

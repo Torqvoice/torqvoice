@@ -11,5 +11,10 @@
     "title": "Rechnungen wurden überarbeitet",
     "body": "Legen Sie Layout, Farben und Schriften für Rechnungen und Angebote im neuen Designer fest, unter Vorlagen.",
     "cta": "Vorlagen öffnen"
+  },
+  "email-designer": {
+    "title": "Ihre E-Mails haben ein neues Aussehen",
+    "body": "Kunden-E-Mails gehen jetzt in einem klareren Design raus. Farben, Texte und Aufbau ändern Sie im neuen Designer unter E-Mail-Vorlagen.",
+    "cta": "E-Mail-Vorlagen öffnen"
   }
 }

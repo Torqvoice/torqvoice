@@ -11,5 +11,10 @@
     "title": "Faturalar yenilendi",
     "body": "Faturalarınızın ve tekliflerinizin düzenini, renklerini ve yazı tiplerini Şablonlar altındaki yeni tasarımcıda belirleyin.",
     "cta": "Şablonları aç"
+  },
+  "email-designer": {
+    "title": "E-postalarınız yeni bir görünüme kavuştu",
+    "body": "Müşteri e-postaları artık daha sade bir tasarımla gönderiliyor. Renkleri, metni ve düzeni E-posta şablonları altındaki yeni tasarımcıda değiştirin.",
+    "cta": "E-posta şablonlarını aç"
   }
 }

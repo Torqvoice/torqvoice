@@ -140,7 +140,8 @@
         "description": "Hva e-postene for faktura, tilbud og rapport sier"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Ny"
   },
   "readOnly": {
     "banner": "Du har kun lesetilgang til innstillingene. Kontakt en administrator for a gjore endringer."

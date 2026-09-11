@@ -140,7 +140,8 @@
         "description": "Co mówią e-maile z fakturą, ofertą i raportem"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nowość"
   },
   "readOnly": {
     "banner": "Masz dostęp tylko do odczytu ustawień. Skontaktuj się z administratorem, aby wprowadzić zmiany."

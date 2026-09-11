@@ -11,5 +11,10 @@
     "title": "Las facturas se han renovado",
     "body": "Define el diseño, los colores y las tipografías de tus facturas y presupuestos en el nuevo diseñador, en Plantillas.",
     "cta": "Abrir Plantillas"
+  },
+  "email-designer": {
+    "title": "Tus correos tienen un nuevo aspecto",
+    "body": "Los correos a clientes salen ahora con un diseño más limpio. Cambia colores, textos y disposición en el nuevo diseñador, en Plantillas de correo.",
+    "cta": "Abrir Plantillas de correo"
   }
 }

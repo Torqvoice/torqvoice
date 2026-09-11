@@ -140,7 +140,8 @@
         "description": "Ce que disent vos e-mails de facture, devis et rapport"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nouveau"
   },
   "readOnly": {
     "banner": "Vous avez un accès en lecture seule aux paramètres. Contactez un administrateur pour effectuer des modifications."

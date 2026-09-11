@@ -11,5 +11,10 @@
     "title": "As faturas foram reformuladas",
     "body": "Defina o layout, as cores e as fontes das suas faturas e orçamentos no novo editor, em Modelos.",
     "cta": "Abrir Modelos"
+  },
+  "email-designer": {
+    "title": "Seus e-mails têm um novo visual",
+    "body": "Os e-mails para clientes agora saem com um design mais limpo. Altere cores, textos e layout no novo editor, em Modelos de e-mail.",
+    "cta": "Abrir Modelos de e-mail"
   }
 }
