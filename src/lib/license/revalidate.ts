@@ -1,4 +1,5 @@
 import type { Prisma } from '@/generated/prisma/client'
+import { isDemoMode } from '@/lib/demo'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { verifyLicenseToken, type LicenseTokenVerification } from './token'
@@ -27,6 +28,11 @@ export async function fetchRemoteLicense(
   licenseKey: string,
   organizationId: string
 ): Promise<RemoteLicenseResult> {
+  // The demo's entitlements are fixed in getFeatures, so there is nothing to
+  // ask torqvoice.com about, and no key of anyone's to send it.
+  if (isDemoMode) {
+    return { reachable: false, valid: false, plan: 'free', expiresAt: '', token: null }
+  }
   try {
     const response = await fetch(`${TORQVOICE_COM_URL}/api/license/validate`, {
       method: 'POST',

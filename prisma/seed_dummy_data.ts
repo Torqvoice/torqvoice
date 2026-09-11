@@ -1427,7 +1427,6 @@ async function seed() {
         data: {
           organizationId: ORG_ID,
           vehicleId: hist.vehicleId,
-          organizationId: ORG_ID,
           title: entry.title,
           description: entry.desc,
           type: entry.type,

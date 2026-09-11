@@ -50,6 +50,10 @@ const EGRESS_PATHS: Array<{ file: string; stoppedBy: RegExp }> = [
     file: 'src/features/notifications/Lib/pushToTechnician.ts',
     stoppedBy: /if \(isDemoMode\) return/,
   },
+  // The licence check against torqvoice.com, shared by the Validate button,
+  // the daily cron and the self-heal in getFeatures. The demo's plan is fixed
+  // in getFeatures, so the fetch itself returns "unreachable" instead.
+  { file: 'src/lib/license/revalidate.ts', stoppedBy: /if \(isDemoMode\)/ },
   // The integrations catalog. Every connector call goes out through one HTTP
   // client, every token exchange or refresh through the OAuth module, and
   // every context a connector runs with (jobs, webhooks, tests, lookups,
