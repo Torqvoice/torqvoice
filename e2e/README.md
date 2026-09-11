@@ -31,6 +31,8 @@ e2e/
     reminders/         a due time survives being displayed and re-saved
     email/             the email template designer, and the mail it sends
     payments/          a customer pays online, and the payment is booked once
+    security/          the doors the September 2026 audit found open: admin-only
+                       actions, file paths, payment attribution, webhook signatures
     cloud/             run with E2E_MODE=cloud: plan limits, Google sign-in, the sign-up pitch
     tech/              the technician app's API contract
     smoke/             the build is alive
