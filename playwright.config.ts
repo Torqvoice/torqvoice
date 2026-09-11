@@ -27,6 +27,25 @@ const mailApiPort = process.env.E2E_MAIL_API_PORT ?? '8025'
  * posted. Started whether or not the suite starts the app: pointed at a
  * server somebody else launched, that server is told to send here too.
  */
+/** Where the stand-in payment vendor listens, for the app and for the specs. */
+const paymentPort = process.env.E2E_PAYMENT_PORT ?? '8026'
+const paymentSinkUrl = `http://127.0.0.1:${paymentPort}`
+
+/**
+ * Stripe and PayPal as far as the app can tell, with a checkout page a spec
+ * can pay on. Started in every mode, like the mail sink: a server somebody
+ * else launched is told to use it through the two base URLs below.
+ */
+const paymentSink = {
+  command: 'npx tsx e2e/payment-sink.ts',
+  url: `${paymentSinkUrl}/health`,
+  reuseExistingServer: !process.env.CI,
+  timeout: 60_000,
+  stdout: 'pipe' as const,
+  stderr: 'pipe' as const,
+  env: { E2E_PAYMENT_PORT: paymentPort },
+}
+
 const mailSink = {
   command: 'npx tsx e2e/mail-sink.ts',
   url: `http://127.0.0.1:${mailApiPort}/health`,
@@ -83,9 +102,10 @@ export default defineConfig({
    * and it is not the artifact that ships anyway.
    */
   webServer: process.env.E2E_BASE_URL
-    ? [mailSink]
+    ? [mailSink, paymentSink]
     : [
         mailSink,
+        paymentSink,
         {
           // The database first, then the server, in one command: Playwright
           // starts this before global setup, and a server on an empty schema
@@ -128,6 +148,10 @@ export default defineConfig({
             SMTP_PORT: smtpPort,
             SMTP_FROM_EMAIL: 'workshop@e2e.test',
             SMTP_SECURE: 'false',
+            // Payments go to the stand-in vendor. Read only from the
+            // environment, so nothing a workshop stores can redirect a key.
+            STRIPE_API_BASE_URL: paymentSinkUrl,
+            PAYPAL_API_BASE_URL: paymentSinkUrl,
           },
         },
       ],

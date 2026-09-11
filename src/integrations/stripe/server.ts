@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import type { ConnectorContext, ConnectorServer } from '@/features/integrations/Lib/types'
+import { stripeClient } from '@/lib/payment-providers/vendor-hosts'
 import { manifest } from './manifest'
 
 function secretKeyOf(ctx: ConnectorContext): string {
@@ -29,7 +30,7 @@ export const connector: ConnectorServer = {
     const secretKey = secretKeyOf(ctx)
     if (!secretKey) return { ok: false, message: 'Stripe: a secret key is required' }
     try {
-      await new Stripe(secretKey).accounts.retrieve()
+      await stripeClient(secretKey).accounts.retrieve()
       return { ok: true }
     } catch (err) {
       if (err instanceof Stripe.errors.StripeAuthenticationError) {
@@ -40,7 +41,7 @@ export const connector: ConnectorServer = {
   },
 
   async identify(ctx) {
-    const account = await new Stripe(secretKeyOf(ctx)).accounts.retrieve()
+    const account = await stripeClient(secretKeyOf(ctx)).accounts.retrieve()
     return { id: account.id, name: accountName(account) }
   },
 

@@ -200,6 +200,12 @@ model Payment {
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
 
+  /// A payment a vendor or a ledger reported is booked once per invoice. The
+  /// browser coming back and the vendor's notification report the same payment
+  /// in the same second, and looking before writing let both write. Rows with
+  /// no provider or no external id, which is every payment typed in by hand,
+  /// are not held to it: Postgres counts nulls as distinct.
+  @@unique([serviceRecordId, provider, externalId])
   @@index([serviceRecordId])
   @@map("payments")
 }

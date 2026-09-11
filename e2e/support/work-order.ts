@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { settle } from './hydration'
 
 /**
  * Driving a work order through the browser the way a workshop does.
@@ -24,6 +25,10 @@ export async function seededVehicleUrl(page: Page, search = 'Camry'): Promise<st
 export async function newWorkOrder(page: Page, vehicleUrl: string, title: string): Promise<string> {
   await page.goto(`${vehicleUrl}/service/new`)
   await page.waitForURL(/\/vehicles\/[^/]+\/service\/[^/]+$/)
+  // `/service/new` makes the draft and redirects to it, and for a moment the
+  // page being left and the page arriving are both in the document: two title
+  // fields, and a strict-mode error instead of a retry. Settled, there is one.
+  await settle(page)
   const titleField = page.locator('input[name="title"]')
   await expect(titleField).toBeVisible()
   await titleField.fill(title)
@@ -180,7 +185,9 @@ export async function shareLink(page: Page): Promise<string> {
     await expired.getByRole('button', { name: /proceed without changes/i }).click()
   }
 
-  const dialog = page.getByRole('dialog')
+  // By name: a workshop-wide announcement is a dialog too, and can be open on
+  // the same page.
+  const dialog = page.getByRole('dialog', { name: 'Share Invoice' })
   await expect(dialog).toBeVisible()
   const generate = dialog.getByRole('button', { name: /generate public link/i })
   if (await generate.isVisible()) {
