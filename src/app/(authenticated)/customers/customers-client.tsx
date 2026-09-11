@@ -60,6 +60,7 @@ import {
   Upload,
   Users,
 } from 'lucide-react'
+import { ListEmpty } from '@/components/list-empty'
 
 interface Customer {
   customerNumber: string | null
@@ -248,6 +249,31 @@ export function CustomersClient({
     }
   }
 
+  // The truly empty list gets the next step in front of it. A search miss
+  // keeps its plain sentence.
+  const emptyState = (bare: boolean) =>
+    search ? (
+      <p className="p-8 text-center text-sm text-muted-foreground">{t('emptySearch')}</p>
+    ) : (
+      <ListEmpty
+        bare={bare}
+        icon={Users}
+        title={t('empty')}
+        action={
+          <Button onClick={() => setShowForm(true)} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('addCustomer')}
+          </Button>
+        }
+        secondary={
+          <Button variant="ghost" size="sm" onClick={() => setShowImport(true)}>
+            <Upload className="mr-1 h-3.5 w-3.5" />
+            {t('importCustomers')}
+          </Button>
+        }
+      />
+    )
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
@@ -336,75 +362,73 @@ export function CustomersClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.customers.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {search ? t('emptySearch') : t('empty')}
-          </div>
-        ) : (
-          data.customers.map((c) => (
-            <div
-              key={c.id}
-              className={`flex items-start gap-3 rounded-lg border bg-card p-3 ${
-                selected.has(c.id) ? 'bg-muted/50' : ''
-              }`}
-            >
-              <Checkbox
-                className="mt-1 shrink-0"
-                checked={selected.has(c.id)}
-                onCheckedChange={() => toggleSelect(c.id)}
-              />
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-left"
-                onClick={() => router.push(`/customers/${c.id}`)}
+        {data.customers.length === 0
+          ? emptyState(false)
+          : data.customers.map((c) => (
+              <div
+                key={c.id}
+                className={`flex items-start gap-3 rounded-lg border bg-card p-3 ${
+                  selected.has(c.id) ? 'bg-muted/50' : ''
+                }`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
-                  <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-                    <Car className="h-3 w-3" />
-                    {c._count.vehicles}
-                  </span>
-                </div>
-                {c.company && <p className="truncate text-xs text-muted-foreground">{c.company}</p>}
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  {c.customerNumber && <span className="font-mono">{c.customerNumber}</span>}
-                  {c.phone && <span>{c.phone}</span>}
-                  {c.email && <span className="truncate">{c.email}</span>}
-                </div>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 h-9 w-9 shrink-0"
-                    aria-label={t('openMenu')}
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditCustomer(c)
-                      setShowForm(true)
-                    }}
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    {tc('buttons.edit')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => handleDelete(c.id, c.name)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {tc('buttons.delete')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ))
-        )}
+                <Checkbox
+                  className="mt-1 shrink-0"
+                  checked={selected.has(c.id)}
+                  onCheckedChange={() => toggleSelect(c.id)}
+                />
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 text-left"
+                  onClick={() => router.push(`/customers/${c.id}`)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
+                    <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                      <Car className="h-3 w-3" />
+                      {c._count.vehicles}
+                    </span>
+                  </div>
+                  {c.company && (
+                    <p className="truncate text-xs text-muted-foreground">{c.company}</p>
+                  )}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    {c.customerNumber && <span className="font-mono">{c.customerNumber}</span>}
+                    {c.phone && <span>{c.phone}</span>}
+                    {c.email && <span className="truncate">{c.email}</span>}
+                  </div>
+                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="-mr-1 h-9 w-9 shrink-0"
+                      aria-label={t('openMenu')}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditCustomer(c)
+                        setShowForm(true)
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {tc('buttons.edit')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(c.id, c.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {tc('buttons.delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ))}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -495,8 +519,8 @@ export function CustomersClient({
           <TableBody>
             {data.customers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
-                  {search ? t('emptySearch') : t('empty')}
+                <TableCell colSpan={8} className="p-0">
+                  {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (

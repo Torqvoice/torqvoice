@@ -147,9 +147,11 @@
     "banner": "Vous avez un accès en lecture seule aux paramètres. Contactez un administrateur pour effectuer des modifications."
   },
   "featureLocked": {
-    "requiresPro": "Necessite une licence Pro",
-    "upgradePlan": "Mettre a niveau",
-    "activateLicense": "Activer la licence"
+    "requiresPro": "Abonnement requis",
+    "upgradePlan": "Voir les offres",
+    "activateLicense": "Activer la licence",
+    "requiresLicense": "Licence en marque blanche requise",
+    "previewHint": "Ceci est un aperçu. Tout ce qui figure sur cette page se débloque avec un abonnement."
   },
   "company": {
     "logoTitle": "Logo de l'entreprise",

@@ -15,7 +15,7 @@ import { EMAIL_KINDS, type EmailKind } from '@/features/email/Lib/emailKinds'
 import { loadEmailMessages } from '@/features/email/Lib/emailMessages.server'
 import { presetTemplate } from '@/features/email/Lib/emailPresets'
 import type { EmailTemplate } from '@/features/email/Lib/emailTemplate'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import { EmailTemplateGallery } from './email-template-gallery'
 
 /**
@@ -33,15 +33,7 @@ export default async function EmailTemplatesPage() {
     getTranslations('settings.emailTemplates'),
   ])
 
-  if (!features.customTemplates) {
-    return (
-      <FeatureLockedMessage
-        feature={t('title')}
-        description={t('lockedDescription')}
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.customTemplates
 
   const [settingsResult, organization, templatesResult, activeResult, messages] = await Promise.all(
     [
@@ -80,13 +72,25 @@ export default async function EmailTemplatesPage() {
 
   const active = activeResult.success && activeResult.data ? activeResult.data : null
 
-  return (
+  const content = (
     <EmailTemplateGallery
       presets={presets}
       samples={samples}
       saved={templatesResult.success && templatesResult.data ? templatesResult.data : []}
       active={active ?? emptyActive()}
     />
+  )
+
+  return locked ? (
+    <FeatureLocked
+      feature={t('title')}
+      description={t('lockedDescription')}
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
   )
 }
 

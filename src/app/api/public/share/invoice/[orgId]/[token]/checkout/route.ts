@@ -10,6 +10,7 @@ import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { calculateTotals } from '@/lib/tax'
+import { getFeatures } from '@/lib/features'
 
 const checkoutSchema = z.object({
   provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
@@ -43,6 +44,11 @@ export async function POST(
     })
 
     if (!record || record.organizationId !== orgId) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    // A connected provider outlives a downgrade; the plan decides, not the row.
+    const features = await getFeatures(orgId)
+    if (!features.payments) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 

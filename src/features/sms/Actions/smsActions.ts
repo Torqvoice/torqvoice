@@ -20,7 +20,6 @@ export async function sendSmsToCustomer(input: {
     async ({ organizationId }) => {
       demoGuard()
       await requireFeature(organizationId, 'sms')
-      await requireFeature(organizationId, 'sms')
 
       const customer = await db.customer.findFirst({
         where: { id: input.customerId, organizationId },

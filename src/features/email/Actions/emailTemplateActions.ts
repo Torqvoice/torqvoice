@@ -109,6 +109,7 @@ function problemsWith(data: SaveEmailTemplateInput): {
 export async function saveEmailTemplate(input: SaveEmailTemplateInput) {
   return withAuth(
     async ({ userId, organizationId }): Promise<SavedEmailTemplate> => {
+      await requireFeature(organizationId, 'customTemplates')
       demoGuard()
       const data = saveEmailTemplateSchema.parse(input)
       const problems = problemsWith(data)
@@ -206,6 +207,7 @@ export async function saveEmailTemplate(input: SaveEmailTemplateInput) {
 export async function applyEmailTemplate(kind: string, id: string | null) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      await requireFeature(organizationId, 'customTemplates')
       demoGuard()
       const parsedKind = emailKindSchema.parse(kind)
       if (id !== null) rowIdSchema.parse(id)
@@ -254,6 +256,7 @@ export async function applyEmailTemplate(kind: string, id: string | null) {
 export async function deleteEmailTemplate(id: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'customTemplates')
       demoGuard()
       rowIdSchema.parse(id)
       const row = await db.emailTemplate.findFirst({

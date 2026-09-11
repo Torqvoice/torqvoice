@@ -147,9 +147,11 @@
     "banner": "You have view-only access to settings. Contact an admin to make changes."
   },
   "featureLocked": {
-    "requiresPro": "Requires a Pro license",
-    "upgradePlan": "Upgrade Plan",
-    "activateLicense": "Activate License"
+    "requiresPro": "Subscription required",
+    "upgradePlan": "View plans",
+    "activateLicense": "Activate License",
+    "requiresLicense": "White-label licence required",
+    "previewHint": "You are looking at a preview. Everything on this page unlocks with a subscription."
   },
   "company": {
     "logoTitle": "Company Logo",

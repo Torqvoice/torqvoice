@@ -790,6 +790,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
 export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
         select: {

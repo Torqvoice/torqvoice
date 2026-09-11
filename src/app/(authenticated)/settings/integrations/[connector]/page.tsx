@@ -7,7 +7,7 @@ import {
 } from '@/features/integrations/Actions/integrationActions'
 import { getManifest } from '@/integrations/registry'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
-import { FeatureLockedMessage } from '../../feature-locked-message'
+import { FeatureLocked } from '../../feature-locked-message'
 import { ConnectionSettings } from './connection-settings'
 
 export default async function IntegrationConnectionPage({
@@ -24,15 +24,7 @@ export default async function IntegrationConnectionPage({
   if (data.status === 'no-organization') redirect('/onboarding')
 
   const features = await getFeatures(data.organizationId)
-  if (!connectorAllowed(manifest, features)) {
-    return (
-      <FeatureLockedMessage
-        feature={manifest.plan ? manifest.name : 'Integrations'}
-        description="Connect calendars, video calls and other services to your workshop."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !connectorAllowed(manifest, features)
 
   const [view, activity] = await Promise.all([
     getIntegrationConnection(connector),
@@ -40,10 +32,22 @@ export default async function IntegrationConnectionPage({
   ])
   if (!view.success || !view.data) notFound()
 
-  return (
+  const content = (
     <ConnectionSettings
       view={view.data}
       activity={activity.success && activity.data ? activity.data : { items: [], logs: [] }}
     />
+  )
+
+  return locked ? (
+    <FeatureLocked
+      feature={manifest.plan ? manifest.name : 'Integrations'}
+      description="Connect calendars, video calls and other services to your workshop."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
   )
 }

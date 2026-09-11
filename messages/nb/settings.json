@@ -147,9 +147,11 @@
     "banner": "Du har kun lesetilgang til innstillingene. Kontakt en administrator for a gjore endringer."
   },
   "featureLocked": {
-    "requiresPro": "Krever en Pro-lisens",
-    "upgradePlan": "Oppgrader plan",
-    "activateLicense": "Aktiver lisens"
+    "requiresPro": "Abonnement kreves",
+    "upgradePlan": "Se planer",
+    "activateLicense": "Aktiver lisens",
+    "requiresLicense": "White label-lisens kreves",
+    "previewHint": "Dette er en forhåndsvisning. Alt på denne siden låses opp med et abonnement."
   },
   "company": {
     "logoTitle": "Bedriftslogo",

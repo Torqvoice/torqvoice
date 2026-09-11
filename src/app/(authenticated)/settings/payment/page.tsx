@@ -3,7 +3,7 @@ import { getPaymentConnections } from '@/features/integrations/Actions/integrati
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { PaymentSettings } from './payment-settings'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 
 export default async function PaymentSettingsPage() {
@@ -14,24 +14,28 @@ export default async function PaymentSettingsPage() {
 
   const features = await getFeatures(data.organizationId)
 
-  if (!features.payments) {
-    return (
-      <FeatureLockedMessage
-        feature="Payment Settings"
-        description="Configure payment providers, terms, and online payment options for your invoices."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.payments
 
   const [result, connections] = await Promise.all([getSettings(), getPaymentConnections()])
   const settings = result.success && result.data ? result.data : {}
 
-  return (
+  const content = (
     <PaymentSettings
       settings={settings}
       orgId={data.organizationId}
       providers={connections.success && connections.data ? connections.data : []}
     />
+  )
+
+  return locked ? (
+    <FeatureLocked
+      feature="Payment Settings"
+      description="Configure payment providers, terms, and online payment options for your invoices."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
   )
 }

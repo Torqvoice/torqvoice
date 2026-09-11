@@ -1,7 +1,7 @@
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { redirect } from 'next/navigation'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import {
   getReportSchedules,
   getOrgMembers,
@@ -16,15 +16,7 @@ export default async function ReportSchedulePage() {
 
   const features = await getFeatures(data.organizationId)
 
-  if (!features.reports) {
-    return (
-      <FeatureLockedMessage
-        feature="Report Schedule"
-        description="Automatically generate and email report PDFs on a recurring schedule."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.reports
 
   const [schedulesResult, membersResult] = await Promise.all([
     getReportSchedules(),
@@ -34,5 +26,17 @@ export default async function ReportSchedulePage() {
   const schedules = schedulesResult.success && schedulesResult.data ? schedulesResult.data : []
   const members = membersResult.success && membersResult.data ? membersResult.data : []
 
-  return <ReportScheduleSettings schedules={schedules} members={members} />
+  const content = <ReportScheduleSettings schedules={schedules} members={members} />
+
+  return locked ? (
+    <FeatureLocked
+      feature="Report Schedule"
+      description="Automatically generate and email report PDFs on a recurring schedule."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
+  )
 }

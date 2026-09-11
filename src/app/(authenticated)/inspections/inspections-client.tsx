@@ -37,6 +37,7 @@ import {
   Loader2,
   Plus,
   Search,
+  ClipboardCheck,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
@@ -48,6 +49,7 @@ import {
 } from '@/features/inspections/Lib/conditions'
 import { useConditionLabels } from '@/features/inspections/Lib/useConditionLabels'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ListEmpty } from '@/components/list-empty'
 
 interface InspectionRecord {
   id: string
@@ -232,6 +234,23 @@ export function InspectionsClient({
     )
   }
 
+  const emptyState = (bare: boolean) =>
+    search ? (
+      <p className="p-8 text-center text-sm text-muted-foreground">{t('empty')}</p>
+    ) : (
+      <ListEmpty
+        bare={bare}
+        icon={ClipboardCheck}
+        title={t('empty')}
+        action={
+          <Button onClick={() => setShowNewDialog(true)} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('new')}
+          </Button>
+        }
+      />
+    )
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Status filters: one scrollable row on phones, wrapped above sm. */}
@@ -286,49 +305,47 @@ export function InspectionsClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {t('empty')}
-          </div>
-        ) : (
-          data.records.map((insp) => (
-            <button
-              key={insp.id}
-              type="button"
-              onClick={() => router.push(`/inspections/${insp.id}`)}
-              className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <span className="min-w-0 flex-1 truncate font-medium">
-                  {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
-                </span>
-                <Badge
-                  variant="outline"
-                  className={`shrink-0 text-xs ${statusColors[insp.status] || ''}`}
-                >
-                  {insp.status === 'in_progress' ? t('statusInProgress') : t('statusCompleted')}
-                </Badge>
-              </div>
-              <p className="truncate text-xs text-muted-foreground">
-                {insp.vehicle.licensePlate && (
-                  <span className="font-mono">{insp.vehicle.licensePlate} · </span>
-                )}
-                {insp.template.name}
-              </p>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                <InspectionProgress
-                  items={insp.items}
-                  scale={
-                    (insp.severityScale ?? insp.template.severityScale) === 'basic' ? 'basic' : 'eu'
-                  }
-                />
-                <span className="font-mono text-xs text-muted-foreground">
-                  {formatDate(new Date(insp.createdAt))}
-                </span>
-              </div>
-            </button>
-          ))
-        )}
+        {data.records.length === 0
+          ? emptyState(false)
+          : data.records.map((insp) => (
+              <button
+                key={insp.id}
+                type="button"
+                onClick={() => router.push(`/inspections/${insp.id}`)}
+                className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">
+                    {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className={`shrink-0 text-xs ${statusColors[insp.status] || ''}`}
+                  >
+                    {insp.status === 'in_progress' ? t('statusInProgress') : t('statusCompleted')}
+                  </Badge>
+                </div>
+                <p className="truncate text-xs text-muted-foreground">
+                  {insp.vehicle.licensePlate && (
+                    <span className="font-mono">{insp.vehicle.licensePlate} · </span>
+                  )}
+                  {insp.template.name}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <InspectionProgress
+                    items={insp.items}
+                    scale={
+                      (insp.severityScale ?? insp.template.severityScale) === 'basic'
+                        ? 'basic'
+                        : 'eu'
+                    }
+                  />
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {formatDate(new Date(insp.createdAt))}
+                  </span>
+                </div>
+              </button>
+            ))}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -386,8 +403,8 @@ export function InspectionsClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  {t('empty')}
+                <TableCell colSpan={5} className="p-0">
+                  {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (

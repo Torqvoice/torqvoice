@@ -28,6 +28,7 @@ function entry(id: string, overrides: Partial<CatalogEntry> = {}): CatalogEntry 
     lastError: null,
     platformApp: true,
     featured: true,
+    enabled: true,
     ...overrides,
   }
 }

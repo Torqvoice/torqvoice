@@ -147,9 +147,11 @@
     "banner": "Masz dostęp tylko do odczytu ustawień. Skontaktuj się z administratorem, aby wprowadzić zmiany."
   },
   "featureLocked": {
-    "requiresPro": "Wymaga licencji Pro",
-    "upgradePlan": "Zaktualizuj plan",
-    "activateLicense": "Aktywuj licencje"
+    "requiresPro": "Wymagana subskrypcja",
+    "upgradePlan": "Zobacz plany",
+    "activateLicense": "Aktywuj licencje",
+    "requiresLicense": "Wymagana licencja white label",
+    "previewHint": "To jest podgląd. Wszystko na tej stronie odblokowuje subskrypcja."
   },
   "company": {
     "logoTitle": "Logo firmy",

@@ -81,7 +81,12 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: 'communications',
     items: [
-      { key: 'emailTemplates', href: '/settings/email-templates', icon: Mail },
+      {
+        key: 'emailTemplates',
+        href: '/settings/email-templates',
+        icon: Mail,
+        gate: 'customTemplates',
+      },
       {
         key: 'customerPortal',
         href: '/settings/customer-portal',
@@ -109,7 +114,7 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: 'integrations',
     items: [
-      { key: 'integrations', href: '/settings/integrations', icon: Plug, gate: 'integrations' },
+      { key: 'integrations', href: '/settings/integrations', icon: Plug },
       { key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' },
     ],
   },

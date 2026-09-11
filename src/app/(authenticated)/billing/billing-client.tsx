@@ -32,11 +32,14 @@ import {
   ArrowUp,
   ArrowUpDown,
   EyeOff,
+  Receipt,
+  Plus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { deliveryState } from '@/features/billing/Lib/deliveryState'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { ListEmpty } from '@/components/list-empty'
 
 interface BillingRecord {
   id: string
@@ -109,6 +112,7 @@ export default function BillingClient({
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
   const t = useTranslations('billing')
+  const tWorkOrders = useTranslations('workOrders.list')
   const { formatDate } = useFormatDate()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -278,6 +282,24 @@ export default function BillingClient({
     }
   }
 
+  // Invoices come from work orders, so the empty list points at making one.
+  const emptyState = (bare: boolean) =>
+    search ? (
+      <p className="p-8 text-center text-sm text-muted-foreground">{t('history.noRecords')}</p>
+    ) : (
+      <ListEmpty
+        bare={bare}
+        icon={Receipt}
+        title={t('history.noRecords')}
+        action={
+          <Button onClick={() => router.push('/work-orders?new=1')} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {tWorkOrders('newWorkOrder')}
+          </Button>
+        }
+      />
+    )
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       {/* Navigation */}
@@ -407,50 +429,48 @@ export default function BillingClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {t('history.noRecords')}
-          </div>
-        ) : (
-          data.records.map((record) => {
-            const balance = record.totalAmount - record.totalPaid
-            return (
-              <button
-                key={record.id}
-                type="button"
-                onClick={() => handleRowClick(record)}
-                className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="min-w-0 flex-1 truncate font-medium">{record.title}</span>
-                  <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
-                </div>
-                <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-                  {record.vehicle && (
-                    <p className="truncate">
-                      {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
-                      {record.vehicle.licensePlate && ` · ${record.vehicle.licensePlate}`}
-                    </p>
-                  )}
-                  {record.customer && <p className="truncate">{record.customer.name}</p>}
-                </div>
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                  {getStatusBadge(record.status)}
-                  {getDeliveryBadge(record)}
-                  <span className={cn('font-medium', getBalanceColor(record.status))}>
-                    {t('history.columnBalance')}: {fmt(balance)}
-                  </span>
-                  <span className="font-mono text-muted-foreground">
-                    {formatDate(new Date(record.serviceDate))}
-                  </span>
-                  {record.invoiceNumber && (
-                    <span className="font-mono text-muted-foreground">{record.invoiceNumber}</span>
-                  )}
-                </div>
-              </button>
-            )
-          })
-        )}
+        {data.records.length === 0
+          ? emptyState(false)
+          : data.records.map((record) => {
+              const balance = record.totalAmount - record.totalPaid
+              return (
+                <button
+                  key={record.id}
+                  type="button"
+                  onClick={() => handleRowClick(record)}
+                  className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">{record.title}</span>
+                    <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
+                  </div>
+                  <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                    {record.vehicle && (
+                      <p className="truncate">
+                        {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
+                        {record.vehicle.licensePlate && ` · ${record.vehicle.licensePlate}`}
+                      </p>
+                    )}
+                    {record.customer && <p className="truncate">{record.customer.name}</p>}
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                    {getStatusBadge(record.status)}
+                    {getDeliveryBadge(record)}
+                    <span className={cn('font-medium', getBalanceColor(record.status))}>
+                      {t('history.columnBalance')}: {fmt(balance)}
+                    </span>
+                    <span className="font-mono text-muted-foreground">
+                      {formatDate(new Date(record.serviceDate))}
+                    </span>
+                    {record.invoiceNumber && (
+                      <span className="font-mono text-muted-foreground">
+                        {record.invoiceNumber}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -538,8 +558,8 @@ export default function BillingClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
-                  {t('history.noRecords')}
+                <TableCell colSpan={9} className="p-0">
+                  {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (

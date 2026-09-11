@@ -54,7 +54,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
-import { Users, Wrench, ClipboardCheck, Columns3, Inbox } from 'lucide-react'
+import { Users, Wrench, ClipboardCheck, Columns3, Inbox, Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
@@ -150,6 +150,7 @@ export function WorkBoardClient({
 }) {
   const store = useWorkBoardStore()
   const t = useTranslations('workBoard.board')
+  const tToolbar = useTranslations('workBoard.toolbar')
   const { timeFormat } = useDateSettings()
   const tUnassigned = useTranslations('workBoard.unassigned')
   const searchParams = useSearchParams()
@@ -755,6 +756,10 @@ export function WorkBoardClient({
             <h3 className="text-lg font-medium">{t('noTechnicians')}</h3>
             <p className="text-sm text-muted-foreground">{t('noTechniciansDescription')}</p>
           </div>
+          <Button onClick={openAddTech}>
+            <Plus className="mr-1 h-4 w-4" />
+            {tToolbar('addTechnician')}
+          </Button>
         </div>
         <TechnicianDialog open={techDialogOpen} onOpenChange={setTechDialogOpen} />
         <WorkBayDialog open={bayDialogOpen} onOpenChange={setBayDialogOpen} />

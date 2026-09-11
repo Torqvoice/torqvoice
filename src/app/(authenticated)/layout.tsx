@@ -214,7 +214,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Check license expiry (only for admin/owner with white-label)
   let daysUntilExpiry: number | null = null
   let licenseExpiryDismissed = false
-  if (isOwnerOrAdmin && features.brandingRemoved) {
+  if (isOwnerOrAdmin && features.brandingRemoved && !isCloudMode()) {
     const expirySettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,

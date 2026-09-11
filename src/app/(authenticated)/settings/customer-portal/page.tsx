@@ -1,6 +1,6 @@
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import { CustomerPortalSettings } from '@/features/portal/Components/CustomerPortalSettings'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
@@ -19,15 +19,7 @@ export default async function CustomerPortalSettingsPage() {
 
   const features = await getFeatures(data.organizationId)
 
-  if (!features.customerPortal) {
-    return (
-      <FeatureLockedMessage
-        feature="Customer Portal"
-        description="Give your customers a self-service portal to view invoices, quotes, inspections, and request service."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.customerPortal
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({
@@ -61,7 +53,7 @@ export default async function CustomerPortalSettingsPage() {
     ? rawBgType
     : 'none'
 
-  return (
+  const content = (
     <CustomerPortalSettings
       enabled={settingMap.get(SETTING_KEYS.PORTAL_ENABLED) === 'true'}
       orgId={data.organizationId}
@@ -73,5 +65,17 @@ export default async function CustomerPortalSettingsPage() {
       backgroundTemplate={settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE) ?? ''}
       backgroundImage={settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ?? ''}
     />
+  )
+
+  return locked ? (
+    <FeatureLocked
+      feature="Customer Portal"
+      description="Give your customers a self-service portal to view invoices, quotes, inspections, and request service."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
   )
 }

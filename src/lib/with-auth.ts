@@ -6,7 +6,7 @@ import type { PermissionInput } from './permissions'
 import { hasAllPermissions } from './permissions'
 import { logAudit } from '@/lib/audit'
 import type { AuditEvent } from '@/lib/audit'
-import { FeatureGatedError } from '@/lib/features'
+import type { FeatureGatedError } from '@/lib/features'
 
 /** What the plan refused, and the number it stopped at when there is one. */
 export type GatedFeature = { feature: string; limit?: number }
@@ -158,13 +158,16 @@ export async function withAuth<T>(
       console.error('[withAuth] Validation error:', message)
       return { success: false, error: message }
     }
-    if (error instanceof FeatureGatedError) {
+    // Matched by name rather than `instanceof`: tests replace '@/lib/features'
+    // with partial mocks, and a plan refusal must still come through as one.
+    if (error instanceof Error && error.name === 'FeatureGatedError') {
+      const gated = error as FeatureGatedError
       // Not a failure: the plan said no. Hand the client what it needs to
       // offer the upgrade instead of an error box.
       return {
         success: false,
         error: error.message,
-        gated: { feature: error.feature, limit: error.limit },
+        gated: { feature: gated.feature, limit: gated.limit },
       }
     }
     const message = error instanceof Error ? error.message : 'An unexpected error occurred'

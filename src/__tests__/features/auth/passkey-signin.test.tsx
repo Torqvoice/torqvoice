@@ -25,7 +25,18 @@ vi.mock('lucide-react', () => ({
   Gauge: () => <svg data-testid="icon-gauge" />,
   Loader2: () => <svg data-testid="icon-loader" />,
   XCircle: () => <svg data-testid="icon-xcircle" />,
+  PlayCircle: () => <svg data-testid="icon-play" />,
+  ArrowRight: () => <svg />,
+  Car: () => <svg />,
+  Check: () => <svg />,
+  FileCheck2: () => <svg />,
+  Link2: () => <svg />,
+  Globe: () => <svg />,
 }))
+
+// The auth shell's language picker is a server-action-backed select; it is
+// not what this file tests.
+vi.mock('@/components/auth/locale-switcher', () => ({ LocaleSwitcher: () => null }))
 
 // Mock UI components
 vi.mock('@/components/ui/button', () => ({

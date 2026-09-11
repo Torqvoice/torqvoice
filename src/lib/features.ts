@@ -134,6 +134,17 @@ export function isCloudMode(): boolean {
   return process.env.TORQVOICE_MODE === 'cloud'
 }
 
+/**
+ * Torqvoice branding on invoices, quotes, inspections and share pages is a
+ * self-hosted matter: the free install carries the mark, the white-label
+ * licence removes it. On the cloud instance nobody gets the mark, whatever
+ * the plan. A new workshop downloading its first invoice from our own
+ * service should see its own name on it, not ours all over it.
+ */
+function cloudPlan(plan: Plan): PlanFeatures {
+  return { ...PLAN_FEATURES[plan], brandingRemoved: true }
+}
+
 // Grace period (in ms) after currentPeriodEnd before we cut off features.
 // Gives Stripe time to process renewals and deliver webhooks, and the daily
 // cron time to sync. 3 days covers Stripe's initial retry window.
@@ -147,12 +158,12 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     })
 
     if (!subscription) {
-      return PLAN_FEATURES.free
+      return cloudPlan('free')
     }
 
     // Only active and trialing subscriptions grant premium features
     if (subscription.status !== 'active' && subscription.status !== 'trialing') {
-      return PLAN_FEATURES.free
+      return cloudPlan('free')
     }
 
     // Defense-in-depth: if the billing period has ended and grace has elapsed,
@@ -162,7 +173,7 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
         subscription.currentPeriodEnd.getTime() + SUBSCRIPTION_GRACE_MS
       )
       if (new Date() > graceDeadline) {
-        return PLAN_FEATURES.free
+        return cloudPlan('free')
       }
     }
 
@@ -172,7 +183,7 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
       : name.includes('pro')
         ? 'pro'
         : 'free'
-    return PLAN_FEATURES[planName]
+    return cloudPlan(planName)
   }
 
   // Self-hosted mode — all features unlocked, license only controls branding

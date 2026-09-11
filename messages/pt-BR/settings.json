@@ -147,9 +147,11 @@
     "banner": "Você tem acesso somente leitura as configurações. Contate um administrador para fazer alterações."
   },
   "featureLocked": {
-    "requiresPro": "Requer uma licença Pro",
-    "upgradePlan": "Atualizar plano",
-    "activateLicense": "Ativar licença"
+    "requiresPro": "Assinatura necessária",
+    "upgradePlan": "Ver planos",
+    "activateLicense": "Ativar licença",
+    "requiresLicense": "Licença white label necessária",
+    "previewHint": "Você está vendo uma prévia. Tudo nesta página é liberado com uma assinatura."
   },
   "company": {
     "logoTitle": "Logo da empresa",

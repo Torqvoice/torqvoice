@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useDayFormatter } from './useDayFormatter'
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, CalendarOff, Plus } from 'lucide-react'
 import { useDateSettings } from '@/components/date-settings-context'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -104,6 +104,7 @@ export default function CalendarClient({
   messageChannels,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
+  const tWorkOrders = useTranslations('workOrders.list')
   const format = useDayFormatter()
   const pathname = usePathname()
   const isMobile = useIsMobile()
@@ -416,22 +417,45 @@ export default function CalendarClient({
     [date, weekStartDay]
   )
 
+  // A fresh workshop opening the calendar saw a blank month grid and nothing
+  // else. The schedule view already says "nothing scheduled" and why; the
+  // month view floats the same note over its grid, with the one thing that
+  // would put something on it. The days underneath stay clickable.
+  const monthIsEmpty =
+    view === 'month' &&
+    monthDays.every((d) => (eventsByDate.get(toLocalDateStr(d))?.length ?? 0) === 0)
+
   const body = (() => {
     switch (view) {
       case 'month':
         return (
-          <MonthView
-            days={monthDays}
-            month={date.getMonth()}
-            eventsByDate={eventsByDate}
-            todayStr={todayStr}
-            selectedDateStr={dateStr}
-            showWeekends={preferences.showWeekends}
-            showWeekNumbers={preferences.showWeekNumbers}
-            actions={dayActions}
-            onSelectDate={selectDate}
-            onOpenDay={openDay}
-          />
+          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+            <MonthView
+              days={monthDays}
+              month={date.getMonth()}
+              eventsByDate={eventsByDate}
+              todayStr={todayStr}
+              selectedDateStr={dateStr}
+              showWeekends={preferences.showWeekends}
+              showWeekNumbers={preferences.showWeekNumbers}
+              actions={dayActions}
+              onSelectDate={selectDate}
+              onOpenDay={openDay}
+            />
+            {monthIsEmpty && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+                <div className="glass pointer-events-auto flex max-w-xs flex-col items-center gap-2 rounded-xl px-6 py-5 text-center shadow-xl">
+                  <CalendarOff className="h-8 w-8 text-muted-foreground/60" />
+                  <p className="text-sm font-medium">{t('schedule.empty')}</p>
+                  <p className="text-xs text-muted-foreground">{t('schedule.emptyHint')}</p>
+                  <Button size="sm" className="mt-1" onClick={() => handleCreate('workOrder')}>
+                    <Plus className="mr-1 h-3.5 w-3.5" />
+                    {tWorkOrders('newWorkOrder')}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         )
       case 'year':
         return (
