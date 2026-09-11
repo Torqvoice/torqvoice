@@ -22,6 +22,24 @@ setup('sign in as the workshop owner', async ({ page, context }) => {
   await page.waitForURL((url) => !url.pathname.startsWith('/auth'), { timeout: 30_000 })
   await expect(page.locator('#password')).toHaveCount(0)
 
+  // A workshop that predates a feature is greeted with an announcement card
+  // on its first page ("Your emails have a new look"). It is a non-modal
+  // dialog, so a spec looking for "the dialog" finds it as well as its own.
+  // Closed here through its own button, which the app records for the whole
+  // workshop, so no spec starts with one on screen. Announcements queue one
+  // at a time, hence the loop.
+  const gotIt = page.getByRole('button', { name: 'Got it', exact: true })
+  for (let shown = 0; shown < 5; shown++) {
+    const open = await gotIt
+      .first()
+      .waitFor({ state: 'visible', timeout: 3_000 })
+      .then(() => true)
+      .catch(() => false)
+    if (!open) break
+    await gotIt.first().click()
+    await expect(gotIt).toHaveCount(0, { timeout: 10_000 })
+  }
+
   // The app reads its language from this cookie before Accept-Language. Set
   // here rather than per test so the saved state carries it everywhere.
   const { hostname } = new URL(page.url())

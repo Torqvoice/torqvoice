@@ -12,6 +12,7 @@ e2e/
   auth.setup.ts        signs in once; every spec starts with that session
   prepare-db.ts        reset + seed, run ahead of the server
   mail-sink.ts         a mail server that delivers nothing and keeps everything
+  payment-sink.ts      Stripe and PayPal as far as the app can tell; no money moves
   support/             helpers specs share: reading mail, reading a PDF's text,
                        database peeks, TOTP, work order driving
   specs/
@@ -28,6 +29,7 @@ e2e/
     inventory/         a stocked part leaves the shelf exactly once
     reminders/         a due time survives being displayed and re-saved
     email/             the email template designer, and the mail it sends
+    payments/          a customer pays online, and the payment is booked once
     tech/              the technician app's API contract
     smoke/             the build is alive
 ```

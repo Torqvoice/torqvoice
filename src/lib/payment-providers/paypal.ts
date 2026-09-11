@@ -1,4 +1,5 @@
 import type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
+import { paypalApiBase } from './vendor-hosts'
 
 export interface PayPalConfig {
   clientId: string
@@ -27,9 +28,7 @@ export class PayPalProvider implements PaymentProvider {
 
   constructor(config: PayPalConfig) {
     this.config = config
-    this.baseUrl = config.useSandbox
-      ? 'https://api-m.sandbox.paypal.com'
-      : 'https://api-m.paypal.com'
+    this.baseUrl = paypalApiBase(config.useSandbox)
   }
 
   async getAccessToken(): Promise<string> {

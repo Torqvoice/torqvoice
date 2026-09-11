@@ -158,10 +158,10 @@ test.describe('a message to a customer', () => {
     const typed = `Ready for collection <b>today</b> ${stamp}`
     await expect(async () => {
       await page.getByRole('button', { name: 'Notify' }).click()
-      await expect(page.getByRole('dialog')).toBeVisible({ timeout: 2_000 })
+      await expect(page.getByRole('dialog', { name: /^Notify / })).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
 
-    const dialog = page.getByRole('dialog')
+    const dialog = page.getByRole('dialog', { name: /^Notify / })
     await dialog.getByRole('textbox').first().fill(typed)
     const email = dialog.locator('#notify-email')
     if ((await email.getAttribute('data-state')) !== 'checked') await email.click()

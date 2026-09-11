@@ -7,7 +7,7 @@
  * the screen must not spend that on everybody's behalf.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 
 const dismissFeatureHint = vi.fn().mockResolvedValue({ success: true, data: { seen: [] } })
@@ -132,5 +132,38 @@ describe('a hint about something just switched on', () => {
     clickOutside()
     expect(showing()).toBe(false)
     expect(dismissFeatureHint).toHaveBeenCalledWith('designer.v1')
+  })
+})
+
+describe('where an announcement is drawn', () => {
+  // jsdom cannot scroll, so the method is lent to elements for these tests
+  // and taken away again, leaving the other tests on the path where it is
+  // missing, which the card must also survive.
+  const scroll = vi.fn()
+  beforeEach(() => {
+    scroll.mockClear()
+    Element.prototype.scrollIntoView = scroll
+  })
+  afterEach(() => {
+    // Restoring jsdom's own prototype, which has no such method.
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView
+  })
+
+  it('brings the thing it points at into view first', async () => {
+    // The Settings row sits below the fold of a sidebar that scrolls, and the
+    // card used to be drawn beside it with its only button off the bottom of
+    // the window.
+    await renderCard({ variant: 'announcement' })
+    expect(scroll).toHaveBeenCalledWith({ block: 'nearest' })
+    expect(scroll.mock.contexts[0], 'the anchor is what scrolled').toBe(
+      screen.getByRole('button', { name: 'Settings' })
+    )
+  })
+
+  it('leaves a hint where it is', async () => {
+    // A hint follows something the person just did, so its anchor is already
+    // on screen, and moving the page under them would be the interruption.
+    await renderCard()
+    expect(scroll).not.toHaveBeenCalled()
   })
 })

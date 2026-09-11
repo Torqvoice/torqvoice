@@ -413,3 +413,105 @@ export async function customerOfVehicle(
     return customer
   })
 }
+
+/** Where a workshop's connection to a vendor stands: active, pending, error, or none at all. */
+export async function connectionStatus(connectorId: string): Promise<string | null> {
+  const organizationId = await ownerOrganizationId()
+  return withDb(async (db) => {
+    const result = await db.query<{ status: string }>(
+      `select status from integration_connections
+        where "organizationId" = $1 and "connectorId" = $2`,
+      [organizationId, connectorId]
+    )
+    return result.rows[0]?.status ?? null
+  })
+}
+
+/**
+ * Every connection a spec made to a vendor, gone. The payment specs connect
+ * Stripe and PayPal to the seeded workshop, and a connection left behind puts
+ * pay buttons on every invoice the rest of the suite shares.
+ */
+export async function forgetConnections(connectorIds: string[]): Promise<void> {
+  const organizationId = await ownerOrganizationId()
+  await withDb((db) =>
+    db.query(
+      `delete from integration_connections
+        where "organizationId" = $1 and "connectorId" = any($2::text[])`,
+      [organizationId, connectorIds]
+    )
+  )
+}
+
+export interface RecordedPayment {
+  amount: number
+  provider: string | null
+  method: string
+  externalId: string | null
+}
+
+/** The money recorded against one work order, oldest first. */
+export async function paymentsFor(serviceRecordId: string): Promise<RecordedPayment[]> {
+  return withDb(async (db) => {
+    const result = await db.query<RecordedPayment>(
+      `select amount, provider, method, "externalId" from payments
+        where "serviceRecordId" = $1
+        order by "createdAt", id`,
+      [serviceRecordId]
+    )
+    return result.rows.map((row) => ({ ...row, amount: Number(row.amount) }))
+  })
+}
+
+/**
+ * Writes a vendor payment row straight into the table, bypassing the app.
+ *
+ * For the one question only the database can answer: whether it refuses a
+ * second row for a payment it already holds. Returns the Postgres error code
+ * when the insert is refused, or null when it went in.
+ */
+export async function insertVendorPaymentRow(row: {
+  serviceRecordId: string
+  provider: string
+  externalId: string
+  amount: number
+}): Promise<string | null> {
+  return withDb(async (db) => {
+    try {
+      await db.query(
+        `insert into payments (id, amount, method, provider, "externalId", "serviceRecordId", "updatedAt")
+         values (md5(random()::text || clock_timestamp()::text), $1, $2, $2, $3, $4, now())`,
+        [row.amount, row.provider, row.externalId, row.serviceRecordId]
+      )
+      return null
+    } catch (error) {
+      return (error as { code?: string }).code ?? 'unknown'
+    }
+  })
+}
+
+/**
+ * How many rows one invoice holds for one vendor payment.
+ *
+ * Counted against the invoice as well as the id: a vendor's id means one
+ * payment on one invoice, and a count across the whole table also finds any
+ * other invoice that happens to carry the same id, which is not a duplicate.
+ */
+export async function vendorPaymentRows(
+  serviceRecordId: string,
+  externalId: string
+): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: number }>(
+      `select count(*)::int as n from payments
+        where "serviceRecordId" = $1 and "externalId" = $2`,
+      [serviceRecordId, externalId]
+    )
+    return result.rows[0]?.n ?? 0
+  })
+}
+
+/** Removes the rows a spec wrote for one vendor payment. */
+export async function deleteVendorPaymentRows(externalId: string): Promise<void> {
+  await withDb((db) => db.query(`delete from payments where "externalId" = $1`, [externalId]))
+}
