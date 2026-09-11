@@ -1,5 +1,7 @@
 import { cache } from 'react'
 import { db } from './db'
+import { verifyLicenseToken } from './license/token'
+import { scheduleLicenseSelfHeal } from './license/revalidate'
 
 export type Plan = 'free' | 'pro' | 'enterprise' | 'white-label'
 
@@ -186,18 +188,31 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     return cloudPlan(planName)
   }
 
-  // Self-hosted mode — all features unlocked, license only controls branding
+  // Self-hosted mode — all features unlocked, license only controls branding.
+  //
+  // The gate trusts one thing: a token signed by torqvoice.com, bound to this
+  // organization, refreshed within the last two weeks. The operator owns this
+  // database, so `license.valid` and friends are display cache only; editing
+  // them changes nothing here. See src/lib/license/token.ts.
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
-      key: { in: ['license.valid', 'license.expiresAt'] },
+      key: { in: ['license.token', 'license.key'] },
     },
   })
 
   const map = new Map(settings.map((s) => [s.key, s.value]))
-  const isValid = map.get('license.valid') === 'true'
-  const expiresAt = map.get('license.expiresAt')
-  const hasLicense = isValid && (!expiresAt || new Date(expiresAt) > new Date())
+  const verification = verifyLicenseToken(map.get('license.token'), organizationId)
+  const hasLicense = verification.status === 'valid'
+
+  // A key with no usable token is an install that has not talked to
+  // torqvoice.com recently, or one that upgraded from the release that stored
+  // plain booleans. Refresh in the background; the cron would get there within
+  // a day anyway, this just makes the upgrade invisible.
+  const key = map.get('license.key')
+  if (key && !hasLicense) {
+    scheduleLicenseSelfHeal(organizationId, key)
+  }
 
   return {
     ...PLAN_FEATURES['white-label'],

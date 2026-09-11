@@ -1264,7 +1264,14 @@
     "validated": "Lisens validert",
     "invalid": "Ugyldig lisensnokkel",
     "failedValidate": "Kunne ikke validere lisens",
-    "keyHint": "Hver lisensnokkel er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner."
+    "keyHint": "Hver lisensnokkel er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner.",
+    "expired": "Utløpt",
+    "unverified": "Ikke bekreftet",
+    "expiresOn": "Utløper: {date}",
+    "unreachable": "torqvoice.com kunne ikke nås. Lisensen som er lagret på denne serveren er uendret.",
+    "unverifiedHint": "Denne serveren har ikke kunnet bekrefte lisensen hos torqvoice.com på {days} dager. Torqvoice-merkingen kommer tilbake etter {max} dager uten en vellykket sjekk.",
+    "rejected": "torqvoice.com godtok ikke denne nøkkelen: {reason}",
+    "signedHint": "Valideringen signeres av torqvoice.com og gjentas daglig, så serveren trenger utgående tilgang til torqvoice.com."
   },
   "about": {
     "title": "Om Torqvoice",

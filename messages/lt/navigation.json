@@ -86,6 +86,9 @@
   "licenseExpiresTomorrow": "Jūsų licencija baigiasi rytoj.",
   "licenseExpiresDays": "Jūsų licencija baigiasi po {days} d.",
   "licenseRenew": "Atnaujinti",
+  "licenseUnverifiedDays": "Nepavyko patikrinti jūsų licencijos. Torqvoice prekės ženklas grįš po {days} d., jei šis serveris nepasieks torqvoice.com.",
+  "licenseUnverifiedNow": "Nepavyko patikrinti jūsų licencijos ir Torqvoice prekės ženklas grįžo.",
+  "licenseVerify": "Patikrinti",
   "sidebar": {
     "dashboard": "Valdymo skydelis",
     "clients": "Klientai",

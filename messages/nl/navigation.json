@@ -86,6 +86,9 @@
   "licenseExpiresTomorrow": "Uw licentie verloopt morgen.",
   "licenseExpiresDays": "Uw licentie verloopt over {days} dagen.",
   "licenseRenew": "Verlengen",
+  "licenseUnverifiedDays": "Uw licentie kon niet worden geverifieerd. De Torqvoice-branding keert over {days} dagen terug tenzij deze server torqvoice.com kan bereiken.",
+  "licenseUnverifiedNow": "Uw licentie kon niet worden geverifieerd en de Torqvoice-branding is teruggekeerd.",
+  "licenseVerify": "Verifiëren",
   "sidebar": {
     "dashboard": "Dashboard",
     "clients": "Klanten",

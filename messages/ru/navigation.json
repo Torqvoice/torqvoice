@@ -86,6 +86,9 @@
   "licenseExpiresTomorrow": "Ваша лицензия истекает завтра.",
   "licenseExpiresDays": "Ваша лицензия истекает через {days} дней.",
   "licenseRenew": "Продлить",
+  "licenseUnverifiedDays": "Не удалось проверить лицензию. Брендинг Torqvoice вернётся через {days} дн., если этот сервер не сможет связаться с torqvoice.com.",
+  "licenseUnverifiedNow": "Не удалось проверить лицензию, и брендинг Torqvoice вернулся.",
+  "licenseVerify": "Проверить",
   "sidebar": {
     "dashboard": "Панель управления",
     "clients": "Клиенты",

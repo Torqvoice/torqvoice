@@ -1264,7 +1264,14 @@
     "validated": "Licencja zweryfikowana pomyślnie",
     "invalid": "Nieprawidlowy klucz licencji",
     "failedValidate": "Nie udało się zweryfikować licencji",
-    "keyHint": "Każdy klucz licencji jest powiazany z ta organizacja i nie może być wspoldzielony między wieloma organizacjami."
+    "keyHint": "Każdy klucz licencji jest powiazany z ta organizacja i nie może być wspoldzielony między wieloma organizacjami.",
+    "expired": "Wygasła",
+    "unverified": "Niezweryfikowana",
+    "expiresOn": "Wygasa: {date}",
+    "unreachable": "Nie udało się połączyć z torqvoice.com. Licencja zapisana na tym serwerze pozostaje bez zmian.",
+    "unverifiedHint": "Ten serwer od {days} dni nie może potwierdzić licencji w torqvoice.com. Po {max} dniach bez udanego sprawdzenia oznaczenie Torqvoice wraca.",
+    "rejected": "torqvoice.com nie przyjął tego klucza: {reason}",
+    "signedHint": "Walidacja jest podpisywana przez torqvoice.com i powtarzana codziennie, więc serwer potrzebuje wychodzącego dostępu do torqvoice.com."
   },
   "about": {
     "title": "O Torqvoice",

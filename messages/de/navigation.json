@@ -86,6 +86,9 @@
   "licenseExpiresTomorrow": "Ihre Lizenz läuft morgen ab.",
   "licenseExpiresDays": "Ihre Lizenz läuft in {days} Tagen ab.",
   "licenseRenew": "Verlängern",
+  "licenseUnverifiedDays": "Ihre Lizenz konnte nicht überprüft werden. Das Torqvoice-Branding kehrt in {days} Tagen zurück, sofern dieser Server torqvoice.com nicht erreichen kann.",
+  "licenseUnverifiedNow": "Ihre Lizenz konnte nicht überprüft werden und das Torqvoice-Branding ist zurückgekehrt.",
+  "licenseVerify": "Überprüfen",
   "sidebar": {
     "dashboard": "Dashboard",
     "clients": "Kunden",

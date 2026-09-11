@@ -89,6 +89,9 @@ export const SETTING_KEYS = {
   PAYMENT_TERMS_OF_SALE: 'payment.termsOfSale',
   PAYMENT_TERMS_OF_SALE_URL: 'payment.termsOfSaleUrl',
   LICENSE_KEY: 'license.key',
+  /// The signed token from torqvoice.com. The only licence row the feature
+  /// gate reads; everything else under license.* is a display cache.
+  LICENSE_TOKEN: 'license.token',
   LICENSE_VALID: 'license.valid',
   LICENSE_CHECKED_AT: 'license.checkedAt',
   LICENSE_PLAN: 'license.plan',

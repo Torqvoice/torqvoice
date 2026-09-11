@@ -86,6 +86,9 @@
   "licenseExpiresTomorrow": "Lisansınız yarın sona eriyor.",
   "licenseExpiresDays": "Lisansınız {days} gün içinde sona eriyor.",
   "licenseRenew": "Yenile",
+  "licenseUnverifiedDays": "Lisansınız doğrulanamadı. Bu sunucu torqvoice.com'a erişemezse Torqvoice markası {days} gün içinde geri döner.",
+  "licenseUnverifiedNow": "Lisansınız doğrulanamadı ve Torqvoice markası geri döndü.",
+  "licenseVerify": "Doğrula",
   "sidebar": {
     "dashboard": "Kontrol Paneli",
     "clients": "Müşteriler",

@@ -1264,7 +1264,14 @@
     "validated": "Licencija sėkmingai patvirtinta",
     "invalid": "Neteisingas licencijos raktas",
     "failedValidate": "Nepavyko patvirtinti licencijos",
-    "keyHint": "Kiekvienas licencijos raktas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose."
+    "keyHint": "Kiekvienas licencijos raktas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose.",
+    "expired": "Pasibaigusi",
+    "unverified": "Nepatikrinta",
+    "expiresOn": "Galioja iki: {date}",
+    "unreachable": "Nepavyko pasiekti torqvoice.com. Šiame serveryje saugoma licencija nepakito.",
+    "unverifiedHint": "Šis serveris jau {days} d. negali patvirtinti licencijos su torqvoice.com. Po {max} d. be sėkmingo patikrinimo Torqvoice prekės ženklas grįžta.",
+    "rejected": "torqvoice.com nepriėmė šio rakto: {reason}",
+    "signedHint": "Patikrinimą pasirašo torqvoice.com ir jis kartojamas kasdien, todėl serveriui reikia išeinančio ryšio su torqvoice.com."
   },
   "about": {
     "title": "Apie Torqvoice",
