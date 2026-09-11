@@ -45,6 +45,7 @@ import { createDefaultRoles } from '@/features/team/Actions/createDefaultRoles'
 import { CountryPicker } from './CountryPicker'
 import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
+import { handleGated } from '@/components/upgrade-gate'
 
 /**
  * Adding somebody to the workshop, whoever they are.
@@ -285,7 +286,7 @@ export function AddPersonDialog({
       // reported back, the team page simply shows them where they ended up.
       const joined = await inviteMember(payload)
       if (!joined.success) {
-        setError(joined.error || t('team.failedSendInvitation'))
+        if (!handleGated(joined)) setError(joined.error || t('team.failedSendInvitation'))
         setBusy(false)
         return
       }

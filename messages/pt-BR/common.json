@@ -81,6 +81,14 @@
     "enterFullscreen": "Tela cheia",
     "exitFullscreen": "Sair da tela cheia"
   },
+  "upgrade": {
+    "title": "Faça upgrade para continuar",
+    "maxCustomers": "Seu plano inclui até {limit} clientes, e você chegou a esse número. Faça upgrade para adicionar quantos precisar.",
+    "maxUsers": "Seu plano inclui {limit, plural, one {um membro na equipe} other {# membros na equipe}}. Faça upgrade para convidar mais pessoas.",
+    "generic": "Este recurso não está incluído no seu plano atual.",
+    "featureNotIncluded": "{feature} não está incluído no seu plano atual.",
+    "notNow": "Agora não"
+  },
   "broadcast": {
     "dismiss": "Fechar",
     "title": "Aviso para todos",

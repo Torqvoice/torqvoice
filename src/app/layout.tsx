@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 import { QueryProvider } from '@/lib/query-provider'
 import { GlassModal } from '@/components/glass-modal'
+import { UpgradeGateDialog } from '@/components/upgrade-gate'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAServiceWorker } from '@/components/pwa-service-worker'
 import { PostHogProvider } from '@/components/posthog-provider'
@@ -129,6 +130,7 @@ export default async function RootLayout({
                     {children}
                   </BannerSlotProvider>
                   <GlassModal />
+                  <UpgradeGateDialog />
                   {/* Centred at the bottom, and lifted clear of the mobile
                       bottom nav so a toast never lands on the tab bar. */}
                   <Toaster

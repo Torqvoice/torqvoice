@@ -81,6 +81,14 @@
     "enterFullscreen": "Pantalla completa",
     "exitFullscreen": "Salir de pantalla completa"
   },
+  "upgrade": {
+    "title": "Mejore su plan para continuar",
+    "maxCustomers": "Su plan incluye hasta {limit} clientes y ya ha alcanzado ese número. Mejore el plan para añadir todos los que necesite.",
+    "maxUsers": "Su plan incluye {limit, plural, one {un miembro del equipo} other {# miembros del equipo}}. Mejore el plan para invitar a más personas.",
+    "generic": "Esta función no está incluida en su plan actual.",
+    "featureNotIncluded": "{feature} no está incluido en su plan actual.",
+    "notNow": "Ahora no"
+  },
   "broadcast": {
     "dismiss": "Cerrar",
     "title": "Aviso para todos",

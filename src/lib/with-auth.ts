@@ -6,11 +6,17 @@ import type { PermissionInput } from './permissions'
 import { hasAllPermissions } from './permissions'
 import { logAudit } from '@/lib/audit'
 import type { AuditEvent } from '@/lib/audit'
+import { FeatureGatedError } from '@/lib/features'
+
+/** What the plan refused, and the number it stopped at when there is one. */
+export type GatedFeature = { feature: string; limit?: number }
 
 export type ActionResult<T = unknown> = {
   success: boolean
   data?: T
   error?: string
+  /** Set when the action was refused by the plan rather than by a failure. */
+  gated?: GatedFeature
 }
 
 export type AuthContext = {
@@ -151,6 +157,15 @@ export async function withAuth<T>(
       const message = messages.join('. ')
       console.error('[withAuth] Validation error:', message)
       return { success: false, error: message }
+    }
+    if (error instanceof FeatureGatedError) {
+      // Not a failure: the plan said no. Hand the client what it needs to
+      // offer the upgrade instead of an error box.
+      return {
+        success: false,
+        error: error.message,
+        gated: { feature: error.feature, limit: error.limit },
+      }
     }
     const message = error instanceof Error ? error.message : 'An unexpected error occurred'
     console.error('[withAuth] Error:', message)

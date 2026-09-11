@@ -9,18 +9,22 @@ import { signUp } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, XCircle } from 'lucide-react'
+import { ArrowRight, Loader2, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
+import { AuthCard, AuthShell } from '@/components/auth/auth-shell'
+import { TERMS_URL } from '@/lib/marketing-urls'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
 export function SignUpForm({
   inviteToken,
   emailVerificationRequired,
   redirectTo,
+  cloudMode = false,
 }: {
   inviteToken?: string
   emailVerificationRequired?: boolean
   redirectTo?: string
+  cloudMode?: boolean
 }) {
   const t = useTranslations('auth.signUp')
   const tc = useTranslations('common')
@@ -34,6 +38,11 @@ export function SignUpForm({
   const [loading, setLoading] = useState(false)
   const termsRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+
+  // The pitch sits beside the form for a fresh cloud sign-up. An invited
+  // colleague is joining a workshop that already chose Torqvoice, so they
+  // get the plain card and a title that says what is happening.
+  const pitch = cloudMode && !inviteToken
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -102,22 +111,27 @@ export function SignUpForm({
     }
   }
 
-  return (
-    <div className="grid-bg flex min-h-screen items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-      </div>
+  const title = inviteToken ? t('title') : pitch ? t('titleCloud') : t('title')
+  const description = inviteToken
+    ? t('descriptionInvite')
+    : pitch
+      ? t('descriptionCloud')
+      : t('descriptionDefault')
+  const submitLabel = inviteToken
+    ? t('createAccountJoin')
+    : pitch
+      ? t('createAccountCloud')
+      : t('createAccount')
 
-      <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
-        <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex items-center gap-2">
+  return (
+    <AuthShell pitch={pitch}>
+      <AuthCard>
+        <div className={pitch ? 'mb-6 text-center lg:text-left' : 'mb-8 text-center'}>
+          <div className={`mb-4 inline-flex items-center gap-2 ${pitch ? 'lg:hidden' : ''}`}>
             <AuthLogo alt={tc('brandName')} />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {inviteToken ? t('descriptionInvite') : t('descriptionDefault')}
-          </p>
+          <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </div>
 
         {error && (
@@ -146,6 +160,7 @@ export function SignUpForm({
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              autoComplete="name"
               className="h-11 bg-background/50"
             />
           </div>
@@ -159,6 +174,7 @@ export function SignUpForm({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
               className="h-11 bg-background/50"
             />
           </div>
@@ -173,6 +189,7 @@ export function SignUpForm({
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
+              autoComplete="new-password"
               className="h-11 bg-background/50"
             />
             <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
@@ -196,20 +213,24 @@ export function SignUpForm({
             />
             <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">
               {t('agreeToTerms')}{' '}
-              <Link
-                href="/terms"
+              <a
+                href={TERMS_URL}
                 target="_blank"
+                rel="noopener"
                 className="font-medium text-primary hover:underline"
               >
                 {tc('terms.termsOfService')}
-              </Link>
+              </a>
             </Label>
           </div>
 
-          <Button type="submit" className="h-11 w-full" disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            {inviteToken ? t('createAccountJoin') : t('createAccount')}
+          <Button type="submit" className="h-11 w-full text-base" disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {submitLabel}
+            {pitch && !loading && <ArrowRight className="ml-1 h-4 w-4" />}
           </Button>
+
+          {pitch && <p className="text-center text-xs text-muted-foreground">{t('noCardNote')}</p>}
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
@@ -218,7 +239,7 @@ export function SignUpForm({
             {tc('buttons.signIn')}
           </Link>
         </p>
-      </div>
-    </div>
+      </AuthCard>
+    </AuthShell>
   )
 }

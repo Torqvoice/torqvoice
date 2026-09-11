@@ -31,7 +31,10 @@ export type PlanFeatures = {
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
   free: {
     maxOrganizations: 1,
-    maxCustomers: 5,
+    // Enough to run real work for a few weeks before the plan is felt. Five
+    // was reached in the first afternoon, often on the third customer once
+    // the seeded samples were counted, and people left instead of upgrading.
+    maxCustomers: 20,
     maxUsers: 1,
     templates: 2,
     customTemplates: false,
@@ -216,13 +219,21 @@ export async function getMaxOrganizations(userId: string): Promise<number> {
   return best
 }
 
+/**
+ * Thrown when the plan refuses an action. `withAuth` turns it into a typed
+ * `gated` field on the result, so the client can show an upgrade prompt with
+ * the actual number instead of a red error box. The message is only a
+ * fallback for callers that do not look at `gated`.
+ */
 export class FeatureGatedError extends Error {
   feature: string
+  limit?: number
 
-  constructor(feature: string, message?: string) {
+  constructor(feature: string, message?: string, limit?: number) {
     super(message ?? `This feature requires an upgraded plan: ${feature}`)
     this.name = 'FeatureGatedError'
     this.feature = feature
+    this.limit = limit
   }
 }
 

@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { SignUpForm } from './sign-up-form'
 import { isDemoMode } from '@/lib/demo'
+import { isCloudMode } from '@/lib/features'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,8 +18,23 @@ export default async function SignUpPage({
   const inviteToken = params.invite
   const redirectTo = params.redirect ? safeRedirectPath(params.redirect) : undefined
 
+  // The three lookups do not depend on each other. This is the first page a
+  // new visitor sees, so it should not pay for three round-trips in a row.
+  const [session, regSetting, verificationSetting] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    inviteToken || isDemoMode
+      ? null
+      : db.systemSetting.findUnique({
+          where: { key: 'registration.disabled' },
+          select: { value: true },
+        }),
+    db.systemSetting.findUnique({
+      where: { key: 'email.verificationRequired' },
+      select: { value: true },
+    }),
+  ])
+
   // If already authenticated, redirect to the target or home
-  const session = await auth.api.getSession({ headers: await headers() })
   if (session?.user?.id) {
     redirect(redirectTo || '/')
   }
@@ -28,20 +44,11 @@ export default async function SignUpPage({
     if (isDemoMode) {
       redirect('/auth/sign-in')
     }
-    const regSetting = await db.systemSetting.findUnique({
-      where: { key: 'registration.disabled' },
-      select: { value: true },
-    })
-
     if (regSetting?.value === 'true') {
       redirect('/auth/sign-in')
     }
   }
 
-  const verificationSetting = await db.systemSetting.findUnique({
-    where: { key: 'email.verificationRequired' },
-    select: { value: true },
-  })
   const emailVerificationRequired = verificationSetting?.value === 'true'
 
   return (
@@ -49,6 +56,7 @@ export default async function SignUpPage({
       inviteToken={inviteToken}
       emailVerificationRequired={emailVerificationRequired}
       redirectTo={redirectTo}
+      cloudMode={isCloudMode()}
     />
   )
 }

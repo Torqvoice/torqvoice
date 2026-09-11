@@ -20,6 +20,7 @@ import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { createCustomer } from '@/features/customers/Actions/customerActions'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { handleGated } from '@/components/upgrade-gate'
 
 interface Vehicle {
   id: string
@@ -113,7 +114,9 @@ export function VehiclePickerDialog({
           phone: newCustomerPhone.trim() || undefined,
         })
         if (!customerResult.success || !customerResult.data) {
-          toast.error(customerResult.error || t('failedCreateCustomer'))
+          if (!handleGated(customerResult)) {
+            toast.error(customerResult.error || t('failedCreateCustomer'))
+          }
           setCreating(false)
           return
         }
@@ -170,7 +173,9 @@ export function VehiclePickerDialog({
           phone: newCustomerPhone.trim() || undefined,
         })
         if (!customerResult.success || !customerResult.data) {
-          toast.error(customerResult.error || t('failedCreateCustomer'))
+          if (!handleGated(customerResult)) {
+            toast.error(customerResult.error || t('failedCreateCustomer'))
+          }
           setCreating(false)
           return
         }

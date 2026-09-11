@@ -156,7 +156,8 @@ export async function inviteMember(input: unknown) {
       if (memberCount >= features.maxUsers) {
         throw new FeatureGatedError(
           'maxUsers',
-          'Team member limit reached. Upgrade your plan to add more members.'
+          'Team member limit reached. Upgrade your plan to add more members.',
+          features.maxUsers
         )
       }
 

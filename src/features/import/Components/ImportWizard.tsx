@@ -67,6 +67,7 @@ import type { DateFormat, DecimalSeparator } from '@/features/import/Lib/normali
 import type { DuplicateRule, RowAction, RowIssue } from '@/features/import/Lib/pipeline'
 import type { ColumnMapping } from '@/features/import/Lib/suggest'
 import { type AnalyzeResponse, IMPORT_ENTITIES, missingRequired } from '@/features/import/Lib/types'
+import { handleGated } from '@/components/upgrade-gate'
 
 type Step = 'upload' | 'mapping' | 'preview' | 'importing' | 'result'
 
@@ -299,7 +300,13 @@ export function ImportWizard({
     }, 800)
     try {
       const res = await commitImport(runInput)
-      if (!res.success || !res.data) throw new Error(res.error || t('errors.importFailed'))
+      if (!res.success || !res.data) {
+        if (handleGated(res)) {
+          setStep('preview')
+          return
+        }
+        throw new Error(res.error || t('errors.importFailed'))
+      }
       setResult(res.data)
       setStep('result')
       router.refresh()
