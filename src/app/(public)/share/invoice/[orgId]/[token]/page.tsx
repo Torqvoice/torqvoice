@@ -10,7 +10,7 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
+import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { getAppBaseUrl } from '@/lib/app-url'
 
@@ -116,7 +116,7 @@ export default async function PublicInvoicePage({
   // shared copy and the download are the same document.
   const [torqvoiceLogoDataUri, telegramQr] = await Promise.all([
     features.brandingRemoved ? undefined : getTorqvoiceLogoDataUri(),
-    telegramQrForPrint(orgId, assembly.layoutConfig),
+    telegramQrForPrint(orgId, assembly.layoutConfig, documentCustomerId(assembly.record)),
   ])
 
   const spec = buildInvoicePrintSpec({

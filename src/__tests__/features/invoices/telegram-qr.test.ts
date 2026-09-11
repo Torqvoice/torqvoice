@@ -21,6 +21,7 @@ vi.mock('@/lib/telegram', () => ({
 
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import {
+  documentCustomerId,
   telegramBotLink,
   telegramQrForPrint,
   telegramQrWanted,
@@ -57,12 +58,21 @@ describe('telegramQrForPrint', () => {
     expect(await telegramQrForPrint('org1', layoutWithTelegram(true))).toBeNull()
   })
 
-  it('encodes the connected bot link when the block is on', async () => {
+  it('encodes the bot link that names the customer, so scanning links them', async () => {
+    // A bare bot link opens the bot and links nobody: a customer who scanned
+    // it stayed unknown, and their message went nowhere. The code on a
+    // document carries the customer the document is for.
     lookup = async () => 'eigeland_bot'
-    const qr = await telegramQrForPrint('org1', layoutWithTelegram(true))
-    expect(qr?.link).toBe('https://t.me/eigeland_bot')
+    const qr = await telegramQrForPrint('org1', layoutWithTelegram(true), 'cust_42')
+    expect(qr?.link).toBe('https://t.me/eigeland_bot?start=cust_42')
     expect(qr?.dataUri.startsWith('data:image/png;base64,')).toBe(true)
     expect(lookups).toEqual(['org1'])
+  })
+
+  it('falls back to the plain bot link for a document with no customer', async () => {
+    lookup = async () => 'eigeland_bot'
+    const qr = await telegramQrForPrint('org1', layoutWithTelegram(true), null)
+    expect(qr?.link).toBe('https://t.me/eigeland_bot')
   })
 
   it('never lets a broken integration cost the document', async () => {
@@ -73,6 +83,21 @@ describe('telegramQrForPrint', () => {
     expect(await telegramQrForPrint('org1', layoutWithTelegram(true))).toBeNull()
     expect(quiet).toHaveBeenCalledOnce()
     quiet.mockRestore()
+  })
+
+  it('names the customer in the link, and only then', () => {
+    expect(telegramBotLink('shop_bot', 'cust_1')).toBe('https://t.me/shop_bot?start=cust_1')
+    expect(telegramBotLink('shop_bot', null)).toBe('https://t.me/shop_bot')
+    expect(telegramBotLink('shop_bot', '')).toBe('https://t.me/shop_bot')
+  })
+
+  it('takes the customer from the document, or from the car it is on', () => {
+    expect(documentCustomerId({ customerId: 'direct', vehicle: { customerId: 'owner' } })).toBe(
+      'direct'
+    )
+    expect(documentCustomerId({ customerId: null, vehicle: { customerId: 'owner' } })).toBe('owner')
+    expect(documentCustomerId({ customerId: null, vehicle: null })).toBeNull()
+    expect(documentCustomerId({})).toBeNull()
   })
 
   it('reads a username with or without the @', () => {

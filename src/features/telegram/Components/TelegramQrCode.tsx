@@ -8,6 +8,69 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Check, Copy, Mail, Send } from 'lucide-react'
 import { toast } from 'sonner'
 
+/**
+ * The QR code and link a customer uses to connect, with the ways to hand it
+ * over. Shown in a dialog from the customer's header, and inline on the
+ * Telegram tab while the customer has not connected yet, so the desk can
+ * turn the screen round rather than hunt for a button.
+ */
+export function TelegramConnectCard({
+  botUsername,
+  customerId,
+  customerName,
+  customerEmail,
+}: {
+  botUsername: string
+  customerId: string
+  customerName: string
+  customerEmail?: string | null
+}) {
+  const t = useTranslations('telegram.qr')
+  const [copied, setCopied] = useState(false)
+
+  const deepLink = `https://t.me/${botUsername}?start=${customerId}`
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(deepLink)
+    setCopied(true)
+    toast.success(t('copied'))
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="flex w-full max-w-sm flex-col items-center gap-4 py-4">
+      <div className="rounded-xl bg-white p-4">
+        <QRCodeSVG value={deepLink} size={200} />
+      </div>
+      <p className="text-center text-sm text-muted-foreground">
+        {t('description', { name: customerName })}
+      </p>
+      <div className="flex w-full gap-2">
+        <Button variant="outline" onClick={handleCopy} className="flex-1">
+          {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+          {copied ? t('copied') : t('copyLink')}
+        </Button>
+        {customerEmail && (
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={() => {
+              const subject = encodeURIComponent(t('emailSubject'))
+              const body = encodeURIComponent(
+                t('emailBody', { name: customerName, link: deepLink })
+              )
+              window.open(`mailto:${customerEmail}?subject=${subject}&body=${body}`)
+            }}
+          >
+            <Mail className="mr-2 h-4 w-4" />
+            {t('sendEmail')}
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function TelegramQrCode({
   botUsername,
   customerId,
@@ -21,16 +84,6 @@ export function TelegramQrCode({
 }) {
   const t = useTranslations('telegram.qr')
   const [open, setOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
-
-  const deepLink = `https://t.me/${botUsername}?start=${customerId}`
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(deepLink)
-    setCopied(true)
-    toast.success(t('copied'))
-    setTimeout(() => setCopied(false), 2000)
-  }
 
   return (
     <>
@@ -44,35 +97,13 @@ export function TelegramQrCode({
           <DialogHeader>
             <DialogTitle className="text-center">{t('title')}</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="rounded-xl bg-white p-4">
-              <QRCodeSVG value={deepLink} size={200} />
-            </div>
-            <p className="text-center text-sm text-muted-foreground">
-              {t('description', { name: customerName })}
-            </p>
-            <div className="flex w-full gap-2">
-              <Button variant="outline" onClick={handleCopy} className="flex-1">
-                {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                {copied ? t('copied') : t('copyLink')}
-              </Button>
-              {customerEmail && (
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    const subject = encodeURIComponent(t('emailSubject'))
-                    const body = encodeURIComponent(
-                      t('emailBody', { name: customerName, link: deepLink })
-                    )
-                    window.open(`mailto:${customerEmail}?subject=${subject}&body=${body}`)
-                  }}
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  {t('sendEmail')}
-                </Button>
-              )}
-            </div>
+          <div className="flex justify-center">
+            <TelegramConnectCard
+              botUsername={botUsername}
+              customerId={customerId}
+              customerName={customerName}
+              customerEmail={customerEmail}
+            />
           </div>
         </DialogContent>
       </Dialog>
