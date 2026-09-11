@@ -11,5 +11,10 @@
     "title": "Facturen zijn vernieuwd",
     "body": "Bepaal de indeling, kleuren en lettertypen van je facturen en offertes in de nieuwe ontwerper, onder Sjablonen.",
     "cta": "Sjablonen openen"
+  },
+  "email-designer": {
+    "title": "Je e-mails hebben een nieuwe look",
+    "body": "Klantmails gaan nu uit in een strakker ontwerp. Pas kleuren, tekst en indeling aan in de nieuwe ontwerper, onder E-mailsjablonen.",
+    "cta": "E-mailsjablonen openen"
   }
 }

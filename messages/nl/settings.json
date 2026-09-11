@@ -140,7 +140,8 @@
         "description": "Wat je e-mails voor factuur, offerte en rapport zeggen"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nieuw"
   },
   "readOnly": {
     "banner": "U heeft alleen-lezen toegang tot de instellingen. Neem contact op met een beheerder om wijzigingen aan te brengen."

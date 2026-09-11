@@ -140,7 +140,8 @@
         "description": "Was Ihre E-Mails zu Rechnung, Angebot und Bericht sagen"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Neu"
   },
   "readOnly": {
     "banner": "Sie haben nur Lesezugriff auf die Einstellungen. Kontaktieren Sie einen Administrator, um Anderungen vorzunehmen."

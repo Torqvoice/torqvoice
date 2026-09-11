@@ -140,7 +140,8 @@
         "description": "What your invoice, quote and report emails say"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "New"
   },
   "readOnly": {
     "banner": "You have view-only access to settings. Contact an admin to make changes."

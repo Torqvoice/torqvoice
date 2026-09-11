@@ -140,7 +140,8 @@
         "description": "Lo que dicen tus correos de factura, presupuesto e informe"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nuevo"
   },
   "readOnly": {
     "banner": "Tiene acceso de solo lectura a la configuración. Contacte a un administrador para realizar cambios."

@@ -140,7 +140,8 @@
         "description": "O que dizem seus e-mails de fatura, orçamento e relatório"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Novo"
   },
   "readOnly": {
     "banner": "Você tem acesso somente leitura as configurações. Contate um administrador para fazer alterações."

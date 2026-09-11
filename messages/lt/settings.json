@@ -140,7 +140,8 @@
         "description": "Ką rašo sąskaitų, pasiūlymų ir ataskaitų laiškai"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nauja"
   },
   "readOnly": {
     "banner": "Turite tik peržiūros prieigą prie nustatymų. Susisiekite su administratoriumi, kad atliktumėte pakeitimus."
