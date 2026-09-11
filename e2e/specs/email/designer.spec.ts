@@ -129,6 +129,31 @@ test.describe('the designer', () => {
     await expect(railBlock(page, 'intro')).toHaveAttribute('aria-pressed', 'false')
   })
 
+  test('line and paragraph spacing set in the theme reach the mail', async ({ page }) => {
+    // Every line of body text used to sit at one fixed height and every
+    // paragraph at one fixed gap; a workshop that found the mail airy had
+    // nothing to turn. The theme has two steps for it now.
+    await openPreset(page, 'invoice_sent')
+    await openSubjectAndTheme(page)
+    const intro = preview(page).locator('[data-block="intro"] td').first()
+    await expect(intro).toHaveAttribute('style', /line-height:1\.6;/)
+
+    await page.getByRole('combobox', { name: 'Line spacing' }).click()
+    await page.getByRole('option', { name: 'Relaxed', exact: true }).click()
+    await expect(intro, 'the body lines open up').toHaveAttribute('style', /line-height:1\.8;/)
+
+    await page.getByRole('combobox', { name: 'Paragraph spacing' }).click()
+    await page.getByRole('option', { name: 'Tight', exact: true }).click()
+    await expect(intro, 'the text blocks close ranks').toHaveAttribute(
+      'style',
+      /padding:0 0 10px 0;/
+    )
+
+    await page.getByRole('combobox', { name: 'Line spacing' }).click()
+    await page.getByRole('option', { name: 'Compact', exact: true }).click()
+    await expect(intro).toHaveAttribute('style', /line-height:1\.4;/)
+  })
+
   test('a block hidden in the rail leaves the mail', async ({ page }) => {
     await openPreset(page, 'invoice_sent')
     const row = railBlock(page, 'outro')

@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Interlinea",
+      "lineSpacings": {
+        "compact": "Compatta",
+        "normal": "Normale",
+        "relaxed": "Ampia"
+      },
+      "paragraphSpacing": "Spazio tra paragrafi",
+      "paragraphSpacings": {
+        "tight": "Stretto",
+        "normal": "Normale",
+        "loose": "Ampio"
+      },
+      "spacingHint": "L'interlinea è l'altezza di ogni riga; lo spazio tra paragrafi è lo spazio tra i paragrafi e tra i blocchi di testo. Invio inizia un nuovo paragrafo, Maiusc+Invio una nuova riga nello stesso.",
       "shapes": "Forme",
       "buttonRadius": "Angoli del pulsante",
       "topBar": "Barra colorata in alto",

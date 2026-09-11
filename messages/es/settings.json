@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Interlineado",
+      "lineSpacings": {
+        "compact": "Compacto",
+        "normal": "Normal",
+        "relaxed": "Amplio"
+      },
+      "paragraphSpacing": "Espacio entre párrafos",
+      "paragraphSpacings": {
+        "tight": "Estrecho",
+        "normal": "Normal",
+        "loose": "Amplio"
+      },
+      "spacingHint": "El interlineado es la altura de cada línea; el espacio entre párrafos es el hueco entre párrafos y entre bloques de texto. Intro empieza un párrafo nuevo, Mayús+Intro una línea nueva dentro del mismo.",
       "shapes": "Formas",
       "buttonRadius": "Esquinas del botón",
       "topBar": "Barra de color arriba",

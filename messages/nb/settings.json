@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Linjeavstand",
+      "lineSpacings": {
+        "compact": "Kompakt",
+        "normal": "Normal",
+        "relaxed": "Luftig"
+      },
+      "paragraphSpacing": "Avsnittsavstand",
+      "paragraphSpacings": {
+        "tight": "Tett",
+        "normal": "Normal",
+        "loose": "Romslig"
+      },
+      "spacingHint": "Linjeavstand er høyden på hver linje; avsnittsavstand er rommet mellom avsnitt og mellom tekstblokker. Enter starter et nytt avsnitt, Shift+Enter en ny linje i samme avsnitt.",
       "shapes": "Former",
       "buttonRadius": "Knappehjørner",
       "topBar": "Fargestripe øverst",

@@ -2295,6 +2295,19 @@
         "trebuchet": "Trebuchet MS",
         "courier": "Courier New"
       },
+      "lineSpacing": "Entrelinha",
+      "lineSpacings": {
+        "compact": "Compacta",
+        "normal": "Normal",
+        "relaxed": "Ampla"
+      },
+      "paragraphSpacing": "Espaço entre parágrafos",
+      "paragraphSpacings": {
+        "tight": "Apertado",
+        "normal": "Normal",
+        "loose": "Amplo"
+      },
+      "spacingHint": "A entrelinha é a altura de cada linha; o espaço entre parágrafos é o vão entre parágrafos e entre blocos de texto. Enter começa um parágrafo novo, Shift+Enter uma linha nova dentro dele.",
       "shapes": "Formas",
       "buttonRadius": "Cantos do botão",
       "topBar": "Barra colorida no topo",

@@ -16,6 +16,8 @@ import {
   type EmailTemplate,
   type SavedEmailTemplate,
   SUMMARY_ROWS,
+  EMAIL_LINE_SPACINGS,
+  EMAIL_PARAGRAPH_SPACINGS,
 } from '../Lib/emailTemplate'
 
 /**
@@ -68,6 +70,8 @@ export const emailThemeSchema = z.object({
   logoWidth: z.number().int().min(EMAIL_LOGO_MIN_WIDTH).max(EMAIL_LOGO_MAX_WIDTH),
   buttonRadius: z.number().int().min(0).max(32),
   topBar: z.boolean().optional(),
+  lineSpacing: z.enum(EMAIL_LINE_SPACINGS).optional(),
+  paragraphSpacing: z.enum(EMAIL_PARAGRAPH_SPACINGS).optional(),
 })
 
 export const emailKindSchema = z.enum(EMAIL_KINDS)

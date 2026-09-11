@@ -20,6 +20,8 @@ export interface RichTextStyle {
   lineHeight: number
   /** Links take the theme's primary colour. */
   linkColor: string
+  /** Room under a paragraph that another follows, in pixels. Absent is 10. */
+  paragraphGap?: number
 }
 
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
@@ -76,7 +78,7 @@ function inlineHtml(nodes: RichNode[] | undefined, style: RichTextStyle): string
 
 function blockHtml(node: RichNode, style: RichTextStyle, last: boolean): string {
   const base = `font-family:${style.font};font-size:${style.fontSize}px;line-height:${style.lineHeight};color:${style.color};`
-  const margin = last ? 'margin:0;' : 'margin:0 0 10px 0;'
+  const margin = last ? 'margin:0;' : `margin:0 0 ${style.paragraphGap ?? 10}px 0;`
   switch (node.type) {
     case 'paragraph': {
       const align = node.attrs?.textAlign

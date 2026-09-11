@@ -34,6 +34,10 @@ import {
   emailImagePublicPath,
   emailLogoPublicPath,
   SUMMARY_ROWS,
+  EMAIL_LINE_SPACINGS,
+  EMAIL_PARAGRAPH_SPACINGS,
+  type EmailLineSpacing,
+  type EmailParagraphSpacing,
 } from '../Lib/emailTemplate'
 import { plainToRich } from '../Lib/richText'
 import { Choice, ColorField, Group, Note, Row, Slider, Toggle } from './EmailDesignerControls'
@@ -459,6 +463,41 @@ function ThemeFields({
           </Select>
         </Row>
         <Note>{t('theme.fontHint')}</Note>
+        <Row label={t('theme.lineSpacing')}>
+          <Select
+            value={theme.lineSpacing ?? 'normal'}
+            onValueChange={(value) => onTheme({ lineSpacing: value as EmailLineSpacing })}
+          >
+            <SelectTrigger size="sm" aria-label={t('theme.lineSpacing')} className="text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {EMAIL_LINE_SPACINGS.map((id) => (
+                <SelectItem key={id} value={id}>
+                  {t(`theme.lineSpacings.${id}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Row>
+        <Row label={t('theme.paragraphSpacing')}>
+          <Select
+            value={theme.paragraphSpacing ?? 'normal'}
+            onValueChange={(value) => onTheme({ paragraphSpacing: value as EmailParagraphSpacing })}
+          >
+            <SelectTrigger size="sm" aria-label={t('theme.paragraphSpacing')} className="text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {EMAIL_PARAGRAPH_SPACINGS.map((id) => (
+                <SelectItem key={id} value={id}>
+                  {t(`theme.paragraphSpacings.${id}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Row>
+        <Note>{t('theme.spacingHint')}</Note>
       </Group>
 
       <Group title={t('theme.shapes')}>
