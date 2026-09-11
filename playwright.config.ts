@@ -94,9 +94,9 @@ export default defineConfig({
   workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI
-    ? [['github'], ['html', { open: 'never' }]]
-    : [['list'], ['html', { open: 'never' }]],
+  // On CI the suite runs in shards, one job each, and every shard writes a
+  // blob; the workflow's last job merges them into a single HTML report.
+  reporter: process.env.CI ? [['github'], ['blob']] : [['list'], ['html', { open: 'never' }]],
 
   use: {
     baseURL,
