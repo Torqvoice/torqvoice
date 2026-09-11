@@ -14,6 +14,8 @@
 
 import { db } from '@/lib/db'
 import { getManifest } from '@/integrations/registry'
+import { getFeatures } from '@/lib/features'
+import { connectorAllowed } from './plan'
 import { loadConnection, setConnectionStatus, writeLog } from './connections'
 
 const STUCK_RUNNING_MS = 10 * 60 * 1000
@@ -79,6 +81,16 @@ async function claim(jobId: string): Promise<boolean> {
   return r.count === 1
 }
 
+async function connectionStillAllowed(connectionId: string): Promise<boolean> {
+  const row = await db.integrationConnection.findUnique({
+    where: { id: connectionId },
+    select: { connectorId: true, organizationId: true },
+  })
+  const manifest = row ? getManifest(row.connectorId) : null
+  if (!row || !manifest) return false
+  return connectorAllowed(manifest, await getFeatures(row.organizationId))
+}
+
 export async function runJob(jobId: string): Promise<void> {
   if (!(await claim(jobId))) return
   const job = await db.integrationJob.findUnique({ where: { id: jobId } })
@@ -102,6 +114,15 @@ export async function runJob(jobId: string): Promise<void> {
     await db.integrationJob.update({
       where: { id: jobId },
       data: { status: 'failed', finishedAt: new Date(), error: `Connection is ${loaded.status}` },
+    })
+    return
+  }
+  // A connection made on a plan that included it keeps its row after a
+  // downgrade; its jobs must not keep running on the plan that does not.
+  if (!(await connectionStillAllowed(job.connectionId))) {
+    await db.integrationJob.update({
+      where: { id: jobId },
+      data: { status: 'failed', finishedAt: new Date(), error: 'Not included in the current plan' },
     })
     return
   }
@@ -212,6 +233,7 @@ export async function scheduleDueSyncs(): Promise<number> {
   for (const c of connections) {
     const manifest = getManifest(c.connectorId)
     if (!manifest?.schedules?.length) continue
+    if (!connectorAllowed(manifest, await getFeatures(c.organizationId))) continue
     const state = (c.state as Record<string, unknown>) ?? {}
     const lastRuns = (state.scheduleRuns as Record<string, number>) ?? {}
     const now = Date.now()

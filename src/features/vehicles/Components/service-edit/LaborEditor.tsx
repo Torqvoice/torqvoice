@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { getCurrencySymbol } from '@/lib/format'
+import { laborRowHasContent } from '@/features/vehicles/Lib/validateServiceForm'
 import { useFormatCurrency, useCurrencySettings } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -78,6 +79,10 @@ function SortableLaborRow({
     id,
   })
 
+  // Hours or a rate with nothing said about them: the row is meant, and until
+  // it is described the job cannot be saved.
+  const descriptionMissing = laborRowHasContent(labor) && !labor.description.trim()
+
   const style = dragEnabled
     ? {
         transform: CSS.Transform.toString(transform),
@@ -113,7 +118,11 @@ function SortableLaborRow({
             value={labor.description}
             onChange={(e) => updateLabor(index, 'description', e.target.value)}
             rows={1}
-            className="min-h-9 flex-1 resize-none"
+            aria-invalid={descriptionMissing}
+            className={cn(
+              'min-h-9 flex-1 resize-none',
+              descriptionMissing && 'border-destructive focus-visible:ring-destructive'
+            )}
           />
           <button
             type="button"
@@ -365,6 +374,9 @@ export function LaborEditor({
           >
             <Plus className="h-4 w-4" />
           </button>
+          {laborItems.some((l) => !l.description.trim() && laborRowHasContent(l)) && (
+            <p className="text-xs text-destructive">{t('descriptionMissingHint')}</p>
+          )}
           <div className="flex justify-end pt-1 text-sm">
             <span className="font-medium">
               {t('subtotal', { amount: formatCurrency(laborSubtotal, currencyCode) })}

@@ -140,15 +140,18 @@
         "description": "Hva e-postene for faktura, tilbud og rapport sier"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Ny"
   },
   "readOnly": {
     "banner": "Du har kun lesetilgang til innstillingene. Kontakt en administrator for a gjore endringer."
   },
   "featureLocked": {
-    "requiresPro": "Krever en Pro-lisens",
-    "upgradePlan": "Oppgrader plan",
-    "activateLicense": "Aktiver lisens"
+    "requiresPro": "Abonnement kreves",
+    "upgradePlan": "Se planer",
+    "activateLicense": "Aktiver lisens",
+    "requiresLicense": "White label-lisens kreves",
+    "previewHint": "Dette er en forhåndsvisning. Alt på denne siden låses opp med et abonnement."
   },
   "company": {
     "logoTitle": "Bedriftslogo",
@@ -859,6 +862,28 @@
     "labelLabel": "Avgiftsetikett",
     "labelHint": "Tilpasset navn vist på fakturaer og tilbud (f.eks. MVA, GST, MwSt.). La stå tom for å bruke standardverdien.",
     "labelPlaceholder": "MVA",
+    "splitLabel": "Del avgiften opp i flere satser",
+    "splitHint": "For steder som krever mer enn én avgift på samme faktura, som GST og QST i Québec eller CGST og SGST i India. Hver avgift skrives ut som egen linje med eget registreringsnummer, og avgiftsrapporten holder dem adskilt.",
+    "splitIncomplete": "Gi hver avgift et navn og en sats før du lagrer.",
+    "presetLabel": "Start fra en mal",
+    "presetPlaceholder": "Velg en region",
+    "presets": {
+      "caQc": "Québec, Canada (GST + QST)",
+      "caBc": "British Columbia, Canada (GST + PST)",
+      "caSk": "Saskatchewan, Canada (GST + PST)",
+      "caMb": "Manitoba, Canada (GST + RST)",
+      "inIntra": "India, samme delstat (CGST + SGST med 18%)"
+    },
+    "componentName": "Navn",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Sats",
+    "componentRegistration": "Registreringsnummer",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Fjern denne avgiften",
+    "registrationHint": "Skrives ut på fakturaer under firmaopplysningene dine. La stå tom for en avgift du ikke er registrert for.",
+    "addComponent": "Legg til en avgift",
+    "combinedRate": "Samlet sats",
+    "combinedRateHint": "Nye arbeidsordrer og tilbud avgiftsberegnes med summen av satsene over.",
     "convertInclusiveLabel": "Konverter eksisterende oppføringer til inklusiv modus",
     "convertInclusiveHint": "Skalerer hver linjepris opp med avgiftssatsen slik at prisene inkluderer avgift. Kundens totaler forblir uendret. Berettiget: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
     "convertInclusiveButton": "Konverter til inklusiv",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
     "setDefault": "Bruk som standard",
     "defaultSet": "«{name}» er nå i bruk",
-    "couldNotSetDefault": "Kunne ikke sette standarddesignet"
+    "couldNotSetDefault": "Kunne ikke sette standarddesignet",
+    "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

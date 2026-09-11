@@ -7,6 +7,7 @@ import { isDemoMode } from '@/lib/demo'
 import { UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { readdir, readFile, stat } from 'fs/promises'
 import path from 'path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 export const maxDuration = 300
 
@@ -432,7 +433,7 @@ export async function POST(request: NextRequest) {
 
   // Add uploaded files if requested
   if (options.files) {
-    const uploadsDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId)
+    const uploadsDir = path.join(uploadsRoot(), ctx.organizationId)
 
     const categories = UPLOAD_CATEGORIES
 

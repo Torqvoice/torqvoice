@@ -1,21 +1,14 @@
 import { NextResponse } from 'next/server'
-import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { cookies } from 'next/headers'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
-import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
-import React from 'react'
 import { readFile } from 'fs/promises'
 import { PDFDocument } from 'pdf-lib'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { getFeatures } from '@/lib/features'
-import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
-import { telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
-import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
-import { getAppBaseUrl } from '@/lib/app-url'
+import { renderInvoicePdf } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
+import { isPrintableImage } from '@/features/invoices/Lib/printableImage'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -41,16 +34,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     if (!assembly) {
       return NextResponse.json({ error: 'Record not found' }, { status: 404 })
     }
-    const { record, settingsMap, org, layoutConfig } = assembly
+    const { record } = assembly
 
     // Getting-started checklist: a downloaded invoice leaves no other trace
     // in the data, so record it here. Best-effort, never blocks the PDF.
     void markInvoiceIssued(ctx.organizationId, ctx.userId, record.id)
 
-    // Load locale-based PDF translations
+    // The workshop reads its own copy in its own language; the customer's
+    // copy follows the customer's, which the shared renderer resolves.
     const cookieStore = await cookies()
     const locale = cookieStore.get('locale')?.value || 'en'
-    const labels = await loadPrintLabels(locale, assembly.labelSettings)
 
     // Load image attachments as base64 data URIs for PDF embedding
     const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = []
@@ -72,13 +65,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         try {
           const filePath = resolveUploadPath(att.fileUrl)
           const buffer = await readFile(filePath)
-          const base64 = buffer.toString('base64')
-          const mimeType = att.fileType
-          imageAttachments.push({
-            fileName: att.fileName,
-            dataUri: `data:${mimeType};base64,${base64}`,
-            description: att.description || undefined,
-          })
+          // A file the renderer cannot decode throws inside its own stream,
+          // where this try cannot reach it: the request then never answers at
+          // all. Checked first, and listed rather than drawn if it fails.
+          if (!isPrintableImage(buffer, att.fileType)) {
+            otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
+          } else {
+            imageAttachments.push({
+              fileName: att.fileName,
+              dataUri: `data:${att.fileType};base64,${buffer.toString('base64')}`,
+              description: att.description || undefined,
+            })
+          }
         } catch {
           otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
         }
@@ -95,40 +93,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       }
     }
 
-    // Check if Torqvoice branding should be shown
-    const features = await getFeatures(ctx.organizationId)
-    let torqvoiceLogoDataUri: string | undefined
-    if (!features.brandingRemoved) {
-      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
-    }
-
-    const appUrl = getAppBaseUrl()
-    const portalSlug = org?.portalSlug
-    const portalEnabled = settingsMap['portal.enabled'] === 'true'
-    const portalUrl = portalEnabled
-      ? `${appUrl}/portal/${portalSlug || ctx.organizationId}`
-      : undefined
-
-    const telegramQr = await telegramQrForPrint(ctx.organizationId, layoutConfig)
-
-    const element = React.createElement(InvoicePDF, {
-      data: assembly.data,
-      workshop: assembly.workshop,
-      invoiceSettings: assembly.invoiceSettings,
-      paymentSummary: assembly.paymentSummary,
+    const invoiceBuffer = await renderInvoicePdf(assembly, locale, {
       imageAttachments,
       otherAttachments,
       pdfAttachmentNames: pdfAttachments.map((a) => a.fileName),
-      logoDataUri: assembly.logoDataUri,
-      template: assembly.template,
-      torqvoiceLogoDataUri,
-      portalUrl,
-      telegramQrDataUri: telegramQr?.dataUri,
-      telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
-      labels,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any
-    const invoiceBuffer = await renderToBuffer(element)
+    })
 
     const invoiceNum = invoiceNumberOf(record)
 

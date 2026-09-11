@@ -140,15 +140,18 @@
         "description": "Lo que dicen tus correos de factura, presupuesto e informe"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nuevo"
   },
   "readOnly": {
     "banner": "Tiene acceso de solo lectura a la configuración. Contacte a un administrador para realizar cambios."
   },
   "featureLocked": {
-    "requiresPro": "Requiere una licencia Pro",
-    "upgradePlan": "Mejorar plan",
-    "activateLicense": "Activar licencia"
+    "requiresPro": "Se requiere suscripción",
+    "upgradePlan": "Ver planes",
+    "activateLicense": "Activar licencia",
+    "requiresLicense": "Se requiere licencia de marca blanca",
+    "previewHint": "Está viendo una vista previa. Todo lo que hay en esta página se desbloquea con una suscripción."
   },
   "company": {
     "logoTitle": "Logo de la empresa",
@@ -859,6 +862,28 @@
     "labelLabel": "Etiqueta de impuesto",
     "labelHint": "Nombre personalizado que se muestra en facturas y presupuestos (p. ej. IVA, GST). Dejar vacío para usar el predeterminado localizado.",
     "labelPlaceholder": "IVA",
+    "splitLabel": "Dividir el impuesto en varias tasas",
+    "splitHint": "Para lugares que cobran más de un impuesto en la misma factura, como GST y QST en Quebec o CGST y SGST en India. Cada impuesto se imprime en su propia línea con su propio número de registro, y el informe de impuestos los mantiene separados.",
+    "splitIncomplete": "Asigne un nombre y una tasa a cada impuesto antes de guardar.",
+    "presetLabel": "Empezar desde una plantilla",
+    "presetPlaceholder": "Elija una región",
+    "presets": {
+      "caQc": "Quebec, Canadá (GST + QST)",
+      "caBc": "Columbia Británica, Canadá (GST + PST)",
+      "caSk": "Saskatchewan, Canadá (GST + PST)",
+      "caMb": "Manitoba, Canadá (GST + RST)",
+      "inIntra": "India, mismo estado (CGST + SGST al 18%)"
+    },
+    "componentName": "Nombre",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Tasa",
+    "componentRegistration": "Número de registro",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Quitar este impuesto",
+    "registrationHint": "Se imprime en las facturas bajo los datos de su empresa. Déjelo vacío para un impuesto en el que no esté registrado.",
+    "addComponent": "Añadir un impuesto",
+    "combinedRate": "Tasa combinada",
+    "combinedRateHint": "Las nuevas órdenes de trabajo y presupuestos se gravan con la suma de las tasas anteriores.",
     "convertInclusiveLabel": "Convertir registros existentes a modo inclusivo",
     "convertInclusiveHint": "Escala cada precio de línea hacia arriba por la tasa de impuesto para que los precios incluyan impuesto. Los totales para el cliente no cambian. Elegibles: {serviceRecords} órdenes de trabajo, {quotes} presupuestos.",
     "convertInclusiveButton": "Convertir a inclusivo",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clientes}} asignados a él volverán al diseño predeterminado.",
     "setDefault": "Establecer como predeterminado",
     "defaultSet": "«{name}» está ahora en uso",
-    "couldNotSetDefault": "No se pudo establecer el diseño predeterminado"
+    "couldNotSetDefault": "No se pudo establecer el diseño predeterminado",
+    "fieldFixedSlot": "Siempre se imprime en el mismo lugar, así que no se puede mover."
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

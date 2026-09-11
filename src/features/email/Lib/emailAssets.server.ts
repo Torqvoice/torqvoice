@@ -5,6 +5,7 @@ import path from 'path'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { db } from '@/lib/db'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { uploadsRoot } from '@/lib/upload-root'
 import {
   EMAIL_ASSET_CATEGORIES,
   type EmailTemplate,
@@ -116,7 +117,7 @@ export async function sweepEmailAssets(organizationId: string): Promise<{ remove
     const referenced = await referencedAssets(organizationId)
     const now = Date.now()
     for (const category of EMAIL_ASSET_CATEGORIES) {
-      const dir = path.join(process.cwd(), 'data', 'uploads', organizationId, category)
+      const dir = path.join(uploadsRoot(), organizationId, category)
       let files: string[]
       try {
         files = await readdir(dir)

@@ -140,15 +140,18 @@
         "description": "Fatura, teklif ve rapor e-postalarınızın metni"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Yeni"
   },
   "readOnly": {
     "banner": "Ayarlara yalnızca görüntüleme erişiminiz var. Değişiklik yapmak için bir yöneticiyle iletişime geçin."
   },
   "featureLocked": {
-    "requiresPro": "Pro lisans gerektirir",
-    "upgradePlan": "Planı Yükselt",
-    "activateLicense": "Lisansı Etkinleştir"
+    "requiresPro": "Abonelik gerekli",
+    "upgradePlan": "Planları görün",
+    "activateLicense": "Lisansı Etkinleştir",
+    "requiresLicense": "Beyaz etiket lisansı gerekli",
+    "previewHint": "Bir önizleme görüyorsunuz. Bu sayfadaki her şey abonelikle açılır."
   },
   "company": {
     "logoTitle": "Şirket Logosu",
@@ -859,6 +862,28 @@
     "labelLabel": "Vergi etiketi",
     "labelHint": "Faturalar ve tekliflerde gösterilen özel ad (örn. KDV, VAT). Yerelleştirilmiş varsayılanı kullanmak için boş bırakın.",
     "labelPlaceholder": "KDV",
+    "splitLabel": "Vergiyi birden fazla orana böl",
+    "splitHint": "Aynı faturada birden fazla vergi uygulanan yerler için, örneğin Québec'te GST ve QST ya da Hindistan'da CGST ve SGST. Her vergi kendi kayıt numarasıyla ayrı bir satır olarak yazdırılır ve vergi raporu bunları ayrı tutar.",
+    "splitIncomplete": "Kaydetmeden önce her vergiye bir ad ve oran verin.",
+    "presetLabel": "Bir şablondan başla",
+    "presetPlaceholder": "Bölge seçin",
+    "presets": {
+      "caQc": "Québec, Kanada (GST + QST)",
+      "caBc": "Britanya Kolumbiyası, Kanada (GST + PST)",
+      "caSk": "Saskatchewan, Kanada (GST + PST)",
+      "caMb": "Manitoba, Kanada (GST + RST)",
+      "inIntra": "Hindistan, aynı eyalet (%18 CGST + SGST)"
+    },
+    "componentName": "Ad",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Oran",
+    "componentRegistration": "Kayıt numarası",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Bu vergiyi kaldır",
+    "registrationHint": "Faturalarda işletme bilgilerinizin altına yazdırılır. Kayıtlı olmadığınız bir vergi için boş bırakın.",
+    "addComponent": "Vergi ekle",
+    "combinedRate": "Toplam oran",
+    "combinedRateHint": "Yeni iş emirleri ve teklifler yukarıdaki oranların toplamıyla vergilendirilir.",
     "convertInclusiveLabel": "Mevcut kayıtları KDV dahil moda dönüştür",
     "convertInclusiveHint": "Her satır fiyatını vergi oranı kadar yukarı ölçekleyerek fiyatların vergi dahil olmasını sağlar. Müşteri tarafındaki toplamlar değişmez. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
     "convertInclusiveButton": "KDV dahile dönüştür",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "Buna ayarlı {count, plural, one {# müşteri} other {# müşteri}} varsayılan tasarıma döner.",
     "setDefault": "Varsayılan yap",
     "defaultSet": "\"{name}\" artık kullanımda",
-    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı"
+    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı",
+    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

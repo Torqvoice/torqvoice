@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures } from '@/lib/features'
+import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { completionTuning, createClient, getAiConfig } from '@/lib/ai'
 import { describeAiError } from '@/lib/ai-error'
 import { demoGuard } from '@/lib/demo'
@@ -173,7 +174,7 @@ async function buildPlan(
 
 async function customerLimit(organizationId: string, toCreate: number) {
   const features = await getFeatures(organizationId)
-  const current = await db.customer.count({ where: { organizationId } })
+  const current = await countCustomersTowardLimit(organizationId)
   const remaining = Math.max(0, features.maxCustomers - current)
   return { maxCustomers: features.maxCustomers, remaining, exceeded: toCreate > remaining }
 }
@@ -485,7 +486,8 @@ export async function commitImport(raw: unknown) {
         if (limit.exceeded) {
           throw new FeatureGatedError(
             'maxCustomers',
-            `Customer limit reached. You can import ${limit.remaining} more customer(s). Upgrade your plan for more.`
+            `Customer limit reached. You can import ${limit.remaining} more customer(s). Upgrade your plan for more.`,
+            limit.maxCustomers
           )
         }
       }

@@ -5,6 +5,7 @@ import { listOrgEntries } from '@/features/time-tracking/Lib/timeEntries'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { netLineTotal } from '@/lib/tax'
+import { TaxByRateTable } from '../Lib/taxByRate'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -980,6 +981,7 @@ export async function getTaxReport(params: { startDate?: string; endDate?: strin
           taxRate: true,
           taxAmount: true,
           taxInclusive: true,
+          taxComponents: true,
           totalAmount: true,
         },
         orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
@@ -989,7 +991,7 @@ export async function getTaxReport(params: { startDate?: string; endDate?: strin
         string,
         { taxCollected: number; invoiceCount: number; taxableAmount: number }
       > = {}
-      const byRate: Record<number, { taxCollected: number; invoiceCount: number }> = {}
+      const byRate = new TaxByRateTable()
       let totalTaxCollected = 0
       let totalTaxableAmount = 0
       let totalInvoices = 0
@@ -1010,9 +1012,7 @@ export async function getTaxReport(params: { startDate?: string; endDate?: strin
         monthly[month].invoiceCount += 1
         monthly[month].taxableAmount += taxableBase
 
-        if (!byRate[r.taxRate]) byRate[r.taxRate] = { taxCollected: 0, invoiceCount: 0 }
-        byRate[r.taxRate].taxCollected += r.taxAmount
-        byRate[r.taxRate].invoiceCount += 1
+        byRate.add(r)
 
         totalTaxCollected += r.taxAmount
         totalTaxableAmount += taxableBase
@@ -1021,7 +1021,7 @@ export async function getTaxReport(params: { startDate?: string; endDate?: strin
 
       return {
         monthly: Object.entries(monthly).map(([month, data]) => ({ month, ...data })),
-        byRate: Object.entries(byRate).map(([rate, data]) => ({ taxRate: Number(rate), ...data })),
+        byRate: byRate.list(),
         summary: { totalTaxCollected, totalTaxableAmount, totalInvoices },
       }
     },

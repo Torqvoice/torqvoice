@@ -1,11 +1,16 @@
 'use server'
 
+import {
+  documentTotals,
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
@@ -375,22 +380,16 @@ export async function createQuoteFromTireSet(input: unknown) {
         where: {
           organizationId,
           key: {
-            in: [
-              'workshop.quotePrefix',
-              'workshop.quoteValidDays',
-              'workshop.defaultTaxRate',
-              'workshop.taxEnabled',
-              'workshop.taxInclusive',
-            ],
+            in: ['workshop.quotePrefix', 'workshop.quoteValidDays', ...WORKSHOP_TAX_SETTING_KEYS],
           },
         },
       })
       const map = new Map(settings.map((s) => [s.key, s.value]))
 
-      const taxEnabled = map.get('workshop.taxEnabled') !== 'false'
-      const taxInclusive = map.get('workshop.taxInclusive') === 'true'
-      const taxRate =
-        taxEnabled && !set.customer?.taxExempt ? Number(map.get('workshop.defaultTaxRate')) || 0 : 0
+      const { taxRate, taxInclusive, taxComponents } = taxFieldsForNewDocument(
+        readWorkshopTax(Object.fromEntries(map)),
+        { customerExempt: set.customer?.taxExempt }
+      )
 
       const prefix = resolveInvoicePrefix(map.get('workshop.quotePrefix') ?? 'QT-')
       const lastQuote = await db.quote.findFirst({
@@ -412,11 +411,12 @@ export async function createQuoteFromTireSet(input: unknown) {
       if (data.includeStorage) labor.push(await storageLine(set, data))
       const laborTotal = labor.reduce((sum, line) => sum + line.total, 0)
       const subtotal = Math.round((lineTotal + laborTotal) * 100) / 100
-      const { taxAmount, totalAmount } = calculateTotals({
+      const totals = documentTotals({
         subtotal,
         discountAmount: 0,
         taxRate,
         taxInclusive,
+        taxComponents,
       })
 
       const quote = await db.quote.create({
@@ -427,9 +427,10 @@ export async function createQuoteFromTireSet(input: unknown) {
           validUntil,
           subtotal,
           taxRate,
-          taxAmount,
+          taxAmount: totals.taxAmount,
           taxInclusive,
-          totalAmount,
+          taxComponents: totals.taxComponents,
+          totalAmount: totals.totalAmount,
           customerId: set.customerId,
           vehicleId: set.vehicleId,
           tireSetId: set.id,
@@ -789,6 +790,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
 export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
         select: {

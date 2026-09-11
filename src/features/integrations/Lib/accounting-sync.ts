@@ -296,21 +296,23 @@ export async function recordPulledPayment(
     select: { id: true },
   })
   if (existing) return { id: existing.id, created: false }
-  const created = await db.payment.create({
-    data: {
-      serviceRecordId: input.serviceRecordId,
-      amount: input.amount,
-      date: input.date,
-      method: input.method,
-      note: input.note,
-      provider: input.provider,
-      externalId: input.externalId,
-    },
-    select: { id: true },
+  // Two pulls overlapping can both get past the lookup above; the write is
+  // what books the payment once, and only the one that wrote issues the
+  // invoice.
+  const { recordVendorPayment } = await import('@/lib/payment-providers/record-payment')
+  const recorded = await recordVendorPayment({
+    serviceRecordId: input.serviceRecordId,
+    amount: input.amount,
+    date: input.date,
+    method: input.method,
+    note: input.note,
+    provider: input.provider,
+    externalId: input.externalId,
   })
+  if (!recorded.created) return recorded
   const { issueInvoice } = await import('@/features/invoices/Lib/issueInvoice')
   await issueInvoice(input.serviceRecordId, organizationId, 'paid')
-  return { id: created.id, created: true }
+  return recorded
 }
 
 /** Undo a pulled payment the ledger has since deleted. Only rows a pull made are touched. */

@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
 import { db } from '@/lib/db'
 import { rateLimit } from '@/lib/rate-limit'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { MAGIC_LINK_DURATION } from '@/lib/customer-session'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { isPortalLive } from '@/features/portal/Lib/portalLive'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
   const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
@@ -33,17 +33,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
 
     const orgId = org.id
 
-    // Check portal is enabled
-    const portalSetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: {
-          organizationId: orgId,
-          key: SETTING_KEYS.PORTAL_ENABLED,
-        },
-      },
-    })
-
-    if (portalSetting?.value !== 'true') {
+    if (!(await isPortalLive(orgId))) {
       return NextResponse.json({ success: true })
     }
 

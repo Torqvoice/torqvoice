@@ -53,6 +53,8 @@ export interface InvoiceData {
   taxRate: number
   taxAmount: number
   taxInclusive?: boolean
+  /** The stored split, when the job has one; see src/lib/tax-components.ts. */
+  taxComponents?: unknown
   totalAmount: number
   cost: number
   invoiceNumber: string | null

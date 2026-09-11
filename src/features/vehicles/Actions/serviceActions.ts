@@ -1,6 +1,13 @@
 'use server'
 
 import { db } from '@/lib/db'
+import {
+  documentTotals,
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
+import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
@@ -319,7 +326,7 @@ export async function createServiceRecord(input: unknown) {
               in: [
                 'workshop.invoicePrefix',
                 'workshop.invoiceStartNumber',
-                'workshop.taxInclusive',
+                ...WORKSHOP_TAX_SETTING_KEYS,
               ],
             },
           },
@@ -345,10 +352,26 @@ export async function createServiceRecord(input: unknown) {
           : settingsMap['workshop.taxInclusive'] === 'true'
 
       // Tax-exempt customer: force taxRate to 0 (overrides whatever the caller sent).
-      if (vehicle?.customer?.taxExempt || directCustomer?.taxExempt) {
+      const customerExempt = Boolean(vehicle?.customer?.taxExempt || directCustomer?.taxExempt)
+      if (customerExempt) {
         data.taxRate = 0
         data.taxAmount = 0
       }
+
+      // A job at the workshop's own rate carries its tax components, so a
+      // split-tax workshop's invoice prints GST and QST apart from the start.
+      // A rate the caller set by hand is one figure and stays one.
+      const workshopTax = readWorkshopTax(settingsMap)
+      const splitTax =
+        !customerExempt && data.taxRate > 0 && data.taxRate === workshopTax.rate
+          ? documentTotals({
+              subtotal: data.subtotal,
+              discountAmount: data.discountAmount,
+              taxRate: data.taxRate,
+              taxInclusive,
+              taxComponents: taxFieldsForNewDocument(workshopTax).taxComponents,
+            })
+          : null
 
       // Generate sequential invoice number
       const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
@@ -398,6 +421,13 @@ export async function createServiceRecord(input: unknown) {
             // records always resolve their customer through the vehicle.
             customerId: data.vehicleId ? null : data.customerId,
             taxInclusive,
+            ...(splitTax?.taxComponents
+              ? {
+                  taxComponents: splitTax.taxComponents,
+                  taxAmount: splitTax.taxAmount,
+                  totalAmount: splitTax.totalAmount,
+                }
+              : {}),
             shopName,
             invoiceNumber,
             serviceDate: toSafeWorkshopDate(serviceDate, timeZone) ?? new Date(),
@@ -576,6 +606,26 @@ export async function updateServiceRecord(input: unknown) {
         ...recordData
       } = data
 
+      // A job totalled with tax components keeps its split in step with the
+      // lines the client sent: the amounts are recomputed here from the
+      // components on the row, because the editor only knows the combined
+      // rate and must not leave the printed GST and QST lines stale.
+      const splitTax =
+        recordData.subtotal !== undefined && parseTaxComponentDefinitions(existing.taxComponents)
+          ? documentTotals({
+              subtotal: recordData.subtotal,
+              discountAmount: recordData.discountAmount ?? existing.discountAmount,
+              taxRate: existing.taxRate,
+              taxInclusive: existing.taxInclusive,
+              taxComponents: existing.taxComponents,
+            })
+          : null
+      if (splitTax) {
+        recordData.taxRate = existing.taxRate
+        recordData.taxAmount = splitTax.taxAmount
+        recordData.totalAmount = splitTax.totalAmount
+      }
+
       // A null vehicleId from the client means "no vehicle" (counter sale) —
       // treat it as no-change rather than detaching an existing vehicle.
       if (recordData.vehicleId == null) {
@@ -609,6 +659,7 @@ export async function updateServiceRecord(input: unknown) {
           where: { id },
           data: {
             ...recordData,
+            taxComponents: splitTax?.taxComponents,
             // Attaching a vehicle to a counter sale: the direct customer link is
             // cleared so the invoice follows the vehicle's customer again.
             customerId:

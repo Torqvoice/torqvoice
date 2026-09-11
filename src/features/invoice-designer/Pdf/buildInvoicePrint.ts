@@ -1,6 +1,8 @@
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { formatQuantity } from '@/lib/format-quantity'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { parseTaxComponents } from '@/lib/tax-components'
+import { taxLines } from './taxLines'
 import {
   getDefaultInvoiceLayout,
   isCustomFieldId,
@@ -327,18 +329,17 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       kind: 'discount',
     })
   }
-  if (taxRate > 0) {
-    const rate = { rate: String(taxRate) }
-    totals.push({
-      label: linesInclTax
-        ? fillTemplate(L('taxIncluded', 'Includes tax ({rate}%)'), rate)
-        : labels.tax
-          ? fillTemplate(labels.tax, rate)
-          : `Tax (${taxRate}%)`,
-      value: money(data.taxAmount),
-      kind: 'line',
+  const taxComponents = parseTaxComponents(data.taxComponents)
+  totals.push(
+    ...taxLines({
+      taxRate,
+      taxAmount: data.taxAmount,
+      components: taxComponents,
+      linesInclTax,
+      labels,
+      money,
     })
-  }
+  )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
   if (paymentSummary && paymentSummary.payments.length > 0) {
     for (const payment of paymentSummary.payments) {
@@ -397,6 +398,17 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       id: 'org_number',
       label: L('orgNumberLabel', 'Org. Number'),
       value: invoiceSettings.orgNumber,
+    })
+  }
+  // A workshop registered for each of its taxes prints each registration:
+  // Québec expects the GST and the QST numbers on the invoice, and a business
+  // customer needs both to claim the tax back. They come from the job's own
+  // snapshot, so a number changed later does not rewrite an issued invoice.
+  for (const component of taxComponents ?? []) {
+    if (!component.registrationNumber) continue
+    payment.push({
+      label: fillTemplate(L('taxRegistrationLabel', '{name} No.'), { name: component.name }),
+      value: component.registrationNumber,
     })
   }
   if (paymentTermsText) {

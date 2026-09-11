@@ -35,6 +35,9 @@ export function useServiceFormState({
   const [laborItems, setLaborItems] = useState<ServiceLaborInput[]>(initialData.laborItems || [])
   const [taxRate, setTaxRate] = useState(initialData.taxRate ?? defaultTaxRate)
   const [taxInclusive] = useState<boolean>(initialData.taxInclusive ?? false)
+  // The split the job was created with. Fixed for the job's life: the
+  // server re-derives the amounts from it on every save.
+  const [taxComponentDefinitions] = useState(initialData.taxComponents ?? null)
   const [discountType, setDiscountType] = useState<string>(initialData.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(initialData.discountValue ?? 0)
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
@@ -155,11 +158,16 @@ export function useServiceFormState({
       : discountType === 'fixed'
         ? Math.min(discountValue, subtotal)
         : 0
-  const { taxAmount, totalAmount } = calculateTotals({
+  const {
+    taxAmount,
+    totalAmount,
+    components: taxComponents,
+  } = calculateTotals({
     subtotal,
     discountAmount,
     taxRate,
     taxInclusive,
+    components: taxComponentDefinitions,
   })
 
   const [localManuallyPaid, setLocalManuallyPaid] = useState(record.manuallyPaid)
@@ -347,6 +355,7 @@ export function useServiceFormState({
     laborItems,
     taxRate,
     taxInclusive,
+    taxComponents,
     discountType,
     discountValue,
     showInventoryPicker,

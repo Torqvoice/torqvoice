@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { sendStatusReport } from '@/features/status-reports/Actions/sendStatusReport'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * A short update for the customer, recorded standing at the car.
@@ -81,7 +82,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         // Generated name, never the client's. See the attachments route.
         const filename = `${crypto.randomUUID()}.${ext}`
-        const dir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'services')
+        const dir = path.join(uploadsRoot(), ctx.organizationId, 'services')
         await mkdir(dir, { recursive: true })
         const target = path.join(dir, filename)
         await writeFile(target, new Uint8Array(await video.arrayBuffer()))

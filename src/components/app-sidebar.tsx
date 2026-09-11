@@ -87,6 +87,7 @@ import { FullscreenLauncher, FullscreenMenuItem } from '@/components/fullscreen-
 import { FeatureHint } from '@/components/feature-hint'
 import { ANNOUNCEMENTS } from '@/features/settings/Lib/featureHints'
 import { cn } from '@/lib/utils'
+import { handleGated } from '@/components/upgrade-gate'
 
 type OrgInfo = { id: string; name: string; role: string }
 
@@ -410,7 +411,7 @@ export function AppSidebar({
       setShowCreateOrg(false)
       setNewOrgName('')
       router.refresh()
-    } else if (result.error) {
+    } else if (!handleGated(result) && result.error) {
       toast.error(result.error)
     }
   }

@@ -1,3 +1,4 @@
+import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { getServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
@@ -253,6 +254,7 @@ export async function ServiceRecordPage({
     taxRate: record.taxRate,
     taxAmount: record.taxAmount,
     taxInclusive: record.taxInclusive,
+    taxComponents: parseTaxComponents(record.taxComponents),
     totalAmount: record.totalAmount,
     discountType: record.discountType || undefined,
     discountValue: record.discountValue,

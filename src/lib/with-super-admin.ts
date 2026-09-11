@@ -1,6 +1,7 @@
 import { getCachedSession } from './cached-session'
 import { db } from './db'
 import type { ActionResult } from './with-auth'
+import { publicErrorMessage } from '@/lib/public-error-message'
 
 type SuperAdminContext = {
   userId: string
@@ -28,8 +29,8 @@ export async function withSuperAdmin<T>(
     const data = await action({ userId: session.user.id })
     return { success: true, data }
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
-    console.error('[withSuperAdmin] Error:', message)
-    return { success: false, error: message }
+    // See withAuth: logged in full, shown only when it is the action's own.
+    console.error('[withSuperAdmin] Error:', error)
+    return { success: false, error: publicErrorMessage(error) }
   }
 }

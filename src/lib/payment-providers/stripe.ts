@@ -1,11 +1,12 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
+import { stripeClient } from './vendor-hosts'
 import type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
 
 export class StripeProvider implements PaymentProvider {
   private stripe: Stripe
 
   constructor(secretKey: string) {
-    this.stripe = new Stripe(secretKey)
+    this.stripe = stripeClient(secretKey)
   }
 
   async createCheckout(req: CheckoutRequest): Promise<CheckoutResult> {

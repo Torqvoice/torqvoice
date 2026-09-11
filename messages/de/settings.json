@@ -140,15 +140,18 @@
         "description": "Was Ihre E-Mails zu Rechnung, Angebot und Bericht sagen"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Neu"
   },
   "readOnly": {
     "banner": "Sie haben nur Lesezugriff auf die Einstellungen. Kontaktieren Sie einen Administrator, um Anderungen vorzunehmen."
   },
   "featureLocked": {
-    "requiresPro": "Erfordert eine Pro-Lizenz",
-    "upgradePlan": "Tarif upgraden",
-    "activateLicense": "Lizenz aktivieren"
+    "requiresPro": "Abonnement erforderlich",
+    "upgradePlan": "Tarife ansehen",
+    "activateLicense": "Lizenz aktivieren",
+    "requiresLicense": "White-Label-Lizenz erforderlich",
+    "previewHint": "Dies ist eine Vorschau. Alles auf dieser Seite wird mit einem Abonnement freigeschaltet."
   },
   "company": {
     "logoTitle": "Firmenlogo",
@@ -859,6 +862,28 @@
     "labelLabel": "Steuerbezeichnung",
     "labelHint": "Benutzerdefinierter Name, der auf Rechnungen und Angeboten angezeigt wird (z.B. MwSt., USt., VAT). Leer lassen für die übersetzte Standardbezeichnung.",
     "labelPlaceholder": "MwSt.",
+    "splitLabel": "Steuer in mehrere Sätze aufteilen",
+    "splitHint": "Für Regionen, in denen auf derselben Rechnung mehr als eine Steuer erhoben wird, etwa GST und QST in Québec oder CGST und SGST in Indien. Jede Steuer erscheint als eigene Zeile mit eigener Registrierungsnummer, und der Steuerbericht führt sie getrennt auf.",
+    "splitIncomplete": "Geben Sie jeder Steuer vor dem Speichern einen Namen und einen Satz.",
+    "presetLabel": "Mit einer Vorlage beginnen",
+    "presetPlaceholder": "Region wählen",
+    "presets": {
+      "caQc": "Québec, Kanada (GST + QST)",
+      "caBc": "British Columbia, Kanada (GST + PST)",
+      "caSk": "Saskatchewan, Kanada (GST + PST)",
+      "caMb": "Manitoba, Kanada (GST + RST)",
+      "inIntra": "Indien, gleicher Bundesstaat (CGST + SGST zu 18%)"
+    },
+    "componentName": "Name",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Satz",
+    "componentRegistration": "Registrierungsnummer",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Diese Steuer entfernen",
+    "registrationHint": "Wird auf Rechnungen unter Ihren Firmendaten gedruckt. Leer lassen bei einer Steuer, für die Sie nicht registriert sind.",
+    "addComponent": "Steuer hinzufügen",
+    "combinedRate": "Gesamtsatz",
+    "combinedRateHint": "Neue Arbeitsaufträge und Angebote werden mit der Summe der obigen Sätze besteuert.",
     "convertInclusiveLabel": "Bestehende Einträge in inklusiven Modus umwandeln",
     "convertInclusiveHint": "Skaliert jeden Zeilenpreis um den Steuersatz nach oben, sodass die Preise die Steuer enthalten. Kundenseitige Summen bleiben gleich. Berechtigt: {serviceRecords} Arbeitsaufträge, {quotes} Angebote.",
     "convertInclusiveButton": "In inklusiv umwandeln",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "{count, plural, one {# Kunde} other {# Kunden}} mit diesem Design fallen auf das Standarddesign zurück.",
     "setDefault": "Als Standard festlegen",
     "defaultSet": "„{name}“ wird jetzt verwendet",
-    "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden"
+    "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden",
+    "fieldFixedSlot": "Wird immer an derselben Stelle gedruckt und kann nicht verschoben werden."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

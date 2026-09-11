@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getTranslations } from 'next-intl/server'
+import { newSettingsEntries } from '@/features/settings/Lib/featureHints'
 
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -41,6 +42,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   const features = await getFeatures(data.organizationId)
   const supportEnabled = await isSupportEnabled()
   const t = await getTranslations('settings')
+  const newItems = newSettingsEntries({ organizationCreatedAt: data.organizationCreatedAt })
 
   return (
     <SettingsPermissionProvider canEdit={canEditSettings}>
@@ -57,6 +59,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
                 features={features}
                 isCloud={isCloudMode()}
                 supportEnabled={supportEnabled}
+                newItems={newItems}
               />
             </aside>
             <div className="min-w-0 flex-1 overflow-y-auto pb-8">
@@ -65,6 +68,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
                   features={features}
                   isCloud={isCloudMode()}
                   supportEnabled={supportEnabled}
+                  newItems={newItems}
                   mobile
                 />
               </div>

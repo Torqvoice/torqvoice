@@ -64,8 +64,9 @@ export interface Announcement {
   feature?: PlanFlag
 }
 
-/** Named, because the designer page marks this one read on arrival. */
+/** Named, because the designer pages mark these read on arrival. */
 export const INVOICE_DESIGNER_ANNOUNCEMENT = 'invoice-designer.v1'
+export const EMAIL_DESIGNER_ANNOUNCEMENT = 'email-designer.v1'
 
 export const ANNOUNCEMENTS: Announcement[] = [
   {
@@ -76,10 +77,73 @@ export const ANNOUNCEMENTS: Announcement[] = [
     // that owns it means the route is learned once.
     href: '/settings/templates',
     subject: PermissionSubject.SETTINGS,
-    shippedAt: '2026-08-31',
+    // Release dates, not merge dates: the day customers could first see it.
+    shippedAt: '2026-09-01',
+    feature: 'customTemplates',
+  },
+  {
+    id: EMAIL_DESIGNER_ANNOUNCEMENT,
+    // The gallery page for the same reason: it is the page that owns the
+    // designer, and the one they will come back to.
+    href: '/settings/email-templates',
+    subject: PermissionSubject.SETTINGS,
+    // Ships with the release that carries this file. Bump if it slips.
+    shippedAt: '2026-09-11',
     feature: 'customTemplates',
   },
 ]
+
+/**
+ * Settings entries that wear a "New" pill for a while after shipping.
+ *
+ * Quieter than an announcement, and the one that scales: nothing is stored
+ * and nothing is dismissed, the pill simply ages out. It only reaches people
+ * already in Settings, which is the audience that would act on it. Keyed by
+ * the entry's path so the nav can look its own rows up.
+ */
+export const SETTINGS_SHIPPED_AT: Record<string, string> = {
+  '/settings/templates': '2026-09-01',
+  '/settings/email-templates': '2026-09-11',
+}
+
+/** How long an entry counts as new. A month covers the slowest weekly visitor. */
+export const NEW_FOR_DAYS = 30
+
+/**
+ * Which settings entries should carry the pill right now.
+ *
+ * Same age rule as the announcements: a workshop that signed up after the
+ * feature shipped has never known the product without it, and greeting them
+ * with a nav full of "New" is how the pill stops meaning anything. Worked out
+ * on the server so the client never has to agree with it about what time it
+ * is.
+ */
+export function newSettingsEntries({
+  shippedAt = SETTINGS_SHIPPED_AT,
+  organizationCreatedAt,
+  now = new Date(),
+  days = NEW_FOR_DAYS,
+}: {
+  shippedAt?: Record<string, string>
+  organizationCreatedAt?: Date | string | null
+  now?: Date
+  days?: number
+}): string[] {
+  const joined = organizationCreatedAt ? new Date(organizationCreatedAt).getTime() : Number.NaN
+  const windowMs = days * 24 * 60 * 60 * 1000
+
+  return Object.entries(shippedAt)
+    .filter(([, date]) => {
+      const shipped = new Date(date).getTime()
+      // A date nobody can read must not pin a pill on forever.
+      if (Number.isNaN(shipped)) return false
+      if (now.getTime() < shipped) return false
+      if (now.getTime() >= shipped + windowMs) return false
+      if (!Number.isNaN(joined) && joined >= shipped) return false
+      return true
+    })
+    .map(([href]) => href)
+}
 
 /**
  * The announcements a given account should be shown, newest feature last.

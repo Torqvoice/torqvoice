@@ -48,6 +48,7 @@ import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 import { clearableInput } from '@/lib/clearable'
+import { handleGated } from '@/components/upgrade-gate'
 
 /**
  * How alike two names must read before the scanned keeper is offered as an
@@ -313,7 +314,7 @@ export function VehicleForm({
         })
         if (created.success && created.data) {
           customerId = (created.data as { id: string }).id
-        } else {
+        } else if (!handleGated(created)) {
           toast.error(created.error || t('ownerSaveFailed'))
         }
       }

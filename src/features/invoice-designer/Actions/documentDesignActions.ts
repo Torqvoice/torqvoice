@@ -20,6 +20,7 @@ import {
   savedDesignFromRow,
 } from '../Lib/designSource'
 import { DESIGN_AUTO_RULES } from '../Lib/designRules'
+import { requireFeature } from '@/lib/features'
 
 const documentTypeSchema = z.enum(['invoice', 'quote'])
 
@@ -77,6 +78,7 @@ export async function listDesignOptions(documentType: DocumentType) {
 export async function saveDocumentDesign(input: SaveDesignInput) {
   return withAuth(
     async ({ organizationId }): Promise<SavedDesign> => {
+      await requireFeature(organizationId, 'customTemplates')
       const data = saveDesignSchema.parse(input)
       assertOwnUploads(data, organizationId)
       const layout = data.layout as Prisma.InputJsonValue
@@ -167,6 +169,7 @@ export async function getDocumentDesignUsage(id: string) {
 export async function deleteDocumentDesign(id: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'customTemplates')
       const design = await db.documentDesign.findFirst({
         where: { id, organizationId },
         select: { id: true, name: true },
@@ -199,6 +202,7 @@ export async function deleteDocumentDesign(id: string) {
 export async function applyDocumentDesign(id: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      await requireFeature(organizationId, 'customTemplates')
       const row = await db.documentDesign.findFirst({ where: { id, organizationId } })
       if (!row) throw new Error('Design not found')
       const documentType = DESIGN_DOCUMENT_TYPES.includes(row.documentType as DocumentType)
@@ -266,6 +270,7 @@ const autoRuleSchema = z.enum(DESIGN_AUTO_RULES).nullable()
 export async function setDocumentDesignRule(id: string, rule: string | null) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'customTemplates')
       const autoRule = autoRuleSchema.parse(rule)
       const design = await db.documentDesign.findFirst({
         where: { id, organizationId },

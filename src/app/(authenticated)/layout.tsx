@@ -108,8 +108,25 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
-    // Members without a custom role have full access
-    if (membership?.roleId) {
+    if (!membership?.roleId) {
+      /**
+       * A member with no role at all.
+       *
+       * `withAuth` refuses every permissioned action for these accounts, so
+       * offering the whole application would be the sidebar of refusals this
+       * screen was built to replace — and the team page already promises the
+       * opposite in as many words: "Without a role, this member cannot do
+       * anything." An invitation may still be sent without a role, so this
+       * account can be created at any time.
+       *
+       * On an install that already holds one, that person now lands here
+       * instead of on a broken-looking app, and an owner or an admin gives
+       * them a role. That is the same end state the action layer arrived at.
+       */
+      visibleSubjects = []
+      canCreateVehicles = false
+      hasAnyAccess = false
+    } else {
       const userPermissions = membership?.customRole?.permissions ?? []
       visibleSubjects = allSubjects.filter((subject) =>
         hasPermission(userPermissions, {
@@ -189,9 +206,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // The header offers a plate lookup once a vehicle registry is connected.
   // Resolved here so the first paint knows, rather than a button appearing a
-  // beat after the page does.
+  // beat after the page does. Registries answer for road vehicles, so a marine
+  // workshop is never offered one: the header button, the palette and its
+  // shortcut all read this one flag.
   const lookupConnection =
-    features.integrations && visibleSubjects.includes(PermissionSubject.VEHICLES)
+    data.serviceType !== 'marine' &&
+    features.integrations &&
+    visibleSubjects.includes(PermissionSubject.VEHICLES)
       ? await findLookupConnection(data.organizationId)
       : null
   const plateLookupAvailable = lookupConnection !== null

@@ -2,6 +2,7 @@ import { readFile, stat } from 'fs/promises'
 import { NextResponse } from 'next/server'
 import path from 'path'
 import { EMAIL_IMAGE_CATEGORY } from '@/features/email/Lib/emailTemplate'
+import { uploadsRoot } from '@/lib/upload-root'
 
 const MIME_TYPES: Record<string, string> = {
   png: 'image/png',
@@ -28,7 +29,7 @@ export async function GET(
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'uploads', orgId, EMAIL_IMAGE_CATEGORY, file)
+  const filePath = path.join(uploadsRoot(), orgId, EMAIL_IMAGE_CATEGORY, file)
   try {
     await stat(filePath)
   } catch {

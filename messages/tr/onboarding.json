@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Başlarken",
-    "description": "Atölyenizi çalışır hale getirmek için dört adım",
+    "description": "{workshop} için üç adım",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Müşteri ekleyin",
-        "description": "İlk müşteri kaydınızı oluşturun"
-      },
-      "vehicle": {
-        "title": "Araç ekleyin",
-        "description": "Bir müşteri için araç kaydedin"
-      },
       "workOrder": {
-        "title": "İş emri oluşturun",
-        "description": "İlk işinizi açın"
+        "title": "İlk iş emrinizi oluşturun",
+        "description": "Müşteri, araç ve iş tek bir pencerede"
+      },
+      "company": {
+        "title": "Atölye bilgilerinizi ekleyin",
+        "description": "Faturalarınız için adres, telefon ve sicil numarası"
       },
       "invoice": {
-        "title": "Fatura gönderin veya indirin",
-        "description": "Bir faturayı müşteriyle paylaşın veya PDF olarak indirin"
+        "title": "İlk faturanızı gönderin veya indirin",
+        "description": "Müşteriyle paylaşın ya da PDF olarak kaydedin"
       }
     },
     "allDoneTitle": "Her şey hazır",

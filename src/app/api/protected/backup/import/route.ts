@@ -7,6 +7,7 @@ import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
+import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -14,6 +15,7 @@ import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
 import { mkdir, rm, writeFile } from 'fs/promises'
 import path from 'path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 // Zip magic bytes: PK\x03\x04
 const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04]
@@ -138,6 +140,7 @@ async function importServiceRecordTree(
       taxRate: (sr.taxRate as number) || 0,
       taxAmount: (sr.taxAmount as number) || 0,
       taxInclusive: (sr.taxInclusive as boolean) ?? false,
+      taxComponents: taxComponentsForCopy(sr.taxComponents),
       totalAmount: (sr.totalAmount as number) || 0,
       invoiceNumber: (sr.invoiceNumber as string) || null,
       discountType: (sr.discountType as string) || null,
@@ -309,7 +312,7 @@ async function restoreRows(
 }
 
 async function restoreFiles(zip: JSZip, organizationId: string) {
-  const uploadsDir = path.join(process.cwd(), 'data', 'uploads', organizationId)
+  const uploadsDir = path.join(uploadsRoot(), organizationId)
 
   const fileEntries = Object.keys(zip.files).filter(
     (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))
@@ -975,6 +978,7 @@ export async function POST(request: NextRequest) {
               taxRate: (q.taxRate as number) || 0,
               taxAmount: (q.taxAmount as number) || 0,
               taxInclusive: (q.taxInclusive as boolean) ?? false,
+              taxComponents: taxComponentsForCopy(q.taxComponents),
               discountType: (q.discountType as string) || null,
               discountValue: (q.discountValue as number) || 0,
               discountAmount: (q.discountAmount as number) || 0,

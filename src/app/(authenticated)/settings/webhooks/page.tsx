@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import { getWebhooks } from '@/features/webhooks/Actions/webhookActions'
 import { WebhooksSettings } from './webhooks-settings'
 
@@ -11,18 +11,22 @@ export default async function WebhooksPage() {
   if (data.status === 'no-organization') redirect('/onboarding')
 
   const features = await getFeatures(data.organizationId)
-  if (!features.api) {
-    return (
-      <FeatureLockedMessage
-        feature="Webhooks"
-        description="Push real-time event notifications to your own systems via HTTPS."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.api
 
   const result = await getWebhooks()
   const webhooks = result.success && result.data ? result.data : []
 
-  return <WebhooksSettings webhooks={webhooks} />
+  const content = <WebhooksSettings webhooks={webhooks} />
+
+  return locked ? (
+    <FeatureLocked
+      feature="Webhooks"
+      description="Push real-time event notifications to your own systems via HTTPS."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
+  )
 }

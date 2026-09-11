@@ -17,7 +17,7 @@ vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     vehicle: { findFirst: vi.fn() },
-    appSetting: { findUnique: vi.fn() },
+    appSetting: { findMany: vi.fn() },
     recurringInvoice: { create: vi.fn() },
   },
 }))
@@ -38,6 +38,8 @@ function setupAuth() {
     customRole: null,
   } as any)
   vi.mocked(db.user.findUnique).mockResolvedValue({ isSuperAdmin: false } as any)
+  // No tax settings: the template inherits an exclusive, single-rate default.
+  vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
 }
 
 beforeEach(() => {

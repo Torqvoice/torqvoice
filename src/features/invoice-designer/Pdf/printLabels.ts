@@ -5,8 +5,7 @@
  */
 
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
-
-type PdfMessages = Record<string, Record<string, string>>
+import { isMarineWorkshop, type PdfMessages, withMarineDocumentLabels } from '../Lib/marineLabels'
 
 /** Which document's wording wins where the invoice and the quote differ. */
 export type PrintDocumentType = 'invoice' | 'quote'
@@ -30,22 +29,14 @@ export async function loadPrintLabels(
   // places, and the two are drawn by the same builder. Layering the quote over
   // the invoice means every shared label (column heads, panel titles, warranty)
   // is translated for a quote too, instead of falling through to English.
-  const labels: Record<string, string> = {
+  let labels: Record<string, string> = {
     ...pdfMessages.invoice,
     ...(quote ? pdfMessages.quote : {}),
     ...pdfMessages.common,
   }
 
-  const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
-  if (serviceType === 'marine') {
-    const source = quote ? { ...pdfMessages.invoice, ...pdfMessages.quote } : pdfMessages.invoice
-    if (source.mileageMarine) labels.mileage = source.mileageMarine
-    if (source.vinMarine) labels.vin = source.vinMarine
-    if (source.plateMarine) labels.plate = source.plateMarine
-    if (source.vehicleMarine) labels.vehicle = source.vehicleMarine
-    // Engine hours, not distance.
-    labels.km = 'hrs'
-    labels.mi = 'hrs'
+  if (isMarineWorkshop(settingsMap)) {
+    labels = withMarineDocumentLabels(labels, pdfMessages, documentType)
   }
 
   const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()

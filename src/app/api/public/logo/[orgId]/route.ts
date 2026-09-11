@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { uploadsRoot } from '@/lib/upload-root'
 
 const MIME_TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
@@ -36,7 +37,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ org
     return NextResponse.json({ error: 'Invalid' }, { status: 400 })
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'uploads', orgId, 'logos', filename)
+  const filePath = path.join(uploadsRoot(), orgId, 'logos', filename)
 
   try {
     await stat(filePath)

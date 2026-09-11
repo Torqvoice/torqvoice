@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Dashbord",
     "vehicles": "Kjøretøy",
+    "vessels": "Fartøy",
     "allVehicles": "Alle kjøretøy",
+    "allVessels": "Alle fartøy",
     "vehicleDetails": "Kjøretøydetaljer",
+    "vesselDetails": "Fartøydetaljer",
     "customers": "Kunder",
     "allCustomers": "Alle kunder",
     "customerDetails": "Kundedetaljer",

@@ -973,6 +973,7 @@ export function InvoiceDesigner({
             {rail.map((section) => (
               <div
                 key={section.id}
+                data-testid={`rail-${section.id}`}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('text/plain', section.id)}
                 onDragOver={(e) => e.preventDefault()}
@@ -991,7 +992,10 @@ export function InvoiceDesigner({
                 <span className="cursor-grab text-[13px] tracking-tighter text-[#b3b7bd]">⠿</span>
                 <span className="flex-1 truncate text-[13.5px]">{sectionName(section.id)}</span>
                 {section.column && (
-                  <span className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]">
+                  <span
+                    data-testid={`rail-column-${section.id}`}
+                    className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]"
+                  >
                     {section.column[0]}
                   </span>
                 )}
@@ -1008,6 +1012,8 @@ export function InvoiceDesigner({
                 )}
                 <button
                   type="button"
+                  data-testid={`rail-eye-${section.id}`}
+                  aria-pressed={section.visible}
                   onClick={(e) => {
                     e.stopPropagation()
                     patchSection(section.id, { visible: !section.visible })

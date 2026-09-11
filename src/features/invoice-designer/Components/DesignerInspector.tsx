@@ -13,6 +13,7 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  fieldHasFixedSlot,
   FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
   footerColumnsOf,
@@ -76,10 +77,25 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function Toggle({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
+function Toggle({
+  on,
+  onChange,
+  testId,
+}: {
+  on: boolean
+  onChange: (on: boolean) => void
+  /** Named where it matters, so a test can reach this one rather than the
+   *  fifth switch in the panel. */
+  testId?: string
+}) {
   return (
     <button
       type="button"
+      // It behaves as a switch, so it says so: screen readers announce the
+      // state, and it can be found by role rather than by shape.
+      role="switch"
+      aria-checked={on}
+      data-testid={testId}
       onClick={() => onChange(!on)}
       className="relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors"
       style={{ background: on ? '#2563eb' : '#d7dade' }}
@@ -547,6 +563,7 @@ export function DesignerInspector({
           <Group title={t('placement')}>
             <Row label={t('visible')}>
               <Toggle
+                testId="section-visible"
                 on={section.visible}
                 onChange={(visible) => onSection(section.id, { visible })}
               />
@@ -576,6 +593,7 @@ export function DesignerInspector({
             {BOXED_ELIGIBLE_SECTIONS.has(section.id) && (
               <Row label={t('drawBox')}>
                 <Toggle
+                  testId="section-boxed"
                   on={section.boxed !== false}
                   onChange={(boxed) => onSection(section.id, { boxed })}
                 />
@@ -584,6 +602,7 @@ export function DesignerInspector({
             {HEADED_SECTIONS.has(section.id) && (
               <Row label={t('showHeading')}>
                 <Toggle
+                  testId="section-heading"
                   on={section.heading !== false}
                   onChange={(heading) => onSection(section.id, { heading })}
                 />
@@ -654,6 +673,7 @@ export function DesignerInspector({
             <Group title={t('titleText')}>
               <input
                 type="text"
+                data-testid="section-title-text"
                 maxLength={60}
                 value={section.text ?? ''}
                 placeholder={documentTitleDefault}
@@ -804,14 +824,23 @@ export function DesignerInspector({
               {resolvedFields.map((field) => (
                 <div
                   key={field.id}
-                  draggable
+                  data-testid={`field-row-${field.id}`}
+                  data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
+                  // A field the sheet prints in a place of its own offers no
+                  // drag, and is no place to drop one either: the position it
+                  // would take is not a position the print reads.
+                  draggable={!fieldHasFixedSlot(section.id, field.id)}
                   onDragStart={(e) => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
                     e.dataTransfer.effectAllowed = 'move'
                     setDragFieldId(field.id)
                   }}
                   onDragEnd={() => setDragFieldId(null)}
                   onDragOver={(e) => e.preventDefault()}
-                  onDragEnter={() => dragFieldOver(field.id)}
+                  onDragEnter={() => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
+                    dragFieldOver(field.id)
+                  }}
                   onDrop={(e) => {
                     e.preventDefault()
                     setDragFieldId(null)
@@ -820,9 +849,18 @@ export function DesignerInspector({
                     dragFieldId === field.id ? 'opacity-50' : ''
                   }`}
                 >
-                  <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
-                    ⠿
-                  </span>
+                  {fieldHasFixedSlot(section.id, field.id) ? (
+                    <span
+                      className="select-none text-[13px] leading-none text-[#dcdee2]"
+                      title={t('fieldFixedSlot')}
+                    >
+                      ·
+                    </span>
+                  ) : (
+                    <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
+                      ⠿
+                    </span>
+                  )}
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
@@ -861,6 +899,7 @@ export function DesignerInspector({
                     </button>
                   )}
                   <Toggle
+                    testId={`field-${field.id}`}
                     on={field.visible}
                     onChange={(visible) =>
                       setFields(

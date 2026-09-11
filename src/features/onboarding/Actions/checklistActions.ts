@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   CHECKLIST_DISMISSED_KEY,
   INVOICE_ISSUED_KEY,
@@ -13,13 +14,15 @@ import {
 
 export interface OnboardingChecklistData {
   steps: {
-    customer: boolean
-    vehicle: boolean
     workOrder: boolean
+    company: boolean
     invoice: boolean
   }
   allDone: boolean
   hasSampleData: boolean
+  workshopName: string
+  /** The newest real work order, where the invoice step sends people. */
+  invoiceHref: string
 }
 
 /**
@@ -37,7 +40,12 @@ export async function getOnboardingChecklist() {
       where: {
         organizationId,
         key: {
-          in: [SAMPLE_DATA_IDS_KEY, CHECKLIST_DISMISSED_KEY, INVOICE_ISSUED_KEY],
+          in: [
+            SAMPLE_DATA_IDS_KEY,
+            CHECKLIST_DISMISSED_KEY,
+            INVOICE_ISSUED_KEY,
+            SETTING_KEYS.WORKSHOP_ADDRESS,
+          ],
         },
       },
       select: { key: true, value: true },
@@ -48,12 +56,16 @@ export async function getOnboardingChecklist() {
 
     const sampleIds = parseSampleDataIds(byKey.get(SAMPLE_DATA_IDS_KEY))
 
-    const [customers, vehicles, workOrders, sharedInvoices] = await Promise.all([
-      db.customer.count({
-        where: { organizationId, id: { notIn: sampleIds.customers } },
-      }),
-      db.vehicle.count({
-        where: { organizationId, id: { notIn: sampleIds.vehicles } },
+    // Three steps, in the order a shop needs them before its first invoice.
+    // The work order dialog creates the customer and the vehicle on the way,
+    // so those are not steps of their own any more. The address is what the
+    // invoice header is missing on a fresh org, and the one thing people
+    // skipped and then asked about.
+    const [latestWorkOrder, workOrders, sharedInvoices, organization] = await Promise.all([
+      db.serviceRecord.findFirst({
+        where: { organizationId, id: { notIn: sampleIds.serviceRecords } },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, vehicleId: true },
       }),
       db.serviceRecord.count({
         where: { organizationId, id: { notIn: sampleIds.serviceRecords } },
@@ -65,12 +77,12 @@ export async function getOnboardingChecklist() {
           sharedAt: { not: null },
         },
       }),
+      db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     ])
 
     const steps = {
-      customer: customers > 0,
-      vehicle: vehicles > 0,
       workOrder: workOrders > 0,
+      company: (byKey.get(SETTING_KEYS.WORKSHOP_ADDRESS) ?? '').trim().length > 0,
       invoice: sharedInvoices > 0 || byKey.get(INVOICE_ISSUED_KEY) === 'true',
     }
     const allDone = Object.values(steps).every(Boolean)
@@ -83,6 +95,10 @@ export async function getOnboardingChecklist() {
       steps,
       allDone,
       hasSampleData: hasAnySampleIds(sampleIds),
+      workshopName: organization?.name ?? '',
+      invoiceHref: latestWorkOrder?.vehicleId
+        ? `/vehicles/${latestWorkOrder.vehicleId}/service/${latestWorkOrder.id}`
+        : '/work-orders',
     }
   })
 }

@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { isCloudMode, getMaxOrganizations } from '@/lib/features'
+import { isCloudMode, getMaxOrganizations, FeatureGatedError } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { createOrganizationSchema } from '../Schema/teamSchema'
 import { revalidatePath } from 'next/cache'
@@ -23,8 +23,10 @@ export async function createNewOrganization(input: unknown) {
         const maxOrgs = await getMaxOrganizations(userId)
 
         if (ownedCount >= maxOrgs) {
-          throw new Error(
-            `You have reached the maximum number of organizations (${maxOrgs}) for your plan. Upgrade to create more.`
+          throw new FeatureGatedError(
+            'maxOrganizations',
+            `You have reached the maximum number of organizations (${maxOrgs}) for your plan. Upgrade to create more.`,
+            maxOrgs
           )
         }
       }

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { calculateTotals } from '@/lib/tax'
+import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { roundMoney } from '@/features/inventory/Lib/partPricing'
@@ -49,6 +49,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           title: true,
           taxRate: true,
           taxInclusive: true,
+          taxComponents: true,
           discountType: true,
           discountValue: true,
         },
@@ -91,16 +92,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             : job.discountType === 'fixed'
               ? Math.min(job.discountValue ?? 0, subtotal)
               : 0
-        const { taxAmount, totalAmount } = calculateTotals({
+        const { taxAmount, totalAmount, taxComponents } = documentTotals({
           subtotal,
           discountAmount,
           taxRate: job.taxRate,
           taxInclusive: job.taxInclusive,
+          taxComponents: job.taxComponents,
         })
 
         await tx.serviceRecord.update({
           where: { id: job.id },
-          data: { subtotal, taxAmount, totalAmount },
+          data: { subtotal, taxAmount, totalAmount, taxComponents },
         })
 
         return created

@@ -34,6 +34,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { useDateSettings } from '@/components/date-settings-context'
 import {
   assignTechnician,
   checkSlotAvailability,
@@ -92,6 +93,9 @@ export function ScheduleTimesSection({
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
   const router = useRouter()
+  // Booked times belong to the workshop's clock, not to the clock of whoever
+  // happens to be looking at them.
+  const { timezone } = useDateSettings()
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
   const [selectedBayId, setSelectedBayId] = useState(initialWorkBayId || NO_BAY)
   const [techOpen, setTechOpen] = useState(false)
@@ -526,6 +530,7 @@ export function ScheduleTimesSection({
                 saveTimes(d, newEnd)
               }
             }}
+            timeZone={timezone}
             granularity="minute"
             hourCycle={24}
             placeholder={t('startTime')}
@@ -545,6 +550,7 @@ export function ScheduleTimesSection({
               setEndDateTime(d)
               if (d && startDateTime) saveTimes(startDateTime, d)
             }}
+            timeZone={timezone}
             granularity="minute"
             hourCycle={24}
             placeholder={t('endTime')}
@@ -575,11 +581,13 @@ export function ScheduleTimesSection({
                       month: 'short',
                       hour: '2-digit',
                       minute: '2-digit',
+                      timeZone: timezone || undefined,
                     })}
                     {' – '}
                     {new Date(c.end).toLocaleTimeString(undefined, {
                       hour: '2-digit',
                       minute: '2-digit',
+                      timeZone: timezone || undefined,
                     })}
                     {' · '}
                     {c.onTechnician && c.onBay

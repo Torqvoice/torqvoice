@@ -140,15 +140,18 @@
         "description": "Co mówią e-maile z fakturą, ofertą i raportem"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nowość"
   },
   "readOnly": {
     "banner": "Masz dostęp tylko do odczytu ustawień. Skontaktuj się z administratorem, aby wprowadzić zmiany."
   },
   "featureLocked": {
-    "requiresPro": "Wymaga licencji Pro",
-    "upgradePlan": "Zaktualizuj plan",
-    "activateLicense": "Aktywuj licencje"
+    "requiresPro": "Wymagana subskrypcja",
+    "upgradePlan": "Zobacz plany",
+    "activateLicense": "Aktywuj licencje",
+    "requiresLicense": "Wymagana licencja white label",
+    "previewHint": "To jest podgląd. Wszystko na tej stronie odblokowuje subskrypcja."
   },
   "company": {
     "logoTitle": "Logo firmy",
@@ -859,6 +862,28 @@
     "labelLabel": "Etykieta podatku",
     "labelHint": "Własna nazwa wyświetlana na fakturach i ofertach (np. VAT, MwSt.). Pozostaw puste, aby użyć domyślnej zlokalizowanej nazwy.",
     "labelPlaceholder": "VAT",
+    "splitLabel": "Podziel podatek na kilka stawek",
+    "splitHint": "Dla miejsc, w których na tej samej fakturze naliczany jest więcej niż jeden podatek, np. GST i QST w Quebecu albo CGST i SGST w Indiach. Każdy podatek jest drukowany w osobnym wierszu z własnym numerem rejestracyjnym, a raport podatkowy wykazuje je oddzielnie.",
+    "splitIncomplete": "Przed zapisaniem nadaj każdemu podatkowi nazwę i stawkę.",
+    "presetLabel": "Zacznij od szablonu",
+    "presetPlaceholder": "Wybierz region",
+    "presets": {
+      "caQc": "Quebec, Kanada (GST + QST)",
+      "caBc": "Kolumbia Brytyjska, Kanada (GST + PST)",
+      "caSk": "Saskatchewan, Kanada (GST + PST)",
+      "caMb": "Manitoba, Kanada (GST + RST)",
+      "inIntra": "Indie, ten sam stan (CGST + SGST po 18%)"
+    },
+    "componentName": "Nazwa",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Stawka",
+    "componentRegistration": "Numer rejestracyjny",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Usuń ten podatek",
+    "registrationHint": "Drukowany na fakturach pod danymi Twojej firmy. Zostaw puste dla podatku, do którego nie jesteś zarejestrowany.",
+    "addComponent": "Dodaj podatek",
+    "combinedRate": "Stawka łączna",
+    "combinedRateHint": "Nowe zlecenia i oferty są opodatkowane sumą powyższych stawek.",
     "convertInclusiveLabel": "Konwertuj istniejące rekordy na tryb brutto",
     "convertInclusiveHint": "Skaluje ceny pozycji w górę o stawkę podatku, aby ceny zawierały podatek. Sumy dla klienta pozostają niezmienione. Kwalifikujące się: {serviceRecords} zleceń, {quotes} ofert.",
     "convertInclusiveButton": "Konwertuj na brutto",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klient} few {# klientów} many {# klientów} other {# klienta}} z tym projektem wróci do projektu domyślnego.",
     "setDefault": "Ustaw jako domyślny",
     "defaultSet": "„{name}” jest teraz w użyciu",
-    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu"
+    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu",
+    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

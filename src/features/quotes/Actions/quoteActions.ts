@@ -3,6 +3,14 @@
 import { assertQuoteEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, quoteLockState } from '@/lib/document-lock'
 import { db } from '@/lib/db'
+import { parseTaxComponentDefinitions } from '@/lib/tax-components'
+import {
+  documentTotals,
+  readWorkshopTax,
+  taxComponentsForCopy,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
 import { withAuth } from '@/lib/with-auth'
 import { createQuoteSchema, quoteStatusSchema, updateQuoteSchema } from '../Schema/quoteSchema'
 import { revalidatePath } from 'next/cache'
@@ -15,6 +23,7 @@ import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileSt
 import { copyFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { clearedToNull } from '@/lib/clearable'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
@@ -198,13 +207,7 @@ export async function createQuote(input: unknown) {
         where: {
           organizationId,
           key: {
-            in: [
-              'workshop.quotePrefix',
-              'workshop.quoteValidDays',
-              'workshop.defaultTaxRate',
-              'workshop.taxEnabled',
-              'workshop.taxInclusive',
-            ],
+            in: ['workshop.quotePrefix', 'workshop.quoteValidDays', ...WORKSHOP_TAX_SETTING_KEYS],
           },
         },
       })
@@ -214,22 +217,39 @@ export async function createQuote(input: unknown) {
 
       // Apply default tax rate from settings when the caller hasn't set one.
       // All current call sites send taxRate: 0 at creation, so 0 means "unset".
-      const taxEnabled = settingsMap['workshop.taxEnabled'] !== 'false'
-      let defaultTaxRate = taxEnabled ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0
-      const taxInclusive = settingsMap['workshop.taxInclusive'] === 'true'
+      const workshopTax = readWorkshopTax(settingsMap)
+      let defaultTaxRate = workshopTax.rate
+      const taxInclusive = workshopTax.inclusive
 
       // Tax-exempt customer: force the rate to 0 regardless of org default.
+      let customerExempt = false
       if (data.customerId) {
         const customer = await db.customer.findFirst({
           where: { id: data.customerId, organizationId },
           select: { taxExempt: true },
         })
         if (customer?.taxExempt) {
+          customerExempt = true
           defaultTaxRate = 0
           data.taxRate = 0
           data.taxAmount = 0
         }
       }
+
+      // A quote at the workshop's own rate carries its tax components, so a
+      // split-tax workshop's quote prints GST and QST apart from the start.
+      // A rate the caller set by hand is one figure and stays one.
+      const taxRate = data.taxRate > 0 ? data.taxRate : defaultTaxRate
+      const splitTax =
+        taxRate > 0 && taxRate === workshopTax.rate && !customerExempt
+          ? documentTotals({
+              subtotal: data.subtotal,
+              discountAmount: data.discountAmount,
+              taxRate,
+              taxInclusive,
+              taxComponents: taxFieldsForNewDocument(workshopTax).taxComponents,
+            })
+          : null
 
       const lastQuote = await db.quote.findFirst({
         where: { organizationId },
@@ -252,8 +272,15 @@ export async function createQuote(input: unknown) {
             quoteNumber,
             userId,
             organizationId,
-            taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
+            taxRate,
             taxInclusive,
+            ...(splitTax?.taxComponents
+              ? {
+                  taxComponents: splitTax.taxComponents,
+                  taxAmount: splitTax.taxAmount,
+                  totalAmount: splitTax.totalAmount,
+                }
+              : {}),
             validUntil:
               toSafeWorkshopDate(quoteData.validUntil, await workshopTimeZone(organizationId)) ??
               defaultValidUntil(settingsMap['workshop.quoteValidDays']),
@@ -304,6 +331,24 @@ export async function updateQuote(input: unknown) {
 
       const { id, partItems, laborItems, ...quoteData } = data
 
+      // Same as the work order: a quote with tax components has its split
+      // recomputed from the row, since the editor sends one combined figure.
+      const splitTax =
+        quoteData.subtotal !== undefined && parseTaxComponentDefinitions(existing.taxComponents)
+          ? documentTotals({
+              subtotal: quoteData.subtotal,
+              discountAmount: quoteData.discountAmount ?? existing.discountAmount,
+              taxRate: existing.taxRate,
+              taxInclusive: existing.taxInclusive,
+              taxComponents: existing.taxComponents,
+            })
+          : null
+      if (splitTax) {
+        quoteData.taxRate = existing.taxRate
+        quoteData.taxAmount = splitTax.taxAmount
+        quoteData.totalAmount = splitTax.totalAmount
+      }
+
       const quote = await db.$transaction(async (tx) => {
         const updated = await tx.quote.update({
           where: { id },
@@ -311,6 +356,7 @@ export async function updateQuote(input: unknown) {
           // cleared.
           data: {
             ...quoteData,
+            taxComponents: splitTax?.taxComponents,
             description: clearedToNull(quoteData.description),
             notes: clearedToNull(quoteData.notes),
             customerId: clearedToNull(quoteData.customerId),
@@ -487,6 +533,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             shopName: org?.name || undefined,
             invoiceNumber,
             subtotal: quote.subtotal,
+            taxComponents: taxComponentsForCopy(quote.taxComponents),
             taxRate: quote.taxRate,
             taxAmount: quote.taxAmount,
             taxInclusive: quote.taxInclusive,
@@ -547,7 +594,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
 
         // Copy attachments from quote to service record
         if (quote.attachments.length > 0) {
-          const quotesDir = path.join(process.cwd(), 'data', 'uploads', organizationId, 'quotes')
+          const quotesDir = path.join(uploadsRoot(), organizationId, 'quotes')
           const servicesDir = path.join(
             process.cwd(),
             'data',

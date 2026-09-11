@@ -75,6 +75,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
+import { handleGated } from '@/components/upgrade-gate'
 
 interface Member {
   id: string
@@ -413,7 +414,7 @@ export function TeamSettings({
     if (result.success) {
       toast.success(t('team.orgCreated'))
       router.refresh()
-    } else {
+    } else if (!handleGated(result)) {
       modal.open('error', 'Error', result.error || t('team.failedCreateOrg'))
     }
     setLoading(false)

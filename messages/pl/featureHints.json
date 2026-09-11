@@ -11,5 +11,10 @@
     "title": "Faktury zostały przebudowane",
     "body": "Ustaw układ, kolory i czcionki faktur oraz ofert w nowym kreatorze, w sekcji Szablony.",
     "cta": "Otwórz Szablony"
+  },
+  "email-designer": {
+    "title": "Twoje e-maile mają nowy wygląd",
+    "body": "E-maile do klientów wychodzą teraz w czystszym projekcie. Kolory, treść i układ zmienisz w nowym edytorze, w sekcji Szablony e-mail.",
+    "cta": "Otwórz Szablony e-mail"
   }
 }

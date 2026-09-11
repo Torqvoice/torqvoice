@@ -81,7 +81,12 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: 'communications',
     items: [
-      { key: 'emailTemplates', href: '/settings/email-templates', icon: Mail },
+      {
+        key: 'emailTemplates',
+        href: '/settings/email-templates',
+        icon: Mail,
+        gate: 'customTemplates',
+      },
       {
         key: 'customerPortal',
         href: '/settings/customer-portal',
@@ -109,7 +114,7 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: 'integrations',
     items: [
-      { key: 'integrations', href: '/settings/integrations', icon: Plug, gate: 'integrations' },
+      { key: 'integrations', href: '/settings/integrations', icon: Plug },
       { key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' },
     ],
   },
@@ -128,16 +133,29 @@ export function SettingsNav({
   features,
   isCloud,
   supportEnabled,
+  newItems = [],
   mobile,
 }: {
   features?: PlanFeatures
   isCloud?: boolean
   supportEnabled?: boolean
+  /**
+   * Paths that wear a "New" pill, decided on the server. Recently shipped and
+   * older than this workshop, so the pill is news to whoever reads it.
+   */
+  newItems?: string[]
   mobile?: boolean
 }) {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations('settings')
+
+  const newPill = (item: SettingsNavItem) =>
+    newItems.includes(item.href) ? (
+      <span className="shrink-0 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
+        {t('nav.new')}
+      </span>
+    ) : null
 
   const filterItem = (item: SettingsNavItem) => {
     if (item.cloudOnly && !isCloud) return false
@@ -161,7 +179,10 @@ export function SettingsNav({
             if (visibleItems.length === 0) return null
             return visibleItems.map((item) => (
               <SelectItem key={item.href} value={item.href}>
-                {t(`nav.items.${item.key}.title`)}
+                <span className="flex items-center gap-2">
+                  {t(`nav.items.${item.key}.title`)}
+                  {newPill(item)}
+                </span>
               </SelectItem>
             ))
           })}
@@ -208,6 +229,7 @@ export function SettingsNav({
                             {t('nav.pro')}
                           </span>
                         )}
+                        {newPill(item)}
                       </div>
                       <p className="hidden truncate text-xs text-muted-foreground lg:block">
                         {t(`nav.items.${item.key}.description`)}

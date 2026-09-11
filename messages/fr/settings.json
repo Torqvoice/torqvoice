@@ -140,15 +140,18 @@
         "description": "Ce que disent vos e-mails de facture, devis et rapport"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nouveau"
   },
   "readOnly": {
     "banner": "Vous avez un accès en lecture seule aux paramètres. Contactez un administrateur pour effectuer des modifications."
   },
   "featureLocked": {
-    "requiresPro": "Necessite une licence Pro",
-    "upgradePlan": "Mettre a niveau",
-    "activateLicense": "Activer la licence"
+    "requiresPro": "Abonnement requis",
+    "upgradePlan": "Voir les offres",
+    "activateLicense": "Activer la licence",
+    "requiresLicense": "Licence en marque blanche requise",
+    "previewHint": "Ceci est un aperçu. Tout ce qui figure sur cette page se débloque avec un abonnement."
   },
   "company": {
     "logoTitle": "Logo de l'entreprise",
@@ -859,6 +862,28 @@
     "labelLabel": "Libellé de taxe",
     "labelHint": "Nom personnalisé affiché sur les factures et devis (p. ex. TVA, GST). Laisser vide pour utiliser le libellé localisé par défaut.",
     "labelPlaceholder": "TVA",
+    "splitLabel": "Répartir la taxe en plusieurs taux",
+    "splitHint": "Pour les régions qui appliquent plusieurs taxes sur la même facture, comme la GST et la QST au Québec ou la CGST et la SGST en Inde. Chaque taxe s'imprime sur sa propre ligne avec son propre numéro d'enregistrement, et le rapport de taxes les distingue.",
+    "splitIncomplete": "Donnez un nom et un taux à chaque taxe avant d'enregistrer.",
+    "presetLabel": "Partir d'un modèle",
+    "presetPlaceholder": "Choisir une région",
+    "presets": {
+      "caQc": "Québec, Canada (GST + QST)",
+      "caBc": "Colombie-Britannique, Canada (GST + PST)",
+      "caSk": "Saskatchewan, Canada (GST + PST)",
+      "caMb": "Manitoba, Canada (GST + RST)",
+      "inIntra": "Inde, même État (CGST + SGST à 18%)"
+    },
+    "componentName": "Nom",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Taux",
+    "componentRegistration": "Numéro d'enregistrement",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Retirer cette taxe",
+    "registrationHint": "Imprimé sur les factures sous les coordonnées de votre entreprise. Laissez vide pour une taxe à laquelle vous n'êtes pas inscrit.",
+    "addComponent": "Ajouter une taxe",
+    "combinedRate": "Taux combiné",
+    "combinedRateHint": "Les nouveaux bons de travail et devis sont taxés à la somme des taux ci-dessus.",
     "convertInclusiveLabel": "Convertir les enregistrements existants en mode inclusif",
     "convertInclusiveHint": "Augmente chaque prix de ligne par le taux de taxe afin que les prix incluent la taxe. Les totaux côté client restent identiques. Éligibles : {serviceRecords} bons de travail, {quotes} devis.",
     "convertInclusiveButton": "Convertir en inclusif",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "{count, plural, one {# client} other {# clients}} qui y sont associés reviendront au design par défaut.",
     "setDefault": "Définir par défaut",
     "defaultSet": "« {name} » est maintenant utilisé",
-    "couldNotSetDefault": "Impossible de définir le design par défaut"
+    "couldNotSetDefault": "Impossible de définir le design par défaut",
+    "fieldFixedSlot": "S'imprime toujours au même endroit et ne peut pas être déplacé."
   },
   "preview": {
     "title": "Révision des freins et vidange",

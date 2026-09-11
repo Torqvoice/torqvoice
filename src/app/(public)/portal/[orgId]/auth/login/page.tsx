@@ -11,6 +11,7 @@ import {
   isValidPortalBackgroundType,
   type PortalBackgroundType,
 } from '@/features/portal/portal-backgrounds'
+import { isPortalLive } from '@/features/portal/Lib/portalLive'
 
 export default async function PortalLoginPage({
   params,
@@ -74,7 +75,7 @@ export default async function PortalLoginPage({
     ? rawBgType
     : 'none'
 
-  if (get(SETTING_KEYS.PORTAL_ENABLED) !== 'true') {
+  if (get(SETTING_KEYS.PORTAL_ENABLED) !== 'true' || !(await isPortalLive(orgId))) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">

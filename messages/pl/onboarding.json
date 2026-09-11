@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Pierwsze kroki",
-    "description": "Cztery kroki, aby uruchomić swój warsztat",
+    "description": "Trzy kroki, aby uruchomić {workshop}",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Dodaj klienta",
-        "description": "Utwórz pierwszą kartotekę klienta"
-      },
-      "vehicle": {
-        "title": "Dodaj pojazd",
-        "description": "Zarejestruj pojazd dla klienta"
-      },
       "workOrder": {
-        "title": "Utwórz zlecenie",
-        "description": "Otwórz swoje pierwsze zlecenie"
+        "title": "Utwórz pierwsze zlecenie",
+        "description": "Klient, pojazd i zlecenie w jednym oknie"
+      },
+      "company": {
+        "title": "Uzupełnij dane warsztatu",
+        "description": "Adres, telefon i numer rejestrowy na fakturach"
       },
       "invoice": {
-        "title": "Wyślij lub pobierz fakturę",
-        "description": "Udostępnij fakturę klientowi lub pobierz ją jako PDF"
+        "title": "Wyślij lub pobierz pierwszą fakturę",
+        "description": "Udostępnij ją klientowi lub zapisz jako PDF"
       }
     },
     "allDoneTitle": "Wszystko gotowe",

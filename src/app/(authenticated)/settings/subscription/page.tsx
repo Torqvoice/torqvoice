@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import { isCloudMode, PLAN_FEATURES, type Plan } from '@/lib/features'
 import { SubscriptionSettings } from '@/features/subscription/Components/subscription-settings'
+import { countCustomersTowardLimit } from '@/lib/customer-limit'
 
 export default async function SubscriptionPage() {
   if (!isCloudMode()) {
@@ -31,9 +32,7 @@ export default async function SubscriptionPage() {
   const features = PLAN_FEATURES[plan]
 
   const [customerCount, memberCount] = await Promise.all([
-    db.customer.count({
-      where: { organizationId: authContext.organizationId },
-    }),
+    countCustomersTowardLimit(authContext.organizationId),
     db.organizationMember.count({
       where: { organizationId: authContext.organizationId },
     }),

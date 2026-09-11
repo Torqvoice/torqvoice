@@ -400,12 +400,18 @@ export function ServicePageClient({
 
       {activeTab === 'details' && (
         <>
+          {/* noValidate, and the rules checked in handleSubmit instead. An
+              autosave submits through requestSubmit, which native validation
+              stops with no message and no request; and the rules that matter
+              most here — a priced part with no name, labour with hours and no
+              description — are not ones a `required` attribute can state. */}
           <form
             id="service-record-form"
             ref={formState.formRef}
             onSubmit={actions.handleSubmit}
             onInput={formState.markDirty}
             className="flex min-h-0 flex-1 flex-col"
+            noValidate
           >
             {/* A locked invoice offers no editing at all, rather than letting
                 someone retype a line and meet the refusal on save. The

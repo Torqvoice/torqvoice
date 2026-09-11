@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Kontrol Paneli",
     "vehicles": "Araçlar",
+    "vessels": "Tekneler",
     "allVehicles": "Tüm Araçlar",
+    "allVessels": "Tüm Tekneler",
     "vehicleDetails": "Araç Detayları",
+    "vesselDetails": "Tekne Detayları",
     "customers": "Müşteriler",
     "allCustomers": "Tüm Müşteriler",
     "customerDetails": "Müşteri Detayları",

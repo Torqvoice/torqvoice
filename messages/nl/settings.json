@@ -140,15 +140,18 @@
         "description": "Wat je e-mails voor factuur, offerte en rapport zeggen"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nieuw"
   },
   "readOnly": {
     "banner": "U heeft alleen-lezen toegang tot de instellingen. Neem contact op met een beheerder om wijzigingen aan te brengen."
   },
   "featureLocked": {
-    "requiresPro": "Vereist een Pro-licentie",
-    "upgradePlan": "Plan upgraden",
-    "activateLicense": "Licentie activeren"
+    "requiresPro": "Abonnement vereist",
+    "upgradePlan": "Abonnementen bekijken",
+    "activateLicense": "Licentie activeren",
+    "requiresLicense": "White-labellicentie vereist",
+    "previewHint": "U kijkt naar een voorbeeld. Alles op deze pagina wordt ontgrendeld met een abonnement."
   },
   "company": {
     "logoTitle": "Bedrijfslogo",
@@ -859,6 +862,28 @@
     "labelLabel": "Belastinglabel",
     "labelHint": "Aangepaste naam getoond op facturen en offertes (bijv. Btw, VAT). Leeg laten voor de gelokaliseerde standaardwaarde.",
     "labelPlaceholder": "Btw",
+    "splitLabel": "Belasting opsplitsen in meerdere tarieven",
+    "splitHint": "Voor regio's die meer dan één belasting op dezelfde factuur heffen, zoals GST en QST in Québec of CGST en SGST in India. Elke belasting wordt als eigen regel afgedrukt met een eigen registratienummer, en het belastingrapport houdt ze gescheiden.",
+    "splitIncomplete": "Geef elke belasting een naam en een tarief voordat u opslaat.",
+    "presetLabel": "Beginnen met een voorinstelling",
+    "presetPlaceholder": "Kies een regio",
+    "presets": {
+      "caQc": "Québec, Canada (GST + QST)",
+      "caBc": "Brits-Columbia, Canada (GST + PST)",
+      "caSk": "Saskatchewan, Canada (GST + PST)",
+      "caMb": "Manitoba, Canada (GST + RST)",
+      "inIntra": "India, zelfde staat (CGST + SGST tegen 18%)"
+    },
+    "componentName": "Naam",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Tarief",
+    "componentRegistration": "Registratienummer",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Deze belasting verwijderen",
+    "registrationHint": "Wordt op facturen onder uw bedrijfsgegevens afgedrukt. Laat leeg voor een belasting waarvoor u niet geregistreerd bent.",
+    "addComponent": "Belasting toevoegen",
+    "combinedRate": "Gecombineerd tarief",
+    "combinedRateHint": "Nieuwe werkorders en offertes worden belast tegen de som van de bovenstaande tarieven.",
     "convertInclusiveLabel": "Bestaande records converteren naar inclusieve modus",
     "convertInclusiveHint": "Schaalt elke regelprijs omhoog met het belastingtarief zodat prijzen belasting bevatten. Klantgerichte totalen blijven hetzelfde. In aanmerking: {serviceRecords} werkorders, {quotes} offertes.",
     "convertInclusiveButton": "Converteer naar inclusief",
@@ -1959,7 +1984,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klant} other {# klanten}} die erop zijn ingesteld, vallen terug op het standaardontwerp.",
     "setDefault": "Als standaard instellen",
     "defaultSet": "\"{name}\" is nu in gebruik",
-    "couldNotSetDefault": "Kon het standaardontwerp niet instellen"
+    "couldNotSetDefault": "Kon het standaardontwerp niet instellen",
+    "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst."
   },
   "preview": {
     "title": "Remservice en oliewissel",

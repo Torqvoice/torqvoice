@@ -5,6 +5,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getTranslations } from 'next-intl/server'
 import { PortalHeader } from './PortalHeader'
+import { isPortalLive } from '../Lib/portalLive'
 
 export async function PortalShell({
   orgId: orgParam,
@@ -31,17 +32,7 @@ export async function PortalShell({
 
   const orgId = org.id
 
-  // Check portal is enabled
-  const portalSetting = await db.appSetting.findUnique({
-    where: {
-      organizationId_key: {
-        organizationId: orgId,
-        key: SETTING_KEYS.PORTAL_ENABLED,
-      },
-    },
-  })
-
-  if (portalSetting?.value !== 'true') {
+  if (!(await isPortalLive(orgId))) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">

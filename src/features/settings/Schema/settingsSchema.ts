@@ -12,6 +12,14 @@ export const SETTING_KEYS = {
   TAX_ENABLED: 'workshop.taxEnabled',
   TAX_INCLUSIVE: 'workshop.taxInclusive',
   TAX_LABEL: 'workshop.taxLabel',
+  /**
+   * `single` (the default) or `split`. Split means the workshop charges more
+   * than one tax on a document and lists them in TAX_COMPONENTS; the default
+   * rate is then their sum, kept in step by the settings page.
+   */
+  TAX_MODE: 'workshop.taxMode',
+  /** JSON array of tax components; see src/lib/tax-components.ts. */
+  TAX_COMPONENTS: 'workshop.taxComponents',
   ORG_NUMBER_LABEL: 'workshop.orgNumberLabel',
   INVOICE_PREFIX: 'workshop.invoicePrefix',
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',

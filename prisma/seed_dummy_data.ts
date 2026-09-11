@@ -268,6 +268,11 @@ async function seed() {
   await provisionDemoAccount();
   await cleanup();
 
+  // Every row the app scopes by organisation needs the column set, not just a
+  // parent that has it: work orders and reminders were created without it and
+  // the app, which reads `where: { organizationId }`, answered "Service record
+  // not found" for all 101 seeded jobs and listed none of the 28 reminders.
+
   // Populate vehicle images: prefer bundled assets → fall back to cached copy
   // in data volume → fall back to live download.
   console.log("Populating vehicle images...");
@@ -468,7 +473,7 @@ async function seed() {
   const serviceRecords = [];
   for (const sr of svcData) {
     const { partItems, laborItems, ...data } = sr;
-    const record = await prisma.serviceRecord.create({ data: { ...data, cost: data.totalAmount, partItems: { create: partItems }, laborItems: { create: laborItems } } });
+    const record = await prisma.serviceRecord.create({ data: { ...data, organizationId: ORG_ID, cost: data.totalAmount, partItems: { create: partItems }, laborItems: { create: laborItems } } });
     serviceRecords.push(record);
   }
   console.log(`  Created ${serviceRecords.length} service records`);
@@ -591,14 +596,14 @@ async function seed() {
   // -- Reminders --
   console.log("\nCreating reminders...");
   await Promise.all([
-    prisma.reminder.create({ data: { vehicleId: vehicles[0].id, title: "Next Oil Change", description: "Due at 25,000 mi or March 2026", dueDate: new Date("2026-03-15"), dueMileage: 25000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[4].id, title: "Brake Fluid Flush", description: "BMW recommends every 2 years", dueDate: new Date("2026-06-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[17].id, title: "Annual DOT Inspection", description: "Kenworth T680 - annual inspection", dueDate: new Date("2026-02-28") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[29].id, title: "Track Tension Check", description: "CAT D6 - check after 100 hours", dueMileage: 4500 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[22].id, title: "1000hr Service", description: "John Deere 6R 250 - scheduled service", dueMileage: 3500 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[23].id, title: "Spring Planting Prep", description: "Fendt 942 - full check before spring", dueDate: new Date("2026-04-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[18].id, title: "Volvo FH 640 - Brake Inspection", description: "Check brakes before next long-haul", dueDate: new Date("2026-03-10") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[13].id, title: "Porsche 911 - Track Day Prep", description: "Brake pads, fluid, tire pressure check before April track day", dueDate: new Date("2026-04-10") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[0].id, title: "Next Oil Change", description: "Due at 25,000 mi or March 2026", dueDate: new Date("2026-03-15"), dueMileage: 25000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[4].id, title: "Brake Fluid Flush", description: "BMW recommends every 2 years", dueDate: new Date("2026-06-01") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[17].id, title: "Annual DOT Inspection", description: "Kenworth T680 - annual inspection", dueDate: new Date("2026-02-28") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[29].id, title: "Track Tension Check", description: "CAT D6 - check after 100 hours", dueMileage: 4500 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[22].id, title: "1000hr Service", description: "John Deere 6R 250 - scheduled service", dueMileage: 3500 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[23].id, title: "Spring Planting Prep", description: "Fendt 942 - full check before spring", dueDate: new Date("2026-04-01") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[18].id, title: "Volvo FH 640 - Brake Inspection", description: "Check brakes before next long-haul", dueDate: new Date("2026-03-10") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[13].id, title: "Porsche 911 - Track Day Prep", description: "Brake pads, fluid, tire pressure check before April track day", dueDate: new Date("2026-04-10") } }),
   ]);
   console.log("  Created 8 reminders");
 
@@ -657,26 +662,26 @@ async function seed() {
   // -- Additional reminders --
   console.log("\nCreating additional reminders...");
   const additionalReminders = await Promise.all([
-    prisma.reminder.create({ data: { vehicleId: vehicles[1].id, title: "Timing belt replacement", description: "Interval-based - EcoBoost timing chain inspection due", dueMileage: 60000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[2].id, title: "Annual inspection", description: "Minnesota state safety inspection", dueDate: new Date("2026-05-15") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[5].id, title: "Brake fluid flush", description: "Honda recommends every 3 years", dueMileage: 72000, dueDate: new Date("2026-06-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[8].id, title: "Registration renewal", description: "Texas registration expires June 2026", dueDate: new Date("2026-06-30") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[9].id, title: "Next oil change", description: "Sprinter service B interval", dueMileage: 40000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[10].id, title: "Haldex service", description: "Quattro rear diff fluid change - 40K interval", dueMileage: 40000, isCompleted: true } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[11].id, title: "Front diff fluid", description: "After lift kit, recommend fluid change at 35K", dueMileage: 35000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[12].id, title: "Annual inspection", description: "Georgia annual safety inspection", dueDate: new Date("2026-08-22") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[14].id, title: "DSG service interval", description: "Next DSG fluid/filter at 78K", dueMileage: 78000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[17].id, title: "CVT fluid check", description: "Subaru CVT recommended drain/fill", dueMileage: 30000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[20].id, title: "Mixer drum inspection", description: "Annual drum wear/bolt check", dueDate: new Date("2026-07-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[25].id, title: "250hr service", description: "John Deere 8R scheduled interval", dueMileage: 1000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[28].id, title: "Pre-harvest prep", description: "X9 1100 combine full inspection before harvest", dueDate: new Date("2026-08-15") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[30].id, title: "Blade edge replacement", description: "Check wear on cutting edge", dueMileage: 6500, isCompleted: true } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[32].id, title: "Undercarriage inspection", description: "2000hr interval for track chain inspection", dueMileage: 2000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[36].id, title: "OSHA crane certification", description: "Annual load test and certification due", dueDate: new Date("2026-05-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[38].id, title: "Corvette annual service", description: "GM recommended annual service with performance inspection", dueDate: new Date("2027-01-22") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[39].id, title: "Transfer case fluid", description: "Land Rover recommends 40K interval for transfer case fluid", dueMileage: 40000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[40].id, title: "Transmission fluid change", description: "8-speed auto - ZF recommends fluid change at 50K", dueMileage: 50000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[41].id, title: "Timing belt inspection", description: "FA24 engine - inspect timing chain tensioner at 60K", dueMileage: 60000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[1].id, title: "Timing belt replacement", description: "Interval-based - EcoBoost timing chain inspection due", dueMileage: 60000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[2].id, title: "Annual inspection", description: "Minnesota state safety inspection", dueDate: new Date("2026-05-15") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[5].id, title: "Brake fluid flush", description: "Honda recommends every 3 years", dueMileage: 72000, dueDate: new Date("2026-06-01") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[8].id, title: "Registration renewal", description: "Texas registration expires June 2026", dueDate: new Date("2026-06-30") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[9].id, title: "Next oil change", description: "Sprinter service B interval", dueMileage: 40000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[10].id, title: "Haldex service", description: "Quattro rear diff fluid change - 40K interval", dueMileage: 40000, isCompleted: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[11].id, title: "Front diff fluid", description: "After lift kit, recommend fluid change at 35K", dueMileage: 35000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[12].id, title: "Annual inspection", description: "Georgia annual safety inspection", dueDate: new Date("2026-08-22") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[14].id, title: "DSG service interval", description: "Next DSG fluid/filter at 78K", dueMileage: 78000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[17].id, title: "CVT fluid check", description: "Subaru CVT recommended drain/fill", dueMileage: 30000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[20].id, title: "Mixer drum inspection", description: "Annual drum wear/bolt check", dueDate: new Date("2026-07-01") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[25].id, title: "250hr service", description: "John Deere 8R scheduled interval", dueMileage: 1000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[28].id, title: "Pre-harvest prep", description: "X9 1100 combine full inspection before harvest", dueDate: new Date("2026-08-15") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[30].id, title: "Blade edge replacement", description: "Check wear on cutting edge", dueMileage: 6500, isCompleted: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[32].id, title: "Undercarriage inspection", description: "2000hr interval for track chain inspection", dueMileage: 2000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[36].id, title: "OSHA crane certification", description: "Annual load test and certification due", dueDate: new Date("2026-05-01") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[38].id, title: "Corvette annual service", description: "GM recommended annual service with performance inspection", dueDate: new Date("2027-01-22") } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[39].id, title: "Transfer case fluid", description: "Land Rover recommends 40K interval for transfer case fluid", dueMileage: 40000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[40].id, title: "Transmission fluid change", description: "8-speed auto - ZF recommends fluid change at 50K", dueMileage: 50000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[41].id, title: "Timing belt inspection", description: "FA24 engine - inspect timing chain tensioner at 60K", dueMileage: 60000 } }),
   ]);
   console.log(`  Created ${additionalReminders.length} additional reminders`);
 
@@ -777,6 +782,7 @@ async function seed() {
       serviceDate.setDate(serviceDate.getDate() + entry.offsetDays);
       const rec = await prisma.serviceRecord.create({
         data: {
+          organizationId: ORG_ID,
           vehicleId: hist.vehicleId,
           title: entry.title,
           description: entry.desc,
@@ -892,7 +898,7 @@ async function seed() {
   const sr = (base: Record<string, unknown>, parts: { name: string; partNumber: string; quantity: number; unitPrice: number; total: number }[], labor: { description: string; hours: number; rate: number; total: number }[], notes?: string) => {
     const subtotal = parts.reduce((s, p) => s + p.total, 0) + labor.reduce((s, l) => s + l.total, 0);
     const taxAmount = Math.round(subtotal * 0.08 * 100) / 100;
-    return prisma.serviceRecord.create({ data: { ...base, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } as never });
+    return prisma.serviceRecord.create({ data: { ...base, organizationId: ORG_ID, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } as never });
   };
 
   // Create service records for the board (assigned ones)

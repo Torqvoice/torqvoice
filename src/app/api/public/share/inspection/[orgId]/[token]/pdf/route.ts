@@ -8,6 +8,7 @@ import React from 'react'
 import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { loadInspectionPhotos } from '@/features/inspections/Lib/inspectionPhotos'
+import { inspectionPrintLabels } from '@/features/inspections/Lib/inspectionLabels'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolvePortalOrg } from '@/lib/portal-slug'
@@ -33,10 +34,6 @@ export async function GET(
       pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default
     } catch {
       pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default
-    }
-    const labels = {
-      ...pdfMessages.inspection,
-      ...pdfMessages.common,
     }
 
     const inspection = await db.inspection.findFirst({
@@ -76,19 +73,8 @@ export async function GET(
     const settingsMap: Record<string, string> = {}
     for (const s of settings) settingsMap[s.key] = s.value
 
-    // Override labels for marine service type
-    const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
-    if (serviceType === 'marine') {
-      if (pdfMessages.inspection.mileageMarine)
-        labels.mileage = pdfMessages.inspection.mileageMarine
-      if (pdfMessages.inspection.vinMarine) labels.vin = pdfMessages.inspection.vinMarine
-      if (pdfMessages.inspection.plateMarine) labels.plate = pdfMessages.inspection.plateMarine
-      if (pdfMessages.inspection.vehicleMarine)
-        labels.vehicle = pdfMessages.inspection.vehicleMarine
-      if (pdfMessages.inspection.titleMarine) labels.title = pdfMessages.inspection.titleMarine
-      if (pdfMessages.inspection.footerTextMarine)
-        labels.footerText = pdfMessages.inspection.footerTextMarine
-    }
+    // Marine workshops get the vessel wording.
+    const labels = inspectionPrintLabels(pdfMessages, settingsMap)
 
     let logoDataUri: string | undefined
     const logoPath = settingsMap['workshop.logo']

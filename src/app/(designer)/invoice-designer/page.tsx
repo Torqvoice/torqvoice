@@ -4,6 +4,7 @@ import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures } from '@/lib/features'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { readWorkshopTax } from '@/features/settings/Lib/workshopTax'
 import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
@@ -126,6 +127,7 @@ export default async function InvoiceDesignerPage({
           orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
           paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
           logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+          taxComponents: readWorkshopTax(settings).components,
         }}
         customFields={
           customFieldsResult.success && customFieldsResult.data

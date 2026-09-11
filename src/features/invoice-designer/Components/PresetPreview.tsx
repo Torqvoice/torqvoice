@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
 import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
+import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildSampleData, type PrintLabels } from './sample'
 import { specForDesign, specForPreset } from './presetSpec'
@@ -20,6 +21,8 @@ interface PreviewWorkshop {
   phone?: string
   email?: string
   slogan?: string
+  /** The workshop's split tax, so a card shows its GST and QST lines. */
+  taxComponents?: TaxComponentDefinition[] | null
 }
 
 /** The sample document on this workshop's own details, for a card's picture. */
@@ -46,6 +49,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         orgNumber: '',
         paymentTerms: '',
         logoUrl: logoUrl ?? '',
+        taxComponents: workshop?.taxComponents ?? null,
       },
       [],
       t,

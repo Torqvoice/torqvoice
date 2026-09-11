@@ -4,10 +4,16 @@ on:
   pull_request:
     branches: [main]
 
+# A second push to the same branch makes the run in flight pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     name: Lint & Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -23,5 +29,17 @@ jobs:
       - run: npx prisma generate
 
       - run: npm test
+
+      # Next reuses its compiler cache across builds when it is given one.
+      # This build is the plain one, with no NEXT_PUBLIC_APP_URL override, so
+      # it keeps its own entry rather than sharing the e2e job's.
+      - name: Cache the build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-ci-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            next-ci-${{ hashFiles('package-lock.json') }}-
+            next-ci-
 
       - run: npm run build

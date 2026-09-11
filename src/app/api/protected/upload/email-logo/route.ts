@@ -5,6 +5,7 @@ import path from 'path'
 import sharp from 'sharp'
 import { EMAIL_LOGO_CATEGORY, EMAIL_LOGO_MAX_WIDTH } from '@/features/email/Lib/emailTemplate'
 import { guardEmailUpload } from '@/features/email/Lib/emailUploadAccess.server'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * A logo for the email templates, uploaded on its own rather than borrowed
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
       .toBuffer({ resolveWithObject: true })
 
     const fileName = `${randomUUID()}.png`
-    const dir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, EMAIL_LOGO_CATEGORY)
+    const dir = path.join(uploadsRoot(), ctx.organizationId, EMAIL_LOGO_CATEGORY)
     await mkdir(dir, { recursive: true })
     await writeFile(path.join(dir, fileName), png.data)
 

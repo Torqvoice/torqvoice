@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { getFeatures, type PlanFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Attaches a photo or video shot in the bay to a job.
@@ -100,7 +101,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // arrives over the wire is an attacker-controlled path, and the only
       // safe thing to do with one is not use it.
       const filename = `${crypto.randomUUID()}.${ext}`
-      const dir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'services')
+      const dir = path.join(uploadsRoot(), ctx.organizationId, 'services')
       await mkdir(dir, { recursive: true })
       const target = path.join(dir, filename)
 

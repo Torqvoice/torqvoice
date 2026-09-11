@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Panel de control",
     "vehicles": "Vehículos",
+    "vessels": "Embarcaciones",
     "allVehicles": "Todos los vehículos",
+    "allVessels": "Todas las embarcaciones",
     "vehicleDetails": "Detalles del vehículo",
+    "vesselDetails": "Detalles de la embarcación",
     "customers": "Clientes",
     "allCustomers": "Todos los clientes",
     "customerDetails": "Detalles del cliente",

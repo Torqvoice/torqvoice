@@ -9,12 +9,25 @@ interface ServiceDetailContentProps {
   rightColumn: React.ReactNode
 }
 
-// Bulletproof layout shell. The outer is a relative box that fills its flex parent.
-// Each scroll region is `position: absolute; inset: 0` inside its own relative cell,
-// so its size is dictated entirely by the cell's geometry (grid track width / parent
-// height) and never by its content's intrinsic min-size. This sidesteps the
-// `min-height: auto` flex-item rule that was letting tall right-column content push
-// the body taller than the viewport.
+/**
+ * The layout shell of the work order page: the job on the left, the sidebar on
+ * the right, stacked on a narrow screen.
+ *
+ * Both columns are rendered **once**. They used to be rendered twice, one
+ * layer per breakpoint with the other hidden, which put two of every field in
+ * the document under the same id and name. The form then submitted the hidden
+ * copy's values, native validation objected to controls the browser would not
+ * focus and abandoned the submit in silence, and every row was mounted and
+ * hydrated twice. One copy, and CSS decides where it sits.
+ *
+ * The height still comes from the box and never from the content. The single
+ * layer is `position: absolute; inset: 0`, so its size is dictated by this
+ * relative parent; from `lg` it becomes the grid and each column scrolls
+ * inside its own track, whose height is pinned by `minmax(0, 1fr)`. That is
+ * what sidesteps the `min-height: auto` flex-item rule which once let tall
+ * sidebar content push the body past the viewport — an auto grid row would
+ * bring it straight back.
+ */
 export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailContentProps) {
   const [sidebarWidth, setSidebarWidth] = useState<number | null>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -43,27 +56,29 @@ export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailC
 
   return (
     <div className="relative min-h-0 flex-1">
-      {/* Mobile: stacked, page scrolls inside the absolute layer */}
-      <div className="absolute inset-0 overflow-y-auto overscroll-contain p-4 lg:hidden">
-        <div className="space-y-3 pb-40">
-          {leftColumn}
-          {rightColumn}
-        </div>
-      </div>
-
-      {/* Desktop: 3-track grid (left | resize handle | right sidebar) */}
+      {/* Below lg: this layer is the one scroller and the columns stack inside
+          it. From lg: a three-track grid (job | handle | sidebar), each column
+          scrolling in its own track. The grid properties are inert while the
+          layer is a flex column. */}
       <div
-        className="absolute inset-0 hidden lg:grid"
-        style={{ gridTemplateColumns: `minmax(0, 1fr) 6px ${rightColTrack}` }}
+        data-testid="service-layout"
+        className="absolute inset-0 flex flex-col gap-3 overflow-y-auto overscroll-contain p-4 pb-40 lg:grid lg:gap-0 lg:overflow-hidden lg:p-0 lg:pb-0"
+        style={{
+          gridTemplateColumns: `minmax(0, 1fr) 6px ${rightColTrack}`,
+          gridTemplateRows: 'minmax(0, 1fr)',
+        }}
       >
-        <div className="relative">
-          <div className="absolute inset-0 overflow-y-auto overscroll-contain p-4 pr-2">
-            <div className="space-y-3 pb-40">{leftColumn}</div>
-          </div>
+        <div
+          data-testid="service-main"
+          className="space-y-3 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:p-4 lg:pr-2 lg:pb-40"
+        >
+          {leftColumn}
         </div>
 
+        {/* Nothing to drag while the columns are stacked. */}
         <div
-          className="relative cursor-col-resize bg-border transition-colors hover:bg-primary/30"
+          data-testid="service-resize"
+          className="relative hidden cursor-col-resize bg-border transition-colors hover:bg-primary/30 lg:block"
           onMouseDown={() => setIsDragging(true)}
         >
           <div className="absolute top-1/2 left-1/2 flex h-8 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-sm border bg-background shadow-sm">
@@ -73,10 +88,11 @@ export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailC
           </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 overflow-y-auto overscroll-contain p-4 pl-2">
-            <div className="space-y-3 pb-40">{rightColumn}</div>
-          </div>
+        <div
+          data-testid="service-sidebar"
+          className="space-y-3 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:p-4 lg:pl-2 lg:pb-40"
+        >
+          {rightColumn}
         </div>
       </div>
     </div>

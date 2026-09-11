@@ -26,6 +26,7 @@ import {
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { netLineTotal } from '@/lib/tax'
+import { taxComponentLabel } from '@/lib/tax-components'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
@@ -412,7 +413,18 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                   </span>
                 )}
               </div>
-              {state.taxEnabled && (
+              {state.taxEnabled && state.taxComponents && state.taxComponents.length > 0 ? (
+                state.taxComponents.map((component) => (
+                  <div
+                    key={component.name}
+                    className="flex items-center justify-between text-sm"
+                    data-testid="tax-component-row"
+                  >
+                    <span className="text-muted-foreground">{taxComponentLabel(component)}</span>
+                    <span>{formatCurrency(component.amount, currencyCode)}</span>
+                  </div>
+                ))
+              ) : state.taxEnabled ? (
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">{t('totals.tax')}</span>
@@ -431,7 +443,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                   </div>
                   <span>{formatCurrency(state.taxAmount, currencyCode)}</span>
                 </div>
-              )}
+              ) : null}
               <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
                 <span>{t('totals.total')}</span>
                 <span>{formatCurrency(state.totalAmount, currencyCode)}</span>

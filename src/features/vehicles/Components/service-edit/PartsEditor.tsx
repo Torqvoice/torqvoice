@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
+import { partRowHasContent } from '@/features/vehicles/Lib/validateServiceForm'
 import { emptyPart } from './form-types'
 import {
   DndContext,
@@ -106,9 +107,9 @@ function SortablePartRow({
       }
     : undefined
 
-  const nameMissing =
-    !part.name.trim() &&
-    !!(part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0)
+  // Same rule the save refuses on, so the red border and the refusal can
+  // never disagree about which rows are a problem.
+  const nameMissing = partRowHasContent(part) && !part.name.trim()
 
   return (
     <div
@@ -457,10 +458,9 @@ export function PartsEditor({
           >
             <Plus className="h-4 w-4" />
           </button>
-          {partItems.some(
-            (p) =>
-              !p.name.trim() && (p.partNumber || Number(p.unitCost) > 0 || Number(p.unitPrice) > 0)
-          ) && <p className="text-xs text-destructive">{t('nameMissingHint')}</p>}
+          {partItems.some((p) => !p.name.trim() && partRowHasContent(p)) && (
+            <p className="text-xs text-destructive">{t('nameMissingHint')}</p>
+          )}
           <div className="flex justify-end pt-1 text-sm">
             <span className="font-medium">
               {t('subtotal', { amount: formatCurrency(partsSubtotal, currencyCode) })}

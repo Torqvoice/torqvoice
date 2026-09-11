@@ -411,6 +411,7 @@ function DayColumn({
     >
       <div
         ref={columnRef}
+        data-testid={`timegrid-day-${dateStr}`}
         className={cn(
           'relative border-r border-border/70 last:border-r-0',
           isToday && 'bg-primary/[0.03]'

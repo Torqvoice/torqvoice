@@ -60,6 +60,7 @@ import type {
   SettingField,
   SettingOption,
 } from '@/features/integrations/Lib/types'
+import { handleGated } from '@/components/upgrade-gate'
 
 type Activity = {
   items: ActivityItem[]
@@ -131,7 +132,7 @@ export function ConnectionSettings({
       try {
         const res = await fn()
         if (res && !res.success) {
-          toast.error(res.error || t('errors.generic'))
+          if (!handleGated(res)) toast.error(res.error || t('errors.generic'))
           return false
         }
         if (done) toast.success(typeof done === 'function' ? done(res?.data) : done)

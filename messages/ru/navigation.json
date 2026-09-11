@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Панель управления",
     "vehicles": "Транспортные средства",
+    "vessels": "Суда",
     "allVehicles": "Все транспортные средства",
+    "allVessels": "Все суда",
     "vehicleDetails": "Детали транспортного средства",
+    "vesselDetails": "Сведения о судне",
     "customers": "Клиенты",
     "allCustomers": "Все клиенты",
     "customerDetails": "Данные клиента",

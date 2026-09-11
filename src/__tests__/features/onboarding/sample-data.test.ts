@@ -27,7 +27,8 @@ vi.mock('@/lib/db', () => ({
     },
     customer: { count: vi.fn(), deleteMany: vi.fn() },
     vehicle: { count: vi.fn(), deleteMany: vi.fn() },
-    serviceRecord: { count: vi.fn(), deleteMany: vi.fn() },
+    serviceRecord: { count: vi.fn(), findFirst: vi.fn(), deleteMany: vi.fn() },
+    organization: { findUnique: vi.fn() },
     quote: { deleteMany: vi.fn() },
     inspection: { deleteMany: vi.fn() },
     $transaction: vi.fn(),
@@ -140,30 +141,40 @@ describe('removeSampleData', () => {
 })
 
 describe('getOnboardingChecklist', () => {
+  const WORKSHOP = { name: 'Egeland Auto' }
+  const LATEST = { id: 'wo-9', vehicleId: 'veh-2' }
+
+  beforeEach(() => {
+    vi.mocked(db.organization.findUnique).mockResolvedValue(WORKSHOP as never)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null as never)
+  })
+
   it('excludes sample ids from step detection', async () => {
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
       { key: 'onboarding.checklistDismissed', value: 'false' },
       { key: 'onboarding.sampleDataIds', value: JSON.stringify(SAMPLE_IDS) },
     ] as never)
     // Only the sample rows exist, so every real count is zero.
-    vi.mocked(db.customer.count).mockResolvedValue(0 as never)
-    vi.mocked(db.vehicle.count).mockResolvedValue(0 as never)
     vi.mocked(db.serviceRecord.count).mockResolvedValue(0 as never)
 
     const result = await getOnboardingChecklist()
     expect(result.success).toBe(true)
     expect(result.data).toEqual({
-      steps: { customer: false, vehicle: false, workOrder: false, invoice: false },
+      steps: { workOrder: false, company: false, invoice: false },
       allDone: false,
       hasSampleData: true,
+      workshopName: 'Egeland Auto',
+      invoiceHref: '/work-orders',
     })
 
-    expect(db.customer.count).toHaveBeenCalledWith({
-      where: { organizationId: ORG, id: { notIn: SAMPLE_IDS.customers } },
-    })
     expect(db.serviceRecord.count).toHaveBeenCalledWith({
       where: { organizationId: ORG, id: { notIn: SAMPLE_IDS.serviceRecords } },
     })
+    expect(db.serviceRecord.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { organizationId: ORG, id: { notIn: SAMPLE_IDS.serviceRecords } },
+      })
+    )
   })
 
   it('hides the card once dismissed', async () => {
@@ -174,14 +185,15 @@ describe('getOnboardingChecklist', () => {
     const result = await getOnboardingChecklist()
     expect(result.success).toBe(true)
     expect(result.data).toBeNull()
-    expect(db.customer.count).not.toHaveBeenCalled()
+    expect(db.serviceRecord.count).not.toHaveBeenCalled()
   })
 
   it('hides the card for pre-existing orgs that already do everything', async () => {
-    // No onboarding rows at all: an org that predates the checklist.
-    vi.mocked(db.appSetting.findMany).mockResolvedValue([] as never)
-    vi.mocked(db.customer.count).mockResolvedValue(12 as never)
-    vi.mocked(db.vehicle.count).mockResolvedValue(30 as never)
+    // No onboarding rows at all: an org that predates the checklist, with an
+    // address on file and work orders, some of them shared.
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workshop.address', value: 'Verkstedveien 1' },
+    ] as never)
     vi.mocked(db.serviceRecord.count).mockResolvedValue(80 as never)
 
     const result = await getOnboardingChecklist()
@@ -191,8 +203,7 @@ describe('getOnboardingChecklist', () => {
 
   it('shows open steps for pre-existing orgs with partial data', async () => {
     vi.mocked(db.appSetting.findMany).mockResolvedValue([] as never)
-    vi.mocked(db.customer.count).mockResolvedValue(3 as never)
-    vi.mocked(db.vehicle.count).mockResolvedValue(2 as never)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(LATEST as never)
     // First serviceRecord.count call: any work order; second: shared invoices.
     vi.mocked(db.serviceRecord.count)
       .mockResolvedValueOnce(1 as never)
@@ -201,19 +212,31 @@ describe('getOnboardingChecklist', () => {
     const result = await getOnboardingChecklist()
     expect(result.success).toBe(true)
     expect(result.data).toEqual({
-      steps: { customer: true, vehicle: true, workOrder: true, invoice: false },
+      steps: { workOrder: true, company: false, invoice: false },
       allDone: false,
       hasSampleData: false,
+      workshopName: 'Egeland Auto',
+      invoiceHref: '/vehicles/veh-2/service/wo-9',
     })
+  })
+
+  it('treats a blank address as missing workshop details', async () => {
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workshop.address', value: '   ' },
+    ] as never)
+    vi.mocked(db.serviceRecord.count).mockResolvedValue(0 as never)
+
+    const result = await getOnboardingChecklist()
+    expect(result.data?.steps.company).toBe(false)
   })
 
   it('completes the invoice step from the download marker', async () => {
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
       { key: 'onboarding.checklistDismissed', value: 'false' },
       { key: 'onboarding.invoiceIssued', value: 'true' },
+      { key: 'workshop.address', value: 'Verkstedveien 1' },
     ] as never)
-    vi.mocked(db.customer.count).mockResolvedValue(1 as never)
-    vi.mocked(db.vehicle.count).mockResolvedValue(1 as never)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(LATEST as never)
     vi.mocked(db.serviceRecord.count)
       .mockResolvedValueOnce(1 as never)
       .mockResolvedValueOnce(0 as never)
@@ -221,9 +244,11 @@ describe('getOnboardingChecklist', () => {
     const result = await getOnboardingChecklist()
     expect(result.success).toBe(true)
     expect(result.data).toEqual({
-      steps: { customer: true, vehicle: true, workOrder: true, invoice: true },
+      steps: { workOrder: true, company: true, invoice: true },
       allDone: true,
       hasSampleData: false,
+      workshopName: 'Egeland Auto',
+      invoiceHref: '/vehicles/veh-2/service/wo-9',
     })
   })
 })
