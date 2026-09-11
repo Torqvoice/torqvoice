@@ -144,6 +144,14 @@ async function handleStartCommand(
     data: { telegramChatId: chatId },
   })
 
+  // Anything this chat sent before it was linked (a message sent before the
+  // link was scanned, or while the webhook was down) belonged to nobody and
+  // could not be seen or read. It is theirs now.
+  await db.telegramMessage.updateMany({
+    where: { organizationId, chatId, customerId: null },
+    data: { customerId: customer.id },
+  })
+
   // Send confirmation message back
   try {
     await sendTelegramMessage(organizationId, {
