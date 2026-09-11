@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 
 /**
@@ -46,6 +47,34 @@ const paymentSink = {
   env: { E2E_PAYMENT_PORT: paymentPort },
 }
 
+/**
+ * Which app the run is against. The suite's specs expect a self-hosted
+ * install, where every feature is unlocked. `E2E_MODE=cloud` runs only
+ * `specs/cloud`, against the same build started in cloud mode: plan limits,
+ * the sign-up pitch and Google sign-in exist only there. One build serves
+ * both, because the app URL baked into it is the same.
+ */
+const cloud = process.env.E2E_MODE === 'cloud'
+
+/** Where the Google stand-in listens, for the app's server and for the specs. */
+const googlePort = process.env.E2E_GOOGLE_PORT ?? '8027'
+const googleStandinUrl = `http://127.0.0.1:${googlePort}`
+
+/**
+ * Google's account chooser and token endpoint, for the cloud run. The browser
+ * is routed to it by the specs; the app's server is pointed at it by a
+ * preload, because better-auth has Google's endpoints written into it.
+ */
+const googleStandin = {
+  command: 'npx tsx e2e/google-standin.ts',
+  url: `${googleStandinUrl}/health`,
+  reuseExistingServer: !process.env.CI,
+  timeout: 60_000,
+  stdout: 'pipe' as const,
+  stderr: 'pipe' as const,
+  env: { E2E_GOOGLE_PORT: googlePort },
+}
+
 const mailSink = {
   command: 'npx tsx e2e/mail-sink.ts',
   url: `http://127.0.0.1:${mailApiPort}/health`,
@@ -89,6 +118,9 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], storageState: 'e2e/.auth/owner.json' },
       dependencies: ['setup'],
+      // The cloud specs need the app in cloud mode, and the rest need it
+      // self-hosted, so each run takes only its own.
+      ...(cloud ? { testMatch: /specs\/cloud\/.*\.spec\.ts$/ } : { testIgnore: /specs\/cloud\// }),
     },
   ],
 
@@ -102,10 +134,11 @@ export default defineConfig({
    * and it is not the artifact that ships anyway.
    */
   webServer: process.env.E2E_BASE_URL
-    ? [mailSink, paymentSink]
+    ? [mailSink, paymentSink, ...(cloud ? [googleStandin] : [])]
     : [
         mailSink,
         paymentSink,
+        ...(cloud ? [googleStandin] : []),
         {
           // The database first, then the server, in one command: Playwright
           // starts this before global setup, and a server on an empty schema
@@ -139,7 +172,18 @@ export default defineConfig({
             // `next start` also reads the developer's .env, which may say cloud.
             // Self-hosted unlocks every feature, which is what a suite that
             // exercises them needs; plan gates are a subject of their own.
-            TORQVOICE_MODE: 'self-hosted',
+            TORQVOICE_MODE: cloud ? 'cloud' : 'self-hosted',
+            // Google sign-in exists only in cloud mode, and only with a client
+            // configured. The preload sends the server's token exchange to the
+            // stand-in; outside the cloud run none of this is set.
+            ...(cloud
+              ? {
+                  GOOGLE_AUTH_CLIENT_ID: 'e2e-google-client',
+                  GOOGLE_AUTH_CLIENT_SECRET: 'e2e-google-secret',
+                  E2E_GOOGLE_STANDIN_URL: googleStandinUrl,
+                  NODE_OPTIONS: `--import=${resolve('e2e/google-standin-preload.mjs')}`,
+                }
+              : {}),
             TZ: process.env.E2E_TZ ?? 'Europe/Oslo',
             // Mail goes to the sink instead of a provider. The app's SMTP
             // settings fall back to these when nothing is configured in the

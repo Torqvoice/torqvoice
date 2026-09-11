@@ -149,10 +149,15 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      // Google verifies the address before it hands it to us, so a Google
-      // sign-in whose email matches a password account attaches to that
-      // account rather than creating a second person with the same email.
-      trustedProviders: ['google'],
+      // A Google sign-in whose email matches a password account attaches to
+      // that account rather than creating a second person with the same
+      // email, but only when Google says it has verified the address. Google
+      // is deliberately not a trusted provider: better-auth links a trusted
+      // provider's account without looking at email_verified at all, and
+      // anyone can create a Google account with somebody else's address on
+      // it. Trusted, that signed a stranger into the workshop that owns the
+      // address. e2e/specs/cloud/google-sign-in.spec.ts holds both halves.
+      //
       // The local account may predate email verification and never have
       // clicked the link. Google's verification of the same address is the
       // stronger proof, the same proof a password reset mail would rest on,

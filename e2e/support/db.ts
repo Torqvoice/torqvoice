@@ -515,3 +515,129 @@ export async function vendorPaymentRows(
 export async function deleteVendorPaymentRows(externalId: string): Promise<void> {
   await withDb((db) => db.query(`delete from payments where "externalId" = $1`, [externalId]))
 }
+
+/** The id of the user signed up with an address. */
+export async function userIdFor(email: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from users where lower(email) = lower($1)`,
+      [email]
+    )
+    const id = result.rows[0]?.id
+    if (!id) throw new Error(`no user with ${email}`)
+    return id
+  })
+}
+
+/**
+ * Writes customers straight into a workshop, as if it had typed them in.
+ *
+ * For reaching a plan limit without twenty trips through a form: what is
+ * under test is the one customer past the limit, and that one goes through
+ * the app. These are real customers, not sample ones, so they count.
+ */
+export async function insertCustomers(
+  organizationId: string,
+  userId: string,
+  count: number,
+  prefix: string
+): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `insert into customers (id, name, "userId", "organizationId", "updatedAt")
+       select md5(random()::text || clock_timestamp()::text || n), $3 || ' ' || n, $2, $1, now()
+       from generate_series(1, $4::int) as n`,
+      [organizationId, userId, prefix, count]
+    )
+  )
+}
+
+/** Every customer row a workshop holds, sample ones included. */
+export async function customerRows(organizationId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: number }>(
+      `select count(*)::int as n from customers where "organizationId" = $1`,
+      [organizationId]
+    )
+    return result.rows[0]?.n ?? 0
+  })
+}
+
+/** Team invitations a workshop has sent. */
+export async function teamInvitations(organizationId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: number }>(
+      `select count(*)::int as n from team_invitations where "organizationId" = $1`,
+      [organizationId]
+    )
+    return result.rows[0]?.n ?? 0
+  })
+}
+
+/**
+ * Puts a workshop on an active Pro subscription, as a paid checkout would.
+ * Returns the plan's id so the spec can take it away again.
+ */
+export async function giveProPlan(organizationId: string): Promise<string> {
+  return withDb(async (db) => {
+    const plan = await db.query<{ id: string }>(
+      `insert into subscription_plans (id, name, price, "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), 'E2E Pro', 0, now())
+       returning id`
+    )
+    const planId = plan.rows[0].id
+    await db.query(
+      `insert into subscriptions (id, status, "organizationId", "planId", "currentPeriodEnd", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), 'active', $1, $2, now() + interval '30 days', now())`,
+      [organizationId, planId]
+    )
+    return planId
+  })
+}
+
+/** Takes a subscription and its plan away again. */
+export async function removePlan(organizationId: string, planId: string): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(`delete from subscriptions where "organizationId" = $1`, [organizationId])
+    await db.query(`delete from subscription_plans where id = $1`, [planId])
+  })
+}
+
+export interface PersonRecord {
+  /** How many users hold the address: more than one is two people where there should be one. */
+  users: number
+  /** How each of them can sign in: `credential` for a password, `google`. */
+  providers: string[]
+  emailVerified: boolean
+}
+
+/** Who holds an address, and how they can sign in. */
+export async function personWithEmail(email: string): Promise<PersonRecord> {
+  return withDb(async (db) => {
+    const users = await db.query<{ id: string; emailVerified: boolean }>(
+      `select id, "emailVerified" from users where lower(email) = lower($1)`,
+      [email]
+    )
+    const providers = await db.query<{ providerId: string }>(
+      `select a."providerId" from accounts a join users u on u.id = a."userId"
+        where lower(u.email) = lower($1) order by a."providerId"`,
+      [email]
+    )
+    return {
+      users: users.rows.length,
+      providers: providers.rows.map((row) => row.providerId),
+      emailVerified: users.rows.some((row) => row.emailVerified),
+    }
+  })
+}
+
+/** Every vehicle row a workshop holds. */
+export async function vehicleRows(organizationId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: number }>(
+      `select count(*)::int as n from vehicles where "organizationId" = $1`,
+      [organizationId]
+    )
+    return result.rows[0]?.n ?? 0
+  })
+}

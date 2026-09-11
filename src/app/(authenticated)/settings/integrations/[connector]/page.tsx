@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import {
@@ -39,10 +40,21 @@ export default async function IntegrationConnectionPage({
     />
   )
 
+  // Said in terms of what this connector does: a payment or AI connector is
+  // gated by its own plan feature, and calendars and video calls are not what
+  // the workshop is being asked to pay for there.
+  const t = await getTranslations('integrations.connection')
+  const lockedDescription =
+    manifest.plan === 'payments'
+      ? t('lockedPayments')
+      : manifest.plan === 'ai'
+        ? t('lockedAi')
+        : t('lockedIntegrations')
+
   return locked ? (
     <FeatureLocked
       feature={manifest.plan ? manifest.name : 'Integrations'}
-      description="Connect calendars, video calls and other services to your workshop."
+      description={lockedDescription}
       isCloud={isCloudMode()}
     >
       {content}
