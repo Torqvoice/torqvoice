@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Valdymo skydelis",
     "vehicles": "Transporto priemonės",
+    "vessels": "Laivai",
     "allVehicles": "Visos transporto priemonės",
+    "allVessels": "Visi laivai",
     "vehicleDetails": "Transporto priemonės informacija",
+    "vesselDetails": "Laivo informacija",
     "customers": "Klientai",
     "allCustomers": "Visi klientai",
     "customerDetails": "Kliento informacija",

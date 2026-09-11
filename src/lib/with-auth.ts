@@ -7,6 +7,7 @@ import { hasAllPermissions } from './permissions'
 import { logAudit } from '@/lib/audit'
 import type { AuditEvent } from '@/lib/audit'
 import type { FeatureGatedError } from '@/lib/features'
+import { publicErrorMessage } from '@/lib/public-error-message'
 
 /** What the plan refused, and the number it stopped at when there is one. */
 export type GatedFeature = { feature: string; limit?: number }
@@ -170,8 +171,10 @@ export async function withAuth<T>(
         gated: { feature: gated.feature, limit: gated.limit },
       }
     }
-    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
-    console.error('[withAuth] Error:', message)
-    return { success: false, error: message }
+    // In full here, where only the server sees it. The page gets the action's
+    // own words, or a plain sentence when the error came from the database or
+    // the runtime: a raw query error once filled the vehicle list.
+    console.error('[withAuth] Error:', error)
+    return { success: false, error: publicErrorMessage(error) }
   }
 }

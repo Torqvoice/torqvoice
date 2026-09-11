@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Painel",
     "vehicles": "Veículos",
+    "vessels": "Embarcações",
     "allVehicles": "Todos os Veículos",
+    "allVessels": "Todas as Embarcações",
     "vehicleDetails": "Detalhes do Veículo",
+    "vesselDetails": "Detalhes da Embarcação",
     "customers": "Clientes",
     "allCustomers": "Todos os Clientes",
     "customerDetails": "Detalhes do Cliente",

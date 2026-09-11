@@ -641,3 +641,58 @@ export async function vehicleRows(organizationId: string): Promise<number> {
     return result.rows[0]?.n ?? 0
   })
 }
+
+/** One of a workshop's settings as stored, or null when it was never saved. */
+export async function workshopSetting(organizationId: string, key: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ value: string }>(
+      `select value from app_settings where "organizationId" = $1 and key = $2`,
+      [organizationId, key]
+    )
+    return result.rows[0]?.value ?? null
+  })
+}
+
+/**
+ * A vehicle registry connected to a workshop, active, the way the header's
+ * plate lookup looks for one. No keys: nothing is looked up, only offered.
+ */
+export async function connectRegistry(
+  organizationId: string,
+  userId: string,
+  connectorId: string
+): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `insert into integration_connections
+         (id, "organizationId", "connectorId", status, "createdById", "updatedAt")
+       values ($1, $2, $3, 'active', $4, now())`,
+      [`e2e-${connectorId}-${Date.now()}`, organizationId, connectorId, userId]
+    )
+  )
+}
+
+export async function disconnectRegistry(
+  organizationId: string,
+  connectorId: string
+): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `delete from integration_connections where "organizationId" = $1 and "connectorId" = $2`,
+      [organizationId, connectorId]
+    )
+  )
+}
+
+/** The id of a workshop's customer with exactly this name. */
+export async function customerIdNamed(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from customers where "organizationId" = $1 and name = $2`,
+      [organizationId, name]
+    )
+    const id = result.rows[0]?.id
+    if (!id) throw new Error(`no customer named ${name}`)
+    return id
+  })
+}

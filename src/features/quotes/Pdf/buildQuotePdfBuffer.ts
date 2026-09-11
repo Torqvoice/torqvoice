@@ -22,7 +22,7 @@ import { PDFDocument } from 'pdf-lib'
 import React from 'react'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
-import { withOrgNumberLabel } from '@/features/invoice-designer/Lib/labelOverrides'
+import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { db } from '@/lib/db'
@@ -46,42 +46,6 @@ const QUOTE_INCLUDE = {
     select: { make: true, model: true, year: true, vin: true, licensePlate: true },
   },
 } as const
-
-/**
- * The words on the sheet, in the reader's language.
- *
- * The quote shares its builder with the invoice, and so its column heads and
- * panel titles: quote wording is layered over the invoice's so every shared
- * label stays translated instead of falling back to English. The workshop's
- * own overrides go on top — what it calls its tax and its registration
- * number, and the marine vocabulary for a yard that services boats.
- */
-async function printLabels(locale: string, settingsMap: Record<string, string>) {
-  let messages: Record<string, Record<string, string>>
-  try {
-    messages = (await import(`../../../../messages/${locale}/pdf.json`)).default
-  } catch {
-    messages = (await import(`../../../../messages/en/pdf.json`)).default
-  }
-
-  const labels: Record<string, string> = {
-    ...messages.invoice,
-    ...messages.quote,
-    ...messages.common,
-  }
-
-  if ((settingsMap['workshop.serviceType'] || 'automotive') === 'marine') {
-    if (messages.quote.vinMarine) labels.vin = messages.quote.vinMarine
-    if (messages.quote.plateMarine) labels.plate = messages.quote.plateMarine
-    if (messages.quote.vehicleMarine) labels.vehicle = messages.quote.vehicleMarine
-  }
-
-  const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()
-  if (customTaxLabel) labels.tax = `${customTaxLabel} ({rate}%)`
-
-  Object.assign(labels, withOrgNumberLabel(labels, settingsMap['workshop.orgNumberLabel']))
-  return labels
-}
 
 /** The workshop's own document logo, as bytes the renderer can draw. */
 async function logoDataUriFor(settingsMap: Record<string, string>): Promise<string | undefined> {
@@ -177,7 +141,9 @@ export async function buildQuotePdfBuffer(
   }
 
   const [labels, logoDataUri, features, customFields, layoutRow] = await Promise.all([
-    printLabels(locale, settingsMap),
+    // The same words the invoice and the public quote page use, marine
+    // vocabulary and the workshop's tax and registration captions included.
+    loadPrintLabels(locale, settingsMap, 'quote'),
     logoDataUriFor(settingsMap),
     getFeatures(organizationId),
     getCustomFieldsForPrint(organizationId, quote.id, 'quote'),

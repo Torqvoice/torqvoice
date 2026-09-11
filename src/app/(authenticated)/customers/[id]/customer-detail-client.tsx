@@ -197,6 +197,8 @@ export function CustomerDetailClient({
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
   const serviceType = useServiceType()
+  // A vessel's reading is engine hours, the same number the header calls it.
+  const readingUnit = serviceType === 'marine' ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showEditForm, setShowEditForm] = useState(false)
@@ -587,7 +589,7 @@ export function CustomerDetailClient({
                       </div>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                         <span className="font-mono">
-                          {v.mileage.toLocaleString()} {unitSystem === 'metric' ? 'km' : 'mi'}
+                          {v.mileage.toLocaleString()} {readingUnit}
                         </span>
                         <span>
                           {t('vehicleTable.services')}: {v._count.serviceRecords}
@@ -632,7 +634,7 @@ export function CustomerDetailClient({
                             {v.year} {v.make} {v.model}
                           </TableCell>
                           <TableCell className="hidden sm:table-cell text-right font-mono text-sm">
-                            {v.mileage.toLocaleString()} {unitSystem === 'metric' ? 'km' : 'mi'}
+                            {v.mileage.toLocaleString()} {readingUnit}
                           </TableCell>
                           <TableCell className="text-center">{v._count.serviceRecords}</TableCell>
                         </TableRow>
