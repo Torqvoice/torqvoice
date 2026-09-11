@@ -696,3 +696,189 @@ export async function customerIdNamed(organizationId: string, name: string): Pro
     return id
   })
 }
+
+// ─── The security specs ──────────────────────────────────────────────────────
+
+/**
+ * A custom role carrying every action on every subject the app knows, and no
+ * admin standing. It is the sharpest test of "logged in is not allowed": a
+ * member with this role passes every `requiredPermissions` check there is,
+ * and the owner-only and admin-only actions have to refuse them anyway.
+ */
+export async function createRoleWithEveryPermission(
+  organizationId: string,
+  name: string
+): Promise<string> {
+  const subjects = [
+    'dashboard',
+    'vehicles',
+    'customers',
+    'work_orders',
+    'quotes',
+    'services',
+    'billing',
+    'inventory',
+    'labor_presets',
+    'inspections',
+    'tire_hotel',
+    'reports',
+    'settings',
+    'work_board',
+    'ai_assistant',
+    'time_tracking',
+  ]
+  const actions = ['create', 'read', 'update', 'delete', 'manage']
+  return withDb(async (db) => {
+    const role = await db.query<{ id: string }>(
+      `insert into roles (id, name, "isAdmin", "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, false, $2, now(), now())
+       returning id`,
+      [name, organizationId]
+    )
+    const roleId = role.rows[0].id
+    for (const subject of subjects) {
+      for (const action of actions) {
+        await db.query(
+          `insert into permissions (id, action, subject, "roleId")
+           values (gen_random_uuid()::text, $1, $2, $3)`,
+          [action, subject, roleId]
+        )
+      }
+    }
+    return roleId
+  })
+}
+
+/** Gives a member a custom role, and a built-in standing (member or admin) beside it. */
+export async function setMembership(
+  email: string,
+  organizationId: string,
+  membership: { roleId: string | null; role: 'member' | 'admin' }
+): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `update organization_members m
+          set "roleId" = $3, role = $4
+         from users u
+        where u.id = m."userId" and u.email = $1 and m."organizationId" = $2`,
+      [email, organizationId, membership.roleId, membership.role]
+    )
+  )
+}
+
+/** The credential in a pending invitation, or null when there is none for the address. */
+export async function invitationTokenFor(
+  email: string,
+  organizationId: string
+): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ token: string }>(
+      `select token from team_invitations
+        where email = $1 and "organizationId" = $2 and status = 'pending'`,
+      [email, organizationId]
+    )
+    return result.rows[0]?.token ?? null
+  })
+}
+
+/** How much of the workshop there is, for a test that must find it all still there. */
+export async function contentCounts(organizationId: string): Promise<Record<string, number>> {
+  return withDb(async (db) => {
+    const counts: Record<string, number> = {}
+    for (const table of ['vehicles', 'customers', 'quotes', 'inventory_parts', 'notifications']) {
+      const result = await db.query<{ n: string }>(
+        `select count(*)::text as n from ${table} where "organizationId" = $1`,
+        [organizationId]
+      )
+      counts[table] = Number(result.rows[0].n)
+    }
+    return counts
+  })
+}
+
+/**
+ * A file row written straight to the job, bypassing the schema that guards
+ * the action: what a record carried before the guard existed, or what a
+ * restore could bring in. The path resolver is the last line for these.
+ */
+export async function insertServiceAttachment(row: {
+  serviceRecordId: string
+  fileName: string
+  fileUrl: string
+  fileType: string
+}): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into service_attachments
+         (id, "fileName", "fileUrl", "fileType", "fileSize", category, "includeInInvoice", "serviceRecordId")
+       values (gen_random_uuid()::text, $1, $2, $3, 1, 'image', true, $4)
+       returning id`,
+      [row.fileName, row.fileUrl, row.fileType, row.serviceRecordId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteServiceAttachments(ids: string[]): Promise<void> {
+  await withDb((db) =>
+    db.query(`delete from service_attachments where id = any($1::text[])`, [ids])
+  )
+}
+
+/** How many file rows carry a name, on any job. */
+export async function serviceAttachmentsNamed(fileName: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from service_attachments where "fileName" = $1`,
+      [fileName]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+/** A live connection to a vendor, planted with sealed keys; see `support/webhooks.ts`. */
+export async function insertConnection(row: {
+  organizationId: string
+  connectorId: string
+  credentials: string
+  settings: Record<string, unknown>
+  createdById: string
+}): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into integration_connections
+         (id, "organizationId", "connectorId", status, credentials, settings, "createdById", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, $2, 'active', $3, $4::jsonb, $5, now(), now())
+       returning id`,
+      [
+        row.organizationId,
+        row.connectorId,
+        row.credentials,
+        JSON.stringify(row.settings),
+        row.createdById,
+      ]
+    )
+    return result.rows[0].id
+  })
+}
+
+/** Inbound text messages with exactly this body, for a workshop. */
+export async function inboundSmsCount(organizationId: string, body: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from sms_messages
+        where "organizationId" = $1 and direction = 'inbound' and body = $2`,
+      [organizationId, body]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+export async function deleteInboundSms(organizationId: string, body: string): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `delete from sms_messages where "organizationId" = $1 and direction = 'inbound' and body = $2`,
+      [organizationId, body]
+    )
+  )
+}
