@@ -7,8 +7,10 @@ import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
 import { isDemoMode } from './demo'
+import { googleSignInConfig } from './auth-providers'
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
+const google = googleSignInConfig()
 const isProduction = baseURL?.startsWith('https://')
 
 /**
@@ -131,6 +133,33 @@ export const auth = betterAuth({
   // server runs with the limiter off. Nothing else sets this variable.
   rateLimit: {
     enabled: process.env.NODE_ENV === 'production' && process.env.AUTH_RATE_LIMIT !== 'off',
+  },
+  socialProviders: google
+    ? {
+        google: {
+          clientId: google.clientId,
+          clientSecret: google.clientSecret,
+          // Always show the chooser: a workshop laptop is shared, and a
+          // silent sign-in with whatever Google account is open is wrong
+          // more often than it is convenient.
+          prompt: 'select_account',
+        },
+      }
+    : undefined,
+  account: {
+    accountLinking: {
+      enabled: true,
+      // Google verifies the address before it hands it to us, so a Google
+      // sign-in whose email matches a password account attaches to that
+      // account rather than creating a second person with the same email.
+      trustedProviders: ['google'],
+      // The local account may predate email verification and never have
+      // clicked the link. Google's verification of the same address is the
+      // stronger proof, the same proof a password reset mail would rest on,
+      // so it must not block the link. Better Auth marks the local email
+      // verified as part of linking.
+      requireLocalEmailVerified: false,
+    },
   },
   emailAndPassword: {
     enabled: true,

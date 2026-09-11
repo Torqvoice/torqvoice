@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { Fingerprint, Loader2, PlayCircle, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
 import { AuthCard, AuthShell } from '@/components/auth/auth-shell'
+import { GoogleMark } from '@/components/auth/google-mark'
 import { TERMS_URL } from '@/lib/marketing-urls'
 
 const DEMO_EMAIL = 'demo@torqvoice.com'
@@ -22,21 +23,26 @@ function SignInFormInner({
   registrationDisabled,
   demoMode = false,
   pitch,
+  googleEnabled = false,
 }: {
   registrationDisabled: boolean
   demoMode?: boolean
   pitch: boolean
+  googleEnabled?: boolean
 }) {
   const t = useTranslations('auth.signIn')
   const tc = useTranslations('common')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [passkeyLoading, setPasskeyLoading] = useState(false)
-  const passwordRef = useRef<HTMLInputElement>(null)
+  const tSocial = useTranslations('auth.social')
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  // Better Auth sends a failed Google round-trip back here with ?error=...
+  const [error, setError] = useState(() => (searchParams.get('error') ? tSocial('failed') : ''))
+  const [loading, setLoading] = useState(false)
+  const [passkeyLoading, setPasskeyLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const passwordRef = useRef<HTMLInputElement>(null)
 
   const redirectParam = searchParams.get('redirect')
   const signUpHref = `/auth/sign-up${
@@ -104,6 +110,27 @@ function SignInFormInner({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demoMode, searchParams])
 
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true)
+    setError('')
+    try {
+      const target = safeRedirectPath(redirectParam)
+      await signIn.social({
+        provider: 'google',
+        callbackURL: target,
+        // A first-time Google user has no workshop yet. Existing users go
+        // where they were headed; a same-email password account is linked
+        // on the way, so they are an existing user too.
+        newUserCallbackURL:
+          target !== '/' ? `/onboarding?redirect=${encodeURIComponent(target)}` : '/onboarding',
+        errorCallbackURL: '/auth/sign-in',
+      })
+    } catch {
+      setError(tSocial('failed'))
+      setGoogleLoading(false)
+    }
+  }
+
   const handlePasskeySignIn = async () => {
     setPasskeyLoading(true)
     setError('')
@@ -160,6 +187,35 @@ function SignInFormInner({
                 {t('resetPasswordCta')}
               </Link>
             </p>
+          </div>
+        </div>
+      )}
+
+      {googleEnabled && !demoMode && (
+        <div className="mb-5">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-full text-base"
+            disabled={googleLoading || loading}
+            onClick={handleGoogleSignIn}
+          >
+            {googleLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleMark className="mr-2 h-4.5 w-4.5" />
+            )}
+            {tSocial('google')}
+          </Button>
+          <div className="relative mt-5">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background/50 px-2 text-muted-foreground">
+                {tSocial('orEmail')}
+              </span>
+            </div>
           </div>
         </div>
       )}
@@ -273,10 +329,12 @@ export function SignInForm({
   registrationDisabled,
   demoMode = false,
   cloudMode = false,
+  googleEnabled = false,
 }: {
   registrationDisabled: boolean
   demoMode?: boolean
   cloudMode?: boolean
+  googleEnabled?: boolean
 }) {
   // The demo instance runs in cloud mode too, but its visitors came for the
   // demo button, not for a sales pitch beside it.
@@ -289,6 +347,7 @@ export function SignInForm({
           registrationDisabled={registrationDisabled}
           demoMode={demoMode}
           pitch={pitch}
+          googleEnabled={googleEnabled}
         />
       </Suspense>
     </AuthShell>
