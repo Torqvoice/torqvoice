@@ -147,9 +147,11 @@
     "banner": "Turite tik peržiūros prieigą prie nustatymų. Susisiekite su administratoriumi, kad atliktumėte pakeitimus."
   },
   "featureLocked": {
-    "requiresPro": "Reikalinga Pro licencija",
-    "upgradePlan": "Atnaujinti planą",
-    "activateLicense": "Aktyvuoti licenciją"
+    "requiresPro": "Reikalinga prenumerata",
+    "upgradePlan": "Peržiūrėti planus",
+    "activateLicense": "Aktyvuoti licenciją",
+    "requiresLicense": "Reikalinga „white label“ licencija",
+    "previewHint": "Tai peržiūra. Viskas šiame puslapyje atrakinama su prenumerata."
   },
   "company": {
     "logoTitle": "Įmonės logotipas",

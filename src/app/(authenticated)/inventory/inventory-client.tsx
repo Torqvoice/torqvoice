@@ -85,9 +85,11 @@ import {
   Search,
   Trash2,
   X,
+  Package,
 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { toast } from 'sonner'
+import { ListEmpty } from '@/components/list-empty'
 
 interface InventoryPart {
   id: string
@@ -362,7 +364,17 @@ export function InventoryClient({
   ) : search || category ? (
     t('empty.noMatch')
   ) : (
-    t('empty.noParts')
+    <ListEmpty
+      bare
+      icon={Package}
+      title={t('empty.noParts')}
+      action={
+        <Button onClick={() => setShowForm(true)} className="w-full sm:w-auto">
+          <Plus className="mr-1 h-4 w-4" />
+          {t('addPart')}
+        </Button>
+      }
+    />
   )
 
   return (
@@ -485,7 +497,13 @@ export function InventoryClient({
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.parts.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+          <div
+            className={
+              search || category || lowStockOnly
+                ? 'rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground'
+                : 'rounded-lg border border-dashed'
+            }
+          >
             {emptyMessage}
           </div>
         ) : (
@@ -694,7 +712,14 @@ export function InventoryClient({
           <TableBody>
             {data.parts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={11} className="h-32 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={11}
+                  className={
+                    search || category || lowStockOnly
+                      ? 'h-32 text-center text-muted-foreground'
+                      : 'p-0'
+                  }
+                >
                   {emptyMessage}
                 </TableCell>
               </TableRow>

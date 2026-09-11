@@ -13,6 +13,7 @@ e2e/
   prepare-db.ts        reset + seed, run ahead of the server
   mail-sink.ts         a mail server that delivers nothing and keeps everything
   payment-sink.ts      Stripe and PayPal as far as the app can tell; no money moves
+  google-standin.ts    Google's account chooser and token endpoint, for the cloud run
   support/             helpers specs share: reading mail, reading a PDF's text,
                        database peeks, TOTP, work order driving
   specs/
@@ -30,6 +31,7 @@ e2e/
     reminders/         a due time survives being displayed and re-saved
     email/             the email template designer, and the mail it sends
     payments/          a customer pays online, and the payment is booked once
+    cloud/             run with E2E_MODE=cloud: plan limits, Google sign-in, the sign-up pitch
     tech/              the technician app's API contract
     smoke/             the build is alive
 ```

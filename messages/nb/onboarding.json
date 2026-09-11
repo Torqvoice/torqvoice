@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Kom i gang",
-    "description": "Fire steg for å få verkstedet i gang",
+    "description": "Tre steg for å få {workshop} i gang",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Legg til en kunde",
-        "description": "Opprett din første kunde"
-      },
-      "vehicle": {
-        "title": "Legg til et kjøretøy",
-        "description": "Registrer et kjøretøy på en kunde"
-      },
       "workOrder": {
-        "title": "Opprett en arbeidsordre",
-        "description": "Åpne din første jobb"
+        "title": "Opprett din første arbeidsordre",
+        "description": "Kunde, kjøretøy og jobb i én dialog"
+      },
+      "company": {
+        "title": "Legg inn verkstedets opplysninger",
+        "description": "Adresse, telefon og organisasjonsnummer til fakturaene dine"
       },
       "invoice": {
-        "title": "Send eller last ned en faktura",
-        "description": "Del en faktura med en kunde eller last den ned som PDF"
+        "title": "Send eller last ned din første faktura",
+        "description": "Del den med kunden eller lagre den som PDF"
       }
     },
     "allDoneTitle": "Alt er klart",

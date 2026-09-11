@@ -8,6 +8,7 @@ import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import type { InvoiceLayoutPreviewProps } from './InvoiceLayoutPreview'
 import { useServiceType } from '@/components/service-type-context'
+import { withMarineDocumentLabels } from '@/features/invoice-designer/Lib/marineLabels'
 
 // ---------------------------------------------------------------------------
 // Dummy data matching InvoiceData type exactly
@@ -264,17 +265,10 @@ export function InvoiceLayoutPreviewRenderer({
       ...(pdf[namespace] ?? {}),
       ...(pdf.common ?? {}),
     }
-    // Override labels for marine service type
-    if (serviceType === 'marine') {
-      const ns = pdf[namespace] ?? {}
-      if (ns.mileageMarine) baseLabels.mileage = ns.mileageMarine
-      if (ns.vinMarine) baseLabels.vin = ns.vinMarine
-      if (ns.plateMarine) baseLabels.plate = ns.plateMarine
-      if (ns.vehicleMarine) baseLabels.vehicle = ns.vehicleMarine
-      baseLabels.km = 'hrs'
-      baseLabels.mi = 'hrs'
-    }
-    return baseLabels
+    // A quote takes the invoice's marine wording, as the print path does.
+    return serviceType === 'marine'
+      ? withMarineDocumentLabels(baseLabels, pdf, namespace)
+      : baseLabels
   }, [messages, documentType, serviceType])
 
   const dummyCf = useMemo(() => buildDummyCustomFields(customFields), [customFields])

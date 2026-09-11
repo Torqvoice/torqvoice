@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Getting started",
-    "description": "Four steps to get your workshop rolling",
+    "description": "Three steps to get {workshop} rolling",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Add a customer",
-        "description": "Create your first customer record"
-      },
-      "vehicle": {
-        "title": "Add a vehicle",
-        "description": "Register a vehicle for a customer"
-      },
       "workOrder": {
-        "title": "Create a work order",
-        "description": "Open your first job"
+        "title": "Create your first work order",
+        "description": "Customer, vehicle and job in one dialog"
+      },
+      "company": {
+        "title": "Add your workshop details",
+        "description": "Address, phone and registration number for your invoices"
       },
       "invoice": {
-        "title": "Send or download an invoice",
-        "description": "Share an invoice with a customer or download it as a PDF"
+        "title": "Send or download your first invoice",
+        "description": "Share it with the customer or save it as a PDF"
       }
     },
     "allDoneTitle": "You are all set",

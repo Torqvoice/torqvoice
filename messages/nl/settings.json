@@ -147,9 +147,11 @@
     "banner": "U heeft alleen-lezen toegang tot de instellingen. Neem contact op met een beheerder om wijzigingen aan te brengen."
   },
   "featureLocked": {
-    "requiresPro": "Vereist een Pro-licentie",
-    "upgradePlan": "Plan upgraden",
-    "activateLicense": "Licentie activeren"
+    "requiresPro": "Abonnement vereist",
+    "upgradePlan": "Abonnementen bekijken",
+    "activateLicense": "Licentie activeren",
+    "requiresLicense": "White-labellicentie vereist",
+    "previewHint": "U kijkt naar een voorbeeld. Alles op deze pagina wordt ontgrendeld met een abonnement."
   },
   "company": {
     "logoTitle": "Bedrijfslogo",

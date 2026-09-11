@@ -23,6 +23,7 @@ import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
 import { DocsLink } from '@/components/docs-link'
 import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
+import { useServiceType } from '@/components/service-type-context'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -184,6 +185,13 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/tire-hotel': [{ key: 'settings', href: '/settings' }, { key: 'tireHotel' }],
 }
 
+/** A marine workshop services vessels, so its vehicle crumbs say so. */
+const marineBreadcrumbKeys: Record<string, string> = {
+  vehicles: 'vessels',
+  allVehicles: 'allVessels',
+  vehicleDetails: 'vesselDetails',
+}
+
 export function PageHeader() {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
@@ -197,6 +205,8 @@ export function PageHeader() {
   )
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
+  const isMarine = useServiceType() === 'marine'
+  const crumb = (key: string) => t(isMarine ? (marineBreadcrumbKeys[key] ?? key) : key)
 
   // A set's own page is still the tire hotel, and somebody reading a set is
   // as likely to want the manual as somebody reading the list.
@@ -271,7 +281,7 @@ export function PageHeader() {
                     <BreadcrumbPage
                       className={segments.length === 1 ? 'text-base font-semibold' : undefined}
                     >
-                      {t(segment.key)}
+                      {crumb(segment.key)}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 )
@@ -280,9 +290,9 @@ export function PageHeader() {
                 <Fragment key={i}>
                   <BreadcrumbItem className="hidden md:block">
                     {segment.href ? (
-                      <BreadcrumbLink href={segment.href}>{t(segment.key)}</BreadcrumbLink>
+                      <BreadcrumbLink href={segment.href}>{crumb(segment.key)}</BreadcrumbLink>
                     ) : (
-                      <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
+                      <BreadcrumbPage>{crumb(segment.key)}</BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />

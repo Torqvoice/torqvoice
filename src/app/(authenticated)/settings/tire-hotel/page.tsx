@@ -3,7 +3,7 @@ import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import { TireHotelSettings } from './tire-hotel-settings'
 
 export default async function TireHotelSettingsPage() {
@@ -14,15 +14,7 @@ export default async function TireHotelSettingsPage() {
 
   const features = await getFeatures(data.organizationId)
 
-  if (!features.tireHotel) {
-    return (
-      <FeatureLockedMessage
-        feature="Tire Hotel"
-        description="Store your customers' seasonal tires, track which shelf every set sits on, and see at a glance how much room is left."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.tireHotel
 
   const result = await getSettings([
     SETTING_KEYS.TIRE_HOTEL_ENABLED,
@@ -37,5 +29,17 @@ export default async function TireHotelSettingsPage() {
   ])
   const settings = result.success && result.data ? result.data : {}
 
-  return <TireHotelSettings settings={settings} />
+  const content = <TireHotelSettings settings={settings} />
+
+  return locked ? (
+    <FeatureLocked
+      feature="Tire Hotel"
+      description="Store your customers' seasonal tires, track which shelf every set sits on, and see at a glance how much room is left."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
+  )
 }

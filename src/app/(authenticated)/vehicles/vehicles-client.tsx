@@ -64,10 +64,12 @@ import {
   Users,
   Wrench,
   Send,
+  Car,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
+import { ListEmpty } from '@/components/list-empty'
 
 interface Vehicle {
   id: string
@@ -272,6 +274,30 @@ export function VehiclesClient({
     }
   }
 
+  const emptyState =
+    search || isArchived ? (
+      <div className="flex h-32 shrink-0 items-center justify-center rounded-lg border text-muted-foreground">
+        {search ? t('emptySearch') : t('emptyArchived')}
+      </div>
+    ) : (
+      <ListEmpty
+        icon={Car}
+        title={t('empty')}
+        action={
+          <Button onClick={() => setShowForm(true)} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('addVehicle')}
+          </Button>
+        }
+        secondary={
+          <Button variant="ghost" size="sm" onClick={() => setShowImport(true)}>
+            <Upload className="mr-1 h-3.5 w-3.5" />
+            {t('importVehicles')}
+          </Button>
+        }
+      />
+    )
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
@@ -412,9 +438,7 @@ export function VehiclesClient({
       </div>
 
       {data.vehicles.length === 0 ? (
-        <div className="flex h-32 shrink-0 items-center justify-center rounded-lg border text-muted-foreground">
-          {search ? t('emptySearch') : isArchived ? t('emptyArchived') : t('empty')}
-        </div>
+        emptyState
       ) : view === 'table' ? (
         <>
           {/* Card list (phones + small tablets) - only this scrolls */}

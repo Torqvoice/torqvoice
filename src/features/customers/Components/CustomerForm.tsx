@@ -33,6 +33,7 @@ import { ScanDocumentButton } from '@/features/vehicles/Components/ScanDocumentB
 import type { VehicleDocumentScan } from '@/features/vehicles/Actions/aiAnalyzeVehicleDocument'
 import { Loader2 } from 'lucide-react'
 import { clearableInput } from '@/lib/clearable'
+import { handleGated } from '@/components/upgrade-gate'
 
 interface CustomerFormProps {
   open: boolean
@@ -182,7 +183,9 @@ export function CustomerForm({
       }
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('saveError'))
+      if (!handleGated(result)) {
+        modal.open('error', tc('errors.error'), result.error || t('saveError'))
+      }
     }
 
     setLoading(false)

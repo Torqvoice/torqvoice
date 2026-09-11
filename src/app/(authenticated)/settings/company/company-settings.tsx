@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Building2, ImageIcon, Loader2, Plus, Save, Trash2, Upload } from 'lucide-react'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
+import { handleGated } from '@/components/upgrade-gate'
 
 export function CompanySettings({
   settings,
@@ -99,7 +100,7 @@ export function CompanySettings({
       setNewOrgName('')
       router.refresh()
       toast.success(t('company.companyCreated'))
-    } else if (result.error) {
+    } else if (!handleGated(result) && result.error) {
       toast.error(result.error)
     }
   }

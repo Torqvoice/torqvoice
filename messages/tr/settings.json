@@ -147,9 +147,11 @@
     "banner": "Ayarlara yalnızca görüntüleme erişiminiz var. Değişiklik yapmak için bir yöneticiyle iletişime geçin."
   },
   "featureLocked": {
-    "requiresPro": "Pro lisans gerektirir",
-    "upgradePlan": "Planı Yükselt",
-    "activateLicense": "Lisansı Etkinleştir"
+    "requiresPro": "Abonelik gerekli",
+    "upgradePlan": "Planları görün",
+    "activateLicense": "Lisansı Etkinleştir",
+    "requiresLicense": "Beyaz etiket lisansı gerekli",
+    "previewHint": "Bir önizleme görüyorsunuz. Bu sayfadaki her şey abonelikle açılır."
   },
   "company": {
     "logoTitle": "Şirket Logosu",

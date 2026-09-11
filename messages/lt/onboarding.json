@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Pradžia",
-    "description": "Keturi žingsniai, kad dirbtuvės pradėtų veikti",
+    "description": "Trys žingsniai, kad {workshop} pradėtų dirbti",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Pridėkite klientą",
-        "description": "Sukurkite pirmą kliento kortelę"
-      },
-      "vehicle": {
-        "title": "Pridėkite automobilį",
-        "description": "Užregistruokite kliento automobilį"
-      },
       "workOrder": {
-        "title": "Sukurkite darbo užsakymą",
-        "description": "Atidarykite pirmą savo darbą"
+        "title": "Sukurkite pirmą darbo užsakymą",
+        "description": "Klientas, transporto priemonė ir darbas viename lange"
+      },
+      "company": {
+        "title": "Įveskite dirbtuvės duomenis",
+        "description": "Adresas, telefonas ir registracijos numeris sąskaitoms"
       },
       "invoice": {
-        "title": "Išsiųskite arba atsisiųskite sąskaitą",
-        "description": "Pasidalinkite sąskaita su klientu arba atsisiųskite ją PDF formatu"
+        "title": "Išsiųskite arba atsisiųskite pirmą sąskaitą",
+        "description": "Pasidalykite su klientu arba išsaugokite PDF formatu"
       }
     },
     "allDoneTitle": "Viskas paruošta",

@@ -1,5 +1,6 @@
 'use client'
 
+import { MARKETING_URL } from '@/lib/marketing-urls'
 import { useTranslations } from 'next-intl'
 import { BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -32,7 +33,7 @@ export function DocsLink({
   if (variant === 'header') {
     return (
       <a
-        href={`https://torqvoice.com${href}`}
+        href={`${MARKETING_URL}${href}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
@@ -49,7 +50,7 @@ export function DocsLink({
 
   return (
     <a
-      href={`https://torqvoice.com${href}`}
+      href={`${MARKETING_URL}${href}`}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(

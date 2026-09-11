@@ -102,6 +102,16 @@ jobs:
       - name: Run the suite
         run: npm run test:e2e
 
+      # The same build again, started in cloud mode: plan limits, the sign-up
+      # pitch and Google sign-in only exist there. The database the first run
+      # prepared is reused, since every cloud spec opens a workshop of its own.
+      - name: Run the cloud specs
+        if: ${{ !cancelled() }}
+        run: npm run test:e2e
+        env:
+          E2E_MODE: cloud
+          E2E_SKIP_SEED: '1'
+
       - name: Upload the report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

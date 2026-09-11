@@ -81,6 +81,14 @@
     "enterFullscreen": "Schermo intero",
     "exitFullscreen": "Esci da schermo intero"
   },
+  "upgrade": {
+    "title": "Passi a un piano superiore per continuare",
+    "maxCustomers": "Il Suo piano include fino a {limit} clienti e ha raggiunto quel numero. Passi a un piano superiore per aggiungerne quanti ne servono.",
+    "maxUsers": "Il Suo piano include {limit, plural, one {un membro del team} other {# membri del team}}. Passi a un piano superiore per invitare altre persone.",
+    "generic": "Questa funzione non è inclusa nel Suo piano attuale.",
+    "featureNotIncluded": "{feature} non è incluso nel Suo piano attuale.",
+    "notNow": "Non ora"
+  },
   "broadcast": {
     "dismiss": "Chiudi",
     "title": "Avviso a tutti",

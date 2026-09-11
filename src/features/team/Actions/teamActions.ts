@@ -85,8 +85,10 @@ export async function createOrganization(input: unknown) {
         const maxOrgs = await getMaxOrganizations(userId)
 
         if (ownedCount >= maxOrgs) {
-          throw new Error(
-            `You have reached the maximum number of organizations (${maxOrgs}) for your plan. Upgrade to create more.`
+          throw new FeatureGatedError(
+            'maxOrganizations',
+            `You have reached the maximum number of organizations (${maxOrgs}) for your plan. Upgrade to create more.`,
+            maxOrgs
           )
         }
       }
@@ -156,7 +158,8 @@ export async function inviteMember(input: unknown) {
       if (memberCount >= features.maxUsers) {
         throw new FeatureGatedError(
           'maxUsers',
-          'Team member limit reached. Upgrade your plan to add more members.'
+          'Team member limit reached. Upgrade your plan to add more members.',
+          features.maxUsers
         )
       }
 

@@ -147,9 +147,11 @@
     "banner": "Hai accesso in sola lettura alle impostazioni. Contatta un amministratore per apportare modifiche."
   },
   "featureLocked": {
-    "requiresPro": "Richiede una licenza Pro",
-    "upgradePlan": "Aggiorna piano",
-    "activateLicense": "Attiva licenza"
+    "requiresPro": "Abbonamento richiesto",
+    "upgradePlan": "Vedi i piani",
+    "activateLicense": "Attiva licenza",
+    "requiresLicense": "Licenza white label richiesta",
+    "previewHint": "Questa è un'anteprima. Tutto ciò che vede in questa pagina si sblocca con un abbonamento."
   },
   "company": {
     "logoTitle": "Logo aziendale",

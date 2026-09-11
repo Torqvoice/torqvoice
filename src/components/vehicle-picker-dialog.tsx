@@ -13,13 +13,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Loader2, Plus, Car, Search, ArrowLeft, UserPlus, ShoppingCart } from 'lucide-react'
+import { Loader2, Plus, Car, Search, ArrowLeft, UserPlus, ShoppingCart, Ship } from 'lucide-react'
 import { createVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { createDraftCounterSale } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { createCustomer } from '@/features/customers/Actions/customerActions'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { handleGated } from '@/components/upgrade-gate'
+import { useServiceType } from '@/components/service-type-context'
 
 interface Vehicle {
   id: string
@@ -56,7 +58,10 @@ export function VehiclePickerDialog({
   const router = useRouter()
   const t = useTranslations('workOrders.vehiclePicker')
   const tc = useTranslations('common.buttons')
-  const displayTitle = title || t('title')
+  const isMarine = useServiceType() === 'marine'
+  // Every caller's own title speaks of vehicles, so a marine workshop gets the
+  // picker's vessel title whatever was passed.
+  const displayTitle = isMarine ? t('titleMarine') : title || t('title')
 
   const [vehicleSearch, setVehicleSearch] = useState('')
   const [pickerStep, setPickerStep] = useState<'select' | 'create' | 'sale'>('select')
@@ -113,7 +118,9 @@ export function VehiclePickerDialog({
           phone: newCustomerPhone.trim() || undefined,
         })
         if (!customerResult.success || !customerResult.data) {
-          toast.error(customerResult.error || t('failedCreateCustomer'))
+          if (!handleGated(customerResult)) {
+            toast.error(customerResult.error || t('failedCreateCustomer'))
+          }
           setCreating(false)
           return
         }
@@ -170,7 +177,9 @@ export function VehiclePickerDialog({
           phone: newCustomerPhone.trim() || undefined,
         })
         if (!customerResult.success || !customerResult.data) {
-          toast.error(customerResult.error || t('failedCreateCustomer'))
+          if (!handleGated(customerResult)) {
+            toast.error(customerResult.error || t('failedCreateCustomer'))
+          }
           setCreating(false)
           return
         }
@@ -185,7 +194,10 @@ export function VehiclePickerDialog({
         customerId,
       })
       if (!vehicleResult.success || !vehicleResult.data) {
-        toast.error(vehicleResult.error || t('failedCreateVehicle'))
+        toast.error(
+          vehicleResult.error ||
+            (isMarine ? t('failedCreateVehicleMarine') : t('failedCreateVehicle'))
+        )
         setCreating(false)
         return
       }
@@ -209,7 +221,7 @@ export function VehiclePickerDialog({
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder={t('searchPlaceholder')}
+                  placeholder={isMarine ? t('searchPlaceholderMarine') : t('searchPlaceholder')}
                   value={vehicleSearch}
                   onChange={(e) => setVehicleSearch(e.target.value)}
                   className="pl-9"
@@ -220,11 +232,17 @@ export function VehiclePickerDialog({
                 {filteredVehicles.length === 0 ? (
                   <div className="py-6 text-center space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      {vehicles.length === 0 ? t('empty') : t('emptySearch')}
+                      {vehicles.length === 0
+                        ? isMarine
+                          ? t('emptyMarine')
+                          : t('empty')
+                        : isMarine
+                          ? t('emptySearchMarine')
+                          : t('emptySearch')}
                     </p>
                     <Button variant="outline" onClick={() => setPickerStep('create')}>
                       <Plus className="h-4 w-4 mr-1" />
-                      {t('addNewVehicle')}
+                      {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
                     </Button>
                   </div>
                 ) : (
@@ -236,14 +254,18 @@ export function VehiclePickerDialog({
                         className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted"
                         onClick={() => handleSelect(v.id)}
                       >
-                        <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        {isMarine ? (
+                          <Ship className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        ) : (
+                          <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        )}
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium">
                             {v.year} {v.make} {v.model}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {[v.licensePlate, v.customer?.name].filter(Boolean).join(' · ') ||
-                              t('noPlate')}
+                              (isMarine ? t('noPlateMarine') : t('noPlate'))}
                           </p>
                         </div>
                       </button>
@@ -254,7 +276,7 @@ export function VehiclePickerDialog({
               <div className="flex gap-2">
                 <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('create')}>
                   <Plus className="h-4 w-4 mr-1" />
-                  {t('addNewVehicle')}
+                  {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
                 </Button>
                 <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('sale')}>
                   <ShoppingCart className="h-4 w-4 mr-1" />
@@ -279,7 +301,9 @@ export function VehiclePickerDialog({
               </div>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">{t('partsSaleDescription')}</p>
+              <p className="text-sm text-muted-foreground">
+                {isMarine ? t('partsSaleDescriptionMarine') : t('partsSaleDescription')}
+              </p>
               <div className="space-y-1.5">
                 <Label>{t('customer')}</Label>
                 {!showNewCustomer ? (
@@ -373,16 +397,18 @@ export function VehiclePickerDialog({
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <DialogTitle>{t('addNewVehicle')}</DialogTitle>
+                <DialogTitle>
+                  {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
+                </DialogTitle>
               </div>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-make">{t('make')}</Label>
+                  <Label htmlFor="new-make">{isMarine ? t('makeMarine') : t('make')}</Label>
                   <Input
                     id="new-make"
-                    placeholder="e.g. Toyota"
+                    placeholder={isMarine ? 'e.g. Boston Whaler' : 'e.g. Toyota'}
                     value={newMake}
                     onChange={(e) => setNewMake(e.target.value)}
                     autoFocus
@@ -392,7 +418,7 @@ export function VehiclePickerDialog({
                   <Label htmlFor="new-model">{t('model')}</Label>
                   <Input
                     id="new-model"
-                    placeholder="e.g. Camry"
+                    placeholder={isMarine ? 'e.g. Montauk 170' : 'e.g. Camry'}
                     value={newModel}
                     onChange={(e) => setNewModel(e.target.value)}
                   />
@@ -410,7 +436,9 @@ export function VehiclePickerDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-plate">{t('licensePlate')}</Label>
+                  <Label htmlFor="new-plate">
+                    {isMarine ? t('licensePlateMarine') : t('licensePlate')}
+                  </Label>
                   <Input
                     id="new-plate"
                     placeholder="e.g. ABC-1234"

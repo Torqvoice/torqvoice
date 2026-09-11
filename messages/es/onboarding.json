@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Primeros pasos",
-    "description": "Cuatro pasos para poner su taller en marcha",
+    "description": "Tres pasos para poner en marcha {workshop}",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Añadir un cliente",
-        "description": "Cree su primera ficha de cliente"
-      },
-      "vehicle": {
-        "title": "Añadir un vehículo",
-        "description": "Registre un vehículo para un cliente"
-      },
       "workOrder": {
-        "title": "Crear una orden de trabajo",
-        "description": "Abra su primer trabajo"
+        "title": "Cree su primera orden de trabajo",
+        "description": "Cliente, vehículo y trabajo en un solo diálogo"
+      },
+      "company": {
+        "title": "Añada los datos de su taller",
+        "description": "Dirección, teléfono y número de registro para sus facturas"
       },
       "invoice": {
-        "title": "Enviar o descargar una factura",
-        "description": "Comparta una factura con un cliente o descárguela en PDF"
+        "title": "Envíe o descargue su primera factura",
+        "description": "Compártala con el cliente o guárdela como PDF"
       }
     },
     "allDoneTitle": "Todo listo",

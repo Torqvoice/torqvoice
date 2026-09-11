@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { unlink } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { auditDetails } from '@/lib/audit'
+import { searchYear } from '@/features/vehicles/Lib/searchYear'
 
 export async function getVehicles() {
   return withAuth(
@@ -125,8 +126,9 @@ export async function getVehiclesPaginated(params: {
             { vin: { contains: word, mode: 'insensitive' } },
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
-          if (!isNaN(Number(word))) {
-            conditions.push({ year: Number(word) })
+          const year = searchYear(word)
+          if (year !== null) {
+            conditions.push({ year })
           }
           return conditions
         }
@@ -426,8 +428,9 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
             { vin: { contains: word, mode: 'insensitive' } },
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
-          if (!isNaN(Number(word))) {
-            conditions.push({ year: Number(word) })
+          const year = searchYear(word)
+          if (year !== null) {
+            conditions.push({ year })
           }
           return conditions
         }

@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Dashboard",
     "vehicles": "Vehicles",
+    "vessels": "Vessels",
     "allVehicles": "All Vehicles",
+    "allVessels": "All Vessels",
     "vehicleDetails": "Vehicle Details",
+    "vesselDetails": "Vessel Details",
     "customers": "Customers",
     "allCustomers": "All Customers",
     "customerDetails": "Customer Details",

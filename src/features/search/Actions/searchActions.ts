@@ -5,6 +5,7 @@ import { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
+import { searchYear } from '@/features/vehicles/Lib/searchYear'
 
 export async function getRecentCustomers() {
   return withAuth(
@@ -67,8 +68,9 @@ export async function globalSearch(query: string) {
             { vin: { contains: word, mode } },
             { customer: { name: { contains: word, mode } } },
           ]
-          if (!isNaN(Number(word))) {
-            or.push({ year: Number(word) })
+          const year = searchYear(word)
+          if (year !== null) {
+            or.push({ year })
           }
           return { OR: or }
         }),

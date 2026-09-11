@@ -147,9 +147,11 @@
     "banner": "Sie haben nur Lesezugriff auf die Einstellungen. Kontaktieren Sie einen Administrator, um Anderungen vorzunehmen."
   },
   "featureLocked": {
-    "requiresPro": "Erfordert eine Pro-Lizenz",
-    "upgradePlan": "Tarif upgraden",
-    "activateLicense": "Lizenz aktivieren"
+    "requiresPro": "Abonnement erforderlich",
+    "upgradePlan": "Tarife ansehen",
+    "activateLicense": "Lizenz aktivieren",
+    "requiresLicense": "White-Label-Lizenz erforderlich",
+    "previewHint": "Dies ist eine Vorschau. Alles auf dieser Seite wird mit einem Abonnement freigeschaltet."
   },
   "company": {
     "logoTitle": "Firmenlogo",

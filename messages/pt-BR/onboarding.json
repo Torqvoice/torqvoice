@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Primeiros passos",
-    "description": "Quatro passos para colocar sua oficina em funcionamento",
+    "description": "Três passos para colocar {workshop} para rodar",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Adicionar um cliente",
-        "description": "Crie seu primeiro cadastro de cliente"
-      },
-      "vehicle": {
-        "title": "Adicionar um veículo",
-        "description": "Registre um veículo para um cliente"
-      },
       "workOrder": {
-        "title": "Criar uma ordem de serviço",
-        "description": "Abra seu primeiro serviço"
+        "title": "Crie sua primeira ordem de serviço",
+        "description": "Cliente, veículo e serviço em uma única janela"
+      },
+      "company": {
+        "title": "Adicione os dados da sua oficina",
+        "description": "Endereço, telefone e número de registro para suas faturas"
       },
       "invoice": {
-        "title": "Enviar ou baixar uma fatura",
-        "description": "Compartilhe uma fatura com um cliente ou baixe em PDF"
+        "title": "Envie ou baixe sua primeira fatura",
+        "description": "Compartilhe com o cliente ou salve em PDF"
       }
     },
     "allDoneTitle": "Tudo pronto",

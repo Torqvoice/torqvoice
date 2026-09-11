@@ -81,6 +81,14 @@
     "enterFullscreen": "Vollbild",
     "exitFullscreen": "Vollbild beenden"
   },
+  "upgrade": {
+    "title": "Upgrade, um weiterzumachen",
+    "maxCustomers": "Ihr Tarif umfasst bis zu {limit} Kunden, und diese Zahl ist erreicht. Mit einem Upgrade legen Sie so viele an, wie Sie brauchen.",
+    "maxUsers": "Ihr Tarif umfasst {limit, plural, one {ein Teammitglied} other {# Teammitglieder}}. Mit einem Upgrade laden Sie weitere Personen ein.",
+    "generic": "Diese Funktion ist in Ihrem aktuellen Tarif nicht enthalten.",
+    "featureNotIncluded": "{feature} ist in Ihrem aktuellen Tarif nicht enthalten.",
+    "notNow": "Später"
+  },
   "broadcast": {
     "dismiss": "Schließen",
     "title": "Hinweis an alle",

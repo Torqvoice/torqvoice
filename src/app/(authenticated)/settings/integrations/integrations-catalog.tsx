@@ -54,6 +54,7 @@ export function IntegrationsCatalog({
   canSuggest: boolean
 }) {
   const t = useTranslations('integrations')
+  const tSettings = useTranslations('settings')
   const [category, setCategory] = useState<IntegrationCategory | 'all'>('all')
   const [query, setQuery] = useState('')
 
@@ -254,7 +255,14 @@ export function IntegrationsCatalog({
                       unoptimized
                     />
                     <div className="min-w-0 flex-1">
-                      <span className="font-medium">{m.name}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">{m.name}</span>
+                        {!entry.enabled && (
+                          <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
+                            {tSettings('nav.pro')}
+                          </span>
+                        )}
+                      </div>
                       <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                         {t(`connectors.${m.id}.description`)}
                       </p>
@@ -270,7 +278,9 @@ export function IntegrationsCatalog({
                   <div className="mt-auto flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">{t(`categories.${m.category}`)}</span>
                     <span className="inline-flex items-center gap-1 font-medium text-primary">
-                      {t('catalog.connect')}
+                      {entry.enabled
+                        ? t('catalog.connect')
+                        : tSettings('featureLocked.upgradePlan')}
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </span>
                   </div>

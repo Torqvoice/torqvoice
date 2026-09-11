@@ -26,7 +26,7 @@ describe('getFeatures — cloud mode', () => {
   it('returns free features when no subscription exists', async () => {
     mockFindUnique.mockResolvedValue(null)
     const features = await getFeatures('org-1')
-    expect(features).toEqual(PLAN_FEATURES.free)
+    expect(features).toEqual({ ...PLAN_FEATURES.free, brandingRemoved: true })
   })
 
   it('returns free features when subscription status is canceled', async () => {
@@ -36,7 +36,7 @@ describe('getFeatures — cloud mode', () => {
       currentPeriodEnd: null,
     } as any)
     const features = await getFeatures('org-1')
-    expect(features).toEqual(PLAN_FEATURES.free)
+    expect(features).toEqual({ ...PLAN_FEATURES.free, brandingRemoved: true })
   })
 
   it("returns pro features for plan named 'Torq Pro'", async () => {
@@ -86,7 +86,7 @@ describe('getFeatures — cloud mode', () => {
       currentPeriodEnd: null,
     } as any)
     const features = await getFeatures('org-1')
-    expect(features).toEqual(PLAN_FEATURES.free)
+    expect(features).toEqual({ ...PLAN_FEATURES.free, brandingRemoved: true })
   })
 
   it('returns free features when period ended and grace period elapsed', async () => {
@@ -97,7 +97,7 @@ describe('getFeatures — cloud mode', () => {
       currentPeriodEnd: fourDaysAgo,
     } as any)
     const features = await getFeatures('org-1')
-    expect(features).toEqual(PLAN_FEATURES.free)
+    expect(features).toEqual({ ...PLAN_FEATURES.free, brandingRemoved: true })
   })
 
   it('returns pro features within grace period after period end', async () => {
@@ -118,7 +118,7 @@ describe('getFeatures — cloud mode', () => {
       currentPeriodEnd: new Date(Date.now() + 86400000),
     } as any)
     const features = await getFeatures('org-1')
-    expect(features).toEqual(PLAN_FEATURES.free)
+    expect(features).toEqual({ ...PLAN_FEATURES.free, brandingRemoved: true })
   })
 })
 

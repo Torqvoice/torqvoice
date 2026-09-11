@@ -2,8 +2,11 @@
   "breadcrumbs": {
     "dashboard": "Pulpit",
     "vehicles": "Pojazdy",
+    "vessels": "Jednostki",
     "allVehicles": "Wszystkie pojazdy",
+    "allVessels": "Wszystkie jednostki",
     "vehicleDetails": "Szczegóły pojazdu",
+    "vesselDetails": "Szczegóły jednostki",
     "customers": "Klienci",
     "allCustomers": "Wszyscy klienci",
     "customerDetails": "Szczegóły klienta",

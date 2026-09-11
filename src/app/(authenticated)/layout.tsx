@@ -201,9 +201,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // The header offers a plate lookup once a vehicle registry is connected.
   // Resolved here so the first paint knows, rather than a button appearing a
-  // beat after the page does.
+  // beat after the page does. Registries answer for road vehicles, so a marine
+  // workshop is never offered one: the header button, the palette and its
+  // shortcut all read this one flag.
   const lookupConnection =
-    features.integrations && visibleSubjects.includes(PermissionSubject.VEHICLES)
+    data.serviceType !== 'marine' &&
+    features.integrations &&
+    visibleSubjects.includes(PermissionSubject.VEHICLES)
       ? await findLookupConnection(data.organizationId)
       : null
   const plateLookupAvailable = lookupConnection !== null
@@ -214,7 +218,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Check license expiry (only for admin/owner with white-label)
   let daysUntilExpiry: number | null = null
   let licenseExpiryDismissed = false
-  if (isOwnerOrAdmin && features.brandingRemoved) {
+  if (isOwnerOrAdmin && features.brandingRemoved && !isCloudMode()) {
     const expirySettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,

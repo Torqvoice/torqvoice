@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Aan de slag",
-    "description": "Vier stappen om uw werkplaats op gang te brengen",
+    "description": "Drie stappen om {workshop} op gang te krijgen",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Voeg een klant toe",
-        "description": "Maak uw eerste klantkaart aan"
-      },
-      "vehicle": {
-        "title": "Voeg een voertuig toe",
-        "description": "Registreer een voertuig voor een klant"
-      },
       "workOrder": {
-        "title": "Maak een werkorder aan",
-        "description": "Open uw eerste klus"
+        "title": "Maak uw eerste werkorder aan",
+        "description": "Klant, voertuig en klus in één venster"
+      },
+      "company": {
+        "title": "Vul uw werkplaatsgegevens in",
+        "description": "Adres, telefoon en registratienummer voor uw facturen"
       },
       "invoice": {
-        "title": "Verstuur of download een factuur",
-        "description": "Deel een factuur met een klant of download deze als PDF"
+        "title": "Verstuur of download uw eerste factuur",
+        "description": "Deel hem met de klant of sla hem op als PDF"
       }
     },
     "allDoneTitle": "Alles staat klaar",
