@@ -377,6 +377,48 @@ describe('one vendor per channel', () => {
     expect(setup?.credentials.accountSid).toBe('AC123')
   })
 
+  it('treats a marker the other adopter wrote first as already written', async () => {
+    appSetting.findMany.mockResolvedValue(
+      legacyRows({
+        [ORG_SMS_KEYS.SMS_PROVIDER]: 'twilio',
+        [ORG_SMS_KEYS.SMS_TWILIO_ACCOUNT_SID]: 'AC123',
+        [ORG_SMS_KEYS.SMS_TWILIO_AUTH_TOKEN]: 'secret-token',
+      })
+    )
+    integrationConnection.create.mockImplementation(({ data }) => ({
+      id: 'conn-1',
+      credentials: data.credentials,
+      settings: data.settings,
+      status: data.status,
+    }))
+    // Prisma's upsert is a select then an insert, so the loser of a race
+    // between two page renders sees the winner's marker as a unique violation.
+    appSetting.upsert.mockRejectedValueOnce({ code: 'P2002' })
+
+    const setup = await channelSetup('org-15', 'sms')
+    expect(setup?.connectionId).toBe('conn-1')
+    expect(appSetting.upsert).toHaveBeenCalledTimes(1)
+  })
+
+  it('still surfaces a marker write that fails for another reason', async () => {
+    appSetting.findMany.mockResolvedValue(
+      legacyRows({
+        [ORG_SMS_KEYS.SMS_PROVIDER]: 'twilio',
+        [ORG_SMS_KEYS.SMS_TWILIO_ACCOUNT_SID]: 'AC123',
+        [ORG_SMS_KEYS.SMS_TWILIO_AUTH_TOKEN]: 'secret-token',
+      })
+    )
+    integrationConnection.create.mockImplementation(({ data }) => ({
+      id: 'conn-1',
+      credentials: data.credentials,
+      settings: data.settings,
+      status: data.status,
+    }))
+    appSetting.upsert.mockRejectedValueOnce(new Error('connection reset'))
+
+    await expect(channelSetup('org-16', 'sms')).rejects.toThrow('connection reset')
+  })
+
   it('keeps sending from the old rows when a connection cannot be unsealed', async () => {
     appSetting.findMany.mockResolvedValue(
       legacyRows({

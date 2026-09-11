@@ -192,7 +192,7 @@ export async function processOrgLowStock(organizationId: string, now = new Date(
     }[]
   >`
     SELECT "id", "name", "partNumber", "quantity", "minQuantity", "unit", "lowStockAlertedAt"
-    FROM "inventory_parts"
+    FROM "public"."inventory_parts"
     WHERE "organizationId" = ${organizationId}
       AND "isArchived" = false
       AND (

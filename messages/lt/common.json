@@ -81,6 +81,14 @@
     "enterFullscreen": "Visas ekranas",
     "exitFullscreen": "Išjungti visą ekraną"
   },
+  "upgrade": {
+    "title": "Atnaujinkite planą, kad tęstumėte",
+    "maxCustomers": "Jūsų planas apima iki {limit} klientų, ir šis skaičius pasiektas. Atnaujinkite planą, kad pridėtumėte tiek, kiek reikia.",
+    "maxUsers": "Jūsų planas apima {limit, plural, one {# komandos narį} few {# komandos narius} many {# komandos nario} other {# komandos narių}}. Atnaujinkite planą, kad pakviestumėte daugiau žmonių.",
+    "generic": "Ši funkcija neįtraukta į jūsų dabartinį planą.",
+    "featureNotIncluded": "{feature} neįtraukta į jūsų dabartinį planą.",
+    "notNow": "Ne dabar"
+  },
   "broadcast": {
     "dismiss": "Uždaryti",
     "title": "Pranešimas visiems",
@@ -100,5 +108,7 @@
     "title": "PDF peržiūra",
     "preview": "Peržiūra",
     "failed": "Nepavyko sugeneruoti PDF peržiūros."
-  }
+  },
+  "attachPdf": "Pridėti PDF",
+  "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė."
 }

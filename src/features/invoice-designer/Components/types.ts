@@ -1,3 +1,4 @@
+import type { TaxComponentDefinition } from '@/lib/tax'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { DesignAutoRule } from '../Lib/designRules'
 
@@ -47,9 +48,18 @@ export interface DesignerWorkshop {
   email: string
   slogan: string
   orgNumber: string
+  /** The workshop's own caption for the number; empty means the translated one. */
+  orgNumberLabel?: string
   /** Payment terms from payment settings. Empty prints nothing on the sheet. */
   paymentTerms: string
   logoUrl: string
+  /**
+   * The taxes the workshop splits its tax into, when it does (GST and QST).
+   * The sample job is then taxed the workshop's way, one line per tax, with
+   * each registration number under the business details, so the canvas
+   * shows the sheet the workshop will actually print.
+   */
+  taxComponents?: TaxComponentDefinition[] | null
 }
 
 export interface DesignerState {

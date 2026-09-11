@@ -207,4 +207,22 @@ describe('withAuth', () => {
     })
     expect(result).toEqual({ success: false, error: 'something went wrong' })
   })
+
+  it('action throwing a database error returns a plain message, not the query', async () => {
+    mockGetCachedSession.mockResolvedValue(SESSION as any)
+    mockFindUnique.mockResolvedValue({ isSuperAdmin: false } as any)
+    mockGetCachedMembership.mockResolvedValue(MEMBERSHIP as any)
+    const result = await withAuth(async () => {
+      throw Object.assign(
+        new Error(
+          'Invalid `prisma.vehicle.findMany()` invocation in /workspace/.next/server/chunk.js: Value out of range for the type: value "4791234567" is out of range for type integer'
+        ),
+        { name: 'PrismaClientUnknownRequestError' }
+      )
+    })
+    expect(result).toEqual({
+      success: false,
+      error: 'Something went wrong. Please try again.',
+    })
+  })
 })

@@ -14,8 +14,12 @@ import {
   announcementsToShow,
   hintsToArm,
   ANNOUNCEMENTS,
+  EMAIL_DESIGNER_ANNOUNCEMENT,
   HINT_FOR_SETTING,
   INVOICE_DESIGNER_ANNOUNCEMENT,
+  newSettingsEntries,
+  NEW_FOR_DAYS,
+  SETTINGS_SHIPPED_AT,
 } from '@/features/settings/Lib/featureHints'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
@@ -125,9 +129,13 @@ describe('showing an announcement', () => {
   })
 
   it('stays quiet once the workshop has been told', () => {
-    expect(announcementsToShow({ organizationCreatedAt: '2026-01-04', seen: [DESIGNER] })).toEqual(
-      []
-    )
+    // Told about all of them: a later announcement is still news after the
+    // first has been dismissed, so one seen id does not silence the registry.
+    const seen = ANNOUNCEMENTS.map((item) => item.id)
+    expect(announcementsToShow({ organizationCreatedAt: '2026-01-04', seen })).toEqual([])
+    expect(
+      announcementsToShow({ organizationCreatedAt: '2026-01-04', seen: [DESIGNER] })
+    ).not.toContain(DESIGNER)
   })
 
   it('stays quiet for a role that cannot reach the feature', () => {
@@ -224,11 +232,82 @@ describe('the announcement registry', () => {
     // question comes back next week.
     const designer = ANNOUNCEMENTS.find((item) => item.id === INVOICE_DESIGNER_ANNOUNCEMENT)
     expect(designer?.href).toBe('/settings/templates')
+    const email = ANNOUNCEMENTS.find((item) => item.id === EMAIL_DESIGNER_ANNOUNCEMENT)
+    expect(email?.href).toBe('/settings/email-templates')
   })
 
   it('keeps the designer announcement dated no later than today', () => {
     // A shippedAt in the future gates the announcement off for every existing
     // workshop, which is the silent way for this to never appear at all.
     expect(new Date(SHIPPED).getTime()).toBeLessThanOrEqual(Date.now())
+  })
+})
+
+/**
+ * The "New" pill on a settings entry.
+ *
+ * Nothing is stored, so the only things that can go wrong are the two dates.
+ * A pill that never ages out is furniture, and one shown to a workshop that
+ * signed up after the feature is the same non-news the announcements avoid.
+ */
+describe('the New pill on a settings entry', () => {
+  const shippedAt = { '/settings/example': '2026-09-08' }
+  const day = 24 * 60 * 60 * 1000
+  const shipped = new Date('2026-09-08').getTime()
+
+  it('shows for a workshop that predates the feature, while it is fresh', () => {
+    const now = new Date(shipped + 3 * day)
+    expect(newSettingsEntries({ shippedAt, organizationCreatedAt: '2026-01-01', now })).toEqual([
+      '/settings/example',
+    ])
+  })
+
+  it('ages out after the window', () => {
+    const now = new Date(shipped + NEW_FOR_DAYS * day)
+    expect(newSettingsEntries({ shippedAt, organizationCreatedAt: '2026-01-01', now })).toEqual([])
+  })
+
+  it('stays off before the feature has shipped', () => {
+    const now = new Date(shipped - day)
+    expect(newSettingsEntries({ shippedAt, organizationCreatedAt: '2026-01-01', now })).toEqual([])
+  })
+
+  it('stays off for a workshop that signed up after it shipped', () => {
+    const now = new Date(shipped + 3 * day)
+    expect(newSettingsEntries({ shippedAt, organizationCreatedAt: '2026-09-09', now })).toEqual([])
+  })
+
+  it('treats an unknown signup date as old enough to be told', () => {
+    const now = new Date(shipped + 3 * day)
+    expect(newSettingsEntries({ shippedAt, organizationCreatedAt: null, now })).toEqual([
+      '/settings/example',
+    ])
+  })
+
+  it('never pins a pill on an entry with an unreadable date', () => {
+    const now = new Date(shipped + 3 * day)
+    expect(
+      newSettingsEntries({
+        shippedAt: { '/settings/example': 'soon' },
+        organizationCreatedAt: null,
+        now,
+      })
+    ).toEqual([])
+  })
+
+  it('ships every registered entry with a date the rule can read, no later than today', () => {
+    for (const [href, date] of Object.entries(SETTINGS_SHIPPED_AT)) {
+      expect(href.startsWith('/settings/'), `${href} is not a settings path`).toBe(true)
+      const time = new Date(date).getTime()
+      expect(Number.isNaN(time), `${href} has an unreadable shippedAt`).toBe(false)
+      expect(time, `${href} is dated in the future`).toBeLessThanOrEqual(Date.now())
+    }
+  })
+
+  it('reads the pill label in every language', () => {
+    for (const locale of ['en', ...LOCALES]) {
+      const messages = JSON.parse(readFileSync(`messages/${locale}/settings.json`, 'utf-8'))
+      expect(messages.nav?.new, `${locale} has no nav.new`).toBeTruthy()
+    }
   })
 })

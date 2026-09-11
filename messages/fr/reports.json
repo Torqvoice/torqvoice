@@ -12,7 +12,9 @@
     "parts": "Pièces",
     "jobAnalytics": "Analyse des Travaux",
     "retention": "Fidélisation",
-    "vehicles": "Véhicules"
+    "vehicles": "Véhicules",
+    "techniciansOverview": "Vue d'ensemble",
+    "clockedTime": "Temps pointé"
   },
   "dateRange": {
     "to": "au",
@@ -138,6 +140,19 @@
       "avgRevenue": "Revenus Moy.",
       "totalHours": "Heures Totales",
       "avgHours": "Heures Moy."
+    },
+    "time": {
+      "clockedHours": "Heures pointées",
+      "billedHours": "Heures facturées",
+      "efficiency": "Efficacité",
+      "techniciansClocked": "Techniciens ayant pointé",
+      "chartTitle": "Pointé et facturé par technicien",
+      "tableTitle": "Pointé contre facturé",
+      "clocked": "Pointé",
+      "billed": "Facturé",
+      "hint": "Les heures pointées viennent de la pointeuse. Les heures facturées sont les lignes de main-d'œuvre des travaux attribués au technicien et commencés dans la période. L'efficacité est facturé divisé par pointé.",
+      "noClock": "Pas de pointage",
+      "jobsClocked": "Travaux pointés"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Type",
     "status": "Statut",
     "partsUsed": "Pièces",
-    "laborHours": "Heures de Main-d'œuvre"
+    "laborHours": "Heures de Main-d'œuvre",
+    "clockedHours": "Heures pointées",
+    "billedHours": "Heures facturées",
+    "efficiency": "Efficacité",
+    "jobsClocked": "Travaux pointés"
   },
   "pdf": {
     "reportTitle": "Business Report",

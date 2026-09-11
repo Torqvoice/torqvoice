@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Uhr läuft für {job}",
+    "stop": "Uhr stoppen",
+    "stopped": "{minutes} erfasst",
+    "switched": "Vorherigen Auftrag bei {minutes} gestoppt",
+    "startFailed": "Uhr konnte nicht gestartet werden",
+    "stopFailed": "Uhr konnte nicht gestoppt werden"
+  },
+  "job": {
+    "title": "Erfasste Zeit",
+    "running": "läuft",
+    "clockIn": "Einstempeln",
+    "clockOut": "Ausstempeln",
+    "switchHere": "Zu diesem Auftrag wechseln",
+    "switchHint": "Stoppt die Uhr bei {job} und startet sie hier",
+    "addAsLabor": "{hours, number} h als Arbeit hinzufügen",
+    "addAsLaborHint": "Fügt eine Arbeitsposition mit {hours, number} Stunden zum Standardsatz hinzu. Die erfasste Zeit selbst bleibt unverändert.",
+    "laborDescription": "Arbeit (erfasste Zeit)",
+    "empty": "Für diesen Auftrag wurde noch keine Zeit erfasst. Techniker stempeln in der App oder unter „Meine aktiven Aufträge“ auf dem Dashboard ein.",
+    "showAll": "{count} weitere anzeigen",
+    "showFewer": "Weniger anzeigen",
+    "openTimesheets": "Stundenzettel öffnen"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manuell",
+    "editedBy": "Angepasst von {name}"
+  },
+  "page": {
+    "title": "Stundenzettel",
+    "description": "Wer wann gearbeitet hat, nach der Uhr der Werkstatt.",
+    "loadFailed": "Stundenzettel konnte nicht geladen werden",
+    "presets": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "thisWeek": "Diese Woche",
+      "lastWeek": "Letzte Woche",
+      "thisMonth": "Dieser Monat",
+      "lastMonth": "Letzter Monat"
+    },
+    "customRange": "Eigener Zeitraum",
+    "apply": "Anwenden",
+    "allTechnicians": "Alle Techniker",
+    "export": "CSV exportieren",
+    "addEntry": "Eintrag hinzufügen",
+    "stats": {
+      "total": "Gesamtzeit",
+      "totalHint": "{days, plural, =1 {1 Tag} other {# Tage}} im Zeitraum",
+      "technicians": "Techniker mit Zeit",
+      "techniciansHint": "von {count} im Team",
+      "running": "Gerade eingestempelt",
+      "runningHint": "live",
+      "average": "Durchschnitt pro aktivem Tag",
+      "averageHint": "über {days, plural, =1 {1 Tag} other {# Tage}} mit Zeit"
+    },
+    "nowStrip": {
+      "title": "Gerade eingestempelt",
+      "since": "seit {time}",
+      "stop": "Stoppen"
+    },
+    "grid": {
+      "title": "Übersicht",
+      "description": "Stunden pro Techniker und Tag. Klicken Sie auf eine Zelle, um zu diesem Tag zu springen.",
+      "technician": "Techniker",
+      "total": "Gesamt",
+      "tooLong": "Die Übersicht zeigt bis zu 31 Tage. Grenzen Sie den Zeitraum ein, um sie zu sehen."
+    },
+    "table": {
+      "time": "Zeit",
+      "duration": "Dauer",
+      "job": "Auftrag",
+      "vehicle": "Fahrzeug",
+      "source": "Quelle",
+      "note": "Notiz",
+      "running": "Läuft",
+      "dayTotal": "Tagessumme",
+      "counterSale": "Thekenverkauf",
+      "edit": "Bearbeiten",
+      "stop": "Uhr stoppen",
+      "delete": "Löschen",
+      "actions": "Aktionen"
+    },
+    "empty": {
+      "title": "Keine Zeit in diesem Zeitraum erfasst",
+      "body": "Techniker stempeln in der Torqvoice Technicians App oder unter „Meine aktiven Aufträge“ auf dem Dashboard ein. Einträge erscheinen hier, sobald eine Uhr startet.",
+      "noTechnicians": "Noch niemand im Team ist als Techniker eingerichtet. Verknüpfen Sie Teammitglieder unter Einstellungen, Team mit Technikern.",
+      "teamLink": "Team-Einstellungen öffnen"
+    },
+    "deleteTitle": "Diesen Eintrag löschen?",
+    "deleteBody": "{duration} für {job} von {technician} wird aus dem Stundenzettel entfernt. Das kann nicht rückgängig gemacht werden.",
+    "deleteConfirm": "Löschen",
+    "deleted": "Eintrag gelöscht",
+    "stoppedByManager": "Uhr bei {minutes} gestoppt",
+    "csv": {
+      "technician": "Techniker",
+      "date": "Datum",
+      "start": "Beginn",
+      "end": "Ende",
+      "duration": "Dauer",
+      "hours": "Stunden",
+      "job": "Auftrag",
+      "vehicle": "Fahrzeug",
+      "plate": "Kennzeichen",
+      "source": "Quelle",
+      "editedBy": "Angepasst von",
+      "note": "Notiz"
+    },
+    "unlinked": "Kein Konto",
+    "unlinkedHint": "Nur auf der Plantafel, nicht mit einem Teammitglied verknüpft"
+  },
+  "dialog": {
+    "addTitle": "Zeiteintrag hinzufügen",
+    "addDescription": "Zeit, die ein Techniker gearbeitet, aber nicht erfasst hat. Sie wird als manuell eingetragen markiert.",
+    "editTitle": "Zeiteintrag korrigieren",
+    "editDescription": "Techniker und Auftrag bleiben unverändert. Wer die Änderung vorgenommen hat, wird protokolliert.",
+    "technician": "Techniker",
+    "pickTechnician": "Techniker wählen",
+    "job": "Auftrag",
+    "pickJob": "Auftrag wählen",
+    "searchJobs": "Nach Titel oder Kennzeichen suchen",
+    "searching": "Suche…",
+    "noJobs": "Keine Aufträge gefunden",
+    "start": "Beginn",
+    "end": "Ende",
+    "stillRunning": "Läuft noch",
+    "leaveEndEmpty": "Lassen Sie das Ende leer, damit die Uhr weiterläuft.",
+    "endBeforeStart": "Das Ende muss nach dem Beginn liegen.",
+    "duration": "Dauer: {duration}",
+    "timesInWorkshopZone": "Zeiten gelten nach der Uhr der Werkstatt ({zone}).",
+    "note": "Notiz",
+    "notePlaceholder": "Optional. Warum das hinzugefügt oder geändert wurde.",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "add": "Hinzufügen",
+    "added": "Eintrag hinzugefügt",
+    "updated": "Eintrag aktualisiert",
+    "saveFailed": "Eintrag konnte nicht gespeichert werden"
+  }
+}

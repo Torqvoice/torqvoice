@@ -81,6 +81,14 @@
     "enterFullscreen": "Volledig scherm",
     "exitFullscreen": "Volledig scherm afsluiten"
   },
+  "upgrade": {
+    "title": "Upgrade om verder te gaan",
+    "maxCustomers": "Uw abonnement omvat maximaal {limit} klanten en dat aantal is bereikt. Upgrade om er zoveel toe te voegen als u nodig heeft.",
+    "maxUsers": "Uw abonnement omvat {limit, plural, one {één teamlid} other {# teamleden}}. Upgrade om meer mensen uit te nodigen.",
+    "generic": "Deze functie is niet inbegrepen in uw huidige abonnement.",
+    "featureNotIncluded": "{feature} is niet inbegrepen in uw huidige abonnement.",
+    "notNow": "Niet nu"
+  },
   "broadcast": {
     "dismiss": "Sluiten",
     "title": "Bericht aan iedereen",
@@ -100,5 +108,7 @@
     "title": "PDF-voorbeeld",
     "preview": "Voorbeeld",
     "failed": "Kon het PDF-voorbeeld niet genereren."
-  }
+  },
+  "attachPdf": "Pdf toevoegen",
+  "attachPdfHint": "Zet dit uit om in plaats daarvan een link te sturen, zodat je ziet wanneer de klant hem opent."
 }

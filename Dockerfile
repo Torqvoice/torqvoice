@@ -8,6 +8,10 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./prisma.config.ts
+# npm ci runs the prepare script, which patches next-ws and then applies our
+# own follow-up patch from scripts/. The source tree is not copied until the
+# builder stage, so that one file has to come along here.
+COPY scripts/patch-next-ws-first-upgrade.mjs ./scripts/
 RUN npm ci
 
 # Rebuild the source code only when needed
@@ -92,6 +96,13 @@ RUN rm -rf \
 # tree can leave the traced copy without one. Installing it by name makes npm
 # resolve the binary against the platform the image will actually run on.
 RUN npx next-ws patch --yes
+
+# next-ws reads a route module's exports the moment an upgrade arrives, and
+# Next 16.3 loads route modules lazily, so the first WebSocket connection after
+# every boot died with "The lazy module is still loading" until the fix below
+# is applied to the fresh copy the install above pulled in.
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/patch-next-ws-first-upgrade.mjs ./scripts/patch-next-ws-first-upgrade.mjs
+RUN node scripts/patch-next-ws-first-upgrade.mjs
 
 # Fail the build here rather than at the first certificate download: a native
 # module that cannot be loaded throws while the route module is being

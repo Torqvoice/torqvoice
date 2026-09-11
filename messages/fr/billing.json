@@ -19,7 +19,13 @@
     "columnTotal": "Total",
     "columnPaid": "Payé",
     "columnBalance": "Solde",
-    "noRecords": "Aucun enregistrement de facturation trouvé."
+    "noRecords": "Aucun enregistrement de facturation trouvé.",
+    "columnDelivery": "Envoi",
+    "deliverySent": "Envoyée",
+    "deliveryViewed": "Consultée",
+    "deliveryViewedOn": "Dernière ouverture le {date}",
+    "filterUnviewed": "Non consultée",
+    "filterUnviewedHint": "Factures envoyées mais jamais ouvertes"
   },
   "recurring": {
     "title": "Récurrent",

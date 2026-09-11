@@ -19,7 +19,8 @@
     "addToJob": "{qty} zum Auftrag hinzufügen",
     "statusReport": "Statusbericht",
     "report": "Bericht",
-    "observation": "Beobachtung"
+    "observation": "Beobachtung",
+    "empty": "Dir sind derzeit keine Aufträge zugewiesen."
   },
   "recentActivity": "Letzte Aktivitäten",
   "noRecentActivity": "Keine aktuellen Aktivitäten",

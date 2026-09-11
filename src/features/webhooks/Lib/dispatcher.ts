@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { WEBHOOK_EVENTS } from '../Schema/webhookSchema'
 import { deliverOnce } from './deliver'
+import { getFeatures } from '@/lib/features'
 
 const KNOWN = new Set<string>([...WEBHOOK_EVENTS, '*'])
 
@@ -32,6 +33,9 @@ export type DispatchInput = {
 export async function dispatchWebhookEvent(input: DispatchInput): Promise<void> {
   if (isDemoMode) return
   if (!input.event || !input.organizationId) return
+  // A downgrade turns the endpoints off, not just the settings page.
+  const features = await getFeatures(input.organizationId)
+  if (!features.api) return
   if (!KNOWN.has(input.event)) return
 
   let webhooks: { id: string; events: string }[] = []

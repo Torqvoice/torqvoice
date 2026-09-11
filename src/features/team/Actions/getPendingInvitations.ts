@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { pendingInvitationSelect } from '../Lib/invitationRules'
 
 export async function getPendingInvitations() {
   return withAuth(
@@ -14,18 +15,7 @@ export async function getPendingInvitations() {
           expiresAt: { gt: new Date() },
         },
         orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          roleId: true,
-          token: true,
-          createdAt: true,
-          expiresAt: true,
-          customRole: {
-            select: { name: true },
-          },
-        },
+        select: pendingInvitationSelect,
       })
 
       return invitations

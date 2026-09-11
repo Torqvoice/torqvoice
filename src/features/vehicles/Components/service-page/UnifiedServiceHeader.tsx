@@ -17,7 +17,12 @@ import {
   Trash2,
   Video,
 } from 'lucide-react'
-import { statusColors, paymentStatusColors, paymentStatusLabels } from '../service-detail/types'
+import {
+  paymentStatusColors,
+  paymentStatusLabels,
+  statusColors,
+  statusMessageKeys,
+} from '../service-detail/types'
 
 export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'
 
@@ -76,6 +81,7 @@ export function UnifiedServiceHeader({
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
   const tPreview = useTranslations('common.pdfPreview')
+  const tStatus = useTranslations('service.basicInfo.statusOptions')
   const tabs: { label: string; value: ServiceTab }[] = [
     { label: t('tabs.details'), value: 'details' },
     { label: t('tabs.images'), value: 'images' },
@@ -101,7 +107,7 @@ export function UnifiedServiceHeader({
                 {paymentStatusLabels[paymentStatus] || t('unpaid')}
               </Badge>
               <Badge variant="outline" className={`shrink-0 text-xs ${statusColors[status] || ''}`}>
-                {status}
+                {statusMessageKeys[status] ? tStatus(statusMessageKeys[status]) : status}
               </Badge>
               <h1 className="truncate text-lg font-semibold leading-tight">{title}</h1>
             </div>

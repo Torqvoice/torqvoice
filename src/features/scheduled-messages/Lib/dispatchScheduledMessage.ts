@@ -1,6 +1,6 @@
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
-import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from '@/lib/sms'
 import { sendTelegramMessage } from '@/lib/telegram'
 import { sendOrgWhatsapp } from '@/lib/whatsapp'
@@ -17,12 +17,6 @@ export type DispatchableMessage = {
   organizationId: string
   customerId: string | null
   vehicleId: string | null
-}
-
-/** Plain text to the minimal HTML the mail senders expect. */
-function toHtml(body: string): string {
-  const escaped = body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  return `<div style="font-family:system-ui,sans-serif;white-space:pre-wrap;line-height:1.5;">${escaped}</div>`
 }
 
 /**
@@ -47,12 +41,12 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
     case 'email': {
       const to = message.recipient?.trim() || customer?.email
       if (!to) throw new Error('No email address for this message')
-      const from = await getOrgFromAddress(organizationId)
-      await sendOrgMail(organizationId, {
-        from,
+      // A blank subject falls through to the template's own
+      await sendTemplatedMail(organizationId, {
+        kind: 'message',
         to,
-        subject: message.subject?.trim() || '',
-        html: toHtml(message.body),
+        subject: message.subject?.trim() || undefined,
+        context: { message: message.body, customerName: customer?.name },
       })
       return
     }

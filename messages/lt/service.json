@@ -16,7 +16,13 @@
     "datesExpiredBack": "Atgal",
     "datesExpiredSetToday": "Nustatyti šiandienos datą",
     "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
-    "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų"
+    "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų",
+    "problems": {
+      "title": "Užsakymui reikia pavadinimo, kad jį būtų galima išsaugoti.",
+      "negative": "Kiekiai, valandos, kainos ir sąnaudos negali būti neigiami.",
+      "partName": "Kiekviena dalis su kaina turi turėti pavadinimą.",
+      "laborDescription": "Kiekviena darbo eilutė su valandomis ar įkainiu turi turėti aprašymą."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "PSL",
     "switchToHourly": "Perjungti į valandinį įkainį",
     "switchToService": "Perjungti į paslaugos įkainį",
-    "switchToHourlyHint": "Valandinis: kainuojama pagal dirbtų valandų skaičių (valandos × tarifas/val.). Spustelėkite, kad perjungtumėte.",
-    "switchToServiceHint": "Paslaugos: fiksuota kaina už vienetą. Spustelėkite, kad perjungtumėte.",
-    "deleteRow": "Delete row"
+    "switchToHourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
+    "switchToServiceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Eilutės be aprašymo neišsaugomos."
   },
   "totals": {
     "title": "Sumos",

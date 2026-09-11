@@ -12,6 +12,9 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Fingerprint, Loader2, PlayCircle, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
+import { AuthCard, AuthShell } from '@/components/auth/auth-shell'
+import { GoogleMark } from '@/components/auth/google-mark'
+import { TERMS_URL } from '@/lib/marketing-urls'
 
 const DEMO_EMAIL = 'demo@torqvoice.com'
 const DEMO_PASSWORD = 'demo'
@@ -19,20 +22,32 @@ const DEMO_PASSWORD = 'demo'
 function SignInFormInner({
   registrationDisabled,
   demoMode = false,
+  pitch,
+  googleEnabled = false,
 }: {
   registrationDisabled: boolean
   demoMode?: boolean
+  pitch: boolean
+  googleEnabled?: boolean
 }) {
   const t = useTranslations('auth.signIn')
   const tc = useTranslations('common')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [passkeyLoading, setPasskeyLoading] = useState(false)
-  const passwordRef = useRef<HTMLInputElement>(null)
+  const tSocial = useTranslations('auth.social')
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  // Better Auth sends a failed Google round-trip back here with ?error=...
+  const [error, setError] = useState(() => (searchParams.get('error') ? tSocial('failed') : ''))
+  const [loading, setLoading] = useState(false)
+  const [passkeyLoading, setPasskeyLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
+  const redirectParam = searchParams.get('redirect')
+  const signUpHref = `/auth/sign-up${
+    redirectParam ? `?redirect=${encodeURIComponent(safeRedirectPath(redirectParam))}` : ''
+  }`
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +72,7 @@ function SignInFormInner({
         setPassword('')
         passwordRef.current?.focus()
       } else {
-        router.push(safeRedirectPath(searchParams.get('redirect')))
+        router.push(safeRedirectPath(redirectParam))
         router.refresh()
       }
     } catch {
@@ -95,6 +110,27 @@ function SignInFormInner({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demoMode, searchParams])
 
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true)
+    setError('')
+    try {
+      const target = safeRedirectPath(redirectParam)
+      await signIn.social({
+        provider: 'google',
+        callbackURL: target,
+        // A first-time Google user has no workshop yet. Existing users go
+        // where they were headed; a same-email password account is linked
+        // on the way, so they are an existing user too.
+        newUserCallbackURL:
+          target !== '/' ? `/onboarding?redirect=${encodeURIComponent(target)}` : '/onboarding',
+        errorCallbackURL: '/auth/sign-in',
+      })
+    } catch {
+      setError(tSocial('failed'))
+      setGoogleLoading(false)
+    }
+  }
+
   const handlePasskeySignIn = async () => {
     setPasskeyLoading(true)
     setError('')
@@ -106,7 +142,7 @@ function SignInFormInner({
         const msg = typeof result.error.message === 'string' ? result.error.message : ''
         setError(msg || t('errors.passkeyFailed'))
       } else {
-        router.push(safeRedirectPath(searchParams.get('redirect')))
+        router.push(safeRedirectPath(redirectParam))
         router.refresh()
       }
     } catch {
@@ -117,13 +153,27 @@ function SignInFormInner({
   }
 
   return (
-    <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
-      <div className="mb-8 text-center">
-        <div className="mb-4 inline-flex items-center gap-2">
+    <AuthCard>
+      <div className={pitch ? 'mb-6 text-center lg:text-left' : 'mb-8 text-center'}>
+        <div className={`mb-4 inline-flex items-center gap-2 ${pitch ? 'lg:hidden' : ''}`}>
           <AuthLogo alt={tc('brandName')} />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        <h2 className="text-2xl font-bold tracking-tight">{t('title')}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
+        {/*
+          Most people who land here from the marketing site have no account
+          yet: they clicked "Login" because it was the only button in the
+          header. The way to a free account goes above the form, where they
+          read, not under the passkey button, where they do not.
+        */}
+        {!registrationDisabled && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            {pitch ? t('newHere') : t('noAccount')}{' '}
+            <Link href={signUpHref} className="font-medium text-primary hover:underline">
+              {pitch ? t('createFreeAccount') : t('createOne')}
+            </Link>
+          </p>
+        )}
       </div>
 
       {error && (
@@ -137,6 +187,35 @@ function SignInFormInner({
                 {t('resetPasswordCta')}
               </Link>
             </p>
+          </div>
+        </div>
+      )}
+
+      {googleEnabled && !demoMode && (
+        <div className="mb-5">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-full text-base"
+            disabled={googleLoading || loading}
+            onClick={handleGoogleSignIn}
+          >
+            {googleLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleMark className="mr-2 h-4.5 w-4.5" />
+            )}
+            {tSocial('google')}
+          </Button>
+          <div className="relative mt-5">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background/50 px-2 text-muted-foreground">
+                {tSocial('orEmail')}
+              </span>
+            </div>
           </div>
         </div>
       )}
@@ -184,7 +263,15 @@ function SignInFormInner({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">{tc('form.password')}</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">{tc('form.password')}</Label>
+            <Link
+              href="/auth/forgot-password"
+              className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+            >
+              {t('forgotPassword')}
+            </Link>
+          </div>
           <Input
             ref={passwordRef}
             id="password"
@@ -193,25 +280,18 @@ function SignInFormInner({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="current-password"
             className="h-11 bg-background/50"
           />
-          <div className="flex justify-end">
-            <Link
-              href="/auth/forgot-password"
-              className="text-xs text-muted-foreground hover:underline"
-            >
-              {t('forgotPassword')}
-            </Link>
-          </div>
         </div>
 
-        <Button type="submit" className="h-11 w-full" disabled={loading}>
+        <Button type="submit" className="h-11 w-full text-base" disabled={loading}>
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {tc('buttons.signIn')}
         </Button>
       </form>
 
-      <div className="relative my-4">
+      <div className="relative my-5">
         <div className="absolute inset-0 flex items-center">
           <Separator className="w-full" />
         </div>
@@ -223,7 +303,7 @@ function SignInFormInner({
       <Button
         type="button"
         variant="outline"
-        className="h-11 w-full"
+        className="h-10 w-full"
         disabled={passkeyLoading}
         onClick={handlePasskeySignIn}
       >
@@ -235,44 +315,41 @@ function SignInFormInner({
         {t('passkey')}
       </Button>
 
-      {!registrationDisabled && (
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {t('noAccount')}{' '}
-          <Link
-            href={`/auth/sign-up${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(safeRedirectPath(searchParams.get('redirect')))}` : ''}`}
-            className="font-medium text-primary hover:underline"
-          >
-            {t('createOne')}
-          </Link>
-        </p>
-      )}
-
-      <p className="mt-4 text-center text-xs text-muted-foreground">
+      <p className="mt-5 text-center text-xs text-muted-foreground">
         {t('termsAgreement')}{' '}
-        <Link href="/terms" target="_blank" className="text-primary hover:underline">
+        <a href={TERMS_URL} target="_blank" rel="noopener" className="text-primary hover:underline">
           {tc('terms.termsOfService')}
-        </Link>
+        </a>
       </p>
-    </div>
+    </AuthCard>
   )
 }
 
 export function SignInForm({
   registrationDisabled,
   demoMode = false,
+  cloudMode = false,
+  googleEnabled = false,
 }: {
   registrationDisabled: boolean
   demoMode?: boolean
+  cloudMode?: boolean
+  googleEnabled?: boolean
 }) {
+  // The demo instance runs in cloud mode too, but its visitors came for the
+  // demo button, not for a sales pitch beside it.
+  const pitch = cloudMode && !demoMode
+
   return (
-    <div className="grid-bg flex min-h-screen items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-      </div>
+    <AuthShell pitch={pitch}>
       <Suspense>
-        <SignInFormInner registrationDisabled={registrationDisabled} demoMode={demoMode} />
+        <SignInFormInner
+          registrationDisabled={registrationDisabled}
+          demoMode={demoMode}
+          pitch={pitch}
+          googleEnabled={googleEnabled}
+        />
       </Suspense>
-    </div>
+    </AuthShell>
   )
 }

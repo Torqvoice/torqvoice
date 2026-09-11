@@ -13,6 +13,7 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  fieldHasFixedSlot,
   FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
   footerColumnsOf,
@@ -76,10 +77,25 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function Toggle({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
+function Toggle({
+  on,
+  onChange,
+  testId,
+}: {
+  on: boolean
+  onChange: (on: boolean) => void
+  /** Named where it matters, so a test can reach this one rather than the
+   *  fifth switch in the panel. */
+  testId?: string
+}) {
   return (
     <button
       type="button"
+      // It behaves as a switch, so it says so: screen readers announce the
+      // state, and it can be found by role rather than by shape.
+      role="switch"
+      aria-checked={on}
+      data-testid={testId}
       onClick={() => onChange(!on)}
       className="relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors"
       style={{ background: on ? '#2563eb' : '#d7dade' }}
@@ -323,6 +339,10 @@ export function DesignerInspector({
   sloganSet,
   paymentTermsSet,
   documentTitleDefault,
+  orgNumberLabel,
+  orgNumberLabelDefault,
+  onOrgNumberLabel,
+  telegramBotLink,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -346,6 +366,13 @@ export function DesignerInspector({
   paymentTermsSet: boolean
   /** What the title strip prints when the workshop has not renamed it. */
   documentTitleDefault: string
+  /** What the organisation number is called on paper, empty for the default. */
+  orgNumberLabel: string
+  /** The default caption in the reader's language, shown as the placeholder. */
+  orgNumberLabelDefault: string
+  onOrgNumberLabel: (value: string) => void
+  /** The connected Telegram bot's link; the block is a stand-in without one. */
+  telegramBotLink?: string
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -360,6 +387,25 @@ export function DesignerInspector({
   }
   /** A section's name, or its id spaced out when nothing has named it. */
   const sectionName = (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' '))
+  /**
+   * The caption printed before the organisation number. Offered wherever the
+   * number is looked at, in the header and in the payment panel, and again
+   * with the sheet's own properties, so it is found from whichever side
+   * somebody approaches it. One value: it is the company's, not the block's.
+   */
+  const orgNumberLabelGroup = (
+    <Group title={t('orgNumberLabel')}>
+      <input
+        type="text"
+        maxLength={40}
+        value={orgNumberLabel}
+        placeholder={orgNumberLabelDefault}
+        onChange={(e) => onOrgNumberLabel(e.target.value)}
+        className="h-7 w-full rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+      />
+      <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('orgNumberLabelHint')}</p>
+    </Group>
+  )
   /** The field row being dragged to a new spot in the list, if any. */
   const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
@@ -517,6 +563,7 @@ export function DesignerInspector({
           <Group title={t('placement')}>
             <Row label={t('visible')}>
               <Toggle
+                testId="section-visible"
                 on={section.visible}
                 onChange={(visible) => onSection(section.id, { visible })}
               />
@@ -546,6 +593,7 @@ export function DesignerInspector({
             {BOXED_ELIGIBLE_SECTIONS.has(section.id) && (
               <Row label={t('drawBox')}>
                 <Toggle
+                  testId="section-boxed"
                   on={section.boxed !== false}
                   onChange={(boxed) => onSection(section.id, { boxed })}
                 />
@@ -554,6 +602,7 @@ export function DesignerInspector({
             {HEADED_SECTIONS.has(section.id) && (
               <Row label={t('showHeading')}>
                 <Toggle
+                  testId="section-heading"
                   on={section.heading !== false}
                   onChange={(heading) => onSection(section.id, { heading })}
                 />
@@ -624,6 +673,7 @@ export function DesignerInspector({
             <Group title={t('titleText')}>
               <input
                 type="text"
+                data-testid="section-title-text"
                 maxLength={60}
                 value={section.text ?? ''}
                 placeholder={documentTitleDefault}
@@ -676,6 +726,30 @@ export function DesignerInspector({
               </p>
             </Group>
           )}
+          {section.id === 'bank_account' && orgNumberLabelGroup}
+
+          {/* The code is only as real as the bot behind it. Connected, the
+              sheet shows the workshop's own link; otherwise a stand-in that
+              prints as nothing, and the way to the integration. */}
+          {section.id === 'telegram_qr' && (
+            <Group title={t('telegramQr')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {telegramBotLink
+                  ? t('telegramQrConnectedHint', {
+                      link: telegramBotLink.replace(/^https?:\/\//, ''),
+                    })
+                  : t('telegramQrPlaceholderHint')}{' '}
+                <a
+                  href="/settings/integrations"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('telegramQrLink')}
+                </a>
+              </p>
+            </Group>
+          )}
 
           {section.id === 'header' && (
             <Group title={t('logo')}>
@@ -712,6 +786,7 @@ export function DesignerInspector({
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('logoHint')}</p>
             </Group>
           )}
+          {section.id === 'header' && orgNumberLabelGroup}
 
           {/* The footer prints the same logo when it is switched on below, so
               it offers the same swap rather than sending somebody to the
@@ -749,14 +824,23 @@ export function DesignerInspector({
               {resolvedFields.map((field) => (
                 <div
                   key={field.id}
-                  draggable
+                  data-testid={`field-row-${field.id}`}
+                  data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
+                  // A field the sheet prints in a place of its own offers no
+                  // drag, and is no place to drop one either: the position it
+                  // would take is not a position the print reads.
+                  draggable={!fieldHasFixedSlot(section.id, field.id)}
                   onDragStart={(e) => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
                     e.dataTransfer.effectAllowed = 'move'
                     setDragFieldId(field.id)
                   }}
                   onDragEnd={() => setDragFieldId(null)}
                   onDragOver={(e) => e.preventDefault()}
-                  onDragEnter={() => dragFieldOver(field.id)}
+                  onDragEnter={() => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
+                    dragFieldOver(field.id)
+                  }}
                   onDrop={(e) => {
                     e.preventDefault()
                     setDragFieldId(null)
@@ -765,9 +849,18 @@ export function DesignerInspector({
                     dragFieldId === field.id ? 'opacity-50' : ''
                   }`}
                 >
-                  <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
-                    ⠿
-                  </span>
+                  {fieldHasFixedSlot(section.id, field.id) ? (
+                    <span
+                      className="select-none text-[13px] leading-none text-[#dcdee2]"
+                      title={t('fieldFixedSlot')}
+                    >
+                      ·
+                    </span>
+                  ) : (
+                    <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
+                      ⠿
+                    </span>
+                  )}
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
@@ -806,6 +899,7 @@ export function DesignerInspector({
                     </button>
                   )}
                   <Toggle
+                    testId={`field-${field.id}`}
                     on={field.visible}
                     onChange={(visible) =>
                       setFields(
@@ -1095,6 +1189,8 @@ export function DesignerInspector({
             onChange={(fontSize) => onDocument({ fontSize })}
           />
         </Group>
+
+        {orgNumberLabelGroup}
 
         <Group title={t('page')}>
           <Slider

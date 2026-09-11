@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { recipientFitsChannel } from '../Lib/recipient'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -12,6 +13,7 @@ import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availabl
 import { TIRE_MESSAGE_REASONS } from '../Lib/messageTemplates'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 
+const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.TIRE_HOTEL }]
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 
 const messageSchema = z
@@ -146,6 +148,9 @@ export async function messageCustomerAboutTireSet(input: unknown) {
       }
 
       const override = data.recipient?.trim()
+      if (override && !recipientFitsChannel(data.channel, override)) {
+        throw new Error('That address does not fit the chosen channel')
+      }
       const onFile =
         data.channel === 'email'
           ? set.customer?.email
@@ -201,7 +206,7 @@ export async function messageCustomerAboutTireSet(input: unknown) {
       }
     },
     {
-      requiredPermissions: READ,
+      requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_set.message_customer',
         entity: 'ScheduledMessage',

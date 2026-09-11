@@ -12,6 +12,7 @@ import {
 import { dispatchScheduledMessage, nextSendAt } from '../Lib/dispatchScheduledMessage'
 import { parseWorkshopDateTime, workshopDayRange } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { requireFeature } from '@/lib/features'
 
 export type ScheduledMessageListItem = {
   id: string
@@ -121,6 +122,11 @@ export async function createScheduledMessage(input: unknown) {
       const timeZone = await workshopTimeZone(organizationId)
       const sendAt = parseWorkshopDateTime(data.sendAt, timeZone)
       assertNotPast(sendAt)
+      // The channel list in the form is built from the plan; the action has
+      // to agree with it, or a hand-made request schedules a paid channel.
+      if (data.channel === 'sms' || data.channel === 'whatsapp' || data.channel === 'telegram') {
+        await requireFeature(organizationId, data.channel)
+      }
 
       if (data.customerId) {
         const customer = await db.customer.findFirst({

@@ -25,6 +25,11 @@ import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
+import {
+  LICENSE_TOKEN_MAX_AGE_DAYS,
+  LICENSE_TOKEN_WARN_AGE_DAYS,
+  verifyLicenseToken,
+} from '@/lib/license/token'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
@@ -35,6 +40,8 @@ import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCo
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
+import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
+import { TimeClockProvider } from '@/features/time-tracking/Components/TimeClockProvider'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -101,8 +108,25 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
-    // Members without a custom role have full access
-    if (membership?.roleId) {
+    if (!membership?.roleId) {
+      /**
+       * A member with no role at all.
+       *
+       * `withAuth` refuses every permissioned action for these accounts, so
+       * offering the whole application would be the sidebar of refusals this
+       * screen was built to replace — and the team page already promises the
+       * opposite in as many words: "Without a role, this member cannot do
+       * anything." An invitation may still be sent without a role, so this
+       * account can be created at any time.
+       *
+       * On an install that already holds one, that person now lands here
+       * instead of on a broken-looking app, and an owner or an admin gives
+       * them a role. That is the same end state the action layer arrived at.
+       */
+      visibleSubjects = []
+      canCreateVehicles = false
+      hasAnyAccess = false
+    } else {
       const userPermissions = membership?.customRole?.permissions ?? []
       visibleSubjects = allSubjects.filter((subject) =>
         hasPermission(userPermissions, {
@@ -175,11 +199,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
     seen: seenHints,
   })
 
+  // Whether this account can clock in from the browser: only when somebody
+  // has linked it to a technician row. Resolved here so the header pill and
+  // the work order buttons know on first paint.
+  const technicianIds = await technicianIdsForUser(data.organizationId, data.userId)
+
   // The header offers a plate lookup once a vehicle registry is connected.
   // Resolved here so the first paint knows, rather than a button appearing a
-  // beat after the page does.
+  // beat after the page does. Registries answer for road vehicles, so a marine
+  // workshop is never offered one: the header button, the palette and its
+  // shortcut all read this one flag.
   const lookupConnection =
-    features.integrations && visibleSubjects.includes(PermissionSubject.VEHICLES)
+    data.serviceType !== 'marine' &&
+    features.integrations &&
+    visibleSubjects.includes(PermissionSubject.VEHICLES)
       ? await findLookupConnection(data.organizationId)
       : null
   const plateLookupAvailable = lookupConnection !== null
@@ -187,30 +220,42 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ? (getManifest(lookupConnection.connectorId)?.name ?? null)
     : null
 
-  // Check license expiry (only for admin/owner with white-label)
+  // Licence notices for admins and owners. Both clocks come off the signed
+  // token: the term itself, and how long since torqvoice.com last confirmed
+  // it. An install with a key but nothing verifiable is told so, too.
   let daysUntilExpiry: number | null = null
+  let unverifiedDaysLeft: number | null = null
   let licenseExpiryDismissed = false
-  if (isOwnerOrAdmin && features.brandingRemoved) {
-    const expirySettings = await db.appSetting.findMany({
+  if (isOwnerOrAdmin && !isCloudMode()) {
+    const licenceSettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,
-        key: { in: ['license.expiresAt', 'license.valid', 'license.expiryDismissed'] },
+        key: { in: ['license.token', 'license.key', 'license.expiryDismissed'] },
       },
       select: { key: true, value: true },
     })
-    const expiryMap = new Map(expirySettings.map((s) => [s.key, s.value]))
-    const expiresAt = expiryMap.get('license.expiresAt')
-    const isValid = expiryMap.get('license.valid')
-    licenseExpiryDismissed = expiryMap.get('license.expiryDismissed') === 'true'
-    if (expiresAt && isValid === 'true') {
-      const diff = new Date(expiresAt).getTime() - Date.now()
-      daysUntilExpiry = Math.ceil(diff / (1000 * 60 * 60 * 24))
+    const licenceMap = new Map(licenceSettings.map((s) => [s.key, s.value]))
+    licenseExpiryDismissed = licenceMap.get('license.expiryDismissed') === 'true'
+    const verification = verifyLicenseToken(licenceMap.get('license.token'), data.organizationId)
+    if (verification.status === 'valid') {
+      daysUntilExpiry = verification.daysUntilExpiry
+      if (verification.ageDays !== null && verification.ageDays >= LICENSE_TOKEN_WARN_AGE_DAYS) {
+        unverifiedDaysLeft = Math.max(0, LICENSE_TOKEN_MAX_AGE_DAYS - verification.ageDays)
+      }
+    } else if (verification.status === 'stale') {
+      unverifiedDaysLeft = 0
+    } else if (verification.status === 'expired') {
+      daysUntilExpiry = verification.daysUntilExpiry
     }
   }
 
   return (
     <ServiceTypeProvider serviceType={data.serviceType}>
-      <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
+      <LicenseExpiryProvider
+        daysUntilExpiry={daysUntilExpiry}
+        unverifiedDaysLeft={unverifiedDaysLeft}
+        dismissed={licenseExpiryDismissed}
+      >
         <WhiteLabelCtaProvider show={showWhiteLabelCta}>
           {/* Accent line along the very top of the viewport — the card hairline at
         page scale: primary on the left, gone by the far edge. Marks where the
@@ -264,31 +309,36 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       initialSeen={seenHints}
                       pending={[...pendingHints, ...announcements]}
                     >
-                      <AppSidebar
-                        companyLogo={data.companyLogo}
-                        organizations={data.organizations}
-                        activeOrgId={data.organizationId}
-                        isSuperAdmin={data.isSuperAdmin}
-                        features={features}
-                        tireHotelEnabled={tireHotelEnabled}
-                        visibleSubjects={visibleSubjects}
-                        announcement={announcements[0] ?? null}
-                        isAdminOrOwner={isOwnerOrAdmin}
-                        counts={sidebarCounts}
-                      />
-                      <SidebarInset>
-                        {/* A flex column with a real height, so the `flex-1` every
+                      <TimeClockProvider technicianIds={technicianIds}>
+                        <AppSidebar
+                          companyLogo={data.companyLogo}
+                          organizations={data.organizations}
+                          activeOrgId={data.organizationId}
+                          isSuperAdmin={data.isSuperAdmin}
+                          features={features}
+                          tireHotelEnabled={tireHotelEnabled}
+                          visibleSubjects={visibleSubjects}
+                          announcement={announcements[0] ?? null}
+                          isAdminOrOwner={isOwnerOrAdmin}
+                          counts={sidebarCounts}
+                          isTechnician={technicianIds.length > 0}
+                        />
+                        <SidebarInset>
+                          {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                        <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">{children}</div>
-                      </SidebarInset>
-                      <SearchCommand />
-                      <PlateLookupCommand />
-                      {isOwnerOrAdmin && <NotificationInitializer />}
-                      <OnlineTracker />
-                      <InstallBanner />
+                          <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
+                            {children}
+                          </div>
+                        </SidebarInset>
+                        <SearchCommand />
+                        <PlateLookupCommand />
+                        {isOwnerOrAdmin && <NotificationInitializer />}
+                        <OnlineTracker />
+                        <InstallBanner />
+                      </TimeClockProvider>
                     </FeatureHintProvider>
                   </PlateLookupProvider>
                 </ConfirmProvider>

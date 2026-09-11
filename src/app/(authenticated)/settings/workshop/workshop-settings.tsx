@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
@@ -33,7 +34,17 @@ import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assignTechToUnassignedWorkOrders } from '@/features/workboard/Actions/technicianActions'
-import { Loader2, Ruler, Save, Wrench, Check, ChevronsUpDown, Plus } from 'lucide-react'
+import {
+  Loader2,
+  Percent,
+  Ruler,
+  Save,
+  Wrench,
+  Check,
+  ChevronsUpDown,
+  Plus,
+  Tag,
+} from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -44,6 +55,14 @@ import {
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
+import {
+  DEFAULT_WORK_ORDER_TITLE_TEMPLATE,
+  MAX_WORK_ORDER_TITLE_TEMPLATE_LENGTH,
+  resolveWorkOrderTitle,
+  SAMPLE_WORK_ORDER_TITLE_VALUES,
+  unknownTokensIn,
+  WORK_ORDER_TITLE_TOKENS,
+} from '@/features/vehicles/Lib/workOrderTitle'
 import { ServiceTypeSelector } from '../company/service-type-selector'
 
 interface TechnicianOption {
@@ -87,8 +106,39 @@ export function WorkshopSettings({
   const [workDayStart, setWorkDayStart] = useState(
     settings[SETTING_KEYS.WORKBOARD_WORK_DAY_START] || '07:00'
   )
+  // Unset means the default; a template saved empty means the plain name,
+  // so the two are kept apart here rather than folded into one falsy value.
+  const [titleTemplate, setTitleTemplate] = useState(
+    settings[SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE] ?? DEFAULT_WORK_ORDER_TITLE_TEMPLATE
+  )
+  const titleTemplateInput = useRef<HTMLInputElement>(null)
+  const insertTitleTag = (token: string) => {
+    const tag = `{${token}}`
+    const input = titleTemplateInput.current
+    const at = input?.selectionStart ?? titleTemplate.length
+    const before = titleTemplate.slice(0, at)
+    const after = titleTemplate.slice(input?.selectionEnd ?? at)
+    // A space between two tags typed back to back, so "{a}{b}" does not
+    // print two values glued together.
+    const glue = before && !/\s$/.test(before) && !after.startsWith(' ') ? ' ' : ''
+    const next = `${before}${glue}${tag}${after}`.slice(0, MAX_WORK_ORDER_TITLE_TEMPLATE_LENGTH)
+    setTitleTemplate(next)
+    requestAnimationFrame(() => {
+      input?.focus()
+      const caret = Math.min(next.length, before.length + glue.length + tag.length)
+      input?.setSelectionRange(caret, caret)
+    })
+  }
+  const titlePreview = resolveWorkOrderTitle(titleTemplate, SAMPLE_WORK_ORDER_TITLE_VALUES)
+  const unknownTitleTags = unknownTokensIn(titleTemplate)
   const [workDayEnd, setWorkDayEnd] = useState(
     settings[SETTING_KEYS.WORKBOARD_WORK_DAY_END] || '15:00'
+  )
+  const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
+    settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT] || '0'
+  )
+  const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
+    settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
 
   const selectedTechName = technicians.find((t) => t.id === defaultTechnicianId)?.name || ''
@@ -147,6 +197,9 @@ export function WorkshopSettings({
       [SETTING_KEYS.INVENTORY_DEFAULT_UNIT]: defaultUnit.trim(),
       [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
       [SETTING_KEYS.WORKBOARD_WORK_DAY_END]: workDayEnd,
+      [SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE]: titleTemplate.trim(),
+      [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
+      [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
     })
     setSaving(false)
     router.refresh()
@@ -312,6 +365,105 @@ export function WorkshopSettings({
                 value={workDayEnd}
                 onChange={(e) => setWorkDayEnd(e.target.value)}
               />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* What a job is called before anybody types a title. Resolved on
+              the server when the draft is made, so the preview here uses
+              sample values; the rules are in workOrderTitle.ts. */}
+          <div className="space-y-4">
+            <div className="flex flex-row items-center gap-3">
+              <Tag className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold">{t('workshop.titleTemplateTitle')}</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t('workshop.titleTemplateDescription')}
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="workOrderTitleTemplate">{t('workshop.titleTemplate')}</Label>
+              <Input
+                id="workOrderTitleTemplate"
+                ref={titleTemplateInput}
+                value={titleTemplate}
+                maxLength={MAX_WORK_ORDER_TITLE_TEMPLATE_LENGTH}
+                placeholder={t('workshop.titleTemplatePlaceholder')}
+                autoComplete="off"
+                onChange={(e) => setTitleTemplate(e.target.value)}
+              />
+              <div className="flex flex-wrap gap-1.5">
+                {WORK_ORDER_TITLE_TOKENS.map((token) => (
+                  <Button
+                    key={token}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-2 font-mono text-xs"
+                    data-testid={`work-order-title-tag-${token}`}
+                    title={t(`workshop.titleTemplateTags.${token}`)}
+                    onClick={() => insertTitleTag(token)}
+                  >
+                    {`{${token}}`}
+                  </Button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">{t('workshop.titleTemplateHint')}</p>
+              <p className="text-sm" data-testid="work-order-title-preview">
+                {t('workshop.titleTemplatePreview', { title: titlePreview })}
+              </p>
+              {unknownTitleTags.length > 0 && (
+                <p className="text-xs text-destructive" data-testid="work-order-title-unknown">
+                  {t('workshop.titleTemplateUnknown', { tags: unknownTitleTags.join(', ') })}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Pricing, not paperwork: the markup decides what a part costs the
+              customer, which is settled here on the job, long before an
+              invoice exists. */}
+          <div className="space-y-4">
+            <div className="flex flex-row items-center gap-3">
+              <Percent className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold">{t('workshop.partsMarkupTitle')}</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">{t('workshop.partsMarkupDescription')}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="defaultMarkupPercent">{t('workshop.defaultMarkupPercent')}</Label>
+                <Input
+                  id="defaultMarkupPercent"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  placeholder="0"
+                  value={defaultMarkupPercent}
+                  onChange={(e) => setDefaultMarkupPercent(e.target.value)}
+                  className="w-32"
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('workshop.defaultMarkupPercentHint')}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="markupAppliesToInventory"
+                  className="flex items-center justify-between gap-3"
+                >
+                  <span>{t('workshop.markupAppliesToInventory')}</span>
+                  <Switch
+                    id="markupAppliesToInventory"
+                    checked={markupAppliesToInventory}
+                    onCheckedChange={setMarkupAppliesToInventory}
+                  />
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('workshop.markupAppliesToInventoryHint')}
+                </p>
+              </div>
             </div>
           </div>
 

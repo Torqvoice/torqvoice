@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { optionalUploadUrlSchema } from '@/lib/upload-url'
 
 export const createVehicleSchema = z.object({
   make: z.string().min(1, 'Make is required'),
@@ -17,7 +18,7 @@ export const createVehicleSchema = z.object({
   engineCode: z.string().optional(),
   purchaseDate: z.string().optional(),
   purchasePrice: z.coerce.number().optional(),
-  imageUrl: z.string().optional(),
+  imageUrl: optionalUploadUrlSchema.optional(),
   customerId: z.string().optional(),
   /** Next periodic inspection, YYYY-MM-DD, set by hand. Empty clears a manual date. */
   inspectionDueAt: z.string().optional(),

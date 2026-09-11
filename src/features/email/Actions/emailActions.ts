@@ -1,31 +1,35 @@
 'use server'
 
-import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
-import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { withAuth } from '@/lib/with-auth'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
 import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
-import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
 import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
-import {
-  mergeWithDefaults,
-  type InvoiceLayoutConfig,
-} from '@/features/settings/Schema/invoiceLayoutSchema'
 import { requireFeature } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
-import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { renderInvoicePdf } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
+import { buildQuotePdfBuffer } from '@/features/quotes/Pdf/buildQuotePdfBuffer'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getAppBaseUrl } from '@/lib/app-url'
+import { randomUUID } from 'crypto'
+import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
+import type { VehicleContext } from '@/features/email/Lib/emailContext'
+import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
+
+/** Whoever pressed send, for a template that signs off with a name. */
+async function senderName(userId: string): Promise<string | null> {
+  const user = await db.user.findUnique({ where: { id: userId }, select: { name: true } })
+  return user?.name ?? null
+}
 
 async function getWorkshopSettings(organizationId: string) {
   const [settings, org] = await Promise.all([
@@ -43,7 +47,6 @@ async function getWorkshopSettings(organizationId: string) {
             'quote.logo',
             'workshop.currencyCode',
             'workshop.currencyFormat',
-            'workshop.emailFromName',
             'workshop.emailEnabled',
             'invoice.primaryColor',
             'invoice.backgroundColor',
@@ -112,9 +115,11 @@ export async function sendQuoteEmail(input: {
   quoteId: string
   recipientEmail: string
   message?: string
+  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  attachPdf?: boolean
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       await requireFeature(organizationId, 'smtp')
 
@@ -139,80 +144,57 @@ export async function sendQuoteEmail(input: {
       if (settings['workshop.emailEnabled'] === 'false') {
         throw new Error('Email sending is disabled. Enable it in Settings.')
       }
+      const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
-      const logoDataUri = await loadLogoDataUri(documentLogoPath(settings, 'quote'))
+      // One language for the PDF's labels and the mail around it.
+      const locale = await resolveCustomerLocale(organizationId, null)
+      // The mail's own summary of the document quotes a figure, so it needs
+      // the same currency the sheet prints in.
       const currencyCode = settings['workshop.currencyCode'] || 'USD'
       const currencyFormat: 'symbol' | 'code' =
         settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
 
-      const pick = (key: string) => settings[`quote.${key}`] || settings[`invoice.${key}`]
-      const template = {
-        primaryColor: pick('primaryColor') || '#d97706',
-        backgroundColor: pick('backgroundColor') || undefined,
-        textColor: pick('textColor') || undefined,
-        companyTextColor: pick('companyTextColor') || undefined,
-        frameBorderColor: pick('frameBorderColor') || undefined,
-        frameShadow: pick('frameShadow'),
-        frameRadius: Number(pick('frameRadius')) || 0,
-        frameSide: (pick('frameSide') === 'right' ? 'right' : 'left') as 'left' | 'right',
-        fontFamily: pick('fontFamily') || 'Helvetica',
-        showLogo: settings['invoice.showLogo'] !== 'false',
-        showCompanyName: settings['invoice.showCompanyName'] !== 'false',
-        headerStyle: pick('headerStyle') || 'standard',
-        logoSize: Number(pick('logoSize')) || undefined,
+      let pdfBuffer: Buffer | null = null
+      if (attachPdf) {
+        // The same builder the download and the share link use. Rendered on
+        // its own, this copy went out with no print labels at all — "Labor"
+        // where the others said "Labor & Services" — and no Torqvoice mark.
+        const rendered = await buildQuotePdfBuffer(quoteId, organizationId, locale)
+        if (!rendered) throw new Error('Quote not found')
+        pdfBuffer = Buffer.from(rendered.buffer)
       }
-      let quoteLayoutConfig: InvoiceLayoutConfig | undefined
-      try {
-        quoteLayoutConfig = settings['quote.layoutConfig']
-          ? mergeWithDefaults(JSON.parse(settings['quote.layoutConfig']))
-          : undefined
-      } catch {
-        quoteLayoutConfig = undefined
-      }
-
-      // Generate PDF
-      const element = React.createElement(QuotePDF, {
-        data: quote,
-        workshop: {
-          name: settings['workshop.name'] || '',
-          address: settings['workshop.address'] || '',
-          phone: settings['workshop.phone'] || '',
-          email: settings['workshop.email'] || '',
-          slogan: settings['workshop.slogan'] || undefined,
-        },
-        currencyCode,
-        currencyFormat,
-        logoDataUri,
-        template,
-        layoutConfig: quoteLayoutConfig,
-      }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
-      const pdfBuffer = await renderToBuffer(element)
       const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
 
-      const from = await getOrgFromAddress(organizationId)
+      // The quote mail carried no link at all before, which left a link-only
+      // send with nothing in it. One is minted for a quote never shared.
+      const token = quote.publicToken ?? (attachPdf ? null : randomUUID())
+      if (token && token !== quote.publicToken) {
+        await db.quote.update({
+          where: { id: quoteId },
+          data: { publicToken: token, sharedAt: new Date() },
+        })
+      }
+      const publicLink = token ? `${getAppBaseUrl()}/share/quote/${organizationId}/${token}` : null
 
-      await sendOrgMail(organizationId, {
-        from,
+      await sendTemplatedMail(organizationId, {
+        kind: 'quote_sent',
         to: recipientEmail,
-        subject: `Quote ${quoteNum} - ${quote.title}`,
-        html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Quote ${quoteNum}</h2>
-          <p>Please find your quote attached.</p>
-          ${message ? `<p>${message}</p>` : ''}
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="color: #666; font-size: 14px;">
-            ${fromName}${settings['workshop.phone'] ? ` · ${settings['workshop.phone']}` : ''}
-          </p>
-        </div>
-      `,
-        attachments: [
-          {
-            filename: `${quoteNum}.pdf`,
-            content: Buffer.from(pdfBuffer),
+        attached: attachPdf,
+        attachments: pdfBuffer ? [{ filename: `${quoteNum}.pdf`, content: pdfBuffer }] : undefined,
+        context: {
+          customerName: quote.customer?.name,
+          vehicle: quote.vehicle,
+          currentUser: await senderName(userId),
+          message,
+          document: {
+            number: quoteNum,
+            title: quote.title,
+            total: quote.totalAmount,
+            currencyCode,
+            currencyFormat,
           },
-        ],
+          shareLink: publicLink,
+        },
       })
 
       // Stamps sentAt and moves a draft to "sent" (accepted and converted
@@ -234,49 +216,70 @@ export async function sendQuoteEmail(input: {
   )
 }
 
+/**
+ * A free-text message to a customer: a status update, a report link, a video
+ * call invitation. The words are the caller's; the mail around them is the
+ * workshop's "message" template. The customer and vehicle are optional
+ * because not every caller has them, and a template that names the car
+ * simply leaves the gap when they are absent.
+ */
 export async function sendNotificationEmail(input: {
   recipientEmail: string
   subject: string
   body: string
+  customerName?: string | null
+  vehicle?: VehicleContext | null
 }) {
-  return withAuth(async ({ organizationId }) => {
-    demoGuard()
-    await requireFeature(organizationId, 'smtp')
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      demoGuard()
+      await requireFeature(organizationId, 'smtp')
 
-    const settings = await getWorkshopSettings(organizationId)
-    if (settings['workshop.emailEnabled'] === 'false') {
-      throw new Error('Email sending is disabled. Enable it in Settings.')
+      const settings = await getWorkshopSettings(organizationId)
+      if (settings['workshop.emailEnabled'] === 'false') {
+        throw new Error('Email sending is disabled. Enable it in Settings.')
+      }
+
+      // The workshop's provider sends to its own customers, not to whoever a
+      // member types in: otherwise this is an open relay under the shop's name.
+      const to = input.recipientEmail.trim()
+      const customer = await db.customer.findFirst({
+        where: { organizationId, email: { equals: to, mode: 'insensitive' } },
+        select: { id: true },
+      })
+      if (!customer) throw new Error('The recipient is not a customer of this workshop')
+
+      await sendTemplatedMail(organizationId, {
+        kind: 'message',
+        to,
+        subject: input.subject,
+        context: {
+          message: input.body,
+          customerName: input.customerName,
+          vehicle: input.vehicle,
+          currentUser: await senderName(userId),
+        },
+      })
+
+      return { sent: true }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
+      ],
     }
-
-    const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
-    const from = await getOrgFromAddress(organizationId)
-
-    await sendOrgMail(organizationId, {
-      from,
-      to: input.recipientEmail,
-      subject: input.subject,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <p style="white-space: pre-line;">${input.body}</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="color: #666; font-size: 14px;">
-            ${fromName}${settings['workshop.phone'] ? ` · ${settings['workshop.phone']}` : ''}
-          </p>
-        </div>
-      `,
-    })
-
-    return { sent: true }
-  })
+  )
 }
 
 export async function sendInvoiceEmail(input: {
   serviceRecordId: string
   recipientEmail: string
   message?: string
+  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  attachPdf?: boolean
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       await requireFeature(organizationId, 'smtp')
 
@@ -292,6 +295,7 @@ export async function sendInvoiceEmail(input: {
       if (settings['workshop.emailEnabled'] === 'false') {
         throw new Error('Email sending is disabled. Enable it in Settings.')
       }
+      const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       // Issued before it is rendered, so the copy that goes out and the copy
       // the workshop can print in five years are the same one.
@@ -300,52 +304,57 @@ export async function sendInvoiceEmail(input: {
       if (!assembly) throw new Error('Service record not found')
       const { record } = assembly
 
+      // One language for the PDF's labels and the mail around it.
       const locale = await resolveCustomerLocale(organizationId, null)
-      const labels = await loadPrintLabels(locale, assembly.labelSettings)
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
 
-      // Generate PDF
-      const element = React.createElement(InvoicePDF, {
-        data: assembly.data,
-        workshop: assembly.workshop,
-        invoiceSettings: assembly.invoiceSettings,
-        paymentSummary: assembly.paymentSummary,
-        logoDataUri: assembly.logoDataUri,
-        template: assembly.template,
-        labels,
-      }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
-      const pdfBuffer = await renderToBuffer(element)
+      let pdfBuffer: Buffer | null = null
+      if (attachPdf) {
+        // The same renderer the download and the share link use, so what is
+        // attached here is the document the customer would have seen either
+        // way. Rendered on its own, this copy went out without the portal
+        // link, the Telegram code and the Torqvoice mark.
+        pdfBuffer = Buffer.from(await renderInvoicePdf(assembly, locale))
+      }
       const invoiceNum = invoiceNumberOf(record)
 
-      // Build public invoice link if token exists
-      const publicLink = owned.publicToken
-        ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/share/invoice/${organizationId}/${owned.publicToken}`
+      // Without the PDF the link is the whole mail, so one is minted here for
+      // a document that has never been shared. sharedAt goes with it, the way
+      // the share dialog sets it; sentAt is markInvoiceSent's job below.
+      const token = owned.publicToken ?? (attachPdf ? null : randomUUID())
+      if (token && token !== owned.publicToken) {
+        await db.serviceRecord.update({
+          where: { id: serviceRecordId },
+          data: { publicToken: token, sharedAt: new Date() },
+        })
+      }
+      const publicLink = token
+        ? `${getAppBaseUrl()}/share/invoice/${organizationId}/${token}`
         : null
 
-      const from = await getOrgFromAddress(organizationId)
-
-      await sendOrgMail(organizationId, {
-        from,
+      await sendTemplatedMail(organizationId, {
+        kind: 'invoice_sent',
         to: recipientEmail,
-        subject: `Invoice ${invoiceNum} - ${record.title}`,
-        html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Invoice ${invoiceNum}</h2>
-          <p>Please find your invoice attached.</p>
-          ${message ? `<p>${message}</p>` : ''}
-          ${publicLink ? `<p><a href="${publicLink}" style="color: #2563eb;">View Invoice Online</a></p>` : ''}
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="color: #666; font-size: 14px;">
-            ${fromName}${settings['workshop.phone'] ? ` · ${settings['workshop.phone']}` : ''}
-          </p>
-        </div>
-      `,
-        attachments: [
-          {
-            filename: `${invoiceNum}.pdf`,
-            content: Buffer.from(pdfBuffer),
+        locale,
+        attached: attachPdf,
+        attachments: pdfBuffer
+          ? [{ filename: `${invoiceNum}.pdf`, content: pdfBuffer }]
+          : undefined,
+        context: {
+          customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
+          vehicle: assembly.data.vehicle,
+          currentUser: await senderName(userId),
+          message,
+          document: {
+            number: invoiceNum,
+            title: record.title,
+            total: record.totalAmount > 0 ? record.totalAmount : record.cost,
+            paid: assembly.paymentSummary?.totalPaid,
+            dueDate: record.invoiceDueDate,
+            currencyCode: assembly.invoiceSettings.currencyCode,
+            currencyFormat: assembly.invoiceSettings.currencyFormat,
           },
-        ],
+          shareLink: publicLink,
+        },
       })
 
       await markInvoiceSent(serviceRecordId, organizationId, { alreadyIssued: true })
@@ -374,9 +383,11 @@ export async function sendInspectionEmail(input: {
   inspectionId: string
   recipientEmail: string
   message?: string
+  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  attachPdf?: boolean
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       await requireFeature(organizationId, 'smtp')
 
@@ -412,15 +423,9 @@ export async function sendInspectionEmail(input: {
       if (settings['workshop.emailEnabled'] === 'false') {
         throw new Error('Email sending is disabled. Enable it in Settings.')
       }
+      const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       const logoDataUri = await loadLogoDataUri(settings['workshop.logo'])
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
-
-      const features = await getFeatures(organizationId)
-      let torqvoiceLogoDataUri: string | undefined
-      if (!features.brandingRemoved) {
-        torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
-      }
 
       const template = {
         primaryColor: settings['invoice.primaryColor'] || '#d97706',
@@ -438,54 +443,59 @@ export async function sendInspectionEmail(input: {
         headerStyle: settings['invoice.headerStyle'] || 'standard',
       }
 
-      const element = React.createElement(InspectionPDF, {
-        data: inspection,
-        workshop: {
-          name: org?.name || '',
-          address: settings['workshop.address'] || '',
-          phone: settings['workshop.phone'] || '',
-          email: settings['workshop.email'] || '',
-        },
-        logoDataUri,
-        torqvoiceLogoDataUri,
-        dateFormat: settings['workshop.dateFormat'] || undefined,
-        timezone: settings['workshop.timezone'] || undefined,
-        template,
-      }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
-      const pdfBuffer = await renderToBuffer(element)
-
       const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
       const fileName = `Inspection-${vehicleName}.pdf`
 
-      // Build public link if token exists
-      const publicLink = inspection.publicToken
-        ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/share/inspection/${organizationId}/${inspection.publicToken}`
+      let pdfBuffer: Buffer | null = null
+      if (attachPdf) {
+        const features = await getFeatures(organizationId)
+        let torqvoiceLogoDataUri: string | undefined
+        if (!features.brandingRemoved) {
+          torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
+        }
+
+        const element = React.createElement(InspectionPDF, {
+          data: inspection,
+          workshop: {
+            name: org?.name || '',
+            address: settings['workshop.address'] || '',
+            phone: settings['workshop.phone'] || '',
+            email: settings['workshop.email'] || '',
+          },
+          logoDataUri,
+          torqvoiceLogoDataUri,
+          dateFormat: settings['workshop.dateFormat'] || undefined,
+          timezone: settings['workshop.timezone'] || undefined,
+          template,
+        }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
+        pdfBuffer = Buffer.from(await renderToBuffer(element))
+      }
+
+      // Without the PDF the link is the whole mail, so one is minted for an
+      // inspection that has never been shared.
+      const token = inspection.publicToken ?? (attachPdf ? null : randomUUID())
+      if (token && token !== inspection.publicToken) {
+        await db.inspection.update({
+          where: { id: inspectionId },
+          data: { publicToken: token },
+        })
+      }
+      const publicLink = token
+        ? `${getAppBaseUrl()}/share/inspection/${organizationId}/${token}`
         : null
 
-      const from = await getOrgFromAddress(organizationId)
-
-      await sendOrgMail(organizationId, {
-        from,
+      await sendTemplatedMail(organizationId, {
+        kind: 'inspection_sent',
         to: recipientEmail,
-        subject: `Vehicle Inspection - ${vehicleName}`,
-        html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Vehicle Inspection Report</h2>
-          <p>Please find the inspection report for your ${vehicleName} attached.</p>
-          ${message ? `<p>${message}</p>` : ''}
-          ${publicLink ? `<p><a href="${publicLink}" style="color: #2563eb;">View Inspection Online</a></p>` : ''}
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="color: #666; font-size: 14px;">
-            ${fromName}${settings['workshop.phone'] ? ` · ${settings['workshop.phone']}` : ''}
-          </p>
-        </div>
-      `,
-        attachments: [
-          {
-            filename: fileName,
-            content: Buffer.from(pdfBuffer),
-          },
-        ],
+        attached: attachPdf,
+        attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
+        context: {
+          customerName: inspection.vehicle.customer?.name,
+          vehicle: inspection.vehicle,
+          currentUser: await senderName(userId),
+          message,
+          shareLink: publicLink,
+        },
       })
 
       return { sent: true, inspectionId, recipientEmail }

@@ -100,6 +100,28 @@ export interface TechnicianReport {
   totalRevenue: number
 }
 
+/** Clocked against billed, per technician, for one window. */
+export interface TechnicianTimeMetrics {
+  technicianId: string
+  techName: string
+  color: string
+  /** Minutes actually clocked inside the window, running clocks counted to now. */
+  clockedMinutes: number
+  /** Hours on labor lines of the jobs assigned to this technician in the window. */
+  billedHours: number
+  /** billedHours / clockedHours as a percentage; null when nothing was clocked. */
+  efficiency: number | null
+  jobsClocked: number
+}
+
+export interface TechnicianTimeReport {
+  technicians: TechnicianTimeMetrics[]
+  totalClockedMinutes: number
+  totalBilledHours: number
+  /** Overall billed / clocked, null when nothing was clocked. */
+  efficiency: number | null
+}
+
 export interface PartUsage {
   name: string
   partNumber: string | null
@@ -197,6 +219,8 @@ export interface TaxByRate {
   taxRate: number
   taxCollected: number
   invoiceCount: number
+  /** Set when the row is one component of a split tax ("GST", "QST"). */
+  name?: string
 }
 
 export interface TaxReport {

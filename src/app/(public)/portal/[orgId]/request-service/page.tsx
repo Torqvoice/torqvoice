@@ -78,7 +78,9 @@ export default async function PortalRequestServicePage({
                     <p className="text-sm font-medium">
                       {req.vehicle.make} {req.vehicle.model}
                     </p>
-                    <p className="mt-1 text-sm text-muted-foreground">{req.description}</p>
+                    <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">
+                      {req.description}
+                    </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {new Date(req.createdAt).toLocaleDateString(undefined, { timeZone })}
                       {req.preferredDate &&

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import JSZip from 'jszip'
@@ -6,6 +7,7 @@ import { isDemoMode } from '@/lib/demo'
 import { UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { readdir, readFile, stat } from 'fs/promises'
 import path from 'path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 export const maxDuration = 300
 
@@ -50,6 +52,8 @@ const DEFAULT_OPTIONS: ExportOptions = {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   if (isDemoMode) {
     return NextResponse.json({ error: 'This action is disabled on the demo.' }, { status: 403 })
   }
@@ -58,6 +62,10 @@ export async function POST(request: NextRequest) {
 
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // Reading or replacing the whole workshop is an owner's or admin's call.
+  if (!ctx.isAdmin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   let options: ExportOptions = DEFAULT_OPTIONS
@@ -88,6 +96,16 @@ export async function POST(request: NextRequest) {
         .findMany({ where: { organizationId: ctx.organizationId } })
         .then((result) => {
           data.documentDesigns = result
+        })
+    )
+  }
+
+  if (options.settings) {
+    queries.push(
+      db.emailTemplate
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.emailTemplates = result
         })
     )
   }
@@ -415,7 +433,7 @@ export async function POST(request: NextRequest) {
 
   // Add uploaded files if requested
   if (options.files) {
-    const uploadsDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId)
+    const uploadsDir = path.join(uploadsRoot(), ctx.organizationId)
 
     const categories = UPLOAD_CATEGORIES
 
@@ -464,6 +482,8 @@ export async function POST(request: NextRequest) {
  * export as everything else, with every option on.
  */
 export async function GET(request: NextRequest) {
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  if (limited) return limited
   return POST(
     new NextRequest(request.url, {
       method: 'POST',

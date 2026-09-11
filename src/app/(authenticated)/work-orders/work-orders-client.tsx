@@ -42,6 +42,7 @@ import {
   Plus,
   Search,
   User,
+  ClipboardList,
 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
@@ -50,6 +51,7 @@ import { useTranslations } from 'next-intl'
 import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
+import { ListEmpty } from '@/components/list-empty'
 
 interface WorkOrder {
   id: string
@@ -175,6 +177,7 @@ export function WorkOrdersClient({
     email: string | null
     phone: string | null
   } | null>(null)
+  const [notifyVehicle, setNotifyVehicle] = useState<WorkOrder['vehicle']>(null)
   const [notifyMessage, setNotifyMessage] = useState('')
   const [notifyStatus, setNotifyStatus] = useState('')
 
@@ -256,11 +259,29 @@ export function WorkOrdersClient({
         current_user: tplData?.currentUser || '',
       })
       setNotifyCustomer(notifyTarget)
+      setNotifyVehicle(workOrder.vehicle)
       setNotifyMessage(message)
       setNotifyStatus(newStatus)
       setShowNotifyDialog(true)
     }
   }
+
+  const emptyState = (bare: boolean) =>
+    search ? (
+      <p className="p-8 text-center text-sm text-muted-foreground">{t('empty')}</p>
+    ) : (
+      <ListEmpty
+        bare={bare}
+        icon={ClipboardList}
+        title={t('empty')}
+        action={
+          <Button onClick={() => setShowPicker(true)} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('newWorkOrder')}
+          </Button>
+        }
+      />
+    )
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -317,65 +338,61 @@ export function WorkOrdersClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {t('empty')}
-          </div>
-        ) : (
-          data.records.map((r) => {
-            const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost
-            const recordHref = r.vehicle
-              ? `/vehicles/${r.vehicle.id}/service/${r.id}`
-              : `/sales/${r.id}`
-            const rowCustomer = r.customer ?? r.vehicle?.customer
-            return (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => {
-                  setNavigatingId(r.id)
-                  router.push(recordHref)
-                }}
-                className={`w-full rounded-lg border bg-card p-3 text-left transition-opacity active:bg-muted/50 ${
-                  navigatingId === r.id ? 'opacity-50' : ''
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="min-w-0 flex-1 truncate font-medium">{r.title}</span>
-                  <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold">
-                    {navigatingId === r.id && (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-                    )}
-                    {formatCurrency(displayTotal, currencyCode)}
-                  </span>
-                </div>
-                {r.vehicle && (
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {r.vehicle.licensePlate && (
-                      <span className="font-mono font-medium text-foreground">
-                        {r.vehicle.licensePlate}{' '}
-                      </span>
-                    )}
-                    {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
-                  </p>
-                )}
-                {rowCustomer && (
-                  <p className="truncate text-xs text-muted-foreground">{rowCustomer.name}</p>
-                )}
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                  <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ''}`}>
-                    {r.status}
-                  </Badge>
-                  <span className="font-mono">
-                    {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
-                  </span>
-                  {r.invoiceNumber && <span className="font-mono">{r.invoiceNumber}</span>}
-                  {r.techName && <span className="truncate">{r.techName}</span>}
-                </div>
-              </button>
-            )
-          })
-        )}
+        {data.records.length === 0
+          ? emptyState(false)
+          : data.records.map((r) => {
+              const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost
+              const recordHref = r.vehicle
+                ? `/vehicles/${r.vehicle.id}/service/${r.id}`
+                : `/sales/${r.id}`
+              const rowCustomer = r.customer ?? r.vehicle?.customer
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => {
+                    setNavigatingId(r.id)
+                    router.push(recordHref)
+                  }}
+                  className={`w-full rounded-lg border bg-card p-3 text-left transition-opacity active:bg-muted/50 ${
+                    navigatingId === r.id ? 'opacity-50' : ''
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">{r.title}</span>
+                    <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold">
+                      {navigatingId === r.id && (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                      )}
+                      {formatCurrency(displayTotal, currencyCode)}
+                    </span>
+                  </div>
+                  {r.vehicle && (
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {r.vehicle.licensePlate && (
+                        <span className="font-mono font-medium text-foreground">
+                          {r.vehicle.licensePlate}{' '}
+                        </span>
+                      )}
+                      {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                    </p>
+                  )}
+                  {rowCustomer && (
+                    <p className="truncate text-xs text-muted-foreground">{rowCustomer.name}</p>
+                  )}
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                    <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ''}`}>
+                      {r.status}
+                    </Badge>
+                    <span className="font-mono">
+                      {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
+                    </span>
+                    {r.invoiceNumber && <span className="font-mono">{r.invoiceNumber}</span>}
+                    {r.techName && <span className="truncate">{r.techName}</span>}
+                  </div>
+                </button>
+              )
+            })}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -475,8 +492,8 @@ export function WorkOrdersClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
-                  {t('empty')}
+                <TableCell colSpan={8} className="p-0">
+                  {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (
@@ -621,6 +638,7 @@ export function WorkOrdersClient({
           open={showNotifyDialog}
           onOpenChange={setShowNotifyDialog}
           customer={notifyCustomer}
+          vehicle={notifyVehicle}
           defaultMessage={notifyMessage}
           emailSubject={t('emailSubject', { status: notifyStatus })}
           smsEnabled={smsEnabled}

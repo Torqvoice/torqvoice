@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useDateSettings } from '@/components/date-settings-context'
+import { zonedDateInput, zonedTimeInput } from '@/lib/timezone'
 import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,12 +67,13 @@ interface ReminderFormDialogProps {
   onSaved?: () => void
 }
 
-/** HH:MM of the local clock */
-function toLocalTimeStr(d: Date): string {
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-
-/** YYYY-MM-DD from the local calendar day, never the UTC one */
+/**
+ * YYYY-MM-DD from the local calendar day, never the UTC one.
+ *
+ * The day picker holds a Date, and this reads the day off it. What goes into
+ * the picker is always local noon of the day meant, so the reading is exact
+ * either way: see the seeding below.
+ */
 function toLocalDateStr(d: Date): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -88,6 +91,7 @@ export function ReminderFormDialog({
   onSaved,
 }: ReminderFormDialogProps) {
   const t = useTranslations('reminders')
+  const { timezone } = useDateSettings()
   const tv = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
   const modal = useGlassModal()
@@ -120,10 +124,14 @@ export function ReminderFormDialog({
       setFormVehicleId(reminder.vehicle?.id ?? '')
       setFormTitle(reminder.title)
       setFormDescription(reminder.description || '')
-      setFormDueDate(reminder.dueDate ? new Date(reminder.dueDate) : undefined)
-      setFormDueTime(
-        reminder.hasDueTime && reminder.dueDate ? toLocalTimeStr(new Date(reminder.dueDate)) : ''
-      )
+      // The workshop's day and clock, because that is how these two fields
+      // are read back on save. Noon of that day, so the day picker cannot
+      // drift across a boundary. Filled from the browser's clock instead, a
+      // reminder due at 14:00 opened from another zone showed a different
+      // time and was moved by saving the form.
+      const due = reminder.dueDate ? new Date(reminder.dueDate) : null
+      setFormDueDate(due ? new Date(`${zonedDateInput(due, timezone)}T12:00:00`) : undefined)
+      setFormDueTime(due && reminder.hasDueTime ? zonedTimeInput(due, timezone) : '')
       setFormDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : '')
       setFormNotifyInApp(reminder.notifyInApp ?? true)
       setFormNotifyEmail(reminder.notifyEmail ?? false)
@@ -141,7 +149,7 @@ export function ReminderFormDialog({
       setFormCustomerId('')
       setFormCustomer(null)
     }
-  }, [open, reminder, defaultDueDate, defaultDueTime])
+  }, [open, reminder, defaultDueDate, defaultDueTime, timezone])
 
   const selectedVehicle = vehicles.find((v) => v.id === formVehicleId)
 

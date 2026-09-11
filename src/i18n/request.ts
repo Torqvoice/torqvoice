@@ -76,6 +76,8 @@ export default getRequestConfig(async () => {
   const featureHints = (await import(`../../messages/${locale}/featureHints.json`)).default
   const dataImport = (await import(`../../messages/${locale}/dataImport.json`)).default
   const integrations = (await import(`../../messages/${locale}/integrations.json`)).default
+  const timeTracking = (await import(`../../messages/${locale}/timeTracking.json`)).default
+  const email = (await import(`../../messages/${locale}/email.json`)).default
 
   return {
     locale,
@@ -121,6 +123,8 @@ export default getRequestConfig(async () => {
       featureHints,
       dataImport,
       integrations,
+      timeTracking,
+      email,
     },
   }
 })

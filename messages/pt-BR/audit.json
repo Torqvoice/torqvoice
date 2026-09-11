@@ -50,6 +50,7 @@
     "team_invite": "Membro da equipe convidado",
     "team_sendInvitation": "Convite enviado",
     "team_cancelInvitation": "Convite cancelado",
+    "team_resendInvitation": "Convite reenviado",
     "team_updateRole": "Função do membro alterada",
     "team_removeMember": "Membro da equipe removido",
     "role_create": "Função criada",
@@ -161,10 +162,16 @@
     "settings_deleteDocumentDesign": "Design de documento excluído",
     "settings_applyDocumentDesign": "Design de documento padrão definido",
     "settings_setDocumentDesignRule": "Alterou quando um design é usado",
+    "settings_saveEmailTemplate": "Modelo de e-mail salvo",
+    "settings_deleteEmailTemplate": "Modelo de e-mail excluído",
+    "settings_applyEmailTemplate": "Modelo de e-mail padrão definido",
     "settings_freezeInvoices": "Faturas anteriores travadas",
     "inspection_reminders_sent": "Enviou lembretes de inspeção",
     "inspection_reminders_send": "Enviou lembretes de inspeção",
-    "service_videoCall_send": "Link da videochamada enviado"
+    "service_videoCall_send": "Link da videochamada enviado",
+    "timeEntry_create": "Registro de tempo adicionado",
+    "timeEntry_update": "Registro de tempo corrigido",
+    "timeEntry_delete": "Registro de tempo excluído"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -243,6 +250,7 @@
     "subscription_cancel": "Assinatura cancelada, com efeito no fim do período",
     "subscription_resume": "Assinatura retomada",
     "team_cancelInvitation": "Convite para {email} cancelado",
+    "team_resendInvitation": "Convite para {email} reenviado",
     "team_removeMember": "Membro da equipe {id} removido",
     "team_sendInvitation": "{email} convidado como {role, select, owner {proprietário} admin {administrador} member {membro} other {{role}}}",
     "team_updateRole": "Função de um membro alterada para {role, select, owner {proprietário} admin {administrador} member {membro} other {{role}}}",
@@ -298,8 +306,15 @@
     "settings_deleteDocumentDesign": "Excluiu o design de documento {name}",
     "settings_applyDocumentDesign": "Definiu {name} como design de documento padrão",
     "settings_setDocumentDesignRule": "Alterou quando o design de documento {name} é usado",
+    "settings_saveEmailTemplate": "Salvou o modelo de e-mail {name}",
+    "settings_deleteEmailTemplate": "Excluiu o modelo de e-mail {name}",
+    "settings_applyEmailTemplate": "Definiu {name} como modelo para e-mails de {kind}",
     "settings_freezeInvoices": "Travou {count, plural, one {# fatura} other {# faturas}} anteriores ao bloqueio com o design atual",
     "inspection_reminders_sent": "Enviou {count} lembretes de inspeção",
-    "service_videoCall_send": "Enviou o link da videochamada por {channels}"
+    "service_videoCall_send": "Enviou o link da videochamada por {channels}",
+    "timeEntry_create": "Adicionados {minutes} minutos para {technician} em \"{job}\"",
+    "timeEntry_update": "Registro de tempo de {technician} em \"{job}\" corrigido para {minutes} minutos",
+    "timeEntry_stop": "Relógio de {technician} em \"{job}\" parado em {minutes} minutos",
+    "timeEntry_delete": "Registro de tempo {id} excluído"
   }
 }

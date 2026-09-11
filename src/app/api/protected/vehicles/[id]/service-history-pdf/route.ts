@@ -10,6 +10,10 @@ import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import {
+  isMarineWorkshop,
+  withMarineDocumentLabels,
+} from '@/features/invoice-designer/Lib/marineLabels'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -28,7 +32,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     } catch {
       pdfMessages = (await import(`../../../../../../../messages/en/pdf.json`)).default
     }
-    const labels = {
+    let labels: Record<string, string> = {
       ...pdfMessages.invoice,
       ...pdfMessages.common,
       ...(pdfMessages.serviceHistory || {}),
@@ -99,14 +103,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     for (const s of settings) settingsMap[s.key] = s.value
 
     // Override labels for marine service type
-    const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
-    if (serviceType === 'marine') {
-      if (pdfMessages.invoice.mileageMarine) labels.mileage = pdfMessages.invoice.mileageMarine
-      if (pdfMessages.invoice.vinMarine) labels.vin = pdfMessages.invoice.vinMarine
-      if (pdfMessages.invoice.plateMarine) labels.plate = pdfMessages.invoice.plateMarine
-      if (pdfMessages.invoice.vehicleMarine) labels.vehicle = pdfMessages.invoice.vehicleMarine
-      labels.km = 'hrs'
-      labels.mi = 'hrs'
+    if (isMarineWorkshop(settingsMap)) {
+      labels = withMarineDocumentLabels(labels, pdfMessages)
       labels.mileageCol = labels.mileageColMarine || 'Engine Hrs'
     }
 

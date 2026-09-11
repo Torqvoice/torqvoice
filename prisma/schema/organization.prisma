@@ -49,6 +49,7 @@ model Organization {
   laborPresets                LaborPreset[]
   customFieldDefinitions      CustomFieldDefinition[]
   settings                    AppSetting[]
+  emailTemplates              EmailTemplate[]
   subscription                Subscription?
   invitations                 TeamInvitation[]
   inspectionTemplates         InspectionTemplate[]

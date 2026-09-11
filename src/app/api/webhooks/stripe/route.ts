@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
 import { paymentProviderFor } from '@/features/integrations/Lib/payments'
+import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
+import { stripeClient } from '@/lib/payment-providers/vendor-hosts'
+import { recordVendorPayment } from '@/lib/payment-providers/record-payment'
 
 export async function POST(request: Request) {
   try {
@@ -41,7 +44,7 @@ export async function POST(request: Request) {
     const webhookSecret = connected?.setup.credentials.webhookSecret
     const signingSecret = typeof webhookSecret === 'string' ? webhookSecret : ''
 
-    const stripe = new Stripe(secretKey)
+    const stripe = stripeClient(secretKey)
 
     // Establish an AUTHENTIC session object. Two trust paths, never the body:
     //  - webhook secret configured → verify the signature over the raw body;
@@ -86,29 +89,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true })
     }
 
-    // Idempotent: check if payment already recorded
-    const existing = await db.payment.findFirst({
-      where: { externalId: session.id },
+    // Verify service record exists and belongs to this org
+    const record = await db.serviceRecord.findUnique({
+      where: { id: serviceRecordId },
+      select: { id: true, organizationId: true },
     })
 
-    if (!existing) {
-      // Verify service record exists and belongs to this org
-      const record = await db.serviceRecord.findUnique({
-        where: { id: serviceRecordId },
-        select: { id: true, organizationId: true },
+    if (
+      record &&
+      paymentMatchesRecord(
+        { serviceRecordId, organizationId: orgId },
+        { serviceRecordId: record.id, organizationId: record.organizationId ?? '' }
+      )
+    ) {
+      // Once, however many reports arrive together: Stripe retries, and the
+      // customer coming back to the invoice reports the same session.
+      await recordVendorPayment({
+        amount: (session.amount_total ?? 0) / 100,
+        method: 'stripe',
+        provider: 'stripe',
+        externalId: session.id,
+        serviceRecordId,
       })
-
-      if (record && record.organizationId === orgId) {
-        await db.payment.create({
-          data: {
-            amount: (session.amount_total ?? 0) / 100,
-            method: 'stripe',
-            provider: 'stripe',
-            externalId: session.id,
-            serviceRecordId,
-          },
-        })
-      }
     }
 
     return NextResponse.json({ received: true })

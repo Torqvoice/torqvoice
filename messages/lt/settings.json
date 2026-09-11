@@ -131,24 +131,27 @@
         "title": "Padangų viešbutis",
         "description": "Sezoninis padangų saugojimas"
       },
-      "providers": {
-        "title": "Tiekėjai",
-        "description": "El. paštas, SMS, „WhatsApp“ ir „Telegram“"
-      },
       "inspectionReminders": {
         "title": "Apžiūros priminimai",
         "description": "Rezervacijos nuoroda, trukmė ir terminas"
+      },
+      "emailTemplates": {
+        "title": "El. laiškų šablonai",
+        "description": "Ką rašo sąskaitų, pasiūlymų ir ataskaitų laiškai"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nauja"
   },
   "readOnly": {
     "banner": "Turite tik peržiūros prieigą prie nustatymų. Susisiekite su administratoriumi, kad atliktumėte pakeitimus."
   },
   "featureLocked": {
-    "requiresPro": "Reikalinga Pro licencija",
-    "upgradePlan": "Atnaujinti planą",
-    "activateLicense": "Aktyvuoti licenciją"
+    "requiresPro": "Reikalinga prenumerata",
+    "upgradePlan": "Peržiūrėti planus",
+    "activateLicense": "Aktyvuoti licenciją",
+    "requiresLicense": "Reikalinga „white label“ licencija",
+    "previewHint": "Tai peržiūra. Viskas šiame puslapyje atrakinama su prenumerata."
   },
   "company": {
     "logoTitle": "Įmonės logotipas",
@@ -164,6 +167,9 @@
     "shopNamePlaceholder": "Jono autoservisas",
     "orgNumber": "Įmonės kodas",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Organizacijos numerio pavadinimas",
+    "orgNumberLabelPlaceholder": "Įmonės kodas",
+    "orgNumberLabelHint": "Spausdinamas šalia numerio sąskaitose ir pasiūlymuose. Palikite tuščią, kad būtų naudojamas numatytasis pavadinimas jūsų kalba, arba įrašykite, kaip jis vadinamas jūsų šalyje, pvz., PVM kodas, ABN arba CVR.",
     "phone": "Telefonas",
     "phonePlaceholder": "+370 600 12345",
     "email": "El. paštas",
@@ -354,10 +360,11 @@
     "failedSendInvitation": "Nepavyko išsiųsti kvietimo",
     "pendingInvitations": "Laukiantys kvietimai",
     "invitedAs": "Pakviestas kaip {role}",
+    "resendInvitation": "Siųsti kvietimą dar kartą",
+    "invitationResent": "Kvietimas dar kartą išsiųstas {email}",
+    "failedResendInvitation": "Nepavyko dar kartą išsiųsti kvietimo",
     "expires": "Galioja iki {date}",
     "pending": "Laukia",
-    "copyInviteLink": "Kopijuoti kvietimo nuorodą",
-    "inviteLinkCopied": "Kvietimo nuoroda nukopijuota į iškarpinę",
     "cancelInvitation": "Atšaukti kvietimą",
     "cancelInvitationDescription": "Atšaukti kvietimą {email}? Jie nebegalės naudoti šios nuorodos prisijungimui.",
     "invitationCancelled": "Kvietimas atšauktas",
@@ -512,6 +519,10 @@
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
     "description": "Konfigūruokite sąskaitų nustatymus, išdėstymą ir pasirinktinius laukus.",
+    "numberingTitle": "Numeracija ir terminai",
+    "numberingDescription": "Kaip numeruojamos sąskaitos ir pasiūlymai, kada sąskaitos tampa mokėtinos ir kiek laiko galioja pasiūlymai.",
+    "documentsTitle": "Dokumentai",
+    "documentsDescription": "Ką kiekviena sąskaita ir pasiūlymas turi su savimi.",
     "tabs": {
       "general": "Bendra",
       "layout": "Išdėstymas",
@@ -542,12 +553,6 @@
     "customFooter": "Pasirinktinė sąskaitos poraštė",
     "footerPlaceholder": "Dėkojame už jūsų pasitikėjimą!",
     "footerHint": "Šis tekstas rodomas kiekvienos sąskaitos apačioje",
-    "partsMarkupTitle": "Dalių Antkainis",
-    "partsMarkupDescription": "Antkainis taikomas tiekėjo savikainai pridedant dalis. Tik vidinis — klientas niekada nemato savikainos ar antkainio, tik galutinę kainą.",
-    "defaultMarkupPercent": "Numatytasis Antkainis %",
-    "defaultMarkupPercentHint": "Naujos rankiniu būdu pridėtos dalys užpildomos šiuo antkainiu. Palikite 0, kad įvestumėte kainas rankiniu būdu.",
-    "markupAppliesToInventory": "Taikyti antkainį sandėlio dalims",
-    "markupAppliesToInventoryHint": "Įjungus, dalys parinktos iš sandėlio taip pat naudoja savikainą + numatytąjį antkainį (perrašo sandėlio pardavimo kainą).",
     "saveInvoice": "Išsaugoti sąskaitos nustatymus",
     "saved": "Sąskaitos nustatymai išsaugoti",
     "layoutDescription": "Pritaikykite sekcijų tvarką ir matomumą sąskaitose ir pasiūlymuose.",
@@ -557,13 +562,6 @@
     "layoutDocQuote": "Pasiūlymas",
     "saveLayout": "Išsaugoti išdėstymą",
     "resetLayout": "Atstatyti numatytuosius",
-    "sectionCustomers": "Klientai",
-    "assignCustomerNumbers": "Priskirti klientų numerius",
-    "assignCustomerNumbersHint": "{count} klientai dar neturi numerio. Priskirti eilės numerius (esami išlieka).",
-    "customerNumbersAssigned": "Numeriai priskirti {count} klientams",
-    "allCustomersNumbered": "Visi klientai turi numerį.",
-    "assignCustomerNumbersConfirmTitle": "Priskirti klientų numerius?",
-    "assignCustomerNumbersConfirmDescription": "{count} klientams be numerio bus priskirti eilės numeriai sukūrimo tvarka, tęsiant nuo didžiausio esamo numerio. Klientai, jau turintys numerį, nekeičiami. Numerius galima redaguoti vėliau.",
     "layoutColorsHint": "Spalvos, šriftai ir antraštės stilius yra skiltyje Šablonai.",
     "goToTemplates": "Atverti šablonus",
     "lockTitle": "Užbaigtų dokumentų užrakinimas",
@@ -571,6 +569,8 @@
     "lockWhatItDoes": "Užrakinama: dalys, darbas, kiekiai, kainos, nuolaida, mokestis, dokumento numeris ir data. Dokumento ištrynimas taip pat blokuojamas.",
     "lockWhatItAllows": "Toliau veikia: mokėjimų registravimas, mokėjimas kortele internetu, būsenos keitimas, siuntimas ir pakartotinis siuntimas, priedai ir vidinės pastabos. Užrakintą sąskaitą visada galima apmokėti.",
     "lockUnlockNote": "Savininkai ir administratoriai gali atrakinti atskirą dokumentą jo paties puslapyje, kai kažką tikrai reikia pataisyti. Kiekvienas atrakinimas įrašomas į audito žurnalą.",
+    "lockDetailsShow": "Ką daro užrakinimas",
+    "lockDetailsHide": "Slėpti",
     "lockInvoicesLabel": "Užrakinti sąskaitas",
     "lockTriggerSent": "Kai sąskaita išsiųsta",
     "lockTriggerPaid": "Kai sąskaita visiškai apmokėta",
@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Kiekviena išlaiko dizainą, logotipą, dirbtuvės duomenis, klientą, transporto priemonę ir pastebėjimus, su kuriais spausdinama dabar. To atšaukti negalima; sąskaitos lieka redaguojamos arba užrakintos redagavimui lygiai kaip šiandien.",
     "freezeProgress": "Užrakinta {done} iš {total}",
     "freezeDone": "Užrakinta {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
-    "freezeFailed": "Nepavyko užrakinti sąskaitų"
+    "freezeFailed": "Nepavyko užrakinti sąskaitų",
+    "sectionSending": "Siuntimas",
+    "attachPdfLabel": "Prie el. laiškų pridėti PDF",
+    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange."
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -854,9 +857,33 @@
     "modeInclusive": "Su mokesčiu",
     "modeExclusiveExample": "Pavyzdys: 100 + {rate}% mokesčio = 100 + mokestis viršuje.",
     "modeInclusiveExample": "Pavyzdys: 100 jau apima {rate}% mokesčio — mokesčio dalis apskaičiuojama atgal.",
+    "lineItemsInclTaxLabel": "Sąskaitose ir pasiūlymuose rodyti eilučių kainas su mokesčiu",
+    "lineItemsInclTaxHint": "Keičia tik tai, kas spausdinama sąskaitose ir pasiūlymuose, įskaitant jų PDF ir kopijas, kurias klientai atidaro per nuorodą. Įjungus kiekviena dalių ir darbo eilutė bei tarpinė suma rodomos su mokesčiu, o mokesčio eilutė nurodo, kokia dalis yra mokestis. Išjungus rodomos kainos be mokesčio, o mokestis pridedamas apačioje. Darbo užsakymai ir jūsų įvedamos kainos nesikeičia.",
     "labelLabel": "Mokesčio etiketė",
     "labelHint": "Pasirinktinis pavadinimas, rodomas sąskaitose ir pasiūlymuose (pvz. PVM, VAT). Palikite tuščią, kad būtų naudojama lokalizuota numatytoji.",
     "labelPlaceholder": "PVM",
+    "splitLabel": "Padalyti mokestį į kelis tarifus",
+    "splitHint": "Vietovėms, kuriose toje pačioje sąskaitoje taikomas daugiau nei vienas mokestis, pvz. GST ir QST Kvebeke arba CGST ir SGST Indijoje. Kiekvienas mokestis spausdinamas atskira eilute su savo registracijos numeriu, o mokesčių ataskaitoje jie rodomi atskirai.",
+    "splitIncomplete": "Prieš išsaugodami kiekvienam mokesčiui nurodykite pavadinimą ir tarifą.",
+    "presetLabel": "Pradėti nuo šablono",
+    "presetPlaceholder": "Pasirinkite regioną",
+    "presets": {
+      "caQc": "Kvebekas, Kanada (GST + QST)",
+      "caBc": "Britų Kolumbija, Kanada (GST + PST)",
+      "caSk": "Saskačevanas, Kanada (GST + PST)",
+      "caMb": "Manitoba, Kanada (GST + RST)",
+      "inIntra": "Indija, ta pati valstija (CGST + SGST po 18%)"
+    },
+    "componentName": "Pavadinimas",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Tarifas",
+    "componentRegistration": "Registracijos numeris",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Pašalinti šį mokestį",
+    "registrationHint": "Spausdinamas sąskaitose po jūsų įmonės duomenimis. Palikite tuščią, jei mokesčiui nesate registruoti.",
+    "addComponent": "Pridėti mokestį",
+    "combinedRate": "Bendras tarifas",
+    "combinedRateHint": "Naujiems darbo užsakymams ir pasiūlymams taikoma aukščiau nurodytų tarifų suma.",
     "convertInclusiveLabel": "Konvertuoti esamus įrašus į režimą su mokesčiu",
     "convertInclusiveHint": "Padidina kiekvienos eilutės kainą mokesčių tarifu, kad kainos apimtų mokestį. Kliento pusės sumos lieka nepakitusios. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
     "convertInclusiveButton": "Konvertuoti į režimą su mokesčiu",
@@ -1039,6 +1066,12 @@
     "addNewTech": "+ Pridėti naują",
     "defaultLaborRate": "Numatytasis darbo tarifas (per valandą)",
     "laborRatePlaceholder": "75,00",
+    "partsMarkupTitle": "Dalių Antkainis",
+    "partsMarkupDescription": "Antkainis taikomas tiekėjo savikainai pridedant dalis. Tik vidinis. Klientas niekada nemato savikainos ar antkainio, tik galutinę kainą.",
+    "defaultMarkupPercent": "Numatytasis Antkainis %",
+    "defaultMarkupPercentHint": "Naujos rankiniu būdu pridėtos dalys užpildomos šiuo antkainiu. Palikite 0, kad įvestumėte kainas rankiniu būdu.",
+    "markupAppliesToInventory": "Taikyti antkainį sandėlio dalims",
+    "markupAppliesToInventoryHint": "Įjungus, dalys parinktos iš sandėlio taip pat naudoja savikainą + numatytąjį antkainį (perrašo sandėlio pardavimo kainą).",
     "unitsTitle": "Vienetai",
     "unitsDescription": "Pasirinkite tarp metrinės (km, litrai) ir imperinės (mylios, galonai) sistemos.",
     "unitSystem": "Vienetų sistema",
@@ -1064,6 +1097,25 @@
     "weekStartDay": "Savaitės pradžios diena",
     "workDayStart": "Darbo dienos pradžia",
     "workDayEnd": "Darbo dienos pabaiga",
+    "titleTemplateTitle": "Darbo užsakymo pavadinimas",
+    "titleTemplateDescription": "Kaip vadinamas naujas darbo užsakymas, kol niekas neįrašė pavadinimo. Sudarykite jį iš žymų žemiau; kiekvienas darbas atsidaro su užpildytomis žymomis, o pavadinimą vis dar galima keisti pačiame darbe.",
+    "titleTemplate": "Pavadinimo šablonas",
+    "titleTemplatePlaceholder": "Palikite tuščią, kad kiekvienas darbas prasidėtų kaip „New Service Record“",
+    "titleTemplateHint": "Spustelėkite žymą, kad ją pridėtumėte. Žyma be turinio, pavyzdžiui automobilis be numerio, praleidžiama kartu su skirtuku.",
+    "titleTemplatePreview": "Pavyzdys: {title}",
+    "titleTemplateUnknown": "Nežinomos žymos praleidžiamos: {tags}",
+    "titleTemplateTags": {
+      "order_number": "Užsakymo numeris",
+      "license_plate": "Valstybinis numeris",
+      "customer_name": "Kliento vardas",
+      "vehicle": "Transporto priemonė (metai, markė, modelis)",
+      "make": "Markė",
+      "model": "Modelis",
+      "year": "Metai",
+      "vin": "VIN",
+      "technician": "Technikas",
+      "date": "Data"
+    },
     "weekDays": {
       "0": "Sekmadienis",
       "1": "Pirmadienis",
@@ -1231,7 +1283,14 @@
     "validated": "Licencija sėkmingai patvirtinta",
     "invalid": "Neteisingas licencijos raktas",
     "failedValidate": "Nepavyko patvirtinti licencijos",
-    "keyHint": "Kiekvienas licencijos raktas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose."
+    "keyHint": "Kiekvienas licencijos raktas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose.",
+    "expired": "Pasibaigusi",
+    "unverified": "Nepatikrinta",
+    "expiresOn": "Galioja iki: {date}",
+    "unreachable": "Nepavyko pasiekti torqvoice.com. Šiame serveryje saugoma licencija nepakito.",
+    "unverifiedHint": "Šis serveris jau {days} d. negali patvirtinti licencijos su torqvoice.com. Po {max} d. be sėkmingo patikrinimo Torqvoice prekės ženklas grįžta.",
+    "rejected": "torqvoice.com nepriėmė šio rakto: {reason}",
+    "signedHint": "Patikrinimą pasirašo torqvoice.com ir jis kartojamas kasdien, todėl serveriui reikia išeinančio ryšio su torqvoice.com."
   },
   "about": {
     "title": "Apie Torqvoice",
@@ -1733,43 +1792,6 @@
     "prepHint": "Kiek kainuoja kiekvienas paruošimo darbas. Palikus tuščią, jis niekada neapmokestinamas, o to ir reikia dirbtuvėms, kurios plovimą įskaičiuoja į saugojimą. Turintys kainą patys atsiranda pasiūlyme ir darbo užsakyme.",
     "prepNotCharged": "neapmokestinama"
   },
-  "providers": {
-    "tabs": {
-      "email": "El. paštas",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "El. pašto nustatymai",
-        "description": "Nustatykite SMTP siuntimą, kad sąskaitos, pasiūlymai ir pranešimai keliautų tiesiai iš dirbtuvių."
-      },
-      "sms": {
-        "feature": "SMS žinutės",
-        "description": "Siųskite ir gaukite SMS su klientais tiesiai iš „Torqvoice“."
-      },
-      "whatsapp": {
-        "feature": "„WhatsApp“ žinutės",
-        "description": "Siųskite ir gaukite „WhatsApp“ žinutes, įskaitant detalių nuotraukas, tiesiai iš „Torqvoice“."
-      },
-      "telegram": {
-        "feature": "„Telegram“ žinutės",
-        "description": "Siųskite ir gaukite „Telegram“ žinutes su klientais tiesiai iš „Torqvoice“."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Sąskaita",
     "quote": "Pasiūlymas",
@@ -1964,8 +1986,14 @@
     "paymentTermsPlaceholderHint": "Mokėjimo sąlygos nenustatytos, todėl lape rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
     "paymentTermsSetHint": "Jūsų mokėjimo sąlygos imamos iš mokėjimų nustatymų.",
     "paymentTermsLink": "Mokėjimų nustatymai",
+    "telegramQr": "Telegram kodas",
+    "telegramQrConnectedHint": "Spausdina kodą, atidarantį {link}, jūsų prijungtą Telegram botą. Jis rodomas tik sąskaitose, išrašytose įjungus bloką.",
+    "telegramQrPlaceholderHint": "Telegram botas neprijungtas, todėl lape rodomas pavyzdinis kodas, kuris nebus spausdinamas.",
+    "telegramQrLink": "Integracijos",
     "titleText": "Pavadinimo tekstas",
     "titleTextHint": "Kaip vadinasi šis dokumentas. Palikus tuščią, spausdinamas jo paties pavadinimas skaitytojo kalba.",
+    "orgNumberLabel": "Organizacijos numerio pavadinimas",
+    "orgNumberLabelHint": "Spausdinamas šalia organizacijos numerio sąskaitose ir pasiūlymuose. Palikite tuščią, kad būtų naudojamas numatytasis pavadinimas jūsų kalba, arba įrašykite, kaip jis vadinamas jūsų šalyje, pvz., PVM kodas, ABN arba CVR. Bendras su įmonės nustatymais.",
     "placeholder": "Vietaženklis",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
@@ -1975,7 +2003,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klientas} few {# klientai} other {# klientų}}, kuriems jis priskirtas, grįš prie numatytojo dizaino.",
     "setDefault": "Nustatyti kaip numatytąjį",
     "defaultSet": "„{name}“ dabar naudojamas",
-    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino"
+    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino",
+    "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",
@@ -2016,5 +2045,362 @@
     "timeZoneDetected": "Laiko juosta nustatyta automatiškai skiltyje Lokalizacija, todėl serveris naudoja {zone} – paskutinę naršyklėje matytą juostą išsaugant nustatymus. Pasirinkite dirbtuvių juostą aiškiai, kad rezervacijos laikai niekada nepriklausytų nuo to, kas išsaugojo paskutinis.",
     "timeZoneExplicit": "Rezervacijos ir darbo laikai skaitomi {zone} juostoje.",
     "timeZoneChange": "Keisti skiltyje Lokalizacija"
+  },
+  "emailTemplates": {
+    "title": "El. laiškų šablonai",
+    "description": "Ką rašo jūsų dirbtuvių siunčiami laiškai ir kaip jie atrodo. Kiekvienas laiško tipas turi įtaisytą šabloną; sukurkite savą, kad pakeistumėte tekstą, spalvas ir blokus, iš kurių jis sudarytas.",
+    "lockedDescription": "Kurkite dirbtuvių siunčiamus laiškus: keiskite tekstą, pridėkite ar šalinkite blokus ir priderinkite spalvas prie savo prekės ženklo.",
+    "groups": {
+      "documents": "Dokumentai",
+      "messages": "Žinutės",
+      "portal": "Klientų portalas",
+      "team": "Komanda"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Sąskaita išsiųsta",
+        "description": "Siunčiamas, kai sąskaita klientui išsiunčiama el. paštu, su pridėtu PDF arba nuoroda peržiūrėti."
+      },
+      "quote_sent": {
+        "name": "Pasiūlymas išsiųstas",
+        "description": "Siunčiamas, kai pasiūlymas klientui išsiunčiamas el. paštu."
+      },
+      "inspection_sent": {
+        "name": "Apžiūros ataskaita išsiųsta",
+        "description": "Siunčiamas, kai apžiūros ataskaita klientui išsiunčiama el. paštu."
+      },
+      "message": {
+        "name": "Žinutė klientui",
+        "description": "Klientui rašoma žinutė: pranešimas iš darbo užsakymo, būsenos ataskaita, kvietimas į vaizdo skambutį arba suplanuotas priminimas."
+      },
+      "portal_signin": {
+        "name": "Prisijungimas prie portalo",
+        "description": "Prisijungimo nuoroda, kurios klientas paprašo klientų portale."
+      },
+      "team_invitation": {
+        "name": "Kvietimas į komandą",
+        "description": "Siunčiamas kolegai, kurį kviečiate prisijungti prie dirbtuvių, su nuoroda paskyrai sukurti."
+      }
+    },
+    "blocks": {
+      "header": "Antraštinė dalis",
+      "heading": "Antraštė",
+      "paragraph": "Pastraipa",
+      "callout": "Išskirtas laukas",
+      "button": "Mygtukas",
+      "document_summary": "Dokumento santrauka",
+      "attachment_note": "Pastaba apie priedą",
+      "image": "Paveikslėlis",
+      "divider": "Skirtukas",
+      "spacer": "Tarpas",
+      "contact_footer": "Kontaktų poraštė"
+    },
+    "blockNotes": {
+      "header": "Jūsų logotipas arba dirbtuvių pavadinimas, kai logotipo nėra arba jis išjungtas. Įkelkite logotipą ir nustatykite jo dydį čia; spalvos ir šriftai yra skiltyje Tema ir dizainas.",
+      "contact_footer": "Jūsų dirbtuvių pavadinimas, adresas, telefonas ir el. paštas iš skilties Įmonė nustatymų. Užpildykite juos ten, kad pakeistumėte, kas čia spausdinama.",
+      "divider": "Plona linija tarp dviejų blokų. Praleidžiama, jei ji pradėtų ar užbaigtų laišką.",
+      "callout": "Išskirtas laukas su spalvotu kraštu. Tinka svarbiausiems žodžiams, pavyzdžiui, pačiai žinutei.",
+      "attachment_note": "Spausdinama tik tada, kai prie laiško pridėtas PDF.",
+      "button": "Nuoroda paprastai yra žymė, pavyzdžiui, bendrinimo nuoroda. Mygtukas, kurio nuoroda neturi reikšmės, laiške praleidžiamas.",
+      "document_summary": "Laukas su pagrindiniais dokumento skaičiais. Eilutės, kuriose nėra ko rodyti, praleidžiamos.",
+      "image": "Įkeliami paveikslėliai suspaudžiami ir sumažinami el. laiškui. Nebenaudojami paveikslėliai pašalinami išsaugant šabloną.",
+      "summaryUnused": "Šio tipo laiškas neturi dokumento, todėl santrauka nieko nespausdina."
+    },
+    "tagGroups": {
+      "workshop": "Dirbtuvės",
+      "customer": "Klientas",
+      "vehicle": "Transporto priemonė",
+      "document": "Dokumentas",
+      "message": "Žinutė",
+      "portal": "Portalas",
+      "team": "Komanda"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Dirbtuvių pavadinimas",
+        "description": "Jūsų dirbtuvių pavadinimas."
+      },
+      "workshop_phone": {
+        "label": "Dirbtuvių telefonas",
+        "description": "Telefono numeris iš skilties Įmonė nustatymų."
+      },
+      "workshop_email": {
+        "label": "Dirbtuvių el. paštas",
+        "description": "El. pašto adresas iš skilties Įmonė nustatymų."
+      },
+      "workshop_address": {
+        "label": "Dirbtuvių adresas",
+        "description": "Adresas iš skilties Įmonė nustatymų, tiek eilučių, kiek jis turi."
+      },
+      "current_user": {
+        "label": "Siuntėjo vardas",
+        "description": "Laišką siunčiančio asmens vardas."
+      },
+      "customer_name": {
+        "label": "Kliento vardas",
+        "description": "Kliento, kuriam siunčiamas laiškas, vardas."
+      },
+      "vehicle": {
+        "label": "Transporto priemonė",
+        "description": "Transporto priemonės metai, markė ir modelis."
+      },
+      "plate": {
+        "label": "Valstybinis numeris",
+        "description": "Transporto priemonės registracijos numeris."
+      },
+      "mileage": {
+        "label": "Rida",
+        "description": "Transporto priemonės užfiksuota rida."
+      },
+      "document_number": {
+        "label": "Dokumento numeris",
+        "description": "Sąskaitos arba pasiūlymo numeris."
+      },
+      "document_title": {
+        "label": "Dokumento pavadinimas",
+        "description": "Darbo arba dokumento pavadinimas."
+      },
+      "total": {
+        "label": "Iš viso",
+        "description": "Dokumento suma jo valiuta."
+      },
+      "balance_due": {
+        "label": "Likutis",
+        "description": "Kiek pagal dokumentą dar liko sumokėti po mokėjimų."
+      },
+      "due_date": {
+        "label": "Apmokėjimo data",
+        "description": "Data, iki kurios reikia sumokėti."
+      },
+      "share_link": {
+        "label": "Bendrinimo nuoroda",
+        "description": "Nuoroda, kurią klientas gali atidaryti ir peržiūrėti dokumentą internete."
+      },
+      "message": {
+        "label": "Žinutė",
+        "description": "Šiam laiškui parašyta žinutė arba prie dokumento pridėta pastaba."
+      },
+      "signin_link": {
+        "label": "Prisijungimo nuoroda",
+        "description": "Nuoroda, kuri prijungia klientą prie portalo. Ji greitai nustoja galioti."
+      },
+      "portal_link": {
+        "label": "Portalo nuoroda",
+        "description": "Nuoroda į klientų portalą."
+      },
+      "invite_link": {
+        "label": "Kvietimo nuoroda",
+        "description": "Nuoroda, kuri sukuria paskyrą ir prijungia prie komandos. Nustoja veikti pasibaigus kvietimo galiojimui."
+      },
+      "role": {
+        "label": "Vaidmuo",
+        "description": "Vaidmuo, kuriam asmuo kviečiamas."
+      },
+      "invite_expires": {
+        "label": "Galiojimo data",
+        "description": "Paskutinė diena, kai kvietimo nuoroda veikia."
+      }
+    },
+    "headerRule": "Linija po antrašte",
+    "headerRuleHint": "Plona linija tarp logotipo ar dirbtuvių pavadinimo ir likusio laiško.",
+    "optionalTag": "Ne kiekvienas laiškas turi šios žymės reikšmę. Kai ji tuščia, aplinkiniai žodžiai sutvarkomi.",
+    "summaryRows": {
+      "reference": "Nuoroda",
+      "vehicle": "Transporto priemonė",
+      "total": "Iš viso",
+      "balance": "Likutis",
+      "due": "Apmokėjimo data"
+    },
+    "builtIn": "Įtaisytas",
+    "inUse": "Naudojamas",
+    "useBuiltIn": "Naudoti įtaisytą",
+    "setDefault": "Nustatyti numatytuoju",
+    "defaultSet": "Dabar siunčiama su „{name}“",
+    "couldNotSetDefault": "Nepavyko pakeisti naudojamo šablono",
+    "updatedOn": "Atnaujinta {date}",
+    "delete": "Ištrinti",
+    "deleteTitle": "Ištrinti šabloną",
+    "deleteConfirm": "Ištrinti šabloną „{name}“? Jei jis naudojamas, laiškai grįžta prie įtaisyto šablono.",
+    "deleteTemplate": "Ištrinti šį šabloną",
+    "deleted": "Ištrinta „{name}“",
+    "couldNotDelete": "Nepavyko ištrinti šablono",
+    "backToSettings": "Grįžti į nustatymus",
+    "unsaved": "(neišsaugota)",
+    "save": "Išsaugoti",
+    "saving": "Išsaugoma…",
+    "savedState": "Išsaugota",
+    "saved": "Išsaugota „{name}“",
+    "couldNotSave": "Nepavyko išsaugoti",
+    "saveAsNew": "Išsaugoti kaip naują",
+    "discard": "Atmesti pakeitimus",
+    "sendTest": "Siųsti bandomąjį",
+    "cancel": "Atšaukti",
+    "problems": "{count, plural, one {# problema} few {# problemos} many {# problemos} other {# problemų}}",
+    "unknownTags": "Šios žymės šio tipo laiškui neegzistuoja: {tags}",
+    "missingTags": "Šiame laiške turi būti {tags}",
+    "subjectRequired": "Tema negali būti tuščia",
+    "invalidTemplate": "Kai kuris tekstas per ilgas arba laukelyje netinkama reikšmė.",
+    "leaveTitle": "Išeiti neišsaugojus?",
+    "leaveBody": "Jūsų šio šablono pakeitimai neišsaugoti. Jie bus prarasti.",
+    "leaveConfirm": "Išeiti",
+    "subjectAndTheme": "Tema ir dizainas",
+    "settingsSubtitle": "Taikoma visam laiškui",
+    "blocksTitle": "Blokai",
+    "addBlock": "Pridėti bloką",
+    "removeBlock": "Šalinti bloką",
+    "removeBlockLast": "Paskutinio bloko pašalinti negalima",
+    "blockEmpty": "tuščias",
+    "blockEmptyHint": "Rodomas, bet jame kol kas nėra ko spausdinti.",
+    "blockShownHint": "Matomas laiške. Spustelėkite, kad paslėptumėte.",
+    "blockHiddenHint": "Paslėptas laiške. Spustelėkite, kad parodytumėte.",
+    "railHint": "Tempkite bloką už rankenėlės, kad jį perkeltumėte. Linija rodo, kur jis atsidurs. Spustelėkite bloką, kad dešinėje redaguotumėte jo tekstą.",
+    "resizeHint": "Tempkite, kad pakeistumėte skydelio dydį. Spustelėkite du kartus, kad atstatytumėte.",
+    "desktop": "Kompiuteris",
+    "mobile": "Mobilusis",
+    "htmlView": "HTML",
+    "textView": "Paprastas tekstas",
+    "desktopTooltip": "Peržiūra kompiuterio pločiu",
+    "mobileTooltip": "Peržiūra telefono pločiu",
+    "htmlViewTooltip": "Rodyti HTML laišką",
+    "previewWidth": "Peržiūros plotis",
+    "previewView": "Peržiūros rodinys",
+    "textViewTooltip": "Rodyti paprasto teksto versiją",
+    "inboxNow": "Dabar",
+    "inboxNoSender": "Jūsų dirbtuvės",
+    "inboxNoSubject": "(be temos)",
+    "subject": "Tema",
+    "text": "Tekstas",
+    "buttonLabel": "Mygtuko tekstas",
+    "buttonHref": "Nuoroda",
+    "spacerHeight": "Aukštis",
+    "tagsTitle": "Žymės",
+    "tagsHint": "Spustelėkite žymę, kad įterptumėte ją ten, kur yra žymeklis lauke, kuriame paskutinį kartą rašėte.",
+    "theme": {
+      "colors": "Spalvos",
+      "primaryColor": "Pagrindinė",
+      "textColor": "Tekstas",
+      "mutedColor": "Prislopintas tekstas",
+      "backgroundColor": "Fonas",
+      "panelColor": "Laukai",
+      "invalidColor": "Spalva nėra tinkama šešioliktainė reikšmė",
+      "hexLabel": "{label} šešioliktaine reikšme",
+      "typography": "Tipografika",
+      "font": "Šriftas",
+      "fontHint": "Tik šriftai, kuriuos jau turi kiekviena pašto programa. Dauguma jų neįkelia žiniatinklio šriftų.",
+      "fonts": {
+        "system": "Sisteminis",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "lineSpacing": "Eilučių tarpai",
+      "lineSpacings": {
+        "compact": "Glaustai",
+        "normal": "Įprastai",
+        "relaxed": "Laisvai"
+      },
+      "paragraphSpacing": "Pastraipų tarpai",
+      "paragraphSpacings": {
+        "tight": "Ankštai",
+        "normal": "Įprastai",
+        "loose": "Plačiai"
+      },
+      "spacingHint": "Eilučių tarpas yra kiekvienos eilutės aukštis; pastraipų tarpas yra vieta tarp pastraipų ir tarp teksto blokų. Enter pradeda naują pastraipą, Shift+Enter – naują eilutę toje pačioje.",
+      "shapes": "Formos",
+      "buttonRadius": "Mygtuko kampai",
+      "topBar": "Spalvota juosta viršuje",
+      "topBarHint": "Plona juosta jūsų pagrindine spalva išilgai viršutinio laiško krašto.",
+      "showLogo": "Rodyti logotipą",
+      "showLogoHint": "Išjungus logotipą, antraštinėje dalyje vietoj jo spausdinamas dirbtuvių pavadinimas."
+    },
+    "nameDialog": {
+      "title": "Išsaugoti šį šabloną",
+      "body": "Suteikite šablonui pavadinimą, pagal kurį rasite jį galerijoje. Išsaugojus jis taip pat tampa šablonu, su kuriuo siunčiamas šio tipo laiškas.",
+      "placeholder": "Šablono pavadinimas",
+      "nameExists": "Šablonas tokiu pavadinimu jau yra. Pasirinkite kitą pavadinimą.",
+      "save": "Išsaugoti šabloną",
+      "update": "Atnaujinti šabloną"
+    },
+    "testDialog": {
+      "title": "Siųsti bandomąjį laišką",
+      "body": "Laiškas siunčiamas su pavyzdiniais duomenimis, kad galėtumėte pamatyti jį tikroje pašto programoje.",
+      "placeholder": "El. pašto adresas",
+      "send": "Siųsti",
+      "sending": "Siunčiama…",
+      "sentTitle": "Bandomasis laiškas išsiųstas",
+      "sentBody": "Patikrinkite {email} pašto dėžutę. Laiškas gali ateiti per minutę.",
+      "failedTitle": "Nepavyko išsiųsti bandomojo laiško",
+      "failedBody": "Patikrinkite el. pašto tiekėją skiltyje Tiekėjai ir bandykite dar kartą."
+    },
+    "toolbar": {
+      "bold": "Paryškintas",
+      "italic": "Kursyvas",
+      "underline": "Pabrauktas",
+      "strike": "Perbrauktas",
+      "link": "Nuoroda",
+      "linkUrl": "Nuorodos adresas",
+      "linkPlaceholder": "https://... arba {share_link}",
+      "linkHint": "Žiniatinklio adresas arba žymė, pvz. {share_link}, kuri užpildoma siunčiant laišką.",
+      "linkApply": "Taikyti",
+      "linkRemove": "Šalinti nuorodą",
+      "bulletList": "Sąrašas su ženkleliais",
+      "orderedList": "Numeruotas sąrašas",
+      "align": {
+        "left": "Lygiuoti kairėje",
+        "center": "Centruoti",
+        "right": "Lygiuoti dešinėje"
+      },
+      "size": {
+        "label": "Teksto dydis",
+        "default": "Numatytasis dydis",
+        "small": "Mažas",
+        "normal": "Įprastas",
+        "large": "Didelis",
+        "extraLarge": "Labai didelis"
+      },
+      "color": {
+        "label": "Teksto spalva",
+        "text": "Temos teksto spalva",
+        "muted": "Temos prislopinta spalva",
+        "primary": "Temos pagrindinė spalva",
+        "default": "Numatytoji",
+        "hex": "Šešioliktainė spalva",
+        "apply": "Taikyti"
+      },
+      "clear": "Šalinti formatavimą"
+    },
+    "logo": {
+      "title": "Logotipas",
+      "empty": "Logotipas neįkeltas. Antraštinėje dalyje spausdinamas dirbtuvių pavadinimas.",
+      "upload": "Įkelti logotipą",
+      "replace": "Pakeisti logotipą",
+      "remove": "Šalinti",
+      "uploading": "Įkeliama…",
+      "width": "Logotipo plotis",
+      "hint": "Atskiras nuo įmonės logotipo. Įkeliant jis apkarpomas ir paruošiamas el. laiškui. PNG, JPEG arba WebP iki 4 MB.",
+      "position": "Padėtis",
+      "tooLarge": "Paveikslėlis turi būti mažesnis nei 4 MB",
+      "uploadFailed": "Nepavyko įkelti logotipo"
+    },
+    "image": {
+      "empty": "Paveikslėlis neįkeltas. Blokas nieko nespausdina, kol jo nėra.",
+      "upload": "Įkelti paveikslėlį",
+      "replace": "Pakeisti paveikslėlį",
+      "remove": "Šalinti",
+      "uploading": "Įkeliama…",
+      "alt": "Aprašymas",
+      "altHint": "Perskaitomas balsu skaitytojams, kurie negali matyti paveikslėlio, ir rodomas, kol jis įkeliamas. PNG, JPEG arba WebP iki 10 MB.",
+      "width": "Plotis",
+      "widthHint": "600 px yra visas el. laiško plotis. Siauresni paveikslėliai dedami ten, kur nurodo Padėtis.",
+      "link": "Nuoroda",
+      "linkHint": "Neprivaloma. Atidaroma spustelėjus paveikslėlį; čia tinka ir žymė, pavyzdžiui, bendrinimo nuoroda.",
+      "tooLarge": "Paveikslėlis turi būti mažesnis nei 10 MB",
+      "uploadFailed": "Nepavyko įkelti paveikslėlio"
+    },
+    "dragHandle": "Tempkite, kad pertvarkytumėte",
+    "dragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte šį bloką",
+    "tagDoesNotFit": "Žymė netelpa į šį laukelį."
   }
 }

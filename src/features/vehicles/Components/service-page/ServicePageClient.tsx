@@ -100,6 +100,7 @@ export function ServicePageClient({
   designFollowsName = null,
   designPinnedAt = null,
   designFollowsRule = null,
+  jobClock = { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' },
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -399,12 +400,18 @@ export function ServicePageClient({
 
       {activeTab === 'details' && (
         <>
+          {/* noValidate, and the rules checked in handleSubmit instead. An
+              autosave submits through requestSubmit, which native validation
+              stops with no message and no request; and the rules that matter
+              most here — a priced part with no name, labour with hours and no
+              description — are not ones a `required` attribute can state. */}
           <form
             id="service-record-form"
             ref={formState.formRef}
             onSubmit={actions.handleSubmit}
             onInput={formState.markDirty}
             className="flex min-h-0 flex-1 flex-col"
+            noValidate
           >
             {/* A locked invoice offers no editing at all, rather than letting
                 someone retype a line and meet the refusal on save. The
@@ -442,6 +449,7 @@ export function ServicePageClient({
                     onShowExistingObservations={() =>
                       obsControlsRef.current?.onShowExistingObservations()
                     }
+                    jobClock={jobClock}
                   />
                 }
                 rightColumn={
@@ -587,11 +595,12 @@ export function ServicePageClient({
         onOpenChange={actions.setShowEmailDialog}
         defaultEmail={customer?.email || ''}
         entityLabel={t('invoice.entityLabel')}
-        onSend={async (email, message) => {
+        onSend={async (email, message, attachPdf) => {
           const result = await sendInvoiceEmail({
             serviceRecordId: record.id,
             recipientEmail: email,
             message,
+            attachPdf,
           })
           // Deliberately not awaited: the email dialog should show "sent" the
           // moment it is, not sit spinning behind the "mark completed"
@@ -619,6 +628,7 @@ export function ServicePageClient({
             open={actions.showPaymentNotifyDialog}
             onOpenChange={actions.setShowPaymentNotifyDialog}
             customer={customer}
+            vehicle={record.vehicle}
             defaultMessage={actions.paymentNotifyMessage}
             emailSubject={t('invoice.emailSubject')}
             smsEnabled={smsEnabled}
@@ -630,6 +640,7 @@ export function ServicePageClient({
             open={showNotifyDialog}
             onOpenChange={setShowNotifyDialog}
             customer={customer}
+            vehicle={record.vehicle}
             defaultMessage={notifyMessage}
             emailSubject={t('invoice.statusEmailSubject')}
             smsEnabled={smsEnabled}

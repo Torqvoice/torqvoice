@@ -155,11 +155,30 @@ export interface CatalogEntry {
   /** Whether this install can start an OAuth flow without the workshop's own app. */
   platformApp: boolean
   featured: boolean
+  /** False when the plan does not include this connector; the card says PRO and connect refuses. */
+  enabled: boolean
 }
 
 function manifestForClient(m: ConnectorManifest): ConnectorManifest {
   // Manifests are plain data already; this documents the boundary.
   return m
+}
+
+/**
+ * The plan check `saveIntegrationCredentials` makes, repeated for every
+ * later action on the connection. A connection made on Pro must stop
+ * syncing and sending when the plan no longer includes it.
+ */
+async function requireConnectorPlan(organizationId: string, connectorId: string) {
+  const manifest = getManifest(connectorId)
+  if (!manifest) throw new Error('Unknown integration')
+  const features = await getFeatures(organizationId)
+  if (!connectorAllowed(manifest, features)) {
+    throw new FeatureGatedError(
+      manifest.plan ?? 'integrations',
+      `${manifest.name} is not included in your plan.`
+    )
+  }
 }
 
 export async function getIntegrationCatalog() {
@@ -185,22 +204,24 @@ export async function getIntegrationCatalog() {
       ])
       const byId = new Map(connections.map((c) => [c.connectorId, c]))
       const country = countrySetting?.value ?? null
-      const entries: CatalogEntry[] = listManifests()
-        .filter((manifest) => features.integrations || connectorAllowed(manifest, features))
-        .map((manifest) => {
-          const c = byId.get(manifest.id)
-          const spec = oauthSpec(manifest)
-          return {
-            manifest: manifestForClient(manifest),
-            status: (c?.status as ConnectionStatus | undefined) ?? null,
-            externalAccountName: c?.externalAccountName ?? null,
-            lastError: c?.lastError ?? null,
-            platformApp: spec ? Boolean(platformClient(spec)) : true,
-            featured:
-              manifest.countries === 'global' ||
-              (country ? manifest.countries.includes(country) : false),
-          }
-        })
+      // Every connector is listed, whatever the plan. A free workshop sees
+      // what an upgrade brings, marked as such, instead of a catalog with
+      // two entries under a navigation badge that says PRO.
+      const entries: CatalogEntry[] = listManifests().map((manifest) => {
+        const c = byId.get(manifest.id)
+        const spec = oauthSpec(manifest)
+        return {
+          manifest: manifestForClient(manifest),
+          enabled: connectorAllowed(manifest, features),
+          status: (c?.status as ConnectionStatus | undefined) ?? null,
+          externalAccountName: c?.externalAccountName ?? null,
+          lastError: c?.lastError ?? null,
+          platformApp: spec ? Boolean(platformClient(spec)) : true,
+          featured:
+            manifest.countries === 'global' ||
+            (country ? manifest.countries.includes(country) : false),
+        }
+      })
       return {
         entries,
         enabled: anyConnectorAllowed(features),
@@ -484,6 +505,7 @@ export async function saveIntegrationCredentials(
 export async function updateIntegrationSettings(connectorId: string, raw: unknown) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireConnectorPlan(organizationId, connectorId)
       demoGuard()
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
@@ -509,6 +531,7 @@ export async function updateIntegrationSettings(connectorId: string, raw: unknow
 export async function getIntegrationRemoteOptions(connectorId: string, source: string) {
   return withAuth(
     async ({ organizationId }): Promise<SettingOption[]> => {
+      await requireConnectorPlan(organizationId, connectorId)
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true, status: true },
@@ -526,6 +549,7 @@ export async function getIntegrationRemoteOptions(connectorId: string, source: s
 export async function testIntegration(connectorId: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
+      await requireConnectorPlan(organizationId, connectorId)
       demoGuard()
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
@@ -570,6 +594,7 @@ export async function testIntegration(connectorId: string) {
 export async function sendIntegrationTestMessage(connectorId: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
+      await requireConnectorPlan(organizationId, connectorId)
       demoGuard()
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
@@ -605,6 +630,7 @@ export async function sendIntegrationTestMessage(connectorId: string) {
 export async function runIntegrationJob(connectorId: string, kind: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireConnectorPlan(organizationId, connectorId)
       demoGuard()
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
@@ -635,6 +661,7 @@ export async function runIntegrationJob(connectorId: string, kind: string) {
 export async function backfillIntegrationCalendar(connectorId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireConnectorPlan(organizationId, connectorId)
       demoGuard()
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
@@ -675,6 +702,7 @@ export async function backfillIntegrationCalendar(connectorId: string) {
 export async function backfillIntegrationAccounting(connectorId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireConnectorPlan(organizationId, connectorId)
       demoGuard()
       const manifest = getManifest(connectorId)
       if (manifest?.category !== 'accounting') throw new Error('Unknown integration')
@@ -824,7 +852,7 @@ export async function getIntegrationActivity(connectorId: string) {
                  count(*) FILTER (WHERE status = 'done')::int AS done,
                  count(*) FILTER (WHERE status = 'failed')::int AS failed,
                  count(*) FILTER (WHERE status = 'dead')::int AS dead
-          FROM integration_jobs
+          FROM "public"."integration_jobs"
           WHERE "connectionId" = ${row.id}
           GROUP BY 1, 2, 3
           ORDER BY 4 DESC

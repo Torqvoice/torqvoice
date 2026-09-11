@@ -131,24 +131,27 @@
         "title": "Lastik oteli",
         "description": "Mevsimlik lastik saklama"
       },
-      "providers": {
-        "title": "Sağlayıcılar",
-        "description": "E-posta, SMS, WhatsApp ve Telegram"
-      },
       "inspectionReminders": {
         "title": "Muayene hatırlatmaları",
         "description": "Randevu bağlantısı, süre ve öncelik"
+      },
+      "emailTemplates": {
+        "title": "E-posta şablonları",
+        "description": "Fatura, teklif ve rapor e-postalarınızın metni"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Yeni"
   },
   "readOnly": {
     "banner": "Ayarlara yalnızca görüntüleme erişiminiz var. Değişiklik yapmak için bir yöneticiyle iletişime geçin."
   },
   "featureLocked": {
-    "requiresPro": "Pro lisans gerektirir",
-    "upgradePlan": "Planı Yükselt",
-    "activateLicense": "Lisansı Etkinleştir"
+    "requiresPro": "Abonelik gerekli",
+    "upgradePlan": "Planları görün",
+    "activateLicense": "Lisansı Etkinleştir",
+    "requiresLicense": "Beyaz etiket lisansı gerekli",
+    "previewHint": "Bir önizleme görüyorsunuz. Bu sayfadaki her şey abonelikle açılır."
   },
   "company": {
     "logoTitle": "Şirket Logosu",
@@ -164,6 +167,9 @@
     "shopNamePlaceholder": "Ali'nin Oto Tamir",
     "orgNumber": "Kuruluş Numarası",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Organizasyon numarası etiketi",
+    "orgNumberLabelPlaceholder": "Org. No.",
+    "orgNumberLabelHint": "Faturalarda ve tekliflerde numaranın yanına yazdırılır. Dilinizdeki varsayılan için boş bırakın veya bulunduğunuz yerde ne dendiğini yazın, örneğin Vergi No., MERSİS No. veya VKN.",
     "phone": "Telefon",
     "phonePlaceholder": "(555) 123-4567",
     "email": "E-posta",
@@ -354,10 +360,11 @@
     "failedSendInvitation": "Davet gönderilemedi",
     "pendingInvitations": "Bekleyen Davetler",
     "invitedAs": "{role} olarak davet edildi",
+    "resendInvitation": "Daveti yeniden gönder",
+    "invitationResent": "Davet {email} adresine yeniden gönderildi",
+    "failedResendInvitation": "Davet yeniden gönderilemedi",
     "expires": "Sona erme: {date}",
     "pending": "Beklemede",
-    "copyInviteLink": "Davet linkini kopyala",
-    "inviteLinkCopied": "Davet linki panoya kopyalandı",
     "cancelInvitation": "Daveti İptal Et",
     "cancelInvitationDescription": "{email} adresine gönderilen davet iptal edilsin mi? Bu linki artık kullanamazlar.",
     "invitationCancelled": "Davet iptal edildi",
@@ -512,6 +519,10 @@
   "invoice": {
     "title": "Fatura Düzeni",
     "description": "Oluşturulan PDF faturalarda nelerin görüneceğini yapılandırın.",
+    "numberingTitle": "Numaralandırma ve süreler",
+    "numberingDescription": "Faturaların ve tekliflerin nasıl numaralandırıldığı, faturaların ne zaman vadesinin dolduğu ve tekliflerin ne kadar süre geçerli kaldığı.",
+    "documentsTitle": "Belgeler",
+    "documentsDescription": "Her fatura ve teklifin yanında taşıdıkları.",
     "tabs": {
       "general": "Genel",
       "layout": "Düzen",
@@ -542,12 +553,6 @@
     "customFooter": "Özel Fatura Alt Bilgisi",
     "footerPlaceholder": "İşiniz için teşekkür ederiz!",
     "footerHint": "Bu metin her faturanın altında görünür",
-    "partsMarkupTitle": "Parça Kâr Marjı",
-    "partsMarkupDescription": "Parça eklenirken tedarikçi maliyetine uygulanan kâr marjı. Yalnızca dahili — müşteri maliyeti veya marjı asla görmez, sadece son fiyatı.",
-    "defaultMarkupPercent": "Varsayılan Kâr Marjı %",
-    "defaultMarkupPercentHint": "Yeni elle eklenen parçalar bu marjla önceden doldurulur. Fiyatları elle girmek için 0 bırakın.",
-    "markupAppliesToInventory": "Stok parçalarına kâr marjı uygula",
-    "markupAppliesToInventoryHint": "Etkinleştirildiğinde, stoktan seçilen parçalar da maliyet + varsayılan marj kullanır (stoğun satış fiyatını geçersiz kılar).",
     "saveInvoice": "Fatura Ayarlarını Kaydet",
     "saved": "Fatura ayarları kaydedildi",
     "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
@@ -557,13 +562,6 @@
     "layoutDocQuote": "Teklif",
     "saveLayout": "Düzeni kaydet",
     "resetLayout": "Sıfırla",
-    "sectionCustomers": "Müşteriler",
-    "assignCustomerNumbers": "Müşteri numaralarını ata",
-    "assignCustomerNumbersHint": "{count} müşterinin henüz numarası yok. Sıralı numaralar atayın (mevcutlar korunur).",
-    "customerNumbersAssigned": "{count} müşteriye numara atandı",
-    "allCustomersNumbered": "Tüm müşterilerin numarası var.",
-    "assignCustomerNumbersConfirmTitle": "Müşteri numaraları atansın mı?",
-    "assignCustomerNumbersConfirmDescription": "Numarası olmayan {count} müşteriye, oluşturulma sırasına göre ve mevcut en yüksek numaradan devam eden sıralı numaralar verilecek. Numarası olan müşteriler değişmez. Numaralar sonradan düzenlenebilir.",
     "layoutColorsHint": "Renkler, yazı tipleri ve antet stili Şablonlar’da bulunur.",
     "goToTemplates": "Şablonları aç",
     "lockTitle": "Tamamlanan belgeleri kilitleme",
@@ -571,6 +569,8 @@
     "lockWhatItDoes": "Kilitlenenler: parçalar, işçilik, miktarlar, fiyatlar, indirim, vergi, belge numarası ve tarihi. Belgeyi silmek de engellenir.",
     "lockWhatItAllows": "Çalışmaya devam edenler: ödeme kaydetme, çevrim içi kartla ödeme, durum değişiklikleri, gönderme ve yeniden gönderme, ekler ve dahili notlar. Kilitli bir fatura her zaman ödenebilir.",
     "lockUnlockNote": "Sahipler ve yöneticiler, gerçekten düzeltilmesi gereken bir şey olduğunda belgenin kendi sayfasından tek bir belgenin kilidini açabilir. Her kilit açma denetim günlüğüne yazılır.",
+    "lockDetailsShow": "Kilitleme ne yapar",
+    "lockDetailsHide": "Gizle",
     "lockInvoicesLabel": "Faturaları kilitle",
     "lockTriggerSent": "Fatura gönderildiğinde",
     "lockTriggerPaid": "Fatura tamamen ödendiğinde",
@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Her biri şu anda yazdırıldığı tasarımı, logoyu, atölye bilgilerini, müşteriyi, aracı ve bulguları korur. Geri alınamaz; faturalar bugünkü gibi düzenlenebilir ya da düzenlemeye kilitli kalır.",
     "freezeProgress": "{total} faturadan {done} tanesi kilitlendi",
     "freezeDone": "{count, plural, one {# fatura} other {# fatura}} kilitlendi",
-    "freezeFailed": "Faturalar kilitlenemedi"
+    "freezeFailed": "Faturalar kilitlenemedi",
+    "sectionSending": "Gönderim",
+    "attachPdfLabel": "E-postalara PDF ekle",
+    "attachPdfHint": "E-postayla gönderdiğiniz her fatura, teklif ve kontrol için varsayılan. Açık: müşteri PDF'i ek olarak alır. Kapalı: bunun yerine belgeye bir bağlantı alır ve görüntülenme sayacı ne zaman açtığını gösterir, böylece kimsenin bakmadıklarını takip edebilirsiniz. Tek bir gönderim için bunu paylaşım penceresinde değiştirebilirsiniz."
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",
@@ -854,9 +857,33 @@
     "modeInclusive": "Dahil",
     "modeExclusiveExample": "Örnek: 100 + %{rate} vergi = 100 + üstüne vergi.",
     "modeInclusiveExample": "Örnek: 100 zaten %{rate} vergiyi içeriyor — vergi kısmı geriye doğru hesaplanır.",
+    "lineItemsInclTaxLabel": "Fatura ve tekliflerde satır fiyatlarını vergi dahil göster",
+    "lineItemsInclTaxHint": "Yalnızca fatura ve tekliflerde basılanı değiştirir; PDF'leri ve müşterilerin bağlantıdan açtığı kopyalar dahil. Açık: her parça ve işçilik satırı ile ara toplam vergi dahil gösterilir, vergi satırı bunun ne kadarının vergi olduğunu belirtir. Kapalı: fiyatlar vergisiz gösterilir, vergi en altta eklenir. İş emirleri ve girdiğiniz fiyatlar etkilenmez.",
     "labelLabel": "Vergi etiketi",
     "labelHint": "Faturalar ve tekliflerde gösterilen özel ad (örn. KDV, VAT). Yerelleştirilmiş varsayılanı kullanmak için boş bırakın.",
     "labelPlaceholder": "KDV",
+    "splitLabel": "Vergiyi birden fazla orana böl",
+    "splitHint": "Aynı faturada birden fazla vergi uygulanan yerler için, örneğin Québec'te GST ve QST ya da Hindistan'da CGST ve SGST. Her vergi kendi kayıt numarasıyla ayrı bir satır olarak yazdırılır ve vergi raporu bunları ayrı tutar.",
+    "splitIncomplete": "Kaydetmeden önce her vergiye bir ad ve oran verin.",
+    "presetLabel": "Bir şablondan başla",
+    "presetPlaceholder": "Bölge seçin",
+    "presets": {
+      "caQc": "Québec, Kanada (GST + QST)",
+      "caBc": "Britanya Kolumbiyası, Kanada (GST + PST)",
+      "caSk": "Saskatchewan, Kanada (GST + PST)",
+      "caMb": "Manitoba, Kanada (GST + RST)",
+      "inIntra": "Hindistan, aynı eyalet (%18 CGST + SGST)"
+    },
+    "componentName": "Ad",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Oran",
+    "componentRegistration": "Kayıt numarası",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Bu vergiyi kaldır",
+    "registrationHint": "Faturalarda işletme bilgilerinizin altına yazdırılır. Kayıtlı olmadığınız bir vergi için boş bırakın.",
+    "addComponent": "Vergi ekle",
+    "combinedRate": "Toplam oran",
+    "combinedRateHint": "Yeni iş emirleri ve teklifler yukarıdaki oranların toplamıyla vergilendirilir.",
     "convertInclusiveLabel": "Mevcut kayıtları KDV dahil moda dönüştür",
     "convertInclusiveHint": "Her satır fiyatını vergi oranı kadar yukarı ölçekleyerek fiyatların vergi dahil olmasını sağlar. Müşteri tarafındaki toplamlar değişmez. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
     "convertInclusiveButton": "KDV dahile dönüştür",
@@ -1039,6 +1066,12 @@
     "addNewTech": "+ Yeni ekle",
     "defaultLaborRate": "Varsayılan İşçilik Ücreti (saat başı)",
     "laborRatePlaceholder": "75,00",
+    "partsMarkupTitle": "Parça Kâr Marjı",
+    "partsMarkupDescription": "Parça eklenirken tedarikçi maliyetine uygulanan kâr marjı. Yalnızca dahili. Müşteri maliyeti veya marjı asla görmez, sadece son fiyatı.",
+    "defaultMarkupPercent": "Varsayılan Kâr Marjı %",
+    "defaultMarkupPercentHint": "Yeni elle eklenen parçalar bu marjla önceden doldurulur. Fiyatları elle girmek için 0 bırakın.",
+    "markupAppliesToInventory": "Stok parçalarına kâr marjı uygula",
+    "markupAppliesToInventoryHint": "Etkinleştirildiğinde, stoktan seçilen parçalar da maliyet + varsayılan marj kullanır (stoğun satış fiyatını geçersiz kılar).",
     "unitsTitle": "Birimler",
     "unitsDescription": "Metrik (km, litre) ve emperyal (mil, galon) birimler arasında seçim yapın.",
     "unitSystem": "Birim Sistemi",
@@ -1064,6 +1097,25 @@
     "weekStartDay": "Hafta Baslangici",
     "workDayStart": "Is Gunu Baslangici",
     "workDayEnd": "Is Gunu Bitisi",
+    "titleTemplateTitle": "İş emri başlığı",
+    "titleTemplateDescription": "Biri başlık yazmadan önce yeni bir iş emrinin adı. Aşağıdaki etiketlerden oluşturun; her iş etiketler doldurulmuş olarak açılır ve başlık iş üzerinde yine değiştirilebilir.",
+    "titleTemplate": "Başlık şablonu",
+    "titleTemplatePlaceholder": "Her işin \"New Service Record\" olarak başlaması için boş bırakın",
+    "titleTemplateHint": "Eklemek için bir etikete tıklayın. İçeriği olmayan bir etiket, örneğin plakasız bir araç, ayırıcısıyla birlikte dışarıda bırakılır.",
+    "titleTemplatePreview": "Örnek: {title}",
+    "titleTemplateUnknown": "Bilinmeyen etiketler dışarıda bırakılır: {tags}",
+    "titleTemplateTags": {
+      "order_number": "Sipariş numarası",
+      "license_plate": "Plaka",
+      "customer_name": "Müşteri adı",
+      "vehicle": "Araç (yıl, marka, model)",
+      "make": "Marka",
+      "model": "Model",
+      "year": "Yıl",
+      "vin": "Şasi (VIN)",
+      "technician": "Teknisyen",
+      "date": "Tarih"
+    },
     "weekDays": {
       "0": "Pazar",
       "1": "Pazartesi",
@@ -1231,7 +1283,14 @@
     "validated": "Lisans başarıyla doğrulandı",
     "invalid": "Geçersiz lisans anahtarı",
     "failedValidate": "Lisans doğrulanamadı",
-    "keyHint": "Her lisans anahtarı bu kuruluşa bağlıdır ve birden fazla kuruluşta paylaşılamaz."
+    "keyHint": "Her lisans anahtarı bu kuruluşa bağlıdır ve birden fazla kuruluşta paylaşılamaz.",
+    "expired": "Süresi doldu",
+    "unverified": "Doğrulanmadı",
+    "expiresOn": "Bitiş: {date}",
+    "unreachable": "torqvoice.com'a ulaşılamadı. Bu sunucuda kayıtlı lisans değişmedi.",
+    "unverifiedHint": "Bu sunucu {days} gündür lisansı torqvoice.com ile doğrulayamıyor. Başarılı bir kontrol olmadan {max} gün sonra Torqvoice markası geri döner.",
+    "rejected": "torqvoice.com bu anahtarı kabul etmedi: {reason}",
+    "signedHint": "Doğrulama torqvoice.com tarafından imzalanır ve her gün yenilenir, bu nedenle sunucunun torqvoice.com'a giden erişimi olmalıdır."
   },
   "about": {
     "title": "Torqvoice Hakkında",
@@ -1733,43 +1792,6 @@
     "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
     "prepNotCharged": "ücretlendirilmiyor"
   },
-  "providers": {
-    "tabs": {
-      "email": "E-posta",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "E-posta ayarları",
-        "description": "Faturaların, tekliflerin ve bildirimlerin doğrudan atölyeden gitmesi için SMTP gönderimini ayarlayın."
-      },
-      "sms": {
-        "feature": "SMS mesajlaşma",
-        "description": "Müşterilerinizle SMS'i doğrudan Torqvoice üzerinden gönderip alın."
-      },
-      "whatsapp": {
-        "feature": "WhatsApp mesajlaşma",
-        "description": "Parça fotoğrafları dahil WhatsApp mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
-      },
-      "telegram": {
-        "feature": "Telegram mesajlaşma",
-        "description": "Müşterilerinizle Telegram mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Fatura",
     "quote": "Teklif",
@@ -1964,8 +1986,14 @@
     "paymentTermsPlaceholderHint": "Ödeme koşulları tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
     "paymentTermsSetHint": "Ödeme koşullarınız ödeme ayarlarınızdan gelir.",
     "paymentTermsLink": "Ödeme ayarları",
+    "telegramQr": "Telegram kodu",
+    "telegramQrConnectedHint": "{link} adresini açan bir kod basar; bu bağlı Telegram botunuzdur. Yalnızca blok açıldıktan sonra kesilen faturalarda görünür.",
+    "telegramQrPlaceholderHint": "Bağlı bir Telegram botu yok, bu yüzden sayfa basılmayacak bir örnek kod gösterir.",
+    "telegramQrLink": "Entegrasyonlar",
     "titleText": "Başlık metni",
     "titleTextHint": "Bu belgenin kendine verdiği ad. Boş bırakılırsa kendi adını okuyucunun dilinde yazdırır.",
+    "orgNumberLabel": "Organizasyon numarası etiketi",
+    "orgNumberLabelHint": "Faturalarda ve tekliflerde organizasyon numaranızın yanına yazdırılır. Dilinizdeki varsayılan için boş bırakın veya bulunduğunuz yerde ne dendiğini yazın, örneğin Vergi No., MERSİS No. veya VKN. Şirket ayarlarıyla ortaktır.",
     "placeholder": "Örnek",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
@@ -1975,7 +2003,8 @@
     "deleteDesignCustomers": "Buna ayarlı {count, plural, one {# müşteri} other {# müşteri}} varsayılan tasarıma döner.",
     "setDefault": "Varsayılan yap",
     "defaultSet": "\"{name}\" artık kullanımda",
-    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı"
+    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı",
+    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",
@@ -2016,5 +2045,362 @@
     "timeZoneDetected": "Saat dilimi Yerelleştirme altında otomatik olduğundan sunucu, ayarları kaydeden bir tarayıcıda son görülen {zone} dilimini kullanıyor. Randevu saatlerinin son kaydeden kişiye bağlı olmaması için atölyenin dilimini açıkça seçin.",
     "timeZoneExplicit": "Randevu saatleri ve çalışma saatleri {zone} diliminde okunur.",
     "timeZoneChange": "Yerelleştirme altında değiştir"
+  },
+  "emailTemplates": {
+    "title": "E-posta şablonları",
+    "description": "Atölyenizin gönderdiği e-postaların metni ve görünümü. Her e-posta türünün yerleşik bir şablonu vardır; metni, renkleri ve oluştuğu blokları değiştirmek için kendi şablonunuzu tasarlayın.",
+    "lockedDescription": "Atölyenizin gönderdiği e-postaları tasarlayın: metni değiştirin, blok ekleyin veya kaldırın ve renkleri markanıza uydurun.",
+    "groups": {
+      "documents": "Belgeler",
+      "messages": "Mesajlar",
+      "portal": "Müşteri portalı",
+      "team": "Ekip"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Fatura gönderildi",
+        "description": "Bir fatura e-postayla müşteriye gittiğinde, PDF ekli veya görüntüleme bağlantısıyla gönderilir."
+      },
+      "quote_sent": {
+        "name": "Teklif gönderildi",
+        "description": "Bir teklif e-postayla müşteriye gittiğinde gönderilir."
+      },
+      "inspection_sent": {
+        "name": "Muayene raporu gönderildi",
+        "description": "Bir muayene raporu e-postayla müşteriye gittiğinde gönderilir."
+      },
+      "message": {
+        "name": "Müşteri mesajı",
+        "description": "Bir müşteriye yazılan mesaj: bir iş emrinden bildirim, durum raporu, görüntülü görüşme daveti veya planlanmış hatırlatma."
+      },
+      "portal_signin": {
+        "name": "Portal girişi",
+        "description": "Müşterinin müşteri portalında istediği giriş bağlantısı."
+      },
+      "team_invitation": {
+        "name": "Ekip daveti",
+        "description": "Atölyeye davet ettiğiniz bir iş arkadaşına, hesabını oluşturan bağlantıyla gönderilir."
+      }
+    },
+    "blocks": {
+      "header": "Üst bilgi",
+      "heading": "Başlık",
+      "paragraph": "Paragraf",
+      "callout": "Vurgu kutusu",
+      "button": "Düğme",
+      "document_summary": "Belge özeti",
+      "attachment_note": "Ek notu",
+      "image": "Görsel",
+      "divider": "Ayırıcı",
+      "spacer": "Boşluk",
+      "contact_footer": "İletişim alt bilgisi"
+    },
+    "blockNotes": {
+      "header": "Logonuz veya logo yoksa ya da kapatılmışsa atölye adı. Logoyu buradan yükleyin ve boyutlandırın; renkler ve yazı tipleri Konu ve tema altındadır.",
+      "contact_footer": "Şirket ayarlarından alınan atölye adınız, adresiniz, telefonunuz ve e-postanız. Burada yazdırılanı değiştirmek için bunları orada doldurun.",
+      "divider": "İki blok arasında ince bir çizgi. E-postayı açacak veya kapatacaksa atlanır.",
+      "callout": "Renkli kenarlı vurgulu bir panel. Mesajın kendisi gibi en önemli sözler için uygundur.",
+      "attachment_note": "Yalnızca e-postaya bir PDF eklendiğinde yazdırılır.",
+      "button": "Bağlantı genellikle paylaşım bağlantısı gibi bir etikettir. Bağlantısında değer olmayan düğme e-postadan çıkarılır.",
+      "document_summary": "Belgenin temel rakamlarını içeren bir panel. Gösterecek bir şeyi olmayan satırlar atlanır.",
+      "image": "Görseller yüklenirken e-posta için sıkıştırılır ve yeniden boyutlandırılır. Artık kullanılmayan görseller şablon kaydedildiğinde kaldırılır.",
+      "summaryUnused": "Bu e-posta türünün belgesi yoktur, bu yüzden özet hiçbir şey yazdırmaz."
+    },
+    "tagGroups": {
+      "workshop": "Atölye",
+      "customer": "Müşteri",
+      "vehicle": "Araç",
+      "document": "Belge",
+      "message": "Mesaj",
+      "portal": "Portal",
+      "team": "Ekip"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Atölye adı",
+        "description": "Atölyenizin adı."
+      },
+      "workshop_phone": {
+        "label": "Atölye telefonu",
+        "description": "Şirket ayarlarındaki telefon numarası."
+      },
+      "workshop_email": {
+        "label": "Atölye e-postası",
+        "description": "Şirket ayarlarındaki e-posta adresi."
+      },
+      "workshop_address": {
+        "label": "Atölye adresi",
+        "description": "Şirket ayarlarındaki adres, kaç satırsa o kadar satırda."
+      },
+      "current_user": {
+        "label": "Gönderen adı",
+        "description": "E-postayı gönderen kişinin adı."
+      },
+      "customer_name": {
+        "label": "Müşteri adı",
+        "description": "E-postanın gittiği müşterinin adı."
+      },
+      "vehicle": {
+        "label": "Araç",
+        "description": "Aracın yılı, markası ve modeli."
+      },
+      "plate": {
+        "label": "Plaka",
+        "description": "Aracın plaka numarası."
+      },
+      "mileage": {
+        "label": "Kilometre",
+        "description": "Araçta kayıtlı kilometre."
+      },
+      "document_number": {
+        "label": "Belge numarası",
+        "description": "Faturanın veya teklifin numarası."
+      },
+      "document_title": {
+        "label": "Belge başlığı",
+        "description": "İşin veya belgenin başlığı."
+      },
+      "total": {
+        "label": "Toplam",
+        "description": "Belgenin kendi para birimindeki toplamı."
+      },
+      "balance_due": {
+        "label": "Kalan bakiye",
+        "description": "Ödemelerden sonra belgede hâlâ borç olan tutar."
+      },
+      "due_date": {
+        "label": "Vade tarihi",
+        "description": "Ödemenin vadesinin dolduğu tarih."
+      },
+      "share_link": {
+        "label": "Paylaşım bağlantısı",
+        "description": "Müşterinin belgeyi çevrimiçi görüntülemek için açabileceği bağlantı."
+      },
+      "message": {
+        "label": "Mesaj",
+        "description": "Bu e-posta için yazılan mesaj veya belgeye eklenen not."
+      },
+      "signin_link": {
+        "label": "Giriş bağlantısı",
+        "description": "Müşteriyi portala giriş yaptıran bağlantı. Kısa süre sonra geçerliliğini yitirir."
+      },
+      "portal_link": {
+        "label": "Portal bağlantısı",
+        "description": "Müşteri portalına bağlantı."
+      },
+      "invite_link": {
+        "label": "Davet bağlantısı",
+        "description": "Hesabı oluşturan ve ekibe katan bağlantı. Davet süresi dolduğunda çalışmaz."
+      },
+      "role": {
+        "label": "Rol",
+        "description": "Kişinin davet edildiği rol."
+      },
+      "invite_expires": {
+        "label": "Son geçerlilik tarihi",
+        "description": "Davet bağlantısının çalıştığı son gün."
+      }
+    },
+    "headerRule": "Başlık altında çizgi",
+    "headerRuleHint": "Logo veya atölye adı ile e-postanın geri kalanı arasında ince bir çizgi.",
+    "optionalTag": "Her e-postada bu etiket için bir değer yoktur. Boş olduğunda çevresindeki sözcükler düzenlenir.",
+    "summaryRows": {
+      "reference": "Referans",
+      "vehicle": "Araç",
+      "total": "Toplam",
+      "balance": "Kalan bakiye",
+      "due": "Vade tarihi"
+    },
+    "builtIn": "Yerleşik",
+    "inUse": "Kullanımda",
+    "useBuiltIn": "Yerleşik olanı kullan",
+    "setDefault": "Varsayılan yap",
+    "defaultSet": "Artık \"{name}\" ile gönderiliyor",
+    "couldNotSetDefault": "Kullanımdaki şablon değiştirilemedi",
+    "updatedOn": "{date} tarihinde güncellendi",
+    "delete": "Sil",
+    "deleteTitle": "Şablonu sil",
+    "deleteConfirm": "\"{name}\" şablonu silinsin mi? Kullanımdaysa e-postalar yerleşik şablona döner.",
+    "deleteTemplate": "Bu şablonu sil",
+    "deleted": "\"{name}\" silindi",
+    "couldNotDelete": "Şablon silinemedi",
+    "backToSettings": "Ayarlara dön",
+    "unsaved": "(kaydedilmedi)",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor…",
+    "savedState": "Kaydedildi",
+    "saved": "\"{name}\" kaydedildi",
+    "couldNotSave": "Kaydedilemedi",
+    "saveAsNew": "Yeni olarak kaydet",
+    "discard": "Değişiklikleri yoksay",
+    "sendTest": "Test gönder",
+    "cancel": "İptal",
+    "problems": "{count, plural, one {# sorun} other {# sorun}}",
+    "unknownTags": "Bu etiketler bu e-posta türü için yok: {tags}",
+    "missingTags": "Bu e-posta {tags} içermeli",
+    "subjectRequired": "Konu boş olamaz",
+    "invalidTemplate": "Bir metin çok uzun ya da bir alanda geçersiz bir değer var.",
+    "leaveTitle": "Kaydetmeden çıkılsın mı?",
+    "leaveBody": "Bu şablondaki değişiklikleriniz kaydedilmedi. Kaybolacaklar.",
+    "leaveConfirm": "Çık",
+    "subjectAndTheme": "Konu ve tema",
+    "settingsSubtitle": "Tüm e-posta için geçerlidir",
+    "blocksTitle": "Bloklar",
+    "addBlock": "Blok ekle",
+    "removeBlock": "Bloğu kaldır",
+    "removeBlockLast": "Son blok kaldırılamaz",
+    "blockEmpty": "boş",
+    "blockEmptyHint": "Gösteriliyor, ancak içinde henüz yazdırılacak bir şey yok.",
+    "blockShownHint": "E-postada görünüyor. Gizlemek için tıklayın.",
+    "blockHiddenHint": "E-postada gizli. Göstermek için tıklayın.",
+    "railHint": "Bir bloğu taşımak için tutamacından sürükleyin. Çizgi, nereye yerleşeceğini gösterir. Metnini sağda düzenlemek için bir bloğa tıklayın.",
+    "resizeHint": "Panelin boyutunu değiştirmek için sürükleyin. Sıfırlamak için çift tıklayın.",
+    "desktop": "Masaüstü",
+    "mobile": "Mobil",
+    "htmlView": "HTML",
+    "textView": "Düz metin",
+    "desktopTooltip": "Masaüstü genişliğinde önizle",
+    "mobileTooltip": "Telefon genişliğinde önizle",
+    "htmlViewTooltip": "HTML e-postayı göster",
+    "previewWidth": "Önizleme genişliği",
+    "previewView": "Önizleme görünümü",
+    "textViewTooltip": "Düz metin sürümünü göster",
+    "inboxNow": "Şimdi",
+    "inboxNoSender": "Atölyeniz",
+    "inboxNoSubject": "(konu yok)",
+    "subject": "Konu",
+    "text": "Metin",
+    "buttonLabel": "Düğme metni",
+    "buttonHref": "Bağlantı",
+    "spacerHeight": "Yükseklik",
+    "tagsTitle": "Etiketler",
+    "tagsHint": "Bir etiketi, en son yazdığınız alanda imlecin bulunduğu yere eklemek için tıklayın.",
+    "theme": {
+      "colors": "Renkler",
+      "primaryColor": "Ana renk",
+      "textColor": "Metin",
+      "mutedColor": "Soluk metin",
+      "backgroundColor": "Arka plan",
+      "panelColor": "Paneller",
+      "invalidColor": "Bir renk geçerli bir onaltılık değer değil",
+      "hexLabel": "{label} onaltılık olarak",
+      "typography": "Tipografi",
+      "font": "Yazı tipi",
+      "fontHint": "Yalnızca her e-posta istemcisinde zaten bulunan yazı tipleri. Çoğu web yazı tiplerini yüklemez.",
+      "fonts": {
+        "system": "Sistem",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "lineSpacing": "Satır aralığı",
+      "lineSpacings": {
+        "compact": "Sıkı",
+        "normal": "Normal",
+        "relaxed": "Geniş"
+      },
+      "paragraphSpacing": "Paragraf aralığı",
+      "paragraphSpacings": {
+        "tight": "Dar",
+        "normal": "Normal",
+        "loose": "Geniş"
+      },
+      "spacingHint": "Satır aralığı her satırın yüksekliğidir; paragraf aralığı paragraflar ve metin blokları arasındaki boşluktur. Enter yeni paragraf, Shift+Enter aynı paragrafta yeni satır başlatır.",
+      "shapes": "Şekiller",
+      "buttonRadius": "Düğme köşeleri",
+      "topBar": "Üstte renkli şerit",
+      "topBarHint": "E-postanın üst kenarı boyunca ana renginizde ince bir şerit.",
+      "showLogo": "Logoyu göster",
+      "showLogoHint": "Logo kapalıyken üst bilgi bunun yerine atölye adını yazdırır."
+    },
+    "nameDialog": {
+      "title": "Bu şablonu kaydet",
+      "body": "Şablona galeride bulabileceğiniz bir ad verin. Kaydetmek onu aynı zamanda bu e-posta türünün gönderildiği şablon yapar.",
+      "placeholder": "Şablon adı",
+      "nameExists": "Bu adda bir şablon zaten var. Başka bir ad seçin.",
+      "save": "Şablonu kaydet",
+      "update": "Şablonu güncelle"
+    },
+    "testDialog": {
+      "title": "Test e-postası gönder",
+      "body": "E-posta örnek verilerle gönderilir, böylece onu gerçek bir e-posta istemcisinde görebilirsiniz.",
+      "placeholder": "E-posta adresi",
+      "send": "Gönder",
+      "sending": "Gönderiliyor…",
+      "sentTitle": "Test e-postası gönderildi",
+      "sentBody": "{email} gelen kutusunu kontrol edin. Ulaşması bir dakika sürebilir.",
+      "failedTitle": "Test e-postası gönderilemedi",
+      "failedBody": "Sağlayıcılar altındaki e-posta sağlayıcısını kontrol edin ve yeniden deneyin."
+    },
+    "toolbar": {
+      "bold": "Kalın",
+      "italic": "İtalik",
+      "underline": "Altı çizili",
+      "strike": "Üstü çizili",
+      "link": "Bağlantı",
+      "linkUrl": "Bağlantı adresi",
+      "linkPlaceholder": "https://... veya {share_link}",
+      "linkHint": "Bir web adresi veya e-posta gönderilirken doldurulan {share_link} gibi bir etiket.",
+      "linkApply": "Uygula",
+      "linkRemove": "Bağlantıyı kaldır",
+      "bulletList": "Madde işaretli liste",
+      "orderedList": "Numaralı liste",
+      "align": {
+        "left": "Sola hizala",
+        "center": "Ortala",
+        "right": "Sağa hizala"
+      },
+      "size": {
+        "label": "Metin boyutu",
+        "default": "Varsayılan boyut",
+        "small": "Küçük",
+        "normal": "Normal",
+        "large": "Büyük",
+        "extraLarge": "Çok büyük"
+      },
+      "color": {
+        "label": "Metin rengi",
+        "text": "Temanın metin rengi",
+        "muted": "Temanın soluk rengi",
+        "primary": "Temanın ana rengi",
+        "default": "Varsayılan",
+        "hex": "Onaltılık renk",
+        "apply": "Uygula"
+      },
+      "clear": "Biçimlendirmeyi temizle"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Logo yüklenmedi. Üst bilgi atölye adını yazdırır.",
+      "upload": "Logo yükle",
+      "replace": "Logoyu değiştir",
+      "remove": "Kaldır",
+      "uploading": "Yükleniyor…",
+      "width": "Logo genişliği",
+      "hint": "Şirket logosundan bağımsızdır. Yüklenirken kırpılır ve e-posta için hazırlanır. En fazla 4 MB PNG, JPEG veya WebP.",
+      "position": "Konum",
+      "tooLarge": "Görsel 4 MB'den küçük olmalıdır",
+      "uploadFailed": "Logo yüklenemedi"
+    },
+    "image": {
+      "empty": "Görsel yüklenmedi. Bir görsel eklenene kadar blok hiçbir şey yazdırmaz.",
+      "upload": "Görsel yükle",
+      "replace": "Görseli değiştir",
+      "remove": "Kaldır",
+      "uploading": "Yükleniyor…",
+      "alt": "Açıklama",
+      "altHint": "Görseli göremeyen okuyuculara sesli okunur ve görsel yüklenirken gösterilir. En fazla 10 MB PNG, JPEG veya WebP.",
+      "width": "Genişlik",
+      "widthHint": "600 px e-postanın tam genişliğidir. Daha dar görseller Konum alanında belirtilen yere yerleşir.",
+      "link": "Bağlantı",
+      "linkHint": "İsteğe bağlı. Görsele tıklandığında açılır; paylaşım bağlantısı gibi bir etiket de burada kullanılabilir.",
+      "tooLarge": "Görsel 10 MB'den küçük olmalıdır",
+      "uploadFailed": "Görsel yüklenemedi"
+    },
+    "dragHandle": "Yeniden sıralamak için sürükleyin",
+    "dragHandleKeyboard": "Bu bloğu taşımak için sürükleyin ya da ok tuşlarını kullanın",
+    "tagDoesNotFit": "Etiket bu alana sığmıyor."
   }
 }

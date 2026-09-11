@@ -81,6 +81,14 @@
     "enterFullscreen": "Pełny ekran",
     "exitFullscreen": "Zamknij pełny ekran"
   },
+  "upgrade": {
+    "title": "Zmień plan, aby kontynuować",
+    "maxCustomers": "Twój plan obejmuje do {limit} klientów i ta liczba została osiągnięta. Zmień plan, aby dodać tylu, ilu potrzebujesz.",
+    "maxUsers": "Twój plan obejmuje {limit, plural, one {jednego członka zespołu} few {# członków zespołu} many {# członków zespołu} other {# członka zespołu}}. Zmień plan, aby zaprosić więcej osób.",
+    "generic": "Ta funkcja nie jest dostępna w Twoim obecnym planie.",
+    "featureNotIncluded": "{feature} nie jest dostępne w Twoim obecnym planie.",
+    "notNow": "Nie teraz"
+  },
   "broadcast": {
     "dismiss": "Zamknij",
     "title": "Komunikat dla wszystkich",
@@ -100,5 +108,7 @@
     "title": "Podgląd PDF",
     "preview": "Podgląd",
     "failed": "Nie udało się wygenerować podglądu PDF."
-  }
+  },
+  "attachPdf": "Dołącz PDF",
+  "attachPdfHint": "Wyłącz, aby wysłać zamiast tego link i widzieć, kiedy klient go otworzy."
 }

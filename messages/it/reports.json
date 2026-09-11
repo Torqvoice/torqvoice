@@ -12,7 +12,9 @@
     "parts": "Ricambi",
     "jobAnalytics": "Analisi Lavori",
     "retention": "Fidelizzazione",
-    "vehicles": "Veicoli"
+    "vehicles": "Veicoli",
+    "techniciansOverview": "Panoramica",
+    "clockedTime": "Tempo registrato"
   },
   "dateRange": {
     "to": "a",
@@ -138,6 +140,19 @@
       "avgRevenue": "Ricavo Medio",
       "totalHours": "Ore Totali",
       "avgHours": "Ore Medie"
+    },
+    "time": {
+      "clockedHours": "Ore registrate",
+      "billedHours": "Ore fatturate",
+      "efficiency": "Efficienza",
+      "techniciansClocked": "Tecnici con tempo",
+      "chartTitle": "Registrato e fatturato per tecnico",
+      "tableTitle": "Registrato contro fatturato",
+      "clocked": "Registrato",
+      "billed": "Fatturato",
+      "hint": "Le ore registrate vengono dal timer. Le ore fatturate sono le righe di manodopera dei lavori assegnati al tecnico iniziati nell'intervallo. L'efficienza è fatturato diviso registrato.",
+      "noClock": "Nessun tempo",
+      "jobsClocked": "Lavori registrati"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Tipo",
     "status": "Stato",
     "partsUsed": "Ricambi",
-    "laborHours": "Ore di Manodopera"
+    "laborHours": "Ore di Manodopera",
+    "clockedHours": "Ore registrate",
+    "billedHours": "Ore fatturate",
+    "efficiency": "Efficienza",
+    "jobsClocked": "Lavori registrati"
   },
   "pdf": {
     "reportTitle": "Business Report",

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
+import { BARE_START_REPLY, getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
 import { notify } from '@/lib/notify'
+import { safeEqual } from '@/lib/webhook-signatures'
 
 interface TelegramUpdate {
   message?: {
@@ -39,7 +40,7 @@ export async function POST(
       return NextResponse.json({ ok: false }, { status: 500 })
     }
 
-    if (!secret || secret !== secretHeader) {
+    if (!secret || !safeEqual(secret, secretHeader)) {
       return NextResponse.json({ ok: true })
     }
 
@@ -56,10 +57,15 @@ export async function POST(
     const telegramMessageId = String(msg.message_id)
 
     // Handle /start deep-link command: /start {customerId}
-    if (text.startsWith('/start ')) {
-      const customerId = text.slice(7).trim()
+    if (text === '/start' || text.startsWith('/start ')) {
+      const customerId = text.slice('/start'.length).trim()
       if (customerId) {
         await handleStartCommand(organizationId, chatId, customerId, msg.chat.first_name)
+      } else {
+        // Somebody opened the bot by name rather than through a link that
+        // names them, so there is nobody to link them to. Not a message to
+        // file or to raise a notification for; say what to do instead.
+        await handleBareStart(organizationId, chatId)
       }
       return NextResponse.json({ ok: true })
     }
@@ -97,7 +103,7 @@ export async function POST(
       entityId: message.id,
       entityUrl: customer
         ? `/messages?tab=telegram&customerId=${customer.id}`
-        : '/settings/providers?tab=telegram',
+        : '/settings/integrations',
     })
 
     return NextResponse.json({ ok: true })
@@ -105,6 +111,14 @@ export async function POST(
     console.error('[webhook/telegram] Error:', error)
     // Always return 200 to prevent Telegram retries
     return NextResponse.json({ ok: true })
+  }
+}
+
+async function handleBareStart(organizationId: string, chatId: string) {
+  try {
+    await sendTelegramMessage(organizationId, { chatId, text: BARE_START_REPLY })
+  } catch (error) {
+    console.error('[webhook/telegram] Could not answer a bare /start:', error)
   }
 }
 
@@ -128,6 +142,14 @@ async function handleStartCommand(
   await db.customer.update({
     where: { id: customer.id },
     data: { telegramChatId: chatId },
+  })
+
+  // Anything this chat sent before it was linked (a message sent before the
+  // link was scanned, or while the webhook was down) belonged to nobody and
+  // could not be seen or read. It is theirs now.
+  await db.telegramMessage.updateMany({
+    where: { organizationId, chatId, customerId: null },
+    data: { customerId: customer.id },
   })
 
   // Send confirmation message back

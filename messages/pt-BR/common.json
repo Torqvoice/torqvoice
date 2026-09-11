@@ -81,6 +81,14 @@
     "enterFullscreen": "Tela cheia",
     "exitFullscreen": "Sair da tela cheia"
   },
+  "upgrade": {
+    "title": "Faça upgrade para continuar",
+    "maxCustomers": "Seu plano inclui até {limit} clientes, e você chegou a esse número. Faça upgrade para adicionar quantos precisar.",
+    "maxUsers": "Seu plano inclui {limit, plural, one {um membro na equipe} other {# membros na equipe}}. Faça upgrade para convidar mais pessoas.",
+    "generic": "Este recurso não está incluído no seu plano atual.",
+    "featureNotIncluded": "{feature} não está incluído no seu plano atual.",
+    "notNow": "Agora não"
+  },
   "broadcast": {
     "dismiss": "Fechar",
     "title": "Aviso para todos",
@@ -100,5 +108,7 @@
     "title": "Pré-visualização do PDF",
     "preview": "Pré-visualização",
     "failed": "Não foi possível gerar a pré-visualização do PDF."
-  }
+  },
+  "attachPdf": "Anexar PDF",
+  "attachPdfHint": "Desligue para enviar um link, assim você vê quando o cliente abre."
 }

@@ -8,6 +8,7 @@ import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { netLineTotal } from '@/lib/tax'
+import { TaxByRateTable } from '@/features/reports/Lib/taxByRate'
 import {
   addZonedDays,
   atZonedTime,
@@ -608,6 +609,7 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
       taxRate: true,
       taxAmount: true,
       taxInclusive: true,
+      taxComponents: true,
       totalAmount: true,
     },
     orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
@@ -616,7 +618,7 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
     string,
     { taxCollected: number; invoiceCount: number; taxableAmount: number }
   > = {}
-  const byRate: Record<number, { taxCollected: number; invoiceCount: number }> = {}
+  const byRate = new TaxByRateTable()
   let totalTaxCollected = 0,
     totalTaxableAmount = 0,
     totalInvoices = 0
@@ -630,16 +632,14 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
     monthly[month].taxCollected += r.taxAmount
     monthly[month].invoiceCount += 1
     monthly[month].taxableAmount += taxableBase
-    if (!byRate[r.taxRate]) byRate[r.taxRate] = { taxCollected: 0, invoiceCount: 0 }
-    byRate[r.taxRate].taxCollected += r.taxAmount
-    byRate[r.taxRate].invoiceCount += 1
+    byRate.add(r)
     totalTaxCollected += r.taxAmount
     totalTaxableAmount += taxableBase
     totalInvoices += 1
   }
   return {
     monthly: Object.entries(monthly).map(([month, d]) => ({ month, ...d })),
-    byRate: Object.entries(byRate).map(([rate, d]) => ({ taxRate: Number(rate), ...d })),
+    byRate: byRate.list(),
     summary: { totalTaxCollected, totalTaxableAmount, totalInvoices },
   }
 }

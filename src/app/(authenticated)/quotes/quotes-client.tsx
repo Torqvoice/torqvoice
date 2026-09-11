@@ -39,9 +39,11 @@ import {
   Plus,
   Search,
   User,
+  FileSignature,
 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
+import { ListEmpty } from '@/components/list-empty'
 
 interface QuoteRecord {
   id: string
@@ -172,6 +174,23 @@ export function QuotesClient({
     )
   }
 
+  const emptyState = (bare: boolean) =>
+    search ? (
+      <p className="p-8 text-center text-sm text-muted-foreground">{t('list.noQuotes')}</p>
+    ) : (
+      <ListEmpty
+        bare={bare}
+        icon={FileSignature}
+        title={t('list.noQuotes')}
+        action={
+          <Button onClick={openNewDialog} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('list.newQuote')}
+          </Button>
+        }
+      />
+    )
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Status filters: a single scrollable row on phones, wrapped above sm. */}
@@ -226,51 +245,47 @@ export function QuotesClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {t('list.noQuotes')}
-          </div>
-        ) : (
-          data.records.map((q) => (
-            <button
-              key={q.id}
-              type="button"
-              onClick={() => router.push(`/quotes/${q.id}`)}
-              className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
-                <span className="shrink-0 font-semibold">
-                  {formatCurrency(q.totalAmount, currencyCode)}
-                </span>
-              </div>
-              {(q.customer || q.vehicle) && (
-                <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-                  {q.customer && (
-                    <p className="flex items-center gap-1.5 truncate">
-                      <User className="h-3 w-3 shrink-0" />
-                      {q.customer.name}
-                    </p>
-                  )}
-                  {q.vehicle && (
-                    <p className="flex items-center gap-1.5 truncate">
-                      <Car className="h-3 w-3 shrink-0" />
-                      {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
-                      {q.vehicle.licensePlate && ` · ${q.vehicle.licensePlate}`}
-                    </p>
-                  )}
+        {data.records.length === 0
+          ? emptyState(false)
+          : data.records.map((q) => (
+              <button
+                key={q.id}
+                type="button"
+                onClick={() => router.push(`/quotes/${q.id}`)}
+                className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
+                  <span className="shrink-0 font-semibold">
+                    {formatCurrency(q.totalAmount, currencyCode)}
+                  </span>
                 </div>
-              )}
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
-                  {q.status}
-                </Badge>
-                {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
-                <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
-              </div>
-            </button>
-          ))
-        )}
+                {(q.customer || q.vehicle) && (
+                  <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                    {q.customer && (
+                      <p className="flex items-center gap-1.5 truncate">
+                        <User className="h-3 w-3 shrink-0" />
+                        {q.customer.name}
+                      </p>
+                    )}
+                    {q.vehicle && (
+                      <p className="flex items-center gap-1.5 truncate">
+                        <Car className="h-3 w-3 shrink-0" />
+                        {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                        {q.vehicle.licensePlate && ` · ${q.vehicle.licensePlate}`}
+                      </p>
+                    )}
+                  </div>
+                )}
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                  <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
+                    {q.status}
+                  </Badge>
+                  {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                  <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
+                </div>
+              </button>
+            ))}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -357,8 +372,8 @@ export function QuotesClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                  {t('list.noQuotes')}
+                <TableCell colSpan={7} className="p-0">
+                  {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (

@@ -14,6 +14,7 @@ import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { sendSmsToCustomer, getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
+import { AttachPdfOption, useAttachPdf } from '@/features/email/Components/AttachPdfOption'
 
 interface ShareDialogProps {
   open: boolean
@@ -50,6 +51,7 @@ export function ShareDialog({
   const [revoking, setRevoking] = useState(false)
   const [copied, setCopied] = useState(false)
   const [notifyEmail, setNotifyEmail] = useState(false)
+  const [attachPdf, setAttachPdf] = useAttachPdf(open)
   const [notifySms, setNotifySms] = useState(false)
   const [sending, setSending] = useState(false)
 
@@ -101,6 +103,7 @@ export function ShareDialog({
       const res = await sendInvoiceEmail({
         serviceRecordId: recordId,
         recipientEmail: customer.email!,
+        attachPdf,
       })
       if (res.success) results.push(t('emailSent'))
       else toast.error(res.error || t('failedEmail'))
@@ -194,6 +197,16 @@ export function ShareDialog({
                         </Label>
                       </div>
                     )}
+                    {emailEnabled && (
+                      <div className="pl-6">
+                        <AttachPdfOption
+                          id="attach-pdf-invoice"
+                          checked={attachPdf}
+                          onCheckedChange={setAttachPdf}
+                          disabled={!notifyEmail || !hasEmail}
+                        />
+                      </div>
+                    )}
                     {smsEnabled && (
                       <div className="flex items-center gap-2">
                         <Checkbox
@@ -213,12 +226,17 @@ export function ShareDialog({
                       </div>
                     )}
                   </div>
-                  {canNotify && (
-                    <Button size="sm" onClick={handleNotify} disabled={sending} className="w-full">
-                      {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                      {t('sendNotification')}
-                    </Button>
-                  )}
+                  {/* Always here, disabled until a channel is ticked: it used to
+                      appear on the first tick and shove the dialog around. */}
+                  <Button
+                    size="sm"
+                    onClick={handleNotify}
+                    disabled={sending || !canNotify}
+                    className="w-full"
+                  >
+                    {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    {t('sendNotification')}
+                  </Button>
                 </div>
               )}
 

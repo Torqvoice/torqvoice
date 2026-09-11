@@ -97,8 +97,8 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
+    "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total"
   },

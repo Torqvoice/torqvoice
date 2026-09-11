@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Erste Schritte",
-    "description": "Vier Schritte, um Ihre Werkstatt zum Laufen zu bringen",
+    "description": "Drei Schritte, und {workshop} läuft",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Kunden anlegen",
-        "description": "Legen Sie Ihren ersten Kunden an"
-      },
-      "vehicle": {
-        "title": "Fahrzeug anlegen",
-        "description": "Erfassen Sie ein Fahrzeug für einen Kunden"
-      },
       "workOrder": {
-        "title": "Auftrag erstellen",
-        "description": "Eröffnen Sie Ihren ersten Auftrag"
+        "title": "Legen Sie Ihren ersten Auftrag an",
+        "description": "Kunde, Fahrzeug und Auftrag in einem Dialog"
+      },
+      "company": {
+        "title": "Ergänzen Sie Ihre Werkstattdaten",
+        "description": "Adresse, Telefon und Registernummer für Ihre Rechnungen"
       },
       "invoice": {
-        "title": "Rechnung senden oder herunterladen",
-        "description": "Teilen Sie eine Rechnung mit einem Kunden oder laden Sie sie als PDF herunter"
+        "title": "Senden oder laden Sie Ihre erste Rechnung",
+        "description": "An den Kunden schicken oder als PDF speichern"
       }
     },
     "allDoneTitle": "Alles erledigt",

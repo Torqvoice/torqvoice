@@ -53,6 +53,8 @@ export interface InvoiceData {
   taxRate: number
   taxAmount: number
   taxInclusive?: boolean
+  /** The stored split, when the job has one; see src/lib/tax-components.ts. */
+  taxComponents?: unknown
   totalAmount: number
   cost: number
   invoiceNumber: string | null
@@ -124,6 +126,8 @@ export interface InvoiceSettingsProps {
   footerNote?: string
   showBankAccount?: boolean
   showOrgNumber?: boolean
+  /** Print each line with tax included, and say how much of the subtotal is tax. */
+  lineItemsInclTax?: boolean
   dueDays?: number
   currencyCode?: string
   currencyFormat?: 'symbol' | 'code'

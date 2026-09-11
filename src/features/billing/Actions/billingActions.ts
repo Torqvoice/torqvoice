@@ -38,9 +38,9 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
         sr."manuallyPaid",
         CASE WHEN sr."manuallyPaid" = true
           THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-          ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+          ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
         END AS paid
-      FROM service_records sr
+      FROM "public"."service_records" sr
       WHERE sr."organizationId" = ${organizationId}
     ) sub
   `)
@@ -64,6 +64,8 @@ export async function getBillingHistory(params: {
   pageSize?: number
   search?: string
   status?: string
+  /** 'unviewed' keeps only invoices that went out and were never opened. */
+  delivery?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }) {
@@ -99,6 +101,13 @@ export async function getBillingHistory(params: {
           statusCondition = Prisma.empty
         }
 
+        // Sent but never opened. A draft nobody has sent is not a chase, and
+        // neither is one the customer has read, so both fall out here.
+        const deliveryCondition =
+          params.delivery === 'unviewed'
+            ? Prisma.sql`AND sent_at IS NOT NULL AND view_count = 0`
+            : Prisma.empty
+
         const countRows = await db.$queryRaw<{ cnt: bigint }[]>(Prisma.sql`
         SELECT COUNT(*) AS cnt FROM (
           SELECT
@@ -107,14 +116,16 @@ export async function getBillingHistory(params: {
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
               THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-              ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
-            END AS paid_amount
-          FROM service_records sr
-          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
+              ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
+            END AS paid_amount,
+            sr."sentAt" AS sent_at,
+            sr."viewCount" AS view_count
+          FROM "public"."service_records" sr
+          LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
           WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
-        WHERE 1=1 ${statusCondition}
+        WHERE 1=1 ${statusCondition} ${deliveryCondition}
       `)
 
         const total = Number(countRows[0]?.cnt ?? 0)
@@ -137,6 +148,9 @@ export async function getBillingHistory(params: {
             vehicle_license_plate: string | null
             customer_id: string | null
             customer_name: string | null
+            sent_at: Date | null
+            view_count: number
+            last_viewed_at: Date | null
           }[]
         >(Prisma.sql`
         SELECT
@@ -155,7 +169,10 @@ export async function getBillingHistory(params: {
           sub.vehicle_year,
           sub.vehicle_license_plate,
           sub.customer_id,
-          sub.customer_name
+          sub.customer_name,
+          sub.sent_at,
+          sub.view_count,
+          sub.last_viewed_at
         FROM (
           SELECT
             sr.id,
@@ -168,7 +185,7 @@ export async function getBillingHistory(params: {
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
               THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-              ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+              ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
             END AS paid_amount,
             v.id AS vehicle_id,
             v.make AS vehicle_make,
@@ -176,14 +193,17 @@ export async function getBillingHistory(params: {
             v.year AS vehicle_year,
             v."licensePlate" AS vehicle_license_plate,
             c.id AS customer_id,
-            c.name AS customer_name
-          FROM service_records sr
-          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
-          LEFT JOIN customers c ON c.id = COALESCE(sr."customerId", v."customerId")
+            c.name AS customer_name,
+            sr."sentAt" AS sent_at,
+            sr."viewCount" AS view_count,
+            sr."lastViewedAt" AS last_viewed_at
+          FROM "public"."service_records" sr
+          LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
+          LEFT JOIN "public"."customers" c ON c.id = COALESCE(sr."customerId", v."customerId")
           WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
-        WHERE 1=1 ${statusCondition}
+        WHERE 1=1 ${statusCondition} ${deliveryCondition}
         ORDER BY ${(() => {
           const dir = params.sortOrder === 'asc' ? Prisma.sql`ASC` : Prisma.sql`DESC`
           switch (params.sortBy) {
@@ -199,6 +219,15 @@ export async function getBillingHistory(params: {
               return Prisma.sql`sub.effective_total ${dir}`
             case 'date':
               return Prisma.sql`${effectiveDateSql('sub')} ${dir}`
+            // Grouped rather than by date: what the column is for is finding
+            // the invoices that went out and were never opened, and those sit
+            // between the ones never sent and the ones already read.
+            case 'delivery':
+              return Prisma.sql`CASE
+                WHEN sub.view_count > 0 THEN 2
+                WHEN sub.sent_at IS NOT NULL THEN 1
+                ELSE 0
+              END ${dir}, sub.last_viewed_at ${dir} NULLS LAST`
             default:
               return Prisma.sql`${effectiveDateSql('sub')} DESC`
           }
@@ -236,6 +265,9 @@ export async function getBillingHistory(params: {
                   }
                 : null,
               customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || '' } : null,
+              sentAt: r.sent_at,
+              viewCount: Number(r.view_count ?? 0),
+              lastViewedAt: r.last_viewed_at,
             }
           }),
           total,

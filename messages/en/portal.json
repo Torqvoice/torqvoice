@@ -105,7 +105,9 @@
     "download": "Download",
     "paid": "paid",
     "partial": "partial",
-    "unpaid": "unpaid"
+    "unpaid": "unpaid",
+    "back": "Back to invoices",
+    "openShared": "Open the shared copy"
   },
   "quotes": {
     "title": "Quotes",

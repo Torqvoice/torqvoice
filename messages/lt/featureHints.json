@@ -11,5 +11,10 @@
     "title": "Sąskaitos buvo atnaujintos",
     "body": "Nustatykite sąskaitų ir pasiūlymų išdėstymą, spalvas ir šriftus naujame redaktoriuje, skiltyje Šablonai.",
     "cta": "Atidaryti šablonus"
+  },
+  "email-designer": {
+    "title": "Jūsų laiškai atrodo naujai",
+    "body": "Laiškai klientams dabar siunčiami su švaresniu dizainu. Spalvas, tekstą ir išdėstymą keiskite naujame redaktoriuje, skiltyje El. laiškų šablonai.",
+    "cta": "Atidaryti El. laiškų šablonus"
   }
 }

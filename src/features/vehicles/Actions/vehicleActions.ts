@@ -1,6 +1,7 @@
 'use server'
 
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { assertOwnUploads } from '@/lib/upload-url'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
@@ -10,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { unlink } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { auditDetails } from '@/lib/audit'
+import { searchYear } from '@/features/vehicles/Lib/searchYear'
 
 export async function getVehicles() {
   return withAuth(
@@ -56,6 +58,14 @@ export async function getVehicle(vehicleId: string) {
               title: true,
               description: true,
               dueDate: true,
+              // Whether the time of day was chosen, and which channels were
+              // asked for. Left out of this select, the tab showed every
+              // reminder as day-only and its edit form opened with the time
+              // blank and the channels back at their defaults, so saving an
+              // 08:00 email reminder rewrote it to noon with no email.
+              hasDueTime: true,
+              notifyInApp: true,
+              notifyEmail: true,
               dueMileage: true,
               isCompleted: true,
               createdAt: true,
@@ -116,8 +126,9 @@ export async function getVehiclesPaginated(params: {
             { vin: { contains: word, mode: 'insensitive' } },
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
-          if (!isNaN(Number(word))) {
-            conditions.push({ year: Number(word) })
+          const year = searchYear(word)
+          if (year !== null) {
+            conditions.push({ year })
           }
           return conditions
         }
@@ -226,6 +237,7 @@ export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const { inspectionDueAt, ...data } = createVehicleSchema.parse(input)
+      assertOwnUploads(data, organizationId)
       const timeZone = await workshopTimeZone(organizationId)
       const vehicle = await db.vehicle.create({
         data: {
@@ -263,6 +275,7 @@ export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
       const { id, inspectionDueAt, ...data } = updateVehicleSchema.parse(input)
+      assertOwnUploads(data, organizationId)
 
       // Fetch current record for display/diff
       const before = await db.vehicle.findFirst({
@@ -415,8 +428,9 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
             { vin: { contains: word, mode: 'insensitive' } },
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
-          if (!isNaN(Number(word))) {
-            conditions.push({ year: Number(word) })
+          const year = searchYear(word)
+          if (year !== null) {
+            conditions.push({ year })
           }
           return conditions
         }

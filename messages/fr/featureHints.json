@@ -11,5 +11,10 @@
     "title": "Les factures ont été repensées",
     "body": "Définissez la mise en page, les couleurs et les polices de vos factures et devis dans le nouvel éditeur, sous Modèles.",
     "cta": "Ouvrir Modèles"
+  },
+  "email-designer": {
+    "title": "Vos e-mails ont un nouveau look",
+    "body": "Les e-mails clients partent désormais avec un design plus épuré. Modifiez couleurs, textes et mise en page dans le nouvel éditeur, sous Modèles d'e-mail.",
+    "cta": "Ouvrir les Modèles d'e-mail"
   }
 }

@@ -131,24 +131,27 @@
         "title": "Hotel opon",
         "description": "Sezonowe przechowywanie opon"
       },
-      "providers": {
-        "title": "Dostawcy",
-        "description": "E-mail, SMS, WhatsApp i Telegram"
-      },
       "inspectionReminders": {
         "title": "Przypomnienia o przeglądzie",
         "description": "Link do rezerwacji, czas trwania i wyprzedzenie"
+      },
+      "emailTemplates": {
+        "title": "Szablony e-mail",
+        "description": "Co mówią e-maile z fakturą, ofertą i raportem"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Nowość"
   },
   "readOnly": {
     "banner": "Masz dostęp tylko do odczytu ustawień. Skontaktuj się z administratorem, aby wprowadzić zmiany."
   },
   "featureLocked": {
-    "requiresPro": "Wymaga licencji Pro",
-    "upgradePlan": "Zaktualizuj plan",
-    "activateLicense": "Aktywuj licencje"
+    "requiresPro": "Wymagana subskrypcja",
+    "upgradePlan": "Zobacz plany",
+    "activateLicense": "Aktywuj licencje",
+    "requiresLicense": "Wymagana licencja white label",
+    "previewHint": "To jest podgląd. Wszystko na tej stronie odblokowuje subskrypcja."
   },
   "company": {
     "logoTitle": "Logo firmy",
@@ -164,6 +167,9 @@
     "shopNamePlaceholder": "Warsztat Samochodowy Kowalski",
     "orgNumber": "Numer organizacji",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Nazwa numeru organizacji",
+    "orgNumberLabelPlaceholder": "Nr org.",
+    "orgNumberLabelHint": "Drukowana obok numeru na fakturach i ofertach. Zostaw puste, aby użyć domyślnej nazwy w Twoim języku, lub wpisz, jak nazywa się w Twoim kraju, np. NIP, REGON lub KRS.",
     "phone": "Telefon",
     "phonePlaceholder": "+48 123 456 789",
     "email": "E-mail",
@@ -354,10 +360,11 @@
     "failedSendInvitation": "Nie udało się wysłać zaproszenia",
     "pendingInvitations": "Oczekujące zaproszenia",
     "invitedAs": "Zaproszony jako {role}",
+    "resendInvitation": "Wyślij zaproszenie ponownie",
+    "invitationResent": "Zaproszenie wysłano ponownie do {email}",
+    "failedResendInvitation": "Nie udało się ponownie wysłać zaproszenia",
     "expires": "Wygasa {date}",
     "pending": "Oczekujące",
-    "copyInviteLink": "Kopiuj link zaproszenia",
-    "inviteLinkCopied": "Link zaproszenia skopiowany do schowka",
     "cancelInvitation": "Anuluj zaproszenie",
     "cancelInvitationDescription": "Anulować zaproszenie dla {email}? Nie będą mogli użyć tego linku.",
     "invitationCancelled": "Zaproszenie anulowane",
@@ -512,6 +519,10 @@
   "invoice": {
     "title": "Układ faktury",
     "description": "Skonfiguruj, co pojawi się na generowanych fakturach PDF.",
+    "numberingTitle": "Numeracja i terminy",
+    "numberingDescription": "Jak numerowane są faktury i wyceny, kiedy faktury stają się wymagalne i jak długo wyceny są ważne.",
+    "documentsTitle": "Dokumenty",
+    "documentsDescription": "Co zawiera każda faktura i wycena.",
     "tabs": {
       "general": "Ogólne",
       "layout": "Układ",
@@ -542,12 +553,6 @@
     "customFooter": "Niestandardowa stopka faktury",
     "footerPlaceholder": "Dziękujemy za zamowienie!",
     "footerHint": "Ten tekst pojawi się na dole każdej faktury",
-    "partsMarkupTitle": "Marża na Części",
-    "partsMarkupDescription": "Marża doliczana do ceny zakupu przy dodawaniu części. Tylko wewnętrznie — klient nigdy nie widzi kosztu ani marży, tylko cenę końcową.",
-    "defaultMarkupPercent": "Domyślna Marża %",
-    "defaultMarkupPercentHint": "Nowe ręcznie dodane części są wstępnie wypełniane tą marżą. Pozostaw 0, aby wprowadzać ceny ręcznie.",
-    "markupAppliesToInventory": "Zastosuj marżę do części z magazynu",
-    "markupAppliesToInventoryHint": "Gdy włączone, części wybrane z magazynu również używają kosztu + domyślnej marży (zastępuje cenę sprzedaży z magazynu).",
     "saveInvoice": "Zapisz ustawienia faktury",
     "saved": "Ustawienia faktury zapisane",
     "layoutDescription": "Dostosuj kolejność i widoczność sekcji w fakturach i wycenach.",
@@ -557,13 +562,6 @@
     "layoutDocQuote": "Wycena",
     "saveLayout": "Zapisz układ",
     "resetLayout": "Resetuj",
-    "sectionCustomers": "Klienci",
-    "assignCustomerNumbers": "Przydziel numery klientów",
-    "assignCustomerNumbersHint": "{count} klientów nie ma jeszcze numeru. Przydziel im kolejne numery (istniejące pozostają).",
-    "customerNumbersAssigned": "Przydzielono numery {count} klientom",
-    "allCustomersNumbered": "Wszyscy klienci mają numer.",
-    "assignCustomerNumbersConfirmTitle": "Przydzielić numery klientów?",
-    "assignCustomerNumbersConfirmDescription": "{count} klientów bez numeru otrzyma kolejne numery w kolejności utworzenia, kontynuując od najwyższego istniejącego numeru. Klienci z numerem nie zostaną zmienieni. Numery można później edytować.",
     "layoutColorsHint": "Kolory, czcionki i styl nagłówka są w Szablonach.",
     "goToTemplates": "Otwórz Szablony",
     "lockTitle": "Blokowanie zakończonych dokumentów",
@@ -571,6 +569,8 @@
     "lockWhatItDoes": "Blokowane są: części, robocizna, ilości, ceny, rabat, podatek, numer i data dokumentu. Usunięcie dokumentu również jest zablokowane.",
     "lockWhatItAllows": "Nadal działa: rejestrowanie płatności, płatność kartą online, zmiany statusu, wysyłka i ponowna wysyłka, załączniki i notatki wewnętrzne. Zablokowaną fakturę zawsze można opłacić.",
     "lockUnlockNote": "Właściciele i administratorzy mogą odblokować pojedynczy dokument z jego własnej strony, gdy naprawdę wymaga poprawki. Każde odblokowanie trafia do dziennika audytu.",
+    "lockDetailsShow": "Co robi blokada",
+    "lockDetailsHide": "Ukryj",
     "lockInvoicesLabel": "Blokuj faktury",
     "lockTriggerSent": "Po wysłaniu faktury",
     "lockTriggerPaid": "Po opłaceniu faktury w całości",
@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Każda zachowa projekt, logo, dane warsztatu, klienta, pojazd i ustalenia, z którymi drukuje się teraz. Nie da się tego cofnąć; faktury pozostaną edytowalne lub zablokowane do edycji dokładnie tak jak dziś.",
     "freezeProgress": "Zablokowano {done} z {total}",
     "freezeDone": "Zablokowano {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}",
-    "freezeFailed": "Nie udało się zablokować faktur"
+    "freezeFailed": "Nie udało się zablokować faktur",
+    "sectionSending": "Wysyłka",
+    "attachPdfLabel": "Dołączaj PDF do wiadomości e-mail",
+    "attachPdfHint": "Domyślne ustawienie dla każdej faktury, oferty i przeglądu wysyłanych e-mailem. Włączone: klient dostaje PDF w załączniku. Wyłączone: dostaje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył, więc możesz przypomnieć się tym, którzy jeszcze nie zajrzeli. Dla pojedynczej wysyłki zmienisz to w oknie udostępniania."
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",
@@ -854,9 +857,33 @@
     "modeInclusive": "Brutto",
     "modeExclusiveExample": "Przyklad: 100 + {rate}% podatku = 100 + podatek doliczony.",
     "modeInclusiveExample": "Przyklad: 100 juz zawiera {rate}% podatku — część podatkowa jest obliczana wstecz.",
+    "lineItemsInclTaxLabel": "Pokazuj ceny pozycji z podatkiem na fakturach i wycenach",
+    "lineItemsInclTaxHint": "Zmienia tylko to, co jest drukowane na fakturach i wycenach, w tym ich PDF-y i kopie otwierane przez klientów z linku. Włączone: każda pozycja części i robocizny oraz suma częściowa są pokazywane z podatkiem, a wiersz podatku podaje, ile z tego stanowi podatek. Wyłączone: ceny bez podatku, z podatkiem doliczonym na dole. Zlecenia i wpisywane ceny pozostają bez zmian.",
     "labelLabel": "Etykieta podatku",
     "labelHint": "Własna nazwa wyświetlana na fakturach i ofertach (np. VAT, MwSt.). Pozostaw puste, aby użyć domyślnej zlokalizowanej nazwy.",
     "labelPlaceholder": "VAT",
+    "splitLabel": "Podziel podatek na kilka stawek",
+    "splitHint": "Dla miejsc, w których na tej samej fakturze naliczany jest więcej niż jeden podatek, np. GST i QST w Quebecu albo CGST i SGST w Indiach. Każdy podatek jest drukowany w osobnym wierszu z własnym numerem rejestracyjnym, a raport podatkowy wykazuje je oddzielnie.",
+    "splitIncomplete": "Przed zapisaniem nadaj każdemu podatkowi nazwę i stawkę.",
+    "presetLabel": "Zacznij od szablonu",
+    "presetPlaceholder": "Wybierz region",
+    "presets": {
+      "caQc": "Quebec, Kanada (GST + QST)",
+      "caBc": "Kolumbia Brytyjska, Kanada (GST + PST)",
+      "caSk": "Saskatchewan, Kanada (GST + PST)",
+      "caMb": "Manitoba, Kanada (GST + RST)",
+      "inIntra": "Indie, ten sam stan (CGST + SGST po 18%)"
+    },
+    "componentName": "Nazwa",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Stawka",
+    "componentRegistration": "Numer rejestracyjny",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Usuń ten podatek",
+    "registrationHint": "Drukowany na fakturach pod danymi Twojej firmy. Zostaw puste dla podatku, do którego nie jesteś zarejestrowany.",
+    "addComponent": "Dodaj podatek",
+    "combinedRate": "Stawka łączna",
+    "combinedRateHint": "Nowe zlecenia i oferty są opodatkowane sumą powyższych stawek.",
     "convertInclusiveLabel": "Konwertuj istniejące rekordy na tryb brutto",
     "convertInclusiveHint": "Skaluje ceny pozycji w górę o stawkę podatku, aby ceny zawierały podatek. Sumy dla klienta pozostają niezmienione. Kwalifikujące się: {serviceRecords} zleceń, {quotes} ofert.",
     "convertInclusiveButton": "Konwertuj na brutto",
@@ -1039,6 +1066,12 @@
     "addNewTech": "+ Dodaj nowego",
     "defaultLaborRate": "Domyślna stawka za godzinę",
     "laborRatePlaceholder": "75,00",
+    "partsMarkupTitle": "Marża na Części",
+    "partsMarkupDescription": "Marża doliczana do ceny zakupu przy dodawaniu części. Tylko wewnętrznie. Klient nigdy nie widzi kosztu ani marży, tylko cenę końcową.",
+    "defaultMarkupPercent": "Domyślna Marża %",
+    "defaultMarkupPercentHint": "Nowe ręcznie dodane części są wstępnie wypełniane tą marżą. Pozostaw 0, aby wprowadzać ceny ręcznie.",
+    "markupAppliesToInventory": "Zastosuj marżę do części z magazynu",
+    "markupAppliesToInventoryHint": "Gdy włączone, części wybrane z magazynu również używają kosztu + domyślnej marży (zastępuje cenę sprzedaży z magazynu).",
     "unitsTitle": "Jednostki",
     "unitsDescription": "Wybierz między metrycznym (km, litry) a imperialnym (mile, galony).",
     "unitSystem": "System jednostek",
@@ -1064,6 +1097,25 @@
     "weekStartDay": "Poczatek tygodnia",
     "workDayStart": "Poczatek dnia pracy",
     "workDayEnd": "Koniec dnia pracy",
+    "titleTemplateTitle": "Tytuł zlecenia",
+    "titleTemplateDescription": "Jak nazywa się nowe zlecenie, zanim ktoś wpisze tytuł. Zbuduj go z poniższych tagów; każde zlecenie otwiera się z wypełnionymi tagami, a tytuł nadal można zmienić w zleceniu.",
+    "titleTemplate": "Szablon tytułu",
+    "titleTemplatePlaceholder": "Pozostaw puste, aby każde zlecenie zaczynało się jako „New Service Record”",
+    "titleTemplateHint": "Kliknij tag, aby go dodać. Tag bez treści, na przykład pojazd bez tablicy, jest pomijany razem ze separatorem.",
+    "titleTemplatePreview": "Przykład: {title}",
+    "titleTemplateUnknown": "Nieznane tagi są pomijane: {tags}",
+    "titleTemplateTags": {
+      "order_number": "Numer zlecenia",
+      "license_plate": "Numer rejestracyjny",
+      "customer_name": "Nazwa klienta",
+      "vehicle": "Pojazd (rok, marka, model)",
+      "make": "Marka",
+      "model": "Model",
+      "year": "Rok",
+      "vin": "VIN",
+      "technician": "Technik",
+      "date": "Data"
+    },
     "weekDays": {
       "0": "Niedziela",
       "1": "Poniedzialek",
@@ -1231,7 +1283,14 @@
     "validated": "Licencja zweryfikowana pomyślnie",
     "invalid": "Nieprawidlowy klucz licencji",
     "failedValidate": "Nie udało się zweryfikować licencji",
-    "keyHint": "Każdy klucz licencji jest powiazany z ta organizacja i nie może być wspoldzielony między wieloma organizacjami."
+    "keyHint": "Każdy klucz licencji jest powiazany z ta organizacja i nie może być wspoldzielony między wieloma organizacjami.",
+    "expired": "Wygasła",
+    "unverified": "Niezweryfikowana",
+    "expiresOn": "Wygasa: {date}",
+    "unreachable": "Nie udało się połączyć z torqvoice.com. Licencja zapisana na tym serwerze pozostaje bez zmian.",
+    "unverifiedHint": "Ten serwer od {days} dni nie może potwierdzić licencji w torqvoice.com. Po {max} dniach bez udanego sprawdzenia oznaczenie Torqvoice wraca.",
+    "rejected": "torqvoice.com nie przyjął tego klucza: {reason}",
+    "signedHint": "Walidacja jest podpisywana przez torqvoice.com i powtarzana codziennie, więc serwer potrzebuje wychodzącego dostępu do torqvoice.com."
   },
   "about": {
     "title": "O Torqvoice",
@@ -1733,43 +1792,6 @@
     "prepHint": "Ile kosztuje każdy rodzaj przygotowania. Puste pole oznacza, że nigdy nie jest fakturowane, co pasuje warsztatom mającym mycie w cenie przechowywania. Wycenione trafiają automatycznie na wycenę i zlecenie.",
     "prepNotCharged": "nie naliczane"
   },
-  "providers": {
-    "tabs": {
-      "email": "E-mail",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "Ustawienia e-mail",
-        "description": "Skonfiguruj wysyłkę SMTP, aby faktury, oferty i powiadomienia wychodziły prosto z warsztatu."
-      },
-      "sms": {
-        "feature": "Wiadomości SMS",
-        "description": "Wysyłaj i odbieraj SMS-y z klientami bezpośrednio w Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "Wiadomości WhatsApp",
-        "description": "Wysyłaj i odbieraj wiadomości WhatsApp, w tym zdjęcia części, bezpośrednio w Torqvoice."
-      },
-      "telegram": {
-        "feature": "Wiadomości Telegram",
-        "description": "Wysyłaj i odbieraj wiadomości Telegram z klientami bezpośrednio w Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Faktura",
     "quote": "Oferta",
@@ -1964,8 +1986,14 @@
     "paymentTermsPlaceholderHint": "Nie ustawiono warunków płatności, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
     "paymentTermsSetHint": "Twoje warunki płatności pochodzą z ustawień płatności.",
     "paymentTermsLink": "Ustawienia płatności",
+    "telegramQr": "Kod Telegram",
+    "telegramQrConnectedHint": "Drukuje kod otwierający {link}, Twojego podłączonego bota Telegram. Pojawia się tylko na fakturach wystawionych po włączeniu bloku.",
+    "telegramQrPlaceholderHint": "Żaden bot Telegram nie jest podłączony, więc arkusz pokazuje przykładowy kod, który nie zostanie wydrukowany.",
+    "telegramQrLink": "Integracje",
     "titleText": "Tekst tytułu",
     "titleTextHint": "Jak nazywa się ten dokument. Pozostawione puste, drukuje własną nazwę w języku odbiorcy.",
+    "orgNumberLabel": "Nazwa numeru organizacji",
+    "orgNumberLabelHint": "Drukowana obok numeru organizacji na fakturach i ofertach. Zostaw puste, aby użyć domyślnej nazwy w Twoim języku, lub wpisz, jak nazywa się w Twoim kraju, np. NIP, REGON lub KRS. Wspólna z ustawieniami firmy.",
     "placeholder": "Symbol zastępczy",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
@@ -1975,7 +2003,8 @@
     "deleteDesignCustomers": "{count, plural, one {# klient} few {# klientów} many {# klientów} other {# klienta}} z tym projektem wróci do projektu domyślnego.",
     "setDefault": "Ustaw jako domyślny",
     "defaultSet": "„{name}” jest teraz w użyciu",
-    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu"
+    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu",
+    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",
@@ -2016,5 +2045,362 @@
     "timeZoneDetected": "Strefa czasowa jest ustawiona na automatyczną w Lokalizacji, więc serwer używa {zone}, strefy ostatnio widzianej w przeglądarce, która zapisała ustawienia. Wybierz strefę warsztatu jawnie, aby godziny rezerwacji nigdy nie zależały od tego, kto zapisał ostatni.",
     "timeZoneExplicit": "Godziny rezerwacji i otwarcia są odczytywane w strefie {zone}.",
     "timeZoneChange": "Zmień w Lokalizacji"
+  },
+  "emailTemplates": {
+    "title": "Szablony e-mail",
+    "description": "Co mówią e-maile wysyłane przez Twój warsztat i jak wyglądają. Każdy rodzaj e-maila ma wbudowany szablon; zaprojektuj własny, aby zmienić treść, kolory i bloki, z których się składa.",
+    "lockedDescription": "Projektuj e-maile wysyłane przez Twój warsztat: zmieniaj treść, dodawaj lub usuwaj bloki i dopasuj kolory do swojej marki.",
+    "groups": {
+      "documents": "Dokumenty",
+      "messages": "Wiadomości",
+      "portal": "Portal klienta",
+      "team": "Zespół"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Faktura wysłana",
+        "description": "Wysyłany, gdy faktura trafia do klienta e-mailem, z załączonym PDF lub linkiem do jej podglądu."
+      },
+      "quote_sent": {
+        "name": "Wycena wysłana",
+        "description": "Wysyłany, gdy wycena trafia do klienta e-mailem."
+      },
+      "inspection_sent": {
+        "name": "Raport z przeglądu wysłany",
+        "description": "Wysyłany, gdy raport z przeglądu trafia do klienta e-mailem."
+      },
+      "message": {
+        "name": "Wiadomość do klienta",
+        "description": "Wiadomość do klienta: powiadomienie ze zlecenia, raport o stanie, zaproszenie na rozmowę wideo lub zaplanowane przypomnienie."
+      },
+      "portal_signin": {
+        "name": "Logowanie do portalu",
+        "description": "Link logowania, o który klient prosi w portalu klienta."
+      },
+      "team_invitation": {
+        "name": "Zaproszenie do zespołu",
+        "description": "Wysyłane do współpracownika zaproszonego do warsztatu, z linkiem tworzącym konto."
+      }
+    },
+    "blocks": {
+      "header": "Nagłówek strony",
+      "heading": "Nagłówek",
+      "paragraph": "Akapit",
+      "callout": "Wyróżnienie",
+      "button": "Przycisk",
+      "document_summary": "Podsumowanie dokumentu",
+      "attachment_note": "Uwaga o załączniku",
+      "image": "Obraz",
+      "divider": "Linia oddzielająca",
+      "spacer": "Odstęp",
+      "contact_footer": "Stopka kontaktowa"
+    },
+    "blockNotes": {
+      "header": "Twoje logo lub nazwa warsztatu, gdy nie ma logo albo jest wyłączone. Prześlij logo i ustaw jego rozmiar tutaj; kolory i czcionki znajdziesz w sekcji Temat i motyw.",
+      "contact_footer": "Nazwa, adres, telefon i e-mail Twojego warsztatu, pobrane z ustawień w sekcji Firma. Uzupełnij je tam, aby zmienić, co jest tu drukowane.",
+      "divider": "Cienka linia między dwoma blokami. Jest pomijana, gdy otwierałaby lub zamykała e-mail.",
+      "callout": "Wyróżniony panel z kolorową krawędzią. Dobry na najważniejsze słowa, na przykład samą wiadomość.",
+      "attachment_note": "Drukowana tylko wtedy, gdy do e-maila dołączony jest PDF.",
+      "button": "Link to zwykle tag, na przykład link do udostępnienia. Przycisk, którego link nie ma wartości, jest pomijany w e-mailu.",
+      "document_summary": "Panel z kluczowymi kwotami dokumentu. Wiersze bez niczego do pokazania są pomijane.",
+      "image": "Obrazy są przy przesyłaniu kompresowane i skalowane do wiadomości e-mail. Obrazy, które nie są już używane, są usuwane przy zapisie szablonu.",
+      "summaryUnused": "Ten rodzaj e-maila nie ma dokumentu, więc podsumowanie niczego nie drukuje."
+    },
+    "tagGroups": {
+      "workshop": "Warsztat",
+      "customer": "Klient",
+      "vehicle": "Pojazd",
+      "document": "Dokument",
+      "message": "Wiadomość",
+      "portal": "Portal",
+      "team": "Zespół"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Nazwa warsztatu",
+        "description": "Nazwa Twojego warsztatu."
+      },
+      "workshop_phone": {
+        "label": "Telefon warsztatu",
+        "description": "Numer telefonu z ustawień w sekcji Firma."
+      },
+      "workshop_email": {
+        "label": "E-mail warsztatu",
+        "description": "Adres e-mail z ustawień w sekcji Firma."
+      },
+      "workshop_address": {
+        "label": "Adres warsztatu",
+        "description": "Adres z ustawień w sekcji Firma, w tylu wierszach, ile ma."
+      },
+      "current_user": {
+        "label": "Nazwa nadawcy",
+        "description": "Imię i nazwisko osoby wysyłającej e-mail."
+      },
+      "customer_name": {
+        "label": "Nazwa klienta",
+        "description": "Nazwa klienta, do którego trafia e-mail."
+      },
+      "vehicle": {
+        "label": "Pojazd",
+        "description": "Rocznik, marka i model pojazdu."
+      },
+      "plate": {
+        "label": "Numer rejestracyjny",
+        "description": "Numer rejestracyjny pojazdu."
+      },
+      "mileage": {
+        "label": "Przebieg",
+        "description": "Przebieg zapisany przy pojeździe."
+      },
+      "document_number": {
+        "label": "Numer dokumentu",
+        "description": "Numer faktury lub wyceny."
+      },
+      "document_title": {
+        "label": "Tytuł dokumentu",
+        "description": "Tytuł zlecenia lub dokumentu."
+      },
+      "total": {
+        "label": "Razem",
+        "description": "Suma dokumentu w jego walucie."
+      },
+      "balance_due": {
+        "label": "Do zapłaty",
+        "description": "Ile pozostaje do zapłaty z dokumentu po wpłatach."
+      },
+      "due_date": {
+        "label": "Termin płatności",
+        "description": "Data, do której należy zapłacić."
+      },
+      "share_link": {
+        "label": "Link do udostępnienia",
+        "description": "Link, który klient może otworzyć, aby zobaczyć dokument online."
+      },
+      "message": {
+        "label": "Wiadomość",
+        "description": "Wiadomość napisana do tego e-maila lub notatka dodana do dokumentu."
+      },
+      "signin_link": {
+        "label": "Link logowania",
+        "description": "Link, który loguje klienta do portalu. Wygasa po krótkim czasie."
+      },
+      "portal_link": {
+        "label": "Link do portalu",
+        "description": "Link do portalu klienta."
+      },
+      "invite_link": {
+        "label": "Link zaproszenia",
+        "description": "Link tworzący konto i dołączający do zespołu. Przestaje działać po wygaśnięciu zaproszenia."
+      },
+      "role": {
+        "label": "Rola",
+        "description": "Rola, do której zapraszana jest osoba."
+      },
+      "invite_expires": {
+        "label": "Data wygaśnięcia",
+        "description": "Ostatni dzień działania linku zaproszenia."
+      }
+    },
+    "headerRule": "Linia pod nagłówkiem",
+    "headerRuleHint": "Cienka linia między logo lub nazwą warsztatu a resztą wiadomości.",
+    "optionalTag": "Nie każdy e-mail ma wartość dla tego tagu. Gdy jest pusty, słowa wokół niego są porządkowane.",
+    "summaryRows": {
+      "reference": "Numer",
+      "vehicle": "Pojazd",
+      "total": "Razem",
+      "balance": "Do zapłaty",
+      "due": "Termin płatności"
+    },
+    "builtIn": "Wbudowany",
+    "inUse": "W użyciu",
+    "useBuiltIn": "Użyj wbudowanego",
+    "setDefault": "Ustaw jako domyślny",
+    "defaultSet": "Wysyłanie odbywa się teraz z „{name}”",
+    "couldNotSetDefault": "Nie udało się zmienić używanego szablonu",
+    "updatedOn": "Zaktualizowano {date}",
+    "delete": "Usuń",
+    "deleteTitle": "Usuń szablon",
+    "deleteConfirm": "Usunąć szablon „{name}”? Jeśli jest w użyciu, e-maile wracają do wbudowanego szablonu.",
+    "deleteTemplate": "Usuń ten szablon",
+    "deleted": "Usunięto „{name}”",
+    "couldNotDelete": "Nie udało się usunąć szablonu",
+    "backToSettings": "Wróć do ustawień",
+    "unsaved": "(niezapisane)",
+    "save": "Zapisz",
+    "saving": "Zapisywanie…",
+    "savedState": "Zapisano",
+    "saved": "Zapisano „{name}”",
+    "couldNotSave": "Nie udało się zapisać",
+    "saveAsNew": "Zapisz jako nowy",
+    "discard": "Odrzuć zmiany",
+    "sendTest": "Wyślij test",
+    "cancel": "Anuluj",
+    "problems": "{count, plural, one {# problem} few {# problemy} many {# problemów} other {# problemu}}",
+    "unknownTags": "Te tagi nie istnieją dla tego rodzaju e-maila: {tags}",
+    "missingTags": "Ten e-mail musi zawierać {tags}",
+    "subjectRequired": "Temat nie może być pusty",
+    "invalidTemplate": "Jakiś tekst jest za długi lub pole ma nieprawidłową wartość.",
+    "leaveTitle": "Wyjść bez zapisywania?",
+    "leaveBody": "Twoje zmiany w tym szablonie nie zostały zapisane. Zostaną utracone.",
+    "leaveConfirm": "Wyjdź",
+    "subjectAndTheme": "Temat i motyw",
+    "settingsSubtitle": "Dotyczy całego e-maila",
+    "blocksTitle": "Bloki",
+    "addBlock": "Dodaj blok",
+    "removeBlock": "Usuń blok",
+    "removeBlockLast": "Ostatniego bloku nie można usunąć",
+    "blockEmpty": "pusty",
+    "blockEmptyHint": "Jest pokazywany, ale nie ma w nim jeszcze nic do wydrukowania.",
+    "blockShownHint": "Widoczny w e-mailu. Kliknij, aby go ukryć.",
+    "blockHiddenHint": "Ukryty w e-mailu. Kliknij, aby go pokazać.",
+    "railHint": "Przeciągnij blok za uchwyt, aby go przenieść. Linia pokazuje, gdzie trafi. Kliknij blok, aby edytować jego treść po prawej.",
+    "resizeHint": "Przeciągnij, aby zmienić rozmiar panelu. Kliknij dwukrotnie, aby przywrócić.",
+    "desktop": "Komputer",
+    "mobile": "Telefon",
+    "htmlView": "HTML",
+    "textView": "Zwykły tekst",
+    "desktopTooltip": "Podgląd w szerokości komputera",
+    "mobileTooltip": "Podgląd w szerokości telefonu",
+    "htmlViewTooltip": "Pokaż wiadomość HTML",
+    "previewWidth": "Szerokość podglądu",
+    "previewView": "Widok podglądu",
+    "textViewTooltip": "Pokaż wersję w zwykłym tekście",
+    "inboxNow": "Teraz",
+    "inboxNoSender": "Twój warsztat",
+    "inboxNoSubject": "(brak tematu)",
+    "subject": "Temat",
+    "text": "Tekst",
+    "buttonLabel": "Tekst przycisku",
+    "buttonHref": "Link",
+    "spacerHeight": "Wysokość",
+    "tagsTitle": "Tagi",
+    "tagsHint": "Kliknij tag, aby wstawić go w miejscu kursora w polu, w którym ostatnio pisałeś.",
+    "theme": {
+      "colors": "Kolory",
+      "primaryColor": "Główny",
+      "textColor": "Tekst",
+      "mutedColor": "Tekst wyciszony",
+      "backgroundColor": "Tło",
+      "panelColor": "Panele",
+      "invalidColor": "Kolor nie jest prawidłową wartością szesnastkową",
+      "hexLabel": "{label} szesnastkowo",
+      "typography": "Typografia",
+      "font": "Czcionka",
+      "fontHint": "Tylko czcionki, które każdy program pocztowy już ma. Większość z nich nie ładuje czcionek webowych.",
+      "fonts": {
+        "system": "Systemowa",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "lineSpacing": "Interlinia",
+      "lineSpacings": {
+        "compact": "Zwarta",
+        "normal": "Normalna",
+        "relaxed": "Luźna"
+      },
+      "paragraphSpacing": "Odstęp między akapitami",
+      "paragraphSpacings": {
+        "tight": "Mały",
+        "normal": "Normalny",
+        "loose": "Duży"
+      },
+      "spacingHint": "Interlinia to wysokość każdego wiersza; odstęp między akapitami to miejsce między akapitami i między blokami tekstu. Enter zaczyna nowy akapit, Shift+Enter nowy wiersz w tym samym.",
+      "shapes": "Kształty",
+      "buttonRadius": "Rogi przycisku",
+      "topBar": "Kolorowy pasek u góry",
+      "topBarHint": "Wąski pasek w Twoim kolorze głównym wzdłuż górnej krawędzi wiadomości.",
+      "showLogo": "Pokaż logo",
+      "showLogoHint": "Przy wyłączonym logo nagłówek drukuje zamiast niego nazwę warsztatu."
+    },
+    "nameDialog": {
+      "title": "Zapisz ten szablon",
+      "body": "Nadaj szablonowi nazwę, po której znajdziesz go w galerii. Zapisanie sprawia też, że ten rodzaj e-maila będzie z nim wysyłany.",
+      "placeholder": "Nazwa szablonu",
+      "nameExists": "Szablon o tej nazwie już istnieje. Wybierz inną nazwę.",
+      "save": "Zapisz szablon",
+      "update": "Zaktualizuj szablon"
+    },
+    "testDialog": {
+      "title": "Wyślij testowy e-mail",
+      "body": "E-mail jest wysyłany z przykładowymi danymi, aby zobaczyć go w prawdziwym programie pocztowym.",
+      "placeholder": "Adres e-mail",
+      "send": "Wyślij",
+      "sending": "Wysyłanie…",
+      "sentTitle": "Testowy e-mail wysłany",
+      "sentBody": "Sprawdź skrzynkę {email}. Dotarcie może zająć minutę.",
+      "failedTitle": "Nie udało się wysłać testowego e-maila",
+      "failedBody": "Sprawdź dostawcę e-mail w sekcji Dostawcy i spróbuj ponownie."
+    },
+    "toolbar": {
+      "bold": "Pogrubienie",
+      "italic": "Kursywa",
+      "underline": "Podkreślenie",
+      "strike": "Przekreślenie",
+      "link": "Link",
+      "linkUrl": "Adres linku",
+      "linkPlaceholder": "https://... lub {share_link}",
+      "linkHint": "Adres internetowy lub tag taki jak {share_link}, który jest wypełniany przy wysyłce wiadomości.",
+      "linkApply": "Zastosuj",
+      "linkRemove": "Usuń link",
+      "bulletList": "Lista punktowana",
+      "orderedList": "Lista numerowana",
+      "align": {
+        "left": "Wyrównaj do lewej",
+        "center": "Wyśrodkuj",
+        "right": "Wyrównaj do prawej"
+      },
+      "size": {
+        "label": "Rozmiar tekstu",
+        "default": "Rozmiar domyślny",
+        "small": "Mały",
+        "normal": "Normalny",
+        "large": "Duży",
+        "extraLarge": "Bardzo duży"
+      },
+      "color": {
+        "label": "Kolor tekstu",
+        "text": "Kolor tekstu motywu",
+        "muted": "Kolor wyciszony motywu",
+        "primary": "Kolor główny motywu",
+        "default": "Domyślny",
+        "hex": "Kolor szesnastkowy",
+        "apply": "Zastosuj"
+      },
+      "clear": "Wyczyść formatowanie"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Nie przesłano logo. Nagłówek drukuje nazwę warsztatu.",
+      "upload": "Prześlij logo",
+      "replace": "Zastąp logo",
+      "remove": "Usuń",
+      "uploading": "Przesyłanie…",
+      "width": "Szerokość logo",
+      "hint": "Niezależne od logo firmy. Przy przesyłaniu jest przycinane i przygotowywane do wiadomości e-mail. PNG, JPEG lub WebP do 4 MB.",
+      "position": "Położenie",
+      "tooLarge": "Obraz musi mieć mniej niż 4 MB",
+      "uploadFailed": "Nie udało się przesłać logo"
+    },
+    "image": {
+      "empty": "Nie przesłano obrazu. Blok nic nie drukuje, dopóki go nie ma.",
+      "upload": "Prześlij obraz",
+      "replace": "Zastąp obraz",
+      "remove": "Usuń",
+      "uploading": "Przesyłanie…",
+      "alt": "Opis",
+      "altHint": "Odczytywany na głos czytelnikom, którzy nie widzą obrazu, i wyświetlany podczas jego ładowania. PNG, JPEG lub WebP do 10 MB.",
+      "width": "Szerokość",
+      "widthHint": "600 px to pełna szerokość wiadomości e-mail. Węższe obrazy ustawiają się tam, gdzie wskazuje Położenie.",
+      "link": "Link",
+      "linkHint": "Opcjonalnie. Otwiera się po kliknięciu obrazu; działa tu też tag, na przykład link do udostępnienia.",
+      "tooLarge": "Obraz musi mieć mniej niż 10 MB",
+      "uploadFailed": "Nie udało się przesłać obrazu"
+    },
+    "dragHandle": "Przeciągnij, aby zmienić kolejność",
+    "dragHandleKeyboard": "Przeciągnij lub użyj klawiszy strzałek, aby przenieść ten blok",
+    "tagDoesNotFit": "Tag nie mieści się w tym polu."
   }
 }

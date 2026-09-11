@@ -4,6 +4,7 @@ import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures } from '@/lib/features'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { readWorkshopTax } from '@/features/settings/Lib/workshopTax'
 import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
@@ -14,6 +15,8 @@ import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceD
 import { DismissOnArrival } from '@/components/feature-hint'
 import { INVOICE_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
+import { telegramBotLink as botLinkOf } from '@/features/invoices/Lib/telegramQr'
+import { getOrgTelegramBotUsername } from '@/lib/telegram'
 
 export default async function InvoiceDesignerPage({
   searchParams,
@@ -38,6 +41,7 @@ export default async function InvoiceDesignerPage({
     seenRow,
     invoiceDesigns,
     quoteDesigns,
+    telegramBotUsername,
   ] = await Promise.all([
     getSettings(),
     getInvoiceLayoutConfig(),
@@ -58,6 +62,7 @@ export default async function InvoiceDesignerPage({
     }),
     listDocumentDesigns('invoice'),
     listDocumentDesigns('quote'),
+    getOrgTelegramBotUsername(data.organizationId),
   ])
 
   // Somebody is looking at the designer, so the workshop knows it exists. Only
@@ -111,6 +116,7 @@ export default async function InvoiceDesignerPage({
         invoiceTemplate={templateFor('invoice')}
         quoteTemplate={templateFor('quote')}
         initialSavedDesigns={savedDesigns}
+        telegramBotLink={telegramBotUsername ? botLinkOf(telegramBotUsername) : undefined}
         workshop={{
           name: organization?.name || '',
           address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] || '',
@@ -118,8 +124,10 @@ export default async function InvoiceDesignerPage({
           email: settings[SETTING_KEYS.WORKSHOP_EMAIL] || '',
           slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] || '',
           orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || '',
+          orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
           paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
           logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+          taxComponents: readWorkshopTax(settings).components,
         }}
         customFields={
           customFieldsResult.success && customFieldsResult.data

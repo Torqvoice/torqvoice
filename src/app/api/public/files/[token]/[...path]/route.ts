@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { svgDownloadHeaders } from '@/lib/upload-url'
 import { db } from '@/lib/db'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
+import { uploadsRoot } from '@/lib/upload-root'
 
 const MIME_TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
@@ -9,7 +11,6 @@ const MIME_TYPES: Record<string, string> = {
   png: 'image/png',
   webp: 'image/webp',
   avif: 'image/avif',
-  svg: 'image/svg+xml',
   pdf: 'application/pdf',
   csv: 'text/csv',
   txt: 'text/plain',
@@ -94,7 +95,7 @@ export async function GET(
   if (!orgId) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  const filePath = path.join(process.cwd(), 'data', 'uploads', orgId, category, filename)
+  const filePath = path.join(uploadsRoot(), orgId, category, filename)
 
   try {
     await stat(filePath)
@@ -104,6 +105,11 @@ export async function GET(
 
   const buffer = await readFile(filePath)
   const ext = filename.split('.').pop()?.toLowerCase() || ''
+  if (ext === 'svg') {
+    return new NextResponse(buffer, {
+      headers: svgDownloadHeaders('public, max-age=31536000, immutable'),
+    })
+  }
   const contentType = MIME_TYPES[ext] || 'application/octet-stream'
 
   return new NextResponse(buffer, {

@@ -4,6 +4,7 @@ import type {
   CustomerReport,
   InventoryReport,
   TechnicianReport,
+  TechnicianTimeReport,
   PartsUsageReport,
   JobAnalyticsReport,
   CustomerRetentionReport,
@@ -337,5 +338,31 @@ export function exportTaxCsv(
     'taxCollected',
     'taxableAmount',
     'invoiceCount',
+  ])
+}
+
+export function exportTechnicianTimeCsv(
+  data: TechnicianTimeReport,
+  headers: [string, string, string, string, string] = [
+    'Technician',
+    'Clocked Hours',
+    'Billed Hours',
+    'Efficiency',
+    'Jobs Clocked',
+  ]
+) {
+  const rows = data.technicians.map((t) => ({
+    technician: t.techName,
+    clocked: (t.clockedMinutes / 60).toFixed(2),
+    billed: t.billedHours.toFixed(2),
+    efficiency: t.efficiency === null ? '' : `${t.efficiency.toFixed(0)}%`,
+    jobs: t.jobsClocked,
+  }))
+  downloadCsv('technician-time-report.csv', headers, rows, [
+    'technician',
+    'clocked',
+    'billed',
+    'efficiency',
+    'jobs',
   ])
 }

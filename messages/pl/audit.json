@@ -50,6 +50,7 @@
     "team_invite": "Zaproszono członka zespołu",
     "team_sendInvitation": "Wysłano zaproszenie",
     "team_cancelInvitation": "Anulowano zaproszenie",
+    "team_resendInvitation": "Ponownie wysłano zaproszenie",
     "team_updateRole": "Zmieniono rolę członka",
     "team_removeMember": "Usunięto członka zespołu",
     "role_create": "Utworzono rolę",
@@ -161,10 +162,16 @@
     "settings_deleteDocumentDesign": "Usunięto projekt dokumentu",
     "settings_applyDocumentDesign": "Ustawiono domyślny projekt dokumentu",
     "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt",
+    "settings_saveEmailTemplate": "Zapisano szablon e-maila",
+    "settings_deleteEmailTemplate": "Usunięto szablon e-maila",
+    "settings_applyEmailTemplate": "Ustawiono domyślny szablon e-maila",
     "settings_freezeInvoices": "Zablokowano starsze faktury",
     "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
     "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie",
-    "service_videoCall_send": "Wysłano link do rozmowy wideo"
+    "service_videoCall_send": "Wysłano link do rozmowy wideo",
+    "timeEntry_create": "Dodano wpis czasu",
+    "timeEntry_update": "Poprawiono wpis czasu",
+    "timeEntry_delete": "Usunięto wpis czasu"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -243,6 +250,7 @@
     "subscription_cancel": "Anulowano abonament ze skutkiem na koniec okresu",
     "subscription_resume": "Wznowiono abonament",
     "team_cancelInvitation": "Anulowano zaproszenie dla {email}",
+    "team_resendInvitation": "Ponownie wysłano zaproszenie dla {email}",
     "team_removeMember": "Usunięto członka zespołu {id}",
     "team_sendInvitation": "Zaproszono {email} jako {role, select, owner {właściciela} admin {administratora} member {członka} other {{role}}}",
     "team_updateRole": "Zmieniono rolę członka na {role, select, owner {właściciel} admin {administrator} member {członek} other {{role}}}",
@@ -298,8 +306,15 @@
     "settings_deleteDocumentDesign": "Usunął projekt dokumentu {name}",
     "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu",
     "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt dokumentu {name}",
+    "settings_saveEmailTemplate": "Zapisał szablon e-maila {name}",
+    "settings_deleteEmailTemplate": "Usunął szablon e-maila {name}",
+    "settings_applyEmailTemplate": "Ustawił {name} jako szablon dla e-maili {kind}",
     "settings_freezeInvoices": "Zablokował {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}} sprzed blokady z bieżącym projektem",
     "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie",
-    "service_videoCall_send": "Wysłano link do rozmowy wideo przez {channels}"
+    "service_videoCall_send": "Wysłano link do rozmowy wideo przez {channels}",
+    "timeEntry_create": "Dodano {minutes} min dla {technician} w zleceniu „{job}”",
+    "timeEntry_update": "Poprawiono wpis czasu {technician} w zleceniu „{job}” na {minutes} min",
+    "timeEntry_stop": "Zatrzymano zegar {technician} w zleceniu „{job}” na {minutes} min",
+    "timeEntry_delete": "Usunięto wpis czasu {id}"
   }
 }

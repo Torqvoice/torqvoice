@@ -35,6 +35,8 @@ describe('isSupportEnabled', () => {
   })
 
   it('is off when no mode is configured at all', async () => {
+    // A developer's shell may carry the cloud mode; this case is about its absence.
+    vi.stubEnv('TORQVOICE_MODE', '')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockFindUnique.mockResolvedValue({ value: 'true' } as any)
     expect(await isSupportEnabled()).toBe(false)

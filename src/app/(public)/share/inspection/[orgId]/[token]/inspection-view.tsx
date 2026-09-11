@@ -297,7 +297,9 @@ export function InspectionView({
               <img src={logoUrl} alt="" className="mb-3 h-12 object-contain" />
             )}
             <p className="text-xl font-bold">{workshop.name}</p>
-            {workshop.address && <p className="text-sm text-gray-500">{workshop.address}</p>}
+            {workshop.address && (
+              <p className="whitespace-pre-wrap text-sm text-gray-500">{workshop.address}</p>
+            )}
             {workshop.phone && <p className="text-sm text-gray-500">{workshop.phone}</p>}
             {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
           </div>
@@ -511,7 +513,7 @@ export function InspectionView({
                       {gradedText(item.condition as Condition)}
                     </span>
                   </div>
-                  {item.notes && <p className="mt-1 text-sm">{item.notes}</p>}
+                  {item.notes && <p className="mt-1 whitespace-pre-wrap text-sm">{item.notes}</p>}
                   {renderValue(item)}
                   {renderMedia(item)}
                 </li>
@@ -558,7 +560,9 @@ export function InspectionView({
                         {gradedText(condition)}
                       </span>
                     </div>
-                    {item.notes && <p className="mt-1 text-sm text-gray-500">{item.notes}</p>}
+                    {item.notes && (
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-gray-500">{item.notes}</p>
+                    )}
                     {renderValue(item)}
                     {renderMedia(item)}
                   </li>

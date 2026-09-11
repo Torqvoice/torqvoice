@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   BarChart3,
+  Timer,
   Bell,
   CalendarDays,
   Car,
@@ -25,8 +26,10 @@ import {
   ScanBarcode,
   Settings,
   ShieldCheck,
+  Ship,
   Users,
 } from 'lucide-react'
+import { useServiceType } from '@/components/service-type-context'
 import {
   Drawer,
   DrawerContent,
@@ -47,8 +50,11 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
+const vehiclesItem = { href: '/vehicles', icon: Car, labelKey: 'vehicles' } as const
+/** A marine workshop services vessels, as the sidebar already says. */
+const vesselsItem = { href: '/vehicles', icon: Ship, labelKey: 'vessels' } as const
+
 const primaryItems = [
-  { href: '/vehicles', icon: Car, labelKey: 'vehicles' },
   { href: '/work-orders', icon: ClipboardList, labelKey: 'workOrders' },
   { href: '/customers', icon: Users, labelKey: 'customers' },
   { href: '/inventory', icon: Package, labelKey: 'inventory' },
@@ -69,6 +75,7 @@ const businessItems = [
   { href: '/billing', icon: Receipt, labelKey: 'billing' },
   { href: '/labor-presets', icon: Layers, labelKey: 'laborPresets' },
   { href: '/reports', icon: BarChart3, labelKey: 'reports' },
+  { href: '/timesheets', icon: Timer, labelKey: 'timesheets' },
   { href: '/audit-log', icon: History, labelKey: 'auditLog' },
 ] as const
 
@@ -88,6 +95,8 @@ export function MobileBottomNav({
   tireHotelEnabled?: boolean
 }) {
   const pathname = usePathname()
+  const isMarine = useServiceType() === 'marine'
+  const visiblePrimaryItems = [isMarine ? vesselsItem : vehiclesItem, ...primaryItems]
   const visibleWorkshopItems = tireHotelEnabled
     ? [...workshopItems, tireHotelItem]
     : [...workshopItems]
@@ -132,7 +141,7 @@ export function MobileBottomNav({
     <>
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
         <div className="grid grid-cols-5">
-          {primaryItems.map(({ href, icon: Icon, labelKey }) => {
+          {visiblePrimaryItems.map(({ href, icon: Icon, labelKey }) => {
             const isActive = pathname === href || pathname.startsWith(`${href}/`)
             return (
               <Link

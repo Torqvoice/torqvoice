@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Popover, PopoverAnchor, PopoverArrow, PopoverContent } from '@/components/ui/popover'
@@ -98,9 +98,23 @@ export function FeatureHint({
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [open, dismiss])
 
+  // An announcement can point at something the person cannot see. The
+  // Settings row sits at the foot of a sidebar that scrolls, and on a laptop
+  // screen it is below the fold: the card was drawn beside it, half off the
+  // bottom of the window, with the only button that closes it out of reach.
+  // So the row is brought into view first, and the card lands where it can be
+  // read and closed. Only for announcements, which nobody asked for; a hint
+  // follows something the person just did, so its anchor is already in view.
+  const anchorRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    // Optional, because not every environment the card renders in can
+    // scroll: a card that throws on mount is worse than one that stays put.
+    if (open && loud) anchorRef.current?.scrollIntoView?.({ block: 'nearest' })
+  }, [open, loud])
+
   return (
     <Popover open={open}>
-      <PopoverAnchor asChild>
+      <PopoverAnchor asChild ref={anchorRef}>
         {typeof children === 'function' ? children(open) : children}
       </PopoverAnchor>
       <PopoverContent
@@ -108,6 +122,10 @@ export function FeatureHint({
         align="center"
         sideOffset={10}
         collisionPadding={12}
+        // Kept inside the window even when that means leaving the anchor's
+        // side: a card whose button is off-screen cannot be closed at all,
+        // which is worse than an arrow that points a little off.
+        sticky="always"
         // Focus stays where the person put it.
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}

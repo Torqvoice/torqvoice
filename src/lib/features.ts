@@ -1,6 +1,8 @@
 import { cache } from 'react'
 import { db } from './db'
 import { isDemoMode } from './demo'
+import { verifyLicenseToken } from './license/token'
+import { scheduleLicenseSelfHeal } from './license/revalidate'
 
 export type Plan = 'free' | 'pro' | 'enterprise' | 'white-label'
 
@@ -32,7 +34,10 @@ export type PlanFeatures = {
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
   free: {
     maxOrganizations: 1,
-    maxCustomers: 5,
+    // Enough to run real work for a few weeks before the plan is felt. Five
+    // was reached in the first afternoon, often on the third customer once
+    // the seeded samples were counted, and people left instead of upgrading.
+    maxCustomers: 20,
     maxUsers: 1,
     templates: 2,
     customTemplates: false,
@@ -132,6 +137,17 @@ export function isCloudMode(): boolean {
   return process.env.TORQVOICE_MODE === 'cloud'
 }
 
+/**
+ * Torqvoice branding on invoices, quotes, inspections and share pages is a
+ * self-hosted matter: the free install carries the mark, the white-label
+ * licence removes it. On the cloud instance nobody gets the mark, whatever
+ * the plan. A new workshop downloading its first invoice from our own
+ * service should see its own name on it, not ours all over it.
+ */
+function cloudPlan(plan: Plan): PlanFeatures {
+  return { ...PLAN_FEATURES[plan], brandingRemoved: true }
+}
+
 // Grace period (in ms) after currentPeriodEnd before we cut off features.
 // Gives Stripe time to process renewals and deliver webhooks, and the daily
 // cron time to sync. 3 days covers Stripe's initial retry window.
@@ -154,12 +170,12 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     })
 
     if (!subscription) {
-      return PLAN_FEATURES.free
+      return cloudPlan('free')
     }
 
     // Only active and trialing subscriptions grant premium features
     if (subscription.status !== 'active' && subscription.status !== 'trialing') {
-      return PLAN_FEATURES.free
+      return cloudPlan('free')
     }
 
     // Defense-in-depth: if the billing period has ended and grace has elapsed,
@@ -169,7 +185,7 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
         subscription.currentPeriodEnd.getTime() + SUBSCRIPTION_GRACE_MS
       )
       if (new Date() > graceDeadline) {
-        return PLAN_FEATURES.free
+        return cloudPlan('free')
       }
     }
 
@@ -179,21 +195,34 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
       : name.includes('pro')
         ? 'pro'
         : 'free'
-    return PLAN_FEATURES[planName]
+    return cloudPlan(planName)
   }
 
-  // Self-hosted mode — all features unlocked, license only controls branding
+  // Self-hosted mode — all features unlocked, license only controls branding.
+  //
+  // The gate trusts one thing: a token signed by torqvoice.com, bound to this
+  // organization, refreshed within the last two weeks. The operator owns this
+  // database, so `license.valid` and friends are display cache only; editing
+  // them changes nothing here. See src/lib/license/token.ts.
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
-      key: { in: ['license.valid', 'license.expiresAt'] },
+      key: { in: ['license.token', 'license.key'] },
     },
   })
 
   const map = new Map(settings.map((s) => [s.key, s.value]))
-  const isValid = map.get('license.valid') === 'true'
-  const expiresAt = map.get('license.expiresAt')
-  const hasLicense = isValid && (!expiresAt || new Date(expiresAt) > new Date())
+  const verification = verifyLicenseToken(map.get('license.token'), organizationId)
+  const hasLicense = verification.status === 'valid'
+
+  // A key with no usable token is an install that has not talked to
+  // torqvoice.com recently, or one that upgraded from the release that stored
+  // plain booleans. Refresh in the background; the cron would get there within
+  // a day anyway, this just makes the upgrade invisible.
+  const key = map.get('license.key')
+  if (key && !hasLicense) {
+    scheduleLicenseSelfHeal(organizationId, key)
+  }
 
   return {
     ...PLAN_FEATURES['white-label'],
@@ -226,13 +255,21 @@ export async function getMaxOrganizations(userId: string): Promise<number> {
   return best
 }
 
+/**
+ * Thrown when the plan refuses an action. `withAuth` turns it into a typed
+ * `gated` field on the result, so the client can show an upgrade prompt with
+ * the actual number instead of a red error box. The message is only a
+ * fallback for callers that do not look at `gated`.
+ */
 export class FeatureGatedError extends Error {
   feature: string
+  limit?: number
 
-  constructor(feature: string, message?: string) {
+  constructor(feature: string, message?: string, limit?: number) {
     super(message ?? `This feature requires an upgraded plan: ${feature}`)
     this.name = 'FeatureGatedError'
     this.feature = feature
+    this.limit = limit
   }
 }
 

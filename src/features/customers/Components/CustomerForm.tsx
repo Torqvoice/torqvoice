@@ -33,6 +33,7 @@ import { ScanDocumentButton } from '@/features/vehicles/Components/ScanDocumentB
 import type { VehicleDocumentScan } from '@/features/vehicles/Actions/aiAnalyzeVehicleDocument'
 import { Loader2 } from 'lucide-react'
 import { clearableInput } from '@/lib/clearable'
+import { handleGated } from '@/components/upgrade-gate'
 
 interface CustomerFormProps {
   open: boolean
@@ -182,7 +183,9 @@ export function CustomerForm({
       }
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('saveError'))
+      if (!handleGated(result)) {
+        modal.open('error', tc('errors.error'), result.error || t('saveError'))
+      }
     }
 
     setLoading(false)
@@ -275,10 +278,15 @@ export function CustomerForm({
 
             <div className="space-y-2">
               <Label htmlFor="address">{tc('form.address')}</Label>
-              <Input
+              {/* An address is street, postcode and town, and it prints on
+                  the invoice the way it is typed here. One row until there
+                  is more, so the form does not open with a tall empty box. */}
+              <Textarea
                 id="address"
                 name="address"
                 placeholder={t('addressPlaceholder')}
+                rows={2}
+                className="min-h-9 resize-none"
                 defaultValue={customer?.address ?? defaults?.address ?? ''}
               />
             </div>

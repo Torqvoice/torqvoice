@@ -105,7 +105,9 @@
     "download": "İndir",
     "paid": "ödendi",
     "partial": "kısmi",
-    "unpaid": "ödenmedi"
+    "unpaid": "ödenmedi",
+    "back": "Faturalara dön",
+    "openShared": "Paylaşılan kopyayı aç"
   },
   "quotes": {
     "title": "Teklifler",

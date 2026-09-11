@@ -666,6 +666,11 @@ async function seed() {
   await provisionDemoAccount();
   await cleanup();
 
+  // Every row the app scopes by organisation needs the column set, not just a
+  // parent that has it: work orders and reminders were created without it and
+  // the app, which reads `where: { organizationId }`, answered "Service record
+  // not found" for all 101 seeded jobs and listed none of the 28 reminders.
+
   // Populate vehicle images: prefer bundled assets → fall back to cached copy
   // in data volume → fall back to live download.
   console.log("Populating vehicle images...");
@@ -1420,6 +1425,7 @@ async function seed() {
       serviceDate.setDate(serviceDate.getDate() + entry.offsetDays);
       const rec = await prisma.serviceRecord.create({
         data: {
+          organizationId: ORG_ID,
           vehicleId: hist.vehicleId,
           organizationId: ORG_ID,
           title: entry.title,

@@ -81,6 +81,14 @@
     "enterFullscreen": "Fullskjerm",
     "exitFullscreen": "Avslutt fullskjerm"
   },
+  "upgrade": {
+    "title": "Oppgrader for å fortsette",
+    "maxCustomers": "Planen din inkluderer opptil {limit} kunder, og du har nådd det antallet. Oppgrader for å legge til så mange du trenger.",
+    "maxUsers": "Planen din inkluderer {limit, plural, one {ett teammedlem} other {# teammedlemmer}}. Oppgrader for å invitere flere.",
+    "generic": "Denne funksjonen er ikke inkludert i planen din.",
+    "featureNotIncluded": "{feature} er ikke inkludert i planen din.",
+    "notNow": "Ikke nå"
+  },
   "broadcast": {
     "dismiss": "Lukk",
     "title": "Melding til alle",
@@ -100,5 +108,7 @@
     "title": "PDF-forhåndsvisning",
     "preview": "Forhåndsvisning",
     "failed": "Kunne ikke generere PDF-forhåndsvisningen."
-  }
+  },
+  "attachPdf": "Legg ved PDF",
+  "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den."
 }

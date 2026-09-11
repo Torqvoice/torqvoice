@@ -6,5 +6,5 @@ import { redirect } from 'next/navigation'
  * providers page explains where it went.
  */
 export default function SmsSettingsPage() {
-  redirect('/settings/providers?tab=sms')
+  redirect('/settings/integrations')
 }

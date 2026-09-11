@@ -1,9 +1,10 @@
 import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { readWorkshopTax, WORKSHOP_TAX_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { TemplateSettings } from './template-settings'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
-import { FeatureLockedMessage } from '../feature-locked-message'
+import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { db } from '@/lib/db'
@@ -22,15 +23,7 @@ export default async function TemplatePage() {
 
   const features = await getFeatures(data.organizationId)
 
-  if (!features.customTemplates) {
-    return (
-      <FeatureLockedMessage
-        feature="Templates"
-        description="Choose from pre-built templates and customize colors, fonts, and header layouts for your PDF invoices and quotes."
-        isCloud={isCloudMode()}
-      />
-    )
-  }
+  const locked = !features.customTemplates
 
   const [
     result,
@@ -60,6 +53,7 @@ export default async function TemplatePage() {
       SETTING_KEYS.QUOTE_FONT_FAMILY,
       SETTING_KEYS.QUOTE_HEADER_STYLE,
       SETTING_KEYS.QUOTE_LOGO_SIZE,
+      ...WORKSHOP_TAX_SETTING_KEYS,
       SETTING_KEYS.COMPANY_LOGO,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
       SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
@@ -114,6 +108,8 @@ export default async function TemplatePage() {
     phone: settings[SETTING_KEYS.WORKSHOP_PHONE],
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
     slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN],
+    // Its own taxes too: a split-tax workshop's cards show its GST and QST lines.
+    taxComponents: readWorkshopTax(settings).components,
   }
 
   const smsDefaultMap: Record<string, string> = {
@@ -134,7 +130,7 @@ export default async function TemplatePage() {
     smsTemplates[key] = settings[key] || smsDefaultMap[key] || ''
   }
 
-  return (
+  const content = (
     <TemplateSettings
       initialInvoiceValues={{
         primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
@@ -171,5 +167,17 @@ export default async function TemplatePage() {
       invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
     />
+  )
+
+  return locked ? (
+    <FeatureLocked
+      feature="Templates"
+      description="Choose from pre-built templates and customize colors, fonts, and header layouts for your PDF invoices and quotes."
+      isCloud={isCloudMode()}
+    >
+      {content}
+    </FeatureLocked>
+  ) : (
+    content
   )
 }

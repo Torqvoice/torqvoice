@@ -126,6 +126,9 @@
     "leaveEmpty": "Lascia vuoto",
     "noLimit": "Nessun limite",
     "planLocked": "Le integrazioni non sono incluse nel tuo piano.",
+    "lockedIntegrations": "Collega calendari, videochiamate e altri servizi alla tua officina.",
+    "lockedPayments": "Permetti ai clienti di pagare le fatture online, con ogni pagamento registrato sulla fattura.",
+    "lockedAi": "Collega un fornitore di IA per usare le funzioni di IA nella tua officina.",
     "ownAppTitle": "Questa installazione usa la tua app presso il provider",
     "redirectUri": "URI di reindirizzamento da registrare presso il provider:",
     "sendTestEmail": "Send test email",
@@ -266,7 +269,9 @@
       "description": "Send and receive text messages through a Vonage number.",
       "fields": {
         "apiKey": "API key",
-        "apiSecret": "API secret"
+        "apiSecret": "API secret",
+        "signatureSecret": "Signature secret",
+        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
       },
       "settings": {
         "phoneNumber": "Send from this number"
@@ -275,7 +280,9 @@
     "telnyx-sms": {
       "description": "Send and receive text messages through a Telnyx number.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API key",
+        "webhookPublicKey": "Webhook public key",
+        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
       },
       "settings": {
         "phoneNumber": "Send from this number"
@@ -288,7 +295,8 @@
         "accessToken": "Access token",
         "verifyToken": "Webhook verify token",
         "appSecret": "App secret",
-        "apiVersion": "Graph API version"
+        "apiVersion": "Graph API version",
+        "appSecretHelp": "Without it, webhook signatures are not checked and anyone who learns the webhook URL can post messages as your customers. Strongly recommended."
       },
       "settings": {
         "enabled": "Send messages on this channel",

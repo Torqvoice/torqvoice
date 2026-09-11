@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { extensionForType } from '@/lib/upload-url'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { writeFile, mkdir, stat } from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
+import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Photos and documents held against a stored tire set.
@@ -43,14 +45,9 @@ export async function POST(request: NextRequest) {
 
   // A generated name, never the uploaded one: a file called ../../server.key
   // must not be able to decide where it lands.
-  const ext =
-    file.name
-      .split('.')
-      .pop()
-      ?.toLowerCase()
-      .replace(/[^a-z0-9]/g, '') || 'bin'
+  const ext = extensionForType(file.type)
   const filename = `${crypto.randomUUID()}.${ext}`
-  const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'tire-hotel')
+  const uploadDir = path.join(uploadsRoot(), ctx.organizationId, 'tire-hotel')
 
   await mkdir(uploadDir, { recursive: true })
   const finalPath = path.join(uploadDir, filename)

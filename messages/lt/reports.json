@@ -12,7 +12,9 @@
     "parts": "Dalys",
     "jobAnalytics": "Darbų analitika",
     "retention": "Grįžtamumas",
-    "vehicles": "Transporto priemonės"
+    "vehicles": "Transporto priemonės",
+    "techniciansOverview": "Apžvalga",
+    "clockedTime": "Užregistruotas laikas"
   },
   "dateRange": {
     "to": "iki",
@@ -138,6 +140,19 @@
       "avgRevenue": "Vid. pajamos",
       "totalHours": "Iš viso valandų",
       "avgHours": "Vid. valandos"
+    },
+    "time": {
+      "clockedHours": "Užregistruotos valandos",
+      "billedHours": "Sąskaitoje nurodytos valandos",
+      "efficiency": "Efektyvumas",
+      "techniciansClocked": "Technikai su laiku",
+      "chartTitle": "Užregistruota ir apmokestinta pagal techniką",
+      "tableTitle": "Užregistruota prieš apmokestinta",
+      "clocked": "Užregistruota",
+      "billed": "Apmokestinta",
+      "hint": "Užregistruotos valandos ateina iš laikmačio. Apmokestintos valandos yra technikui priskirtų darbų, prasidėjusių laikotarpyje, darbo eilutės. Efektyvumas yra apmokestinta padalinta iš užregistruotos.",
+      "noClock": "Nėra laiko",
+      "jobsClocked": "Užregistruoti darbai"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Tipas",
     "status": "Būsena",
     "partsUsed": "Dalys",
-    "laborHours": "Darbo valandos"
+    "laborHours": "Darbo valandos",
+    "clockedHours": "Užregistruotos valandos",
+    "billedHours": "Sąskaitoje nurodytos valandos",
+    "efficiency": "Efektyvumas",
+    "jobsClocked": "Užregistruoti darbai"
   },
   "pdf": {
     "reportTitle": "Verslo ataskaita",

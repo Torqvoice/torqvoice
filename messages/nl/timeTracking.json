@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Klok loopt op {job}",
+    "stop": "Klok stoppen",
+    "stopped": "{minutes} geregistreerd",
+    "switched": "Vorige klus gestopt op {minutes}",
+    "startFailed": "Kon de klok niet starten",
+    "stopFailed": "Kon de klok niet stoppen"
+  },
+  "job": {
+    "title": "Geklokte tijd",
+    "running": "loopt",
+    "clockIn": "Inklokken",
+    "clockOut": "Uitklokken",
+    "switchHere": "Overschakelen naar deze klus",
+    "switchHint": "Stopt de klok op {job} en start hem hier",
+    "addAsLabor": "{hours, number} u als arbeid toevoegen",
+    "addAsLaborHint": "Voegt een arbeidsregel van {hours, number} uur toe tegen het standaardtarief. De geklokte tijd zelf verandert niet.",
+    "laborDescription": "Arbeid (geklokte tijd)",
+    "empty": "Nog geen tijd geklokt op deze klus. Monteurs klokken in vanuit de app of via Mijn actieve klussen op het dashboard.",
+    "showAll": "Nog {count} tonen",
+    "showFewer": "Minder tonen",
+    "openTimesheets": "Urenstaten openen"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Handmatig",
+    "editedBy": "Aangepast door {name}"
+  },
+  "page": {
+    "title": "Urenstaten",
+    "description": "Wie wanneer werkte, volgens de klok van de werkplaats.",
+    "loadFailed": "Kon de urenstaat niet laden",
+    "presets": {
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "thisWeek": "Deze week",
+      "lastWeek": "Vorige week",
+      "thisMonth": "Deze maand",
+      "lastMonth": "Vorige maand"
+    },
+    "customRange": "Aangepaste periode",
+    "apply": "Toepassen",
+    "allTechnicians": "Alle monteurs",
+    "export": "CSV exporteren",
+    "addEntry": "Registratie toevoegen",
+    "stats": {
+      "total": "Totale tijd",
+      "totalHint": "{days, plural, =1 {1 dag} other {# dagen}} in de periode",
+      "technicians": "Monteurs met tijd",
+      "techniciansHint": "van {count} in het team",
+      "running": "Nu ingeklokt",
+      "runningHint": "live",
+      "average": "Gemiddeld per actieve dag",
+      "averageHint": "over {days, plural, =1 {1 dag} other {# dagen}} met tijd"
+    },
+    "nowStrip": {
+      "title": "Nu ingeklokt",
+      "since": "sinds {time}",
+      "stop": "Stoppen"
+    },
+    "grid": {
+      "title": "Overzicht",
+      "description": "Uren per monteur per dag. Klik op een cel om naar die dag te springen.",
+      "technician": "Monteur",
+      "total": "Totaal",
+      "tooLong": "Het overzicht toont maximaal 31 dagen. Verklein de periode om het te zien."
+    },
+    "table": {
+      "time": "Tijd",
+      "duration": "Duur",
+      "job": "Klus",
+      "vehicle": "Voertuig",
+      "source": "Bron",
+      "note": "Notitie",
+      "running": "Loopt",
+      "dayTotal": "Dagtotaal",
+      "counterSale": "Balieverkoop",
+      "edit": "Bewerken",
+      "stop": "Klok stoppen",
+      "delete": "Verwijderen",
+      "actions": "Acties"
+    },
+    "empty": {
+      "title": "Geen tijd geklokt in deze periode",
+      "body": "Monteurs klokken in vanuit de Torqvoice Technicians-app of via Mijn actieve klussen op het dashboard. Registraties verschijnen hier zodra een klok start.",
+      "noTechnicians": "Nog niemand in het team is ingesteld als monteur. Koppel teamleden aan monteurs onder Instellingen, Team.",
+      "teamLink": "Teaminstellingen openen"
+    },
+    "deleteTitle": "Deze registratie verwijderen?",
+    "deleteBody": "{duration} op {job} door {technician} wordt van de urenstaat verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    "deleteConfirm": "Verwijderen",
+    "deleted": "Registratie verwijderd",
+    "stoppedByManager": "Klok gestopt op {minutes}",
+    "csv": {
+      "technician": "Monteur",
+      "date": "Datum",
+      "start": "Start",
+      "end": "Einde",
+      "duration": "Duur",
+      "hours": "Uren",
+      "job": "Klus",
+      "vehicle": "Voertuig",
+      "plate": "Kenteken",
+      "source": "Bron",
+      "editedBy": "Aangepast door",
+      "note": "Notitie"
+    },
+    "unlinked": "Geen account",
+    "unlinkedHint": "Alleen op het bord, niet gekoppeld aan een teamlid"
+  },
+  "dialog": {
+    "addTitle": "Tijdregistratie toevoegen",
+    "addDescription": "Tijd die een monteur werkte maar niet klokte. Wordt gemarkeerd als handmatig ingevoerd.",
+    "editTitle": "Tijdregistratie corrigeren",
+    "editDescription": "De registratie behoudt monteur en klus. Wie het wijzigde, wordt vastgelegd.",
+    "technician": "Monteur",
+    "pickTechnician": "Kies een monteur",
+    "job": "Werkorder",
+    "pickJob": "Kies een werkorder",
+    "searchJobs": "Zoek op titel of kenteken",
+    "searching": "Zoeken…",
+    "noJobs": "Geen werkorders gevonden",
+    "start": "Start",
+    "end": "Einde",
+    "stillRunning": "Loopt nog",
+    "leaveEndEmpty": "Laat het einde leeg om de klok te laten doorlopen.",
+    "endBeforeStart": "Het einde moet na de start liggen.",
+    "duration": "Duur: {duration}",
+    "timesInWorkshopZone": "Tijden volgen de klok van de werkplaats ({zone}).",
+    "note": "Notitie",
+    "notePlaceholder": "Optioneel. Waarom dit is toegevoegd of gewijzigd.",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "add": "Toevoegen",
+    "added": "Registratie toegevoegd",
+    "updated": "Registratie bijgewerkt",
+    "saveFailed": "Kon de registratie niet opslaan"
+  }
+}

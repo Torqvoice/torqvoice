@@ -12,7 +12,9 @@
     "parts": "Parçalar",
     "jobAnalytics": "İş Analizi",
     "retention": "Müşteri Sadakati",
-    "vehicles": "Araçlar"
+    "vehicles": "Araçlar",
+    "techniciansOverview": "Genel bakış",
+    "clockedTime": "Kaydedilen süre"
   },
   "dateRange": {
     "to": "-",
@@ -138,6 +140,19 @@
       "avgRevenue": "Ort. Gelir",
       "totalHours": "Toplam Saat",
       "avgHours": "Ort. Saat"
+    },
+    "time": {
+      "clockedHours": "Kaydedilen saat",
+      "billedHours": "Faturalanan saat",
+      "efficiency": "Verimlilik",
+      "techniciansClocked": "Süresi olan teknisyenler",
+      "chartTitle": "Teknisyene göre kaydedilen ve faturalanan",
+      "tableTitle": "Kaydedilen ve faturalanan",
+      "clocked": "Kaydedilen",
+      "billed": "Faturalanan",
+      "hint": "Kaydedilen saatler zaman sayacından gelir. Faturalanan saatler, teknisyene atanan ve aralıkta başlayan işlerdeki işçilik satırlarıdır. Verimlilik, faturalananın kaydedilene bölümüdür.",
+      "noClock": "Süre yok",
+      "jobsClocked": "Kaydedilen işler"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Tür",
     "status": "Durum",
     "partsUsed": "Parçalar",
-    "laborHours": "İşçilik Saatleri"
+    "laborHours": "İşçilik Saatleri",
+    "clockedHours": "Kaydedilen saat",
+    "billedHours": "Faturalanan saat",
+    "efficiency": "Verimlilik",
+    "jobsClocked": "Kaydedilen işler"
   },
   "pdf": {
     "reportTitle": "Business Report",

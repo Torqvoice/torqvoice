@@ -4,12 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { PermissionAction, PermissionSubject, type PermissionInput } from '@/lib/permissions'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures } from '@/lib/features'
+import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { completionTuning, createClient, getAiConfig } from '@/lib/ai'
 import { describeAiError } from '@/lib/ai-error'
 import { demoGuard } from '@/lib/demo'
 import { type ImportEntity, fieldsFor } from '../Lib/fields'
+import { permissionsFor } from '../Lib/permissions'
 import {
   type DuplicateRule,
   type ExistingData,
@@ -92,24 +94,6 @@ export interface CommitResult {
   failures: { index: number; issue: RowIssue }[]
 }
 
-function permissionsFor(entity: ImportEntity): PermissionInput[] {
-  switch (entity) {
-    case 'customers':
-      return [{ action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS }]
-    case 'vehicles':
-      return [
-        { action: PermissionAction.CREATE, subject: PermissionSubject.VEHICLES },
-        { action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS },
-      ]
-    case 'services':
-      return [
-        { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
-        { action: PermissionAction.CREATE, subject: PermissionSubject.VEHICLES },
-        { action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS },
-      ]
-  }
-}
-
 /** Only the field keys the entity can carry survive; anything else is ignored. */
 function sanitizeMapping(mapping: ColumnMapping, entity: ImportEntity): ColumnMapping {
   const allowed = new Set(fieldsFor(entity).map((f) => f.key))
@@ -176,6 +160,11 @@ async function buildPlan(
 }> {
   const staged = await readStagedImport(organizationId, input.token)
   if (!staged) throw new Error('The uploaded file has expired. Upload it again.')
+  // The permission was checked for the entity the caller named; the file
+  // decides what is written, so the two have to agree.
+  if (staged.entity !== input.options.entity) {
+    throw new Error('The uploaded file is a different kind of import')
+  }
   const options: ImportOptions = { ...input.options, entity: staged.entity }
   const mapping = sanitizeMapping(input.mapping, staged.entity)
   const existing = await loadExisting(organizationId, staged.entity)
@@ -185,7 +174,7 @@ async function buildPlan(
 
 async function customerLimit(organizationId: string, toCreate: number) {
   const features = await getFeatures(organizationId)
-  const current = await db.customer.count({ where: { organizationId } })
+  const current = await countCustomersTowardLimit(organizationId)
   const remaining = Math.max(0, features.maxCustomers - current)
   return { maxCustomers: features.maxCustomers, remaining, exceeded: toCreate > remaining }
 }
@@ -497,7 +486,8 @@ export async function commitImport(raw: unknown) {
         if (limit.exceeded) {
           throw new FeatureGatedError(
             'maxCustomers',
-            `Customer limit reached. You can import ${limit.remaining} more customer(s). Upgrade your plan for more.`
+            `Customer limit reached. You can import ${limit.remaining} more customer(s). Upgrade your plan for more.`,
+            limit.maxCustomers
           )
         }
       }

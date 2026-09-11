@@ -9,6 +9,8 @@ model Quote {
   taxRate         Float     @default(0)
   taxAmount       Float     @default(0)
   taxInclusive    Boolean   @default(false)
+  /// See ServiceRecord.taxComponents.
+  taxComponents   Json?
   discountType    String?
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)

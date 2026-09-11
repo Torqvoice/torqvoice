@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
+import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -34,6 +35,7 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   deleteDocumentDesign,
   getDocumentDesignUsage,
@@ -75,6 +77,7 @@ export function InvoiceDesigner({
   workshop: companyWorkshop,
   customFields: serviceCustomFields,
   quoteCustomFields = [],
+  telegramBotLink,
 }: {
   initialDocumentType: DocumentType
   initialView: 'gallery' | 'designer'
@@ -92,6 +95,8 @@ export function InvoiceDesigner({
   workshop: DesignerWorkshop
   customFields: DesignerFieldDef[]
   quoteCustomFields?: DesignerFieldDef[]
+  /** The connected Telegram bot's t.me link, or nothing when no bot is set up. */
+  telegramBotLink?: string
 }) {
   const router = useRouter()
   const t = useTranslations('settings.designer')
@@ -202,14 +207,32 @@ export function InvoiceDesigner({
     const ids: string[] = []
     if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
     if (!companyWorkshop.paymentTerms?.trim()) ids.push('payment_terms')
+    if (!telegramBotLink) ids.push('telegram_qr')
     return new Set(ids)
-  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms])
+  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms, telegramBotLink])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
+  // What the organisation number is called on paper ("ABN", "CVR", "VAT
+  // no."). A company fact rather than a design choice, so it is one value
+  // for both documents and is written to the company setting on save, the
+  // same place the company page writes it. Edited here all the same, because
+  // the number is looked at where it prints.
+  const [orgNumberLabel, setOrgNumberLabelState] = useState(companyWorkshop.orgNumberLabel ?? '')
+  const setOrgNumberLabel = useCallback(
+    (next: string) => {
+      setOrgNumberLabelState(next)
+      setDirty((prev) => ({ ...prev, [docType]: true }))
+    },
+    [docType]
+  )
   const workshop = useMemo(
-    () => ({ ...companyWorkshop, logoUrl: template.logoUrl || companyWorkshop.logoUrl || '' }),
-    [companyWorkshop, template.logoUrl]
+    () => ({
+      ...companyWorkshop,
+      logoUrl: template.logoUrl || companyWorkshop.logoUrl || '',
+      orgNumberLabel,
+    }),
+    [companyWorkshop, template.logoUrl, orgNumberLabel]
   )
 
   /**
@@ -220,12 +243,15 @@ export function InvoiceDesigner({
    */
   const printLabels = useMemo<PrintLabels>(() => {
     const pdf = messages.pdf ?? {}
-    return {
-      ...(pdf.invoice ?? {}),
-      ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-      ...(pdf.common ?? {}),
-    }
-  }, [messages, docType])
+    return withOrgNumberLabel(
+      {
+        ...(pdf.invoice ?? {}),
+        ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
+        ...(pdf.common ?? {}),
+      },
+      workshop.orgNumberLabel
+    )
+  }, [messages, docType, workshop.orgNumberLabel])
   const L = useCallback(
     (key: string, fallback: string) => printLabels[key] || fallback,
     [printLabels]
@@ -252,10 +278,36 @@ export function InvoiceDesigner({
     [docType]
   )
 
+  // The Telegram block draws a real code: the workshop's own bot when one is
+  // connected, a stand-in otherwise, marked as such. Without it the block
+  // drew nothing at all and looked broken the moment it was switched on.
+  // Encoded in the browser, only while the block is on the sheet.
+  const telegramOn = layout.sections.some((s) => s.id === 'telegram_qr' && s.visible)
+  const [telegramQrDataUri, setTelegramQrDataUri] = useState<string>()
+  useEffect(() => {
+    if (!telegramOn) return
+    let cancelled = false
+    const link = telegramBotLink || 'https://t.me/torqvoice'
+    import('qrcode').then((QRCode) =>
+      QRCode.toDataURL(link, { width: 200, margin: 1 }).then((uri) => {
+        if (!cancelled) setTelegramQrDataUri(uri)
+      })
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [telegramOn, telegramBotLink])
+
   /** What a workshop's own sheet says, with the sample standing in for a job. */
   const data: DocumentData = useMemo(
-    () => buildSampleData(workshop, customFields, t, printLabels, docType),
-    [workshop, customFields, t, printLabels, docType]
+    () => ({
+      ...buildSampleData(workshop, customFields, t, printLabels, docType),
+      telegramQr:
+        telegramOn && telegramQrDataUri
+          ? { dataUri: telegramQrDataUri, label: L('telegramConnect', 'Chat with us on Telegram') }
+          : undefined,
+    }),
+    [workshop, customFields, t, printLabels, docType, telegramOn, telegramQrDataUri, L]
   )
 
   const spec = useMemo(
@@ -614,6 +666,7 @@ export function InvoiceDesigner({
           [`${prefix}.headerStyle`]: template.headerStyle,
           [`${prefix}.logoSize`]: String(template.logoSize),
           [`${prefix}.logo`]: template.logoUrl,
+          [SETTING_KEYS.ORG_NUMBER_LABEL]: orgNumberLabel.trim(),
         }),
       ])
       setDirty((prev) => ({ ...prev, [docType]: false }))
@@ -920,6 +973,7 @@ export function InvoiceDesigner({
             {rail.map((section) => (
               <div
                 key={section.id}
+                data-testid={`rail-${section.id}`}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('text/plain', section.id)}
                 onDragOver={(e) => e.preventDefault()}
@@ -938,7 +992,10 @@ export function InvoiceDesigner({
                 <span className="cursor-grab text-[13px] tracking-tighter text-[#b3b7bd]">⠿</span>
                 <span className="flex-1 truncate text-[13.5px]">{sectionName(section.id)}</span>
                 {section.column && (
-                  <span className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]">
+                  <span
+                    data-testid={`rail-column-${section.id}`}
+                    className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]"
+                  >
                     {section.column[0]}
                   </span>
                 )}
@@ -955,6 +1012,8 @@ export function InvoiceDesigner({
                 )}
                 <button
                   type="button"
+                  data-testid={`rail-eye-${section.id}`}
+                  aria-pressed={section.visible}
                   onClick={(e) => {
                     e.stopPropagation()
                     patchSection(section.id, { visible: !section.visible })
@@ -1011,6 +1070,10 @@ export function InvoiceDesigner({
           sloganSet={!!companyWorkshop.slogan?.trim()}
           paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
           documentTitleDefault={data.meta.title}
+          orgNumberLabel={orgNumberLabel}
+          orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
+          onOrgNumberLabel={setOrgNumberLabel}
+          telegramBotLink={telegramBotLink}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

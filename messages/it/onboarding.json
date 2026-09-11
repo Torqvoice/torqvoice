@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Per iniziare",
-    "description": "Quattro passaggi per avviare la Sua officina",
+    "description": "Tre passi per avviare {workshop}",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Aggiungere un cliente",
-        "description": "Crei la Sua prima scheda cliente"
-      },
-      "vehicle": {
-        "title": "Aggiungere un veicolo",
-        "description": "Registri un veicolo per un cliente"
-      },
       "workOrder": {
-        "title": "Creare un ordine di lavoro",
-        "description": "Apra il Suo primo lavoro"
+        "title": "Crei il Suo primo ordine di lavoro",
+        "description": "Cliente, veicolo e lavoro in un'unica finestra"
+      },
+      "company": {
+        "title": "Aggiunga i dati della Sua officina",
+        "description": "Indirizzo, telefono e numero di registrazione per le fatture"
       },
       "invoice": {
-        "title": "Inviare o scaricare una fattura",
-        "description": "Condivida una fattura con un cliente o la scarichi in PDF"
+        "title": "Invii o scarichi la Sua prima fattura",
+        "description": "La condivida con il cliente o la salvi in PDF"
       }
     },
     "allDoneTitle": "Tutto pronto",

@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 
 export function UpgradePrompt({
   feature,
-  title = 'Upgrade Required',
+  title,
   description,
 }: {
   feature: string
@@ -15,6 +15,7 @@ export function UpgradePrompt({
   description?: string
 }) {
   const t = useTranslations('common.shared')
+  const tu = useTranslations('common.upgrade')
   const cloud = isCloudMode()
 
   return (
@@ -23,11 +24,9 @@ export function UpgradePrompt({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5" />
-            {title}
+            {title ?? tu('title')}
           </CardTitle>
-          <CardDescription>
-            {description ?? `The ${feature} feature is not available on your current plan.`}
-          </CardDescription>
+          <CardDescription>{description ?? tu('featureNotIncluded', { feature })}</CardDescription>
         </CardHeader>
         <CardContent>
           {cloud ? (

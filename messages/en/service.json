@@ -16,7 +16,13 @@
     "datesExpiredBack": "Back",
     "datesExpiredSetToday": "Set to today",
     "customFieldsInvalid": "Please fill in all required custom fields",
-    "customFieldsSaveFailed": "Failed to save custom fields"
+    "customFieldsSaveFailed": "Failed to save custom fields",
+    "problems": {
+      "title": "The job needs a title before it can be saved.",
+      "negative": "Quantities, hours, prices and costs cannot be negative.",
+      "partName": "Every priced part needs a name.",
+      "laborDescription": "Every labour line with hours or a rate needs a description."
+    }
   },
   "header": {
     "tabs": {
@@ -143,7 +149,8 @@
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Rows without a description are not saved."
   },
   "totals": {
     "title": "Totals",

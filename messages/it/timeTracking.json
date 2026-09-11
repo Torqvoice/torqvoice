@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Timer attivo su {job}",
+    "stop": "Ferma il timer",
+    "stopped": "{minutes} registrati",
+    "switched": "Lavoro precedente fermato a {minutes}",
+    "startFailed": "Impossibile avviare il timer",
+    "stopFailed": "Impossibile fermare il timer"
+  },
+  "job": {
+    "title": "Tempo registrato",
+    "running": "in corso",
+    "clockIn": "Timbra entrata",
+    "clockOut": "Timbra uscita",
+    "switchHere": "Passa a questo lavoro",
+    "switchHint": "Ferma il timer su {job} e lo avvia qui",
+    "addAsLabor": "Aggiungi {hours, number} h come manodopera",
+    "addAsLaborHint": "Aggiunge una riga di manodopera di {hours, number} ore alla tariffa predefinita. Il tempo registrato non viene modificato.",
+    "laborDescription": "Manodopera (tempo registrato)",
+    "empty": "Nessun tempo registrato su questo lavoro. I tecnici timbrano dall'app o da I miei lavori attivi nella dashboard.",
+    "showAll": "Mostra altri {count}",
+    "showFewer": "Mostra meno",
+    "openTimesheets": "Apri i fogli ore"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manuale",
+    "editedBy": "Modificato da {name}"
+  },
+  "page": {
+    "title": "Fogli ore",
+    "description": "Chi ha lavorato e quando, secondo l'orologio dell'officina.",
+    "loadFailed": "Impossibile caricare il foglio ore",
+    "presets": {
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "thisWeek": "Questa settimana",
+      "lastWeek": "Settimana scorsa",
+      "thisMonth": "Questo mese",
+      "lastMonth": "Mese scorso"
+    },
+    "customRange": "Intervallo personalizzato",
+    "apply": "Applica",
+    "allTechnicians": "Tutti i tecnici",
+    "export": "Esporta CSV",
+    "addEntry": "Aggiungi voce",
+    "stats": {
+      "total": "Tempo totale",
+      "totalHint": "{days, plural, =1 {1 giorno} other {# giorni}} nell'intervallo",
+      "technicians": "Tecnici con tempo",
+      "techniciansHint": "su {count} in squadra",
+      "running": "Timbrati ora",
+      "runningHint": "in tempo reale",
+      "average": "Media per giorno attivo",
+      "averageHint": "su {days, plural, =1 {1 giorno} other {# giorni}} con tempo"
+    },
+    "nowStrip": {
+      "title": "Timbrati ora",
+      "since": "dalle {time}",
+      "stop": "Ferma"
+    },
+    "grid": {
+      "title": "Panoramica",
+      "description": "Ore per tecnico e per giorno. Clicca una cella per andare a quel giorno.",
+      "technician": "Tecnico",
+      "total": "Totale",
+      "tooLong": "La panoramica mostra fino a 31 giorni. Restringi l'intervallo per vederla."
+    },
+    "table": {
+      "time": "Ora",
+      "duration": "Durata",
+      "job": "Lavoro",
+      "vehicle": "Veicolo",
+      "source": "Origine",
+      "note": "Nota",
+      "running": "In corso",
+      "dayTotal": "Totale giorno",
+      "counterSale": "Vendita al banco",
+      "edit": "Modifica",
+      "stop": "Ferma il timer",
+      "delete": "Elimina",
+      "actions": "Azioni"
+    },
+    "empty": {
+      "title": "Nessun tempo registrato in questo intervallo",
+      "body": "I tecnici timbrano dall'app Torqvoice Technicians o da I miei lavori attivi nella dashboard. Le voci compaiono qui appena parte un timer.",
+      "noTechnicians": "Nessuno della squadra è ancora configurato come tecnico. Collega i membri della squadra ai tecnici in Impostazioni, Squadra.",
+      "teamLink": "Apri le impostazioni della squadra"
+    },
+    "deleteTitle": "Eliminare questa voce?",
+    "deleteBody": "{duration} su {job} di {technician} verranno rimossi dal foglio ore. L'operazione non può essere annullata.",
+    "deleteConfirm": "Elimina",
+    "deleted": "Voce eliminata",
+    "stoppedByManager": "Timer fermato a {minutes}",
+    "csv": {
+      "technician": "Tecnico",
+      "date": "Data",
+      "start": "Inizio",
+      "end": "Fine",
+      "duration": "Durata",
+      "hours": "Ore",
+      "job": "Lavoro",
+      "vehicle": "Veicolo",
+      "plate": "Targa",
+      "source": "Origine",
+      "editedBy": "Modificato da",
+      "note": "Nota"
+    },
+    "unlinked": "Senza account",
+    "unlinkedHint": "Tecnico solo da bacheca, non collegato a un membro della squadra"
+  },
+  "dialog": {
+    "addTitle": "Aggiungi voce oraria",
+    "addDescription": "Tempo lavorato da un tecnico ma non timbrato. Viene contrassegnato come inserito a mano.",
+    "editTitle": "Correggi voce oraria",
+    "editDescription": "La voce mantiene tecnico e lavoro. Viene registrato chi l'ha modificata.",
+    "technician": "Tecnico",
+    "pickTechnician": "Scegli un tecnico",
+    "job": "Ordine di lavoro",
+    "pickJob": "Scegli un ordine di lavoro",
+    "searchJobs": "Cerca per titolo o targa",
+    "searching": "Ricerca…",
+    "noJobs": "Nessun ordine di lavoro trovato",
+    "start": "Inizio",
+    "end": "Fine",
+    "stillRunning": "Ancora in corso",
+    "leaveEndEmpty": "Lascia vuota la fine per mantenere il timer attivo.",
+    "endBeforeStart": "La fine deve essere dopo l'inizio.",
+    "duration": "Durata: {duration}",
+    "timesInWorkshopZone": "Gli orari seguono l'orologio dell'officina ({zone}).",
+    "note": "Nota",
+    "notePlaceholder": "Facoltativo. Perché è stato aggiunto o modificato.",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "add": "Aggiungi",
+    "added": "Voce aggiunta",
+    "updated": "Voce aggiornata",
+    "saveFailed": "Impossibile salvare la voce"
+  }
+}

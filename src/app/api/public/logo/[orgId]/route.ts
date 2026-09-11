@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
+import { svgDownloadHeaders } from '@/lib/upload-url'
 import { db } from '@/lib/db'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { uploadsRoot } from '@/lib/upload-root'
 
 const MIME_TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
@@ -10,7 +12,6 @@ const MIME_TYPES: Record<string, string> = {
   png: 'image/png',
   webp: 'image/webp',
   avif: 'image/avif',
-  svg: 'image/svg+xml',
 }
 
 export async function GET(_request: Request, { params }: { params: Promise<{ orgId: string }> }) {
@@ -36,7 +37,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ org
     return NextResponse.json({ error: 'Invalid' }, { status: 400 })
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'uploads', orgId, 'logos', filename)
+  const filePath = path.join(uploadsRoot(), orgId, 'logos', filename)
 
   try {
     await stat(filePath)
@@ -46,6 +47,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ org
 
   const buffer = await readFile(filePath)
   const ext = filename.split('.').pop()?.toLowerCase() || ''
+  if (ext === 'svg') {
+    return new NextResponse(buffer, { headers: svgDownloadHeaders('public, max-age=3600') })
+  }
   const contentType = MIME_TYPES[ext] || 'image/png'
 
   return new NextResponse(buffer, {

@@ -1,8 +1,19 @@
 import { db } from '@/lib/db'
+import {
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
 import { nextAvailableSlot } from '@/features/workboard/Lib/availability'
 import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { atZonedTime, startOfZonedDay, zonedParts } from '@/lib/timezone'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  resolveWorkOrderTitle,
+  workOrderTitleTemplateFrom,
+  workOrderTitleValues,
+} from './workOrderTitle'
 
 /**
  * Shared draft-record creation for both work orders (with a vehicle) and
@@ -18,7 +29,11 @@ export async function createDraftRecord(
     vehicleId: string | null
     customerId: string | null
     customerExempt: boolean
-    title: string
+    /**
+     * The job's title, or null to name it from the workshop's title template
+     * once its number is known (see workOrderTitle.ts).
+     */
+    title: string | null
     startDateTime?: Date
     endDateTime?: Date
     technicianId?: string
@@ -36,9 +51,8 @@ export async function createDraftRecord(
             'workshop.invoiceStartNumber',
             'workshop.defaultTechnician',
             'workshop.defaultTechnicianId',
-            'workshop.defaultTaxRate',
-            'workshop.taxEnabled',
-            'workshop.taxInclusive',
+            SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE,
+            ...WORKSHOP_TAX_SETTING_KEYS,
             'workboard.workDayStart',
           ],
         },
@@ -126,12 +140,11 @@ export async function createDraftRecord(
     })
   }
 
-  // Apply default tax rate from settings (if tax is enabled).
+  // The workshop's default tax, components included when it splits its tax.
   // Tax-exempt customers always get a 0% rate regardless of org default.
-  const taxEnabled = settingsMap['workshop.taxEnabled'] !== 'false'
-  const defaultTaxRate =
-    taxEnabled && !opts.customerExempt ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0
-  const taxInclusive = settingsMap['workshop.taxInclusive'] === 'true'
+  const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap), {
+    customerExempt: opts.customerExempt,
+  })
 
   /**
    * When a job with no stated time gets booked in.
@@ -175,10 +188,24 @@ export async function createDraftRecord(
   // serviceDate should be date-only (start of the workshop's day)
   const serviceDate = startOfZonedDay(defaultStart, timeZone)
 
+  // Named from the template once everything it can mention is known: the
+  // number just allocated, the car, its owner, the technician and the day.
+  const title =
+    opts.title ??
+    resolveWorkOrderTitle(
+      workOrderTitleTemplateFrom(settingsMap, SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE),
+      workOrderTitleValues({
+        orderNumber: invoiceNumber,
+        ...(await titleSubject(organizationId, opts.vehicleId, opts.customerId)),
+        technicianName: techName,
+        date: `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`,
+      })
+    )
+
   return db.serviceRecord.create({
     data: {
       organizationId,
-      title: opts.title,
+      title,
       type: 'maintenance',
       status: 'pending',
       vehicleId: opts.vehicleId,
@@ -188,12 +215,50 @@ export async function createDraftRecord(
       technicianId: resolvedTechId || undefined,
       workBayId: opts.workBayId || undefined,
       invoiceNumber,
-      taxRate: defaultTaxRate,
-      taxInclusive,
+      ...taxFields,
       serviceDate,
       invoiceDate: serviceDate,
       startDateTime: defaultStart,
       endDateTime: defaultEnd ?? new Date(defaultStart.getTime() + 3600000),
     },
   })
+}
+
+/** The car and the customer a job is for, as far as the title template cares. */
+async function titleSubject(
+  organizationId: string,
+  vehicleId: string | null,
+  customerId: string | null
+): Promise<{
+  vehicle: {
+    licensePlate: string | null
+    make: string
+    model: string
+    year: number
+    vin: string | null
+  } | null
+  customerName: string | null
+}> {
+  if (vehicleId) {
+    const vehicle = await db.vehicle.findFirst({
+      where: { id: vehicleId, organizationId },
+      select: {
+        licensePlate: true,
+        make: true,
+        model: true,
+        year: true,
+        vin: true,
+        customer: { select: { name: true } },
+      },
+    })
+    return { vehicle, customerName: vehicle?.customer?.name ?? null }
+  }
+  if (customerId) {
+    const customer = await db.customer.findFirst({
+      where: { id: customerId, organizationId },
+      select: { name: true },
+    })
+    return { vehicle: null, customerName: customer?.name ?? null }
+  }
+  return { vehicle: null, customerName: null }
 }

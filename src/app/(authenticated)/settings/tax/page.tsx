@@ -10,6 +10,9 @@ export default async function TaxSettingsPage() {
       SETTING_KEYS.DEFAULT_TAX_RATE,
       SETTING_KEYS.TAX_INCLUSIVE,
       SETTING_KEYS.TAX_LABEL,
+      SETTING_KEYS.TAX_MODE,
+      SETTING_KEYS.TAX_COMPONENTS,
+      SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX,
     ]),
     getTaxBackfillCounts(),
   ])

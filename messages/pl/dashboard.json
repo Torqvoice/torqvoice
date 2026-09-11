@@ -19,7 +19,8 @@
     "addToJob": "Dodaj {qty} do zlecenia",
     "statusReport": "Raport statusu",
     "report": "Raport",
-    "observation": "Obserwacja"
+    "observation": "Obserwacja",
+    "empty": "Obecnie nie masz przypisanych zleceń."
   },
   "recentActivity": "Ostatnia aktywność",
   "noRecentActivity": "Brak ostatniej aktywności",

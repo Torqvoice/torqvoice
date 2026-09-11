@@ -19,7 +19,13 @@
     "columnTotal": "Suma",
     "columnPaid": "Apmokėta",
     "columnBalance": "Likutis",
-    "noRecords": "Atsiskaitymų įrašų nerasta."
+    "noRecords": "Atsiskaitymų įrašų nerasta.",
+    "columnDelivery": "Pristatymas",
+    "deliverySent": "Išsiųsta",
+    "deliveryViewed": "Peržiūrėta",
+    "deliveryViewedOn": "Paskutinį kartą atidaryta {date}",
+    "filterUnviewed": "Neperžiūrėtos",
+    "filterUnviewedHint": "Sąskaitos, kurios išsiųstos, bet niekada neatidarytos"
   },
   "recurring": {
     "title": "Periodinės",

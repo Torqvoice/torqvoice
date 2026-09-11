@@ -21,6 +21,7 @@ import {
   exceedsRequestLimit,
   sanitizeFilename,
   validateSupportRequest,
+  supportReplyToAddress,
 } from '@/features/support/Lib/supportRequest'
 
 const attachment = (
@@ -297,5 +298,24 @@ describe('buildSupportEmailHtml', () => {
   it('falls back to the email alone when the account has no name', () => {
     const html = buildSupportEmailHtml('s', 'm', { ...context, userName: null })
     expect(html).toContain('kari@example.com')
+  })
+})
+
+describe('supportReplyToAddress', () => {
+  it('pairs the name with the address so the inbox shows who is asking', () => {
+    expect(supportReplyToAddress('Kari Nordmann', 'kari@example.com')).toBe(
+      '"Kari Nordmann" <kari@example.com>'
+    )
+  })
+
+  it('falls back to the bare address when there is no usable name', () => {
+    expect(supportReplyToAddress(null, 'kari@example.com')).toBe('kari@example.com')
+    expect(supportReplyToAddress('   ', 'kari@example.com')).toBe('kari@example.com')
+  })
+
+  it('strips characters that would break the header', () => {
+    expect(supportReplyToAddress('Evil" <boss@example.com>\r\nBcc: x', 'kari@example.com')).toBe(
+      '"Evil boss@example.com Bcc: x" <kari@example.com>'
+    )
   })
 })

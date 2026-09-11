@@ -81,6 +81,14 @@
     "enterFullscreen": "Fullscreen",
     "exitFullscreen": "Exit fullscreen"
   },
+  "upgrade": {
+    "title": "Upgrade to keep going",
+    "maxCustomers": "Your plan includes up to {limit} customers, and you have reached that number. Upgrade to add as many as you need.",
+    "maxUsers": "Your plan includes {limit, plural, one {one team member} other {# team members}}. Upgrade to invite more people.",
+    "generic": "This feature is not included in your current plan.",
+    "featureNotIncluded": "{feature} is not included in your current plan.",
+    "notNow": "Not now"
+  },
   "broadcast": {
     "dismiss": "Dismiss",
     "title": "Notice to everyone",
@@ -100,5 +108,7 @@
     "title": "PDF preview",
     "preview": "Preview",
     "failed": "Could not generate the PDF preview."
-  }
+  },
+  "attachPdf": "Attach PDF",
+  "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it."
 }

@@ -107,6 +107,14 @@ export async function sendServiceVideoCall(input: unknown) {
             recipientEmail: customer.email as string,
             subject: t('emailSubject', { vehicle }),
             body,
+            customerName: customer.name,
+            vehicle: record.vehicle
+              ? {
+                  year: record.vehicle.year,
+                  make: record.vehicle.make,
+                  model: record.vehicle.model,
+                }
+              : null,
           })
         )
       }

@@ -6,6 +6,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getOrgSmsProvider, sendOrgSms } from '@/lib/sms'
 import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
+import { isPortalLive } from '@/features/portal/Lib/portalLive'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
   const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
@@ -43,7 +44,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     })
     const settingMap = new Map(settings.map((s) => [s.key, s.value]))
 
-    if (settingMap.get(SETTING_KEYS.PORTAL_ENABLED) !== 'true') {
+    if (settingMap.get(SETTING_KEYS.PORTAL_ENABLED) !== 'true' || !(await isPortalLive(orgId))) {
       return NextResponse.json({ success: true })
     }
 

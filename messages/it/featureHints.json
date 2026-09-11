@@ -11,5 +11,10 @@
     "title": "Le fatture sono state rinnovate",
     "body": "Imposta layout, colori e caratteri di fatture e preventivi nel nuovo editor, in Modelli.",
     "cta": "Apri Modelli"
+  },
+  "email-designer": {
+    "title": "Le tue email hanno un nuovo aspetto",
+    "body": "Le email ai clienti ora partono con un design più pulito. Cambia colori, testi e impaginazione nel nuovo editor, sotto Modelli email.",
+    "cta": "Apri Modelli email"
   }
 }

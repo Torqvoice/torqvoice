@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getBillingHistory } from '@/features/billing/Actions/billingActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -13,6 +14,7 @@ export default async function BillingPage({
     pageSize?: string
     search?: string
     status?: string
+    delivery?: string
     sortBy?: string
     sortOrder?: string
   }>
@@ -22,11 +24,23 @@ export default async function BillingPage({
   const pageSize = Number(params.pageSize) || 20
   const search = params.search || ''
   const statusFilter = params.status || 'all'
-  const sortBy = params.sortBy || ''
-  const sortOrder = (params.sortOrder as 'asc' | 'desc') || 'desc'
+  const deliveryFilter = params.delivery === 'unviewed' ? 'unviewed' : ''
+  // No column asked for anywhere means the list keeps its own default, which
+  // getBillingHistory reads as newest first.
+  const sort = await resolveListSort('billing', params, { sortBy: undefined, sortOrder: 'desc' })
+  const sortBy = sort.sortBy || ''
+  const sortOrder = sort.sortOrder
 
   const [result, settingsResult] = await Promise.all([
-    getBillingHistory({ page, pageSize, search, status: statusFilter, sortBy, sortOrder }),
+    getBillingHistory({
+      page,
+      pageSize,
+      search,
+      status: statusFilter,
+      delivery: deliveryFilter,
+      sortBy,
+      sortOrder,
+    }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
   ])
 
@@ -53,6 +67,7 @@ export default async function BillingPage({
           currencyCode={currencyCode}
           search={search}
           statusFilter={statusFilter}
+          deliveryFilter={deliveryFilter}
           sortBy={sortBy}
           sortOrder={sortOrder}
         />

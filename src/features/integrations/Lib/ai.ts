@@ -13,6 +13,7 @@
  */
 
 import { db } from '@/lib/db'
+import { isUniqueViolation, writeAdoptionMarker } from './adoption-marker'
 import { AI_KEYS } from '@/features/ai/Schema/aiSettingsSchema'
 import { openCredentials, sealCredentials } from './vault'
 
@@ -68,11 +69,7 @@ export async function retireOtherAiProviders(
 
 /** Record that the connections table decides AI from now on. */
 export async function markAiAdopted(organizationId: string, userId: string): Promise<void> {
-  await db.appSetting.upsert({
-    where: { organizationId_key: { organizationId, key: AI_ADOPTED_KEY } },
-    create: { organizationId, userId, key: AI_ADOPTED_KEY, value: new Date().toISOString() },
-    update: {},
-  })
+  await writeAdoptionMarker(organizationId, AI_ADOPTED_KEY, userId)
 }
 
 export interface LegacyAiSetup {
@@ -113,11 +110,6 @@ export async function legacyAiSetup(
     setup: { provider, apiKey, model, userId: rows.find((r) => r.userId)?.userId ?? null },
     adopted,
   }
-}
-
-/** Prisma's code for a unique constraint the row already satisfies. */
-function isUniqueViolation(err: unknown): boolean {
-  return typeof err === 'object' && err !== null && (err as { code?: string }).code === 'P2002'
 }
 
 /**

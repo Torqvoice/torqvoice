@@ -131,3 +131,56 @@ export function safeTimeZone(value: string | null | undefined, fallback = 'UTC')
     return fallback
   }
 }
+
+/**
+ * A stand-in Date whose *browser-local* wall clock reads what `date` reads in
+ * `timeZone`. For widgets that work in local time and cannot be told
+ * otherwise: the returned instant is not `date` and must never be stored or
+ * sent anywhere. Seconds are dropped, because the pickers that need this stop
+ * at the minute. Undo it with `fromZonedWallClock`.
+ */
+export function toZonedWallClock(date: Date, timeZone: string): Date {
+  const p = zonedParts(date, timeZone)
+  return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, 0, 0)
+}
+
+/** The instant a local stand-in stands for: its wall clock, read in `timeZone`. */
+export function fromZonedWallClock(local: Date, timeZone: string): Date {
+  return zonedDate(
+    local.getFullYear(),
+    local.getMonth() + 1,
+    local.getDate(),
+    local.getHours(),
+    local.getMinutes(),
+    timeZone
+  )
+}
+
+/**
+ * The date and time a form field should show for a stored instant: the
+ * workshop's wall clock, as `YYYY-MM-DD` and `HH:MM`.
+ *
+ * These exist because a date field and a time field are read straight back as
+ * a wall clock by the server (`toSafeWorkshopDate`), so filling them from the
+ * browser's clock silently moves whatever is being edited. An empty
+ * `timeZone` means the workshop has never chosen one, and then the browser's
+ * own is all there is.
+ */
+export function zonedDateInput(date: Date, timeZone: string): string {
+  if (!timeZone) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+  }
+  const p = zonedParts(date, timeZone)
+  return `${p.year}-${pad(p.month)}-${pad(p.day)}`
+}
+
+/** The same, for a time field. */
+export function zonedTimeInput(date: Date, timeZone: string): string {
+  if (!timeZone) return `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  const p = zonedParts(date, timeZone)
+  return `${pad(p.hour)}:${pad(p.minute)}`
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, '0')
+}

@@ -7,8 +7,10 @@ import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
 import { isDemoMode } from './demo'
+import { googleSignInConfig } from './auth-providers'
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
+const google = googleSignInConfig()
 const isProduction = baseURL?.startsWith('https://')
 
 /**
@@ -68,14 +70,11 @@ export const auth = betterAuth({
       })
       if (setting?.value !== 'true') return
 
-      // Skip for users with a pending invitation — acceptInvitation will set emailVerified
-      const pendingInvitation = await db.teamInvitation.findFirst({
-        where: {
-          email: user.email,
-          status: 'pending',
-        },
-      })
-      if (pendingInvitation) return
+      // Invited addresses are verified like any other. This used to skip the
+      // mail when a pending invitation existed for the address, relying on
+      // acceptInvitation to mark the user verified; but an invitation only
+      // proves the inviter typed the address, and any admin anywhere could
+      // suppress somebody's verification mail just by inviting them.
 
       // Server-side rate limit: 60 seconds between verification emails per user
       const cooldownKey = `email-verify-cooldown:${user.id}`
@@ -127,6 +126,44 @@ export const auth = betterAuth({
       } catch (error) {
         console.error('[emailVerification] Failed to send verification email:', error)
       }
+    },
+  },
+  // better-auth allows three sign-ins per ten seconds in production. The
+  // end-to-end suite signs in far more often than that, on purpose, so its
+  // server runs with the limiter off. Nothing else sets this variable.
+  rateLimit: {
+    enabled: process.env.NODE_ENV === 'production' && process.env.AUTH_RATE_LIMIT !== 'off',
+  },
+  socialProviders: google
+    ? {
+        google: {
+          clientId: google.clientId,
+          clientSecret: google.clientSecret,
+          // Always show the chooser: a workshop laptop is shared, and a
+          // silent sign-in with whatever Google account is open is wrong
+          // more often than it is convenient.
+          prompt: 'select_account',
+        },
+      }
+    : undefined,
+  account: {
+    accountLinking: {
+      enabled: true,
+      // A Google sign-in whose email matches a password account attaches to
+      // that account rather than creating a second person with the same
+      // email, but only when Google says it has verified the address. Google
+      // is deliberately not a trusted provider: better-auth links a trusted
+      // provider's account without looking at email_verified at all, and
+      // anyone can create a Google account with somebody else's address on
+      // it. Trusted, that signed a stranger into the workshop that owns the
+      // address. e2e/specs/cloud/google-sign-in.spec.ts holds both halves.
+      //
+      // The local account may predate email verification and never have
+      // clicked the link. Google's verification of the same address is the
+      // stronger proof, the same proof a password reset mail would rest on,
+      // so it must not block the link. Better Auth marks the local email
+      // verified as part of linking.
+      requireLocalEmailVerified: false,
     },
   },
   emailAndPassword: {

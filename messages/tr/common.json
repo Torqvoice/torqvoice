@@ -81,6 +81,14 @@
     "enterFullscreen": "Tam ekran",
     "exitFullscreen": "Tam ekrandan çık"
   },
+  "upgrade": {
+    "title": "Devam etmek için planınızı yükseltin",
+    "maxCustomers": "Planınız en fazla {limit} müşteri içeriyor ve bu sayıya ulaştınız. İhtiyacınız kadar müşteri eklemek için planınızı yükseltin.",
+    "maxUsers": "Planınız {limit, plural, one {bir ekip üyesi} other {# ekip üyesi}} içeriyor. Daha fazla kişi davet etmek için planınızı yükseltin.",
+    "generic": "Bu özellik mevcut planınıza dahil değil.",
+    "featureNotIncluded": "{feature} mevcut planınıza dahil değil.",
+    "notNow": "Şimdi değil"
+  },
   "broadcast": {
     "dismiss": "Kapat",
     "title": "Herkese duyuru",
@@ -100,5 +108,7 @@
     "title": "PDF önizleme",
     "preview": "Önizleme",
     "failed": "PDF önizlemesi oluşturulamadı."
-  }
+  },
+  "attachPdf": "PDF ekle",
+  "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz."
 }

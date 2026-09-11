@@ -143,7 +143,7 @@ export function MessagesPageClient({
             <p className="text-sm font-medium">{t('noChannelsTitle')}</p>
             <p className="mt-1 max-w-sm text-xs text-muted-foreground">{t('noChannelsHint')}</p>
             <Button size="sm" variant="outline" className="mt-4" asChild>
-              <a href="/settings/providers">{t('goToProviders')}</a>
+              <a href="/settings/integrations">{t('goToProviders')}</a>
             </Button>
           </div>
         ) : (

@@ -38,7 +38,11 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
 import { ImportWizard } from '@/features/import/Components/ImportWizard'
 import { Checkbox } from '@/components/ui/checkbox'
-import { deleteCustomer, deleteCustomers } from '@/features/customers/Actions/customerActions'
+import {
+  backfillCustomerNumbers,
+  deleteCustomer,
+  deleteCustomers,
+} from '@/features/customers/Actions/customerActions'
 import { toast } from 'sonner'
 import {
   ArrowDown,
@@ -46,6 +50,7 @@ import {
   ArrowUpDown,
   Car,
   ExternalLink,
+  Hash,
   Loader2,
   MoreVertical,
   Pencil,
@@ -55,6 +60,7 @@ import {
   Upload,
   Users,
 } from 'lucide-react'
+import { ListEmpty } from '@/components/list-empty'
 
 interface Customer {
   customerNumber: string | null
@@ -83,11 +89,14 @@ export function CustomersClient({
   search,
   sortBy,
   sortOrder,
+  unnumbered: initialUnnumbered = 0,
 }: {
   data: PaginatedData
   search: string
   sortBy: string
   sortOrder: 'asc' | 'desc'
+  /** Customers with no number yet; the assign button shows while there are any. */
+  unnumbered?: number
 }) {
   const t = useTranslations('customers.list')
   const tc = useTranslations('common')
@@ -98,6 +107,12 @@ export function CustomersClient({
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
   useRememberedSort('customers')
+
+  // Customers imported or created before numbering may have none. The
+  // button lives here, beside the list it changes, and goes away once every
+  // customer has a number.
+  const [unnumbered, setUnnumbered] = useState(initialUnnumbered)
+  const [assigning, setAssigning] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null)
@@ -215,6 +230,50 @@ export function CustomersClient({
     setIsDeleting(false)
   }
 
+  const handleAssignNumbers = async () => {
+    const ok = await confirm({
+      title: t('assignNumbersTitle'),
+      description: t('assignNumbersDescription', { count: unnumbered }),
+      confirmLabel: t('assignNumbers'),
+    })
+    if (!ok) return
+    setAssigning(true)
+    const result = await backfillCustomerNumbers()
+    setAssigning(false)
+    if (result.success && result.data) {
+      setUnnumbered(0)
+      toast.success(t('assignNumbersDone', { count: result.data.assigned }))
+      router.refresh()
+    } else {
+      toast.error(result.success ? t('error') : result.error || t('error'))
+    }
+  }
+
+  // The truly empty list gets the next step in front of it. A search miss
+  // keeps its plain sentence.
+  const emptyState = (bare: boolean) =>
+    search ? (
+      <p className="p-8 text-center text-sm text-muted-foreground">{t('emptySearch')}</p>
+    ) : (
+      <ListEmpty
+        bare={bare}
+        icon={Users}
+        title={t('empty')}
+        action={
+          <Button onClick={() => setShowForm(true)} className="w-full sm:w-auto">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('addCustomer')}
+          </Button>
+        }
+        secondary={
+          <Button variant="ghost" size="sm" onClick={() => setShowImport(true)}>
+            <Upload className="mr-1 h-3.5 w-3.5" />
+            {t('importCustomers')}
+          </Button>
+        }
+      />
+    )
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
@@ -254,6 +313,27 @@ export function CustomersClient({
               {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
             </div>
             <div className="flex shrink-0 items-center gap-2">
+              {unnumbered > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleAssignNumbers}
+                  disabled={assigning}
+                  aria-label={t('assignNumbers')}
+                  title={t('assignNumbersDescription', { count: unnumbered })}
+                  className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+                >
+                  {assigning ? (
+                    <Loader2 className="h-4 w-4 animate-spin md:mr-1 md:h-3.5 md:w-3.5" />
+                  ) : (
+                    <Hash className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                  )}
+                  <span className="hidden md:inline">{t('assignNumbers')}</span>
+                  <span className="hidden rounded-full bg-primary/10 px-1.5 text-[11px] font-semibold tabular-nums text-primary md:ml-1.5 md:inline">
+                    {unnumbered}
+                  </span>
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="outline"
@@ -282,75 +362,73 @@ export function CustomersClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.customers.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {search ? t('emptySearch') : t('empty')}
-          </div>
-        ) : (
-          data.customers.map((c) => (
-            <div
-              key={c.id}
-              className={`flex items-start gap-3 rounded-lg border bg-card p-3 ${
-                selected.has(c.id) ? 'bg-muted/50' : ''
-              }`}
-            >
-              <Checkbox
-                className="mt-1 shrink-0"
-                checked={selected.has(c.id)}
-                onCheckedChange={() => toggleSelect(c.id)}
-              />
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-left"
-                onClick={() => router.push(`/customers/${c.id}`)}
+        {data.customers.length === 0
+          ? emptyState(false)
+          : data.customers.map((c) => (
+              <div
+                key={c.id}
+                className={`flex items-start gap-3 rounded-lg border bg-card p-3 ${
+                  selected.has(c.id) ? 'bg-muted/50' : ''
+                }`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
-                  <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-                    <Car className="h-3 w-3" />
-                    {c._count.vehicles}
-                  </span>
-                </div>
-                {c.company && <p className="truncate text-xs text-muted-foreground">{c.company}</p>}
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  {c.customerNumber && <span className="font-mono">{c.customerNumber}</span>}
-                  {c.phone && <span>{c.phone}</span>}
-                  {c.email && <span className="truncate">{c.email}</span>}
-                </div>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 h-9 w-9 shrink-0"
-                    aria-label={t('openMenu')}
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditCustomer(c)
-                      setShowForm(true)
-                    }}
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    {tc('buttons.edit')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => handleDelete(c.id, c.name)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {tc('buttons.delete')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ))
-        )}
+                <Checkbox
+                  className="mt-1 shrink-0"
+                  checked={selected.has(c.id)}
+                  onCheckedChange={() => toggleSelect(c.id)}
+                />
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 text-left"
+                  onClick={() => router.push(`/customers/${c.id}`)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
+                    <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                      <Car className="h-3 w-3" />
+                      {c._count.vehicles}
+                    </span>
+                  </div>
+                  {c.company && (
+                    <p className="truncate text-xs text-muted-foreground">{c.company}</p>
+                  )}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    {c.customerNumber && <span className="font-mono">{c.customerNumber}</span>}
+                    {c.phone && <span>{c.phone}</span>}
+                    {c.email && <span className="truncate">{c.email}</span>}
+                  </div>
+                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="-mr-1 h-9 w-9 shrink-0"
+                      aria-label={t('openMenu')}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditCustomer(c)
+                        setShowForm(true)
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {tc('buttons.edit')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(c.id, c.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {tc('buttons.delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ))}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -441,8 +519,8 @@ export function CustomersClient({
           <TableBody>
             {data.customers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
-                  {search ? t('emptySearch') : t('empty')}
+                <TableCell colSpan={8} className="p-0">
+                  {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (

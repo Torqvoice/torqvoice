@@ -12,6 +12,7 @@ import {
 } from '@/features/quotes/Actions/quoteActions'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals } from '@/lib/tax'
+import { parseTaxComponents } from '@/lib/tax-components'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
@@ -99,6 +100,9 @@ export function useQuoteFormState({
   )
   const [taxRate, setTaxRate] = useState(quote.taxRate ?? defaultTaxRate)
   const [taxInclusive] = useState<boolean>(quote.taxInclusive ?? false)
+  // The split the quote was created with; the server re-derives the
+  // amounts from it on every save.
+  const [taxComponentDefinitions] = useState(() => parseTaxComponents(quote.taxComponents))
   const [discountType, setDiscountType] = useState<string>(quote.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(quote.discountValue ?? 0)
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
@@ -207,11 +211,16 @@ export function useQuoteFormState({
       : discountType === 'fixed'
         ? Math.min(discountValue, subtotal)
         : 0
-  const { taxAmount, totalAmount } = calculateTotals({
+  const {
+    taxAmount,
+    totalAmount,
+    components: taxComponents,
+  } = calculateTotals({
     subtotal,
     discountAmount,
     taxRate,
     taxInclusive,
+    components: taxComponentDefinitions,
   })
 
   // Cost, markup and price stay consistent with each other; repricePartRow
@@ -329,6 +338,9 @@ export function useQuoteFormState({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    // currentTarget is nulled once the event has finished dispatching, which
+    // happens during the custom-fields await below. Read the form now.
+    const form = e.currentTarget
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
 
@@ -349,40 +361,47 @@ export function useQuoteFormState({
 
     isSavingRef.current = true
     setSaving(true)
-    const formData = new FormData(e.currentTarget)
-    const result = await updateQuote({
-      id: quote.id,
-      title: formData.get('title') as string,
-      // Emptied fields go as '' (and a removed discount as 'none') so the
-      // update action clears them; undefined would leave the old value.
-      description,
-      status,
-      validUntil: (formData.get('validUntil') as string | null) ?? '',
-      customerId,
-      vehicleId,
-      notes,
-      partItems: partItems.filter((p) => p.name),
-      laborItems: laborItems.filter((l) => l.description),
-      subtotal,
-      taxRate,
-      taxInclusive,
-      taxAmount,
-      discountType,
-      discountValue,
-      discountAmount,
-      totalAmount,
-    })
-    if (result.success) {
-      setHasUnsavedChanges(false)
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
-      setShowSaved(true)
-      savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
-      router.refresh()
-    } else {
-      modal.open('error', 'Error', result.error || t('page.failedSave'))
+    try {
+      const formData = new FormData(form)
+      const result = await updateQuote({
+        id: quote.id,
+        title: formData.get('title') as string,
+        // Emptied fields go as '' (and a removed discount as 'none') so the
+        // update action clears them; undefined would leave the old value.
+        description,
+        status,
+        validUntil: (formData.get('validUntil') as string | null) ?? '',
+        customerId,
+        vehicleId,
+        notes,
+        partItems: partItems.filter((p) => p.name),
+        laborItems: laborItems.filter((l) => l.description),
+        subtotal,
+        taxRate,
+        taxInclusive,
+        taxAmount,
+        discountType,
+        discountValue,
+        discountAmount,
+        totalAmount,
+      })
+      if (result.success) {
+        setHasUnsavedChanges(false)
+        if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+        setShowSaved(true)
+        savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
+        router.refresh()
+      } else {
+        modal.open('error', 'Error', result.error || t('page.failedSave'))
+      }
+    } catch (err) {
+      console.error('Quote save error:', err)
+      modal.open('error', 'Error', t('page.failedSave'))
+    } finally {
+      // Whatever happened, the save button must stop spinning.
+      isSavingRef.current = false
+      setSaving(false)
     }
-    isSavingRef.current = false
-    setSaving(false)
   }
 
   const handleDelete = async () => {
@@ -481,6 +500,7 @@ export function useQuoteFormState({
     setTaxRate,
     taxEnabled,
     taxInclusive,
+    taxComponents,
     discountType,
     setDiscountType,
     discountValue,

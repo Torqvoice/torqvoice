@@ -64,9 +64,14 @@ async function POST(request: Request) {
     )
   }
 
-  const config = strictPrefixes.find((p) => pathname.startsWith(p.prefix)) ?? defaultConfig
-  const limited = rateLimit(request, config)
-  if (limited) return limited
+  // The end-to-end suite signs in on nearly every test and loads the sign-in
+  // page more often still, each load a passkey probe on the same prefix; its
+  // server runs with the limiter off. Nothing else sets this variable.
+  if (process.env.AUTH_RATE_LIMIT !== 'off') {
+    const config = strictPrefixes.find((p) => pathname.startsWith(p.prefix)) ?? defaultConfig
+    const limited = rateLimit(request, config)
+    if (limited) return limited
+  }
 
   const isAuthAttempt = authAuditPrefixes.some((p) => pathname.startsWith(p))
 

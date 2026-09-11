@@ -152,6 +152,24 @@ export function sanitizeFilename(filename: string, fallback: string): string {
   return cleaned.slice(0, 120)
 }
 
+/**
+ * The Reply-To address for a support mail, so answering from the inbox goes to
+ * the person who asked rather than to the platform sender.
+ *
+ * The display name is whatever the user typed into their profile, and it is
+ * going into a mail header. Quotes, angle brackets and line breaks are stripped
+ * rather than escaped: a name is only a courtesy here, the address is what
+ * matters, and a mangled name is better than a header the mailer refuses.
+ */
+export function supportReplyToAddress(name: string | null, email: string): string {
+  const cleaned = (name ?? '')
+    .replace(/[\r\n"<>,;\\]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!cleaned) return email
+  return `"${cleaned}" <${email}>`
+}
+
 export interface SupportContext {
   organizationName: string
   organizationId: string

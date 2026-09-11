@@ -53,24 +53,20 @@
   },
   "checklist": {
     "title": "Premiers pas",
-    "description": "Quatre étapes pour lancer votre atelier",
+    "description": "Trois étapes pour lancer {workshop}",
     "progress": "{done}/{total}",
     "steps": {
-      "customer": {
-        "title": "Ajouter un client",
-        "description": "Créez votre première fiche client"
-      },
-      "vehicle": {
-        "title": "Ajouter un véhicule",
-        "description": "Enregistrez un véhicule pour un client"
-      },
       "workOrder": {
-        "title": "Créer un ordre de réparation",
-        "description": "Ouvrez votre première intervention"
+        "title": "Créez votre premier ordre de réparation",
+        "description": "Client, véhicule et intervention dans une seule fenêtre"
+      },
+      "company": {
+        "title": "Renseignez les coordonnées de votre atelier",
+        "description": "Adresse, téléphone et numéro d'immatriculation pour vos factures"
       },
       "invoice": {
-        "title": "Envoyer ou télécharger une facture",
-        "description": "Partagez une facture avec un client ou téléchargez-la en PDF"
+        "title": "Envoyez ou téléchargez votre première facture",
+        "description": "Partagez-la avec le client ou enregistrez-la en PDF"
       }
     },
     "allDoneTitle": "Tout est prêt",

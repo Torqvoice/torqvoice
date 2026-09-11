@@ -94,6 +94,7 @@ describe('audit summaries', () => {
     // production because nobody tests in Lithuanian.
     const sample: Record<string, string | number> = {
       name: 'X',
+      kind: 'invoice',
       id: 'X',
       ref: 'X',
       code: 'X',
@@ -124,6 +125,9 @@ describe('audit summaries', () => {
       count: 2,
       records: 2,
       quotes: 2,
+      technician: 'Kari',
+      job: 'Brakes',
+      minutes: 45,
     }
     for (const locale of LOCALES) {
       const messages = summary(locale)

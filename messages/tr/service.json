@@ -16,7 +16,13 @@
     "datesExpiredBack": "Geri",
     "datesExpiredSetToday": "Bugüne ayarla",
     "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
-    "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"
+    "customFieldsSaveFailed": "Özel alanlar kaydedilemedi",
+    "problems": {
+      "title": "İş kaydedilmeden önce bir başlık gerekiyor.",
+      "negative": "Miktarlar, saatler, fiyatlar ve maliyetler negatif olamaz.",
+      "partName": "Fiyatı olan her parçanın bir adı olmalı.",
+      "laborDescription": "Saati veya ücreti olan her işçilik satırının bir açıklaması olmalı."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "switchToHourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
+    "switchToServiceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez."
   },
   "totals": {
     "title": "Toplamlar",

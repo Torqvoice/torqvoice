@@ -1,5 +1,10 @@
 'use server'
 
+import {
+  readWorkshopTax,
+  taxFieldsForNewDocument,
+  WORKSHOP_TAX_SETTING_KEYS,
+} from '@/features/settings/Lib/workshopTax'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -677,9 +682,7 @@ export async function createWorkOrderFromInspection(id: string) {
               in: [
                 'workshop.invoicePrefix',
                 'workshop.defaultLaborRate',
-                'workshop.defaultTaxRate',
-                'workshop.taxEnabled',
-                'workshop.taxInclusive',
+                ...WORKSHOP_TAX_SETTING_KEYS,
               ],
             },
           },
@@ -708,7 +711,7 @@ export async function createWorkOrderFromInspection(id: string) {
         if (match) nextNum = parseInt(match[1], 10) + 1
       }
 
-      const taxEnabled = settingsMap['workshop.taxEnabled'] !== 'false'
+      const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap))
       const laborRate = Number(settingsMap['workshop.defaultLaborRate']) || 0
       const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
 
@@ -729,8 +732,7 @@ export async function createWorkOrderFromInspection(id: string) {
             mileage: inspection.mileage,
             // Hours and totals stay at zero: the point is to get the job on the
             // board immediately, and the workshop prices it as it works.
-            taxRate: taxEnabled ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0,
-            taxInclusive: settingsMap['workshop.taxInclusive'] === 'true',
+            ...taxFields,
             serviceDate: startOfZonedDay(now, timeZone),
             startDateTime: now,
           },

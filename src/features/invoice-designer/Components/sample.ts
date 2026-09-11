@@ -1,5 +1,7 @@
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
-import type { DocumentData } from '../Spec/buildSpec'
+import { calculateTotals } from '@/lib/tax'
+import { taxComponentLabel } from '@/lib/tax-components'
+import type { DocumentData, PaymentPair, TotalLine } from '../Spec/buildSpec'
 import type { DesignerWorkshop, DocumentType } from './types'
 
 /**
@@ -135,7 +137,9 @@ export function fieldValues(
     // A made-up customer, the same for every workshop.
     customer_name: 'Alex Carter',
     customer_company: 'Carter Logistics Ltd',
-    customer_address: '12 Harbour Road, Springfield',
+    // Two lines, because a customer address is written on two and the
+    // designer should show what that does to the block before it prints.
+    customer_address: '12 Harbour Road\nSpringfield',
     customer_email: 'alex@example.com',
     customer_phone: '+1 555 0134',
     customer_tax_id: `${L('customerTaxId', 'Tax ID')}: 000 000 000`,
@@ -171,6 +175,62 @@ export function fieldValues(
   }
 }
 
+/** The sample's money, written the way its other figures are. */
+function sampleMoney(value: number): string {
+  return `€ ${value.toFixed(2)}`
+}
+
+/**
+ * The tax rows of the sample, and the registration numbers they bring: the
+ * workshop's own split when it has one, taxed on the sample's net subtotal
+ * so the lines add up on the canvas as they will on paper; otherwise the
+ * single 25% line every workshop has always seen here.
+ */
+function sampleTax(
+  workshop: DesignerWorkshop,
+  sample: SampleTables,
+  labels: PrintLabels
+): { lines: TotalLine[]; total: string; registrations: PaymentPair[] } {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const components = workshop.taxComponents ?? null
+  if (!components || components.length === 0) {
+    return {
+      lines: [
+        {
+          // The tax label carries the rate, the way the printed sheet does.
+          label: fillTemplate(L('tax', 'Tax ({rate}%)'), { rate: '25' }),
+          value: sample.tax,
+          kind: 'line',
+        },
+      ],
+      total: sample.total,
+      registrations: [],
+    }
+  }
+  const subtotal = Number(sample.subtotal.replace(/[^\d.]/g, ''))
+  const totals = calculateTotals({
+    subtotal,
+    discountAmount: 0,
+    taxRate: 0,
+    taxInclusive: false,
+    components,
+  })
+  return {
+    lines: (totals.components ?? []).map((component) => ({
+      label: taxComponentLabel(component),
+      value: sampleMoney(component.amount),
+      kind: 'line' as const,
+    })),
+    total: sampleMoney(totals.totalAmount),
+    registrations: components
+      .filter((component) => component.registrationNumber)
+      .map((component) => ({
+        label: fillTemplate(L('taxRegistrationLabel', '{name} No.'), { name: component.name }),
+        value: component.registrationNumber as string,
+      })),
+  }
+}
+
 /**
  * The whole sample document: what a workshop's own sheet says, with the
  * sample standing in for a job. One builder, so the designer's canvas and the
@@ -186,6 +246,7 @@ export function buildSampleData(
   const L = (key: string, fallback: string) => labels[key] || fallback
   const sample = sampleTables(t, labels)
   const values = fieldValues(workshop, t, labels)
+  const tax = sampleTax(workshop, sample, labels)
   return {
     fields: {
       ...values,
@@ -235,13 +296,8 @@ export function buildSampleData(
     findings: sample.findings,
     totals: [
       { label: L('subtotal', 'Subtotal'), value: sample.subtotal, kind: 'line' as const },
-      {
-        // The tax label carries the rate, the way the printed sheet does.
-        label: fillTemplate(L('tax', 'Tax ({rate}%)'), { rate: '25' }),
-        value: sample.tax,
-        kind: 'line' as const,
-      },
-      { label: L('total', 'Total'), value: sample.total, kind: 'total' as const },
+      ...tax.lines,
+      { label: L('total', 'Total'), value: tax.total, kind: 'total' as const },
       // A settled invoice, so the payment line and the paid stamp can be
       // seen and styled. Quotes never carry payments, so theirs ends at the
       // total.
@@ -249,7 +305,7 @@ export function buildSampleData(
         ? [
             {
               label: `${sample.date} (Visa)`,
-              value: `-${sample.total}`,
+              value: `-${tax.total}`,
               kind: 'payment' as const,
             },
             { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' as const },
@@ -282,6 +338,9 @@ export function buildSampleData(
         value: workshop.paymentTerms?.trim() || t('sample.paymentTerms'),
       },
       { id: 'due_date', label: L('dueDateLabel', 'Due Date'), value: sample.due },
+      // The workshop's registration for each of its taxes, where it has one;
+      // the printed sheet carries these the same way, after the rows above.
+      ...tax.registrations,
     ],
     // A stand-in link, so the canvas shows the portal line the printed sheet
     // carries and the footer's switch for it has something to switch.

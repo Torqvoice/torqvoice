@@ -16,7 +16,13 @@
     "datesExpiredBack": "Terug",
     "datesExpiredSetToday": "Instellen op vandaag",
     "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
-    "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"
+    "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan",
+    "problems": {
+      "title": "De opdracht heeft een titel nodig voordat deze kan worden opgeslagen.",
+      "negative": "Aantallen, uren, prijzen en kosten kunnen niet negatief zijn.",
+      "partName": "Elk onderdeel met een prijs heeft een naam nodig.",
+      "laborDescription": "Elke arbeidsregel met uren of tarief heeft een omschrijving nodig."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
+    "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen."
   },
   "totals": {
     "title": "Totalen",

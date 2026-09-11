@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Relógio rodando em {job}",
+    "stop": "Parar o relógio",
+    "stopped": "{minutes} registrados",
+    "switched": "Serviço anterior parado em {minutes}",
+    "startFailed": "Não foi possível iniciar o relógio",
+    "stopFailed": "Não foi possível parar o relógio"
+  },
+  "job": {
+    "title": "Tempo registrado",
+    "running": "em andamento",
+    "clockIn": "Bater ponto",
+    "clockOut": "Encerrar ponto",
+    "switchHere": "Mudar para este serviço",
+    "switchHint": "Para o relógio em {job} e inicia aqui",
+    "addAsLabor": "Adicionar {hours, number} h como mão de obra",
+    "addAsLaborHint": "Adiciona uma linha de mão de obra de {hours, number} horas na tarifa padrão. O tempo registrado não muda.",
+    "laborDescription": "Mão de obra (tempo registrado)",
+    "empty": "Nenhum tempo registrado neste serviço ainda. Os técnicos batem ponto pelo app ou em Meus serviços ativos no painel.",
+    "showAll": "Mostrar mais {count}",
+    "showFewer": "Mostrar menos",
+    "openTimesheets": "Abrir folhas de ponto"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manual",
+    "editedBy": "Ajustado por {name}"
+  },
+  "page": {
+    "title": "Folhas de ponto",
+    "description": "Quem trabalhou e quando, pelo relógio da oficina.",
+    "loadFailed": "Não foi possível carregar a folha de ponto",
+    "presets": {
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "thisWeek": "Esta semana",
+      "lastWeek": "Semana passada",
+      "thisMonth": "Este mês",
+      "lastMonth": "Mês passado"
+    },
+    "customRange": "Período personalizado",
+    "apply": "Aplicar",
+    "allTechnicians": "Todos os técnicos",
+    "export": "Exportar CSV",
+    "addEntry": "Adicionar registro",
+    "stats": {
+      "total": "Tempo total",
+      "totalHint": "{days, plural, =1 {1 dia} other {# dias}} no período",
+      "technicians": "Técnicos com tempo",
+      "techniciansHint": "de {count} na equipe",
+      "running": "Em ponto agora",
+      "runningHint": "ao vivo",
+      "average": "Média por dia ativo",
+      "averageHint": "em {days, plural, =1 {1 dia} other {# dias}} com tempo"
+    },
+    "nowStrip": {
+      "title": "Em ponto agora",
+      "since": "desde {time}",
+      "stop": "Parar"
+    },
+    "grid": {
+      "title": "Visão geral",
+      "description": "Horas por técnico por dia. Clique em uma célula para ir até aquele dia.",
+      "technician": "Técnico",
+      "total": "Total",
+      "tooLong": "A visão geral mostra até 31 dias. Reduza o período para vê-la."
+    },
+    "table": {
+      "time": "Hora",
+      "duration": "Duração",
+      "job": "Serviço",
+      "vehicle": "Veículo",
+      "source": "Origem",
+      "note": "Observação",
+      "running": "Em andamento",
+      "dayTotal": "Total do dia",
+      "counterSale": "Venda no balcão",
+      "edit": "Editar",
+      "stop": "Parar o relógio",
+      "delete": "Excluir",
+      "actions": "Ações"
+    },
+    "empty": {
+      "title": "Nenhum tempo registrado neste período",
+      "body": "Os técnicos batem ponto pelo app Torqvoice Technicians ou em Meus serviços ativos no painel. Os registros aparecem aqui assim que um relógio inicia.",
+      "noTechnicians": "Ninguém da equipe está configurado como técnico ainda. Vincule membros da equipe a técnicos em Configurações, Equipe.",
+      "teamLink": "Abrir configurações da equipe"
+    },
+    "deleteTitle": "Excluir este registro?",
+    "deleteBody": "{duration} em {job} por {technician} será removido da folha de ponto. Isso não pode ser desfeito.",
+    "deleteConfirm": "Excluir",
+    "deleted": "Registro excluído",
+    "stoppedByManager": "Relógio parado em {minutes}",
+    "csv": {
+      "technician": "Técnico",
+      "date": "Data",
+      "start": "Início",
+      "end": "Fim",
+      "duration": "Duração",
+      "hours": "Horas",
+      "job": "Serviço",
+      "vehicle": "Veículo",
+      "plate": "Placa",
+      "source": "Origem",
+      "editedBy": "Ajustado por",
+      "note": "Observação"
+    },
+    "unlinked": "Sem conta",
+    "unlinkedHint": "Técnico apenas do quadro, não vinculado a um membro da equipe"
+  },
+  "dialog": {
+    "addTitle": "Adicionar registro de tempo",
+    "addDescription": "Tempo que um técnico trabalhou mas não registrou. Fica marcado como inserido manualmente.",
+    "editTitle": "Corrigir registro de tempo",
+    "editDescription": "O registro mantém o técnico e o serviço. Quem alterou fica gravado.",
+    "technician": "Técnico",
+    "pickTechnician": "Escolha um técnico",
+    "job": "Ordem de serviço",
+    "pickJob": "Escolha uma ordem de serviço",
+    "searchJobs": "Buscar por título ou placa",
+    "searching": "Buscando…",
+    "noJobs": "Nenhuma ordem de serviço encontrada",
+    "start": "Início",
+    "end": "Fim",
+    "stillRunning": "Ainda em andamento",
+    "leaveEndEmpty": "Deixe o fim vazio para manter o relógio rodando.",
+    "endBeforeStart": "O fim deve ser depois do início.",
+    "duration": "Duração: {duration}",
+    "timesInWorkshopZone": "Os horários seguem o relógio da oficina ({zone}).",
+    "note": "Observação",
+    "notePlaceholder": "Opcional. Por que isso foi adicionado ou alterado.",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "add": "Adicionar",
+    "added": "Registro adicionado",
+    "updated": "Registro atualizado",
+    "saveFailed": "Não foi possível salvar o registro"
+  }
+}

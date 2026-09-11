@@ -12,7 +12,9 @@
     "parts": "Parts",
     "jobAnalytics": "Job Analytics",
     "retention": "Retention",
-    "vehicles": "Vehicles"
+    "vehicles": "Vehicles",
+    "techniciansOverview": "Overview",
+    "clockedTime": "Clocked time"
   },
   "dateRange": {
     "to": "to",
@@ -138,6 +140,19 @@
       "avgRevenue": "Avg Revenue",
       "totalHours": "Total Hours",
       "avgHours": "Avg Hours"
+    },
+    "time": {
+      "clockedHours": "Clocked hours",
+      "billedHours": "Billed hours",
+      "efficiency": "Efficiency",
+      "techniciansClocked": "Technicians clocked",
+      "chartTitle": "Clocked vs billed by technician",
+      "tableTitle": "Clocked against billed",
+      "clocked": "Clocked",
+      "billed": "Billed",
+      "hint": "Clocked hours come from the time clock. Billed hours are the labor lines on jobs assigned to the technician that started in the range. Efficiency is billed divided by clocked.",
+      "noClock": "No clock",
+      "jobsClocked": "Jobs clocked"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Type",
     "status": "Status",
     "partsUsed": "Parts",
-    "laborHours": "Labor Hours"
+    "laborHours": "Labor Hours",
+    "clockedHours": "Clocked hours",
+    "billedHours": "Billed hours",
+    "efficiency": "Efficiency",
+    "jobsClocked": "Jobs clocked"
   },
   "pdf": {
     "reportTitle": "Business Report",

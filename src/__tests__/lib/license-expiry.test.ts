@@ -28,10 +28,30 @@ vi.mock('@/lib/notification-bus', () => ({
   notificationBus: { emit: vi.fn() },
 }))
 
+vi.mock('@/lib/license/revalidate', () => ({
+  revalidateLicense: vi.fn(),
+}))
+
+vi.mock('@/lib/license/token', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/license/token')>()
+  return { ...actual, verifyLicenseToken: vi.fn() }
+})
+
 import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { notify } from '@/lib/notify'
-import { revalidateOrganizationLicense, sendExpiryWarning } from '@/lib/cron/check-licenses'
+import { revalidateLicense } from '@/lib/license/revalidate'
+import {
+  LICENSE_TOKEN_MAX_AGE_DAYS,
+  LICENSE_TOKEN_WARN_AGE_DAYS,
+  verifyLicenseToken,
+  type LicenseTokenVerification,
+} from '@/lib/license/token'
+import {
+  refreshLicensesMissingTokens,
+  revalidateOrganizationLicense,
+  sendExpiryWarning,
+} from '@/lib/cron/check-licenses'
 
 const ORG_ID = 'org-test-1'
 const USER_ID = 'user-test-1'
@@ -185,145 +205,152 @@ describe('sendExpiryWarning', () => {
 })
 
 describe('revalidateOrganizationLicense', () => {
-  function mockFetch(response: { ok: boolean; data?: Record<string, unknown> }) {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: response.ok,
-      json: () => Promise.resolve(response.data || {}),
+  function mockRemote(verification: Partial<LicenseTokenVerification>) {
+    vi.mocked(revalidateLicense).mockResolvedValue({
+      remote: {
+        reachable: true,
+        valid: true,
+        plan: 'white-label',
+        expiresAt: '',
+        token: 'tvl1.x.y',
+      },
+      verification: {
+        status: 'valid',
+        payload: null,
+        ageDays: 0,
+        daysUntilExpiry: 100,
+        ...verification,
+      },
     })
   }
 
-  it('stores license data and sends expiry warning when within 14 days', async () => {
-    const expiresAt = daysFromNow(10)
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro', expiresAt },
-    })
+  beforeEach(() => {
     vi.mocked(db.appSetting.findUnique).mockResolvedValue(null)
     vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
       userId: USER_ID,
       user: { email: 'owner@test.com' },
     } as any)
+  })
+
+  it('refreshes through the shared revalidation and warns when expiry is within 14 days', async () => {
+    mockRemote({ daysUntilExpiry: 10 })
 
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
 
-    // Should store license settings
-    expect(db.$transaction).toHaveBeenCalled()
-
-    // Should trigger expiry warning
+    expect(revalidateLicense).toHaveBeenCalledWith(ORG_ID, LICENSE_KEY)
     expect(notify).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'license_expiring',
-        organizationId: ORG_ID,
-      })
+      expect.objectContaining({ type: 'license_expiring', organizationId: ORG_ID })
     )
   })
 
-  it('does not send warning when expiry is more than 14 days away', async () => {
-    const expiresAt = daysFromNow(30)
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro', expiresAt },
-    })
-
+  it('does not warn when expiry is more than 14 days away', async () => {
+    mockRemote({ daysUntilExpiry: 30 })
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
-
-    expect(db.$transaction).toHaveBeenCalled()
     expect(notify).not.toHaveBeenCalled()
   })
 
-  it('does not send warning when license is invalid', async () => {
-    const expiresAt = daysFromNow(5)
-    mockFetch({
-      ok: true,
-      data: { valid: false, expiresAt },
-    })
-
+  it('does not warn about expiry when the token is not valid', async () => {
+    mockRemote({ status: 'invalid', daysUntilExpiry: 5 })
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
-
     expect(notify).not.toHaveBeenCalled()
   })
 
-  it('does not send warning when license is already expired', async () => {
-    const expiresAt = daysFromNow(-1)
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro', expiresAt },
-    })
-
+  it('does not warn about expiry once already expired', async () => {
+    mockRemote({ status: 'expired', daysUntilExpiry: -1 })
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
-
     expect(notify).not.toHaveBeenCalled()
   })
 
-  it('does not send warning when no expiresAt', async () => {
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro' },
-    })
-
+  it('warns at exactly 14 days and at 1 day', async () => {
+    mockRemote({ daysUntilExpiry: 14 })
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
+    expect(notify).toHaveBeenCalledTimes(1)
 
-    expect(notify).not.toHaveBeenCalled()
-  })
-
-  it('handles API failure gracefully', async () => {
-    mockFetch({ ok: false })
-
-    await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
-
-    // Should still store the result (valid=false)
-    expect(db.$transaction).toHaveBeenCalled()
-    expect(notify).not.toHaveBeenCalled()
-  })
-
-  it('skips if no org member found', async () => {
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro', expiresAt: daysFromNow(5) },
-    })
-    vi.mocked(db.organizationMember.findFirst).mockResolvedValue(null)
-
-    await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
-
-    expect(db.$transaction).not.toHaveBeenCalled()
-    expect(notify).not.toHaveBeenCalled()
-  })
-
-  it('sends warning at exactly 14 days', async () => {
-    const expiresAt = daysFromNow(14)
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro', expiresAt },
-    })
+    vi.mocked(notify).mockClear()
     vi.mocked(db.appSetting.findUnique).mockResolvedValue(null)
-    vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
-      userId: USER_ID,
-      user: { email: 'owner@test.com' },
-    } as any)
-
+    mockRemote({ daysUntilExpiry: 1 })
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
-
-    expect(notify).toHaveBeenCalled()
+    expect(notify).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'License expires in 1 day' })
+    )
   })
 
-  it('sends warning at exactly 1 day', async () => {
-    const expiresAt = daysFromNow(1)
-    mockFetch({
-      ok: true,
-      data: { valid: true, plan: 'pro', expiresAt },
-    })
-    vi.mocked(db.appSetting.findUnique).mockResolvedValue(null)
-    vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
-      userId: USER_ID,
-      user: { email: 'owner@test.com' },
-    } as any)
+  it('warns when the token has not been refreshed for a week', async () => {
+    mockRemote({ ageDays: LICENSE_TOKEN_WARN_AGE_DAYS })
 
     await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
 
     expect(notify).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'License expires in 1 day',
+        type: 'license_unverified',
+        title: `License could not be verified, branding returns in ${
+          LICENSE_TOKEN_MAX_AGE_DAYS - LICENSE_TOKEN_WARN_AGE_DAYS
+        } days`,
+        entityUrl: '/settings/license',
       })
     )
+    expect(sendOrgMail).toHaveBeenCalledWith(
+      ORG_ID,
+      expect.objectContaining({ to: 'owner@test.com' })
+    )
+  })
+
+  it('says branding has returned once the token is stale', async () => {
+    mockRemote({ status: 'stale', ageDays: LICENSE_TOKEN_MAX_AGE_DAYS + 3 })
+
+    await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
+
+    expect(notify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'license_unverified',
+        title: 'License could not be verified, branding has returned',
+      })
+    )
+  })
+
+  it('stays quiet about verification while the token is fresh', async () => {
+    mockRemote({ ageDays: 1 })
+    await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
+    expect(notify).not.toHaveBeenCalled()
+  })
+
+  it('sends the verification warning once per day', async () => {
+    const today = new Date().toISOString().slice(0, 10)
+    vi.mocked(db.appSetting.findUnique).mockResolvedValue({ value: today } as any)
+    mockRemote({ ageDays: 10 })
+    await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
+    expect(notify).not.toHaveBeenCalled()
+  })
+})
+
+describe('refreshLicensesMissingTokens', () => {
+  it('refreshes only orgs whose stored token does not verify', async () => {
+    vi.mocked(db.appSetting.findMany)
+      .mockResolvedValueOnce([
+        { organizationId: 'org-fresh', value: 'KEY-A' },
+        { organizationId: 'org-legacy', value: 'KEY-B' },
+        { organizationId: null, value: 'KEY-C' },
+      ] as any)
+      .mockResolvedValueOnce([{ organizationId: 'org-fresh', value: 'tvl1.good' }] as any)
+    vi.mocked(verifyLicenseToken).mockImplementation((token) => ({
+      status: token === 'tvl1.good' ? 'valid' : 'missing',
+      payload: null,
+      ageDays: null,
+      daysUntilExpiry: null,
+    }))
+    vi.mocked(revalidateLicense).mockResolvedValue({
+      remote: { reachable: true, valid: true, plan: 'white-label', expiresAt: '', token: 't' },
+      verification: { status: 'valid', payload: null, ageDays: 0, daysUntilExpiry: 100 },
+    })
+
+    await refreshLicensesMissingTokens()
+
+    expect(revalidateLicense).toHaveBeenCalledTimes(1)
+    expect(revalidateLicense).toHaveBeenCalledWith('org-legacy', 'KEY-B')
+  })
+
+  it('never throws', async () => {
+    vi.mocked(db.appSetting.findMany).mockRejectedValue(new Error('db down'))
+    await expect(refreshLicensesMissingTokens()).resolves.toBeUndefined()
   })
 })

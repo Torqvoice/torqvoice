@@ -1,0 +1,60 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Fatura",
+      "subject": "Fatura {document_number} de {workshop_name}",
+      "heading": "Fatura {document_number}",
+      "intro": "Olá, {customer_name},\n\nObrigado por escolher a gente. Sua fatura está pronta.",
+      "button": "Ver fatura",
+      "outro": "Se tiver alguma dúvida, é só responder a este e-mail."
+    },
+    "quote_sent": {
+      "name": "Orçamento",
+      "subject": "Orçamento {document_number} de {workshop_name}",
+      "heading": "Orçamento {document_number}",
+      "intro": "Olá, {customer_name},\n\nAqui está o orçamento que você pediu. É só avisar se quiser que a gente siga em frente.",
+      "button": "Ver orçamento",
+      "outro": "Se tiver alguma dúvida, é só responder a este e-mail."
+    },
+    "inspection_sent": {
+      "name": "Relatório de inspeção",
+      "subject": "Relatório de inspeção de {workshop_name}",
+      "heading": "Relatório de inspeção do veículo",
+      "intro": "Olá, {customer_name},\n\nConcluímos a inspeção. O relatório já está disponível para você.",
+      "button": "Ver relatório",
+      "outro": "Se tiver alguma dúvida, é só responder a este e-mail."
+    },
+    "message": {
+      "name": "Mensagem ao cliente",
+      "subject": "Mensagem de {workshop_name}",
+      "intro": "Olá, {customer_name},",
+      "outro": "Se tiver alguma dúvida, é só responder a este e-mail."
+    },
+    "portal_signin": {
+      "name": "Acesso ao portal",
+      "subject": "Entre em {workshop_name}",
+      "heading": "Entre no seu portal do cliente",
+      "intro": "Olá, {customer_name},\n\nUse o botão abaixo para entrar no portal do cliente de {workshop_name}.",
+      "button": "Entrar",
+      "linkFallback": "Se o botão não funcionar, copie este link no seu navegador:\n{signin_link}",
+      "outro": "Este link expira em 15 minutos. Se você não o solicitou, pode ignorar este e-mail."
+    },
+    "team_invitation": {
+      "name": "Convite para a equipe",
+      "subject": "Você foi convidado a entrar em {workshop_name}",
+      "heading": "Entre em {workshop_name}",
+      "intro": "Você foi convidado a entrar em {workshop_name} no Torqvoice como {role}.\n\nUse o botão abaixo para criar sua conta e entrar na equipe.",
+      "button": "Aceitar convite",
+      "linkFallback": "Se o botão não funcionar, copie este link no seu navegador:\n{invite_link}",
+      "outro": "Este convite é válido até {invite_expires}. Se você não o esperava, pode ignorar este e-mail."
+    }
+  },
+  "attachmentNote": "Uma cópia em PDF está anexada a este e-mail.",
+  "summary": {
+    "reference": "Referência",
+    "vehicle": "Veículo",
+    "total": "Total",
+    "balance": "Saldo a pagar",
+    "due": "Vencimento"
+  }
+}

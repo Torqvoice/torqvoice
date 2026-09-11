@@ -22,6 +22,8 @@ import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
 import { DocsLink } from '@/components/docs-link'
+import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
+import { useServiceType } from '@/components/service-type-context'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -139,6 +141,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/billing': [{ key: 'billing', href: '/billing' }, { key: 'billingHistory' }],
   '/inventory': [{ key: 'inventory', href: '/inventory' }, { key: 'allParts' }],
   '/reports': [{ key: 'reports', href: '/reports' }, { key: 'reports' }],
+  '/timesheets': [{ key: 'timesheets' }],
   '/reminders': [{ key: 'reminders', href: '/reminders' }, { key: 'allReminders' }],
   '/work-board': [{ key: 'workBoard' }],
   '/work-board/presenter': [{ key: 'workBoard', href: '/work-board' }, { key: 'presenter' }],
@@ -182,19 +185,31 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/tire-hotel': [{ key: 'settings', href: '/settings' }, { key: 'tireHotel' }],
 }
 
+/** A marine workshop services vessels, so its vehicle crumbs say so. */
+const marineBreadcrumbKeys: Record<string, string> = {
+  vehicles: 'vessels',
+  allVehicles: 'allVessels',
+  vehicleDetails: 'vesselDetails',
+}
+
 export function PageHeader() {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
-  const { daysUntilExpiry, dismissed, dismiss } = useLicenseExpiry()
+  const { daysUntilExpiry, unverifiedDaysLeft, dismissed, dismiss } = useLicenseExpiry()
   // Weeks of warning before a licence lapses, so this waits behind anything
-  // happening right now rather than adding a second bar beneath it.
+  // happening right now rather than adding a second bar beneath it. A licence
+  // that torqvoice.com has not confirmed for a week takes the same slot and
+  // is not dismissable: the fix is on the operator's side of the network.
+  const showUnverifiedNotice = unverifiedDaysLeft !== null
   const showLicenceNotice = useBannerSlot(
     'licence',
     BANNER_PRIORITY.licence,
-    daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed
+    showUnverifiedNotice || (daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed)
   )
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
+  const isMarine = useServiceType() === 'marine'
+  const crumb = (key: string) => t(isMarine ? (marineBreadcrumbKeys[key] ?? key) : key)
 
   // A set's own page is still the tire hotel, and somebody reading a set is
   // as likely to want the manual as somebody reading the list.
@@ -269,7 +284,7 @@ export function PageHeader() {
                     <BreadcrumbPage
                       className={segments.length === 1 ? 'text-base font-semibold' : undefined}
                     >
-                      {t(segment.key)}
+                      {crumb(segment.key)}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 )
@@ -278,9 +293,9 @@ export function PageHeader() {
                 <Fragment key={i}>
                   <BreadcrumbItem className="hidden md:block">
                     {segment.href ? (
-                      <BreadcrumbLink href={segment.href}>{t(segment.key)}</BreadcrumbLink>
+                      <BreadcrumbLink href={segment.href}>{crumb(segment.key)}</BreadcrumbLink>
                     ) : (
-                      <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
+                      <BreadcrumbPage>{crumb(segment.key)}</BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
@@ -291,6 +306,7 @@ export function PageHeader() {
         </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">
           {docsHref && <DocsLink href={docsHref} variant="header" className="hidden sm:flex" />}
+          <RunningClockPill />
           <PlateTrigger />
           <SearchTrigger />
           <QuickCreateMenu />
@@ -304,7 +320,28 @@ export function PageHeader() {
           )}
         </div>
       </header>
-      {showLicenceNotice && daysUntilExpiry !== null && (
+      {showLicenceNotice && showUnverifiedNotice && (
+        <div
+          className={`flex items-center gap-2 px-4 py-2 text-sm ${
+            unverifiedDaysLeft <= 0
+              ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
+              : 'bg-amber-500/10 text-amber-600 border-b border-amber-500/20'
+          }`}
+        >
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>
+            {unverifiedDaysLeft <= 0
+              ? tn('licenseUnverifiedNow')
+              : tn('licenseUnverifiedDays', { days: unverifiedDaysLeft })}
+          </span>
+          <div className="ml-auto flex items-center gap-2 shrink-0">
+            <Link href="/settings/license" className="font-medium underline hover:no-underline">
+              {tn('licenseVerify')}
+            </Link>
+          </div>
+        </div>
+      )}
+      {showLicenceNotice && !showUnverifiedNotice && daysUntilExpiry !== null && (
         <div
           className={`flex items-center gap-2 px-4 py-2 text-sm ${
             daysUntilExpiry <= 0

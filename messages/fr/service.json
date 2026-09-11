@@ -16,7 +16,13 @@
     "datesExpiredBack": "Retour",
     "datesExpiredSetToday": "Définir à aujourd'hui",
     "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
-    "customFieldsSaveFailed": "Échec de l'enregistrement des champs personnalisés"
+    "customFieldsSaveFailed": "Échec de l'enregistrement des champs personnalisés",
+    "problems": {
+      "title": "Le travail doit avoir un titre avant d'être enregistré.",
+      "negative": "Les quantités, heures, prix et coûts ne peuvent pas être négatifs.",
+      "partName": "Chaque pièce avec un prix doit avoir un nom.",
+      "laborDescription": "Chaque ligne de main-d'œuvre avec des heures ou un taux doit avoir une description."
+    }
   },
   "header": {
     "tabs": {
@@ -141,9 +147,10 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
-    "deleteRow": "Delete row"
+    "switchToHourlyHint": "À l'heure : facturé selon les heures travaillées (heures × taux/h). Cliquez pour changer.",
+    "switchToServiceHint": "Forfait : facturé au prix fixe par unité. Cliquez pour changer.",
+    "deleteRow": "Delete row",
+    "descriptionMissingHint": "Les lignes sans description ne sont pas enregistrées."
   },
   "totals": {
     "title": "Totaux",

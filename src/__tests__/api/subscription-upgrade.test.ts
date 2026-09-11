@@ -5,19 +5,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const mockSubscriptionsRetrieve = vi.fn()
 const mockSubscriptionsUpdate = vi.fn()
 
-vi.mock('@/lib/auth', () => ({
-  auth: {
-    api: { getSession: vi.fn() },
-  },
-}))
-
-vi.mock('next/headers', () => ({
-  headers: vi.fn().mockResolvedValue(new Headers()),
+vi.mock('@/lib/get-auth-context', () => ({
+  getAuthContext: vi.fn(),
 }))
 
 vi.mock('@/lib/db', () => ({
   db: {
-    organizationMember: { findFirst: vi.fn() },
     subscription: { findUnique: vi.fn(), update: vi.fn() },
     subscriptionPlan: { upsert: vi.fn() },
     appSetting: { upsert: vi.fn() },
@@ -29,13 +22,12 @@ vi.mock('@/lib/stripe-config', () => ({
   getStripeClient: vi.fn(),
 }))
 
-import { auth } from '@/lib/auth'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
 import { POST } from '@/app/api/protected/subscription/upgrade/route'
 
-const mockGetSession = vi.mocked(auth.api.getSession)
-const mockFindMember = vi.mocked(db.organizationMember.findFirst)
+const mockGetAuthContext = vi.mocked(getAuthContext)
 const mockFindSubscription = vi.mocked(db.subscription.findUnique)
 const mockUpdateSubscription = vi.mocked(db.subscription.update)
 const mockUpsertPlan = vi.mocked(db.subscriptionPlan.upsert)
@@ -51,11 +43,14 @@ function makeRequest(body: Record<string, unknown>) {
   })
 }
 
-function setupAuth(userId = 'user-1', orgId = 'org-1') {
-  mockGetSession.mockResolvedValue({
-    user: { id: userId, email: 'user@example.com' },
-  } as any)
-  mockFindMember.mockResolvedValue({ organizationId: orgId } as any)
+function setupAuth(userId = 'user-1', orgId = 'org-1', isAdmin = true) {
+  mockGetAuthContext.mockResolvedValue({
+    userId,
+    organizationId: orgId,
+    role: isAdmin ? 'owner' : 'member',
+    isAdmin,
+    isSuperAdmin: false,
+  })
 }
 
 function setupStripe() {
@@ -110,23 +105,20 @@ beforeEach(() => {
 
 describe('POST /api/protected/subscription/upgrade', () => {
   it('returns 401 when not authenticated', async () => {
-    mockGetSession.mockResolvedValue(null)
+    mockGetAuthContext.mockResolvedValue(null)
     const res = await POST(makeRequest({ plan: 'enterprise' }))
     expect(res.status).toBe(401)
     const data = await res.json()
     expect(data.error).toBe('Unauthorized')
   })
 
-  it('returns 400 when user has no organization', async () => {
-    mockGetSession.mockResolvedValue({
-      user: { id: 'user-1' },
-    } as any)
-    mockFindMember.mockResolvedValue(null)
-
+  it('refuses a member who is not an owner or admin', async () => {
+    // Changing the plan charges the card; a technician must not be able to.
+    setupAuth('user-2', 'org-1', false)
     const res = await POST(makeRequest({ plan: 'enterprise' }))
-    expect(res.status).toBe(400)
+    expect(res.status).toBe(403)
     const data = await res.json()
-    expect(data.error).toBe('No organization found')
+    expect(data.error).toBe('Forbidden')
   })
 
   it('returns 400 for invalid plan (not enterprise)', async () => {
@@ -200,7 +192,9 @@ describe('POST /api/protected/subscription/upgrade', () => {
     mockUpdateSubscription.mockResolvedValue({} as any)
     mockUpsertSetting.mockResolvedValue({} as any)
 
-    const res = await POST(makeRequest({ plan: 'enterprise', prorationDate: 1700000000 }))
+    // A proration stamp from the preview a moment ago; an old one is ignored.
+    const prorationDate = Math.floor(Date.now() / 1000) - 60
+    const res = await POST(makeRequest({ plan: 'enterprise', prorationDate }))
     expect(res.status).toBe(200)
     const data = await res.json()
     expect(data.success).toBe(true)
@@ -210,7 +204,7 @@ describe('POST /api/protected/subscription/upgrade', () => {
     expect(mockSubscriptionsUpdate).toHaveBeenCalledWith('sub_123', {
       items: [{ id: 'si_item_1', price: 'price_enterprise' }],
       proration_behavior: 'always_invoice',
-      proration_date: 1700000000,
+      proration_date: prorationDate,
       metadata: { plan: 'enterprise', organizationId: 'org-1' },
     })
 
@@ -266,7 +260,8 @@ describe('POST /api/protected/subscription/upgrade', () => {
     const res = await POST(makeRequest({ plan: 'enterprise' }))
     expect(res.status).toBe(500)
     const data = await res.json()
-    expect(data.error).toBe('Stripe API error')
+    // The vendor's wording stays in the log, not in the browser.
+    expect(data.error).toBe('Upgrade failed')
   })
 
   it('returns 500 when Stripe update fails', async () => {
@@ -282,7 +277,7 @@ describe('POST /api/protected/subscription/upgrade', () => {
     const res = await POST(makeRequest({ plan: 'enterprise' }))
     expect(res.status).toBe(500)
     const data = await res.json()
-    expect(data.error).toBe('Card was declined')
+    expect(data.error).toBe('Upgrade failed')
   })
 
   it('handles subscription with past_due status', async () => {
@@ -309,5 +304,22 @@ describe('POST /api/protected/subscription/upgrade', () => {
     expect(res.status).toBe(400)
     const data = await res.json()
     expect(data.error).toBe('No active subscription found')
+  })
+})
+
+describe('POST /api/protected/subscription/upgrade proration stamp', () => {
+  it('ignores a proration stamp that is old or not a timestamp', async () => {
+    setupAuth()
+    setupActiveSubscription()
+    setupStripe()
+    setupStripeResponses()
+    mockUpsertPlan.mockResolvedValue({ id: 'plan-ent' } as any)
+    mockUpdateSubscription.mockResolvedValue({} as any)
+    mockUpsertSetting.mockResolvedValue({} as any)
+
+    const res = await POST(makeRequest({ plan: 'enterprise', prorationDate: 1700000000 }))
+    expect(res.status).toBe(200)
+    const call = mockSubscriptionsUpdate.mock.calls.at(-1)?.[1] as Record<string, unknown>
+    expect(call.proration_date).toBeUndefined()
   })
 })

@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
 import { SignInForm } from './sign-in-form'
 import { isDemoMode } from '@/lib/demo'
+import { isCloudMode } from '@/lib/features'
+import { isGoogleSignInEnabled } from '@/lib/auth-providers'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +18,8 @@ export default async function SignInPage() {
     <SignInForm
       registrationDisabled={isDemoMode || regSetting?.value === 'true'}
       demoMode={isDemoMode}
+      cloudMode={isCloudMode()}
+      googleEnabled={isGoogleSignInEnabled()}
     />
   )
 }

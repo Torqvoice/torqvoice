@@ -1,0 +1,60 @@
+{
+  "presets": {
+    "invoice_sent": {
+      "name": "Faktura",
+      "subject": "Faktura {document_number} od {workshop_name}",
+      "heading": "Faktura {document_number}",
+      "intro": "Dzień dobry, {customer_name},\n\ndziękujemy za skorzystanie z naszych usług. Faktura jest gotowa.",
+      "button": "Zobacz fakturę",
+      "outro": "W razie pytań wystarczy odpowiedzieć na tę wiadomość."
+    },
+    "quote_sent": {
+      "name": "Wycena",
+      "subject": "Wycena {document_number} od {workshop_name}",
+      "heading": "Wycena {document_number}",
+      "intro": "Dzień dobry, {customer_name},\n\nprzesyłamy wycenę, o którą Państwo prosili. Prosimy o informację, czy mamy przystąpić do pracy.",
+      "button": "Zobacz wycenę",
+      "outro": "W razie pytań wystarczy odpowiedzieć na tę wiadomość."
+    },
+    "inspection_sent": {
+      "name": "Raport z przeglądu",
+      "subject": "Raport z przeglądu od {workshop_name}",
+      "heading": "Raport z przeglądu pojazdu",
+      "intro": "Dzień dobry, {customer_name},\n\nzakończyliśmy przegląd. Raport jest już gotowy.",
+      "button": "Zobacz raport",
+      "outro": "W razie pytań wystarczy odpowiedzieć na tę wiadomość."
+    },
+    "message": {
+      "name": "Wiadomość do klienta",
+      "subject": "Wiadomość od {workshop_name}",
+      "intro": "Dzień dobry, {customer_name},",
+      "outro": "W razie pytań wystarczy odpowiedzieć na tę wiadomość."
+    },
+    "portal_signin": {
+      "name": "Logowanie do portalu",
+      "subject": "Zaloguj się do {workshop_name}",
+      "heading": "Zaloguj się do swojego portalu klienta",
+      "intro": "Dzień dobry, {customer_name},\n\nprosimy użyć przycisku poniżej, aby zalogować się do portalu klienta {workshop_name}.",
+      "button": "Zaloguj się",
+      "linkFallback": "Jeśli przycisk nie działa, prosimy skopiować ten link do przeglądarki:\n{signin_link}",
+      "outro": "Ten link wygasa za 15 minut. Jeśli nie prosili Państwo o niego, można zignorować tę wiadomość."
+    },
+    "team_invitation": {
+      "name": "Zaproszenie do zespołu",
+      "subject": "Zaproszenie do dołączenia do {workshop_name}",
+      "heading": "Dołącz do {workshop_name}",
+      "intro": "Zaproszono Cię do dołączenia do {workshop_name} w Torqvoice jako {role}.\n\nUżyj przycisku poniżej, aby utworzyć konto i dołączyć do zespołu.",
+      "button": "Przyjmij zaproszenie",
+      "linkFallback": "Jeśli przycisk nie działa, skopiuj ten link do przeglądarki:\n{invite_link}",
+      "outro": "Zaproszenie jest ważne do {invite_expires}. Jeśli się go nie spodziewasz, możesz zignorować tę wiadomość."
+    }
+  },
+  "attachmentNote": "Kopia PDF jest załączona do tej wiadomości.",
+  "summary": {
+    "reference": "Numer",
+    "vehicle": "Pojazd",
+    "total": "Razem",
+    "balance": "Do zapłaty",
+    "due": "Termin płatności"
+  }
+}

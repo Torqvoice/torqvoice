@@ -20,6 +20,7 @@ export type ListKey =
   | 'inventory'
   | 'inspections'
   | 'laborPresets'
+  | 'billing'
 
 export const LIST_SORT_COOKIE = 'listSort'
 

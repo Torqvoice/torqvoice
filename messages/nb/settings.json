@@ -131,24 +131,27 @@
         "title": "Dekkhotell",
         "description": "Sesonglagring av dekk"
       },
-      "providers": {
-        "title": "Leverandører",
-        "description": "E-post, SMS, WhatsApp og Telegram"
-      },
       "inspectionReminders": {
         "title": "EU-kontroll-påminnelser",
         "description": "Bestillingslenke, varighet og frist"
+      },
+      "emailTemplates": {
+        "title": "E-postmaler",
+        "description": "Hva e-postene for faktura, tilbud og rapport sier"
       }
     },
-    "pro": "PRO"
+    "pro": "PRO",
+    "new": "Ny"
   },
   "readOnly": {
     "banner": "Du har kun lesetilgang til innstillingene. Kontakt en administrator for a gjore endringer."
   },
   "featureLocked": {
-    "requiresPro": "Krever en Pro-lisens",
-    "upgradePlan": "Oppgrader plan",
-    "activateLicense": "Aktiver lisens"
+    "requiresPro": "Abonnement kreves",
+    "upgradePlan": "Se planer",
+    "activateLicense": "Aktiver lisens",
+    "requiresLicense": "White label-lisens kreves",
+    "previewHint": "Dette er en forhåndsvisning. Alt på denne siden låses opp med et abonnement."
   },
   "company": {
     "logoTitle": "Bedriftslogo",
@@ -164,6 +167,9 @@
     "shopNamePlaceholder": "Hansens Bilverksted",
     "orgNumber": "Organisasjonsnummer",
     "orgNumberPlaceholder": "123 456 789",
+    "orgNumberLabel": "Betegnelse på organisasjonsnummer",
+    "orgNumberLabelPlaceholder": "Org.nummer",
+    "orgNumberLabelHint": "Skrives ut ved siden av nummeret på fakturaer og tilbud. La stå tomt for standarden på ditt språk, eller skriv hva det heter der du er, for eksempel ABN, VAT no. eller CVR.",
     "phone": "Telefon",
     "phonePlaceholder": "123 45 678",
     "email": "E-post",
@@ -354,10 +360,11 @@
     "failedSendInvitation": "Kunne ikke sende invitasjon",
     "pendingInvitations": "Ventende invitasjoner",
     "invitedAs": "Invitert som {role}",
+    "resendInvitation": "Send invitasjonen på nytt",
+    "invitationResent": "Invitasjonen er sendt på nytt til {email}",
+    "failedResendInvitation": "Kunne ikke sende invitasjonen på nytt",
     "expires": "Utloper {date}",
     "pending": "Ventende",
-    "copyInviteLink": "Kopier invitasjonslenke",
-    "inviteLinkCopied": "Invitasjonslenke kopiert til utklippstavlen",
     "cancelInvitation": "Kanseller invitasjon",
     "cancelInvitationDescription": "Kansellere invitasjonen til {email}? De vil ikke lenger kunne bruke denne lenken.",
     "invitationCancelled": "Invitasjon kansellert",
@@ -512,6 +519,10 @@
   "invoice": {
     "title": "Faktura og tilbud",
     "description": "Konfigurer fakturainnstillinger, layout og egendefinerte felter.",
+    "numberingTitle": "Nummerering og frister",
+    "numberingDescription": "Hvordan fakturaer og tilbud nummereres, når fakturaer forfaller og hvor lenge tilbud gjelder.",
+    "documentsTitle": "Dokumenter",
+    "documentsDescription": "Det hver faktura og hvert tilbud har med seg.",
     "tabs": {
       "general": "Generelt",
       "layout": "Oppsett",
@@ -542,12 +553,6 @@
     "customFooter": "Egendefinert fakturabunnstykke",
     "footerPlaceholder": "Takk for handelen!",
     "footerHint": "Denne teksten vises nederst pa hver faktura",
-    "partsMarkupTitle": "Delepåslag",
-    "partsMarkupDescription": "Påslag på innkjøpspris når deler legges til. Kun internt — kunden ser aldri kostnad eller påslag, bare sluttpris.",
-    "defaultMarkupPercent": "Standard påslag %",
-    "defaultMarkupPercentHint": "Nye manuelt lagt til deler fylles ut med dette påslaget. La stå på 0 for å skrive priser manuelt.",
-    "markupAppliesToInventory": "Bruk påslag på lagerdeler",
-    "markupAppliesToInventoryHint": "Når aktivert, bruker deler valgt fra lager også kostnad + standardpåslag (overstyrer lagerets salgspris).",
     "saveInvoice": "Lagre fakturainnstillinger",
     "saved": "Fakturainnstillinger lagret",
     "layoutDescription": "Tilpass rekkefølgen og synligheten av seksjoner i fakturaer og tilbud.",
@@ -557,13 +562,6 @@
     "layoutDocQuote": "Tilbud",
     "saveLayout": "Lagre oppsett",
     "resetLayout": "Tilbakestill",
-    "sectionCustomers": "Kunder",
-    "assignCustomerNumbers": "Tildel kundenumre",
-    "assignCustomerNumbersHint": "{count} kunder mangler nummer. Tildel fortløpende numre (eksisterende beholdes).",
-    "customerNumbersAssigned": "Tildelte numre til {count} kunder",
-    "allCustomersNumbered": "Alle kunder har et nummer.",
-    "assignCustomerNumbersConfirmTitle": "Tildele kundenumre?",
-    "assignCustomerNumbersConfirmDescription": "De {count} kundene uten nummer får fortløpende numre i opprettelsesrekkefølge, fortsettende etter det høyeste eksisterende nummeret. Kunder som allerede har nummer endres ikke. Numrene kan redigeres etterpå.",
     "layoutColorsHint": "Farger, skrifter og brevhodestilen ligger under Maler.",
     "goToTemplates": "Åpne Maler",
     "lockTitle": "Låsing av ferdige dokumenter",
@@ -571,6 +569,8 @@
     "lockWhatItDoes": "Dette låses: deler, arbeid, antall, priser, rabatt, avgift, dokumentnummer og dato. Sletting av dokumentet blokkeres også.",
     "lockWhatItAllows": "Dette virker fortsatt: registrere betalinger, kortbetaling på nett, statusendringer, sending og ny sending, vedlegg og interne notater. En låst faktura kan alltid betales.",
     "lockUnlockNote": "Eiere og administratorer kan låse opp ett enkelt dokument fra dokumentets egen side når noe virkelig må rettes. Hver opplåsing loggføres.",
+    "lockDetailsShow": "Hva låsing gjør",
+    "lockDetailsHide": "Skjul",
     "lockInvoicesLabel": "Lås fakturaer",
     "lockTriggerSent": "Når fakturaen er sendt",
     "lockTriggerPaid": "Når fakturaen er betalt i sin helhet",
@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Hver av dem beholder designet, logoen, verkstedopplysningene, kunden, kjøretøyet og funnene den skrives ut med akkurat nå. Dette kan ikke angres, og fakturaene forblir redigerbare eller låst for redigering nøyaktig som i dag.",
     "freezeProgress": "Låst {done} av {total}",
     "freezeDone": "{count, plural, one {# faktura} other {# fakturaer}} låst",
-    "freezeFailed": "Kunne ikke låse fakturaene"
+    "freezeFailed": "Kunne ikke låse fakturaene",
+    "sectionSending": "Utsending",
+    "attachPdfLabel": "Legg ved PDF i e-post",
+    "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",
@@ -854,9 +857,33 @@
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Eksempel: 100 + {rate}% avgift = 100 + avgift på toppen.",
     "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs.",
+    "lineItemsInclTaxLabel": "Vis linjepriser inkludert mva på fakturaer og tilbud",
+    "lineItemsInclTaxHint": "Endrer bare det som skrives ut på fakturaer og tilbud, inkludert PDF-ene og kopiene kundene åpner fra en lenke. På: hver dele- og arbeidslinje og delsummen vises inkludert mva, og mva-linjen sier hvor mye av dette som er mva. Av: priser uten mva, med mva lagt til nederst. Arbeidsordrer og prisene du legger inn påvirkes ikke.",
     "labelLabel": "Avgiftsetikett",
     "labelHint": "Tilpasset navn vist på fakturaer og tilbud (f.eks. MVA, GST, MwSt.). La stå tom for å bruke standardverdien.",
     "labelPlaceholder": "MVA",
+    "splitLabel": "Del avgiften opp i flere satser",
+    "splitHint": "For steder som krever mer enn én avgift på samme faktura, som GST og QST i Québec eller CGST og SGST i India. Hver avgift skrives ut som egen linje med eget registreringsnummer, og avgiftsrapporten holder dem adskilt.",
+    "splitIncomplete": "Gi hver avgift et navn og en sats før du lagrer.",
+    "presetLabel": "Start fra en mal",
+    "presetPlaceholder": "Velg en region",
+    "presets": {
+      "caQc": "Québec, Canada (GST + QST)",
+      "caBc": "British Columbia, Canada (GST + PST)",
+      "caSk": "Saskatchewan, Canada (GST + PST)",
+      "caMb": "Manitoba, Canada (GST + RST)",
+      "inIntra": "India, samme delstat (CGST + SGST med 18%)"
+    },
+    "componentName": "Navn",
+    "componentNamePlaceholder": "GST",
+    "componentRate": "Sats",
+    "componentRegistration": "Registreringsnummer",
+    "componentRegistrationPlaceholder": "123456789 RT0001",
+    "componentRemove": "Fjern denne avgiften",
+    "registrationHint": "Skrives ut på fakturaer under firmaopplysningene dine. La stå tom for en avgift du ikke er registrert for.",
+    "addComponent": "Legg til en avgift",
+    "combinedRate": "Samlet sats",
+    "combinedRateHint": "Nye arbeidsordrer og tilbud avgiftsberegnes med summen av satsene over.",
     "convertInclusiveLabel": "Konverter eksisterende oppføringer til inklusiv modus",
     "convertInclusiveHint": "Skalerer hver linjepris opp med avgiftssatsen slik at prisene inkluderer avgift. Kundens totaler forblir uendret. Berettiget: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
     "convertInclusiveButton": "Konverter til inklusiv",
@@ -1039,6 +1066,12 @@
     "addNewTech": "+ Legg til ny",
     "defaultLaborRate": "Standard timesats",
     "laborRatePlaceholder": "750",
+    "partsMarkupTitle": "Delepåslag",
+    "partsMarkupDescription": "Påslag på innkjøpspris når deler legges til. Kun internt. Kunden ser aldri kostnad eller påslag, bare sluttpris.",
+    "defaultMarkupPercent": "Standard påslag %",
+    "defaultMarkupPercentHint": "Nye manuelt lagt til deler fylles ut med dette påslaget. La stå på 0 for å skrive priser manuelt.",
+    "markupAppliesToInventory": "Bruk påslag på lagerdeler",
+    "markupAppliesToInventoryHint": "Når aktivert, bruker deler valgt fra lager også kostnad + standardpåslag (overstyrer lagerets salgspris).",
     "unitsTitle": "Enheter",
     "unitsDescription": "Velg mellom metrisk (km, liter) og imperial (miles, gallons).",
     "unitSystem": "Enhetssystem",
@@ -1064,6 +1097,25 @@
     "weekStartDay": "Ukens startdag",
     "workDayStart": "Arbeidsdagen starter",
     "workDayEnd": "Arbeidsdagen slutter",
+    "titleTemplateTitle": "Tittel på arbeidsordre",
+    "titleTemplateDescription": "Hva en ny arbeidsordre heter før noen skriver inn en tittel. Sett den sammen av taggene under; hver jobb åpnes med taggene fylt ut, og tittelen kan fortsatt endres på jobben.",
+    "titleTemplate": "Tittelmal",
+    "titleTemplatePlaceholder": "La stå tom for at hver jobb skal starte som «New Service Record»",
+    "titleTemplateHint": "Klikk på en tagg for å legge den til. En tagg uten innhold, som et kjøretøy uten skilt, utelates sammen med skilletegnet.",
+    "titleTemplatePreview": "Eksempel: {title}",
+    "titleTemplateUnknown": "Ukjente tagger utelates: {tags}",
+    "titleTemplateTags": {
+      "order_number": "Ordrenummer",
+      "license_plate": "Registreringsnummer",
+      "customer_name": "Kundenavn",
+      "vehicle": "Kjøretøy (år, merke, modell)",
+      "make": "Merke",
+      "model": "Modell",
+      "year": "Årsmodell",
+      "vin": "Understellsnummer",
+      "technician": "Tekniker",
+      "date": "Dato"
+    },
     "weekDays": {
       "0": "Søndag",
       "1": "Mandag",
@@ -1231,7 +1283,14 @@
     "validated": "Lisens validert",
     "invalid": "Ugyldig lisensnokkel",
     "failedValidate": "Kunne ikke validere lisens",
-    "keyHint": "Hver lisensnokkel er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner."
+    "keyHint": "Hver lisensnokkel er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner.",
+    "expired": "Utløpt",
+    "unverified": "Ikke bekreftet",
+    "expiresOn": "Utløper: {date}",
+    "unreachable": "torqvoice.com kunne ikke nås. Lisensen som er lagret på denne serveren er uendret.",
+    "unverifiedHint": "Denne serveren har ikke kunnet bekrefte lisensen hos torqvoice.com på {days} dager. Torqvoice-merkingen kommer tilbake etter {max} dager uten en vellykket sjekk.",
+    "rejected": "torqvoice.com godtok ikke denne nøkkelen: {reason}",
+    "signedHint": "Valideringen signeres av torqvoice.com og gjentas daglig, så serveren trenger utgående tilgang til torqvoice.com."
   },
   "about": {
     "title": "Om Torqvoice",
@@ -1733,43 +1792,6 @@
     "prepHint": "Hva hver type klargjøring koster. La en stå tom, så faktureres den aldri, som passer for verksteder som har vask inkludert i lagerprisen. De med pris legges automatisk på tilbud og arbeidsordre.",
     "prepNotCharged": "ikke fakturert"
   },
-  "providers": {
-    "tabs": {
-      "email": "E-post",
-      "sms": "SMS",
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
-    },
-    "locked": {
-      "email": {
-        "feature": "E-postinnstillinger",
-        "description": "Sett opp SMTP-sending slik at fakturaer, tilbud og varsler går direkte fra verkstedet."
-      },
-      "sms": {
-        "feature": "SMS-meldinger",
-        "description": "Send og motta SMS med kundene dine rett fra Torqvoice."
-      },
-      "whatsapp": {
-        "feature": "WhatsApp-meldinger",
-        "description": "Send og motta WhatsApp-meldinger, inkludert bilder av deler, rett fra Torqvoice."
-      },
-      "telegram": {
-        "feature": "Telegram-meldinger",
-        "description": "Send og motta Telegram-meldinger med kundene dine rett fra Torqvoice."
-      }
-    },
-    "moved": {
-      "title": "These settings moved to Integrations",
-      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
-      "connectedTo": "Connected through {vendor}",
-      "notSetUp": "Not set up yet",
-      "manage": "Manage",
-      "notConnected": "Not connected",
-      "goToIntegrations": "Go to Integrations",
-      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
-      "onByDefault": "On by default"
-    }
-  },
   "designer": {
     "invoice": "Faktura",
     "quote": "Tilbud",
@@ -1964,8 +1986,14 @@
     "paymentTermsPlaceholderHint": "Det er ikke satt noen betalingsvilkår, så arket viser en plassholder som ikke skrives ut.",
     "paymentTermsSetHint": "Betalingsvilkårene hentes fra betalingsinnstillingene dine.",
     "paymentTermsLink": "Betalingsinnstillinger",
+    "telegramQr": "Telegram-kode",
+    "telegramQrConnectedHint": "Skriver ut en kode som åpner {link}, Telegram-boten din. Den vises bare på fakturaer utstedt etter at blokken ble slått på.",
+    "telegramQrPlaceholderHint": "Ingen Telegram-bot er koblet til, så arket viser en eksempelkode som ikke blir skrevet ut.",
+    "telegramQrLink": "Integrasjoner",
     "titleText": "Titteltekst",
     "titleTextHint": "Hva dette dokumentet kaller seg. Står feltet tomt, skrives dokumentets eget navn på leserens språk.",
+    "orgNumberLabel": "Betegnelse på organisasjonsnummer",
+    "orgNumberLabelHint": "Skrives ut ved siden av organisasjonsnummeret på fakturaer og tilbud. La stå tomt for standarden på ditt språk, eller skriv hva det heter der du er, for eksempel ABN, VAT no. eller CVR. Samme verdi som i firmainnstillingene.",
     "placeholder": "Plassholder",
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
@@ -1975,7 +2003,8 @@
     "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
     "setDefault": "Bruk som standard",
     "defaultSet": "«{name}» er nå i bruk",
-    "couldNotSetDefault": "Kunne ikke sette standarddesignet"
+    "couldNotSetDefault": "Kunne ikke sette standarddesignet",
+    "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",
@@ -2016,5 +2045,362 @@
     "timeZoneDetected": "Tidssone står på automatisk under Lokalisering, så serveren bruker {zone}, sonen sist sett i en nettleser som lagret innstillinger. Velg verkstedets sone eksplisitt så bestillingstider aldri avhenger av hvem som lagret sist.",
     "timeZoneExplicit": "Bestillingstider og åpningstider leses i {zone}.",
     "timeZoneChange": "Endre under Lokalisering"
+  },
+  "emailTemplates": {
+    "title": "E-postmaler",
+    "description": "Hva e-postene verkstedet sender sier, og hvordan de ser ut. Hver type e-post har en innebygd mal; lag din egen for å endre ordlyden, fargene og blokkene den er satt sammen av.",
+    "lockedDescription": "Utform e-postene verkstedet sender: endre ordlyden, legg til eller fjern blokker, og tilpass fargene til merkevaren din.",
+    "groups": {
+      "documents": "Dokumenter",
+      "messages": "Meldinger",
+      "portal": "Kundeportal",
+      "team": "Team"
+    },
+    "kinds": {
+      "invoice_sent": {
+        "name": "Faktura sendt",
+        "description": "Sendes når en faktura går til en kunde på e-post, med PDF-en vedlagt eller en lenke for å se den."
+      },
+      "quote_sent": {
+        "name": "Tilbud sendt",
+        "description": "Sendes når et tilbud går til en kunde på e-post."
+      },
+      "inspection_sent": {
+        "name": "Inspeksjonsrapport sendt",
+        "description": "Sendes når en inspeksjonsrapport går til en kunde på e-post."
+      },
+      "message": {
+        "name": "Kundemelding",
+        "description": "En melding skrevet til en kunde: et varsel fra en arbeidsordre, en statusrapport, en videosamtaleinvitasjon eller en planlagt påminnelse."
+      },
+      "portal_signin": {
+        "name": "Portalinnlogging",
+        "description": "Innloggingslenken en kunde ber om på kundeportalen."
+      },
+      "team_invitation": {
+        "name": "Invitasjon til teamet",
+        "description": "Sendes til en kollega du inviterer inn i verkstedet, med lenken som oppretter kontoen."
+      }
+    },
+    "blocks": {
+      "header": "Topptekst",
+      "heading": "Overskrift",
+      "paragraph": "Avsnitt",
+      "callout": "Uthevet felt",
+      "button": "Knapp",
+      "document_summary": "Dokumentsammendrag",
+      "attachment_note": "Vedleggsmerknad",
+      "image": "Bilde",
+      "divider": "Skillelinje",
+      "spacer": "Mellomrom",
+      "contact_footer": "Kontaktbunntekst"
+    },
+    "blockNotes": {
+      "header": "Logoen din, eller verkstedsnavnet når det ikke finnes noen logo eller den er slått av. Last opp og velg størrelse på logoen her; farger og skrifter finner du under Emne og tema.",
+      "contact_footer": "Verkstedets navn, adresse, telefon og e-post, hentet fra innstillingene under Bedrift. Fyll dem inn der for å endre hva som skrives ut her.",
+      "divider": "En tynn linje mellom to blokker. Den utelates når den ville åpnet eller avsluttet e-posten.",
+      "callout": "Et uthevet felt med farget kant. Passer for ordene som betyr mest, som selve meldingen.",
+      "attachment_note": "Skrives bare ut når en PDF er vedlagt e-posten.",
+      "button": "Lenken er vanligvis en tagg, som delingslenken. En knapp uten verdi i lenken utelates fra e-posten.",
+      "document_summary": "Et felt med nøkkeltallene i dokumentet. Rader uten noe å vise utelates.",
+      "image": "Bilder komprimeres og skaleres for e-post når de lastes opp. Bilder som ikke lenger brukes, fjernes når malen lagres.",
+      "summaryUnused": "Denne typen e-post har ikke noe dokument, så sammendraget skriver ikke ut noe."
+    },
+    "tagGroups": {
+      "workshop": "Verksted",
+      "customer": "Kunde",
+      "vehicle": "Kjøretøy",
+      "document": "Dokument",
+      "message": "Melding",
+      "portal": "Portal",
+      "team": "Team"
+    },
+    "tags": {
+      "workshop_name": {
+        "label": "Verkstedsnavn",
+        "description": "Navnet på verkstedet ditt."
+      },
+      "workshop_phone": {
+        "label": "Verkstedets telefon",
+        "description": "Telefonnummeret fra innstillingene under Bedrift."
+      },
+      "workshop_email": {
+        "label": "Verkstedets e-post",
+        "description": "E-postadressen fra innstillingene under Bedrift."
+      },
+      "workshop_address": {
+        "label": "Verkstedets adresse",
+        "description": "Adressen fra innstillingene under Bedrift, på så mange linjer som den har."
+      },
+      "current_user": {
+        "label": "Avsendernavn",
+        "description": "Navnet på personen som sender e-posten."
+      },
+      "customer_name": {
+        "label": "Kundenavn",
+        "description": "Navnet på kunden e-posten går til."
+      },
+      "vehicle": {
+        "label": "Kjøretøy",
+        "description": "Årsmodell, merke og modell på kjøretøyet."
+      },
+      "plate": {
+        "label": "Registreringsnummer",
+        "description": "Kjøretøyets registreringsnummer."
+      },
+      "mileage": {
+        "label": "Kilometerstand",
+        "description": "Kilometerstanden registrert på kjøretøyet."
+      },
+      "document_number": {
+        "label": "Dokumentnummer",
+        "description": "Nummeret på fakturaen eller tilbudet."
+      },
+      "document_title": {
+        "label": "Dokumenttittel",
+        "description": "Tittelen på jobben eller dokumentet."
+      },
+      "total": {
+        "label": "Totalt",
+        "description": "Dokumentets totalsum, i dokumentets valuta."
+      },
+      "balance_due": {
+        "label": "Utestående",
+        "description": "Det som fortsatt skyldes på dokumentet etter betalinger."
+      },
+      "due_date": {
+        "label": "Forfallsdato",
+        "description": "Datoen betalingen forfaller."
+      },
+      "share_link": {
+        "label": "Delingslenke",
+        "description": "En lenke kunden kan åpne for å se dokumentet på nett."
+      },
+      "message": {
+        "label": "Melding",
+        "description": "Meldingen skrevet for denne e-posten, eller notatet lagt til dokumentet."
+      },
+      "signin_link": {
+        "label": "Innloggingslenke",
+        "description": "Lenken som logger kunden inn på portalen. Den utløper etter kort tid."
+      },
+      "portal_link": {
+        "label": "Portallenke",
+        "description": "En lenke til kundeportalen."
+      },
+      "invite_link": {
+        "label": "Invitasjonslenke",
+        "description": "Lenken som oppretter kontoen og legger personen til i teamet. Den slutter å virke når invitasjonen utløper."
+      },
+      "role": {
+        "label": "Rolle",
+        "description": "Rollen personen inviteres som."
+      },
+      "invite_expires": {
+        "label": "Utløpsdato",
+        "description": "Siste dag invitasjonslenken virker."
+      }
+    },
+    "headerRule": "Strek under toppen",
+    "headerRuleHint": "En tynn strek mellom logoen eller verkstedsnavnet og resten av e-posten.",
+    "optionalTag": "Ikke alle e-poster har en verdi for denne taggen. Når den er tom, ryddes ordene rundt den opp.",
+    "summaryRows": {
+      "reference": "Referanse",
+      "vehicle": "Kjøretøy",
+      "total": "Totalt",
+      "balance": "Utestående",
+      "due": "Forfallsdato"
+    },
+    "builtIn": "Innebygd",
+    "inUse": "I bruk",
+    "useBuiltIn": "Bruk innebygd",
+    "setDefault": "Sett som standard",
+    "defaultSet": "Sender nå med «{name}»",
+    "couldNotSetDefault": "Kunne ikke endre malen i bruk",
+    "updatedOn": "Oppdatert {date}",
+    "delete": "Slett",
+    "deleteTitle": "Slett mal",
+    "deleteConfirm": "Slette malen «{name}»? Hvis den er i bruk, går e-postene tilbake til den innebygde malen.",
+    "deleteTemplate": "Slett denne malen",
+    "deleted": "Slettet «{name}»",
+    "couldNotDelete": "Kunne ikke slette malen",
+    "backToSettings": "Tilbake til innstillinger",
+    "unsaved": "(ikke lagret)",
+    "save": "Lagre",
+    "saving": "Lagrer…",
+    "savedState": "Lagret",
+    "saved": "Lagret «{name}»",
+    "couldNotSave": "Kunne ikke lagre",
+    "saveAsNew": "Lagre som ny",
+    "discard": "Forkast endringer",
+    "sendTest": "Send test",
+    "cancel": "Avbryt",
+    "problems": "{count, plural, one {# problem} other {# problemer}}",
+    "unknownTags": "Disse taggene finnes ikke for denne typen e-post: {tags}",
+    "missingTags": "Denne e-posten må inneholde {tags}",
+    "subjectRequired": "Emnet kan ikke være tomt",
+    "invalidTemplate": "En tekst er for lang, eller et felt har en ugyldig verdi.",
+    "leaveTitle": "Forlate uten å lagre?",
+    "leaveBody": "Endringene dine i denne malen er ikke lagret. De går tapt.",
+    "leaveConfirm": "Forlat",
+    "subjectAndTheme": "Emne og tema",
+    "settingsSubtitle": "Gjelder hele e-posten",
+    "blocksTitle": "Blokker",
+    "addBlock": "Legg til blokk",
+    "removeBlock": "Fjern blokk",
+    "removeBlockLast": "Den siste blokken kan ikke fjernes",
+    "blockEmpty": "tom",
+    "blockEmptyHint": "Vises, men det er ingenting i den å skrive ut ennå.",
+    "blockShownHint": "Vises i e-posten. Klikk for å skjule den.",
+    "blockHiddenHint": "Skjult fra e-posten. Klikk for å vise den.",
+    "railHint": "Dra en blokk i håndtaket for å flytte den. Linjen viser hvor den havner. Klikk på en blokk for å redigere teksten til høyre.",
+    "resizeHint": "Dra for å endre størrelsen på panelet. Dobbeltklikk for å tilbakestille.",
+    "desktop": "Skrivebord",
+    "mobile": "Mobil",
+    "htmlView": "HTML",
+    "textView": "Ren tekst",
+    "desktopTooltip": "Forhåndsvis i skrivebordsbredde",
+    "mobileTooltip": "Forhåndsvis i mobilbredde",
+    "htmlViewTooltip": "Vis HTML-e-posten",
+    "previewWidth": "Bredde på forhåndsvisning",
+    "previewView": "Visning av forhåndsvisning",
+    "textViewTooltip": "Vis ren tekst-versjonen",
+    "inboxNow": "Nå",
+    "inboxNoSender": "Verkstedet ditt",
+    "inboxNoSubject": "(uten emne)",
+    "subject": "Emne",
+    "text": "Tekst",
+    "buttonLabel": "Knappetekst",
+    "buttonHref": "Lenke",
+    "spacerHeight": "Høyde",
+    "tagsTitle": "Tagger",
+    "tagsHint": "Klikk på en tagg for å sette den inn der markøren står i feltet du sist skrev i.",
+    "theme": {
+      "colors": "Farger",
+      "primaryColor": "Primær",
+      "textColor": "Tekst",
+      "mutedColor": "Dempet tekst",
+      "backgroundColor": "Bakgrunn",
+      "panelColor": "Felt",
+      "invalidColor": "En farge er ikke en gyldig hex-verdi",
+      "hexLabel": "{label} som hex",
+      "typography": "Typografi",
+      "font": "Skrift",
+      "fontHint": "Bare skrifter alle e-postklienter allerede har. De fleste laster ikke webfonter.",
+      "fonts": {
+        "system": "System",
+        "arial": "Arial",
+        "georgia": "Georgia",
+        "verdana": "Verdana",
+        "trebuchet": "Trebuchet MS",
+        "courier": "Courier New"
+      },
+      "lineSpacing": "Linjeavstand",
+      "lineSpacings": {
+        "compact": "Kompakt",
+        "normal": "Normal",
+        "relaxed": "Luftig"
+      },
+      "paragraphSpacing": "Avsnittsavstand",
+      "paragraphSpacings": {
+        "tight": "Tett",
+        "normal": "Normal",
+        "loose": "Romslig"
+      },
+      "spacingHint": "Linjeavstand er høyden på hver linje; avsnittsavstand er rommet mellom avsnitt og mellom tekstblokker. Enter starter et nytt avsnitt, Shift+Enter en ny linje i samme avsnitt.",
+      "shapes": "Former",
+      "buttonRadius": "Knappehjørner",
+      "topBar": "Fargestripe øverst",
+      "topBarHint": "Et smalt bånd i primærfargen din langs toppen av e-posten.",
+      "showLogo": "Vis logo",
+      "showLogoHint": "Med logoen av skriver toppteksten ut verkstedsnavnet i stedet."
+    },
+    "nameDialog": {
+      "title": "Lagre denne malen",
+      "body": "Gi malen et navn å finne den igjen på i galleriet. Lagring gjør den også til malen denne typen e-post sendes med.",
+      "placeholder": "Navn på mal",
+      "nameExists": "En mal med dette navnet finnes allerede. Velg et annet navn.",
+      "save": "Lagre mal",
+      "update": "Oppdater mal"
+    },
+    "testDialog": {
+      "title": "Send en test-e-post",
+      "body": "E-posten sendes med eksempeldata, så du kan se den i en ekte e-postklient.",
+      "placeholder": "E-postadresse",
+      "send": "Send",
+      "sending": "Sender…",
+      "sentTitle": "Test-e-post sendt",
+      "sentBody": "Sjekk innboksen til {email}. Det kan ta et minutt før den kommer.",
+      "failedTitle": "Kunne ikke sende test-e-posten",
+      "failedBody": "Sjekk e-postleverandøren under Leverandører og prøv igjen."
+    },
+    "toolbar": {
+      "bold": "Fet",
+      "italic": "Kursiv",
+      "underline": "Understreket",
+      "strike": "Gjennomstreket",
+      "link": "Lenke",
+      "linkUrl": "Lenkeadresse",
+      "linkPlaceholder": "https://... eller {share_link}",
+      "linkHint": "En nettadresse, eller en tagg som {share_link} som fylles inn når e-posten sendes.",
+      "linkApply": "Bruk",
+      "linkRemove": "Fjern lenke",
+      "bulletList": "Punktliste",
+      "orderedList": "Nummerert liste",
+      "align": {
+        "left": "Venstrejuster",
+        "center": "Midtstill",
+        "right": "Høyrejuster"
+      },
+      "size": {
+        "label": "Tekststørrelse",
+        "default": "Standardstørrelse",
+        "small": "Liten",
+        "normal": "Normal",
+        "large": "Stor",
+        "extraLarge": "Ekstra stor"
+      },
+      "color": {
+        "label": "Tekstfarge",
+        "text": "Temaets tekstfarge",
+        "muted": "Temaets dempede farge",
+        "primary": "Temaets primærfarge",
+        "default": "Standard",
+        "hex": "Hex-farge",
+        "apply": "Bruk"
+      },
+      "clear": "Fjern formatering"
+    },
+    "logo": {
+      "title": "Logo",
+      "empty": "Ingen logo lastet opp. Toppteksten skriver ut verkstedsnavnet.",
+      "upload": "Last opp logo",
+      "replace": "Bytt logo",
+      "remove": "Fjern",
+      "uploading": "Laster opp…",
+      "width": "Logobredde",
+      "hint": "Uavhengig av firmalogoen. Den beskjæres og klargjøres for e-post når den lastes opp. PNG, JPEG eller WebP på inntil 4 MB.",
+      "position": "Plassering",
+      "tooLarge": "Bildet må være under 4 MB",
+      "uploadFailed": "Kunne ikke laste opp logoen"
+    },
+    "image": {
+      "empty": "Ingen bilde lastet opp. Blokken skriver ikke ut noe før det finnes ett.",
+      "upload": "Last opp bilde",
+      "replace": "Bytt bilde",
+      "remove": "Fjern",
+      "uploading": "Laster opp…",
+      "alt": "Beskrivelse",
+      "altHint": "Leses opp for lesere som ikke kan se bildet, og vises mens det lastes. PNG, JPEG eller WebP på inntil 10 MB.",
+      "width": "Bredde",
+      "widthHint": "600 px er hele bredden på e-posten. Smalere bilder plasseres der Plassering sier.",
+      "link": "Lenke",
+      "linkHint": "Valgfritt. Åpnes når bildet klikkes; en tagg som delingslenken fungerer også her.",
+      "tooLarge": "Bildet må være under 10 MB",
+      "uploadFailed": "Kunne ikke laste opp bildet"
+    },
+    "dragHandle": "Dra for å endre rekkefølge",
+    "dragHandleKeyboard": "Dra, eller bruk piltastene, for å flytte denne blokken",
+    "tagDoesNotFit": "Taggen får ikke plass i dette feltet."
   }
 }

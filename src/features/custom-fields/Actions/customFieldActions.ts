@@ -72,6 +72,7 @@ export async function createFieldDefinition(input: unknown) {
 export async function updateFieldDefinition(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'customFields')
       const data = updateFieldDefinitionSchema.parse(input)
       const { id, ...rest } = data
 
@@ -110,6 +111,7 @@ export async function updateFieldDefinition(input: unknown) {
 export async function deleteFieldDefinition(fieldId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'customFields')
       const field = await db.customFieldDefinition.findFirst({
         where: { id: fieldId, organizationId },
       })

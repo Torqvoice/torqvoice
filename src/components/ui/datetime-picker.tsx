@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select'
 import { DayPicker, type DayPickerProps } from 'react-day-picker'
 import { useDateSettings } from '@/components/date-settings-context'
+import { fromZonedWallClock, toZonedWallClock } from '@/lib/timezone'
 
 // ---------- UTILITY FUNCTIONS ----------
 
@@ -618,6 +619,12 @@ TimePicker.displayName = 'TimePicker'
 
 type DateTimePickerProps = {
   value?: Date
+  /**
+   * The clock the picked time belongs to, e.g. the workshop's timezone. The
+   * value in and out is always a real instant; this only decides which wall
+   * clock is shown and typed. Left out, it is the browser's own.
+   */
+  timeZone?: string
   onChange?: (date: Date | undefined) => void
   onMonthChange?: (date: Date | undefined) => void
   disabled?: boolean
@@ -634,7 +641,10 @@ type DateTimePickerRef = {
   value?: Date
 } & Omit<HTMLButtonElement, 'value'>
 
-const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerProps>(
+const LocalDateTimePicker = React.forwardRef<
+  Partial<DateTimePickerRef>,
+  Omit<DateTimePickerProps, 'timeZone'>
+>(
   (
     {
       locale = enUS,
@@ -782,6 +792,38 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
           )}
         </PopoverContent>
       </Popover>
+    )
+  }
+)
+
+LocalDateTimePicker.displayName = 'LocalDateTimePicker'
+
+/**
+ * The picker above works entirely in the browser's local time: it formats with
+ * date-fns and types into `setHours`. A workshop that has chosen a timezone
+ * means its bookings to be read in that clock whatever clock the browser is
+ * set to, and the calendar and the board already are. So the instant is
+ * handed down as a local stand-in with the workshop's wall clock on it, and
+ * every value coming back out is read in the workshop's zone again.
+ *
+ * Without a `timeZone` this is the picker itself, unchanged.
+ */
+const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerProps>(
+  ({ timeZone, value, onChange, onMonthChange, defaultPopupValue, ...props }, ref) => {
+    const zoned = (date: Date | undefined) =>
+      timeZone && date ? toZonedWallClock(date, timeZone) : date
+    const real = (date: Date | undefined) =>
+      timeZone && date ? fromZonedWallClock(date, timeZone) : date
+
+    return (
+      <LocalDateTimePicker
+        ref={ref}
+        value={zoned(value)}
+        defaultPopupValue={zoned(defaultPopupValue)}
+        onChange={onChange ? (date) => onChange(real(date)) : undefined}
+        onMonthChange={onMonthChange ? (date) => onMonthChange(real(date)) : undefined}
+        {...props}
+      />
     )
   }
 )

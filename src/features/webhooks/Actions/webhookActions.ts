@@ -9,6 +9,7 @@ import { generateWebhookSecret, signPayload } from '../Lib/sign'
 import { deliverOnce } from '../Lib/deliver'
 import { checkWebhookUrl } from '../Lib/ssrf'
 import { demoGuard } from '@/lib/demo'
+import { requireFeature } from '@/lib/features'
 
 const SSRF_REASONS: Record<string, string> = {
   invalid_url: 'URL is not valid',
@@ -61,6 +62,7 @@ export async function getWebhooks() {
 export async function createWebhook(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
+      await requireFeature(organizationId, 'api')
       // Otherwise the demo becomes an open outbound HTTP relay: SSRF blocks
       // private ranges, but not arbitrary public URLs.
       demoGuard()
@@ -108,6 +110,7 @@ export async function createWebhook(input: unknown) {
 export async function updateWebhook(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'api')
       demoGuard()
       const data = updateWebhookSchema.parse(input)
       const existing = await db.webhook.findFirst({
@@ -158,6 +161,7 @@ export async function toggleWebhook(id: string) {
       // now that the dispatcher refuses, but a switch that flips and then
       // never fires reads as a broken feature rather than a disabled one.
       demoGuard()
+      await requireFeature(organizationId, 'api')
       const existing = await db.webhook.findFirst({
         where: { id, organizationId },
       })
@@ -208,6 +212,7 @@ export async function deleteWebhook(id: string) {
 export async function rotateWebhookSecret(id: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'api')
       const existing = await db.webhook.findFirst({
         where: { id, organizationId },
       })
@@ -236,6 +241,7 @@ export async function rotateWebhookSecret(id: string) {
 export async function sendTestWebhook(id: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
+      await requireFeature(organizationId, 'api')
       demoGuard()
       const webhook = await db.webhook.findFirst({
         where: { id, organizationId },
@@ -311,6 +317,7 @@ export async function getWebhookDeliveries(webhookId: string, limit: number = 25
 export async function retryWebhookDelivery(deliveryId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await requireFeature(organizationId, 'api')
       demoGuard()
       const delivery = await db.webhookDelivery.findFirst({
         where: { id: deliveryId, webhook: { organizationId } },

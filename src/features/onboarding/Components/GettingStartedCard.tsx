@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useConfirm } from '@/components/confirm-dialog'
 import {
   ArrowRight,
-  Car,
+  Building2,
   Check,
   ClipboardList,
   FileSpreadsheet,
@@ -20,7 +20,6 @@ import {
   PartyPopper,
   Rocket,
   Trash2,
-  UserPlus,
   X,
 } from 'lucide-react'
 import {
@@ -29,11 +28,16 @@ import {
   type OnboardingChecklistData,
 } from '../Actions/checklistActions'
 
+/**
+ * Each step opens the thing itself, not a list page that has a button for
+ * it. The work order link opens the create dialog, which takes the customer
+ * and the vehicle in the same form; the invoice link goes to the newest work
+ * order, where the invoice lives.
+ */
 const STEPS = [
-  { key: 'customer', href: '/customers', icon: UserPlus },
-  { key: 'vehicle', href: '/vehicles', icon: Car },
-  { key: 'workOrder', href: '/work-orders', icon: ClipboardList },
-  { key: 'invoice', href: '/work-orders', icon: FileText },
+  { key: 'workOrder', icon: ClipboardList },
+  { key: 'company', icon: Building2 },
+  { key: 'invoice', icon: FileText },
 ] as const
 
 export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) {
@@ -45,6 +49,12 @@ export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) 
   const [removing, setRemoving] = useState(false)
 
   const doneCount = STEPS.filter((s) => data.steps[s.key]).length
+  const hrefFor = (key: (typeof STEPS)[number]['key']) =>
+    key === 'workOrder'
+      ? '/work-orders?new=1'
+      : key === 'company'
+        ? '/settings/company'
+        : data.invoiceHref
 
   const handleDismiss = () => {
     startTransition(async () => {
@@ -76,7 +86,7 @@ export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) 
     <AppCard
       icon={Rocket}
       title={t('title')}
-      description={t('description')}
+      description={t('description', { workshop: data.workshopName })}
       badge={t('progress', { done: doneCount, total: STEPS.length })}
       action={
         <Tooltip>
@@ -133,12 +143,12 @@ export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) 
         </div>
       ) : (
         <div className="divide-y">
-          {STEPS.map(({ key, href, icon: Icon }) => {
+          {STEPS.map(({ key, icon: Icon }) => {
             const done = data.steps[key]
             return (
               <Link
                 key={key}
-                href={href}
+                href={hrefFor(key)}
                 className="flex items-center justify-between gap-3 px-5 py-3 transition-colors hover:bg-muted/50"
               >
                 <div className="flex min-w-0 items-center gap-3">

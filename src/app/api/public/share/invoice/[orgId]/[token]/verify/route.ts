@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { PAYMENT_CONNECTOR_IDS, paymentProviderFor } from '@/features/integrations/Lib/payments'
+import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
+import { recordVendorPayment } from '@/lib/payment-providers/record-payment'
 import { rateLimit } from '@/lib/rate-limit'
 import { notify } from '@/lib/notify'
 import { resolvePortalOrg } from '@/lib/portal-slug'
@@ -62,22 +64,29 @@ export async function POST(
       return NextResponse.json({ verified: false })
     }
 
-    // Idempotent: check if payment with this externalId already exists
-    const existing = await db.payment.findFirst({
-      where: { externalId },
+    // A paid order is only this invoice's if it was created for it. Without
+    // this, an order paid on one invoice could be posted against another.
+    if (!paymentMatchesRecord(result, { serviceRecordId: record.id, organizationId: orgId })) {
+      console.warn(
+        `[Verify] ${provider} payment ${externalId} was not created for record ${record.id} of organization ${orgId}; refusing`
+      )
+      return NextResponse.json(
+        { error: 'Payment does not belong to this invoice' },
+        { status: 400 }
+      )
+    }
+
+    // Once, however many reports arrive together: the vendor's notification
+    // usually lands in the same second as the customer coming back.
+    const { created } = await recordVendorPayment({
+      amount: result.amount,
+      method: provider,
+      provider,
+      externalId,
+      serviceRecordId: record.id,
     })
 
-    if (!existing) {
-      await db.payment.create({
-        data: {
-          amount: result.amount,
-          method: provider,
-          provider,
-          externalId,
-          serviceRecordId: record.id,
-        },
-      })
-
+    if (created) {
       notify({
         organizationId: orgId,
         type: 'invoice_payment',

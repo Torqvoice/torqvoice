@@ -1,21 +1,18 @@
-import { NextResponse } from 'next/server'
-import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { headers } from 'next/headers'
-import { db } from '@/lib/db'
-import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
-import React from 'react'
-import { readFile } from 'fs/promises'
-import { PDFDocument } from 'pdf-lib'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { getFeatures } from '@/lib/features'
-import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
-import { resolvePortalOrg } from '@/lib/portal-slug'
-import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
-import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { NextResponse } from 'next/server'
+import { buildQuotePdfBuffer } from '@/features/quotes/Pdf/buildQuotePdfBuffer'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { db } from '@/lib/db'
+import { resolvePortalOrg } from '@/lib/portal-slug'
 
+/**
+ * The customer's copy of a quote, behind the share link's token.
+ *
+ * The token is the whole of the permission: it is unguessable, and holding it
+ * is how a customer was given the quote. The document is built by
+ * `buildQuotePdfBuffer`, the same one the workshop downloads and the same one
+ * an email attaches, so the three cannot drift apart.
+ */
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orgId: string; token: string }> }
@@ -23,256 +20,33 @@ export async function GET(
   try {
     const { orgId: orgParam, token } = await params
 
-    // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+    // The link may carry a slug ("egelandauto") or the organisation's id.
     const resolvedOrg = await resolvePortalOrg(orgParam)
-    const orgId = resolvedOrg?.id ?? orgParam
-
-    // Load locale-based PDF translations
-    const headerStore = await headers()
-    const locale = await resolveCustomerLocale(orgId, headerStore.get('accept-language'))
-    let pdfMessages: Record<string, Record<string, string>>
-    try {
-      pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default
-    } catch {
-      pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default
-    }
-    // The quote sheet shares its builder, and so its column heads and panel
-    // titles, with the invoice. Layering quote wording over the invoice's keeps
-    // every shared label translated instead of falling back to English.
-    const labels = {
-      ...pdfMessages.invoice,
-      ...pdfMessages.quote,
-      ...pdfMessages.common,
-    }
+    const organizationId = resolvedOrg?.id ?? orgParam
 
     const quote = await db.quote.findFirst({
-      where: { publicToken: token, organizationId: orgId },
-      include: {
-        partItems: true,
-        laborItems: true,
-        attachments: true,
-        customer: {
-          select: {
-            name: true,
-            email: true,
-            phone: true,
-            address: true,
-            company: true,
-            taxId: true,
-          },
-        },
-        vehicle: {
-          select: { make: true, model: true, year: true, vin: true, licensePlate: true },
-        },
-      },
+      where: { publicToken: token, organizationId },
+      select: { id: true },
     })
-
     if (!quote) {
       return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
     }
 
-    const [settings, org] = await Promise.all([
-      db.appSetting.findMany({ where: { organizationId: orgId } }),
-      db.organization.findUnique({
-        where: { id: orgId },
-        select: { name: true, portalSlug: true },
-      }),
-    ])
-
-    const settingsMap: Record<string, string> = {}
-    for (const s of settings) settingsMap[s.key] = s.value
-
-    // Override labels for marine service type
-    const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
-    if (serviceType === 'marine') {
-      if (pdfMessages.quote.vinMarine) labels.vin = pdfMessages.quote.vinMarine
-      if (pdfMessages.quote.plateMarine) labels.plate = pdfMessages.quote.plateMarine
-      if (pdfMessages.quote.vehicleMarine) labels.vehicle = pdfMessages.quote.vehicleMarine
-    }
-
-    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
-    const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()
-    if (customTaxLabel) {
-      labels.tax = `${customTaxLabel} ({rate}%)`
-    }
-
-    let logoDataUri: string | undefined
-    const logoPath = documentLogoPath(settingsMap, 'quote')
-    if (logoPath) {
-      try {
-        const fullPath = resolveUploadPath(logoPath)
-        const logoBuffer = await readFile(fullPath)
-        const ext = logoPath.split('.').pop()?.toLowerCase() || 'png'
-        const mimeMap: Record<string, string> = {
-          png: 'image/png',
-          jpg: 'image/jpeg',
-          jpeg: 'image/jpeg',
-          webp: 'image/webp',
-          svg: 'image/svg+xml',
-        }
-        const mime = mimeMap[ext] || 'image/png'
-        logoDataUri = `data:${mime};base64,${logoBuffer.toString('base64')}`
-      } catch {
-        // Skip
-      }
-    }
-
-    // Process attachments for PDF
-    const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = []
-    const otherAttachments: { fileName: string; fileType: string }[] = []
-    const pdfAttachments: { fileName: string; buffer: Buffer }[] = []
-
-    const seenNames = new Set<string>()
-    const uniqueAttachments = (quote.attachments || [])
-      .filter((att) => att.includeInInvoice !== false)
-      .filter((att) => {
-        if (seenNames.has(att.fileName)) return false
-        seenNames.add(att.fileName)
-        return true
-      })
-
-    for (const att of uniqueAttachments) {
-      if (att.fileType.startsWith('image/')) {
-        try {
-          const filePath = resolveUploadPath(att.fileUrl)
-          const buffer = await readFile(filePath)
-          const base64 = buffer.toString('base64')
-          imageAttachments.push({
-            fileName: att.fileName,
-            dataUri: `data:${att.fileType};base64,${base64}`,
-            description: att.description || undefined,
-          })
-        } catch {
-          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
-        }
-      } else if (att.fileType === 'application/pdf') {
-        try {
-          const filePath = resolveUploadPath(att.fileUrl)
-          const buffer = await readFile(filePath)
-          pdfAttachments.push({ fileName: att.fileName, buffer })
-        } catch {
-          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
-        }
-      } else {
-        otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
-      }
-    }
-
-    // Fetch custom field values for the quote
-    const customFields = await getCustomFieldsForPrint(orgId, quote.id, 'quote')
-
-    const features = await getFeatures(orgId)
-    let torqvoiceLogoDataUri: string | undefined
-    if (!features.brandingRemoved) {
-      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
-    }
-
-    // Fetch layout config for quotes
-    const layoutConfigSetting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: orgId, key: 'quote.layoutConfig' } },
-    })
-    const layoutConfig = mergeWithDefaults(
-      layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
+    // The reader's language, not the workshop's: this copy is the customer's.
+    const locale = await resolveCustomerLocale(
+      organizationId,
+      (await headers()).get('accept-language')
     )
 
-    const template = {
-      primaryColor:
-        settingsMap['quote.primaryColor'] || settingsMap['invoice.primaryColor'] || '#d97706',
-      backgroundColor:
-        settingsMap['quote.backgroundColor'] || settingsMap['invoice.backgroundColor'] || undefined,
-      textColor: settingsMap['quote.textColor'] || settingsMap['invoice.textColor'] || undefined,
-      companyTextColor:
-        settingsMap['quote.companyTextColor'] ||
-        settingsMap['invoice.companyTextColor'] ||
-        undefined,
-      frameBorderColor:
-        settingsMap['quote.frameBorderColor'] ||
-        settingsMap['invoice.frameBorderColor'] ||
-        undefined,
-      frameShadow: settingsMap['quote.frameShadow'] ?? settingsMap['invoice.frameShadow'],
-      frameRadius:
-        Number(settingsMap['quote.frameRadius'] ?? settingsMap['invoice.frameRadius']) || 0,
-      frameSide: ((settingsMap['quote.frameSide'] ?? settingsMap['invoice.frameSide']) === 'right'
-        ? 'right'
-        : 'left') as 'left' | 'right',
-      fontFamily:
-        settingsMap['quote.fontFamily'] || settingsMap['invoice.fontFamily'] || 'Helvetica',
-      showLogo: settingsMap['invoice.showLogo'] !== 'false',
-      showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
-      headerStyle:
-        settingsMap['quote.headerStyle'] || settingsMap['invoice.headerStyle'] || 'standard',
-      logoSize: Number(settingsMap['quote.logoSize']) || 100,
+    const pdf = await buildQuotePdfBuffer(quote.id, organizationId, locale)
+    if (!pdf) {
+      return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
     }
 
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
-    const portalSlug = org?.portalSlug
-    const portalEnabled = settingsMap['portal.enabled'] === 'true'
-    const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
-
-    const element = React.createElement(QuotePDF, {
-      data: quote,
-      workshop: {
-        name: org?.name || '',
-        address: settingsMap['workshop.address'] || '',
-        phone: settingsMap['workshop.phone'] || '',
-        email: settingsMap['workshop.email'] || '',
-        slogan: settingsMap['workshop.slogan'] || undefined,
-      },
-      currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-      currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
-        | 'symbol'
-        | 'code',
-      logoDataUri,
-      torqvoiceLogoDataUri,
-      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
-      timezone: settingsMap['workshop.timezone'] || undefined,
-      template,
-      portalUrl,
-      imageAttachments,
-      otherAttachments,
-      pdfAttachmentNames: pdfAttachments.map((a) => a.fileName),
-      customFields,
-      labels,
-      layoutConfig,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any
-    const quoteBuffer = await renderToBuffer(element)
-
-    const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
-
-    // Merge attached PDFs into the quote PDF
-    let finalBuffer: ArrayBuffer
-    if (pdfAttachments.length > 0) {
-      const mergedPdf = await PDFDocument.load(quoteBuffer)
-      for (const att of pdfAttachments) {
-        try {
-          const attachedPdf = await PDFDocument.load(att.buffer)
-          const pages = await mergedPdf.copyPages(attachedPdf, attachedPdf.getPageIndices())
-          for (const page of pages) {
-            mergedPdf.addPage(page)
-          }
-        } catch {
-          // Skip corrupted/unreadable PDFs silently
-        }
-      }
-      const saved = await mergedPdf.save()
-      finalBuffer = saved.buffer.slice(
-        saved.byteOffset,
-        saved.byteOffset + saved.byteLength
-      ) as ArrayBuffer
-    } else {
-      finalBuffer = quoteBuffer.buffer.slice(
-        quoteBuffer.byteOffset,
-        quoteBuffer.byteOffset + quoteBuffer.byteLength
-      ) as ArrayBuffer
-    }
-
-    return new NextResponse(finalBuffer, {
+    return new NextResponse(pdf.buffer as unknown as BodyInit, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${quoteNum}.pdf"`,
+        'Content-Disposition': `attachment; filename="${pdf.filename}"`,
       },
     })
   } catch (error) {

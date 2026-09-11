@@ -143,6 +143,15 @@ interface SmsMessage {
   toNumber: string
 }
 
+/** An address written on several lines, read back as one. */
+function oneLine(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(', ')
+}
+
 export function CustomerDetailClient({
   customer,
   customers = [],
@@ -188,6 +197,8 @@ export function CustomerDetailClient({
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
   const serviceType = useServiceType()
+  // A vessel's reading is engine hours, the same number the header calls it.
+  const readingUnit = serviceType === 'marine' ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showEditForm, setShowEditForm] = useState(false)
@@ -352,8 +363,12 @@ export function CustomerDetailClient({
                 )}
                 {customer.address && (
                   <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" />
-                    <span>{customer.address}</span>
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    {/* One line here, whatever it was typed as. This row is a
+                        summary sitting beside the email and the phone, and a
+                        three-line address makes the whole header ragged. The
+                        invoice prints it as written. */}
+                    <span title={customer.address}>{oneLine(customer.address)}</span>
                   </div>
                 )}
                 {customer.taxId && (
@@ -574,7 +589,7 @@ export function CustomerDetailClient({
                       </div>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                         <span className="font-mono">
-                          {v.mileage.toLocaleString()} {unitSystem === 'metric' ? 'km' : 'mi'}
+                          {v.mileage.toLocaleString()} {readingUnit}
                         </span>
                         <span>
                           {t('vehicleTable.services')}: {v._count.serviceRecords}
@@ -619,7 +634,7 @@ export function CustomerDetailClient({
                             {v.year} {v.make} {v.model}
                           </TableCell>
                           <TableCell className="hidden sm:table-cell text-right font-mono text-sm">
-                            {v.mileage.toLocaleString()} {unitSystem === 'metric' ? 'km' : 'mi'}
+                            {v.mileage.toLocaleString()} {readingUnit}
                           </TableCell>
                           <TableCell className="text-center">{v._count.serviceRecords}</TableCell>
                         </TableRow>
@@ -693,6 +708,8 @@ export function CustomerDetailClient({
               <TelegramConversation
                 customerId={customer.id}
                 customerName={customer.name}
+                customerEmail={customer.email}
+                botUsername={telegramBotUsername}
                 telegramChatId={telegramChatId}
                 initialMessages={telegramMessages}
                 initialNextCursor={telegramNextCursor}

@@ -126,6 +126,9 @@
     "leaveEmpty": "Laisser vide",
     "noLimit": "Sans limite",
     "planLocked": "Les intégrations ne sont pas incluses dans votre forfait.",
+    "lockedIntegrations": "Connectez des calendriers, des appels vidéo et d'autres services à votre atelier.",
+    "lockedPayments": "Laissez vos clients régler leurs factures en ligne, chaque paiement étant enregistré sur la facture.",
+    "lockedAi": "Connectez un fournisseur d'IA pour utiliser les fonctions d'IA dans votre atelier.",
     "ownAppTitle": "Cette installation utilise votre propre application auprès du fournisseur",
     "redirectUri": "URI de redirection à enregistrer auprès du fournisseur :",
     "sendTestEmail": "Send test email",
@@ -266,7 +269,9 @@
       "description": "Send and receive text messages through a Vonage number.",
       "fields": {
         "apiKey": "API key",
-        "apiSecret": "API secret"
+        "apiSecret": "API secret",
+        "signatureSecret": "Signature secret",
+        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
       },
       "settings": {
         "phoneNumber": "Send from this number"
@@ -275,7 +280,9 @@
     "telnyx-sms": {
       "description": "Send and receive text messages through a Telnyx number.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API key",
+        "webhookPublicKey": "Webhook public key",
+        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
       },
       "settings": {
         "phoneNumber": "Send from this number"
@@ -288,7 +295,8 @@
         "accessToken": "Access token",
         "verifyToken": "Webhook verify token",
         "appSecret": "App secret",
-        "apiVersion": "Graph API version"
+        "apiVersion": "Graph API version",
+        "appSecretHelp": "Without it, webhook signatures are not checked and anyone who learns the webhook URL can post messages as your customers. Strongly recommended."
       },
       "settings": {
         "enabled": "Send messages on this channel",

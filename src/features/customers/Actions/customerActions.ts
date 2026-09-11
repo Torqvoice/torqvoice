@@ -6,6 +6,7 @@ import { createCustomerSchema, updateCustomerSchema } from '../Schema/customerSc
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getFeatures, FeatureGatedError } from '@/lib/features'
+import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
 import { serviceDateOrderBy } from '@/lib/date-sort'
@@ -85,11 +86,12 @@ export async function createCustomer(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const features = await getFeatures(organizationId)
-      const count = await db.customer.count({ where: { organizationId } })
+      const count = await countCustomersTowardLimit(organizationId)
       if (count >= features.maxCustomers) {
         throw new FeatureGatedError(
           'maxCustomers',
-          'Customer limit reached. Upgrade your plan to add more customers.'
+          'Customer limit reached. Upgrade your plan to add more customers.',
+          features.maxCustomers
         )
       }
 
@@ -239,6 +241,19 @@ export async function deleteCustomers(customerIds: string[]) {
   )
 }
 
+/** How many customers still have no number: what the list's assign button shows. */
+export async function countUnnumberedCustomers() {
+  return withAuth(
+    async ({ organizationId }) =>
+      db.customer.count({ where: { organizationId, customerNumber: null } }),
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
 /**
  * Assigns sequential numbers to every customer that has none, oldest first,
  * continuing after the highest existing numeric number (min 1001). Customers
@@ -275,7 +290,6 @@ export async function backfillCustomerNumbers() {
       )
 
       revalidatePath('/customers')
-      revalidatePath('/settings/invoice')
       return { assigned: unnumbered.length }
     },
     {

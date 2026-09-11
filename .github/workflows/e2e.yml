@@ -1,0 +1,202 @@
+name: End-to-end tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push to the same branch makes the run in flight pointless.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+# The suite runs one test at a time against one seeded database, so more
+# workers would only trip over each other. More databases do not: resetting
+# and seeding one takes about fifteen seconds. So the specs are split across
+# shards, each on its own runner with its own database, and the cloud specs
+# run beside them. The last job merges what they found into one report and is
+# the one check a pull request waits on.
+
+jobs:
+  e2e:
+    name: Playwright (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      # A failure in one shard says nothing about the others; let them finish.
+      fail-fast: false
+      matrix:
+        include:
+          - { id: shard-1, name: shard 1 of 4, shard: 1/4 }
+          - { id: shard-2, name: shard 2 of 4, shard: 2/4 }
+          - { id: shard-3, name: shard 3 of 4, shard: 3/4 }
+          - { id: shard-4, name: shard 4 of 4, shard: 4/4 }
+          # The same build started in cloud mode: plan limits, the sign-up
+          # pitch and Google sign-in only exist there.
+          - { id: cloud, name: cloud, mode: cloud }
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: torqvoice
+          POSTGRES_PASSWORD: torqvoice
+          # The name has to carry "e2e" or "test": the harness refuses to reset
+          # a database whose name says nothing about being throwaway.
+          POSTGRES_DB: torqvoice_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U torqvoice -d torqvoice_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Playwright starts the app itself on this port and resets this database
+      # before it does; both come from playwright.config.ts.
+      E2E_DATABASE_URL: postgresql://torqvoice:torqvoice@127.0.0.1:5432/torqvoice_e2e
+      E2E_MODE: ${{ matrix.mode }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # A fresh one per run: the sessions it signs live as long as the job, and
+      # a short or guessable value makes better-auth warn on every request.
+      - name: Make a session secret for this run
+        run: echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+
+      - run: npm ci
+
+      - run: npx prisma generate
+
+      # Keyed on the pinned version, because the image tag and this download
+      # have to be the same build.
+      - name: Cache the browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install the browser
+        run: npx playwright install --with-deps chromium
+
+      # The seed copies bundled vehicle photos when they are in the tree and
+      # downloads fifty of them from Unsplash when they are not, one after
+      # another, which is minutes of a cold run and the flakiest thing in it.
+      # Cached, a warm run copies them off disk instead.
+      - name: Cache the seed's photos
+        uses: actions/cache@v4
+        with:
+          # Where prepare-db.ts points the seed's DATA_ROOT, so a test run
+          # cannot disturb a running instance's own uploads.
+          path: e2e/.data
+          key: seed-photos-${{ hashFiles('prisma/seed_dummy_data.ts') }}
+          restore-keys: |
+            seed-photos-
+
+      # Next reuses its compiler cache across builds when it is given one.
+      # Every job reads it; only the first shard writes it back, so five jobs
+      # do not race to save the same entry.
+      - name: Restore the build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .next/cache
+          key: next-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ hashFiles('package-lock.json') }}-
+            next-
+
+      # NEXT_PUBLIC_APP_URL is baked into the client bundle, and better-auth
+      # refuses a sign-in from an origin the build was not made for, so it has
+      # to match the base URL the suite uses.
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APP_URL: http://127.0.0.1:3100
+
+      - name: Save the build cache
+        if: ${{ matrix.id == 'shard-1' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .next/cache
+          key: next-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+
+      - name: Run the specs
+        run: npx playwright test ${{ matrix.shard && format('--shard={0}', matrix.shard) || '' }}
+
+      # The blob carries the results with their traces, screenshots and videos;
+      # the report job turns every job's blob into one HTML report.
+      - name: Upload the blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.id }}
+          path: blob-report/
+          retention-days: 1
+          if-no-files-found: ignore
+
+  report:
+    # Named as the single job used to be, so a required check keeps its name.
+    name: Playwright
+    needs: e2e
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Download the blob reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+
+      # Each job's blob lands in a folder of its own. The merge wants them side
+      # by side, and two jobs may give their file the same name.
+      - name: Gather the blobs
+        run: |
+          mkdir -p blob-reports
+          for dir in all-blob-reports/*/; do
+            [ -d "$dir" ] || continue
+            job=$(basename "$dir")
+            for file in "$dir"*.zip; do
+              [ -e "$file" ] || continue
+              mv "$file" "blob-reports/${job}-$(basename "$file")"
+            done
+          done
+          ls -la blob-reports
+
+      - name: Merge the reports
+        run: npx playwright merge-reports --reporter html ./blob-reports
+
+      - name: Upload the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # Green only when every shard and the cloud specs are.
+      - name: Every job passed
+        if: ${{ always() }}
+        run: |
+          if [ "${{ needs.e2e.result }}" != "success" ]; then
+            echo "The e2e jobs finished as: ${{ needs.e2e.result }}"
+            exit 1
+          fi

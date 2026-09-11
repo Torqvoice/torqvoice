@@ -26,6 +26,8 @@ export interface QuoteRecord {
   taxRate: number
   taxAmount: number
   taxInclusive: boolean
+  /** The stored split, read leniently; see src/lib/tax-components.ts. */
+  taxComponents?: unknown
   discountType: string | null
   discountValue: number
   discountAmount: number

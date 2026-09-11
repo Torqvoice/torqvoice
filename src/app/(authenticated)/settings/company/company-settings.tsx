@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Building2, ImageIcon, Loader2, Plus, Save, Trash2, Upload } from 'lucide-react'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
+import { handleGated } from '@/components/upgrade-gate'
 
 export function CompanySettings({
   settings,
@@ -36,6 +37,9 @@ export function CompanySettings({
   const [workshopPhone, setWorkshopPhone] = useState(settings[SETTING_KEYS.WORKSHOP_PHONE] || '')
   const [workshopEmail, setWorkshopEmail] = useState(settings[SETTING_KEYS.WORKSHOP_EMAIL] || '')
   const [orgNumber, setOrgNumber] = useState(settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || '')
+  const [orgNumberLabel, setOrgNumberLabel] = useState(
+    settings[SETTING_KEYS.ORG_NUMBER_LABEL] || ''
+  )
   const [logoUrl, setLogoUrl] = useState(settings[SETTING_KEYS.COMPANY_LOGO] || '')
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [showCreateOrg, setShowCreateOrg] = useState(false)
@@ -52,6 +56,7 @@ export function CompanySettings({
         [SETTING_KEYS.WORKSHOP_PHONE]: workshopPhone,
         [SETTING_KEYS.WORKSHOP_EMAIL]: workshopEmail,
         [SETTING_KEYS.INVOICE_ORG_NUMBER]: orgNumber,
+        [SETTING_KEYS.ORG_NUMBER_LABEL]: orgNumberLabel.trim(),
       }),
     ])
     setSaving(false)
@@ -95,7 +100,7 @@ export function CompanySettings({
       setNewOrgName('')
       router.refresh()
       toast.success(t('company.companyCreated'))
-    } else if (result.error) {
+    } else if (!handleGated(result) && result.error) {
       toast.error(result.error)
     }
   }
@@ -189,6 +194,19 @@ export function CompanySettings({
                 value={orgNumber}
                 onChange={(e) => setOrgNumber(e.target.value)}
               />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="orgNumberLabel" className="text-xs">
+                {t('company.orgNumberLabel')}
+              </Label>
+              <Input
+                id="orgNumberLabel"
+                placeholder={t('company.orgNumberLabelPlaceholder')}
+                value={orgNumberLabel}
+                maxLength={40}
+                onChange={(e) => setOrgNumberLabel(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">{t('company.orgNumberLabelHint')}</p>
             </div>
             <div className="space-y-1">
               <Label htmlFor="workshopPhone" className="text-xs">

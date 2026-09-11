@@ -50,6 +50,7 @@
     "team_invite": "Miembro del equipo invitado",
     "team_sendInvitation": "Invitación enviada",
     "team_cancelInvitation": "Invitación cancelada",
+    "team_resendInvitation": "Invitación reenviada",
     "team_updateRole": "Rol del miembro cambiado",
     "team_removeMember": "Miembro del equipo eliminado",
     "role_create": "Rol creado",
@@ -161,10 +162,16 @@
     "settings_deleteDocumentDesign": "Diseño de documento eliminado",
     "settings_applyDocumentDesign": "Diseño de documento predeterminado establecido",
     "settings_setDocumentDesignRule": "Cambió cuándo se usa un diseño",
+    "settings_saveEmailTemplate": "Plantilla de correo guardada",
+    "settings_deleteEmailTemplate": "Plantilla de correo eliminada",
+    "settings_applyEmailTemplate": "Plantilla de correo predeterminada establecida",
     "settings_freezeInvoices": "Facturas anteriores bloqueadas",
     "inspection_reminders_sent": "Envió recordatorios de inspección",
     "inspection_reminders_send": "Envió recordatorios de inspección",
-    "service_videoCall_send": "Enlace de videollamada enviado"
+    "service_videoCall_send": "Enlace de videollamada enviado",
+    "timeEntry_create": "Entrada de tiempo añadida",
+    "timeEntry_update": "Entrada de tiempo corregida",
+    "timeEntry_delete": "Entrada de tiempo eliminada"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -243,6 +250,7 @@
     "subscription_cancel": "Suscripción cancelada, efectiva al final del periodo",
     "subscription_resume": "Suscripción reanudada",
     "team_cancelInvitation": "Invitación para {email} cancelada",
+    "team_resendInvitation": "Invitación para {email} reenviada",
     "team_removeMember": "Miembro del equipo {id} eliminado",
     "team_sendInvitation": "{email} invitado como {role, select, owner {propietario} admin {administrador} member {miembro} other {{role}}}",
     "team_updateRole": "Rol de un miembro cambiado a {role, select, owner {propietario} admin {administrador} member {miembro} other {{role}}}",
@@ -298,8 +306,15 @@
     "settings_deleteDocumentDesign": "Eliminó el diseño de documento {name}",
     "settings_applyDocumentDesign": "Estableció {name} como diseño de documento predeterminado",
     "settings_setDocumentDesignRule": "Cambió cuándo se usa el diseño de documento {name}",
+    "settings_saveEmailTemplate": "Guardó la plantilla de correo {name}",
+    "settings_deleteEmailTemplate": "Eliminó la plantilla de correo {name}",
+    "settings_applyEmailTemplate": "Estableció {name} como plantilla para los correos de {kind}",
     "settings_freezeInvoices": "Bloqueó {count, plural, one {# factura} other {# facturas}} anteriores al bloqueo con el diseño actual",
     "inspection_reminders_sent": "Envió {count} recordatorios de inspección",
-    "service_videoCall_send": "Envió el enlace de la videollamada por {channels}"
+    "service_videoCall_send": "Envió el enlace de la videollamada por {channels}",
+    "timeEntry_create": "Se añadieron {minutes} minutos para {technician} en \"{job}\"",
+    "timeEntry_update": "Entrada de tiempo de {technician} en \"{job}\" corregida a {minutes} minutos",
+    "timeEntry_stop": "Reloj de {technician} en \"{job}\" detenido en {minutes} minutos",
+    "timeEntry_delete": "Entrada de tiempo {id} eliminada"
   }
 }
