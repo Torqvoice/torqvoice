@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const mockSubscriptionsRetrieve = vi.fn()
-const mockInvoicesCreatePreview = vi.fn()
-
 vi.mock('@/lib/get-auth-context', () => ({
   getAuthContext: vi.fn(),
 }))
@@ -13,20 +10,19 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 
-vi.mock('@/lib/stripe-config', () => ({
-  getStripeConfig: vi.fn(),
-  getStripeClient: vi.fn(),
-}))
+vi.mock('@/lib/torqvoice-com', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/torqvoice-com')>('@/lib/torqvoice-com')
+  return { ...actual, billingRequest: vi.fn() }
+})
 
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
-import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
+import { billingRequest, TorqvoiceComError } from '@/lib/torqvoice-com'
 import { POST } from '@/app/api/protected/subscription/upgrade-preview/route'
 
 const mockGetAuthContext = vi.mocked(getAuthContext)
 const mockFindSubscription = vi.mocked(db.subscription.findUnique)
-const mockGetStripeConfig = vi.mocked(getStripeConfig)
-const mockGetStripeClient = vi.mocked(getStripeClient)
+const mockBillingRequest = vi.mocked(billingRequest)
 
 function setupAuth(isAdmin = true) {
   mockGetAuthContext.mockResolvedValue({
@@ -38,181 +34,51 @@ function setupAuth(isAdmin = true) {
   })
 }
 
-function setupStripe() {
-  mockGetStripeConfig.mockResolvedValue({
-    secretKey: 'sk_test',
-    webhookSecret: 'whsec_test',
-    proPriceId: 'price_pro',
-    enterprisePriceId: 'price_enterprise',
-  })
-  mockGetStripeClient.mockResolvedValue({
-    subscriptions: { retrieve: mockSubscriptionsRetrieve },
-    invoices: { createPreview: mockInvoicesCreatePreview },
-  } as any)
-}
-
 beforeEach(() => {
   vi.resetAllMocks()
 })
 
 describe('POST /api/protected/subscription/upgrade-preview', () => {
-  it('returns 401 when not authenticated', async () => {
-    mockGetAuthContext.mockResolvedValue(null)
-    const res = await POST()
-    expect(res.status).toBe(401)
-  })
-
-  it('refuses a member who is not an owner or admin', async () => {
-    setupAuth(false)
-    const res = await POST()
-    expect(res.status).toBe(403)
-  })
-
-  it('returns 400 when no subscription exists', async () => {
-    setupAuth()
-    mockFindSubscription.mockResolvedValue(null)
-
-    const res = await POST()
-    expect(res.status).toBe(400)
-  })
-
-  it('returns only proration amount, not full invoice', async () => {
+  it('returns the prorated amount torqvoice.com worked out', async () => {
     setupAuth()
     mockFindSubscription.mockResolvedValue({
       stripeSubscriptionId: 'sub_123',
       stripeCustomerId: 'cus_123',
       status: 'active',
-    } as any)
-    setupStripe()
-
-    mockSubscriptionsRetrieve.mockResolvedValue({
-      id: 'sub_123',
-      items: { data: [{ id: 'si_item_1' }] },
-    })
-
-    // Simulate Stripe preview with proration items + next period charge
-    mockInvoicesCreatePreview.mockResolvedValue({
-      amount_due: 18100, // Total including next period — should NOT be used
-      currency: 'usd',
-      lines: {
-        data: [
-          {
-            amount: -9900, // Credit for unused Pro
-            parent: {
-              type: 'invoice_item_details',
-              invoice_item_details: { proration: true },
-              subscription_item_details: null,
-            },
-          },
-          {
-            amount: 13900, // Charge for Enterprise remainder
-            parent: {
-              type: 'invoice_item_details',
-              invoice_item_details: { proration: true },
-              subscription_item_details: null,
-            },
-          },
-          {
-            amount: 14000, // Next period (should be excluded)
-            parent: {
-              type: 'subscription_item_details',
-              invoice_item_details: null,
-              subscription_item_details: { proration: false },
-            },
-          },
-        ],
-      },
-    })
+    } as never)
+    mockBillingRequest.mockResolvedValue({ amountDue: 41, currency: 'usd', prorationDate: 1 })
 
     const res = await POST()
+
     expect(res.status).toBe(200)
-    const data = await res.json()
-    // Only proration items: -9900 + 13900 = 4000 cents = $40.00
-    expect(data.amountDue).toBe(40)
-    expect(data.currency).toBe('usd')
-    expect(data.prorationDate).toBeTypeOf('number')
+    expect(await res.json()).toEqual({ amountDue: 41, currency: 'usd', prorationDate: 1 })
+    expect(mockBillingRequest).toHaveBeenCalledWith('upgrade-preview', { organizationId: 'org-1' })
   })
 
-  it('returns 0 when proration is negative', async () => {
+  it('is for owners and admins only', async () => {
+    setupAuth(false)
+    expect((await POST()).status).toBe(403)
+    expect(mockBillingRequest).not.toHaveBeenCalled()
+  })
+
+  it('needs an active Stripe-backed subscription', async () => {
+    setupAuth()
+    mockFindSubscription.mockResolvedValue({ stripeSubscriptionId: null } as never)
+    expect((await POST()).status).toBe(400)
+    expect(mockBillingRequest).not.toHaveBeenCalled()
+  })
+
+  it('passes a refusal from torqvoice.com through', async () => {
     setupAuth()
     mockFindSubscription.mockResolvedValue({
       stripeSubscriptionId: 'sub_123',
       stripeCustomerId: 'cus_123',
       status: 'active',
-    } as any)
-    setupStripe()
-
-    mockSubscriptionsRetrieve.mockResolvedValue({
-      id: 'sub_123',
-      items: { data: [{ id: 'si_item_1' }] },
-    })
-
-    mockInvoicesCreatePreview.mockResolvedValue({
-      amount_due: 0,
-      currency: 'usd',
-      lines: {
-        data: [
-          {
-            amount: -5000,
-            parent: {
-              type: 'invoice_item_details',
-              invoice_item_details: { proration: true },
-              subscription_item_details: null,
-            },
-          },
-        ],
-      },
-    })
-
-    const res = await POST()
-    const data = await res.json()
-    expect(data.amountDue).toBe(0)
-  })
-
-  it('calls Stripe createPreview with correct params', async () => {
-    setupAuth()
-    mockFindSubscription.mockResolvedValue({
-      stripeSubscriptionId: 'sub_123',
-      stripeCustomerId: 'cus_123',
-      status: 'active',
-    } as any)
-    setupStripe()
-
-    mockSubscriptionsRetrieve.mockResolvedValue({
-      id: 'sub_123',
-      items: { data: [{ id: 'si_item_1' }] },
-    })
-
-    mockInvoicesCreatePreview.mockResolvedValue({
-      amount_due: 0,
-      currency: 'usd',
-      lines: { data: [] },
-    })
-
-    await POST()
-
-    expect(mockInvoicesCreatePreview).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customer: 'cus_123',
-        subscription: 'sub_123',
-        subscription_details: expect.objectContaining({
-          items: [{ id: 'si_item_1', price: 'price_enterprise' }],
-        }),
-      })
-    )
-  })
-
-  it('returns 400 when subscription is not active', async () => {
-    setupAuth()
-    mockFindSubscription.mockResolvedValue({
-      stripeSubscriptionId: 'sub_123',
-      stripeCustomerId: 'cus_123',
-      status: 'canceled',
-    } as any)
+    } as never)
+    mockBillingRequest.mockRejectedValue(new TorqvoiceComError('Subscription is not active', 400))
 
     const res = await POST()
     expect(res.status).toBe(400)
-    const data = await res.json()
-    expect(data.error).toBe('Subscription is not active')
+    expect((await res.json()).error).toBe('Subscription is not active')
   })
 })

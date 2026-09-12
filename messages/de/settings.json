@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Erfolgreich auf Enterprise upgegradet!",
     "upgradeError": "Abonnement konnte nicht upgegradet werden",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Läuft in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}} ab ({date})"
+    "demoExpiresIn": "Läuft in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}} ab ({date})",
+    "checkoutOnTorqvoice": "Zum Abschluss des Kaufs werden Sie zu torqvoice.com weitergeleitet. Rechnungen und Belege finden Sie dort unter Ihrem Konto.",
+    "purchaseSuccess": "Vielen Dank! Ihr Plan ist jetzt aktiv.",
+    "purchaseActivating": "Zahlung erhalten. Ihr Plan wird aktiviert, diese Seite wird gleich aktualisiert.",
+    "accountOnTorqvoice": "Rechnungen und Belege finden Sie auf torqvoice.com, wo Sie mit diesem Konto angemeldet sind.",
+    "openTorqvoiceAccount": "Konto auf torqvoice.com öffnen"
   },
   "ai": {
     "title": "KI-Assistent",

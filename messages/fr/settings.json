@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Mis à niveau vers Enterprise avec succès !",
     "upgradeError": "Échec de la mise à niveau de l'abonnement",
     "demoBadge": "Démo",
-    "demoExpiresIn": "Expire dans {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}} ({date})"
+    "demoExpiresIn": "Expire dans {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}} ({date})",
+    "checkoutOnTorqvoice": "Vous serez redirigé vers torqvoice.com pour finaliser l'achat. Les factures et reçus y sont disponibles dans votre compte.",
+    "purchaseSuccess": "Merci ! Votre forfait est maintenant actif.",
+    "purchaseActivating": "Paiement reçu. Votre forfait est en cours d'activation, cette page se rafraîchit dans un instant.",
+    "accountOnTorqvoice": "Les factures et reçus sont sur torqvoice.com, où vous êtes connecté avec ce compte.",
+    "openTorqvoiceAccount": "Ouvrir votre compte sur torqvoice.com"
   },
   "ai": {
     "title": "Assistant IA",

@@ -578,7 +578,10 @@ export async function teamInvitations(organizationId: string): Promise<number> {
  * Puts a workshop on an active Pro subscription, as a paid checkout would.
  * Returns the plan's id so the spec can take it away again.
  */
-export async function giveProPlan(organizationId: string): Promise<string> {
+export async function giveProPlan(
+  organizationId: string,
+  stripe?: { subscriptionId: string; customerId: string }
+): Promise<string> {
   return withDb(async (db) => {
     const plan = await db.query<{ id: string }>(
       `insert into subscription_plans (id, name, price, "updatedAt")
@@ -586,13 +589,26 @@ export async function giveProPlan(organizationId: string): Promise<string> {
        returning id`
     )
     const planId = plan.rows[0].id
+    // With Stripe ids the row looks like a real purchase, which is what the
+    // manage-subscription card and its buttons are shown for.
     await db.query(
-      `insert into subscriptions (id, status, "organizationId", "planId", "currentPeriodEnd", "updatedAt")
-       values (md5(random()::text || clock_timestamp()::text), 'active', $1, $2, now() + interval '30 days', now())`,
-      [organizationId, planId]
+      `insert into subscriptions (id, status, "organizationId", "planId", "currentPeriodEnd", "updatedAt",
+                                  "stripeSubscriptionId", "stripeCustomerId")
+       values (md5(random()::text || clock_timestamp()::text), 'active', $1, $2, now() + interval '30 days', now(), $3, $4)`,
+      [organizationId, planId, stripe?.subscriptionId ?? null, stripe?.customerId ?? null]
     )
     return planId
   })
+}
+
+/** Flags a subscription as ending at the period end, as a cancel through torqvoice.com would. */
+export async function setCancelAtPeriodEnd(organizationId: string, value: boolean): Promise<void> {
+  await withDb((db) =>
+    db.query(`update subscriptions set "cancelAtPeriodEnd" = $2 where "organizationId" = $1`, [
+      organizationId,
+      value,
+    ])
+  )
 }
 
 /** Takes a subscription and its plan away again. */

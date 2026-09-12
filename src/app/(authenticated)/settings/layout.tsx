@@ -2,7 +2,8 @@ import { PageHeader } from '@/components/page-header'
 import { SettingsNav } from './settings-nav'
 import { SettingsPermissionProvider } from './settings-permission-context'
 import { getLayoutData } from '@/lib/get-layout-data'
-import { getFeatures, isCloudMode } from '@/lib/features'
+import { getFeatures } from '@/lib/features'
+import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { isSupportEnabled } from '@/lib/support'
 import { redirect } from 'next/navigation'
 import { getCachedMembership } from '@/lib/cached-session'
@@ -41,6 +42,9 @@ export default async function SettingsLayout({ children }: { children: React.Rea
 
   const features = await getFeatures(data.organizationId)
   const supportEnabled = await isSupportEnabled()
+  // Subscription pages only on the app torqvoice.com bills for, not on any
+  // install that copied TORQVOICE_MODE=cloud.
+  const cloudLinked = await isCloudLinked()
   const t = await getTranslations('settings')
   const newItems = newSettingsEntries({ organizationCreatedAt: data.organizationCreatedAt })
 
@@ -57,7 +61,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
             <aside className="hidden shrink-0 overflow-y-auto md:block md:w-56 lg:w-64">
               <SettingsNav
                 features={features}
-                isCloud={isCloudMode()}
+                isCloud={cloudLinked}
                 supportEnabled={supportEnabled}
                 newItems={newItems}
               />
@@ -66,7 +70,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
               <div className="mb-4 md:hidden">
                 <SettingsNav
                   features={features}
-                  isCloud={isCloudMode()}
+                  isCloud={cloudLinked}
                   supportEnabled={supportEnabled}
                   newItems={newItems}
                   mobile

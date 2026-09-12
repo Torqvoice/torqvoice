@@ -40,10 +40,12 @@ jobs:
           DATABASE_URL: ${{ secrets.CLOUD_DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.CLOUD_BETTER_AUTH_SECRET }}
           APP_URL: ${{ secrets.CLOUD_APP_URL }}
-          STRIPE_SECRET_KEY: ${{ secrets.CLOUD_STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET: ${{ secrets.CLOUD_STRIPE_WEBHOOK_SECRET }}
-          STRIPE_PRO_PRICE_ID: ${{ secrets.CLOUD_STRIPE_PRO_PRICE_ID }}
-          STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.CLOUD_STRIPE_ENTERPRISE_PRICE_ID }}
+          # Plans are sold on torqvoice.com. This secret is the one torqvoice.com
+          # holds as TORQVOICE_SERVICE_SECRET; the app signs checkout handoffs
+          # with it and authenticates billing calls with it. The Stripe keys
+          # themselves live in this app's database and are edited from the
+          # torqvoice.com admin, so they are no longer passed here.
+          TORQVOICE_SERVICE_SECRET: ${{ secrets.TORQVOICE_SERVICE_SECRET }}
           DATA_PATH: ${{ secrets.DATA_PATH }}
           POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
           POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
@@ -63,7 +65,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/prod
           cd $HOME/torqvoice-deploy/prod
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
@@ -91,10 +93,8 @@ jobs:
                 # edges, so the visitor address is the one Cloudflare says it is.
                 # Without this every visitor shares the edge's rate-limit bucket.
                 TRUST_CF_CONNECTING_IP: "true"
-                STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-                STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-                STRIPE_PRO_PRICE_ID: ${STRIPE_PRO_PRICE_ID}
-                STRIPE_ENTERPRISE_PRICE_ID: ${STRIPE_ENTERPRISE_PRICE_ID}
+                TORQVOICE_SERVICE_SECRET: ${TORQVOICE_SERVICE_SECRET}
+                TORQVOICE_COM_URL: https://torqvoice.com
                 POSTHOG_HOST: ${POSTHOG_HOST}
                 POSTHOG_KEY: ${POSTHOG_KEY}
                 BACKUP_HEARTBEAT_TOKEN: ${BACKUP_HEARTBEAT_TOKEN}
@@ -112,6 +112,22 @@ jobs:
               networks:
                 - proxy
           COMPOSE
+
+          # The link to torqvoice.com is what the subscription pages hang on. A
+          # wrong secret or an origin the site does not list only shows up as a
+          # missing page, so the deploy asks the site itself and says so.
+          if [ -n "$TORQVOICE_SERVICE_SECRET" ]; then
+            status=$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://torqvoice.com/api/app/subscription/ping \
+              -H "Authorization: Bearer $TORQVOICE_SERVICE_SECRET" -H 'Content-Type: application/json' \
+              -d "{\"appUrl\":\"$APP_URL\"}" || echo 000)
+            if [ "$status" != "200" ]; then
+              echo "::warning title=torqvoice.com link not confirmed::ping answered $status. Check TORQVOICE_SERVICE_SECRET on both sides and that $APP_URL is TORQVOICE_APP_URL or TORQVOICE_STAGING_APP_URL on torqvoice.com. The subscription page stays hidden until it is."
+            else
+              echo "torqvoice.com link confirmed for $APP_URL"
+            fi
+          else
+            echo "::warning title=torqvoice.com link not configured::TORQVOICE_SERVICE_SECRET is empty, so plans cannot be bought from this deployment."
+          fi
 
       - name: Ensure data directory permissions
         run: |

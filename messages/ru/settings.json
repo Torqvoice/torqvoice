@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Успешно обновлено до корпоративного тарифа!",
     "upgradeError": "Не удалось обновить подписку",
     "demoBadge": "Демо",
-    "demoExpiresIn": "Истекает через {days, plural, =0 {меньше дня} one {# день} other {# дней}} ({date})"
+    "demoExpiresIn": "Истекает через {days, plural, =0 {меньше дня} one {# день} other {# дней}} ({date})",
+    "checkoutOnTorqvoice": "Для завершения покупки вы будете перенаправлены на torqvoice.com. Счета и квитанции доступны там в вашем аккаунте.",
+    "purchaseSuccess": "Спасибо! Ваш план теперь активен.",
+    "purchaseActivating": "Платёж получен. Ваш план активируется, страница обновится через мгновение.",
+    "accountOnTorqvoice": "Счета и квитанции находятся на torqvoice.com, куда вы входите с этой учётной записью.",
+    "openTorqvoiceAccount": "Открыть учётную запись на torqvoice.com"
   },
   "ai": {
     "title": "ИИ-ассистент",
