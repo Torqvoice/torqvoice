@@ -296,7 +296,7 @@
         "verifyToken": "Webhook verify token",
         "appSecret": "App secret",
         "apiVersion": "Graph API version",
-        "appSecretHelp": "Without it, webhook signatures are not checked and anyone who learns the webhook URL can post messages as your customers. Strongly recommended."
+        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers."
       },
       "settings": {
         "enabled": "Send messages on this channel",

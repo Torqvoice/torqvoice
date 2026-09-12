@@ -38,7 +38,13 @@ function SignInFormInner({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   // Better Auth sends a failed Google round-trip back here with ?error=...
-  const [error, setError] = useState(() => (searchParams.get('error') ? tSocial('failed') : ''))
+  // One of them deserves its own words: the address already has a password
+  // account that was never verified, so Google was not joined to it.
+  const [error, setError] = useState(() => {
+    const code = searchParams.get('error')
+    if (!code) return ''
+    return code === 'account_not_linked' ? tSocial('notLinked') : tSocial('failed')
+  })
   const [loading, setLoading] = useState(false)
   const [passkeyLoading, setPasskeyLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)

@@ -76,6 +76,24 @@ export async function createDraftRecord(
 
   // Resolve technician: explicit param > default setting by ID > legacy default by name
   let resolvedTechId = opts.technicianId
+  if (resolvedTechId) {
+    // Named by the caller, so it has to be one of this workshop's. Before
+    // this, a lookup that found nothing still wrote the id, and the row
+    // then pointed at another workshop's technician: their board showed the
+    // job, and renaming their technician rewrote its name.
+    const own = await db.technician.findFirst({
+      where: { id: resolvedTechId, organizationId },
+      select: { id: true },
+    })
+    if (!own) throw new Error('Technician not found')
+  }
+  if (opts.workBayId) {
+    const bay = await db.workBay.findFirst({
+      where: { id: opts.workBayId, organizationId },
+      select: { id: true },
+    })
+    if (!bay) throw new Error('Work bay not found')
+  }
   if (!resolvedTechId) {
     const defaultId = settingsMap['workshop.defaultTechnicianId']
     if (defaultId) {

@@ -939,3 +939,133 @@ export async function forgetWorkshopSetting(organizationId: string, key: string)
     ])
   )
 }
+
+/** Marks the address verified, as clicking the mail's link would. */
+export async function markEmailVerified(email: string): Promise<void> {
+  await withDb((db) =>
+    db.query(`update users set "emailVerified" = true where lower(email) = lower($1)`, [email])
+  )
+}
+
+export interface MembershipRecord {
+  id: string
+  role: string
+  roleId: string | null
+}
+
+/** A person's membership of a workshop, as stored. */
+export async function membershipOf(
+  email: string,
+  organizationId: string
+): Promise<MembershipRecord> {
+  return withDb(async (db) => {
+    const result = await db.query<MembershipRecord>(
+      `select m.id, m.role, m."roleId" from organization_members m
+         join users u on u.id = m."userId"
+        where lower(u.email) = lower($1) and m."organizationId" = $2`,
+      [email, organizationId]
+    )
+    if (!result.rows[0]) throw new Error(`${email} is not a member of ${organizationId}`)
+    return result.rows[0]
+  })
+}
+
+/** A role that carries the admin switch and nothing else. */
+export async function createAdminRole(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into roles (id, name, "isAdmin", "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, true, $2, now(), now()) returning id`,
+      [name, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteRoles(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query(`delete from roles where id = any($1::text[])`, [ids]))
+}
+
+/** A technician on a workshop's board, made here so the spec owns it. */
+export async function insertTechnician(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into technicians (id, name, "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, $2, now(), now()) returning id`,
+      [name, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function insertWorkBay(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into work_bays (id, name, "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, $2, now(), now()) returning id`,
+      [name, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteTechnicians(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query(`delete from technicians where id = any($1::text[])`, [ids]))
+}
+
+export async function deleteWorkBays(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query(`delete from work_bays where id = any($1::text[])`, [ids]))
+}
+
+export interface JobAssignment {
+  id: string
+  technicianId: string | null
+  workBayId: string | null
+}
+
+/** A job's technician and bay as stored, by its id. */
+export async function jobAssignment(serviceRecordId: string): Promise<JobAssignment> {
+  return withDb(async (db) => {
+    const result = await db.query<JobAssignment>(
+      `select id, "technicianId", "workBayId" from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    if (!result.rows[0]) throw new Error(`no job ${serviceRecordId}`)
+    return result.rows[0]
+  })
+}
+
+/** How many jobs a vehicle has, before and after an attempt to add one. */
+export async function jobCount(vehicleId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from service_records where "vehicleId" = $1`,
+      [vehicleId]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+/** Inbound WhatsApp messages with exactly this body, for a workshop. */
+export async function inboundWhatsappCount(organizationId: string, body: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from whatsapp_messages
+        where "organizationId" = $1 and direction = 'inbound' and body = $2`,
+      [organizationId, body]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+export async function deleteInboundWhatsapp(organizationId: string, body: string): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `delete from whatsapp_messages where "organizationId" = $1 and direction = 'inbound' and body like $2`,
+      [organizationId, `${body}%`]
+    )
+  )
+}

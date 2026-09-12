@@ -240,8 +240,10 @@ const WHATSAPP: MessagingProvider[] = [
       }),
       secret('accessToken', whatsappCredentialKey('meta', 'accessToken')),
       text('verifyToken', whatsappCredentialKey('meta', 'verifyToken')),
+      // Required on the form: without it nothing Meta posts can be verified,
+      // so the webhook refuses every delivery. The adapter itself still sends
+      // without one, for a connection made before the form asked.
       secret('appSecret', whatsappCredentialKey('meta', 'appSecret'), {
-        required: false,
         help: 'appSecretHelp',
       }),
       text('apiVersion', whatsappCredentialKey('meta', 'apiVersion'), { required: false }),
