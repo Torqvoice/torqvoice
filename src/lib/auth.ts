@@ -210,9 +210,13 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
+    // No cookie cache. It saved one session lookup per request and in return
+    // let a revoked session keep working for up to five minutes: a phone
+    // signed out from the devices list stayed signed in, and a password
+    // change did not end the other browser until the cache ran out. The
+    // session table is read on every request now; membership already was.
     cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60, // 5 minutes
+      enabled: false,
     },
   },
   advanced: {
@@ -248,6 +252,7 @@ export const auth = betterAuth({
             ? null
             : await noteDevice(
                 {
+                  id: session.id,
                   userId: session.userId,
                   userAgent: ((session as Record<string, unknown>).userAgent as string) ?? null,
                   ipAddress: ((session as Record<string, unknown>).ipAddress as string) ?? null,

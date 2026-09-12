@@ -1081,3 +1081,15 @@ export async function sessionCountFor(email: string): Promise<number> {
     return Number(result.rows[0].n)
   })
 }
+
+/** Device rows a person has whose user agent mentions `needle`. */
+export async function deviceCountFor(email: string, needle: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from user_devices d join users u on u.id = d."userId"
+        where lower(u.email) = lower($1) and d."userAgent" like $2`,
+      [email, `%${needle}%`]
+    )
+    return Number(result.rows[0].n)
+  })
+}

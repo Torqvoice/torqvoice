@@ -46,8 +46,8 @@ const sessionIdSchema = z.string().min(1).max(200)
 
 /**
  * Ends one of the caller's own sessions. Deleting the row is what better-auth's
- * own revoke does; a browser holding a cached cookie keeps rendering pages for
- * up to five minutes and is then refused everywhere.
+ * own revoke does, and with no session cookie cache the device is refused on
+ * its very next request.
  */
 export async function signOutDevice(input: unknown) {
   // The demo's one account is shared by every visitor; nobody gets to sign

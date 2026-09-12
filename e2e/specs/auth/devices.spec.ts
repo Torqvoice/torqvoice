@@ -1,7 +1,7 @@
 import { type BrowserContext, expect, type Page, test } from '@playwright/test'
-import { sessionCountFor } from '../../support/db'
+import { deviceCountFor, sessionCountFor } from '../../support/db'
 import { fillSettled } from '../../support/hydration'
-import { waitForMail } from '../../support/mail'
+import { mailsTo, waitForMail } from '../../support/mail'
 
 /**
  * Who is signed in to an account, and how to get them out.
@@ -83,6 +83,28 @@ test('the account page lists the phone and signs it out', async ({ page }) => {
 
   expect(await sessionCountFor(email)).toBe(sessionsBefore - 1)
   expect(await stillSignedIn(phone), 'the phone is out').toBe(false)
+
+  // What the person holding the phone sees: the next page it asks for is the
+  // sign-in page. A row count proved nothing here while the session cookie
+  // cache let a revoked session keep working for five minutes.
+  const held = await phone.newPage()
+  await held.goto('/customers')
+  await expect(held).toHaveURL(/\/auth\/sign-in/, { timeout: 15_000 })
+  await held.close()
+})
+
+test('signing in again on the same phone is not a new device', async () => {
+  // The device cookie outlives the session, so the phone that was just
+  // signed out comes back as itself: one device row, no second mail.
+  const mailsBefore = (await mailsTo(email)).filter((m) => /new sign-in/i.test(m.subject)).length
+  const rowsBefore = await deviceCountFor(email, 'iPhone')
+  const page = await phone.newPage()
+  await signIn(page)
+  await page.waitForTimeout(1_500)
+  const mailsAfter = (await mailsTo(email)).filter((m) => /new sign-in/i.test(m.subject)).length
+  expect(mailsAfter, 'no new-device mail for a device the account knows').toBe(mailsBefore)
+  expect(await deviceCountFor(email, 'iPhone'), 'no second row for the phone').toBe(rowsBefore)
+  await page.close()
 })
 
 test('changing the password ends every other device', async ({ page, browser }) => {
@@ -99,6 +121,11 @@ test('changing the password ends every other device', async ({ page, browser }) 
 
   expect(await stillSignedIn(other), 'the other browser is out').toBe(false)
   expect(await sessionCountFor(email), 'only the changing browser remains').toBe(1)
+  const held = await other.newPage()
+  await held.goto('/customers')
+  await expect(held, 'the other browser lands on sign-in').toHaveURL(/\/auth\/sign-in/, {
+    timeout: 15_000,
+  })
   await other.close()
 
   // Put the seeded password back for the rest of the suite, and save the

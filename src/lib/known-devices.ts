@@ -1,29 +1,16 @@
 import 'server-only'
-import { createHash, randomBytes } from 'node:crypto'
+import { createHash } from 'node:crypto'
 import { db } from '@/lib/db'
-
-/** Long-lived cookie naming this browser to the app, across sign-ins. */
-export const DEVICE_COOKIE = 'torqvoice-device'
-const DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+import { DEVICE_COOKIE, readDeviceCookie } from '@/lib/device-cookie'
 
 /**
  * What better-auth hands a database hook: the endpoint context of the request
- * that created the row, when there is one. Only the cookie helpers are used,
- * and only when present; a session minted outside a request has neither.
+ * that created the row, when there is one. Only the request headers are read,
+ * and only when present; a session minted outside a request has none.
  */
 interface HookContext {
+  headers?: { get(name: string): string | null } | null
   getCookie?: (name: string) => string | undefined | null
-  setCookie?: (
-    name: string,
-    value: string,
-    options?: {
-      httpOnly?: boolean
-      sameSite?: 'lax' | 'strict' | 'none'
-      secure?: boolean
-      path?: string
-      maxAge?: number
-    }
-  ) => void
 }
 
 export interface DeviceSighting {
@@ -100,30 +87,27 @@ function useSecureCookies(): boolean {
  * Records the device a session was just created from, and says whether the
  * account has seen it before.
  *
- * A browser is known by the id in its device cookie, set here on first
- * sight and kept for a year, so a sign-out or a password change that ends
+ * A browser is known by the id in its device cookie, issued by the auth
+ * route on first sight and kept for a year, so a sign-out or a password change that ends
  * every session does not turn the same laptop into a "new device" next week.
  * A client that keeps no cookies, such as the technician app, is known by
  * its user agent instead: coarser, but stable for one phone.
+ *
+ * The first device an account ever sees is recorded quietly; a device that
+ * shows up while another session is already open is a new one, even if it
+ * is the first row here.
  */
 export async function noteDevice(
-  session: { userId: string; userAgent?: string | null; ipAddress?: string | null },
+  session: { id: string; userId: string; userAgent?: string | null; ipAddress?: string | null },
   ctx: unknown
 ): Promise<DeviceSighting> {
   const hook = (ctx ?? {}) as HookContext
   const label = describeUserAgent(session.userAgent)
 
-  let deviceKey = hook.getCookie?.(DEVICE_COOKIE) || null
-  if (!deviceKey && hook.setCookie) {
-    deviceKey = randomBytes(24).toString('hex')
-    hook.setCookie(DEVICE_COOKIE, deviceKey, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: useSecureCookies(),
-      path: '/',
-      maxAge: DEVICE_COOKIE_MAX_AGE,
-    })
-  }
+  // The auth route issues the cookie before better-auth runs (device-cookie.ts),
+  // so a returning browser and a brand-new one both carry it here.
+  let deviceKey =
+    readDeviceCookie(hook.headers ?? undefined) ?? hook.getCookie?.(DEVICE_COOKIE) ?? null
   if (!deviceKey) {
     deviceKey = `ua:${createHash('sha256')
       .update(session.userAgent ?? '')
@@ -147,7 +131,17 @@ export async function noteDevice(
     return { isNew: false, isFirst: false, label }
   }
 
-  const others = await db.userDevice.count({ where: { userId: session.userId } })
+  // "First" means the account has never been used anywhere: no device on
+  // record and no other session open. An account from before devices were
+  // tracked has no rows, but a laptop still signed in says it is in use, so
+  // a phone appearing beside it is news, not a first sighting.
+  const [knownDevices, otherSessions] = await Promise.all([
+    db.userDevice.count({ where: { userId: session.userId } }),
+    db.session.count({
+      where: { userId: session.userId, id: { not: session.id }, expiresAt: { gt: now } },
+    }),
+  ])
+  const others = knownDevices + otherSessions
   await db.userDevice.create({
     data: {
       userId: session.userId,
