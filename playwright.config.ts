@@ -211,6 +211,7 @@ export default defineConfig({
                   // The server variable, not NEXT_PUBLIC_: that one is baked
                   // into the bundle at build time and would point at the real site.
                   TORQVOICE_COM_URL: torqvoiceComUrl,
+                  TORQVOICE_COM_LINK_TTL_SECONDS: '1',
                   TORQVOICE_COM_LINK_RETRY_SECONDS: '1',
                 }
               : {}),
