@@ -75,6 +75,28 @@ const googleStandin = {
   env: { E2E_GOOGLE_PORT: googlePort },
 }
 
+/** Where the torqvoice.com stand-in listens, for the app's server and for the specs. */
+const torqvoiceComPort = process.env.E2E_TORQVOICE_COM_PORT ?? '8028'
+const torqvoiceComUrl = `http://127.0.0.1:${torqvoiceComPort}`
+/** Shared with the app as TORQVOICE_SERVICE_SECRET; throwaway, like the auth secret. */
+const serviceSecret = 'e2e-service-secret-0123456789abcdef'
+
+/**
+ * torqvoice.com for the cloud run: the bearer API the app calls for the
+ * billing portal, cancel, resume and upgrade, the checkout page a purchase
+ * hands the browser to, and the account link. Tokens are verified there
+ * the way the real site verifies them.
+ */
+const torqvoiceComStandin = {
+  command: 'npx tsx e2e/torqvoice-com-standin.ts',
+  url: `${torqvoiceComUrl}/health`,
+  reuseExistingServer: !process.env.CI,
+  timeout: 60_000,
+  stdout: 'pipe' as const,
+  stderr: 'pipe' as const,
+  env: { E2E_TORQVOICE_COM_PORT: torqvoiceComPort, E2E_SERVICE_SECRET: serviceSecret },
+}
+
 const mailSink = {
   command: 'npx tsx e2e/mail-sink.ts',
   url: `http://127.0.0.1:${mailApiPort}/health`,
@@ -134,11 +156,11 @@ export default defineConfig({
    * and it is not the artifact that ships anyway.
    */
   webServer: process.env.E2E_BASE_URL
-    ? [mailSink, paymentSink, ...(cloud ? [googleStandin] : [])]
+    ? [mailSink, paymentSink, ...(cloud ? [googleStandin, torqvoiceComStandin] : [])]
     : [
         mailSink,
         paymentSink,
-        ...(cloud ? [googleStandin] : []),
+        ...(cloud ? [googleStandin, torqvoiceComStandin] : []),
         {
           // The database first, then the server, in one command: Playwright
           // starts this before global setup, and a server on an empty schema
@@ -182,6 +204,14 @@ export default defineConfig({
                   GOOGLE_AUTH_CLIENT_SECRET: 'e2e-google-secret',
                   E2E_GOOGLE_STANDIN_URL: googleStandinUrl,
                   NODE_OPTIONS: `--import=${resolve('e2e/google-standin-preload.mjs')}`,
+                  // Plans are sold on torqvoice.com; the stand-in plays it.
+                  // The link check forgets its answer after a second instead of
+                  // an hour or two minutes, so a spec can flip the stand-in's answer.
+                  TORQVOICE_SERVICE_SECRET: serviceSecret,
+                  // The server variable, not NEXT_PUBLIC_: that one is baked
+                  // into the bundle at build time and would point at the real site.
+                  TORQVOICE_COM_URL: torqvoiceComUrl,
+                  TORQVOICE_COM_LINK_RETRY_SECONDS: '1',
                 }
               : {}),
             TZ: process.env.E2E_TZ ?? 'Europe/Oslo',

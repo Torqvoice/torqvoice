@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -19,7 +19,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Check, Crown, CreditCard, Loader2, Shield, X, Zap, AlertTriangle } from 'lucide-react'
+import {
+  Check,
+  CheckCircle2,
+  Crown,
+  CreditCard,
+  ExternalLink,
+  Loader2,
+  Shield,
+  X,
+  Zap,
+  AlertTriangle,
+} from 'lucide-react'
 import {
   cancelSubscription,
   resumeSubscription,
@@ -36,6 +47,10 @@ type Props = {
   planPrice: number
   planInterval: string
   hasStripeCustomer: boolean
+  /** Back from a completed checkout on torqvoice.com. */
+  justPurchased: boolean
+  /** Whether torqvoice.com is linked, so the account there can be opened signed in. */
+  accountLinkAvailable: boolean
   usage: { customers: number; members: number }
   features: PlanFeatures
 }
@@ -50,6 +65,8 @@ export function SubscriptionSettings({
   planPrice,
   planInterval,
   hasStripeCustomer,
+  justPurchased,
+  accountLinkAvailable,
   usage,
   features,
 }: Props) {
@@ -60,6 +77,7 @@ export function SubscriptionSettings({
   const [cancelLoading, setCancelLoading] = useState(false)
   const [resumeLoading, setResumeLoading] = useState(false)
   const [billingLoading, setBillingLoading] = useState(false)
+  const [accountLoading, setAccountLoading] = useState(false)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
   const [upgradePreview, setUpgradePreview] = useState<{
     amountDue: number
@@ -69,6 +87,17 @@ export function SubscriptionSettings({
   const [previewLoading, setPreviewLoading] = useState(false)
 
   const isPaid = plan === 'pro' || plan === 'enterprise'
+
+  // Back from checkout before the row was written: the site records the
+  // subscription on its success page and again from Stripe's webhook, so a
+  // second look a few seconds later finds it. The customer sees a notice
+  // rather than the buy buttons in the meantime.
+  const activating = justPurchased && !isPaid
+  useEffect(() => {
+    if (!activating) return
+    const timer = setTimeout(() => router.refresh(), 4_000)
+    return () => clearTimeout(timer)
+  }, [activating, router])
   const isCanceling = cancelAtPeriodEnd && status === 'active'
   const isPastDue = status === 'past_due'
 
@@ -188,6 +217,23 @@ export function SubscriptionSettings({
     }
   }
 
+  const handleOpenAccount = async () => {
+    setAccountLoading(true)
+    try {
+      const res = await fetch('/api/protected/subscription/account-link', { method: 'POST' })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        toast.error(data.error ?? t('subscription.billingPortalError'))
+        setAccountLoading(false)
+      }
+    } catch {
+      toast.error(t('subscription.billingPortalError'))
+      setAccountLoading(false)
+    }
+  }
+
   const formatDate = (iso: string | null) => {
     if (!iso) return '—'
     return new Date(iso).toLocaleDateString(locale, {
@@ -289,6 +335,24 @@ export function SubscriptionSettings({
         description={t('subscription.description')}
         contentClassName="space-y-4"
       >
+        {justPurchased && isPaid && (
+          <div className="flex items-center gap-2 rounded-md border border-green-500/50 bg-green-500/10 p-3">
+            <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+            <p className="text-sm text-green-700 dark:text-green-400">
+              {t('subscription.purchaseSuccess')}
+            </p>
+          </div>
+        )}
+
+        {activating && (
+          <div className="flex items-center gap-2 rounded-md border border-amber-500/50 bg-amber-500/10 p-3">
+            <Loader2 className="h-4 w-4 animate-spin text-amber-600 shrink-0" />
+            <p className="text-sm text-amber-700 dark:text-amber-400">
+              {t('subscription.purchaseActivating')}
+            </p>
+          </div>
+        )}
+
         <div className="flex items-center gap-3">
           <Label>{t('subscription.currentPlan')}:</Label>
           {planBadge}
@@ -385,7 +449,11 @@ export function SubscriptionSettings({
 
       {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
       {isPaid && !isDemo && (
-        <AppCard title={t('subscription.manageTitle')} contentClassName="flex flex-wrap gap-3">
+        <AppCard
+          title={t('subscription.manageTitle')}
+          description={accountLinkAvailable ? t('subscription.accountOnTorqvoice') : undefined}
+          contentClassName="flex flex-wrap gap-3"
+        >
           {hasStripeCustomer && (
             <Button variant="outline" onClick={handleBillingPortal} disabled={billingLoading}>
               {billingLoading ? (
@@ -394,6 +462,16 @@ export function SubscriptionSettings({
                 <CreditCard className="mr-2 h-4 w-4" />
               )}
               {t('subscription.manageBilling')}
+            </Button>
+          )}
+          {accountLinkAvailable && (
+            <Button variant="outline" onClick={handleOpenAccount} disabled={accountLoading}>
+              {accountLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <ExternalLink className="mr-2 h-4 w-4" />
+              )}
+              {t('subscription.openTorqvoiceAccount')}
             </Button>
           )}
 
@@ -437,7 +515,7 @@ export function SubscriptionSettings({
       )}
 
       {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout */}
-      {(plan === 'free' || isDemo) && (
+      {(plan === 'free' || isDemo) && !activating && (
         <AppCard
           title={t('subscription.upgradeTitle')}
           description={t('subscription.upgradeToProDescription')}
@@ -470,6 +548,9 @@ export function SubscriptionSettings({
               {t('subscription.upgradeToEnterprise')}
             </Button>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {t('subscription.checkoutOnTorqvoice')}
+          </p>
         </AppCard>
       )}
 

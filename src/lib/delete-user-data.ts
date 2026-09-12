@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { safeUploadPath } from '@/lib/resolve-upload-path'
 import { unlink, rm } from 'fs/promises'
 import path from 'path'
-import { getStripeClient } from '@/lib/stripe-config'
+import { billingRequest, isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
 import { uploadsRoot } from './upload-root'
 
 /**
@@ -47,18 +47,20 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
     if (vehiclePath) filePaths.push(vehiclePath)
   }
 
-  // Cancel Stripe subscription before deleting org data
+  // End the Stripe subscription before deleting org data. torqvoice.com holds
+  // the Stripe keys; a self-hosted install has no Stripe-backed row here.
   const subscription = await db.subscription.findUnique({
     where: { organizationId },
     select: { stripeSubscriptionId: true },
   })
 
-  if (subscription?.stripeSubscriptionId) {
+  if (subscription?.stripeSubscriptionId && isTorqvoiceComBillingConfigured()) {
     try {
-      const stripe = await getStripeClient()
-      await stripe.subscriptions.cancel(subscription.stripeSubscriptionId)
-    } catch {
-      // Subscription may already be canceled on Stripe's side, or Stripe not configured
+      await billingRequest('end', { organizationId })
+    } catch (error) {
+      // Already canceled on Stripe's side, or torqvoice.com unreachable: the
+      // daily sync ends an orphan either way, and the deletion must go on.
+      console.error('[delete-user-data] could not end the subscription:', error)
     }
   }
 

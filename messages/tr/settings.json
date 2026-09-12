@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Enterprise'a başarıyla yükseltildi!",
     "upgradeError": "Abonelik yükseltilemedi",
     "demoBadge": "Demo",
-    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})"
+    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})",
+    "checkoutOnTorqvoice": "Satın almayı tamamlamak için torqvoice.com'a yönlendirileceksiniz. Faturalar ve makbuzlar orada hesabınızın altında bulunur.",
+    "purchaseSuccess": "Teşekkürler! Planınız artık etkin.",
+    "purchaseActivating": "Ödeme alındı. Planınız etkinleştiriliyor, bu sayfa birazdan yenilenecek.",
+    "accountOnTorqvoice": "Faturalar ve makbuzlar torqvoice.com'da; oraya bu hesapla giriş yaparsınız.",
+    "openTorqvoiceAccount": "torqvoice.com'daki hesabınızı açın"
   },
   "ai": {
     "title": "Yapay Zeka Asistani",
