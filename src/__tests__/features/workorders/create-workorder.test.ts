@@ -726,6 +726,9 @@ describe('createDraftServiceRecord — scheduling', () => {
     vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
     vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    // The technician named in the booking is one of the workshop's own; a
+    // stranger's id is refused before any slot is looked for.
+    vi.mocked(db.technician.findFirst).mockResolvedValue({ name: 'Tech' } as any)
     vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
       {
         id: 'busy',

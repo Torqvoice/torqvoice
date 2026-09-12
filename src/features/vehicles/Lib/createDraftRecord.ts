@@ -83,9 +83,10 @@ export async function createDraftRecord(
     // job, and renaming their technician rewrote its name.
     const own = await db.technician.findFirst({
       where: { id: resolvedTechId, organizationId },
-      select: { id: true },
+      select: { name: true },
     })
     if (!own) throw new Error('Technician not found')
+    techName = own.name
   }
   if (opts.workBayId) {
     const bay = await db.workBay.findFirst({
@@ -117,15 +118,6 @@ export async function createDraftRecord(
         techName = defaultTech.name
       }
     }
-  }
-
-  // If a technician is resolved (explicit or default), use their name
-  if (resolvedTechId) {
-    const tech = await db.technician.findFirst({
-      where: { id: resolvedTechId, organizationId },
-      select: { name: true },
-    })
-    if (tech) techName = tech.name
   }
 
   const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
