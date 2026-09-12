@@ -196,6 +196,16 @@
     "marineServiceDescription": "Лодки, яхты и морские суда"
   },
   "account": {
+    "devicesTitle": "Устройства с входом",
+    "devicesDescription": "Все браузеры и телефоны с открытой сессией в вашем аккаунте.",
+    "thisDevice": "Это устройство",
+    "signedInAt": "Вход {date}",
+    "lastActiveAt": "Последняя активность {date}",
+    "signOutDevice": "Выйти",
+    "signOutOthers": "Выйти на других устройствах",
+    "deviceSignedOut": "Устройство отключено",
+    "othersSignedOut": "Другие устройства отключены",
+    "failedSignOutDevice": "Не удалось отключить это устройство",
     "profileTitle": "Профиль",
     "profileDescription": "Обновите своё отображаемое имя и адрес эл. почты.",
     "emailVerified": "Подтверждено",

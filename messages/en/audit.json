@@ -85,6 +85,8 @@
     "customField_delete": "Deleted Custom Field",
     "quoteRequest_update": "Updated Quote Request",
     "auth_login": "User Logged In",
+    "auth_sessionRevoked": "Signed Out a Device",
+    "auth_sessionsRevoked": "Signed Out Other Devices",
     "auth_loginFailed": "Failed Login Attempt",
     "auth_register": "User Registered",
     "auth_passwordReset": "Password Reset Requested",

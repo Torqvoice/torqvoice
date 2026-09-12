@@ -6,8 +6,9 @@ import { toNextJsHandler } from 'better-auth/next-js'
 import { db } from '@/lib/db'
 import { logAudit } from '@/lib/audit'
 import { explainInvalidOrigin } from '@/lib/auth-origin-hint'
+import { attachDeviceCookie, withDeviceCookie } from '@/lib/device-cookie'
 
-const { POST: authPOST, GET } = toNextJsHandler(auth)
+const { POST: authPOST, GET: authGET } = toNextJsHandler(auth)
 
 const authAuditPrefixes = [
   '/api/public/auth/sign-in',
@@ -37,7 +38,16 @@ function getRequestIp(request: Request): string | null {
   )
 }
 
-async function POST(request: Request) {
+/** OAuth callbacks arrive as GET and create sessions too. */
+async function GET(incoming: Request) {
+  const { request, issued } = withDeviceCookie(incoming)
+  return attachDeviceCookie(await authGET(request), issued)
+}
+
+async function POST(incoming: Request) {
+  // The browser's device id, minted here when it has none, so the session
+  // hook can tell a returning device from a new one.
+  const { request, issued } = withDeviceCookie(incoming)
   const { pathname } = new URL(request.url)
 
   if (isDemoMode && demoBlockedPrefixes.some((p) => pathname.startsWith(p))) {
@@ -63,7 +73,10 @@ async function POST(request: Request) {
   if (isAuthAttempt) {
     // Clone body before better-auth consumes it
     const cloned = request.clone()
-    const response = await explainInvalidOrigin(cloned, await authPOST(request))
+    const response = attachDeviceCookie(
+      await explainInvalidOrigin(cloned, await authPOST(request)),
+      issued
+    )
 
     // Log failed authentication attempts (fire-and-forget to avoid timing side-channels)
     if (!response.ok) {
@@ -107,7 +120,7 @@ async function POST(request: Request) {
     return response
   }
 
-  return explainInvalidOrigin(request, await authPOST(request))
+  return attachDeviceCookie(await explainInvalidOrigin(request, await authPOST(request)), issued)
 }
 
 export { GET, POST }

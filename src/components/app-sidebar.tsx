@@ -68,6 +68,7 @@ import {
   ShieldCheck,
   Timer,
   Users,
+  UserRound,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
@@ -635,11 +636,15 @@ export function AppSidebar({
                 align="start"
                 sideOffset={4}
               >
+                {/* The person's own page: name, password, devices. Settings for
+                    the workshop has its own row in the navigation above. The
+                    settings layout turns away a custom role without settings
+                    access, so the same rule gates this link. */}
                 {canAccess('settings') && (
                   <DropdownMenuItem asChild>
-                    <Link href="/settings">
-                      <Settings className="mr-2 size-4" />
-                      {t('sidebar.settings')}
+                    <Link href="/settings/account">
+                      <UserRound className="mr-2 size-4" />
+                      {t('sidebar.account')}
                     </Link>
                   </DropdownMenuItem>
                 )}

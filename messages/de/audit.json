@@ -85,6 +85,8 @@
     "customField_delete": "Benutzerdefiniertes Feld gelöscht",
     "quoteRequest_update": "Angebotsanfrage aktualisiert",
     "auth_login": "Benutzer angemeldet",
+    "auth_sessionRevoked": "Gerät abgemeldet",
+    "auth_sessionsRevoked": "Andere Geräte abgemeldet",
     "auth_loginFailed": "Fehlgeschlagener Anmeldeversuch",
     "auth_register": "Benutzer registriert",
     "auth_passwordReset": "Passwort-Zurücksetzung angefordert",

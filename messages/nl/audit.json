@@ -85,6 +85,8 @@
     "customField_delete": "Aangepast veld verwijderd",
     "quoteRequest_update": "Offerteaanvraag bijgewerkt",
     "auth_login": "Gebruiker ingelogd",
+    "auth_sessionRevoked": "Apparaat uitgelogd",
+    "auth_sessionsRevoked": "Andere apparaten uitgelogd",
     "auth_loginFailed": "Mislukte inlogpoging",
     "auth_register": "Gebruiker geregistreerd",
     "auth_passwordReset": "Wachtwoord reset aangevraagd",

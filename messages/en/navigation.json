@@ -90,6 +90,7 @@
   "licenseUnverifiedNow": "Your license could not be verified and Torqvoice branding has returned.",
   "licenseVerify": "Verify",
   "sidebar": {
+    "account": "Account",
     "dashboard": "Dashboard",
     "clients": "Clients",
     "customers": "Customers",

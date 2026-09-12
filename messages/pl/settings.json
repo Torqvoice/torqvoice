@@ -196,6 +196,16 @@
     "marineServiceDescription": "Łodzie, jachty i jednostki pływające"
   },
   "account": {
+    "devicesTitle": "Zalogowane urządzenia",
+    "devicesDescription": "Każda przeglądarka i telefon z otwartą sesją na Twoim koncie.",
+    "thisDevice": "To urządzenie",
+    "signedInAt": "Zalogowano {date}",
+    "lastActiveAt": "Ostatnia aktywność {date}",
+    "signOutDevice": "Wyloguj",
+    "signOutOthers": "Wyloguj pozostałe urządzenia",
+    "deviceSignedOut": "Urządzenie wylogowane",
+    "othersSignedOut": "Pozostałe urządzenia wylogowane",
+    "failedSignOutDevice": "Nie udało się wylogować tego urządzenia",
     "profileTitle": "Profil",
     "profileDescription": "Zaktualizuj swoją nazwę wyświetlana i adres e-mail.",
     "emailVerified": "Zweryfikowany",

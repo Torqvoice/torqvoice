@@ -98,31 +98,19 @@ export async function requestEmailChange(data: { email: string }) {
       const baseURL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const confirmUrl = `${baseURL}/api/public/confirm-email-change?token=${token}&uid=${userId}`
 
-      const { sendMail, getFromAddress } = await import('@/lib/email')
-      const from = await getFromAddress()
-
-      await sendMail({
-        from,
+      const { sendAccountMail } = await import('@/lib/account-mail')
+      await sendAccountMail({
         to: parsed.email,
         subject: 'Confirm your new Torqvoice email',
-        html: `
-        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-          <h2>Email Change Confirmation</h2>
-          <p>Hi${user.name ? ` ${user.name}` : ''},</p>
-          <p>You requested to change your Torqvoice email to this address. Click the button below to confirm:</p>
-          <div style="margin: 24px 0;">
-            <a href="${confirmUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-              Confirm Email Change
-            </a>
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">If you didn't request this change, you can safely ignore this email.</p>
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-          <p style="color: #6b7280; font-size: 12px;">
-            This link will expire in 24 hours. If it doesn't work, copy and paste this URL into your browser:<br/>
-            <a href="${confirmUrl}" style="color: #6b7280;">${confirmUrl}</a>
-          </p>
-        </div>
-      `,
+        name: user.name,
+        paragraphs: [
+          'You asked to move your Torqvoice account to this email address. Open the link below to confirm it.',
+        ],
+        link: { text: 'Confirm your new email', url: confirmUrl },
+        notes: [
+          "If you didn't ask for this, you can ignore this mail and nothing changes.",
+          'The link expires in 24 hours.',
+        ],
       })
 
       return { sent: true }

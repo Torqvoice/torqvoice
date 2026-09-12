@@ -196,6 +196,16 @@
     "marineServiceDescription": "Bateaux, yachts et navires"
   },
   "account": {
+    "devicesTitle": "Appareils connectés",
+    "devicesDescription": "Tous les navigateurs et téléphones ayant une session ouverte sur votre compte.",
+    "thisDevice": "Cet appareil",
+    "signedInAt": "Connecté le {date}",
+    "lastActiveAt": "Dernière activité {date}",
+    "signOutDevice": "Déconnecter",
+    "signOutOthers": "Déconnecter les autres appareils",
+    "deviceSignedOut": "Appareil déconnecté",
+    "othersSignedOut": "Autres appareils déconnectés",
+    "failedSignOutDevice": "Impossible de déconnecter cet appareil",
     "profileTitle": "Profil",
     "profileDescription": "Mettez a jour votre nom d'affichage et votre adresse e-mail.",
     "emailVerified": "Vérifié",

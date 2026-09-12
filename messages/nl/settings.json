@@ -196,6 +196,16 @@
     "marineServiceDescription": "Boten, jachten en vaartuigen"
   },
   "account": {
+    "devicesTitle": "Ingelogde apparaten",
+    "devicesDescription": "Elke browser en telefoon met een open sessie op je account.",
+    "thisDevice": "Dit apparaat",
+    "signedInAt": "Ingelogd {date}",
+    "lastActiveAt": "Laatst actief {date}",
+    "signOutDevice": "Uitloggen",
+    "signOutOthers": "Andere apparaten uitloggen",
+    "deviceSignedOut": "Apparaat uitgelogd",
+    "othersSignedOut": "Andere apparaten uitgelogd",
+    "failedSignOutDevice": "Kon dat apparaat niet uitloggen",
     "profileTitle": "Profiel",
     "profileDescription": "Werk uw weergavenaam en e-mailadres bij.",
     "emailVerified": "Geverifieerd",

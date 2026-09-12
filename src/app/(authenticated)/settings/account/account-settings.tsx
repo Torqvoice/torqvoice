@@ -1,6 +1,8 @@
 'use client'
 
 import { AppCard } from '@/components/app-card'
+import { SignedInDevices } from './signed-in-devices'
+import type { SignedInDevice } from '@/features/settings/Actions/sessionActions'
 import { useState, useEffect } from 'react'
 import { useSession } from '@/lib/auth-client'
 import { authClient } from '@/lib/auth-client'
@@ -41,10 +43,12 @@ export function AccountSettings({
   twoFactorEnabled: initialTwoFactorEnabled,
   emailVerified: initialEmailVerified,
   emailVerificationRequired,
+  devices,
 }: {
   twoFactorEnabled: boolean
   emailVerified: boolean
   emailVerificationRequired: boolean
+  devices: SignedInDevice[]
 }) {
   const { data: session } = useSession()
   const router = useRouter()
@@ -231,6 +235,9 @@ export function AccountSettings({
       const result = await authClient.changePassword({
         currentPassword,
         newPassword,
+        // A new password is often a response to a stolen one: end every
+        // other session, and leave this one signed in.
+        revokeOtherSessions: true,
       })
       if (result.error) {
         toast.error(result.error.message || t('account.failedChangePassword'))
@@ -440,6 +447,8 @@ export function AccountSettings({
           </>
         )}
       </AppCard>
+
+      <SignedInDevices devices={devices} />
 
       {/* 2FA Setup Dialog */}
       <Dialog
