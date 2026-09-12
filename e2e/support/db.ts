@@ -1069,3 +1069,18 @@ export async function deleteInboundWhatsapp(organizationId: string, body: string
     )
   )
 }
+
+/** A platform-wide switch in the app's system_settings, as an admin would set it. */
+export async function setSystemSetting(key: string, value: string): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `insert into system_settings (id, key, value) values (gen_random_uuid()::text, $1, $2)
+       on conflict (key) do update set value = excluded.value`,
+      [key, value]
+    )
+  )
+}
+
+export async function forgetSystemSetting(key: string): Promise<void> {
+  await withDb((db) => db.query(`delete from system_settings where key = $1`, [key]))
+}

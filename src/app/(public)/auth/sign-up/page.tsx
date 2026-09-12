@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { SignUpForm } from './sign-up-form'
+import { SignUpPaused } from './sign-up-paused'
 import { isDemoMode } from '@/lib/demo'
 import { isCloudMode } from '@/lib/features'
 import { isGoogleSignInEnabled } from '@/lib/auth-providers'
@@ -53,8 +54,12 @@ export default async function SignUpPage({
     if (isDemoMode) {
       redirect('/auth/sign-in')
     }
+    // Say so rather than bounce to sign-in: every "Start free" link on the
+    // website, the docs and old mails lands here, and a person who arrived
+    // to make an account should read why they cannot, not find themselves
+    // on a sign-in form for an account they do not have.
     if (regSetting?.value === 'true') {
-      redirect('/auth/sign-in')
+      return <SignUpPaused cloudMode={isCloudMode()} />
     }
   }
 
