@@ -151,19 +151,24 @@ export const auth = betterAuth({
       enabled: true,
       // A Google sign-in whose email matches a password account attaches to
       // that account rather than creating a second person with the same
-      // email, but only when Google says it has verified the address. Google
-      // is deliberately not a trusted provider: better-auth links a trusted
+      // email, but only when both sides have proved the address. Google is
+      // deliberately not a trusted provider: better-auth links a trusted
       // provider's account without looking at email_verified at all, and
       // anyone can create a Google account with somebody else's address on
       // it. Trusted, that signed a stranger into the workshop that owns the
-      // address. e2e/specs/cloud/google-sign-in.spec.ts holds both halves.
+      // address.
       //
-      // The local account may predate email verification and never have
-      // clicked the link. Google's verification of the same address is the
-      // stronger proof, the same proof a password reset mail would rest on,
-      // so it must not block the link. Better Auth marks the local email
-      // verified as part of linking.
-      requireLocalEmailVerified: false,
+      // The local account has to be verified too. Google's word covers the
+      // person now signing in; it says nothing about who made the password
+      // account. Left unverified, that account can be anyone's: sign up with
+      // a stranger's address and a password of your own, and when they later
+      // press "Continue with Google" they are signed into your account and
+      // build their workshop behind a password you hold. So an unverified
+      // password account is not joined; the person is sent back to sign-in
+      // with a message (see sign-in-form.tsx) and gets in with the password,
+      // where verifying the address makes the Google route open up.
+      // e2e/specs/cloud/google-sign-in.spec.ts holds all three halves.
+      requireLocalEmailVerified: true,
     },
   },
   emailAndPassword: {

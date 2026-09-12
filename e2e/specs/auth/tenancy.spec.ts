@@ -1,6 +1,12 @@
 import { expect, type Page, test } from '@playwright/test'
 import { attach } from '../../support/attachments'
 import {
+  deleteTechnicians,
+  deleteWorkBays,
+  insertTechnician,
+  insertWorkBay,
+  jobAssignment,
+  jobCount,
   latestAttachmentUrl,
   organizationIdFor,
   seededTenantFixtures,
@@ -178,5 +184,70 @@ test.describe('a second workshop', () => {
     const response = await page.request.get(`/api/public/share/invoice/${orgId}/${token}/pdf`)
     expect(response.status()).toBe(200)
     expect(response.headers()['content-type']).toContain('application/pdf')
+  })
+})
+
+/**
+ * A job booked from the work board names the technician and the bay it was
+ * dropped on, by id, in the URL that opens the new job. Those ids have to be
+ * the workshop's own: the technician lookup used to write the id it was given
+ * even when it found nothing, so a job could point at another workshop's
+ * technician, and the bay was never looked up at all.
+ */
+test.describe('a job booked onto a technician and a bay', () => {
+  const made = { technicians: [] as string[], bays: [] as string[] }
+  let theirs = { technicianId: '', workBayId: '' }
+  let ours = { technicianId: '', workBayId: '' }
+
+  test.beforeAll(async () => {
+    const outsiderOrg = await organizationIdFor(OUTSIDER)
+    theirs = {
+      technicianId: await insertTechnician(outsiderOrg, `E2E Their Tech ${stamp}`),
+      workBayId: await insertWorkBay(outsiderOrg, `E2E Their Bay ${stamp}`),
+    }
+    ours = {
+      technicianId: await insertTechnician(seeded.organizationId, `E2E Own Tech ${stamp}`),
+      workBayId: await insertWorkBay(seeded.organizationId, `E2E Own Bay ${stamp}`),
+    }
+    made.technicians.push(theirs.technicianId, ours.technicianId)
+    made.bays.push(theirs.workBayId, ours.workBayId)
+  })
+
+  test.afterAll(async () => {
+    await deleteTechnicians(made.technicians)
+    await deleteWorkBays(made.bays)
+  })
+
+  test('is refused when either belongs to the other workshop', async ({ browser }) => {
+    const owner = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
+    const before = await jobCount(seeded.vehicleId)
+    const newJob = `/vehicles/${seeded.vehicleId}/service/new`
+
+    await owner.goto(`${newJob}?boardTech=${theirs.technicianId}&boardBay=${ours.workBayId}`)
+    await expect(owner.getByText('Technician not found')).toBeVisible()
+    await expect(owner).toHaveURL(/\/service\/new/)
+
+    await owner.goto(`${newJob}?boardTech=${ours.technicianId}&boardBay=${theirs.workBayId}`)
+    await expect(owner.getByText('Work bay not found')).toBeVisible()
+    await expect(owner).toHaveURL(/\/service\/new/)
+
+    expect(await jobCount(seeded.vehicleId), 'no job was made').toBe(before)
+    await owner.close()
+  })
+
+  test('opens on the workshop’s own technician and bay', async ({ browser }) => {
+    const owner = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
+    await owner.goto(
+      `/vehicles/${seeded.vehicleId}/service/new?boardTech=${ours.technicianId}&boardBay=${ours.workBayId}`
+    )
+    await owner.waitForURL(/\/service\/(?!new)[^/]+$/, { timeout: 30_000 })
+
+    const jobId = new URL(owner.url()).pathname.split('/').pop() as string
+    expect(await jobAssignment(jobId)).toEqual({
+      id: jobId,
+      technicianId: ours.technicianId,
+      workBayId: ours.workBayId,
+    })
+    await owner.close()
   })
 })

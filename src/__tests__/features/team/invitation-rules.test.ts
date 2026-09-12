@@ -63,7 +63,11 @@ vi.mock('@/lib/db', () => ({
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
-import { canInvite, pendingInvitationSelect } from '@/features/team/Lib/invitationRules'
+import {
+  canAssignRole,
+  canInvite,
+  pendingInvitationSelect,
+} from '@/features/team/Lib/invitationRules'
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { getPendingInvitations } from '@/features/team/Actions/getPendingInvitations'
 import { inviteMember } from '@/features/team/Actions/teamActions'
@@ -247,5 +251,58 @@ describe('acceptInvitation', () => {
     expect(db.user.update).not.toHaveBeenCalled()
     const ops = vi.mocked(db.$transaction).mock.calls[0][0] as unknown as unknown[]
     expect(ops).toHaveLength(2)
+  })
+})
+
+describe('canAssignRole', () => {
+  const owner = { role: 'owner', isAdmin: true, userId: 'u-owner' }
+  const admin = { role: 'admin', isAdmin: true, userId: 'u-admin' }
+  // A custom role with the admin switch: stored role `member`, admin standing.
+  const roleAdmin = { role: 'member', isAdmin: true, userId: 'u-role-admin' }
+  const member = { role: 'member', isAdmin: false, userId: 'u-member' }
+
+  it('lets an admin hand out a custom role or none', () => {
+    expect(canAssignRole(admin, { userId: 'u-x', role: 'member' }, { role: 'member' })).toEqual({
+      ok: true,
+    })
+    expect(canAssignRole(roleAdmin, { userId: 'u-x', role: 'member' }, { role: 'member' })).toEqual(
+      {
+        ok: true,
+      }
+    )
+  })
+
+  it('reserves the built-in admin role for the owner', () => {
+    expect(canAssignRole(owner, { userId: 'u-x', role: 'member' }, { role: 'admin' })).toEqual({
+      ok: true,
+    })
+    for (const caller of [admin, roleAdmin]) {
+      const decision = canAssignRole(caller, { userId: 'u-x', role: 'member' }, { role: 'admin' })
+      expect(decision).toEqual({ ok: false, reason: 'Only the owner can change who is an admin' })
+    }
+  })
+
+  it('does not let an admin take admin away from a peer either', () => {
+    const decision = canAssignRole(admin, { userId: 'u-x', role: 'admin' }, { role: 'member' })
+    expect(decision.ok).toBe(false)
+    expect(canAssignRole(owner, { userId: 'u-x', role: 'admin' }, { role: 'member' }).ok).toBe(true)
+  })
+
+  it('refuses a change to the caller’s own standing', () => {
+    const decision = canAssignRole(
+      roleAdmin,
+      { userId: 'u-role-admin', role: 'member' },
+      { role: 'admin' }
+    )
+    expect(decision).toEqual({ ok: false, reason: 'You cannot change your own role' })
+  })
+
+  it('refuses the owner as a target, and a caller with no admin standing', () => {
+    expect(canAssignRole(owner, { userId: 'u-owner', role: 'owner' }, { role: 'member' }).ok).toBe(
+      false
+    )
+    expect(canAssignRole(member, { userId: 'u-x', role: 'member' }, { role: 'member' }).ok).toBe(
+      false
+    )
   })
 })

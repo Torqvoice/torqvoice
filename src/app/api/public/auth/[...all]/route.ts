@@ -1,25 +1,13 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { isDemoMode } from '@/lib/demo'
-import { rateLimit } from '@/lib/rate-limit'
+import { limitAuthRequest } from '@/lib/auth-rate-limit'
 import { toNextJsHandler } from 'better-auth/next-js'
 import { db } from '@/lib/db'
 import { logAudit } from '@/lib/audit'
 import { explainInvalidOrigin } from '@/lib/auth-origin-hint'
 
 const { POST: authPOST, GET } = toNextJsHandler(auth)
-
-// Path prefixes that need stricter rate limits.
-// Better-auth registers sub-paths like /sign-in/email, /sign-up/email,
-// /two-factor/verify-totp, etc., so we match by prefix.
-const strictPrefixes: { prefix: string; limit: number; windowMs: number }[] = [
-  { prefix: '/api/public/auth/sign-in', limit: 10, windowMs: 60_000 },
-  { prefix: '/api/public/auth/two-factor/verify', limit: 10, windowMs: 60_000 },
-  { prefix: '/api/public/auth/sign-up', limit: 5, windowMs: 60_000 },
-  { prefix: '/api/public/auth/request-password-reset', limit: 5, windowMs: 60_000 },
-  { prefix: '/api/public/auth/reset-password', limit: 5, windowMs: 60_000 },
-  { prefix: '/api/public/auth/passkey', limit: 10, windowMs: 60_000 },
-]
 
 const authAuditPrefixes = [
   '/api/public/auth/sign-in',
@@ -37,8 +25,6 @@ const demoBlockedPrefixes = [
   '/api/public/auth/two-factor',
   '/api/public/auth/passkey',
 ]
-
-const defaultConfig = { limit: 30, windowMs: 60_000 }
 
 function getRequestIp(request: Request): string | null {
   // Same precedence as lib/rate-limit.ts: Cloudflare's header cannot be forged
@@ -68,8 +54,7 @@ async function POST(request: Request) {
   // page more often still, each load a passkey probe on the same prefix; its
   // server runs with the limiter off. Nothing else sets this variable.
   if (process.env.AUTH_RATE_LIMIT !== 'off') {
-    const config = strictPrefixes.find((p) => pathname.startsWith(p.prefix)) ?? defaultConfig
-    const limited = rateLimit(request, config)
+    const limited = limitAuthRequest(request, pathname)
     if (limited) return limited
   }
 

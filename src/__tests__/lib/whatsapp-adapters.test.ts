@@ -195,6 +195,20 @@ describe('meta webhook', () => {
     ])
   })
 
+  it('refuses a delivery it cannot verify because no app secret is stored', async () => {
+    // The URL names only the workshop's id, which every share link carries,
+    // so a delivery that cannot be checked is not read, however it is signed.
+    const { appSecret: _omitted, ...withoutSecret } = metaContext.credentials
+    const unguarded: WhatsappContext = { ...metaContext, credentials: withoutSecret }
+
+    await expect(metaAdapter.receive(signed(inboundBody), unguarded)).rejects.toThrow(/app secret/i)
+    const unsigned = new Request('https://app.test/api/webhooks/whatsapp/meta/org_1', {
+      method: 'POST',
+      body: inboundBody,
+    })
+    await expect(metaAdapter.receive(unsigned, unguarded)).rejects.toThrow(/app secret/i)
+  })
+
   it('echoes the challenge only when the verify token matches', async () => {
     const url = 'https://app.test/api/webhooks/whatsapp/meta/org_1'
     const ok = await metaAdapter.verify?.(
