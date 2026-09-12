@@ -1,6 +1,7 @@
 import 'server-only'
 import { createHash } from 'node:crypto'
 import { db } from '@/lib/db'
+import { sendAccountMail } from '@/lib/account-mail'
 import { DEVICE_COOKIE, readDeviceCookie } from '@/lib/device-cookie'
 
 /**
@@ -155,14 +156,6 @@ export async function noteDevice(
   return { isNew: true, isFirst: others === 0, label }
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-}
-
 /**
  * "A new device signed in": sent to the account's address, from the
  * platform sender, never through a workshop's own mail setup. Best effort;
@@ -176,36 +169,16 @@ export async function sendNewDeviceMail(input: {
   at: Date
 }): Promise<void> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.torqvoice.com'
-  const devicesUrl = `${appUrl}/settings/account`
-  const when = input.at.toUTCString()
-  const where = input.ip ? ` from ${escapeHtml(input.ip)}` : ''
-  const hi = input.name ? ` ${escapeHtml(input.name)}` : ''
-  const label = escapeHtml(input.label)
-
-  const { sendMail, getFromAddress } = await import('@/lib/email')
-  const from = await getFromAddress()
-  await sendMail({
-    from,
+  const where = input.ip ? ` from ${input.ip}` : ''
+  await sendAccountMail({
     to: input.to,
     subject: 'New sign-in to your Torqvoice account',
-    text: `Hi${input.name ? ` ${input.name}` : ''},\n\nA new device signed in to your Torqvoice account: ${input.label}${input.ip ? ` from ${input.ip}` : ''}, ${when}.\n\nIf this was you, there is nothing to do. If it was not, change your password and sign out the other devices here: ${devicesUrl}\n`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2>New sign-in to your account</h2>
-        <p>Hi${hi},</p>
-        <p>A new device signed in to your Torqvoice account:</p>
-        <p style="margin: 16px 0; padding: 12px 16px; background: #f4f4f5; border-radius: 8px;">
-          <strong>${label}</strong>${where}<br/>
-          <span style="color: #6b7280; font-size: 14px;">${escapeHtml(when)}</span>
-        </p>
-        <p>If this was you, there is nothing to do.</p>
-        <p>If it was not, change your password and sign out the other devices:</p>
-        <div style="margin: 24px 0;">
-          <a href="${devicesUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-            Review signed-in devices
-          </a>
-        </div>
-      </div>
-    `,
+    name: input.name,
+    paragraphs: [
+      `A new device signed in to your Torqvoice account: ${input.label}${where}, ${input.at.toUTCString()}.`,
+      'If this was you, there is nothing to do.',
+      'If it was not, change your password and sign out the other devices from your account page.',
+    ],
+    link: { text: 'Review signed-in devices', url: `${appUrl}/settings/account` },
   })
 }

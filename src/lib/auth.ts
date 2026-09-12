@@ -7,6 +7,7 @@ import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
 import { noteDevice, sendNewDeviceMail } from '@/lib/known-devices'
+import { sendAccountMail } from '@/lib/account-mail'
 import { isDemoMode } from './demo'
 import { googleSignInConfig } from './auth-providers'
 
@@ -98,31 +99,13 @@ export const auth = betterAuth({
       })
 
       try {
-        const { sendMail, getFromAddress } = await import('@/lib/email')
-        const from = await getFromAddress()
-
-        await sendMail({
-          from,
+        await sendAccountMail({
           to: user.email,
           subject: 'Verify your Torqvoice email',
-          html: `
-            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-              <h2>Email Verification</h2>
-              <p>Hi${user.name ? ` ${user.name}` : ''},</p>
-              <p>Please verify your email address by clicking the button below:</p>
-              <div style="margin: 24px 0;">
-                <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                  Verify Email
-                </a>
-              </div>
-              <p style="color: #6b7280; font-size: 14px;">If you didn't create an account, you can safely ignore this email.</p>
-              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-              <p style="color: #6b7280; font-size: 12px;">
-                If the button doesn't work, copy and paste this URL into your browser:<br/>
-                <a href="${url}" style="color: #6b7280;">${url}</a>
-              </p>
-            </div>
-          `,
+          name: user.name,
+          paragraphs: ['Please confirm this is your email address by opening the link below.'],
+          link: { text: 'Verify your email', url },
+          notes: ["If you didn't create a Torqvoice account, you can ignore this mail."],
         })
       } catch (error) {
         console.error('[emailVerification] Failed to send verification email:', error)
@@ -179,31 +162,18 @@ export const auth = betterAuth({
     // revokeOtherSessions from the form for the same reason.
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) => {
-      const { sendMail, getFromAddress } = await import('@/lib/email')
-      const from = await getFromAddress()
-
-      await sendMail({
-        from,
+      await sendAccountMail({
         to: user.email,
         subject: 'Reset your Torqvoice password',
-        html: `
-          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-            <h2>Password Reset</h2>
-            <p>Hi${user.name ? ` ${user.name}` : ''},</p>
-            <p>We received a request to reset your password. Click the button below to set a new password:</p>
-            <div style="margin: 24px 0;">
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                Reset Password
-              </a>
-            </div>
-            <p style="color: #6b7280; font-size: 14px;">If you didn't request this, you can safely ignore this email.</p>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-            <p style="color: #6b7280; font-size: 12px;">
-              This link will expire shortly. If it doesn't work, copy and paste this URL into your browser:<br/>
-              <a href="${url}" style="color: #6b7280;">${url}</a>
-            </p>
-          </div>
-        `,
+        name: user.name,
+        paragraphs: [
+          'We received a request to reset the password on your Torqvoice account. Open the link below to choose a new one.',
+        ],
+        link: { text: 'Reset your password', url },
+        notes: [
+          "If you didn't ask for this, you can ignore this mail and your password stays as it is.",
+          'The link expires shortly.',
+        ],
       })
     },
   },
