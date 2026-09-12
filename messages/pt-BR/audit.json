@@ -85,6 +85,8 @@
     "customField_delete": "Campo personalizado excluído",
     "quoteRequest_update": "Solicitação de orçamento atualizada",
     "auth_login": "Usuário conectado",
+    "auth_sessionRevoked": "Desconectou um dispositivo",
+    "auth_sessionsRevoked": "Desconectou os outros dispositivos",
     "auth_loginFailed": "Tentativa de login falhada",
     "auth_register": "Usuário registrado",
     "auth_passwordReset": "Redefinição de senha solicitada",

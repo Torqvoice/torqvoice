@@ -6,6 +6,7 @@ import { bearer } from 'better-auth/plugins/bearer'
 import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
+import { noteDevice, sendNewDeviceMail } from '@/lib/known-devices'
 import { isDemoMode } from './demo'
 import { googleSignInConfig } from './auth-providers'
 
@@ -173,6 +174,10 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    // A reset is how a person recovers from a stolen password; leaving the
+    // thief's sessions alive would make it theatre. Change-password passes
+    // revokeOtherSessions from the form for the same reason.
+    revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) => {
       const { sendMail, getFromAddress } = await import('@/lib/email')
       const from = await getFromAddress()
@@ -228,11 +233,45 @@ export const auth = betterAuth({
   databaseHooks: {
     session: {
       create: {
-        after: async (session) => {
+        after: async (session, ctx) => {
           await db.user.update({
             where: { id: session.userId },
             data: { lastLogin: new Date() },
           })
+
+          // Which device this is, and a mail when the account has not seen
+          // it before. Its first device is recorded without a word: that is
+          // the sign-up, or an account from before devices were tracked. The
+          // demo's one shared account is every visitor's browser and sends no
+          // mail, so it is not tracked at all.
+          const sighting = isDemoMode
+            ? null
+            : await noteDevice(
+                {
+                  userId: session.userId,
+                  userAgent: ((session as Record<string, unknown>).userAgent as string) ?? null,
+                  ipAddress: ((session as Record<string, unknown>).ipAddress as string) ?? null,
+                },
+                ctx
+              ).catch((error) => {
+                console.error('[auth] could not record the device:', error)
+                return null
+              })
+          if (sighting?.isNew && !sighting.isFirst) {
+            const account = await db.user.findUnique({
+              where: { id: session.userId },
+              select: { email: true, name: true },
+            })
+            if (account?.email) {
+              sendNewDeviceMail({
+                to: account.email,
+                name: account.name,
+                label: sighting.label,
+                ip: ((session as Record<string, unknown>).ipAddress as string) ?? null,
+                at: new Date(),
+              }).catch((error) => console.error('[auth] new-device mail failed:', error))
+            }
+          }
 
           // Audit: log successful login
           const membership = await db.organizationMember.findFirst({

@@ -196,6 +196,16 @@
     "marineServiceDescription": "Barcos, iates e embarcações"
   },
   "account": {
+    "devicesTitle": "Dispositivos conectados",
+    "devicesDescription": "Todos os navegadores e telefones com uma sessão aberta na sua conta.",
+    "thisDevice": "Este dispositivo",
+    "signedInAt": "Conectado em {date}",
+    "lastActiveAt": "Última atividade {date}",
+    "signOutDevice": "Sair",
+    "signOutOthers": "Sair dos outros dispositivos",
+    "deviceSignedOut": "Dispositivo desconectado",
+    "othersSignedOut": "Outros dispositivos desconectados",
+    "failedSignOutDevice": "Não foi possível desconectar esse dispositivo",
     "profileTitle": "Perfil",
     "profileDescription": "Atualize seu nome de exibição e endereço de e-mail.",
     "emailVerified": "Verificado",

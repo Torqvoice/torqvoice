@@ -196,6 +196,16 @@
     "marineServiceDescription": "Valtys, jachtos ir jūrinės transporto priemonės"
   },
   "account": {
+    "devicesTitle": "Prisijungę įrenginiai",
+    "devicesDescription": "Visos naršyklės ir telefonai su atvira sesija jūsų paskyroje.",
+    "thisDevice": "Šis įrenginys",
+    "signedInAt": "Prisijungta {date}",
+    "lastActiveAt": "Paskutinį kartą aktyvus {date}",
+    "signOutDevice": "Atsijungti",
+    "signOutOthers": "Atjungti kitus įrenginius",
+    "deviceSignedOut": "Įrenginys atjungtas",
+    "othersSignedOut": "Kiti įrenginiai atjungti",
+    "failedSignOutDevice": "Nepavyko atjungti to įrenginio",
     "profileTitle": "Profilis",
     "profileDescription": "Atnaujinkite savo rodomą vardą ir el. pašto adresą.",
     "emailVerified": "Patvirtintas",

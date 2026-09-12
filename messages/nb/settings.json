@@ -196,6 +196,16 @@
     "marineServiceDescription": "Båter, yachter og marine fartøy"
   },
   "account": {
+    "devicesTitle": "Innloggede enheter",
+    "devicesDescription": "Alle nettlesere og telefoner med en åpen økt på kontoen din.",
+    "thisDevice": "Denne enheten",
+    "signedInAt": "Logget inn {date}",
+    "lastActiveAt": "Sist aktiv {date}",
+    "signOutDevice": "Logg ut",
+    "signOutOthers": "Logg ut andre enheter",
+    "deviceSignedOut": "Enheten er logget ut",
+    "othersSignedOut": "Andre enheter er logget ut",
+    "failedSignOutDevice": "Kunne ikke logge ut enheten",
     "profileTitle": "Profil",
     "profileDescription": "Oppdater visningsnavnet og e-postadressen din.",
     "emailVerified": "Bekreftet",

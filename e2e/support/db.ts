@@ -1069,3 +1069,15 @@ export async function deleteInboundWhatsapp(organizationId: string, body: string
     )
   )
 }
+
+/** Open sessions a person has, however many browsers and phones that is. */
+export async function sessionCountFor(email: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from sessions s join users u on u.id = s."userId"
+        where lower(u.email) = lower($1) and s."expiresAt" > now()`,
+      [email]
+    )
+    return Number(result.rows[0].n)
+  })
+}

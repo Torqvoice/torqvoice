@@ -90,6 +90,7 @@
   "licenseUnverifiedNow": "Не удалось проверить лицензию, и брендинг Torqvoice вернулся.",
   "licenseVerify": "Проверить",
   "sidebar": {
+    "account": "Аккаунт",
     "dashboard": "Панель управления",
     "clients": "Клиенты",
     "customers": "Клиенты",

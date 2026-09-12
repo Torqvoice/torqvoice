@@ -85,6 +85,8 @@
     "customField_delete": "Usunięto pole niestandardowe",
     "quoteRequest_update": "Zaktualizowano zapytanie o wycenę",
     "auth_login": "Użytkownik zalogowany",
+    "auth_sessionRevoked": "Wylogowano urządzenie",
+    "auth_sessionsRevoked": "Wylogowano pozostałe urządzenia",
     "auth_loginFailed": "Nieudana próba logowania",
     "auth_register": "Użytkownik zarejestrowany",
     "auth_passwordReset": "Żądanie resetowania hasła",

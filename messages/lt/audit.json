@@ -85,6 +85,8 @@
     "customField_delete": "Ištrintas pasirinktinis laukas",
     "quoteRequest_update": "Atnaujinta pasiūlymo užklausa",
     "auth_login": "Naudotojas prisijungė",
+    "auth_sessionRevoked": "Atjungtas įrenginys",
+    "auth_sessionsRevoked": "Atjungti kiti įrenginiai",
     "auth_loginFailed": "Nesėkmingas prisijungimo bandymas",
     "auth_register": "Naudotojas užsiregistravo",
     "auth_passwordReset": "Prašomas slaptažodžio atstatymas",

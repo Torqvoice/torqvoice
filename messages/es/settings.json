@@ -196,6 +196,16 @@
     "marineServiceDescription": "Barcos, yates y embarcaciones"
   },
   "account": {
+    "devicesTitle": "Dispositivos con sesión iniciada",
+    "devicesDescription": "Todos los navegadores y teléfonos con una sesión abierta en tu cuenta.",
+    "thisDevice": "Este dispositivo",
+    "signedInAt": "Sesión iniciada {date}",
+    "lastActiveAt": "Última actividad {date}",
+    "signOutDevice": "Cerrar sesión",
+    "signOutOthers": "Cerrar sesión en otros dispositivos",
+    "deviceSignedOut": "Sesión cerrada en el dispositivo",
+    "othersSignedOut": "Sesión cerrada en los demás dispositivos",
+    "failedSignOutDevice": "No se pudo cerrar la sesión de ese dispositivo",
     "profileTitle": "Perfil",
     "profileDescription": "Actualice su nombre para mostrar y dirección de correo electrónico.",
     "emailVerified": "Verificado",

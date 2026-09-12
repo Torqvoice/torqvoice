@@ -196,6 +196,16 @@
     "marineServiceDescription": "Tekneler, yatlar ve deniz taşıtları"
   },
   "account": {
+    "devicesTitle": "Oturum açık cihazlar",
+    "devicesDescription": "Hesabınızda açık oturumu olan tüm tarayıcılar ve telefonlar.",
+    "thisDevice": "Bu cihaz",
+    "signedInAt": "Giriş {date}",
+    "lastActiveAt": "Son etkinlik {date}",
+    "signOutDevice": "Çıkış yap",
+    "signOutOthers": "Diğer cihazlardan çıkış yap",
+    "deviceSignedOut": "Cihaz oturumu kapatıldı",
+    "othersSignedOut": "Diğer cihazların oturumu kapatıldı",
+    "failedSignOutDevice": "Bu cihazın oturumu kapatılamadı",
     "profileTitle": "Profil",
     "profileDescription": "Görünen adınızı ve e-posta adresinizi güncelleyin.",
     "emailVerified": "Doğrulandı",

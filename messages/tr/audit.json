@@ -85,6 +85,8 @@
     "customField_delete": "Özel alan silindi",
     "quoteRequest_update": "Teklif talebi güncellendi",
     "auth_login": "Kullanıcı giriş yaptı",
+    "auth_sessionRevoked": "Bir cihazın oturumu kapatıldı",
+    "auth_sessionsRevoked": "Diğer cihazların oturumu kapatıldı",
     "auth_loginFailed": "Başarısız giriş denemesi",
     "auth_register": "Kullanıcı kaydoldu",
     "auth_passwordReset": "Şifre sıfırlama talep edildi",

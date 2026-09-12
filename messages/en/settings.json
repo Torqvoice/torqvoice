@@ -196,6 +196,16 @@
     "marineServiceDescription": "Boats, yachts, and marine vessels"
   },
   "account": {
+    "devicesTitle": "Signed-in devices",
+    "devicesDescription": "Every browser and phone with an open session on your account.",
+    "thisDevice": "This device",
+    "signedInAt": "Signed in {date}",
+    "lastActiveAt": "Last active {date}",
+    "signOutDevice": "Sign out",
+    "signOutOthers": "Sign out other devices",
+    "deviceSignedOut": "Device signed out",
+    "othersSignedOut": "Other devices signed out",
+    "failedSignOutDevice": "Could not sign out that device",
     "profileTitle": "Profile",
     "profileDescription": "Update your display name and email address.",
     "emailVerified": "Verified",

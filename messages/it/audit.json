@@ -85,6 +85,8 @@
     "customField_delete": "Campo personalizzato eliminato",
     "quoteRequest_update": "Richiesta di preventivo aggiornata",
     "auth_login": "Utente connesso",
+    "auth_sessionRevoked": "Dispositivo disconnesso",
+    "auth_sessionsRevoked": "Altri dispositivi disconnessi",
     "auth_loginFailed": "Tentativo di accesso fallito",
     "auth_register": "Utente registrato",
     "auth_passwordReset": "Reimpostazione password richiesta",

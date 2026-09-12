@@ -196,6 +196,16 @@
     "marineServiceDescription": "Boote, Yachten und Wasserfahrzeuge"
   },
   "account": {
+    "devicesTitle": "Angemeldete Geräte",
+    "devicesDescription": "Jeder Browser und jedes Telefon mit einer offenen Sitzung auf deinem Konto.",
+    "thisDevice": "Dieses Gerät",
+    "signedInAt": "Angemeldet {date}",
+    "lastActiveAt": "Zuletzt aktiv {date}",
+    "signOutDevice": "Abmelden",
+    "signOutOthers": "Andere Geräte abmelden",
+    "deviceSignedOut": "Gerät abgemeldet",
+    "othersSignedOut": "Andere Geräte abgemeldet",
+    "failedSignOutDevice": "Das Gerät konnte nicht abgemeldet werden",
     "profileTitle": "Profil",
     "profileDescription": "Aktualisieren Sie Ihren Anzeigenamen und Ihre E-Mail-Adresse.",
     "emailVerified": "Bestätigt",

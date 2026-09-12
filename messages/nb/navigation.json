@@ -90,6 +90,7 @@
   "licenseUnverifiedNow": "Lisensen din kunne ikke bekreftes, og Torqvoice-merkingen er tilbake.",
   "licenseVerify": "Bekreft",
   "sidebar": {
+    "account": "Konto",
     "dashboard": "Dashbord",
     "clients": "Klienter",
     "customers": "Kunder",
