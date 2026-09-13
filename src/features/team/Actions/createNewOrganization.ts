@@ -3,7 +3,12 @@
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { isCloudMode, getMaxOrganizations, FeatureGatedError } from '@/lib/features'
+import {
+  isCloudMode,
+  organizationAllowance,
+  FeatureGatedError,
+  SINGLE_WORKSHOP_MESSAGE,
+} from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { createOrganizationSchema } from '../Schema/teamSchema'
 import { revalidatePath } from 'next/cache'
@@ -16,19 +21,17 @@ export async function createNewOrganization(input: unknown) {
       demoGuard()
       const data = createOrganizationSchema.parse(input)
 
-      if (isCloudMode()) {
-        const ownedCount = await db.organizationMember.count({
-          where: { userId, role: 'owner' },
-        })
-        const maxOrgs = await getMaxOrganizations(userId)
-
-        if (ownedCount >= maxOrgs) {
-          throw new FeatureGatedError(
-            'maxOrganizations',
-            `You have reached the maximum number of organizations (${maxOrgs}) for your plan. Upgrade to create more.`,
-            maxOrgs
-          )
-        }
+      const allowance = await organizationAllowance(userId)
+      if (!allowance.allowed) {
+        // On the cloud this is a plan limit and the client offers the way to
+        // a plan; on a self-hosted install it is the licence, and the message
+        // says where that lives.
+        if (!isCloudMode()) throw new Error(SINGLE_WORKSHOP_MESSAGE)
+        throw new FeatureGatedError(
+          'maxOrganizations',
+          `You have reached the maximum number of organizations (${allowance.max}) for your plan. Upgrade to create more.`,
+          allowance.max
+        )
       }
 
       const org = await db.$transaction(async (tx) => {

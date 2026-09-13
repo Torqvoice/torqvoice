@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Всего пользователей",
     "organizations": "Организации",
-    "activeSubscriptions": "Активные подписки",
-    "monthlyRevenue": "Ежемесячный доход"
+    "activeSubscriptions": "Активные подписки"
   },
   "users": {
     "searchPlaceholder": "Поиск по имени или эл. почте...",

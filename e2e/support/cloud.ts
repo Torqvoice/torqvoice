@@ -89,6 +89,19 @@ export async function signUpWithPassword(
   await page.waitForURL(/\/onboarding/, { timeout: 30_000 })
 }
 
+/** Signs in with a password, from the sign-in page, and waits to be inside the app. */
+export async function signInWithPassword(
+  page: Page,
+  person: { email: string; password: string }
+): Promise<void> {
+  await page.goto('/auth/sign-in')
+  await settle(page)
+  await page.locator('#email').fill(person.email)
+  await page.locator('#password').fill(person.password)
+  await page.getByRole('button', { name: 'Sign In', exact: true }).click()
+  await page.waitForURL((url) => !/^\/(auth|onboarding)/.test(url.pathname), { timeout: 30_000 })
+}
+
 /** Names the workshop and finishes onboarding, with or without the sample data. */
 export async function completeOnboarding(
   page: Page,

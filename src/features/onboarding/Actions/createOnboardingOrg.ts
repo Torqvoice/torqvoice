@@ -15,6 +15,7 @@ import { CHECKLIST_DISMISSED_KEY, SAMPLE_DATA_IDS_KEY } from '../Lib/onboardingK
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { safeTimeZone } from '@/lib/timezone'
 import type { ActionResult } from '@/lib/with-auth'
+import { organizationAllowance, SINGLE_WORKSHOP_MESSAGE } from '@/lib/features'
 
 export async function createOnboardingOrg(
   input: unknown
@@ -33,6 +34,11 @@ export async function createOnboardingOrg(
     })
     if (existingMembership) {
       return { success: false, error: 'You already belong to an organization' }
+    }
+
+    const allowance = await organizationAllowance(session.user.id)
+    if (!allowance.allowed) {
+      return { success: false, error: SINGLE_WORKSHOP_MESSAGE }
     }
 
     const org = await db.organization.create({

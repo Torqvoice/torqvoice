@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Isso exclui os clientes, veículos, ordens de serviço, o orçamento e a inspeção de exemplo criados durante a configuração. Seus próprios dados não são afetados.",
     "removed": "Dados de exemplo removidos",
     "removeFailed": "Não foi possível remover os dados de exemplo"
+  },
+  "singleWorkshop": {
+    "title": "Esta instalação já tem sua oficina",
+    "description": "O Torqvoice aqui roda uma oficina, e ela já foi configurada. Para trabalhar nela, peça ao proprietário que convide {email} em Configurações, depois Equipe.",
+    "signOut": "Sair"
   }
 }

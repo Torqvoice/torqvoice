@@ -2,8 +2,13 @@ import { expect, type Page, test } from '@playwright/test'
 import { linkIn, waitForMail } from '../../support/mail'
 
 /**
- * How people arrive: a stranger who opens a workshop of their own, and a
- * colleague who was invited into one that exists.
+ * How people arrive: a stranger, and a colleague who was invited into the
+ * workshop that exists.
+ *
+ * A self-hosted install runs one workshop, so the stranger does not open a
+ * second one: they are told to ask its owner for an invitation
+ * (single-workshop.spec.ts holds the rest of that). The colleague's path is
+ * the one that matters on such an install.
  *
  * Both start signed out. The colleague follows the link out of the invitation
  * mail itself, caught by the harness's mail sink, so the address the app
@@ -22,16 +27,16 @@ async function fillSignUp(page: Page, name: string, email: string, password: str
   await page.getByRole('button', { name: /create account/i }).click()
 }
 
-test('a new account is walked through onboarding into a workshop of its own', async ({ page }) => {
+test('a new account reaches onboarding, where the install says it has its workshop', async ({
+  page,
+}) => {
   await page.goto('/auth/sign-up')
   await fillSignUp(page, 'E2E Founder', `e2e-founder-${stamp}@example.com`, `E2e-pass-${stamp}`)
 
   await page.waitForURL(/\/onboarding/, { timeout: 30_000 })
-  await page.locator('#workshopName').fill(`E2E Garage ${stamp}`)
-  await page.locator('form button[type="submit"]').click()
-
-  await page.waitForURL((url) => !/^\/(auth|onboarding)/.test(url.pathname), { timeout: 30_000 })
-  await expect(page.getByText(`E2E Garage ${stamp}`).first()).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'This installation already has its workshop' })
+  ).toBeVisible()
 })
 
 test('an invited colleague signs up straight into the workshop', async ({ page, browser }) => {

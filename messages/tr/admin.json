@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Toplam Kullanıcılar",
     "organizations": "Organizasyonlar",
-    "activeSubscriptions": "Aktif Abonelikler",
-    "monthlyRevenue": "Aylık Gelir"
+    "activeSubscriptions": "Aktif Abonelikler"
   },
   "users": {
     "searchPlaceholder": "Ad veya e-posta ile ara...",

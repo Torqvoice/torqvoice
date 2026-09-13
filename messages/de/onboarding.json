@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Damit werden die bei der Einrichtung erstellten Beispielkunden, Fahrzeuge, Aufträge, das Angebot und die Inspektion gelöscht. Ihre eigenen Daten bleiben unberührt.",
     "removed": "Beispieldaten entfernt",
     "removeFailed": "Beispieldaten konnten nicht entfernt werden"
+  },
+  "singleWorkshop": {
+    "title": "Diese Installation hat bereits ihre Werkstatt",
+    "description": "Torqvoice betreibt hier eine Werkstatt, und sie ist bereits eingerichtet. Um darin zu arbeiten, bitten Sie den Inhaber, {email} unter Einstellungen, dann Team einzuladen.",
+    "signOut": "Abmelden"
   }
 }

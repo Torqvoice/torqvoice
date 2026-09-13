@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Total de Usuários",
     "organizations": "Organizações",
-    "activeSubscriptions": "Assinaturas Ativas",
-    "monthlyRevenue": "Receita Mensal"
+    "activeSubscriptions": "Assinaturas Ativas"
   },
   "users": {
     "searchPlaceholder": "Buscar por nome ou e-mail...",

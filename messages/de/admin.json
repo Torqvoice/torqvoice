@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Benutzer gesamt",
     "organizations": "Organisationen",
-    "activeSubscriptions": "Aktive Abonnements",
-    "monthlyRevenue": "Monatlicher Umsatz"
+    "activeSubscriptions": "Aktive Abonnements"
   },
   "users": {
     "searchPlaceholder": "Nach Name oder E-Mail suchen...",

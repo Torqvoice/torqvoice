@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Totaal aantal gebruikers",
     "organizations": "Organisaties",
-    "activeSubscriptions": "Actieve abonnementen",
-    "monthlyRevenue": "Maandelijkse omzet"
+    "activeSubscriptions": "Actieve abonnementen"
   },
   "users": {
     "searchPlaceholder": "Zoeken op naam of e-mail...",
