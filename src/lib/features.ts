@@ -218,15 +218,38 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     ...PLAN_FEATURES['white-label'],
     brandingRemoved: hasLicense,
     customPlatformName: hasLicense,
+    // One workshop per install without a licence. A self-hosting workshop
+    // needs one; running many is what the white-label licence is for.
+    maxOrganizations: hasLicense ? PLAN_FEATURES['white-label'].maxOrganizations : 1,
   }
 })
 
 /**
+ * Whether any organization on this install holds a valid licence token.
+ * The licence is what turns a single-workshop install into a multi-workshop
+ * one, so it is checked across the install, not per person.
+ */
+export async function installHasLicense(): Promise<boolean> {
+  const tokens = await db.appSetting.findMany({
+    where: { key: 'license.token', organizationId: { not: null } },
+    select: { organizationId: true, value: true },
+  })
+  return tokens.some(
+    (row) =>
+      row.organizationId !== null &&
+      verifyLicenseToken(row.value, row.organizationId).status === 'valid'
+  )
+}
+
+/**
  * Returns the max organizations a user is allowed based on their best plan
- * across all orgs they own. In self-hosted mode, returns unlimited.
+ * across all orgs they own. In self-hosted mode the limit is one for the
+ * whole install, lifted by a valid white-label licence.
  */
 export async function getMaxOrganizations(userId: string): Promise<number> {
-  if (!isCloudMode()) return 999999
+  if (!isCloudMode()) {
+    return (await installHasLicense()) ? PLAN_FEATURES['white-label'].maxOrganizations : 1
+  }
 
   const ownedOrgs = await db.organizationMember.findMany({
     where: { userId, role: 'owner' },
@@ -244,6 +267,31 @@ export async function getMaxOrganizations(userId: string): Promise<number> {
 
   return best
 }
+
+export type OrganizationAllowance = {
+  allowed: boolean
+  /** what counts against the limit: organizations owned (cloud) or on the install (self-hosted) */
+  current: number
+  max: number
+}
+
+/**
+ * Whether one more organization may be created. On the cloud the limit is
+ * the plan's and counts what this person owns; on a self-hosted install it
+ * counts every organization there is, so a second sign-up cannot open a
+ * second workshop on an install licensed for one.
+ */
+export async function organizationAllowance(userId: string): Promise<OrganizationAllowance> {
+  const max = await getMaxOrganizations(userId)
+  const current = isCloudMode()
+    ? await db.organizationMember.count({ where: { userId, role: 'owner' } })
+    : await db.organization.count()
+  return { allowed: current < max, current, max }
+}
+
+/** The refusal an install licensed for one workshop gives, worded for a self-hoster. */
+export const SINGLE_WORKSHOP_MESSAGE =
+  'This installation runs one workshop. A white-label licence from torqvoice.com allows more; see Settings, then License.'
 
 /**
  * Thrown when the plan refuses an action. `withAuth` turns it into a typed

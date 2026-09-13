@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Bus ištrinti pavyzdiniai klientai, automobiliai, darbo užsakymai, pasiūlymas ir apžiūra, sukurti per pradinį nustatymą. Jūsų pačių duomenys nebus paliesti.",
     "removed": "Pavyzdiniai duomenys pašalinti",
     "removeFailed": "Nepavyko pašalinti pavyzdinių duomenų"
+  },
+  "singleWorkshop": {
+    "title": "Ši instaliacija jau turi savo dirbtuvę",
+    "description": "Torqvoice čia aptarnauja vieną dirbtuvę, ir ji jau sukurta. Norėdami joje dirbti, paprašykite savininko pakviesti {email} per Nustatymai, tada Komanda.",
+    "signOut": "Atsijungti"
   }
 }

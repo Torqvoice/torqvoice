@@ -11,6 +11,7 @@ import {
   organizationIdFor,
   seededTenantFixtures,
   type TenantFixtures,
+  plantWorkshop,
 } from '../../support/db'
 import { shareLink } from '../../support/work-order'
 
@@ -48,7 +49,7 @@ let sharedInvoice = ''
 /** A file that genuinely belongs to the first workshop's own job. */
 let theirFileUrl = ''
 
-/** Signs the outsider in, opening their workshop on the first run. */
+/** Signs the outsider in. */
 async function signInAsOutsider(page: Page) {
   await page.goto('/auth/sign-in')
   await page.locator('#email').fill(OUTSIDER)
@@ -79,19 +80,17 @@ test.beforeAll(async ({ browser }) => {
 })
 
 test.describe('a second workshop', () => {
-  test('is opened by a stranger signing up', async ({ page }) => {
-    await page.goto('/auth/sign-up')
-    await page.locator('#name').fill('E2E Outsider')
-    await page.locator('#email').fill(OUTSIDER)
-    await page.locator('#password').fill(PASSWORD)
-    await page.locator('#terms').click()
-    await page.getByRole('button', { name: /create account/i }).click()
-
-    await page.waitForURL(/\/onboarding/, { timeout: 30_000 })
-    await page.locator('#workshopName').fill(`E2E Outsider Garage ${stamp}`)
-    await page.locator('form button[type="submit"]').click()
-    await page.waitForURL((url) => !/^\/(auth|onboarding)/.test(url.pathname), { timeout: 30_000 })
-
+  test('exists beside the first, with its own owner signed in', async ({ page }) => {
+    // A self-hosted install opens one workshop and sends every later
+    // sign-up to ask for an invitation (single-workshop.spec.ts), so the
+    // outsider's workshop is planted rather than signed up.
+    await plantWorkshop({
+      name: 'E2E Outsider',
+      email: OUTSIDER,
+      password: PASSWORD,
+      workshopName: `E2E Outsider Garage ${stamp}`,
+    })
+    await signInAsOutsider(page)
     await expect(page.getByText(`E2E Outsider Garage ${stamp}`).first()).toBeVisible()
   })
 

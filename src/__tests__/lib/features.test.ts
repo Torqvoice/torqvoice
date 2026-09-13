@@ -4,6 +4,8 @@ vi.mock('@/lib/db', () => ({
   db: {
     subscription: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
+    organization: { count: vi.fn() },
+    organizationMember: { count: vi.fn(), findMany: vi.fn() },
   },
 }))
 
@@ -16,7 +18,12 @@ vi.mock('@/lib/license/revalidate', () => ({
 }))
 
 import { db } from '@/lib/db'
-import { getFeatures, PLAN_FEATURES } from '@/lib/features'
+import {
+  getFeatures,
+  getMaxOrganizations,
+  organizationAllowance,
+  PLAN_FEATURES,
+} from '@/lib/features'
 import { verifyLicenseToken } from '@/lib/license/token'
 import { scheduleLicenseSelfHeal } from '@/lib/license/revalidate'
 
@@ -209,5 +216,64 @@ describe('getFeatures — self-hosted mode', () => {
     mockVerify.mockReturnValue(verification('stale'))
     await getFeatures('org-1')
     expect(mockSelfHeal).not.toHaveBeenCalled()
+  })
+})
+
+describe('the workshop limit on a self-hosted install', () => {
+  beforeEach(() => {
+    vi.stubEnv('TORQVOICE_MODE', 'self-hosted')
+  })
+
+  it('is one workshop without a licence, counted across the install', async () => {
+    mockFindMany.mockResolvedValue([])
+    vi.mocked(db.organization.count).mockResolvedValue(1)
+    expect(await getMaxOrganizations('user-1')).toBe(1)
+    expect(await organizationAllowance('user-1')).toEqual({ allowed: false, current: 1, max: 1 })
+    // The count is the install's, not the person's: a newcomer who owns
+    // nothing is still refused once the workshop exists.
+    expect(db.organizationMember.count).not.toHaveBeenCalled()
+  })
+
+  it('opens the first workshop', async () => {
+    mockFindMany.mockResolvedValue([])
+    vi.mocked(db.organization.count).mockResolvedValue(0)
+    expect(await organizationAllowance('user-1')).toEqual({ allowed: true, current: 0, max: 1 })
+  })
+
+  it('is lifted by a valid licence token on any organization', async () => {
+    mockFindMany.mockResolvedValue([
+      { organizationId: 'org-1', value: 'tvl1.stale' },
+      { organizationId: 'org-2', value: 'tvl1.good' },
+    ] as never)
+    mockVerify.mockImplementation((token) =>
+      verification(token === 'tvl1.good' ? 'valid' : 'stale')
+    )
+    vi.mocked(db.organization.count).mockResolvedValue(2)
+    expect(await getMaxOrganizations('user-1')).toBe(PLAN_FEATURES['white-label'].maxOrganizations)
+    expect((await organizationAllowance('user-1')).allowed).toBe(true)
+  })
+
+  it('does not count a token that fails to verify', async () => {
+    mockFindMany.mockResolvedValue([{ organizationId: 'org-1', value: 'tvl1.forged' }] as never)
+    mockVerify.mockReturnValue(verification('invalid'))
+    expect(await getMaxOrganizations('user-1')).toBe(1)
+  })
+
+  it('plan features say one workshop without a licence and many with one', async () => {
+    mockFindMany.mockResolvedValue([])
+    expect((await getFeatures('org-1')).maxOrganizations).toBe(1)
+  })
+})
+
+describe('the workshop limit on the cloud', () => {
+  it('counts what the person owns against the plan', async () => {
+    vi.stubEnv('TORQVOICE_MODE', 'cloud')
+    vi.mocked(db.organizationMember.count).mockResolvedValue(1)
+    // No owned organizations with a plan to look up: the free allowance applies.
+    vi.mocked(db.organizationMember.findMany).mockResolvedValue([])
+    const allowance = await organizationAllowance('user-1')
+    expect(allowance.max).toBe(PLAN_FEATURES.free.maxOrganizations)
+    expect(allowance.current).toBe(1)
+    expect(db.organization.count).not.toHaveBeenCalled()
   })
 })

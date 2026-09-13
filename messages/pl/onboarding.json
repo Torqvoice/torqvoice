@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Spowoduje to usunięcie przykładowych klientów, pojazdów, zleceń, wyceny i przeglądu utworzonych podczas konfiguracji. Twoje własne dane pozostaną nietknięte.",
     "removed": "Dane przykładowe usunięte",
     "removeFailed": "Nie udało się usunąć danych przykładowych"
+  },
+  "singleWorkshop": {
+    "title": "Ta instalacja ma już swój warsztat",
+    "description": "Torqvoice prowadzi tu jeden warsztat i został on już skonfigurowany. Aby w nim pracować, poproś właściciela o zaproszenie {email} w Ustawieniach, potem Zespół.",
+    "signOut": "Wyloguj się"
   }
 }

@@ -8,7 +8,6 @@ export default async function AdminPage() {
     totalUsers: 0,
     totalOrganizations: 0,
     totalActiveSubscriptions: 0,
-    totalRevenue: 0,
   }
 
   return <AdminOverview stats={stats} />

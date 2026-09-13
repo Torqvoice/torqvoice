@@ -1,5 +1,11 @@
 import { expect, type APIRequestContext, type Page, test } from '@playwright/test'
-import { foreignServiceRecordId, organizationIdFor, seededTenantFixtures } from '../../support/db'
+import {
+  foreignServiceRecordId,
+  organizationIdFor,
+  plantJob,
+  plantWorkshop,
+  seededTenantFixtures,
+} from '../../support/db'
 import { settle } from '../../support/hydration'
 
 /**
@@ -89,23 +95,16 @@ test.beforeAll(async ({ browser, playwright, baseURL }) => {
   // A job in this workshop that will not be assigned to the new technician.
   someoneElsesJob = seeded.serviceRecordId
 
-  // A second workshop, for the cross-workshop refusals. Signing up gives it a
-  // few work orders of its own, which is what makes it a useful target.
-  const outsider = await browser.newContext({ storageState: { cookies: [], origins: [] } })
-  const outsiderPage = await outsider.newPage()
-  await outsiderPage.goto('/auth/sign-up')
-  await outsiderPage.locator('#name').fill('E2E Tech Outsider')
-  await outsiderPage.locator('#email').fill(OUTSIDER)
-  await outsiderPage.locator('#password').fill(OUTSIDER_PASSWORD)
-  await outsiderPage.locator('#terms').click()
-  await outsiderPage.getByRole('button', { name: /create account/i }).click()
-  await outsiderPage.waitForURL(/\/onboarding/, { timeout: 30_000 })
-  await outsiderPage.locator('#workshopName').fill(`E2E Tech Outsider Garage ${stamp}`)
-  await outsiderPage.locator('form button[type="submit"]').click()
-  await outsiderPage.waitForURL((url) => !/^\/(auth|onboarding)/.test(url.pathname), {
-    timeout: 30_000,
+  // A second workshop, for the cross-workshop refusals, planted with a job
+  // of its own: a self-hosted install opens one workshop, so a sign-up would
+  // be told to ask for an invitation instead of opening this one.
+  const outsider = await plantWorkshop({
+    name: 'E2E Tech Outsider',
+    email: OUTSIDER,
+    password: OUTSIDER_PASSWORD,
+    workshopName: `E2E Tech Outsider Garage ${stamp}`,
   })
-  await outsider.close()
+  await plantJob(outsider.organizationId, outsider.userId, `E2E Tech Outsider Job ${stamp}`)
 
   foreignJob = await foreignServiceRecordId(await organizationIdFor(OUTSIDER))
   expect(foreignJob).not.toBe(someoneElsesJob)

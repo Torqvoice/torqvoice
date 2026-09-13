@@ -85,5 +85,10 @@
     "removeConfirmDescription": "This deletes the sample customers, vehicles, work orders, quote and inspection created during setup. Your own data is not affected.",
     "removed": "Sample data removed",
     "removeFailed": "Could not remove sample data"
+  },
+  "singleWorkshop": {
+    "title": "This installation already has its workshop",
+    "description": "Torqvoice here runs one workshop, and it has been set up. To work in it, ask its owner to invite {email} from Settings, then Team.",
+    "signOut": "Sign out"
   }
 }

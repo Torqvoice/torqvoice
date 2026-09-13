@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Iš viso naudotojų",
     "organizations": "Organizacijos",
-    "activeSubscriptions": "Aktyvios prenumeratos",
-    "monthlyRevenue": "Mėnesio pajamos"
+    "activeSubscriptions": "Aktyvios prenumeratos"
   },
   "users": {
     "searchPlaceholder": "Ieškoti pagal vardą arba el. paštą...",

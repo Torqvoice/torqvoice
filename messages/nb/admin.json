@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Totalt antall brukere",
     "organizations": "Organisasjoner",
-    "activeSubscriptions": "Aktive abonnementer",
-    "monthlyRevenue": "Månedlig inntekt"
+    "activeSubscriptions": "Aktive abonnementer"
   },
   "users": {
     "searchPlaceholder": "Søk etter navn eller e-post...",

@@ -1,3 +1,4 @@
+import { randomBytes, scryptSync } from 'node:crypto'
 import { Client } from 'pg'
 
 /**
@@ -1107,5 +1108,115 @@ export async function deviceCountFor(email: string, needle: string): Promise<num
       [email, `%${needle}%`]
     )
     return Number(result.rows[0].n)
+  })
+}
+
+/**
+ * Matches better-auth's scrypt parameters, the same way the seed does, so a
+ * password written here is accepted by the sign-in form.
+ */
+function hashPassword(password: string): string {
+  const N = 16384
+  const r = 16
+  const p = 1
+  const salt = randomBytes(16).toString('hex')
+  const key = scryptSync(password.normalize('NFKC'), salt, 64, { N, r, p, maxmem: 128 * N * r * 2 })
+  return `${salt}:${key.toString('hex')}`
+}
+
+export interface PlantedWorkshop {
+  userId: string
+  organizationId: string
+}
+
+/**
+ * A second tenant, put straight into the database.
+ *
+ * A self-hosted install opens one workshop; every later sign-up is told to
+ * ask for an invitation. A spec that needs a second, separate workshop to
+ * prove isolation therefore cannot sign one up and has to plant it: a
+ * verified person with a password, and a workshop they own.
+ */
+export async function plantWorkshop(input: {
+  name: string
+  email: string
+  password: string
+  workshopName: string
+}): Promise<PlantedWorkshop> {
+  return withDb(async (db) => {
+    const user = await db.query<{ id: string }>(
+      `insert into users (id, name, email, "emailVerified", "termsAcceptedAt", "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, true, now(), now(), now())
+       returning id`,
+      [input.name, input.email.toLowerCase()]
+    )
+    const userId = user.rows[0].id
+    await db.query(
+      `insert into accounts (id, "accountId", "providerId", "userId", password, "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, 'credential', $1, $2, now(), now())`,
+      [userId, hashPassword(input.password)]
+    )
+    const org = await db.query<{ id: string }>(
+      `insert into organizations (id, name, "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, now(), now())
+       returning id`,
+      [input.workshopName]
+    )
+    const organizationId = org.rows[0].id
+    await db.query(
+      `insert into organization_members (id, role, "userId", "organizationId")
+       values (md5(random()::text || clock_timestamp()::text), 'owner', $1, $2)`,
+      [userId, organizationId]
+    )
+    return { userId, organizationId }
+  })
+}
+
+/** Removes a person and, through the cascade, their memberships and sessions. */
+export async function deletePersonWithEmail(email: string): Promise<void> {
+  await withDb((db) => db.query(`delete from users where lower(email) = lower($1)`, [email]))
+}
+
+/** How many workshops the install has. */
+export async function organizationCount(): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ count: string }>(
+      `select count(*)::text as count from organizations`
+    )
+    return Number(result.rows[0].count)
+  })
+}
+
+/**
+ * One customer, one vehicle and one work order in a workshop, for a spec
+ * that needs a job to point at. A planted workshop has none of the sample
+ * data onboarding would have given it.
+ */
+export async function plantJob(
+  organizationId: string,
+  userId: string,
+  title: string
+): Promise<{ serviceRecordId: string; vehicleId: string }> {
+  return withDb(async (db) => {
+    const customer = await db.query<{ id: string }>(
+      `insert into customers (id, name, "userId", "organizationId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, now())
+       returning id`,
+      [`${title} customer`, userId, organizationId]
+    )
+    const vehicle = await db.query<{ id: string }>(
+      `insert into vehicles (id, make, model, year, "userId", "organizationId", "customerId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), 'E2E', $1, 2020, $2, $3, $4, now())
+       returning id`,
+      [title, userId, organizationId, customer.rows[0].id]
+    )
+    const vehicleId = vehicle.rows[0].id
+    const job = await db.query<{ id: string }>(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, now())
+       returning id`,
+      [title, vehicleId, organizationId]
+    )
+    return { serviceRecordId: job.rows[0].id, vehicleId }
   })
 }

@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Hiermee verwijdert u de voorbeeldklanten, voertuigen, werkorders, de offerte en de inspectie die bij de installatie zijn aangemaakt. Uw eigen gegevens blijven onaangetast.",
     "removed": "Voorbeeldgegevens verwijderd",
     "removeFailed": "Kon de voorbeeldgegevens niet verwijderen"
+  },
+  "singleWorkshop": {
+    "title": "Deze installatie heeft haar werkplaats al",
+    "description": "Torqvoice draait hier één werkplaats en die is al ingericht. Om erin te werken vraag je de eigenaar om {email} uit te nodigen via Instellingen, dan Team.",
+    "signOut": "Uitloggen"
   }
 }

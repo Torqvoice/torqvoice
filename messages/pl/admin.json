@@ -24,8 +24,7 @@
   "overview": {
     "totalUsers": "Łączna liczba użytkowników",
     "organizations": "Organizacje",
-    "activeSubscriptions": "Aktywne subskrypcje",
-    "monthlyRevenue": "Miesięczny przychód"
+    "activeSubscriptions": "Aktywne subskrypcje"
   },
   "users": {
     "searchPlaceholder": "Szukaj po nazwie lub e-mailu...",
