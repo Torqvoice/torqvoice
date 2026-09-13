@@ -36,6 +36,11 @@ export function SignUpForm({
   const t = useTranslations('auth.signUp')
   const tc = useTranslations('common')
   const tSocial = useTranslations('auth.social')
+  // Someone who came here with a destination keeps it when they switch to
+  // sign-in; the sign-in form does the same in the other direction.
+  const signInHref = `/auth/sign-in${
+    redirectTo ? `?redirect=${encodeURIComponent(safeRedirectPath(redirectTo))}` : ''
+  }`
   const [googleLoading, setGoogleLoading] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -177,7 +182,7 @@ export function SignUpForm({
               <p>{error}</p>
               {emailAlreadyExists && (
                 <p className="mt-1 text-xs">
-                  <Link href="/auth/sign-in" className="font-medium underline">
+                  <Link href={signInHref} className="font-medium underline">
                     {t('signInInstead')}
                   </Link>
                 </p>
@@ -300,7 +305,7 @@ export function SignUpForm({
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {t('alreadyHaveAccount')}{' '}
-          <Link href="/auth/sign-in" className="font-medium text-primary hover:underline">
+          <Link href={signInHref} className="font-medium text-primary hover:underline">
             {tc('buttons.signIn')}
           </Link>
         </p>
