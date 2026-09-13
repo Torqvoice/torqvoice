@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Aggiornato a Enterprise con successo!",
     "upgradeError": "Aggiornamento dell'abbonamento non riuscito",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Scade tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}} ({date})"
+    "demoExpiresIn": "Scade tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}} ({date})",
+    "checkoutOnTorqvoice": "Verrai reindirizzato a torqvoice.com per completare l'acquisto. Fatture e ricevute sono disponibili lì nel tuo account.",
+    "purchaseSuccess": "Grazie! Il tuo piano è ora attivo.",
+    "purchaseActivating": "Pagamento ricevuto. Il tuo piano è in attivazione, questa pagina si aggiornerà tra poco.",
+    "accountOnTorqvoice": "Fatture e ricevute sono su torqvoice.com, dove accedi con questo account.",
+    "openTorqvoiceAccount": "Apri il tuo account su torqvoice.com"
   },
   "ai": {
     "title": "Assistente IA",

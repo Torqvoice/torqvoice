@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
-import { getStripeClient } from '@/lib/stripe-config'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { isDemoMode } from '@/lib/demo'
+import { billingErrorResponse, billingRequest } from '@/lib/torqvoice-com'
 
+/** The Stripe billing portal, opened through torqvoice.com, returning here. */
 export async function POST() {
   try {
     if (isDemoMode) {
@@ -19,10 +20,9 @@ export async function POST() {
     if (!ctx.isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    const membership = { organizationId: ctx.organizationId }
 
     const subscription = await db.subscription.findUnique({
-      where: { organizationId: membership.organizationId },
+      where: { organizationId: ctx.organizationId },
       select: { stripeCustomerId: true },
     })
 
@@ -30,18 +30,12 @@ export async function POST() {
       return NextResponse.json({ error: 'No billing account found' }, { status: 400 })
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const stripe = await getStripeClient()
-
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: subscription.stripeCustomerId,
-      return_url: `${appUrl}/settings/subscription`,
+    const { url } = await billingRequest<{ url: string }>('portal', {
+      organizationId: ctx.organizationId,
     })
 
-    return NextResponse.json({ url: portalSession.url })
+    return NextResponse.json({ url })
   } catch (error) {
-    console.error('[Billing Portal] Error:', error)
-    const message = 'Failed to create billing portal session'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return billingErrorResponse(error, 'Failed to create billing portal session')
   }
 }

@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
     "upgradeError": "Kunne ikke oppgradere abonnementet",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Utløper om {days, plural, =0 {mindre enn én dag} one {# dag} other {# dager}} ({date})"
+    "demoExpiresIn": "Utløper om {days, plural, =0 {mindre enn én dag} one {# dag} other {# dager}} ({date})",
+    "checkoutOnTorqvoice": "Du sendes til torqvoice.com for å fullføre kjøpet. Fakturaer og kvitteringer finner du der under kontoen din.",
+    "purchaseSuccess": "Takk! Planen din er nå aktiv.",
+    "purchaseActivating": "Betaling mottatt. Planen din aktiveres, siden oppdateres om et øyeblikk.",
+    "accountOnTorqvoice": "Fakturaer og kvitteringer ligger på torqvoice.com, der du er logget inn med denne kontoen.",
+    "openTorqvoiceAccount": "Åpne kontoen din på torqvoice.com"
   },
   "ai": {
     "title": "AI-assistent",

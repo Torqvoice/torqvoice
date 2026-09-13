@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "¡Mejorado a Enterprise con éxito!",
     "upgradeError": "Error al mejorar la suscripción",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Caduca en {days, plural, =0 {menos de un día} one {# día} other {# días}} ({date})"
+    "demoExpiresIn": "Caduca en {days, plural, =0 {menos de un día} one {# día} other {# días}} ({date})",
+    "checkoutOnTorqvoice": "Serás dirigido a torqvoice.com para completar la compra. Las facturas y recibos están disponibles allí en tu cuenta.",
+    "purchaseSuccess": "¡Gracias! Tu plan ya está activo.",
+    "purchaseActivating": "Pago recibido. Tu plan se está activando, esta página se actualizará en un momento.",
+    "accountOnTorqvoice": "Las facturas y recibos están en torqvoice.com, donde inicias sesión con esta cuenta.",
+    "openTorqvoiceAccount": "Abrir tu cuenta en torqvoice.com"
   },
   "ai": {
     "title": "Asistente de IA",

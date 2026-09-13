@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Sėkmingai atnaujinta į Enterprise!",
     "upgradeError": "Nepavyko atnaujinti prenumeratos",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})"
+    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})",
+    "checkoutOnTorqvoice": "Pirkimui užbaigti būsite nukreipti į torqvoice.com. Sąskaitas ir kvitus rasite ten savo paskyroje.",
+    "purchaseSuccess": "Ačiū! Jūsų planas dabar aktyvus.",
+    "purchaseActivating": "Mokėjimas gautas. Jūsų planas aktyvuojamas, puslapis netrukus atsinaujins.",
+    "accountOnTorqvoice": "Sąskaitos ir kvitai yra torqvoice.com, kur prisijungiate šia paskyra.",
+    "openTorqvoiceAccount": "Atidaryti paskyrą torqvoice.com"
   },
   "ai": {
     "title": "DI asistentas",

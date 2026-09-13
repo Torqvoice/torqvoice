@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Successfully upgraded to Enterprise!",
     "upgradeError": "Failed to upgrade subscription",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})"
+    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})",
+    "checkoutOnTorqvoice": "You will be taken to torqvoice.com to complete the purchase. Invoices and receipts are available there under your account.",
+    "purchaseSuccess": "Thank you! Your plan is now active.",
+    "purchaseActivating": "Payment received. Your plan is being activated, this page refreshes in a moment.",
+    "accountOnTorqvoice": "Invoices and receipts are on torqvoice.com, where you are signed in with this account.",
+    "openTorqvoiceAccount": "Open your account on torqvoice.com"
   },
   "ai": {
     "title": "AI Assistant",

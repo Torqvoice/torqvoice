@@ -1,17 +1,29 @@
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
-import { isCloudMode, PLAN_FEATURES, type Plan } from '@/lib/features'
+import { PLAN_FEATURES, type Plan } from '@/lib/features'
+import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { SubscriptionSettings } from '@/features/subscription/Components/subscription-settings'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
+import { isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
 
-export default async function SubscriptionPage() {
-  if (!isCloudMode()) {
+export default async function SubscriptionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ subscription?: string }>
+}) {
+  // Only the app torqvoice.com bills for has this page; an install that
+  // merely set TORQVOICE_MODE=cloud is sent back to settings.
+  if (!(await isCloudLinked())) {
     redirect('/settings')
   }
 
   const authContext = await getAuthContext()
   if (!authContext) redirect('/auth/sign-in')
+
+  // torqvoice.com sends the customer back here after a completed checkout.
+  const { subscription: checkoutFlag } = await searchParams
+  const justPurchased = checkoutFlag === 'success'
 
   const subscription = await db.subscription.findUnique({
     where: { organizationId: authContext.organizationId },
@@ -49,6 +61,8 @@ export default async function SubscriptionPage() {
       planPrice={subscription?.plan.price ?? 0}
       planInterval={subscription?.plan.interval ?? 'year'}
       hasStripeCustomer={!!subscription?.stripeCustomerId}
+      justPurchased={justPurchased}
+      accountLinkAvailable={isTorqvoiceComBillingConfigured()}
       usage={{ customers: customerCount, members: memberCount }}
       features={features}
     />

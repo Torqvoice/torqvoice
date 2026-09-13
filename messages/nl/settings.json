@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
     "upgradeError": "Upgrade van abonnement mislukt",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})"
+    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})",
+    "checkoutOnTorqvoice": "Je wordt naar torqvoice.com gebracht om de aankoop af te ronden. Facturen en bonnen vind je daar onder je account.",
+    "purchaseSuccess": "Bedankt! Je abonnement is nu actief.",
+    "purchaseActivating": "Betaling ontvangen. Je abonnement wordt geactiveerd, deze pagina ververst zo.",
+    "accountOnTorqvoice": "Facturen en bonnen staan op torqvoice.com, waar je met dit account bent aangemeld.",
+    "openTorqvoiceAccount": "Je account op torqvoice.com openen"
   },
   "ai": {
     "title": "AI-assistent",

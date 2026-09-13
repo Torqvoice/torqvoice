@@ -1502,7 +1502,12 @@
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
     "upgradeError": "Nie udało się ulepszyć subskrypcji",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})"
+    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})",
+    "checkoutOnTorqvoice": "Zostaniesz przekierowany do torqvoice.com, aby dokończyć zakup. Faktury i potwierdzenia znajdziesz tam na swoim koncie.",
+    "purchaseSuccess": "Dziękujemy! Twój plan jest już aktywny.",
+    "purchaseActivating": "Płatność otrzymana. Twój plan jest aktywowany, strona odświeży się za chwilę.",
+    "accountOnTorqvoice": "Faktury i potwierdzenia znajdziesz na torqvoice.com, gdzie logujesz się tym kontem.",
+    "openTorqvoiceAccount": "Otwórz swoje konto na torqvoice.com"
   },
   "ai": {
     "title": "Asystent AI",
