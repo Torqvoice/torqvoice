@@ -1,7 +1,7 @@
 import 'server-only'
 import { createHash } from 'node:crypto'
 import { db } from '@/lib/db'
-import { sendAccountMail } from '@/lib/account-mail'
+import { type AccountMail, type AccountMailRow, sendAccountMail } from '@/lib/account-mail'
 import { DEVICE_COOKIE, readDeviceCookie } from '@/lib/device-cookie'
 
 /**
@@ -156,29 +156,59 @@ export async function noteDevice(
   return { isNew: true, isFirst: others === 0, label }
 }
 
-/**
- * "A new device signed in": sent to the account's address, from the
- * platform sender, never through a workshop's own mail setup. Best effort;
- * the sign-in has already happened and must not fail on a mail error.
- */
-export async function sendNewDeviceMail(input: {
+export interface NewDeviceMailInput {
   to: string
   name?: string | null
   label: string
   ip?: string | null
   at: Date
-}): Promise<void> {
+}
+
+/** "13 September 2026, 10:26 UTC": the mail has no idea what timezone the reader is in. */
+function formatSignInTime(at: Date): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'UTC',
+    timeZoneName: 'short',
+  }).format(at)
+}
+
+/**
+ * The mail itself, separate from sending so a test can look at it. The
+ * device, address and time sit in a card so a person can compare them with
+ * what is in front of them at a glance.
+ */
+export function newDeviceMail(input: NewDeviceMailInput): AccountMail {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.torqvoice.com'
-  const where = input.ip ? ` from ${input.ip}` : ''
-  await sendAccountMail({
+  const rows: AccountMailRow[] = [{ label: 'Device', value: input.label }]
+  if (input.ip) rows.push({ label: 'Address', value: input.ip })
+  rows.push({ label: 'When', value: formatSignInTime(input.at) })
+  return {
     to: input.to,
     subject: 'New sign-in to your Torqvoice account',
+    heading: 'New sign-in to your account',
     name: input.name,
+    reason: 'a new device signed in to your Torqvoice account',
     paragraphs: [
-      `A new device signed in to your Torqvoice account: ${input.label}${where}, ${input.at.toUTCString()}.`,
+      'A device we have not seen before just signed in to your Torqvoice account.',
+      { rows },
       'If this was you, there is nothing to do.',
       'If it was not, change your password and sign out the other devices from your account page.',
     ],
     link: { text: 'Review signed-in devices', url: `${appUrl}/settings/account` },
-  })
+  }
+}
+
+/**
+ * Sent to the account's address, from the platform sender, never through a
+ * workshop's own mail setup. Best effort; the sign-in has already happened
+ * and must not fail on a mail error.
+ */
+export async function sendNewDeviceMail(input: NewDeviceMailInput): Promise<void> {
+  await sendAccountMail(newDeviceMail(input))
 }
