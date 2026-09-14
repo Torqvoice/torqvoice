@@ -15,6 +15,7 @@ import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
 import { manifest as nhtsa } from './nhtsa/manifest'
 import { manifest as openai } from './openai/manifest'
+import { manifest as openaiCompatible } from './openai-compatible/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as paypal } from './paypal/manifest'
 import { manifest as postmark } from './postmark/manifest'
@@ -40,9 +41,10 @@ interface RegistryEntry {
   load: () => Promise<{ connector: ConnectorServer }>
 }
 
-const ENTRIES: readonly RegistryEntry[] = [
+const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: openai, load: () => import('./openai/server') },
   { manifest: anthropic, load: () => import('./anthropic/server') },
+  { manifest: openaiCompatible, load: () => import('./openai-compatible/server') },
   { manifest: googleCalendar, load: () => import('./google-calendar/server') },
   { manifest: microsoft365, load: () => import('./microsoft-365/server') },
   { manifest: zoom, load: () => import('./zoom/server') },
@@ -68,6 +70,22 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: paypal, load: () => import('./paypal/server') },
   { manifest: quickbooks, load: () => import('./quickbooks/server') },
 ]
+
+/**
+ * The same test as isCloudMode() in lib/features, read here directly so the
+ * registry stays plain data with no database behind it.
+ */
+const IS_CLOUD = process.env.TORQVOICE_MODE === 'cloud'
+
+/**
+ * A self-hosted-only connector does not exist on the cloud instance: not in
+ * the catalog, not on its settings page, not for a job or a completion.
+ * Leaving it out here, rather than hiding the card, is what makes that one
+ * decision hold everywhere the id could arrive from.
+ */
+const ENTRIES: readonly RegistryEntry[] = ALL_ENTRIES.filter(
+  (e) => !(IS_CLOUD && e.manifest.selfHostedOnly)
+)
 
 const BY_ID = new Map(ENTRIES.map((e) => [e.manifest.id, e]))
 

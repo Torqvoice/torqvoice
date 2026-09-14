@@ -3,11 +3,19 @@ import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
 import { describeAiError } from '@/lib/ai-error'
+import {
+  ANTHROPIC_BASE,
+  ANTHROPIC_VERSION,
+  OPENAI_BASE,
+  normalizeBaseUrl,
+} from '@/integrations/ai/models'
 
 interface AiConfig {
   provider: string
   apiKey: string
   model: string
+  /** API root of an OpenAI-compatible server, for the connector that takes one. */
+  baseUrl?: string
 }
 
 /**
@@ -19,23 +27,41 @@ export async function getAiConfig(organizationId: string): Promise<AiConfig> {
   const setup = await aiSetup(organizationId)
 
   if (!setup) {
-    throw new Error('AI is not connected. Connect OpenAI or Anthropic in Settings → Integrations.')
+    throw new Error('AI is not connected. Connect an AI provider in Settings → Integrations.')
   }
 
-  return { provider: setup.provider, apiKey: setup.apiKey, model: setup.model }
+  return {
+    provider: setup.provider,
+    apiKey: setup.apiKey,
+    model: setup.model,
+    ...(setup.baseUrl && { baseUrl: setup.baseUrl }),
+  }
 }
 
+/**
+ * Every provider gets its address spelled out. Left blank, the SDK would
+ * read OPENAI_BASE_URL from the environment on its own, and completions
+ * would quietly go somewhere the connector's key check never looked.
+ */
 export function createClient(config: AiConfig): OpenAI {
   if (config.provider === 'anthropic') {
     return new OpenAI({
       apiKey: config.apiKey,
-      baseURL: 'https://api.anthropic.com/v1/',
+      baseURL: `${ANTHROPIC_BASE}/`,
       defaultHeaders: {
-        'anthropic-version': '2023-06-01',
+        'anthropic-version': ANTHROPIC_VERSION,
       },
     })
   }
-  return new OpenAI({ apiKey: config.apiKey })
+  if (config.provider === 'openai-compatible') {
+    return new OpenAI({
+      // The SDK refuses to start without a key; a server that wants none
+      // ignores whatever the header says.
+      apiKey: config.apiKey || 'none',
+      baseURL: normalizeBaseUrl(config.baseUrl ?? ''),
+    })
+  }
+  return new OpenAI({ apiKey: config.apiKey, baseURL: OPENAI_BASE })
 }
 
 /**
@@ -44,7 +70,8 @@ export function createClient(config: AiConfig): OpenAI {
  * `max_completion_tokens`; they likewise refuse any temperature other than the
  * default. Every current OpenAI chat model accepts `max_completion_tokens`, so
  * it is used across the board there. The Anthropic compatibility endpoint
- * keeps the classic parameter.
+ * keeps the classic parameter, and so does a self-hosted OpenAI-compatible
+ * server: Ollama and LocalAI still only read `max_tokens`.
  *
  * Reasoning models spend billed-but-hidden thinking tokens inside the same
  * cap before producing a visible answer, so they get headroom on top of the

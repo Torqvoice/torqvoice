@@ -479,6 +479,19 @@
         "modelHelp": "Kuris modelis atsako. Sąrašas nuskaitomas iš jūsų paskyros, naujausi viršuje. Mažesni modeliai kainuoja mažiau ir daugumai serviso tekstų visiškai pakanka."
       }
     },
+    "openai-compatible": {
+      "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas, kuriuos atsako bet kuris serveris, kalbantis OpenAI pokalbių API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ir panašūs. Jūsų duomenys lieka jūsų pačių įrangoje.",
+      "fields": {
+        "baseUrl": "Bazinis URL",
+        "baseUrlHelp": "Kur prasideda serverio OpenAI tipo API, įskaitant kelią: /v1 Ollama, vLLM, LocalAI ir LM Studio, /api Open WebUI. Torqvoice prideda /models ir /chat/completions.",
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Tik jei serveris jo reikalauja. Ollama ir vLLM paprastai veikia be rakto; Open WebUI jį išduoda skiltyje Nustatymai, Paskyra."
+      },
+      "settings": {
+        "model": "Modelis",
+        "modelHelp": "Kuris modelis atsako. Sąraše yra viskas, ką serveris praneša, pagal pavadinimą. Jei norite, kad būtų skaitomos nuotraukos, naudokite modelį su vaizdų atpažinimu."
+      }
+    },
     "stripe": {
       "description": "Mokėjimai kortele iš sąskaitos nuorodos į jūsų Stripe paskyrą. Klientas sumoka, Stripe praneša Torqvoice, ir sąskaita pati pažymima kaip apmokėta.",
       "fields": {

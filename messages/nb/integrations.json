@@ -479,6 +479,19 @@
         "modelHelp": "Hvilken modell som svarer. Listen leses fra kontoen din, nyeste først. Mindre modeller koster mindre per kall og holder for det meste av verkstedteksten."
       }
     },
+    "openai-compatible": {
+      "description": "Servicebeskrivelser, historikksammendrag, dokumentlesing og assistenten, besvart av en hvilken som helst server som snakker OpenAIs chat-API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM og lignende. Dataene dine blir på din egen maskinvare.",
+      "fields": {
+        "baseUrl": "Base-URL",
+        "baseUrlHelp": "Der serverens OpenAI-lignende API starter, inkludert stien: /v1 for Ollama, vLLM, LocalAI og LM Studio, /api for Open WebUI. Torqvoice legger til /models og /chat/completions.",
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Bare hvis serveren krever en. Ollama og vLLM kjører vanligvis uten nøkkel; Open WebUI utsteder en under Innstillinger, Konto."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Hvilken modell som svarer. Listen er alt serveren rapporterer, etter navn. Bruk en modell med bildeforståelse hvis du vil at bilder skal leses."
+      }
+    },
     "stripe": {
       "description": "Kortbetaling fra fakturalenken, rett inn på din egen Stripe-konto. Kunden betaler, Stripe sier fra til Torqvoice, og fakturaen merkes betalt av seg selv.",
       "fields": {

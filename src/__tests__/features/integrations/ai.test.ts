@@ -68,6 +68,43 @@ describe('AI connection', () => {
     expect(integrationConnection.create).not.toHaveBeenCalled()
   })
 
+  /**
+   * A self-hosted server is addressed by its URL, and often has no key at
+   * all, so the URL is what the setup must carry and the key is what it may
+   * do without.
+   */
+  it('runs on an OpenAI-compatible server by its base URL, key or no key', async () => {
+    integrationConnection.findMany.mockResolvedValue([
+      {
+        id: 'conn-local',
+        connectorId: 'openai-compatible',
+        credentials: sealCredentials({ baseUrl: 'http://ollama:11434/v1' }),
+        settings: { model: 'qwen3:8b' },
+      },
+    ])
+
+    await expect(aiSetup(ORG)).resolves.toEqual({
+      connectionId: 'conn-local',
+      provider: 'openai-compatible',
+      apiKey: '',
+      model: 'qwen3:8b',
+      baseUrl: 'http://ollama:11434/v1',
+    })
+  })
+
+  it('refuses an OpenAI-compatible connection without a base URL', async () => {
+    integrationConnection.findMany.mockResolvedValue([
+      {
+        id: 'conn-local',
+        connectorId: 'openai-compatible',
+        credentials: sealCredentials({ apiKey: 'sk-local' }),
+        settings: { model: 'qwen3:8b' },
+      },
+    ])
+
+    await expect(aiSetup(ORG)).resolves.toBeNull()
+  })
+
   it('adopts an old settings-page setup on first use, sealing the key', async () => {
     appSetting.findMany.mockResolvedValue(legacyRows())
 
@@ -131,7 +168,11 @@ describe('AI connection', () => {
     await aiSetup(ORG)
 
     expect(integrationConnection.updateMany).toHaveBeenCalledWith({
-      where: { organizationId: ORG, connectorId: { in: ['openai'] }, status: 'active' },
+      where: {
+        organizationId: ORG,
+        connectorId: { in: ['openai', 'openai-compatible'] },
+        status: 'active',
+      },
       data: { status: 'disconnected', lastError: null },
     })
   })
@@ -181,7 +222,7 @@ describe('plan gates', () => {
       .filter((m) => connectorAllowed(m, free))
       .map((m) => m.id)
       .sort()
-    expect(reachable).toEqual(['anthropic', 'openai'])
+    expect(reachable).toEqual(['anthropic', 'openai', 'openai-compatible'])
 
     const pro = PLAN_FEATURES.pro
     expect(connectorAllowed(getManifest('openai')!, pro)).toBe(true)
