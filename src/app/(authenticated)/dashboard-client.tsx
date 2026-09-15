@@ -71,6 +71,8 @@ import {
 } from '@/features/customers/Actions/customerActions'
 import type { TireHotelSummary } from '@/features/tire-hotel/Actions/getTireHotelSummary'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
+import { markNotificationRead } from '@/features/notifications/Actions/notificationActions'
+import { useNotificationStore } from '@/features/notifications/store/notificationStore'
 import { toast } from 'sonner'
 import { convertQuoteToServiceRecord, createQuote } from '@/features/quotes/Actions/quoteActions'
 import type { ReactNode } from 'react'
@@ -1042,7 +1044,14 @@ export function DashboardClient({
                       <div
                         key={n.id}
                         className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                        {...interactiveRow(() => router.push(n.entityUrl))}
+                        {...interactiveRow(() => {
+                          // Opening one from here reads it, as the bell does.
+                          if (!n.read) {
+                            useNotificationStore.getState().markRead(n.id)
+                            void markNotificationRead(n.id)
+                          }
+                          router.push(n.entityUrl)
+                        })}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <div

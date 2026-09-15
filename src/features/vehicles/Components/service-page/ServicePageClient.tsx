@@ -2,7 +2,7 @@
 
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { updateServiceStatus } from '@/features/vehicles/Actions/serviceActions'
@@ -115,6 +115,11 @@ export function ServicePageClient({
       : 'details'
 
   const [activeTab, setActiveTab] = useState<ServiceTab>(resolvedInitialTab)
+  // A link to this record with another tab (feedback on a status report, say)
+  // changes only the query, so the page is not remounted and has to follow it.
+  useEffect(() => {
+    setActiveTab(resolvedInitialTab)
+  }, [resolvedInitialTab])
 
   const handleTabChange = useCallback((tab: ServiceTab) => {
     setActiveTab(tab)

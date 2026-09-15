@@ -341,9 +341,13 @@ export async function cancelBooking(rawToken: string) {
         timeZone: (await loadInspectionReminderSettings(send.organizationId)).timeZone,
       }).format(booking.start),
     }),
-    entityType: 'vehicle',
-    entityId: send.vehicleId,
-    entityUrl: `/vehicles/${send.vehicleId}`,
+    // A cancelled request stays listed on the customer, marked cancelled; a
+    // booked slot is deleted, which leaves the vehicle as the place to look.
+    entityType: send.bookedServiceRequestId ? 'service_request' : 'vehicle',
+    entityId: send.bookedServiceRequestId ?? send.vehicleId,
+    entityUrl: send.bookedServiceRequestId
+      ? `/customers/${send.customerId}?tab=requests`
+      : `/vehicles/${send.vehicleId}`,
   })
   return { ok: true }
 }

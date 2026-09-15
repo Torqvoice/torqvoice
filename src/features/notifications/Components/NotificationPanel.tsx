@@ -69,7 +69,13 @@ export function NotificationPanel() {
     }
     setPanelOpen(false)
     setTimeout(() => {
-      router.push(entityUrl)
+      // Pushing the address already open is not a navigation: nothing is
+      // fetched, so a notification about the page on screen appeared to do
+      // nothing. Refresh it instead, which brings in what the notification
+      // is about.
+      const here = `${window.location.pathname}${window.location.search}`
+      if (entityUrl === here) router.refresh()
+      else router.push(entityUrl)
     }, 300)
   }
 

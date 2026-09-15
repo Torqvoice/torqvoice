@@ -292,7 +292,7 @@ describe('reminder targets — vehicle, customer, or workshop', () => {
     expect(vi.mocked(notify)).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'EU-kontroll — Petter',
-        entityUrl: '/customers/cust-a',
+        entityUrl: '/reminders',
       })
     )
   })

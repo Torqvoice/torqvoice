@@ -17,6 +17,7 @@ import { db } from '@/lib/db'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
 import { VehicleDetailClient } from './vehicle-detail-client'
 import { PageHeader } from '@/components/page-header'
+import { redirect } from 'next/navigation'
 
 export default async function VehicleDetailPage({
   params,
@@ -27,6 +28,13 @@ export default async function VehicleDetailPage({
 }) {
   const { id } = await params
   const sp = await searchParams
+
+  // Payment notifications used to link here with the invoice as `record`,
+  // which this page never read, so they opened the vehicle instead of the
+  // invoice. Those links are still in people's bells.
+  if (typeof sp.record === 'string' && sp.record) {
+    redirect(`/vehicles/${id}/service/${sp.record}`)
+  }
 
   const page = Number(sp.page) || 1
   const pageSize = Number(sp.pageSize) || 10

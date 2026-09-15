@@ -13,23 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  ArrowRight,
-  Car,
-  Check,
-  ClipboardCheck,
-  Loader2,
-  MessageSquare,
-  Users,
-  X,
-} from 'lucide-react'
+import { ArrowRight, Car, ClipboardCheck, Users, X } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { netLineTotal } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { type LockReason, quoteStatusKeepsLock } from '@/lib/document-lock'
-import { useFormatDate } from '@/lib/use-format-date'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
@@ -61,7 +51,6 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   lockReason,
 }: QuoteRightColumnProps) {
   const formatCurrency = useFormatCurrency()
-  const { formatDateTime } = useFormatDate()
   const [validUntil, setValidUntil] = useState(state.defaultValidDate)
   const locked = lockReason !== null
   const statusAllowed = (value: string) => !lockReason || quoteStatusKeepsLock(lockReason, value)
@@ -98,9 +87,8 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
       )}
 
       {/* The fields that edit the quote sit in fieldsets a lock disables. The
-          actions do not: converting, the shared link, the status and the
-          customer's response, because a disabled fieldset disables the
-          buttons inside it too. */}
+          actions do not: converting, the shared link and the status, because a
+          disabled fieldset disables the buttons inside it too. */}
       <fieldset disabled={locked} className="contents">
         {/* Vehicle & Customer */}
         <div className="rounded-lg border p-3 space-y-3">
@@ -258,6 +246,16 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 <SelectItem value="rejected" disabled={!statusAllowed('rejected')}>
                   {t('details.statusRejected')}
                 </SelectItem>
+                {/* Statuses the customer or a conversion sets, never picked by
+                      hand. Listed so the select can show them: with no option
+                      to match, it reports an empty value and the page would
+                      save a status the server refuses. */}
+                <SelectItem value="changes_requested" disabled>
+                  {t('page.changesRequested')}
+                </SelectItem>
+                <SelectItem value="converted" disabled>
+                  {t('list.statusConverted')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -298,69 +296,6 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
           onChange={state.markDirty}
         />
       </fieldset>
-
-      {/* Customer Response */}
-      {quote.customerMessage &&
-        !quote.responseDismissedAt &&
-        (state.status === 'changes_requested' || state.status === 'accepted') && (
-          <div
-            className={`rounded-lg border p-3 space-y-2 ${
-              state.status === 'changes_requested'
-                ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20'
-                : 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <h3
-                className={`flex items-center gap-1.5 text-sm font-semibold ${
-                  state.status === 'changes_requested'
-                    ? 'text-orange-700 dark:text-orange-400'
-                    : 'text-emerald-700 dark:text-emerald-400'
-                }`}
-              >
-                <MessageSquare className="h-3.5 w-3.5" />
-                {state.status === 'changes_requested'
-                  ? t('page.changesRequested')
-                  : t('page.quoteAccepted')}
-              </h3>
-              <span
-                className={`text-[10px] ${
-                  state.status === 'changes_requested'
-                    ? 'text-orange-500 dark:text-orange-500'
-                    : 'text-emerald-500 dark:text-emerald-500'
-                }`}
-              >
-                {/* In the workshop's zone: the browser's own locale and clock
-                    disagree with the server's render and break hydration. */}
-                {formatDateTime(quote.updatedAt)}
-              </span>
-            </div>
-            <p
-              className={`text-sm ${
-                state.status === 'changes_requested'
-                  ? 'text-orange-600 dark:text-orange-400'
-                  : 'text-emerald-600 dark:text-emerald-400'
-              }`}
-            >
-              &ldquo;{quote.customerMessage}&rdquo;
-            </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full"
-              disabled={state.resolving}
-              onClick={state.handleResolveResponse}
-            >
-              {state.resolving ? (
-                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Check className="mr-1 h-3.5 w-3.5" />
-              )}
-              {t('page.markResolved')}
-            </Button>
-          </div>
-        )}
 
       {/* Totals */}
       <fieldset disabled={locked} className="contents">
