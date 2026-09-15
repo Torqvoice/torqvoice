@@ -46,6 +46,7 @@ import type { InventoryPartOption } from '@/features/vehicles/Components/service
 import { QuoteLaborEditor } from './QuoteLaborEditor'
 import { QuoteNotesEditor } from './QuoteNotesEditor'
 import { QuoteRightColumn } from './QuoteRightColumn'
+import { QuoteCustomerResponse } from './QuoteCustomerResponse'
 import { VehicleCombobox } from './VehicleCombobox'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
 
@@ -393,6 +394,22 @@ export function QuotePageClient({
           ))}
         </div>
       </div>
+
+      {/* Above everything else: it is usually why the quote was opened. */}
+      {quote.customerMessage &&
+        !quote.responseDismissedAt &&
+        (state.status === 'changes_requested' || state.status === 'accepted') && (
+          <div className="shrink-0 px-4 pt-3">
+            <QuoteCustomerResponse
+              status={state.status}
+              message={quote.customerMessage}
+              respondedAt={quote.updatedAt}
+              resolving={state.resolving}
+              onResolve={state.handleResolveResponse}
+              t={t}
+            />
+          </div>
+        )}
 
       {(lockState.locked || lockState.unlockedAt) && (
         <div className="shrink-0 px-4 pt-3">

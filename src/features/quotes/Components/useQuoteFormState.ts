@@ -65,6 +65,12 @@ export function useQuoteFormState({
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [status, setStatus] = useState(quote.status)
+  // The customer can answer while the quote is open. A refresh brings the new
+  // status in as a prop, and the page has to show it rather than the status it
+  // was opened with; a status chosen here and not yet saved is left alone.
+  useEffect(() => {
+    setStatus(quote.status)
+  }, [quote.status])
   const [customerId, setCustomerId] = useState(quote.customer?.id || '')
   const [vehicleId, setVehicleId] = useState(quote.vehicle?.id || '')
   const [partItems, setPartItems] = useState<QuotePartInput[]>(
@@ -175,6 +181,9 @@ export function useQuoteFormState({
   // the lock, which is the owner-or-admin unlock by another route.
   const [changingStatus, setChangingStatus] = useState(false)
   const changeStatus = async (next: string) => {
+    // The select also reports a value when the status changes under it, as
+    // an empty string when no option matches; neither is somebody choosing.
+    if (!next || next === status) return
     if (!locked) {
       setStatus(next)
       markDirty()

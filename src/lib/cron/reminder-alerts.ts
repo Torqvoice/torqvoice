@@ -35,7 +35,8 @@ function targetLabel(r: DueReminder) {
 
 function targetUrl(r: DueReminder) {
   if (r.vehicle) return `/vehicles/${r.vehicle.id}?tab=reminders`
-  if (r.customer) return `/customers/${r.customer.id}`
+  // The customer page has no reminders of its own, so a customer's reminder
+  // is found on the reminders list rather than on a page that never shows it.
   return '/reminders'
 }
 

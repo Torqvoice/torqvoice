@@ -6,6 +6,7 @@ import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
 import { recordVendorPayment } from '@/lib/payment-providers/record-payment'
 import { rateLimit } from '@/lib/rate-limit'
 import { notify } from '@/lib/notify'
+import { serviceRecordHref } from '@/lib/service-record'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 
 const verifySchema = z.object({
@@ -94,9 +95,7 @@ export async function POST(
         message: `${(record.customer ?? record.vehicle?.customer)?.name || 'A customer'} paid ${result.amount.toFixed(2)} for invoice ${record.invoiceNumber || record.title}`,
         entityType: 'invoice',
         entityId: record.id,
-        entityUrl: record.vehicle
-          ? `/vehicles/${record.vehicle.id}?tab=service&record=${record.id}`
-          : `/sales/${record.id}`,
+        entityUrl: serviceRecordHref(record),
       })
     }
 

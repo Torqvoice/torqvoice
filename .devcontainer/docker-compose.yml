@@ -11,9 +11,6 @@ services:
     command: sleep infinity
     ports:
       - 3000:3000
-    networks:
-      - default
-      - torqvoice-shared
     depends_on:
       db:
         condition: service_healthy
@@ -35,9 +32,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - default
-      - torqvoice-shared
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -60,7 +54,3 @@ services:
 volumes:
   postgres-data:
   pgadmin-data:
-
-networks:
-  torqvoice-shared:
-    external: true

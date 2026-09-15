@@ -1220,3 +1220,118 @@ export async function plantJob(
     return { serviceRecordId: job.rows[0].id, vehicleId }
   })
 }
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+export interface PlantedNotification {
+  type: string
+  title: string
+  message: string
+  entityType: string
+  entityId: string
+  entityUrl: string
+}
+
+/**
+ * A notification written straight into the bell, with the address the code
+ * that raises it builds. Planting it rather than provoking it lets a spec
+ * follow links whose trigger needs a provider the harness cannot play (an
+ * inbound SMS, a Telegram webhook), and also links already stored in the old
+ * shape, which the pages still have to honour.
+ */
+export async function plantNotification(
+  organizationId: string,
+  n: PlantedNotification
+): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into notifications (id, type, title, message, "entityType", "entityId", "entityUrl", read, "organizationId", "createdAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, $4, $5, $6, false, $7, now())
+       returning id`,
+      [n.type, n.title, n.message, n.entityType, n.entityId, n.entityUrl, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteNotifications(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query('delete from notifications where id = any($1)', [ids]))
+}
+
+/** An inbound message on a customer's thread, as the webhook would have stored it. */
+export async function plantInboundMessage(
+  channel: 'sms' | 'telegram',
+  organizationId: string,
+  customerId: string,
+  body: string
+): Promise<void> {
+  await withDb((db) =>
+    channel === 'sms'
+      ? db.query(
+          `insert into sms_messages (id, direction, "fromNumber", "toNumber", body, status, "organizationId", "customerId", "createdAt", "updatedAt")
+           values (md5(random()::text || clock_timestamp()::text), 'inbound', '+4790000000', '+4790000001', $1, 'received', $2, $3, now(), now())`,
+          [body, organizationId, customerId]
+        )
+      : db.query(
+          `insert into telegram_messages (id, direction, "chatId", body, status, "organizationId", "customerId", "createdAt", "updatedAt")
+           values (md5(random()::text || clock_timestamp()::text), 'inbound', '777000', $1, 'received', $2, $3, now(), now())`,
+          [body, organizationId, customerId]
+        )
+  )
+}
+
+/**
+ * Links a customer to a Telegram chat and hands back what was there before.
+ * A real inbound Telegram message only ever comes from a linked chat, and the
+ * conversation shows nothing but "not connected yet" without one.
+ */
+export async function linkTelegramChat(
+  customerId: string,
+  chatId: string | null
+): Promise<string | null> {
+  return withDb(async (db) => {
+    const before = await db.query<{ telegramChatId: string | null }>(
+      'select "telegramChatId" from customers where id = $1',
+      [customerId]
+    )
+    await db.query('update customers set "telegramChatId" = $1 where id = $2', [chatId, customerId])
+    return before.rows[0]?.telegramChatId ?? null
+  })
+}
+
+export async function deleteMessagesWithBody(body: string): Promise<void> {
+  await withDb(async (db) => {
+    await db.query('delete from sms_messages where body = $1', [body])
+    await db.query('delete from telegram_messages where body = $1', [body])
+  })
+}
+
+/** A vehicle job with the customer it belongs to, taken from one row so the ids agree. */
+export async function jobWithCustomer(organizationId: string): Promise<{
+  vehicleId: string
+  serviceRecordId: string
+  customerId: string
+  customerName: string
+}> {
+  return withDb(async (db) => {
+    const result = await db.query<{
+      vehicleId: string
+      serviceRecordId: string
+      customerId: string
+      customerName: string
+    }>(
+      `select v.id as "vehicleId", s.id as "serviceRecordId", c.id as "customerId", c.name as "customerName"
+         from service_records s
+         join vehicles v on v.id = s."vehicleId"
+         join customers c on c.id = v."customerId"
+        where s."organizationId" = $1
+        order by s."createdAt" asc
+        limit 1`,
+      [organizationId]
+    )
+    const row = result.rows[0]
+    if (!row) throw new Error('the seeded workshop has no vehicle job with a customer')
+    return row
+  })
+}
