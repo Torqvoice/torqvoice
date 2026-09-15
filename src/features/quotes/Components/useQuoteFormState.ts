@@ -7,6 +7,7 @@ import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import {
   updateQuote,
+  updateQuoteStatus,
   deleteQuote,
   convertQuoteToServiceRecord,
 } from '@/features/quotes/Actions/quoteActions'
@@ -168,6 +169,29 @@ export function useQuoteFormState({
       }
     }, 5000)
   }, [locked])
+
+  // A locked quote refuses a save, so its status is written on its own the
+  // moment it is chosen. The server still refuses a status that would release
+  // the lock, which is the owner-or-admin unlock by another route.
+  const [changingStatus, setChangingStatus] = useState(false)
+  const changeStatus = async (next: string) => {
+    if (!locked) {
+      setStatus(next)
+      markDirty()
+      return
+    }
+    const previous = status
+    setStatus(next)
+    setChangingStatus(true)
+    const result = await updateQuoteStatus(quote.id, next)
+    setChangingStatus(false)
+    if (result.success) {
+      router.refresh()
+    } else {
+      setStatus(previous)
+      toast.error(result.error || t('page.failedSave'))
+    }
+  }
 
   // When the lock engages mid-session, a save already queued can only be
   // refused, and "Unsaved changes" would offer one that can never complete.
@@ -474,7 +498,8 @@ export function useQuoteFormState({
     setResolving(true)
     const result = await acknowledgeQuoteResponse(quote.id)
     if (result.success) {
-      setStatus('draft')
+      // A change request goes back to draft; an acceptance keeps its status.
+      if (result.data) setStatus(result.data.status)
       toast.success(t('page.responseResolved'))
       router.refresh()
     }
@@ -522,6 +547,8 @@ export function useQuoteFormState({
     setConvertVehicleId,
     converting,
     resolving,
+    changeStatus,
+    changingStatus,
     defaultValidDate,
     // Unsaved
     hasUnsavedChanges,

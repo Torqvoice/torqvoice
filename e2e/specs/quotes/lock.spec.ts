@@ -14,6 +14,12 @@ import { setQuoteLock } from '../../support/settings'
  * the moment a customer accepted. A workshop reported it as a glitch: the
  * quote they had just been told was accepted could not be turned into the job.
  *
+ * The same report turned up two more things a locked quote has to allow: a
+ * status that keeps it locked (a quote accepted over the phone), and dismissing
+ * the customer's acceptance from the dashboard. Dismissing used to put the
+ * quote back to draft, which erased the acceptance and released the lock, and
+ * the row stayed on screen until the page was reloaded.
+ *
  * Both triggers are walked, because they lock at different moments and the
  * button has to survive each of them. The quote setting is off by default and
  * is put back afterwards.
@@ -23,6 +29,8 @@ test.describe.configure({ mode: 'serial' })
 
 const stamp = Date.now()
 const CUSTOMER = `e2e-quote-lock-${stamp}@example.com`
+/** The seeded Camry belongs to James Mitchell, who is who the Share dialog notifies. */
+const SEEDED_CUSTOMER_EMAIL = 'james.mitchell@gmail.com'
 
 /** The editor's price fields are the part the lock is for, so they have to be frozen. */
 async function expectPricesFrozen(page: Page, banner: string) {
@@ -88,6 +96,28 @@ test.describe('a locked quote can still become a work order', () => {
     await settle(page)
     await expectPricesFrozen(page, 'This quote is locked because it has been sent')
 
+    // The customer says yes on the phone. A status that keeps the quote locked
+    // is not an edit, and one that would release the lock is not offered.
+    const status = page.getByRole('combobox', { name: 'Status' })
+    await expect(status).toBeEnabled()
+    await expect(async () => {
+      await status.click()
+      await expect(page.getByRole('option', { name: 'Accepted' })).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+    await expect(page.getByRole('option', { name: 'Draft' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+    await page.getByRole('option', { name: 'Accepted' }).click()
+    await expect(status).toContainText('Accepted')
+    // Disabled while the change is written, so enabled again means it landed.
+    await expect(status).toBeEnabled()
+
+    await page.reload()
+    await settle(page)
+    await expect(page.getByRole('combobox', { name: 'Status' })).toContainText('Accepted')
+    await expectPricesFrozen(page, 'This quote is locked because it has been sent')
+
     await convertToWorkOrder(page, quoteUrl, part)
   })
 
@@ -95,10 +125,24 @@ test.describe('a locked quote can still become a work order', () => {
     await setQuoteLock(page, { enabled: true, trigger: 'accepted' })
 
     const part = `E2E lock accepted part ${stamp}`
-    const quoteUrl = await newQuote(page, `E2E locked when accepted ${stamp}`)
+    const title = `E2E locked when accepted ${stamp}`
+    const quoteUrl = await newQuote(page, title)
     await addQuotePart(page, { name: part, quantity: 1, unitPrice: 700 })
     await saveQuote(page)
     const shareUrl = await quoteShareLink(page)
+
+    // Telling the customer from the Share dialog closes it once the mail has
+    // gone, instead of leaving a finished dialog on screen.
+    await clearMailbox()
+    const shareDialog = page.getByRole('dialog', { name: 'Share Quote' })
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Share', exact: true }).click()
+      await expect(shareDialog).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+    await shareDialog.locator('#notify-email-quote').click()
+    await shareDialog.getByRole('button', { name: 'Send Notification', exact: true }).click()
+    await expect(shareDialog).toBeHidden({ timeout: 30_000 })
+    await waitForMail(SEEDED_CUSTOMER_EMAIL, { timeout: 30_000 })
 
     // Sharing sends it, and under this trigger a sent quote is still open.
     await page.goto(quoteUrl)
@@ -126,6 +170,24 @@ test.describe('a locked quote can still become a work order', () => {
 
     // Copying the link is not an edit either.
     await expect(page.getByRole('button', { name: 'Copy link', exact: true })).toBeEnabled()
+
+    // Dismissed from the dashboard, the response leaves the list without a
+    // reload and stays gone, while the quote keeps the acceptance and its lock.
+    await page.goto('/')
+    await settle(page)
+    const row = page.getByTestId('quote-response-row').filter({ hasText: title })
+    await expect(row).toBeVisible()
+    await expect(async () => {
+      await row.getByRole('button', { name: 'Dismiss response' }).click()
+      await expect(row).toHaveCount(0, { timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+    await page.reload()
+    await settle(page)
+    await expect(page.getByTestId('quote-response-row').filter({ hasText: title })).toHaveCount(0)
+
+    await page.goto(quoteUrl)
+    await settle(page)
+    await expectPricesFrozen(page, 'This quote is locked because it has been accepted')
 
     await convertToWorkOrder(page, quoteUrl, part)
   })

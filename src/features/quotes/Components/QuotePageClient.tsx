@@ -238,7 +238,7 @@ export function QuotePageClient({
       currencyCode={currencyCode}
       t={t}
       onRevoke={handleRevoke}
-      locked={lockState.locked}
+      lockReason={lockState.locked ? lockState.reason : null}
     />
   )
 
