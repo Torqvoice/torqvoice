@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Visi",
+    "statusAttention": "Reikia dėmesio",
     "statusDraft": "Juodraštis",
     "statusSent": "Išsiųstas",
     "statusAccepted": "Priimtas",
@@ -212,5 +213,14 @@
     "failedDelete": "Nepavyko ištrinti failo",
     "failedUpdate": "Nepavyko atnaujinti",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Juodraštis",
+    "sent": "Išsiųstas",
+    "accepted": "Priimtas",
+    "rejected": "Atmestas",
+    "expired": "Pasibaigęs",
+    "converted": "Konvertuotas",
+    "changes_requested": "Prašomi pakeitimai"
   }
 }

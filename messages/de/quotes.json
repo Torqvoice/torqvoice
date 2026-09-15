@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Alle",
+    "statusAttention": "Erfordert Aufmerksamkeit",
     "statusDraft": "Entwurf",
     "statusSent": "Gesendet",
     "statusAccepted": "Akzeptiert",
@@ -212,5 +213,14 @@
     "failedDelete": "Datei konnte nicht gelöscht werden",
     "failedUpdate": "Aktualisierung fehlgeschlagen",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Entwurf",
+    "sent": "Gesendet",
+    "accepted": "Akzeptiert",
+    "rejected": "Abgelehnt",
+    "expired": "Abgelaufen",
+    "converted": "Umgewandelt",
+    "changes_requested": "Änderungen angefordert"
   }
 }

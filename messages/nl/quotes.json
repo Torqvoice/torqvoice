@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Alle",
+    "statusAttention": "Actie vereist",
     "statusDraft": "Concept",
     "statusSent": "Verzonden",
     "statusAccepted": "Geaccepteerd",
@@ -212,5 +213,14 @@
     "failedDelete": "Bestand verwijderen mislukt",
     "failedUpdate": "Bijwerken mislukt",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Concept",
+    "sent": "Verzonden",
+    "accepted": "Geaccepteerd",
+    "rejected": "Afgewezen",
+    "expired": "Verlopen",
+    "converted": "Geconverteerd",
+    "changes_requested": "Wijzigingen gevraagd"
   }
 }

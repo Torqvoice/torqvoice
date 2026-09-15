@@ -99,6 +99,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useTranslations } from 'next-intl'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { useServiceType } from '@/components/service-type-context'
 
 interface CustomerOption {
@@ -237,6 +238,7 @@ interface QuoteRecord {
 }
 
 const quoteStatusColors: Record<string, string> = {
+  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
   draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
   sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
   accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
@@ -344,6 +346,7 @@ export function VehicleDetailClient({
   const tc = useTranslations('common.buttons')
 
   const tq = useTranslations('vehicles.quotes')
+  const tQuoteStatus = useTranslations('quotes.statusLabels')
   const tf = useTranslations('vehicles.findings')
   const validTabs = ['services', 'quotes', 'inspections', 'findings', 'notes', 'reminders'] as const
   const tabParam = searchParams.get('tab')
@@ -1378,7 +1381,7 @@ export function VehicleDetailClient({
                         variant="outline"
                         className={`text-xs ${quoteStatusColors[q.status] || ''}`}
                       >
-                        {q.status}
+                        {quoteStatusLabel(q.status, tQuoteStatus)}
                       </Badge>
                       {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
                       <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
@@ -1413,9 +1416,9 @@ export function VehicleDetailClient({
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={`text-xs ${quoteStatusColors[q.status] || ''}`}
+                            className={`max-w-full whitespace-normal text-center text-xs leading-tight ${quoteStatusColors[q.status] || ''}`}
                           >
-                            {q.status}
+                            {quoteStatusLabel(q.status, tQuoteStatus)}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">

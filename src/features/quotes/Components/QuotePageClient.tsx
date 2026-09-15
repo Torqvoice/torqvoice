@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -107,6 +108,7 @@ export function QuotePageClient({
   const router = useRouter()
   const isLarge = useIsLargeScreen()
   const t = useTranslations('quotes')
+  const tStatus = useTranslations('quotes.statusLabels')
   const tPreview = useTranslations('common.pdfPreview')
 
   const state = useQuoteFormState({
@@ -257,9 +259,9 @@ export function QuotePageClient({
               <div className="flex items-center gap-2">
                 <Badge
                   variant="outline"
-                  className={`shrink-0 text-xs capitalize ${statusColors[state.status] || ''}`}
+                  className={`shrink-0 text-xs ${statusColors[state.status] || ''}`}
                 >
-                  {state.status}
+                  {quoteStatusLabel(state.status, tStatus)}
                 </Badge>
                 <h1 className="truncate text-lg font-semibold leading-tight">{quote.title}</h1>
               </div>

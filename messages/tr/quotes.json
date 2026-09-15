@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Tümü",
+    "statusAttention": "İlgi bekliyor",
     "statusDraft": "Taslak",
     "statusSent": "Gönderildi",
     "statusAccepted": "Kabul Edildi",
@@ -212,5 +213,14 @@
     "failedDelete": "Dosya silinemedi",
     "failedUpdate": "Güncelleme başarısız",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Taslak",
+    "sent": "Gönderildi",
+    "accepted": "Kabul Edildi",
+    "rejected": "Reddedildi",
+    "expired": "Süresi doldu",
+    "converted": "Dönüştürüldü",
+    "changes_requested": "Değişiklik Talep Edildi"
   }
 }

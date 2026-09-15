@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Все",
+    "statusAttention": "Требует внимания",
     "statusDraft": "Черновик",
     "statusSent": "Отправлено",
     "statusAccepted": "Принято",
@@ -212,5 +213,14 @@
     "failedDelete": "Не удалось удалить файл",
     "failedUpdate": "Не удалось обновить",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Черновик",
+    "sent": "Отправлено",
+    "accepted": "Принято",
+    "rejected": "Отклонено",
+    "expired": "Истекло",
+    "converted": "Конвертировано",
+    "changes_requested": "Запрошены изменения"
   }
 }

@@ -8,6 +8,12 @@ import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { useState, useCallback, useTransition, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { cn } from '@/lib/utils'
+import {
+  attentionClasses,
+  quoteNeedsAttention,
+  quoteStatusLabel,
+} from '@/features/quotes/Lib/quoteStatus'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -74,6 +80,7 @@ interface PaginatedData {
 
 const statusTabs = [
   { key: 'all', titleKey: 'list.statusAll' },
+  { key: 'attention', titleKey: 'list.statusAttention' },
   { key: 'draft', titleKey: 'list.statusDraft' },
   { key: 'sent', titleKey: 'list.statusSent' },
   { key: 'accepted', titleKey: 'list.statusAccepted' },
@@ -88,6 +95,7 @@ const statusColors: Record<string, string> = {
   rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
   expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
   converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
 }
 
 export function QuotesClient({
@@ -114,6 +122,7 @@ export function QuotesClient({
   const tableNav = useTableKeyboardNav()
   useRememberedSort('quotes')
   const t = useTranslations('quotes')
+  const tStatus = useTranslations('quotes.statusLabels')
   const tcm = useTranslations('common.contextMenu')
 
   // New quote dialog state
@@ -252,7 +261,11 @@ export function QuotesClient({
                 key={q.id}
                 type="button"
                 onClick={() => router.push(`/quotes/${q.id}`)}
-                className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                data-attention={quoteNeedsAttention(q.status) ? q.status : undefined}
+                className={cn(
+                  'w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50',
+                  attentionClasses(q.status).card
+                )}
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
@@ -279,7 +292,7 @@ export function QuotesClient({
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
                   <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
-                    {q.status}
+                    {quoteStatusLabel(q.status, tStatus)}
                   </Badge>
                   {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
                   <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
@@ -337,7 +350,7 @@ export function QuotesClient({
                   <SortIcon column="vehicle" />
                 </button>
               </TableHead>
-              <TableHead className="w-27.5">
+              <TableHead className="w-36">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -381,10 +394,13 @@ export function QuotesClient({
                 <ContextMenu key={q.id} modal={false}>
                   <ContextMenuTrigger asChild>
                     <TableRow
-                      className="cursor-pointer"
+                      data-attention={quoteNeedsAttention(q.status) ? q.status : undefined}
+                      className={`cursor-pointer ${attentionClasses(q.status).row}`}
                       {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
                     >
-                      <TableCell className="font-mono text-xs text-muted-foreground">
+                      <TableCell
+                        className={`font-mono text-xs text-muted-foreground ${attentionClasses(q.status).edge}`}
+                      >
                         {q.quoteNumber || '-'}
                       </TableCell>
                       <TableCell className="truncate font-medium">{q.title}</TableCell>
@@ -409,9 +425,11 @@ export function QuotesClient({
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className={`text-xs ${statusColors[q.status] || ''}`}
+                          // Wraps rather than spilling into the date column
+                          // when a language's word is wider than the cell.
+                          className={`max-w-full whitespace-normal text-center text-xs leading-tight ${statusColors[q.status] || ''}`}
                         >
-                          {q.status}
+                          {quoteStatusLabel(q.status, tStatus)}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-mono text-xs">
