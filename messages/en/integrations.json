@@ -479,6 +479,19 @@
         "modelHelp": "Which model answers. The list is read from your account, newest first. Smaller models cost less per call and are enough for most workshop text."
       }
     },
+    "openai-compatible": {
+      "description": "Service descriptions, history summaries, document scanning and the assistant, answered by any server that speaks OpenAI's chat API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM and the like. Your data stays on your own hardware.",
+      "fields": {
+        "baseUrl": "Base URL",
+        "baseUrlHelp": "Where the server's OpenAI-style API starts, including the path: /v1 for Ollama, vLLM, LocalAI and LM Studio, /api for Open WebUI. Torqvoice appends /models and /chat/completions to it.",
+        "apiKey": "API key",
+        "apiKeyHelp": "Only if the server asks for one. Ollama and vLLM usually run without a key; Open WebUI issues one under Settings, Account."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Which model answers. The list is everything the server reports, by name. Use a model with vision if you want photos read."
+      }
+    },
     "stripe": {
       "description": "Card payments from the invoice link, into your own Stripe account. The customer pays, Stripe tells Torqvoice, and the invoice marks itself paid.",
       "fields": {

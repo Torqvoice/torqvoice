@@ -479,6 +479,19 @@
         "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
       }
     },
+    "openai-compatible": {
+      "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan, OpenAI sohbet API'sini konuşan herhangi bir sunucu tarafından yanıtlanır: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ve benzerleri. Verileriniz kendi donanımınızda kalır.",
+      "fields": {
+        "baseUrl": "Temel URL",
+        "baseUrlHelp": "Sunucunun OpenAI tarzı API'sinin başladığı yer, yol dahil: Ollama, vLLM, LocalAI ve LM Studio için /v1, Open WebUI için /api. Torqvoice buna /models ve /chat/completions ekler.",
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "Yalnızca sunucu isterse. Ollama ve vLLM genellikle anahtarsız çalışır; Open WebUI anahtarı Ayarlar, Hesap altında verir."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Hangi modelin yanıtlayacağı. Liste, sunucunun bildirdiği her şeydir, ada göre. Fotoğrafların okunmasını istiyorsanız görüntü destekli bir model kullanın."
+      }
+    },
     "stripe": {
       "description": "Fatura bağlantısından kendi Stripe hesabınıza kart ödemesi. Müşteri öder, Stripe Torqvoice'a bildirir ve fatura kendini ödendi olarak işaretler.",
       "fields": {

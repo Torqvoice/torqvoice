@@ -126,6 +126,14 @@ export interface ConnectorManifest {
   schedules?: { job: string; everyMinutes: number }[]
   /** Plan feature that must be on, beyond the general integrations flag. */
   plan?: keyof PlanFeatures
+  /**
+   * Only offered on a self-hosted install. The registry leaves the connector
+   * out entirely on the cloud instance, so it is neither listed nor loadable
+   * there. For connectors that send to an address the workshop types in: on
+   * their own server that address is theirs to choose, on ours it would be
+   * a way to point the server at whatever else runs next to it.
+   */
+  selfHostedOnly?: boolean
 }
 
 export type LogLevel = 'info' | 'warn' | 'error'

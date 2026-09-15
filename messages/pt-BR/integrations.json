@@ -479,6 +479,19 @@
         "modelHelp": "Qual modelo responde. A lista vem da sua conta, os mais novos primeiro. Modelos menores custam menos por chamada e bastam para a maior parte dos textos da oficina."
       }
     },
+    "openai-compatible": {
+      "description": "Descrições de serviço, resumos de histórico, leitura de documentos e o assistente, respondidos por qualquer servidor que fale a API de chat da OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM e afins. Seus dados ficam no seu próprio hardware.",
+      "fields": {
+        "baseUrl": "URL base",
+        "baseUrlHelp": "Onde começa a API no estilo OpenAI do servidor, incluindo o caminho: /v1 para Ollama, vLLM, LocalAI e LM Studio, /api para Open WebUI. O Torqvoice acrescenta /models e /chat/completions.",
+        "apiKey": "Chave de API",
+        "apiKeyHelp": "Só se o servidor pedir uma. Ollama e vLLM costumam rodar sem chave; o Open WebUI emite uma em Configurações, Conta."
+      },
+      "settings": {
+        "model": "Modelo",
+        "modelHelp": "Qual modelo responde. A lista é tudo o que o servidor informa, por nome. Use um modelo com visão se quiser que fotos sejam lidas."
+      }
+    },
     "stripe": {
       "description": "Pagamentos com cartão pelo link da fatura, na sua própria conta Stripe. O cliente paga, o Stripe avisa a Torqvoice e a fatura se marca como paga sozinha.",
       "fields": {

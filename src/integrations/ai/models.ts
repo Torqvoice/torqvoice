@@ -1,5 +1,5 @@
 /**
- * The model list behind both AI connectors.
+ * The model list behind the AI connectors.
  *
  * OpenAI and Anthropic each publish everything the key can reach, embeddings
  * and image models included, so the list is filtered to the chat models the
@@ -20,8 +20,23 @@ export function apiKeyOf(ctx: ConnectorContext): string {
   return typeof key === 'string' ? key.trim() : ''
 }
 
+/** Bearer auth, or nothing at all: a local server often has no key to check. */
 export function openAiHeaders(apiKey: string): Record<string, string> {
-  return { Authorization: `Bearer ${apiKey}` }
+  return apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
+}
+
+/**
+ * The API root of an OpenAI-compatible server as the connect form stored it,
+ * without a trailing slash so `${base}/models` lands where the vendor put it:
+ * Open WebUI serves under /api, most others under /v1.
+ */
+export function compatibleBaseUrlOf(ctx: ConnectorContext): string {
+  const url = ctx.credentials.baseUrl
+  return typeof url === 'string' ? normalizeBaseUrl(url) : ''
+}
+
+export function normalizeBaseUrl(url: string): string {
+  return url.trim().replace(/\/+$/, '')
 }
 
 export function anthropicHeaders(apiKey: string): Record<string, string> {
@@ -76,14 +91,34 @@ export function formatModelLabel(modelId: string): string {
     .replace(/Gpt/g, 'GPT')
 }
 
-export async function listOpenAiModels(ctx: ConnectorContext): Promise<SettingOption[]> {
-  const data = await ctx.http.json<{ data: { id: string }[] }>(`${OPENAI_BASE}/models`, {
+async function fetchModelIds(ctx: ConnectorContext, base: string): Promise<string[]> {
+  const data = await ctx.http.json<{ data?: { id?: unknown }[] }>(`${base}/models`, {
     headers: openAiHeaders(apiKeyOf(ctx)),
   })
-  return data.data
-    .filter((m) => isOpenAiChatModel(m.id))
-    .sort((a, b) => openAiModelOrder(a.id) - openAiModelOrder(b.id))
-    .map((m) => ({ value: m.id, label: formatModelLabel(m.id) }))
+  return (data?.data ?? [])
+    .map((m) => m?.id)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0)
+}
+
+export async function listOpenAiModels(ctx: ConnectorContext): Promise<SettingOption[]> {
+  const ids = await fetchModelIds(ctx, OPENAI_BASE)
+  return ids
+    .filter(isOpenAiChatModel)
+    .sort((a, b) => openAiModelOrder(a) - openAiModelOrder(b))
+    .map((id) => ({ value: id, label: formatModelLabel(id) }))
+}
+
+/**
+ * Every model a compatible server lists, by its own name. The OpenAI filter
+ * would drop all of them (qwen3:8b, llama3.1:8b) and the label rewriting
+ * would mangle them, and a server that lists a model is offering it: what
+ * the model can do is for the workshop running it to know.
+ */
+export async function listCompatibleModels(ctx: ConnectorContext): Promise<SettingOption[]> {
+  const ids = await fetchModelIds(ctx, compatibleBaseUrlOf(ctx))
+  return [...new Set(ids)]
+    .sort((a, b) => a.localeCompare(b))
+    .map((id) => ({ value: id, label: id }))
 }
 
 /** Anthropic pages its model list, twenty at a time by default. */

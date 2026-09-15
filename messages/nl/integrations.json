@@ -479,6 +479,19 @@
         "modelHelp": "Welk model antwoordt. De lijst komt uit uw account, nieuwste eerst. Kleinere modellen kosten minder per aanroep en volstaan voor de meeste werkplaatsteksten."
       }
     },
+    "openai-compatible": {
+      "description": "Servicebeschrijvingen, historieksamenvattingen, documentherkenning en de assistent, beantwoord door elke server die de chat-API van OpenAI spreekt: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM en dergelijke. Uw gegevens blijven op uw eigen hardware.",
+      "fields": {
+        "baseUrl": "Basis-URL",
+        "baseUrlHelp": "Waar de OpenAI-achtige API van de server begint, inclusief het pad: /v1 bij Ollama, vLLM, LocalAI en LM Studio, /api bij Open WebUI. Torqvoice plakt er /models en /chat/completions achter.",
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Alleen als de server erom vraagt. Ollama en vLLM draaien meestal zonder sleutel; Open WebUI geeft er een uit onder Instellingen, Account."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Welk model antwoordt. De lijst is alles wat de server meldt, op naam. Kies een model met beeldherkenning als foto's gelezen moeten worden."
+      }
+    },
     "stripe": {
       "description": "Kaartbetalingen via de factuurlink, op je eigen Stripe-account. De klant betaalt, Stripe meldt het aan Torqvoice en de factuur markeert zichzelf als betaald.",
       "fields": {
