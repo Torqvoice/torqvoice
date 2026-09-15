@@ -55,7 +55,8 @@ test('opened from the bell, a change request lands on the quote showing the requ
   browser,
 }) => {
   const request = `Please use a genuine filter ${stamp}`
-  const { quoteUrl, shareUrl } = await sharedQuote(page, `E2E notified quote ${stamp}`)
+  const title = `E2E notified quote ${stamp}`
+  const { quoteUrl, shareUrl } = await sharedQuote(page, title)
   await requestChanges(browser, shareUrl, request)
 
   await page.goto('/')
@@ -64,6 +65,14 @@ test('opened from the bell, a change request lands on the quote showing the requ
 
   await page.waitForURL(quoteUrl, { timeout: 15_000 })
   await expect(page.getByText(request)).toBeVisible()
+
+  // And on the list, under "Needs attention", highlighted as a change request.
+  await page.goto(`/quotes?status=attention&search=${encodeURIComponent(title)}`)
+  await settle(page)
+  const row = page.getByRole('row').filter({ hasText: title })
+  await expect(row).toHaveAttribute('data-attention', 'changes_requested')
+  await expect(page.getByRole('button', { name: /Needs attention/ })).toBeVisible()
+  await page.goto(quoteUrl)
   // At the top of the quote, seen without scrolling past the lines first.
   await expect(page.getByText(request)).toBeInViewport()
 })
@@ -84,5 +93,5 @@ test('arriving while the quote is open, clicking it shows the request without a 
   await expect(page).toHaveURL(quoteUrl)
   await expect(page.getByText(request)).toBeVisible({ timeout: 15_000 })
   await expect(page.getByText(request)).toBeInViewport()
-  await expect(page.getByText('changes_requested', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Changes Requested', { exact: true }).first()).toBeVisible()
 })

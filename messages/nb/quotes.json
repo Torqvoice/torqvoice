@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Alle",
+    "statusAttention": "Trenger oppfølging",
     "statusDraft": "Utkast",
     "statusSent": "Sendt",
     "statusAccepted": "Akseptert",
@@ -212,5 +213,14 @@
     "failedDelete": "Kunne ikke slette filen",
     "failedUpdate": "Kunne ikke oppdatere",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Utkast",
+    "sent": "Sendt",
+    "accepted": "Akseptert",
+    "rejected": "Avslått",
+    "expired": "Utløpt",
+    "converted": "Konvertert",
+    "changes_requested": "Endringer forespurt"
   }
 }

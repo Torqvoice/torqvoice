@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Tous",
+    "statusAttention": "À traiter",
     "statusDraft": "Brouillon",
     "statusSent": "Envoyé",
     "statusAccepted": "Accepté",
@@ -212,5 +213,14 @@
     "failedDelete": "Échec de la suppression du fichier",
     "failedUpdate": "Échec de la mise à jour",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Brouillon",
+    "sent": "Envoyé",
+    "accepted": "Accepté",
+    "rejected": "Rejeté",
+    "expired": "Expiré",
+    "converted": "Converti",
+    "changes_requested": "Modifications demandées"
   }
 }

@@ -61,7 +61,7 @@ async function convertToWorkOrder(page: Page, quoteUrl: string, partName: string
   // Back on the quote, it is marked converted and offers no second conversion.
   await page.goto(quoteUrl)
   await settle(page)
-  await expect(page.getByText('converted', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Converted', { exact: true }).first()).toBeVisible()
   await expect(
     page.getByRole('button', { name: 'Convert to Work Order', exact: true })
   ).toHaveCount(0)

@@ -12,6 +12,7 @@ import {
 import { FileQuestion } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
@@ -21,6 +22,7 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.quotes')
+  const tQuoteStatus = await getTranslations('quotes.statusLabels')
   const result = await getPortalQuotes()
 
   if (!result.success || !result.data) {
@@ -68,7 +70,7 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                             : 'outline'
                       }
                     >
-                      {q.status}
+                      {quoteStatusLabel(q.status, tQuoteStatus)}
                     </Badge>
                     {q.vehicle && (
                       <span className="truncate">
@@ -126,7 +128,7 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                                 : 'outline'
                           }
                         >
-                          {q.status}
+                          {quoteStatusLabel(q.status, tQuoteStatus)}
                         </Badge>
                       </TableCell>
                       <TableCell>${q.totalAmount.toFixed(2)}</TableCell>

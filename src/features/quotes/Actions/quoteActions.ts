@@ -1,5 +1,6 @@
 'use server'
 
+import { ATTENTION_STATUSES } from '@/features/quotes/Lib/quoteStatus'
 import { assertQuoteEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, quoteLockState } from '@/lib/document-lock'
 import { db } from '@/lib/db'
@@ -54,7 +55,9 @@ export async function getQuotesPaginated(params: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
 
-      if (params.status && params.status !== 'all') {
+      if (params.status === 'attention') {
+        where.status = { in: ATTENTION_STATUSES }
+      } else if (params.status && params.status !== 'all') {
         where.status = params.status
       }
 
@@ -117,6 +120,7 @@ export async function getQuotesPaginated(params: {
       for (const g of statusCounts) {
         counts[g.status] = g._count
       }
+      counts.attention = ATTENTION_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0)
 
       return {
         records,
