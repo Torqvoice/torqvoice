@@ -198,6 +198,16 @@ const AGREED_QUOTE_STATUSES = ['accepted', 'converted']
 /** Statuses that mean the quote has left the workshop. */
 const ISSUED_QUOTE_STATUSES = ['sent', ...AGREED_QUOTE_STATUSES]
 
+/**
+ * Whether a locked quote may move to `status`. Status changes stay open on a
+ * locked quote, except one that would release the lock: that would be the
+ * owner-or-admin unlock by another route. `reason` is the lock's own, which
+ * names the trigger that set it.
+ */
+export function quoteStatusKeepsLock(reason: LockReason, status: string): boolean {
+  return (reason === 'sent' ? ISSUED_QUOTE_STATUSES : AGREED_QUOTE_STATUSES).includes(status)
+}
+
 export function quoteLockState(quote: LockableQuote, settings: DocumentLockSettings): LockState {
   if (!settings.quoteLockEnabled) return EDITABLE
 

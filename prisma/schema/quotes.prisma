@@ -31,6 +31,13 @@ model Quote {
   /// not change it.
   sentAt DateTime?
 
+  /// When the workshop dismissed the customer's answer from its list of
+  /// responses. An acceptance keeps its status when dismissed, because it is
+  /// the customer's agreement and may be what holds the quote locked, so the
+  /// list needs its own record of it. Cleared whenever the customer answers
+  /// again.
+  responseDismissedAt DateTime?
+
   /// See ServiceRecord.editUnlockedAt.
   editUnlockedAt   DateTime?
   editUnlockedById String?

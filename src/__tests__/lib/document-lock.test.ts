@@ -16,6 +16,7 @@ import {
   invoiceLockState,
   invoicePaymentStatus,
   quoteLockState,
+  quoteStatusKeepsLock,
   readDocumentLockSettings,
   type DocumentLockSettings,
 } from '@/lib/document-lock'
@@ -382,6 +383,41 @@ describe('quoteLockState', () => {
 
   it('does not lock on an unknown status', () => {
     expect(quoteLockState({ status: 'something-new' }, sent).locked).toBe(false)
+  })
+})
+
+describe('quoteStatusKeepsLock', () => {
+  it('lets a quote locked on sending move between sent, accepted and converted', () => {
+    for (const status of ['sent', 'accepted', 'converted']) {
+      expect(quoteStatusKeepsLock('sent', status)).toBe(true)
+    }
+  })
+
+  it('does not let a quote locked on sending go back to draft or on to rejected', () => {
+    expect(quoteStatusKeepsLock('sent', 'draft')).toBe(false)
+    expect(quoteStatusKeepsLock('sent', 'rejected')).toBe(false)
+  })
+
+  it('keeps a quote locked on acceptance to accepted and converted', () => {
+    expect(quoteStatusKeepsLock('accepted', 'accepted')).toBe(true)
+    expect(quoteStatusKeepsLock('accepted', 'converted')).toBe(true)
+    expect(quoteStatusKeepsLock('accepted', 'sent')).toBe(false)
+    expect(quoteStatusKeepsLock('accepted', 'draft')).toBe(false)
+  })
+
+  it('agrees with quoteLockState for every status the editor offers', () => {
+    for (const trigger of ['sent', 'accepted'] as const) {
+      const settings: DocumentLockSettings = {
+        ...DOCUMENT_LOCK_DEFAULTS,
+        quoteLockEnabled: true,
+        quoteLockTrigger: trigger,
+      }
+      for (const status of ['draft', 'sent', 'accepted', 'rejected', 'converted']) {
+        expect(quoteStatusKeepsLock(trigger, status), `${trigger} -> ${status}`).toBe(
+          quoteLockState({ status }, settings).locked
+        )
+      }
+    }
   })
 })
 

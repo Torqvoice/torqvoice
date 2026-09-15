@@ -34,6 +34,7 @@ export interface QuoteRecord {
   totalAmount: number
   notes: string | null
   customerMessage: string | null
+  responseDismissedAt?: Date | null
   publicToken: string | null
   sharedAt: Date | null
   viewCount: number

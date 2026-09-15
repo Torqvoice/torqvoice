@@ -353,6 +353,10 @@ export function DashboardClient({
   const activeNav = useTableKeyboardNav()
   const obsNav = useTableKeyboardNav()
   const [dismissingId, setDismissingId] = useState<string | null>(null)
+  // A dismissed response leaves the list at once rather than waiting for the
+  // server's next render of it, and comes back if the dismissal is refused.
+  const [dismissedResponseIds, setDismissedResponseIds] = useState<string[]>([])
+  const visibleQuoteResponses = quoteResponses.filter((r) => !dismissedResponseIds.includes(r.id))
   const [maintenanceTab, setMaintenanceTab] = useState<'active' | 'dismissed'>('active')
   const [restoringId, setRestoringId] = useState<string | null>(null)
   const [, startTransition] = useTransition()
@@ -475,7 +479,7 @@ export function DashboardClient({
     inProgressInspections.length === 0 && completedInspections.length === 0 ? 'inspections' : null,
     !serviceRequests || serviceRequests.length === 0 ? 'serviceRequests' : null,
     quoteRequests.length === 0 ? 'quoteRequests' : null,
-    quoteResponses.length === 0 ? 'quoteResponses' : null,
+    visibleQuoteResponses.length === 0 ? 'quoteResponses' : null,
     stats.recentServices.length === 0 ? 'recentCompleted' : null,
     stats.todaysServices.length === 0 ? 'activeJobs' : null,
     recentAuditLogs.length === 0 ? 'recentActivity' : null,
@@ -1418,7 +1422,7 @@ export function DashboardClient({
               <AppCard
                 icon={FileText}
                 title={t('quoteResponses.title')}
-                badge={quoteResponses.length || undefined}
+                badge={visibleQuoteResponses.length || undefined}
                 description={t('quoteResponses.description')}
                 contentClassName="p-0"
                 footer={
@@ -1432,13 +1436,14 @@ export function DashboardClient({
                   </button>
                 }
               >
-                {quoteResponses.length === 0 ? (
+                {visibleQuoteResponses.length === 0 ? (
                   <CardEmpty icon={FileText} title={t('quoteResponses.noData')} />
                 ) : (
                   <div className="divide-y">
-                    {quoteResponses.map((resp) => (
+                    {visibleQuoteResponses.map((resp) => (
                       <div
                         key={resp.id}
+                        data-testid="quote-response-row"
                         className="flex items-center justify-between px-5 py-3 overflow-hidden"
                       >
                         <div
@@ -1528,8 +1533,15 @@ export function DashboardClient({
                                 size="icon"
                                 className="h-6 w-6 text-muted-foreground hover:text-foreground"
                                 onClick={() => {
+                                  setDismissedResponseIds((ids) => [...ids, resp.id])
                                   startTransition(async () => {
-                                    await acknowledgeQuoteResponse(resp.id)
+                                    const result = await acknowledgeQuoteResponse(resp.id)
+                                    if (!result.success) {
+                                      setDismissedResponseIds((ids) =>
+                                        ids.filter((id) => id !== resp.id)
+                                      )
+                                      if (result.error) toast.error(result.error)
+                                    }
                                   })
                                 }}
                                 aria-label={t('quoteResponses.dismissAriaLabel')}
