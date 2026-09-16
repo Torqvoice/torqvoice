@@ -17,6 +17,7 @@ import {
   findRuleDesign,
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { getFeatures } from '@/lib/features'
+import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
@@ -136,7 +137,7 @@ export async function ServiceRecordPage({
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
 
-  const [currentUser, features, aiSettings, tireHotel] = await Promise.all([
+  const [currentUser, features, aiConfigured, tireHotel] = await Promise.all([
     session?.user?.id
       ? db.user.findUnique({
           where: { id: session.user.id },
@@ -144,15 +145,9 @@ export async function ServiceRecordPage({
         })
       : Promise.resolve(null),
     orgId ? getFeatures(orgId) : Promise.resolve(null),
-    orgId
-      ? db.appSetting.findMany({
-          where: {
-            organizationId: orgId,
-            key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
-          },
-          select: { key: true, value: true },
-        })
-      : Promise.resolve([]),
+    // An AI vendor connected in the catalog, or the settings a workshop saved
+    // before AI moved there. Nothing is adopted from a page render.
+    orgId ? isAiConfigured(orgId).catch(() => false) : Promise.resolve(false),
     // The whole config, not just the switch: checking a set in from here
     // grades tread, and it has to grade against this workshop's own limits.
     getTireHotelSettings(orgId ?? ''),
@@ -185,11 +180,7 @@ export async function ServiceRecordPage({
     null
   const designFollowsRule = ruleDesign?.autoRule ?? null
   const designPinnedAt = rendersFromIssue(record) ? (record.issuedAt?.toISOString() ?? null) : null
-  const aiSettingsMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
-  const aiEnabled =
-    features?.ai === true &&
-    aiSettingsMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
-    !!aiSettingsMap[SETTING_KEYS.AI_API_KEY]
+  const aiEnabled = features?.ai === true && aiConfigured
 
   // A timestamp outside JS date range (bad legacy data) must degrade to a
   // fallback date, not crash the page on toISOString().
