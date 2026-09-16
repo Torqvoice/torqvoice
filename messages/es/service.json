@@ -41,7 +41,20 @@
     "unpaid": "Sin Pagar",
     "unsavedChanges": "Cambios sin guardar",
     "saved": "Guardado",
-    "joinCall": "Unirse a la videollamada"
+    "joinCall": "Unirse a la videollamada",
+    "moreActions": "Más acciones",
+    "designMenu": "Diseño de la factura",
+    "designMenuLoading": "Comprobando con qué diseño se imprime esta factura...",
+    "designMenuExplain": "Se envió al cliente el {date}, así que sigue imprimiéndose con el diseño del envío. Elegir otro solo cambia el aspecto. Lo que dice la factura se mantiene tal como se envió, y el aspecto anterior no se conserva.",
+    "designSentWith": "El diseño con el que se envió",
+    "designFollow": "Seguir el diseño predeterminado",
+    "designFollowNamed": "Seguir el diseño predeterminado ({name})",
+    "designDefaultName": "el diseño predeterminado",
+    "designPickConfirmTitle": "¿Cambiar esta factura a {name}?",
+    "designPickConfirmBody": "Solo cambia el aspecto. Los datos del taller, el cliente, las condiciones de pago y los importes se mantienen tal como se enviaron. El diseño actual no se conserva, así que esto no se puede deshacer.",
+    "designPickConfirm": "Cambiar el diseño",
+    "designPickDone": "La factura ya se imprime con {name}",
+    "designPickFailed": "No se pudo cambiar el diseño"
   },
   "basicInfo": {
     "title": "Información Básica",
@@ -89,8 +102,9 @@
     "design": "Diseño de factura",
     "designDefault": "Predeterminado del taller",
     "designFollowing": "Predeterminado ({name})",
-    "designPinned": "La hoja se congeló al emitir la factura el {date}. Una nueva elección se aplica solo después de que un propietario desbloquee la factura y se envíe de nuevo.",
+    "designPinned": "Esta factura llegó al cliente el {date}, así que mantiene el diseño con el que salió. Una elección aquí se aplica solo después de desbloquearla y volver a enviarla. Un propietario puede cambiar el diseño ahora desde Diseño de la factura en el menú ⋮ de arriba.",
     "designSaved": "Diseño de factura actualizado",
+    "designSavedPinned": "Guardado. Esta factura mantiene el diseño con el que se envió hasta que se desbloquee y se vuelva a enviar.",
     "designFollowingRule": "Predeterminado ({name}, {rule})",
     "designRule": {
       "parts_sale": "Venta solo de piezas"

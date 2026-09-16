@@ -141,6 +141,12 @@ async function loadLogoDataUri(logoPath: string): Promise<string | undefined> {
   }
 }
 
+/** The little of an invoice that decides which design it prints with. */
+export interface DesignSubject {
+  designId: string | null
+  vehicleId: string | null
+}
+
 /**
  * The design a draft prints with: the invoice's own choice, then the
  * customer's, then whatever the settings describe. A choice that points at
@@ -150,7 +156,7 @@ async function loadLogoDataUri(logoPath: string): Promise<string | undefined> {
 async function resolveLiveDesign(
   organizationId: string,
   settingsMap: Record<string, string>,
-  record: InvoiceRecordForPrint,
+  record: DesignSubject,
   customerDesignId: string | null | undefined
 ): Promise<DesignSource> {
   // The invoice's own choice, then its customer's, then whichever design
@@ -168,6 +174,43 @@ async function resolveLiveDesign(
   const ruled = byRule ? designSourceFromStored(byRule.layout, byRule.template) : null
   if (ruled) return ruled
   return designSourceFromSettings(settingsMap, 'invoice')
+}
+
+/** A design together with the logo it prints. */
+export interface DesignLook {
+  designSource: DesignSource
+  logoDataUri?: string
+}
+
+/**
+ * A design plus the logo it points at, which is the design's own if it sets
+ * one and the workshop's otherwise.
+ */
+export async function designLook(
+  settingsMap: Record<string, string>,
+  designSource: DesignSource
+): Promise<DesignLook> {
+  const logoPath =
+    designSource.template.logoUrl?.trim() || settingsMap[SETTING_KEYS.COMPANY_LOGO]?.trim() || ''
+  return { designSource, logoDataUri: await loadLogoDataUri(logoPath) }
+}
+
+/**
+ * The look an invoice would print with right now. Split out of the live
+ * assembly because re-applying a design to an issued invoice needs exactly
+ * this and nothing else, and building a whole sheet per invoice to get it
+ * would make a bulk run crawl.
+ */
+export async function currentLook(
+  organizationId: string,
+  settingsMap: Record<string, string>,
+  record: DesignSubject,
+  customerDesignId: string | null | undefined
+): Promise<DesignLook> {
+  return designLook(
+    settingsMap,
+    await resolveLiveDesign(organizationId, settingsMap, record, customerDesignId)
+  )
 }
 
 function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettingsProps {
@@ -267,19 +310,16 @@ async function assembleLive(
   settingsMap: Record<string, string>
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
-  const [findings, customFields, designSource] = await Promise.all([
+  const [findings, customFields, look] = await Promise.all([
     db.vehicleFinding.findMany({
       where: { serviceRecordId: record.id, status: { not: 'resolved' } },
       select: { description: true, severity: true, notes: true },
       orderBy: { createdAt: 'desc' },
     }),
     getCustomFieldsForPrint(organizationId, record.id, 'service_record'),
-    resolveLiveDesign(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
+    currentLook(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
   ])
-
-  const logoPath =
-    designSource.template.logoUrl?.trim() || settingsMap[SETTING_KEYS.COMPANY_LOGO]?.trim() || ''
-  const logoDataUri = await loadLogoDataUri(logoPath)
+  const { designSource, logoDataUri } = look
 
   const invoiceSettings = liveInvoiceSettings(settingsMap)
   const workshop: WorkshopInfo = {

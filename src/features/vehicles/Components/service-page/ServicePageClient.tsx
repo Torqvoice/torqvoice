@@ -2,6 +2,7 @@
 
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
+import { InvoiceDesignMenu } from './InvoiceDesignMenu'
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
@@ -341,6 +342,12 @@ export function ServicePageClient({
     }
   }, [router, confirmComplete, formState, record.id, t])
 
+  // An issued invoice prints from the design it was frozen with. An owner or
+  // admin can move it to another, which changes the look and nothing the
+  // invoice says. Offered only while the sheet is actually frozen: a reopened
+  // one already follows the live design, so there is nothing to change.
+  const canChangeIssuedDesign = canUnlock && designPinnedAt !== null
+
   useSaveShortcut(() => {
     if (formState.hasUnsavedChanges) return actions.saveNow()
   })
@@ -390,6 +397,11 @@ export function ServicePageClient({
         }}
         onNotifyCustomer={handleNotifyCustomer}
         hasCustomer={!!customer}
+        designMenu={
+          canChangeIssuedDesign ? (
+            <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
+          ) : undefined
+        }
       />
 
       {(lockState.locked || lockState.unlockedAt) && (

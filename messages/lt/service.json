@@ -41,7 +41,20 @@
     "unpaid": "Neapmokėta",
     "unsavedChanges": "Neišsaugoti pakeitimai",
     "saved": "Išsaugota",
-    "joinCall": "Prisijungti prie vaizdo skambučio"
+    "joinCall": "Prisijungti prie vaizdo skambučio",
+    "moreActions": "Daugiau veiksmų",
+    "designMenu": "Sąskaitos dizainas",
+    "designMenuLoading": "Tikrinama, su kuriuo dizainu spausdinama ši sąskaita...",
+    "designMenuExplain": "Klientui iškeliavo {date}, todėl vis dar spausdinama su tuo dizainu, su kuriuo buvo išsiųsta. Pasirinkus kitą, keičiasi tik išvaizda. Tai, ką sąskaita sako, lieka kaip išsiųsta, o senoji išvaizda nesaugoma.",
+    "designSentWith": "Dizainas, su kuriuo išsiųsta",
+    "designFollow": "Sekti dabartinį numatytąjį",
+    "designFollowNamed": "Sekti dabartinį numatytąjį ({name})",
+    "designDefaultName": "dabartinį numatytąjį dizainą",
+    "designPickConfirmTitle": "Pakeisti šią sąskaitą į {name}?",
+    "designPickConfirmBody": "Keičiasi tik išvaizda. Serviso duomenys, klientas, mokėjimo sąlygos ir sumos lieka tokie, kokie buvo išsiųsti. Dabartinis dizainas nesaugomas, todėl to atšaukti nepavyks.",
+    "designPickConfirm": "Keisti dizainą",
+    "designPickDone": "Sąskaita dabar spausdinama su {name}",
+    "designPickFailed": "Nepavyko pakeisti dizaino"
   },
   "basicInfo": {
     "title": "Pagrindinė informacija",
@@ -89,8 +102,9 @@
     "design": "Sąskaitos dizainas",
     "designDefault": "Dirbtuvės numatytasis",
     "designFollowing": "Numatytasis ({name})",
-    "designPinned": "Lapas užfiksuotas išrašant sąskaitą {date}. Naujas pasirinkimas galios tik po to, kai savininkas atrakins sąskaitą ir ji bus išsiųsta dar kartą.",
+    "designPinned": "Ši sąskaita klientą pasiekė {date}, todėl išlaiko dizainą, su kuriuo iškeliavo. Čia padarytas pasirinkimas suveiks tik atrakinus ir išsiuntus iš naujo. Savininkas gali pakeisti dizainą dabar per Sąskaitos dizainas ⋮ meniu viršuje.",
     "designSaved": "Sąskaitos dizainas atnaujintas",
+    "designSavedPinned": "Išsaugota. Ši sąskaita išlaiko dizainą, su kuriuo buvo išsiųsta, kol nebus atrakinta ir išsiųsta iš naujo.",
     "designFollowingRule": "Numatytasis ({name}, {rule})",
     "designRule": {
       "parts_sale": "Tik dalių pardavimas"

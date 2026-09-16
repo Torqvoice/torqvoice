@@ -41,7 +41,20 @@
     "unpaid": "Ubetalt",
     "unsavedChanges": "Ulagrede endringer",
     "saved": "Lagret",
-    "joinCall": "Bli med i videosamtale"
+    "joinCall": "Bli med i videosamtale",
+    "moreActions": "Flere handlinger",
+    "designMenu": "Fakturadesign",
+    "designMenuLoading": "Sjekker hvilket design denne fakturaen skrives ut med ...",
+    "designMenuExplain": "Sendt til kunden {date}, så den skrives fortsatt ut med designet den ble sendt med. Å velge et annet endrer bare utseendet. Det fakturaen sier står som da den ble sendt, og det gamle utseendet tas ikke vare på.",
+    "designSentWith": "Designet den ble sendt med",
+    "designFollow": "Følg gjeldende standard",
+    "designFollowNamed": "Følg gjeldende standard ({name})",
+    "designDefaultName": "gjeldende standard",
+    "designPickConfirmTitle": "Endre denne fakturaen til {name}?",
+    "designPickConfirmBody": "Bare utseendet endres. Verkstedopplysningene, kunden, betalingsbetingelsene og beløpene står nøyaktig som de ble sendt. Designet den skrives ut med nå tas ikke vare på, så dette kan ikke angres.",
+    "designPickConfirm": "Endre designet",
+    "designPickDone": "Fakturaen skrives nå ut med {name}",
+    "designPickFailed": "Kunne ikke endre designet"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",
@@ -89,8 +102,9 @@
     "design": "Fakturadesign",
     "designDefault": "Verkstedets standard",
     "designFollowing": "Standard ({name})",
-    "designPinned": "Arket ble fryst da fakturaen ble utstedt {date}. Et nytt valg gjelder først etter at en eier låser opp fakturaen og den sendes igjen.",
+    "designPinned": "Denne fakturaen nådde kunden {date}, så den beholder designet den gikk ut med. Et valg her gjelder først etter at den låses opp og sendes på nytt. En eier kan endre designet nå fra Fakturadesign i ⋮-menyen øverst.",
     "designSaved": "Fakturadesign oppdatert",
+    "designSavedPinned": "Lagret. Denne fakturaen beholder designet den ble sendt med til den låses opp og sendes på nytt.",
     "designFollowingRule": "Standard ({name}, {rule})",
     "designRule": {
       "parts_sale": "Kun delesalg"

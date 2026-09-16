@@ -41,7 +41,20 @@
     "unpaid": "Onbetaald",
     "unsavedChanges": "Niet-opgeslagen wijzigingen",
     "saved": "Opgeslagen",
-    "joinCall": "Deelnemen aan videogesprek"
+    "joinCall": "Deelnemen aan videogesprek",
+    "moreActions": "Meer acties",
+    "designMenu": "Factuurontwerp",
+    "designMenuLoading": "Bezig met nagaan met welk ontwerp deze factuur wordt afgedrukt...",
+    "designMenuExplain": "Op {date} naar de klant gegaan, dus ze wordt nog steeds afgedrukt met het ontwerp van toen. Een ander kiezen verandert alleen het uiterlijk. Wat de factuur zegt blijft zoals ze is verstuurd, en het oude uiterlijk wordt niet bewaard.",
+    "designSentWith": "Het ontwerp bij verzending",
+    "designFollow": "Het huidige standaardontwerp volgen",
+    "designFollowNamed": "Het huidige standaardontwerp volgen ({name})",
+    "designDefaultName": "het huidige standaardontwerp",
+    "designPickConfirmTitle": "Deze factuur omzetten naar {name}?",
+    "designPickConfirmBody": "Alleen het uiterlijk verandert. De werkplaatsgegevens, de klant, de betalingsvoorwaarden en de bedragen blijven precies zoals ze zijn verstuurd. Het huidige ontwerp wordt niet bewaard, dus dit kan niet ongedaan worden gemaakt.",
+    "designPickConfirm": "Ontwerp wijzigen",
+    "designPickDone": "De factuur wordt nu afgedrukt met {name}",
+    "designPickFailed": "Kon het ontwerp niet wijzigen"
   },
   "basicInfo": {
     "title": "Basisinformatie",
@@ -89,8 +102,9 @@
     "design": "Factuurontwerp",
     "designDefault": "Standaard van de werkplaats",
     "designFollowing": "Standaard ({name})",
-    "designPinned": "Het blad is bevroren toen de factuur op {date} werd uitgegeven. Een nieuwe keuze geldt pas nadat een eigenaar de factuur ontgrendelt en ze opnieuw wordt verzonden.",
+    "designPinned": "Deze factuur bereikte de klant op {date} en houdt dus het ontwerp waarmee ze is uitgegaan. Een keuze hier geldt pas nadat ze is ontgrendeld en opnieuw verstuurd. Een eigenaar kan het ontwerp nu wijzigen via Factuurontwerp in het ⋮-menu bovenaan.",
     "designSaved": "Factuurontwerp bijgewerkt",
+    "designSavedPinned": "Opgeslagen. Deze factuur houdt het ontwerp waarmee ze is verstuurd totdat ze wordt ontgrendeld en opnieuw verstuurd.",
     "designFollowingRule": "Standaard ({name}, {rule})",
     "designRule": {
       "parts_sale": "Alleen onderdelenverkoop"

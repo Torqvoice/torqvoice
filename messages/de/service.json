@@ -41,7 +41,20 @@
     "unpaid": "Unbezahlt",
     "unsavedChanges": "Nicht gespeicherte Änderungen",
     "saved": "Gespeichert",
-    "joinCall": "Videoanruf beitreten"
+    "joinCall": "Videoanruf beitreten",
+    "moreActions": "Weitere Aktionen",
+    "designMenu": "Rechnungsdesign",
+    "designMenuLoading": "Prüfe, mit welchem Design diese Rechnung gedruckt wird ...",
+    "designMenuExplain": "Am {date} an den Kunden gegangen, daher wird sie weiterhin mit dem damaligen Design gedruckt. Ein anderes zu wählen ändert nur das Aussehen. Was die Rechnung sagt, bleibt wie versendet, und das alte Aussehen wird nicht aufbewahrt.",
+    "designSentWith": "Das Design beim Versand",
+    "designFollow": "Aktueller Standard",
+    "designFollowNamed": "Aktueller Standard ({name})",
+    "designDefaultName": "den aktuellen Standard",
+    "designPickConfirmTitle": "Diese Rechnung auf {name} umstellen?",
+    "designPickConfirmBody": "Nur das Aussehen ändert sich. Werkstattangaben, Kunde, Zahlungsbedingungen und Beträge bleiben genau so, wie sie versendet wurden. Das jetzige Design wird nicht aufbewahrt, das lässt sich also nicht rückgängig machen.",
+    "designPickConfirm": "Design ändern",
+    "designPickDone": "Die Rechnung wird jetzt mit {name} gedruckt",
+    "designPickFailed": "Design konnte nicht geändert werden"
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",
@@ -89,8 +102,9 @@
     "design": "Rechnungsdesign",
     "designDefault": "Werkstatt-Standard",
     "designFollowing": "Standard ({name})",
-    "designPinned": "Das Blatt wurde beim Ausstellen der Rechnung am {date} eingefroren. Eine neue Wahl gilt erst, wenn ein Inhaber die Rechnung entsperrt und sie erneut gesendet wird.",
+    "designPinned": "Diese Rechnung erreichte den Kunden am {date} und behält daher das Design, mit dem sie hinausging. Eine Auswahl hier greift erst, nachdem sie entsperrt und erneut versendet wurde. Ein Inhaber kann das Design jetzt über Rechnungsdesign im ⋮-Menü oben ändern.",
     "designSaved": "Rechnungsdesign aktualisiert",
+    "designSavedPinned": "Gespeichert. Diese Rechnung behält das Design, mit dem sie versendet wurde, bis sie entsperrt und erneut versendet wird.",
     "designFollowingRule": "Standard ({name}, {rule})",
     "designRule": {
       "parts_sale": "Reiner Teileverkauf"

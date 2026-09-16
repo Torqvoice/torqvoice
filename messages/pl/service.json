@@ -41,7 +41,20 @@
     "unpaid": "Niezapłacone",
     "unsavedChanges": "Niezapisane zmiany",
     "saved": "Zapisano",
-    "joinCall": "Dołącz do rozmowy wideo"
+    "joinCall": "Dołącz do rozmowy wideo",
+    "moreActions": "Więcej działań",
+    "designMenu": "Projekt faktury",
+    "designMenuLoading": "Sprawdzanie, z jakim projektem drukuje się ta faktura...",
+    "designMenuExplain": "Trafiła do klienta {date}, więc nadal drukuje się z projektem z chwili wysyłki. Wybór innego zmienia tylko wygląd. To, co faktura mówi, pozostaje takie jak przy wysyłce, a poprzedni wygląd nie jest zachowywany.",
+    "designSentWith": "Projekt z chwili wysyłki",
+    "designFollow": "Zgodnie z bieżącym domyślnym",
+    "designFollowNamed": "Zgodnie z bieżącym domyślnym ({name})",
+    "designDefaultName": "bieżący domyślny projekt",
+    "designPickConfirmTitle": "Zmienić tę fakturę na {name}?",
+    "designPickConfirmBody": "Zmienia się tylko wygląd. Dane warsztatu, klient, warunki płatności i kwoty pozostają dokładnie takie, jakie zostały wysłane. Obecny projekt nie jest zachowywany, więc tej operacji nie można cofnąć.",
+    "designPickConfirm": "Zmień projekt",
+    "designPickDone": "Faktura drukuje się teraz z projektem {name}",
+    "designPickFailed": "Nie udało się zmienić projektu"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",
@@ -89,8 +102,9 @@
     "design": "Projekt faktury",
     "designDefault": "Domyślny warsztatu",
     "designFollowing": "Domyślny ({name})",
-    "designPinned": "Arkusz został zamrożony przy wystawieniu faktury {date}. Nowy wybór zadziała dopiero, gdy właściciel odblokuje fakturę i zostanie ona wysłana ponownie.",
+    "designPinned": "Ta faktura trafiła do klienta {date}, więc zachowuje projekt, z którym wyszła. Wybór tutaj zadziała dopiero po odblokowaniu i ponownej wysyłce. Właściciel może zmienić projekt teraz przez Projekt faktury w menu ⋮ u góry.",
     "designSaved": "Projekt faktury zaktualizowany",
+    "designSavedPinned": "Zapisano. Ta faktura zachowuje projekt, z którym została wysłana, dopóki nie zostanie odblokowana i wysłana ponownie.",
     "designFollowingRule": "Domyślny ({name}, {rule})",
     "designRule": {
       "parts_sale": "Sprzedaż samych części"
