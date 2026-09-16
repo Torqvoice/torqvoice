@@ -626,6 +626,13 @@ export function InvoiceDesigner({
     try {
       const prefix = docType === 'invoice' ? 'invoice' : 'quote'
 
+      // The stamp that graduates this organization from the classic
+      // pre-designer rendering to whatever this designer shows. The row needs
+      // it as much as the settings copy below: a row saved without it printed
+      // the classic header and title whenever an invoice picked the design by
+      // name, while the same design as the workshop default printed correctly.
+      const stamped = { ...layout, version: DESIGNER_LAYOUT_VERSION }
+
       // The row is the design: saved on the server under its name, which is
       // also what makes the same name update in place rather than fill the
       // gallery with near-copies.
@@ -633,7 +640,7 @@ export function InvoiceDesigner({
         id: existing?.id,
         documentType: docType,
         name,
-        layout: JSON.parse(JSON.stringify(layout)) as InvoiceLayoutConfig,
+        layout: JSON.parse(JSON.stringify(stamped)) as InvoiceLayoutConfig,
         template: { ...template },
       })
       if (!savedResult.success || !savedResult.data) {
@@ -647,9 +654,6 @@ export function InvoiceDesigner({
         setActiveDesigns((prev) => ({ ...prev, [docType]: active }))
       }
 
-      // The stamp that graduates this organization from the classic
-      // pre-designer rendering to whatever this designer shows.
-      const stamped = { ...layout, version: DESIGNER_LAYOUT_VERSION }
       await Promise.all([
         docType === 'invoice' ? saveInvoiceLayoutConfig(stamped) : saveQuoteLayoutConfig(stamped),
         setSettings({
