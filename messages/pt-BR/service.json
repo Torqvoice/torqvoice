@@ -41,7 +41,20 @@
     "unpaid": "Não Pago",
     "unsavedChanges": "Alterações não salvas",
     "saved": "Salvo",
-    "joinCall": "Entrar na videochamada"
+    "joinCall": "Entrar na videochamada",
+    "moreActions": "Mais ações",
+    "designMenu": "Design da fatura",
+    "designMenuLoading": "Verificando com qual design esta fatura é impressa...",
+    "designMenuExplain": "Foi para o cliente em {date}, então ainda é impressa com o design do envio. Escolher outro muda apenas a aparência. O que a fatura diz continua como foi enviado, e a aparência anterior não é guardada.",
+    "designSentWith": "O design com que foi enviada",
+    "designFollow": "Seguir o design padrão",
+    "designFollowNamed": "Seguir o design padrão ({name})",
+    "designDefaultName": "o design padrão",
+    "designPickConfirmTitle": "Mudar esta fatura para {name}?",
+    "designPickConfirmBody": "Só a aparência muda. Os dados da oficina, o cliente, as condições de pagamento e os valores continuam exatamente como foram enviados. O design atual não é guardado, então isso não pode ser desfeito.",
+    "designPickConfirm": "Mudar o design",
+    "designPickDone": "A fatura agora é impressa com {name}",
+    "designPickFailed": "Não foi possível alterar o design"
   },
   "basicInfo": {
     "title": "Informações Básicas",
@@ -89,8 +102,9 @@
     "design": "Design da fatura",
     "designDefault": "Padrão da oficina",
     "designFollowing": "Padrão ({name})",
-    "designPinned": "A folha foi congelada quando a fatura foi emitida em {date}. Uma nova escolha só vale depois que um proprietário desbloquear a fatura e ela for enviada de novo.",
+    "designPinned": "Esta fatura chegou ao cliente em {date}, então mantém o design com que saiu. Uma escolha aqui só vale depois de destravar e enviar de novo. Um proprietário pode mudar o design agora em Design da fatura no menu ⋮ no topo.",
     "designSaved": "Design da fatura atualizado",
+    "designSavedPinned": "Salvo. Esta fatura mantém o design com que foi enviada até ser destravada e enviada de novo.",
     "designFollowingRule": "Padrão ({name}, {rule})",
     "designRule": {
       "parts_sale": "Venda apenas de peças"

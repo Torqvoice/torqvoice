@@ -41,7 +41,20 @@
     "unpaid": "Ödenmedi",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",
     "saved": "Kaydedildi",
-    "joinCall": "Görüntülü görüşmeye katıl"
+    "joinCall": "Görüntülü görüşmeye katıl",
+    "moreActions": "Diğer işlemler",
+    "designMenu": "Fatura tasarımı",
+    "designMenuLoading": "Bu faturanın hangi tasarımla yazdırıldığı kontrol ediliyor...",
+    "designMenuExplain": "{date} tarihinde müşteriye gitti, bu yüzden hâlâ gönderildiği tasarımla yazdırılıyor. Başka birini seçmek yalnızca görünümü değiştirir. Faturanın söyledikleri gönderildiği gibi kalır, eski görünüm ise saklanmaz.",
+    "designSentWith": "Gönderildiği tasarım",
+    "designFollow": "Geçerli varsayılanı izle",
+    "designFollowNamed": "Geçerli varsayılanı izle ({name})",
+    "designDefaultName": "geçerli varsayılan tasarım",
+    "designPickConfirmTitle": "Bu fatura {name} tasarımına geçsin mi?",
+    "designPickConfirmBody": "Yalnızca görünüm değişir. Servis bilgileri, müşteri, ödeme koşulları ve tutarlar gönderildiği gibi kalır. Şu anki tasarım saklanmaz, bu yüzden bu işlem geri alınamaz.",
+    "designPickConfirm": "Tasarımı değiştir",
+    "designPickDone": "Fatura artık {name} tasarımıyla yazdırılıyor",
+    "designPickFailed": "Tasarım değiştirilemedi"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
@@ -89,8 +102,9 @@
     "design": "Fatura tasarımı",
     "designDefault": "Atölye varsayılanı",
     "designFollowing": "Varsayılan ({name})",
-    "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim yalnızca bir sahip faturanın kilidini açıp yeniden gönderildikten sonra uygulanır.",
+    "designPinned": "Bu fatura müşteriye {date} tarihinde ulaştı, bu yüzden çıktığı tasarımı korur. Buradaki seçim ancak kilidi açılıp yeniden gönderildikten sonra geçerli olur. Bir sahip tasarımı şimdi üstteki ⋮ menüsündeki Fatura tasarımı ile değiştirebilir.",
     "designSaved": "Fatura tasarımı güncellendi",
+    "designSavedPinned": "Kaydedildi. Bu fatura, kilidi açılıp yeniden gönderilene kadar gönderildiği tasarımı korur.",
     "designFollowingRule": "Varsayılan ({name}, {rule})",
     "designRule": {
       "parts_sale": "Yalnızca parça satışı"

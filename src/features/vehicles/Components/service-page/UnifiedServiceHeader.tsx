@@ -5,6 +5,15 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { IconActionButton } from '@/components/icon-action-button'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -13,6 +22,7 @@ import {
   Globe,
   Mail,
   MessageSquare,
+  MoreVertical,
   Save,
   Trash2,
   Video,
@@ -53,6 +63,8 @@ interface UnifiedServiceHeaderProps {
   onShowShare: () => void
   onNotifyCustomer?: () => void
   hasCustomer?: boolean
+  /** The invoice-design submenu, when this invoice has a frozen look to change. */
+  designMenu?: React.ReactNode
   /** Video call link from a connected calendar, when one exists. */
   meetingUrl?: string | null
 }
@@ -77,6 +89,7 @@ export function UnifiedServiceHeader({
   onShowShare,
   onNotifyCustomer,
   hasCustomer = false,
+  designMenu,
   meetingUrl = null,
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
@@ -162,12 +175,39 @@ export function UnifiedServiceHeader({
                 onClick={onNotifyCustomer}
               />
             )}
-            <IconActionButton
-              label={t('delete')}
-              icon={Trash2}
-              className="text-destructive hover:bg-destructive/10"
-              onClick={onDelete}
-            />
+            {/* The row already carries six actions in twelve languages. New
+                ones go in here rather than widening it, and Delete moved in
+                with them: a destructive button one pixel from Share is a
+                misclick waiting to happen. */}
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      aria-label={t('moreActions')}
+                    >
+                      <MoreVertical className="size-4" aria-hidden="true" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>{t('moreActions')}</TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align="end" className="min-w-56">
+                {designMenu && (
+                  <>
+                    {designMenu}
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+                  <Trash2 className="mr-2 size-4" aria-hidden="true" />
+                  {t('delete')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </ButtonGroup>
         </div>
       </div>

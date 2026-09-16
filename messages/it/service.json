@@ -41,7 +41,20 @@
     "unpaid": "Non Pagato",
     "unsavedChanges": "Modifiche non salvate",
     "saved": "Salvato",
-    "joinCall": "Partecipa alla videochiamata"
+    "joinCall": "Partecipa alla videochiamata",
+    "moreActions": "Altre azioni",
+    "designMenu": "Design della fattura",
+    "designMenuLoading": "Controllo con quale design viene stampata questa fattura...",
+    "designMenuExplain": "Andata al cliente il {date}, quindi viene ancora stampata con il design di allora. Sceglierne un altro cambia solo l'aspetto. Quello che la fattura dice resta come è stato inviato, e l'aspetto precedente non viene conservato.",
+    "designSentWith": "Il design con cui è stata inviata",
+    "designFollow": "Segui il design predefinito",
+    "designFollowNamed": "Segui il design predefinito ({name})",
+    "designDefaultName": "il design predefinito",
+    "designPickConfirmTitle": "Passare questa fattura a {name}?",
+    "designPickConfirmBody": "Cambia solo l'aspetto. I dati dell'officina, il cliente, le condizioni di pagamento e gli importi restano esattamente come sono stati inviati. Il design attuale non viene conservato, quindi l'operazione non è reversibile.",
+    "designPickConfirm": "Cambia il design",
+    "designPickDone": "La fattura ora viene stampata con {name}",
+    "designPickFailed": "Impossibile cambiare il design"
   },
   "basicInfo": {
     "title": "Informazioni di Base",
@@ -89,8 +102,9 @@
     "design": "Design della fattura",
     "designDefault": "Predefinito dell'officina",
     "designFollowing": "Predefinito ({name})",
-    "designPinned": "Il foglio è stato congelato all'emissione della fattura il {date}. Una nuova scelta vale solo dopo che un titolare sblocca la fattura e questa viene inviata di nuovo.",
+    "designPinned": "Questa fattura è arrivata al cliente il {date}, quindi mantiene il design con cui è uscita. Una scelta fatta qui vale solo dopo che è stata sbloccata e inviata di nuovo. Un titolare può cambiare il design ora da Design della fattura nel menu ⋮ in alto.",
     "designSaved": "Design della fattura aggiornato",
+    "designSavedPinned": "Salvato. Questa fattura mantiene il design con cui è stata inviata finché non viene sbloccata e inviata di nuovo.",
     "designFollowingRule": "Predefinito ({name}, {rule})",
     "designRule": {
       "parts_sale": "Vendita solo ricambi"

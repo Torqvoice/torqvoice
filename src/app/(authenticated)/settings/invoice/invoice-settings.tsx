@@ -19,8 +19,19 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { freezeUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
+import { reapplyDesignToIssuedInvoices } from '@/features/invoices/Actions/invoiceDesignActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { ChevronDown, ChevronUp, FileText, Hash, Loader2, Lock, Save } from 'lucide-react'
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Hash,
+  Loader2,
+  Lock,
+  Palette,
+  Save,
+} from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -51,6 +62,8 @@ interface InvoiceSettingsProps {
   workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
   /** Invoices that reached a customer before issuing existed, still unfrozen. */
   unfrozenInvoices?: number
+  /** Invoices locked to the design they were issued with. */
+  issuedInvoices?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
@@ -107,6 +120,7 @@ function SwitchRow({
 export function InvoiceSettings({
   settings,
   unfrozenInvoices = 0,
+  issuedInvoices = 0,
   initialInvoiceLayout,
   initialQuoteLayout,
   customFields,
@@ -217,6 +231,41 @@ export function InvoiceSettings({
       toast.error(t('invoice.freezeFailed'))
     } finally {
       setFreezing(null)
+    }
+  }
+
+  // Invoices already sent print from the design they were locked to. A
+  // workshop that rebrands wants the new look on the archive too, so this
+  // walks every issued invoice by cursor and moves only its design and logo.
+  // A cursor rather than a count: a re-applied invoice is still issued, so
+  // the set being walked never shrinks.
+  const [reapplying, setReapplying] = useState<{ done: number; total: number } | null>(null)
+  const handleReapplyDesign = async () => {
+    const total = issuedInvoices
+    const ok = await confirm({
+      title: t('invoice.reapplyConfirmTitle', { count: total }),
+      description: t('invoice.reapplyConfirmBody'),
+      confirmLabel: t('invoice.reapplyButton'),
+      destructive: true,
+    })
+    if (!ok) return
+    setReapplying({ done: 0, total })
+    let done = 0
+    try {
+      let cursor: string | undefined
+      do {
+        const result = await reapplyDesignToIssuedInvoices(cursor)
+        if (!result.success || !result.data) throw new Error(result.success ? '' : result.error)
+        done += result.data.updated
+        cursor = result.data.nextCursor ?? undefined
+        setReapplying({ done, total })
+      } while (cursor)
+      toast.success(t('invoice.reapplyDone', { count: done }))
+      router.refresh()
+    } catch {
+      toast.error(t('invoice.reapplyFailed'))
+    } finally {
+      setReapplying(null)
     }
   }
 
@@ -507,6 +556,41 @@ export function InvoiceSettings({
                 </div>
               )}
             </AppCard>
+
+            {issuedInvoices > 0 && (
+              <AppCard
+                icon={Palette}
+                title={t('invoice.reapplyTitle')}
+                description={t('invoice.reapplyDescription')}
+                contentClassName="space-y-3"
+              >
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {t('invoice.reapplyBody', { count: issuedInvoices })}
+                </p>
+                <div className="flex flex-col gap-3 rounded-md border border-dashed p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="flex items-start gap-2 text-xs leading-relaxed text-amber-700 dark:text-amber-400">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    {t('invoice.reapplyWarning')}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                    disabled={reapplying !== null}
+                    onClick={handleReapplyDesign}
+                  >
+                    {reapplying && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    {reapplying
+                      ? t('invoice.reapplyProgress', {
+                          done: reapplying.done,
+                          total: reapplying.total,
+                        })
+                      : t('invoice.reapplyButton')}
+                  </Button>
+                </div>
+              </AppCard>
+            )}
 
             <SaveButton>
               <div className="flex items-center gap-3">

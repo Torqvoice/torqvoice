@@ -41,7 +41,20 @@
     "unpaid": "Unpaid",
     "unsavedChanges": "Unsaved changes",
     "saved": "Saved",
-    "joinCall": "Join video call"
+    "joinCall": "Join video call",
+    "moreActions": "More actions",
+    "designMenu": "Invoice design",
+    "designMenuLoading": "Checking which design this invoice prints with...",
+    "designMenuExplain": "Sent to the customer on {date}, so it still prints with the design it was sent with. Choosing another changes only how it looks. What it says stays as it was sent, and the old look is not kept.",
+    "designSentWith": "The design it was sent with",
+    "designFollow": "Follow the current default",
+    "designFollowNamed": "Follow the current default ({name})",
+    "designDefaultName": "the current default",
+    "designPickConfirmTitle": "Change this invoice to {name}?",
+    "designPickConfirmBody": "Only the look changes. The workshop details, the customer, the payment terms and the totals stay exactly as they were sent. The design it prints with now is not kept, so this cannot be undone.",
+    "designPickConfirm": "Change the design",
+    "designPickDone": "This invoice now prints with {name}",
+    "designPickFailed": "Could not change the design"
   },
   "basicInfo": {
     "title": "Basic Information",
@@ -89,8 +102,9 @@
     "design": "Invoice design",
     "designDefault": "Workshop default",
     "designFollowing": "Default ({name})",
-    "designPinned": "The sheet was frozen when the invoice was issued on {date}. A new choice applies only after an owner unlocks the invoice and it is sent again.",
+    "designPinned": "This invoice reached the customer on {date}, so it keeps the design it went out with. A choice here applies only after it is unlocked and sent again. An owner can change the design now from Invoice design in the ⋮ menu at the top.",
     "designSaved": "Invoice design updated",
+    "designSavedPinned": "Saved. This invoice keeps the design it was sent with until it is unlocked and sent again.",
     "designFollowingRule": "Default ({name}, {rule})",
     "designRule": {
       "parts_sale": "Parts-Only Sale"

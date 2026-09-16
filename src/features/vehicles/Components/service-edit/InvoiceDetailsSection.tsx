@@ -88,7 +88,10 @@ export function InvoiceDetailsSection({
     const result = await setInvoiceDesign(initialData.id, value === FOLLOW_DEFAULT ? null : value)
     setSavingDesign(false)
     if (result.success) {
-      toast.success(t('designSaved'))
+      // An issued invoice prints from the copy it was sent with, so the choice
+      // is saved but not visible yet. Saying "updated" here sends people off
+      // to email a sheet that still carries the old design.
+      toast.success(designPinnedAt ? t('designSavedPinned') : t('designSaved'))
       router.refresh()
     } else {
       setDesign(previous)

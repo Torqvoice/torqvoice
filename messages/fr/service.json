@@ -41,7 +41,20 @@
     "unpaid": "Non Payé",
     "unsavedChanges": "Modifications non enregistrées",
     "saved": "Enregistré",
-    "joinCall": "Rejoindre l'appel vidéo"
+    "joinCall": "Rejoindre l'appel vidéo",
+    "moreActions": "Autres actions",
+    "designMenu": "Design de la facture",
+    "designMenuLoading": "Recherche du design avec lequel cette facture s'imprime...",
+    "designMenuExplain": "Partie au client le {date}, elle s'imprime donc toujours avec le design de l'envoi. En choisir un autre ne change que l'apparence. Ce que dit la facture reste tel qu'envoyé, et l'ancienne apparence n'est pas conservée.",
+    "designSentWith": "Le design lors de l'envoi",
+    "designFollow": "Suivre le design par défaut",
+    "designFollowNamed": "Suivre le design par défaut ({name})",
+    "designDefaultName": "le design par défaut",
+    "designPickConfirmTitle": "Passer cette facture à {name} ?",
+    "designPickConfirmBody": "Seule l'apparence change. Les coordonnées de l'atelier, le client, les conditions de paiement et les montants restent exactement tels qu'ils ont été envoyés. Le design actuel n'est pas conservé, l'action est donc irréversible.",
+    "designPickConfirm": "Changer le design",
+    "designPickDone": "La facture s'imprime maintenant avec {name}",
+    "designPickFailed": "Impossible de changer le design"
   },
   "basicInfo": {
     "title": "Informations de Base",
@@ -89,8 +102,9 @@
     "design": "Design de facture",
     "designDefault": "Défaut de l'atelier",
     "designFollowing": "Défaut ({name})",
-    "designPinned": "La feuille a été figée à l'émission de la facture le {date}. Un nouveau choix ne s'applique qu'après qu'un propriétaire déverrouille la facture et qu'elle soit renvoyée.",
+    "designPinned": "Cette facture est parvenue au client le {date}, elle conserve donc le design avec lequel elle est partie. Un choix fait ici ne s'applique qu'après déverrouillage et nouvel envoi. Un propriétaire peut changer le design maintenant via Design de la facture dans le menu ⋮ en haut.",
     "designSaved": "Design de facture mis à jour",
+    "designSavedPinned": "Enregistré. Cette facture conserve le design avec lequel elle a été envoyée jusqu'à ce qu'elle soit déverrouillée et renvoyée.",
     "designFollowingRule": "Par défaut ({name}, {rule})",
     "designRule": {
       "parts_sale": "Vente de pièces seule"
