@@ -74,8 +74,8 @@
     "unitPrice": "Цена за ед.",
     "total": "Итого",
     "subtotal": "Подитог запчастей: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Удалить строку",
+    "excludeFromTotal": "Не включать в итог",
     "addFromInventory": "Со склада",
     "unitCost": "Себестоимость",
     "markupPercent": "Наценка %",
@@ -100,8 +100,8 @@
     "switchToService": "Переключить на оплату услуг",
     "switchToHourlyHint": "Почасовая: оценка по нормо-часам (часы × ставка/час). Нажмите для изменения.",
     "switchToServiceHint": "Услуга: фиксированная цена за единицу. Нажмите для изменения.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Удалить строку",
+    "excludeFromTotal": "Не включать в итог"
   },
   "notes": {
     "title": "Заметки",
@@ -139,8 +139,8 @@
     "selectVehicle": "Выберите транспортное средство...",
     "selectCustomer": "Выберите клиента...",
     "none": "Нет",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Убрать автомобиль",
+    "clearCustomer": "Убрать клиента"
   },
   "totals": {
     "title": "Итоги",
@@ -172,7 +172,7 @@
     "failedEmail": "Не удалось отправить письмо",
     "smsSent": "SMS отправлено",
     "failedSms": "Не удалось отправить SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Копировать ссылку"
   },
   "images": {
     "title": "Изображения предложения",
@@ -187,8 +187,8 @@
     "uploadingCount": "Загрузка изображений: {count}...",
     "uploadedCount": "Загружено изображений: {count}",
     "uploadFailed": "Загрузка не удалась",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Не удалось загрузить {name}",
+    "failedSaveFile": "Не удалось сохранить {name}",
     "deleted": "Изображение удалено",
     "failedDelete": "Не удалось удалить изображение",
     "failedUpdate": "Не удалось обновить",
@@ -207,8 +207,8 @@
     "uploadingCount": "Загрузка файлов: {count}...",
     "uploadedCount": "Загружено файлов: {count}",
     "uploadFailed": "Загрузка не удалась",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Не удалось загрузить {name}",
+    "failedSaveFile": "Не удалось сохранить {name}",
     "deleted": "Файл удалён",
     "failedDelete": "Не удалось удалить файл",
     "failedUpdate": "Не удалось обновить",

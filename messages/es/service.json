@@ -136,7 +136,7 @@
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" añadido del inventario",
     "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Eliminar fila",
     "outOfStock": "Agotado",
     "onBackorder": "En pedido pendiente ({count})",
     "nameMissingHint": "Las filas sin nombre de pieza no se guardan."
@@ -151,19 +151,19 @@
     "total": "Total",
     "descriptionPlaceholder": "Descripción *",
     "subtotal": "Subtotal de Mano de Obra: {amount}",
-    "addService": "Add Service",
+    "addService": "Agregar Servicio",
     "addFinding": "Observación",
     "newObservation": "Nueva observación",
     "addExisting": "Ver existentes ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Cantidad",
+    "qtyOrHours": "Unidad / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Cambiar a precio por horas",
+    "switchToService": "Cambiar a precio por servicio",
     "switchToHourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
     "switchToServiceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Eliminar fila",
     "descriptionMissingHint": "Las filas sin descripción no se guardan."
   },
   "totals": {
@@ -261,8 +261,8 @@
     "videos": "Videos ({count})",
     "diagnostics": "Reportes de Diagnóstico ({count})",
     "documents": "Documentos ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Descargar",
+    "close": "Cerrar"
   },
   "share": {
     "title": "Compartir Factura",
@@ -279,7 +279,7 @@
     "failedEmail": "Error al enviar correo electrónico",
     "smsSent": "SMS enviado",
     "failedSms": "Error al enviar SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copiar enlace"
   },
   "sidebar": {
     "vehicle": "Vehículo",
@@ -374,8 +374,8 @@
     "endBeforeStart": "La hora de fin debe ser posterior a la hora de inicio",
     "failedUpdate": "Error al actualizar el horario",
     "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "platformUsers": "Usuarios de la plataforma",
+    "customTechnicians": "Personalizados",
     "readMore": "Leer más",
     "setDefaults": "Configurar valores",
     "workBay": "Puesto de trabajo",

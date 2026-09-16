@@ -136,7 +136,7 @@
     "scanTitle": "Scanner le code-barres",
     "partFound": "\"{name}\" ajouté depuis l'inventaire",
     "partNotFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Supprimer la ligne",
     "outOfStock": "En rupture de stock",
     "onBackorder": "En réapprovisionnement ({count})",
     "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées."
@@ -151,19 +151,19 @@
     "total": "Total",
     "descriptionPlaceholder": "Description *",
     "subtotal": "Sous-total Main-d'œuvre: {amount}",
-    "addService": "Add Service",
+    "addService": "Ajouter une Prestation",
     "addFinding": "Observation",
     "newObservation": "Nouvelle observation",
     "addExisting": "Voir existantes ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Qté",
+    "qtyOrHours": "Unité / Heures",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Passer au tarif horaire",
+    "switchToService": "Passer au tarif forfaitaire",
     "switchToHourlyHint": "À l'heure : facturé selon les heures travaillées (heures × taux/h). Cliquez pour changer.",
     "switchToServiceHint": "Forfait : facturé au prix fixe par unité. Cliquez pour changer.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Supprimer la ligne",
     "descriptionMissingHint": "Les lignes sans description ne sont pas enregistrées."
   },
   "totals": {
@@ -261,8 +261,8 @@
     "videos": "Vidéos ({count})",
     "diagnostics": "Rapports Diagnostiques ({count})",
     "documents": "Documents ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Télécharger",
+    "close": "Fermer"
   },
   "share": {
     "title": "Partager la Facture",
@@ -279,7 +279,7 @@
     "failedEmail": "Impossible d'envoyer l'email",
     "smsSent": "SMS envoyé",
     "failedSms": "Impossible d'envoyer le SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copier le lien"
   },
   "sidebar": {
     "vehicle": "Véhicule",
@@ -374,8 +374,8 @@
     "endBeforeStart": "L'heure de fin doit être après l'heure de début",
     "failedUpdate": "Impossible de mettre à jour le planning",
     "splitCreated": "Le travail s'étend sur plusieurs jours — suite créée pour le jour suivant",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "platformUsers": "Utilisateurs de la plateforme",
+    "customTechnicians": "Personnalisés",
     "readMore": "En savoir plus",
     "setDefaults": "Paramètres par défaut",
     "workBay": "Poste de travail",

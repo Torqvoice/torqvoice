@@ -74,8 +74,8 @@
     "unitPrice": "Cena jedn.",
     "total": "Suma",
     "subtotal": "Części suma częściowa: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Usuń wiersz",
+    "excludeFromTotal": "Wyłącz z sumy",
     "addFromInventory": "Z magazynu",
     "unitCost": "Koszt",
     "markupPercent": "Marża %",
@@ -91,17 +91,17 @@
     "rate": "Stawka ({currency}/godz.)",
     "total": "Suma",
     "subtotal": "Robocizna suma częściowa: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Dodaj usługę",
+    "qty": "Ilość",
+    "qtyOrHours": "Jednostka / Godziny",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Przełącz na cenę godzinową",
+    "switchToService": "Przełącz na cenę usługi",
     "switchToHourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
     "switchToServiceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Usuń wiersz",
+    "excludeFromTotal": "Wyłącz z sumy"
   },
   "notes": {
     "title": "Notatki",
@@ -139,8 +139,8 @@
     "selectVehicle": "Wybierz pojazd...",
     "selectCustomer": "Wybierz klienta...",
     "none": "Brak",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Usuń pojazd",
+    "clearCustomer": "Usuń klienta"
   },
   "totals": {
     "title": "Podsumowanie",
@@ -172,7 +172,7 @@
     "failedEmail": "Nie udało się wysłać e-maila",
     "smsSent": "SMS wysłany",
     "failedSms": "Nie udało się wysłać SMS-a",
-    "copyLink": "Copy link"
+    "copyLink": "Kopiuj link"
   },
   "images": {
     "title": "Zdjęcia wyceny",
@@ -187,8 +187,8 @@
     "uploadingCount": "Przesyłanie {count} zdjęcia/zdjęć...",
     "uploadedCount": "Przesłano {count} zdjęcie/zdjęć",
     "uploadFailed": "Przesyłanie nie powiodło się",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Nie udało się przesłać {name}",
+    "failedSaveFile": "Nie udało się zapisać {name}",
     "deleted": "Zdjęcie usunięte",
     "failedDelete": "Nie udało się usunąć zdjęcia",
     "failedUpdate": "Nie udało się zaktualizować",
@@ -207,8 +207,8 @@
     "uploadingCount": "Przesyłanie {count} pliku/plików...",
     "uploadedCount": "Przesłano {count} plik/plików",
     "uploadFailed": "Przesyłanie nie powiodło się",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Nie udało się przesłać {name}",
+    "failedSaveFile": "Nie udało się zapisać {name}",
     "deleted": "Plik usunięty",
     "failedDelete": "Nie udało się usunąć pliku",
     "failedUpdate": "Nie udało się zaktualizować",

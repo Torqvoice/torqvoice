@@ -74,8 +74,8 @@
     "unitPrice": "Preço unitário",
     "total": "Total",
     "subtotal": "Subtotal de peças: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Excluir linha",
+    "excludeFromTotal": "Não somar ao total",
     "addFromInventory": "Do estoque",
     "unitCost": "Custo",
     "markupPercent": "Margem %",
@@ -91,17 +91,17 @@
     "rate": "Taxa ({currency}/h)",
     "total": "Total",
     "subtotal": "Subtotal de mão de obra: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Adicionar serviço",
+    "qty": "Qtd.",
+    "qtyOrHours": "Unidade / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Mudar para preço por hora",
+    "switchToService": "Mudar para preço por serviço",
     "switchToHourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
     "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Excluir linha",
+    "excludeFromTotal": "Não somar ao total"
   },
   "notes": {
     "title": "Notas",
@@ -139,8 +139,8 @@
     "selectVehicle": "Selecionar veículo...",
     "selectCustomer": "Selecionar cliente...",
     "none": "Nenhum",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Remover veículo",
+    "clearCustomer": "Remover cliente"
   },
   "totals": {
     "title": "Totais",
@@ -172,7 +172,7 @@
     "failedEmail": "Falha ao enviar o e-mail",
     "smsSent": "SMS enviado",
     "failedSms": "Falha ao enviar o SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copiar link"
   },
   "images": {
     "title": "Imagens do orçamento",
@@ -187,8 +187,8 @@
     "uploadingCount": "Enviando {count} imagem(ns)...",
     "uploadedCount": "{count} imagem(ns) enviada(s)",
     "uploadFailed": "Falha no envio",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Falha ao enviar {name}",
+    "failedSaveFile": "Falha ao salvar {name}",
     "deleted": "Imagem excluída",
     "failedDelete": "Falha ao excluir a imagem",
     "failedUpdate": "Falha ao atualizar",
@@ -207,8 +207,8 @@
     "uploadingCount": "Enviando {count} arquivo(s)...",
     "uploadedCount": "{count} arquivo(s) enviado(s)",
     "uploadFailed": "Falha no envio",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Falha ao enviar {name}",
+    "failedSaveFile": "Falha ao salvar {name}",
     "deleted": "Arquivo excluído",
     "failedDelete": "Falha ao excluir o arquivo",
     "failedUpdate": "Falha ao atualizar",

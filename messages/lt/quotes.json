@@ -74,8 +74,8 @@
     "unitPrice": "Vnt. kaina",
     "total": "Suma",
     "subtotal": "Dalių tarpinė suma: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Ištrinti eilutę",
+    "excludeFromTotal": "Neįskaičiuoti į sumą",
     "addFromInventory": "Iš sandėlio",
     "unitCost": "Savikaina",
     "markupPercent": "Antkainis %",
@@ -100,8 +100,8 @@
     "switchToService": "Perjungti į paslaugos įkainį",
     "switchToHourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
     "switchToServiceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Ištrinti eilutę",
+    "excludeFromTotal": "Neįskaičiuoti į sumą"
   },
   "notes": {
     "title": "Pastabos",
@@ -139,8 +139,8 @@
     "selectVehicle": "Pasirinkite transporto priemonę...",
     "selectCustomer": "Pasirinkite klientą...",
     "none": "Nėra",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Pašalinti transporto priemonę",
+    "clearCustomer": "Pašalinti klientą"
   },
   "totals": {
     "title": "Sumos",
@@ -172,7 +172,7 @@
     "failedEmail": "Nepavyko išsiųsti laiško",
     "smsSent": "SMS išsiųsta",
     "failedSms": "Nepavyko išsiųsti SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Kopijuoti nuorodą"
   },
   "images": {
     "title": "Pasiūlymo vaizdai",
@@ -187,8 +187,8 @@
     "uploadingCount": "Įkeliama {count} vaizdas(-ų)...",
     "uploadedCount": "{count} vaizdas(-ų) įkelta",
     "uploadFailed": "Įkėlimas nepavyko",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Nepavyko įkelti {name}",
+    "failedSaveFile": "Nepavyko išsaugoti {name}",
     "deleted": "Vaizdas ištrintas",
     "failedDelete": "Nepavyko ištrinti vaizdo",
     "failedUpdate": "Nepavyko atnaujinti",
@@ -207,8 +207,8 @@
     "uploadingCount": "Įkeliama {count} failas(-ų)...",
     "uploadedCount": "{count} failas(-ų) įkelta",
     "uploadFailed": "Įkėlimas nepavyko",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Nepavyko įkelti {name}",
+    "failedSaveFile": "Nepavyko išsaugoti {name}",
     "deleted": "Failas ištrintas",
     "failedDelete": "Nepavyko ištrinti failo",
     "failedUpdate": "Nepavyko atnaujinti",

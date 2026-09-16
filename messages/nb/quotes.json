@@ -74,8 +74,8 @@
     "unitPrice": "Enhetspris",
     "total": "Totalt",
     "subtotal": "Deler delsum: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Slett rad",
+    "excludeFromTotal": "Hold utenfor summen",
     "addFromInventory": "Fra lager",
     "unitCost": "Kostnad",
     "markupPercent": "Påslag %",
@@ -91,17 +91,17 @@
     "rate": "Sats ({currency}/t)",
     "total": "Totalt",
     "subtotal": "Arbeid delsum: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Legg til tjeneste",
+    "qty": "Ant.",
+    "qtyOrHours": "Enhet / Timer",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Bytt til timepris",
+    "switchToService": "Bytt til fastpris",
     "switchToHourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
     "switchToServiceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Slett rad",
+    "excludeFromTotal": "Hold utenfor summen"
   },
   "notes": {
     "title": "Notater",
@@ -139,8 +139,8 @@
     "selectVehicle": "Velg kjøretøy...",
     "selectCustomer": "Velg kunde...",
     "none": "Ingen",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Fjern kjøretøy",
+    "clearCustomer": "Fjern kunde"
   },
   "totals": {
     "title": "Totaler",
@@ -172,7 +172,7 @@
     "failedEmail": "Kunne ikke sende e-post",
     "smsSent": "SMS sendt",
     "failedSms": "Kunne ikke sende SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Kopier lenke"
   },
   "images": {
     "title": "Tilbudsbilder",
@@ -187,8 +187,8 @@
     "uploadingCount": "Laster opp {count} bilde(r)...",
     "uploadedCount": "{count} bilde(r) lastet opp",
     "uploadFailed": "Opplasting mislyktes",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Kunne ikke laste opp {name}",
+    "failedSaveFile": "Kunne ikke lagre {name}",
     "deleted": "Bilde slettet",
     "failedDelete": "Kunne ikke slette bildet",
     "failedUpdate": "Kunne ikke oppdatere",
@@ -207,8 +207,8 @@
     "uploadingCount": "Laster opp {count} fil(er)...",
     "uploadedCount": "{count} fil(er) lastet opp",
     "uploadFailed": "Opplasting mislyktes",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Kunne ikke laste opp {name}",
+    "failedSaveFile": "Kunne ikke lagre {name}",
     "deleted": "Fil slettet",
     "failedDelete": "Kunne ikke slette filen",
     "failedUpdate": "Kunne ikke oppdatere",

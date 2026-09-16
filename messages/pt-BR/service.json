@@ -136,7 +136,7 @@
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" adicionado do estoque",
     "partNotFound": "Nenhuma peça encontrada para o código de barras \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Excluir linha",
     "outOfStock": "Fora de estoque",
     "onBackorder": "Sob encomenda ({count})",
     "nameMissingHint": "Linhas sem nome da peça não são salvas."
@@ -151,19 +151,19 @@
     "total": "Total",
     "descriptionPlaceholder": "Descrição *",
     "subtotal": "Subtotal de Mão de Obra: {amount}",
-    "addService": "Add Service",
+    "addService": "Adicionar Serviço",
     "addFinding": "Observação",
     "newObservation": "Nova observação",
     "addExisting": "Ver existentes ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Qtd",
+    "qtyOrHours": "Unidade / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Mudar para preço por hora",
+    "switchToService": "Mudar para preço por serviço",
     "switchToHourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
     "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Excluir linha",
     "descriptionMissingHint": "Linhas sem descrição não são salvas."
   },
   "totals": {
@@ -261,8 +261,8 @@
     "videos": "Vídeos ({count})",
     "diagnostics": "Relatórios de Diagnóstico ({count})",
     "documents": "Documentos ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Baixar",
+    "close": "Fechar"
   },
   "share": {
     "title": "Compartilhar Fatura",
@@ -279,7 +279,7 @@
     "failedEmail": "Falha ao enviar email",
     "smsSent": "SMS enviado",
     "failedSms": "Falha ao enviar SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copiar link"
   },
   "sidebar": {
     "vehicle": "Veículo",
@@ -374,8 +374,8 @@
     "endBeforeStart": "A hora de término deve ser após a hora de início",
     "failedUpdate": "Falha ao atualizar o agendamento",
     "splitCreated": "O trabalho abrange vários dias — continuação criada para o dia seguinte",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "platformUsers": "Usuários da plataforma",
+    "customTechnicians": "Personalizados",
     "readMore": "Saiba mais",
     "setDefaults": "Valores padrão",
     "workBay": "Baia",

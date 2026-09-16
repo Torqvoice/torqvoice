@@ -74,8 +74,8 @@
     "unitPrice": "Precio unitario",
     "total": "Total",
     "subtotal": "Subtotal de repuestos: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Eliminar fila",
+    "excludeFromTotal": "Excluir del total",
     "addFromInventory": "Del inventario",
     "unitCost": "Costo",
     "markupPercent": "Margen %",
@@ -91,17 +91,17 @@
     "rate": "Tarifa ({currency}/hr)",
     "total": "Total",
     "subtotal": "Subtotal de mano de obra: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Agregar servicio",
+    "qty": "Cant.",
+    "qtyOrHours": "Unidad / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Cambiar a precio por horas",
+    "switchToService": "Cambiar a precio por servicio",
     "switchToHourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
     "switchToServiceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Eliminar fila",
+    "excludeFromTotal": "Excluir del total"
   },
   "notes": {
     "title": "Notas",
@@ -139,8 +139,8 @@
     "selectVehicle": "Seleccionar vehículo...",
     "selectCustomer": "Seleccionar cliente...",
     "none": "Ninguno",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Quitar vehículo",
+    "clearCustomer": "Quitar cliente"
   },
   "totals": {
     "title": "Totales",
@@ -172,7 +172,7 @@
     "failedEmail": "Error al enviar el correo",
     "smsSent": "SMS enviado",
     "failedSms": "Error al enviar el SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copiar enlace"
   },
   "images": {
     "title": "Imágenes del presupuesto",
@@ -187,8 +187,8 @@
     "uploadingCount": "Subiendo {count} imagen(es)...",
     "uploadedCount": "{count} imagen(es) subida(s)",
     "uploadFailed": "Error al subir",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "No se pudo subir {name}",
+    "failedSaveFile": "No se pudo guardar {name}",
     "deleted": "Imagen eliminada",
     "failedDelete": "Error al eliminar la imagen",
     "failedUpdate": "Error al actualizar",
@@ -207,8 +207,8 @@
     "uploadingCount": "Subiendo {count} archivo(s)...",
     "uploadedCount": "{count} archivo(s) subido(s)",
     "uploadFailed": "Error al subir",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "No se pudo subir {name}",
+    "failedSaveFile": "No se pudo guardar {name}",
     "deleted": "Archivo eliminado",
     "failedDelete": "Error al eliminar el archivo",
     "failedUpdate": "Error al actualizar",

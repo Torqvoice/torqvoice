@@ -136,7 +136,7 @@
     "scanTitle": "Skanuj kod kreskowy",
     "partFound": "Dodano \"{name}\" z magazynu",
     "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Usuń wiersz",
     "outOfStock": "Brak w magazynie",
     "onBackorder": "W zamówieniu ({count})",
     "nameMissingHint": "Wiersze bez nazwy części nie są zapisywane."
@@ -151,19 +151,19 @@
     "total": "Razem",
     "descriptionPlaceholder": "Opis *",
     "subtotal": "Razem Praca: {amount}",
-    "addService": "Add Service",
+    "addService": "Dodaj Usługę",
     "addFinding": "Obserwacja",
     "newObservation": "Nowa obserwacja",
     "addExisting": "Pokaż istniejące ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Ilość",
+    "qtyOrHours": "Jednostka / Godziny",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Przełącz na cenę godzinową",
+    "switchToService": "Przełącz na cenę usługi",
     "switchToHourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
     "switchToServiceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Usuń wiersz",
     "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane."
   },
   "totals": {
@@ -261,8 +261,8 @@
     "videos": "Wideo ({count})",
     "diagnostics": "Raporty Diagnostyczne ({count})",
     "documents": "Dokumenty ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Pobierz",
+    "close": "Zamknij"
   },
   "share": {
     "title": "Udostępnij Fakturę",
@@ -279,7 +279,7 @@
     "failedEmail": "Nie udało się wysłać email",
     "smsSent": "SMS wysłany",
     "failedSms": "Nie udało się wysłać SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Kopiuj link"
   },
   "sidebar": {
     "vehicle": "Pojazd",
@@ -374,8 +374,8 @@
     "endBeforeStart": "Czas zakończenia musi być po czasie rozpoczęcia",
     "failedUpdate": "Nie udało się zaktualizować harmonogramu",
     "splitCreated": "Zadanie obejmuje wiele dni — kontynuacja utworzona na następny dzień",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "platformUsers": "Użytkownicy platformy",
+    "customTechnicians": "Własne",
     "readMore": "Czytaj więcej",
     "setDefaults": "Ustaw domyślne",
     "workBay": "Stanowisko",

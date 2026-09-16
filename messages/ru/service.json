@@ -136,7 +136,7 @@
     "scanTitle": "Сканировать штрихкод",
     "partFound": "\"{name}\" добавлено из склада",
     "partNotFound": "Деталь для штрихкода \"{barcode}\" не найдена",
-    "deleteRow": "Delete row",
+    "deleteRow": "Удалить строку",
     "outOfStock": "Нет в наличии",
     "onBackorder": "Под заказ ({count})",
     "nameMissingHint": "Строки без названия детали не сохраняются."
@@ -155,7 +155,7 @@
     "addFinding": "Наблюдение",
     "newObservation": "Новое наблюдение",
     "addExisting": "Показать существующие ({count})",
-    "qty": "кол-во",
+    "qty": "Кол-во",
     "qtyOrHours": "Услуга / Часы",
     "hourlyTag": "н/ч",
     "serviceTag": "усл.",
@@ -163,7 +163,7 @@
     "switchToService": "Изменить на оплату услуг",
     "switchToHourlyHint": "Почасовая: оценка по нормо-часам (часы × ставка/час). Нажмите для изменения.",
     "switchToServiceHint": "Услуга: фиксированная цена за единицу. Нажмите для изменения.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Удалить строку",
     "descriptionMissingHint": "Строки без описания не сохраняются."
   },
   "totals": {
@@ -261,8 +261,8 @@
     "videos": "Видео ({count})",
     "diagnostics": "Диагностические отчёты ({count})",
     "documents": "Документы ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Скачать",
+    "close": "Закрыть"
   },
   "share": {
     "title": "Поделиться счётом",
@@ -279,7 +279,7 @@
     "failedEmail": "Не удалось отправить письмо",
     "smsSent": "SMS отправлено",
     "failedSms": "Не удалось отправить SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Копировать ссылку"
   },
   "sidebar": {
     "vehicle": "Транспортное средство",
@@ -374,8 +374,8 @@
     "endBeforeStart": "Время окончания должно быть позже времени начала",
     "failedUpdate": "Не удалось обновить время в расписании",
     "splitCreated": "Работа занимает несколько дней — создано продолжение на следующий день",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "platformUsers": "Пользователи платформы",
+    "customTechnicians": "Свои",
     "readMore": "Подробнее",
     "setDefaults": "Настройки по умолчанию",
     "workBay": "Пост",

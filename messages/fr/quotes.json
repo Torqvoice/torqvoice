@@ -74,8 +74,8 @@
     "unitPrice": "Prix unitaire",
     "total": "Total",
     "subtotal": "Sous-total pièces : {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Supprimer la ligne",
+    "excludeFromTotal": "Exclure du total",
     "addFromInventory": "Du stock",
     "unitCost": "Coût",
     "markupPercent": "Marge %",
@@ -91,17 +91,17 @@
     "rate": "Tarif ({currency}/h)",
     "total": "Total",
     "subtotal": "Sous-total main-d'œuvre : {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Ajouter une prestation",
+    "qty": "Qté",
+    "qtyOrHours": "Unité / Heures",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
+    "switchToHourly": "Passer au tarif horaire",
+    "switchToService": "Passer au tarif forfaitaire",
     "switchToHourlyHint": "À l'heure : facturé selon les heures travaillées (heures × taux/h). Cliquez pour changer.",
     "switchToServiceHint": "Forfait : facturé au prix fixe par unité. Cliquez pour changer.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Supprimer la ligne",
+    "excludeFromTotal": "Exclure du total"
   },
   "notes": {
     "title": "Notes",
@@ -139,8 +139,8 @@
     "selectVehicle": "Sélectionner un véhicule...",
     "selectCustomer": "Sélectionner un client...",
     "none": "Aucun",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Retirer le véhicule",
+    "clearCustomer": "Retirer le client"
   },
   "totals": {
     "title": "Totaux",
@@ -172,7 +172,7 @@
     "failedEmail": "Échec de l'envoi de l'e-mail",
     "smsSent": "SMS envoyé",
     "failedSms": "Échec de l'envoi du SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copier le lien"
   },
   "images": {
     "title": "Images du devis",
@@ -187,8 +187,8 @@
     "uploadingCount": "Téléversement de {count} image(s)...",
     "uploadedCount": "{count} image(s) téléversée(s)",
     "uploadFailed": "Échec du téléversement",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Échec du téléversement de {name}",
+    "failedSaveFile": "Échec de l'enregistrement de {name}",
     "deleted": "Image supprimée",
     "failedDelete": "Échec de la suppression de l'image",
     "failedUpdate": "Échec de la mise à jour",
@@ -207,8 +207,8 @@
     "uploadingCount": "Téléversement de {count} fichier(s)...",
     "uploadedCount": "{count} fichier(s) téléversé(s)",
     "uploadFailed": "Échec du téléversement",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Échec du téléversement de {name}",
+    "failedSaveFile": "Échec de l'enregistrement de {name}",
     "deleted": "Fichier supprimé",
     "failedDelete": "Échec de la suppression du fichier",
     "failedUpdate": "Échec de la mise à jour",
