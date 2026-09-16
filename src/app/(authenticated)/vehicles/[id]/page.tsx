@@ -12,8 +12,8 @@ import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
 import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
 import { getFeatures } from '@/lib/features'
 import { findSafetyConnection } from '@/features/integrations/Lib/vehicle-safety'
+import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { db } from '@/lib/db'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
 import { VehicleDetailClient } from './vehicle-detail-client'
 import { PageHeader } from '@/components/page-header'
@@ -169,15 +169,11 @@ export default async function VehicleDetailPage({
   let aiEnabled = false
   let safetyAvailable = false
   if (orgId) {
-    const [features, aiSettings, safetyConnection] = await Promise.all([
+    const [features, aiConfigured, safetyConnection] = await Promise.all([
       getFeatures(orgId),
-      db.appSetting.findMany({
-        where: {
-          organizationId: orgId,
-          key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
-        },
-        select: { key: true, value: true },
-      }),
+      // An AI vendor connected in the catalog, or the settings a workshop
+      // saved before AI moved there. Nothing is adopted from a page render.
+      isAiConfigured(orgId).catch(() => false),
       // An integration must never take the vehicle page down with it: a
       // failed lookup means no panel, nothing more.
       findSafetyConnection(orgId).catch(() => null),
@@ -188,11 +184,7 @@ export default async function VehicleDetailPage({
       features?.integrations === true &&
       safetyConnection !== null &&
       Boolean(result.data.make && result.data.model && result.data.year)
-    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
-    aiEnabled =
-      features?.ai === true &&
-      aiMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
-      !!aiMap[SETTING_KEYS.AI_API_KEY]
+    aiEnabled = features?.ai === true && aiConfigured
   }
 
   return (
