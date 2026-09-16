@@ -136,7 +136,7 @@
     "scanTitle": "Nuskaityti brūkšninį kodą",
     "partFound": "Pridėta \"{name}\" iš inventoriaus",
     "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta",
-    "deleteRow": "Delete row",
+    "deleteRow": "Ištrinti eilutę",
     "outOfStock": "Nėra sandėlyje",
     "onBackorder": "Užsakoma ({count})",
     "nameMissingHint": "Eilutės be dalies pavadinimo neišsaugomos."
@@ -159,11 +159,9 @@
     "subtotal": "Darbų tarpinė suma: {amount}",
     "hourlyTag": "VAL",
     "serviceTag": "PSL",
-    "switchToHourly": "Perjungti į valandinį įkainį",
-    "switchToService": "Perjungti į paslaugos įkainį",
     "switchToHourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
     "switchToServiceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Ištrinti eilutę",
     "descriptionMissingHint": "Eilutės be aprašymo neišsaugomos."
   },
   "totals": {
@@ -261,8 +259,8 @@
     "videos": "Vaizdo įrašai ({count})",
     "diagnostics": "Diagnostikos ataskaitos ({count})",
     "documents": "Dokumentai ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Atsisiųsti",
+    "close": "Uždaryti"
   },
   "share": {
     "title": "Dalintis sąskaita",
@@ -279,7 +277,7 @@
     "failedEmail": "Nepavyko išsiųsti laiško",
     "smsSent": "SMS išsiųsta",
     "failedSms": "Nepavyko išsiųsti SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Kopijuoti nuorodą"
   },
   "sidebar": {
     "vehicle": "Transporto priemonė",
@@ -374,7 +372,6 @@
     "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko",
     "failedUpdate": "Nepavyko atnaujinti grafiko laikų",
     "splitCreated": "Darbas apima kelias dienas — tęsinys sukurtas kitai dienai",
-    "platformUsers": "Platformos naudotojai",
     "customTechnicians": "Pasirinktiniai",
     "readMore": "Skaityti daugiau",
     "setDefaults": "Nustatyti numatytuosius",

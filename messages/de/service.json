@@ -136,7 +136,7 @@
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" aus dem Lager hinzugefügt",
     "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
-    "deleteRow": "Delete row",
+    "deleteRow": "Zeile löschen",
     "outOfStock": "Nicht auf Lager",
     "onBackorder": "Im Rückstand ({count})",
     "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert."
@@ -151,19 +151,17 @@
     "total": "Gesamt",
     "descriptionPlaceholder": "Beschreibung *",
     "subtotal": "Arbeitssumme: {amount}",
-    "addService": "Add Service",
+    "addService": "Leistung hinzufügen",
     "addFinding": "Beobachtung",
     "newObservation": "Neue Beobachtung",
     "addExisting": "Vorhandene anzeigen ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Menge",
+    "qtyOrHours": "Einheit / Stunden",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
     "switchToServiceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Zeile löschen",
     "descriptionMissingHint": "Zeilen ohne Beschreibung werden nicht gespeichert."
   },
   "totals": {
@@ -261,8 +259,8 @@
     "videos": "Videos ({count})",
     "diagnostics": "Diagnoseberichte ({count})",
     "documents": "Dokumente ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Herunterladen",
+    "close": "Schließen"
   },
   "share": {
     "title": "Rechnung teilen",
@@ -279,7 +277,7 @@
     "failedEmail": "E-Mail konnte nicht gesendet werden",
     "smsSent": "SMS gesendet",
     "failedSms": "SMS konnte nicht gesendet werden",
-    "copyLink": "Copy link"
+    "copyLink": "Link kopieren"
   },
   "sidebar": {
     "vehicle": "Fahrzeug",
@@ -374,8 +372,7 @@
     "endBeforeStart": "Endzeit muss nach der Startzeit liegen",
     "failedUpdate": "Zeitplan konnte nicht aktualisiert werden",
     "splitCreated": "Auftrag erstreckt sich über mehrere Tage — Fortsetzung für den nächsten Tag erstellt",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Eigene",
     "readMore": "Mehr erfahren",
     "setDefaults": "Standardwerte",
     "workBay": "Arbeitsplatz",

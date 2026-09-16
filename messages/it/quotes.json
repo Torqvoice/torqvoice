@@ -74,8 +74,8 @@
     "unitPrice": "Prezzo unitario",
     "total": "Totale",
     "subtotal": "Subtotale ricambi: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Elimina riga",
+    "excludeFromTotal": "Escludi dal totale",
     "addFromInventory": "Dal magazzino",
     "unitCost": "Costo",
     "markupPercent": "Ricarico %",
@@ -91,17 +91,15 @@
     "rate": "Tariffa ({currency}/ora)",
     "total": "Totale",
     "subtotal": "Subtotale manodopera: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Aggiungi servizio",
+    "qty": "Qtà",
+    "qtyOrHours": "Unità / Ore",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
     "switchToServiceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Elimina riga",
+    "excludeFromTotal": "Escludi dal totale"
   },
   "notes": {
     "title": "Note",
@@ -139,8 +137,8 @@
     "selectVehicle": "Seleziona veicolo...",
     "selectCustomer": "Seleziona cliente...",
     "none": "Nessuno",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Rimuovi veicolo",
+    "clearCustomer": "Rimuovi cliente"
   },
   "totals": {
     "title": "Totali",
@@ -172,7 +170,7 @@
     "failedEmail": "Invio e-mail non riuscito",
     "smsSent": "SMS inviato",
     "failedSms": "Invio SMS non riuscito",
-    "copyLink": "Copy link"
+    "copyLink": "Copia link"
   },
   "images": {
     "title": "Immagini del preventivo",
@@ -187,8 +185,8 @@
     "uploadingCount": "Caricamento di {count} immagine/i...",
     "uploadedCount": "{count} immagine/i caricata/e",
     "uploadFailed": "Caricamento non riuscito",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Caricamento di {name} non riuscito",
+    "failedSaveFile": "Salvataggio di {name} non riuscito",
     "deleted": "Immagine eliminata",
     "failedDelete": "Eliminazione immagine non riuscita",
     "failedUpdate": "Aggiornamento non riuscito",
@@ -207,8 +205,8 @@
     "uploadingCount": "Caricamento di {count} file...",
     "uploadedCount": "{count} file caricato/i",
     "uploadFailed": "Caricamento non riuscito",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Caricamento di {name} non riuscito",
+    "failedSaveFile": "Salvataggio di {name} non riuscito",
     "deleted": "File eliminato",
     "failedDelete": "Eliminazione file non riuscita",
     "failedUpdate": "Aggiornamento non riuscito",

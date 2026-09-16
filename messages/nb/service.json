@@ -136,7 +136,7 @@
     "scanTitle": "Skann strekkode",
     "partFound": "\"{name}\" lagt til fra lageret",
     "partNotFound": "Ingen del funnet for strekkode \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Slett rad",
     "outOfStock": "Utsolgt",
     "onBackorder": "På restordre ({count})",
     "nameMissingHint": "Rader uten delenavn lagres ikke."
@@ -151,19 +151,17 @@
     "total": "Total",
     "descriptionPlaceholder": "Beskrivelse *",
     "subtotal": "Arbeid delsum: {amount}",
-    "addService": "Add Service",
+    "addService": "Legg til tjeneste",
     "addFinding": "Observasjon",
     "newObservation": "Ny observasjon",
     "addExisting": "Vis eksisterende ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Antall",
+    "qtyOrHours": "Enhet / Timer",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
     "switchToServiceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Slett rad",
     "descriptionMissingHint": "Rader uten beskrivelse lagres ikke."
   },
   "totals": {
@@ -261,8 +259,8 @@
     "videos": "Videoer ({count})",
     "diagnostics": "Diagnostikkrapporter ({count})",
     "documents": "Dokumenter ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Last ned",
+    "close": "Lukk"
   },
   "share": {
     "title": "Del faktura",
@@ -279,7 +277,7 @@
     "failedEmail": "Kunne ikke sende e-post",
     "smsSent": "SMS sendt",
     "failedSms": "Kunne ikke sende SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Kopier lenke"
   },
   "sidebar": {
     "vehicle": "Kjøretøy",
@@ -374,8 +372,7 @@
     "endBeforeStart": "Sluttid må være etter starttid",
     "failedUpdate": "Kunne ikke oppdatere tidsplan",
     "splitCreated": "Jobben går over flere dager — fortsettelse opprettet for neste dag",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Egne",
     "readMore": "Les mer",
     "setDefaults": "Standardinnstillinger",
     "workBay": "Arbeidsplass",

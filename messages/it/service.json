@@ -117,7 +117,7 @@
     "addPart": "Aggiungi Pezzo",
     "partNumber": "Numero Pezzo",
     "name": "Nome",
-    "qty": "Qty",
+    "qty": "Qtà",
     "unitCost": "Costo",
     "unitCostHint": "Costo fornitore (interno — non mostrato al cliente)",
     "markupPercent": "Ricarico %",
@@ -136,7 +136,7 @@
     "scanTitle": "Scansiona codice a barre",
     "partFound": "\"{name}\" aggiunto dall'inventario",
     "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Elimina riga",
     "outOfStock": "Esaurito",
     "onBackorder": "In arretrato ({count})",
     "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
@@ -151,19 +151,17 @@
     "total": "Totale",
     "descriptionPlaceholder": "Descrizione *",
     "subtotal": "Subtotale Manodopera: {amount}",
-    "addService": "Add Service",
+    "addService": "Aggiungi Servizio",
     "addFinding": "Osservazione",
     "newObservation": "Nuova osservazione",
     "addExisting": "Mostra esistenti ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Qtà",
+    "qtyOrHours": "Unità / Ore",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
     "switchToServiceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Elimina riga",
     "descriptionMissingHint": "Le righe senza descrizione non vengono salvate."
   },
   "totals": {
@@ -261,8 +259,8 @@
     "videos": "Video ({count})",
     "diagnostics": "Rapporti Diagnostici ({count})",
     "documents": "Documenti ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Scarica",
+    "close": "Chiudi"
   },
   "share": {
     "title": "Condividi Fattura",
@@ -279,7 +277,7 @@
     "failedEmail": "Impossibile inviare email",
     "smsSent": "SMS inviato",
     "failedSms": "Impossibile inviare SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copia link"
   },
   "sidebar": {
     "vehicle": "Veicolo",
@@ -374,8 +372,7 @@
     "endBeforeStart": "L'ora di fine deve essere dopo l'ora di inizio",
     "failedUpdate": "Impossibile aggiornare la pianificazione",
     "splitCreated": "Il lavoro si estende su più giorni — continuazione creata per il giorno successivo",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Personalizzati",
     "readMore": "Scopri di più",
     "setDefaults": "Valori predefiniti",
     "workBay": "Postazione",

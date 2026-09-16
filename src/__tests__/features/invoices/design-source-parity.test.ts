@@ -22,7 +22,9 @@ import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvo
 import { liveInvoiceSettings } from '@/features/invoices/Lib/assembleInvoicePrint'
 import {
   designSourceFromSettings,
+  designSourceFromSnapshot,
   designSourceFromStored,
+  materializeDesignSource,
   templateConfigFromSource,
 } from '@/features/invoice-designer/Lib/designSource'
 import {
@@ -120,5 +122,37 @@ describe('a design row saved before the stamp was written to it', () => {
     expect(blockIds(templateConfigFromSource(asRow!))).toEqual(
       blockIds(templateConfigFromSource(asDefault))
     )
+  })
+})
+
+/** The whole printed sheet, so a changed label shows up and not just a block. */
+function sheet(template: ReturnType<typeof templateConfigFromSource>): string {
+  return JSON.stringify(buildInvoicePrintSpec({ data, template }).blocks)
+}
+
+describe('an invoice issued by a workshop that never opened the designer', () => {
+  // No layout in settings: the classic sheet, with no version on it.
+  const live = designSourceFromSettings({}, 'invoice')
+  // What issuing freezes into the snapshot row.
+  const frozen = materializeDesignSource(live)
+
+  it('reads its snapshot back without a version stamp', () => {
+    expect(frozen.layout.version).toBeUndefined()
+    expect(designSourceFromSnapshot(frozen.layout, frozen.template)?.layout.version).toBeUndefined()
+  })
+
+  it('prints the same sheet from the snapshot as it did live', () => {
+    const fromSnapshot = designSourceFromSnapshot(frozen.layout, frozen.template)
+    expect(fromSnapshot).not.toBeNull()
+    expect(sheet(templateConfigFromSource(fromSnapshot!))).toBe(
+      sheet(templateConfigFromSource(live))
+    )
+  })
+
+  it('would print a different sheet if the snapshot were read as a design row', () => {
+    // The regression this guards: the share link read the snapshot through the
+    // design-row reader, which stamps a version and swaps in the designer header.
+    const asRow = designSourceFromStored(frozen.layout, frozen.template)
+    expect(sheet(templateConfigFromSource(asRow!))).not.toBe(sheet(templateConfigFromSource(live)))
   })
 })

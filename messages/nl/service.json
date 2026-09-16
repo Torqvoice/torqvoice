@@ -136,7 +136,7 @@
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" toegevoegd uit voorraad",
     "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Rij verwijderen",
     "outOfStock": "Niet op voorraad",
     "onBackorder": "In nabestelling ({count})",
     "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen."
@@ -151,19 +151,17 @@
     "total": "Totaal",
     "descriptionPlaceholder": "Beschrijving *",
     "subtotal": "Arbeidskosten totaal: {amount}",
-    "addService": "Add Service",
+    "addService": "Dienst toevoegen",
     "addFinding": "Observatie",
     "newObservation": "Nieuwe observatie",
     "addExisting": "Bestaande tonen ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Hoeveelheid",
+    "qtyOrHours": "Eenheid / Uren",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
     "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Rij verwijderen",
     "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen."
   },
   "totals": {
@@ -261,8 +259,8 @@
     "videos": "Video's ({count})",
     "diagnostics": "Diagnostische verslagen ({count})",
     "documents": "Documenten ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Downloaden",
+    "close": "Sluiten"
   },
   "share": {
     "title": "Factuur delen",
@@ -279,7 +277,7 @@
     "failedEmail": "E-mail verzenden mislukt",
     "smsSent": "SMS verzonden",
     "failedSms": "SMS verzenden mislukt",
-    "copyLink": "Copy link"
+    "copyLink": "Link kopiëren"
   },
   "sidebar": {
     "vehicle": "Voertuig",
@@ -374,8 +372,7 @@
     "endBeforeStart": "Eindtijd moet na de starttijd zijn",
     "failedUpdate": "Planning bijwerken mislukt",
     "splitCreated": "Taak beslaat meerdere dagen — vervolg aangemaakt voor de volgende dag",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Eigen",
     "readMore": "Meer lezen",
     "setDefaults": "Standaardwaarden",
     "workBay": "Werkplek",
