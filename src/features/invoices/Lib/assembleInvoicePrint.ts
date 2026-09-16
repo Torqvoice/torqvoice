@@ -213,14 +213,22 @@ export async function currentLook(
   )
 }
 
-function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettingsProps {
+/** Exported for the tests that pin down what an absent setting means. */
+export function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettingsProps {
   return {
     bankAccount: settingsMap['invoice.bankAccount'] || '',
     orgNumber: settingsMap['invoice.orgNumber'] || '',
     paymentTerms: settingsMap['invoice.paymentTerms'] || '',
     footerNote: settingsMap['invoice.footerNote'] || '',
-    showBankAccount: settingsMap['invoice.showBankAccount'] === 'true',
-    showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
+    // Absent means shown. These two predate the designer, when the invoice
+    // settings page carried a switch for each; the designer replaced them with
+    // the header's own field switches and the switch was deleted, so no
+    // organization onboarded since has ever had the row. Read as `=== 'true'`
+    // they were false for all of them, and the org number could not be printed
+    // in the header at all, whatever the designer showed. An organization that
+    // did turn the old switch off still has its 'false' and is still obeyed.
+    showBankAccount: settingsMap['invoice.showBankAccount'] !== 'false',
+    showOrgNumber: settingsMap['invoice.showOrgNumber'] !== 'false',
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',

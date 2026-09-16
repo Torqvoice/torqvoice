@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import {
+  DESIGNER_LAYOUT_VERSION,
   invoiceLayoutConfigSchema,
   mergeWithDefaults,
   type InvoiceLayoutConfig,
@@ -51,13 +52,27 @@ export const designTemplateSchema = z
 
 export const DESIGN_DOCUMENT_TYPES: DocumentType[] = ['invoice', 'quote']
 
-/** Reads a stored design row's JSON columns back into a source, or null. */
+/**
+ * Reads a stored design row's JSON columns back into a source, or null.
+ *
+ * A row with no `version` is read as a designer layout rather than as a
+ * pre-designer one. Only the designer writes these rows, so every one of them
+ * is a designer layout by definition; the stamp was simply left off the row
+ * while the copy that went to settings got it. Without this, the same design
+ * printed one way as the workshop default and another way when an invoice
+ * picked it by name, which is what the classic fallback does to the header
+ * and the title.
+ */
 export function designSourceFromStored(layout: unknown, template: unknown): DesignSource | null {
   const parsedTemplate = designTemplateSchema.safeParse(template ?? {})
   if (!parsedTemplate.success) return null
   const parsedLayout = invoiceLayoutConfigSchema.partial().safeParse(layout ?? {})
   if (!parsedLayout.success) return null
-  return { layout: parsedLayout.data, template: parsedTemplate.data }
+  const stored = parsedLayout.data
+  return {
+    layout: stored.version === undefined ? { ...stored, version: DESIGNER_LAYOUT_VERSION } : stored,
+    template: parsedTemplate.data,
+  }
 }
 
 function parseLayoutSetting(value: string | undefined): Partial<InvoiceLayoutConfig> {
