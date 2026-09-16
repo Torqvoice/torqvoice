@@ -136,7 +136,7 @@
     "scanTitle": "Barkod tara",
     "partFound": "\"{name}\" envanterden eklendi",
     "partNotFound": "\"{barcode}\" barkodu için parça bulunamadı",
-    "deleteRow": "Delete row",
+    "deleteRow": "Satırı sil",
     "outOfStock": "Stokta yok",
     "onBackorder": "Ön siparişte ({count})",
     "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez."
@@ -151,19 +151,17 @@
     "total": "Toplam",
     "descriptionPlaceholder": "Açıklama *",
     "subtotal": "İşçilik Ara Toplamı: {amount}",
-    "addService": "Add Service",
+    "addService": "Hizmet Ekle",
     "addFinding": "Gözlem",
     "newObservation": "Yeni gözlem",
     "addExisting": "Mevcut göster ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Mik.",
+    "qtyOrHours": "Birim / Saat",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
     "switchToServiceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
-    "deleteRow": "Delete row",
+    "deleteRow": "Satırı sil",
     "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez."
   },
   "totals": {
@@ -261,8 +259,8 @@
     "videos": "Videolar ({count})",
     "diagnostics": "Tanı Raporları ({count})",
     "documents": "Belgeler ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "İndir",
+    "close": "Kapat"
   },
   "share": {
     "title": "Faturayı Paylaş",
@@ -279,7 +277,7 @@
     "failedEmail": "E-posta gönderilemedi",
     "smsSent": "SMS gönderildi",
     "failedSms": "SMS gönderilemedi",
-    "copyLink": "Copy link"
+    "copyLink": "Bağlantıyı kopyala"
   },
   "sidebar": {
     "vehicle": "Araç",
@@ -374,8 +372,7 @@
     "endBeforeStart": "Bitiş saati başlangıç saatinden sonra olmalıdır",
     "failedUpdate": "Zamanlama güncellenemedi",
     "splitCreated": "İş birden fazla güne yayılıyor — sonraki gün için devam oluşturuldu",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Özel",
     "readMore": "Daha fazla",
     "setDefaults": "Varsayılanlar",
     "workBay": "Çalışma alanı",

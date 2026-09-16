@@ -35,6 +35,7 @@ import type {
 } from '@/features/vehicles/Components/invoice-pdf/types'
 import {
   designSourceFromSettings,
+  designSourceFromSnapshot,
   designSourceFromStored,
   templateConfigFromSource,
   type DesignSource,
@@ -386,7 +387,7 @@ function assembleFrozen(
   // A snapshot that cannot be read falls back to the live look rather than
   // to nothing: the words on the sheet are still the frozen ones.
   const designSource =
-    (snapshot && designSourceFromStored(snapshot.layout, snapshot.template)) ||
+    (snapshot && designSourceFromSnapshot(snapshot.layout, snapshot.template)) ||
     designSourceFromSettings(settingsMap, 'invoice')
   const template = templateConfigFromSource(designSource)
   const logoDataUri = record.issuedLogoSnapshot

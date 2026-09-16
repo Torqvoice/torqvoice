@@ -74,8 +74,8 @@
     "unitPrice": "Stückpreis",
     "total": "Gesamt",
     "subtotal": "Teile Zwischensumme: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Zeile löschen",
+    "excludeFromTotal": "Von der Summe ausnehmen",
     "addFromInventory": "Aus Lager",
     "unitCost": "Kosten",
     "markupPercent": "Aufschlag %",
@@ -91,17 +91,15 @@
     "rate": "Satz ({currency}/Std.)",
     "total": "Gesamt",
     "subtotal": "Arbeitszeit Zwischensumme: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Leistung hinzufügen",
+    "qty": "Menge",
+    "qtyOrHours": "Einheit / Stunden",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
     "switchToServiceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Zeile löschen",
+    "excludeFromTotal": "Von der Summe ausnehmen"
   },
   "notes": {
     "title": "Notizen",
@@ -139,8 +137,8 @@
     "selectVehicle": "Fahrzeug auswählen...",
     "selectCustomer": "Kunden auswählen...",
     "none": "Keine",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Fahrzeug entfernen",
+    "clearCustomer": "Kunde entfernen"
   },
   "totals": {
     "title": "Summen",
@@ -172,7 +170,7 @@
     "failedEmail": "E-Mail konnte nicht gesendet werden",
     "smsSent": "SMS gesendet",
     "failedSms": "SMS konnte nicht gesendet werden",
-    "copyLink": "Copy link"
+    "copyLink": "Link kopieren"
   },
   "images": {
     "title": "Angebotsbilder",
@@ -187,8 +185,8 @@
     "uploadingCount": "{count} Bild(er) werden hochgeladen...",
     "uploadedCount": "{count} Bild(er) hochgeladen",
     "uploadFailed": "Hochladen fehlgeschlagen",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "{name} konnte nicht hochgeladen werden",
+    "failedSaveFile": "{name} konnte nicht gespeichert werden",
     "deleted": "Bild gelöscht",
     "failedDelete": "Bild konnte nicht gelöscht werden",
     "failedUpdate": "Aktualisierung fehlgeschlagen",
@@ -207,8 +205,8 @@
     "uploadingCount": "{count} Datei(en) werden hochgeladen...",
     "uploadedCount": "{count} Datei(en) hochgeladen",
     "uploadFailed": "Hochladen fehlgeschlagen",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "{name} konnte nicht hochgeladen werden",
+    "failedSaveFile": "{name} konnte nicht gespeichert werden",
     "deleted": "Datei gelöscht",
     "failedDelete": "Datei konnte nicht gelöscht werden",
     "failedUpdate": "Aktualisierung fehlgeschlagen",
