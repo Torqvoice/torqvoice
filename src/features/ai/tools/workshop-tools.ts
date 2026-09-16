@@ -1,6 +1,8 @@
 import 'server-only'
 import { db } from '@/lib/db'
 import type OpenAI from 'openai'
+import { hasPermission, PermissionAction } from '@/lib/permissions'
+import { TABLE_COLUMNS, TABLE_SUBJECTS } from './workshop-columns'
 
 const MAX_ROWS = 100
 
@@ -92,7 +94,7 @@ const UNSAFE_FUNCTIONS = new Set([
 const LOCK_STRENGTH = new Set(['UPDATE', 'NO', 'SHARE', 'KEY'])
 
 // Tables the AI is allowed to query (whitelist approach: everything else is blocked)
-const ALLOWED_TABLES = [
+export const ALLOWED_TABLES = [
   'vehicles',
   'service_records',
   'service_parts',
@@ -291,20 +293,24 @@ function matchingClose(tokens: Token[], open: number, to: number, close: string)
   return -1
 }
 
-/**
- * Walks a statement or subquery. `ctes` are the names visible from enclosing
- * WITH clauses; a leading WITH here extends them for the rest of the fragment.
- */
-function checkFragment(
-  tokens: Token[],
-  from: number,
-  to: number,
+/** What a name after FROM or JOIN may resolve to at this point of the walk. */
+interface Scope {
+  /** CTE names visible from enclosing WITH clauses. */
   ctes: ReadonlySet<string>
-): string | null {
+  /** The allowed tables this user's role may read. */
+  tables: ReadonlySet<string>
+}
+
+/**
+ * Walks a statement or subquery. `scope.ctes` are the names visible from
+ * enclosing WITH clauses; a leading WITH here extends them for the rest of
+ * the fragment.
+ */
+function checkFragment(tokens: Token[], from: number, to: number, scope: Scope): string | null {
   let i = from
-  let visible = ctes
+  let visible = scope
   if (isKeyword(tokens[i], 'WITH')) {
-    const local = new Set(ctes)
+    const local = new Set(scope.ctes)
     i++
     if (isKeyword(tokens[i], 'RECURSIVE')) return 'Recursive queries are not allowed.'
     for (;;) {
@@ -325,7 +331,7 @@ function checkFragment(
       if (close < 0) return UNBALANCED
       // The name becomes visible only after its own body: without RECURSIVE,
       // `WITH users AS (SELECT * FROM users)` reads the real users table.
-      const error = checkFragment(tokens, i + 1, close, local)
+      const error = checkFragment(tokens, i + 1, close, { ...scope, ctes: local })
       if (error) return error
       local.add(identName(name))
       i = close + 1
@@ -335,7 +341,7 @@ function checkFragment(
       }
       break
     }
-    visible = local
+    visible = { ...scope, ctes: local }
   }
   return checkBody(tokens, i, to, visible, false)
 }
@@ -350,14 +356,14 @@ function checkBody(
   tokens: Token[],
   from: number,
   to: number,
-  ctes: ReadonlySet<string>,
+  scope: Scope,
   startsWithTable: boolean
 ): string | null {
   let i = from
   let selectSeen = false
   let inFromList = false
   if (startsWithTable) {
-    const next = checkTableItem(tokens, i, to, ctes)
+    const next = checkTableItem(tokens, i, to, scope)
     if (typeof next === 'string') return next
     i = next
     inFromList = true
@@ -367,7 +373,7 @@ function checkBody(
     if (isPunct(tok, '(') || isPunct(tok, '[')) {
       const close = matchingClose(tokens, i, to, tok.value === '(' ? ')' : ']')
       if (close < 0) return UNBALANCED
-      const error = checkFragment(tokens, i + 1, close, ctes)
+      const error = checkFragment(tokens, i + 1, close, scope)
       if (error) return error
       i = close + 1
       continue
@@ -389,7 +395,7 @@ function checkBody(
       continue
     }
     if ((keyword === 'FROM' && selectSeen) || keyword === 'JOIN') {
-      const next = checkTableItem(tokens, i + 1, to, ctes)
+      const next = checkTableItem(tokens, i + 1, to, scope)
       if (typeof next === 'string') return next
       i = next
       inFromList = true
@@ -405,12 +411,7 @@ function checkBody(
  * parenthesised subquery, or a parenthesised join. Returns the index after
  * the item, or an error.
  */
-function checkTableItem(
-  tokens: Token[],
-  i: number,
-  to: number,
-  ctes: ReadonlySet<string>
-): number | string {
+function checkTableItem(tokens: Token[], i: number, to: number, scope: Scope): number | string {
   const tok = i < to ? tokens[i] : undefined
   if (!tok) return 'Missing table name after FROM or JOIN.'
   if (isPunct(tok, '(')) {
@@ -419,20 +420,30 @@ function checkTableItem(
     const first = keywordOf(tokens[i + 1])
     const error =
       first && SUBQUERY_KEYWORDS.has(first)
-        ? checkFragment(tokens, i + 1, close, ctes)
-        : checkBody(tokens, i + 1, close, ctes, true)
+        ? checkFragment(tokens, i + 1, close, scope)
+        : checkBody(tokens, i + 1, close, scope, true)
     return error ?? close + 1
   }
   if (tok.kind !== 'ident') return 'Unexpected token after FROM or JOIN.'
   if (isPunct(tokens[i + 1], '.')) return 'Schema-qualified table names are not allowed.'
   const name = identName(tok)
-  if (ctes.has(name) || ALLOWED_TABLE_SET.has(name)) return i + 1
+  if (scope.ctes.has(name) || scope.tables.has(name)) return i + 1
+  if (ALLOWED_TABLE_SET.has(name)) {
+    return `Table "${name}" is not available to this user's role.`
+  }
   return `Access to table "${name}" is not allowed.`
 }
 
 // ─── Validation ─────────────────────────────────────────────────────────────
 
-export function validateSql(sql: string): { valid: boolean; error?: string } {
+/**
+ * `tables` is what this user's role may read; it defaults to every allowed
+ * table for callers that only care about statement shape.
+ */
+export function validateSql(
+  sql: string,
+  tables: ReadonlySet<string> = ALLOWED_TABLE_SET
+): { valid: boolean; error?: string } {
   const trimmed = sql.trim()
 
   if (!/^(SELECT|WITH)\b/i.test(trimmed)) {
@@ -464,17 +475,40 @@ export function validateSql(sql: string): { valid: boolean; error?: string } {
     }
   }
 
-  const error = checkFragment(tokens, 0, tokens.length, new Set())
+  const error = checkFragment(tokens, 0, tokens.length, { ctes: new Set(), tables })
   if (error) return { valid: false, error }
 
   return { valid: true }
+}
+
+// ─── Role visibility ─────────────────────────────────────────────────────────
+
+/**
+ * The allowed tables a user may read through the chat: those whose subject
+ * their role can read, and only when every parent up the chain is readable
+ * too, since a child view is built on its parent's. Owners, admins and admin
+ * roles read all of them, as they do in the app.
+ */
+export function visibleTablesFor(
+  isAdmin: boolean,
+  permissions: { action: string; subject: string }[]
+): ReadonlySet<string> {
+  if (isAdmin) return ALLOWED_TABLE_SET
+  const readable = (table: string) =>
+    hasPermission(permissions, { action: PermissionAction.READ, subject: TABLE_SUBJECTS[table] })
+  const visible = new Set<string>(ORG_DIRECT_TABLES.filter(readable))
+  for (const { tables, parent } of CHILD_TABLES) {
+    if (!visible.has(parent)) continue
+    for (const table of tables) if (readable(table)) visible.add(table)
+  }
+  return visible
 }
 
 // ─── Org-scoped execution ───────────────────────────────────────────────────
 
 // Tables that carry their own organizationId. Service records are here rather
 // than under vehicles because counter sales have no vehicle.
-const ORG_DIRECT_TABLES = [
+export const ORG_DIRECT_TABLES = [
   'vehicles',
   'customers',
   'quotes',
@@ -489,7 +523,7 @@ const ORG_DIRECT_TABLES = [
 
 // Tables without an organizationId, scoped by joining their already-scoped
 // parent view. Order matters: recurring_invoices must exist before its children.
-const CHILD_TABLES: { tables: string[]; parent: string; key: string }[] = [
+export const CHILD_TABLES: { tables: string[]; parent: string; key: string }[] = [
   {
     tables: ['notes', 'fuel_logs', 'reminders', 'recurring_invoices'],
     parent: 'vehicles',
@@ -515,7 +549,8 @@ const CHILD_TABLES: { tables: string[]; parent: string; key: string }[] = [
  *
  * Security layers:
  * 1. validateSql() has already limited the statement to allowed table names
- * 2. Temporary views shadow every allowed table name, pre-filtered by orgId
+ * 2. Temporary views shadow every allowed table name the user's role may
+ *    read, pre-filtered by orgId and listing columns explicitly
  * 3. Child tables (service_parts, payments, etc.) are scoped via JOIN to
  *    their org-scoped parent view, so they need no organizationId of their own
  * 4. The orgId is regex-validated (CUID characters only) and then string
@@ -528,46 +563,69 @@ const CHILD_TABLES: { tables: string[]; parent: string; key: string }[] = [
  *    pool, and the rest of the app qualifies its raw queries as
  *    "public"."table" so a stray view could never be picked up by mistake
  */
-async function executeOrgScopedQuery(sql: string, orgId: string): Promise<unknown[]> {
+function columnList(table: string, alias = ''): string {
+  const columns = TABLE_COLUMNS[table]
+  if (!columns) throw new Error(`No column list for table ${table}`)
+  return columns.map((c) => `${alias}"${c}"`).join(', ')
+}
+
+async function executeOrgScopedQuery(
+  sql: string,
+  orgId: string,
+  visible: ReadonlySet<string>
+): Promise<unknown[]> {
   // Defense-in-depth: the orgId is interpolated below, so it must be a plain CUID
   if (!/^[a-zA-Z0-9_-]+$/.test(orgId)) {
     throw new Error('Invalid organization ID')
   }
 
-  return db.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe('SET LOCAL search_path TO pg_temp, public')
+  return db.$transaction(
+    async (tx) => {
+      await tx.$executeRawUnsafe('SET LOCAL search_path TO pg_temp, public')
+      // A query the model writes badly must not hold a pooled connection for
+      // long; the transaction is the only thing bounding it.
+      await tx.$executeRawUnsafe('SET LOCAL statement_timeout = 15000')
 
-    // The views are created before the transaction goes read-only, since
-    // CREATE VIEW needs write access. They are the security boundary.
-    for (const table of ORG_DIRECT_TABLES) {
-      await tx.$executeRawUnsafe(
-        `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT * FROM "public"."${table}" WHERE "organizationId" = '${orgId}'`
-      )
-    }
-    for (const { tables, parent, key } of CHILD_TABLES) {
-      for (const table of tables) {
+      // The views are created before the transaction goes read-only, since
+      // CREATE VIEW needs write access. They are the security boundary.
+      // Only the tables this role may read get a view. A name without one is
+      // already refused by validateSql, and would otherwise be refused by
+      // Postgres, since the real table is never on the unqualified path.
+      for (const table of ORG_DIRECT_TABLES) {
+        if (!visible.has(table)) continue
         await tx.$executeRawUnsafe(
-          `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT t.* FROM "public"."${table}" t INNER JOIN pg_temp."${parent}" p ON t."${key}" = p.id`
+          `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT ${columnList(table)} FROM "public"."${table}" WHERE "organizationId" = '${orgId}'`
         )
       }
-    }
+      for (const { tables, parent, key } of CHILD_TABLES) {
+        for (const table of tables) {
+          if (!visible.has(table)) continue
+          await tx.$executeRawUnsafe(
+            `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT ${columnList(table, 't.')} FROM "public"."${table}" t INNER JOIN pg_temp."${parent}" p ON t."${key}" = p.id`
+          )
+        }
+      }
 
-    let failed = false
-    try {
-      await tx.$executeRawUnsafe('SET TRANSACTION READ ONLY')
-      const rows = await tx.$queryRawUnsafe(sql)
-      return Array.isArray(rows) ? rows.slice(0, MAX_ROWS) : []
-    } catch (err) {
-      failed = true
-      throw err
-    } finally {
-      // Postgres allows DISCARD TEMP in a read-only transaction (DROP VIEW it
-      // does not). A failed statement leaves the transaction aborted; Prisma
-      // rolls it back and the rollback drops the views with it, so cleaning
-      // up there would only replace the real error message.
-      if (!failed) await tx.$executeRawUnsafe('DISCARD TEMP')
-    }
-  })
+      let failed = false
+      try {
+        await tx.$executeRawUnsafe('SET TRANSACTION READ ONLY')
+        const rows = await tx.$queryRawUnsafe(sql)
+        return Array.isArray(rows) ? rows.slice(0, MAX_ROWS) : []
+      } catch (err) {
+        failed = true
+        throw err
+      } finally {
+        // Postgres allows DISCARD TEMP in a read-only transaction (DROP VIEW it
+        // does not). A failed statement leaves the transaction aborted; Prisma
+        // rolls it back and the rollback drops the views with it, so cleaning
+        // up there would only replace the real error message.
+        if (!failed) await tx.$executeRawUnsafe('DISCARD TEMP')
+      }
+    },
+    // Prisma's default of five seconds is too short for the view setup plus
+    // a real query; the statement timeout above still ends a runaway one.
+    { timeout: 20_000, maxWait: 5_000 }
+  )
 }
 
 // ─── Tool execution ─────────────────────────────────────────────────────────
@@ -575,7 +633,8 @@ async function executeOrgScopedQuery(sql: string, orgId: string): Promise<unknow
 export async function executeTool(
   name: string,
   args: Record<string, unknown>,
-  organizationId: string
+  organizationId: string,
+  visible: ReadonlySet<string> = ALLOWED_TABLE_SET
 ): Promise<string> {
   if (name !== 'run_sql_query') {
     return JSON.stringify({ error: `Unknown tool: ${name}` })
@@ -584,7 +643,7 @@ export async function executeTool(
   const sql = (args.sql as string) || ''
 
   // Validate
-  const validation = validateSql(sql)
+  const validation = validateSql(sql, visible)
   if (!validation.valid) {
     return JSON.stringify({ error: validation.error })
   }
@@ -594,7 +653,7 @@ export async function executeTool(
     const hasLimit = /\bLIMIT\b/i.test(sql)
     const limitedSql = hasLimit ? sql : `${sql} LIMIT ${MAX_ROWS}`
 
-    const rows = await executeOrgScopedQuery(limitedSql, organizationId)
+    const rows = await executeOrgScopedQuery(limitedSql, organizationId, visible)
 
     return JSON.stringify(rows, (_key, value) =>
       typeof value === 'bigint' ? Number(value) : value

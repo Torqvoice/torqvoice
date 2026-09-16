@@ -69,6 +69,7 @@ import {
   Timer,
   Users,
   UserRound,
+  Sparkles,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
@@ -129,6 +130,7 @@ export function AppSidebar({
   isSuperAdmin,
   features,
   tireHotelEnabled = false,
+  aiEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
   announcement = null,
@@ -142,6 +144,8 @@ export function AppSidebar({
   isSuperAdmin?: boolean
   features?: PlanFeatures
   tireHotelEnabled?: boolean
+  /** An AI vendor is connected and the plan includes AI, so the assistant page can answer. */
+  aiEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
   /** The one product announcement to show, worked out on the server. */
@@ -275,6 +279,18 @@ export function AppSidebar({
       icon: Timer,
       subject: 'time_tracking',
     },
+    // Only once a provider is connected: a link to a page that can only say
+    // "not connected" is noise.
+    ...(aiEnabled
+      ? [
+          {
+            titleKey: 'sidebar.aiAssistant' as const,
+            url: '/ai',
+            icon: Sparkles,
+            subject: 'ai_assistant',
+          },
+        ]
+      : []),
     {
       titleKey: 'sidebar.auditLog' as const,
       url: '/audit-log',

@@ -37,6 +37,7 @@ model Customer {
   serviceRecords ServiceRecord[]
   reminders      Reminder[]
   tireSets       TireSet[]
+  aiChats        AiChat[]
 
   /// The invoice design this customer's invoices use in place of the
   /// workshop's default: a fleet account that wants its own paper. An
