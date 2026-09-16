@@ -74,8 +74,8 @@
     "unitPrice": "Birim Fiyat",
     "total": "Toplam",
     "subtotal": "Parçalar Ara Toplam: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Satırı sil",
+    "excludeFromTotal": "Toplama dahil etme",
     "addFromInventory": "Stoktan",
     "unitCost": "Maliyet",
     "markupPercent": "Kâr Marjı %",
@@ -91,17 +91,15 @@
     "rate": "Ücret ({currency}/sa)",
     "total": "Toplam",
     "subtotal": "İşçilik Ara Toplam: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Hizmet Ekle",
+    "qty": "Adet",
+    "qtyOrHours": "Birim / Saat",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
     "switchToServiceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Satırı sil",
+    "excludeFromTotal": "Toplama dahil etme"
   },
   "notes": {
     "title": "Notlar",
@@ -139,8 +137,8 @@
     "selectVehicle": "Araç seçin...",
     "selectCustomer": "Müşteri seçin...",
     "none": "Yok",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Aracı kaldır",
+    "clearCustomer": "Müşteriyi kaldır"
   },
   "totals": {
     "title": "Toplamlar",
@@ -172,7 +170,7 @@
     "failedEmail": "E-posta gönderilemedi",
     "smsSent": "SMS gönderildi",
     "failedSms": "SMS gönderilemedi",
-    "copyLink": "Copy link"
+    "copyLink": "Bağlantıyı kopyala"
   },
   "images": {
     "title": "Teklif Görselleri",
@@ -187,8 +185,8 @@
     "uploadingCount": "{count} görsel yükleniyor...",
     "uploadedCount": "{count} görsel yüklendi",
     "uploadFailed": "Yükleme başarısız",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "{name} yüklenemedi",
+    "failedSaveFile": "{name} kaydedilemedi",
     "deleted": "Görsel silindi",
     "failedDelete": "Görsel silinemedi",
     "failedUpdate": "Güncelleme başarısız",
@@ -207,8 +205,8 @@
     "uploadingCount": "{count} dosya yükleniyor...",
     "uploadedCount": "{count} dosya yüklendi",
     "uploadFailed": "Yükleme başarısız",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "{name} yüklenemedi",
+    "failedSaveFile": "{name} kaydedilemedi",
     "deleted": "Dosya silindi",
     "failedDelete": "Dosya silinemedi",
     "failedUpdate": "Güncelleme başarısız",

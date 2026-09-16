@@ -15,4 +15,10 @@
     "source.removeUnusedImports": "always",
     "source.organizeImports.biome": "always"
   },
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#1f4e8c",
+    "titleBar.activeForeground": "#ffffff",
+    "titleBar.inactiveBackground": "#1f4e8c99",
+    "titleBar.inactiveForeground": "#ffffffaa"
+  }
 }

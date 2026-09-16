@@ -74,8 +74,8 @@
     "unitPrice": "Stuksprijs",
     "total": "Totaal",
     "subtotal": "Subtotaal onderdelen: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Rij verwijderen",
+    "excludeFromTotal": "Buiten het totaal houden",
     "addFromInventory": "Uit voorraad",
     "unitCost": "Inkoop",
     "markupPercent": "Marge %",
@@ -91,17 +91,15 @@
     "rate": "Tarief ({currency}/uur)",
     "total": "Totaal",
     "subtotal": "Subtotaal arbeid: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Dienst toevoegen",
+    "qty": "Aantal",
+    "qtyOrHours": "Eenheid / Uren",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
     "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "deleteRow": "Rij verwijderen",
+    "excludeFromTotal": "Buiten het totaal houden"
   },
   "notes": {
     "title": "Notities",
@@ -139,8 +137,8 @@
     "selectVehicle": "Selecteer voertuig...",
     "selectCustomer": "Selecteer klant...",
     "none": "Geen",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Voertuig wissen",
+    "clearCustomer": "Klant wissen"
   },
   "totals": {
     "title": "Totalen",
@@ -172,7 +170,7 @@
     "failedEmail": "E-mail verzenden mislukt",
     "smsSent": "SMS verzonden",
     "failedSms": "SMS verzenden mislukt",
-    "copyLink": "Copy link"
+    "copyLink": "Link kopiëren"
   },
   "images": {
     "title": "Offerteafbeeldingen",
@@ -187,8 +185,8 @@
     "uploadingCount": "{count} afbeelding(en) uploaden...",
     "uploadedCount": "{count} afbeelding(en) geüpload",
     "uploadFailed": "Upload mislukt",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Uploaden van {name} mislukt",
+    "failedSaveFile": "Opslaan van {name} mislukt",
     "deleted": "Afbeelding verwijderd",
     "failedDelete": "Afbeelding verwijderen mislukt",
     "failedUpdate": "Bijwerken mislukt",
@@ -207,8 +205,8 @@
     "uploadingCount": "{count} bestand(en) uploaden...",
     "uploadedCount": "{count} bestand(en) geüpload",
     "uploadFailed": "Upload mislukt",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Uploaden van {name} mislukt",
+    "failedSaveFile": "Opslaan van {name} mislukt",
     "deleted": "Bestand verwijderd",
     "failedDelete": "Bestand verwijderen mislukt",
     "failedUpdate": "Bijwerken mislukt",
