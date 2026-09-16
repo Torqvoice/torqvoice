@@ -8,6 +8,12 @@ import {
 } from '@/features/integrations/Lib/inspection-sync'
 import { getConnector, getManifest, listManifests } from '@/integrations/registry'
 
+// Cloud mode also needs a signed token (see cloud-instance.test.ts); here the
+// environment variable alone stands for a confirmed cloud instance.
+vi.mock('@/lib/cloud-instance', () => ({
+  isCloudInstance: () => process.env.TORQVOICE_MODE === 'cloud',
+}))
+
 const ROOT = process.cwd()
 const messages = JSON.parse(
   fs.readFileSync(path.join(ROOT, 'messages/en/integrations.json'), 'utf-8')

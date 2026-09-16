@@ -1,4 +1,5 @@
 import { cache } from 'react'
+import { isCloudInstance } from './cloud-instance'
 import { db } from './db'
 import { verifyLicenseToken } from './license/token'
 import { scheduleLicenseSelfHeal } from './license/revalidate'
@@ -132,8 +133,9 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
   },
 }
 
+/** TORQVOICE_MODE=cloud with a token torqvoice.com signed for this URL. See lib/cloud-instance. */
 export function isCloudMode(): boolean {
-  return process.env.TORQVOICE_MODE === 'cloud'
+  return isCloudInstance()
 }
 
 /**

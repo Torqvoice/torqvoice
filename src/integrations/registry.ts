@@ -8,6 +8,7 @@
  */
 
 import type { ConnectorManifest, ConnectorServer } from '@/features/integrations/Lib/types'
+import { isCloudInstance } from '@/lib/cloud-instance'
 import { manifest as amazonSes } from './amazon-ses/manifest'
 import { manifest as anthropic } from './anthropic/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
@@ -72,10 +73,10 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
 ]
 
 /**
- * The same test as isCloudMode() in lib/features, read here directly so the
- * registry stays plain data with no database behind it.
+ * The same test as isCloudMode() in lib/features, imported from lib/cloud-instance
+ * directly so the registry stays plain data with no database behind it.
  */
-const IS_CLOUD = process.env.TORQVOICE_MODE === 'cloud'
+const IS_CLOUD = isCloudInstance()
 
 /**
  * A self-hosted-only connector does not exist on the cloud instance: not in
