@@ -46,6 +46,9 @@ jobs:
           # themselves live in this app's database and are edited from the
           # torqvoice.com admin, so they are no longer passed here.
           TORQVOICE_SERVICE_SECRET: ${{ secrets.TORQVOICE_SERVICE_SECRET }}
+          # Signed by torqvoice.com for APP_URL (scripts/mint-cloud-token.mjs there).
+          # Without it the app ignores TORQVOICE_MODE=cloud and runs self-hosted.
+          TORQVOICE_CLOUD_TOKEN: ${{ secrets.CLOUD_TORQVOICE_CLOUD_TOKEN }}
           DATA_PATH: ${{ secrets.DATA_PATH }}
           POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
           POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
@@ -94,6 +97,7 @@ jobs:
                 # Without this every visitor shares the edge's rate-limit bucket.
                 TRUST_CF_CONNECTING_IP: "true"
                 TORQVOICE_SERVICE_SECRET: ${TORQVOICE_SERVICE_SECRET}
+                TORQVOICE_CLOUD_TOKEN: ${TORQVOICE_CLOUD_TOKEN}
                 TORQVOICE_COM_URL: https://torqvoice.com
                 POSTHOG_HOST: ${POSTHOG_HOST}
                 POSTHOG_KEY: ${POSTHOG_KEY}
@@ -112,6 +116,14 @@ jobs:
               networks:
                 - proxy
           COMPOSE
+
+          # Without the cloud token the new container would come up as a
+          # self-hosted install: one workshop for everybody, branding back on.
+          # Stop here, before anything is replaced.
+          if [ -z "$TORQVOICE_CLOUD_TOKEN" ]; then
+            echo "::error title=Cloud token missing::CLOUD_TORQVOICE_CLOUD_TOKEN is empty. Mint one for $APP_URL with scripts/mint-cloud-token.mjs in the torqvoice.com repo."
+            exit 1
+          fi
 
           # The link to torqvoice.com is what the subscription pages hang on. A
           # wrong secret or an origin the site does not list only shows up as a

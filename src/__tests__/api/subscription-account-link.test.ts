@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
+// Cloud mode also needs a signed token (see cloud-instance.test.ts); here the
+// environment variable alone stands for a confirmed cloud instance.
+vi.mock('@/lib/cloud-instance', () => ({
+  isCloudInstance: () => process.env.TORQVOICE_MODE === 'cloud',
+}))
+
 vi.mock('@/lib/get-auth-context', () => ({ getAuthContext: vi.fn() }))
 vi.mock('@/lib/db', () => ({ db: { user: { findUnique: vi.fn() } } }))
 
