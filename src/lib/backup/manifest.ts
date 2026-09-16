@@ -327,6 +327,8 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
  */
 export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   AiChat: 'Assistant conversation history, not a workshop record.',
+  AiChatMessage:
+    'The turns of that history; reached through the vehicle or customer the chat was about.',
   CustomerMagicLink: 'Single-use portal login link, expires within the hour.',
   CustomerSession: 'Portal session, recreated when the customer signs in.',
   CustomerSmsCode: 'One-time code, valid for minutes.',

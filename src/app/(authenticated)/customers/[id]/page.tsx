@@ -11,6 +11,7 @@ import { getConversation } from '@/features/sms/Actions/smsActions'
 import { getTelegramConversation } from '@/features/telegram/Actions/telegramActions'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures } from '@/lib/features'
+import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { channelEnabled } from '@/features/integrations/Lib/messaging'
 import { CustomerDetailClient } from './customer-detail-client'
@@ -42,6 +43,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
   // Load SMS/Telegram features and conversation if enabled
   let smsEnabled = false
+  let aiEnabled = false
   let telegramBotUsername: string | null = null
   let telegramEnabled = false
   let whatsappEnabled = false
@@ -68,6 +70,9 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   if (layoutData.status === 'ok') {
     const features = await getFeatures(layoutData.organizationId)
     smsEnabled = features.sms
+    // Ask AI needs a vendor connected in the catalog; a failed lookup means
+    // no button, nothing more.
+    aiEnabled = features.ai && (await isAiConfigured(layoutData.organizationId).catch(() => false))
 
     // Both switches live on the channel's integration now. The conversation
     // itself loads client-side, so only the flag is needed here to decide
@@ -121,6 +126,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
           canReadInvoices={invoicesResult.success}
           canReadQuotes={quotesResult.success}
+          aiEnabled={aiEnabled}
         />
       </div>
     </>

@@ -21,6 +21,7 @@ model Vehicle {
   maintenanceDismissed   Boolean              @default(false)
   maintenanceDismissedAt DateTime?
   aiMessages             AiGeneratedMessage[]
+  aiChats                AiChat[]
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
 

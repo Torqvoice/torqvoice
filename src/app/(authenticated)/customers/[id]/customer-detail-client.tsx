@@ -12,6 +12,7 @@ import { useFormatCurrency } from '@/components/currency-settings-context'
 import { statusColors } from '@/lib/table-utils'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { Button } from '@/components/ui/button'
+import { AskAiSheet } from '@/features/ai/Components/AskAiSheet'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -169,6 +170,7 @@ export function CustomerDetailClient({
   quotes = [],
   canReadInvoices = false,
   canReadQuotes = false,
+  aiEnabled = false,
 }: {
   customer: CustomerDetail
   customers?: { id: string; name: string; company: string | null }[]
@@ -193,6 +195,8 @@ export function CustomerDetailClient({
   quotes?: QuoteRow[]
   canReadInvoices?: boolean
   canReadQuotes?: boolean
+  /** An AI vendor is connected, so the Ask AI sheet can answer about this customer. */
+  aiEnabled?: boolean
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
@@ -405,6 +409,13 @@ export function CustomerDetailClient({
             )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            {aiEnabled && (
+              <AskAiSheet
+                subject={{ type: 'customer', id: customer.id }}
+                title={customer.name}
+                className="h-9 md:h-8"
+              />
+            )}
             {telegramBotUsername && (
               <TelegramQrCode
                 botUsername={telegramBotUsername}

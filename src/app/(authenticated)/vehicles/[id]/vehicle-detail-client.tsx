@@ -51,6 +51,7 @@ import {
   aiClearMessage,
 } from '@/features/ai/Actions/aiActions'
 import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
+import { AskAiSheet } from '@/features/ai/Components/AskAiSheet'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import {
   AlertTriangle,
@@ -901,6 +902,13 @@ export function VehicleDetailClient({
                 {t('purchased', { date: formatDate(new Date(vehicle.purchaseDate)) })}
               </span>
             </div>
+          )}
+          {aiEnabled && (
+            <AskAiSheet
+              subject={{ type: 'vehicle', id: vehicle.id }}
+              title={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+              className="h-7 text-xs"
+            />
           )}
           {aiEnabled && (
             <div className="flex items-center rounded-md border">

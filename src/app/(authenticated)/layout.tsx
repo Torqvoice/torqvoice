@@ -34,6 +34,8 @@ import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup'
+import { isAiConfigured } from '@/features/integrations/Lib/ai'
+import { WORKSHOP_CHAT_ENABLED } from '@/features/ai/constants'
 import { getManifest } from '@/integrations/registry'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
@@ -74,6 +76,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Tire hotel is opt-in, so the nav entry only exists once a workshop has
   // switched the module on.
   const tireHotelEnabled = await isTireHotelEnabled(data.organizationId)
+
+  // The assistant link appears only when a provider is connected and the
+  // plan includes AI, the same rule as every AI button in the app.
+  const aiEnabled =
+    WORKSHOP_CHAT_ENABLED &&
+    features.ai &&
+    (await isAiConfigured(data.organizationId).catch(() => false))
 
   // Read here so the first paint already knows, and a hint that was dismissed
   // months ago never flashes up before the client can suppress it.
@@ -317,6 +326,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                           isSuperAdmin={data.isSuperAdmin}
                           features={features}
                           tireHotelEnabled={tireHotelEnabled}
+                          aiEnabled={aiEnabled}
                           visibleSubjects={visibleSubjects}
                           announcement={announcements[0] ?? null}
                           isAdminOrOwner={isOwnerOrAdmin}
