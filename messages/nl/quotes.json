@@ -96,8 +96,6 @@
     "qtyOrHours": "Eenheid / Uren",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Overschakelen naar uurtarief",
-    "switchToService": "Overschakelen naar vaste prijs",
     "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
     "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Rij verwijderen",

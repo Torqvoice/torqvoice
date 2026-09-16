@@ -96,8 +96,6 @@
     "qtyOrHours": "Birim / Saat",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Saatlik fiyatlandırmaya geç",
-    "switchToService": "Hizmet fiyatlandırmasına geç",
     "switchToHourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
     "switchToServiceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
     "deleteRow": "Satırı sil",

@@ -96,8 +96,6 @@
     "qtyOrHours": "Jednostka / Godziny",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Przełącz na cenę godzinową",
-    "switchToService": "Przełącz na cenę usługi",
     "switchToHourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
     "switchToServiceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
     "deleteRow": "Usuń wiersz",

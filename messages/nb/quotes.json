@@ -96,8 +96,6 @@
     "qtyOrHours": "Enhet / Timer",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Bytt til timepris",
-    "switchToService": "Bytt til fastpris",
     "switchToHourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
     "switchToServiceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
     "deleteRow": "Slett rad",

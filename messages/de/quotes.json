@@ -96,8 +96,6 @@
     "qtyOrHours": "Einheit / Stunden",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Zu Stundenpreis wechseln",
-    "switchToService": "Zu Festpreis wechseln",
     "switchToHourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
     "switchToServiceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
     "deleteRow": "Zeile löschen",
