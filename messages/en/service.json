@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Warranty",
     "months": "Duration (months)",
-    "mileage": "Mileage Limit",
     "notes": "Warranty Terms",
     "notesPlaceholder": "e.g. 12-month warranty on all parts and labor...",
     "expiresAt": "Expires",
@@ -427,10 +426,19 @@
       "expired": "Expired",
       "none": "N/A"
     },
-    "defaults": {
-      "title": "Default Warranty Settings",
-      "description": "Set default warranty terms for new service records"
-    }
+    "statementLabel": "What the customer is told about warranty",
+    "statement": {
+      "none": "Not stated",
+      "included": "Included",
+      "not_included": "Not included"
+    },
+    "noneHint": "Nothing about warranty is printed on this document.",
+    "mileageWithUnit": "Distance limit ({unit})",
+    "notIncludedNotes": "Statement to the customer",
+    "notIncludedPlaceholder": "e.g. No workshop warranty is offered on customer-supplied parts.",
+    "printedHint": "Printed under the warranty on the document.",
+    "notIncludedHint": "Leave empty and the document says that statutory rights are not affected.",
+    "summaryMonths": "{count} mo"
   },
   "concerns": {
     "title": "Customer concerns",

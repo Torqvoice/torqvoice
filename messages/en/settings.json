@@ -43,6 +43,10 @@
         "title": "Tax",
         "description": "Tax rate & defaults"
       },
+      "warranty": {
+        "title": "Warranty",
+        "description": "Default warranty on quotes & invoices"
+      },
       "currency": {
         "title": "Currency",
         "description": "Currency & tax defaults"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Show warning when within this distance of next service",
     "saveMaintenance": "Save Maintenance Settings",
     "saved": "Maintenance settings saved"
+  },
+  "warranty": {
+    "title": "Warranty",
+    "description": "Set what your quotes and invoices say about warranty. Every new document starts from this, and you can still change it on each one.",
+    "designHint": "Printed in the Warranty section of your invoice and quote design. If you have hidden that section under Templates, switch it back on. The Compact design leaves it out.",
+    "defaultStatus": "New quotes and work orders say",
+    "status": {
+      "none": "Nothing",
+      "included": "Warranty included",
+      "not_included": "No warranty"
+    },
+    "statusHint": {
+      "none": "Warranty is not mentioned until somebody fills it in on the document.",
+      "included": "New documents start with the period and terms below.",
+      "not_included": "New documents tell the customer that no workshop warranty is included."
+    },
+    "includedTitle": "When a warranty is included",
+    "includedHint": "The period and terms a document gets when it offers a warranty.",
+    "months": "Duration (months)",
+    "mileage": "Distance limit ({unit})",
+    "mileageHint": "Leave empty for no distance limit.",
+    "terms": "Warranty terms",
+    "termsPlaceholder": "e.g. 12 months on parts and labour. Wear parts are not covered.",
+    "termsHint": "Printed under the warranty on quotes and invoices.",
+    "notIncludedTitle": "When no warranty is included",
+    "notIncludedHint": "What the customer reads when a document says no warranty is included.",
+    "notIncludedText": "Statement",
+    "notIncludedPlaceholder": "e.g. No workshop warranty is offered on customer-supplied parts. Your statutory rights are not affected.",
+    "legalHint": "This is about your own workshop warranty. In many countries, including the EU and the UK, customers also have legal guarantee rights that cannot be excluded. Leave this empty and the document says that statutory rights are not affected.",
+    "applyTitle": "Use these defaults on",
+    "applyToQuotes": "New quotes",
+    "applyToQuotesHint": "The customer sees the warranty before accepting.",
+    "applyToWorkOrders": "New work orders",
+    "applyToWorkOrdersHint": "Printed on the invoice. A work order made from a quote keeps what the quote said.",
+    "save": "Save warranty settings",
+    "saved": "Warranty settings saved",
+    "saveFailed": "Could not save the warranty settings"
   },
   "appearance": {
     "title": "Appearance",

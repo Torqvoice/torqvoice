@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garantie",
     "months": "Durée (mois)",
-    "mileage": "Limite de kilométrage",
     "notes": "Conditions de garantie",
     "notesPlaceholder": "ex. Garantie de 12 mois sur toutes les pièces et la main-d'œuvre...",
     "expiresAt": "Expire",
@@ -427,10 +426,19 @@
       "expired": "Expirée",
       "none": "Aucune"
     },
-    "defaults": {
-      "title": "Paramètres de garantie par défaut",
-      "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
-    }
+    "statementLabel": "Ce que le client apprend sur la garantie",
+    "statement": {
+      "none": "Non précisé",
+      "included": "Incluse",
+      "not_included": "Non incluse"
+    },
+    "noneHint": "Rien n'est imprimé sur la garantie dans ce document.",
+    "mileageWithUnit": "Limite de distance ({unit})",
+    "notIncludedNotes": "Mention pour le client",
+    "notIncludedPlaceholder": "ex. L'atelier n'offre aucune garantie sur les pièces fournies par le client.",
+    "printedHint": "Imprimé sous la garantie sur le document.",
+    "notIncludedHint": "Laissez vide et le document indique que les droits légaux ne sont pas affectés.",
+    "summaryMonths": "{count} mois"
   },
   "concerns": {
     "title": "Demandes du client",

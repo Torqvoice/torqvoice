@@ -78,6 +78,8 @@ export interface InvoiceData {
   }[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   findings?: Array<{ description: string; severity: string; notes: string | null }>
+  /** 'included', 'not_included' or null; see src/lib/warranty.ts. */
+  warrantyStatus?: string | null
   warrantyMonths?: number | null
   warrantyMileage?: number | null
   warrantyExpiresAt?: Date | string | null

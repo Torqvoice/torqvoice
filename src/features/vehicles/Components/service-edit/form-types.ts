@@ -50,6 +50,7 @@ export interface InitialData {
   discountType?: string
   discountValue?: number
   discountAmount?: number
+  warrantyStatus?: string | null
   warrantyMonths?: number | null
   warrantyMileage?: number | null
   warrantyNotes?: string | null

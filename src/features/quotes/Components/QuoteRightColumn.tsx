@@ -20,6 +20,8 @@ import { netLineTotal } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { type LockReason, quoteStatusKeepsLock } from '@/lib/document-lock'
+import type { WarrantyTexts } from '@/lib/warranty'
+import { WarrantySection } from '@/features/vehicles/Components/service-page/WarrantySection'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
@@ -30,6 +32,8 @@ interface QuoteRightColumnProps {
   quote: QuoteRecord
   organizationId: string
   currencyCode: string
+  warrantyTexts: WarrantyTexts
+  distanceUnit: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
   onRevoke: () => Promise<void>
@@ -46,6 +50,8 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   quote,
   organizationId,
   currencyCode,
+  warrantyTexts,
+  distanceUnit,
   t,
   onRevoke,
   lockReason,
@@ -422,6 +428,16 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
             </div>
           )
         })()}
+      </fieldset>
+
+      {/* Warranty: what the customer is offered, stated before they accept */}
+      <fieldset disabled={locked} className="contents">
+        <WarrantySection
+          value={state.warranty}
+          onChange={state.setWarranty}
+          texts={warrantyTexts}
+          distanceUnit={distanceUnit}
+        />
       </fieldset>
     </div>
   )

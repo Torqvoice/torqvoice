@@ -12,6 +12,13 @@ import {
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyExpiryFor,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
+import { normalizeWarranty } from '@/lib/warranty'
 import { withAuth } from '@/lib/with-auth'
 import { createQuoteSchema, quoteStatusSchema, updateQuoteSchema } from '../Schema/quoteSchema'
 import { revalidatePath } from 'next/cache'
@@ -211,7 +218,12 @@ export async function createQuote(input: unknown) {
         where: {
           organizationId,
           key: {
-            in: ['workshop.quotePrefix', 'workshop.quoteValidDays', ...WORKSHOP_TAX_SETTING_KEYS],
+            in: [
+              'workshop.quotePrefix',
+              'workshop.quoteValidDays',
+              ...WORKSHOP_TAX_SETTING_KEYS,
+              ...WARRANTY_SETTING_KEYS,
+            ],
           },
         },
       })
@@ -267,12 +279,32 @@ export async function createQuote(input: unknown) {
       }
       const quoteNumber = `${prefix}${nextNum}`
 
-      const { partItems, laborItems, ...quoteData } = data
+      const {
+        partItems,
+        laborItems,
+        warrantyStatus,
+        warrantyMonths,
+        warrantyMileage,
+        warrantyNotes,
+        ...quoteData
+      } = data
+
+      // A quote that says nothing about warranty starts from the workshop's
+      // standing answer; one that says anything is taken at its word.
+      const warrantyUnstated =
+        warrantyStatus === undefined &&
+        warrantyMonths === undefined &&
+        warrantyMileage === undefined &&
+        warrantyNotes === undefined
+      const warranty = warrantyUnstated
+        ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'quote')
+        : normalizeWarranty({ warrantyStatus, warrantyMonths, warrantyMileage, warrantyNotes })
 
       const quote = await db.$transaction(async (tx) => {
         const created = await tx.quote.create({
           data: {
             ...quoteData,
+            ...warranty,
             quoteNumber,
             userId,
             organizationId,
@@ -333,7 +365,32 @@ export async function updateQuote(input: unknown) {
       })
       if (!existing) throw new Error('Quote not found')
 
-      const { id, partItems, laborItems, ...quoteData } = data
+      const {
+        id,
+        partItems,
+        laborItems,
+        warrantyStatus,
+        warrantyMonths,
+        warrantyMileage,
+        warrantyNotes,
+        ...quoteData
+      } = data
+
+      // The four warranty columns move together, as on a work order: naming
+      // any of them restates the whole, with the row filling in the rest.
+      const warrantyTouched =
+        warrantyStatus !== undefined ||
+        warrantyMonths !== undefined ||
+        warrantyMileage !== undefined ||
+        warrantyNotes !== undefined
+      const warranty = warrantyTouched
+        ? normalizeWarranty({
+            warrantyStatus: warrantyStatus ?? existing.warrantyStatus,
+            warrantyMonths: warrantyMonths ?? existing.warrantyMonths,
+            warrantyMileage: warrantyMileage ?? existing.warrantyMileage,
+            warrantyNotes: warrantyNotes ?? existing.warrantyNotes,
+          })
+        : {}
 
       // Same as the work order: a quote with tax components has its split
       // recomputed from the row, since the editor sends one combined figure.
@@ -360,6 +417,7 @@ export async function updateQuote(input: unknown) {
           // cleared.
           data: {
             ...quoteData,
+            ...warranty,
             taxComponents: splitTax?.taxComponents,
             description: clearedToNull(quoteData.description),
             notes: clearedToNull(quoteData.notes),
@@ -498,7 +556,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       // Get settings for invoice number
       const [settings, org] = await Promise.all([
         db.appSetting.findMany({
-          where: { organizationId, key: { in: ['workshop.invoicePrefix'] } },
+          where: {
+            organizationId,
+            key: { in: ['workshop.invoicePrefix', ...WARRANTY_SETTING_KEYS] },
+          },
         }),
         db.organization.findUnique({
           where: { id: organizationId },
@@ -520,6 +581,16 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         if (match) nextNum = parseInt(match[1], 10) + 1
       }
       const invoiceNumber = `${prefix}${nextNum}`
+
+      // What the customer was told on the quote is what the job carries, "not
+      // included" as much as twelve months: they accepted on those words. A
+      // quote that never mentioned warranty leaves the job to start like any
+      // other, from the workshop's standing answer.
+      const timeZone = await workshopTimeZone(organizationId)
+      const serviceDate = new Date()
+      const warranty = quote.warrantyStatus
+        ? normalizeWarranty(quote)
+        : warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
 
       const record = await db.$transaction(async (tx) => {
         const created = await tx.serviceRecord.create({
@@ -546,8 +617,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             discountType: quote.discountType,
             discountValue: quote.discountValue,
             discountAmount: quote.discountAmount,
-            serviceDate: new Date(),
-            startDateTime: new Date(),
+            ...warranty,
+            warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
+            serviceDate,
+            startDateTime: serviceDate,
           },
         })
 

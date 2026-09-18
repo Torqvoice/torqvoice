@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garanti",
     "months": "Süre (ay)",
-    "mileage": "Kilometre limiti",
     "notes": "Garanti koşulları",
     "notesPlaceholder": "ör. Tüm parça ve işçilik için 12 ay garanti...",
     "expiresAt": "Bitiş",
@@ -427,10 +426,19 @@
       "expired": "Süresi doldu",
       "none": "Yok"
     },
-    "defaults": {
-      "title": "Varsayılan garanti ayarları",
-      "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
-    }
+    "statementLabel": "Müşteriye garanti hakkında ne söylendiği",
+    "statement": {
+      "none": "Belirtilmedi",
+      "included": "Dahil",
+      "not_included": "Dahil değil"
+    },
+    "noneHint": "Bu belgede garantiyle ilgili hiçbir şey yazdırılmaz.",
+    "mileageWithUnit": "Mesafe limiti ({unit})",
+    "notIncludedNotes": "Müşteriye beyan",
+    "notIncludedPlaceholder": "örn. Müşterinin getirdiği parçalar için atölye garantisi verilmez.",
+    "printedHint": "Belgede garantinin altında yazdırılır.",
+    "notIncludedHint": "Boş bırakırsanız belge, yasal hakların saklı olduğunu belirtir.",
+    "summaryMonths": "{count} ay"
   },
   "concerns": {
     "title": "Müşteri bildirimleri",

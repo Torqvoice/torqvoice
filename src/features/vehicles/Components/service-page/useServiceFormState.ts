@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { calculateTotals } from '@/lib/tax'
+import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -43,15 +44,10 @@ export function useServiceFormState({
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
   const [showPresetPicker, setShowPresetPicker] = useState(false)
-  const [warrantyMonths, setWarrantyMonths] = useState<number | null>(
-    initialData.warrantyMonths ?? null
-  )
-  const [warrantyMileage, setWarrantyMileage] = useState<number | null>(
-    initialData.warrantyMileage ?? null
-  )
-  const [warrantyNotes, setWarrantyNotes] = useState<string | null>(
-    initialData.warrantyNotes ?? null
-  )
+  // One value, because the four move together: choosing "not included" clears
+  // the months, and read through normalizeWarranty so a job saved before the
+  // statement existed opens as the included warranty it was.
+  const [warranty, setWarranty] = useState<WarrantyFields>(() => normalizeWarranty(initialData))
 
   // Autosave state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -319,23 +315,9 @@ export function useServiceFormState({
     },
     [markDirty]
   )
-  const dirtySetWarrantyMonths = useCallback(
-    (v: number | null) => {
-      setWarrantyMonths(v)
-      markDirty()
-    },
-    [markDirty]
-  )
-  const dirtySetWarrantyMileage = useCallback(
-    (v: number | null) => {
-      setWarrantyMileage(v)
-      markDirty()
-    },
-    [markDirty]
-  )
-  const dirtySetWarrantyNotes = useCallback(
-    (v: string | null) => {
-      setWarrantyNotes(v)
+  const dirtySetWarranty = useCallback(
+    (next: WarrantyFields) => {
+      setWarranty(next)
       markDirty()
     },
     [markDirty]
@@ -414,12 +396,8 @@ export function useServiceFormState({
     setStatus,
     dirtySetSelectedVehicleId,
     // Warranty
-    warrantyMonths,
-    warrantyMileage,
-    warrantyNotes,
-    dirtySetWarrantyMonths,
-    dirtySetWarrantyMileage,
-    dirtySetWarrantyNotes,
+    warranty,
+    dirtySetWarranty,
     initialData,
   }
 }

@@ -84,6 +84,8 @@ export const createServiceSchema = z.object({
   invoiceNumber: z.string().optional(),
   invoiceDate: z.string().optional(),
   invoiceDueDate: z.string().optional(),
+  /** 'none' clears the warranty; see normalizeWarranty for how the four combine. */
+  warrantyStatus: z.enum(['none', 'included', 'not_included']).optional(),
   warrantyMonths: z.coerce.number().int().min(0).optional(),
   warrantyMileage: z.coerce.number().int().min(0).optional(),
   warrantyNotes: z.string().optional(),

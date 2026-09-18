@@ -171,6 +171,8 @@ export async function buildQuotePdfBuffer(
     torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
+    // The same fallback the invoice prints its distances with.
+    unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     template: templateFor(settingsMap),
     imageAttachments,
     otherAttachments,

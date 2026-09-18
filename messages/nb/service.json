@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garanti",
     "months": "Varighet (måneder)",
-    "mileage": "Kilometergrense",
     "notes": "Garantivilkår",
     "notesPlaceholder": "f.eks. 12 måneders garanti på alle deler og arbeid...",
     "expiresAt": "Utløper",
@@ -427,10 +426,19 @@
       "expired": "Utløpt",
       "none": "Ingen"
     },
-    "defaults": {
-      "title": "Standard garantiinnstillinger",
-      "description": "Angi standard garantivilkår for nye serviceoppføringer"
-    }
+    "statementLabel": "Hva kunden får vite om garanti",
+    "statement": {
+      "none": "Ikke oppgitt",
+      "included": "Inkludert",
+      "not_included": "Ikke inkludert"
+    },
+    "noneHint": "Ingenting om garanti skrives ut på dette dokumentet.",
+    "mileageWithUnit": "Distansegrense ({unit})",
+    "notIncludedNotes": "Erklæring til kunden",
+    "notIncludedPlaceholder": "f.eks. Verkstedet gir ingen garanti på deler kunden selv har levert.",
+    "printedHint": "Skrives ut under garantien på dokumentet.",
+    "notIncludedHint": "La stå tomt, så sier dokumentet at lovfestede rettigheter ikke påvirkes.",
+    "summaryMonths": "{count} md."
   },
   "concerns": {
     "title": "Kundens beskrivelse",

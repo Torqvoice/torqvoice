@@ -43,6 +43,10 @@
         "title": "Imposto",
         "description": "Taxa de imposto e predefinições"
       },
+      "warranty": {
+        "title": "Garantia",
+        "description": "Garantia predefinida em orçamentos e faturas"
+      },
       "currency": {
         "title": "Moeda",
         "description": "Predefinições de moeda e impostos"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Mostrar aviso quando faltar menos do que esta distância para o próximo serviço",
     "saveMaintenance": "Guardar definições de manutenção",
     "saved": "Definições de manutenção guardadas"
+  },
+  "warranty": {
+    "title": "Garantia",
+    "description": "Defina o que os seus orçamentos e faturas dizem sobre a garantia. Cada documento novo parte daqui, e pode sempre alterá-lo em cada um.",
+    "designHint": "Impresso na secção Garantia do design das suas faturas e orçamentos. Se ocultou essa secção em Modelos, volte a ativá-la. O design Compacto não a inclui.",
+    "defaultStatus": "Os novos orçamentos e ordens de serviço indicam",
+    "status": {
+      "none": "Nada",
+      "included": "Garantia incluída",
+      "not_included": "Sem garantia"
+    },
+    "statusHint": {
+      "none": "A garantia não é mencionada até alguém a preencher no documento.",
+      "included": "Os novos documentos começam com o prazo e as condições abaixo.",
+      "not_included": "Os novos documentos informam o cliente de que não está incluída garantia da oficina."
+    },
+    "includedTitle": "Quando a garantia está incluída",
+    "includedHint": "O prazo e as condições que um documento recebe quando oferece garantia.",
+    "months": "Duração (meses)",
+    "mileage": "Limite de distância ({unit})",
+    "mileageHint": "Deixe em branco se não houver limite de distância.",
+    "terms": "Condições da garantia",
+    "termsPlaceholder": "ex.: 12 meses em peças e mão de obra. As peças de desgaste não estão abrangidas.",
+    "termsHint": "Impresso por baixo da garantia em orçamentos e faturas.",
+    "notIncludedTitle": "Quando a garantia não está incluída",
+    "notIncludedHint": "O que o cliente lê quando um documento diz que a garantia não está incluída.",
+    "notIncludedText": "Declaração",
+    "notIncludedPlaceholder": "ex.: A oficina não dá garantia sobre peças fornecidas pelo cliente. Os seus direitos legais não são afetados.",
+    "legalHint": "Isto diz respeito à garantia da própria oficina. Em muitos países, incluindo a UE e o Reino Unido, os clientes têm também direitos legais de garantia que não podem ser excluídos. Deixe em branco e o documento indica que os direitos legais não são afetados.",
+    "applyTitle": "Usar estas predefinições em",
+    "applyToQuotes": "Novos orçamentos",
+    "applyToQuotesHint": "O cliente vê a garantia antes de aceitar.",
+    "applyToWorkOrders": "Novas ordens de serviço",
+    "applyToWorkOrdersHint": "Impresso na fatura. Uma ordem de serviço criada a partir de um orçamento mantém o que o orçamento dizia.",
+    "save": "Guardar definições de garantia",
+    "saved": "Definições de garantia guardadas",
+    "saveFailed": "Não foi possível guardar as definições de garantia"
   },
   "appearance": {
     "title": "Aspeto",

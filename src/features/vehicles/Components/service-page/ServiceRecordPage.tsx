@@ -4,6 +4,11 @@ import { getServiceVideoCall } from '@/features/integrations/Actions/integration
 import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyTextsOf,
+} from '@/features/settings/Lib/warrantyDefaults'
 import { readPartsPricingSettings } from '@/features/inventory/Lib/partPricing'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
@@ -70,6 +75,7 @@ export async function ServiceRecordPage({
       SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
       SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
+      ...WARRANTY_SETTING_KEYS,
     ]),
     getInventoryPartsList(),
     getTechnicians(),
@@ -250,6 +256,7 @@ export async function ServiceRecordPage({
     discountType: record.discountType || undefined,
     discountValue: record.discountValue,
     discountAmount: record.discountAmount,
+    warrantyStatus: record.warrantyStatus ?? null,
     warrantyMonths: record.warrantyMonths ?? null,
     warrantyMileage: record.warrantyMileage ?? null,
     warrantyNotes: record.warrantyNotes ?? null,
@@ -322,6 +329,7 @@ export async function ServiceRecordPage({
         initialTab={initialTab}
         currencyCode={currencyCode}
         unitSystem={unitSystem}
+        warrantyTexts={warrantyTextsOf(readWarrantyDefaults(settings))}
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}

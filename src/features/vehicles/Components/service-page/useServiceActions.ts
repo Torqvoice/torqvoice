@@ -16,6 +16,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { formatCurrency } from '@/lib/format'
 import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
+import { WARRANTY_NONE } from '@/lib/warranty'
 import type { ServiceDetail } from '../service-detail/types'
 import type { useServiceFormState } from './useServiceFormState'
 
@@ -63,9 +64,7 @@ export function useServiceActions({
     discountType,
     discountValue,
     discountAmount,
-    warrantyMonths,
-    warrantyMileage,
-    warrantyNotes,
+    warranty,
     isSavingRef,
     autosaveTimer,
     setLoading,
@@ -177,9 +176,12 @@ export function useServiceActions({
       discountType: discountType === 'none' ? 'none' : discountType,
       discountValue: discountType === 'none' ? 0 : discountValue,
       discountAmount: discountType === 'none' ? 0 : discountAmount,
-      warrantyMonths: warrantyMonths ?? 0,
-      warrantyMileage: warrantyMileage ?? 0,
-      warrantyNotes: warrantyNotes ?? '',
+      // Cleared fields go as 'none', 0 and '' so the action clears them;
+      // undefined would leave the old value in place.
+      warrantyStatus: warranty.warrantyStatus ?? WARRANTY_NONE,
+      warrantyMonths: warranty.warrantyMonths ?? 0,
+      warrantyMileage: warranty.warrantyMileage ?? 0,
+      warrantyNotes: warranty.warrantyNotes ?? '',
     }
 
     const result = await updateServiceRecord(payload)

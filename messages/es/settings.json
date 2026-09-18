@@ -43,6 +43,10 @@
         "title": "Impuesto",
         "description": "Tasa de impuesto y predeterminados"
       },
+      "warranty": {
+        "title": "Garantía",
+        "description": "Garantía predeterminada en presupuestos y facturas"
+      },
       "currency": {
         "title": "Moneda",
         "description": "Valores predeterminados de moneda e impuestos"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Mostrar advertencia cuando este dentro de esta distancia del próximo servicio",
     "saveMaintenance": "Guardar configuración de mantenimiento",
     "saved": "Configuración de mantenimiento guardada"
+  },
+  "warranty": {
+    "title": "Garantía",
+    "description": "Defina lo que sus presupuestos y facturas dicen sobre la garantía. Cada documento nuevo parte de aquí, y aún puede cambiarlo en cada uno.",
+    "designHint": "Se imprime en la sección Garantía del diseño de sus facturas y presupuestos. Si ocultó esa sección en Plantillas, vuelva a activarla. El diseño Compacto no la incluye.",
+    "defaultStatus": "Los presupuestos y órdenes de trabajo nuevos dicen",
+    "status": {
+      "none": "Nada",
+      "included": "Garantía incluida",
+      "not_included": "Sin garantía"
+    },
+    "statusHint": {
+      "none": "La garantía no se menciona hasta que alguien la rellene en el documento.",
+      "included": "Los documentos nuevos empiezan con el plazo y los términos de abajo.",
+      "not_included": "Los documentos nuevos indican al cliente que no se incluye garantía del taller."
+    },
+    "includedTitle": "Cuando se incluye garantía",
+    "includedHint": "El plazo y los términos que recibe un documento cuando ofrece garantía.",
+    "months": "Duración (meses)",
+    "mileage": "Límite de distancia ({unit})",
+    "mileageHint": "Déjelo vacío si no hay límite de distancia.",
+    "terms": "Términos de garantía",
+    "termsPlaceholder": "p. ej. 12 meses en piezas y mano de obra. Las piezas de desgaste no están cubiertas.",
+    "termsHint": "Se imprime bajo la garantía en presupuestos y facturas.",
+    "notIncludedTitle": "Cuando no se incluye garantía",
+    "notIncludedHint": "Lo que lee el cliente cuando un documento dice que no se incluye garantía.",
+    "notIncludedText": "Declaración",
+    "notIncludedPlaceholder": "p. ej. El taller no ofrece garantía sobre piezas aportadas por el cliente. Sus derechos legales no se ven afectados.",
+    "legalHint": "Esto se refiere a la garantía propia de su taller. En muchos países, entre ellos la UE y el Reino Unido, los clientes tienen además derechos legales de garantía que no se pueden excluir. Si lo deja vacío, el documento dice que los derechos legales no se ven afectados.",
+    "applyTitle": "Usar estos valores en",
+    "applyToQuotes": "Presupuestos nuevos",
+    "applyToQuotesHint": "El cliente ve la garantía antes de aceptar.",
+    "applyToWorkOrders": "Órdenes de trabajo nuevas",
+    "applyToWorkOrdersHint": "Se imprime en la factura. Una orden de trabajo creada desde un presupuesto conserva lo que decía el presupuesto.",
+    "save": "Guardar configuración de garantía",
+    "saved": "Configuración de garantía guardada",
+    "saveFailed": "No se pudo guardar la configuración de garantía"
   },
   "appearance": {
     "title": "Apariencia",

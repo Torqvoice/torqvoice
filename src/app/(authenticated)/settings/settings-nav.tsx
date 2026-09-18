@@ -36,6 +36,7 @@ import {
   LifeBuoy,
   Plug,
   ClipboardCheck,
+  ShieldCheck,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -76,6 +77,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'templates', href: '/settings/templates', icon: Layout, gate: 'customTemplates' },
       { key: 'payment', href: '/settings/payment', icon: Banknote, gate: 'payments' },
       { key: 'tax', href: '/settings/tax', icon: Percent },
+      { key: 'warranty', href: '/settings/warranty', icon: ShieldCheck },
     ],
   },
   {

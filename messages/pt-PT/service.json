@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garantia",
     "months": "Duração (meses)",
-    "mileage": "Limite de quilometragem",
     "notes": "Condições da garantia",
     "notesPlaceholder": "ex.: Garantia de 12 meses em todas as peças e mão de obra...",
     "expiresAt": "Expira",
@@ -427,10 +426,19 @@
       "expired": "Expirada",
       "none": "N/A"
     },
-    "defaults": {
-      "title": "Definições predefinidas da garantia",
-      "description": "Definir as condições de garantia predefinidas para novos registos de serviço"
-    }
+    "statementLabel": "O que é dito ao cliente sobre a garantia",
+    "statement": {
+      "none": "Não indicada",
+      "included": "Incluída",
+      "not_included": "Não incluída"
+    },
+    "noneHint": "Nada sobre a garantia é impresso neste documento.",
+    "mileageWithUnit": "Limite de distância ({unit})",
+    "notIncludedNotes": "Declaração ao cliente",
+    "notIncludedPlaceholder": "ex.: A oficina não dá garantia sobre peças fornecidas pelo cliente.",
+    "printedHint": "Impresso por baixo da garantia no documento.",
+    "notIncludedHint": "Deixe em branco e o documento indica que os direitos legais não são afetados.",
+    "summaryMonths": "{count} m"
   },
   "concerns": {
     "title": "Queixas do cliente",

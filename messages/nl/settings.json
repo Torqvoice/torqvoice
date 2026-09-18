@@ -43,6 +43,10 @@
         "title": "Belasting",
         "description": "Belastingtarief en standaardwaarden"
       },
+      "warranty": {
+        "title": "Garantie",
+        "description": "Standaardgarantie op offertes en facturen"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Standaardvaluta en belasting"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Toon waarschuwing wanneer binnen deze afstand van de volgende service",
     "saveMaintenance": "Onderhoudsinstellingen opslaan",
     "saved": "Onderhoudsinstellingen opgeslagen"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "description": "Bepaal wat uw offertes en facturen over garantie zeggen. Elk nieuw document begint hiermee, en u kunt het per document nog aanpassen.",
+    "designHint": "Wordt afgedrukt in de sectie Garantie van uw factuur- en offerteontwerp. Als u die sectie onder Sjablonen hebt verborgen, zet u deze weer aan. Het ontwerp Compact laat de sectie weg.",
+    "defaultStatus": "Nieuwe offertes en werkorders vermelden",
+    "status": {
+      "none": "Niets",
+      "included": "Garantie inbegrepen",
+      "not_included": "Geen garantie"
+    },
+    "statusHint": {
+      "none": "Garantie wordt niet vermeld totdat iemand het op het document invult.",
+      "included": "Nieuwe documenten beginnen met de periode en voorwaarden hieronder.",
+      "not_included": "Nieuwe documenten vertellen de klant dat er geen werkplaatsgarantie is inbegrepen."
+    },
+    "includedTitle": "Wanneer garantie is inbegrepen",
+    "includedHint": "De periode en voorwaarden die een document krijgt wanneer het garantie biedt.",
+    "months": "Duur (maanden)",
+    "mileage": "Afstandslimiet ({unit})",
+    "mileageHint": "Laat leeg als er geen afstandslimiet is.",
+    "terms": "Garantievoorwaarden",
+    "termsPlaceholder": "bijv. 12 maanden op onderdelen en arbeid. Slijtageonderdelen vallen er niet onder.",
+    "termsHint": "Wordt onder de garantie afgedrukt op offertes en facturen.",
+    "notIncludedTitle": "Wanneer geen garantie is inbegrepen",
+    "notIncludedHint": "Wat de klant leest wanneer een document zegt dat er geen garantie is inbegrepen.",
+    "notIncludedText": "Verklaring",
+    "notIncludedPlaceholder": "bijv. De werkplaats geeft geen garantie op door de klant aangeleverde onderdelen. Uw wettelijke rechten blijven onverminderd van kracht.",
+    "legalHint": "Dit gaat over uw eigen werkplaatsgarantie. In veel landen, waaronder de EU en het Verenigd Koninkrijk, hebben klanten daarnaast wettelijke garantierechten die niet kunnen worden uitgesloten. Laat dit leeg en het document vermeldt dat de wettelijke rechten onverminderd van kracht blijven.",
+    "applyTitle": "Gebruik deze standaardwaarden voor",
+    "applyToQuotes": "Nieuwe offertes",
+    "applyToQuotesHint": "De klant ziet de garantie voordat hij akkoord gaat.",
+    "applyToWorkOrders": "Nieuwe werkorders",
+    "applyToWorkOrdersHint": "Wordt op de factuur afgedrukt. Een werkorder die uit een offerte is gemaakt, behoudt wat de offerte vermeldde.",
+    "save": "Garantie-instellingen opslaan",
+    "saved": "Garantie-instellingen opgeslagen",
+    "saveFailed": "De garantie-instellingen konden niet worden opgeslagen"
   },
   "appearance": {
     "title": "Weergave",

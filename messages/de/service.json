@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garantie",
     "months": "Dauer (Monate)",
-    "mileage": "Kilometergrenze",
     "notes": "Garantiebedingungen",
     "notesPlaceholder": "z.B. 12 Monate Garantie auf alle Teile und Arbeit...",
     "expiresAt": "Läuft ab",
@@ -427,10 +426,19 @@
       "expired": "Abgelaufen",
       "none": "Keine"
     },
-    "defaults": {
-      "title": "Standard-Garantieeinstellungen",
-      "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
-    }
+    "statementLabel": "Was der Kunde zur Garantie erfährt",
+    "statement": {
+      "none": "Keine Angabe",
+      "included": "Enthalten",
+      "not_included": "Nicht enthalten"
+    },
+    "noneHint": "Auf diesem Dokument wird nichts zur Garantie gedruckt.",
+    "mileageWithUnit": "Streckenbegrenzung ({unit})",
+    "notIncludedNotes": "Erklärung an den Kunden",
+    "notIncludedPlaceholder": "z. B. Auf vom Kunden gelieferte Teile gibt die Werkstatt keine Garantie.",
+    "printedHint": "Wird unter der Garantie auf dem Dokument gedruckt.",
+    "notIncludedHint": "Bleibt das Feld leer, steht im Dokument, dass die gesetzlichen Rechte unberührt bleiben.",
+    "summaryMonths": "{count} Mon."
   },
   "concerns": {
     "title": "Kundenanliegen",

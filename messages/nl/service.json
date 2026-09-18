@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garantie",
     "months": "Duur (maanden)",
-    "mileage": "Kilometerlimiet",
     "notes": "Garantievoorwaarden",
     "notesPlaceholder": "bijv. 12 maanden garantie op alle onderdelen en arbeid...",
     "expiresAt": "Verloopt",
@@ -427,10 +426,19 @@
       "expired": "Verlopen",
       "none": "Geen"
     },
-    "defaults": {
-      "title": "Standaard garantie-instellingen",
-      "description": "Stel standaard garantievoorwaarden in voor nieuwe serviceregistraties"
-    }
+    "statementLabel": "Wat de klant over garantie te lezen krijgt",
+    "statement": {
+      "none": "Niet vermeld",
+      "included": "Inbegrepen",
+      "not_included": "Niet inbegrepen"
+    },
+    "noneHint": "Op dit document wordt niets over garantie afgedrukt.",
+    "mileageWithUnit": "Afstandslimiet ({unit})",
+    "notIncludedNotes": "Verklaring aan de klant",
+    "notIncludedPlaceholder": "bijv. De werkplaats geeft geen garantie op door de klant aangeleverde onderdelen.",
+    "printedHint": "Wordt onder de garantie op het document afgedrukt.",
+    "notIncludedHint": "Laat leeg en het document vermeldt dat de wettelijke rechten onverminderd van kracht blijven.",
+    "summaryMonths": "{count} mnd."
   },
   "concerns": {
     "title": "Klantmeldingen",

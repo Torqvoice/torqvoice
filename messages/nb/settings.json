@@ -43,6 +43,10 @@
         "title": "Avgift",
         "description": "Avgiftssats og standarder"
       },
+      "warranty": {
+        "title": "Garanti",
+        "description": "Standard garanti på tilbud og fakturaer"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Valuta- og avgiftsstandarder"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Vis advarsel når neste service er innenfor denne avstanden",
     "saveMaintenance": "Lagre vedlikeholdsinnstillinger",
     "saved": "Vedlikeholdsinnstillinger lagret"
+  },
+  "warranty": {
+    "title": "Garanti",
+    "description": "Bestem hva tilbudene og fakturaene dine sier om garanti. Hvert nye dokument starter herfra, og du kan fortsatt endre det på hvert enkelt.",
+    "designHint": "Skrives ut i Garanti-seksjonen i faktura- og tilbudsdesignet ditt. Hvis du har skjult seksjonen under Maler, slå den på igjen. Designet Kompakt har den ikke med.",
+    "defaultStatus": "Nye tilbud og arbeidsordre sier",
+    "status": {
+      "none": "Ingenting",
+      "included": "Garanti inkludert",
+      "not_included": "Ingen garanti"
+    },
+    "statusHint": {
+      "none": "Garanti nevnes ikke før noen fyller det ut på dokumentet.",
+      "included": "Nye dokumenter starter med perioden og vilkårene nedenfor.",
+      "not_included": "Nye dokumenter forteller kunden at ingen verkstedgaranti er inkludert."
+    },
+    "includedTitle": "Når garanti er inkludert",
+    "includedHint": "Perioden og vilkårene et dokument får når det tilbyr garanti.",
+    "months": "Varighet (måneder)",
+    "mileage": "Distansegrense ({unit})",
+    "mileageHint": "La stå tomt for ingen distansegrense.",
+    "terms": "Garantivilkår",
+    "termsPlaceholder": "f.eks. 12 måneder på deler og arbeid. Slitedeler dekkes ikke.",
+    "termsHint": "Skrives ut under garantien på tilbud og fakturaer.",
+    "notIncludedTitle": "Når garanti ikke er inkludert",
+    "notIncludedHint": "Det kunden leser når et dokument sier at garanti ikke er inkludert.",
+    "notIncludedText": "Erklæring",
+    "notIncludedPlaceholder": "f.eks. Verkstedet gir ingen garanti på deler kunden selv har levert. Dine lovfestede rettigheter påvirkes ikke.",
+    "legalHint": "Dette gjelder verkstedets egen garanti. I mange land, blant annet i EU, EØS og Storbritannia, har kunder også lovfestede rettigheter som ikke kan avtales bort. La feltet stå tomt, så sier dokumentet at lovfestede rettigheter ikke påvirkes.",
+    "applyTitle": "Bruk standardene på",
+    "applyToQuotes": "Nye tilbud",
+    "applyToQuotesHint": "Kunden ser garantien før de godtar.",
+    "applyToWorkOrders": "Nye arbeidsordre",
+    "applyToWorkOrdersHint": "Skrives ut på fakturaen. En arbeidsorder laget fra et tilbud beholder det tilbudet sa.",
+    "save": "Lagre garantiinnstillinger",
+    "saved": "Garantiinnstillinger lagret",
+    "saveFailed": "Kunne ikke lagre garantiinnstillingene"
   },
   "appearance": {
     "title": "Utseende",

@@ -16,6 +16,7 @@ import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
+import type { WarrantyTexts } from '@/lib/warranty'
 import type { BoardTechnicianOption, OrgMemberOption, WorkBayOption } from './service-page-types'
 
 interface DetailsRightColumnProps {
@@ -25,6 +26,8 @@ interface DetailsRightColumnProps {
   vehicleId: string | null
   organizationId: string
   currencyCode: string
+  unitSystem: 'metric' | 'imperial'
+  warrantyTexts: WarrantyTexts
   taxEnabled: boolean
   initialVehicle: {
     id: string
@@ -60,6 +63,8 @@ export function DetailsRightColumn({
   vehicleId,
   organizationId,
   currencyCode,
+  unitSystem,
+  warrantyTexts,
   taxEnabled,
   initialVehicle,
   boardTechnicians,
@@ -162,13 +167,11 @@ export function DetailsRightColumn({
         currencyCode={currencyCode}
       />
       <WarrantySection
-        warrantyMonths={formState.warrantyMonths}
-        warrantyMileage={formState.warrantyMileage}
-        warrantyNotes={formState.warrantyNotes}
+        value={formState.warranty}
+        onChange={formState.dirtySetWarranty}
+        texts={warrantyTexts}
+        distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
         serviceDate={formState.initialData.serviceDate}
-        onWarrantyMonthsChange={formState.dirtySetWarrantyMonths}
-        onWarrantyMileageChange={formState.dirtySetWarrantyMileage}
-        onWarrantyNotesChange={formState.dirtySetWarrantyNotes}
       />
       <ServiceAttachments
         attachments={record.attachments || []}

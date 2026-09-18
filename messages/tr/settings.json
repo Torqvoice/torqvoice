@@ -43,6 +43,10 @@
         "title": "Vergi",
         "description": "Vergi oranı ve varsayılanlar"
       },
+      "warranty": {
+        "title": "Garanti",
+        "description": "Tekliflerde ve faturalarda varsayılan garanti"
+      },
       "currency": {
         "title": "Para Birimi",
         "description": "Para birimi & vergi varsayılanları"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Bir sonraki servise bu mesafe kaldığında uyarı göster",
     "saveMaintenance": "Bakım Ayarlarını Kaydet",
     "saved": "Bakım ayarları kaydedildi"
+  },
+  "warranty": {
+    "title": "Garanti",
+    "description": "Tekliflerinizin ve faturalarınızın garanti hakkında ne söylediğini belirleyin. Her yeni belge buradan başlar ve her birinde yine de değiştirebilirsiniz.",
+    "designHint": "Fatura ve teklif tasarımınızın Garanti bölümünde yazdırılır. Bu bölümü Şablonlar altında gizlediyseniz yeniden açın. Kompakt tasarımda bu bölüm yoktur.",
+    "defaultStatus": "Yeni teklifler ve iş emirleri şunu belirtir",
+    "status": {
+      "none": "Hiçbir şey",
+      "included": "Garanti dahil",
+      "not_included": "Garanti yok"
+    },
+    "statusHint": {
+      "none": "Biri belgede doldurana kadar garantiden söz edilmez.",
+      "included": "Yeni belgeler aşağıdaki süre ve koşullarla başlar.",
+      "not_included": "Yeni belgeler müşteriye atölye garantisinin dahil olmadığını bildirir."
+    },
+    "includedTitle": "Garanti dahil olduğunda",
+    "includedHint": "Bir belge garanti sunduğunda alacağı süre ve koşullar.",
+    "months": "Süre (ay)",
+    "mileage": "Mesafe limiti ({unit})",
+    "mileageHint": "Mesafe limiti yoksa boş bırakın.",
+    "terms": "Garanti koşulları",
+    "termsPlaceholder": "örn. Parça ve işçilikte 12 ay. Aşınan parçalar kapsam dışıdır.",
+    "termsHint": "Tekliflerde ve faturalarda garantinin altında yazdırılır.",
+    "notIncludedTitle": "Garanti dahil olmadığında",
+    "notIncludedHint": "Bir belge garantinin dahil olmadığını söylediğinde müşterinin okuduğu metin.",
+    "notIncludedText": "Beyan",
+    "notIncludedPlaceholder": "örn. Müşterinin getirdiği parçalar için atölye garantisi verilmez. Yasal haklarınız saklıdır.",
+    "legalHint": "Bu, atölyenizin kendi garantisiyle ilgilidir. AB ve Birleşik Krallık dahil birçok ülkede müşterilerin ayrıca hariç tutulamayan yasal garanti hakları vardır. Boş bırakırsanız belge, yasal hakların saklı olduğunu belirtir.",
+    "applyTitle": "Bu varsayılanları şunlarda kullan",
+    "applyToQuotes": "Yeni teklifler",
+    "applyToQuotesHint": "Müşteri kabul etmeden önce garantiyi görür.",
+    "applyToWorkOrders": "Yeni iş emirleri",
+    "applyToWorkOrdersHint": "Faturada yazdırılır. Tekliften oluşturulan iş emri, teklifte yazanı korur.",
+    "save": "Garanti ayarlarını kaydet",
+    "saved": "Garanti ayarları kaydedildi",
+    "saveFailed": "Garanti ayarları kaydedilemedi"
   },
   "appearance": {
     "title": "Görünüm",

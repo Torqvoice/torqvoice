@@ -7,6 +7,13 @@ import {
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyExpiryFor,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
+import { EMPTY_WARRANTY, normalizeWarranty } from '@/lib/warranty'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
@@ -18,7 +25,7 @@ import { randomUUID } from 'crypto'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { shiftWorkshopTime, toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -327,6 +334,7 @@ export async function createServiceRecord(input: unknown) {
                 'workshop.invoicePrefix',
                 'workshop.invoiceStartNumber',
                 ...WORKSHOP_TAX_SETTING_KEYS,
+                ...WARRANTY_SETTING_KEYS,
               ],
             },
           },
@@ -406,11 +414,27 @@ export async function createServiceRecord(input: unknown) {
         serviceDate,
         invoiceDate,
         invoiceDueDate,
+        warrantyStatus,
         warrantyMonths,
         warrantyMileage,
         warrantyNotes,
         ...recordData
       } = data
+
+      // A caller that says nothing about warranty gets the workshop's standing
+      // answer, as a job opened from the board does; one that says anything is
+      // taken at its word. Counter sales are not repairs and start empty.
+      const warrantyUnstated =
+        warrantyStatus === undefined &&
+        warrantyMonths === undefined &&
+        warrantyMileage === undefined &&
+        warrantyNotes === undefined
+      const warranty = !warrantyUnstated
+        ? normalizeWarranty({ warrantyStatus, warrantyMonths, warrantyMileage, warrantyNotes })
+        : data.vehicleId
+          ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
+          : EMPTY_WARRANTY
+      const warrantyStartsOn = toSafeWorkshopDate(serviceDate, timeZone) ?? new Date()
 
       const record = await db.$transaction(async (tx) => {
         const created = await tx.serviceRecord.create({
@@ -436,16 +460,8 @@ export async function createServiceRecord(input: unknown) {
               toSafeWorkshopDate(serviceDate, timeZone) ??
               new Date(),
             invoiceDueDate: toSafeWorkshopDate(invoiceDueDate, timeZone),
-            warrantyMonths: warrantyMonths || null,
-            warrantyMileage: warrantyMileage || null,
-            warrantyNotes: warrantyNotes || null,
-            warrantyExpiresAt: warrantyMonths
-              ? shiftWorkshopTime(
-                  toSafeWorkshopDate(serviceDate, timeZone) ?? new Date(),
-                  { months: warrantyMonths },
-                  timeZone
-                )
-              : null,
+            ...warranty,
+            warrantyExpiresAt: warrantyExpiryFor(warranty, warrantyStartsOn, timeZone),
           },
         })
 
@@ -600,11 +616,40 @@ export async function updateServiceRecord(input: unknown) {
         serviceDate: _sd,
         invoiceDate: _id,
         invoiceDueDate: _idd,
+        warrantyStatus: _ws,
         warrantyMonths: _wm,
         warrantyMileage: _wmil,
         warrantyNotes: _wn,
         ...recordData
       } = data
+
+      // The four warranty columns move together. A save that names any of them
+      // restates the whole warranty, with the row filling in what was left
+      // out, so they can never be left contradicting each other; and the
+      // expiry follows the service date even when only the date was changed.
+      const warrantyTouched =
+        data.warrantyStatus !== undefined ||
+        data.warrantyMonths !== undefined ||
+        data.warrantyMileage !== undefined ||
+        data.warrantyNotes !== undefined
+      const warranty = warrantyTouched
+        ? normalizeWarranty({
+            warrantyStatus: data.warrantyStatus ?? existing.warrantyStatus,
+            warrantyMonths: data.warrantyMonths ?? existing.warrantyMonths,
+            warrantyMileage: data.warrantyMileage ?? existing.warrantyMileage,
+            warrantyNotes: data.warrantyNotes ?? existing.warrantyNotes,
+          })
+        : null
+      const movedServiceDate =
+        data.serviceDate !== undefined ? toSafeWorkshopDate(data.serviceDate, timeZone) : undefined
+      const warrantyExpiresAt =
+        warranty || movedServiceDate
+          ? warrantyExpiryFor(
+              warranty ?? normalizeWarranty(existing),
+              movedServiceDate ?? existing.serviceDate,
+              timeZone
+            )
+          : undefined
 
       // A job totalled with tax components keeps its split in step with the
       // lines the client sent: the amounts are recomputed here from the
@@ -691,22 +736,8 @@ export async function updateServiceRecord(input: unknown) {
               data.invoiceDueDate !== undefined
                 ? (toSafeWorkshopDate(data.invoiceDueDate, timeZone) ?? null)
                 : undefined,
-            warrantyMonths:
-              data.warrantyMonths !== undefined ? data.warrantyMonths || null : undefined,
-            warrantyMileage:
-              data.warrantyMileage !== undefined ? data.warrantyMileage || null : undefined,
-            warrantyNotes:
-              data.warrantyNotes !== undefined ? data.warrantyNotes || null : undefined,
-            warrantyExpiresAt:
-              data.warrantyMonths !== undefined
-                ? data.warrantyMonths
-                  ? shiftWorkshopTime(
-                      toSafeWorkshopDate(data.serviceDate, timeZone) ?? existing.serviceDate,
-                      { months: data.warrantyMonths },
-                      timeZone
-                    )
-                  : null
-                : undefined,
+            ...(warranty ?? {}),
+            warrantyExpiresAt,
           },
         })
 

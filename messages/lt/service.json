@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garantija",
     "months": "Trukmė (mėnesiai)",
-    "mileage": "Ridos limitas",
     "notes": "Garantijos sąlygos",
     "notesPlaceholder": "pvz. 12 mėnesių garantija visoms dalims ir darbui...",
     "expiresAt": "Galioja iki",
@@ -427,10 +426,19 @@
       "expired": "Pasibaigusi",
       "none": "Nėra"
     },
-    "defaults": {
-      "title": "Numatytieji garantijos nustatymai",
-      "description": "Nustatyti numatytas garantijos sąlygas naujiems aptarnavimo įrašams"
-    }
+    "statementLabel": "Kas klientui pranešama apie garantiją",
+    "statement": {
+      "none": "Nenurodyta",
+      "included": "Suteikiama",
+      "not_included": "Nesuteikiama"
+    },
+    "noneHint": "Šiame dokumente apie garantiją nieko nespausdinama.",
+    "mileageWithUnit": "Atstumo limitas ({unit})",
+    "notIncludedNotes": "Pareiškimas klientui",
+    "notIncludedPlaceholder": "pvz., Kliento pateiktoms dalims dirbtuvės garantijos nesuteikia.",
+    "printedHint": "Spausdinama po garantija dokumente.",
+    "notIncludedHint": "Palikite tuščią, ir dokumente bus nurodyta, kad įstatymų nustatytos teisės lieka galioti.",
+    "summaryMonths": "{count} mėn."
   },
   "concerns": {
     "title": "Kliento pranešimai",

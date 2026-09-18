@@ -6,6 +6,11 @@ import {
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
@@ -380,7 +385,12 @@ export async function createQuoteFromTireSet(input: unknown) {
         where: {
           organizationId,
           key: {
-            in: ['workshop.quotePrefix', 'workshop.quoteValidDays', ...WORKSHOP_TAX_SETTING_KEYS],
+            in: [
+              'workshop.quotePrefix',
+              'workshop.quoteValidDays',
+              ...WORKSHOP_TAX_SETTING_KEYS,
+              ...WARRANTY_SETTING_KEYS,
+            ],
           },
         },
       })
@@ -436,6 +446,8 @@ export async function createQuoteFromTireSet(input: unknown) {
           tireSetId: set.id,
           organizationId,
           userId,
+          // Every new quote starts from the workshop's standing warranty.
+          ...warrantyFieldsForNewDocument(readWarrantyDefaults(Object.fromEntries(map)), 'quote'),
           ...(data.includeTires
             ? {
                 partItems: {

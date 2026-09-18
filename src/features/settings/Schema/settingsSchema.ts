@@ -236,9 +236,20 @@ export const SETTING_KEYS = {
   /// type. A type with no price here produces no line, which is how a shop
   /// that folds washing into the storage fee keeps it off the invoice.
   TIRE_HOTEL_TREATMENT_PRICES: 'tireHotel.treatmentPrices',
-  DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
-  DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
-  DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',
+  /// What a new quote or work order says about warranty before anybody
+  /// touches it: 'none', 'included' or 'not_included'. See
+  /// src/features/settings/Lib/warrantyDefaults.ts.
+  WARRANTY_DEFAULT_STATUS: 'warranty.defaultStatus',
+  WARRANTY_DEFAULT_MONTHS: 'warranty.defaultMonths',
+  WARRANTY_DEFAULT_MILEAGE: 'warranty.defaultMileage',
+  /// The terms printed under an included warranty.
+  WARRANTY_DEFAULT_TERMS: 'warranty.defaultTerms',
+  /// What is printed when the workshop offers no warranty of its own.
+  WARRANTY_NOT_INCLUDED_TEXT: 'warranty.notIncludedText',
+  /// Off when a workshop states its warranty on the invoice only, or on the
+  /// quote only. Unset means on.
+  WARRANTY_APPLY_TO_QUOTES: 'warranty.applyToQuotes',
+  WARRANTY_APPLY_TO_WORK_ORDERS: 'warranty.applyToWorkOrders',
 } as const
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]
