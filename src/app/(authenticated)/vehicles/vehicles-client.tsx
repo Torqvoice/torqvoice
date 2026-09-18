@@ -2,6 +2,7 @@
 
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { interactiveRow } from '@/lib/interactive-row'
+import { fitColumnWidth } from '@/lib/table-utils'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useState, useCallback, useTransition, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
@@ -214,6 +215,22 @@ export function VehiclesClient({
     },
     [navigate, sortBy, sortOrder]
   )
+
+  const mileageLabel = serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')
+  const columnWidths = {
+    plate: fitColumnWidth(
+      t('table.plate'),
+      data.vehicles.map((v) => v.licensePlate)
+    ),
+    mileage: fitColumnWidth(
+      mileageLabel,
+      data.vehicles.map((v) => new Intl.NumberFormat('en-US').format(v.mileage))
+    ),
+    services: fitColumnWidth(
+      t('table.services'),
+      data.vehicles.map((v) => v._count.serviceRecords)
+    ),
+  }
 
   const SortIcon = ({ column }: { column: string }) => {
     if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
@@ -537,7 +554,7 @@ export function VehiclesClient({
             <Table containerClassName="min-h-0 flex-1" className="table-fixed">
               <TableHeader sticky>
                 <TableRow>
-                  <TableHead className="w-[120px]">
+                  <TableHead style={{ width: columnWidths.plate }}>
                     <button
                       type="button"
                       className="flex items-center hover:text-foreground"
@@ -567,17 +584,20 @@ export function VehiclesClient({
                       <SortIcon column="customer" />
                     </button>
                   </TableHead>
-                  <TableHead className="hidden md:table-cell w-[100px]">
+                  <TableHead
+                    className="hidden md:table-cell"
+                    style={{ width: columnWidths.mileage }}
+                  >
                     <button
                       type="button"
                       className="ml-auto flex items-center hover:text-foreground"
                       onClick={() => handleSort('mileage')}
                     >
-                      {serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}
+                      {mileageLabel}
                       <SortIcon column="mileage" />
                     </button>
                   </TableHead>
-                  <TableHead className="w-[80px]">
+                  <TableHead style={{ width: columnWidths.services }}>
                     <button
                       type="button"
                       className="mx-auto flex items-center hover:text-foreground"

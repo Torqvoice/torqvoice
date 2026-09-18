@@ -6,7 +6,7 @@
       "name": "Nome",
       "company": "Empresa",
       "phone": "Telefone",
-      "email": "Email",
+      "email": "E-mail",
       "vehicles": "Viaturas",
       "number": "N.º"
     },
@@ -33,7 +33,7 @@
     "backToCustomers": "Voltar aos clientes",
     "editCustomer": "Editar Cliente",
     "notFound": "Cliente não encontrado",
-    "emailCopied": "Email copiado para a área de transferência",
+    "emailCopied": "E-mail copiado para a área de transferência",
     "phoneCopied": "Número de telefone copiado para a área de transferência",
     "taxIdLabel": "NIF",
     "taxExemptBadge": "Isento de IVA",

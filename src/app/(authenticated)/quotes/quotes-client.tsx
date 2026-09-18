@@ -9,6 +9,7 @@ import { useState, useCallback, useTransition, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
+import { fitColumnWidth } from '@/lib/table-utils'
 import {
   attentionClasses,
   quoteNeedsAttention,
@@ -174,14 +175,12 @@ export function QuotesClient({
     [navigate, sortBy, sortOrder]
   )
 
-  // The table is fixed-layout so the text columns can truncate, which means
-  // the number column cannot size itself. Size it from what it holds: the
-  // header in this language, or the longest quote number on the page (xs
-  // monospace, a little narrower per character). The rem covers padding and
-  // the sort icon.
   const numberLabel = t('list.columnQuoteNumber')
-  const longestNumber = Math.max(0, ...data.records.map((q) => (q.quoteNumber || '-').length))
-  const numberColumnWidth = `calc(${Math.max(numberLabel.length, longestNumber * 0.85)}ch + 2.5rem)`
+  const numberColumnWidth = fitColumnWidth(
+    numberLabel,
+    data.records.map((q) => q.quoteNumber),
+    0.85
+  )
 
   const SortIcon = ({ column }: { column: string }) => {
     if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
