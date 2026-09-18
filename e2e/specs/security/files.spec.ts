@@ -112,6 +112,13 @@ test.describe('a file URL on a record', () => {
 
     for (const [i, { url }] of forged.entries()) {
       const name = `e2e-forged-${i}-${stamp}.txt`
+      // The refusal is a toast, and the last file's is still up when the next
+      // one starts. Left there it answers this file's check at once, the route
+      // below is taken away while its upload is still in flight, and the
+      // handler then fails with "Route is already handled" on a slow runner.
+      await expect(page.getByText(/not an upload of this workshop/i)).toHaveCount(0, {
+        timeout: 30_000,
+      })
       await page.route('**/api/protected/upload/service-files', async (route) => {
         const response = await route.fetch()
         const json = (await response.json()) as Record<string, unknown>
