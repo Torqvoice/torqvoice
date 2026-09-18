@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Klantmeldingen",
-    "addFirst": "Klantmelding toevoegen",
+    "hint": "Waarom de klant is gekomen, in eigen woorden. Eén regel voor elk genoemd punt.",
     "add": "Nog een toevoegen",
     "placeholder": "Er komt een geluid van achteren als ik rem",
     "remove": "Dit punt verwijderen",

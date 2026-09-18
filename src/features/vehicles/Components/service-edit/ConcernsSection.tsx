@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { MessageSquareQuote, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSchema'
 
 /**
@@ -16,11 +16,12 @@ import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSche
  * reason. Answering one and quietly dropping the other is the most common
  * reason a car comes back.
  *
- * Prominence follows content, but never at the cost of density: this is a page
- * where every other row is a record, so a concern is one row too. Empty, it is
- * a single quiet line inviting the first one. An always-empty box at the top of
- * every job teaches people to look past it, which is the one outcome that kills
- * the feature.
+ * It is always a field, with somewhere to type. It used to be one grey link
+ * until somebody clicked it, on the reasoning that an empty box teaches people
+ * to look past it; what it taught instead was that the feature was not there,
+ * and a workshop asked for it to be made visible. The customer's words are
+ * the reason for the job, so they get a named place at the top of it, the
+ * room to run over a line, and ordinary type rather than italics.
  */
 interface ConcernsSectionProps {
   concerns: ServiceConcernInput[]
@@ -38,13 +39,25 @@ export function ConcernsSection({
 }: ConcernsSectionProps) {
   const t = useTranslations('service.concerns')
 
+  // With nothing written yet there is still one row to type into. It is not a
+  // concern until it has words: the list stays empty, so nothing blank is
+  // saved, and the first keystroke is what creates the row. The key is the one
+  // that row will have, so the field keeps its focus as it becomes real.
+  const unwritten = concerns.length === 0
+  const rows: ServiceConcernInput[] = unwritten ? [{ description: '', sortOrder: 0 }] : concerns
+  const hasBlankRow = rows.some((c) => !c.description.trim())
+
   const add = () => {
     setConcerns([...concerns, { description: '', sortOrder: concerns.length }])
     onChange()
   }
 
   const update = (index: number, description: string) => {
-    setConcerns(concerns.map((c, i) => (i === index ? { ...c, description } : c)))
+    setConcerns(
+      unwritten
+        ? [{ description, sortOrder: 0 }]
+        : concerns.map((c, i) => (i === index ? { ...c, description } : c))
+    )
     onChange()
   }
 
@@ -53,77 +66,72 @@ export function ConcernsSection({
     onChange()
   }
 
-  // Empty, this is an offer, not a container. Full width it read as a broken
-  // card sitting above the work; sized to its own text it reads as the small
-  // action it is, and costs one line until somebody actually types something.
-  if (concerns.length === 0) {
-    return (
-      <button
-        type="button"
-        onClick={add}
-        className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-muted-foreground text-xs transition-colors hover:bg-muted hover:text-foreground"
-      >
-        <MessageSquareQuote className="h-3.5 w-3.5 shrink-0" />
-        {t('addFirst')}
-      </button>
-    )
-  }
-
-  // One line per concern, the way parts and labour get one line each. This
-  // started as a two-row textarea with the answered state on a line of its own
-  // underneath, which spent four rows of the page on one sentence. On a screen
-  // where every other row is a record, a concern is a record too.
   return (
-    <div className="space-y-1.5 rounded-lg border border-l-4 border-l-primary/60 px-3 py-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <MessageSquareQuote className="h-3.5 w-3.5 text-muted-foreground" />
-          <h3 className="font-medium text-sm">{t('title')}</h3>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={add}
-          aria-label={t('add')}
-          className="h-6 w-6 shrink-0 text-muted-foreground"
-        >
-          <Plus className="h-3.5 w-3.5" />
-        </Button>
+    <div
+      className="space-y-2 rounded-lg border border-l-4 border-l-primary p-3"
+      data-testid="customer-concerns"
+    >
+      <div className="flex items-center gap-2">
+        <MessageSquareQuote className="h-4 w-4 shrink-0 text-primary" />
+        <h3 className="font-semibold text-sm">{t('title')}</h3>
       </div>
+      {unwritten && <p className="text-muted-foreground text-xs">{t('hint')}</p>}
 
-      {concerns.map((concern, index) => {
+      {rows.map((concern, index) => {
         const answered = concern.id ? (answeredCounts[concern.id] ?? 0) : 0
         return (
-          <div key={concern.id ?? `new-${index}`} className="flex items-center gap-2">
-            <Input
-              value={concern.description}
-              placeholder={t('placeholder')}
-              onChange={(e) => update(index, e.target.value)}
-              className="h-8 flex-1 italic"
-              aria-label={t('title')}
-            />
-            {/* Whether anybody has answered this one yet. The point of keeping
-                concerns apart is being able to see the one nobody looked at,
-                so it stays on the row rather than costing a line of its own. */}
-            <span
-              className={`shrink-0 text-xs ${answered > 0 ? 'text-muted-foreground' : 'text-amber-600 dark:text-amber-500'}`}
-            >
-              {answered > 0 ? t('answered', { count: answered }) : t('notAnswered')}
-            </span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => remove(index)}
-              aria-label={t('remove')}
-              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
+          <div key={concern.id ?? `new-${index}`} className="flex items-start gap-2">
+            <div className="min-w-0 flex-1 space-y-1">
+              {/* A textarea that grows: what a customer says is often a sentence
+                  or two, and a one-line input showed the first half of it. */}
+              <Textarea
+                value={concern.description}
+                placeholder={t('placeholder')}
+                onChange={(e) => update(index, e.target.value)}
+                rows={1}
+                className="min-h-9 w-full resize-none"
+                aria-label={t('title')}
+              />
+              {/* Whether anybody has answered this one yet. The point of keeping
+                  concerns apart is being able to see the one nobody looked at. */}
+              {!unwritten && concern.description.trim() && (
+                <p
+                  className={`text-xs ${answered > 0 ? 'text-muted-foreground' : 'text-amber-600 dark:text-amber-500'}`}
+                >
+                  {answered > 0 ? t('answered', { count: answered }) : t('notAnswered')}
+                </p>
+              )}
+            </div>
+            {!unwritten && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => remove(index)}
+                aria-label={t('remove')}
+                className="h-9 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         )
       })}
+
+      {/* Said in words rather than a bare plus: the second thing a customer
+          mentions is the one that gets lost. Held back while a row is still
+          blank, so blank rows cannot pile up. */}
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={add}
+        disabled={hasBlankRow}
+        className="h-7 px-2 text-muted-foreground text-xs"
+      >
+        <Plus className="mr-1 h-3.5 w-3.5" />
+        {t('add')}
+      </Button>
     </div>
   )
 }

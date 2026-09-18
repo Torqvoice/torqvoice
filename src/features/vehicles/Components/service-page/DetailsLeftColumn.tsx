@@ -120,12 +120,6 @@ export function DetailsLeftColumn({
       />
     ) : null
 
-  // Two short things, one line. Stacked, an empty concerns prompt and a lone
-  // Store tires button read as two abandoned rows above the parts; side by
-  // side they read as the toolbar they actually are. Once somebody types a
-  // concern the block needs the full width, so it gets its own row back.
-  const pairable = formState.concerns.length === 0
-
   return (
     <div className="space-y-3">
       {/* First thing on the job, above the work itself: why the car is here,
@@ -133,17 +127,8 @@ export function DetailsLeftColumn({
           the tires are the first thing this job needs and the last thing the
           invoice sidebar cares about, so they belong here rather than spanning
           both columns. */}
-      {pairable ? (
-        <div className="flex items-center justify-between gap-2">
-          {concerns}
-          {storeTires}
-        </div>
-      ) : (
-        <>
-          {concerns}
-          {storeTires && <div className="flex justify-end">{storeTires}</div>}
-        </>
-      )}
+      {concerns}
+      {storeTires && <div className="flex justify-end">{storeTires}</div>}
 
       {tireSet && (
         <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />

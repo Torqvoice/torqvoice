@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Customer concerns",
-    "addFirst": "Add a customer concern",
+    "hint": "Why the customer came in, in their own words. One row for each thing they mentioned.",
     "add": "Add another",
     "placeholder": "There is a noise from the back when I brake",
     "remove": "Remove this concern",

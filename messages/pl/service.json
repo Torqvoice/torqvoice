@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Zgłoszenia klienta",
-    "addFirst": "Dodaj zgłoszenie klienta",
+    "hint": "Dlaczego klient przyjechał, własnymi słowami klienta. Jeden wiersz na każdą zgłoszoną rzecz.",
     "add": "Dodaj kolejne",
     "placeholder": "Przy hamowaniu słychać hałas z tyłu",
     "remove": "Usuń ten punkt",

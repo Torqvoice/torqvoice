@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Kundens beskrivelse",
-    "addFirst": "Legg til kundens beskrivelse",
+    "hint": "Hvorfor kunden kom, med kundens egne ord. Én rad for hver ting som ble nevnt.",
     "add": "Legg til en til",
     "placeholder": "Det kommer en lyd bakfra når jeg bremser",
     "remove": "Fjern dette punktet",

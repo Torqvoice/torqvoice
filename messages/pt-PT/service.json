@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Queixas do cliente",
-    "addFirst": "Adicionar uma queixa do cliente",
+    "hint": "O motivo da visita do cliente, pelas suas próprias palavras. Uma linha por cada coisa mencionada.",
     "add": "Adicionar outra",
     "placeholder": "Faz um barulho atrás quando travo",
     "remove": "Remover esta queixa",
