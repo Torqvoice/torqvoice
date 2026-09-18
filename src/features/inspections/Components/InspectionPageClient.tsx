@@ -455,10 +455,12 @@ export function InspectionPageClient({
                     : saveFailed
                       ? t('saveFailed')
                       : lastSavedAt
-                        ? `Saved ${lastSavedAt.toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}`
+                        ? t('savedAt', {
+                            time: lastSavedAt.toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }),
+                          })
                         : t('savesAsYouGo')}
                 </p>
                 <Button
