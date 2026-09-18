@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Kundenanliegen",
-    "addFirst": "Kundenanliegen hinzufügen",
+    "hint": "Warum der Kunde gekommen ist, in eigenen Worten. Eine Zeile für jeden genannten Punkt.",
     "add": "Weiteres hinzufügen",
     "placeholder": "Beim Bremsen kommt hinten ein Geräusch",
     "remove": "Dieses Anliegen entfernen",

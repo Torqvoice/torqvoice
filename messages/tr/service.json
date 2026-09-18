@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Müşteri bildirimleri",
-    "addFirst": "Müşteri bildirimi ekle",
+    "hint": "Müşterinin neden geldiği, kendi sözleriyle. Bahsedilen her şey için bir satır.",
     "add": "Bir tane daha ekle",
     "placeholder": "Fren yapınca arkadan ses geliyor",
     "remove": "Bu maddeyi kaldır",

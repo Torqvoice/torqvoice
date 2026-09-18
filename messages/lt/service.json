@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Kliento pranešimai",
-    "addFirst": "Pridėti kliento pranešimą",
+    "hint": "Kodėl klientas atvyko, kliento žodžiais. Po vieną eilutę kiekvienam paminėtam dalykui.",
     "add": "Pridėti dar vieną",
     "placeholder": "Stabdant gale girdisi garsas",
     "remove": "Pašalinti šį punktą",

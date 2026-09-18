@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Demandes du client",
-    "addFirst": "Ajouter une demande du client",
+    "hint": "Pourquoi le client est venu, avec ses propres mots. Une ligne par point mentionné.",
     "add": "En ajouter un autre",
     "placeholder": "Il y a un bruit à l'arrière quand je freine",
     "remove": "Retirer ce point",

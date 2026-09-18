@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Segnalazioni del cliente",
-    "addFirst": "Aggiungi una segnalazione del cliente",
+    "hint": "Perché il cliente è venuto, con parole sue. Una riga per ogni cosa segnalata.",
     "add": "Aggiungine un altro",
     "placeholder": "C'è un rumore dietro quando freno",
     "remove": "Rimuovi questo punto",

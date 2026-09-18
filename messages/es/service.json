@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Motivos del cliente",
-    "addFirst": "Añadir un motivo del cliente",
+    "hint": "Por qué vino el cliente, con sus propias palabras. Una fila por cada cosa que mencionó.",
     "add": "Añadir otro",
     "placeholder": "Hace un ruido detrás cuando freno",
     "remove": "Quitar este punto",

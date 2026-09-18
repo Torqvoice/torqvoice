@@ -442,7 +442,7 @@
   },
   "concerns": {
     "title": "Relatos do cliente",
-    "addFirst": "Adicionar um relato do cliente",
+    "hint": "Por que o cliente veio, nas palavras do próprio cliente. Uma linha para cada coisa mencionada.",
     "add": "Adicionar outro",
     "placeholder": "Faz um barulho atrás quando eu freio",
     "remove": "Remover este item",
