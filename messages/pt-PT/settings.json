@@ -1147,9 +1147,9 @@
     }
   },
   "maintenance": {
-    "title": "Manutenção preditiva",
+    "title": "Manutenção prevista",
     "description": "Estime a quilometragem atual de cada viatura a partir do histórico de serviço e destaque as viaturas que já precisam ou estão perto do próximo serviço.",
-    "enablePredicted": "Ativar manutenção preditiva",
+    "enablePredicted": "Ativar manutenção prevista",
     "enablePredictedHint": "Mostrar previsões nos detalhes da viatura e no painel",
     "serviceInterval": "Intervalo de serviço ({unit})",
     "serviceIntervalHint": "Distância entre serviços recomendados",
@@ -1557,7 +1557,7 @@
     "biweekly": "A cada 2 semanas",
     "monthly": "Mensal",
     "bimonthly": "A cada 2 meses",
-    "quarterly": "A cada 4 meses",
+    "quarterly": "A cada 3 meses",
     "semiannually": "A cada 6 meses",
     "yearly": "Anual",
     "dateRangeLabel": "Período",
