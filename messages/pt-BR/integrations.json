@@ -40,19 +40,19 @@
       "conference": "Links de videochamada"
     },
     "sms": {
-      "send": "Text messages out",
-      "receive": "Replies back in"
+      "send": "Envio de SMS",
+      "receive": "Recebimento de respostas"
     },
     "whatsapp": {
-      "send": "WhatsApp messages out",
-      "receive": "Replies back in"
+      "send": "Envio de mensagens no WhatsApp",
+      "receive": "Recebimento de respostas"
     },
     "telegram": {
-      "send": "Telegram messages out",
-      "receive": "Replies back in"
+      "send": "Envio de mensagens no Telegram",
+      "receive": "Recebimento de respostas"
     },
     "email": {
-      "send": "Email out"
+      "send": "Envio de e-mail"
     },
     "vehicle": {
       "lookup": "Consulta por placa e VIN",
@@ -131,19 +131,19 @@
     "lockedAi": "Conecte um provedor de IA para usar recursos de IA na sua oficina.",
     "ownAppTitle": "Esta instalação usa seu próprio aplicativo junto ao provedor",
     "redirectUri": "URI de redirecionamento para registrar no provedor:",
-    "sendTestEmail": "Send test email",
-    "testEmailSent": "Test email sent to {email}",
-    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
-    "inboundUrl": "Inbound webhook URL",
-    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
-    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "sendTestEmail": "Enviar e-mail de teste",
+    "testEmailSent": "E-mail de teste enviado para {email}",
+    "testEmailHint": "Um e-mail de teste vai para o seu próprio endereço por este provedor, o que comprova o endereço de remetente e as regras de envio que uma verificação de chave não consegue.",
+    "inboundUrl": "URL do webhook de entrada",
+    "inboundHintSecret": "Cole esta URL nas configurações de mensagens recebidas do provedor. Ela contém um segredo que identifica sua oficina, então mantenha-a em sigilo.",
+    "inboundHintMeta": "Cole esta URL como URL de callback no seu app da Meta, com o token de verificação que você informou acima, e inscreva-se em mensagens.",
     "inboundHintStripe": "Adicione esta URL no painel do Stripe em Developers, Webhooks, inscrita em checkout.session.completed. Depois cole o segredo de assinatura que o Stripe mostra no campo de segredo do webhook aqui, para que as notificações possam ser verificadas.",
     "inboundHintVipps": "Informe esta URL como URL de callback no portal do Vipps MobilePay. O Vipps também exige termos de venda publicados, definidos em Configurações, Pagamento.",
     "inboundHintPaypal": "Adicione esta URL no painel de desenvolvedor do PayPal em Webhooks, inscrita em PAYMENT.CAPTURE.COMPLETED.",
-    "copy": "Copy",
-    "copied": "Copied",
-    "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "updateKeys": "Atualizar chaves",
+    "updateKeysHint": "A última verificação falhou. Informe as chaves novamente para tentar outra vez.",
     "inspectionSync": {
       "title": "Sincronização de inspeções",
       "vehicles": "{count} veículos com placa nesta oficina",
@@ -256,155 +256,155 @@
       }
     },
     "twilio-sms": {
-      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "description": "Envie e receba SMS por um número da Twilio. Lembretes, avisos de veículo pronto para retirada e as respostas que chegam.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token"
+        "authToken": "Token de autenticação"
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Enviar deste número"
       }
     },
     "vonage-sms": {
-      "description": "Send and receive text messages through a Vonage number.",
+      "description": "Envie e receba SMS por um número da Vonage.",
       "fields": {
-        "apiKey": "API key",
-        "apiSecret": "API secret",
-        "signatureSecret": "Signature secret",
-        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "Chave de API",
+        "apiSecret": "Segredo da API",
+        "signatureSecret": "Segredo de assinatura",
+        "signatureSecretHelp": "No painel da Vonage, em API settings. Quando definido, mensagens recebidas só são aceitas se a Vonage as tiver assinado. Sem ele, só o segredo na URL do webhook é verificado."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Enviar deste número"
       }
     },
     "telnyx-sms": {
-      "description": "Send and receive text messages through a Telnyx number.",
+      "description": "Envie e receba SMS por um número da Telnyx.",
       "fields": {
-        "apiKey": "API key",
-        "webhookPublicKey": "Webhook public key",
-        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "Chave de API",
+        "webhookPublicKey": "Chave pública do webhook",
+        "webhookPublicKeyHelp": "No portal da Telnyx, em Account settings, Keys and credentials, Public key. Quando definida, mensagens recebidas só são aceitas se a Telnyx as tiver assinado. Sem ela, só o segredo na URL do webhook é verificado."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Enviar deste número"
       }
     },
     "whatsapp-meta": {
-      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "description": "Converse com os clientes no WhatsApp diretamente pela Meta. Fotos do que você encontrou e a conversa que vem depois.",
       "fields": {
-        "phoneNumberId": "Phone number ID",
-        "accessToken": "Access token",
-        "verifyToken": "Webhook verify token",
-        "appSecret": "App secret",
-        "apiVersion": "Graph API version",
-        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers."
+        "phoneNumberId": "ID do número de telefone",
+        "accessToken": "Token de acesso",
+        "verifyToken": "Token de verificação do webhook",
+        "appSecret": "Segredo do app",
+        "apiVersion": "Versão da Graph API",
+        "appSecretHelp": "A Meta assina cada entrega com ele. Até ele ser informado, as mensagens enviadas ao webhook são recusadas, já que qualquer pessoa que descobrisse a URL poderia se passar pelos seus clientes."
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Enviar mensagens por este canal",
+        "phoneNumber": "Enviar deste número",
+        "templateName": "Modelo para reabrir uma conversa",
+        "templateLanguage": "Idioma do modelo",
+        "templateVariables": "Valores do modelo, em ordem",
+        "mediaTemplateName": "Modelo para uma mensagem com foto",
+        "mediaTemplateLanguage": "Idioma do modelo com foto",
+        "mediaTemplateVariables": "Valores do modelo com foto, em ordem"
       }
     },
     "whatsapp-twilio": {
-      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "description": "Converse com os clientes no WhatsApp por um número da Twilio, se foi a Twilio que forneceu o seu.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token",
-        "messagingServiceSid": "Messaging service SID"
+        "authToken": "Token de autenticação",
+        "messagingServiceSid": "SID do serviço de mensagens"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Enviar mensagens por este canal",
+        "phoneNumber": "Enviar deste número",
+        "templateName": "Modelo para reabrir uma conversa",
+        "templateLanguage": "Idioma do modelo",
+        "templateVariables": "Valores do modelo, em ordem",
+        "mediaTemplateName": "Modelo para uma mensagem com foto",
+        "mediaTemplateLanguage": "Idioma do modelo com foto",
+        "mediaTemplateVariables": "Valores do modelo com foto, em ordem"
       }
     },
     "telegram": {
-      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "description": "Um bot do Telegram que alcança os clientes que usam o app e traz as respostas deles para a caixa de entrada.",
       "fields": {
-        "botToken": "Bot token"
+        "botToken": "Token do bot"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "botUsername": "Bot username"
+        "enabled": "Enviar mensagens por este canal",
+        "botUsername": "Nome de usuário do bot"
       }
     },
     "smtp": {
-      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "description": "Envie faturas e lembretes pelo seu próprio servidor de e-mail, em vez do e-mail da plataforma.",
       "fields": {
-        "host": "Server",
-        "port": "Port",
-        "user": "Username",
-        "pass": "Password"
+        "host": "Servidor",
+        "port": "Porta",
+        "user": "Nome de usuário",
+        "pass": "Senha"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "secure": "Connect over TLS from the start",
-        "requireTls": "Require the server to upgrade to TLS",
-        "rejectUnauthorized": "Reject a certificate that does not check out"
+        "fromEmail": "Enviar deste endereço",
+        "fromName": "Nome exibido como remetente",
+        "secure": "Conectar via TLS desde o início",
+        "requireTls": "Exigir que o servidor passe para TLS",
+        "rejectUnauthorized": "Recusar um certificado que não seja válido"
       }
     },
     "resend": {
-      "description": "Send invoices and reminders through Resend.",
+      "description": "Envie faturas e lembretes pelo Resend.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "Chave de API"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Enviar deste endereço",
+        "fromName": "Nome exibido como remetente"
       }
     },
     "postmark": {
-      "description": "Send invoices and reminders through Postmark.",
+      "description": "Envie faturas e lembretes pelo Postmark.",
       "fields": {
-        "apiKey": "Server token"
+        "apiKey": "Token do servidor"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Enviar deste endereço",
+        "fromName": "Nome exibido como remetente"
       }
     },
     "mailgun": {
-      "description": "Send invoices and reminders through Mailgun.",
+      "description": "Envie faturas e lembretes pelo Mailgun.",
       "fields": {
-        "apiKey": "API key",
-        "domain": "Sending domain"
+        "apiKey": "Chave de API",
+        "domain": "Domínio de envio"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "region": "Region the domain is in"
+        "fromEmail": "Enviar deste endereço",
+        "fromName": "Nome exibido como remetente",
+        "region": "Região do domínio"
       }
     },
     "sendgrid": {
-      "description": "Send invoices and reminders through SendGrid.",
+      "description": "Envie faturas e lembretes pelo SendGrid.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "Chave de API"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Enviar deste endereço",
+        "fromName": "Nome exibido como remetente"
       }
     },
     "amazon-ses": {
-      "description": "Send invoices and reminders through Amazon SES.",
+      "description": "Envie faturas e lembretes pelo Amazon SES.",
       "fields": {
-        "accessKeyId": "Access key ID",
-        "secretAccessKey": "Secret access key",
-        "region": "Region"
+        "accessKeyId": "ID da chave de acesso",
+        "secretAccessKey": "Chave de acesso secreta",
+        "region": "Região"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Enviar deste endereço",
+        "fromName": "Nome exibido como remetente"
       }
     },
     "vegvesen": {

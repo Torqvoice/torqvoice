@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Telegram-Bot & Nachrichten"
       },
       "customerPortal": {
         "title": "Kundenportal",
@@ -192,7 +192,7 @@
     "serviceTypeDescription": "Wählen Sie die Art der Dienstleistung, die Ihre Werkstatt anbietet. Dies ändert die Feldbezeichnungen in der gesamten Anwendung.",
     "automotive": "Automobil",
     "automotiveDescription": "Autos, LKWs und andere Straßenfahrzeuge",
-    "marineService": "Marine",
+    "marineService": "Maritim",
     "marineServiceDescription": "Boote, Yachten und Wasserfahrzeuge"
   },
   "account": {
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Mitglied konnte nicht entfernt werden",
     "memberRoleUpdated": "Mitgliedsrolle aktualisiert",
     "failedUpdateRole": "Rolle konnte nicht aktualisiert werden",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Mitglied entfernen",
+    "cancelInvite": "Einladung zurückziehen",
+    "editRole": "Rolle bearbeiten",
     "technician": "Techniker",
     "technicianHint": "Kann Aufträge zugewiesen bekommen und die Techniker-App nutzen",
     "technicianFailed": "Konnte nicht geändert werden",
@@ -830,7 +830,7 @@
       "red": "Rot",
       "purple": "Lila",
       "slate": "Schiefer",
-      "rose": "Rose",
+      "rose": "Rosé",
       "indigo": "Indigo"
     },
     "layoutTitle": "Rechnungslayout",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Benutzerdefiniertes Feld gelöscht",
     "failedSave": "Feld konnte nicht gespeichert werden",
     "failedDelete": "Konnte nicht gelöscht werden",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
     "unassigned": "Nicht zugewiesen",
     "defaultValue": "Standardwert",
     "defaultValueHint": "Wird bei neuen Einträgen vorausgefüllt und gedruckt, solange kein Wert eingegeben wurde.",
@@ -1316,7 +1316,7 @@
     "title": "Uber Torqvoice",
     "description": "Torqvoice ist Ihre komplette Lösung für die Fahrzeug-Serviceverwaltung. Verfolgen Sie Servicehistorie, Reparaturen und mehr.",
     "version": "Version",
-    "website": "Website",
+    "website": "Webseite",
     "documentation": "Dokumentation",
     "changelog": "Anderungsprotokoll"
   },
@@ -1370,7 +1370,7 @@
         "sand": "Sand"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Portal-URL kopieren"
   },
   "email": {
     "title": "E-Mail-Anbieter",
@@ -1446,7 +1446,7 @@
     "failedSave": "Einstellungen konnten nicht gespeichert werden",
     "testSentTo": "Test-SMS gesendet an {phone}",
     "testFailed": "SMS-Test fehlgeschlagen",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Webhook-URL kopieren"
   },
   "subscription": {
     "title": "Abonnementplan",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Abonnement erfolgreich fortgesetzt",
     "resumeError": "Abonnement konnte nicht fortgesetzt werden",
     "billingPortalError": "Abrechnungsportal konnte nicht geöffnet werden",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Checkout konnte nicht gestartet werden",
     "upgradeTitle": "Plan upgraden",
     "upgradeDescription": "Schalten Sie weitere Funktionen frei, indem Sie Ihren Plan upgraden.",
     "upgradeToProDescription": "Upgraden Sie, um unbegrenzte Kunden, Teammitglieder, Berichte, SMTP, API-Zugang und mehr freizuschalten.",
@@ -1596,10 +1596,10 @@
     "deleted": "Berichtszeitplan gelöscht",
     "toggledOn": "Berichtszeitplan aktiviert",
     "toggledOff": "Berichtszeitplan deaktiviert",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Speichern fehlgeschlagen",
+    "failedSend": "Senden fehlgeschlagen",
+    "failedToggle": "Umschalten fehlgeschlagen",
+    "failedDelete": "Löschen fehlgeschlagen",
     "noMembers": "Keine Teammitglieder gefunden",
     "addRecipient": "Empfänger hinzufügen...",
     "searchMembers": "Mitglieder suchen...",

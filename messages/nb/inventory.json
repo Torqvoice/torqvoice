@@ -131,7 +131,7 @@
     "saveChanges": "Lagre endringer",
     "addPart": "Legg til del"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Åpne meny",
   "history": {
     "title": "Lagerhistorikk",
     "description": "Alle registrerte endringer for {name}, nyeste først.",

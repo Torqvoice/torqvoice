@@ -14,7 +14,7 @@
     "createAndSend": "Crear y enviar",
     "cancel": "Cancelar",
     "uploadFailed": "Error al subir el vídeo",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Error al crear el informe de estado",
     "created": "Informe de estado creado",
     "noVideo": "Por favor, suba un vídeo primero",
     "removeVideo": "Eliminar vídeo",
@@ -84,7 +84,7 @@
     "sentAt": "Enviado",
     "sentVia": "Enviado por",
     "messageLabel": "Mensaje",
-    "videoLabel": "Video"
+    "videoLabel": "Vídeo"
   },
   "notify": {
     "defaultMessage": "Hola {name}, tenemos una actualización de estado de su {vehicle}. Véala aquí: {url}",

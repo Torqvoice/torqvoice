@@ -31,7 +31,7 @@
     "messageDeleted": "Mesaj silindi",
     "deleteError": "Mesaj silinemedi",
     "sendError": "Mesaj gönderilemedi",
-    "sendMessage": "Send message"
+    "sendMessage": "Mesaj gönder"
   },
   "sendDialog": {
     "send": "{label} gönder",

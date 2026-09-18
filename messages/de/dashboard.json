@@ -74,8 +74,8 @@
     "noDismissed": "Keine ausgeblendeten Fahrzeuge.",
     "dismissedOn": "Verworfen am {date}",
     "restore": "Wiederherstellen",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Wartungseinstellungen",
+    "dismissAriaLabel": "Ausblenden"
   },
   "reminders": {
     "title": "Anstehende Erinnerungen",
@@ -112,7 +112,7 @@
     "createQuote": "Angebot erstellen",
     "itemsRequested": "{count, plural, one {# Position angefragt} other {# Positionen angefragt}}",
     "noData": "Keine ausstehenden Angebotsanfragen.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Angebotsanfrage ausblenden"
   },
   "quoteResponses": {
     "title": "Angebotsantworten der Kunden",
@@ -120,11 +120,11 @@
     "accepted": "Angenommen",
     "changesRequested": "Änderungen gewünscht",
     "convertToWorkOrder": "In Arbeitsauftrag umwandeln",
-    "convert": "Convert",
+    "convert": "Umwandeln",
     "viewQuote": "Angebot anzeigen",
-    "view": "View",
+    "view": "Anzeigen",
     "noData": "Keine Kundenantworten.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Antwort ausblenden"
   },
   "recentCompleted": {
     "title": "Kürzlich abgeschlossen",

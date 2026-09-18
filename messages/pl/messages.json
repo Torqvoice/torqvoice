@@ -30,8 +30,8 @@
     "deleteDescription": "Wszystkie wiadomości z {name} zostaną trwale usunięte. Tej czynności nie można cofnąć.",
     "deleted": "Rozmowa usunięta",
     "deleteError": "Nie udało się usunąć rozmowy",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Wstecz",
+    "conversationMenu": "Menu rozmowy",
     "searchPlaceholder": "Szukaj rozmów",
     "noSearchResults": "Brak rozmów pasujących do wyszukiwania",
     "now": "teraz"
@@ -47,7 +47,7 @@
     "messageDeleted": "Wiadomość usunięta",
     "deleteError": "Nie udało się usunąć wiadomości",
     "sendError": "Nie udało się wysłać SMS",
-    "sendMessage": "Send message"
+    "sendMessage": "Wyślij wiadomość"
   },
   "sendDialog": {
     "send": "Wyślij {label}",

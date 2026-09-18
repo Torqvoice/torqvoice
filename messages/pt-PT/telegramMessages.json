@@ -1,0 +1,46 @@
+{
+  "page": {
+    "featureName": "Mensagens do Telegram",
+    "featureDescription": "Envie e receba mensagens do Telegram com os seus clientes diretamente no Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram não configurado",
+    "description": "Configure um bot do Telegram para trocar mensagens com os seus clientes. Crie um bot através do @BotFather e configure-o nas definições.",
+    "goToSettings": "Ir para as definições do Telegram"
+  },
+  "threads": {
+    "title": "Conversas",
+    "empty": "Ainda não há conversas no Telegram. Para iniciar uma conversa, basta que os clientes enviem uma mensagem ao seu bot.",
+    "loadMore": "Carregar mais",
+    "selectConversation": "Selecione uma conversa",
+    "you": "Eu: ",
+    "deleteConversation": "Eliminar conversa",
+    "deleteTitle": "Eliminar conversa?",
+    "deleteDescription": "Todas as mensagens do Telegram com {name} serão eliminadas definitivamente. Esta ação não pode ser anulada.",
+    "deleted": "Conversa eliminada",
+    "deleteError": "Não foi possível eliminar a conversa"
+  },
+  "conversation": {
+    "notLinked": "Este cliente ainda não se ligou ao seu bot do Telegram. Partilhe o link do bot para o ligar.",
+    "loadOlder": "Carregar anteriores",
+    "empty": "Ainda não há mensagens. Envie a primeira mensagem a {name}.",
+    "placeholder": "Mensagem para {name}...",
+    "deleteMessage": "Eliminar mensagem",
+    "deleteTitle": "Eliminar mensagem?",
+    "deleteDescription": "Esta mensagem será eliminada definitivamente. Esta ação não pode ser anulada.",
+    "messageDeleted": "Mensagem eliminada",
+    "deleteError": "Não foi possível eliminar a mensagem",
+    "sendError": "Não foi possível enviar a mensagem",
+    "sendMessage": "Enviar mensagem"
+  },
+  "sendDialog": {
+    "send": "Enviar {label}",
+    "message": "Mensagem",
+    "placeholder": "Escreva a sua mensagem...",
+    "characters": "{count} / 4096 caracteres",
+    "sendTelegram": "Enviar mensagem",
+    "messageSent": "Mensagem enviada",
+    "sentTo": "Mensagem enviada a {name} pelo Telegram",
+    "sendError": "Não foi possível enviar a mensagem"
+  }
+}

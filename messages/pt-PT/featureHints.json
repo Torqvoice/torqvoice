@@ -1,0 +1,20 @@
+{
+  "tire-hotel": {
+    "title": "O hotel de pneus está ativo",
+    "body": "Guarde os pneus sazonais dos clientes. Configure as prateleiras e dê entrada a um jogo."
+  },
+  "telegram": {
+    "title": "O Telegram está ativo",
+    "body": "As conversas com os clientes chegam aqui. Responda sem sair da aplicação."
+  },
+  "invoice-designer": {
+    "title": "As faturas foram renovadas",
+    "body": "Defina o layout, as cores e os tipos de letra das suas faturas e orçamentos no novo editor, em Modelos.",
+    "cta": "Abrir Modelos"
+  },
+  "email-designer": {
+    "title": "Os seus e-mails têm um novo visual",
+    "body": "Os e-mails para clientes passam a ter um design mais limpo. Altere as cores, os textos e o layout no novo editor, em Modelos de e-mail.",
+    "cta": "Abrir Modelos de e-mail"
+  }
+}

@@ -6,7 +6,7 @@
     "description": "Descripción",
     "itemCount": "Elementos",
     "type": "Tipo",
-    "hrs": "hrs",
+    "hrs": "h",
     "units": "unidad(es)"
   },
   "empty": {
@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Editar",
     "delete": "Eliminar",
-    "openMenu": "Open menu"
+    "openMenu": "Abrir menú"
   },
   "deletePreset": {
     "title": "Eliminar plantilla de mano de obra",
@@ -44,7 +44,7 @@
     "create": "Crear",
     "saveChanges": "Guardar cambios",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQtyOrHours": "Unidad / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Piezas",
@@ -63,7 +63,7 @@
     "noPackages": "No se encontraron plantillas de mano de obra.",
     "items": "{count} elementos",
     "totalHours": "{hours}h en total",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} unidad(es)",
     "totalParts": "{count} piezas"
   },
   "errors": {

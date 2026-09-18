@@ -64,7 +64,7 @@
     "markPaid": "Markeer als betaald",
     "markUnpaid": "Markeer als onbetaald",
     "vehicle": "Voertuig",
-    "open": "Open",
+    "open": "Openen",
     "customer": "Klant",
     "titleLabel": "Titel *",
     "titlePlaceholder": "Olievervanging",
@@ -398,7 +398,7 @@
   },
   "notifications": {
     "title": "Klantmeldingen",
-    "viaSms": "via SMS",
+    "viaSms": "via sms",
     "viaEmail": "via e-mail",
     "justNow": "Zojuist",
     "minutesAgo": "{count}m geleden",

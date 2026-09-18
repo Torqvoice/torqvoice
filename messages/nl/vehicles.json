@@ -28,10 +28,10 @@
     "unarchiveError": "Dearchiveren van voertuig mislukt",
     "deleteError": "Verwijderen van voertuig mislukt",
     "error": "Laden van voertuigen mislukt",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Tabelweergave",
+    "viewGrid": "Rasterweergave",
+    "viewLargeGrid": "Grote rasterweergave",
+    "openMenu": "Menu openen",
     "inspectionOverdue": "APK verlopen",
     "inspectionDue30": "Vervalt binnen 30 dagen",
     "inspectionDue90": "Vervalt binnen 90 dagen",
@@ -95,8 +95,8 @@
     "severityModerate": "Matig — gemeld door sommige eigenaren",
     "severityUncommon": "Ongebruikelijk — gemeld door weinig eigenaren",
     "severityRare": "Zeldzaam — geïsoleerde meldingen maar kritiek wanneer het optreedt",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Menu openen",
+    "dismissMaintenance": "Negeren",
     "inspectionDue": "APK vervalt {date}",
     "inspectionCheckedAt": "Gecontroleerd bij het register op {date}",
     "notRegistered": "Niet geregistreerd",
@@ -184,10 +184,10 @@
     "showing": "{start}-{end} van {total} weergegeven",
     "perPage": "per pagina",
     "page": "Pagina {page} van {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina"
   },
   "notes": {
     "addNote": "Notitie toevoegen",
@@ -213,11 +213,11 @@
     "noteCreated": "Notitie aangemaakt",
     "titleRequired": "Titel en inhoud zijn verplicht",
     "saveError": "Kan notitie niet opslaan",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Menu openen",
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina"
   },
   "findings": {
     "sectionTitle": "Observaties",
@@ -266,11 +266,11 @@
     "showing": "{start}-{end} van {total} weergegeven",
     "perPage": "per pagina",
     "page": "Pagina {page} van {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina",
+    "openMenu": "Menu openen",
     "concernLabel": "Beantwoordt welk punt?",
     "concernNone": "Niet iets waar de klant naar vroeg"
   },
@@ -373,10 +373,10 @@
     "archiveError": "Archiveren van voertuig mislukt"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina"
   },
   "inspectionReminders": {
     "title": "Keuringsherinneringen",
@@ -511,7 +511,7 @@
     "weights": "Massa's",
     "weightsValue": "{kerb} kg ledig, {gross} kg max",
     "kerbOnly": "{kerb} kg ledig",
-    "grossOnly": "{gross} kg max",
+    "grossOnly": "max. {gross} kg",
     "tyres": "Banden",
     "axle": "As {n}",
     "tyreSize": "Band",

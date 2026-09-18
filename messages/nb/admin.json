@@ -97,7 +97,7 @@
     "requireTlsUpgrade": "Krev TLS-oppgradering",
     "requireTlsUpgradeHint": "Tving TLS-oppgradering på STARTTLS-tilkoblinger",
     "apiKey": "API-nøkkel",
-    "serverToken": "Server Token",
+    "serverToken": "Servertoken",
     "domain": "Domene",
     "region": "Region",
     "awsRegion": "AWS-region",
@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "Hent API-nøkkelen din fra app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Åpne meny"
   },
   "userDetails": {
     "back": "Tilbake til brukere",

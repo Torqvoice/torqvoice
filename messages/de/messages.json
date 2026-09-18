@@ -30,8 +30,8 @@
     "deleteDescription": "Alle Nachrichten mit {name} werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleted": "Unterhaltung gelöscht",
     "deleteError": "Unterhaltung konnte nicht gelöscht werden",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Zurück",
+    "conversationMenu": "Unterhaltungsmenü",
     "searchPlaceholder": "Unterhaltungen durchsuchen",
     "noSearchResults": "Keine Unterhaltung passt zur Suche",
     "now": "jetzt"
@@ -47,7 +47,7 @@
     "messageDeleted": "Nachricht gelöscht",
     "deleteError": "Nachricht konnte nicht gelöscht werden",
     "sendError": "SMS konnte nicht gesendet werden",
-    "sendMessage": "Send message"
+    "sendMessage": "Nachricht senden"
   },
   "sendDialog": {
     "send": "{label} senden",

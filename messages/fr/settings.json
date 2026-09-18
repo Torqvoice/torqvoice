@@ -3,7 +3,7 @@
   "subtitle": "Gerez votre atelier, factures et preferences",
   "nav": {
     "categories": {
-      "general": "General",
+      "general": "Général",
       "billing": "Facturation et documents",
       "communications": "Communications",
       "workshop": "Atelier",
@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Bot Telegram et messagerie"
       },
       "customerPortal": {
         "title": "Portail client",
@@ -84,7 +84,7 @@
         "description": "Intervalles de service predits"
       },
       "ai": {
-        "title": "AI",
+        "title": "IA",
         "description": "Fournisseur IA et fonctionnalités"
       },
       "reportSchedule": {
@@ -262,7 +262,7 @@
     "backupCodesTitle": "Sauvegarder les codes de secours",
     "backupCodesDescription": "Conservez ces codes dans un endroit sur. Vous pouvez les utiliser pour vous connecter si vous perdez l'accès a votre application d'authentification. Chaque code ne peut être utilise qu'une seule fois.",
     "copyCodes": "Copier les codes",
-    "copied": "Copie",
+    "copied": "Copié",
     "backupCodesCopied": "Codes de secours copies dans le presse-papiers",
     "savedBackupCodes": "J'ai sauvegarde mes codes de secours",
     "twoFactorEnabledSuccess": "Authentification a deux facteurs activee",
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Échec du retrait du membre",
     "memberRoleUpdated": "Role du membre mis a jour",
     "failedUpdateRole": "Échec de la mise a jour du role",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Retirer le membre",
+    "cancelInvite": "Annuler l'invitation",
+    "editRole": "Modifier le rôle",
     "technician": "Technicien",
     "technicianHint": "Peut se voir attribuer des travaux et utiliser l’application technicien",
     "technicianFailed": "Modification impossible",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Champ personnalisé supprimé",
     "failedSave": "Impossible d'enregistrer le champ",
     "failedDelete": "Impossible de supprimer",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Modifier",
+    "delete": "Supprimer",
     "unassigned": "Non assigné",
     "defaultValue": "Valeur par défaut",
     "defaultValueHint": "Préremplie sur les nouvelles fiches et imprimée tant qu'aucune valeur n'a été saisie.",
@@ -1096,7 +1096,7 @@
     "unitsDescription": "Choisissez entre metrique (km, litres) et imperial (miles, gallons).",
     "unitSystem": "Système d'unites",
     "metric": "Metrique (km, litres)",
-    "imperial": "Imperial (miles, gallons)",
+    "imperial": "Impérial (miles, gallons)",
     "distanceLabel": "Distance",
     "volumeLabel": "Volume",
     "kilometers": "kilometres (km)",
@@ -1370,7 +1370,7 @@
         "sand": "Sable"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Copier l'URL du portail"
   },
   "email": {
     "title": "Fournisseur de messagerie",
@@ -1446,7 +1446,7 @@
     "failedSave": "Échec de l'enregistrement des paramètres",
     "testSentTo": "SMS de test envoye a {phone}",
     "testFailed": "Échec du test SMS",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Copier l'URL du webhook"
   },
   "subscription": {
     "title": "Plan d'abonnement",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Abonnement repris avec succès",
     "resumeError": "Échec de la reprise de l'abonnement",
     "billingPortalError": "Impossible d'ouvrir le portail de facturation",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Impossible de lancer le paiement",
     "upgradeTitle": "Améliorer le plan",
     "upgradeDescription": "Débloquez plus de fonctionnalités en améliorant votre plan.",
     "upgradeToProDescription": "Améliorez pour débloquer des clients illimités, des membres d'équipe, des rapports, SMTP, l'accès API et plus encore.",
@@ -1596,10 +1596,10 @@
     "deleted": "Planning de rapports supprimé",
     "toggledOn": "Planning de rapports activé",
     "toggledOff": "Planning de rapports désactivé",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Échec de l'enregistrement",
+    "failedSend": "Échec de l'envoi",
+    "failedToggle": "Échec de l'activation ou de la désactivation",
+    "failedDelete": "Échec de la suppression",
     "noMembers": "Aucun membre trouvé",
     "addRecipient": "Ajouter un destinataire...",
     "searchMembers": "Rechercher des membres...",

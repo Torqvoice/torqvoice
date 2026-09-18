@@ -34,7 +34,7 @@
       "total": "Totaal"
     },
     "emailSubject": "Voertuigstatus bijgewerkt: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Status wijzigen",
     "contextMenu": {
       "open": "Werkorder openen",
       "openVehicle": "Voertuig openen",

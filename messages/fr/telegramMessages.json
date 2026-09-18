@@ -31,7 +31,7 @@
     "messageDeleted": "Message supprimé",
     "deleteError": "Échec de la suppression du message",
     "sendError": "Échec de l'envoi du message",
-    "sendMessage": "Send message"
+    "sendMessage": "Envoyer le message"
   },
   "sendDialog": {
     "send": "Envoyer {label}",

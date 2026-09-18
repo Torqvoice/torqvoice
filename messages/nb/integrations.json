@@ -40,19 +40,19 @@
       "conference": "Lenker til videosamtaler"
     },
     "sms": {
-      "send": "Text messages out",
-      "receive": "Replies back in"
+      "send": "Utgående SMS",
+      "receive": "Innkommende svar"
     },
     "whatsapp": {
-      "send": "WhatsApp messages out",
-      "receive": "Replies back in"
+      "send": "Utgående WhatsApp-meldinger",
+      "receive": "Innkommende svar"
     },
     "telegram": {
-      "send": "Telegram messages out",
-      "receive": "Replies back in"
+      "send": "Utgående Telegram-meldinger",
+      "receive": "Innkommende svar"
     },
     "email": {
-      "send": "Email out"
+      "send": "Utgående e-post"
     },
     "vehicle": {
       "lookup": "Oppslag på skilt og understellsnummer",
@@ -131,19 +131,19 @@
     "lockedAi": "Koble til en AI-leverandør for å bruke AI-funksjoner i verkstedet ditt.",
     "ownAppTitle": "Denne installasjonen bruker din egen app hos leverandøren",
     "redirectUri": "Omdirigerings-URI som må registreres hos leverandøren:",
-    "sendTestEmail": "Send test email",
-    "testEmailSent": "Test email sent to {email}",
-    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
-    "inboundUrl": "Inbound webhook URL",
-    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
-    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "sendTestEmail": "Send test-e-post",
+    "testEmailSent": "Test-e-post sendt til {email}",
+    "testEmailHint": "En test-e-post sendes til din egen adresse gjennom denne leverandøren. Slik ser du at avsenderadressen og senderreglene fungerer, noe en sjekk av nøklene ikke kan vise.",
+    "inboundUrl": "Webhook-URL for innkommende meldinger",
+    "inboundHintSecret": "Lim inn denne URL-en i leverandørens innstillinger for innkommende meldinger. Den inneholder en hemmelighet som identifiserer verkstedet ditt, så hold den for deg selv.",
+    "inboundHintMeta": "Lim inn denne URL-en som callback-URL i Meta-appen din, sammen med verifiseringstokenet du la inn ovenfor, og abonner på messages.",
     "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet under Developers, Webhooks, abonnert på checkout.session.completed. Lim deretter signeringshemmeligheten Stripe viser inn i feltet for webhook-hemmelighet her, slik at varslene kan verifiseres.",
     "inboundHintVipps": "Legg inn denne URL-en som callback-URL i Vipps MobilePay-portalen. Vipps krever også publiserte salgsvilkår, som settes under Innstillinger, Betaling.",
     "inboundHintPaypal": "Legg inn denne URL-en i PayPal-utviklerdashbordet under Webhooks, abonnert på PAYMENT.CAPTURE.COMPLETED.",
-    "copy": "Copy",
-    "copied": "Copied",
-    "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "copy": "Kopier",
+    "copied": "Kopiert",
+    "updateKeys": "Oppdater nøklene",
+    "updateKeysHint": "Siste sjekk mislyktes. Skriv inn nøklene på nytt for å prøve igjen.",
     "inspectionSync": {
       "title": "Synkronisering av EU-kontroll",
       "vehicles": "{count} kjøretøy med skilt i dette verkstedet",
@@ -256,155 +256,155 @@
       }
     },
     "twilio-sms": {
-      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "description": "Send og motta SMS gjennom et Twilio-nummer. Påminnelser, beskjed om at bilen er klar til henting, og svarene som kommer tilbake.",
       "fields": {
         "accountSid": "Account SID",
         "authToken": "Auth token"
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Send fra dette nummeret"
       }
     },
     "vonage-sms": {
-      "description": "Send and receive text messages through a Vonage number.",
+      "description": "Send og motta SMS gjennom et Vonage-nummer.",
       "fields": {
-        "apiKey": "API key",
-        "apiSecret": "API secret",
-        "signatureSecret": "Signature secret",
-        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API-nøkkel",
+        "apiSecret": "API-hemmelighet",
+        "signatureSecret": "Signaturhemmelighet",
+        "signatureSecretHelp": "Fra Vonage-dashbordet, under API settings. Når den er satt, godtas innkommende meldinger bare hvis Vonage har signert dem. Uten den sjekkes bare hemmeligheten i webhook-URL-en."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Send fra dette nummeret"
       }
     },
     "telnyx-sms": {
-      "description": "Send and receive text messages through a Telnyx number.",
+      "description": "Send og motta SMS gjennom et Telnyx-nummer.",
       "fields": {
-        "apiKey": "API key",
-        "webhookPublicKey": "Webhook public key",
-        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API-nøkkel",
+        "webhookPublicKey": "Offentlig nøkkel for webhook",
+        "webhookPublicKeyHelp": "Fra Telnyx-portalen, under Account settings, Keys and credentials, Public key. Når den er satt, godtas innkommende meldinger bare hvis Telnyx har signert dem. Uten den sjekkes bare hemmeligheten i webhook-URL-en."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Send fra dette nummeret"
       }
     },
     "whatsapp-meta": {
-      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "description": "Skriv til kundene på WhatsApp direkte gjennom Meta. Bilder av det du fant, og samtalen som følger.",
       "fields": {
-        "phoneNumberId": "Phone number ID",
-        "accessToken": "Access token",
-        "verifyToken": "Webhook verify token",
-        "appSecret": "App secret",
-        "apiVersion": "Graph API version",
-        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers."
+        "phoneNumberId": "Telefonnummer-ID",
+        "accessToken": "Tilgangstoken",
+        "verifyToken": "Verifiseringstoken for webhook",
+        "appSecret": "Apphemmelighet",
+        "apiVersion": "Graph API-versjon",
+        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn."
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Send meldinger på denne kanalen",
+        "phoneNumber": "Send fra dette nummeret",
+        "templateName": "Mal for å gjenåpne en samtale",
+        "templateLanguage": "Språk for malen",
+        "templateVariables": "Verdier i malen, i rekkefølge",
+        "mediaTemplateName": "Mal for melding med bilde",
+        "mediaTemplateLanguage": "Språk for bildemalen",
+        "mediaTemplateVariables": "Verdier i bildemalen, i rekkefølge"
       }
     },
     "whatsapp-twilio": {
-      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "description": "Skriv til kundene på WhatsApp gjennom et Twilio-nummer, hvis det er Twilio du har nummeret fra.",
       "fields": {
         "accountSid": "Account SID",
         "authToken": "Auth token",
         "messagingServiceSid": "Messaging service SID"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Send meldinger på denne kanalen",
+        "phoneNumber": "Send fra dette nummeret",
+        "templateName": "Mal for å gjenåpne en samtale",
+        "templateLanguage": "Språk for malen",
+        "templateVariables": "Verdier i malen, i rekkefølge",
+        "mediaTemplateName": "Mal for melding med bilde",
+        "mediaTemplateLanguage": "Språk for bildemalen",
+        "mediaTemplateVariables": "Verdier i bildemalen, i rekkefølge"
       }
     },
     "telegram": {
-      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "description": "En Telegram-bot som når kundene som bruker den, og henter svarene deres inn i innboksen.",
       "fields": {
-        "botToken": "Bot token"
+        "botToken": "Bot-token"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "botUsername": "Bot username"
+        "enabled": "Send meldinger på denne kanalen",
+        "botUsername": "Botens brukernavn"
       }
     },
     "smtp": {
-      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "description": "Send fakturaer og påminnelser gjennom din egen e-postserver i stedet for plattformens e-post.",
       "fields": {
         "host": "Server",
         "port": "Port",
-        "user": "Username",
-        "pass": "Password"
+        "user": "Brukernavn",
+        "pass": "Passord"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "secure": "Connect over TLS from the start",
-        "requireTls": "Require the server to upgrade to TLS",
-        "rejectUnauthorized": "Reject a certificate that does not check out"
+        "fromEmail": "Send fra denne adressen",
+        "fromName": "Navn som vises som avsender",
+        "secure": "Koble til med TLS fra start",
+        "requireTls": "Krev at serveren oppgraderer til TLS",
+        "rejectUnauthorized": "Avvis sertifikater som ikke kan verifiseres"
       }
     },
     "resend": {
-      "description": "Send invoices and reminders through Resend.",
+      "description": "Send fakturaer og påminnelser gjennom Resend.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API-nøkkel"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Send fra denne adressen",
+        "fromName": "Navn som vises som avsender"
       }
     },
     "postmark": {
-      "description": "Send invoices and reminders through Postmark.",
+      "description": "Send fakturaer og påminnelser gjennom Postmark.",
       "fields": {
-        "apiKey": "Server token"
+        "apiKey": "Servertoken"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Send fra denne adressen",
+        "fromName": "Navn som vises som avsender"
       }
     },
     "mailgun": {
-      "description": "Send invoices and reminders through Mailgun.",
+      "description": "Send fakturaer og påminnelser gjennom Mailgun.",
       "fields": {
-        "apiKey": "API key",
-        "domain": "Sending domain"
+        "apiKey": "API-nøkkel",
+        "domain": "Avsenderdomene"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "region": "Region the domain is in"
+        "fromEmail": "Send fra denne adressen",
+        "fromName": "Navn som vises som avsender",
+        "region": "Regionen domenet ligger i"
       }
     },
     "sendgrid": {
-      "description": "Send invoices and reminders through SendGrid.",
+      "description": "Send fakturaer og påminnelser gjennom SendGrid.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API-nøkkel"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Send fra denne adressen",
+        "fromName": "Navn som vises som avsender"
       }
     },
     "amazon-ses": {
-      "description": "Send invoices and reminders through Amazon SES.",
+      "description": "Send fakturaer og påminnelser gjennom Amazon SES.",
       "fields": {
-        "accessKeyId": "Access key ID",
-        "secretAccessKey": "Secret access key",
+        "accessKeyId": "Tilgangsnøkkel-ID",
+        "secretAccessKey": "Hemmelig tilgangsnøkkel",
         "region": "Region"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Send fra denne adressen",
+        "fromName": "Navn som vises som avsender"
       }
     },
     "vegvesen": {
@@ -509,8 +509,8 @@
     "vipps": {
       "description": "Vipps MobilePay fra fakturalenken. Kunden betaler i appen de allerede har, og fakturaen merkes betalt av seg selv.",
       "fields": {
-        "clientId": "Client ID",
-        "clientSecret": "Client secret",
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet",
         "subscriptionKey": "Subscription key",
         "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key fra Vipps MobilePay-portalen, under salgsenhetens API-nøkler.",
         "merchantSerialNumber": "Merchant Serial Number (MSN)"
@@ -525,8 +525,8 @@
     "paypal": {
       "description": "PayPal-betaling fra fakturalenken, gjennom din egen PayPal-app. Kunden betaler med PayPal-konto eller kort, og fakturaen merkes betalt av seg selv.",
       "fields": {
-        "clientId": "Client ID",
-        "clientSecret": "Client secret"
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
       },
       "settings": {
         "enabled": "Tilby på fakturalenker",

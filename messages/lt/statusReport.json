@@ -14,7 +14,7 @@
     "createAndSend": "Sukurti ir siųsti",
     "cancel": "Atšaukti",
     "uploadFailed": "Nepavyko įkelti vaizdo įrašo",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Nepavyko sukurti būsenos ataskaitos",
     "created": "Būsenos ataskaita sukurta",
     "noVideo": "Pirmiausia įkelkite vaizdo įrašą",
     "removeVideo": "Pašalinti vaizdo įrašą",

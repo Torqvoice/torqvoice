@@ -31,7 +31,7 @@
     "messageDeleted": "Melding slettet",
     "deleteError": "Kunne ikke slette melding",
     "sendError": "Kunne ikke sende melding",
-    "sendMessage": "Send message"
+    "sendMessage": "Send melding"
   },
   "sendDialog": {
     "send": "Send {label}",

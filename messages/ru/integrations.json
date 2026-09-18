@@ -40,19 +40,19 @@
       "conference": "Ссылки на видеозвонки"
     },
     "sms": {
-      "send": "Text messages out",
-      "receive": "Replies back in"
+      "send": "Исходящие SMS",
+      "receive": "Входящие ответы"
     },
     "whatsapp": {
-      "send": "WhatsApp messages out",
-      "receive": "Replies back in"
+      "send": "Исходящие сообщения WhatsApp",
+      "receive": "Входящие ответы"
     },
     "telegram": {
-      "send": "Telegram messages out",
-      "receive": "Replies back in"
+      "send": "Исходящие сообщения Telegram",
+      "receive": "Входящие ответы"
     },
     "email": {
-      "send": "Email out"
+      "send": "Исходящая почта"
     },
     "vehicle": {
       "lookup": "Поиск по номеру и VIN",
@@ -131,19 +131,19 @@
     "lockedAi": "Подключите провайдера ИИ, чтобы использовать функции ИИ в вашей мастерской.",
     "ownAppTitle": "Эта установка использует ваше собственное приложение у провайдера",
     "redirectUri": "URI перенаправления для регистрации у провайдера:",
-    "sendTestEmail": "Send test email",
-    "testEmailSent": "Test email sent to {email}",
-    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
-    "inboundUrl": "Inbound webhook URL",
-    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
-    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "sendTestEmail": "Отправить тестовое письмо",
+    "testEmailSent": "Тестовое письмо отправлено на {email}",
+    "testEmailHint": "Тестовое письмо уходит на ваш собственный адрес через этого провайдера и подтверждает адрес отправителя и правила отправки, чего не может проверка ключа.",
+    "inboundUrl": "URL входящего вебхука",
+    "inboundHintSecret": "Вставьте этот URL в настройки входящих сообщений у провайдера. В нём содержится секрет, по которому опознаётся ваша мастерская, поэтому никому его не показывайте.",
+    "inboundHintMeta": "Укажите этот URL как callback-URL в вашем приложении Meta вместе с токеном проверки, введённым выше, и подпишитесь на messages.",
     "inboundHintStripe": "Добавьте этот URL в панели Stripe в разделе Developers, Webhooks с подпиской на checkout.session.completed. Затем вставьте секрет подписи, который покажет Stripe, в поле секрета вебхука здесь, чтобы уведомления можно было проверять.",
     "inboundHintVipps": "Укажите этот URL как callback-URL в портале Vipps MobilePay. Vipps также требует опубликованных условий продажи, они задаются в разделе Настройки, Оплата.",
     "inboundHintPaypal": "Добавьте этот URL в панели разработчика PayPal в разделе Webhooks с подпиской на PAYMENT.CAPTURE.COMPLETED.",
-    "copy": "Copy",
-    "copied": "Copied",
-    "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "copy": "Копировать",
+    "copied": "Скопировано",
+    "updateKeys": "Обновить ключи",
+    "updateKeysHint": "Последняя проверка не прошла. Введите ключи ещё раз, чтобы попробовать снова.",
     "inspectionSync": {
       "title": "Синхронизация техосмотров",
       "vehicles": "{count} автомобилей с номером в этой мастерской",
@@ -256,155 +256,155 @@
       }
     },
     "twilio-sms": {
-      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "description": "Отправляйте и получайте SMS через номер Twilio: напоминания, сообщения о готовности автомобиля и ответы клиентов.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token"
+        "authToken": "Токен авторизации"
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Отправлять с этого номера"
       }
     },
     "vonage-sms": {
-      "description": "Send and receive text messages through a Vonage number.",
+      "description": "Отправляйте и получайте SMS через номер Vonage.",
       "fields": {
-        "apiKey": "API key",
-        "apiSecret": "API secret",
-        "signatureSecret": "Signature secret",
-        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API-ключ",
+        "apiSecret": "API-секрет",
+        "signatureSecret": "Секрет подписи",
+        "signatureSecretHelp": "В панели Vonage, в разделе API settings. Если он задан, входящие сообщения принимаются, только когда они подписаны Vonage. Без него проверяется только секрет в URL вебхука."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Отправлять с этого номера"
       }
     },
     "telnyx-sms": {
-      "description": "Send and receive text messages through a Telnyx number.",
+      "description": "Отправляйте и получайте SMS через номер Telnyx.",
       "fields": {
-        "apiKey": "API key",
-        "webhookPublicKey": "Webhook public key",
-        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API-ключ",
+        "webhookPublicKey": "Открытый ключ вебхука",
+        "webhookPublicKeyHelp": "На портале Telnyx, в разделе Account settings, Keys and credentials, Public key. Если он задан, входящие сообщения принимаются, только когда они подписаны Telnyx. Без него проверяется только секрет в URL вебхука."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Отправлять с этого номера"
       }
     },
     "whatsapp-meta": {
-      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "description": "Пишите клиентам в WhatsApp напрямую через Meta: фото того, что вы нашли, и последующая переписка.",
       "fields": {
-        "phoneNumberId": "Phone number ID",
-        "accessToken": "Access token",
-        "verifyToken": "Webhook verify token",
-        "appSecret": "App secret",
-        "apiVersion": "Graph API version",
-        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers."
+        "phoneNumberId": "ID номера телефона",
+        "accessToken": "Токен доступа",
+        "verifyToken": "Токен проверки вебхука",
+        "appSecret": "Секрет приложения",
+        "apiVersion": "Версия Graph API",
+        "appSecretHelp": "Meta подписывает им каждую доставку. Пока он не введён, сообщения, отправленные на вебхук, отклоняются, иначе любой, кто узнает URL, смог бы писать от имени ваших клиентов."
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Отправлять сообщения по этому каналу",
+        "phoneNumber": "Отправлять с этого номера",
+        "templateName": "Шаблон для возобновления беседы",
+        "templateLanguage": "Язык шаблона",
+        "templateVariables": "Значения шаблона по порядку",
+        "mediaTemplateName": "Шаблон для сообщения с фото",
+        "mediaTemplateLanguage": "Язык шаблона с фото",
+        "mediaTemplateVariables": "Значения шаблона с фото по порядку"
       }
     },
     "whatsapp-twilio": {
-      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "description": "Пишите клиентам в WhatsApp через номер Twilio, если номер вам продал Twilio.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token",
+        "authToken": "Токен авторизации",
         "messagingServiceSid": "Messaging service SID"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Отправлять сообщения по этому каналу",
+        "phoneNumber": "Отправлять с этого номера",
+        "templateName": "Шаблон для возобновления беседы",
+        "templateLanguage": "Язык шаблона",
+        "templateVariables": "Значения шаблона по порядку",
+        "mediaTemplateName": "Шаблон для сообщения с фото",
+        "mediaTemplateLanguage": "Язык шаблона с фото",
+        "mediaTemplateVariables": "Значения шаблона с фото по порядку"
       }
     },
     "telegram": {
-      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "description": "Бот Telegram, который связывается с клиентами, пользующимися им, и приносит их ответы во входящие.",
       "fields": {
-        "botToken": "Bot token"
+        "botToken": "Токен бота"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "botUsername": "Bot username"
+        "enabled": "Отправлять сообщения по этому каналу",
+        "botUsername": "Имя пользователя бота"
       }
     },
     "smtp": {
-      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "description": "Отправляйте счета и напоминания через собственный почтовый сервер, а не через почту платформы.",
       "fields": {
-        "host": "Server",
-        "port": "Port",
-        "user": "Username",
-        "pass": "Password"
+        "host": "Сервер",
+        "port": "Порт",
+        "user": "Имя пользователя",
+        "pass": "Пароль"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "secure": "Connect over TLS from the start",
-        "requireTls": "Require the server to upgrade to TLS",
-        "rejectUnauthorized": "Reject a certificate that does not check out"
+        "fromEmail": "Отправлять с этого адреса",
+        "fromName": "Имя отправителя",
+        "secure": "Подключаться по TLS с самого начала",
+        "requireTls": "Требовать перехода сервера на TLS",
+        "rejectUnauthorized": "Отклонять сертификат, который не прошёл проверку"
       }
     },
     "resend": {
-      "description": "Send invoices and reminders through Resend.",
+      "description": "Отправляйте счета и напоминания через Resend.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API-ключ"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Отправлять с этого адреса",
+        "fromName": "Имя отправителя"
       }
     },
     "postmark": {
-      "description": "Send invoices and reminders through Postmark.",
+      "description": "Отправляйте счета и напоминания через Postmark.",
       "fields": {
-        "apiKey": "Server token"
+        "apiKey": "Серверный токен"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Отправлять с этого адреса",
+        "fromName": "Имя отправителя"
       }
     },
     "mailgun": {
-      "description": "Send invoices and reminders through Mailgun.",
+      "description": "Отправляйте счета и напоминания через Mailgun.",
       "fields": {
-        "apiKey": "API key",
-        "domain": "Sending domain"
+        "apiKey": "API-ключ",
+        "domain": "Домен отправки"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "region": "Region the domain is in"
+        "fromEmail": "Отправлять с этого адреса",
+        "fromName": "Имя отправителя",
+        "region": "Регион домена"
       }
     },
     "sendgrid": {
-      "description": "Send invoices and reminders through SendGrid.",
+      "description": "Отправляйте счета и напоминания через SendGrid.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API-ключ"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Отправлять с этого адреса",
+        "fromName": "Имя отправителя"
       }
     },
     "amazon-ses": {
-      "description": "Send invoices and reminders through Amazon SES.",
+      "description": "Отправляйте счета и напоминания через Amazon SES.",
       "fields": {
-        "accessKeyId": "Access key ID",
-        "secretAccessKey": "Secret access key",
-        "region": "Region"
+        "accessKeyId": "ID ключа доступа",
+        "secretAccessKey": "Секретный ключ доступа",
+        "region": "Регион"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Отправлять с этого адреса",
+        "fromName": "Имя отправителя"
       }
     },
     "vegvesen": {
@@ -510,7 +510,7 @@
       "description": "Vipps MobilePay по ссылке на счёт. Клиент платит в приложении, которое у него уже есть, и счёт сам отмечается оплаченным.",
       "fields": {
         "clientId": "Client ID",
-        "clientSecret": "Client secret",
+        "clientSecret": "Секрет клиента",
         "subscriptionKey": "Ключ подписки",
         "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key из портала Vipps MobilePay, в API-ключах торговой единицы.",
         "merchantSerialNumber": "Серийный номер продавца"
@@ -526,7 +526,7 @@
       "description": "Оплата через PayPal по ссылке на счёт через ваше собственное приложение PayPal. Клиент платит аккаунтом PayPal или картой, и счёт сам отмечается оплаченным.",
       "fields": {
         "clientId": "Client ID",
-        "clientSecret": "Client secret"
+        "clientSecret": "Секрет клиента"
       },
       "settings": {
         "enabled": "Предлагать в ссылках на счета",

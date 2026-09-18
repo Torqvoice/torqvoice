@@ -34,8 +34,8 @@
     "total": "Totaal",
     "labor": "Arbeid",
     "hours": "Uren",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "u",
+    "unit": "eenh.",
     "qtyOrHours": "Eenheid / Uren",
     "rate": "Tarief",
     "ratePerHour": "{rate}/uur",
@@ -93,8 +93,8 @@
     "labor": "Arbeid",
     "laborDescription": "Omschrijving",
     "hours": "Uren",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "u",
+    "unit": "eenh.",
     "qtyOrHours": "Eenheid / Uren",
     "rate": "Tarief",
     "ratePerHour": "{rate}/uur",
@@ -200,7 +200,7 @@
     "privacyNotice": "Dit rapport wordt u verstrekt door de werkplaats die de keuring heeft uitgevoerd. Iedereen met deze link kan het bekijken; stuur de link daarom niet door. Neem contact op met de werkplaats om de link in te trekken of uw gegevens te laten wissen."
   },
   "terms": {
-    "title": "Verkoopvoorwaarden (Salgsvilkår)",
+    "title": "Verkoopvoorwaarden",
     "contact": "Contact",
     "tel": "Tel: {phone}"
   },

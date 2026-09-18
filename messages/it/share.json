@@ -34,8 +34,8 @@
     "total": "Totale",
     "labor": "Manodopera",
     "hours": "Ore",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "ore",
+    "unit": "unità",
     "qtyOrHours": "Unità / Ore",
     "rate": "Tariffa",
     "ratePerHour": "{rate}/ora",
@@ -93,8 +93,8 @@
     "labor": "Manodopera",
     "laborDescription": "Descrizione",
     "hours": "Ore",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "ore",
+    "unit": "unità",
     "qtyOrHours": "Unità / Ore",
     "rate": "Tariffa",
     "ratePerHour": "{rate}/ora",
@@ -200,7 +200,7 @@
     "privacyNotice": "Questo rapporto le viene fornito dall'officina che ha eseguito il controllo. È consultabile da chiunque disponga di questo link: la preghiamo di non inoltrarlo. Contatti l'officina per revocare il link o cancellare i suoi dati."
   },
   "terms": {
-    "title": "Condizioni di Vendita (Salgsvilkår)",
+    "title": "Condizioni di Vendita",
     "contact": "Contatto",
     "tel": "Tel: {phone}"
   },
@@ -222,7 +222,7 @@
     "submitError": "Invio della richiesta non riuscito"
   },
   "common": {
-    "poweredBy": "Powered by",
+    "poweredBy": "Realizzato con",
     "termsOfSale": "Condizioni di Vendita",
     "portalMessage": "Visualizza i tuoi veicoli, fatture e altro nel tuo",
     "customerPortal": "portale clienti",

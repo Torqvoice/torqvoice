@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "Gaukite API raktą iš app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Atidaryti meniu"
   },
   "userDetails": {
     "back": "Atgal į vartotojus",

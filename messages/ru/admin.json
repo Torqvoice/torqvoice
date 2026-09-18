@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "Получите ключ API на app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Открыть меню"
   },
   "userDetails": {
     "back": "Назад к пользователям",

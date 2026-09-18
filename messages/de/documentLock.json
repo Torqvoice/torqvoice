@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Diese Rechnung ist gesperrt, weil sie gesendet wurde",
+      "paid": "Diese Rechnung ist gesperrt, weil sie bezahlt wurde"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Dieses Angebot ist gesperrt, weil es gesendet wurde",
+      "accepted": "Dieses Angebot ist gesperrt, weil es angenommen wurde"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Teile, Arbeitsleistung, Preise, Rabatt, Steuer, Nummer und Datum können nicht mehr geändert werden. Zahlungen, Statusänderungen, Versand und Anhänge funktionieren weiterhin.",
+  "lockedAdminHint": "Als Inhaber oder Admin können Sie die Sperre aufheben, wenn wirklich etwas korrigiert werden muss. Das Entsperren wird im Prüfprotokoll festgehalten.",
+  "lockedMemberHint": "Bitten Sie einen Inhaber oder Admin, die Sperre aufzuheben, wenn etwas korrigiert werden muss.",
+  "unlock": "Zum Bearbeiten entsperren",
+  "relock": "Wieder sperren",
+  "unlockConfirmTitle": "Dieses Dokument entsperren?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Es wird wieder bearbeitbar, und die Änderung wird mit Ihrem Namen im Prüfprotokoll festgehalten. Erstellen Sie lieber eine Gutschrift, wo die Vorschriften in Ihrem Land das verlangen.",
+    "quote": "Es wird wieder bearbeitbar, und die Änderung wird mit Ihrem Namen im Prüfprotokoll festgehalten."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Zum Bearbeiten entsperrt",
+  "relocked": "Wieder gesperrt",
+  "reopenedTitle": "Dieses Dokument wurde zum Bearbeiten entsperrt",
+  "reopenedBody": "Es bleibt bearbeitbar, bis es wieder gesperrt wird.",
+  "failed": "Die Sperre konnte nicht geändert werden"
 }

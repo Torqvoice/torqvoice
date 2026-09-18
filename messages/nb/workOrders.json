@@ -34,7 +34,7 @@
       "total": "Total"
     },
     "emailSubject": "Kjøretøystatus oppdatert: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Endre status",
     "contextMenu": {
       "open": "Åpne arbeidsordre",
       "openVehicle": "Åpne kjøretøy",

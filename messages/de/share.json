@@ -34,8 +34,8 @@
     "total": "Gesamt",
     "labor": "Arbeitsleistung",
     "hours": "Stunden",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "Std.",
+    "unit": "Einh.",
     "qtyOrHours": "Einheit / Stunden",
     "rate": "Stundensatz",
     "ratePerHour": "{rate}/Std.",
@@ -93,8 +93,8 @@
     "labor": "Arbeitsleistung",
     "laborDescription": "Beschreibung",
     "hours": "Stunden",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "Std.",
+    "unit": "Einh.",
     "qtyOrHours": "Einheit / Stunden",
     "rate": "Stundensatz",
     "ratePerHour": "{rate}/Std.",
@@ -200,7 +200,7 @@
     "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen."
   },
   "terms": {
-    "title": "Verkaufsbedingungen (Salgsvilkår)",
+    "title": "Verkaufsbedingungen",
     "contact": "Kontakt",
     "tel": "Tel: {phone}"
   },

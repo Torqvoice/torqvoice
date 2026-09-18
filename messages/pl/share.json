@@ -34,8 +34,8 @@
     "total": "Suma",
     "labor": "Robocizna",
     "hours": "Godziny",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "godz.",
+    "unit": "szt.",
     "qtyOrHours": "Jednostka / Godziny",
     "rate": "Stawka",
     "ratePerHour": "{rate}/godz.",
@@ -93,8 +93,8 @@
     "labor": "Robocizna",
     "laborDescription": "Opis",
     "hours": "Godziny",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "godz.",
+    "unit": "szt.",
     "qtyOrHours": "Jednostka / Godziny",
     "rate": "Stawka",
     "ratePerHour": "{rate}/godz.",
@@ -200,7 +200,7 @@
     "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane."
   },
   "terms": {
-    "title": "Warunki sprzedaży (Salgsvilkår)",
+    "title": "Warunki sprzedaży",
     "contact": "Kontakt",
     "tel": "Tel: {phone}"
   },

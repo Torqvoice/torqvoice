@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Bot Telegram e messaggistica"
       },
       "customerPortal": {
         "title": "Portale clienti",
@@ -192,7 +192,7 @@
     "serviceTypeDescription": "Seleziona il tipo di servizio offerto dalla tua officina. Questo cambia le etichette dei campi in tutta l'applicazione.",
     "automotive": "Automobilistico",
     "automotiveDescription": "Auto, camion e altri veicoli stradali",
-    "marineService": "Marine",
+    "marineService": "Nautico",
     "marineServiceDescription": "Barche, yacht e imbarcazioni"
   },
   "account": {
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Rimozione membro non riuscita",
     "memberRoleUpdated": "Ruolo membro aggiornato",
     "failedUpdateRole": "Aggiornamento ruolo non riuscito",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Rimuovi membro",
+    "cancelInvite": "Annulla invito",
+    "editRole": "Modifica ruolo",
     "technician": "Tecnico",
     "technicianHint": "Può ricevere lavori assegnati e usare l’app tecnico",
     "technicianFailed": "Impossibile modificare",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Campo personalizzato eliminato",
     "failedSave": "Impossibile salvare il campo",
     "failedDelete": "Impossibile eliminare",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Modifica",
+    "delete": "Elimina",
     "unassigned": "Non assegnato",
     "defaultValue": "Valore predefinito",
     "defaultValueHint": "Precompilato nei nuovi record e stampato finché non viene inserito un valore.",
@@ -1370,7 +1370,7 @@
         "sand": "Sabbia"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Copia URL del portale"
   },
   "email": {
     "title": "Provider e-mail",
@@ -1446,7 +1446,7 @@
     "failedSave": "Salvataggio impostazioni non riuscito",
     "testSentTo": "SMS di test inviato a {phone}",
     "testFailed": "Test SMS non riuscito",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Copia URL webhook"
   },
   "subscription": {
     "title": "Piano di abbonamento",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Abbonamento ripreso con successo",
     "resumeError": "Ripresa dell'abbonamento non riuscita",
     "billingPortalError": "Impossibile aprire il portale di fatturazione",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Impossibile avviare il pagamento",
     "upgradeTitle": "Aggiorna piano",
     "upgradeDescription": "Sblocca più funzionalità aggiornando il tuo piano.",
     "upgradeToProDescription": "Aggiorna per sbloccare clienti illimitati, membri del team, report, SMTP, accesso API e altro.",
@@ -1596,10 +1596,10 @@
     "deleted": "Pianificazione report eliminata",
     "toggledOn": "Pianificazione report attivata",
     "toggledOff": "Pianificazione report disattivata",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Salvataggio non riuscito",
+    "failedSend": "Invio non riuscito",
+    "failedToggle": "Impossibile cambiare lo stato",
+    "failedDelete": "Eliminazione non riuscita",
     "noMembers": "Nessun membro trovato",
     "addRecipient": "Aggiungi destinatario...",
     "searchMembers": "Cerca membri...",

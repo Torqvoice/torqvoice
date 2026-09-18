@@ -32,8 +32,8 @@
     "total": "Totale",
     "labor": "Manodopera",
     "hours": "Ore",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "ore",
+    "unit": "unità",
     "rate": "Tariffa",
     "ratePerHour": "{rate}/ora",
     "subtotal": "Subtotale",
@@ -75,7 +75,7 @@
     "professionalWorkshop": "Gestione Officina Professionale",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Unit / Hours",
+    "qtyOrHours": "Unità / Ore",
     "customFieldsTitle": "Informazioni aggiuntive",
     "telegramConnect": "Scrivici su Telegram",
     "taxRegistrationLabel": "N. {name}"
@@ -96,8 +96,8 @@
     "total": "Totale",
     "labor": "Manodopera",
     "hours": "Ore",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "ore",
+    "unit": "unità",
     "rate": "Tariffa",
     "ratePerHour": "{rate}/ora",
     "subtotal": "Subtotale",
@@ -115,7 +115,7 @@
     "validityFooter30": "Questo preventivo è valido per 30 giorni",
     "viewPortal": "Visualizza il tuo portale: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours",
+    "qtyOrHours": "Unità / Ore",
     "customFieldsTitle": "Informazioni aggiuntive",
     "quoteNumberLabel": "N. preventivo",
     "validUntilLabel": "Valido fino al"
@@ -193,6 +193,6 @@
     "mileageColMarine": "Ore Motore"
   },
   "common": {
-    "poweredBy": "Powered by"
+    "poweredBy": "Realizzato con"
   }
 }

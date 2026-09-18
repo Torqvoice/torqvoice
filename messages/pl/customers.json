@@ -20,14 +20,14 @@
     "assignNumbers": "Nadaj numery",
     "assignNumbersTitle": "Nadać numery klientów?",
     "assignNumbersDescription": "{count, plural, one {# klient nie ma} few {# klientów nie ma} many {# klientów nie ma} other {# klientów nie ma}} jeszcze numeru. Każdy otrzyma kolejny numer w sekwencji, najstarsi jako pierwsi. Klienci, którzy już mają numer, pozostaną bez zmian.",
-    "assignNumbersDone": "Nadano numery: {count}",
+    "assignNumbersDone": "Ponumerowano {count, plural, one {# klienta} few {# klientów} many {# klientów} other {# klienta}}",
     "selectedCount": "{count} zaznaczono",
     "clearSelection": "Wyczyść",
     "batchDelete": "Usuń ({count})",
     "batchDeleteTitle": "Usuń klientów",
     "batchDeleteDescription": "Usunąć {count} klient(ów)? Spowoduje to odłączenie ich pojazdów.",
     "batchDeleteSuccess": "{count} klient(ów) usunięto",
-    "openMenu": "Open menu"
+    "openMenu": "Otwórz menu"
   },
   "detail": {
     "backToCustomers": "Wróć do klientów",
@@ -95,7 +95,7 @@
     "customerCreated": "Klient utworzony",
     "saveError": "Nie udało się zapisać klienta",
     "customerNumber": "Nr klienta",
-    "customerNumberAuto": "Auto",
+    "customerNumberAuto": "Automatycznie",
     "sectionContact": "Kontakt",
     "sectionBilling": "Rozliczenia",
     "addScannedVehicle": "Dodaj pojazd {vehicle}",

@@ -29,12 +29,12 @@
       "customer": "Klient",
       "title": "Tytuł",
       "status": "Status",
-      "tech": "Tech",
+      "tech": "Technik",
       "date": "Data",
       "total": "Razem"
     },
     "emailSubject": "Aktualizacja Statusu Pojazdu: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Zmień status",
     "contextMenu": {
       "open": "Otwórz zlecenie",
       "openVehicle": "Otwórz pojazd",

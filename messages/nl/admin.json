@@ -84,7 +84,7 @@
     "requireEmailVerificationHint": "Nieuwe gebruikers moeten hun e-mailadres verifiëren voordat ze toegang krijgen tot het platform",
     "emailTitle": "E-mailinstellingen",
     "emailDescription": "Platform e-mailprovider — Wordt gebruikt voor e-mails op systeemniveau, zoals wachtwoordresets en teamuitnodigingen. Dit is ook de standaard e-mailprovider voor alle organisaties. Organisaties kunnen optioneel hun eigen e-mailprovider configureren in Instellingen > E-mail.",
-    "smtpHost": "SMTP Host",
+    "smtpHost": "SMTP-host",
     "smtpPort": "SMTP Poort",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
@@ -97,7 +97,7 @@
     "requireTlsUpgrade": "TLS-upgrade vereisen",
     "requireTlsUpgradeHint": "TLS-upgrade forceren bij STARTTLS-verbindingen",
     "apiKey": "API-sleutel",
-    "serverToken": "Server Token",
+    "serverToken": "Servertoken",
     "domain": "Domein",
     "region": "Regio",
     "awsRegion": "AWS Regio",
@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "Haal uw API-sleutel op via app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Menu openen"
   },
   "userDetails": {
     "back": "Terug naar gebruikers",

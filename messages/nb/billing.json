@@ -85,7 +85,7 @@
     "failedDelete": "Kunne ikke slette",
     "processed": "{count} faktura(er) behandlet",
     "failedProcess": "Kunne ikke behandle",
-    "pause": "Pause",
+    "pause": "Sett på pause",
     "resume": "Gjenoppta",
     "delete": "Slett",
     "removeRow": "Fjern rad"

@@ -34,8 +34,8 @@
     "total": "Total",
     "labor": "Mano de obra",
     "hours": "Horas",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "ud.",
     "qtyOrHours": "Unidad / Horas",
     "rate": "Tarifa",
     "ratePerHour": "{rate}/h",
@@ -93,8 +93,8 @@
     "labor": "Mano de obra",
     "laborDescription": "Descripción",
     "hours": "Horas",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "ud.",
     "qtyOrHours": "Unidad / Horas",
     "rate": "Tarifa",
     "ratePerHour": "{rate}/h",
@@ -200,7 +200,7 @@
     "privacyNotice": "Este informe se lo facilita el taller que realizó la inspección. Cualquier persona con este enlace puede consultarlo, así que le rogamos que no lo reenvíe. Contacte con el taller para retirar el enlace o solicitar la supresión de sus datos."
   },
   "terms": {
-    "title": "Términos de venta (Salgsvilkår)",
+    "title": "Términos de venta",
     "contact": "Contacto",
     "tel": "Tel: {phone}"
   },

@@ -418,9 +418,9 @@
     "failedRemoveMember": "Nepavyko pašalinti nario",
     "memberRoleUpdated": "Nario rolė atnaujinta",
     "failedUpdateRole": "Nepavyko atnaujinti rolės",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Pašalinti narį",
+    "cancelInvite": "Atšaukti kvietimą",
+    "editRole": "Keisti rolę",
     "technician": "Technikas",
     "technicianHint": "Gali gauti priskirtus darbus ir naudotis techniko programa",
     "technicianFailed": "Nepavyko pakeisti",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Pasirinktinis laukas ištrintas",
     "failedSave": "Nepavyko išsaugoti lauko",
     "failedDelete": "Nepavyko ištrinti",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Redaguoti",
+    "delete": "Ištrinti",
     "unassigned": "Nepriskirta",
     "defaultValue": "Numatytoji reikšmė",
     "defaultValueHint": "Automatiškai užpildoma naujuose įrašuose ir spausdinama, kol neįvesta reikšmė.",
@@ -1370,7 +1370,7 @@
         "sand": "Smėlis"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Kopijuoti portalo URL"
   },
   "email": {
     "title": "El. pašto tiekėjas",
@@ -1446,7 +1446,7 @@
     "failedSave": "Nepavyko išsaugoti nustatymų",
     "testSentTo": "Bandomoji SMS išsiųsta numeriu {phone}",
     "testFailed": "SMS testas nepavyko",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Kopijuoti webhook URL"
   },
   "subscription": {
     "title": "Prenumeratos planas",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Prenumerata sėkmingai atnaujinta",
     "resumeError": "Nepavyko atnaujinti prenumeratos",
     "billingPortalError": "Nepavyko atidaryti atsiskaitymų portalo",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Nepavyko pradėti apmokėjimo",
     "upgradeTitle": "Atnaujinti planą",
     "upgradeDescription": "Atrakinkite daugiau funkcijų atnaujindami planą.",
     "upgradeToProDescription": "Atnaujinkite, kad atrakintumėte neribotą klientų, komandos narių, ataskaitų, SMTP, API prieigos skaičių ir daugiau.",
@@ -1596,10 +1596,10 @@
     "deleted": "Ataskaitų grafikas ištrintas",
     "toggledOn": "Ataskaitų grafikas įjungtas",
     "toggledOff": "Ataskaitų grafikas išjungtas",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Nepavyko išsaugoti",
+    "failedSend": "Nepavyko išsiųsti",
+    "failedToggle": "Nepavyko perjungti",
+    "failedDelete": "Nepavyko ištrinti",
     "noMembers": "Komandos narių nerasta",
     "addRecipient": "Pridėti gavėją...",
     "searchMembers": "Ieškoti narių...",

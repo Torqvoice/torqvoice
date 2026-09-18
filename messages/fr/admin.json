@@ -31,7 +31,7 @@
     "name": "Nom",
     "email": "E-mail",
     "role": "Rôle",
-    "orgs": "Orgs",
+    "orgs": "Organisations",
     "created": "Créé",
     "lastSeen": "Dernière connexion",
     "noResults": "Aucun utilisateur ne correspond à votre recherche.",
@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "Obtenez votre clé API sur app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Ouvrir le menu"
   },
   "userDetails": {
     "back": "Retour aux utilisateurs",

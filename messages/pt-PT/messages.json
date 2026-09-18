@@ -1,0 +1,79 @@
+{
+  "page": {
+    "featureName": "Mensagens SMS",
+    "featureDescription": "Envie e receba mensagens SMS com os seus clientes diretamente no Torqvoice.",
+    "tabs": {
+      "inbox": "Caixa de entrada",
+      "scheduled": "Agendadas",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "campaigns": "Campanhas"
+    },
+    "smsNotConfiguredTitle": "O SMS não está configurado",
+    "smsNotConfiguredHint": "Ligue um fornecedor de SMS para enviar e receber mensagens aqui. Os e-mails agendados funcionam sem isso.",
+    "goToSmsSettings": "Ir para as definições de SMS"
+  },
+  "notConfigured": {
+    "title": "SMS não configurado",
+    "description": "Configure um fornecedor de SMS para trocar mensagens com os seus clientes. Suporta Twilio, Vonage e Telnyx.",
+    "goToSettings": "Ir para as definições de SMS"
+  },
+  "threads": {
+    "title": "Conversas",
+    "empty": "Ainda não há conversas. Envie um SMS a partir da página de um cliente para começar.",
+    "loadMore": "Carregar mais",
+    "selectConversation": "Selecione uma conversa",
+    "you": "Eu: ",
+    "deleteConversation": "Eliminar conversa",
+    "deleteTitle": "Eliminar conversa?",
+    "deleteDescription": "Todas as mensagens com {name} serão eliminadas definitivamente. Esta ação não pode ser anulada.",
+    "deleted": "Conversa eliminada",
+    "deleteError": "Não foi possível eliminar a conversa",
+    "back": "Voltar",
+    "conversationMenu": "Menu da conversa",
+    "searchPlaceholder": "Pesquisar conversas",
+    "noSearchResults": "Nenhuma conversa corresponde à pesquisa",
+    "now": "agora"
+  },
+  "conversation": {
+    "noPhone": "Não há número de telefone registado para {name}. Adicione um número de telefone para começar a trocar mensagens.",
+    "loadOlder": "Carregar anteriores",
+    "empty": "Ainda não há mensagens. Envie a primeira mensagem a {name}.",
+    "placeholder": "Mensagem para {name}...",
+    "deleteMessage": "Eliminar mensagem",
+    "deleteTitle": "Eliminar mensagem?",
+    "deleteDescription": "Esta mensagem será eliminada definitivamente da conversa. Esta ação não pode ser anulada.",
+    "messageDeleted": "Mensagem eliminada",
+    "deleteError": "Não foi possível eliminar a mensagem",
+    "sendError": "Não foi possível enviar o SMS",
+    "sendMessage": "Enviar mensagem"
+  },
+  "sendDialog": {
+    "send": "Enviar {label}",
+    "message": "Mensagem",
+    "placeholder": "Escreva a sua mensagem...",
+    "characters": "{count} / 1600 caracteres",
+    "sendSms": "Enviar SMS",
+    "smsSent": "SMS enviado",
+    "sentTo": "{label} foi enviado a {name} ({phone})",
+    "sendError": "Não foi possível enviar o SMS"
+  },
+  "compose": {
+    "newMessage": "Nova mensagem",
+    "title": "Nova mensagem",
+    "searchPlaceholder": "Pesquisar clientes por nome ou número",
+    "noMatches": "Nenhum cliente corresponde à pesquisa",
+    "noRecipients": "Nenhum cliente com telefone",
+    "noRecipientsHint": "Adicione um telefone ao cliente para lhe enviar SMS.",
+    "changeRecipient": "Escolher outra pessoa",
+    "messageLabel": "Mensagem",
+    "messagePlaceholder": "Mensagem para {name}...",
+    "segments": "{chars} caracteres · {segments} SMS",
+    "send": "Enviar",
+    "scheduleInstead": "Agendar em vez de enviar",
+    "sent": "Enviada a {name}",
+    "sendError": "Não foi possível enviar a mensagem",
+    "templates": "Modelos"
+  }
+}

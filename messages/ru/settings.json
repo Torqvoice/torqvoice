@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Бот Telegram и сообщения"
       },
       "customerPortal": {
         "title": "Портал клиента",
@@ -96,7 +96,7 @@
         "description": "Календари, видеозвонки и подключённые сервисы"
       },
       "webhooks": {
-        "title": "Webhooks",
+        "title": "Вебхуки",
         "description": "Уведомления о событиях в реальном времени"
       },
       "appearance": {
@@ -192,7 +192,7 @@
     "serviceTypeDescription": "Выберите тип услуг, которые предоставляет ваша мастерская. Это изменит названия полей во всём приложении.",
     "automotive": "Автомобильный",
     "automotiveDescription": "Легковые автомобили, грузовики и другие транспортные средства",
-    "marineService": "Marine",
+    "marineService": "Морской",
     "marineServiceDescription": "Лодки, яхты и морские суда"
   },
   "account": {
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Не удалось удалить участника",
     "memberRoleUpdated": "Роль участника обновлена",
     "failedUpdateRole": "Не удалось обновить роль",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Удалить участника",
+    "cancelInvite": "Отменить приглашение",
+    "editRole": "Изменить роль",
     "technician": "Механик",
     "technicianHint": "Может получать заказы и пользоваться приложением механика",
     "technicianFailed": "Не удалось изменить",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Пользовательское поле удалено",
     "failedSave": "Не удалось сохранить поле",
     "failedDelete": "Не удалось удалить",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Редактировать",
+    "delete": "Удалить",
     "unassigned": "Не назначено",
     "defaultValue": "Значение по умолчанию",
     "defaultValueHint": "Автоматически подставляется в новые записи и печатается, пока значение не введено.",
@@ -1370,7 +1370,7 @@
         "sand": "Песок"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Копировать URL портала"
   },
   "email": {
     "title": "Провайдер эл. почты",
@@ -1446,7 +1446,7 @@
     "failedSave": "Не удалось сохранить настройки",
     "testSentTo": "Тестовое SMS отправлено на {phone}",
     "testFailed": "Тест SMS не удался",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Копировать URL вебхука"
   },
   "subscription": {
     "title": "Тарифный план",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Подписка успешно возобновлена",
     "resumeError": "Не удалось возобновить подписку",
     "billingPortalError": "Не удалось открыть платёжный портал",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Не удалось начать оформление оплаты",
     "upgradeTitle": "Обновить тариф",
     "upgradeDescription": "Разблокируйте больше функций, обновив тариф.",
     "upgradeToProDescription": "Обновитесь для неограниченных клиентов, участников команды, отчётов, SMTP, доступа к API и многого другого.",
@@ -1596,10 +1596,10 @@
     "deleted": "Расписание отчётов удалено",
     "toggledOn": "Расписание отчётов включено",
     "toggledOff": "Расписание отчётов отключено",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Не удалось сохранить",
+    "failedSend": "Не удалось отправить",
+    "failedToggle": "Не удалось переключить",
+    "failedDelete": "Не удалось удалить",
     "noMembers": "Участники команды не найдены",
     "addRecipient": "Добавить получателя...",
     "searchMembers": "Поиск участников...",
@@ -1626,7 +1626,7 @@
     }
   },
   "webhooks": {
-    "title": "Webhooks",
+    "title": "Вебхуки",
     "subtitle": "Отправляйте уведомления о событиях в реальном времени в ваши собственные системы по HTTPS. Каждое событие подписывается HMAC-SHA256, чтобы вы могли проверить подлинность.",
     "create": "Добавить webhook",
     "createTitle": "Добавить webhook",
@@ -1696,7 +1696,7 @@
     "helpIntro": "Каждая доставка содержит подпись HMAC-SHA256, чтобы вы могли подтвердить, что запрос пришёл от Torqvoice.",
     "helpHeadersTitle": "Заголовки, отправляемые с каждым запросом",
     "helpVerify": "Соберите подписанную строку как `[timestamp].[body]` и сравните с безопасной по времени проверкой:",
-    "tabWebhooks": "Webhooks",
+    "tabWebhooks": "Вебхуки",
     "tabReference": "Справочник событий",
     "autoDisabled": "Автоприостановлен",
     "autoDisabledBanner": "Этот webhook был автоматически приостановлен после 20 последовательных ошибок. Включите его снова, чтобы возобновить доставку.",

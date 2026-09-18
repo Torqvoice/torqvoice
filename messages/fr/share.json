@@ -34,8 +34,8 @@
     "total": "Total",
     "labor": "Main-d'œuvre",
     "hours": "Heures",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unité",
     "qtyOrHours": "Unité / Heures",
     "rate": "Taux",
     "ratePerHour": "{rate}/h",
@@ -93,8 +93,8 @@
     "labor": "Main-d'œuvre",
     "laborDescription": "Description",
     "hours": "Heures",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unité",
     "qtyOrHours": "Unité / Heures",
     "rate": "Taux",
     "ratePerHour": "{rate}/h",
@@ -200,7 +200,7 @@
     "privacyNotice": "Ce rapport vous est communiqué par l'atelier qui a réalisé le contrôle. Toute personne disposant de ce lien peut le consulter : merci de ne pas le transmettre. Contactez l'atelier pour faire retirer le lien ou effacer vos données."
   },
   "terms": {
-    "title": "Conditions de vente (Salgsvilkår)",
+    "title": "Conditions de vente",
     "contact": "Contact",
     "tel": "Tél. : {phone}"
   },

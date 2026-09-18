@@ -34,7 +34,7 @@
       "total": "Toplam"
     },
     "emailSubject": "Araç Durum Güncellemesi: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Durumu değiştir",
     "contextMenu": {
       "open": "İş emrini aç",
       "openVehicle": "Aracı aç",

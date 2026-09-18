@@ -131,7 +131,7 @@
     "saveChanges": "Сохранить изменения",
     "addPart": "Добавить запчасть"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Открыть меню",
   "history": {
     "title": "История склада",
     "description": "Все изменения по «{name}», сначала новые.",
