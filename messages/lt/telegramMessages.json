@@ -31,7 +31,7 @@
     "messageDeleted": "Žinutė ištrinta",
     "deleteError": "Nepavyko ištrinti žinutės",
     "sendError": "Nepavyko išsiųsti žinutės",
-    "sendMessage": "Send message"
+    "sendMessage": "Siųsti žinutę"
   },
   "sendDialog": {
     "send": "Siųsti {label}",

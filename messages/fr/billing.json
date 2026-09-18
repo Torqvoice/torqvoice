@@ -85,7 +85,7 @@
     "failedDelete": "Échec de la suppression",
     "processed": "{count} facture(s) traitée(s)",
     "failedProcess": "Échec du traitement",
-    "pause": "Pause",
+    "pause": "Mettre en pause",
     "resume": "Reprendre",
     "delete": "Supprimer",
     "removeRow": "Supprimer la ligne"

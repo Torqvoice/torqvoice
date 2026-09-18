@@ -1,0 +1,114 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Iniciar sessão",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "submit": "Enviar",
+    "back": "Voltar",
+    "confirm": "Confirmar",
+    "saveChanges": "Guardar alterações",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "gotIt": "Entendido"
+  },
+  "contextMenu": {
+    "hint": "Dica: clique com o botão direito numa linha para ver as ações",
+    "open": "Abrir",
+    "openVehicle": "Abrir viatura",
+    "openCustomer": "Abrir cliente",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "form": {
+    "email": "E-mail",
+    "password": "Palavra-passe",
+    "emailPlaceholder": "you@example.com",
+    "name": "Nome",
+    "phone": "Telefone",
+    "company": "Empresa",
+    "address": "Morada",
+    "notes": "Observações"
+  },
+  "errors": {
+    "unexpected": "Ocorreu um erro inesperado. Tente novamente.",
+    "error": "Erro"
+  },
+  "terms": {
+    "termsOfService": "Termos de Serviço"
+  },
+  "errorPage": {
+    "title": "Algo correu mal",
+    "description": "O motor foi abaixo inesperadamente. Os nossos mecânicos já foram avisados e estão a tratar do assunto.",
+    "tryAgain": "Tentar novamente",
+    "backToDashboard": "Voltar ao painel"
+  },
+  "notFoundPage": {
+    "title": "Página não encontrada",
+    "description": "Parece que esta peça ainda está na oficina. A página que procura não existe ou foi movida.",
+    "backToDashboard": "Voltar ao painel"
+  },
+  "updateBanner": {
+    "updated": "O Torqvoice foi atualizado para a versão {version}",
+    "whatsNew": "Ver novidades",
+    "dismiss": "Fechar"
+  },
+  "pagination": {
+    "showing": "A mostrar {start}–{end} de {total}",
+    "perPage": "por página",
+    "pageOf": "Página {page} de {pages}",
+    "first": "Primeira página",
+    "previous": "Página anterior",
+    "next": "Página seguinte",
+    "last": "Última página"
+  },
+  "shared": {
+    "close": "Fechar",
+    "viewPlans": "Ver planos",
+    "manageLicense": "Gerir licença",
+    "installOwn": "Instale a sua",
+    "install": "Instalar",
+    "installApp": "Instalar aplicação",
+    "installTorqvoice": "Instalar o Torqvoice",
+    "dismiss": "Fechar",
+    "useCamera": "Usar a câmara",
+    "enterManually": "Introduzir manualmente",
+    "enterBarcode": "Introduzir código de barras…",
+    "scanHint": "Aponte a câmara para um código de barras ou introduza-o manualmente",
+    "iosInstallHint": "Toque em Partilhar > Adicionar ao ecrã principal",
+    "installDescription": "Adicione ao ecrã principal para um acesso rápido",
+    "enterFullscreen": "Ecrã inteiro",
+    "exitFullscreen": "Sair do ecrã inteiro"
+  },
+  "upgrade": {
+    "title": "Mude de plano para continuar",
+    "maxCustomers": "O seu plano inclui até {limit} clientes e já atingiu esse número. Mude de plano para adicionar todos os clientes de que precisa.",
+    "maxUsers": "O seu plano inclui {limit, plural, one {um membro da equipa} other {# membros da equipa}}. Mude de plano para convidar mais pessoas.",
+    "generic": "Esta funcionalidade não está incluída no seu plano atual.",
+    "featureNotIncluded": "{feature} não está incluído no seu plano atual.",
+    "notNow": "Agora não"
+  },
+  "broadcast": {
+    "dismiss": "Fechar",
+    "title": "Aviso para todos",
+    "description": "Apresentado no topo de todas as páginas, para todos, com ou sem sessão iniciada. Deixe vazio para não mostrar nenhum aviso.",
+    "message": "Mensagem",
+    "level": "Gravidade",
+    "post": "Publicar aviso",
+    "clear": "Remover aviso",
+    "levelInfo": "Informação",
+    "levelWarning": "Aviso",
+    "levelCritical": "Crítico",
+    "placeholder": "ex.: Estamos com problemas na nossa infraestrutura de servidores e já estamos a trabalhar na solução.",
+    "posted": "Aviso publicado",
+    "cleared": "Aviso removido"
+  },
+  "pdfPreview": {
+    "title": "Pré-visualização do PDF",
+    "preview": "Pré-visualizar",
+    "failed": "Não foi possível gerar a pré-visualização do PDF."
+  },
+  "attachPdf": "Anexar PDF",
+  "attachPdfHint": "Desative para enviar um link em vez do anexo e assim saber quando o cliente o abre."
+}

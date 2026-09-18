@@ -34,7 +34,7 @@
       "total": "Totale"
     },
     "emailSubject": "Aggiornamento Stato Veicolo: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Cambia stato",
     "contextMenu": {
       "open": "Apri ordine di lavoro",
       "openVehicle": "Apri veicolo",

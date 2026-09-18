@@ -28,7 +28,7 @@
     "tabs": {
       "details": "Detalles",
       "images": "Imágenes",
-      "video": "Video",
+      "video": "Vídeo",
       "documents": "Documentos",
       "statusReports": "Informes de estado"
     },
@@ -256,7 +256,7 @@
     "deleted": "Archivo eliminado",
     "failedDelete": "Error al eliminar",
     "images": "Imágenes ({count})",
-    "videos": "Videos ({count})",
+    "videos": "Vídeos ({count})",
     "diagnostics": "Reportes de Diagnóstico ({count})",
     "documents": "Documentos ({count})",
     "download": "Descargar",

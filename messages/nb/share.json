@@ -34,8 +34,8 @@
     "total": "Totalt",
     "labor": "Arbeid",
     "hours": "Timer",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "t",
+    "unit": "enhet",
     "qtyOrHours": "Enhet / Timer",
     "rate": "Sats",
     "ratePerHour": "{rate}/t",
@@ -93,8 +93,8 @@
     "labor": "Arbeid",
     "laborDescription": "Beskrivelse",
     "hours": "Timer",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "t",
+    "unit": "enhet",
     "qtyOrHours": "Enhet / Timer",
     "rate": "Sats",
     "ratePerHour": "{rate}/t",
@@ -200,7 +200,7 @@
     "privacyNotice": "Denne rapporten deles med deg av verkstedet som utførte kontrollen. Alle som har lenken kan se den, så ikke send den videre. Ta kontakt med verkstedet for å trekke tilbake lenken eller få slettet opplysningene dine."
   },
   "terms": {
-    "title": "Salgsbetingelser (Salgsvilkår)",
+    "title": "Salgsvilkår",
     "contact": "Kontakt",
     "tel": "Tlf: {phone}"
   },

@@ -32,8 +32,8 @@
   "results": {
     "pass": "Aprovado",
     "pass_minor": "Aprovado com deficiências leves",
-    "fail": "Reprovado — deficiências graves",
-    "fail_dangerous": "Reprovado — deficiências perigosas",
+    "fail": "Reprovado: deficiências graves",
+    "fail_dangerous": "Reprovado: deficiências perigosas",
     "incomplete": "Não concluído",
     "detail": {
       "pass": "Nenhuma deficiência foi encontrada.",
@@ -115,7 +115,7 @@
     "hideNote": "Ocultar observação",
     "addPhoto": "Adicionar foto ou vídeo a {name}",
     "notesFor": "Observações de {name}",
-    "describeDefect": "Descreva a deficiência — ela aparece no laudo",
+    "describeDefect": "Descreva a deficiência. Ela aparece no laudo",
     "optionalNote": "Adicionar uma observação (opcional)",
     "notesRequired": "Descreva a deficiência antes que esta classificação seja salva.",
     "photoRequired": "Aqui é exigida uma foto da deficiência. A inspeção não pode ser concluída até que uma seja anexada.",

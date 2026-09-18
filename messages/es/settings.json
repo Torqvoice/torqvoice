@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Bot de Telegram y mensajería"
       },
       "customerPortal": {
         "title": "Portal del cliente",
@@ -158,7 +158,7 @@
     "logoAlt": "Logo de la empresa",
     "upload": "Subir",
     "remove": "Eliminar",
-    "logoHint": "JPG, PNG, WebP, SVG — max 2MB",
+    "logoHint": "JPG, PNG, WebP, SVG, máx. 2 MB",
     "uploadingLogo": "Subiendo logo...",
     "logoUpdated": "Logo actualizado",
     "failedUploadLogo": "Error al subir el logo",
@@ -192,7 +192,7 @@
     "serviceTypeDescription": "Seleccione el tipo de servicio que ofrece su taller. Esto cambia las etiquetas de los campos en toda la aplicación.",
     "automotive": "Automotriz",
     "automotiveDescription": "Coches, camiones y otros vehículos de carretera",
-    "marineService": "Marine",
+    "marineService": "Náutico",
     "marineServiceDescription": "Barcos, yates y embarcaciones"
   },
   "account": {
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Error al eliminar el miembro",
     "memberRoleUpdated": "Rol del miembro actualizado",
     "failedUpdateRole": "Error al actualizar el rol",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Eliminar miembro",
+    "cancelInvite": "Cancelar invitación",
+    "editRole": "Editar rol",
     "technician": "Técnico",
     "technicianHint": "Puede recibir trabajos asignados y usar la aplicación de técnico",
     "technicianFailed": "No se pudo cambiar",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Campo personalizado eliminado",
     "failedSave": "No se pudo guardar el campo",
     "failedDelete": "No se pudo eliminar",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Editar",
+    "delete": "Eliminar",
     "unassigned": "Sin asignar",
     "defaultValue": "Valor predeterminado",
     "defaultValueHint": "Se rellena automáticamente en registros nuevos y se imprime mientras no se haya introducido un valor.",
@@ -1315,7 +1315,7 @@
   "about": {
     "title": "Acerca de Torqvoice",
     "description": "Torqvoice es su solucion completa de gestión de servicios de vehículos. Rastree historial de servicio, reparaciones y mas.",
-    "version": "Version",
+    "version": "Versión",
     "website": "Sitio web",
     "documentation": "Documentacion",
     "changelog": "Registro de cambios"
@@ -1370,7 +1370,7 @@
         "sand": "Arena"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Copiar URL del portal"
   },
   "email": {
     "title": "Proveedor de correo",
@@ -1446,7 +1446,7 @@
     "failedSave": "Error al guardar la configuración",
     "testSentTo": "SMS de prueba enviado a {phone}",
     "testFailed": "Prueba de SMS fallida",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Copiar URL del webhook"
   },
   "subscription": {
     "title": "Plan de suscripción",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Suscripción reanudada con éxito",
     "resumeError": "Error al reanudar la suscripción",
     "billingPortalError": "Error al abrir el portal de facturación",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "No se pudo iniciar el pago",
     "upgradeTitle": "Mejorar plan",
     "upgradeDescription": "Desbloquee más funciones mejorando su plan.",
     "upgradeToProDescription": "Mejore para desbloquear clientes ilimitados, miembros del equipo, informes, SMTP, acceso API y más.",
@@ -1557,7 +1557,7 @@
     "biweekly": "Cada 2 semanas",
     "monthly": "Mensual",
     "bimonthly": "Cada 2 meses",
-    "quarterly": "Cada 4 meses",
+    "quarterly": "Cada 3 meses",
     "semiannually": "Cada 6 meses",
     "yearly": "Anual",
     "dateRangeLabel": "Período",
@@ -1596,10 +1596,10 @@
     "deleted": "Programa de informes eliminado",
     "toggledOn": "Programa de informes activado",
     "toggledOff": "Programa de informes desactivado",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Error al guardar",
+    "failedSend": "Error al enviar",
+    "failedToggle": "Error al cambiar el estado",
+    "failedDelete": "Error al eliminar",
     "noMembers": "No se encontraron miembros del equipo",
     "addRecipient": "Agregar destinatario...",
     "searchMembers": "Buscar miembros...",

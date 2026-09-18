@@ -2,11 +2,11 @@
   "title": "Telegram Ayarları",
   "description": "Müşterilerle mesaj göndermek ve almak için Telegram botunuzu yapılandırın.",
   "botToken": {
-    "label": "Bot Token",
+    "label": "Bot Tokeni",
     "placeholder": "@BotFather'dan aldığınız bot tokenini girin",
     "help": "Tokeninizi almak için Telegram'da @BotFather üzerinden bir bot oluşturun.",
-    "show": "Show token",
-    "hide": "Hide token"
+    "show": "Tokeni göster",
+    "hide": "Tokeni gizle"
   },
   "botUsername": {
     "label": "Bot Kullanıcı Adı",
@@ -20,7 +20,7 @@
     "title": "Müşteri Bağlantı Linki",
     "description": "Müşterilerin botunuza bağlanabilmesi için bu linki paylaşın. Müşteri kimliği yer tutucusunu gerçek müşteri kimliğiyle değiştirin.",
     "copied": "Link kopyalandı!",
-    "copy": "Copy deep link"
+    "copy": "Bağlantı linkini kopyala"
   },
   "test": {
     "title": "Test Mesajı",

@@ -1,0 +1,159 @@
+{
+  "page": {
+    "error": "Não foi possível carregar o quadro de trabalho"
+  },
+  "toolbar": {
+    "today": "Hoje",
+    "day": "Dia",
+    "week": "Semana",
+    "presenter": "Modo de apresentação",
+    "addTechnician": "Adicionar Técnico",
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana seguinte",
+    "previousDay": "Dia anterior",
+    "nextDay": "Dia seguinte",
+    "groupBy": "Colunas",
+    "byTechnician": "Uma coluna por técnico",
+    "byBay": "Uma coluna por posto de trabalho",
+    "byNothing": "Uma coluna por dia",
+    "weekends": "Fins de semana",
+    "add": "Adicionar",
+    "addBay": "Adicionar posto de trabalho",
+    "weekNumber": "Sem. {number}",
+    "lanes": "Faixas",
+    "showAllLanes": "Mostrar todas",
+    "onlyBusyLanes": "Só as que têm trabalho",
+    "layout": "Vista",
+    "layoutTimeline": "Cronologia",
+    "layoutCards": "Visão geral",
+    "rows": "Linhas",
+    "rowPerTechnician": "Uma linha por técnico",
+    "rowPerBay": "Uma linha por posto de trabalho",
+    "rowNothing": "Uma única linha",
+    "technicians": "Técnicos",
+    "workBays": "Postos de trabalho",
+    "weekendsDayHint": "Só se aplica na vista semanal"
+  },
+  "board": {
+    "days": {
+      "mon": "Seg",
+      "tue": "Ter",
+      "wed": "Qua",
+      "thu": "Qui",
+      "fri": "Sex",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "noTechnicians": "Ainda Sem Técnicos",
+    "noTechniciansDescription": "Adicione um técnico para começar a planear trabalho no quadro.",
+    "failedMove": "Não foi possível mover a atribuição",
+    "failedAssign": "Não foi possível atribuir o trabalho",
+    "failedRemove": "Não foi possível remover a atribuição",
+    "createNewWorkorder": "Criar nova ordem de serviço",
+    "noBays": "Ainda não há postos de trabalho. Adicione um para planear a semana posto a posto.",
+    "addFirstBay": "Adicionar posto de trabalho",
+    "lanes": {
+      "noBay": "Sem posto",
+      "noTechnician": "Sem técnico",
+      "everyone": "Todo o trabalho",
+      "thisWeek": "Esta semana"
+    },
+    "dropNeedsLane": "Agrupe o quadro por técnico ou por posto de trabalho antes de largar um trabalho nele."
+  },
+  "unassigned": {
+    "title": "Trabalhos Não Atribuídos ({count})",
+    "searchPlaceholder": "Pesquisar trabalhos...",
+    "empty": "Nenhum trabalho por atribuir"
+  },
+  "technician": {
+    "editTitle": "Editar Técnico",
+    "addTitle": "Adicionar Técnico",
+    "name": "Nome",
+    "namePlaceholder": "ex.: João Silva",
+    "color": "Cor",
+    "linkMember": "Associar a Membro da Organização (opcional)",
+    "standalone": "Técnico independente",
+    "deleteTitle": "Eliminar Técnico",
+    "deleteDescription": "Remover \"{name}\" do quadro de trabalho? As atribuições existentes deste técnico também serão removidas.",
+    "addTechnician": "Adicionar Técnico",
+    "standaloneOnly": "Um nome no quadro para alguém que não inicia sessão, como um aprendiz ou um subcontratado. Para um mecânico que usa a aplicação, adicione-o na página Equipa.",
+    "linkedTo": "Inicia sessão como {name}",
+    "linkedManagedOnTeam": "Gerido na página Equipa, juntamente com o acesso à aplicação."
+  },
+  "jobDetail": {
+    "viewDetails": "Ver Detalhes",
+    "remove": "Remover",
+    "endBeforeStart": "A hora de fim tem de ser posterior à hora de início",
+    "endTime": "Hora de fim",
+    "failedDuration": "Não foi possível atualizar a duração",
+    "failedTimes": "Não foi possível atualizar as horas",
+    "startTime": "Hora de início"
+  },
+  "presenter": {
+    "title": "Quadro de Trabalho",
+    "day": "Dia",
+    "status": "Estado",
+    "week": "Semana",
+    "today": "Hoje",
+    "live": "Em Direto",
+    "disconnected": "Atualizações em direto desligadas",
+    "noTechnicians": "Nenhum técnico configurado",
+    "noJobsToday": "Sem trabalhos hoje",
+    "job": "{count} trabalho",
+    "jobs": "{count} trabalhos",
+    "statusLabels": {
+      "pending": "Pendente",
+      "inProgress": "Em Curso",
+      "waitingParts": "A Aguardar Peças",
+      "completed": "Concluído"
+    },
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "groupingUnused": "O quadro de estados agrupa por estado",
+    "connecting": "A ligar…"
+  },
+  "week": {
+    "createAt": "Nova ordem de serviço às {time}",
+    "unscheduled": "Sem marcação ({count})",
+    "hint": "Arraste um trabalho para o mover. Arraste o limite superior ou inferior para alterar a duração.",
+    "hiddenDays": "{count} marcado(s) no fim de semana. Mostrar fins de semana.",
+    "panLeft": "Mais cedo na semana",
+    "panRight": "Mais tarde na semana",
+    "hintPan": "Arraste o fundo para percorrer a semana.",
+    "wholeWeek": "Ver a semana inteira",
+    "hintZoom": "Mantenha o Ctrl premido e deslize para ampliar."
+  },
+  "bay": {
+    "addTitle": "Adicionar posto de trabalho",
+    "editTitle": "Editar posto de trabalho",
+    "description": "Um local onde se faz o trabalho: um elevador, uma rampa, uma zona de lavagem.",
+    "name": "Nome",
+    "namePlaceholder": "ex.: Elevador 1",
+    "color": "Cor",
+    "dailyCapacity": "Horas disponíveis para marcação por dia",
+    "hoursPerDay": "horas por dia",
+    "capacityHint": "Serve para mostrar a ocupação de cada dia.",
+    "deleteTitle": "Eliminar posto de trabalho",
+    "deleteDescription": "Remover \"{name}\"? Os trabalhos marcados neste posto mantêm a marcação e passam para a coluna sem posto.",
+    "addBay": "Adicionar posto de trabalho",
+    "saveFailed": "Não foi possível guardar o posto de trabalho"
+  },
+  "lane": {
+    "booked": "Marcado",
+    "capacity": "Capacidade",
+    "free": "Livre",
+    "over": "Excedido em",
+    "jobs": "Trabalhos",
+    "utilisation": "{pct}% da capacidade",
+    "placeholder": "Ainda não há trabalho atribuído aqui."
+  },
+  "job": {
+    "time": "Hora",
+    "duration": "Duração",
+    "technician": "Técnico",
+    "workBay": "Posto de trabalho",
+    "status": "Estado",
+    "noTime": "Ainda sem hora definida",
+    "none": "Ainda ninguém"
+  }
+}

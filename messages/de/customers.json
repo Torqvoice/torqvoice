@@ -27,7 +27,7 @@
     "batchDeleteTitle": "Kunden löschen",
     "batchDeleteDescription": "{count} Kunde(n) löschen? Die zugehörigen Fahrzeuge werden dabei entknüpft.",
     "batchDeleteSuccess": "{count} Kunde(n) gelöscht",
-    "openMenu": "Open menu"
+    "openMenu": "Menü öffnen"
   },
   "detail": {
     "backToCustomers": "Zurück zur Kundenliste",
@@ -95,7 +95,7 @@
     "customerCreated": "Kunde angelegt",
     "saveError": "Kunde konnte nicht gespeichert werden",
     "customerNumber": "Kundennr.",
-    "customerNumberAuto": "Auto",
+    "customerNumberAuto": "Automatisch",
     "sectionContact": "Kontakt",
     "sectionBilling": "Rechnung",
     "addScannedVehicle": "Fahrzeug {vehicle} anlegen",

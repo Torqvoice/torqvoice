@@ -1,0 +1,76 @@
+{
+  "searchPlaceholder": "Pesquisar modelos de mão de obra...",
+  "addPackage": "Adicionar modelo de mão de obra",
+  "table": {
+    "name": "Nome",
+    "description": "Descrição",
+    "itemCount": "Itens",
+    "type": "Tipo",
+    "hrs": "h",
+    "units": "unidade(s)"
+  },
+  "empty": {
+    "noMatch": "Nenhum modelo corresponde à sua pesquisa.",
+    "noPresets": "Ainda não há modelos de mão de obra. Clique em \"Adicionar modelo de mão de obra\" para criar um."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "openMenu": "Abrir menu"
+  },
+  "deletePreset": {
+    "title": "Eliminar modelo de mão de obra",
+    "description": "\"{name}\" e todos os seus itens serão eliminados definitivamente. Esta ação não pode ser anulada.",
+    "confirm": "Eliminar"
+  },
+  "form": {
+    "singleItem": "Item único",
+    "package": "Pacote",
+    "addPackage": "Adicionar modelo de mão de obra",
+    "editPackage": "Editar modelo de mão de obra",
+    "singleNameLabel": "Nome",
+    "singleNamePlaceholder": "ex.: Mudança de óleo",
+    "nameLabel": "Nome do pacote",
+    "namePlaceholder": "ex.: Pacote de mudança de óleo",
+    "descriptionLabel": "Descrição",
+    "descriptionPlaceholder": "Descrição opcional...",
+    "itemsTitle": "Itens de mão de obra",
+    "itemDescription": "Descrição",
+    "itemHours": "Horas",
+    "itemRate": "Preço",
+    "itemDescriptionPlaceholder": "Descrição *",
+    "addItem": "Adicionar item",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "saveChanges": "Guardar alterações",
+    "itemQty": "Qtd.",
+    "itemQtyOrHours": "Unid. / Horas",
+    "hourlyTag": "H",
+    "serviceTag": "SERV",
+    "partsTitle": "Peças",
+    "addPart": "Adicionar peça",
+    "partName": "Nome da peça",
+    "partNumber": "Ref. peça",
+    "partQty": "Qtd.",
+    "partPrice": "Preço unitário",
+    "importFromInventory": "Importar do stock",
+    "searchInventory": "Pesquisar no stock...",
+    "noPartsFound": "Nenhuma peça encontrada"
+  },
+  "picker": {
+    "title": "Selecionar modelo de mão de obra",
+    "search": "Pesquisar modelos...",
+    "noPackages": "Nenhum modelo de mão de obra encontrado.",
+    "items": "{count} itens",
+    "totalHours": "{hours} h no total",
+    "totalUnits": "{units} unidade(s)",
+    "totalParts": "{count} peças"
+  },
+  "errors": {
+    "error": "Erro",
+    "saveFailed": "Não foi possível guardar o modelo de mão de obra",
+    "deleteFailed": "Não foi possível eliminar o modelo de mão de obra",
+    "loadFailed": "Não foi possível carregar o modelo de mão de obra",
+    "noItems": "É necessário pelo menos um item"
+  }
+}

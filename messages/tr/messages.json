@@ -30,8 +30,8 @@
     "deleteDescription": "{name} ile tüm mesajlar kalıcı olarak silinecek. Bu işlem geri alınamaz.",
     "deleted": "Görüşme silindi",
     "deleteError": "Görüşme silinemedi",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Geri",
+    "conversationMenu": "Sohbet menüsü",
     "searchPlaceholder": "Sohbetlerde ara",
     "noSearchResults": "Aramayla eşleşen sohbet yok",
     "now": "şimdi"
@@ -47,7 +47,7 @@
     "messageDeleted": "Mesaj silindi",
     "deleteError": "Mesaj silinemedi",
     "sendError": "SMS gönderilemedi",
-    "sendMessage": "Send message"
+    "sendMessage": "Mesaj gönder"
   },
   "sendDialog": {
     "send": "{label} gönder",

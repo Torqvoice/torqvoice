@@ -23,7 +23,7 @@
   "customerSuggestion3": "Quando foi a última visita e o que foi feito?",
   "customerSuggestion4": "Resuma nossas mensagens recentes",
   "assistantTitle": "Assistente IA",
-  "assistantDescription": "Faça perguntas sobre os dados da sua oficina — veículos, serviços, clientes, receita e mais.",
+  "assistantDescription": "Faça perguntas sobre os dados da sua oficina: veículos, serviços, clientes, receita e mais.",
   "assistantPlaceholder": "Pergunte sobre sua oficina...",
   "notEnabled": "A IA não está conectada. Conecte a OpenAI ou a Anthropic em Configurações → Integrações.",
   "suggestion1": "Quais veículos precisam de serviço em breve?",

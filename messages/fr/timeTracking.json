@@ -23,7 +23,7 @@
     "openTimesheets": "Ouvrir les feuilles de temps"
   },
   "source": {
-    "app": "App",
+    "app": "Application",
     "web": "Web",
     "manual": "Manuel",
     "editedBy": "Ajusté par {name}"

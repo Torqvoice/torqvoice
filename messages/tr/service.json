@@ -236,7 +236,7 @@
     "methodOptions": {
       "cash": "Nakit",
       "card": "Kart",
-      "transfer": "Transfer",
+      "transfer": "Havale",
       "other": "Diğer"
     },
     "recorded": "Ödeme kaydedildi",

@@ -74,8 +74,8 @@
     "noDismissed": "Geen genegeerde voertuigen.",
     "dismissedOn": "Genegeerd op {date}",
     "restore": "Herstellen",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Onderhoudsinstellingen",
+    "dismissAriaLabel": "Negeren"
   },
   "reminders": {
     "title": "Aankomende herinneringen",
@@ -97,7 +97,7 @@
     "title": "Inspecties",
     "inProgress": "In uitvoering",
     "completed": "Afgerond",
-    "itemCount": "{inspected}/{total} items",
+    "itemCount": "{inspected}/{total} punten",
     "noData": "Geen inspecties."
   },
   "serviceRequests": {
@@ -112,7 +112,7 @@
     "createQuote": "Offerte aanmaken",
     "itemsRequested": "{count, plural, one {# item aangevraagd} other {# items aangevraagd}}",
     "noData": "Geen openstaande offerteaanvragen.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Offerteaanvraag negeren"
   },
   "quoteResponses": {
     "title": "Offerte-reacties van klanten",
@@ -120,11 +120,11 @@
     "accepted": "Geaccepteerd",
     "changesRequested": "Wijzigingen aangevraagd",
     "convertToWorkOrder": "Omzetten naar werkorder",
-    "convert": "Convert",
+    "convert": "Omzetten",
     "viewQuote": "Offerte bekijken",
-    "view": "View",
+    "view": "Bekijken",
     "noData": "Geen klantreacties.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Reactie negeren"
   },
   "recentCompleted": {
     "title": "Recent afgerond",

@@ -27,7 +27,7 @@
     "batchDeleteTitle": "Klanten verwijderen",
     "batchDeleteDescription": "{count} klant(en) verwijderen? Hun voertuigen worden ontkoppeld.",
     "batchDeleteSuccess": "{count} klant(en) verwijderd",
-    "openMenu": "Open menu"
+    "openMenu": "Menu openen"
   },
   "detail": {
     "backToCustomers": "Terug naar klanten",
@@ -54,7 +54,7 @@
       "vehicle": "Voertuig",
       "mileage": "Kilometerstand",
       "mileageMarine": "Motoruren",
-      "services": "Services"
+      "services": "Onderhoudsbeurten"
     },
     "documentTable": {
       "invoiceNumber": "Factuurnr.",
@@ -95,8 +95,8 @@
     "customerCreated": "Klant aangemaakt",
     "saveError": "Opslaan van klant mislukt",
     "customerNumber": "Klantnr.",
-    "customerNumberAuto": "Auto",
-    "sectionContact": "Contact",
+    "customerNumberAuto": "Automatisch",
+    "sectionContact": "Contactgegevens",
     "sectionBilling": "Facturatie",
     "addScannedVehicle": "Voertuig {vehicle} toevoegen",
     "invoiceDesign": "Factuurontwerp",

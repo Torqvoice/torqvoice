@@ -1,0 +1,30 @@
+{
+  "inbox": {
+    "title": "Conversas",
+    "searchPlaceholder": "Pesquisar conversas",
+    "noSearchResults": "Nenhuma conversa corresponde à sua pesquisa.",
+    "empty": "Ainda não há conversas.",
+    "selectConversation": "Escolha uma conversa",
+    "back": "Voltar",
+    "newMessage": "Nova mensagem",
+    "unknownContact": "Este número ainda não pertence a nenhum cliente. Registe-o como cliente para responder.",
+    "noChannelsTitle": "Nenhum canal de mensagens configurado",
+    "noChannelsHint": "Ligue o SMS, o WhatsApp ou o Telegram para escrever aos seus clientes a partir daqui.",
+    "goToProviders": "Configurar um fornecedor",
+    "chooseChannel": {
+      "title": "Enviar por que canal?",
+      "description": "Tem mais do que uma forma de contactar os seus clientes."
+    },
+    "deleteConversation": "Eliminar conversa",
+    "deleteTitle": "Eliminar esta conversa?",
+    "deleteDescription": "Remove a sua cópia da conversa com {name}. As mensagens continuam no telemóvel do cliente.",
+    "deleteFailed": "Não foi possível eliminar a conversa",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "loadMore": "Carregar mais",
+    "unread": "{count} por ler",
+    "markUnread": "Marcar como não lida",
+    "nothingToMarkUnread": "O cliente ainda não escreveu nesta conversa.",
+    "markUnreadFailed": "Não foi possível marcar a conversa como não lida."
+  }
+}

@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Telegram botu & mesajlaşma"
       },
       "customerPortal": {
         "title": "Müşteri Portalı",
@@ -96,7 +96,7 @@
         "description": "Takvimler, görüntülü görüşmeler ve bağlı servisler"
       },
       "webhooks": {
-        "title": "Webhooks",
+        "title": "Webhook'lar",
         "description": "Gerçek zamanlı olay bildirimleri"
       },
       "appearance": {
@@ -192,7 +192,7 @@
     "serviceTypeDescription": "Atölyenizin sunduğu hizmet türünü seçin. Bu, uygulama genelinde alan etiketlerini değiştirir.",
     "automotive": "Otomotiv",
     "automotiveDescription": "Arabalar, kamyonlar ve diğer kara taşıtları",
-    "marineService": "Marine",
+    "marineService": "Denizcilik",
     "marineServiceDescription": "Tekneler, yatlar ve deniz taşıtları"
   },
   "account": {
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Üye kaldırılamadı",
     "memberRoleUpdated": "Üye rolü güncellendi",
     "failedUpdateRole": "Rol güncellenemedi",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Üyeyi çıkar",
+    "cancelInvite": "Daveti iptal et",
+    "editRole": "Rolü düzenle",
     "technician": "Teknisyen",
     "technicianHint": "İş atanabilir ve teknisyen uygulamasını kullanabilir",
     "technicianFailed": "Değiştirilemedi",
@@ -648,7 +648,7 @@
       "bank_account": "Banka hesabı",
       "footer": "Alt bilgi",
       "general": "Genel",
-      "telegram_qr": "Telegram QR"
+      "telegram_qr": "Telegram QR kodu"
     },
     "fields": {
       "customer_name": "Müşteri adı",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Özel alan silindi",
     "failedSave": "Alan kaydedilemedi",
     "failedDelete": "Silinemedi",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Düzenle",
+    "delete": "Sil",
     "unassigned": "Atanmadı",
     "defaultValue": "Varsayılan değer",
     "defaultValueHint": "Yeni kayıtlarda otomatik doldurulur ve bir değer girilene kadar yazdırılır.",
@@ -1370,7 +1370,7 @@
         "sand": "Kum"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Portal URL'sini kopyala"
   },
   "email": {
     "title": "E-posta Sağlayıcısı",
@@ -1432,7 +1432,7 @@
     "authToken": "Kimlik Doğrulama Jetonu",
     "apiKey": "API Anahtarı",
     "apiSecret": "API Gizli Anahtarı",
-    "webhookUrl": "Webhook URL",
+    "webhookUrl": "Webhook URL'si",
     "webhookUrlHint": "Gelen SMS mesajlarını almak için bu URL'yi {provider} panonuzda yapılandırın.",
     "webhookCopied": "Webhook URL kopyalandı",
     "testPhoneNumber": "Test Telefon Numarası",
@@ -1446,7 +1446,7 @@
     "failedSave": "Ayarlar kaydedilemedi",
     "testSentTo": "Test SMS {phone} numarasına gönderildi",
     "testFailed": "SMS testi başarısız",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Webhook URL'sini kopyala"
   },
   "subscription": {
     "title": "Abonelik Planı",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Abonelik başarıyla sürdürüldü",
     "resumeError": "Abonelik sürdürülemedi",
     "billingPortalError": "Fatura portalı açılamadı",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Ödeme başlatılamadı",
     "upgradeTitle": "Planı Yükselt",
     "upgradeDescription": "Planınızı yükselterek daha fazla özelliğin kilidini açın.",
     "upgradeToProDescription": "Sınırsız müşteri, ekip üyesi, rapor, SMTP, API erişimi ve daha fazlasının kilidini açmak için yükseltin.",
@@ -1557,7 +1557,7 @@
     "biweekly": "2 haftada bir",
     "monthly": "Aylık",
     "bimonthly": "2 ayda bir",
-    "quarterly": "4 ayda bir",
+    "quarterly": "3 ayda bir",
     "semiannually": "6 ayda bir",
     "yearly": "Yıllık",
     "dateRangeLabel": "Dönem",
@@ -1596,10 +1596,10 @@
     "deleted": "Rapor zamanlaması silindi",
     "toggledOn": "Rapor zamanlaması etkinleştirildi",
     "toggledOff": "Rapor zamanlaması devre dışı bırakıldı",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Kaydedilemedi",
+    "failedSend": "Gönderilemedi",
+    "failedToggle": "Değiştirilemedi",
+    "failedDelete": "Silinemedi",
     "noMembers": "Ekip üyesi bulunamadı",
     "addRecipient": "Alıcı ekle...",
     "searchMembers": "Üye ara...",
@@ -1626,7 +1626,7 @@
     }
   },
   "webhooks": {
-    "title": "Webhooks",
+    "title": "Webhook'lar",
     "subtitle": "HTTPS üzerinden kendi sistemlerinize gerçek zamanlı olay bildirimleri gönderin. Her olay HMAC-SHA256 ile imzalanır, böylece gerçekliği doğrulayabilirsiniz.",
     "create": "Webhook ekle",
     "createTitle": "Webhook ekle",
@@ -1696,7 +1696,7 @@
     "helpIntro": "Her teslimat HMAC-SHA256 imzası içerir, böylece isteğin Torqvoice'tan geldiğini onaylayabilirsiniz.",
     "helpHeadersTitle": "Her istekle gönderilen başlıklar",
     "helpVerify": "İmzalanmış dizeyi `[timestamp].[body]` olarak yeniden oluşturun ve zamana karşı güvenli eşitlikle karşılaştırın:",
-    "tabWebhooks": "Webhooks",
+    "tabWebhooks": "Webhook'lar",
     "tabReference": "Olay referansı",
     "autoDisabled": "Otomatik duraklatıldı",
     "autoDisabledBanner": "Bu webhook 20 ardışık başarısızlıktan sonra otomatik olarak duraklatıldı. Teslimatları sürdürmek için yeniden etkinleştirin.",

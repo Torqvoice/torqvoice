@@ -40,19 +40,19 @@
       "conference": "Vaizdo skambučių nuorodos"
     },
     "sms": {
-      "send": "Text messages out",
-      "receive": "Replies back in"
+      "send": "Siunčiamos SMS žinutės",
+      "receive": "Gaunami atsakymai"
     },
     "whatsapp": {
-      "send": "WhatsApp messages out",
-      "receive": "Replies back in"
+      "send": "Siunčiamos WhatsApp žinutės",
+      "receive": "Gaunami atsakymai"
     },
     "telegram": {
-      "send": "Telegram messages out",
-      "receive": "Replies back in"
+      "send": "Siunčiamos Telegram žinutės",
+      "receive": "Gaunami atsakymai"
     },
     "email": {
-      "send": "Email out"
+      "send": "Siunčiami el. laiškai"
     },
     "vehicle": {
       "lookup": "Paieška pagal numerį ir VIN",
@@ -131,19 +131,19 @@
     "lockedAi": "Prijunkite DI paslaugų teikėją, kad galėtumėte naudoti DI funkcijas savo dirbtuvėse.",
     "ownAppTitle": "Šis diegimas naudoja jūsų pačių programą pas tiekėją",
     "redirectUri": "Nukreipimo URI, kurį reikia užregistruoti pas tiekėją:",
-    "sendTestEmail": "Send test email",
-    "testEmailSent": "Test email sent to {email}",
-    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
-    "inboundUrl": "Inbound webhook URL",
-    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
-    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "sendTestEmail": "Siųsti bandomąjį laišką",
+    "testEmailSent": "Bandomasis laiškas išsiųstas adresu {email}",
+    "testEmailHint": "Bandomasis laiškas per šį tiekėją išsiunčiamas jūsų pačių adresu. Taip patikrinamas siuntėjo adresas ir siuntimo taisyklės, ko rakto patikra padaryti negali.",
+    "inboundUrl": "Gaunamųjų žinučių webhook URL",
+    "inboundHintSecret": "Įklijuokite šį URL tiekėjo gaunamųjų žinučių nustatymuose. Jame yra paslaptis, identifikuojanti jūsų dirbtuves, todėl niekam jo nerodykite.",
+    "inboundHintMeta": "Įklijuokite šį URL kaip atgalinio iškvietimo URL savo Meta programoje kartu su aukščiau įvestu patvirtinimo žetonu ir užsiprenumeruokite žinutes (messages).",
     "inboundHintStripe": "Pridėkite šį URL Stripe valdymo skydelyje, skiltyje Developers, Webhooks, prenumeruodami checkout.session.completed. Tada įklijuokite Stripe rodomą parašo paslaptį į webhook paslapties lauką čia, kad pranešimus būtų galima patikrinti.",
     "inboundHintVipps": "Įveskite šį URL kaip atgalinio iškvietimo URL Vipps MobilePay portale. Vipps taip pat reikalauja paskelbtų pardavimo sąlygų, kurios nustatomos skiltyje Nustatymai, Mokėjimas.",
     "inboundHintPaypal": "Pridėkite šį URL PayPal kūrėjų skydelyje, skiltyje Webhooks, prenumeruodami PAYMENT.CAPTURE.COMPLETED.",
-    "copy": "Copy",
-    "copied": "Copied",
-    "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "copy": "Kopijuoti",
+    "copied": "Nukopijuota",
+    "updateKeys": "Atnaujinti raktus",
+    "updateKeysHint": "Paskutinė patikra nepavyko. Įveskite raktus dar kartą ir bandykite iš naujo.",
     "inspectionSync": {
       "title": "Apžiūrų sinchronizavimas",
       "vehicles": "{count} transporto priemonės su numeriu šiose dirbtuvėse",
@@ -256,155 +256,155 @@
       }
     },
     "twilio-sms": {
-      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "description": "Siųskite ir gaukite SMS žinutes per Twilio numerį. Priminimai, pranešimai, kad automobilį galima atsiimti, ir gauti atsakymai.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token"
+        "authToken": "Autentifikavimo žetonas (Auth token)"
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Siųsti iš šio numerio"
       }
     },
     "vonage-sms": {
-      "description": "Send and receive text messages through a Vonage number.",
+      "description": "Siųskite ir gaukite SMS žinutes per Vonage numerį.",
       "fields": {
-        "apiKey": "API key",
-        "apiSecret": "API secret",
-        "signatureSecret": "Signature secret",
-        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API raktas",
+        "apiSecret": "API slaptas raktas",
+        "signatureSecret": "Parašo paslaptis",
+        "signatureSecretHelp": "Iš Vonage valdymo skydelio, skilties API settings. Kai nustatyta, gaunamos žinutės priimamos tik tada, jei jas pasirašė Vonage. Be jos tikrinama tik webhook URL esanti paslaptis."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Siųsti iš šio numerio"
       }
     },
     "telnyx-sms": {
-      "description": "Send and receive text messages through a Telnyx number.",
+      "description": "Siųskite ir gaukite SMS žinutes per Telnyx numerį.",
       "fields": {
-        "apiKey": "API key",
-        "webhookPublicKey": "Webhook public key",
-        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API raktas",
+        "webhookPublicKey": "Webhook viešasis raktas",
+        "webhookPublicKeyHelp": "Iš Telnyx portalo, skilties Account settings, Keys and credentials, Public key. Kai nustatyta, gaunamos žinutės priimamos tik tada, jei jas pasirašė Telnyx. Be jo tikrinama tik webhook URL esanti paslaptis."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Siųsti iš šio numerio"
       }
     },
     "whatsapp-meta": {
-      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "description": "Rašykite klientams WhatsApp tiesiogiai per Meta. Nuotraukos to, ką radote, ir po jų vykstantis pokalbis.",
       "fields": {
-        "phoneNumberId": "Phone number ID",
-        "accessToken": "Access token",
-        "verifyToken": "Webhook verify token",
-        "appSecret": "App secret",
-        "apiVersion": "Graph API version",
-        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers."
+        "phoneNumberId": "Telefono numerio ID",
+        "accessToken": "Prieigos žetonas",
+        "verifyToken": "Webhook patvirtinimo žetonas",
+        "appSecret": "Programos paslaptis",
+        "apiVersion": "Graph API versija",
+        "appSecretHelp": "Meta ja pasirašo kiekvieną pristatymą. Kol ji neįvesta, į webhook siunčiamos žinutės atmetamos, nes kitaip bet kas, sužinojęs URL, galėtų rašyti jūsų klientų vardu."
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Siųsti žinutes šiuo kanalu",
+        "phoneNumber": "Siųsti iš šio numerio",
+        "templateName": "Šablonas pokalbiui atnaujinti",
+        "templateLanguage": "Šablono kalba",
+        "templateVariables": "Šablono reikšmės iš eilės",
+        "mediaTemplateName": "Šablonas žinutei su nuotrauka",
+        "mediaTemplateLanguage": "Nuotraukos šablono kalba",
+        "mediaTemplateVariables": "Nuotraukos šablono reikšmės iš eilės"
       }
     },
     "whatsapp-twilio": {
-      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "description": "Rašykite klientams WhatsApp per Twilio numerį, jei numerį jums pardavė Twilio.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token",
-        "messagingServiceSid": "Messaging service SID"
+        "authToken": "Autentifikavimo žetonas (Auth token)",
+        "messagingServiceSid": "Pranešimų paslaugos SID (Messaging service SID)"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Siųsti žinutes šiuo kanalu",
+        "phoneNumber": "Siųsti iš šio numerio",
+        "templateName": "Šablonas pokalbiui atnaujinti",
+        "templateLanguage": "Šablono kalba",
+        "templateVariables": "Šablono reikšmės iš eilės",
+        "mediaTemplateName": "Šablonas žinutei su nuotrauka",
+        "mediaTemplateLanguage": "Nuotraukos šablono kalba",
+        "mediaTemplateVariables": "Nuotraukos šablono reikšmės iš eilės"
       }
     },
     "telegram": {
-      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "description": "Telegram botas, pasiekiantis juo besinaudojančius klientus ir perkeliantis jų atsakymus į gautuosius.",
       "fields": {
-        "botToken": "Bot token"
+        "botToken": "Boto žetonas"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "botUsername": "Bot username"
+        "enabled": "Siųsti žinutes šiuo kanalu",
+        "botUsername": "Boto naudotojo vardas"
       }
     },
     "smtp": {
-      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "description": "Siųskite sąskaitas ir priminimus per savo pašto serverį, o ne per platformos paštą.",
       "fields": {
-        "host": "Server",
-        "port": "Port",
-        "user": "Username",
-        "pass": "Password"
+        "host": "Serveris",
+        "port": "Prievadas",
+        "user": "Naudotojo vardas",
+        "pass": "Slaptažodis"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "secure": "Connect over TLS from the start",
-        "requireTls": "Require the server to upgrade to TLS",
-        "rejectUnauthorized": "Reject a certificate that does not check out"
+        "fromEmail": "Siųsti iš šio adreso",
+        "fromName": "Siuntėjo rodomas vardas",
+        "secure": "Jungtis per TLS nuo pat pradžių",
+        "requireTls": "Reikalauti, kad serveris pereitų prie TLS",
+        "rejectUnauthorized": "Atmesti nepatikimą sertifikatą"
       }
     },
     "resend": {
-      "description": "Send invoices and reminders through Resend.",
+      "description": "Siųskite sąskaitas ir priminimus per Resend.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API raktas"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Siųsti iš šio adreso",
+        "fromName": "Siuntėjo rodomas vardas"
       }
     },
     "postmark": {
-      "description": "Send invoices and reminders through Postmark.",
+      "description": "Siųskite sąskaitas ir priminimus per Postmark.",
       "fields": {
-        "apiKey": "Server token"
+        "apiKey": "Serverio žetonas"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Siųsti iš šio adreso",
+        "fromName": "Siuntėjo rodomas vardas"
       }
     },
     "mailgun": {
-      "description": "Send invoices and reminders through Mailgun.",
+      "description": "Siųskite sąskaitas ir priminimus per Mailgun.",
       "fields": {
-        "apiKey": "API key",
-        "domain": "Sending domain"
+        "apiKey": "API raktas",
+        "domain": "Siuntimo domenas"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "region": "Region the domain is in"
+        "fromEmail": "Siųsti iš šio adreso",
+        "fromName": "Siuntėjo rodomas vardas",
+        "region": "Regionas, kuriame yra domenas"
       }
     },
     "sendgrid": {
-      "description": "Send invoices and reminders through SendGrid.",
+      "description": "Siųskite sąskaitas ir priminimus per SendGrid.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API raktas"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Siųsti iš šio adreso",
+        "fromName": "Siuntėjo rodomas vardas"
       }
     },
     "amazon-ses": {
-      "description": "Send invoices and reminders through Amazon SES.",
+      "description": "Siųskite sąskaitas ir priminimus per Amazon SES.",
       "fields": {
-        "accessKeyId": "Access key ID",
-        "secretAccessKey": "Secret access key",
-        "region": "Region"
+        "accessKeyId": "Prieigos rakto ID",
+        "secretAccessKey": "Slaptasis prieigos raktas",
+        "region": "Regionas"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Siųsti iš šio adreso",
+        "fromName": "Siuntėjo rodomas vardas"
       }
     },
     "vegvesen": {

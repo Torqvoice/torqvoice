@@ -14,7 +14,7 @@
     "createAndSend": "Создать и отправить",
     "cancel": "Отмена",
     "uploadFailed": "Не удалось загрузить видео",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Не удалось создать отчёт о состоянии",
     "created": "Отчёт о состоянии создан",
     "noVideo": "Сначала загрузите видео",
     "removeVideo": "Удалить видео",

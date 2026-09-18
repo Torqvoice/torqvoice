@@ -80,10 +80,10 @@
   },
   "selectVehicle": "Wybierz pojazd do zlecenia",
   "dateChoice": {
-    "title": "Work Order Date",
-    "description": "You have {selectedDate} selected. Which date should this work order be for?",
-    "useSelected": "Use {date}",
-    "useToday": "Use today"
+    "title": "Data zlecenia",
+    "description": "Zaznaczono {selectedDate}. Na którą datę ma być to zlecenie?",
+    "useSelected": "Użyj {date}",
+    "useToday": "Użyj dzisiejszej"
   },
   "more": "+ {count} więcej",
   "monthTotal": "Wydarzenia: {count}",
@@ -144,6 +144,6 @@
       "readOnly": "Zajęty czas z połączonego kalendarza. Zmień go tam, a tutaj zaktualizuje się przy następnej synchronizacji."
     }
   },
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "previousMonth": "Poprzedni miesiąc",
+  "nextMonth": "Następny miesiąc"
 }

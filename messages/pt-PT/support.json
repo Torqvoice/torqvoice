@@ -1,0 +1,33 @@
+{
+  "title": "Pedido de suporte",
+  "open": "Contactar o suporte",
+  "close": "Fechar",
+  "subjectLabel": "Assunto",
+  "subjectPlaceholder": "Breve resumo do problema",
+  "messageLabel": "Descrição",
+  "messagePlaceholder": "O que aconteceu e o que esperava que acontecesse?",
+  "takeScreenshot": "Capturar ecrã",
+  "addFiles": "Adicionar ficheiros",
+  "removeAttachment": "Remover anexo",
+  "attachmentSummary": "{count} de {max} anexos · {size} MB",
+  "send": "Enviar pedido",
+  "sending": "A enviar…",
+  "sentTitle": "Pedido enviado",
+  "sentDescription": "Responderemos para o endereço de e-mail associado à sua conta.",
+  "sendAnother": "Enviar outro",
+  "hideButton": "Ocultar o botão de suporte",
+  "dragHint": "Arraste para mover",
+  "move": "Mover",
+  "restore": "Mostrar o botão de suporte",
+  "errors": {
+    "sendFailed": "Não foi possível enviar o pedido. Tente novamente.",
+    "screenshotFailed": "Não foi possível capturar o ecrã.",
+    "subject-required": "Adicione um assunto.",
+    "subject-too-long": "O assunto é demasiado longo.",
+    "message-required": "Adicione uma descrição.",
+    "message-too-long": "A descrição é demasiado longa.",
+    "too-many-attachments": "Pode anexar até {max} ficheiros.",
+    "attachment-type-not-allowed": "Esse tipo de ficheiro não pode ser anexado.",
+    "attachments-too-large": "Os anexos são demasiado grandes. O limite total é de 10 MB."
+  }
+}

@@ -85,7 +85,7 @@
     "failedDelete": "Löschen fehlgeschlagen",
     "processed": "{count} Rechnung(en) verarbeitet",
     "failedProcess": "Verarbeitung fehlgeschlagen",
-    "pause": "Pause",
+    "pause": "Pausieren",
     "resume": "Fortsetzen",
     "delete": "Löschen",
     "removeRow": "Zeile entfernen"

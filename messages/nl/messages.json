@@ -30,8 +30,8 @@
     "deleteDescription": "Alle berichten met {name} worden permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
     "deleted": "Gesprek verwijderd",
     "deleteError": "Gesprek kon niet worden verwijderd",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Terug",
+    "conversationMenu": "Gespreksmenu",
     "searchPlaceholder": "Gesprekken zoeken",
     "noSearchResults": "Geen gesprekken gevonden",
     "now": "nu"
@@ -47,7 +47,7 @@
     "messageDeleted": "Bericht verwijderd",
     "deleteError": "Bericht kon niet worden verwijderd",
     "sendError": "SMS kon niet worden verzonden",
-    "sendMessage": "Send message"
+    "sendMessage": "Bericht versturen"
   },
   "sendDialog": {
     "send": "{label} verzenden",

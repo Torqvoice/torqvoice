@@ -34,8 +34,8 @@
     "total": "Toplam",
     "labor": "İşçilik",
     "hours": "Saat",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "sa",
+    "unit": "birim",
     "qtyOrHours": "Birim / Saat",
     "rate": "Ücret",
     "ratePerHour": "{rate}/sa",
@@ -93,8 +93,8 @@
     "labor": "İşçilik",
     "laborDescription": "Açıklama",
     "hours": "Saat",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "sa",
+    "unit": "birim",
     "qtyOrHours": "Birim / Saat",
     "rate": "Ücret",
     "ratePerHour": "{rate}/sa",
@@ -200,7 +200,7 @@
     "privacyNotice": "Bu rapor, muayeneyi yapan servis tarafından sizinle paylaşılmıştır. Bu bağlantıya sahip herkes raporu görebilir, lütfen iletmeyin. Bağlantının geri çekilmesi veya verilerinizin silinmesi için servisle iletişime geçin."
   },
   "terms": {
-    "title": "Satış Koşulları (Salgsvilkår)",
+    "title": "Satış Koşulları",
     "contact": "İletişim",
     "tel": "Tel: {phone}"
   },

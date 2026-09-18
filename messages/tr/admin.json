@@ -97,7 +97,7 @@
     "requireTlsUpgrade": "TLS Yükseltmesi Gerektir",
     "requireTlsUpgradeHint": "STARTTLS bağlantılarında TLS yükseltmesini zorla",
     "apiKey": "API Anahtarı",
-    "serverToken": "Server Token",
+    "serverToken": "Sunucu Jetonu",
     "domain": "Alan Adı",
     "region": "Bölge",
     "awsRegion": "AWS Bölgesi",
@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "API anahtarınızı app.sendgrid.com adresinden alın"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Menüyü aç"
   },
   "userDetails": {
     "back": "Kullanıcılara dön",

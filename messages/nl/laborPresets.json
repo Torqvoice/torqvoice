@@ -4,10 +4,10 @@
   "table": {
     "name": "Naam",
     "description": "Beschrijving",
-    "itemCount": "Items",
+    "itemCount": "Posten",
     "type": "Type",
-    "hrs": "hrs",
-    "units": "unit(s)"
+    "hrs": "u",
+    "units": "eenh."
   },
   "empty": {
     "noMatch": "Geen sjablonen komen overeen met uw zoekopdracht.",
@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Bewerken",
     "delete": "Verwijderen",
-    "openMenu": "Open menu"
+    "openMenu": "Menu openen"
   },
   "deletePreset": {
     "title": "Arbeidssjabloon verwijderen",
@@ -44,7 +44,7 @@
     "create": "Aanmaken",
     "saveChanges": "Wijzigingen opslaan",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQtyOrHours": "Eenheid / Uren",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Onderdelen",
@@ -61,9 +61,9 @@
     "title": "Arbeidssjabloon selecteren",
     "search": "Sjablonen zoeken...",
     "noPackages": "Geen arbeidssjablonen gevonden.",
-    "items": "{count} items",
+    "items": "{count} posten",
     "totalHours": "{hours}u totaal",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} eenh.",
     "totalParts": "{count} onderdelen"
   },
   "errors": {

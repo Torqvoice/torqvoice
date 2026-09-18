@@ -34,7 +34,7 @@
       "total": "Итого"
     },
     "emailSubject": "Обновление статуса транспортного средства: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Изменить статус",
     "contextMenu": {
       "open": "Открыть заказ-наряд",
       "openVehicle": "Открыть автомобиль",

@@ -28,10 +28,10 @@
     "unarchiveError": "Не удалось разархивировать транспортное средство",
     "deleteError": "Не удалось удалить транспортное средство",
     "error": "Не удалось загрузить транспортные средства",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Таблица",
+    "viewGrid": "Сетка",
+    "viewLargeGrid": "Крупная сетка",
+    "openMenu": "Открыть меню",
     "inspectionOverdue": "Техосмотр просрочен",
     "inspectionDue30": "В течение 30 дней",
     "inspectionDue90": "В течение 90 дней",
@@ -95,8 +95,8 @@
     "severityModerate": "Умеренно — отмечено некоторыми владельцами",
     "severityUncommon": "Нечасто — отмечено немногими владельцами",
     "severityRare": "Редко — единичные случаи, но критично при возникновении",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Открыть меню",
+    "dismissMaintenance": "Отклонить",
     "inspectionDue": "Техосмотр до {date}",
     "inspectionCheckedAt": "Проверено в реестре {date}",
     "notRegistered": "Не зарегистрирован",
@@ -184,10 +184,10 @@
     "showing": "Показано {start}-{end} из {total}",
     "perPage": "на странице",
     "page": "Страница {page} из {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница"
   },
   "notes": {
     "addNote": "Добавить заметку",
@@ -213,11 +213,11 @@
     "noteCreated": "Заметка создана",
     "titleRequired": "Название и содержание обязательны",
     "saveError": "Не удалось сохранить заметку",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Открыть меню",
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница"
   },
   "findings": {
     "sectionTitle": "Наблюдения",
@@ -266,11 +266,11 @@
     "showing": "Показано {start}-{end} из {total}",
     "perPage": "на странице",
     "page": "Страница {page} из {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница",
+    "openMenu": "Открыть меню",
     "concernLabel": "К какому пункту относится?",
     "concernNone": "Клиент об этом не спрашивал"
   },
@@ -373,10 +373,10 @@
     "archiveError": "Не удалось архивировать транспортное средство"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница"
   },
   "inspectionReminders": {
     "title": "Напоминания о техосмотре",

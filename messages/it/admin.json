@@ -97,7 +97,7 @@
     "requireTlsUpgrade": "Richiedi aggiornamento TLS",
     "requireTlsUpgradeHint": "Forza l'aggiornamento TLS sulle connessioni STARTTLS",
     "apiKey": "Chiave API",
-    "serverToken": "Server Token",
+    "serverToken": "Token del server",
     "domain": "Dominio",
     "region": "Regione",
     "awsRegion": "Regione AWS",
@@ -117,7 +117,7 @@
     "sendgridApiKeyHint": "Ottieni la tua chiave API da app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Apri menu"
   },
   "userDetails": {
     "back": "Torna agli utenti",

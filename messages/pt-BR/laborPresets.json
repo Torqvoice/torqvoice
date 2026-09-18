@@ -6,7 +6,7 @@
     "description": "Descrição",
     "itemCount": "Itens",
     "type": "Tipo",
-    "hrs": "hrs",
+    "hrs": "h",
     "units": "unidade(s)"
   },
   "empty": {
@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Editar",
     "delete": "Excluir",
-    "openMenu": "Open menu"
+    "openMenu": "Abrir menu"
   },
   "deletePreset": {
     "title": "Excluir modelo de mão de obra",
@@ -41,10 +41,10 @@
     "itemDescriptionPlaceholder": "Descrição *",
     "addItem": "Adicionar item",
     "cancel": "Cancelar",
-    "create": "Criar",
+    "create": "Criar pacote",
     "saveChanges": "Salvar alterações",
-    "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQty": "Qtd",
+    "itemQtyOrHours": "Unidade / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Peças",
@@ -63,7 +63,7 @@
     "noPackages": "Nenhum modelo de mão de obra encontrado.",
     "items": "{count} itens",
     "totalHours": "{hours}h no total",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} unidade(s)",
     "totalParts": "{count} peças"
   },
   "errors": {

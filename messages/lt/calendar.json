@@ -144,6 +144,6 @@
       "readOnly": "Užimtas laikas iš prijungto kalendoriaus. Keiskite jį ten, čia atsinaujins per kitą sinchronizaciją."
     }
   },
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "previousMonth": "Ankstesnis mėnuo",
+  "nextMonth": "Kitas mėnuo"
 }

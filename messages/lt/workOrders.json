@@ -34,7 +34,7 @@
       "total": "Suma"
     },
     "emailSubject": "Transporto priemonės būsenos atnaujinimas: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Keisti būseną",
     "contextMenu": {
       "open": "Atidaryti darbo užsakymą",
       "openVehicle": "Atidaryti transporto priemonę",

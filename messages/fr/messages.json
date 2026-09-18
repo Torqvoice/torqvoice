@@ -30,8 +30,8 @@
     "deleteDescription": "Tous les messages avec {name} seront définitivement supprimés. Cette action est irréversible.",
     "deleted": "Conversation supprimée",
     "deleteError": "Impossible de supprimer la conversation",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Retour",
+    "conversationMenu": "Menu de la conversation",
     "searchPlaceholder": "Rechercher des conversations",
     "noSearchResults": "Aucune conversation ne correspond à la recherche",
     "now": "maintenant"
@@ -47,7 +47,7 @@
     "messageDeleted": "Message supprimé",
     "deleteError": "Impossible de supprimer le message",
     "sendError": "Impossible d'envoyer le SMS",
-    "sendMessage": "Send message"
+    "sendMessage": "Envoyer le message"
   },
   "sendDialog": {
     "send": "Envoyer {label}",

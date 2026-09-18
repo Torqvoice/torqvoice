@@ -28,10 +28,10 @@
     "unarchiveError": "Araç arşivden çıkarılamadı",
     "deleteError": "Araç silinemedi",
     "error": "Araçlar yüklenemedi",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Tablo görünümü",
+    "viewGrid": "Izgara görünümü",
+    "viewLargeGrid": "Büyük ızgara görünümü",
+    "openMenu": "Menüyü aç",
     "inspectionOverdue": "Muayene gecikmiş",
     "inspectionDue30": "30 gün içinde",
     "inspectionDue90": "90 gün içinde",
@@ -95,8 +95,8 @@
     "severityModerate": "Orta düzey — bazı araç sahipleri tarafından bildirilmiş",
     "severityUncommon": "Nadir — az sayıda araç sahibi tarafından bildirilmiş",
     "severityRare": "Çok nadir — tek tük bildirimler ancak gerçekleştiğinde kritik",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Menüyü aç",
+    "dismissMaintenance": "Kapat",
     "inspectionDue": "Muayene {date}",
     "inspectionCheckedAt": "Sicilde {date} tarihinde kontrol edildi",
     "notRegistered": "Kayıtlı değil",
@@ -184,10 +184,10 @@
     "showing": "{start}-{end} / {total} gösteriliyor",
     "perPage": "sayfa başına",
     "page": "Sayfa {page} / {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa"
   },
   "notes": {
     "addNote": "Not Ekle",
@@ -213,11 +213,11 @@
     "noteCreated": "Not oluşturuldu",
     "titleRequired": "Başlık ve içerik gereklidir",
     "saveError": "Not kaydedilemedi",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Menüyü aç",
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa"
   },
   "findings": {
     "sectionTitle": "Gözlemler",
@@ -266,11 +266,11 @@
     "showing": "{start}-{end} / {total} gösteriliyor",
     "perPage": "sayfa başına",
     "page": "Sayfa {page} / {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa",
+    "openMenu": "Menüyü aç",
     "concernLabel": "Hangi maddeyi yanıtlıyor?",
     "concernNone": "Müşterinin sorduğu bir şey değil"
   },
@@ -373,10 +373,10 @@
     "archiveError": "Araç arşivlenemedi"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa"
   },
   "inspectionReminders": {
     "title": "Muayene hatırlatmaları",

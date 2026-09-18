@@ -14,7 +14,7 @@
     "createAndSend": "Aanmaken en verzenden",
     "cancel": "Annuleren",
     "uploadFailed": "Video uploaden mislukt",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Statusrapport aanmaken mislukt",
     "created": "Statusrapport aangemaakt",
     "noVideo": "Upload eerst een video",
     "removeVideo": "Video verwijderen",

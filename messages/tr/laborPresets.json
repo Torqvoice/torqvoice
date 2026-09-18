@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Düzenle",
     "delete": "Sil",
-    "openMenu": "Open menu"
+    "openMenu": "Menüyü aç"
   },
   "deletePreset": {
     "title": "İşçilik Şablonunu Sil",
@@ -44,7 +44,7 @@
     "create": "Oluştur",
     "saveChanges": "Değişiklikleri Kaydet",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQtyOrHours": "Birim / Saat",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Parçalar",
@@ -63,7 +63,7 @@
     "noPackages": "İşçilik şablonu bulunamadı.",
     "items": "{count} kalem",
     "totalHours": "toplam {hours}s",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} birim",
     "totalParts": "{count} parça"
   },
   "errors": {

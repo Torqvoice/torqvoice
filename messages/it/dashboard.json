@@ -74,8 +74,8 @@
     "noDismissed": "Nessun veicolo ignorato.",
     "dismissedOn": "Ignorato il {date}",
     "restore": "Ripristina",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Impostazioni manutenzione",
+    "dismissAriaLabel": "Ignora"
   },
   "reminders": {
     "title": "Promemoria in scadenza",
@@ -112,7 +112,7 @@
     "createQuote": "Crea preventivo",
     "itemsRequested": "{count, plural, one {# elemento richiesto} other {# elementi richiesti}}",
     "noData": "Nessuna richiesta di preventivo in sospeso.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Ignora richiesta di preventivo"
   },
   "quoteResponses": {
     "title": "Risposte ai preventivi dei clienti",
@@ -120,11 +120,11 @@
     "accepted": "Accettato",
     "changesRequested": "Modifiche richieste",
     "convertToWorkOrder": "Converti in ordine di lavoro",
-    "convert": "Convert",
+    "convert": "Converti",
     "viewQuote": "Visualizza preventivo",
-    "view": "View",
+    "view": "Visualizza",
     "noData": "Nessuna risposta dai clienti.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Ignora risposta"
   },
   "recentCompleted": {
     "title": "Completati di recente",
@@ -232,7 +232,7 @@
     "options": {
       "maintenance": "Manutenzione",
       "repair": "Riparazione",
-      "upgrade": "Upgrade",
+      "upgrade": "Aggiornamento",
       "inspection": "Ispezione",
       "pending": "In attesa",
       "in-progress": "In corso",

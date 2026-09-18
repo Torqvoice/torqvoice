@@ -65,7 +65,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Bot Telegram i wiadomości"
       },
       "customerPortal": {
         "title": "Portal klienta",
@@ -96,7 +96,7 @@
         "description": "Kalendarze, rozmowy wideo i połączone usługi"
       },
       "webhooks": {
-        "title": "Webhooks",
+        "title": "Webhooki",
         "description": "Powiadomienia o zdarzeniach w czasie rzeczywistym"
       },
       "appearance": {
@@ -192,7 +192,7 @@
     "serviceTypeDescription": "Wybierz typ usługi oferowanej przez Twój warsztat. Zmienia to etykiety pól w całej aplikacji.",
     "automotive": "Motoryzacja",
     "automotiveDescription": "Samochody, ciężarówki i inne pojazdy drogowe",
-    "marineService": "Marine",
+    "marineService": "Branża morska",
     "marineServiceDescription": "Łodzie, jachty i jednostki pływające"
   },
   "account": {
@@ -418,9 +418,9 @@
     "failedRemoveMember": "Nie udało się usunąć członka",
     "memberRoleUpdated": "Rola członka zaktualizowana",
     "failedUpdateRole": "Nie udało się zaktualizować roli",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Usuń członka",
+    "cancelInvite": "Anuluj zaproszenie",
+    "editRole": "Edytuj rolę",
     "technician": "Technik",
     "technicianHint": "Może otrzymywać zlecenia i korzystać z aplikacji technika",
     "technicianFailed": "Nie udało się zmienić",
@@ -1061,8 +1061,8 @@
     "fieldDeleted": "Pole niestandardowe usunięte",
     "failedSave": "Nie udało się zapisać pola",
     "failedDelete": "Nie udało się usunąć",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Edytuj",
+    "delete": "Usuń",
     "unassigned": "Nieprzypisane",
     "defaultValue": "Wartość domyślna",
     "defaultValueHint": "Wypełniana automatycznie w nowych wpisach i drukowana, dopóki nie wprowadzono wartości.",
@@ -1370,7 +1370,7 @@
         "sand": "Piasek"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Kopiuj adres URL portalu"
   },
   "email": {
     "title": "Dostawca poczty e-mail",
@@ -1446,7 +1446,7 @@
     "failedSave": "Nie udało się zapisać ustawień",
     "testSentTo": "Testowy SMS wyslany do {phone}",
     "testFailed": "Test SMS nie powiódł się",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Kopiuj URL webhooka"
   },
   "subscription": {
     "title": "Plan subskrypcji",
@@ -1497,7 +1497,7 @@
     "resumeSuccess": "Subskrypcja wznowiona pomyślnie",
     "resumeError": "Nie udało się wznowić subskrypcji",
     "billingPortalError": "Nie udało się otworzyć portalu rozliczeniowego",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Nie udało się rozpocząć płatności",
     "upgradeTitle": "Ulepsz plan",
     "upgradeDescription": "Odblokuj więcej funkcji, ulepszając swój plan.",
     "upgradeToProDescription": "Ulepsz, aby odblokować nieograniczoną liczbę klientów, członków zespołu, raportów, SMTP, dostęp API i więcej.",
@@ -1557,7 +1557,7 @@
     "biweekly": "Co 2 tygodnie",
     "monthly": "Co miesiąc",
     "bimonthly": "Co 2 miesiące",
-    "quarterly": "Co 4 miesiące",
+    "quarterly": "Co 3 miesiące",
     "semiannually": "Co 6 miesięcy",
     "yearly": "Rocznie",
     "dateRangeLabel": "Okres",
@@ -1596,10 +1596,10 @@
     "deleted": "Harmonogram raportów usunięty",
     "toggledOn": "Harmonogram raportów włączony",
     "toggledOff": "Harmonogram raportów wyłączony",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Nie udało się zapisać",
+    "failedSend": "Nie udało się wysłać",
+    "failedToggle": "Nie udało się przełączyć",
+    "failedDelete": "Nie udało się usunąć",
     "noMembers": "Nie znaleziono członków zespołu",
     "addRecipient": "Dodaj odbiorcę...",
     "searchMembers": "Szukaj członków...",
@@ -1626,7 +1626,7 @@
     }
   },
   "webhooks": {
-    "title": "Webhooks",
+    "title": "Webhooki",
     "subtitle": "Wysyłaj powiadomienia o zdarzeniach w czasie rzeczywistym do własnych systemów przez HTTPS. Każde zdarzenie jest podpisywane HMAC-SHA256, dzięki czemu możesz zweryfikować autentyczność.",
     "create": "Dodaj webhook",
     "createTitle": "Dodaj webhook",
@@ -1696,7 +1696,7 @@
     "helpIntro": "Każde dostarczenie zawiera podpis HMAC-SHA256, dzięki czemu możesz potwierdzić, że żądanie pochodzi z Torqvoice.",
     "helpHeadersTitle": "Nagłówki wysyłane z każdym żądaniem",
     "helpVerify": "Zbuduj podpisany ciąg jako `[timestamp].[body]` i porównaj z bezpiecznym czasowo równaniem:",
-    "tabWebhooks": "Webhooks",
+    "tabWebhooks": "Webhooki",
     "tabReference": "Dokumentacja zdarzeń",
     "autoDisabled": "Automatycznie wstrzymany",
     "autoDisabledBanner": "Ten webhook został automatycznie wstrzymany po 20 kolejnych niepowodzeniach. Włącz go ponownie, aby wznowić dostarczanie.",

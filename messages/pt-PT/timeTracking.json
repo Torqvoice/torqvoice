@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Relógio a contar em {job}",
+    "stop": "Parar o relógio",
+    "stopped": "{minutes} registados",
+    "switched": "Trabalho anterior parado aos {minutes}",
+    "startFailed": "Não foi possível iniciar o relógio",
+    "stopFailed": "Não foi possível parar o relógio"
+  },
+  "job": {
+    "title": "Tempo registado",
+    "running": "a contar",
+    "clockIn": "Registar entrada",
+    "clockOut": "Registar saída",
+    "switchHere": "Mudar para este trabalho",
+    "switchHint": "Para o relógio em {job} e inicia-o aqui",
+    "addAsLabor": "Adicionar {hours, number} h como mão de obra",
+    "addAsLaborHint": "Adiciona uma linha de mão de obra de {hours, number} horas ao preço predefinido. O tempo registado não é alterado.",
+    "laborDescription": "Mão de obra (tempo registado)",
+    "empty": "Ainda não há tempo registado neste trabalho. Os técnicos registam a entrada na aplicação ou em Os meus trabalhos ativos no painel.",
+    "showAll": "Mostrar mais {count}",
+    "showFewer": "Mostrar menos",
+    "openTimesheets": "Abrir folhas de horas"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manual",
+    "editedBy": "Ajustado por {name}"
+  },
+  "page": {
+    "title": "Folhas de horas",
+    "description": "Quem trabalhou e quando, segundo o relógio da oficina.",
+    "loadFailed": "Não foi possível carregar a folha de horas",
+    "presets": {
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "thisWeek": "Esta semana",
+      "lastWeek": "Semana passada",
+      "thisMonth": "Este mês",
+      "lastMonth": "Mês passado"
+    },
+    "customRange": "Período personalizado",
+    "apply": "Aplicar",
+    "allTechnicians": "Todos os técnicos",
+    "export": "Exportar CSV",
+    "addEntry": "Adicionar registo",
+    "stats": {
+      "total": "Tempo total",
+      "totalHint": "{days, plural, =1 {1 dia} other {# dias}} no período",
+      "technicians": "Técnicos com tempo",
+      "techniciansHint": "de {count} na equipa",
+      "running": "A trabalhar agora",
+      "runningHint": "em direto",
+      "average": "Média por dia ativo",
+      "averageHint": "em {days, plural, =1 {1 dia} other {# dias}} com tempo"
+    },
+    "nowStrip": {
+      "title": "A trabalhar agora",
+      "since": "desde as {time}",
+      "stop": "Parar"
+    },
+    "grid": {
+      "title": "Visão geral",
+      "description": "Horas por técnico e por dia. Clique numa célula para ir para esse dia.",
+      "technician": "Técnico",
+      "total": "Total",
+      "tooLong": "A visão geral mostra até 31 dias. Reduza o período para a ver."
+    },
+    "table": {
+      "time": "Hora",
+      "duration": "Duração",
+      "job": "Trabalho",
+      "vehicle": "Viatura",
+      "source": "Origem",
+      "note": "Nota",
+      "running": "A contar",
+      "dayTotal": "Total do dia",
+      "counterSale": "Venda ao balcão",
+      "edit": "Editar",
+      "stop": "Parar o relógio",
+      "delete": "Eliminar",
+      "actions": "Ações"
+    },
+    "empty": {
+      "title": "Nenhum tempo registado neste período",
+      "body": "Os técnicos registam a entrada na aplicação Torqvoice Technicians ou em Os meus trabalhos ativos no painel. Os registos aparecem aqui assim que um relógio é iniciado.",
+      "noTechnicians": "Ainda ninguém da equipa está configurado como técnico. Associe membros da equipa a técnicos em Definições, Equipa.",
+      "teamLink": "Abrir definições da equipa"
+    },
+    "deleteTitle": "Eliminar este registo?",
+    "deleteBody": "{duration} em {job} por {technician} será removido da folha de horas. Esta ação não pode ser anulada.",
+    "deleteConfirm": "Eliminar",
+    "deleted": "Registo eliminado",
+    "stoppedByManager": "Relógio parado aos {minutes}",
+    "csv": {
+      "technician": "Técnico",
+      "date": "Data",
+      "start": "Início",
+      "end": "Fim",
+      "duration": "Duração",
+      "hours": "Horas",
+      "job": "Trabalho",
+      "vehicle": "Viatura",
+      "plate": "Matrícula",
+      "source": "Origem",
+      "editedBy": "Ajustado por",
+      "note": "Nota"
+    },
+    "unlinked": "Sem conta",
+    "unlinkedHint": "Técnico só do quadro, não associado a um membro da equipa"
+  },
+  "dialog": {
+    "addTitle": "Adicionar registo de tempo",
+    "addDescription": "Tempo que um técnico trabalhou mas não registou. Fica marcado como introduzido manualmente.",
+    "editTitle": "Corrigir registo de tempo",
+    "editDescription": "O registo mantém o técnico e o trabalho. Fica registado quem o alterou.",
+    "technician": "Técnico",
+    "pickTechnician": "Escolha um técnico",
+    "job": "Ordem de serviço",
+    "pickJob": "Escolha uma ordem de serviço",
+    "searchJobs": "Pesquisar por título ou matrícula",
+    "searching": "A pesquisar…",
+    "noJobs": "Nenhuma ordem de serviço encontrada",
+    "start": "Início",
+    "end": "Fim",
+    "stillRunning": "Ainda a contar",
+    "leaveEndEmpty": "Deixe o fim vazio para manter o relógio a contar.",
+    "endBeforeStart": "O fim tem de ser posterior ao início.",
+    "duration": "Duração: {duration}",
+    "timesInWorkshopZone": "As horas seguem o relógio da oficina ({zone}).",
+    "note": "Nota",
+    "notePlaceholder": "Opcional. Porque foi adicionado ou alterado.",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "add": "Adicionar",
+    "added": "Registo adicionado",
+    "updated": "Registo atualizado",
+    "saveFailed": "Não foi possível guardar o registo"
+  }
+}

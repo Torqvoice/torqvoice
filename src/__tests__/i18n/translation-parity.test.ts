@@ -50,7 +50,7 @@ const referenceNamespaces = fs
 describe('translation parity', () => {
   it('discovers all expected locales', () => {
     expect(allLocales).toContain(REFERENCE_LOCALE)
-    expect(allLocales.length).toBeGreaterThanOrEqual(12)
+    expect(allLocales.length).toBeGreaterThanOrEqual(13)
   })
 
   describe.each(referenceNamespaces)('namespace %s', (namespace) => {

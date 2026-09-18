@@ -1,0 +1,100 @@
+{
+  "page": {
+    "error": "Não foi possível carregar as ordens de serviço"
+  },
+  "list": {
+    "searchPlaceholder": "Pesquisar ordens de serviço...",
+    "newWorkOrder": "Nova ordem de serviço",
+    "selectVehicle": "Selecionar viatura",
+    "empty": "Nenhuma ordem de serviço encontrada.",
+    "statusUpdated": "Estado atualizado",
+    "statusTabs": {
+      "all": "Todas",
+      "active": "Ativas",
+      "pending": "Pendentes",
+      "inProgress": "Em curso",
+      "waitingParts": "A aguardar peças",
+      "completed": "Concluídas"
+    },
+    "statusActions": {
+      "startWork": "Iniciar trabalho",
+      "waitingParts": "A aguardar peças",
+      "complete": "Concluir",
+      "resumeWork": "Retomar trabalho",
+      "reopen": "Reabrir"
+    },
+    "table": {
+      "invoice": "Fatura n.º",
+      "vehicle": "Viatura",
+      "customer": "Cliente",
+      "title": "Título",
+      "status": "Estado",
+      "tech": "Técnico",
+      "date": "Data",
+      "total": "Total"
+    },
+    "emailSubject": "Ponto de situação da sua viatura: {status}",
+    "changeStatus": "Alterar estado",
+    "contextMenu": {
+      "open": "Abrir ordem de serviço",
+      "openVehicle": "Abrir viatura",
+      "openCustomer": "Abrir cliente"
+    }
+  },
+  "vehiclePicker": {
+    "title": "Selecionar viatura para a ordem de serviço",
+    "titleMarine": "Selecionar embarcação para a ordem de serviço",
+    "searchPlaceholder": "Pesquisar viaturas...",
+    "searchPlaceholderMarine": "Pesquisar embarcações...",
+    "empty": "Nenhuma viatura encontrada.",
+    "emptyMarine": "Nenhuma embarcação encontrada.",
+    "emptySearch": "Nenhuma viatura corresponde à sua pesquisa.",
+    "emptySearchMarine": "Nenhuma embarcação corresponde à sua pesquisa.",
+    "addNewVehicle": "Adicionar nova viatura",
+    "addNewVehicleMarine": "Adicionar nova embarcação",
+    "noPlate": "Sem matrícula",
+    "noPlateMarine": "Sem registo",
+    "make": "Marca *",
+    "makeMarine": "Fabricante *",
+    "model": "Modelo *",
+    "year": "Ano *",
+    "licensePlate": "Matrícula",
+    "licensePlateMarine": "Número de registo",
+    "customer": "Cliente",
+    "selectCustomer": "Selecionar um cliente (opcional)",
+    "createNewCustomer": "Criar novo cliente",
+    "newCustomer": "Novo cliente",
+    "customerName": "Nome *",
+    "customerNamePlaceholder": "Nome do cliente",
+    "phone": "Telefone",
+    "phonePlaceholder": "Número de telefone",
+    "creating": "A criar...",
+    "createAndContinue": "Criar e continuar",
+    "invalidYear": "Introduza um ano válido",
+    "customerNameRequired": "O nome do cliente é obrigatório",
+    "failedCreateCustomer": "Não foi possível criar o cliente",
+    "failedCreateVehicle": "Não foi possível criar a viatura",
+    "failedCreateVehicleMarine": "Não foi possível criar a embarcação",
+    "somethingWentWrong": "Algo correu mal",
+    "partsSale": "Venda só de peças",
+    "partsSaleDescription": "Crie uma fatura sem viatura, para vendas de peças ao balcão.",
+    "partsSaleDescriptionMarine": "Crie uma fatura sem embarcação, para vendas de peças ao balcão.",
+    "createSale": "Criar venda",
+    "none": "Nenhuma"
+  },
+  "notify": {
+    "title": "Notificar {name}",
+    "description": "Enviar uma notificação ao cliente sobre esta atualização.",
+    "sms": "SMS",
+    "email": "E-mail",
+    "noPhone": "(sem telefone registado)",
+    "noEmail": "(sem e-mail registado)",
+    "notAvailable": "(não disponível)",
+    "skip": "Ignorar",
+    "send": "Enviar",
+    "smsSent": "SMS enviado",
+    "emailSent": "E-mail enviado",
+    "failedSms": "Não foi possível enviar o SMS",
+    "failedEmail": "Não foi possível enviar o e-mail"
+  }
+}

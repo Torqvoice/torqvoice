@@ -1,0 +1,17 @@
+{
+  "error": "Não foi possível carregar os lembretes",
+  "showing": "A mostrar {count} de {total}",
+  "deleted": "Lembrete eliminado",
+  "deleteError": "Não foi possível eliminar o lembrete",
+  "vehicle": "Viatura",
+  "selectVehicle": "Selecionar viatura...",
+  "searchVehicle": "Pesquisar viaturas...",
+  "noVehicle": "Nenhuma viatura encontrada.",
+  "pickDate": "Escolher uma data",
+  "openMenu": "Abrir menu",
+  "relatesTo": "Refere-se a (opcional)",
+  "selectCustomer": "Cliente (opcional)",
+  "noneOption": "Nenhum",
+  "workshopHint": "Nenhum cliente ou viatura selecionado: este é um lembrete geral da oficina.",
+  "workshopReminder": "Oficina"
+}

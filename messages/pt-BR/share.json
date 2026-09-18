@@ -34,8 +34,8 @@
     "total": "Total",
     "labor": "Mão de Obra",
     "hours": "Horas",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unid.",
     "qtyOrHours": "Unidade / Horas",
     "rate": "Taxa",
     "ratePerHour": "{rate}/h",
@@ -93,8 +93,8 @@
     "labor": "Mão de Obra",
     "laborDescription": "Descrição",
     "hours": "Horas",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unid.",
     "qtyOrHours": "Unidade / Horas",
     "rate": "Taxa",
     "ratePerHour": "{rate}/h",
@@ -146,7 +146,7 @@
     "quoteAvailableDescription": "Revise o orçamento para ver os preços e aprovar o trabalho recomendado.",
     "viewQuote": "Ver Orçamento",
     "quoteRequested": "Orçamento Solicitado",
-    "quoteRequestedCancel": "— Cancelar",
+    "quoteRequestedCancel": "· Cancelar",
     "requestQuote": "Solicitar Orçamento",
     "downloadPdf": "Baixar PDF",
     "notes": "Observações",
@@ -169,8 +169,8 @@
     "result": {
       "pass": "Aprovado",
       "pass_minor": "Aprovado com deficiências leves",
-      "fail": "Reprovado — deficiências graves",
-      "fail_dangerous": "Reprovado — deficiências perigosas",
+      "fail": "Reprovado: deficiências graves",
+      "fail_dangerous": "Reprovado: deficiências perigosas",
       "incomplete": "Não concluído"
     },
     "resultDetail": {
@@ -200,7 +200,7 @@
     "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados."
   },
   "terms": {
-    "title": "Termos de Venda (Salgsvilkår)",
+    "title": "Termos de Venda",
     "contact": "Contato",
     "tel": "Tel: {phone}"
   },

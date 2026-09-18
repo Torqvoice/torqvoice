@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Modifica",
     "delete": "Elimina",
-    "openMenu": "Open menu"
+    "openMenu": "Apri menu"
   },
   "deletePreset": {
     "title": "Elimina modello di manodopera",
@@ -43,8 +43,8 @@
     "cancel": "Annulla",
     "create": "Crea",
     "saveChanges": "Salva modifiche",
-    "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQty": "Qtà",
+    "itemQtyOrHours": "Unità / Ore",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Ricambi",
@@ -63,7 +63,7 @@
     "noPackages": "Nessun modello di manodopera trovato.",
     "items": "{count} voci",
     "totalHours": "{hours}h in totale",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} unità",
     "totalParts": "{count} ricambi"
   },
   "errors": {

@@ -9,6 +9,7 @@ import { useState, useCallback, useTransition, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
+import { fitColumnWidth } from '@/lib/table-utils'
 import {
   attentionClasses,
   quoteNeedsAttention,
@@ -174,6 +175,13 @@ export function QuotesClient({
     [navigate, sortBy, sortOrder]
   )
 
+  const numberLabel = t('list.columnQuoteNumber')
+  const numberColumnWidth = fitColumnWidth(
+    numberLabel,
+    data.records.map((q) => q.quoteNumber),
+    0.85
+  )
+
   const SortIcon = ({ column }: { column: string }) => {
     if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
     return sortOrder === 'asc' ? (
@@ -310,13 +318,13 @@ export function QuotesClient({
         <Table containerClassName="min-h-0 flex-1" className="table-fixed">
           <TableHeader sticky>
             <TableRow>
-              <TableHead className="w-25">
+              <TableHead style={{ width: numberColumnWidth }}>
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
                   onClick={() => handleSort('quoteNumber')}
                 >
-                  {t('list.columnQuoteNumber')}
+                  {numberLabel}
                   <SortIcon column="quoteNumber" />
                 </button>
               </TableHead>

@@ -80,10 +80,10 @@
   },
   "selectVehicle": "Selecionar veículo para ordem de serviço",
   "dateChoice": {
-    "title": "Work Order Date",
-    "description": "You have {selectedDate} selected. Which date should this work order be for?",
+    "title": "Data da ordem de serviço",
+    "description": "Você selecionou {selectedDate}. Para qual data deve ser esta ordem de serviço?",
     "useSelected": "Use {date}",
-    "useToday": "Use today"
+    "useToday": "Usar hoje"
   },
   "more": "+ {count} mais",
   "monthTotal": "{count} eventos",
@@ -144,6 +144,6 @@
       "readOnly": "Horário ocupado de uma agenda conectada. Altere lá e aqui atualiza na próxima sincronização."
     }
   },
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "previousMonth": "Mês anterior",
+  "nextMonth": "Próximo mês"
 }

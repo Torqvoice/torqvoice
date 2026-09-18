@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Этот счёт заблокирован, так как он уже отправлен",
+      "paid": "Этот счёт заблокирован, так как он уже оплачен"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Это предложение заблокировано, так как оно уже отправлено",
+      "accepted": "Это предложение заблокировано, так как оно уже принято"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Запчасти, работы, цены, скидку, налог, номер и дату больше нельзя изменить. Платежи, смена статуса, отправка и вложения по-прежнему работают.",
+  "lockedAdminHint": "Как владелец или администратор вы можете разблокировать документ, если что-то действительно нужно исправить. Разблокировка записывается в журнал аудита.",
+  "lockedMemberHint": "Попросите владельца или администратора разблокировать документ, если что-то нужно исправить.",
+  "unlock": "Разблокировать для редактирования",
+  "relock": "Заблокировать снова",
+  "unlockConfirmTitle": "Разблокировать этот документ?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Документ снова станет редактируемым, а изменение будет записано в журнал аудита с вашим именем. Если местные правила этого требуют, лучше выставьте корректировочный счёт.",
+    "quote": "Документ снова станет редактируемым, а изменение будет записано в журнал аудита с вашим именем."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Разблокировано для редактирования",
+  "relocked": "Снова заблокировано",
+  "reopenedTitle": "Этот документ разблокирован для редактирования",
+  "reopenedBody": "Он остаётся редактируемым, пока его снова не заблокируют.",
+  "failed": "Не удалось изменить блокировку"
 }

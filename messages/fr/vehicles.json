@@ -28,10 +28,10 @@
     "unarchiveError": "Échec de la désarchivation du véhicule",
     "deleteError": "Échec de la suppression du véhicule",
     "error": "Échec du chargement des véhicules",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Vue tableau",
+    "viewGrid": "Vue grille",
+    "viewLargeGrid": "Vue grande grille",
+    "openMenu": "Ouvrir le menu",
     "inspectionOverdue": "Contrôle en retard",
     "inspectionDue30": "Dans 30 jours",
     "inspectionDue90": "Dans 90 jours",
@@ -95,8 +95,8 @@
     "severityModerate": "Modéré — signalé par certains propriétaires",
     "severityUncommon": "Peu courant — signalé par peu de propriétaires",
     "severityRare": "Rare — signalements isolés mais critique lorsqu'il survient",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Ouvrir le menu",
+    "dismissMaintenance": "Ignorer",
     "inspectionDue": "Contrôle le {date}",
     "inspectionCheckedAt": "Vérifié auprès du registre le {date}",
     "notRegistered": "Non immatriculé",
@@ -184,10 +184,10 @@
     "showing": "Affichage de {start}-{end} sur {total}",
     "perPage": "par page",
     "page": "Page {page} sur {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Première page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "lastPage": "Dernière page"
   },
   "notes": {
     "addNote": "Ajouter une note",
@@ -213,11 +213,11 @@
     "noteCreated": "Note créée",
     "titleRequired": "Le titre et le contenu sont obligatoires",
     "saveError": "Échec de l'enregistrement de la note",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Ouvrir le menu",
+    "firstPage": "Première page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "lastPage": "Dernière page"
   },
   "findings": {
     "sectionTitle": "Observations",
@@ -266,11 +266,11 @@
     "showing": "Affichage de {start}-{end} sur {total}",
     "perPage": "par page",
     "page": "Page {page} sur {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Première page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "lastPage": "Dernière page",
+    "openMenu": "Ouvrir le menu",
     "concernLabel": "Répond à quel point ?",
     "concernNone": "Rien que le client ait signalé"
   },
@@ -373,10 +373,10 @@
     "archiveError": "Échec de l'archivage du véhicule"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Première page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "lastPage": "Dernière page"
   },
   "inspectionReminders": {
     "title": "Rappels de contrôle technique",

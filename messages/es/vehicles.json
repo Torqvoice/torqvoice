@@ -28,10 +28,10 @@
     "unarchiveError": "Error al desarchivar vehículo",
     "deleteError": "Error al eliminar vehículo",
     "error": "Error al cargar vehículos",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Vista de tabla",
+    "viewGrid": "Vista de cuadrícula",
+    "viewLargeGrid": "Vista de cuadrícula grande",
+    "openMenu": "Abrir menú",
     "inspectionOverdue": "ITV vencida",
     "inspectionDue30": "Vence en 30 días",
     "inspectionDue90": "Vence en 90 días",
@@ -95,8 +95,8 @@
     "severityModerate": "Moderado — reportado por algunos propietarios",
     "severityUncommon": "Poco común — reportado por pocos propietarios",
     "severityRare": "Raro — reportes aislados pero crítico cuando ocurre",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Abrir menú",
+    "dismissMaintenance": "Descartar",
     "inspectionDue": "ITV el {date}",
     "inspectionCheckedAt": "Comprobado en el registro el {date}",
     "notRegistered": "Sin matricular",
@@ -184,10 +184,10 @@
     "showing": "Mostrando {start}-{end} de {total}",
     "perPage": "por página",
     "page": "Página {page} de {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Primera página",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "lastPage": "Última página"
   },
   "notes": {
     "addNote": "Agregar nota",
@@ -213,11 +213,11 @@
     "noteCreated": "Nota creada",
     "titleRequired": "El título y el contenido son obligatorios",
     "saveError": "Error al guardar la nota",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Abrir menú",
+    "firstPage": "Primera página",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "lastPage": "Última página"
   },
   "findings": {
     "sectionTitle": "Observaciones",
@@ -266,11 +266,11 @@
     "showing": "Mostrando {start}-{end} de {total}",
     "perPage": "por página",
     "page": "Página {page} de {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Primera página",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "lastPage": "Última página",
+    "openMenu": "Abrir menú",
     "concernLabel": "¿Responde a qué punto?",
     "concernNone": "No es algo que preguntara el cliente"
   },
@@ -313,7 +313,7 @@
     "color": "Color",
     "fuelType": "Tipo de combustible",
     "gasoline": "Gasolina",
-    "diesel": "Diesel",
+    "diesel": "Diésel",
     "electric": "Electrico",
     "hybrid": "Hibrido",
     "other": "Otro",
@@ -373,10 +373,10 @@
     "archiveError": "Error al archivar vehículo"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Primera página",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "lastPage": "Última página"
   },
   "inspectionReminders": {
     "title": "Recordatorios de inspección",
