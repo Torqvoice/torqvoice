@@ -124,7 +124,10 @@ test.describe('a job with files attached to it', () => {
 
     // It turns before the write lands, so the answer is read back from the
     // server rather than from the screen: asked any sooner, the PDF is built
-    // from rows the click has not reached yet.
+    // from rows the click has not reached yet. The write is waited for first,
+    // because a reload while it is still in flight cancels it, and on a busy
+    // machine the switch then comes back on.
+    await page.waitForLoadState('networkidle')
     await page.reload()
     await expect((await openReportRow()).getByRole('switch')).toHaveAttribute(
       'aria-checked',

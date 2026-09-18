@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garantía",
     "months": "Duración (meses)",
-    "mileage": "Límite de kilometraje",
     "notes": "Términos de garantía",
     "notesPlaceholder": "ej. Garantía de 12 meses en todas las piezas y mano de obra...",
     "expiresAt": "Vence",
@@ -427,10 +426,19 @@
       "expired": "Vencida",
       "none": "N/A"
     },
-    "defaults": {
-      "title": "Configuración de garantía predeterminada",
-      "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
-    }
+    "statementLabel": "Lo que se le dice al cliente sobre la garantía",
+    "statement": {
+      "none": "Sin indicar",
+      "included": "Incluida",
+      "not_included": "No incluida"
+    },
+    "noneHint": "En este documento no se imprime nada sobre la garantía.",
+    "mileageWithUnit": "Límite de distancia ({unit})",
+    "notIncludedNotes": "Declaración al cliente",
+    "notIncludedPlaceholder": "p. ej. El taller no ofrece garantía sobre piezas aportadas por el cliente.",
+    "printedHint": "Se imprime bajo la garantía en el documento.",
+    "notIncludedHint": "Si lo deja vacío, el documento dice que los derechos legales no se ven afectados.",
+    "summaryMonths": "{count} m."
   },
   "concerns": {
     "title": "Motivos del cliente",

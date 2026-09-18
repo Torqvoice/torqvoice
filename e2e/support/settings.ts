@@ -213,3 +213,42 @@ export async function bankAccount(page: Page): Promise<string> {
   await expect(field).toBeVisible()
   return field.inputValue()
 }
+
+export interface WarrantySetup {
+  /** What a new quote or work order says before anybody touches it. */
+  newDocumentsSay: 'Nothing' | 'Warranty included' | 'No warranty'
+  months?: number
+  distance?: number
+  terms?: string
+  notIncludedText?: string
+  /** Whether the defaults reach new quotes, and new work orders. On unless said otherwise. */
+  onQuotes?: boolean
+  onWorkOrders?: boolean
+}
+
+/**
+ * Settings → Warranty, saved. Nothing is set on a seeded workshop, so a spec
+ * that writes these removes them afterwards (`forgetWorkshopSetting`): every
+ * other quote and invoice in the suite is printed without a warranty panel.
+ */
+export async function setWarrantyDefaults(page: Page, warranty: WarrantySetup): Promise<void> {
+  await page.goto('/settings/warranty')
+  await settle(page)
+
+  const choice = page.getByRole('radio', { name: warranty.newDocumentsSay, exact: true })
+  await expect(async () => {
+    await choice.click()
+    await expect(choice).toHaveAttribute('aria-checked', 'true', { timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+
+  const text = (value: number | string | undefined) => (value === undefined ? '' : String(value))
+  await fillSettled(page.locator('#warrantyDefaultMonths'), text(warranty.months))
+  await fillSettled(page.locator('#warrantyDefaultMileage'), text(warranty.distance))
+  await fillSettled(page.locator('#warrantyDefaultTerms'), text(warranty.terms))
+  await fillSettled(page.locator('#warrantyNotIncludedText'), text(warranty.notIncludedText))
+  await setSwitch(page.locator('#warrantyApplyToQuotes'), warranty.onQuotes ?? true)
+  await setSwitch(page.locator('#warrantyApplyToWorkOrders'), warranty.onWorkOrders ?? true)
+
+  await page.getByRole('button', { name: 'Save warranty settings', exact: true }).click()
+  await expect(page.getByText('Warranty settings saved', { exact: true })).toBeVisible()
+}

@@ -39,6 +39,7 @@
     "invoice": "Invoice",
     "payment": "Payment",
     "tax": "Tax",
+    "warranty": "Warranty",
     "workshop": "Workshop",
     "appearance": "Appearance",
     "email": "Email",

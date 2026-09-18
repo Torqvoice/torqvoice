@@ -29,6 +29,7 @@ import {
   type TotalLine,
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
+import { warrantyForPrint } from './warrantyPrint'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -368,18 +369,6 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     ...(input.otherAttachmentNames ?? []),
   ]
 
-  const warrantyParts: string[] = []
-  if (data.warrantyMonths) {
-    warrantyParts.push(
-      `${data.warrantyMonths} ${
-        labels.warrantyMonthsUnit || (data.warrantyMonths === 1 ? 'month' : 'months')
-      }`
-    )
-  }
-  if (data.warrantyMileage) {
-    warrantyParts.push(`${data.warrantyMileage.toLocaleString()} ${L('km', 'km')}`)
-  }
-
   // The workshop's own words, from payment settings. An empty field prints
   // nothing at all: a due date is already its own line below, and terms
   // counted off it ("Net 14 Days") read as a rule nobody wrote.
@@ -440,13 +429,13 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     totals,
     notes: { html: data.invoiceNotes ?? undefined },
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    warranty: {
-      duration: warrantyParts.length ? warrantyParts.join(' / ') : undefined,
+    warranty: warrantyForPrint(data, {
+      labels,
+      unitSystem: invoiceSettings?.unitSystem,
       expires: data.warrantyExpiresAt
         ? formatDateForPdf(data.warrantyExpiresAt, df, tz)
         : undefined,
-      terms: data.warrantyNotes ?? undefined,
-    },
+    }),
     payment,
     telegramQr: input.telegramQrDataUri
       ? {

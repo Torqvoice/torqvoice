@@ -36,6 +36,11 @@ model ServiceRecord {
   manuallyPaid    Boolean   @default(false)
 
   // Warranty tracking
+  /// What the workshop tells the customer about its own warranty on this job:
+  /// "included", "not_included", or null when it says nothing. Only an included
+  /// warranty carries months, mileage and an expiry; the terms are printed for
+  /// either statement. See src/lib/warranty.ts.
+  warrantyStatus    String?
   warrantyMonths    Int?
   warrantyMileage   Int?
   warrantyExpiresAt DateTime?

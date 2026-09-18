@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Garanzia",
     "months": "Durata (mesi)",
-    "mileage": "Limite chilometrico",
     "notes": "Termini di garanzia",
     "notesPlaceholder": "es. Garanzia di 12 mesi su tutti i ricambi e la manodopera...",
     "expiresAt": "Scadenza",
@@ -427,10 +426,19 @@
       "expired": "Scaduta",
       "none": "Nessuna"
     },
-    "defaults": {
-      "title": "Impostazioni garanzia predefinite",
-      "description": "Imposta i termini di garanzia predefiniti per i nuovi interventi"
-    }
+    "statementLabel": "Cosa viene detto al cliente sulla garanzia",
+    "statement": {
+      "none": "Non indicata",
+      "included": "Inclusa",
+      "not_included": "Non inclusa"
+    },
+    "noneHint": "Su questo documento non viene stampato nulla sulla garanzia.",
+    "mileageWithUnit": "Limite di distanza ({unit})",
+    "notIncludedNotes": "Dichiarazione al cliente",
+    "notIncludedPlaceholder": "es. L'officina non offre garanzia sui ricambi forniti dal cliente.",
+    "printedHint": "Stampato sotto la garanzia sul documento.",
+    "notIncludedHint": "Lascia vuoto e il documento dirà che i diritti di legge restano invariati.",
+    "summaryMonths": "{count} mesi"
   },
   "concerns": {
     "title": "Segnalazioni del cliente",

@@ -8,6 +8,7 @@ import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
 import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import { warrantyFromUntyped } from '@/lib/warranty'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -146,6 +147,10 @@ async function importServiceRecordTree(
       discountType: (sr.discountType as string) || null,
       discountValue: (sr.discountValue as number) || 0,
       discountAmount: (sr.discountAmount as number) || 0,
+      // A backup from before the statement existed has months and no status,
+      // which is read as the included warranty it was.
+      ...warrantyFromUntyped(sr),
+      warrantyExpiresAt: sr.warrantyExpiresAt ? toSafeDate(sr.warrantyExpiresAt as string) : null,
       publicToken: (sr.publicToken as string) || null,
       technicianId: (sr.technicianId as string) || null,
       workBayId: (sr.workBayId as string) || null,
@@ -984,6 +989,7 @@ export async function POST(request: NextRequest) {
               discountAmount: (q.discountAmount as number) || 0,
               totalAmount: (q.totalAmount as number) || 0,
               notes: (q.notes as string) || null,
+              ...warrantyFromUntyped(q),
               convertedToId: (q.convertedToId as string) || null,
               createdAt: toSafeDate(q.createdAt as string),
               updatedAt: toSafeDate(q.updatedAt as string),

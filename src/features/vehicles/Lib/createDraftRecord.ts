@@ -4,6 +4,13 @@ import {
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyExpiryFor,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
+import { EMPTY_WARRANTY } from '@/lib/warranty'
 import { nextAvailableSlot } from '@/features/workboard/Lib/availability'
 import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -53,6 +60,7 @@ export async function createDraftRecord(
             'workshop.defaultTechnicianId',
             SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE,
             ...WORKSHOP_TAX_SETTING_KEYS,
+            ...WARRANTY_SETTING_KEYS,
             'workboard.workDayStart',
           ],
         },
@@ -212,6 +220,13 @@ export async function createDraftRecord(
       })
     )
 
+  // The workshop's standing warranty, for work on a vehicle. A sale over the
+  // counter is not a repair, and terms written for one would misdescribe it;
+  // its warranty panel is still there for whoever wants to fill it in.
+  const warranty = isShopWork
+    ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
+    : EMPTY_WARRANTY
+
   return db.serviceRecord.create({
     data: {
       organizationId,
@@ -226,6 +241,8 @@ export async function createDraftRecord(
       workBayId: opts.workBayId || undefined,
       invoiceNumber,
       ...taxFields,
+      ...warranty,
+      warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
       serviceDate,
       invoiceDate: serviceDate,
       startDateTime: defaultStart,

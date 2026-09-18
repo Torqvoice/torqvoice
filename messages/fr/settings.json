@@ -43,6 +43,10 @@
         "title": "Taxe",
         "description": "Taux de taxe et valeurs par défaut"
       },
+      "warranty": {
+        "title": "Garantie",
+        "description": "Garantie par défaut sur les devis et factures"
+      },
       "currency": {
         "title": "Devise",
         "description": "Devise et taxes par défaut"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Afficher un avertissement a cette distance du prochain service",
     "saveMaintenance": "Enregistrer les paramètres de maintenance",
     "saved": "Paramètres de maintenance enregistrés"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "description": "Définissez ce que vos devis et factures disent de la garantie. Chaque nouveau document part de là, et vous pouvez toujours le modifier sur chacun.",
+    "designHint": "Imprimé dans la section Garantie du modèle de vos factures et devis. Si vous avez masqué cette section dans Modèles, réactivez-la. Le modèle Compact ne l'inclut pas.",
+    "defaultStatus": "Les nouveaux devis et ordres de travail indiquent",
+    "status": {
+      "none": "Rien",
+      "included": "Garantie incluse",
+      "not_included": "Pas de garantie"
+    },
+    "statusHint": {
+      "none": "La garantie n'est pas mentionnée tant que personne ne la renseigne sur le document.",
+      "included": "Les nouveaux documents commencent avec la durée et les conditions ci-dessous.",
+      "not_included": "Les nouveaux documents indiquent au client qu'aucune garantie de l'atelier n'est incluse."
+    },
+    "includedTitle": "Quand une garantie est incluse",
+    "includedHint": "La durée et les conditions qu'un document reçoit lorsqu'il propose une garantie.",
+    "months": "Durée (mois)",
+    "mileage": "Limite de distance ({unit})",
+    "mileageHint": "Laissez vide s'il n'y a pas de limite de distance.",
+    "terms": "Conditions de garantie",
+    "termsPlaceholder": "ex. 12 mois sur les pièces et la main-d'œuvre. Les pièces d'usure ne sont pas couvertes.",
+    "termsHint": "Imprimé sous la garantie sur les devis et factures.",
+    "notIncludedTitle": "Quand aucune garantie n'est incluse",
+    "notIncludedHint": "Ce que le client lit lorsqu'un document indique qu'aucune garantie n'est incluse.",
+    "notIncludedText": "Mention",
+    "notIncludedPlaceholder": "ex. L'atelier n'offre aucune garantie sur les pièces fournies par le client. Vos droits légaux ne sont pas affectés.",
+    "legalHint": "Il s'agit de la garantie propre à votre atelier. Dans de nombreux pays, dont l'UE et le Royaume-Uni, les clients disposent aussi de garanties légales qui ne peuvent pas être exclues. Laissez ce champ vide et le document indique que les droits légaux ne sont pas affectés.",
+    "applyTitle": "Appliquer ces valeurs par défaut aux",
+    "applyToQuotes": "Nouveaux devis",
+    "applyToQuotesHint": "Le client voit la garantie avant d'accepter.",
+    "applyToWorkOrders": "Nouveaux ordres de travail",
+    "applyToWorkOrdersHint": "Imprimé sur la facture. Un ordre de travail créé depuis un devis conserve ce que disait le devis.",
+    "save": "Enregistrer les paramètres de garantie",
+    "saved": "Paramètres de garantie enregistrés",
+    "saveFailed": "Impossible d'enregistrer les paramètres de garantie"
   },
   "appearance": {
     "title": "Apparence",

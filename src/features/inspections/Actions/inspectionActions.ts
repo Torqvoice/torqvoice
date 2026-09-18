@@ -5,6 +5,12 @@ import {
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyExpiryFor,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -683,6 +689,7 @@ export async function createWorkOrderFromInspection(id: string) {
                 'workshop.invoicePrefix',
                 'workshop.defaultLaborRate',
                 ...WORKSHOP_TAX_SETTING_KEYS,
+                ...WARRANTY_SETTING_KEYS,
               ],
             },
           },
@@ -712,6 +719,8 @@ export async function createWorkOrderFromInspection(id: string) {
       }
 
       const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap))
+      const warranty = warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
+      const serviceDate = startOfZonedDay(now, timeZone)
       const laborRate = Number(settingsMap['workshop.defaultLaborRate']) || 0
       const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
 
@@ -733,7 +742,9 @@ export async function createWorkOrderFromInspection(id: string) {
             // Hours and totals stay at zero: the point is to get the job on the
             // board immediately, and the workshop prices it as it works.
             ...taxFields,
-            serviceDate: startOfZonedDay(now, timeZone),
+            ...warranty,
+            warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
+            serviceDate,
             startDateTime: now,
           },
         })

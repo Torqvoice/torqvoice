@@ -33,6 +33,7 @@ export function QuotePDF({
   torqvoiceLogoDataUri,
   dateFormat,
   timezone,
+  unitSystem,
   template,
   portalUrl,
   imageAttachments = [],
@@ -51,6 +52,7 @@ export function QuotePDF({
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
+  unitSystem?: string
   template?: TemplateConfig
   portalUrl?: string
   imageAttachments?: ImageAttachmentPDF[]
@@ -71,6 +73,7 @@ export function QuotePDF({
     torqvoiceLogoDataUri,
     dateFormat,
     timezone,
+    unitSystem,
     template,
     portalUrl,
     pdfAttachmentNames,

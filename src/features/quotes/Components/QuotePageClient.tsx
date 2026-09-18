@@ -50,6 +50,7 @@ import { QuoteRightColumn } from './QuoteRightColumn'
 import { QuoteCustomerResponse } from './QuoteCustomerResponse'
 import { VehicleCombobox } from './VehicleCombobox'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import type { WarrantyTexts } from '@/lib/warranty'
 
 const LG_BREAKPOINT = 1024
 
@@ -74,6 +75,8 @@ export function QuotePageClient({
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
+  warrantyTexts,
+  distanceUnit,
   laborPresets = [],
   inventoryParts = [],
   smsEnabled = false,
@@ -95,6 +98,10 @@ export function QuotePageClient({
   defaultTaxRate?: number
   taxEnabled?: boolean
   defaultLaborRate?: number
+  /** The workshop's stock warranty texts, for the warranty panel to fill in. */
+  warrantyTexts: WarrantyTexts
+  /** 'km' or 'mi', as the workshop measures distance. */
+  distanceUnit: string
   laborPresets?: LaborPresetOption[]
   inventoryParts?: InventoryPartOption[]
   smsEnabled?: boolean
@@ -239,6 +246,8 @@ export function QuotePageClient({
       quote={quote}
       organizationId={organizationId}
       currencyCode={currencyCode}
+      warrantyTexts={warrantyTexts}
+      distanceUnit={distanceUnit}
       t={t}
       onRevoke={handleRevoke}
       lockReason={lockState.locked ? lockState.reason : null}

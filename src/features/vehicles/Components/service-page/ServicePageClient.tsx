@@ -65,6 +65,7 @@ export function ServicePageClient({
   canUnlock,
   currencyCode,
   unitSystem,
+  warrantyTexts,
   tireHotelEnabled = false,
   videoCall = { link: null, providers: [] },
   tireThresholds,
@@ -481,6 +482,8 @@ export function ServicePageClient({
                     vehicleId={vehicleId}
                     organizationId={organizationId}
                     currencyCode={currencyCode}
+                    unitSystem={unitSystem}
+                    warrantyTexts={warrantyTexts}
                     taxEnabled={taxEnabled}
                     initialVehicle={initialVehicle}
                     boardTechnicians={boardTechnicians}

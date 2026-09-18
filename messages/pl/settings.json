@@ -43,6 +43,10 @@
         "title": "Podatek",
         "description": "Stawka podatku i wartości domyślne"
       },
+      "warranty": {
+        "title": "Gwarancja",
+        "description": "Domyślna gwarancja na wycenach i fakturach"
+      },
       "currency": {
         "title": "Waluta",
         "description": "Domyślna waluta i podatki"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Pokaż ostrzezenie w tej odleglosci od następnego serwisu",
     "saveMaintenance": "Zapisz ustawienia konserwacji",
     "saved": "Ustawienia konserwacji zapisane"
+  },
+  "warranty": {
+    "title": "Gwarancja",
+    "description": "Ustal, co wyceny i faktury mówią o gwarancji. Każdy nowy dokument zaczyna od tych ustawień, a na każdym z nich nadal możesz to zmienić.",
+    "designHint": "Drukowane w sekcji Gwarancja w projekcie faktur i wycen. Jeśli ta sekcja została ukryta w Szablonach, włącz ją ponownie. Projekt Kompaktowy jej nie zawiera.",
+    "defaultStatus": "Nowe wyceny i zlecenia podają",
+    "status": {
+      "none": "Nic",
+      "included": "Gwarancja udzielona",
+      "not_included": "Brak gwarancji"
+    },
+    "statusHint": {
+      "none": "Gwarancja nie jest wspominana, dopóki ktoś nie wypełni jej w dokumencie.",
+      "included": "Nowe dokumenty zaczynają z okresem i warunkami podanymi poniżej.",
+      "not_included": "Nowe dokumenty informują klienta, że warsztat nie udziela gwarancji."
+    },
+    "includedTitle": "Gdy gwarancja jest udzielona",
+    "includedHint": "Okres i warunki, które otrzymuje dokument oferujący gwarancję.",
+    "months": "Czas trwania (miesiące)",
+    "mileage": "Limit dystansu ({unit})",
+    "mileageHint": "Pozostaw puste, jeśli nie ma limitu dystansu.",
+    "terms": "Warunki gwarancji",
+    "termsPlaceholder": "np. 12 miesięcy na części i robociznę. Części eksploatacyjne nie są objęte gwarancją.",
+    "termsHint": "Drukowane pod gwarancją na wycenach i fakturach.",
+    "notIncludedTitle": "Gdy gwarancja nie jest udzielona",
+    "notIncludedHint": "To, co czyta klient, gdy dokument informuje o braku gwarancji.",
+    "notIncludedText": "Oświadczenie",
+    "notIncludedPlaceholder": "np. Warsztat nie udziela gwarancji na części dostarczone przez klienta. Nie narusza to Twoich praw ustawowych.",
+    "legalHint": "Dotyczy to własnej gwarancji warsztatu. W wielu krajach, w tym w UE i Wielkiej Brytanii, klienci mają także ustawowe prawa z tytułu rękojmi, których nie można wyłączyć. Pozostaw puste, a dokument poinformuje, że prawa ustawowe pozostają nienaruszone.",
+    "applyTitle": "Stosuj te wartości domyślne do",
+    "applyToQuotes": "Nowych wycen",
+    "applyToQuotesHint": "Klient widzi gwarancję przed akceptacją.",
+    "applyToWorkOrders": "Nowych zleceń",
+    "applyToWorkOrdersHint": "Drukowane na fakturze. Zlecenie utworzone z wyceny zachowuje to, co podała wycena.",
+    "save": "Zapisz ustawienia gwarancji",
+    "saved": "Ustawienia gwarancji zapisane",
+    "saveFailed": "Nie udało się zapisać ustawień gwarancji"
   },
   "appearance": {
     "title": "Wygląd",

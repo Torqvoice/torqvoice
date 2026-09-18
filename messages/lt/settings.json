@@ -43,6 +43,10 @@
         "title": "Mokestis",
         "description": "Mokesčių tarifas ir numatytosios reikšmės"
       },
+      "warranty": {
+        "title": "Garantija",
+        "description": "Numatytoji garantija pasiūlymuose ir sąskaitose"
+      },
       "currency": {
         "title": "Valiuta",
         "description": "Valiuta ir mokesčių numatytosios reikšmės"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Rodyti įspėjimą, kai iki kito aptarnavimo liko mažiau nei šis atstumas",
     "saveMaintenance": "Išsaugoti priežiūros nustatymus",
     "saved": "Priežiūros nustatymai išsaugoti"
+  },
+  "warranty": {
+    "title": "Garantija",
+    "description": "Nustatykite, ką jūsų pasiūlymai ir sąskaitos sako apie garantiją. Kiekvienas naujas dokumentas pradedamas nuo šių nustatymų, o kiekviename jų vis tiek galite tai pakeisti.",
+    "designHint": "Spausdinama sąskaitų ir pasiūlymų dizaino skiltyje „Garantija“. Jei šią skiltį paslėpėte skiltyje „Šablonai“, vėl ją įjunkite. Dizaine „Kompaktiškas“ jos nėra.",
+    "defaultStatus": "Nauji pasiūlymai ir darbo užsakymai nurodo",
+    "status": {
+      "none": "Nieko",
+      "included": "Garantija suteikiama",
+      "not_included": "Garantijos nėra"
+    },
+    "statusHint": {
+      "none": "Garantija neminima, kol kas nors jos neužpildo dokumente.",
+      "included": "Nauji dokumentai pradedami su žemiau nurodytu laikotarpiu ir sąlygomis.",
+      "not_included": "Nauji dokumentai praneša klientui, kad dirbtuvių garantija nesuteikiama."
+    },
+    "includedTitle": "Kai garantija suteikiama",
+    "includedHint": "Laikotarpis ir sąlygos, kuriuos gauna dokumentas, kai siūloma garantija.",
+    "months": "Trukmė (mėnesiai)",
+    "mileage": "Atstumo limitas ({unit})",
+    "mileageHint": "Palikite tuščią, jei atstumo limito nėra.",
+    "terms": "Garantijos sąlygos",
+    "termsPlaceholder": "pvz., 12 mėnesių dalims ir darbui. Dylančioms dalims garantija netaikoma.",
+    "termsHint": "Spausdinama po garantija pasiūlymuose ir sąskaitose.",
+    "notIncludedTitle": "Kai garantija nesuteikiama",
+    "notIncludedHint": "Ką klientas perskaito, kai dokumente nurodyta, kad garantija nesuteikiama.",
+    "notIncludedText": "Pareiškimas",
+    "notIncludedPlaceholder": "pvz., Kliento pateiktoms dalims dirbtuvės garantijos nesuteikia. Jūsų įstatymų nustatytos teisės lieka galioti.",
+    "legalHint": "Tai jūsų dirbtuvių garantija. Daugelyje šalių, įskaitant ES ir Jungtinę Karalystę, klientai taip pat turi įstatymų nustatytas garantines teises, kurių negalima atsisakyti. Palikite tuščią, ir dokumente bus nurodyta, kad įstatymų nustatytos teisės lieka galioti.",
+    "applyTitle": "Taikyti šias numatytąsias reikšmes",
+    "applyToQuotes": "Naujiems pasiūlymams",
+    "applyToQuotesHint": "Klientas mato garantiją prieš priimdamas pasiūlymą.",
+    "applyToWorkOrders": "Naujiems darbo užsakymams",
+    "applyToWorkOrdersHint": "Spausdinama sąskaitoje. Iš pasiūlymo sukurtas darbo užsakymas išlaiko tai, kas buvo nurodyta pasiūlyme.",
+    "save": "Išsaugoti garantijos nustatymus",
+    "saved": "Garantijos nustatymai išsaugoti",
+    "saveFailed": "Nepavyko išsaugoti garantijos nustatymų"
   },
   "appearance": {
     "title": "Išvaizda",

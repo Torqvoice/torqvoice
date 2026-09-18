@@ -23,6 +23,7 @@ import {
   type TotalLine,
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
+import { warrantyForPrint } from './warrantyPrint'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -47,6 +48,11 @@ export interface QuotePrintData {
   discountAmount: number
   totalAmount: number
   notes: string | null
+  /** The warranty the customer is offered; see src/lib/warranty.ts. */
+  warrantyStatus?: string | null
+  warrantyMonths?: number | null
+  warrantyMileage?: number | null
+  warrantyNotes?: string | null
   partItems: {
     partNumber: string | null
     name: string
@@ -90,6 +96,8 @@ export interface QuotePrintInput {
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
+  /** The workshop's units, for the warranty's distance limit. */
+  unitSystem?: string
   template?: TemplateConfig
   portalUrl?: string
   pdfAttachmentNames?: string[]
@@ -341,7 +349,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     totals,
     notes: { html: data.description ?? undefined },
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    warranty: {},
+    warranty: warrantyForPrint(data, { labels, unitSystem: input.unitSystem }),
     payment: [],
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,

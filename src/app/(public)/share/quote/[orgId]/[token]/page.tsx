@@ -92,6 +92,7 @@ export default async function PublicQuotePage({
             'workshop.currencyFormat',
             'workshop.dateFormat',
             'workshop.timezone',
+            'workshop.unitSystem',
             'quote.primaryColor',
             'quote.backgroundColor',
             'quote.textColor',
@@ -209,6 +210,7 @@ export default async function PublicQuotePage({
     torqvoiceLogoDataUri,
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
+    unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     template: {
       primaryColor,
       backgroundColor: pick('backgroundColor') || undefined,

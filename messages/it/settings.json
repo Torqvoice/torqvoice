@@ -43,6 +43,10 @@
         "title": "Imposta",
         "description": "Aliquota fiscale e predefiniti"
       },
+      "warranty": {
+        "title": "Garanzia",
+        "description": "Garanzia predefinita su preventivi e fatture"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Valuta e imposte predefinite"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Mostra avviso quando entro questa distanza dal prossimo tagliando",
     "saveMaintenance": "Salva impostazioni manutenzione",
     "saved": "Impostazioni manutenzione salvate"
+  },
+  "warranty": {
+    "title": "Garanzia",
+    "description": "Stabilisci cosa dicono preventivi e fatture sulla garanzia. Ogni nuovo documento parte da qui, e puoi comunque modificarlo su ciascuno.",
+    "designHint": "Stampato nella sezione Garanzia del design di fatture e preventivi. Se hai nascosto quella sezione in Modelli, riattivala. Il design Compatto non la include.",
+    "defaultStatus": "I nuovi preventivi e ordini di lavoro indicano",
+    "status": {
+      "none": "Niente",
+      "included": "Garanzia inclusa",
+      "not_included": "Nessuna garanzia"
+    },
+    "statusHint": {
+      "none": "La garanzia non viene menzionata finché qualcuno non la compila sul documento.",
+      "included": "I nuovi documenti partono con la durata e i termini qui sotto.",
+      "not_included": "I nuovi documenti informano il cliente che non è inclusa alcuna garanzia dell'officina."
+    },
+    "includedTitle": "Quando la garanzia è inclusa",
+    "includedHint": "La durata e i termini che un documento riceve quando offre una garanzia.",
+    "months": "Durata (mesi)",
+    "mileage": "Limite di distanza ({unit})",
+    "mileageHint": "Lascia vuoto se non c'è limite di distanza.",
+    "terms": "Termini di garanzia",
+    "termsPlaceholder": "es. 12 mesi su ricambi e manodopera. Le parti soggette a usura non sono coperte.",
+    "termsHint": "Stampato sotto la garanzia su preventivi e fatture.",
+    "notIncludedTitle": "Quando la garanzia non è inclusa",
+    "notIncludedHint": "Ciò che il cliente legge quando un documento dice che la garanzia non è inclusa.",
+    "notIncludedText": "Dichiarazione",
+    "notIncludedPlaceholder": "es. L'officina non offre garanzia sui ricambi forniti dal cliente. I suoi diritti di legge restano invariati.",
+    "legalHint": "Si tratta della garanzia propria della tua officina. In molti paesi, tra cui l'UE e il Regno Unito, i clienti hanno anche diritti di garanzia legale che non possono essere esclusi. Lascia vuoto e il documento dirà che i diritti di legge restano invariati.",
+    "applyTitle": "Usa questi valori predefiniti su",
+    "applyToQuotes": "Nuovi preventivi",
+    "applyToQuotesHint": "Il cliente vede la garanzia prima di accettare.",
+    "applyToWorkOrders": "Nuovi ordini di lavoro",
+    "applyToWorkOrdersHint": "Stampato sulla fattura. Un ordine di lavoro creato da un preventivo mantiene ciò che diceva il preventivo.",
+    "save": "Salva impostazioni garanzia",
+    "saved": "Impostazioni garanzia salvate",
+    "saveFailed": "Impossibile salvare le impostazioni della garanzia"
   },
   "appearance": {
     "title": "Aspetto",

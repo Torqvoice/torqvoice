@@ -411,7 +411,6 @@
   "warranty": {
     "title": "Gwarancja",
     "months": "Czas trwania (miesiące)",
-    "mileage": "Limit przebiegu",
     "notes": "Warunki gwarancji",
     "notesPlaceholder": "np. 12-miesięczna gwarancja na wszystkie części i robociznę...",
     "expiresAt": "Wygasa",
@@ -427,10 +426,19 @@
       "expired": "Wygasła",
       "none": "Brak"
     },
-    "defaults": {
-      "title": "Domyślne ustawienia gwarancji",
-      "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
-    }
+    "statementLabel": "Co klient dowiaduje się o gwarancji",
+    "statement": {
+      "none": "Nie podano",
+      "included": "Udzielona",
+      "not_included": "Nieudzielona"
+    },
+    "noneHint": "Na tym dokumencie nie drukuje się nic o gwarancji.",
+    "mileageWithUnit": "Limit dystansu ({unit})",
+    "notIncludedNotes": "Oświadczenie dla klienta",
+    "notIncludedPlaceholder": "np. Warsztat nie udziela gwarancji na części dostarczone przez klienta.",
+    "printedHint": "Drukowane pod gwarancją na dokumencie.",
+    "notIncludedHint": "Pozostaw puste, a dokument poinformuje, że prawa ustawowe pozostają nienaruszone.",
+    "summaryMonths": "{count} mies."
   },
   "concerns": {
     "title": "Zgłoszenia klienta",

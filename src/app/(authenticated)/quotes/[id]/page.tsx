@@ -1,6 +1,11 @@
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyTextsOf,
+} from '@/features/settings/Lib/warrantyDefaults'
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -18,6 +23,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       SETTING_KEYS.DEFAULT_TAX_RATE,
       SETTING_KEYS.TAX_ENABLED,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
+      SETTING_KEYS.UNIT_SYSTEM,
+      ...WARRANTY_SETTING_KEYS,
     ]),
     getLaborPresetsList(),
     getInventoryPartsList(),
@@ -74,6 +81,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
+        warrantyTexts={warrantyTextsOf(readWarrantyDefaults(settings))}
+        distanceUnit={settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'km' : 'mi'}
         laborPresets={laborPresets}
         inventoryParts={inventoryParts}
         smsEnabled={features?.sms ?? false}

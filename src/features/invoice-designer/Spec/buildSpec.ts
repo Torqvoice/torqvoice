@@ -74,7 +74,16 @@ export interface DocumentData {
   notes: { html?: string }
   /** Names of the files riding along with the document, already worded. */
   attachedDocuments?: string[]
-  warranty: { duration?: string; expires?: string; terms?: string }
+  warranty: {
+    duration?: string
+    expires?: string
+    terms?: string
+    /**
+     * A sentence printed where the duration would be, when there is none to
+     * print: "No workshop warranty is included", or a bare "Included".
+     */
+    statement?: string
+  }
   payment: PaymentPair[]
   telegramQr?: { dataUri: string; label: string }
   /** The plan's watermark. Present means the sheet says who printed it. */
@@ -1372,8 +1381,8 @@ function warrantyBlock(
   theme: DocumentTheme,
   data: DocumentData
 ): Node | null {
-  const { duration, expires, terms } = data.warranty
-  if (!duration && !terms) return null
+  const { duration, expires, terms, statement } = data.warranty
+  if (!duration && !terms && !statement) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
 
@@ -1383,6 +1392,13 @@ function warrantyBlock(
       kind: 'text',
       text: label(data, 'warrantyTitle', 'Warranty'),
       style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
+    })
+  }
+  if (statement) {
+    children.push({
+      kind: 'text',
+      text: statement,
+      style: { color: look.text, fontSize: scale(size, 0.9), bold: true },
     })
   }
   if (duration) {

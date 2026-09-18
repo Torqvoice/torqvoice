@@ -158,6 +158,11 @@ const SEARCHABLE_SETTINGS = [
   },
   { key: 'tax', href: '/settings/tax', keywords: ['tax', 'vat', 'rate'] },
   {
+    key: 'warranty',
+    href: '/settings/warranty',
+    keywords: ['warranty', 'guarantee', 'terms', 'default'],
+  },
+  {
     key: 'localization',
     href: '/settings/localization',
     keywords: [

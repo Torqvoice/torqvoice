@@ -104,6 +104,7 @@ export const ANNOUNCEMENTS: Announcement[] = [
 export const SETTINGS_SHIPPED_AT: Record<string, string> = {
   '/settings/templates': '2026-09-01',
   '/settings/email-templates': '2026-09-11',
+  '/settings/warranty': '2026-09-18',
 }
 
 /** How long an entry counts as new. A month covers the slowest weekly visitor. */

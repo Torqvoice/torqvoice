@@ -43,6 +43,10 @@
         "title": "Steuer",
         "description": "Steuersatz & Standardwerte"
       },
+      "warranty": {
+        "title": "Garantie",
+        "description": "Standardgarantie auf Angeboten & Rechnungen"
+      },
       "currency": {
         "title": "Wahrung",
         "description": "Wahrungs- & Steuerstandards"
@@ -1157,6 +1161,43 @@
     "approachingThresholdHint": "Warnung anzeigen, wenn innerhalb dieser Entfernung zum nachsten Service",
     "saveMaintenance": "Wartungseinstellungen speichern",
     "saved": "Wartungseinstellungen gespeichert"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "description": "Legen Sie fest, was Ihre Angebote und Rechnungen zur Garantie sagen. Jedes neue Dokument beginnt damit, und Sie können es auf jedem einzelnen weiterhin ändern.",
+    "designHint": "Wird im Abschnitt Garantie Ihres Rechnungs- und Angebotsdesigns gedruckt. Wenn Sie diesen Abschnitt unter Vorlagen ausgeblendet haben, schalten Sie ihn wieder ein. Das Design Kompakt lässt ihn weg.",
+    "defaultStatus": "Neue Angebote und Arbeitsaufträge sagen",
+    "status": {
+      "none": "Nichts",
+      "included": "Garantie enthalten",
+      "not_included": "Keine Garantie"
+    },
+    "statusHint": {
+      "none": "Die Garantie wird nicht erwähnt, bis jemand sie im Dokument ausfüllt.",
+      "included": "Neue Dokumente beginnen mit der Laufzeit und den Bedingungen unten.",
+      "not_included": "Neue Dokumente teilen dem Kunden mit, dass keine Werkstattgarantie enthalten ist."
+    },
+    "includedTitle": "Wenn eine Garantie enthalten ist",
+    "includedHint": "Laufzeit und Bedingungen, die ein Dokument erhält, wenn es eine Garantie anbietet.",
+    "months": "Dauer (Monate)",
+    "mileage": "Streckenbegrenzung ({unit})",
+    "mileageHint": "Leer lassen für keine Streckenbegrenzung.",
+    "terms": "Garantiebedingungen",
+    "termsPlaceholder": "z. B. 12 Monate auf Teile und Arbeit. Verschleißteile sind ausgenommen.",
+    "termsHint": "Wird unter der Garantie auf Angeboten und Rechnungen gedruckt.",
+    "notIncludedTitle": "Wenn keine Garantie enthalten ist",
+    "notIncludedHint": "Was der Kunde liest, wenn ein Dokument angibt, dass keine Garantie enthalten ist.",
+    "notIncludedText": "Erklärung",
+    "notIncludedPlaceholder": "z. B. Auf vom Kunden gelieferte Teile gibt die Werkstatt keine Garantie. Ihre gesetzlichen Rechte bleiben unberührt.",
+    "legalHint": "Hier geht es um Ihre eigene Werkstattgarantie. In vielen Ländern, unter anderem in der EU und im Vereinigten Königreich, haben Kunden zusätzlich gesetzliche Gewährleistungsrechte, die nicht ausgeschlossen werden können. Bleibt das Feld leer, steht im Dokument, dass die gesetzlichen Rechte unberührt bleiben.",
+    "applyTitle": "Diese Standardwerte verwenden für",
+    "applyToQuotes": "Neue Angebote",
+    "applyToQuotesHint": "Der Kunde sieht die Garantie, bevor er annimmt.",
+    "applyToWorkOrders": "Neue Arbeitsaufträge",
+    "applyToWorkOrdersHint": "Wird auf der Rechnung gedruckt. Ein Arbeitsauftrag aus einem Angebot behält, was im Angebot stand.",
+    "save": "Garantieeinstellungen speichern",
+    "saved": "Garantieeinstellungen gespeichert",
+    "saveFailed": "Die Garantieeinstellungen konnten nicht gespeichert werden"
   },
   "appearance": {
     "title": "Darstellung",

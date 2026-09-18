@@ -14,6 +14,7 @@ import {
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
+import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
@@ -115,6 +116,8 @@ export function useQuoteFormState({
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
   const [description, setDescription] = useState(quote.description || '')
   const [notes, setNotes] = useState(quote.notes || '')
+  // One value, because the four move together; see the work order's editor.
+  const [warranty, setWarrantyState] = useState<WarrantyFields>(() => normalizeWarranty(quote))
 
   // Dialog state
   const [showEmailDialog, setShowEmailDialog] = useState(false)
@@ -175,6 +178,14 @@ export function useQuoteFormState({
       }
     }, 5000)
   }, [locked])
+
+  const setWarranty = useCallback(
+    (next: WarrantyFields) => {
+      setWarrantyState(next)
+      markDirty()
+    },
+    [markDirty]
+  )
 
   // A locked quote refuses a save, so its status is written on its own the
   // moment it is chosen. The server still refuses a status that would release
@@ -417,6 +428,11 @@ export function useQuoteFormState({
         discountValue,
         discountAmount,
         totalAmount,
+        // Cleared fields go as 'none', 0 and '' for the same reason as above.
+        warrantyStatus: warranty.warrantyStatus ?? WARRANTY_NONE,
+        warrantyMonths: warranty.warrantyMonths ?? 0,
+        warrantyMileage: warranty.warrantyMileage ?? 0,
+        warrantyNotes: warranty.warrantyNotes ?? '',
       })
       if (result.success) {
         setHasUnsavedChanges(false)
@@ -545,6 +561,8 @@ export function useQuoteFormState({
     setDescription,
     notes,
     setNotes,
+    warranty,
+    setWarranty,
     // Dialogs
     showEmailDialog,
     setShowEmailDialog,
