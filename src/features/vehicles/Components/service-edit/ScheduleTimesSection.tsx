@@ -609,16 +609,26 @@ export function ScheduleTimesSection({
           {/* Everything the list cannot say: nobody at all, a colleague who is
               not a technician yet, somebody new. The same picker the classic
               page opens, behind a quieter door. */}
-          <div className="flex items-center justify-between gap-2">
-            <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
-              <PopoverTrigger asChild>
-                <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                  <UserPlus className="mr-1 h-3.5 w-3.5" />
-                  {technicians.length === 0 ? t('selectTechnician') : t('someoneElse')}
-                </Button>
-              </PopoverTrigger>
-              {techPickerContent}
-            </Popover>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
+                <PopoverTrigger asChild>
+                  <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                    <UserPlus className="mr-1 h-3.5 w-3.5" />
+                    {technicians.length === 0 ? t('selectTechnician') : t('someoneElse')}
+                  </Button>
+                </PopoverTrigger>
+                {techPickerContent}
+              </Popover>
+              <Link
+                href="/settings/workshop"
+                target="_blank"
+                className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <Settings className="h-3.5 w-3.5" />
+                {t('setDefaults')}
+              </Link>
+            </div>
             {startDateTime && technicians.length > 0 && (
               <span className="text-[11px] text-muted-foreground" suppressHydrationWarning>
                 {t('loadOn', {

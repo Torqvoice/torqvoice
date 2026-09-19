@@ -19,6 +19,8 @@ export const HIDDEN_COLUMNS: readonly string[] = [
   'publicToken',
   'issuedData',
   'editUnlockedById',
+  'createdById',
+  'concernId',
   'telegramChatId',
 ]
 

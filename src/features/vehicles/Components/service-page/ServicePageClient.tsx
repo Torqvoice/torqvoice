@@ -486,6 +486,7 @@ export function ServicePageClient({
     openObservationsCount: otherObsCount,
     onShowExistingObservations: () => obsControlsRef.current?.onShowExistingObservations(),
     jobClock,
+    locked: lockState.locked,
   }
 
   const rightColumnProps: ComponentProps<typeof DetailsRightColumn> = {
@@ -597,7 +598,7 @@ export function ServicePageClient({
               onAddFindingForConcern={(concernId) =>
                 obsControlsRef.current?.onAddFinding(concernId)
               }
-              scrollToFiles={storedTab === 'statusReports'}
+              scrollToFiles={isFileTab || storedTab === 'statusReports'}
             />
           ) : (
             // noValidate, and the rules checked in handleSubmit instead. An

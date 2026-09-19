@@ -999,6 +999,48 @@ export async function updateServiceStatus(recordId: string, status: string) {
   )
 }
 
+/**
+ * Saves the job's internal notes on their own. The work order's Save goes
+ * through updateServiceRecord, which refuses a locked invoice outright; the
+ * internal notes are not part of what the lock freezes (they are never printed
+ * or shared), so a locked job still takes them through here.
+ */
+export async function updateInternalNotes(recordId: string, html: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      if (typeof html !== 'string' || html.length > 200_000) throw new Error('Invalid notes')
+      const notes = html
+      const record = await db.serviceRecord.findFirst({
+        where: { id: recordId, organizationId },
+        select: { id: true, invoiceNumber: true, vehicleId: true },
+      })
+      if (!record) throw new Error('Record not found')
+
+      await db.serviceRecord.update({
+        where: { id: record.id },
+        // The editor reports an emptied box as one empty paragraph.
+        data: { diagnosticNotes: notes && notes !== '<p></p>' ? notes : null },
+      })
+
+      if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
+      else revalidatePath(`/sales/${record.id}`)
+      return { id: record.id, invoiceNumber: record.invoiceNumber }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'service.update',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
+        metadata: { serviceRecordId: result.id, field: 'diagnosticNotes' },
+      }),
+    }
+  )
+}
+
 export async function toggleManuallyPaid(recordId: string) {
   return withAuth(
     async ({ organizationId }) => {

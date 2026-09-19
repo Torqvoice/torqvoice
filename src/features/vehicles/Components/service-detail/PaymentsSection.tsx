@@ -102,8 +102,19 @@ export function PaymentsSection({
     }
   }
 
+  // This sits inside the work order form, where Enter would save the whole job
+  // (and on a locked invoice be refused). Here Enter records the payment.
   const paymentForm = (
-    <div ref={formRef} className="space-y-3 rounded-lg border p-3">
+    <div
+      ref={formRef}
+      className="space-y-3 rounded-lg border p-3"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+          e.preventDefault()
+          if (!paymentLoading) void handleSubmit()
+        }
+      }}
+    >
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1">
           <Label htmlFor="paymentAmount" className="text-xs">

@@ -27,6 +27,10 @@ interface NotesSectionProps {
   onNotesChange: (field: 'invoiceNotes' | 'diagnosticNotes' | 'description', value: string) => void
   serviceRecordId?: string
   aiEnabled?: boolean
+  /** The customer notes print on the invoice, so a locked invoice freezes them. */
+  publicLocked?: boolean
+  /** Only when the internal notes have no save of their own on a locked invoice. */
+  internalLocked?: boolean
 }
 
 function hasContent(html: string): boolean {
@@ -39,6 +43,8 @@ export function NotesSection({
   onNotesChange,
   serviceRecordId,
   aiEnabled,
+  publicLocked = false,
+  internalLocked = false,
 }: NotesSectionProps) {
   const t = useTranslations('service.notes')
   const modern = useModernWorkOrder()
@@ -161,8 +167,10 @@ export function NotesSection({
     </AlertDialog>
   )
 
+  const isLocked = (target: 'public' | 'internal') =>
+    target === 'public' ? publicLocked : internalLocked
   const aiButton = (target: 'public' | 'internal') =>
-    aiEnabled && serviceRecordId ? (
+    aiEnabled && serviceRecordId && !isLocked(target) ? (
       <Button
         type="button"
         variant="ghost"
@@ -195,6 +203,7 @@ export function NotesSection({
           <RichTextEditor
             content={internalNotes}
             onChange={handleInternalChange}
+            editable={!internalLocked}
             placeholder={t('internalPlaceholder')}
           />
         </AppCard>
@@ -207,6 +216,7 @@ export function NotesSection({
           <RichTextEditor
             content={publicNotes}
             onChange={handlePublicChange}
+            editable={!publicLocked}
             placeholder={t('publicPlaceholder')}
           />
         </AppCard>
@@ -238,7 +248,7 @@ export function NotesSection({
               )}
             </TabsTrigger>
           </TabsList>
-          {aiEnabled && serviceRecordId && (
+          {aiEnabled && serviceRecordId && !isLocked(noteType) && (
             <Button
               type="button"
               variant="ghost"
@@ -261,6 +271,7 @@ export function NotesSection({
           <RichTextEditor
             content={publicNotes}
             onChange={handlePublicChange}
+            editable={!publicLocked}
             placeholder={t('publicPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">{t('publicHelper')}</p>
@@ -270,6 +281,7 @@ export function NotesSection({
           <RichTextEditor
             content={internalNotes}
             onChange={handleInternalChange}
+            editable={!internalLocked}
             placeholder={t('internalPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>

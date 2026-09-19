@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type ComponentProps, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Receipt } from 'lucide-react'
@@ -12,7 +12,12 @@ import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFiel
 import { JobClockSection } from '@/features/time-tracking/Components/JobClockSection'
 import { StoreTiresButton } from '@/features/tire-hotel/Components/StoreTiresButton'
 import { TireSetBanner } from '@/features/tire-hotel/Components/TireSetBanner'
-import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
+import {
+  revokePublicLink,
+  updateInternalNotes,
+  updateServiceStatus,
+} from '@/features/vehicles/Actions/serviceActions'
+import { toast } from 'sonner'
 import { PaymentsSection } from '../../service-detail/PaymentsSection'
 import { ServiceFindingsSection } from '../../service-detail/ServiceFindingsSection'
 import { paymentStatusColors, paymentStatusLabels } from '../../service-detail/types'
@@ -37,7 +42,11 @@ type LeftProps = ComponentProps<typeof DetailsLeftColumn>
 type RightProps = ComponentProps<typeof DetailsRightColumn>
 
 export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof LeftProps> {
-  /** A locked invoice disables every field; photos and the hero stay live. */
+  /**
+   * A locked invoice disables what it freezes: the lines, totals, invoice
+   * fields, warranty, notes and custom fields. Status, booking, clock,
+   * payments, sharing and files stay live.
+   */
   locked: boolean
   lockedLabel?: string
   /**
@@ -48,7 +57,7 @@ export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof Le
   form: Pick<ComponentProps<'form'>, 'id' | 'ref' | 'onSubmit' | 'onInput'>
   /** Sections under the two columns that save on their own, outside the form. */
   belowForm?: ReactNode
-  /** A link that used to open the status reports tab lands on the files card, with that tab open. */
+  /** A link that used to open one of the classic tabs lands on the files card, with that tab open. */
   scrollToFiles?: boolean
   onBackToClassic: () => void
   /** The job's title as the header currently holds it, saved with the form. */
@@ -140,8 +149,59 @@ export function ModernDetails(props: ModernDetailsProps) {
       })
       if (!ok) return
     }
-    formState.dirtySetStatus(next)
+    if (!locked) {
+      formState.dirtySetStatus(next)
+      return
+    }
+    // A locked invoice refuses the form's save, but the lock freezes what the
+    // invoice says is owed, not how far along the job is. So the status is
+    // saved on its own, the way the work board moves a card.
+    const previous = formState.status
+    formState.setStatus(next)
+    const result = await updateServiceStatus(record.id, next)
+    if (result.success) {
+      formState.flashSaved()
+      router.refresh()
+    } else {
+      formState.setStatus(previous)
+      toast.error(t('page.failedUpdate'))
+    }
   }
+
+  // Internal notes on a locked invoice. The form's save is refused there, but
+  // these notes are never printed or shared, so they are saved on their own,
+  // a moment after the typing stops. Unlocked, they go with the form as always.
+  const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingNotes = useRef<string | null>(null)
+  const saveInternalNotes = async (html: string) => {
+    const result = await updateInternalNotes(record.id, html)
+    if (result.success) formState.flashSaved()
+    else toast.error(t('page.failedUpdate'))
+  }
+  const onNotesChange = (
+    field: 'invoiceNotes' | 'diagnosticNotes' | 'description',
+    value: string
+  ) => {
+    // Keeps the form's copy current; it marks nothing dirty while locked.
+    formState.handleNotesChange(field, value)
+    if (!locked || field !== 'diagnosticNotes') return
+    pendingNotes.current = value
+    if (notesTimer.current) clearTimeout(notesTimer.current)
+    notesTimer.current = setTimeout(() => {
+      notesTimer.current = null
+      const html = pendingNotes.current
+      pendingNotes.current = null
+      if (html !== null) void saveInternalNotes(html)
+    }, 800)
+  }
+  // Leaving the page mid-sentence still saves what was typed.
+  useEffect(() => {
+    const recordId = record.id
+    return () => {
+      if (notesTimer.current) clearTimeout(notesTimer.current)
+      if (pendingNotes.current !== null) void updateInternalNotes(recordId, pendingNotes.current)
+    }
+  }, [record.id])
 
   useEffect(() => {
     if (scrollToFiles) document.getElementById('files-media')?.scrollIntoView()
@@ -196,12 +256,8 @@ export function ModernDetails(props: ModernDetailsProps) {
               name="serviceDate"
               value={formState.initialData.serviceDate || new Date().toISOString().split('T')[0]}
             />
-            <Lockable locked={locked} label={lockedLabel}>
-              <StatusStepper
-                status={formState.status}
-                onChange={(next) => void changeStatus(next)}
-              />
-            </Lockable>
+            {/* Outside the lock: a locked invoice still moves along. */}
+            <StatusStepper status={formState.status} onChange={(next) => void changeStatus(next)} />
 
             {/* The side column gives way before the job does: the parts and labour
             editors turn into a table at 672px of their own, so two columns
@@ -285,54 +341,62 @@ export function ModernDetails(props: ModernDetailsProps) {
 
                 <FilesMediaCard serviceRecordId={record.id} customerId={customer?.id} {...files} />
 
-                <Lockable locked={locked}>
-                  <NotesSection
-                    initialData={formState.initialData}
-                    onNotesChange={formState.handleNotesChange}
-                    serviceRecordId={record.id}
-                    aiEnabled={props.aiEnabled}
-                  />
-                </Lockable>
+                {/* Outside the lock: the customer notes freeze with the invoice,
+                    the internal ones keep saving on their own. */}
+                <NotesSection
+                  initialData={formState.initialData}
+                  onNotesChange={onNotesChange}
+                  serviceRecordId={record.id}
+                  aiEnabled={props.aiEnabled}
+                  publicLocked={locked}
+                />
               </div>
 
+              {/* A locked invoice freezes what it says is owed: its lines, totals,
+                number, dates, design and warranty. The booking, the clock, the
+                payments and the sharing save through their own actions and stay
+                usable, as src/lib/document-lock.ts intends. */}
               <aside data-testid="service-sidebar" className="flex min-w-0 flex-col gap-3">
-                <Lockable locked={locked}>
-                  <ScheduleTimesSection
-                    serviceRecordId={record.id}
-                    technicians={props.boardTechnicians}
-                    workBays={props.workBays}
-                    orgMembers={props.orgMembers}
-                    initialStartDateTime={formState.initialData.startDateTime}
-                    initialEndDateTime={formState.initialData.endDateTime}
-                    initialTechnicianId={record.technicianId}
-                    initialWorkBayId={record.workBayId}
-                    initialPromisedAt={
-                      record.promisedAt ? new Date(record.promisedAt).toISOString() : null
-                    }
-                    onSaved={formState.flashSaved}
-                  />
+                <ScheduleTimesSection
+                  serviceRecordId={record.id}
+                  technicians={props.boardTechnicians}
+                  workBays={props.workBays}
+                  orgMembers={props.orgMembers}
+                  initialStartDateTime={formState.initialData.startDateTime}
+                  initialEndDateTime={formState.initialData.endDateTime}
+                  initialTechnicianId={record.technicianId}
+                  initialWorkBayId={record.workBayId}
+                  initialPromisedAt={
+                    record.promisedAt ? new Date(record.promisedAt).toISOString() : null
+                  }
+                  onSaved={formState.flashSaved}
+                />
 
-                  {/* Beside who is on the job and when, not between the labour
+                {/* Beside who is on the job and when, not between the labour
                     and the parts: it says how the work is going, and the two
                     cards it sat between are the invoice being built. "Add as
                     labour" still puts its line in the labour card. */}
-                  <JobClockSection
-                    serviceRecordId={record.id}
-                    initial={props.jobClock}
-                    onAddLabor={(hours) =>
-                      formState.dirtySetLaborItems((prev) => [
-                        ...prev,
-                        {
-                          description: tClock('laborDescription'),
-                          hours,
-                          rate: props.defaultLaborRate,
-                          total: Math.round(hours * props.defaultLaborRate * 100) / 100,
-                          pricingType: 'hourly' as const,
-                        },
-                      ])
-                    }
-                  />
+                <JobClockSection
+                  serviceRecordId={record.id}
+                  initial={props.jobClock}
+                  onAddLabor={
+                    locked
+                      ? undefined
+                      : (hours) =>
+                          formState.dirtySetLaborItems((prev) => [
+                            ...prev,
+                            {
+                              description: tClock('laborDescription'),
+                              hours,
+                              rate: props.defaultLaborRate,
+                              total: Math.round(hours * props.defaultLaborRate * 100) / 100,
+                              pricingType: 'hourly' as const,
+                            },
+                          ])
+                  }
+                />
 
+                <Lockable locked={locked} label={lockedLabel}>
                   <WarrantySection
                     value={formState.warranty}
                     onChange={formState.dirtySetWarranty}
@@ -340,20 +404,22 @@ export function ModernDetails(props: ModernDetailsProps) {
                     distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                     serviceDate={formState.initialData.serviceDate}
                   />
+                </Lockable>
 
-                  <AppCard
-                    icon={Receipt}
-                    title={t('modern.invoiceTitle')}
-                    action={
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${paymentStatusColors[formState.paymentStatus] || ''}`}
-                      >
-                        {paymentStatusLabels[formState.paymentStatus] || t('header.unpaid')}
-                      </Badge>
-                    }
-                    contentClassName="p-0"
-                  >
+                <AppCard
+                  icon={Receipt}
+                  title={t('modern.invoiceTitle')}
+                  action={
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${paymentStatusColors[formState.paymentStatus] || ''}`}
+                    >
+                      {paymentStatusLabels[formState.paymentStatus] || t('header.unpaid')}
+                    </Badge>
+                  }
+                  contentClassName="p-0"
+                >
+                  <Lockable locked={locked}>
                     <div className="border-b border-card-edge/60 p-5 pt-4">
                       <InvoiceDetailsSection
                         part="invoice"
@@ -393,54 +459,54 @@ export function ModernDetails(props: ModernDetailsProps) {
                         currencyCode={currencyCode}
                       />
                     </div>
-                    <div className="space-y-3 p-5">
-                      <PaymentsSection
-                        payments={record.payments || []}
-                        paymentStatus={formState.paymentStatus}
-                        manuallyPaid={record.manuallyPaid}
-                        totalPaid={formState.totalPaid}
-                        displayTotal={formState.displayTotal}
-                        balanceDue={formState.balanceDue}
-                        currencyCode={currencyCode}
-                        onCreatePayment={actions.handleCreatePayment}
-                        onDeletePayment={actions.handleDeletePayment}
-                        onTogglePaid={actions.handleTogglePaid}
-                        paymentLoading={actions.paymentLoading}
-                        deletingPayment={actions.deletingPayment}
-                        openFormSignal={paymentSignal}
-                      />
-                    </div>
-                  </AppCard>
-                </Lockable>
+                  </Lockable>
+                  <div className="space-y-3 p-5">
+                    <PaymentsSection
+                      payments={record.payments || []}
+                      paymentStatus={formState.paymentStatus}
+                      manuallyPaid={record.manuallyPaid}
+                      totalPaid={formState.totalPaid}
+                      displayTotal={formState.displayTotal}
+                      balanceDue={formState.balanceDue}
+                      currencyCode={currencyCode}
+                      onCreatePayment={actions.handleCreatePayment}
+                      onDeletePayment={actions.handleDeletePayment}
+                      onTogglePaid={actions.handleTogglePaid}
+                      paymentLoading={actions.paymentLoading}
+                      deletingPayment={actions.deletingPayment}
+                      openFormSignal={paymentSignal}
+                    />
+                  </div>
+                </AppCard>
+
+                {record.publicToken && (
+                  <SharedLinkCard
+                    publicToken={record.publicToken}
+                    organizationId={props.organizationId}
+                    type="invoice"
+                    sharedAt={record.sharedAt}
+                    viewCount={record.viewCount}
+                    lastViewedAt={record.lastViewedAt}
+                    onRevoke={async () => {
+                      await revokePublicLink(record.id)
+                      router.refresh()
+                    }}
+                  />
+                )}
+
+                {props.videoCall && (
+                  <VideoCallSection
+                    serviceRecordId={record.id}
+                    videoCall={props.videoCall}
+                    scheduled={Boolean(formState.initialData.startDateTime)}
+                    customer={customer}
+                    smsEnabled={props.smsEnabled}
+                    emailEnabled={props.emailEnabled}
+                    telegramEnabled={props.telegramEnabled}
+                  />
+                )}
 
                 <Lockable locked={locked}>
-                  {record.publicToken && (
-                    <SharedLinkCard
-                      publicToken={record.publicToken}
-                      organizationId={props.organizationId}
-                      type="invoice"
-                      sharedAt={record.sharedAt}
-                      viewCount={record.viewCount}
-                      lastViewedAt={record.lastViewedAt}
-                      onRevoke={async () => {
-                        await revokePublicLink(record.id)
-                        router.refresh()
-                      }}
-                    />
-                  )}
-
-                  {props.videoCall && (
-                    <VideoCallSection
-                      serviceRecordId={record.id}
-                      videoCall={props.videoCall}
-                      scheduled={Boolean(formState.initialData.startDateTime)}
-                      customer={customer}
-                      smsEnabled={props.smsEnabled}
-                      emailEnabled={props.emailEnabled}
-                      telegramEnabled={props.telegramEnabled}
-                    />
-                  )}
-
                   <CustomFieldsForm
                     entityId={record.id}
                     entityType="service_record"

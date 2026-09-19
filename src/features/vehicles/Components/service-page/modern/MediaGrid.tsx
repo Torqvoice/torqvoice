@@ -11,11 +11,13 @@ import {
   FileText,
   Film,
   Loader2,
+  Play,
   Trash2,
   Upload,
   type LucideIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAttachment'
 import { updateServiceAttachment } from '@/features/vehicles/Actions/updateServiceAttachment'
 import { deleteServiceAttachment } from '@/features/vehicles/Actions/serviceActions'
@@ -89,6 +91,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
   const [dragging, setDragging] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
+  const [playing, setPlaying] = useState<Attachment | null>(null)
 
   // The tiles follow the job: a photo filed under a concern elsewhere on the
   // page arrives with the refreshed record and belongs here too.
@@ -114,7 +117,14 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
         toast.error(t('modern.media.limit', { count: items.length, max }))
         return
       }
-      chosen = chosen.slice(0, room)
+      if (chosen.length > room) {
+        toast.warning(
+          t(kind === 'image' ? 'images.onlyUploading' : 'documents.onlyUploading', {
+            count: room,
+          })
+        )
+        chosen = chosen.slice(0, room)
+      }
     }
     if (chosen.length === 0) return
 
@@ -140,8 +150,10 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
             fileType: data.fileType,
             fileSize: data.fileSize,
             category: kind,
-            // A video is not something an invoice can print.
-            includeInInvoice: kind !== 'video',
+            // Shown to the customer unless somebody says otherwise, as the
+            // classic tabs do. For a video that means the shared link, which
+            // plays it; the printed invoice has nothing to draw for one.
+            includeInInvoice: true,
           },
         })
         if (result.success && result.data) {
@@ -198,6 +210,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
     <div className="grid grid-cols-2 gap-3 p-5 pt-4 @xl:grid-cols-3 @3xl:grid-cols-4">
       {items.map((file, index) => {
         const isImage = file.fileType.startsWith('image/')
+        const isVideo = file.fileType.startsWith('video/')
         return (
           <div
             key={file.id}
@@ -217,6 +230,28 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
                     alt={file.description || file.fileName}
                     className="h-full w-full object-cover"
                   />
+                </button>
+              ) : isVideo ? (
+                // The first frame as the tile, and a player a click away:
+                // the classic tab played video on the page, not in a new tab.
+                <button
+                  type="button"
+                  onClick={() => setPlaying(file)}
+                  className="relative h-full w-full cursor-pointer bg-black"
+                  aria-label={file.description || file.fileName}
+                >
+                  <video
+                    src={`${file.fileUrl}#t=0.1`}
+                    preload="metadata"
+                    muted
+                    playsInline
+                    className="pointer-events-none h-full w-full object-cover"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm">
+                      <Play className="ml-0.5 h-4 w-4" aria-hidden="true" />
+                    </span>
+                  </span>
                 </button>
               ) : (
                 <a
@@ -358,6 +393,23 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
           e.target.value = ''
         }}
       />
+
+      <Dialog open={playing !== null} onOpenChange={(open) => !open && setPlaying(null)}>
+        <DialogContent className="max-w-3xl p-3">
+          <DialogTitle className="truncate pr-8 text-sm">
+            {playing?.description || playing?.fileName}
+          </DialogTitle>
+          {playing && (
+            <video
+              src={playing.fileUrl}
+              controls
+              autoPlay
+              playsInline
+              className="max-h-[75vh] w-full rounded-md bg-black"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {kind === 'image' && (
         <ImageCarousel

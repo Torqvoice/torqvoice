@@ -59,7 +59,8 @@ export function JobClockSection({
 }: {
   serviceRecordId: string
   initial: JobClock
-  onAddLabor: (hours: number) => void
+  /** Absent on a locked invoice: a labor line is what the lock freezes. */
+  onAddLabor?: (hours: number) => void
 }) {
   const t = useTranslations('timeTracking.job')
   const tPage = useTranslations('timeTracking.page')
@@ -167,7 +168,7 @@ export function JobClockSection({
   }
 
   const addAsLabor =
-    totalMinutes > 0 ? (
+    onAddLabor && totalMinutes > 0 ? (
       <Button
         type="button"
         size="sm"

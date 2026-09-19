@@ -65,10 +65,26 @@ export function FilesMediaCard({
   const diagnostics = documents.filter((file) => file.category === 'diagnostic')
   const otherDocuments = documents.filter((file) => file.category !== 'diagnostic')
 
-  const tabs: { value: FileTab; label: string; count: number }[] = [
-    { value: 'images', label: t('modern.media.tabs.photos'), count: images.length },
-    { value: 'documents', label: t('header.tabs.documents'), count: otherDocuments.length },
-    { value: 'diagnostics', label: t('modern.media.tabs.diagnostics'), count: diagnostics.length },
+  // A tab under a plan cap says how much of it is used, as the classic photo tab did.
+  const tabs: { value: FileTab; label: string; count: number; max?: number }[] = [
+    {
+      value: 'images',
+      label: t('modern.media.tabs.photos'),
+      count: images.length,
+      max: capOf(maxImages),
+    },
+    {
+      value: 'documents',
+      label: t('header.tabs.documents'),
+      count: otherDocuments.length,
+      max: capOf(maxDocuments),
+    },
+    {
+      value: 'diagnostics',
+      label: t('modern.media.tabs.diagnostics'),
+      count: diagnostics.length,
+      max: capOf(maxDiagnostics),
+    },
     { value: 'video', label: t('header.tabs.video'), count: videos.length },
     ...(statusReports
       ? [
@@ -127,7 +143,7 @@ export function FilesMediaCard({
             >
               {item.label}
               <span className="rounded bg-muted px-1.5 text-[11px] tabular-nums text-foreground">
-                {item.count}
+                {item.max !== undefined ? `${item.count} / ${item.max}` : item.count}
               </span>
             </button>
           ))}
