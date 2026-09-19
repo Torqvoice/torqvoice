@@ -78,7 +78,10 @@
     "addTechnician": "Aggiungi Tecnico",
     "standaloneOnly": "Un nome sulla lavagna per chi non accede, come un apprendista o un esterno. Per un meccanico che usa l'app, aggiungilo dalla pagina Team.",
     "linkedTo": "Accede come {name}",
-    "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app."
+    "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app.",
+    "skills": "Skills",
+    "skillsPlaceholder": "Diagnostics, EV certified",
+    "skillsHint": "Shown under the name where work is handed out. Optional."
   },
   "jobDetail": {
     "viewDetails": "Visualizza Dettagli",

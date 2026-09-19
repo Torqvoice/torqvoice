@@ -46,10 +46,23 @@ export const serviceAttachmentSchema = z.object({
  * points at them. Findings point at concerns, so a concern that survives an
  * edit has to keep its id or the link from its diagnosis is quietly cut.
  */
+/** Long enough for a paragraph, short enough that nobody pastes a manual in. */
+const concernText = z.string().max(2000).nullable().optional()
+
 export const serviceConcernSchema = z.object({
   id: z.string().optional(),
+  /** The condition: what the customer reported, or what was observed. */
   description: z.string().min(1, 'Concern is required'),
   sortOrder: z.coerce.number().int().min(0).default(0),
+  cause: concernText,
+  correction: concernText,
+  /** How the fix was checked. */
+  confirmation: concernText,
+  /**
+   * Whether somebody has ticked this concern as confirmed. Who and when are
+   * the server's to say, from the session, at the moment the tick arrives.
+   */
+  confirmed: z.boolean().optional(),
 })
 
 export const createServiceSchema = z.object({

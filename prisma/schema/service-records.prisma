@@ -9,6 +9,9 @@ model ServiceRecord {
   serviceDate     DateTime  @default(now())
   startDateTime   DateTime?
   endDateTime     DateTime?
+  /// When the customer was told the vehicle would be ready. Not the booking:
+  /// `endDateTime` is when the work is planned to finish, this is the promise.
+  promisedAt      DateTime?
   shopName        String?
   techName        String?
   parts           String?
@@ -52,6 +55,12 @@ model ServiceRecord {
   lastViewedAt DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  /// Who opened the job, when a person did. Null for work the system made
+  /// (a customer's online booking, a recurring invoice, an import) and for
+  /// everything older than this column.
+  createdById String?
+  createdBy   User?   @relation("ServiceRecordCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   /// First time this invoice reached the customer, by email or share link.
   /// Distinct from sharedAt, which tracks only the link and is cleared when
@@ -180,12 +189,28 @@ model ServiceConcern {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  /// The rest of the story this concern starts: condition, cause, correction,
+  /// confirmation. `description` is the condition. The cause is the sentence
+  /// the customer is told; the structured findings hang off `findings` below.
+  cause        String?
+  /// What was done about it.
+  correction   String?
+  /// How the fix was checked: the test drive, the re-scan, the symptom gone.
+  confirmation String?
+  /// Set when somebody ticks the concern as confirmed, cleared when unticked.
+  /// Stamped by the server from the session, never taken from the client.
+  confirmedAt   DateTime?
+  confirmedById String?
+  confirmedBy   User?     @relation("ConcernConfirmedBy", fields: [confirmedById], references: [id], onDelete: SetNull)
+
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
 
   /// What the shop found when it went looking. Empty means nobody has answered
   /// this one yet, which is worth being able to ask about before closing a job.
-  findings VehicleFinding[]
+  findings    VehicleFinding[]
+  /// Photos and video filed under this concern.
+  attachments ServiceAttachment[]
 
   @@index([serviceRecordId])
   @@map("service_concerns")
@@ -229,7 +254,15 @@ model ServiceAttachment {
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
 
+  /// The concern this photo or video is evidence for, when it was added from
+  /// that concern's row. It is still one of the job's files, listed with the
+  /// rest. SetNull, because a picture of the car outlives the sentence it
+  /// was filed under.
+  concernId String?
+  concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
+
   @@index([serviceRecordId])
+  @@index([concernId])
   @@map("service_attachments")
 }
 

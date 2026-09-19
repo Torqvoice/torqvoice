@@ -21,7 +21,8 @@
       "title": "Заказу нужно название, прежде чем его можно сохранить.",
       "negative": "Количество, часы, цены и затраты не могут быть отрицательными.",
       "partName": "У каждой детали с ценой должно быть название.",
-      "laborDescription": "У каждой строки работ с часами или ставкой должно быть описание."
+      "laborDescription": "У каждой строки работ с часами или ставкой должно быть описание.",
+      "concernCondition": "A concern with a cause, correction or confirmation needs its condition filled in."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Заменить",
     "aiOverwriteAppend": "Добавить",
     "aiOverwriteCancel": "Отмена",
-    "aiDontShowAgain": "Больше не показывать"
+    "aiDontShowAgain": "Больше не показывать",
+    "internalTitle": "Internal notes",
+    "publicTitle": "Customer notes"
   },
   "invoice": {
     "title": "Итоги по счёту",
@@ -248,7 +251,10 @@
     "failedDelete": "Не удалось удалить платёж",
     "deleteTitle": "Удалить платёж",
     "deleteDescription": "Эта запись платежа будет удалена.",
-    "failedPdf": "Не удалось сгенерировать PDF-счёт"
+    "failedPdf": "Не удалось сгенерировать PDF-счёт",
+    "received": "Payments received",
+    "noneYet": "Nothing paid yet.",
+    "balanceDue": "Balance due"
   },
   "attachments": {
     "deleteTitle": "Удалить вложение",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Выбрать ближайшее свободное время",
     "findingSlot": "Поиск времени…",
     "slotPicked": "Назначено на ближайшее свободное время",
-    "noSlotFound": "В ближайшие недели свободного времени не найдено"
+    "noSlotFound": "В ближайшие недели свободного времени не найдено",
+    "assignedTitle": "Assigned technician",
+    "boardLink": "Work board",
+    "someoneElse": "Someone else",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h free",
+    "loadFull": "Fully booked",
+    "loadOn": "Booked hours on {date}",
+    "promisedAt": "Promised to customer",
+    "promisedPlaceholder": "Not promised yet",
+    "promisedClear": "Clear"
   },
   "notifications": {
     "title": "Уведомления клиента",
@@ -447,7 +463,43 @@
     "placeholder": "При торможении сзади слышен шум",
     "remove": "Удалить этот пункт",
     "notAnswered": "По этому пункту пока ничего не найдено",
-    "answered": "Найдено по этому пункту: {count}"
+    "answered": "Найдено по этому пункту: {count}",
+    "storyTitle": "Job description",
+    "storyHint": "Condition, cause, correction, confirm. One row for each thing the customer mentioned or you observed.",
+    "steps": {
+      "condition": "Condition",
+      "cause": "Cause",
+      "correction": "Correction",
+      "confirm": "Confirm"
+    },
+    "conditionPlaceholder": "What the customer reported, or what you observed",
+    "causePlaceholder": "What testing showed the root cause to be",
+    "correctionPlaceholder": "What was done to fix it",
+    "confirmPlaceholder": "How the fix was checked: test drive, re-scan, symptom gone",
+    "markConfirmed": "Confirmed",
+    "confirmedBy": "Confirmed by {name}, {date}",
+    "confirmedAt": "Confirmed {date}",
+    "confirmedOnSave": "Stamped with your name when you save",
+    "confirmedCount": "{confirmed} of {total} confirmed",
+    "findingsCount": "{count, plural, one {# observation} other {# observations}}",
+    "addFinding": "Add observation",
+    "unconfirmedTitle": "Complete with unconfirmed concerns?",
+    "unconfirmedBody": "{count, plural, one {One concern has not been confirmed as fixed:} other {# concerns have not been confirmed as fixed:}}",
+    "unconfirmedProceed": "Complete anyway",
+    "addMedia": "Add media",
+    "mediaUploading": "Uploading…",
+    "mediaAdded": "{count, plural, one {# file added} other {# files added}}",
+    "mediaFailed": "Could not upload {name}",
+    "mediaTypes": "Choose a photo (JPG, PNG, WebP) or a video.",
+    "dictate": {
+      "start": "Dictate",
+      "listening": "Listening",
+      "startHint": "Speak and it is written here. Nothing is recorded.",
+      "stopHint": "Stop listening",
+      "notAllowed": "The browser was not allowed to use the microphone. Allow it for this site and try again.",
+      "noMicrophone": "No microphone was found.",
+      "failed": "Dictation stopped. Try again."
+    }
   },
   "videoCall": {
     "title": "Видеозвонок",
@@ -492,6 +544,64 @@
       "invitationNoTime": "Здравствуйте, {name}! Вот ссылка на видеозвонок по поводу {vehicle}: {url}",
       "joinLine": "Подключиться к видеозвонку: {url}",
       "emailSubject": "Видеозвонок по поводу вашего {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Work order status",
+    "back": "Back",
+    "backToClassic": "Back to the classic layout",
+    "openCustomer": "Open customer",
+    "serviceHistory": "Service history",
+    "changeVehicle": "Change vehicle",
+    "vehicleChangesOnSave": "The work order moves to this vehicle when you save.",
+    "phone": "Phone",
+    "email": "Email",
+    "notSet": "Not set",
+    "noCustomer": "No customer on this work order.",
+    "invoiceTitle": "Invoice & payment",
+    "previewInvoice": "Preview invoice",
+    "sendToCustomer": "Send to customer",
+    "filesTitle": "Files & media",
+    "activity": {
+      "title": "Activity",
+      "messageSent": "Message sent to the customer",
+      "linkShared": "Invoice link shared",
+      "linkViewed": "{count, plural, one {Customer opened the link} other {Customer opened the link # times}}",
+      "paymentTaken": "Payment of {amount} recorded"
+    },
+    "invite": {
+      "title": "The work order page has been overhauled.",
+      "body": "A clearer layout with the same fields. You can switch back at any time.",
+      "try": "Try it now",
+      "dismiss": "Not now",
+      "menu": "Try the new layout"
+    },
+    "promised": "Promised {date}",
+    "promisedOverdue": "Promised {date}, overdue",
+    "opened": "Opened {date}",
+    "openedBy": "Opened {date} by {name}",
+    "editTitle": "Edit title",
+    "titleField": "Title",
+    "media": {
+      "tabs": {
+        "photos": "Photos",
+        "diagnostics": "Diagnostics"
+      },
+      "summary": "{count, plural, one {# file} other {# files}} · shared with the customer only when marked",
+      "customerCanSee": "Customer can see",
+      "showToCustomer": "Show to the customer",
+      "hideFromCustomer": "Hide from the customer",
+      "add": {
+        "image": "Add photos",
+        "document": "Add documents",
+        "diagnostic": "Add diagnostic report",
+        "video": "Add video"
+      },
+      "dropHint": "Drop files or click to browse",
+      "added": "{count, plural, one {# file added} other {# files added}}",
+      "failed": "Could not upload {name}",
+      "wrongType": "Not the right kind of file for this tab: {names}",
+      "limit": "Limit reached ({count}/{max})"
     }
   }
 }

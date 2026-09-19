@@ -35,6 +35,7 @@ import { PageHeader } from '@/components/page-header'
 import { getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDayKey } from '@/lib/timezone'
+import { resolveWorkOrderLayout } from '@/lib/work-order-layout.server'
 
 /**
  * Shared server component behind both service-record routes:
@@ -63,6 +64,7 @@ export async function ServiceRecordPage({
     videoCallResult,
     designOptionsResult,
     jobClockResult,
+    initialLayout,
   ] = await Promise.all([
     getServiceRecord(serviceId),
     getSettings([
@@ -89,6 +91,7 @@ export async function ServiceRecordPage({
     getServiceVideoCall(serviceId),
     listDesignOptions('invoice'),
     getJobClock(serviceId),
+    resolveWorkOrderLayout(),
   ])
 
   if (!result.success || !result.data) {
@@ -130,7 +133,14 @@ export async function ServiceRecordPage({
     : null
   const boardTechnicians = (
     techniciansResult.success && techniciansResult.data ? techniciansResult.data : []
-  ).map((t) => ({ id: t.id, name: t.name, userId: t.userId }))
+  ).map((t) => ({
+    id: t.id,
+    name: t.name,
+    userId: t.userId,
+    color: t.color,
+    dailyCapacity: t.dailyCapacity,
+    skills: t.skills,
+  }))
   const workBays = (workBaysResult.success && workBaysResult.data ? workBaysResult.data : []).map(
     (b) => ({ id: b.id, name: b.name })
   )
@@ -224,6 +234,12 @@ export async function ServiceRecordPage({
       id: c.id,
       description: c.description,
       sortOrder: c.sortOrder,
+      cause: c.cause,
+      correction: c.correction,
+      confirmation: c.confirmation,
+      confirmed: Boolean(c.confirmedAt),
+      confirmedAt: c.confirmedAt ? c.confirmedAt.toISOString() : null,
+      confirmedByName: c.confirmedBy?.name ?? null,
     })),
     partItems: record.partItems.map((p) => ({
       partNumber: p.partNumber || '',
@@ -385,6 +401,7 @@ export async function ServiceRecordPage({
             : { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' }
         }
         designPinnedAt={designPinnedAt}
+        initialLayout={initialLayout}
       />
     </div>
   )

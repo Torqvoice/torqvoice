@@ -3,7 +3,8 @@ import { calculateTotals } from '@/lib/tax'
 import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
-import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSchema'
+import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
+import type { ConcernRow } from '../service-edit/form-types'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 
@@ -30,7 +31,7 @@ export function useServiceFormState({
   const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
   const [status, setStatus] = useState(initialData.status || 'completed')
-  const [concerns, setConcerns] = useState<ServiceConcernInput[]>(initialData.concerns || [])
+  const [concerns, setConcerns] = useState<ConcernRow[]>(initialData.concerns || [])
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData.partItems || [])
   const { schedule: scheduleCommit, cancel: cancelCommit } = useDeferredCommit()
   const [laborItems, setLaborItems] = useState<ServiceLaborInput[]>(initialData.laborItems || [])
@@ -85,6 +86,19 @@ export function useServiceFormState({
   // "Unsaved changes" would offer a save that can never complete (and keep
   // the beforeunload warning armed). Drop both: the lock has closed every
   // route those edits could take.
+  // A save gives new concerns their ids and stamps who confirmed what; the
+  // page is refreshed after it, and the rows here have to follow. Without
+  // this a concern typed in this session went back without an id on the next
+  // save, was taken for a new one, and the saved row was deleted with every
+  // finding that pointed at it.
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
+  hasUnsavedChangesRef.current = hasUnsavedChanges
+  const savedConcernsKey = JSON.stringify(initialData.concerns ?? [])
+  useEffect(() => {
+    const saved: ConcernRow[] = JSON.parse(savedConcernsKey)
+    setConcerns((current) => reconcileConcernRows(current, saved, hasUnsavedChangesRef.current))
+  }, [savedConcernsKey])
+
   useEffect(() => {
     if (!locked) return
     if (autosaveTimer.current) {

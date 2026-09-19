@@ -50,7 +50,7 @@ export function AppCard({
     <div
       data-slot="card"
       className={cn(
-        'group/card relative flex flex-col overflow-hidden rounded-xl border border-card-edge bg-card text-card-foreground',
+        'group/card relative flex flex-col overflow-hidden rounded-lg border border-card-edge bg-card text-card-foreground',
         // Two shadows instead of one: a crisp 1px seat and a soft, low drop.
         // Reads as depth rather than the flat grey smudge of shadow-sm.
         'shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)]',
@@ -79,7 +79,7 @@ export function AppCard({
             <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight">
               <span className="truncate">{title}</span>
               {badge != null && (
-                <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-px text-[11px] font-semibold tabular-nums text-primary ring-1 ring-inset ring-primary/15">
+                <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-px text-[11px] font-semibold tabular-nums text-primary ring-1 ring-inset ring-primary/15">
                   {badge}
                 </span>
               )}

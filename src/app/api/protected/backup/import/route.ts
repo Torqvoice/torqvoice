@@ -131,6 +131,7 @@ async function importServiceRecordTree(
       serviceDate: toSafeDate(sr.serviceDate as string),
       startDateTime: startDT ?? undefined,
       endDateTime: endDT ?? undefined,
+      promisedAt: sr.promisedAt ? (toSafeDate(sr.promisedAt as string) ?? null) : null,
       shopName: (sr.shopName as string) || null,
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
@@ -152,7 +153,9 @@ async function importServiceRecordTree(
       ...warrantyFromUntyped(sr),
       warrantyExpiresAt: sr.warrantyExpiresAt ? toSafeDate(sr.warrantyExpiresAt as string) : null,
       publicToken: (sr.publicToken as string) || null,
-      technicianId: (sr.technicianId as string) || null,
+      // Only a technician this import restored: a job pointing at one the
+      // backup does not carry would be refused, and take the import with it.
+      technicianId: keptReference(sr.technicianId, opts.technicianIds),
       workBayId: (sr.workBayId as string) || null,
       sortOrder: (sr.sortOrder as number) || 0,
       createdAt: toSafeDate(sr.createdAt as string),
@@ -201,6 +204,13 @@ async function importServiceRecordTree(
         id: c.id as string,
         description: c.description as string,
         sortOrder: (c.sortOrder as number) ?? index,
+        cause: (c.cause as string) || null,
+        correction: (c.correction as string) || null,
+        confirmation: (c.confirmation as string) || null,
+        // When it was confirmed comes back; who does not. The id belongs to
+        // an account in the installation the backup was taken from, and the
+        // same person here has another one, if they are here at all.
+        confirmedAt: c.confirmedAt ? (toSafeDate(c.confirmedAt as string) ?? null) : null,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -222,6 +232,7 @@ async function importServiceRecordTree(
   }
 
   // Service attachments
+  const restoredConcernIds = new Set((concerns ?? []).map((c) => c.id as string))
   const attachments = sr.attachments as Record<string, unknown>[] | undefined
   if (attachments?.length) {
     await tx.serviceAttachment.createMany({
@@ -236,6 +247,8 @@ async function importServiceRecordTree(
         includeInInvoice: a.includeInInvoice !== false,
         createdAt: toSafeDate(a.createdAt as string),
         serviceRecordId: sr.id as string,
+        // The concern it was filed under, when this record restored it above.
+        concernId: keptReference(a.concernId, restoredConcernIds),
       })),
     })
   }
@@ -613,6 +626,28 @@ export async function POST(request: NextRequest) {
 
       // 4. Insert technicians
       if (data.technicians?.length) {
+        // A technician can be linked to a person's account, and a backup only
+        // carries that account's id. Restored into another installation, or
+        // into this one after the person was removed, the id points at nobody
+        // and the foreign key refuses the whole import. The link is kept only
+        // for people who are members of this workshop today; anybody else
+        // comes back as a board-only technician, name and all, and can be
+        // linked again from the team page.
+        const linkedUserIds = [
+          ...new Set(
+            (data.technicians as Record<string, unknown>[])
+              .map((t) => t.userId)
+              .filter((id): id is string => typeof id === 'string' && id.length > 0)
+          ),
+        ]
+        const members = linkedUserIds.length
+          ? await tx.organizationMember.findMany({
+              where: { organizationId: ctx.organizationId, userId: { in: linkedUserIds } },
+              select: { userId: true },
+            })
+          : []
+        const memberUserIds = new Set(members.map((m) => m.userId))
+
         await tx.technician.createMany({
           data: (data.technicians as Record<string, unknown>[]).map(
             (t: Record<string, unknown>) => ({
@@ -622,7 +657,9 @@ export async function POST(request: NextRequest) {
               isActive: t.isActive !== false,
               sortOrder: (t.sortOrder as number) || 0,
               dailyCapacity: (t.dailyCapacity as number) || 480,
-              userId: (t.userId as string) || null, // memberId from old backups ignored — no FK to users
+              skills: (t.skills as string) || null,
+              // memberId from old backups is ignored: it has no FK to users.
+              userId: typeof t.userId === 'string' && memberUserIds.has(t.userId) ? t.userId : null,
               createdAt: toSafeDate(t.createdAt as string),
               updatedAt: toSafeDate(t.updatedAt as string),
               organizationId: ctx.organizationId,

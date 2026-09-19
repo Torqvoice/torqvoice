@@ -1,3 +1,4 @@
+import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
 import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
@@ -12,6 +13,11 @@ export interface BoardTechnicianOption {
   id: string
   name: string
   userId?: string | null
+  color?: string | null
+  /** Minutes in the technician's working day. */
+  dailyCapacity?: number | null
+  /** What they are good at, in the workshop's words. */
+  skills?: string | null
 }
 
 export interface WorkBayOption {
@@ -136,6 +142,11 @@ export interface ServicePageClientProps {
     createdAt: string
     toNumber: string
   }[]
+  /**
+   * The layout this browser asked for, read from its cookie on the server so
+   * the first paint is already the right page. Classic unless somebody opted in.
+   */
+  initialLayout?: WorkOrderLayout
 }
 
 export type {
