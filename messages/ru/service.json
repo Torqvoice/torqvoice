@@ -628,6 +628,17 @@
       "previewShort": "Просмотр",
       "send": "Отправить клиенту",
       "sendShort": "Отправить"
+    },
+    "vehicleInfo": {
+      "more": "Подробнее",
+      "less": "Свернуть",
+      "copy": "Копировать: {label}",
+      "copied": "Скопировано",
+      "lastInspection": "Последний техосмотр",
+      "purchaseDate": "Дата покупки",
+      "purchasePrice": "Цена покупки",
+      "overdue": "просрочен",
+      "customerSince": "Клиент с"
     }
   }
 }

@@ -123,6 +123,52 @@ test.describe('the overhauled work order page', () => {
     await expect(page.locator('#mileage')).toHaveValue('123456')
   })
 
+  test('shows the whole customer and vehicle under "More info", with the VIN one click from the clipboard', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'], {
+      origin: baseURL ?? 'http://127.0.0.1:3100',
+    })
+    await openModern(page, factsJob)
+    const facts = page.getByTestId('job-facts')
+    const details = facts.getByTestId('vehicle-details')
+    await expect(details).toHaveCount(0)
+
+    await expect(async () => {
+      await facts.getByRole('button', { name: 'More info' }).click()
+      await expect(details).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+    await expect(details.getByTestId('vehicle-detail-vehicle')).toContainText('Camry')
+    // The same switch opens the customer's half: every customer has a "since".
+    await expect(facts.getByTestId('customer-details')).toContainText('Customer since')
+
+    // The reason for the list: the VIN, copied without leaving the job.
+    const vinRow = details.getByTestId('vehicle-detail-vin')
+    const vin = (await vinRow.locator('dd span').first().innerText()).trim()
+    expect(vin).toMatch(/^[A-HJ-NPR-Z0-9]{17}$/)
+    await vinRow.getByRole('button', { name: 'Copy VIN' }).click()
+    await expect(vinRow.getByRole('button', { name: 'Copied' })).toBeVisible()
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(vin)
+
+    // The plate on the card copies too; the vehicle's name is the link.
+    const plate = facts.getByTestId('copy-plate')
+    const plateText = (await plate.innerText()).trim()
+    await plate.click()
+    await expect(plate).toContainText('Copied')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(plateText)
+    await expect(plate).toHaveText(plateText)
+
+    // Left open, it opens again next time; closed, it stays closed.
+    await page.reload()
+    await settle(page)
+    await expect(page.getByTestId('vehicle-details')).toBeVisible()
+    await page.getByTestId('job-facts').getByRole('button', { name: 'Less info' }).click()
+    await expect(page.getByTestId('vehicle-details')).toHaveCount(0)
+    await expect(page.getByTestId('customer-details')).toHaveCount(0)
+  })
+
   test('writes in both notes from a click anywhere in the box, and saves them', async ({
     page,
   }) => {
@@ -348,8 +394,12 @@ test.describe('the overhauled work order page', () => {
         page.getByText('This invoice is locked because it has been sent', { exact: true })
       ).toBeVisible()
 
-      // Frozen: the lines, and the notes the invoice prints.
+      // Frozen: the lines, the mileage, and the notes the invoice prints.
       await expect(partRows(page).first()).toBeDisabled()
+      await expect(page.locator('#mileage')).toBeDisabled()
+      // Still readable: the vehicle's details open on a locked invoice too.
+      await page.getByTestId('job-facts').getByRole('button', { name: 'More info' }).click()
+      await expect(page.getByTestId('vehicle-details')).toBeVisible()
       await expect(page.getByTestId('notes-customer').locator('.ProseMirror')).toHaveAttribute(
         'contenteditable',
         'false'

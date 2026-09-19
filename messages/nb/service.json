@@ -628,6 +628,17 @@
       "previewShort": "Forhåndsvis",
       "send": "Send til kunden",
       "sendShort": "Send"
+    },
+    "vehicleInfo": {
+      "more": "Mer info",
+      "less": "Mindre info",
+      "copy": "Kopier {label}",
+      "copied": "Kopiert",
+      "lastInspection": "Forrige EU-kontroll",
+      "purchaseDate": "Kjøpsdato",
+      "purchasePrice": "Kjøpspris",
+      "overdue": "forfalt",
+      "customerSince": "Kunde siden"
     }
   }
 }

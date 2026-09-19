@@ -167,6 +167,27 @@ test.describe('the overhauled work order page', () => {
     const layout = page.getByTestId('service-layout-modern')
     await expect(layout).toBeVisible()
 
+    // The money bar is a desktop thing: the page already carries its totals,
+    // payment form, preview and send, and a phone has no height to spare.
+    await expect(page.getByTestId('money-bar')).toBeHidden()
+    // The header's second line is which job this is; when it was opened is
+    // left for a wider screen.
+    await expect(page.getByTestId('service-opened')).toBeHidden()
+
+    // Each stage of the status stepper stays in its own space: a label is cut
+    // short rather than running into the next stage.
+    const stages = await page
+      .getByTestId('status-stepper')
+      .getByRole('button')
+      .evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().toJSON()))
+    expect(stages).toHaveLength(4)
+    for (let i = 1; i < stages.length; i++) {
+      expect(
+        stages[i - 1].right,
+        `stage ${i} ends before stage ${i + 1} starts`
+      ).toBeLessThanOrEqual(stages[i].left)
+    }
+
     const overflow = await layout.evaluate((el) => el.scrollWidth - el.clientWidth)
     expect(overflow, 'sideways overflow in pixels').toBeLessThanOrEqual(1)
 

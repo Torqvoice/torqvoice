@@ -628,6 +628,17 @@
       "previewShort": "Podgląd",
       "send": "Wyślij klientowi",
       "sendShort": "Wyślij"
+    },
+    "vehicleInfo": {
+      "more": "Więcej informacji",
+      "less": "Mniej informacji",
+      "copy": "Kopiuj: {label}",
+      "copied": "Skopiowano",
+      "lastInspection": "Ostatni przegląd okresowy",
+      "purchaseDate": "Data zakupu",
+      "purchasePrice": "Cena zakupu",
+      "overdue": "po terminie",
+      "customerSince": "Klient od"
     }
   }
 }

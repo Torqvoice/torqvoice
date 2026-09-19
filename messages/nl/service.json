@@ -628,6 +628,17 @@
       "previewShort": "Voorbeeld",
       "send": "Naar klant sturen",
       "sendShort": "Sturen"
+    },
+    "vehicleInfo": {
+      "more": "Meer info",
+      "less": "Minder info",
+      "copy": "{label} kopiëren",
+      "copied": "Gekopieerd",
+      "lastInspection": "Laatste periodieke keuring",
+      "purchaseDate": "Aankoopdatum",
+      "purchasePrice": "Aankoopprijs",
+      "overdue": "verlopen",
+      "customerSince": "Klant sinds"
     }
   }
 }

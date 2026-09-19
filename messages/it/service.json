@@ -628,6 +628,17 @@
       "previewShort": "Anteprima",
       "send": "Invia al cliente",
       "sendShort": "Invia"
+    },
+    "vehicleInfo": {
+      "more": "Più info",
+      "less": "Meno info",
+      "copy": "Copia {label}",
+      "copied": "Copiato",
+      "lastInspection": "Ultima revisione periodica",
+      "purchaseDate": "Data di acquisto",
+      "purchasePrice": "Prezzo di acquisto",
+      "overdue": "scaduta",
+      "customerSince": "Cliente dal"
     }
   }
 }

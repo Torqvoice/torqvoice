@@ -628,6 +628,17 @@
       "previewShort": "Önizle",
       "send": "Müşteriye gönder",
       "sendShort": "Gönder"
+    },
+    "vehicleInfo": {
+      "more": "Daha fazla bilgi",
+      "less": "Daha az bilgi",
+      "copy": "{label} kopyala",
+      "copied": "Kopyalandı",
+      "lastInspection": "Son periyodik muayene",
+      "purchaseDate": "Satın alma tarihi",
+      "purchasePrice": "Satın alma fiyatı",
+      "overdue": "gecikmiş",
+      "customerSince": "Müşteri olma tarihi"
     }
   }
 }

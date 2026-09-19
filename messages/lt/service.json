@@ -628,6 +628,17 @@
       "previewShort": "Peržiūra",
       "send": "Siųsti klientui",
       "sendShort": "Siųsti"
+    },
+    "vehicleInfo": {
+      "more": "Daugiau informacijos",
+      "less": "Mažiau informacijos",
+      "copy": "Kopijuoti: {label}",
+      "copied": "Nukopijuota",
+      "lastInspection": "Paskutinė periodinė apžiūra",
+      "purchaseDate": "Pirkimo data",
+      "purchasePrice": "Pirkimo kaina",
+      "overdue": "pavėluota",
+      "customerSince": "Klientas nuo"
     }
   }
 }

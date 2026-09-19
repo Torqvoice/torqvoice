@@ -241,7 +241,10 @@ export function ModernDetails(props: ModernDetailsProps) {
         data-testid="service-layout-modern"
         className="@container min-h-0 flex-1 overflow-y-auto overscroll-contain"
       >
-        <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-3 p-4 pb-10">
+        {/* Below `md` the app's navigation is fixed over the bottom of the
+            screen; the money bar used to hold the page clear of it, and with
+            the bar gone below `lg` the padding does. */}
+        <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-3 p-4 pb-[calc(2.5rem+58px+env(safe-area-inset-bottom))] md:pb-10">
           {/* noValidate, and the rules checked in handleSubmit instead; see the
             classic form in ServicePageClient. display:contents, so the form's
             children are laid out by this column as if it were not there. */}
@@ -266,17 +269,21 @@ export function ModernDetails(props: ModernDetailsProps) {
             can be open or closed, hence container widths, not the viewport's. */}
             <div className="grid grid-cols-1 items-start gap-3 @[1080px]:grid-cols-[minmax(0,1fr)_320px] @[1240px]:grid-cols-[minmax(0,1fr)_380px] @[1400px]:grid-cols-[minmax(0,1fr)_424px]">
               <div data-testid="service-main" className="@container flex min-w-0 flex-col gap-3">
-                <Lockable locked={locked}>
-                  <JobFactsCard
-                    record={record}
-                    initialData={formState.initialData}
-                    vehicleName={formState.vehicleName}
-                    selectedVehicleId={formState.selectedVehicleId}
-                    setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
-                    techName={formState.techName}
-                    initialVehicle={props.initialVehicle}
-                  />
+                {/* Outside the lock: "More info" and copying the VIN work on a
+                    locked invoice; the card disables its own fields. */}
+                <JobFactsCard
+                  record={record}
+                  currencyCode={currencyCode}
+                  locked={locked}
+                  initialData={formState.initialData}
+                  vehicleName={formState.vehicleName}
+                  selectedVehicleId={formState.selectedVehicleId}
+                  setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
+                  techName={formState.techName}
+                  initialVehicle={props.initialVehicle}
+                />
 
+                <Lockable locked={locked}>
                   <ConcernsSection
                     concerns={formState.concerns}
                     setConcerns={formState.setConcerns}

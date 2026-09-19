@@ -25,8 +25,8 @@ interface MoneyBarProps {
  *
  * It lives outside the work order form and its fieldset, so it works on a
  * locked invoice, which is exactly the one that gets paid and sent again.
- * Below `md` the app's own navigation is fixed over the bottom of the screen,
- * so the bar stands on top of it rather than under it.
+ * Drawn from `lg` up only: a phone or tablet has too little height to give a
+ * strip of it away, and everything on the bar is on the page as well.
  */
 export function MoneyBar({
   total,
@@ -44,7 +44,10 @@ export function MoneyBar({
   return (
     <div
       data-testid="money-bar"
-      className="shrink-0 border-t bg-background/95 backdrop-blur mb-[calc(58px+env(safe-area-inset-bottom))] md:mb-0"
+      // Desktop only. On a phone or tablet it took a strip of a small screen
+      // for things the page already has: the totals and "Record payment" in
+      // the invoice card, preview and send in the header.
+      className="hidden shrink-0 border-t bg-background/95 backdrop-blur lg:block"
     >
       <div className="mx-auto flex w-full max-w-[1800px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
         <dl className="flex min-w-0 flex-1 items-baseline gap-x-5 gap-y-1">

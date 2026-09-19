@@ -10,8 +10,11 @@
  * two saves in Oslo.
  */
 import { describe, expect, it } from 'vitest'
-import { inspectionDueInput } from '@/features/vehicles/Lib/inspectionDueInput'
-import { zonedDateInput } from '@/lib/timezone'
+import {
+  inspectionDisplayDate,
+  inspectionDueInput,
+} from '@/features/vehicles/Lib/inspectionDueInput'
+import { zonedDateInput, zonedDayKey } from '@/lib/timezone'
 import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
 
 const DAY = '2026-10-19'
@@ -80,5 +83,29 @@ describe('vehicle inspection due date', () => {
 
   it('leaves the field empty for a value that is not a date', () => {
     expect(inspectionDueInput('not a date', 'manual', 'Europe/Oslo')).toBe('')
+  })
+})
+
+describe('inspection date as the work order shows it', () => {
+  // The formatter works in the workshop's zone, so what matters is the day
+  // the handed-over instant falls on there.
+  for (const tz of ['Europe/Oslo', 'America/Chicago', 'Pacific/Auckland', 'UTC']) {
+    it(`shows a registry's day and a typed day as that day in ${tz}`, () => {
+      const registry = inspectionDisplayDate(new Date(DAY), 'rdw', tz)
+      const typed = inspectionDisplayDate(toSafeWorkshopDate(DAY, tz) as Date, 'manual', tz)
+      expect(registry && zonedDayKey(registry, tz)).toBe(DAY)
+      expect(typed && zonedDayKey(typed, tz)).toBe(DAY)
+    })
+  }
+
+  it("uses the browser's own day when the workshop has no zone", () => {
+    const shown = inspectionDisplayDate(new Date(DAY), 'vegvesen', '')
+    expect(shown && [shown.getFullYear(), shown.getMonth() + 1, shown.getDate()]).toEqual([
+      2026, 10, 19,
+    ])
+  })
+
+  it('shows nothing for a value that is not a date', () => {
+    expect(inspectionDisplayDate('never', 'manual', 'Europe/Oslo')).toBeNull()
   })
 })

@@ -268,6 +268,12 @@ export async function getServiceRecord(recordId: string) {
               company: true,
               telegramChatId: true,
               invoiceDesignId: true,
+              customerNumber: true,
+              taxId: true,
+              taxExempt: true,
+              reminderOptOut: true,
+              notes: true,
+              createdAt: true,
             },
           },
           vehicle: {
@@ -279,6 +285,18 @@ export async function getServiceRecord(recordId: string) {
               vin: true,
               licensePlate: true,
               mileage: true,
+              // The facts card's "More info": what the desk would otherwise
+              // open the vehicle page to read (and copy) mid-job.
+              color: true,
+              fuelType: true,
+              transmission: true,
+              engineSize: true,
+              engineCode: true,
+              purchaseDate: true,
+              purchasePrice: true,
+              inspectionStatus: {
+                select: { dueAt: true, lastAt: true, source: true, registered: true },
+              },
               customer: {
                 select: {
                   id: true,
@@ -289,6 +307,12 @@ export async function getServiceRecord(recordId: string) {
                   company: true,
                   telegramChatId: true,
                   invoiceDesignId: true,
+                  customerNumber: true,
+                  taxId: true,
+                  taxExempt: true,
+                  reminderOptOut: true,
+                  notes: true,
+                  createdAt: true,
                 },
               },
             },

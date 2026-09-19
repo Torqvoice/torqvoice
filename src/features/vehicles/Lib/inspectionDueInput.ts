@@ -1,4 +1,4 @@
-import { zonedDateInput } from '@/lib/timezone'
+import { zonedDate, zonedDateInput } from '@/lib/timezone'
 
 /**
  * The inspection due date as the vehicle form's date field holds it,
@@ -23,4 +23,23 @@ export function inspectionDueInput(
   if (Number.isNaN(date.getTime())) return ''
   if (source && source !== 'manual') return date.toISOString().slice(0, 10)
   return zonedDateInput(date, timeZone)
+}
+
+/**
+ * An inspection date to hand to a date formatter: noon on the right day in
+ * the workshop's zone, so the formatter, which works in that zone, prints the
+ * day the registry or the workshop meant. Formatting the stored instant
+ * itself would print a registry's date a day early anywhere west of UTC.
+ * With no workshop zone the formatter uses the browser's, and so does this.
+ */
+export function inspectionDisplayDate(
+  value: Date | string,
+  source: string | null | undefined,
+  timeZone: string
+): Date | null {
+  const day = inspectionDueInput(value, source, timeZone)
+  if (!day) return null
+  const [year, month, date] = day.split('-').map(Number)
+  if (!timeZone) return new Date(year, month - 1, date, 12)
+  return zonedDate(year, month, date, 12, 0, timeZone)
 }

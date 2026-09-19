@@ -135,6 +135,20 @@ export interface Vehicle {
   vin: string | null
   licensePlate: string | null
   mileage: number
+  /** The rest of the vehicle, for the work order's "More info". Absent where a page does not load it. */
+  color?: string | null
+  fuelType?: string | null
+  transmission?: string | null
+  engineSize?: string | null
+  engineCode?: string | null
+  purchaseDate?: Date | string | null
+  purchasePrice?: number | null
+  inspectionStatus?: {
+    dueAt: Date | string | null
+    lastAt: Date | string | null
+    source: string
+    registered: boolean | null
+  } | null
   customer: {
     id: string
     name: string
@@ -144,6 +158,13 @@ export interface Vehicle {
     company: string | null
     telegramChatId: string | null
     invoiceDesignId?: string | null
+    /** For the work order's "More info". Absent where a page does not load them. */
+    customerNumber?: string | null
+    taxId?: string | null
+    taxExempt?: boolean
+    reminderOptOut?: boolean
+    notes?: string | null
+    createdAt?: Date | string
   } | null
 }
 

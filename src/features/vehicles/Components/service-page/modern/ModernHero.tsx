@@ -342,15 +342,19 @@ export function ModernHero({
                   </Link>
                 </>
               )}
+              {/* Left out on a phone or tablet: the line is for which job this
+                  is, and on a small screen when it was opened pushed the plate
+                  onto a line of its own. `contents` keeps the dot and the text
+                  in the row's own gaps from lg up, where the money bar starts too. */}
               {opened && (
-                <>
+                <span className="hidden lg:contents">
                   <span aria-hidden="true">·</span>
                   <span suppressHydrationWarning data-testid="service-opened">
                     {openedBy
                       ? t('modern.openedBy', { date: formatDateTime(opened), name: openedBy })
                       : t('modern.opened', { date: formatDateTime(opened) })}
                   </span>
-                </>
+                </span>
               )}
             </p>
           </div>
