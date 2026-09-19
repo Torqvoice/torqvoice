@@ -13,5 +13,78 @@
   "selectCustomer": "Cliente (opcional)",
   "noneOption": "Ninguno",
   "workshopHint": "Sin cliente ni vehículo: este es un recordatorio general del taller.",
-  "workshopReminder": "Taller"
+  "workshopReminder": "Taller",
+  "import": {
+    "button": "Importar",
+    "title": "Importar recordatorios",
+    "description": "Suba un archivo CSV o Excel con un recordatorio por fila. Verá cada fila antes de que se guarde nada.",
+    "drop": "Suelte aquí un archivo CSV o Excel",
+    "formats": "CSV o Excel (.xlsx), hasta {rows} filas",
+    "browse": "Elegir archivo",
+    "reading": "Leyendo el archivo...",
+    "templateHint": "Empiece con la plantilla para que las columnas sean correctas.",
+    "templateXlsx": "Plantilla de Excel",
+    "templateCsv": "Plantilla CSV",
+    "columnsTitle": "Columnas del archivo",
+    "required": {
+      "yes": "Obligatoria",
+      "dateOrMileage": "Fecha o kilometraje",
+      "no": "Opcional"
+    },
+    "columns": {
+      "title": "Qué hay que hacer, por ejemplo «Cambio de aceite».",
+      "dueDate": "El día en que vence. 2026-10-15 siempre funciona, y se detectan formatos como 15.10.2026 o 10/15/2026.",
+      "dueTime": "Hora del día, por ejemplo 14:30, en la zona horaria del taller. Déjela vacía para cualquier hora de ese día.",
+      "dueMileage": "La lectura del cuentakilómetros en la que vence, en {unit}.",
+      "description": "Cualquier detalle adicional.",
+      "licensePlate": "Vincula el recordatorio a un vehículo. Se ignoran los espacios y los guiones.",
+      "vin": "Vincula el recordatorio a un vehículo. Útil cuando no hay matrícula.",
+      "customer": "Correo electrónico, número de cliente o nombre exacto. Solo se usa si la fila no tiene vehículo.",
+      "emailNotification": "Sí o no. Envía un correo electrónico cuando vence el recordatorio. Las notificaciones en la app están siempre activas."
+    },
+    "targetRule": "Una fila sin vehículo ni cliente se convierte en un recordatorio del taller. Las filas que coinciden con un recordatorio abierto se omiten, así que subir el mismo archivo dos veces no añade nada.",
+    "summary": {
+      "ready": "Listos: {count}",
+      "duplicates": "Ya existen: {count}",
+      "errors": "Por corregir: {count}"
+    },
+    "ignoredColumns": "Columnas no leídas: {columns}",
+    "rowLabel": "Fila {line}",
+    "untitled": "(sin título)",
+    "issues": {
+      "missingTitle": "El título está vacío.",
+      "missingDue": "Necesita una fecha de vencimiento o un kilometraje de vencimiento.",
+      "badDate": "No se pudo leer la fecha «{value}».",
+      "badTime": "No se pudo leer la hora «{value}».",
+      "timeWithoutDate": "Una hora necesita una fecha de vencimiento.",
+      "badMileage": "No se pudo leer el kilometraje «{value}».",
+      "badEmailNotification": "La notificación por correo debe ser sí o no, no «{value}».",
+      "vehicleNotFound": "Ningún vehículo coincide con «{value}».",
+      "vehicleAmbiguous": "Más de un vehículo coincide con «{value}».",
+      "vehicleMismatch": "La matrícula y el VIN pertenecen a vehículos distintos ({value}).",
+      "customerNotFound": "Ningún cliente coincide con «{value}».",
+      "customerAmbiguous": "Más de un cliente coincide con «{value}». Use su correo electrónico o su número de cliente.",
+      "duplicateExisting": "Omitida: este recordatorio ya existe.",
+      "duplicateInFile": "Omitida: repite una fila anterior del archivo."
+    },
+    "fileErrors": {
+      "demo": "La importación está desactivada en la demo.",
+      "noFile": "Elija un archivo para subir.",
+      "tooLarge": "El archivo supera los 900 KB. Divídalo e impórtelo por partes.",
+      "unsupported": "Suba un archivo .csv o .xlsx.",
+      "legacyXls": "Los archivos antiguos de Excel .xls no se pueden leer. Guarde el archivo como .xlsx o .csv e inténtelo de nuevo.",
+      "empty": "El archivo no tiene filas.",
+      "unreadable": "No se pudo leer el archivo.",
+      "tooManyRows": "El archivo tiene más de {limit} filas. Divídalo e impórtelo por partes.",
+      "noTitleColumn": "El archivo no tiene una columna «Title». Descargue la plantilla para ver los encabezados esperados."
+    },
+    "chooseAnother": "Elegir otro archivo",
+    "downloadSkipped": "Descargar filas omitidas",
+    "problemColumn": "Problema",
+    "submit": "Importar {count, plural, one {# recordatorio} other {# recordatorios}}",
+    "nothingToImport": "Nada que importar",
+    "done": "{count, plural, one {# recordatorio importado} other {# recordatorios importados}}",
+    "doneSkipped": "{count, plural, one {# fila omitida} other {# filas omitidas}}",
+    "close": "Cerrar"
+  }
 }

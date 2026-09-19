@@ -13,5 +13,78 @@
   "selectCustomer": "Client (optionnel)",
   "noneOption": "Aucun",
   "workshopHint": "Aucun client ni véhicule sélectionné : rappel général pour l'atelier.",
-  "workshopReminder": "Atelier"
+  "workshopReminder": "Atelier",
+  "import": {
+    "button": "Importer",
+    "title": "Importer des rappels",
+    "description": "Téléversez un fichier CSV ou Excel avec un rappel par ligne. Vous verrez chaque ligne avant tout enregistrement.",
+    "drop": "Déposez un fichier CSV ou Excel ici",
+    "formats": "CSV ou Excel (.xlsx), jusqu'à {rows} lignes",
+    "browse": "Choisir un fichier",
+    "reading": "Lecture du fichier...",
+    "templateHint": "Partez du modèle pour avoir les bonnes colonnes.",
+    "templateXlsx": "Modèle Excel",
+    "templateCsv": "Modèle CSV",
+    "columnsTitle": "Colonnes du fichier",
+    "required": {
+      "yes": "Obligatoire",
+      "dateOrMileage": "Date ou kilométrage",
+      "no": "Facultatif"
+    },
+    "columns": {
+      "title": "Ce qu'il faut faire, par exemple « Vidange d'huile ».",
+      "dueDate": "Le jour de l'échéance. 2026-10-15 fonctionne toujours, et les formats comme 15.10.2026 ou 10/15/2026 sont détectés.",
+      "dueTime": "Heure de la journée, par exemple 14:30, dans le fuseau horaire de l'atelier. Laissez vide pour n'importe quelle heure ce jour-là.",
+      "dueMileage": "Le relevé du compteur à l'échéance, en {unit}.",
+      "description": "Tout détail supplémentaire.",
+      "licensePlate": "Associe le rappel à un véhicule. Les espaces et les tirets sont ignorés.",
+      "vin": "Associe le rappel à un véhicule, utile quand il n'y a pas de plaque.",
+      "customer": "E-mail, numéro de client ou nom exact. Utilisé uniquement si la ligne n'a pas de véhicule.",
+      "emailNotification": "Oui ou non. Envoie un e-mail à l'échéance du rappel. Les notifications dans l'app sont toujours actives."
+    },
+    "targetRule": "Une ligne sans véhicule ni client devient un rappel de l'atelier. Les lignes qui correspondent à un rappel ouvert sont ignorées : importer deux fois le même fichier n'ajoute donc rien.",
+    "summary": {
+      "ready": "Prêts : {count}",
+      "duplicates": "Déjà existants : {count}",
+      "errors": "À corriger : {count}"
+    },
+    "ignoredColumns": "Colonnes non lues : {columns}",
+    "rowLabel": "Ligne {line}",
+    "untitled": "(sans titre)",
+    "issues": {
+      "missingTitle": "Le titre est vide.",
+      "missingDue": "Une date d'échéance ou un kilométrage d'échéance est nécessaire.",
+      "badDate": "Impossible de lire la date « {value} ».",
+      "badTime": "Impossible de lire l'heure « {value} ».",
+      "timeWithoutDate": "Une heure nécessite une date d'échéance.",
+      "badMileage": "Impossible de lire le kilométrage « {value} ».",
+      "badEmailNotification": "La notification par e-mail doit être oui ou non, pas « {value} ».",
+      "vehicleNotFound": "Aucun véhicule ne correspond à « {value} ».",
+      "vehicleAmbiguous": "Plusieurs véhicules correspondent à « {value} ».",
+      "vehicleMismatch": "La plaque et le NIV appartiennent à des véhicules différents ({value}).",
+      "customerNotFound": "Aucun client ne correspond à « {value} ».",
+      "customerAmbiguous": "Plusieurs clients correspondent à « {value} ». Utilisez son e-mail ou son numéro de client.",
+      "duplicateExisting": "Ignorée : ce rappel existe déjà.",
+      "duplicateInFile": "Ignorée : répète une ligne précédente du fichier."
+    },
+    "fileErrors": {
+      "demo": "L'import est désactivé sur la démo.",
+      "noFile": "Choisissez un fichier à téléverser.",
+      "tooLarge": "Le fichier dépasse 900 KB. Divisez-le et importez-le en plusieurs fois.",
+      "unsupported": "Téléversez un fichier .csv ou .xlsx.",
+      "legacyXls": "Les anciens fichiers Excel .xls ne peuvent pas être lus. Enregistrez le fichier en .xlsx ou .csv et réessayez.",
+      "empty": "Le fichier ne contient aucune ligne.",
+      "unreadable": "Impossible de lire le fichier.",
+      "tooManyRows": "Le fichier contient plus de {limit} lignes. Divisez-le et importez-le en plusieurs fois.",
+      "noTitleColumn": "Le fichier n'a pas de colonne « Title ». Téléchargez le modèle pour voir les en-têtes attendus."
+    },
+    "chooseAnother": "Choisir un autre fichier",
+    "downloadSkipped": "Télécharger les lignes ignorées",
+    "problemColumn": "Problème",
+    "submit": "Importer {count, plural, one {# rappel} other {# rappels}}",
+    "nothingToImport": "Rien à importer",
+    "done": "{count, plural, one {# rappel importé} other {# rappels importés}}",
+    "doneSkipped": "{count, plural, one {# ligne ignorée} other {# lignes ignorées}}",
+    "close": "Fermer"
+  }
 }

@@ -13,5 +13,78 @@
   "selectCustomer": "Kunde (valgfritt)",
   "noneOption": "Ingen",
   "workshopHint": "Ingen kunde eller kjøretøy valgt: dette er en generell verkstedpåminnelse.",
-  "workshopReminder": "Verksted"
+  "workshopReminder": "Verksted",
+  "import": {
+    "button": "Importer",
+    "title": "Importer påminnelser",
+    "description": "Last opp en CSV- eller Excel-fil med én påminnelse per rad. Du ser alle radene før noe blir lagret.",
+    "drop": "Slipp en CSV- eller Excel-fil her",
+    "formats": "CSV eller Excel (.xlsx), opptil {rows} rader",
+    "browse": "Velg fil",
+    "reading": "Leser filen...",
+    "templateHint": "Start med malen, så blir kolonnene riktige.",
+    "templateXlsx": "Excel-mal",
+    "templateCsv": "CSV-mal",
+    "columnsTitle": "Kolonner i filen",
+    "required": {
+      "yes": "Påkrevd",
+      "dateOrMileage": "Dato eller kilometerstand",
+      "no": "Valgfri"
+    },
+    "columns": {
+      "title": "Hva som skal gjøres, for eksempel «Oljeskift».",
+      "dueDate": "Dagen den forfaller. 2026-10-15 fungerer alltid, og formater som 15.10.2026 eller 10/15/2026 blir gjenkjent.",
+      "dueTime": "Klokkeslett, for eksempel 14:30, i verkstedets tidssone. La feltet stå tomt for når som helst den dagen.",
+      "dueMileage": "Kilometerstanden den forfaller ved, i {unit}.",
+      "description": "Eventuelle ekstra detaljer.",
+      "licensePlate": "Knytter påminnelsen til et kjøretøy. Mellomrom og bindestreker ignoreres.",
+      "vin": "Knytter påminnelsen til et kjøretøy, nyttig når det ikke finnes skilt.",
+      "customer": "E-post, kundenummer eller nøyaktig navn. Brukes bare når raden ikke har kjøretøy.",
+      "emailNotification": "Ja eller nei. Sender en e-post når påminnelsen forfaller. Varsler i appen er alltid på."
+    },
+    "targetRule": "En rad uten kjøretøy og uten kunde blir en verkstedpåminnelse. Rader som samsvarer med en åpen påminnelse hoppes over, så å laste opp samme fil to ganger legger ikke til noe.",
+    "summary": {
+      "ready": "Klare: {count}",
+      "duplicates": "Finnes allerede: {count}",
+      "errors": "Må rettes: {count}"
+    },
+    "ignoredColumns": "Kolonner som ikke leses: {columns}",
+    "rowLabel": "Rad {line}",
+    "untitled": "(uten tittel)",
+    "issues": {
+      "missingTitle": "Tittelen er tom.",
+      "missingDue": "Trenger en forfallsdato eller en kilometerstand ved forfall.",
+      "badDate": "Kunne ikke lese datoen «{value}».",
+      "badTime": "Kunne ikke lese klokkeslettet «{value}».",
+      "timeWithoutDate": "Et klokkeslett krever en forfallsdato.",
+      "badMileage": "Kunne ikke lese kilometerstanden «{value}».",
+      "badEmailNotification": "E-postvarsel skal være ja eller nei, ikke «{value}».",
+      "vehicleNotFound": "Ingen kjøretøy samsvarer med «{value}».",
+      "vehicleAmbiguous": "Mer enn ett kjøretøy samsvarer med «{value}».",
+      "vehicleMismatch": "Skiltet og VIN hører til forskjellige kjøretøy ({value}).",
+      "customerNotFound": "Ingen kunde samsvarer med «{value}».",
+      "customerAmbiguous": "Mer enn én kunde samsvarer med «{value}». Bruk e-posten eller kundenummeret.",
+      "duplicateExisting": "Hoppet over: denne påminnelsen finnes allerede.",
+      "duplicateInFile": "Hoppet over: gjentar en tidligere rad i filen."
+    },
+    "fileErrors": {
+      "demo": "Import er slått av i demoen.",
+      "noFile": "Velg en fil å laste opp.",
+      "tooLarge": "Filen er større enn 900 KB. Del den opp og importer den i flere omganger.",
+      "unsupported": "Last opp en .csv- eller .xlsx-fil.",
+      "legacyXls": "Gamle Excel-filer i .xls-format kan ikke leses. Lagre filen som .xlsx eller .csv og prøv igjen.",
+      "empty": "Filen har ingen rader.",
+      "unreadable": "Filen kunne ikke leses.",
+      "tooManyRows": "Filen har mer enn {limit} rader. Del den opp og importer den i flere omganger.",
+      "noTitleColumn": "Filen har ingen «Title»-kolonne. Last ned malen for å se hvilke overskrifter den forventer."
+    },
+    "chooseAnother": "Velg en annen fil",
+    "downloadSkipped": "Last ned rader som ble hoppet over",
+    "problemColumn": "Problem",
+    "submit": "Importer {count, plural, one {# påminnelse} other {# påminnelser}}",
+    "nothingToImport": "Ingenting å importere",
+    "done": "{count, plural, one {# påminnelse importert} other {# påminnelser importert}}",
+    "doneSkipped": "{count, plural, one {# rad hoppet over} other {# rader hoppet over}}",
+    "close": "Lukk"
+  }
 }

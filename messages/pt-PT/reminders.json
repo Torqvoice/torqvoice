@@ -13,5 +13,78 @@
   "selectCustomer": "Cliente (opcional)",
   "noneOption": "Nenhum",
   "workshopHint": "Nenhum cliente ou viatura selecionado: este é um lembrete geral da oficina.",
-  "workshopReminder": "Oficina"
+  "workshopReminder": "Oficina",
+  "import": {
+    "button": "Importar",
+    "title": "Importar lembretes",
+    "description": "Carregue um ficheiro CSV ou Excel com um lembrete por linha. Verá cada linha antes de qualquer coisa ser guardada.",
+    "drop": "Largue aqui um ficheiro CSV ou Excel",
+    "formats": "CSV ou Excel (.xlsx), até {rows} linhas",
+    "browse": "Escolher ficheiro",
+    "reading": "A ler o ficheiro...",
+    "templateHint": "Comece pelo modelo para acertar nas colunas.",
+    "templateXlsx": "Modelo Excel",
+    "templateCsv": "Modelo CSV",
+    "columnsTitle": "Colunas no ficheiro",
+    "required": {
+      "yes": "Obrigatória",
+      "dateOrMileage": "Data ou quilometragem",
+      "no": "Opcional"
+    },
+    "columns": {
+      "title": "O que é preciso fazer, por exemplo \"Mudança de óleo\".",
+      "dueDate": "O dia em que vence. 2026-10-15 funciona sempre, e formatos como 15.10.2026 ou 10/15/2026 são detetados.",
+      "dueTime": "Hora do dia, por exemplo 14:30, no fuso horário da oficina. Deixe em branco para qualquer hora desse dia.",
+      "dueMileage": "A leitura do conta-quilómetros em que vence, em {unit}.",
+      "description": "Qualquer detalhe adicional.",
+      "licensePlate": "Associa o lembrete a uma viatura. Espaços e hífenes são ignorados.",
+      "vin": "Associa o lembrete a uma viatura, útil quando não há matrícula.",
+      "customer": "E-mail, número de cliente ou nome exato. Usado apenas quando a linha não tem viatura.",
+      "emailNotification": "Sim ou não. Envia um e-mail quando o lembrete vence. As notificações na aplicação estão sempre ativas."
+    },
+    "targetRule": "Uma linha sem viatura e sem cliente torna-se um lembrete da oficina. As linhas que correspondem a um lembrete em aberto são ignoradas, por isso carregar o mesmo ficheiro duas vezes não acrescenta nada.",
+    "summary": {
+      "ready": "Prontos: {count}",
+      "duplicates": "Já existem: {count}",
+      "errors": "Por corrigir: {count}"
+    },
+    "ignoredColumns": "Colunas não lidas: {columns}",
+    "rowLabel": "Linha {line}",
+    "untitled": "(sem título)",
+    "issues": {
+      "missingTitle": "O título está vazio.",
+      "missingDue": "Precisa de uma data de vencimento ou de uma quilometragem de vencimento.",
+      "badDate": "Não foi possível ler a data \"{value}\".",
+      "badTime": "Não foi possível ler a hora \"{value}\".",
+      "timeWithoutDate": "Uma hora precisa de uma data de vencimento.",
+      "badMileage": "Não foi possível ler a quilometragem \"{value}\".",
+      "badEmailNotification": "A notificação por e-mail deve ser sim ou não, e não \"{value}\".",
+      "vehicleNotFound": "Nenhuma viatura corresponde a \"{value}\".",
+      "vehicleAmbiguous": "Mais de uma viatura corresponde a \"{value}\".",
+      "vehicleMismatch": "A matrícula e o número de quadro (VIN) pertencem a viaturas diferentes ({value}).",
+      "customerNotFound": "Nenhum cliente corresponde a \"{value}\".",
+      "customerAmbiguous": "Mais de um cliente corresponde a \"{value}\". Use o e-mail ou o número de cliente.",
+      "duplicateExisting": "Ignorada: este lembrete já existe.",
+      "duplicateInFile": "Ignorada: repete uma linha anterior do ficheiro."
+    },
+    "fileErrors": {
+      "demo": "A importação está desativada na demonstração.",
+      "noFile": "Escolha um ficheiro para carregar.",
+      "tooLarge": "O ficheiro tem mais de 900 KB. Divida-o e importe-o por partes.",
+      "unsupported": "Carregue um ficheiro .csv ou .xlsx.",
+      "legacyXls": "Os ficheiros antigos do Excel (.xls) não podem ser lidos. Guarde o ficheiro como .xlsx ou .csv e tente novamente.",
+      "empty": "O ficheiro não tem linhas.",
+      "unreadable": "Não foi possível ler o ficheiro.",
+      "tooManyRows": "O ficheiro tem mais de {limit} linhas. Divida-o e importe-o por partes.",
+      "noTitleColumn": "O ficheiro não tem a coluna \"Title\". Descarregue o modelo para ver os cabeçalhos esperados."
+    },
+    "chooseAnother": "Escolher outro ficheiro",
+    "downloadSkipped": "Descarregar linhas ignoradas",
+    "problemColumn": "Problema",
+    "submit": "Importar {count, plural, one {# lembrete} other {# lembretes}}",
+    "nothingToImport": "Nada para importar",
+    "done": "{count, plural, one {# lembrete importado} other {# lembretes importados}}",
+    "doneSkipped": "{count, plural, one {# linha ignorada} other {# linhas ignoradas}}",
+    "close": "Fechar"
+  }
 }
