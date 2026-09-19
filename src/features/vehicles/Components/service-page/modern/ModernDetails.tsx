@@ -53,6 +53,9 @@ export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof Le
   onBackToClassic: () => void
   /** The job's title as the header currently holds it, saved with the form. */
   title: string
+  /** The connected AI vendor can transcribe speech, so dictation goes through it. */
+  aiTranscription?: boolean
+  dictationMode?: 'ai' | 'choice'
   /** Opens the finding form already pointed at one concern. */
   onAddFindingForConcern?: (concernId: string) => void
   files: Omit<ComponentProps<typeof FilesMediaCard>, 'serviceRecordId' | 'customerId'>
@@ -222,6 +225,8 @@ export function ModernDetails(props: ModernDetailsProps) {
                   onEditFinding={props.onEditFinding}
                   serviceRecordId={record.id}
                   media={record.attachments}
+                  serverTranscription={props.aiTranscription}
+                  dictationMode={props.dictationMode}
                 />
 
                 {vehicleId && (

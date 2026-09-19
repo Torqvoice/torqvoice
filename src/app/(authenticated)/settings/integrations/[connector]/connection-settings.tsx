@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   Check,
   ChevronDown,
+  ChevronRight,
   Copy,
   Loader2,
   Mail,
@@ -700,6 +701,33 @@ function ConnectForm({
     return <p className="text-sm text-muted-foreground">{t('connection.planLocked')}</p>
   }
 
+  const usualFields = fields.filter((f) => !f.advanced)
+  const advancedFields = fields.filter((f) => f.advanced)
+
+  const credentialField = (f: CredentialField) => (
+    <div key={f.key} className="space-y-1">
+      <Label className="text-xs">{tc(`fields.${f.label}`)}</Label>
+      {/* Vendor keys are not a login. Browsers ignore autocomplete="off"
+          on a password field and fill the site's saved sign-in into it,
+          with the username into the field before it, so the secrets
+          ask for a "new password" instead, which nothing has saved,
+          and the password managers are told to stay out. */}
+      <Input
+        type={f.type === 'password' ? 'password' : 'text'}
+        name={`${manifest.id}-${f.key}`}
+        value={values[f.key] ?? ''}
+        placeholder={f.key === 'clientSecret' && tenantReady ? '••••••••' : f.placeholder}
+        onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+        autoComplete={f.type === 'password' ? 'new-password' : 'off'}
+        data-1p-ignore
+        data-lpignore="true"
+        data-bwignore
+        data-form-type="other"
+      />
+      {f.help && <p className="text-xs text-muted-foreground">{tc(`fields.${f.help}`)}</p>}
+    </div>
+  )
+
   return (
     <div className="space-y-4">
       {manifest.auth.type === 'oauth2' && needsTenantApp && (
@@ -715,32 +743,23 @@ function ConnectForm({
         </div>
       )}
 
-      {fields.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {fields.map((f) => (
-            <div key={f.key} className="space-y-1">
-              <Label className="text-xs">{tc(`fields.${f.label}`)}</Label>
-              {/* Vendor keys are not a login. Browsers ignore autocomplete="off"
-                  on a password field and fill the site's saved sign-in into it,
-                  with the username into the field before it, so the secrets
-                  ask for a "new password" instead, which nothing has saved,
-                  and the password managers are told to stay out. */}
-              <Input
-                type={f.type === 'password' ? 'password' : 'text'}
-                name={`${manifest.id}-${f.key}`}
-                value={values[f.key] ?? ''}
-                placeholder={f.key === 'clientSecret' && tenantReady ? '••••••••' : f.placeholder}
-                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                autoComplete={f.type === 'password' ? 'new-password' : 'off'}
-                data-1p-ignore
-                data-lpignore="true"
-                data-bwignore
-                data-form-type="other"
-              />
-              {f.help && <p className="text-xs text-muted-foreground">{tc(`fields.${f.help}`)}</p>}
-            </div>
-          ))}
-        </div>
+      {usualFields.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-2">{usualFields.map(credentialField)}</div>
+      )}
+
+      {/* What almost nobody needs, folded away: a second box on the page reads
+          as a second thing to fill in. The fold is the browser's own, so it
+          stays as the person left it while they type. */}
+      {advancedFields.length > 0 && (
+        <details className="group rounded-lg border">
+          <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
+            <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90" />
+            {t('connection.advanced')}
+          </summary>
+          <div className="grid gap-3 border-t p-3 sm:grid-cols-2">
+            {advancedFields.map(credentialField)}
+          </div>
+        </details>
       )}
 
       {visibleSettings.length > 0 && (

@@ -22,7 +22,8 @@ import {
   findRuleDesign,
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { getFeatures } from '@/lib/features'
-import { isAiConfigured } from '@/features/integrations/Lib/ai'
+import { configuredAiProvider } from '@/features/integrations/Lib/ai'
+import { configuredDictation } from '@/features/integrations/Lib/speech'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
@@ -153,7 +154,7 @@ export async function ServiceRecordPage({
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
 
-  const [currentUser, features, aiConfigured, tireHotel] = await Promise.all([
+  const [currentUser, features, aiProvider, dictation, tireHotel] = await Promise.all([
     session?.user?.id
       ? db.user.findUnique({
           where: { id: session.user.id },
@@ -163,7 +164,11 @@ export async function ServiceRecordPage({
     orgId ? getFeatures(orgId) : Promise.resolve(null),
     // An AI vendor connected in the catalog, or the settings a workshop saved
     // before AI moved there. Nothing is adopted from a page render.
-    orgId ? isAiConfigured(orgId).catch(() => false) : Promise.resolve(false),
+    orgId ? configuredAiProvider(orgId).catch(() => null) : Promise.resolve(null),
+    // Whether dictation has a speech model to go to, and who picks the engine.
+    orgId
+      ? configuredDictation(orgId).catch(() => ({ available: false, mode: 'choice' as const }))
+      : Promise.resolve({ available: false, mode: 'choice' as const }),
     // The whole config, not just the switch: checking a set in from here
     // grades tread, and it has to grade against this workshop's own limits.
     getTireHotelSettings(orgId ?? ''),
@@ -196,7 +201,11 @@ export async function ServiceRecordPage({
     null
   const designFollowsRule = ruleDesign?.autoRule ?? null
   const designPinnedAt = rendersFromIssue(record) ? (record.issuedAt?.toISOString() ?? null) : null
-  const aiEnabled = features?.ai === true && aiConfigured
+  const aiEnabled = features?.ai === true && aiProvider !== null
+  // Dictation is better through a speech model, when the workshop has one:
+  // its Speech to text connection, or a chat provider that can transcribe.
+  // The browser's own recognition otherwise.
+  const aiTranscription = features?.ai === true && dictation.available
 
   // A timestamp outside JS date range (bad legacy data) must degrade to a
   // fallback date, not crash the page on toISOString().
@@ -367,6 +376,8 @@ export async function ServiceRecordPage({
         emailEnabled={features?.smtp ?? false}
         telegramEnabled={features?.telegram ?? false}
         aiEnabled={aiEnabled}
+        aiTranscription={aiTranscription}
+        dictationMode={dictation.mode}
         tireHotelEnabled={tireHotel.enabled}
         tireThresholds={{
           summerReplace: tireHotel.summerReplaceMm,

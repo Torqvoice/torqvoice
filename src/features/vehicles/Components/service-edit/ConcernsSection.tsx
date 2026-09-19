@@ -44,6 +44,9 @@ interface ConcernsSectionProps {
   /** The job and its files, so photos and video can be filed under a concern. */
   serviceRecordId?: string
   media?: ConcernMediaFile[]
+  /** Dictation can go through the workshop's AI vendor. */
+  serverTranscription?: boolean
+  dictationMode?: 'ai' | 'choice'
 }
 
 export function ConcernsSection({
@@ -56,6 +59,8 @@ export function ConcernsSection({
   onEditFinding,
   serviceRecordId,
   media,
+  serverTranscription,
+  dictationMode,
 }: ConcernsSectionProps) {
   const t = useTranslations('service.concerns')
   const modern = useModernWorkOrder()
@@ -180,6 +185,8 @@ export function ConcernsSection({
             onEditFinding={onEditFinding}
             serviceRecordId={serviceRecordId}
             media={media}
+            serverTranscription={serverTranscription}
+            dictationMode={dictationMode}
           />
         </AppCard>
       </div>

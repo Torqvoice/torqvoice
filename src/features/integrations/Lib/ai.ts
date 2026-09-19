@@ -268,3 +268,25 @@ export async function isAiConfigured(organizationId: string): Promise<boolean> {
   const { setup } = await legacyAiSetup(organizationId)
   return setup !== null
 }
+
+/**
+ * Which vendor a completion would go to, without adopting anything and
+ * without opening any credentials. For pages that offer something only some
+ * vendors can do (speech to text is one), and for the same reason as
+ * `isAiConfigured` must not create a connection while rendering.
+ */
+export async function configuredAiProvider(organizationId: string): Promise<AiConnectorId | null> {
+  const rows = await db.integrationConnection.findMany({
+    where: {
+      organizationId,
+      connectorId: { in: [...AI_CONNECTOR_IDS] },
+      status: 'active',
+    },
+    orderBy: { updatedAt: 'desc' },
+    select: { connectorId: true, settings: true },
+  })
+  const row = rows.find((candidate) => modelOf(candidate.settings))
+  if (row && isAiConnector(row.connectorId)) return row.connectorId
+  const { setup } = await legacyAiSetup(organizationId)
+  return setup?.provider ?? null
+}

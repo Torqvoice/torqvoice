@@ -35,6 +35,9 @@ interface ConcernStoryRowsProps {
   /** The job, and its files: media is filed under a concern from its row. */
   serviceRecordId?: string
   media?: ConcernMediaFile[]
+  /** Dictation can go through the workshop's AI vendor. */
+  serverTranscription?: boolean
+  dictationMode?: 'ai' | 'choice'
 }
 
 // One fixed height for every step's label row, so the four boxes start on the
@@ -74,6 +77,8 @@ export function ConcernStoryRows({
   onEditFinding,
   serviceRecordId,
   media = [],
+  serverTranscription = false,
+  dictationMode = 'choice',
 }: ConcernStoryRowsProps) {
   const t = useTranslations('service.concerns')
   const { formatDateTime } = useFormatDate()
@@ -132,12 +137,18 @@ export function ConcernStoryRows({
                   and a click on it must not land in the box as well. */}
               <div className="flex min-w-0 flex-col gap-1">
                 <div className="flex h-5 items-center justify-between gap-2">
-                  <label htmlFor={`concern-condition-${index}`} className={stepLabel}>
+                  <label
+                    htmlFor={`concern-condition-${index}`}
+                    className={cn(stepLabel, 'min-w-0 truncate whitespace-nowrap')}
+                  >
                     1 · {t('steps.condition')}
                   </label>
                   <DictateButton
                     value={concern.description}
                     onChange={(description) => onPatch(index, { description })}
+                    serverTranscription={serverTranscription}
+                    allowBrowserChoice={dictationMode === 'choice'}
+                    serviceRecordId={serviceRecordId}
                   />
                 </div>
                 <Textarea

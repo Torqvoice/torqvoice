@@ -87,6 +87,10 @@ export interface ServicePageClientProps {
   emailEnabled?: boolean
   telegramEnabled?: boolean
   aiEnabled?: boolean
+  /** The connected AI vendor can turn speech into text, so dictation goes through it. */
+  aiTranscription?: boolean
+  /** Whether dictation is always the speech model, or each person may pick the browser instead. */
+  dictationMode?: 'ai' | 'choice'
   /** Gates the "Store tires" action, by plan and by the org's own switch. */
   tireHotelEnabled?: boolean
   /** The work order's video call, and the connected services that could add one. */

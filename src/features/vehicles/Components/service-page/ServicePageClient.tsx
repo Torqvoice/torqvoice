@@ -95,6 +95,8 @@ export function ServicePageClient({
   emailEnabled = false,
   telegramEnabled = false,
   aiEnabled = false,
+  aiTranscription = false,
+  dictationMode = 'choice',
   defaultDueDays = 0,
   defaultMarkupPercent = 0,
   markupAppliesToInventory = false,
@@ -590,6 +592,8 @@ export function ServicePageClient({
               onSendToCustomer={shareInvoice}
               onBackToClassic={() => void switchLayout('classic')}
               title={title}
+              aiTranscription={aiTranscription}
+              dictationMode={dictationMode}
               onAddFindingForConcern={(concernId) =>
                 obsControlsRef.current?.onAddFinding(concernId)
               }

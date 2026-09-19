@@ -498,7 +498,18 @@
       "stopHint": "Stop listening",
       "notAllowed": "The browser was not allowed to use the microphone. Allow it for this site and try again.",
       "noMicrophone": "No microphone was found.",
-      "failed": "Dictation stopped. Try again."
+      "failed": "Dictation stopped. Try again.",
+      "startHintServer": "Speak and it is written as you talk. The audio goes to your speech model to be written down and is not kept.",
+      "transcribing": "Finishing…",
+      "language": "Language spoken",
+      "auto": "Auto",
+      "nothingHeard": "Nothing was heard.",
+      "fellBack": "Using the browser's own dictation for now.",
+      "autoLong": "Auto (detect the language)",
+      "engine": "Written down by",
+      "engineAi": "Speech model (more accurate)",
+      "engineBrowser": "Browser (writes as you speak)",
+      "liveFellBack": "Writing in steps of a few seconds instead of word by word."
     }
   },
   "videoCall": {
