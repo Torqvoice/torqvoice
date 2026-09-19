@@ -79,9 +79,9 @@
     "standaloneOnly": "Ein Name auf dem Board für jemanden ohne Anmeldung, etwa einen Azubi oder Subunternehmer. Einen Mechaniker mit App fügen Sie auf der Team-Seite hinzu.",
     "linkedTo": "Meldet sich als {name} an",
     "linkedManagedOnTeam": "Wird auf der Team-Seite verwaltet, zusammen mit dem App-Zugang.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Fähigkeiten",
+    "skillsPlaceholder": "Diagnose, HV-qualifiziert",
+    "skillsHint": "Wird unter dem Namen angezeigt, wo Arbeit verteilt wird. Optional."
   },
   "jobDetail": {
     "viewDetails": "Details anzeigen",

@@ -61,7 +61,7 @@
     },
     "ai": {
       "chat": "Testi e riepiloghi",
-      "transcribe": "Dictation"
+      "transcribe": "Dettatura"
     },
     "payments": {
       "checkout": "Paga dal link della fattura"
@@ -158,7 +158,7 @@
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
-    "advanced": "Advanced"
+    "advanced": "Avanzate"
   },
   "activity": {
     "title": "Attività",
@@ -582,20 +582,20 @@
       }
     },
     "speech-to-text": {
-      "description": "Dictation on a work order, written down by a speech model instead of the browser: far more accurate, any language, and it knows a workshop's words. Separate from your AI provider, so you can keep that one as it is. Uses your own OpenAI key, or a server of your own that speaks OpenAI's transcription API. The recording is sent to be written down and is not kept.",
+      "description": "La dettatura su un ordine di lavoro viene trascritta da un modello vocale invece che dal browser: molto più precisa, in qualsiasi lingua e conosce le parole dell'officina. È separata dal tuo fornitore di IA, quindi puoi lasciarlo com'è. Usa la tua chiave OpenAI o un tuo server che parli l'API di trascrizione di OpenAI. La registrazione viene inviata per la trascrizione e non viene conservata.",
       "fields": {
-        "apiKey": "API key",
-        "apiKeyHelp": "An OpenAI key from platform.openai.com under API keys; OpenAI bills the usage, by the minute. For your own server, only if it asks for one.",
-        "baseUrl": "Server address",
-        "baseUrlHelp": "Leave empty to use OpenAI. For a server of your own (a local Whisper, LocalAI, Groq), where its OpenAI-style API starts, including the path, such as /v1. Torqvoice appends /audio/transcriptions to it."
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Una chiave OpenAI da platform.openai.com, in API keys; OpenAI fattura l'uso al minuto. Per un tuo server, solo se la richiede.",
+        "baseUrl": "Indirizzo del server",
+        "baseUrlHelp": "Lascia vuoto per usare OpenAI. Per un tuo server (un Whisper locale, LocalAI, Groq), il punto in cui inizia la sua API in stile OpenAI, percorso incluso, ad esempio /v1. Torqvoice vi aggiunge /audio/transcriptions."
       },
       "settings": {
-        "model": "Model",
-        "modelHelp": "The speech model to ask for. gpt-4o-mini-transcribe is accurate and cheap; gpt-4o-transcribe is the larger one. A server of your own usually answers to whisper-1.",
-        "mode": "Who chooses how dictation is written down",
-        "modeHelp": "The browser writes as you speak but is weaker, above all in smaller languages. The speech model writes when you stop.",
-        "modeAi": "Always the speech model",
-        "modeChoice": "Each person chooses: speech model or browser"
+        "model": "Modello",
+        "modelHelp": "Il modello vocale da richiedere. gpt-4o-mini-transcribe è preciso ed economico; gpt-4o-transcribe è quello più grande. Un tuo server di solito risponde a whisper-1.",
+        "mode": "Chi sceglie come viene trascritta la dettatura",
+        "modeHelp": "Il browser scrive mentre parli ma è meno preciso, soprattutto nelle lingue meno diffuse. Il modello vocale scrive quando ti fermi.",
+        "modeAi": "Sempre il modello vocale",
+        "modeChoice": "Sceglie ciascuno: modello vocale o browser"
       }
     }
   },

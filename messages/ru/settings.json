@@ -1230,26 +1230,26 @@
     "dateTimeLabel": "Дата и время",
     "saveSettings": "Сохранить настройки",
     "saved": "Настройки сохранены",
-    "fontLabel": "Font",
-    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
-    "fontSampleHeading": "Work order",
-    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fontLabel": "Шрифт",
+    "fontHint": "Выберите шрифты приложения. Выбор сохраняется на этом устройстве.",
+    "fontSampleHeading": "Заказ-наряд",
+    "fontSampleText": "Заменить катушку зажигания и свечи",
     "fonts": {
       "default": {
-        "name": "Default",
-        "description": "Geist, clean and neutral."
+        "name": "По умолчанию",
+        "description": "Geist, чистый и нейтральный."
       },
       "workshop": {
-        "name": "Workshop",
-        "description": "IBM Plex with condensed capital headings, like a job card."
+        "name": "Мастерская",
+        "description": "IBM Plex с узкими заглавными заголовками, как в рабочей карточке."
       },
       "precise": {
-        "name": "Precise",
-        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+        "name": "Точный",
+        "description": "Inter и JetBrains Mono. Для экранов, полных таблиц и цифр."
       },
       "legible": {
-        "name": "Legible",
-        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+        "name": "Разборчивый",
+        "description": "Atkinson Hyperlegible. 0 и O, 1 и l никогда не похожи друг на друга; легко читается с другого конца мастерской."
       }
     }
   },

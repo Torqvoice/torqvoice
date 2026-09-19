@@ -79,9 +79,9 @@
     "standaloneOnly": "Имя на доске для того, кто не входит в систему: ученика или подрядчика. Механика с приложением добавьте на странице «Команда».",
     "linkedTo": "Входит как {name}",
     "linkedManagedOnTeam": "Управляется на странице «Команда» вместе с доступом к приложению.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Навыки",
+    "skillsPlaceholder": "Диагностика, допуск к электромобилям",
+    "skillsHint": "Показывается под именем там, где распределяется работа. Необязательно."
   },
   "jobDetail": {
     "viewDetails": "Просмотреть детали",

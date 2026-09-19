@@ -61,7 +61,7 @@
     },
     "ai": {
       "chat": "Teksten en samenvattingen",
-      "transcribe": "Dictation"
+      "transcribe": "Dicteren"
     },
     "payments": {
       "checkout": "Betalen via de factuurlink"
@@ -158,7 +158,7 @@
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
     "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
-    "advanced": "Advanced"
+    "advanced": "Geavanceerd"
   },
   "activity": {
     "title": "Activiteit",
@@ -582,20 +582,20 @@
       }
     },
     "speech-to-text": {
-      "description": "Dictation on a work order, written down by a speech model instead of the browser: far more accurate, any language, and it knows a workshop's words. Separate from your AI provider, so you can keep that one as it is. Uses your own OpenAI key, or a server of your own that speaks OpenAI's transcription API. The recording is sent to be written down and is not kept.",
+      "description": "Dicteren op een werkorder, uitgeschreven door een spraakmodel in plaats van door de browser: veel nauwkeuriger, in elke taal, en het kent de woorden van een werkplaats. Los van uw AI-provider, dus die kunt u laten zoals hij is. Gebruikt uw eigen OpenAI-sleutel, of een eigen server die de transcriptie-API van OpenAI spreekt. De opname wordt alleen verstuurd om uit te schrijven en wordt niet bewaard.",
       "fields": {
-        "apiKey": "API key",
-        "apiKeyHelp": "An OpenAI key from platform.openai.com under API keys; OpenAI bills the usage, by the minute. For your own server, only if it asks for one.",
-        "baseUrl": "Server address",
-        "baseUrlHelp": "Leave empty to use OpenAI. For a server of your own (a local Whisper, LocalAI, Groq), where its OpenAI-style API starts, including the path, such as /v1. Torqvoice appends /audio/transcriptions to it."
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Een OpenAI-sleutel van platform.openai.com onder API keys; OpenAI rekent het gebruik per minuut af. Bij een eigen server alleen als die erom vraagt.",
+        "baseUrl": "Serveradres",
+        "baseUrlHelp": "Laat leeg om OpenAI te gebruiken. Bij een eigen server (een lokale Whisper, LocalAI, Groq) het adres waar de OpenAI-achtige API begint, inclusief het pad, zoals /v1. Torqvoice zet er /audio/transcriptions achter."
       },
       "settings": {
         "model": "Model",
-        "modelHelp": "The speech model to ask for. gpt-4o-mini-transcribe is accurate and cheap; gpt-4o-transcribe is the larger one. A server of your own usually answers to whisper-1.",
-        "mode": "Who chooses how dictation is written down",
-        "modeHelp": "The browser writes as you speak but is weaker, above all in smaller languages. The speech model writes when you stop.",
-        "modeAi": "Always the speech model",
-        "modeChoice": "Each person chooses: speech model or browser"
+        "modelHelp": "Het spraakmodel dat wordt aangesproken. gpt-4o-mini-transcribe is nauwkeurig en goedkoop; gpt-4o-transcribe is het grotere. Een eigen server luistert meestal naar whisper-1.",
+        "mode": "Wie kiest hoe dicteren wordt uitgeschreven",
+        "modeHelp": "De browser schrijft mee terwijl u spreekt, maar is zwakker, vooral in kleinere talen. Het spraakmodel schrijft zodra u stopt.",
+        "modeAi": "Altijd het spraakmodel",
+        "modeChoice": "Ieder kiest zelf: spraakmodel of browser"
       }
     }
   },

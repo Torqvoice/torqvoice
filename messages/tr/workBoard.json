@@ -79,9 +79,9 @@
     "standaloneOnly": "Panoda giriş yapmayan biri için bir isim, örneğin çırak ya da taşeron. Uygulamayı kullanan bir tamirciyi Ekip sayfasından ekleyin.",
     "linkedTo": "{name} olarak giriş yapar",
     "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Uzmanlıklar",
+    "skillsPlaceholder": "Arıza tespiti, elektrikli araç sertifikalı",
+    "skillsHint": "İşlerin dağıtıldığı yerde adın altında gösterilir. İsteğe bağlı."
   },
   "jobDetail": {
     "viewDetails": "Ayrıntıları Görüntüle",

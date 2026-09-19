@@ -1230,26 +1230,26 @@
     "dateTimeLabel": "Data i czas",
     "saveSettings": "Zapisz ustawienia",
     "saved": "Ustawienia zapisane",
-    "fontLabel": "Font",
-    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
-    "fontSampleHeading": "Work order",
-    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fontLabel": "Czcionka",
+    "fontHint": "Wybierz kroje pisma używane w aplikacji. Wybór jest zapisywany na tym urządzeniu.",
+    "fontSampleHeading": "Zlecenie",
+    "fontSampleText": "Wymiana cewki zapłonowej i świec zapłonowych",
     "fonts": {
       "default": {
-        "name": "Default",
-        "description": "Geist, clean and neutral."
+        "name": "Domyślna",
+        "description": "Geist, czysta i neutralna."
       },
       "workshop": {
-        "name": "Workshop",
-        "description": "IBM Plex with condensed capital headings, like a job card."
+        "name": "Warsztatowa",
+        "description": "IBM Plex z wąskimi wersalikami w nagłówkach, jak na karcie zlecenia."
       },
       "precise": {
-        "name": "Precise",
-        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+        "name": "Precyzyjna",
+        "description": "Inter i JetBrains Mono. Stworzona dla ekranów pełnych tabel i liczb."
       },
       "legible": {
-        "name": "Legible",
-        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+        "name": "Czytelna",
+        "description": "Atkinson Hyperlegible. 0 i O, 1 i l nigdy nie wyglądają podobnie; łatwo czytać z drugiego końca warsztatu."
       }
     }
   },

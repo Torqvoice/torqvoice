@@ -1230,26 +1230,26 @@
     "dateTimeLabel": "Dato og tid",
     "saveSettings": "Lagre innstillinger",
     "saved": "Innstillinger lagret",
-    "fontLabel": "Font",
-    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
-    "fontSampleHeading": "Work order",
-    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fontLabel": "Skrift",
+    "fontHint": "Velg skrifttypene appen bruker. Valget lagres på denne enheten.",
+    "fontSampleHeading": "Arbeidsordre",
+    "fontSampleText": "Bytt tennspole og tennplugger",
     "fonts": {
       "default": {
-        "name": "Default",
-        "description": "Geist, clean and neutral."
+        "name": "Standard",
+        "description": "Geist, ren og nøytral."
       },
       "workshop": {
-        "name": "Workshop",
-        "description": "IBM Plex with condensed capital headings, like a job card."
+        "name": "Verksted",
+        "description": "IBM Plex med smale store bokstaver i overskriftene, som på et arbeidskort."
       },
       "precise": {
-        "name": "Precise",
-        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+        "name": "Presis",
+        "description": "Inter og JetBrains Mono. Laget for skjermer fulle av tabeller og tall."
       },
       "legible": {
-        "name": "Legible",
-        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+        "name": "Lettlest",
+        "description": "Atkinson Hyperlegible. 0 og O, 1 og l ligner aldri på hverandre; lett å lese fra andre siden av verkstedet."
       }
     }
   },

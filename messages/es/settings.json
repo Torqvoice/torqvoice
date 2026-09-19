@@ -1230,26 +1230,26 @@
     "dateTimeLabel": "Fecha y hora",
     "saveSettings": "Guardar configuración",
     "saved": "Configuración guardada",
-    "fontLabel": "Font",
-    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
-    "fontSampleHeading": "Work order",
-    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fontLabel": "Tipo de letra",
+    "fontHint": "Elige las tipografías de la aplicación. La elección se guarda en este dispositivo.",
+    "fontSampleHeading": "Orden de trabajo",
+    "fontSampleText": "Cambiar bobina de encendido y bujías",
     "fonts": {
       "default": {
-        "name": "Default",
-        "description": "Geist, clean and neutral."
+        "name": "Predeterminada",
+        "description": "Geist, limpia y neutra."
       },
       "workshop": {
-        "name": "Workshop",
-        "description": "IBM Plex with condensed capital headings, like a job card."
+        "name": "Taller",
+        "description": "IBM Plex con títulos en mayúsculas estrechas, como una hoja de trabajo."
       },
       "precise": {
-        "name": "Precise",
-        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+        "name": "Precisa",
+        "description": "Inter y JetBrains Mono. Pensada para pantallas llenas de tablas y cifras."
       },
       "legible": {
         "name": "Legible",
-        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+        "description": "Atkinson Hyperlegible. 0 y O, 1 y l nunca se parecen; fácil de leer desde el otro lado del taller."
       }
     }
   },

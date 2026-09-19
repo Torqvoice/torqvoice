@@ -79,9 +79,9 @@
     "standaloneOnly": "Um nome no quadro para alguém que não inicia sessão, como um aprendiz ou um subcontratado. Para um mecânico que usa a aplicação, adicione-o na página Equipa.",
     "linkedTo": "Inicia sessão como {name}",
     "linkedManagedOnTeam": "Gerido na página Equipa, juntamente com o acesso à aplicação.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Competências",
+    "skillsPlaceholder": "Diagnóstico, certificado em veículos elétricos",
+    "skillsHint": "Aparece por baixo do nome onde o trabalho é atribuído. Opcional."
   },
   "jobDetail": {
     "viewDetails": "Ver Detalhes",

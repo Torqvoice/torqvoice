@@ -1230,26 +1230,26 @@
     "dateTimeLabel": "Tarih & Saat",
     "saveSettings": "Ayarları Kaydet",
     "saved": "Ayarlar kaydedildi",
-    "fontLabel": "Font",
-    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
-    "fontSampleHeading": "Work order",
-    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fontLabel": "Yazı tipi",
+    "fontHint": "Uygulamada kullanılacak yazı tiplerini seçin. Seçim bu cihazda kaydedilir.",
+    "fontSampleHeading": "İş emri",
+    "fontSampleText": "Ateşleme bobinini ve bujileri değiştir",
     "fonts": {
       "default": {
-        "name": "Default",
-        "description": "Geist, clean and neutral."
+        "name": "Varsayılan",
+        "description": "Geist, sade ve nötr."
       },
       "workshop": {
-        "name": "Workshop",
-        "description": "IBM Plex with condensed capital headings, like a job card."
+        "name": "Atölye",
+        "description": "Dar büyük harfli başlıklarla IBM Plex, bir iş kartı gibi."
       },
       "precise": {
-        "name": "Precise",
-        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+        "name": "Hassas",
+        "description": "Inter ve JetBrains Mono. Tablo ve rakamlarla dolu ekranlar için yapıldı."
       },
       "legible": {
-        "name": "Legible",
-        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+        "name": "Okunaklı",
+        "description": "Atkinson Hyperlegible. 0 ile O, 1 ile l asla birbirine benzemez; atölyenin öbür ucundan bile kolayca okunur."
       }
     }
   },

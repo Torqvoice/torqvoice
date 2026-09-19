@@ -79,9 +79,9 @@
     "standaloneOnly": "Nazwisko na tablicy dla kogoś, kto się nie loguje, na przykład ucznia lub podwykonawcy. Mechanika korzystającego z aplikacji dodasz na stronie Zespół.",
     "linkedTo": "Loguje się jako {name}",
     "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Umiejętności",
+    "skillsPlaceholder": "Diagnostyka, certyfikat EV",
+    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne."
   },
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",

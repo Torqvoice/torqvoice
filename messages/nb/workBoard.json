@@ -79,9 +79,9 @@
     "standaloneOnly": "Et navn på tavlen for noen som ikke logger inn, for eksempel en lærling eller innleid. En mekaniker som bruker appen legger du til på Team-siden.",
     "linkedTo": "Logger inn som {name}",
     "linkedManagedOnTeam": "Styres fra Team-siden, sammen med apptilgangen.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Kompetanse",
+    "skillsPlaceholder": "Diagnostikk, elbilsertifisert",
+    "skillsHint": "Vises under navnet der jobbene fordeles. Valgfritt."
   },
   "jobDetail": {
     "viewDetails": "Vis detaljer",

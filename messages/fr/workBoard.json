@@ -79,9 +79,9 @@
     "standaloneOnly": "Un nom sur le tableau pour quelqu'un qui ne se connecte pas, un apprenti ou un sous-traitant. Pour un mécanicien qui utilise l'application, passez par la page Équipe.",
     "linkedTo": "Se connecte en tant que {name}",
     "linkedManagedOnTeam": "Géré depuis la page Équipe, avec son accès à l'application.",
-    "skills": "Skills",
-    "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skills": "Compétences",
+    "skillsPlaceholder": "Diagnostic, habilité VE",
+    "skillsHint": "Affiché sous le nom là où le travail est attribué. Facultatif."
   },
   "jobDetail": {
     "viewDetails": "Voir les Détails",

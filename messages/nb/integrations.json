@@ -61,7 +61,7 @@
     },
     "ai": {
       "chat": "Tekst og sammendrag",
-      "transcribe": "Dictation"
+      "transcribe": "Diktering"
     },
     "payments": {
       "checkout": "Betal fra fakturalenken"
@@ -158,7 +158,7 @@
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
-    "advanced": "Advanced"
+    "advanced": "Avansert"
   },
   "activity": {
     "title": "Aktivitet",
@@ -582,20 +582,20 @@
       }
     },
     "speech-to-text": {
-      "description": "Dictation on a work order, written down by a speech model instead of the browser: far more accurate, any language, and it knows a workshop's words. Separate from your AI provider, so you can keep that one as it is. Uses your own OpenAI key, or a server of your own that speaks OpenAI's transcription API. The recording is sent to be written down and is not kept.",
+      "description": "Diktering på en arbeidsordre, skrevet ned av en talemodell i stedet for nettleseren: langt mer nøyaktig, alle språk, og den kan verkstedets ord. Atskilt fra AI-leverandøren din, så den kan du beholde som den er. Bruker din egen OpenAI-nøkkel, eller en egen server som snakker OpenAIs API for transkribering. Opptaket sendes for å skrives ned og lagres ikke.",
       "fields": {
-        "apiKey": "API key",
-        "apiKeyHelp": "An OpenAI key from platform.openai.com under API keys; OpenAI bills the usage, by the minute. For your own server, only if it asks for one.",
-        "baseUrl": "Server address",
-        "baseUrlHelp": "Leave empty to use OpenAI. For a server of your own (a local Whisper, LocalAI, Groq), where its OpenAI-style API starts, including the path, such as /v1. Torqvoice appends /audio/transcriptions to it."
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "En OpenAI-nøkkel fra platform.openai.com under API keys; OpenAI fakturerer bruken per minutt. For en egen server bare hvis den krever en.",
+        "baseUrl": "Serveradresse",
+        "baseUrlHelp": "La stå tomt for å bruke OpenAI. For en egen server (en lokal Whisper, LocalAI, Groq): der serverens OpenAI-lignende API starter, inkludert stien, for eksempel /v1. Torqvoice legger til /audio/transcriptions."
       },
       "settings": {
-        "model": "Model",
-        "modelHelp": "The speech model to ask for. gpt-4o-mini-transcribe is accurate and cheap; gpt-4o-transcribe is the larger one. A server of your own usually answers to whisper-1.",
-        "mode": "Who chooses how dictation is written down",
-        "modeHelp": "The browser writes as you speak but is weaker, above all in smaller languages. The speech model writes when you stop.",
-        "modeAi": "Always the speech model",
-        "modeChoice": "Each person chooses: speech model or browser"
+        "model": "Modell",
+        "modelHelp": "Talemodellen som skal brukes. gpt-4o-mini-transcribe er nøyaktig og billig; gpt-4o-transcribe er den større. En egen server svarer vanligvis på whisper-1.",
+        "mode": "Hvem velger hvordan diktering skrives ned",
+        "modeHelp": "Nettleseren skriver mens du snakker, men er svakere, særlig på mindre språk. Talemodellen skriver når du stopper.",
+        "modeAi": "Alltid talemodellen",
+        "modeChoice": "Hver person velger: talemodell eller nettleser"
       }
     }
   },

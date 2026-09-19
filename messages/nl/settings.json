@@ -1230,26 +1230,26 @@
     "dateTimeLabel": "Datum en tijd",
     "saveSettings": "Instellingen opslaan",
     "saved": "Instellingen opgeslagen",
-    "fontLabel": "Font",
-    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
-    "fontSampleHeading": "Work order",
-    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fontLabel": "Lettertype",
+    "fontHint": "Kies de lettertypen waarin de app wordt weergegeven. De keuze wordt op dit apparaat opgeslagen.",
+    "fontSampleHeading": "Werkorder",
+    "fontSampleText": "Bobine en bougies vervangen",
     "fonts": {
       "default": {
-        "name": "Default",
-        "description": "Geist, clean and neutral."
+        "name": "Standaard",
+        "description": "Geist, strak en neutraal."
       },
       "workshop": {
-        "name": "Workshop",
-        "description": "IBM Plex with condensed capital headings, like a job card."
+        "name": "Werkplaats",
+        "description": "IBM Plex met smalle koppen in hoofdletters, zoals een werkbon."
       },
       "precise": {
-        "name": "Precise",
-        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+        "name": "Precies",
+        "description": "Inter en JetBrains Mono. Gemaakt voor schermen vol tabellen en cijfers."
       },
       "legible": {
-        "name": "Legible",
-        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+        "name": "Goed leesbaar",
+        "description": "Atkinson Hyperlegible. 0 en O, 1 en l lijken nooit op elkaar; ook van de andere kant van de werkplaats goed te lezen."
       }
     }
   },
