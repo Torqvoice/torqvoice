@@ -55,6 +55,7 @@ import { ObservationsManager, type ObservationsControls } from './ObservationsMa
 import type { ServicePageClientProps } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
 import { rememberWorkOrderLayout, type WorkOrderLayout } from '@/lib/work-order-layout'
+import { registerAnalyticsProperties, track } from '@/lib/analytics'
 import { TryNewLayoutBanner } from './TryNewLayoutBanner'
 import { ModernDetails } from './modern/ModernDetails'
 import { ModernHero } from './modern/ModernHero'
@@ -138,6 +139,17 @@ export function ServicePageClient({
     setTitle(record.title)
   }, [record.title])
   const modern = layout === 'modern'
+
+  // One view per work order opened, in the layout it opened in; a switch on
+  // the page is its own event and does not count as a second view. The
+  // layout is also put on every later event from this browser, so any chart
+  // (autocaptured clicks included) can be split by it.
+  const layoutRef = useRef(layout)
+  layoutRef.current = layout
+  useEffect(() => {
+    registerAnalyticsProperties({ work_order_layout: layoutRef.current })
+    track('work_order:page_view', { layout: layoutRef.current })
+  }, [record.id])
   // The overhauled page has no tabs: photos, video, documents and status
   // reports are all on the job itself. A link to one of the old tabs lands on
   // the page with that section open or scrolled to.
@@ -383,7 +395,16 @@ export function ServicePageClient({
   // number, mileage) are remounted by the switch and would come back showing
   // the saved value. So what has been typed is saved first.
   const switchLayout = useCallback(
-    async (next: WorkOrderLayout) => {
+    async (next: WorkOrderLayout, source: 'banner' | 'menu' | 'footer') => {
+      // Which way people go, and from where, is what decides when the classic
+      // page can be retired: a switch back is the signal that something is
+      // missing from the new one.
+      track('work_order:layout_switch', {
+        from_layout: next === 'modern' ? 'classic' : 'modern',
+        to_layout: next,
+        source,
+      })
+      registerAnalyticsProperties({ work_order_layout: next })
       if (formState.hasUnsavedChanges) await actions.saveNow()
       rememberWorkOrderLayout(next)
       setLayout(next)
@@ -456,7 +477,7 @@ export function ServicePageClient({
       <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
     ) : undefined,
     layout,
-    onSwitchLayout: () => void switchLayout(modern ? 'classic' : 'modern'),
+    onSwitchLayout: () => void switchLayout(modern ? 'classic' : 'modern', 'menu'),
   }
 
   // One set of props for each column, handed to whichever layout is showing:
@@ -551,7 +572,7 @@ export function ServicePageClient({
         />
       )}
 
-      {!modern && <TryNewLayoutBanner onTry={() => void switchLayout('modern')} />}
+      {!modern && <TryNewLayoutBanner onTry={() => void switchLayout('modern', 'banner')} />}
 
       {(lockState.locked || lockState.unlockedAt) && (
         <div className="shrink-0 px-4 pt-3">
@@ -591,7 +612,7 @@ export function ServicePageClient({
               }}
               onPreviewInvoice={previewInvoice}
               onSendToCustomer={shareInvoice}
-              onBackToClassic={() => void switchLayout('classic')}
+              onBackToClassic={() => void switchLayout('classic', 'footer')}
               title={title}
               aiTranscription={aiTranscription}
               dictationMode={dictationMode}

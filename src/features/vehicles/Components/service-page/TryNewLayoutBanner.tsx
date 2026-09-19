@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Sparkles, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { track } from '@/lib/analytics'
 
 const DISMISSED_KEY = 'torqvoice:workOrderLayoutHintDismissed'
 
@@ -33,6 +34,8 @@ export function TryNewLayoutBanner({ onTry }: { onTry: () => void }) {
 
   const dismiss = () => {
     setVisible(false)
+    // Closed without trying it: the other half of how well the invitation works.
+    track('work_order:layout_invite_dismiss')
     try {
       localStorage.setItem(DISMISSED_KEY, 'true')
     } catch {
