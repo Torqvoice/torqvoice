@@ -5,6 +5,7 @@ import { withAuth } from '@/lib/with-auth'
 import { getFeatures, requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuard } from '@/lib/demo'
+import { releaseFiles } from '@/lib/files/manager'
 import {
   getWhatsappConfig,
   isWhatsappConfigured,
@@ -361,9 +362,14 @@ export async function deleteWhatsappConversation(customerId: string) {
   return withAuth(
     async ({ organizationId }) => {
       demoGuard()
-      const { count } = await db.whatsappMessage.deleteMany({
-        where: { organizationId, customerId },
-      })
+      const where = { organizationId, customerId }
+      const media = await db.whatsappMessage.findMany({ where, select: { mediaUrl: true } })
+      const { count } = await db.whatsappMessage.deleteMany({ where })
+      // Pictures sent from here, unless they are a job's photos still in use.
+      await releaseFiles(
+        media.map((m) => m.mediaUrl),
+        { organizationId, reason: 'WhatsApp conversation deleted' }
+      )
       return { deleted: count }
     },
     {
@@ -384,13 +390,17 @@ export async function deleteWhatsappConversationByPhone(phone: string) {
   return withAuth(
     async ({ organizationId }) => {
       demoGuard()
-      const { count } = await db.whatsappMessage.deleteMany({
-        where: {
-          organizationId,
-          customerId: null,
-          OR: [{ fromNumber: phone }, { toNumber: phone }],
-        },
-      })
+      const where = {
+        organizationId,
+        customerId: null,
+        OR: [{ fromNumber: phone }, { toNumber: phone }],
+      }
+      const media = await db.whatsappMessage.findMany({ where, select: { mediaUrl: true } })
+      const { count } = await db.whatsappMessage.deleteMany({ where })
+      await releaseFiles(
+        media.map((m) => m.mediaUrl),
+        { organizationId, reason: 'WhatsApp conversation deleted' }
+      )
       return { deleted: count }
     },
     {
@@ -407,13 +417,14 @@ export async function deleteWhatsappMessage(messageId: string) {
       demoGuard()
       const message = await db.whatsappMessage.findFirst({
         where: { id: messageId, organizationId },
-        select: { id: true },
+        select: { id: true, mediaUrl: true },
       })
       if (!message) throw new Error('Message not found')
 
       // Deleting here only clears our copy: WhatsApp itself keeps what was
       // already delivered to the customer's phone.
       await db.whatsappMessage.delete({ where: { id: message.id } })
+      await releaseFiles([message.mediaUrl], { organizationId, reason: 'WhatsApp message deleted' })
       return { deleted: true }
     },
     {

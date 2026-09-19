@@ -32,6 +32,8 @@ import { copyFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { clearedToNull } from '@/lib/clearable'
 import { uploadsRoot } from '@/lib/upload-root'
+import { releaseFiles } from '@/lib/files/manager'
+import { quoteFileUrls } from '@/lib/files/collect'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
@@ -522,7 +524,10 @@ export async function deleteQuote(quoteId: string) {
       })
       if (!quote) throw new Error('Quote not found')
 
+      // Its attachments cascade with it; their files are let go afterwards.
+      const files = await quoteFileUrls(organizationId, [quoteId])
       await db.quote.deleteMany({ where: { id: quoteId, organizationId } })
+      await releaseFiles(files, { organizationId, reason: 'quote deleted' })
       revalidatePath('/quotes')
       return { quoteId }
     },
@@ -673,19 +678,19 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         // Copy attachments from quote to service record
         if (quote.attachments.length > 0) {
           const quotesDir = path.join(uploadsRoot(), organizationId, 'quotes')
-          const servicesDir = path.join(
-            process.cwd(),
-            'data',
-            'uploads',
-            organizationId,
-            'services'
-          )
+          // Where every other upload goes. This used to be a fixed
+          // `data/uploads`, so with DATA_ROOT set the copies landed where the
+          // file route never looks and the job showed broken images.
+          const servicesDir = path.join(uploadsRoot(), organizationId, 'services')
           await mkdir(servicesDir, { recursive: true })
 
           for (const att of quote.attachments) {
             try {
-              // Extract filename from URL and build paths
-              const filename = att.fileUrl.split('/').pop()!
+              // Extract filename from URL and build paths; only a plain name.
+              const filename = att.fileUrl.split('/').pop() ?? ''
+              if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(filename) || filename.includes('..')) {
+                throw new Error('not a stored file name')
+              }
               const srcPath = path.join(quotesDir, filename)
               const destPath = path.join(servicesDir, filename)
               await copyFile(srcPath, destPath)

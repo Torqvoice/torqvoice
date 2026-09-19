@@ -264,6 +264,7 @@ export function ConcernStoryRows({
                   <ConcernMedia
                     serviceRecordId={serviceRecordId}
                     concernId={concern.id ?? null}
+                    concernLabel={concern.description.trim() || undefined}
                     files={files}
                   />
                 )}

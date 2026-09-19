@@ -21,9 +21,9 @@ import { withAuth } from '@/lib/with-auth'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { unlink } from 'fs/promises'
 import { randomUUID } from 'crypto'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { releaseFiles } from '@/lib/files/manager'
+import { serviceRecordFileUrls } from '@/lib/files/collect'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
@@ -913,14 +913,11 @@ export async function updateServiceRecord(input: unknown) {
         }
       }
 
-      // Delete removed attachment files from disk (after successful DB transaction)
-      for (const fileUrl of removedFileUrls) {
-        try {
-          await unlink(resolveUploadPath(fileUrl))
-        } catch (err) {
-          console.warn(`[updateServiceRecord] Failed to delete file "${fileUrl}":`, err)
-        }
-      }
+      // Files of removed attachments, let go after the transaction committed.
+      await releaseFiles(removedFileUrls, {
+        organizationId,
+        reason: 'work order attachments replaced',
+      })
 
       // Notify workboard if status changed
       if (record.status !== existing.status) {
@@ -1230,18 +1227,13 @@ export async function deleteServiceRecord(recordId: string) {
       await assertInvoiceEditable(recordId, organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
-        include: { attachments: true },
       })
       if (!record) throw new Error('Record not found')
 
-      // Clean up attachment files from disk
-      for (const attachment of record.attachments) {
-        try {
-          await unlink(resolveUploadPath(attachment.fileUrl))
-        } catch (err) {
-          console.warn(`[deleteServiceRecord] Failed to delete file "${attachment.fileUrl}":`, err)
-        }
-      }
+      // Its attachments and status report videos, read now and let go once
+      // the record is gone. A tire set's photo on this job is shared with the
+      // set and stays, as does anything else still in use.
+      const files = await serviceRecordFileUrls(organizationId, [recordId])
 
       // Restock any inventory-linked parts, then delete the record (its parts
       // cascade-delete). Both happen in one transaction so stock is only
@@ -1261,6 +1253,7 @@ export async function deleteServiceRecord(recordId: string) {
         })
         await tx.serviceRecord.delete({ where: { id: recordId } })
       })
+      await releaseFiles(files, { organizationId, reason: 'work order deleted' })
 
       revalidatePath('/')
       if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
@@ -1293,21 +1286,12 @@ export async function deleteServiceAttachment(attachmentId: string) {
       })
       if (!attachment) throw new Error('Attachment not found')
 
-      // Delete file from disk. Not for tire hotel copies: those rows point at
-      // the tire set's own uploads, so only the reference goes and the set
-      // keeps its file.
-      if (attachment.category !== 'tire_hotel') {
-        try {
-          await unlink(resolveUploadPath(attachment.fileUrl))
-        } catch (err) {
-          console.warn(
-            `[deleteServiceAttachment] Failed to delete file "${attachment.fileUrl}":`,
-            err
-          )
-        }
-      }
-
       await db.serviceAttachment.delete({ where: { id: attachmentId } })
+
+      // Then the file, unless something still uses it: a tire hotel copy points
+      // at the tire set's own upload, which the set keeps; a photo sent on
+      // WhatsApp stays for the conversation.
+      await releaseFiles([attachment.fileUrl], { organizationId, reason: 'attachment deleted' })
 
       const { vehicleId, id: serviceId } = attachment.serviceRecord
       revalidatePath(

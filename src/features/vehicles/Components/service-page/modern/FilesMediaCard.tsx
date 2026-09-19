@@ -6,6 +6,7 @@ import { Paperclip } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { cn } from '@/lib/utils'
 import { MediaGrid } from './MediaGrid'
+import { PhotoHandoffButton } from '../PhotoHandoffButton'
 import type { ServicePageClientProps } from '../service-page-types'
 
 type FileTab = 'images' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
@@ -116,9 +117,13 @@ export function FilesMediaCard({
         icon={Paperclip}
         title={t('modern.filesTitle')}
         action={
-          <span className="text-xs text-muted-foreground">
-            {t('modern.media.summary', { count: total })}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs text-muted-foreground sm:inline">
+              {t('modern.media.summary', { count: total })}
+            </span>
+            {/* For the photo taken out at the car: a code the phone scans. */}
+            <PhotoHandoffButton serviceRecordId={serviceRecordId} />
+          </div>
         }
         contentClassName="p-0"
       >

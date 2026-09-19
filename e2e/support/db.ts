@@ -1335,3 +1335,123 @@ export async function jobWithCustomer(organizationId: string): Promise<{
     return row
   })
 }
+
+export interface PlantedVehicleFiles {
+  vehicleImage: string
+  jobPhoto: string
+  /** A tire set's photo, also on the job as a tire hotel copy. */
+  tireSetPhoto: string
+  statusVideo: string
+  inspectionPhoto?: string
+  quoteDocument: string
+  /** A URL naming another workshop, as a row restored from its backup can. */
+  foreignPhoto: string
+}
+
+export interface PlantedVehicle {
+  vehicleId: string
+  serviceRecordId: string
+  tireSetId: string
+  quoteId: string
+  inspected: boolean
+}
+
+/**
+ * A vehicle with every kind of file that can go with it, written straight
+ * into the database so a spec knows exactly which rows point at which file:
+ * its image; a job with a photo, a status report video and the copy of a tire
+ * set's photo; an inspection with a photo on one item (when the workshop has
+ * a template to hang it on); and, pointing at the same vehicle but not
+ * deleted with it, a stored tire set and a quote with a document.
+ */
+export async function plantVehicleWithFiles(
+  organizationId: string,
+  userId: string,
+  files: PlantedVehicleFiles,
+  label: string
+): Promise<PlantedVehicle> {
+  return withDb(async (db) => {
+    const id = () => randomBytes(12).toString('hex')
+    const vehicleId = id()
+    const serviceRecordId = id()
+    const tireSetId = id()
+    const quoteId = id()
+    await db.query(
+      `insert into vehicles (id, make, model, year, "userId", "organizationId", "imageUrl", "updatedAt")
+       values ($1, 'E2E', $2, 2020, $3, $4, $5, now())`,
+      [vehicleId, label, userId, organizationId, files.vehicleImage]
+    )
+    await db.query(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "updatedAt")
+       values ($1, $2, $3, $4, now())`,
+      [serviceRecordId, `${label} job`, vehicleId, organizationId]
+    )
+    await db.query(
+      `insert into tire_sets (id, "organizationId", "userId", "vehicleId", "updatedAt")
+       values ($1, $2, $3, $4, now())`,
+      [tireSetId, organizationId, userId, vehicleId]
+    )
+    await db.query(
+      `insert into tire_set_attachments (id, "organizationId", "tireSetId", "fileName", "fileUrl", "fileType", "fileSize")
+       values ($1, $2, $3, 'rim.jpg', $4, 'image/jpeg', 10)`,
+      [id(), organizationId, tireSetId, files.tireSetPhoto]
+    )
+    for (const [fileUrl, category] of [
+      [files.jobPhoto, 'image'],
+      [files.tireSetPhoto, 'tire_hotel'],
+      [files.foreignPhoto, 'image'],
+    ]) {
+      await db.query(
+        `insert into service_attachments (id, "serviceRecordId", "fileName", "fileUrl", "fileType", "fileSize", category)
+         values ($1, $2, 'photo.jpg', $3, 'image/jpeg', 10, $4)`,
+        [id(), serviceRecordId, fileUrl, category]
+      )
+    }
+    await db.query(
+      `insert into status_reports (id, "publicToken", "organizationId", "serviceRecordId", "videoUrl", "updatedAt")
+       values ($1, $2, $3, $4, $5, now())`,
+      [id(), id(), organizationId, serviceRecordId, files.statusVideo]
+    )
+    await db.query(
+      `insert into quotes (id, title, "userId", "organizationId", "vehicleId", "updatedAt")
+       values ($1, $2, $3, $4, $5, now())`,
+      [quoteId, `${label} quote`, userId, organizationId, vehicleId]
+    )
+    await db.query(
+      `insert into quote_attachments (id, "quoteId", "fileName", "fileUrl", "fileType", "fileSize")
+       values ($1, $2, 'estimate.pdf', $3, 'application/pdf', 10)`,
+      [id(), quoteId, files.quoteDocument]
+    )
+
+    let inspected = false
+    const template = await db.query<{ id: string }>(
+      `select id from inspection_templates where "organizationId" = $1 limit 1`,
+      [organizationId]
+    )
+    if (files.inspectionPhoto && template.rows[0]) {
+      const inspectionId = id()
+      await db.query(
+        `insert into inspections (id, "vehicleId", "organizationId", "templateId", "updatedAt")
+         values ($1, $2, $3, $4, now())`,
+        [inspectionId, vehicleId, organizationId, template.rows[0].id]
+      )
+      await db.query(
+        `insert into inspection_items (id, "inspectionId", name, section, "imageUrls")
+         values ($1, $2, 'Brakes', 'Checks', $3)`,
+        [id(), inspectionId, [files.inspectionPhoto]]
+      )
+      inspected = true
+    }
+    return { vehicleId, serviceRecordId, tireSetId, quoteId, inspected }
+  })
+}
+
+/** Removes what `plantVehicleWithFiles` made that its spec did not delete. */
+export async function removePlantedVehicle(planted: PlantedVehicle): Promise<void> {
+  await withDb(async (db) => {
+    await db.query('delete from quotes where id = $1', [planted.quoteId])
+    await db.query('delete from tire_sets where id = $1', [planted.tireSetId])
+    await db.query('delete from inspections where "vehicleId" = $1', [planted.vehicleId])
+    await db.query('delete from vehicles where id = $1', [planted.vehicleId])
+  })
+}

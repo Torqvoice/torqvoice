@@ -29,6 +29,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { invoiceLineWords, jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
+import { releaseFiles } from '@/lib/files/manager'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const QUOTE = [
@@ -815,6 +816,10 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
       if (!record) throw new Error('Work order not found')
       if (!record.tireSet) throw new Error('This job is not linked to a tire set')
 
+      const copies = await db.serviceAttachment.findMany({
+        where: { serviceRecordId: record.id, category: 'tire_hotel' },
+        select: { fileUrl: true },
+      })
       await db.$transaction([
         db.serviceRecord.update({
           where: { id: record.id },
@@ -824,6 +829,12 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
           where: { serviceRecordId: record.id, category: 'tire_hotel' },
         }),
       ])
+      // The set still holds these files, so the file manager keeps them; only
+      // a file the set itself has since let go is removed.
+      await releaseFiles(
+        copies.map((c) => c.fileUrl),
+        { organizationId, reason: 'tire set unlinked from work order' }
+      )
 
       revalidatePath(`/tire-hotel/${record.tireSet.id}`)
       if (record.vehicleId) {

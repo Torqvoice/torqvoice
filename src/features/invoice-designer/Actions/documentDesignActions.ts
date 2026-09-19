@@ -21,6 +21,8 @@ import {
 } from '../Lib/designSource'
 import { DESIGN_AUTO_RULES } from '../Lib/designRules'
 import { requireFeature } from '@/lib/features'
+import { releaseReplacedSettingFiles, settingValuesBefore } from '@/lib/files/settings'
+import { releaseFiles } from '@/lib/files/manager'
 
 const documentTypeSchema = z.enum(['invoice', 'quote'])
 
@@ -75,6 +77,13 @@ export async function listDesignOptions(documentType: DocumentType) {
  * same design: saving again updates it in place rather than filling the
  * gallery with near-copies, which is what the designer has always done.
  */
+/** The logo a stored design template points at, if any. */
+function templateLogo(template: unknown): string | null {
+  if (!template || typeof template !== 'object') return null
+  const logo = (template as { logoUrl?: unknown }).logoUrl
+  return typeof logo === 'string' && logo ? logo : null
+}
+
 export async function saveDocumentDesign(input: SaveDesignInput) {
   return withAuth(
     async ({ organizationId }): Promise<SavedDesign> => {
@@ -87,7 +96,7 @@ export async function saveDocumentDesign(input: SaveDesignInput) {
       let target = data.id
         ? await db.documentDesign.findFirst({
             where: { id: data.id, organizationId, documentType: data.documentType },
-            select: { id: true },
+            select: { id: true, template: true },
           })
         : null
       if (!target) {
@@ -97,7 +106,7 @@ export async function saveDocumentDesign(input: SaveDesignInput) {
             documentType: data.documentType,
             name: { equals: data.name, mode: 'insensitive' },
           },
-          select: { id: true },
+          select: { id: true, template: true },
         })
       }
 
@@ -115,6 +124,13 @@ export async function saveDocumentDesign(input: SaveDesignInput) {
               template,
             },
           })
+
+      // A logo this design no longer uses is let go, unless the settings, a
+      // snapshot or another design still has it.
+      const previousLogo = target ? templateLogo(target.template) : null
+      if (previousLogo && previousLogo !== templateLogo(template)) {
+        await releaseFiles([previousLogo], { organizationId, reason: 'design logo replaced' })
+      }
 
       const saved = savedDesignFromRow(row)
       if (!saved) throw new Error('Design could not be read back')
@@ -172,10 +188,16 @@ export async function deleteDocumentDesign(id: string) {
       await requireFeature(organizationId, 'customTemplates')
       const design = await db.documentDesign.findFirst({
         where: { id, organizationId },
-        select: { id: true, name: true },
+        select: { id: true, name: true, template: true },
       })
       if (!design) throw new Error('Design not found')
       await db.documentDesign.delete({ where: { id: design.id } })
+      // Issued invoices keep their snapshot, which still names the logo, so
+      // the file manager keeps the file for them.
+      await releaseFiles([templateLogo(design.template)], {
+        organizationId,
+        reason: 'design deleted',
+      })
       revalidatePath('/settings/templates')
       return { id: design.id, name: design.name }
     },
@@ -231,6 +253,7 @@ export async function applyDocumentDesign(id: string) {
         [`${prefix}.logo`]: t.logoUrl,
         [`${prefix}.activeDesign`]: `design:${row.id}`,
       }
+      const before = await settingValuesBefore(organizationId, Object.keys(entries))
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>
           db.appSetting.upsert({
@@ -240,6 +263,8 @@ export async function applyDocumentDesign(id: string) {
           })
         )
       )
+      // The logo the document used before, unless a design still has it.
+      await releaseReplacedSettingFiles(organizationId, before, entries)
       revalidatePath('/settings/templates')
       revalidatePath('/settings/invoice')
       return { id: row.id, name: row.name, documentType }

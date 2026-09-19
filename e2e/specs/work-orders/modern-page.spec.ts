@@ -7,7 +7,7 @@ import {
   paymentsFor,
 } from '../../support/db'
 import { fillSettled, settle } from '../../support/hydration'
-import { TINY_PNG } from '../../support/pdf'
+import { makePdf, TINY_PNG } from '../../support/pdf'
 import { setInvoiceLock } from '../../support/settings'
 import {
   addPart,
@@ -328,6 +328,68 @@ test.describe('the overhauled work order page', () => {
       'true'
     )
     await expect(files).toBeInViewport()
+  })
+
+  test("takes photos on a phone that scanned the desk's code, and shows them at the desk as they land", async ({
+    page,
+    browser,
+  }) => {
+    await openModern(page, factsJob)
+    const files = page.getByTestId('files-media')
+    const before = await files.getByTestId('media-tile').count()
+
+    const dialog = page.getByTestId('photo-handoff-dialog')
+    await expect(async () => {
+      await files.getByTestId('photo-handoff-open').click()
+      await expect(dialog).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+    const link = dialog.getByTestId('photo-handoff-link')
+    await expect(link).toHaveValue(/\/p\/ph1\./)
+    const url = await link.inputValue()
+
+    // The phone: another browser, signed in to nothing.
+    const phone = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+      viewport: { width: 390, height: 844 },
+    })
+    const phonePage = await phone.newPage()
+    await phonePage.goto(url)
+    await settle(phonePage)
+    await expect(phonePage.getByRole('heading', { name: 'Add photos and documents' })).toBeVisible()
+    await expect(phonePage.getByRole('button', { name: 'Take photo' })).toBeVisible()
+    // The workshop's own page, as far as the customer holding the phone can tell.
+    await expect(phonePage.getByTestId('photo-handoff-workshop')).not.toBeEmpty()
+    await phonePage.getByTestId('photo-handoff-library').setInputFiles({
+      name: `e2e-phone-${stamp}.png`,
+      mimeType: 'image/png',
+      buffer: TINY_PNG,
+    })
+    await expect(phonePage.getByTestId('photo-handoff-added')).toHaveText('1 file added')
+
+    // And a customer's paperwork: a PDF goes on the job as a document.
+    await phonePage.getByTestId('photo-handoff-document').setInputFiles({
+      name: `e2e-registration-${stamp}.pdf`,
+      mimeType: 'application/pdf',
+      buffer: await makePdf([`Registration ${stamp}`]),
+    })
+    await expect(phonePage.getByTestId('photo-handoff-added')).toHaveText('2 files added')
+
+    // A link somebody changed opens nothing.
+    await phonePage.goto(url.replace(/.$/, (last) => (last === 'A' ? 'B' : 'A')))
+    await expect(phonePage.getByTestId('photo-handoff-problem')).toContainText(
+      'This link does not work'
+    )
+    await phone.close()
+
+    // At the desk the photo arrives without anybody reloading.
+    await expect(dialog.getByTestId('photo-handoff-received')).toHaveText('2 files received', {
+      timeout: 15_000,
+    })
+    await dialog.getByRole('button', { name: 'Done' }).click()
+    await expect(files.getByTestId('media-tile')).toHaveCount(before + 1)
+    await files.getByRole('tab', { name: /^Documents/ }).click()
+    // A document's name is its caption until somebody writes one.
+    await expect(files.getByPlaceholder(`e2e-registration-${stamp}.pdf`)).toHaveCount(1)
   })
 
   test.describe('the technician list', () => {

@@ -14,7 +14,8 @@ import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
-import { mkdir, rm, writeFile } from 'fs/promises'
+import { mkdir, writeFile } from 'fs/promises'
+import { releaseFilesNotRestored } from '@/lib/files/manager'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
 
@@ -336,21 +337,8 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))
   )
 
-  // Clear only the folders this backup can refill. Wiping the lot took the
-  // portal background and the tire photos with it, and no backup carried
-  // either of them back.
-  const carried = new Set(
-    fileEntries.map((name) => name.split('/')[1]).filter((category) => Boolean(category))
-  )
-  for (const category of carried) {
-    if (!UPLOAD_CATEGORIES.includes(category)) continue
-    try {
-      await rm(path.join(uploadsDir, category), { recursive: true, force: true })
-    } catch {
-      // Folder may not exist yet.
-    }
-  }
-
+  // The backup's files are written first, over whatever has the same name.
+  const restored = new Map<string, Set<string>>()
   for (const filePath of fileEntries) {
     // Supports both formats:
     //   files/{category}/{filename}  (v2 backup)
@@ -371,6 +359,20 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
 
     const fileData = await zip.files[filePath].async('nodebuffer')
     await writeFile(path.join(targetDir, filename), fileData)
+
+    const names = restored.get(category) ?? new Set<string>()
+    names.add(filename)
+    restored.set(category, names)
+  }
+
+  // Then the files in those folders that the backup did not bring back go
+  // through the file manager, which keeps any a row still uses. The folders
+  // used to be emptied first, which also took files uploaded after the backup
+  // was made, still used by rows this restore did not replace. Only the
+  // folders the backup carries are looked at: it has nothing to say about
+  // the others (the portal background, the tire photos, when absent).
+  for (const [category, names] of restored) {
+    await releaseFilesNotRestored(organizationId, category, names)
   }
 }
 

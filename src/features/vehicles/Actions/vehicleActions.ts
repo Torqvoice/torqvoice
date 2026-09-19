@@ -8,8 +8,8 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchema'
 import { revalidatePath } from 'next/cache'
-import { unlink } from 'fs/promises'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { releaseFiles } from '@/lib/files/manager'
+import { vehicleFileUrls } from '@/lib/files/collect'
 import { auditDetails } from '@/lib/audit'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
 
@@ -277,27 +277,12 @@ export async function updateVehicle(input: unknown) {
       const { id, inspectionDueAt, ...data } = updateVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
 
-      // Fetch current record for display/diff
+      // Fetch current record for display/diff, and the image it had
       const before = await db.vehicle.findFirst({
         where: { id, organizationId },
-        select: { year: true, make: true, model: true, licensePlate: true },
+        select: { year: true, make: true, model: true, licensePlate: true, imageUrl: true },
       })
       if (!before) throw new Error('Vehicle not found')
-
-      // If image is being changed, delete the old file from disk
-      if (data.imageUrl !== undefined) {
-        const existing = await db.vehicle.findFirst({
-          where: { id, organizationId },
-          select: { imageUrl: true },
-        })
-        if (existing?.imageUrl && existing.imageUrl !== data.imageUrl) {
-          try {
-            await unlink(resolveUploadPath(existing.imageUrl))
-          } catch {
-            // Old file may already be gone
-          }
-        }
-      }
 
       const updateResult = await db.vehicle.updateMany({
         where: { id, organizationId },
@@ -318,6 +303,11 @@ export async function updateVehicle(input: unknown) {
         },
       })
       if (updateResult.count === 0) throw new Error('Vehicle not found')
+      // A replaced image is let go once the new one is saved; the file manager
+      // keeps it if anything else still shows it.
+      if (data.imageUrl !== undefined && before.imageUrl && before.imageUrl !== data.imageUrl) {
+        await releaseFiles([before.imageUrl], { organizationId, reason: 'vehicle image replaced' })
+      }
       await saveManualInspectionDate(organizationId, id, inspectionDueAt)
       const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
       const changedKeys = Object.keys(data).filter(
@@ -355,41 +345,17 @@ export async function updateVehicle(input: unknown) {
 export async function deleteVehicle(vehicleId: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      // Fetch vehicle with its attachments so we can clean up files
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
-        select: {
-          imageUrl: true,
-          year: true,
-          make: true,
-          model: true,
-          licensePlate: true,
-          serviceRecords: {
-            select: { attachments: { select: { fileUrl: true } } },
-          },
-        },
+        select: { year: true, make: true, model: true, licensePlate: true },
       })
       if (!vehicle) throw new Error('Vehicle not found')
 
+      // Everything the delete cascades to, read while it still exists, and
+      // let go once the rows are gone.
+      const files = await vehicleFileUrls(organizationId, [vehicleId])
       await db.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
-
-      // Clean up files from disk after DB deletion
-      if (vehicle) {
-        const filesToDelete: string[] = []
-        if (vehicle.imageUrl) filesToDelete.push(vehicle.imageUrl)
-        for (const sr of vehicle.serviceRecords) {
-          for (const att of sr.attachments) {
-            filesToDelete.push(att.fileUrl)
-          }
-        }
-        for (const fileUrl of filesToDelete) {
-          try {
-            await unlink(resolveUploadPath(fileUrl))
-          } catch {
-            // File may already be gone
-          }
-        }
-      }
+      await releaseFiles(files, { organizationId, reason: 'vehicle deleted' })
 
       const vehicleDisplay = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
       revalidatePath('/')

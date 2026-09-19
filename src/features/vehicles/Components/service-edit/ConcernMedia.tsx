@@ -7,6 +7,7 @@ import { Film, ImagePlus, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAttachment'
 import { compressImage } from '@/lib/compress-image'
+import { PhotoHandoffButton } from '../service-page/PhotoHandoffButton'
 
 export interface ConcernMediaFile {
   id: string
@@ -31,9 +32,12 @@ const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 export function ConcernMedia({
   serviceRecordId,
   concernId,
+  concernLabel,
   files,
 }: {
   serviceRecordId: string
+  /** The concern as the customer put it, for the phone code's "Photos go under". */
+  concernLabel?: string
   /** Null until the concern has been saved: there is nothing to file under yet. */
   concernId: string | null
   files: ConcernMediaFile[]
@@ -129,6 +133,14 @@ export function ConcernMedia({
         )}
         {uploading ? t('mediaUploading') : t('addMedia')}
       </button>
+      <PhotoHandoffButton
+        variant="link"
+        serviceRecordId={serviceRecordId}
+        concernId={concernId}
+        concernLabel={concernLabel}
+        disabled={!concernId}
+        disabledReason={t('saveFirst')}
+      />
       <input
         ref={inputRef}
         type="file"

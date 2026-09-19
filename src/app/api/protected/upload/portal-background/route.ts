@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { writeFile, mkdir, unlink } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { randomUUID } from 'crypto'
-import { db } from '@/lib/db'
 import { cleanImage } from '@/lib/image-upload.server'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { uploadsRoot } from '@/lib/upload-root'
 
 export async function POST(request: Request) {
@@ -50,21 +47,9 @@ export async function POST(request: Request) {
 
     const url = `/api/protected/files/${ctx.organizationId}/portal/${fileName}`
 
-    // Delete the previous background image if one exists.
-    const previous = await db.appSetting.findFirst({
-      where: {
-        organizationId: ctx.organizationId,
-        key: SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
-      },
-      select: { value: true },
-    })
-    if (previous?.value) {
-      try {
-        await unlink(resolveUploadPath(previous.value))
-      } catch {
-        // File may already be gone — best effort.
-      }
-    }
+    // Nothing is deleted here: the previous background is let go when the
+    // setting is saved with this one (lib/files/settings.ts), and an upload
+    // that is never saved is swept.
 
     return NextResponse.json({ url, fileName })
   } catch (error) {
