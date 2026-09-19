@@ -29,20 +29,9 @@ import {
   CommandGroup,
   CommandItem,
 } from '@/components/ui/command'
-import {
-  Calendar,
-  Check,
-  ChevronDown,
-  Clock,
-  Coins,
-  Globe,
-  Loader2,
-  Palette,
-  Save,
-} from 'lucide-react'
+import { Calendar, Check, ChevronDown, Clock, Coins, Globe, Loader2, Save } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatCurrency, formatDate, formatDateTime, DEFAULT_DATE_FORMAT } from '@/lib/format'
-import { ThemePicker } from '@/components/theme-picker'
 import { setLocale } from '@/i18n/actions'
 import { locales, localeNames } from '@/i18n/config'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
@@ -559,15 +548,6 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
             </div>
           </div>
         </ReadOnlyWrapper>
-      </AppCard>
-
-      {/* Theme */}
-      <AppCard icon={Palette} title={t('appearance.title')} contentClassName="space-y-4">
-        <div>
-          <Label className="text-sm font-medium">{t('appearance.themeLabel')}</Label>
-          <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
-        </div>
-        <ThemePicker />
       </AppCard>
 
       {/* Save */}

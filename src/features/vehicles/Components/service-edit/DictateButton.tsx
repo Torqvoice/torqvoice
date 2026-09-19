@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Loader2, Mic } from 'lucide-react'
 import {
@@ -21,6 +21,8 @@ import { cn } from '@/lib/utils'
 
 const LANGUAGE_KEY = 'torqvoice:dictationLanguage'
 const ENGINE_KEY = 'torqvoice:dictationEngine'
+/** Said on the window when one microphone starts, so any other one stops. */
+const STARTED_EVENT = 'torqvoice:dictation-started'
 /** Let the speech model work out the language. Only it can; a browser has to be told. */
 const AUTO = 'auto'
 
@@ -169,6 +171,26 @@ export function DictateButton({
       toast.error(message || t('failed'))
     },
   })
+  // Hooks first, before the early return below: a hook after a return is a
+  // hook that some renders call and others do not, which React refuses.
+  // Every step of every concern has a microphone, and there is one customer
+  // talking: starting one stops whichever other was listening, so what is
+  // said is written in one box and not two.
+  const buttonId = useId()
+  const stopRef = useRef<() => void>(undefined)
+  stopRef.current = () => {
+    if (live.recording) live.stop()
+    if (recorder.recording) recorder.stop()
+    if (browser.listening) browser.stop()
+  }
+  useEffect(() => {
+    const onStarted = (event: Event) => {
+      if ((event as CustomEvent<string>).detail !== buttonId) stopRef.current?.()
+    }
+    window.addEventListener(STARTED_EVENT, onStarted)
+    return () => window.removeEventListener(STARTED_EVENT, onStarted)
+  }, [buttonId])
+
   const useLive = live.supported && !liveUnavailable
 
   const serverAvailable =
@@ -189,6 +211,7 @@ export function DictateButton({
 
   const toggle = () => {
     if (transcribing) return
+    if (!active) window.dispatchEvent(new CustomEvent(STARTED_EVENT, { detail: buttonId }))
     if (useServer) {
       if (live.recording) {
         live.stop()

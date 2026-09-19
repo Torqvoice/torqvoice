@@ -465,7 +465,7 @@
     "notAnswered": "Dazu wurde noch nichts festgestellt",
     "answered": "{count} Feststellung(en) dazu",
     "storyTitle": "Job description",
-    "storyHint": "Condition, cause, correction, confirm. One row for each thing the customer mentioned or you observed.",
+    "storyHint": "Condition, cause, correction, confirm. Click a step to open it; one row for each thing the customer mentioned or you observed.",
     "steps": {
       "condition": "Condition",
       "cause": "Cause",
@@ -510,7 +510,13 @@
       "engineAi": "Speech model (more accurate)",
       "engineBrowser": "Browser (writes as you speak)",
       "liveFellBack": "Writing in steps of a few seconds instead of word by word."
-    }
+    },
+    "stepEmpty": "Not written yet",
+    "removeTitle": "Remove this concern?",
+    "removeBody": "Its condition, cause, correction and confirmation are removed with it when you save the work order.",
+    "removeAttached": "Its observations and media stay on the job, no longer filed under a concern.",
+    "removeConfirm": "Remove concern",
+    "saveFirst": "Save the work order first"
   },
   "videoCall": {
     "title": "Videoanruf",
@@ -570,8 +576,6 @@
     "notSet": "Not set",
     "noCustomer": "No customer on this work order.",
     "invoiceTitle": "Invoice & payment",
-    "previewInvoice": "Preview invoice",
-    "sendToCustomer": "Send to customer",
     "filesTitle": "Files & media",
     "activity": {
       "title": "Activity",
@@ -613,6 +617,17 @@
       "failed": "Could not upload {name}",
       "wrongType": "Not the right kind of file for this tab: {names}",
       "limit": "Limit reached ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Paid",
+      "balance": "Balance due",
+      "settled": "Paid in full",
+      "takePayment": "Take payment",
+      "preview": "Preview invoice",
+      "previewShort": "Preview",
+      "send": "Send to customer",
+      "sendShort": "Send"
     }
   }
 }

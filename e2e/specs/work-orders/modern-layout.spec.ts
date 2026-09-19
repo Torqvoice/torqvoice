@@ -113,6 +113,14 @@ test.describe('the overhauled work order page', () => {
     await expect(files.getByTestId('media-add')).toContainText('Add photos')
     await files.getByRole('tab', { name: /^Status Reports/ }).click()
     await expect(files.getByTestId('status-reports-section')).toBeVisible()
+
+    // The money stays on screen along the bottom, with what is done about it.
+    const bar = page.getByTestId('money-bar')
+    await expect(bar).toBeInViewport()
+    await expect(bar.getByTestId('money-balance')).toContainText('300')
+    await expect(bar.getByRole('button', { name: 'Take payment' })).toBeVisible()
+    await expect(bar.getByRole('button', { name: /Preview/ })).toBeVisible()
+    await expect(bar.getByRole('button', { name: /Send/ })).toBeVisible()
   })
 
   test('saves the same job the classic page does', async ({ page }) => {

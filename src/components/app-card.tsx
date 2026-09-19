@@ -76,7 +76,7 @@ export function AppCard({
             </div>
           )}
           <div className="min-w-0 flex-1 self-center">
-            <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+            <h3 className="flex items-center gap-2 font-display text-sm font-semibold tracking-tight">
               <span className="truncate">{title}</span>
               {badge != null && (
                 <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-px text-[11px] font-semibold tabular-nums text-primary ring-1 ring-inset ring-primary/15">

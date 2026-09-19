@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -40,6 +40,12 @@ interface PaymentsSectionProps {
   onTogglePaid: () => void
   paymentLoading: boolean
   deletingPayment: string | null
+  /**
+   * Bumped by something elsewhere on the page that wants a payment taken (the
+   * bar along the bottom of the overhauled page): the form opens and is
+   * brought into view. The number only has to change; its value means nothing.
+   */
+  openFormSignal?: number
 }
 
 export function PaymentsSection({
@@ -55,6 +61,7 @@ export function PaymentsSection({
   onTogglePaid,
   paymentLoading,
   deletingPayment,
+  openFormSignal = 0,
 }: PaymentsSectionProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.payments')
@@ -65,6 +72,17 @@ export function PaymentsSection({
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0])
   const { formatDate } = useFormatDate()
   const formRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (openFormSignal === 0) return
+    setShowForm(true)
+    // After the form has been drawn, so the view lands on it and not above it.
+    requestAnimationFrame(() => {
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      formRef.current?.querySelector<HTMLInputElement>('[name="paymentAmount"]')?.focus()
+    })
+  }, [openFormSignal])
 
   const handleSubmit = async () => {
     if (!formRef.current) return
@@ -150,7 +168,7 @@ export function PaymentsSection({
   // and taking a payment as the one big button under it.
   if (modern) {
     return (
-      <div className="space-y-3" data-testid="payments-section">
+      <div ref={sectionRef} className="space-y-3" data-testid="payments-section">
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {t('received')}
@@ -219,7 +237,7 @@ export function PaymentsSection({
             {t('balanceDue')}
           </span>
           <span
-            className="font-mono text-3xl font-bold leading-none tabular-nums"
+            className="order-number text-3xl font-bold leading-none tabular-nums"
             data-testid="balance-due"
           >
             {formatCurrency(balanceDue, currencyCode)}

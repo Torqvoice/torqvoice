@@ -186,7 +186,7 @@ const SEARCHABLE_SETTINGS = [
   {
     key: 'appearance',
     href: '/settings/appearance',
-    keywords: ['appearance', 'theme', 'dark', 'light', 'date', 'timezone'],
+    keywords: ['appearance', 'theme', 'dark', 'light', 'font', 'typeface', 'colour', 'color'],
   },
   { key: 'data', href: '/settings/data', keywords: ['data', 'export', 'import', 'backup'] },
   { key: 'about', href: '/settings/about', keywords: ['about', 'version', 'info'] },

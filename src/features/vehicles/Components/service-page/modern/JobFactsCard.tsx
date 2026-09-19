@@ -78,7 +78,9 @@ export function JobFactsCard({
       <div className="grid grid-cols-1 divide-y divide-card-edge @xl:grid-cols-2 @xl:divide-x @xl:divide-y-0">
         <div className="space-y-2 px-4 py-3">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold tracking-tight">{t('basicInfo.customer')}</h3>
+            <h3 className="font-display text-sm font-semibold tracking-tight">
+              {t('basicInfo.customer')}
+            </h3>
             {customer && (
               <Link
                 href={`/customers/${customer.id}`}
@@ -143,7 +145,9 @@ export function JobFactsCard({
             into a vehicle job, so the way to do that stays. */}
         <div className="space-y-2 px-4 py-3">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold tracking-tight">{t('basicInfo.vehicle')}</h3>
+            <h3 className="font-display text-sm font-semibold tracking-tight">
+              {t('basicInfo.vehicle')}
+            </h3>
             <div className="flex items-center gap-3">
               {selectedVehicleId && (
                 <Link

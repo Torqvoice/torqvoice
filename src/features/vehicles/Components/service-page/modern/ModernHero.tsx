@@ -38,6 +38,20 @@ interface ModernHeroProps {
   locked?: boolean
 }
 
+/** How much of a title the header shows before it is cut. */
+const TITLE_SHOWN = 50
+
+/**
+ * A title as the header shows it: whole up to fifty characters, and cut there
+ * with an ellipsis beyond. By count, not by width, so it is cut at the same
+ * place on every screen. The full title is in the tooltip and in the field.
+ */
+export function shownTitle(title: string): string {
+  const characters = Array.from(title)
+  if (characters.length <= TITLE_SHOWN) return title
+  return `${characters.slice(0, TITLE_SHOWN).join('').trimEnd()}…`
+}
+
 const SERVICE_TYPES = ['maintenance', 'repair', 'upgrade', 'inspection'] as const
 
 /**
@@ -89,32 +103,50 @@ function TitleEditor({
             setEditing(false)
           }
         }}
-        className="w-[min(28rem,60vw)] rounded-md border border-input bg-background px-2 py-0.5 font-sans text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="w-[min(44rem,100%)] min-w-64 rounded-md border border-input bg-background px-2 py-0.5 font-sans text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
       />
     )
   }
 
-  return (
-    <span className="group/title inline-flex min-w-0 items-center gap-1">
-      <span className="min-w-0 break-words" data-testid="service-title">
-        {title}
+  // A locked invoice only reads the title.
+  if (locked) {
+    return (
+      <span className="min-w-0 whitespace-nowrap" data-testid="service-title" title={title}>
+        {shownTitle(title)}
       </span>
-      {!locked && (
-        <button
-          type="button"
-          aria-label={editLabel}
-          title={editLabel}
-          data-testid="edit-title"
-          onClick={() => {
-            setDraft(title)
-            setEditing(true)
-          }}
-          className="shrink-0 cursor-pointer rounded p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <Pencil className="h-3 w-3" aria-hidden="true" />
-        </button>
-      )}
-    </span>
+    )
+  }
+
+  // The whole title is the way in, not only the pencil: it sits in a dashed
+  // outline so it reads as something that can be changed before anybody
+  // hovers over it, and turns into a field where it stands.
+  return (
+    <button
+      type="button"
+      aria-label={`${editLabel}: ${title}`}
+      title={`${editLabel}: ${title}`}
+      data-testid="edit-title"
+      onClick={() => {
+        setDraft(title)
+        setEditing(true)
+      }}
+      // Always one line, and all of it for as long as there is room: the box
+      // takes the width its text needs and gives none of it up to the items
+      // beside it, which wrap under it instead. Its limit is the row itself
+      // (measured against the row, not against a wrapper sized by the box,
+      // which cut it early). Only a title wider than the whole row is cut with an ellipsis
+      // (the full text is in the tooltip and in the field once it is opened)
+      // rather than folding onto a second line and doubling the header.
+      className="group/title -ml-1.5 inline-flex max-w-full shrink-0 cursor-text items-center gap-1.5 whitespace-nowrap rounded-md border border-dashed border-muted-foreground/40 px-1.5 py-px text-left font-medium text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="min-w-0 truncate" data-testid="service-title">
+        {shownTitle(title)}
+      </span>
+      <Pencil
+        className="h-3 w-3 shrink-0 text-muted-foreground transition-colors group-hover/title:text-primary"
+        aria-hidden="true"
+      />
+    </button>
   )
 }
 
@@ -213,7 +245,8 @@ export function ModernHero({
               <h1
                 className={cn(
                   'min-w-0 break-words text-xl font-bold leading-tight tracking-tight',
-                  number && 'font-mono'
+                  // Figures in the default font set, the heading face in the workshop one.
+                  number ? 'order-number' : 'font-display'
                 )}
                 data-testid="service-number"
               >
@@ -282,8 +315,10 @@ export function ModernHero({
               </div>
             </div>
 
-            <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
-              {number && <span className="font-medium text-foreground">{titleEditor}</span>}
+            {/* A little air under the number: the two lines are different
+                things, and ran together when they touched. */}
+            <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+              {number && titleEditor}
               {number && (customer || vehicle) && <span aria-hidden="true">·</span>}
               {customer && (
                 <Link href={`/customers/${customer.id}`} className={factLink}>

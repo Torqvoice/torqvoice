@@ -42,7 +42,7 @@ export interface TranscriptionSubject {
 export function transcriptionPrompt(subject: TranscriptionSubject, spokenBefore = ''): string {
   const vehicle = [subject.year, subject.make, subject.model].filter(Boolean).join(' ')
   return [
-    'A customer at a vehicle workshop describes what is wrong with their vehicle.',
+    'Spoken at a vehicle workshop: what is wrong with a vehicle, what caused it, what was done about it and how the repair was checked.',
     vehicle ? `The vehicle is a ${vehicle}.` : '',
     'Fault codes are written like P0303. Parts and systems: ABS, ESP, DPF, EGR, turbo, clutch, brake pads, brake discs, ignition coil, spark plugs, timing belt, wheel bearing, control arm.',
     // Last, because the model continues from where the prompt ends: a live

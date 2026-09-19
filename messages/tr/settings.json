@@ -1229,7 +1229,29 @@
     "dateLabel": "Tarih",
     "dateTimeLabel": "Tarih & Saat",
     "saveSettings": "Ayarları Kaydet",
-    "saved": "Ayarlar kaydedildi"
+    "saved": "Ayarlar kaydedildi",
+    "fontLabel": "Font",
+    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
+    "fontSampleHeading": "Work order",
+    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fonts": {
+      "default": {
+        "name": "Default",
+        "description": "Geist, clean and neutral."
+      },
+      "workshop": {
+        "name": "Workshop",
+        "description": "IBM Plex with condensed capital headings, like a job card."
+      },
+      "precise": {
+        "name": "Precise",
+        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+      },
+      "legible": {
+        "name": "Legible",
+        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+      }
+    }
   },
   "data": {
     "title": "Veri Yönetimi",

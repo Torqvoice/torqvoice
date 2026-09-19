@@ -34,7 +34,8 @@ export function ConcernMedia({
   files,
 }: {
   serviceRecordId: string
-  concernId: string
+  /** Null until the concern has been saved: there is nothing to file under yet. */
+  concernId: string | null
   files: ConcernMediaFile[]
 }) {
   const t = useTranslations('service.concerns')
@@ -43,6 +44,7 @@ export function ConcernMedia({
   const [uploading, setUploading] = useState(false)
 
   const upload = async (list: FileList) => {
+    if (!concernId) return
     const chosen = Array.from(list).filter(
       (file) => IMAGE_TYPES.includes(file.type) || file.type.startsWith('video/')
     )
@@ -114,10 +116,11 @@ export function ConcernMedia({
       ))}
       <button
         type="button"
-        disabled={uploading}
+        disabled={uploading || !concernId}
+        title={concernId ? undefined : t('saveFirst')}
         onClick={() => inputRef.current?.click()}
         data-testid="concern-add-media"
-        className="flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-default disabled:opacity-60"
+        className="flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-default disabled:opacity-50 disabled:hover:text-muted-foreground"
       >
         {uploading ? (
           <Loader2 className="h-3 w-3 animate-spin" />
