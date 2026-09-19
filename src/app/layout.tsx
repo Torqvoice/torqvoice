@@ -88,16 +88,27 @@ const jetBrainsMono = JetBrains_Mono({
 })
 
 // The "legible" set. Latin only: the family has no Cyrillic.
+//
+// adjustFontFallback is off for these two. next/font sizes a stand-in system
+// font to match each face while it loads, from a table of font metrics shipped
+// with Next, and these families are newer than that table: it found nothing,
+// skipped the stand-in anyway, and said so on every compile. The fallback is
+// named here instead, so the text is still set in something sensible for the
+// moment before the font arrives.
 const atkinson = Atkinson_Hyperlegible_Next({
   variable: '--font-atkinson',
   subsets: ['latin', 'latin-ext'],
   preload: false,
+  adjustFontFallback: false,
+  fallback: ['system-ui', 'sans-serif'],
 })
 
 const atkinsonMono = Atkinson_Hyperlegible_Mono({
   variable: '--font-atkinson-mono',
   subsets: ['latin', 'latin-ext'],
   preload: false,
+  adjustFontFallback: false,
+  fallback: ['ui-monospace', 'monospace'],
 })
 
 export const metadata: Metadata = {
