@@ -202,6 +202,7 @@ export function RichTextEditor({
           taller, so a click in the empty space below it would land nowhere.
           Anywhere in the box puts the cursor at the end, as a textarea does. */}
       <div
+        data-testid="rich-text-area"
         className={cn('flex-1 overflow-y-auto', editable && 'cursor-text')}
         onMouseDown={(e) => {
           if (!editable) return

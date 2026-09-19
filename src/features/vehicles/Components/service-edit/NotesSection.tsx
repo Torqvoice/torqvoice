@@ -193,33 +193,37 @@ export function NotesSection({
   if (modern) {
     return (
       <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-2" data-testid="notes-section">
-        <AppCard
-          icon={Lock}
-          title={t('internalTitle')}
-          description={t('internalHelper')}
-          action={aiButton('internal')}
-          className="border-amber-500/30 bg-amber-500/5 hover:border-amber-500/40"
-        >
-          <RichTextEditor
-            content={internalNotes}
-            onChange={handleInternalChange}
-            editable={!internalLocked}
-            placeholder={t('internalPlaceholder')}
-          />
-        </AppCard>
-        <AppCard
-          icon={Eye}
-          title={t('publicTitle')}
-          description={t('publicHelper')}
-          action={aiButton('public')}
-        >
-          <RichTextEditor
-            content={publicNotes}
-            onChange={handlePublicChange}
-            editable={!publicLocked}
-            placeholder={t('publicPlaceholder')}
-          />
-        </AppCard>
+        <div data-testid="notes-internal">
+          <AppCard
+            icon={Lock}
+            title={t('internalTitle')}
+            description={t('internalHelper')}
+            action={aiButton('internal')}
+            className="border-amber-500/30 bg-amber-500/5 hover:border-amber-500/40"
+          >
+            <RichTextEditor
+              content={internalNotes}
+              onChange={handleInternalChange}
+              editable={!internalLocked}
+              placeholder={t('internalPlaceholder')}
+            />
+          </AppCard>
+        </div>
+        <div data-testid="notes-customer">
+          <AppCard
+            icon={Eye}
+            title={t('publicTitle')}
+            description={t('publicHelper')}
+            action={aiButton('public')}
+          >
+            <RichTextEditor
+              content={publicNotes}
+              onChange={handlePublicChange}
+              editable={!publicLocked}
+              placeholder={t('publicPlaceholder')}
+            />
+          </AppCard>
+        </div>
         {aiDialog}
       </div>
     )
