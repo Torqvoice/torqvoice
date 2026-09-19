@@ -51,6 +51,12 @@ interface InvoiceDetailsSectionProps {
   designPinnedAt?: string | null
   /** Set when a design rule, not the customer or the default, is what "default" means here. */
   designFollowsRule?: DesignAutoRule | null
+  /**
+   * The overhauled page edits the title, type and status in its header, so it
+   * asks for the invoice's own fields only (number, dates, design), with no
+   * frame. The classic page leaves this unset and gets the whole section.
+   */
+  part?: 'invoice'
 }
 
 export function InvoiceDetailsSection({
@@ -69,6 +75,7 @@ export function InvoiceDetailsSection({
   designFollowsName = null,
   designPinnedAt = null,
   designFollowsRule = null,
+  part,
 }: InvoiceDetailsSectionProps) {
   const t = useTranslations('service.basicInfo')
   const router = useRouter()
@@ -110,31 +117,27 @@ export function InvoiceDetailsSection({
     setInvoiceDueDate(initialData.invoiceDueDate || '')
   }, [initialData.invoiceDueDate])
 
-  return (
-    <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">{t('invoiceDetails')}</h3>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            'h-7 text-xs',
-            paymentStatus === 'paid' &&
-              'border-green-300 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800'
-          )}
-          onClick={onTogglePaid}
-          disabled={paymentLoading}
-        >
-          {paymentLoading ? (
-            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-          ) : (
-            <Check className="mr-1 h-3 w-3" />
-          )}
-          {paymentStatus === 'paid' ? t('paid') : t('markPaid')}
-        </Button>
-      </div>
+  // On the overhauled page the status is the stepper under the title, so the
+  // select is not drawn a second time.
+  const statusField = part ? null : (
+    <div className="space-y-1">
+      <Label className="text-xs">{t('status')}</Label>
+      <Select value={status} onValueChange={setStatus}>
+        <SelectTrigger className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
+          <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
+          <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
+          <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  )
 
+  const jobFields = (
+    <>
       <div className="space-y-1">
         <Label htmlFor="title" className="text-xs">
           {t('titleLabel')}
@@ -156,7 +159,9 @@ export function InvoiceDetailsSection({
         value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
       />
 
-      <div className={showType ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2'}>
+      <div
+        className={showType && statusField ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2'}
+      >
         {showType && (
           <div className="space-y-1">
             <Label className="text-xs">{t('type')}</Label>
@@ -173,22 +178,13 @@ export function InvoiceDetailsSection({
             </Select>
           </div>
         )}
-        <div className="space-y-1">
-          <Label className="text-xs">{t('status')}</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
-              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
-              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
-              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {statusField}
       </div>
+    </>
+  )
 
+  const invoiceFields = (
+    <>
       <div className="space-y-1">
         <Label htmlFor="invoiceNumber" className="text-xs">
           {t('invoiceNumber')}
@@ -266,6 +262,38 @@ export function InvoiceDetailsSection({
           )}
         </div>
       )}
+    </>
+  )
+
+  if (part === 'invoice') return <div className="space-y-3">{invoiceFields}</div>
+
+  return (
+    <div className="rounded-lg border p-3 space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold">{t('invoiceDetails')}</h3>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            'h-7 text-xs',
+            paymentStatus === 'paid' &&
+              'border-green-300 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800'
+          )}
+          onClick={onTogglePaid}
+          disabled={paymentLoading}
+        >
+          {paymentLoading ? (
+            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+          ) : (
+            <Check className="mr-1 h-3 w-3" />
+          )}
+          {paymentStatus === 'paid' ? t('paid') : t('markPaid')}
+        </Button>
+      </div>
+
+      {jobFields}
+      {invoiceFields}
     </div>
   )
 }

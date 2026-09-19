@@ -60,7 +60,8 @@
       "safety": "Akcje serwisowe i skargi właścicieli"
     },
     "ai": {
-      "chat": "Teksty i podsumowania"
+      "chat": "Teksty i podsumowania",
+      "transcribe": "Dyktowanie"
     },
     "payments": {
       "checkout": "Płatność z linku do faktury"
@@ -156,7 +157,8 @@
       "syncNowHelp": "Synchronizuj teraz uruchamia przebieg od razu zamiast czekać na cogodzinny. Sprawdza po 25 pojazdów i kontynuuje sam, aż wszystkie oczekujące pojazdy zostaną obsłużone."
     },
     "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
-    "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}"
+    "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}",
+    "advanced": "Zaawansowane"
   },
   "activity": {
     "title": "Aktywność",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Utrzymuj aktualne dane o akcjach serwisowych i skargach dla każdego pojazdu w tym warsztacie",
         "refreshFleetHelp": "Raz dziennie modele nieodświeżone w ostatnim tygodniu są pobierane ponownie, aby strona pojazdu nigdy nie czekała, a nowa akcja serwisowa pojawiła się w ciągu tygodnia. Wysyłane są tylko marka, model i rocznik."
+      }
+    },
+    "speech-to-text": {
+      "description": "Dyktowanie w zleceniu zapisywane przez model mowy zamiast przeglądarki: znacznie dokładniej, w każdym języku i ze znajomością słownictwa warsztatowego. Działa niezależnie od Twojego dostawcy AI, więc możesz go zostawić bez zmian. Używa Twojego własnego klucza OpenAI albo własnego serwera obsługującego API transkrypcji OpenAI. Nagranie jest wysyłane do zapisania i nie jest przechowywane.",
+      "fields": {
+        "apiKey": "Klucz API",
+        "apiKeyHelp": "Klucz OpenAI z platform.openai.com, sekcja API keys; OpenAI rozlicza użycie za minutę. Przy własnym serwerze tylko wtedy, gdy go wymaga.",
+        "baseUrl": "Adres serwera",
+        "baseUrlHelp": "Zostaw puste, aby używać OpenAI. Dla własnego serwera (lokalny Whisper, LocalAI, Groq) podaj, gdzie zaczyna się jego API w stylu OpenAI, łącznie ze ścieżką, np. /v1. Torqvoice dokleja do niego /audio/transcriptions."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Model mowy, którego używać. gpt-4o-mini-transcribe jest dokładny i tani; gpt-4o-transcribe to większy model. Własny serwer zwykle odpowiada na whisper-1.",
+        "mode": "Kto wybiera, jak zapisywane jest dyktowanie",
+        "modeHelp": "Przeglądarka pisze na bieżąco, ale gorzej, zwłaszcza w mniejszych językach. Model mowy pisze, gdy skończysz mówić.",
+        "modeAi": "Zawsze model mowy",
+        "modeChoice": "Każdy wybiera sam: model mowy lub przeglądarka"
       }
     }
   },

@@ -657,7 +657,7 @@ export async function getInspectionTechnicians() {
  */
 export async function createWorkOrderFromInspection(id: string) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       const inspection = await db.inspection.findFirst({
         where: { id, organizationId },
         include: {
@@ -728,6 +728,7 @@ export async function createWorkOrderFromInspection(id: string) {
         const created = await tx.serviceRecord.create({
           data: {
             organizationId,
+            createdById: userId,
             title: `${vehicleName} — inspection repairs`,
             description: `Raised from the inspection carried out on ${zonedDayKey(inspection.createdAt, timeZone)}.`,
             type: 'repair',

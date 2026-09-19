@@ -60,7 +60,8 @@
       "safety": "Terugroepacties en klachten van eigenaren"
     },
     "ai": {
-      "chat": "Teksten en samenvattingen"
+      "chat": "Teksten en samenvattingen",
+      "transcribe": "Dicteren"
     },
     "payments": {
       "checkout": "Betalen via de factuurlink"
@@ -156,7 +157,8 @@
       "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
-    "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}"
+    "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
+    "advanced": "Geavanceerd"
   },
   "activity": {
     "title": "Activiteit",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Terugroep- en klachtgegevens actueel houden voor elk voertuig in deze werkplaats",
         "refreshFleetHelp": "Eén keer per dag worden modellen die de afgelopen week niet zijn vernieuwd opnieuw opgehaald, zodat de voertuigpagina nooit wacht en een nieuwe terugroepactie binnen een week zichtbaar is. Alleen merk, model en bouwjaar worden verstuurd."
+      }
+    },
+    "speech-to-text": {
+      "description": "Dicteren op een werkorder, uitgeschreven door een spraakmodel in plaats van door de browser: veel nauwkeuriger, in elke taal, en het kent de woorden van een werkplaats. Los van uw AI-provider, dus die kunt u laten zoals hij is. Gebruikt uw eigen OpenAI-sleutel, of een eigen server die de transcriptie-API van OpenAI spreekt. De opname wordt alleen verstuurd om uit te schrijven en wordt niet bewaard.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Een OpenAI-sleutel van platform.openai.com onder API keys; OpenAI rekent het gebruik per minuut af. Bij een eigen server alleen als die erom vraagt.",
+        "baseUrl": "Serveradres",
+        "baseUrlHelp": "Laat leeg om OpenAI te gebruiken. Bij een eigen server (een lokale Whisper, LocalAI, Groq) het adres waar de OpenAI-achtige API begint, inclusief het pad, zoals /v1. Torqvoice zet er /audio/transcriptions achter."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Het spraakmodel dat wordt aangesproken. gpt-4o-mini-transcribe is nauwkeurig en goedkoop; gpt-4o-transcribe is het grotere. Een eigen server luistert meestal naar whisper-1.",
+        "mode": "Wie kiest hoe dicteren wordt uitgeschreven",
+        "modeHelp": "De browser schrijft mee terwijl u spreekt, maar is zwakker, vooral in kleinere talen. Het spraakmodel schrijft zodra u stopt.",
+        "modeAi": "Altijd het spraakmodel",
+        "modeChoice": "Ieder kiest zelf: spraakmodel of browser"
       }
     }
   },

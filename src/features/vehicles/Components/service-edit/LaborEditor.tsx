@@ -8,6 +8,8 @@ import { AlertTriangle, Eye, GripVertical, Layers, Plus, Trash2, Wrench } from '
 import { IconActionButton } from '@/components/icon-action-button'
 import { FieldRow } from '@/components/line-item-field'
 import { cn } from '@/lib/utils'
+import { AppCard } from '@/components/app-card'
+import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -193,6 +195,7 @@ export function LaborEditor({
   onShowExistingObservations,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
+  const modern = useModernWorkOrder()
   const formatCurrency = useFormatCurrency()
   const { currencyFormat } = useCurrencySettings()
   const cs = getCurrencySymbol(currencyCode, currencyFormat)
@@ -259,65 +262,61 @@ export function LaborEditor({
     [setLaborItems]
   )
 
-  return (
-    // Sizes itself off its own container: the details view splits into two
-    // resizable columns, so this editor can be narrower on a wide screen than
-    // it is on a phone.
-    <div className="@container space-y-2 rounded-lg border p-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold">{t('title')}</h3>
-        <div className="flex flex-wrap gap-1.5">
-          {hasPresets && onOpenPresets && (
-            <IconActionButton label={t('fromPresets')} icon={Layers} onClick={onOpenPresets} />
-          )}
-          <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
-          <IconActionButton label={t('addService')} icon={Wrench} onClick={addServiceAtStart} />
-          {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
-            <DropdownMenu>
-              {/* Plain button with a native tooltip: a Radix dropdown trigger
-                  cannot wrap a Tooltip root, only the button inside it */}
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-sm"
-                  className="relative"
-                  aria-label={t('addFinding')}
-                  title={t('addFinding')}
-                >
-                  <AlertTriangle className="size-4" />
-                  <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
-                    {openObservationsCount}
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.preventDefault()
-                    onAddFinding()
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t('newObservation')}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.preventDefault()
-                    onShowExistingObservations()
-                  }}
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  {t('addExisting', { count: openObservationsCount })}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : onAddFinding ? (
-            <IconActionButton label={t('addFinding')} icon={AlertTriangle} onClick={onAddFinding} />
-          ) : null}
-        </div>
-      </div>
+  const actions = (
+    <div className="flex flex-wrap gap-1.5">
+      {hasPresets && onOpenPresets && (
+        <IconActionButton label={t('fromPresets')} icon={Layers} onClick={onOpenPresets} />
+      )}
+      <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
+      <IconActionButton label={t('addService')} icon={Wrench} onClick={addServiceAtStart} />
+      {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
+        <DropdownMenu>
+          {/* Plain button with a native tooltip: a Radix dropdown trigger
+              cannot wrap a Tooltip root, only the button inside it */}
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              className="relative"
+              aria-label={t('addFinding')}
+              title={t('addFinding')}
+            >
+              <AlertTriangle className="size-4" />
+              <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
+                {openObservationsCount}
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                onAddFinding()
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              {t('newObservation')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                onShowExistingObservations()
+              }}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {t('addExisting', { count: openObservationsCount })}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : onAddFinding ? (
+        <IconActionButton label={t('addFinding')} icon={AlertTriangle} onClick={onAddFinding} />
+      ) : null}
+    </div>
+  )
 
+  const body = (
+    <>
       {laborItems.length > 0 && (
         <>
           <div className="hidden grid-cols-[auto_2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
@@ -405,6 +404,34 @@ export function LaborEditor({
           </button>
         </div>
       )}
+    </>
+  )
+
+  if (modern) {
+    return (
+      <AppCard
+        icon={Wrench}
+        title={t('title')}
+        badge={laborItems.length || undefined}
+        action={actions}
+        className="@container"
+        contentClassName="space-y-2 px-3"
+      >
+        {body}
+      </AppCard>
+    )
+  }
+
+  return (
+    // Sizes itself off its own container: the details view splits into two
+    // resizable columns, so this editor can be narrower on a wide screen than
+    // it is on a phone.
+    <div className="@container space-y-2 rounded-lg border p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold">{t('title')}</h3>
+        {actions}
+      </div>
+      {body}
     </div>
   )
 }

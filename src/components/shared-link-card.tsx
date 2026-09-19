@@ -1,5 +1,6 @@
 'use client'
 
+import { SectionFrame } from '@/components/section-frame'
 import { useState } from 'react'
 import { Link2, Copy, Check, Trash2, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -57,27 +58,36 @@ export function SharedLinkCard({
 
   const hasViews = viewCount > 0
 
-  return (
-    <div className="rounded-lg border p-3 space-y-2">
-      <div className="flex items-center gap-2">
-        <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="flex-1 text-sm font-semibold">{t('sidebar.sharedLink.title')}</h3>
-        {onRevoke && (
-          <button
-            type="button"
-            onClick={handleRevoke}
-            disabled={revoking}
-            className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
-          >
-            {revoking ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="h-3.5 w-3.5" />
-            )}
-          </button>
-        )}
-      </div>
+  const revokeButton = onRevoke ? (
+    <button
+      type="button"
+      onClick={handleRevoke}
+      disabled={revoking}
+      className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+    >
+      {revoking ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <Trash2 className="h-3.5 w-3.5" />
+      )}
+    </button>
+  ) : null
 
+  return (
+    <SectionFrame
+      className="rounded-lg border p-3 space-y-2"
+      icon={Link2}
+      title={t('sidebar.sharedLink.title')}
+      action={revokeButton}
+      contentClassName="space-y-2"
+      header={
+        <div className="flex items-center gap-2">
+          <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+          <h3 className="flex-1 text-sm font-semibold">{t('sidebar.sharedLink.title')}</h3>
+          {revokeButton}
+        </div>
+      }
+    >
       {/* Public URL with copy */}
       <div className="flex items-center gap-1.5">
         <div className="min-w-0 flex-1 truncate rounded-md bg-muted/50 px-2.5 py-1.5 font-mono text-xs text-muted-foreground">
@@ -125,6 +135,6 @@ export function SharedLinkCard({
           <span className="text-xs text-muted-foreground">{t('sidebar.sharedLink.notViewed')}</span>
         )}
       </div>
-    </div>
+    </SectionFrame>
   )
 }

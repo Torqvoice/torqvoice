@@ -21,7 +21,8 @@
       "title": "Užsakymui reikia pavadinimo, kad jį būtų galima išsaugoti.",
       "negative": "Kiekiai, valandos, kainos ir sąnaudos negali būti neigiami.",
       "partName": "Kiekviena dalis su kaina turi turėti pavadinimą.",
-      "laborDescription": "Kiekviena darbo eilutė su valandomis ar įkainiu turi turėti aprašymą."
+      "laborDescription": "Kiekviena darbo eilutė su valandomis ar įkainiu turi turėti aprašymą.",
+      "concernCondition": "Punktui su priežastimi, pataisymu ar patikrinimu reikia užpildyti būklę."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Pakeisti",
     "aiOverwriteAppend": "Pridėti",
     "aiOverwriteCancel": "Atšaukti",
-    "aiDontShowAgain": "Daugiau nerodyti"
+    "aiDontShowAgain": "Daugiau nerodyti",
+    "internalTitle": "Vidinės pastabos",
+    "publicTitle": "Pastabos klientui"
   },
   "invoice": {
     "title": "Sąskaitos santrauka",
@@ -248,7 +251,10 @@
     "failedDelete": "Nepavyko ištrinti mokėjimo",
     "deleteTitle": "Ištrinti mokėjimą",
     "deleteDescription": "Bus pašalintas šis mokėjimo įrašas.",
-    "failedPdf": "Nepavyko sugeneruoti PDF sąskaitos"
+    "failedPdf": "Nepavyko sugeneruoti PDF sąskaitos",
+    "received": "Gauti mokėjimai",
+    "noneYet": "Dar nieko nesumokėta.",
+    "balanceDue": "Mokėtina suma"
   },
   "attachments": {
     "deleteTitle": "Ištrinti priedą",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Rinktis artimiausią laisvą laiką",
     "findingSlot": "Ieškoma laiko…",
     "slotPicked": "Priskirta artimiausiam laisvam laikui",
-    "noSlotFound": "Artimiausiomis savaitėmis laisvo laiko nerasta"
+    "noSlotFound": "Artimiausiomis savaitėmis laisvo laiko nerasta",
+    "assignedTitle": "Priskirtas technikas",
+    "boardLink": "Darbų lenta",
+    "someoneElse": "Kitas žmogus",
+    "loadOf": "{booked} / {capacity} val.",
+    "loadFree": "{hours} val. laisva",
+    "loadFull": "Visiškai užimta",
+    "loadOn": "Užimtos valandos {date}",
+    "promisedAt": "Pažadėta klientui",
+    "promisedPlaceholder": "Dar nepažadėta",
+    "promisedClear": "Išvalyti"
   },
   "notifications": {
     "title": "Kliento pranešimai",
@@ -447,7 +463,60 @@
     "placeholder": "Stabdant gale girdisi garsas",
     "remove": "Pašalinti šį punktą",
     "notAnswered": "Kol kas nieko nenustatyta",
-    "answered": "Nustatymų: {count}"
+    "answered": "Nustatymų: {count}",
+    "storyTitle": "Darbo aprašymas",
+    "storyHint": "Būklė, priežastis, pataisymas, patikrinimas. Spustelėkite žingsnį, kad jį atidarytumėte; po vieną eilutę kiekvienam dalykui, kurį paminėjo klientas ar pastebėjote jūs.",
+    "steps": {
+      "condition": "Būklė",
+      "cause": "Priežastis",
+      "correction": "Pataisymas",
+      "confirm": "Patikrinimas"
+    },
+    "conditionPlaceholder": "Ką pranešė klientas arba ką pastebėjote jūs",
+    "causePlaceholder": "Kokią pagrindinę priežastį parodė patikra",
+    "correctionPlaceholder": "Kas padaryta, kad būtų sutvarkyta",
+    "confirmPlaceholder": "Kaip patikrintas pataisymas: bandomasis važiavimas, pakartotinis skenavimas, simptomo nebėra",
+    "markConfirmed": "Patikrinta",
+    "confirmedBy": "Patikrino {name}, {date}",
+    "confirmedAt": "Patikrinta {date}",
+    "confirmedOnSave": "Išsaugant pažymima jūsų vardu",
+    "confirmedCount": "Patikrinta {confirmed} iš {total}",
+    "findingsCount": "{count, plural, one {# pastebėjimas} few {# pastebėjimai} many {# pastebėjimo} other {# pastebėjimų}}",
+    "addFinding": "Pridėti pastebėjimą",
+    "unconfirmedTitle": "Užbaigti su nepatikrintais punktais?",
+    "unconfirmedBody": "{count, plural, one {Nepatikrinta, ar sutvarkytas # punktas:} few {Nepatikrinta, ar sutvarkyti # punktai:} many {Nepatikrinta, ar sutvarkyta # punkto:} other {Nepatikrinta, ar sutvarkyta # punktų:}}",
+    "unconfirmedProceed": "Vis tiek užbaigti",
+    "addMedia": "Pridėti nuotraukų ar vaizdo įrašų",
+    "mediaUploading": "Įkeliama…",
+    "mediaAdded": "{count, plural, one {Pridėtas # failas} few {Pridėti # failai} many {Pridėta # failo} other {Pridėta # failų}}",
+    "mediaFailed": "Nepavyko įkelti {name}",
+    "mediaTypes": "Pasirinkite nuotrauką (JPG, PNG, WebP) arba vaizdo įrašą.",
+    "dictate": {
+      "start": "Diktuoti",
+      "listening": "Klausoma",
+      "startHint": "Kalbėkite, ir tai bus užrašyta čia. Garsas neįrašomas.",
+      "stopHint": "Nebeklausyti",
+      "notAllowed": "Naršyklei neleista naudoti mikrofono. Leiskite tai šiai svetainei ir bandykite dar kartą.",
+      "noMicrophone": "Mikrofonas nerastas.",
+      "failed": "Diktavimas sustojo. Bandykite dar kartą.",
+      "startHintServer": "Kalbėkite, ir tai bus užrašoma jums kalbant. Garsas siunčiamas jūsų kalbos modeliui užrašyti ir nesaugomas.",
+      "transcribing": "Baigiama…",
+      "language": "Kalbama kalba",
+      "auto": "Automatiškai",
+      "nothingHeard": "Nieko neišgirsta.",
+      "fellBack": "Kol kas naudojamas pačios naršyklės diktavimas.",
+      "autoLong": "Automatiškai (atpažinti kalbą)",
+      "engine": "Užrašo",
+      "engineAi": "Kalbos modelis (tiksliau)",
+      "engineBrowser": "Naršyklė (rašo jums kalbant)",
+      "liveFellBack": "Rašoma kelių sekundžių dalimis, o ne žodis po žodžio."
+    },
+    "stepEmpty": "Dar neparašyta",
+    "removeTitle": "Pašalinti šį punktą?",
+    "removeBody": "Išsaugojus darbo užsakymą, kartu pašalinami jo būklė, priežastis, pataisymas ir patikrinimas.",
+    "removeAttached": "Jo pastebėjimai ir failai lieka prie darbo, tik nebepriskirti jokiam punktui.",
+    "removeConfirm": "Pašalinti punktą",
+    "saveFirst": "Pirmiausia išsaugokite darbo užsakymą"
   },
   "videoCall": {
     "title": "Vaizdo skambutis",
@@ -492,6 +561,73 @@
       "invitationNoTime": "Sveiki, {name}, štai vaizdo skambučio dėl {vehicle} nuoroda: {url}",
       "joinLine": "Prisijunkite prie vaizdo skambučio čia: {url}",
       "emailSubject": "Vaizdo skambutis dėl jūsų {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Darbo užsakymo būsena",
+    "back": "Atgal",
+    "backToClassic": "Grįžti į klasikinį išdėstymą",
+    "openCustomer": "Atidaryti klientą",
+    "serviceHistory": "Paslaugų istorija",
+    "changeVehicle": "Keisti transporto priemonę",
+    "vehicleChangesOnSave": "Išsaugojus darbo užsakymas bus perkeltas šiai transporto priemonei.",
+    "phone": "Telefonas",
+    "email": "El. paštas",
+    "notSet": "Nenustatyta",
+    "noCustomer": "Šiame darbo užsakyme nėra kliento.",
+    "invoiceTitle": "Sąskaita ir mokėjimas",
+    "filesTitle": "Failai ir nuotraukos",
+    "activity": {
+      "title": "Veikla",
+      "messageSent": "Žinutė išsiųsta klientui",
+      "linkShared": "Pasidalyta sąskaitos nuoroda",
+      "linkViewed": "{count, plural, one {Klientas atidarė nuorodą # kartą} few {Klientas atidarė nuorodą # kartus} many {Klientas atidarė nuorodą # karto} other {Klientas atidarė nuorodą # kartų}}",
+      "paymentTaken": "Užregistruotas {amount} mokėjimas"
+    },
+    "invite": {
+      "title": "Darbo užsakymo puslapis atnaujintas.",
+      "body": "Aiškesnis išdėstymas, tie patys laukai. Grįžti galite bet kada.",
+      "try": "Išbandyti dabar",
+      "dismiss": "Ne dabar",
+      "menu": "Išbandyti naują išdėstymą"
+    },
+    "promised": "Pažadėta {date}",
+    "promisedOverdue": "Pažadėta {date}, vėluoja",
+    "opened": "Atidaryta {date}",
+    "openedBy": "Atidarė {name}, {date}",
+    "editTitle": "Redaguoti pavadinimą",
+    "titleField": "Pavadinimas",
+    "media": {
+      "tabs": {
+        "photos": "Nuotraukos",
+        "diagnostics": "Diagnostika"
+      },
+      "summary": "{count, plural, one {# failas} few {# failai} many {# failo} other {# failų}} · klientui rodomi tik pažymėti",
+      "customerCanSee": "Klientas mato",
+      "showToCustomer": "Rodyti klientui",
+      "hideFromCustomer": "Slėpti nuo kliento",
+      "add": {
+        "image": "Pridėti nuotraukų",
+        "document": "Pridėti dokumentų",
+        "diagnostic": "Pridėti diagnostikos ataskaitą",
+        "video": "Pridėti vaizdo įrašą"
+      },
+      "dropHint": "Nutempkite failus arba spustelėkite, kad pasirinktumėte",
+      "added": "{count, plural, one {Pridėtas # failas} few {Pridėti # failai} many {Pridėta # failo} other {Pridėta # failų}}",
+      "failed": "Nepavyko įkelti {name}",
+      "wrongType": "Netinkamas failo tipas šiam skirtukui: {names}",
+      "limit": "Pasiekta riba ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Iš viso",
+      "paid": "Sumokėta",
+      "balance": "Mokėtina suma",
+      "settled": "Visiškai apmokėta",
+      "takePayment": "Priimti mokėjimą",
+      "preview": "Peržiūrėti sąskaitą",
+      "previewShort": "Peržiūra",
+      "send": "Siųsti klientui",
+      "sendShort": "Siųsti"
     }
   }
 }

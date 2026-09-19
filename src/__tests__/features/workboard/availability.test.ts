@@ -13,6 +13,7 @@ import {
   findConflicts,
   nextAvailableSlot,
   overlaps,
+  technicianMinutesInDay,
   withinWorkingHours,
   type Booking,
 } from '@/features/workboard/Lib/availability'
@@ -257,5 +258,53 @@ describe('finding the next free slot', () => {
         searchDays: 3,
       })
     ).toBeNull()
+  })
+})
+
+describe('technicianMinutesInDay', () => {
+  const dayStart = new Date('2026-09-22T00:00:00+02:00')
+  const dayEnd = new Date('2026-09-23T00:00:00+02:00')
+  const job = (technicianId: string | null, start: string, end: string) => ({
+    id: `${technicianId}-${start}`,
+    kind: 'serviceRecord' as const,
+    label: '',
+    start: new Date(start),
+    end: new Date(end),
+    technicianId,
+    workBayId: null,
+  })
+
+  it('adds up what each technician is booked for inside the day', () => {
+    const minutes = technicianMinutesInDay(
+      [
+        job('anna', '2026-09-22T08:00:00+02:00', '2026-09-22T10:30:00+02:00'),
+        job('anna', '2026-09-22T12:00:00+02:00', '2026-09-22T15:00:00+02:00'),
+        job('ben', '2026-09-22T09:00:00+02:00', '2026-09-22T10:00:00+02:00'),
+      ],
+      dayStart,
+      dayEnd
+    )
+    expect(minutes).toEqual({ anna: 330, ben: 60 })
+  })
+
+  it('counts only the part of a job that falls inside the day', () => {
+    const minutes = technicianMinutesInDay(
+      [job('anna', '2026-09-21T22:00:00+02:00', '2026-09-22T02:00:00+02:00')],
+      dayStart,
+      dayEnd
+    )
+    expect(minutes).toEqual({ anna: 120 })
+  })
+
+  it('leaves out other days and work nobody is assigned to', () => {
+    const minutes = technicianMinutesInDay(
+      [
+        job('anna', '2026-09-23T08:00:00+02:00', '2026-09-23T09:00:00+02:00'),
+        job(null, '2026-09-22T08:00:00+02:00', '2026-09-22T09:00:00+02:00'),
+      ],
+      dayStart,
+      dayEnd
+    )
+    expect(minutes).toEqual({})
   })
 })

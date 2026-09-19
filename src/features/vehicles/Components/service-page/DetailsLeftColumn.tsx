@@ -56,6 +56,8 @@ interface DetailsLeftColumnProps {
   openObservationsCount?: number
   onShowExistingObservations?: () => void
   jobClock: JobClock
+  /** A locked invoice: the notes editors go read-only, which the fieldset cannot do for them. */
+  locked?: boolean
 }
 
 export function DetailsLeftColumn({
@@ -82,6 +84,7 @@ export function DetailsLeftColumn({
   openObservationsCount = 0,
   onShowExistingObservations,
   jobClock,
+  locked = false,
 }: DetailsLeftColumnProps) {
   const tClock = useTranslations('timeTracking.job')
   // Which concerns somebody has actually looked at. Counted here rather than
@@ -181,6 +184,8 @@ export function DetailsLeftColumn({
         onNotesChange={formState.handleNotesChange}
         serviceRecordId={record.id}
         aiEnabled={aiEnabled}
+        publicLocked={locked}
+        internalLocked={locked}
       />
       {vehicleId && (
         <ServiceFindingsSection

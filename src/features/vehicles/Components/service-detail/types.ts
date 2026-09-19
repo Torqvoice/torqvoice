@@ -47,6 +47,11 @@ export interface ServiceDetail {
   mileage: number | null
   serviceDate: Date
   startDateTime: Date | null
+  /** When the job was opened, and by whom when a person opened it. */
+  createdAt?: Date
+  createdBy?: { name: string | null } | null
+  /** When the customer was told the vehicle would be ready. */
+  promisedAt?: Date | null
   shopName: string | null
   techName: string | null
   technicianId: string | null
@@ -109,6 +114,8 @@ export interface Attachment {
   category: string
   description: string | null
   createdAt: Date
+  /** The concern this file was filed under, if any. */
+  concernId?: string | null
 }
 
 export interface Payment {

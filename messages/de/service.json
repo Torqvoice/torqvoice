@@ -21,7 +21,8 @@
       "title": "Der Auftrag braucht einen Titel, bevor er gespeichert werden kann.",
       "negative": "Mengen, Stunden, Preise und Kosten dürfen nicht negativ sein.",
       "partName": "Jedes Teil mit Preis braucht einen Namen.",
-      "laborDescription": "Jede Arbeitszeile mit Stunden oder Satz braucht eine Beschreibung."
+      "laborDescription": "Jede Arbeitszeile mit Stunden oder Satz braucht eine Beschreibung.",
+      "concernCondition": "Ein Anliegen mit Ursache, Behebung oder Kontrolle braucht eine ausgefüllte Beanstandung."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Ersetzen",
     "aiOverwriteAppend": "Anhängen",
     "aiOverwriteCancel": "Abbrechen",
-    "aiDontShowAgain": "Nicht mehr anzeigen"
+    "aiDontShowAgain": "Nicht mehr anzeigen",
+    "internalTitle": "Interne Notizen",
+    "publicTitle": "Kundennotizen"
   },
   "invoice": {
     "title": "Rechnungszusammenfassung",
@@ -248,7 +251,10 @@
     "failedDelete": "Zahlung konnte nicht gelöscht werden",
     "deleteTitle": "Zahlung löschen",
     "deleteDescription": "Dies entfernt diesen Zahlungseintrag.",
-    "failedPdf": "PDF-Rechnung konnte nicht erstellt werden"
+    "failedPdf": "PDF-Rechnung konnte nicht erstellt werden",
+    "received": "Erhaltene Zahlungen",
+    "noneYet": "Noch nichts bezahlt.",
+    "balanceDue": "Ausstehend"
   },
   "attachments": {
     "deleteTitle": "Anlage löschen",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Nächsten freien Termin wählen",
     "findingSlot": "Termin wird gesucht…",
     "slotPicked": "Auf den nächsten freien Termin gelegt",
-    "noSlotFound": "In den nächsten Wochen kein freier Termin gefunden"
+    "noSlotFound": "In den nächsten Wochen kein freier Termin gefunden",
+    "assignedTitle": "Zugewiesener Techniker",
+    "boardLink": "Auftragsboard",
+    "someoneElse": "Jemand anderes",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h frei",
+    "loadFull": "Ausgebucht",
+    "loadOn": "Gebuchte Stunden am {date}",
+    "promisedAt": "Dem Kunden zugesagt",
+    "promisedPlaceholder": "Noch nicht zugesagt",
+    "promisedClear": "Leeren"
   },
   "notifications": {
     "title": "Kundenbenachrichtigungen",
@@ -447,7 +463,60 @@
     "placeholder": "Beim Bremsen kommt hinten ein Geräusch",
     "remove": "Dieses Anliegen entfernen",
     "notAnswered": "Dazu wurde noch nichts festgestellt",
-    "answered": "{count} Feststellung(en) dazu"
+    "answered": "{count} Feststellung(en) dazu",
+    "storyTitle": "Auftragsbeschreibung",
+    "storyHint": "Beanstandung, Ursache, Behebung, Kontrolle. Klicken Sie auf einen Schritt, um ihn zu öffnen; eine Zeile für jeden Punkt, den der Kunde genannt oder Sie festgestellt haben.",
+    "steps": {
+      "condition": "Beanstandung",
+      "cause": "Ursache",
+      "correction": "Behebung",
+      "confirm": "Kontrolle"
+    },
+    "conditionPlaceholder": "Was der Kunde gemeldet hat oder was Sie festgestellt haben",
+    "causePlaceholder": "Was die Prüfung als eigentliche Ursache ergeben hat",
+    "correctionPlaceholder": "Was zur Behebung getan wurde",
+    "confirmPlaceholder": "Wie die Behebung geprüft wurde: Probefahrt, erneuter Scan, Symptom weg",
+    "markConfirmed": "Bestätigt",
+    "confirmedBy": "Bestätigt von {name}, {date}",
+    "confirmedAt": "Bestätigt am {date}",
+    "confirmedOnSave": "Wird beim Speichern mit Ihrem Namen versehen",
+    "confirmedCount": "{confirmed} von {total} bestätigt",
+    "findingsCount": "{count, plural, one {# Beobachtung} other {# Beobachtungen}}",
+    "addFinding": "Beobachtung hinzufügen",
+    "unconfirmedTitle": "Mit unbestätigten Anliegen abschließen?",
+    "unconfirmedBody": "{count, plural, one {Bei einem Anliegen ist die Behebung nicht bestätigt:} other {Bei # Anliegen ist die Behebung nicht bestätigt:}}",
+    "unconfirmedProceed": "Trotzdem abschließen",
+    "addMedia": "Medien hinzufügen",
+    "mediaUploading": "Wird hochgeladen…",
+    "mediaAdded": "{count, plural, one {# Datei hinzugefügt} other {# Dateien hinzugefügt}}",
+    "mediaFailed": "{name} konnte nicht hochgeladen werden",
+    "mediaTypes": "Wählen Sie ein Foto (JPG, PNG, WebP) oder ein Video.",
+    "dictate": {
+      "start": "Diktieren",
+      "listening": "Hört zu",
+      "startHint": "Sprechen Sie, und es wird hier aufgeschrieben. Nichts wird aufgenommen.",
+      "stopHint": "Zuhören beenden",
+      "notAllowed": "Der Browser durfte das Mikrofon nicht verwenden. Erlauben Sie es für diese Seite und versuchen Sie es erneut.",
+      "noMicrophone": "Kein Mikrofon gefunden.",
+      "failed": "Diktat abgebrochen. Versuchen Sie es erneut.",
+      "startHintServer": "Sprechen Sie, und es wird beim Reden aufgeschrieben. Der Ton geht zum Aufschreiben an Ihr Sprachmodell und wird nicht aufbewahrt.",
+      "transcribing": "Wird abgeschlossen…",
+      "language": "Gesprochene Sprache",
+      "auto": "Automatisch",
+      "nothingHeard": "Es war nichts zu hören.",
+      "fellBack": "Vorerst wird das Diktieren des Browsers verwendet.",
+      "autoLong": "Automatisch (Sprache erkennen)",
+      "engine": "Aufgeschrieben von",
+      "engineAi": "Sprachmodell (genauer)",
+      "engineBrowser": "Browser (schreibt beim Sprechen mit)",
+      "liveFellBack": "Schreibt in Schritten von wenigen Sekunden statt Wort für Wort."
+    },
+    "stepEmpty": "Noch nicht ausgefüllt",
+    "removeTitle": "Dieses Anliegen entfernen?",
+    "removeBody": "Beanstandung, Ursache, Behebung und Kontrolle werden beim Speichern des Arbeitsauftrags mit entfernt.",
+    "removeAttached": "Die zugehörigen Beobachtungen und Medien bleiben am Auftrag, nur nicht mehr unter einem Anliegen abgelegt.",
+    "removeConfirm": "Anliegen entfernen",
+    "saveFirst": "Speichern Sie zuerst den Arbeitsauftrag"
   },
   "videoCall": {
     "title": "Videoanruf",
@@ -492,6 +561,73 @@
       "invitationNoTime": "Hallo {name}, hier ist der Link zum Videoanruf zum {vehicle}: {url}",
       "joinLine": "Hier dem Videoanruf beitreten: {url}",
       "emailSubject": "Videoanruf zu deinem {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Status des Arbeitsauftrags",
+    "back": "Zurück",
+    "backToClassic": "Zurück zum klassischen Layout",
+    "openCustomer": "Kunde öffnen",
+    "serviceHistory": "Servicehistorie",
+    "changeVehicle": "Fahrzeug ändern",
+    "vehicleChangesOnSave": "Der Arbeitsauftrag wechselt beim Speichern zu diesem Fahrzeug.",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "notSet": "Nicht angegeben",
+    "noCustomer": "Kein Kunde auf diesem Arbeitsauftrag.",
+    "invoiceTitle": "Rechnung & Zahlung",
+    "filesTitle": "Dateien & Medien",
+    "activity": {
+      "title": "Aktivität",
+      "messageSent": "Nachricht an den Kunden gesendet",
+      "linkShared": "Rechnungslink geteilt",
+      "linkViewed": "{count, plural, one {Kunde hat den Link geöffnet} other {Kunde hat den Link # Mal geöffnet}}",
+      "paymentTaken": "Zahlung von {amount} aufgezeichnet"
+    },
+    "invite": {
+      "title": "Die Seite für Arbeitsaufträge wurde überarbeitet.",
+      "body": "Ein übersichtlicheres Layout mit denselben Feldern. Sie können jederzeit zurückwechseln.",
+      "try": "Jetzt ausprobieren",
+      "dismiss": "Nicht jetzt",
+      "menu": "Neues Layout ausprobieren"
+    },
+    "promised": "Zugesagt für {date}",
+    "promisedOverdue": "Zugesagt für {date}, überfällig",
+    "opened": "Eröffnet am {date}",
+    "openedBy": "Eröffnet am {date} von {name}",
+    "editTitle": "Titel bearbeiten",
+    "titleField": "Titel",
+    "media": {
+      "tabs": {
+        "photos": "Fotos",
+        "diagnostics": "Diagnose"
+      },
+      "summary": "{count, plural, one {# Datei} other {# Dateien}} · nur markierte werden mit dem Kunden geteilt",
+      "customerCanSee": "Für Kunden sichtbar",
+      "showToCustomer": "Dem Kunden zeigen",
+      "hideFromCustomer": "Vor dem Kunden verbergen",
+      "add": {
+        "image": "Fotos hinzufügen",
+        "document": "Dokumente hinzufügen",
+        "diagnostic": "Diagnosebericht hinzufügen",
+        "video": "Video hinzufügen"
+      },
+      "dropHint": "Dateien hier ablegen oder zum Durchsuchen klicken",
+      "added": "{count, plural, one {# Datei hinzugefügt} other {# Dateien hinzugefügt}}",
+      "failed": "{name} konnte nicht hochgeladen werden",
+      "wrongType": "Nicht die richtige Dateiart für diesen Tab: {names}",
+      "limit": "Limit erreicht ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Gesamt",
+      "paid": "Bezahlt",
+      "balance": "Ausstehend",
+      "settled": "Vollständig bezahlt",
+      "takePayment": "Zahlung annehmen",
+      "preview": "Rechnungsvorschau",
+      "previewShort": "Vorschau",
+      "send": "An Kunden senden",
+      "sendShort": "Senden"
     }
   }
 }

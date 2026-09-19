@@ -98,7 +98,7 @@ describe('the customer concerns field', () => {
         answeredCounts={{ c1: 2 }}
       />
     )
-    expect(screen.getByText('2 finding(s) against this')).toBeInTheDocument()
+    expect(screen.getByText('2 observations against this')).toBeInTheDocument()
     expect(screen.getByText('Nothing found against this yet')).toBeInTheDocument()
   })
 

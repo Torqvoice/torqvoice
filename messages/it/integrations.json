@@ -60,7 +60,8 @@
       "safety": "Richiami e reclami dei proprietari"
     },
     "ai": {
-      "chat": "Testi e riepiloghi"
+      "chat": "Testi e riepiloghi",
+      "transcribe": "Dettatura"
     },
     "payments": {
       "checkout": "Paga dal link della fattura"
@@ -156,7 +157,8 @@
       "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
-    "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}"
+    "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
+    "advanced": "Avanzate"
   },
   "activity": {
     "title": "Attività",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Tieni aggiornati i dati su richiami e reclami per ogni veicolo di questa officina",
         "refreshFleetHelp": "Una volta al giorno i modelli non aggiornati nell'ultima settimana vengono richiesti di nuovo, così la pagina del veicolo non attende mai e un nuovo richiamo compare entro una settimana. Vengono inviati solo marca, modello e anno."
+      }
+    },
+    "speech-to-text": {
+      "description": "La dettatura su un ordine di lavoro viene trascritta da un modello vocale invece che dal browser: molto più precisa, in qualsiasi lingua e conosce le parole dell'officina. È separata dal tuo fornitore di IA, quindi puoi lasciarlo com'è. Usa la tua chiave OpenAI o un tuo server che parli l'API di trascrizione di OpenAI. La registrazione viene inviata per la trascrizione e non viene conservata.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Una chiave OpenAI da platform.openai.com, in API keys; OpenAI fattura l'uso al minuto. Per un tuo server, solo se la richiede.",
+        "baseUrl": "Indirizzo del server",
+        "baseUrlHelp": "Lascia vuoto per usare OpenAI. Per un tuo server (un Whisper locale, LocalAI, Groq), il punto in cui inizia la sua API in stile OpenAI, percorso incluso, ad esempio /v1. Torqvoice vi aggiunge /audio/transcriptions."
+      },
+      "settings": {
+        "model": "Modello",
+        "modelHelp": "Il modello vocale da richiedere. gpt-4o-mini-transcribe è preciso ed economico; gpt-4o-transcribe è quello più grande. Un tuo server di solito risponde a whisper-1.",
+        "mode": "Chi sceglie come viene trascritta la dettatura",
+        "modeHelp": "Il browser scrive mentre parli ma è meno preciso, soprattutto nelle lingue meno diffuse. Il modello vocale scrive quando ti fermi.",
+        "modeAi": "Sempre il modello vocale",
+        "modeChoice": "Sceglie ciascuno: modello vocale o browser"
       }
     }
   },

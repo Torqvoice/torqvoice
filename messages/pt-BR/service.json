@@ -21,7 +21,8 @@
       "title": "A ordem precisa de um título antes de ser salva.",
       "negative": "Quantidades, horas, preços e custos não podem ser negativos.",
       "partName": "Toda peça com preço precisa de um nome.",
-      "laborDescription": "Toda linha de mão de obra com horas ou taxa precisa de uma descrição."
+      "laborDescription": "Toda linha de mão de obra com horas ou taxa precisa de uma descrição.",
+      "concernCondition": "Um relato com causa, correção ou confirmação precisa ter a condição preenchida."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Substituir",
     "aiOverwriteAppend": "Adicionar",
     "aiOverwriteCancel": "Cancelar",
-    "aiDontShowAgain": "Não mostrar novamente"
+    "aiDontShowAgain": "Não mostrar novamente",
+    "internalTitle": "Notas internas",
+    "publicTitle": "Notas para o cliente"
   },
   "invoice": {
     "title": "Resumo da Fatura",
@@ -248,7 +251,10 @@
     "failedDelete": "Falha ao deletar pagamento",
     "deleteTitle": "Deletar Pagamento",
     "deleteDescription": "Isto vai remover este registro de pagamento.",
-    "failedPdf": "Falha ao gerar PDF da fatura"
+    "failedPdf": "Falha ao gerar PDF da fatura",
+    "received": "Pagamentos recebidos",
+    "noneYet": "Nada pago ainda.",
+    "balanceDue": "Saldo devedor"
   },
   "attachments": {
     "deleteTitle": "Deletar Anexo",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Escolher o próximo horário livre",
     "findingSlot": "Procurando um horário…",
     "slotPicked": "Agendado no próximo horário livre",
-    "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas"
+    "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas",
+    "assignedTitle": "Técnico responsável",
+    "boardLink": "Quadro de Trabalho",
+    "someoneElse": "Outra pessoa",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h livres",
+    "loadFull": "Agenda cheia",
+    "loadOn": "Horas agendadas em {date}",
+    "promisedAt": "Prometido ao cliente",
+    "promisedPlaceholder": "Ainda não prometido",
+    "promisedClear": "Limpar"
   },
   "notifications": {
     "title": "Notificações ao cliente",
@@ -447,7 +463,60 @@
     "placeholder": "Faz um barulho atrás quando eu freio",
     "remove": "Remover este item",
     "notAnswered": "Nada encontrado sobre isso ainda",
-    "answered": "{count} constatação(ões) sobre isso"
+    "answered": "{count} constatação(ões) sobre isso",
+    "storyTitle": "Descrição do serviço",
+    "storyHint": "Condição, causa, correção, confirmação. Clique em uma etapa para abri-la; uma linha para cada coisa que o cliente relatou ou que você observou.",
+    "steps": {
+      "condition": "Condição",
+      "cause": "Causa",
+      "correction": "Correção",
+      "confirm": "Confirmação"
+    },
+    "conditionPlaceholder": "O que o cliente relatou, ou o que você observou",
+    "causePlaceholder": "O que os testes mostraram ser a causa raiz",
+    "correctionPlaceholder": "O que foi feito para resolver",
+    "confirmPlaceholder": "Como o reparo foi verificado: test drive, nova leitura com o scanner, sintoma resolvido",
+    "markConfirmed": "Confirmado",
+    "confirmedBy": "Confirmado por {name}, {date}",
+    "confirmedAt": "Confirmado em {date}",
+    "confirmedOnSave": "Marcado com o seu nome ao salvar",
+    "confirmedCount": "{confirmed} de {total} confirmados",
+    "findingsCount": "{count, plural, one {# observação} other {# observações}}",
+    "addFinding": "Adicionar observação",
+    "unconfirmedTitle": "Concluir com relatos não confirmados?",
+    "unconfirmedBody": "{count, plural, one {Um relato ainda não foi confirmado como resolvido:} other {# relatos ainda não foram confirmados como resolvidos:}}",
+    "unconfirmedProceed": "Concluir mesmo assim",
+    "addMedia": "Adicionar mídia",
+    "mediaUploading": "Enviando…",
+    "mediaAdded": "{count, plural, one {# arquivo adicionado} other {# arquivos adicionados}}",
+    "mediaFailed": "Não foi possível enviar {name}",
+    "mediaTypes": "Escolha uma foto (JPG, PNG, WebP) ou um vídeo.",
+    "dictate": {
+      "start": "Ditar",
+      "listening": "Ouvindo",
+      "startHint": "Fale e o texto aparece aqui. Nada é gravado.",
+      "stopHint": "Parar de ouvir",
+      "notAllowed": "O navegador não teve permissão para usar o microfone. Permita o acesso para este site e tente novamente.",
+      "noMicrophone": "Nenhum microfone encontrado.",
+      "failed": "O ditado parou. Tente novamente.",
+      "startHintServer": "Fale e o texto aparece enquanto você fala. O áudio vai para o seu modelo de voz para ser transcrito e não é guardado.",
+      "transcribing": "Finalizando…",
+      "language": "Idioma falado",
+      "auto": "Automático",
+      "nothingHeard": "Nada foi ouvido.",
+      "fellBack": "Usando o ditado do próprio navegador por enquanto.",
+      "autoLong": "Automático (detectar o idioma)",
+      "engine": "Transcrito por",
+      "engineAi": "Modelo de voz (mais preciso)",
+      "engineBrowser": "Navegador (escreve enquanto você fala)",
+      "liveFellBack": "Escrevendo em blocos de alguns segundos em vez de palavra por palavra."
+    },
+    "stepEmpty": "Ainda não preenchido",
+    "removeTitle": "Remover este relato?",
+    "removeBody": "A condição, a causa, a correção e a confirmação dele são removidas junto quando você salvar a ordem de serviço.",
+    "removeAttached": "As observações e mídias dele continuam no serviço, mas deixam de ficar vinculadas a um relato.",
+    "removeConfirm": "Remover relato",
+    "saveFirst": "Salve a ordem de serviço primeiro"
   },
   "videoCall": {
     "title": "Videochamada",
@@ -492,6 +561,73 @@
       "invitationNoTime": "Olá {name}, aqui está o link da videochamada sobre o {vehicle}: {url}",
       "joinLine": "Entre na videochamada aqui: {url}",
       "emailSubject": "Videochamada sobre o seu {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Status da ordem de serviço",
+    "back": "Voltar",
+    "backToClassic": "Voltar ao layout clássico",
+    "openCustomer": "Abrir cliente",
+    "serviceHistory": "Histórico de serviços",
+    "changeVehicle": "Trocar veículo",
+    "vehicleChangesOnSave": "A ordem de serviço passa para este veículo quando você salvar.",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "notSet": "Não definido",
+    "noCustomer": "Nenhum cliente nesta ordem de serviço.",
+    "invoiceTitle": "Fatura e pagamento",
+    "filesTitle": "Arquivos e mídia",
+    "activity": {
+      "title": "Atividade",
+      "messageSent": "Mensagem enviada ao cliente",
+      "linkShared": "Link da fatura compartilhado",
+      "linkViewed": "{count, plural, one {O cliente abriu o link} other {O cliente abriu o link # vezes}}",
+      "paymentTaken": "Pagamento de {amount} registrado"
+    },
+    "invite": {
+      "title": "A página da ordem de serviço foi reformulada.",
+      "body": "Um layout mais claro com os mesmos campos. Você pode voltar ao anterior a qualquer momento.",
+      "try": "Experimentar agora",
+      "dismiss": "Agora não",
+      "menu": "Experimentar o novo layout"
+    },
+    "promised": "Prometida para {date}",
+    "promisedOverdue": "Prometida para {date}, atrasada",
+    "opened": "Aberta em {date}",
+    "openedBy": "Aberta em {date} por {name}",
+    "editTitle": "Editar título",
+    "titleField": "Título",
+    "media": {
+      "tabs": {
+        "photos": "Fotos",
+        "diagnostics": "Diagnóstico"
+      },
+      "summary": "{count, plural, one {# arquivo} other {# arquivos}} · o cliente só vê o que estiver marcado",
+      "customerCanSee": "Visível para o cliente",
+      "showToCustomer": "Mostrar ao cliente",
+      "hideFromCustomer": "Ocultar do cliente",
+      "add": {
+        "image": "Adicionar fotos",
+        "document": "Adicionar documentos",
+        "diagnostic": "Adicionar relatório de diagnóstico",
+        "video": "Adicionar vídeo"
+      },
+      "dropHint": "Arraste arquivos aqui ou clique para procurar",
+      "added": "{count, plural, one {# arquivo adicionado} other {# arquivos adicionados}}",
+      "failed": "Não foi possível enviar {name}",
+      "wrongType": "Tipo de arquivo errado para esta aba: {names}",
+      "limit": "Limite atingido ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Pago",
+      "balance": "Saldo devedor",
+      "settled": "Pago integralmente",
+      "takePayment": "Receber pagamento",
+      "preview": "Pré-visualizar fatura",
+      "previewShort": "Pré-visualizar",
+      "send": "Enviar ao cliente",
+      "sendShort": "Enviar"
     }
   }
 }

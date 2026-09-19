@@ -1229,7 +1229,29 @@
     "dateLabel": "Datum",
     "dateTimeLabel": "Datum en tijd",
     "saveSettings": "Instellingen opslaan",
-    "saved": "Instellingen opgeslagen"
+    "saved": "Instellingen opgeslagen",
+    "fontLabel": "Lettertype",
+    "fontHint": "Kies de lettertypen waarin de app wordt weergegeven. De keuze wordt op dit apparaat opgeslagen.",
+    "fontSampleHeading": "Werkorder",
+    "fontSampleText": "Bobine en bougies vervangen",
+    "fonts": {
+      "default": {
+        "name": "Standaard",
+        "description": "Geist, strak en neutraal."
+      },
+      "workshop": {
+        "name": "Werkplaats",
+        "description": "IBM Plex met smalle koppen in hoofdletters, zoals een werkbon."
+      },
+      "precise": {
+        "name": "Precies",
+        "description": "Inter en JetBrains Mono. Gemaakt voor schermen vol tabellen en cijfers."
+      },
+      "legible": {
+        "name": "Goed leesbaar",
+        "description": "Atkinson Hyperlegible. 0 en O, 1 en l lijken nooit op elkaar; ook van de andere kant van de werkplaats goed te lezen."
+      }
+    }
   },
   "data": {
     "title": "Gegevensbeheer",

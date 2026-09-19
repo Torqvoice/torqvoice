@@ -39,6 +39,8 @@ interface FindingFormProps {
   serviceRecordId?: string
   /** The concerns on this job, so a finding can say which one it answers. */
   concerns?: { id: string; description: string }[]
+  /** The concern a new finding starts out answering, when it was added from that concern's row. */
+  defaultConcernId?: string | null
 }
 
 export function FindingForm({
@@ -48,6 +50,7 @@ export function FindingForm({
   finding,
   serviceRecordId,
   concerns = [],
+  defaultConcernId = null,
 }: FindingFormProps) {
   const router = useRouter()
   const modal = useGlassModal()
@@ -72,9 +75,9 @@ export function FindingForm({
       setDescription('')
       setSeverity('needs_work')
       setNotes('')
-      setConcernId('none')
+      setConcernId(defaultConcernId || 'none')
     }
-  }, [open, finding])
+  }, [open, finding, defaultConcernId])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -111,7 +114,12 @@ export function FindingForm({
           <DialogTitle>{isEdit ? t('editTitle') : t('addTitle')}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* min-w-0 all the way down: the dialog is a grid, and a grid item is
+            as wide as its widest content unless told otherwise. A concern is a
+            sentence, the select showing it does not wrap, and once a concern
+            could be preselected the form grew wider than the dialog and half
+            of it was clipped behind a scrollbar. */}
+        <form onSubmit={handleSubmit} className="min-w-0 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="finding-description">{t('descriptionLabel')}</Label>
             <Input
@@ -140,16 +148,19 @@ export function FindingForm({
           {/* Which question this answers. Only on a job that has concerns:
               on a vehicle-level observation there is nothing to answer. */}
           {concerns.length > 0 && (
-            <div className="space-y-2">
+            <div className="min-w-0 space-y-2">
               <Label htmlFor="finding-concern">{t('concernLabel')}</Label>
               <Select value={concernId} onValueChange={setConcernId}>
-                <SelectTrigger id="finding-concern">
+                <SelectTrigger
+                  id="finding-concern"
+                  className="w-full min-w-0 *:data-[slot=select-value]:block *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:truncate"
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-w-[min(28rem,calc(100vw-4rem))]">
                   <SelectItem value="none">{t('concernNone')}</SelectItem>
                   {concerns.map((concern) => (
-                    <SelectItem key={concern.id} value={concern.id}>
+                    <SelectItem key={concern.id} value={concern.id} className="whitespace-normal">
                       {concern.description}
                     </SelectItem>
                   ))}

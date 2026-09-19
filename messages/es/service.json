@@ -21,7 +21,8 @@
       "title": "El trabajo necesita un título antes de poder guardarse.",
       "negative": "Las cantidades, horas, precios y costes no pueden ser negativos.",
       "partName": "Toda pieza con precio necesita un nombre.",
-      "laborDescription": "Toda línea de mano de obra con horas o tarifa necesita una descripción."
+      "laborDescription": "Toda línea de mano de obra con horas o tarifa necesita una descripción.",
+      "concernCondition": "Un motivo con causa, corrección o confirmación necesita que se rellene su condición."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Reemplazar",
     "aiOverwriteAppend": "Agregar",
     "aiOverwriteCancel": "Cancelar",
-    "aiDontShowAgain": "No mostrar de nuevo"
+    "aiDontShowAgain": "No mostrar de nuevo",
+    "internalTitle": "Notas internas",
+    "publicTitle": "Notas para el cliente"
   },
   "invoice": {
     "title": "Resumen de Factura",
@@ -248,7 +251,10 @@
     "failedDelete": "Error al eliminar pago",
     "deleteTitle": "Eliminar Pago",
     "deleteDescription": "Esto eliminará este registro de pago.",
-    "failedPdf": "Error al generar factura en PDF"
+    "failedPdf": "Error al generar factura en PDF",
+    "received": "Pagos recibidos",
+    "noneYet": "Todavía no se ha pagado nada.",
+    "balanceDue": "Saldo pendiente"
   },
   "attachments": {
     "deleteTitle": "Eliminar Archivo",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Elegir la siguiente franja libre",
     "findingSlot": "Buscando una franja…",
     "slotPicked": "Reservado en la siguiente franja libre",
-    "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas"
+    "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas",
+    "assignedTitle": "Técnico asignado",
+    "boardLink": "Tablero de trabajo",
+    "someoneElse": "Otra persona",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h libres",
+    "loadFull": "Completo",
+    "loadOn": "Horas reservadas el {date}",
+    "promisedAt": "Prometido al cliente",
+    "promisedPlaceholder": "Sin prometer todavía",
+    "promisedClear": "Borrar"
   },
   "notifications": {
     "title": "Notificaciones al cliente",
@@ -447,7 +463,60 @@
     "placeholder": "Hace un ruido detrás cuando freno",
     "remove": "Quitar este punto",
     "notAnswered": "Todavía no se ha encontrado nada",
-    "answered": "{count} hallazgo(s) sobre esto"
+    "answered": "{count} hallazgo(s) sobre esto",
+    "storyTitle": "Descripción del trabajo",
+    "storyHint": "Condición, causa, corrección, confirmación. Haz clic en un paso para abrirlo; una fila por cada cosa que mencionó el cliente o que observaste.",
+    "steps": {
+      "condition": "Condición",
+      "cause": "Causa",
+      "correction": "Corrección",
+      "confirm": "Confirmación"
+    },
+    "conditionPlaceholder": "Lo que informó el cliente o lo que observaste",
+    "causePlaceholder": "Qué causa raíz mostraron las pruebas",
+    "correctionPlaceholder": "Qué se hizo para repararlo",
+    "confirmPlaceholder": "Cómo se comprobó la reparación: prueba de conducción, nuevo escaneo, síntoma desaparecido",
+    "markConfirmed": "Confirmado",
+    "confirmedBy": "Confirmado por {name}, {date}",
+    "confirmedAt": "Confirmado el {date}",
+    "confirmedOnSave": "Se firma con tu nombre al guardar",
+    "confirmedCount": "{confirmed} de {total} confirmados",
+    "findingsCount": "{count, plural, one {# observación} other {# observaciones}}",
+    "addFinding": "Añadir observación",
+    "unconfirmedTitle": "¿Completar con motivos sin confirmar?",
+    "unconfirmedBody": "{count, plural, one {Un motivo no se ha confirmado como reparado:} other {# motivos no se han confirmado como reparados:}}",
+    "unconfirmedProceed": "Completar igualmente",
+    "addMedia": "Añadir fotos o vídeo",
+    "mediaUploading": "Subiendo…",
+    "mediaAdded": "{count, plural, one {# archivo añadido} other {# archivos añadidos}}",
+    "mediaFailed": "No se pudo subir {name}",
+    "mediaTypes": "Elige una foto (JPG, PNG, WebP) o un vídeo.",
+    "dictate": {
+      "start": "Dictar",
+      "listening": "Escuchando",
+      "startHint": "Habla y se escribe aquí. No se graba nada.",
+      "stopHint": "Dejar de escuchar",
+      "notAllowed": "El navegador no tiene permiso para usar el micrófono. Permítelo para este sitio e inténtalo de nuevo.",
+      "noMicrophone": "No se encontró ningún micrófono.",
+      "failed": "El dictado se detuvo. Inténtalo de nuevo.",
+      "startHintServer": "Habla y se escribe mientras hablas. El audio va a tu modelo de voz para transcribirlo y no se guarda.",
+      "transcribing": "Terminando…",
+      "language": "Idioma hablado",
+      "auto": "Auto",
+      "nothingHeard": "No se oyó nada.",
+      "fellBack": "Usando por ahora el dictado del propio navegador.",
+      "autoLong": "Auto (detectar el idioma)",
+      "engine": "Transcrito por",
+      "engineAi": "Modelo de voz (más preciso)",
+      "engineBrowser": "Navegador (escribe mientras hablas)",
+      "liveFellBack": "Escribiendo en tramos de unos segundos en lugar de palabra por palabra."
+    },
+    "stepEmpty": "Sin escribir todavía",
+    "removeTitle": "¿Quitar este motivo?",
+    "removeBody": "Su condición, causa, corrección y confirmación se eliminan con él al guardar la orden de trabajo.",
+    "removeAttached": "Sus observaciones y archivos siguen en el trabajo, ya no archivados bajo un motivo.",
+    "removeConfirm": "Quitar motivo",
+    "saveFirst": "Guarda primero la orden de trabajo"
   },
   "videoCall": {
     "title": "Videollamada",
@@ -492,6 +561,73 @@
       "invitationNoTime": "Hola {name}, aquí tienes el enlace de la videollamada sobre el {vehicle}: {url}",
       "joinLine": "Únete a la videollamada aquí: {url}",
       "emailSubject": "Videollamada sobre tu {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Estado de la orden de trabajo",
+    "back": "Atrás",
+    "backToClassic": "Volver al diseño clásico",
+    "openCustomer": "Abrir cliente",
+    "serviceHistory": "Historial de servicio",
+    "changeVehicle": "Cambiar vehículo",
+    "vehicleChangesOnSave": "La orden de trabajo pasa a este vehículo al guardar.",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "notSet": "Sin definir",
+    "noCustomer": "No hay cliente en esta orden de trabajo.",
+    "invoiceTitle": "Factura y pago",
+    "filesTitle": "Archivos y multimedia",
+    "activity": {
+      "title": "Actividad",
+      "messageSent": "Mensaje enviado al cliente",
+      "linkShared": "Enlace de la factura compartido",
+      "linkViewed": "{count, plural, one {El cliente abrió el enlace} other {El cliente abrió el enlace # veces}}",
+      "paymentTaken": "Pago de {amount} registrado"
+    },
+    "invite": {
+      "title": "La página de la orden de trabajo se ha renovado.",
+      "body": "Un diseño más claro con los mismos campos. Puedes volver al anterior cuando quieras.",
+      "try": "Probar ahora",
+      "dismiss": "Ahora no",
+      "menu": "Probar el nuevo diseño"
+    },
+    "promised": "Prometido el {date}",
+    "promisedOverdue": "Prometido el {date}, con retraso",
+    "opened": "Abierta el {date}",
+    "openedBy": "Abierta el {date} por {name}",
+    "editTitle": "Editar título",
+    "titleField": "Título",
+    "media": {
+      "tabs": {
+        "photos": "Fotos",
+        "diagnostics": "Diagnóstico"
+      },
+      "summary": "{count, plural, one {# archivo} other {# archivos}} · se comparten con el cliente solo si se marcan",
+      "customerCanSee": "Visible para el cliente",
+      "showToCustomer": "Mostrar al cliente",
+      "hideFromCustomer": "Ocultar al cliente",
+      "add": {
+        "image": "Añadir fotos",
+        "document": "Añadir documentos",
+        "diagnostic": "Añadir informe de diagnóstico",
+        "video": "Añadir vídeo"
+      },
+      "dropHint": "Suelta archivos aquí o haz clic para explorar",
+      "added": "{count, plural, one {# archivo añadido} other {# archivos añadidos}}",
+      "failed": "No se pudo subir {name}",
+      "wrongType": "No es el tipo de archivo adecuado para esta pestaña: {names}",
+      "limit": "Límite alcanzado ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Pagado",
+      "balance": "Saldo pendiente",
+      "settled": "Pagado por completo",
+      "takePayment": "Cobrar",
+      "preview": "Vista previa de la factura",
+      "previewShort": "Vista previa",
+      "send": "Enviar al cliente",
+      "sendShort": "Enviar"
     }
   }
 }

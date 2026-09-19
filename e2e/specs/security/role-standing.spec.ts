@@ -129,7 +129,9 @@ test.describe('the role picker’s action', () => {
     await settle(page)
 
     // Members are bordered cards, one per person, each with its own picker.
-    const row = page.locator('div.rounded-lg.border').filter({ hasText: PEER })
+    // By test id: the page's own cards are bordered and rounded as well, and
+    // one of them holds every member.
+    const row = page.getByTestId('team-member').filter({ hasText: PEER })
     const action = page.waitForRequest((request) => Boolean(request.headers()['next-action']))
     await row.getByRole('combobox').click()
     await page.getByRole('option', { name: `E2E Plain ${stamp}`, exact: true }).click()

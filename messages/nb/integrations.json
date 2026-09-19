@@ -60,7 +60,8 @@
       "safety": "Tilbakekallinger og eierklager"
     },
     "ai": {
-      "chat": "Tekst og sammendrag"
+      "chat": "Tekst og sammendrag",
+      "transcribe": "Diktering"
     },
     "payments": {
       "checkout": "Betal fra fakturalenken"
@@ -156,7 +157,8 @@
       "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige."
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
-    "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}"
+    "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
+    "advanced": "Avansert"
   },
   "activity": {
     "title": "Aktivitet",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Hold tilbakekallings- og klagedata oppdatert for alle kjøretøy i dette verkstedet",
         "refreshFleetHelp": "En gang om dagen hentes modeller som ikke er oppdatert siste uke på nytt, så kjøretøysiden aldri venter og en ny tilbakekalling vises innen en uke. Bare merke, modell og år sendes."
+      }
+    },
+    "speech-to-text": {
+      "description": "Diktering på en arbeidsordre, skrevet ned av en talemodell i stedet for nettleseren: langt mer nøyaktig, alle språk, og den kan verkstedets ord. Atskilt fra AI-leverandøren din, så den kan du beholde som den er. Bruker din egen OpenAI-nøkkel, eller en egen server som snakker OpenAIs API for transkribering. Opptaket sendes for å skrives ned og lagres ikke.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "En OpenAI-nøkkel fra platform.openai.com under API keys; OpenAI fakturerer bruken per minutt. For en egen server bare hvis den krever en.",
+        "baseUrl": "Serveradresse",
+        "baseUrlHelp": "La stå tomt for å bruke OpenAI. For en egen server (en lokal Whisper, LocalAI, Groq): der serverens OpenAI-lignende API starter, inkludert stien, for eksempel /v1. Torqvoice legger til /audio/transcriptions."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Talemodellen som skal brukes. gpt-4o-mini-transcribe er nøyaktig og billig; gpt-4o-transcribe er den større. En egen server svarer vanligvis på whisper-1.",
+        "mode": "Hvem velger hvordan diktering skrives ned",
+        "modeHelp": "Nettleseren skriver mens du snakker, men er svakere, særlig på mindre språk. Talemodellen skriver når du stopper.",
+        "modeAi": "Alltid talemodellen",
+        "modeChoice": "Hver person velger: talemodell eller nettleser"
       }
     }
   },

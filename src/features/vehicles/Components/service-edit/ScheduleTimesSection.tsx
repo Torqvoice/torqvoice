@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { SectionFrame } from '@/components/section-frame'
+import { useState, useEffect, useCallback } from 'react'
+import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useRouter } from 'next/navigation'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 import { useTranslations } from 'next-intl'
@@ -39,7 +41,9 @@ import {
   assignTechnician,
   checkSlotAvailability,
   findNextSlot,
+  getTechnicianDayLoad,
   scheduleJob,
+  setPromisedTime,
   updateServiceTimes,
 } from '@/features/workboard/Actions/boardActions'
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
@@ -55,6 +59,28 @@ interface Technician {
   id: string
   name: string
   userId?: string | null
+  /** The technician's colour on the work board. */
+  color?: string | null
+  /** Minutes in their working day; the board's default is eight hours. */
+  dailyCapacity?: number | null
+  /** What they are good at, in the workshop's words. */
+  skills?: string | null
+}
+
+const DEFAULT_DAILY_CAPACITY = 480
+
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
+}
+
+/** Minutes as hours with at most one decimal: 330 is 5.5, 480 is 8. */
+function hoursOf(minutes: number): string {
+  return (Math.round(minutes / 6) / 10).toLocaleString()
 }
 
 interface WorkBay {
@@ -77,6 +103,8 @@ interface ScheduleTimesSectionProps {
   initialEndDateTime?: string | null
   initialTechnicianId?: string | null
   initialWorkBayId?: string | null
+  /** When the customer was told the vehicle would be ready, ISO. */
+  initialPromisedAt?: string | null
   onSaved?: () => void
 }
 
@@ -89,10 +117,12 @@ export function ScheduleTimesSection({
   initialEndDateTime,
   initialTechnicianId,
   initialWorkBayId,
+  initialPromisedAt,
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
   const router = useRouter()
+  const modern = useModernWorkOrder()
   // Booked times belong to the workshop's clock, not to the clock of whoever
   // happens to be looking at them.
   const { timezone } = useDateSettings()
@@ -139,6 +169,25 @@ export function ScheduleTimesSection({
     initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000)
   )
 
+  const [promisedAt, setPromisedAt] = useState<Date | undefined>(
+    initialPromisedAt ? new Date(initialPromisedAt) : undefined
+  )
+
+  /** Saved as it is set, like the times above it; clearing takes the promise away. */
+  const savePromisedAt = async (next: Date | undefined) => {
+    const previous = promisedAt
+    setPromisedAt(next)
+    const res = await setPromisedTime({ id: serviceRecordId, promisedAt: next ?? null })
+    if (res.success) {
+      onSaved?.()
+      // The header says when the vehicle was promised, from the record.
+      router.refresh()
+    } else {
+      toast.error(res.error || t('failedUpdate'))
+      setPromisedAt(previous)
+    }
+  }
+
   /** What the current selection would double-book, if anything. */
   const [conflicts, setConflicts] = useState<
     {
@@ -152,6 +201,19 @@ export function ScheduleTimesSection({
   >([])
   const [checking, setChecking] = useState(false)
   const [finding, setFinding] = useState(false)
+
+  // How full each technician's day is, on the day this job is booked. Only
+  // the overhauled page draws it, so only that page asks.
+  const [dayLoad, setDayLoad] = useState<Record<string, number>>({})
+  const loadDay = startDateTime ? startDateTime.toISOString() : null
+  const refreshDayLoad = useCallback(async () => {
+    if (!modern || !loadDay) return
+    const res = await getTechnicianDayLoad({ day: loadDay })
+    if (res.success && res.data) setDayLoad(res.data.minutes)
+  }, [modern, loadDay])
+  useEffect(() => {
+    void refreshDayLoad()
+  }, [refreshDayLoad])
 
   const bayId = selectedBayId === NO_BAY ? null : selectedBayId
 
@@ -219,6 +281,7 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      void refreshDayLoad()
       // Checked after the write rather than before it: the times save as they
       // always did, and the clash is reported against what is now booked.
       if (!opts?.skipCheck) void checkSlot(start, end, selectedTechId, bayId)
@@ -244,6 +307,7 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      void refreshDayLoad()
       if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, techId, bayId)
     } else {
       toast.error(t('failedAssign'))
@@ -266,6 +330,7 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      void refreshDayLoad()
       if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, '', bayId)
     } else {
       toast.error(res.error || t('failedUpdate'))
@@ -347,150 +412,265 @@ export function ScheduleTimesSection({
       ? Math.round((endDateTime.getTime() - startDateTime.getTime()) / 3600000)
       : null
 
-  return (
-    <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold">{t('title')}</h3>
-        </div>
-        <a
-          href="https://torqvoice.com/docs/configuration/work-orders/technician-assignment"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {t('readMore')} →
-        </a>
-      </div>
+  const techPickerContent = (
+    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <Command shouldFilter={true}>
+        <CommandInput
+          placeholder={t('searchOrCreate')}
+          value={techSearch}
+          onValueChange={setTechSearch}
+        />
+        <CommandList className="max-h-60 overflow-y-auto">
+          <CommandEmpty className="p-0" />
+          {/* The way off the job, the same as the bay select's "No work
+              bay". Without it a technician could be swapped but never
+              removed from here. */}
+          <CommandGroup>
+            <CommandItem value={t('noTechnician')} onSelect={handleTechClear}>
+              <Check className={cn('mr-2 h-4 w-4', selectedTechId ? 'opacity-0' : 'opacity-100')} />
+              <span className="text-muted-foreground">{t('noTechnician')}</span>
+            </CommandItem>
+          </CommandGroup>
+          {/* Two different kinds of person, under two headings.
+              They used to share one, so somebody who books cars in read
+              as a mechanic, and choosing them quietly created a
+              technician record for an account the desk had never said
+              was one. The list still offers them, because assigning a
+              colleague on the spot is worth keeping; it just says which
+              is which. */}
+          {linkedTechnicians.length > 0 && (
+            <CommandGroup heading={t('technicians')}>
+              {linkedTechnicians.map((tech) => (
+                <CommandItem
+                  key={tech.id}
+                  value={tech.name}
+                  onSelect={() => handleTechSelect(tech.id)}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      selectedTechId === tech.id ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {tech.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {/* Custom technicians (not linked to platform users) */}
+          {customTechnicians.length > 0 && (
+            <CommandGroup heading={t('customTechnicians')}>
+              {customTechnicians.map((tech) => (
+                <CommandItem
+                  key={tech.id}
+                  value={tech.name}
+                  onSelect={() => handleTechSelect(tech.id)}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      selectedTechId === tech.id ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {tech.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {/* Colleagues who are not on the board yet.
+              This list was computed and then not rendered, which left no
+              way at all to put somebody on a job from here: the only
+              route was a phone icon on the team page, labelled as
+              something else. It was dropped because choosing a colleague
+              quietly turned them into a technician, and that is the part
+              worth keeping fixed, so the heading says what will happen
+              rather than the click doing it silently. */}
+          {unlinkedMembers.length > 0 && (
+            <CommandGroup heading={t('notOnBoard')}>
+              {unlinkedMembers.map((member) => (
+                <CommandItem
+                  key={member.id}
+                  value={member.name ?? ''}
+                  disabled={creating}
+                  onSelect={() => handleMemberSelect(member)}
+                >
+                  <UserPlus className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span className="flex-1">{member.name}</span>
+                  <span className="text-muted-foreground text-xs">{t('putOnBoard')}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {/* Adding somebody is one workflow, and this is a door into
+              it rather than a fourth way of doing it. */}
+          <CommandGroup>
+            <CommandItem value="__add_person__" onSelect={() => setAddingPerson(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t('addSomeoneNew')}
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    </PopoverContent>
+  )
 
-      <div className="space-y-1">
+  return (
+    <SectionFrame
+      className="rounded-lg border p-3 space-y-3"
+      icon={Clock}
+      title={t('assignedTitle')}
+      action={
+        <Link
+          href="/work-board"
+          className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {t('boardLink')}
+        </Link>
+      }
+      contentClassName="space-y-3"
+      header={
         <div className="flex items-center justify-between">
-          <Label className="text-xs">{t('technician')}</Label>
-          <Link
-            href="/settings/workshop"
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold">{t('title')}</h3>
+          </div>
+          <a
+            href="https://torqvoice.com/docs/configuration/work-orders/technician-assignment"
             target="_blank"
-            className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+            rel="noopener noreferrer"
+            className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
           >
-            <Settings className="h-3 w-3" />
-            {t('setDefaults')}
-          </Link>
+            {t('readMore')} →
+          </a>
         </div>
-        <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={techOpen}
-              className="w-full justify-between font-normal"
+      }
+    >
+      {modern ? (
+        <div className="space-y-2">
+          <div role="radiogroup" aria-label={t('technician')} className="space-y-1.5">
+            {technicians.map((tech) => {
+              const selected = tech.id === selectedTechId
+              const capacity = tech.dailyCapacity || DEFAULT_DAILY_CAPACITY
+              const booked = dayLoad[tech.id] ?? 0
+              const full = booked >= capacity
+              return (
+                <button
+                  key={tech.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => {
+                    if (!selected) void handleTechSelect(tech.id)
+                  }}
+                  className={cn(
+                    'grid w-full cursor-pointer grid-cols-[2.25rem_minmax(0,1fr)_5.5rem] items-center gap-3 rounded-lg border px-2.5 py-2 text-left transition-colors disabled:cursor-default',
+                    selected
+                      ? 'border-primary bg-primary/10'
+                      : 'border-card-edge hover:border-primary/40 hover:bg-muted/50'
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold',
+                      selected ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                    )}
+                  >
+                    {initialsOf(tech.name)}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold">{tech.name}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {tech.skills ||
+                        (full
+                          ? t('loadFull')
+                          : t('loadFree', { hours: hoursOf(capacity - booked) }))}
+                    </span>
+                  </span>
+                  <span className="flex flex-col gap-1">
+                    <span className="text-right text-xs tabular-nums text-muted-foreground">
+                      {t('loadOf', { booked: hoursOf(booked), capacity: hoursOf(capacity) })}
+                    </span>
+                    <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
+                      <span
+                        className={cn(
+                          'block h-full rounded-full',
+                          full ? 'bg-destructive' : 'bg-foreground/50'
+                        )}
+                        style={{
+                          width: `${Math.min(100, Math.round((booked / capacity) * 100))}%`,
+                        }}
+                      />
+                    </span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          {/* Everything the list cannot say: nobody at all, a colleague who is
+              not a technician yet, somebody new. The same picker the classic
+              page opens, behind a quieter door. */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
+                <PopoverTrigger asChild>
+                  <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                    <UserPlus className="mr-1 h-3.5 w-3.5" />
+                    {technicians.length === 0 ? t('selectTechnician') : t('someoneElse')}
+                  </Button>
+                </PopoverTrigger>
+                {techPickerContent}
+              </Popover>
+              <Link
+                href="/settings/workshop"
+                target="_blank"
+                className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <Settings className="h-3.5 w-3.5" />
+                {t('setDefaults')}
+              </Link>
+            </div>
+            {startDateTime && technicians.length > 0 && (
+              <span className="text-[11px] text-muted-foreground" suppressHydrationWarning>
+                {t('loadOn', {
+                  date: startDateTime.toLocaleDateString(undefined, {
+                    day: 'numeric',
+                    month: 'short',
+                    timeZone: timezone || undefined,
+                  }),
+                })}
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs">{t('technician')}</Label>
+            <Link
+              href="/settings/workshop"
+              target="_blank"
+              className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
             >
-              <span className="truncate">{selectedTechName || t('selectTechnician')}</span>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-            <Command shouldFilter={true}>
-              <CommandInput
-                placeholder={t('searchOrCreate')}
-                value={techSearch}
-                onValueChange={setTechSearch}
-              />
-              <CommandList className="max-h-60 overflow-y-auto">
-                <CommandEmpty className="p-0" />
-                {/* The way off the job, the same as the bay select's "No work
-                    bay". Without it a technician could be swapped but never
-                    removed from here. */}
-                <CommandGroup>
-                  <CommandItem value={t('noTechnician')} onSelect={handleTechClear}>
-                    <Check
-                      className={cn('mr-2 h-4 w-4', selectedTechId ? 'opacity-0' : 'opacity-100')}
-                    />
-                    <span className="text-muted-foreground">{t('noTechnician')}</span>
-                  </CommandItem>
-                </CommandGroup>
-                {/* Two different kinds of person, under two headings.
-                    They used to share one, so somebody who books cars in read
-                    as a mechanic, and choosing them quietly created a
-                    technician record for an account the desk had never said
-                    was one. The list still offers them, because assigning a
-                    colleague on the spot is worth keeping; it just says which
-                    is which. */}
-                {linkedTechnicians.length > 0 && (
-                  <CommandGroup heading={t('technicians')}>
-                    {linkedTechnicians.map((tech) => (
-                      <CommandItem
-                        key={tech.id}
-                        value={tech.name}
-                        onSelect={() => handleTechSelect(tech.id)}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0'
-                          )}
-                        />
-                        {tech.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-                {/* Custom technicians (not linked to platform users) */}
-                {customTechnicians.length > 0 && (
-                  <CommandGroup heading={t('customTechnicians')}>
-                    {customTechnicians.map((tech) => (
-                      <CommandItem
-                        key={tech.id}
-                        value={tech.name}
-                        onSelect={() => handleTechSelect(tech.id)}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0'
-                          )}
-                        />
-                        {tech.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-                {/* Colleagues who are not on the board yet.
-                    This list was computed and then not rendered, which left no
-                    way at all to put somebody on a job from here: the only
-                    route was a phone icon on the team page, labelled as
-                    something else. It was dropped because choosing a colleague
-                    quietly turned them into a technician, and that is the part
-                    worth keeping fixed, so the heading says what will happen
-                    rather than the click doing it silently. */}
-                {unlinkedMembers.length > 0 && (
-                  <CommandGroup heading={t('notOnBoard')}>
-                    {unlinkedMembers.map((member) => (
-                      <CommandItem
-                        key={member.id}
-                        value={member.name ?? ''}
-                        disabled={creating}
-                        onSelect={() => handleMemberSelect(member)}
-                      >
-                        <UserPlus className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span className="flex-1">{member.name}</span>
-                        <span className="text-muted-foreground text-xs">{t('putOnBoard')}</span>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-                {/* Adding somebody is one workflow, and this is a door into
-                    it rather than a fourth way of doing it. */}
-                <CommandGroup>
-                  <CommandItem value="__add_person__" onSelect={() => setAddingPerson(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t('addSomeoneNew')}
-                  </CommandItem>
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
+              <Settings className="h-3 w-3" />
+              {t('setDefaults')}
+            </Link>
+          </div>
+          <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={techOpen}
+                className="w-full justify-between font-normal"
+              >
+                <span className="truncate">{selectedTechName || t('selectTechnician')}</span>
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            {techPickerContent}
+          </Popover>
+        </div>
+      )}
 
       <AddPersonDialog
         open={addingPerson}
@@ -554,6 +734,36 @@ export function ScheduleTimesSection({
             granularity="minute"
             hourCycle={24}
             placeholder={t('endTime')}
+            displayFormat={{ hour24: 'PPP HH:mm' }}
+          />
+        ) : (
+          <div className="h-9 rounded-md border" />
+        )}
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs">{t('promisedAt')}</Label>
+          {promisedAt && (
+            <button
+              type="button"
+              onClick={() => void savePromisedAt(undefined)}
+              className="cursor-pointer text-[11px] text-muted-foreground transition-colors hover:text-foreground disabled:cursor-default"
+            >
+              {t('promisedClear')}
+            </button>
+          )}
+        </div>
+        {mounted ? (
+          <DateTimePicker
+            value={promisedAt}
+            onChange={(d) => {
+              if (d) void savePromisedAt(d)
+            }}
+            timeZone={timezone}
+            granularity="minute"
+            hourCycle={24}
+            placeholder={t('promisedPlaceholder')}
             displayFormat={{ hour24: 'PPP HH:mm' }}
           />
         ) : (
@@ -638,6 +848,6 @@ export function ScheduleTimesSection({
           ))}
         </div>
       </div>
-    </div>
+    </SectionFrame>
   )
 }

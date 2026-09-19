@@ -134,9 +134,7 @@ describe('resolveWorkOrderTitle', () => {
   })
 
   it('handles a number where a string was expected', () => {
-    expect(resolveWorkOrderTitle('{year} {make}', { year: 2019, make: 'Volvo' })).toBe(
-      '2019 Volvo'
-    )
+    expect(resolveWorkOrderTitle('{year} {make}', { year: 2019, make: 'Volvo' })).toBe('2019 Volvo')
   })
 
   it('leaves an unclosed brace alone as text', () => {

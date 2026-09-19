@@ -1,5 +1,6 @@
 'use client'
 
+import { SectionFrame } from '@/components/section-frame'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -58,7 +59,8 @@ export function JobClockSection({
 }: {
   serviceRecordId: string
   initial: JobClock
-  onAddLabor: (hours: number) => void
+  /** Absent on a locked invoice: a labor line is what the lock freezes. */
+  onAddLabor?: (hours: number) => void
 }) {
   const t = useTranslations('timeTracking.job')
   const tPage = useTranslations('timeTracking.page')
@@ -165,39 +167,49 @@ export function JobClockSection({
     void reload()
   }
 
-  return (
-    <div className="@container space-y-3 rounded-lg border p-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Timer className="size-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold">{t('title')}</h3>
-          <Badge variant="secondary" className="font-mono tabular-nums">
-            {formatMinutes(totalMinutes)}
-          </Badge>
-          {anyRunning && (
-            <span className="relative flex size-2" aria-label={t('running')}>
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-primary" />
-            </span>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {totalMinutes > 0 && (
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="h-8"
-              onClick={() => onAddLabor(billableHours)}
-              title={t('addAsLaborHint', { hours: billableHours })}
-            >
-              <Plus className="size-3.5" />
-              {t('addAsLabor', { hours: billableHours })}
-            </Button>
-          )}
-        </div>
-      </div>
+  const addAsLabor =
+    onAddLabor && totalMinutes > 0 ? (
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-8"
+        onClick={() => onAddLabor(billableHours)}
+        title={t('addAsLaborHint', { hours: billableHours })}
+      >
+        <Plus className="size-3.5" />
+        {t('addAsLabor', { hours: billableHours })}
+      </Button>
+    ) : null
 
+  return (
+    <SectionFrame
+      className="@container space-y-3 rounded-lg border p-3"
+      icon={Timer}
+      title={t('title')}
+      badge={formatMinutes(totalMinutes)}
+      action={addAsLabor}
+      modernClassName="@container"
+      contentClassName="space-y-3"
+      header={
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Timer className="size-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold">{t('title')}</h3>
+            <Badge variant="secondary" className="font-mono tabular-nums">
+              {formatMinutes(totalMinutes)}
+            </Badge>
+            {anyRunning && (
+              <span className="relative flex size-2" aria-label={t('running')}>
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+                <span className="relative inline-flex size-2 rounded-full bg-primary" />
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-1.5">{addAsLabor}</div>
+        </div>
+      }
+    >
       {perTechnician.length > 1 && (
         <div className="flex flex-wrap gap-1.5">
           {perTechnician.map((row) => (
@@ -332,6 +344,6 @@ export function JobClockSection({
           onSaved={() => void reload()}
         />
       )}
-    </div>
+    </SectionFrame>
   )
 }

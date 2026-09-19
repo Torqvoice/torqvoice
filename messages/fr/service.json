@@ -21,7 +21,8 @@
       "title": "Le travail doit avoir un titre avant d'être enregistré.",
       "negative": "Les quantités, heures, prix et coûts ne peuvent pas être négatifs.",
       "partName": "Chaque pièce avec un prix doit avoir un nom.",
-      "laborDescription": "Chaque ligne de main-d'œuvre avec des heures ou un taux doit avoir une description."
+      "laborDescription": "Chaque ligne de main-d'œuvre avec des heures ou un taux doit avoir une description.",
+      "concernCondition": "Un point avec une cause, une correction ou un contrôle doit avoir son symptôme renseigné."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Remplacer",
     "aiOverwriteAppend": "Ajouter",
     "aiOverwriteCancel": "Annuler",
-    "aiDontShowAgain": "Ne plus afficher"
+    "aiDontShowAgain": "Ne plus afficher",
+    "internalTitle": "Notes internes",
+    "publicTitle": "Notes client"
   },
   "invoice": {
     "title": "Résumé de la Facture",
@@ -248,7 +251,10 @@
     "failedDelete": "Impossible de supprimer le paiement",
     "deleteTitle": "Supprimer le Paiement",
     "deleteDescription": "Cela supprimera ce dossier de paiement.",
-    "failedPdf": "Impossible de générer la facture PDF"
+    "failedPdf": "Impossible de générer la facture PDF",
+    "received": "Paiements reçus",
+    "noneYet": "Rien de payé pour l'instant.",
+    "balanceDue": "Solde dû"
   },
   "attachments": {
     "deleteTitle": "Supprimer la Pièce Jointe",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Choisir le prochain créneau libre",
     "findingSlot": "Recherche d'un créneau…",
     "slotPicked": "Placé sur le prochain créneau libre",
-    "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines"
+    "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines",
+    "assignedTitle": "Technicien assigné",
+    "boardLink": "Tableau de travail",
+    "someoneElse": "Quelqu'un d'autre",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h libres",
+    "loadFull": "Complet",
+    "loadOn": "Heures réservées le {date}",
+    "promisedAt": "Promis au client",
+    "promisedPlaceholder": "Pas encore promis",
+    "promisedClear": "Effacer"
   },
   "notifications": {
     "title": "Notifications client",
@@ -447,7 +463,60 @@
     "placeholder": "Il y a un bruit à l'arrière quand je freine",
     "remove": "Retirer ce point",
     "notAnswered": "Rien trouvé à ce sujet pour l'instant",
-    "answered": "{count} constat(s) à ce sujet"
+    "answered": "{count} constat(s) à ce sujet",
+    "storyTitle": "Description du travail",
+    "storyHint": "Symptôme, cause, correction, contrôle. Cliquez sur une étape pour l'ouvrir ; une ligne par point signalé par le client ou constaté par vous.",
+    "steps": {
+      "condition": "Symptôme",
+      "cause": "Cause",
+      "correction": "Correction",
+      "confirm": "Contrôle"
+    },
+    "conditionPlaceholder": "Ce que le client a signalé, ou ce que vous avez constaté",
+    "causePlaceholder": "La cause réelle révélée par les tests",
+    "correctionPlaceholder": "Ce qui a été fait pour y remédier",
+    "confirmPlaceholder": "Comment la réparation a été vérifiée : essai routier, nouveau diagnostic, symptôme disparu",
+    "markConfirmed": "Contrôlé",
+    "confirmedBy": "Contrôlé par {name}, {date}",
+    "confirmedAt": "Contrôlé le {date}",
+    "confirmedOnSave": "Signé à votre nom à l'enregistrement",
+    "confirmedCount": "{confirmed} sur {total} contrôlés",
+    "findingsCount": "{count, plural, one {# observation} other {# observations}}",
+    "addFinding": "Ajouter une observation",
+    "unconfirmedTitle": "Terminer avec des points non contrôlés ?",
+    "unconfirmedBody": "{count, plural, one {Un point n'a pas été contrôlé comme réparé :} other {# points n'ont pas été contrôlés comme réparés :}}",
+    "unconfirmedProceed": "Terminer quand même",
+    "addMedia": "Ajouter des médias",
+    "mediaUploading": "Envoi…",
+    "mediaAdded": "{count, plural, one {# fichier ajouté} other {# fichiers ajoutés}}",
+    "mediaFailed": "Impossible d'envoyer {name}",
+    "mediaTypes": "Choisissez une photo (JPG, PNG, WebP) ou une vidéo.",
+    "dictate": {
+      "start": "Dicter",
+      "listening": "À l'écoute",
+      "startHint": "Parlez et le texte s'écrit ici. Rien n'est enregistré.",
+      "stopHint": "Arrêter l'écoute",
+      "notAllowed": "Le navigateur n'a pas été autorisé à utiliser le micro. Autorisez-le pour ce site et réessayez.",
+      "noMicrophone": "Aucun micro trouvé.",
+      "failed": "La dictée s'est arrêtée. Réessayez.",
+      "startHintServer": "Parlez et le texte s'écrit au fil de vos paroles. L'audio est envoyé à votre modèle vocal pour être transcrit et n'est pas conservé.",
+      "transcribing": "Finalisation…",
+      "language": "Langue parlée",
+      "auto": "Auto",
+      "nothingHeard": "Rien n'a été entendu.",
+      "fellBack": "Dictée du navigateur utilisée pour l'instant.",
+      "autoLong": "Auto (détecter la langue)",
+      "engine": "Transcrit par",
+      "engineAi": "Modèle vocal (plus précis)",
+      "engineBrowser": "Navigateur (écrit pendant que vous parlez)",
+      "liveFellBack": "Écriture par tranches de quelques secondes au lieu de mot à mot."
+    },
+    "stepEmpty": "Pas encore rédigé",
+    "removeTitle": "Retirer ce point ?",
+    "removeBody": "Son symptôme, sa cause, sa correction et son contrôle sont retirés avec lui à l'enregistrement de l'ordre de travail.",
+    "removeAttached": "Ses observations et médias restent sur le travail, sans être rattachés à un point.",
+    "removeConfirm": "Retirer le point",
+    "saveFirst": "Enregistrez d'abord l'ordre de travail"
   },
   "videoCall": {
     "title": "Appel vidéo",
@@ -492,6 +561,73 @@
       "invitationNoTime": "Bonjour {name}, voici le lien de l'appel vidéo concernant le véhicule {vehicle} : {url}",
       "joinLine": "Rejoignez l'appel vidéo ici : {url}",
       "emailSubject": "Appel vidéo concernant votre {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Statut de l'ordre de travail",
+    "back": "Retour",
+    "backToClassic": "Revenir à la présentation classique",
+    "openCustomer": "Ouvrir le client",
+    "serviceHistory": "Historique des services",
+    "changeVehicle": "Changer de véhicule",
+    "vehicleChangesOnSave": "L'ordre de travail passe sur ce véhicule à l'enregistrement.",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "notSet": "Non renseigné",
+    "noCustomer": "Aucun client sur cet ordre de travail.",
+    "invoiceTitle": "Facture et paiement",
+    "filesTitle": "Fichiers et médias",
+    "activity": {
+      "title": "Activité",
+      "messageSent": "Message envoyé au client",
+      "linkShared": "Lien de la facture partagé",
+      "linkViewed": "{count, plural, one {Le client a ouvert le lien} other {Le client a ouvert le lien # fois}}",
+      "paymentTaken": "Paiement de {amount} enregistré"
+    },
+    "invite": {
+      "title": "La page de l'ordre de travail a été refaite.",
+      "body": "Une présentation plus claire, avec les mêmes champs. Vous pouvez revenir à l'ancienne à tout moment.",
+      "try": "Essayer maintenant",
+      "dismiss": "Plus tard",
+      "menu": "Essayer la nouvelle présentation"
+    },
+    "promised": "Promis pour le {date}",
+    "promisedOverdue": "Promis pour le {date}, en retard",
+    "opened": "Ouvert le {date}",
+    "openedBy": "Ouvert le {date} par {name}",
+    "editTitle": "Modifier le titre",
+    "titleField": "Titre",
+    "media": {
+      "tabs": {
+        "photos": "Photos",
+        "diagnostics": "Diagnostics"
+      },
+      "summary": "{count, plural, one {# fichier} other {# fichiers}} · montrés au client seulement s'ils sont marqués",
+      "customerCanSee": "Visible par le client",
+      "showToCustomer": "Montrer au client",
+      "hideFromCustomer": "Masquer au client",
+      "add": {
+        "image": "Ajouter des photos",
+        "document": "Ajouter des documents",
+        "diagnostic": "Ajouter un rapport de diagnostic",
+        "video": "Ajouter une vidéo"
+      },
+      "dropHint": "Déposez des fichiers ou cliquez pour parcourir",
+      "added": "{count, plural, one {# fichier ajouté} other {# fichiers ajoutés}}",
+      "failed": "Impossible d'envoyer {name}",
+      "wrongType": "Type de fichier non adapté à cet onglet : {names}",
+      "limit": "Limite atteinte ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Payé",
+      "balance": "Solde dû",
+      "settled": "Payé en totalité",
+      "takePayment": "Encaisser",
+      "preview": "Aperçu de la facture",
+      "previewShort": "Aperçu",
+      "send": "Envoyer au client",
+      "sendShort": "Envoyer"
     }
   }
 }

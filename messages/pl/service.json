@@ -21,7 +21,8 @@
       "title": "Zlecenie musi mieć tytuł, zanim będzie można je zapisać.",
       "negative": "Ilości, godziny, ceny i koszty nie mogą być ujemne.",
       "partName": "Każda część z ceną musi mieć nazwę.",
-      "laborDescription": "Każda pozycja robocizny z godzinami lub stawką musi mieć opis."
+      "laborDescription": "Każda pozycja robocizny z godzinami lub stawką musi mieć opis.",
+      "concernCondition": "Zgłoszenie z przyczyną, naprawą lub weryfikacją musi mieć wypełniony objaw."
     }
   },
   "header": {
@@ -198,7 +199,9 @@
     "aiOverwriteReplace": "Zastąp",
     "aiOverwriteAppend": "Dołącz",
     "aiOverwriteCancel": "Anuluj",
-    "aiDontShowAgain": "Nie pokazuj ponownie"
+    "aiDontShowAgain": "Nie pokazuj ponownie",
+    "internalTitle": "Notatki wewnętrzne",
+    "publicTitle": "Notatki dla klienta"
   },
   "invoice": {
     "title": "Podsumowanie Faktury",
@@ -248,7 +251,10 @@
     "failedDelete": "Nie udało się usunąć płatności",
     "deleteTitle": "Usuń Płatność",
     "deleteDescription": "Spowoduje to usunięcie tego rekordu płatności.",
-    "failedPdf": "Nie udało się wygenerować faktury PDF"
+    "failedPdf": "Nie udało się wygenerować faktury PDF",
+    "received": "Otrzymane płatności",
+    "noneYet": "Nic jeszcze nie zapłacono.",
+    "balanceDue": "Pozostało do zapłaty"
   },
   "attachments": {
     "deleteTitle": "Usuń Załącznik",
@@ -394,7 +400,17 @@
     "pickNextAvailable": "Wybierz najbliższy wolny termin",
     "findingSlot": "Szukanie terminu…",
     "slotPicked": "Zaplanowano na najbliższy wolny termin",
-    "noSlotFound": "Nie znaleziono wolnego terminu w najbliższych tygodniach"
+    "noSlotFound": "Nie znaleziono wolnego terminu w najbliższych tygodniach",
+    "assignedTitle": "Przypisany technik",
+    "boardLink": "Tablica zleceń",
+    "someoneElse": "Ktoś inny",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "Wolne: {hours} h",
+    "loadFull": "Pełne obłożenie",
+    "loadOn": "Zajęte godziny w dniu {date}",
+    "promisedAt": "Termin obiecany klientowi",
+    "promisedPlaceholder": "Jeszcze nie obiecano",
+    "promisedClear": "Wyczyść"
   },
   "notifications": {
     "title": "Powiadomienia klienta",
@@ -447,7 +463,60 @@
     "placeholder": "Przy hamowaniu słychać hałas z tyłu",
     "remove": "Usuń ten punkt",
     "notAnswered": "Nic jeszcze nie ustalono",
-    "answered": "Ustalenia: {count}"
+    "answered": "Ustalenia: {count}",
+    "storyTitle": "Opis pracy",
+    "storyHint": "Objaw, przyczyna, naprawa, weryfikacja. Kliknij krok, aby go otworzyć; jeden wiersz na każdą rzecz zgłoszoną przez klienta lub zauważoną przez ciebie.",
+    "steps": {
+      "condition": "Objaw",
+      "cause": "Przyczyna",
+      "correction": "Naprawa",
+      "confirm": "Weryfikacja"
+    },
+    "conditionPlaceholder": "Co zgłosił klient lub co zauważono",
+    "causePlaceholder": "Co według testów jest główną przyczyną",
+    "correctionPlaceholder": "Co zrobiono, aby to naprawić",
+    "confirmPlaceholder": "Jak sprawdzono naprawę: jazda próbna, ponowny odczyt błędów, objaw ustąpił",
+    "markConfirmed": "Zweryfikowane",
+    "confirmedBy": "Zweryfikowano: {name}, {date}",
+    "confirmedAt": "Zweryfikowano {date}",
+    "confirmedOnSave": "Przy zapisie zostanie oznaczone Twoim imieniem",
+    "confirmedCount": "Zweryfikowano {confirmed} z {total}",
+    "findingsCount": "{count, plural, one {# obserwacja} few {# obserwacje} many {# obserwacji} other {# obserwacji}}",
+    "addFinding": "Dodaj obserwację",
+    "unconfirmedTitle": "Zakończyć z niezweryfikowanymi zgłoszeniami?",
+    "unconfirmedBody": "{count, plural, one {Jedno zgłoszenie nie zostało zweryfikowane jako naprawione:} few {# zgłoszenia nie zostały zweryfikowane jako naprawione:} many {# zgłoszeń nie zostało zweryfikowanych jako naprawione:} other {# zgłoszenia nie zostało zweryfikowanych jako naprawione:}}",
+    "unconfirmedProceed": "Zakończ mimo to",
+    "addMedia": "Dodaj multimedia",
+    "mediaUploading": "Przesyłanie…",
+    "mediaAdded": "{count, plural, one {Dodano # plik} few {Dodano # pliki} many {Dodano # plików} other {Dodano # pliku}}",
+    "mediaFailed": "Nie udało się przesłać {name}",
+    "mediaTypes": "Wybierz zdjęcie (JPG, PNG, WebP) lub wideo.",
+    "dictate": {
+      "start": "Dyktuj",
+      "listening": "Słucham",
+      "startHint": "Mów, a tekst pojawi się tutaj. Nic nie jest nagrywane.",
+      "stopHint": "Przestań słuchać",
+      "notAllowed": "Przeglądarka nie dostała dostępu do mikrofonu. Zezwól na niego dla tej strony i spróbuj ponownie.",
+      "noMicrophone": "Nie znaleziono mikrofonu.",
+      "failed": "Dyktowanie zatrzymane. Spróbuj ponownie.",
+      "startHintServer": "Mów, a tekst zapisuje się na bieżąco. Dźwięk trafia do Twojego modelu mowy do zapisania i nie jest przechowywany.",
+      "transcribing": "Kończenie…",
+      "language": "Język mówiony",
+      "auto": "Auto",
+      "nothingHeard": "Niczego nie usłyszano.",
+      "fellBack": "Na razie używane jest dyktowanie wbudowane w przeglądarkę.",
+      "autoLong": "Auto (wykryj język)",
+      "engine": "Zapisuje",
+      "engineAi": "Model mowy (dokładniejszy)",
+      "engineBrowser": "Przeglądarka (pisze na bieżąco)",
+      "liveFellBack": "Tekst pojawia się co kilka sekund zamiast słowo po słowie."
+    },
+    "stepEmpty": "Jeszcze nie wpisano",
+    "removeTitle": "Usunąć to zgłoszenie?",
+    "removeBody": "Jego objaw, przyczyna, naprawa i weryfikacja zostaną usunięte razem z nim przy zapisie zlecenia.",
+    "removeAttached": "Jego obserwacje i multimedia zostają w zleceniu, ale nie są już przypisane do zgłoszenia.",
+    "removeConfirm": "Usuń zgłoszenie",
+    "saveFirst": "Najpierw zapisz zlecenie"
   },
   "videoCall": {
     "title": "Rozmowa wideo",
@@ -492,6 +561,73 @@
       "invitationNoTime": "Cześć {name}, oto link do rozmowy wideo dotyczącej {vehicle}: {url}",
       "joinLine": "Dołącz do rozmowy wideo tutaj: {url}",
       "emailSubject": "Rozmowa wideo dotycząca Twojego {vehicle}"
+    }
+  },
+  "modern": {
+    "statusLabel": "Status zlecenia",
+    "back": "Wstecz",
+    "backToClassic": "Wróć do klasycznego układu",
+    "openCustomer": "Otwórz klienta",
+    "serviceHistory": "Historia serwisowa",
+    "changeVehicle": "Zmień pojazd",
+    "vehicleChangesOnSave": "Po zapisaniu zlecenie zostanie przeniesione na ten pojazd.",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "notSet": "Nie ustawiono",
+    "noCustomer": "To zlecenie nie ma klienta.",
+    "invoiceTitle": "Faktura i płatność",
+    "filesTitle": "Pliki i multimedia",
+    "activity": {
+      "title": "Aktywność",
+      "messageSent": "Wysłano wiadomość do klienta",
+      "linkShared": "Udostępniono link do faktury",
+      "linkViewed": "{count, plural, =1 {Klient otworzył link} one {Klient otworzył link # raz} few {Klient otworzył link # razy} many {Klient otworzył link # razy} other {Klient otworzył link # razy}}",
+      "paymentTaken": "Zarejestrowano płatność {amount}"
+    },
+    "invite": {
+      "title": "Strona zlecenia została przebudowana.",
+      "body": "Czytelniejszy układ z tymi samymi polami. Możesz wrócić w każdej chwili.",
+      "try": "Wypróbuj teraz",
+      "dismiss": "Nie teraz",
+      "menu": "Wypróbuj nowy układ"
+    },
+    "promised": "Obiecano na {date}",
+    "promisedOverdue": "Obiecano na {date}, po terminie",
+    "opened": "Otwarto {date}",
+    "openedBy": "Otwarto {date}, przez: {name}",
+    "editTitle": "Edytuj tytuł",
+    "titleField": "Tytuł",
+    "media": {
+      "tabs": {
+        "photos": "Zdjęcia",
+        "diagnostics": "Diagnostyka"
+      },
+      "summary": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# pliku}} · widoczne dla klienta tylko po oznaczeniu",
+      "customerCanSee": "Widoczne dla klienta",
+      "showToCustomer": "Pokaż klientowi",
+      "hideFromCustomer": "Ukryj przed klientem",
+      "add": {
+        "image": "Dodaj zdjęcia",
+        "document": "Dodaj dokumenty",
+        "diagnostic": "Dodaj raport diagnostyczny",
+        "video": "Dodaj wideo"
+      },
+      "dropHint": "Upuść pliki lub kliknij, aby wybrać",
+      "added": "{count, plural, one {Dodano # plik} few {Dodano # pliki} many {Dodano # plików} other {Dodano # pliku}}",
+      "failed": "Nie udało się przesłać {name}",
+      "wrongType": "Nieodpowiedni rodzaj pliku dla tej karty: {names}",
+      "limit": "Osiągnięto limit ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Razem",
+      "paid": "Zapłacono",
+      "balance": "Pozostało do zapłaty",
+      "settled": "Zapłacono w całości",
+      "takePayment": "Przyjmij płatność",
+      "preview": "Podgląd faktury",
+      "previewShort": "Podgląd",
+      "send": "Wyślij klientowi",
+      "sendShort": "Wyślij"
     }
   }
 }

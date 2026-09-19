@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
   documentTotals,
   readWorkshopTax,
@@ -221,11 +222,16 @@ export async function getServiceRecord(recordId: string) {
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
         include: {
-          concerns: { orderBy: { sortOrder: 'asc' } },
+          concerns: {
+            orderBy: { sortOrder: 'asc' },
+            include: { confirmedBy: { select: { name: true } } },
+          },
           partItems: true,
           laborItems: true,
           attachments: true,
           payments: { orderBy: { date: 'desc' } },
+          // Who opened the job, for the line under its number.
+          createdBy: { select: { name: true } },
           // A tire job is meaningless without knowing which set and which
           // shelf, so it travels with the record rather than being fetched
           // separately by whatever screen happens to need it.
@@ -441,6 +447,7 @@ export async function createServiceRecord(input: unknown) {
           data: {
             ...recordData,
             organizationId,
+            createdById: userId,
             // Only vehicle-less records link a customer directly; vehicle-linked
             // records always resolve their customer through the vehicle.
             customerId: data.vehicleId ? null : data.customerId,
@@ -505,11 +512,13 @@ export async function createServiceRecord(input: unknown) {
         }
 
         if (concerns && concerns.length > 0) {
+          const now = new Date()
           await tx.serviceConcern.createMany({
             data: concerns.map((concern, index) => ({
               description: concern.description,
               sortOrder: concern.sortOrder ?? index,
               serviceRecordId: created.id,
+              ...concernStoryData(concern, null, userId, now),
             })),
           })
         }
@@ -791,8 +800,10 @@ export async function updateServiceRecord(input: unknown) {
         if (concerns !== undefined) {
           const existingConcerns = await tx.serviceConcern.findMany({
             where: { serviceRecordId: id },
-            select: { id: true },
+            select: { id: true, confirmedAt: true, confirmedById: true },
           })
+          const existingById = new Map(existingConcerns.map((concern) => [concern.id, concern]))
+          const now = new Date()
           const keptIds = new Set(
             concerns.map((concern) => concern.id).filter((cid): cid is string => Boolean(cid))
           )
@@ -811,12 +822,21 @@ export async function updateServiceRecord(input: unknown) {
             if (concern.id && keptIds.has(concern.id)) {
               const { count } = await tx.serviceConcern.updateMany({
                 where: { id: concern.id, serviceRecordId: id },
-                data: { description: concern.description, sortOrder },
+                data: {
+                  description: concern.description,
+                  sortOrder,
+                  ...concernStoryData(concern, existingById.get(concern.id) ?? null, userId, now),
+                },
               })
               if (count > 0) continue
             }
             await tx.serviceConcern.create({
-              data: { description: concern.description, sortOrder, serviceRecordId: id },
+              data: {
+                description: concern.description,
+                sortOrder,
+                serviceRecordId: id,
+                ...concernStoryData(concern, null, userId, now),
+              },
             })
           }
         }
@@ -974,6 +994,48 @@ export async function updateServiceStatus(recordId: string, status: string) {
           params: { status: result.status.replaceAll('-', '_') },
         },
         metadata: { serviceRecordId: result.recordId, status: result.status },
+      }),
+    }
+  )
+}
+
+/**
+ * Saves the job's internal notes on their own. The work order's Save goes
+ * through updateServiceRecord, which refuses a locked invoice outright; the
+ * internal notes are not part of what the lock freezes (they are never printed
+ * or shared), so a locked job still takes them through here.
+ */
+export async function updateInternalNotes(recordId: string, html: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      if (typeof html !== 'string' || html.length > 200_000) throw new Error('Invalid notes')
+      const notes = html
+      const record = await db.serviceRecord.findFirst({
+        where: { id: recordId, organizationId },
+        select: { id: true, invoiceNumber: true, vehicleId: true },
+      })
+      if (!record) throw new Error('Record not found')
+
+      await db.serviceRecord.update({
+        where: { id: record.id },
+        // The editor reports an emptied box as one empty paragraph.
+        data: { diagnosticNotes: notes && notes !== '<p></p>' ? notes : null },
+      })
+
+      if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
+      else revalidatePath(`/sales/${record.id}`)
+      return { id: record.id, invoiceNumber: record.invoiceNumber }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'service.update',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
+        metadata: { serviceRecordId: result.id, field: 'diagnosticNotes' },
       }),
     }
   )

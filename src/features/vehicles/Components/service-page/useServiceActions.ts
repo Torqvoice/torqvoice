@@ -117,6 +117,7 @@ export function useServiceActions({
       title: getVisible('title') ?? '',
       partItems,
       laborItems,
+      concerns,
     })
     if (problem) {
       toast.error(t(`page.problems.${problem}`))
@@ -163,9 +164,18 @@ export function useServiceActions({
       invoiceDate: optionalText('invoiceDate'),
       invoiceDueDate: optionalText('invoiceDueDate'),
       // Blank rows are somebody halfway through typing, not a concern.
+      // Only the saved fields: the stamp of who confirmed is the server's.
       concerns: concerns
         .filter((c) => c.description.trim())
-        .map((c, index) => ({ ...c, description: c.description.trim(), sortOrder: index })),
+        .map((c, index) => ({
+          id: c.id,
+          description: c.description.trim(),
+          sortOrder: index,
+          cause: c.cause ?? null,
+          correction: c.correction ?? null,
+          confirmation: c.confirmation ?? null,
+          confirmed: c.confirmed ?? false,
+        })),
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
       subtotal,

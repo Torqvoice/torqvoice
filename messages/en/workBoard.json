@@ -78,7 +78,10 @@
     "addTechnician": "Add Technician",
     "standaloneOnly": "A name on the board for somebody who does not sign in, like an apprentice or a contractor. To add a mechanic who uses the app, add them on the Team page.",
     "linkedTo": "Signs in as {name}",
-    "linkedManagedOnTeam": "Managed on the Team page, along with their app access."
+    "linkedManagedOnTeam": "Managed on the Team page, along with their app access.",
+    "skills": "Skills",
+    "skillsPlaceholder": "Diagnostics, EV certified",
+    "skillsHint": "Shown under the name where work is handed out. Optional."
   },
   "jobDetail": {
     "viewDetails": "View Details",

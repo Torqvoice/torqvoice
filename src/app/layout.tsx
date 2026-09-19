@@ -1,5 +1,16 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import {
+  Atkinson_Hyperlegible_Mono,
+  Atkinson_Hyperlegible_Next,
+  Barlow_Condensed,
+  Geist,
+  Geist_Mono,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  Inter,
+  Inter_Tight,
+  JetBrains_Mono,
+} from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Toaster } from '@/components/ui/sonner'
@@ -21,14 +32,83 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import './globals.css'
 
+// Declared under *-base: globals.css points --font-geist-sans at it, or at
+// another face when a font set is chosen (see src/lib/font-sets.ts).
 const geistSans = Geist({
-  variable: '--font-geist-sans',
+  variable: '--font-geist-sans-base',
   subsets: ['latin', 'latin-ext'],
 })
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+  variable: '--font-geist-mono-base',
   subsets: ['latin', 'latin-ext'],
+})
+
+// The "workshop" font set (Settings → Appearance). Not preloaded: a browser
+// fetches a font file only when some text is actually set in it, so whoever
+// stays on the default never downloads these.
+const plexSans = IBM_Plex_Sans({
+  variable: '--font-plex-sans',
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  preload: false,
+})
+
+const plexMono = IBM_Plex_Mono({
+  variable: '--font-plex-mono',
+  weight: ['400', '500', '600'],
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  preload: false,
+})
+
+const barlowCondensed = Barlow_Condensed({
+  variable: '--font-barlow-condensed',
+  weight: ['500', '600', '700'],
+  subsets: ['latin', 'latin-ext'],
+  preload: false,
+})
+
+// The "precise" set. Variable fonts, so one file covers every weight.
+const inter = Inter({
+  variable: '--font-inter',
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  preload: false,
+})
+
+const interTight = Inter_Tight({
+  variable: '--font-inter-tight',
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  preload: false,
+})
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: '--font-jetbrains-mono',
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  preload: false,
+})
+
+// The "legible" set. Latin only: the family has no Cyrillic.
+//
+// adjustFontFallback is off for these two. next/font sizes a stand-in system
+// font to match each face while it loads, from a table of font metrics shipped
+// with Next, and these families are newer than that table: it found nothing,
+// skipped the stand-in anyway, and said so on every compile. The fallback is
+// named here instead, so the text is still set in something sensible for the
+// moment before the font arrives.
+const atkinson = Atkinson_Hyperlegible_Next({
+  variable: '--font-atkinson',
+  subsets: ['latin', 'latin-ext'],
+  preload: false,
+  adjustFontFallback: false,
+  fallback: ['system-ui', 'sans-serif'],
+})
+
+const atkinsonMono = Atkinson_Hyperlegible_Mono({
+  variable: '--font-atkinson-mono',
+  subsets: ['latin', 'latin-ext'],
+  preload: false,
+  adjustFontFallback: false,
+  fallback: ['ui-monospace', 'monospace'],
 })
 
 export const metadata: Metadata = {
@@ -107,11 +187,13 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var c=document.documentElement.classList;var p=location.pathname;if(p.indexOf('/share/')===0||p.indexOf('/portal')===0){c.add('light');return}var M={light:'light',dark:'dark',graphite:'light',ocean:'light',forest:'light',midnight:'dark',carbon:'dark'};var t=localStorage.getItem('torqvoice-theme')||'dark';if(t==='system'){t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}var m=M[t];if(!m){t='dark';m='dark'}c.add(m);if(t!==m){c.add('theme-'+t)}}catch(e){}})()`,
+            __html: `(function(){try{var c=document.documentElement.classList;var p=location.pathname;if(p.indexOf('/share/')===0||p.indexOf('/portal')===0){c.add('light');return}var M={light:'light',dark:'dark',graphite:'light',ocean:'light',forest:'light',midnight:'dark',carbon:'dark'};var t=localStorage.getItem('torqvoice-theme')||'dark';if(t==='system'){t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}var m=M[t];if(!m){t='dark';m='dark'}c.add(m);if(t!==m){c.add('theme-'+t)}var f=localStorage.getItem('torqvoice-font');if(f==='workshop'||f==='precise'||f==='legible'){c.add('font-set-'+f)}}catch(e){}})()`,
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${plexSans.variable} ${plexMono.variable} ${barlowCondensed.variable} ${inter.variable} ${interTight.variable} ${jetBrainsMono.variable} ${atkinson.variable} ${atkinsonMono.variable} font-sans antialiased`}
+      >
         <PostHogProvider
           enabled={isCloudMode() || isDemoMode}
           posthogKey={process.env.POSTHOG_KEY}

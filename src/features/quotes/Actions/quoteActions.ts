@@ -596,6 +596,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         const created = await tx.serviceRecord.create({
           data: {
             organizationId,
+            createdById: userId,
             title: quote.title,
             description: quote.description,
             type: 'repair',

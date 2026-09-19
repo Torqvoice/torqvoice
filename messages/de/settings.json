@@ -1229,7 +1229,29 @@
     "dateLabel": "Datum",
     "dateTimeLabel": "Datum & Uhrzeit",
     "saveSettings": "Einstellungen speichern",
-    "saved": "Einstellungen gespeichert"
+    "saved": "Einstellungen gespeichert",
+    "fontLabel": "Schriftart",
+    "fontHint": "Wählen Sie die Schriften, in denen die App gesetzt ist. Die Auswahl wird auf diesem Gerät gespeichert.",
+    "fontSampleHeading": "Arbeitsauftrag",
+    "fontSampleText": "Zündspule und Zündkerzen ersetzen",
+    "fonts": {
+      "default": {
+        "name": "Standard",
+        "description": "Geist, klar und neutral."
+      },
+      "workshop": {
+        "name": "Werkstatt",
+        "description": "IBM Plex mit schmalen Überschriften in Großbuchstaben, wie ein Auftragszettel."
+      },
+      "precise": {
+        "name": "Präzise",
+        "description": "Inter und JetBrains Mono. Gemacht für Bildschirme voller Tabellen und Zahlen."
+      },
+      "legible": {
+        "name": "Gut lesbar",
+        "description": "Atkinson Hyperlegible. 0 und O, 1 und l sehen nie gleich aus; auch quer durch die Werkstatt gut lesbar."
+      }
+    }
   },
   "data": {
     "title": "Datenverwaltung",
