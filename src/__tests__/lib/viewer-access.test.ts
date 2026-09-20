@@ -23,6 +23,7 @@ const getCachedMembership = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/get-auth-context', () => ({ getAuthContext }))
 vi.mock('@/lib/cached-session', () => ({ getCachedMembership }))
 
+import { MEMBER_PERMISSIONS } from '@/features/team/Lib/technicianRole'
 import { PermissionSubject } from '@/lib/permissions'
 import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
 
@@ -91,54 +92,86 @@ describe('a card the role may not read', () => {
   })
 })
 
-describe('the dashboard', () => {
+describe('every page that asks first', () => {
   const root = join(process.cwd(), 'src')
-  const page = readFileSync(join(root, 'app/(authenticated)/page.tsx'), 'utf8')
 
-  /** Every source file under src/features, read once. */
   const sources: string[] = []
-  const walk = (dir: string) => {
+  const pages: { path: string; source: string }[] = []
+  const walk = (dir: string, into: (path: string, source: string) => void) => {
     for (const entry of readdirSync(dir)) {
       const path = join(dir, entry)
-      if (statSync(path).isDirectory()) walk(path)
-      else if (/\.tsx?$/.test(entry)) sources.push(readFileSync(path, 'utf8'))
+      if (statSync(path).isDirectory()) walk(path, into)
+      else if (/\.tsx?$/.test(entry)) into(path, readFileSync(path, 'utf8'))
     }
   }
-  walk(join(root, 'features'))
+  walk(join(root, 'features'), (_path, source) => sources.push(source))
+  walk(join(root, 'app'), (path, source) => {
+    if (source.includes('readIfAllowed(access,'))
+      pages.push({ path: path.slice(root.length + 1), source })
+  })
 
-  /** The subject an action's `requiredPermissions` asks to READ, or null when it asks for none. */
+  /** The subject an action must be allowed to READ, or null when it asks for none. */
   function subjectNeededBy(action: string): string | null {
     for (const source of sources) {
       const at = source.search(new RegExp(`export (async )?function ${action}\\b`))
       if (at < 0) continue
-      const next = source.indexOf('\nexport ', at + 1)
-      const body = source.slice(at, next < 0 ? undefined : next)
+      // Up to the end of this function, not the next export: a helper that
+      // follows it may need something this action does not.
+      const end = source.indexOf('\n}\n', at)
+      const body = source.slice(at, end < 0 ? undefined : end)
+      const inline = body.match(
+        /PermissionAction\.READ,\s*subject:\s*PermissionSubject\.([A-Z_]+)/
+      )?.[1]
+      if (inline) return inline
+      // Some files name the permission once and refer to it:
+      // `requiredPermissions: READ`, with `const READ = [{ … }]` elsewhere.
+      const named = body.match(/requiredPermissions:\s*([A-Za-z_]\w*)\b/)?.[1]
+      if (!named) return null
       return (
-        body.match(/PermissionAction\.READ,\s*subject:\s*PermissionSubject\.([A-Z_]+)/)?.[1] ?? null
+        source.match(
+          new RegExp(
+            `const ${named} = \\[\\s*\\{\\s*action:\\s*PermissionAction\\.READ,\\s*subject:\\s*PermissionSubject\\.([A-Z_]+)`
+          )
+        )?.[1] ?? null
       )
     }
     throw new Error(`${action} was not found under src/features`)
   }
 
-  const gated = [...page.matchAll(/readIfAllowed\(access, S\.([A-Z_]+), \(\) =>\s*(\w+)\(/g)].map(
-    ([, subject, action]) => ({ subject, action })
-  )
+  it('covers the dashboard and the vehicle page', () => {
+    expect(pages.map((page) => page.path).sort()).toEqual([
+      'app/(authenticated)/page.tsx',
+      'app/(authenticated)/vehicles/[id]/page.tsx',
+    ])
+  })
 
-  it('gates each card on the permission its action really needs', () => {
-    expect(gated.length).toBeGreaterThan(8)
-    const wrong = gated.filter(({ subject, action }) => subjectNeededBy(action) !== subject)
+  it('gates each call on the permission its action really needs', () => {
+    const wrong = pages.flatMap(({ path, source }) =>
+      [...source.matchAll(/readIfAllowed\(access, S\.([A-Z_]+), \(\) =>\s*(\w+)\(/g)]
+        .filter(([, subject, action]) => subjectNeededBy(action) !== subject)
+        .map(([, subject, action]) => `${path}: ${action} is gated on ${subject}`)
+    )
     expect(wrong).toEqual([])
   })
 
-  it('asks for nothing that needs a permission without asking first', () => {
-    // Everything called inside the page's Promise.all, gated or not.
-    // Up to the line that closes the list, not the first `])`, which belongs
-    // to the settings call near the top.
-    const start = page.indexOf('await Promise.all([')
-    const block = page.slice(start, page.indexOf('\n  ])', start))
-    expect(block).toContain('getTireHotelSummary')
-    const bare = [...block.matchAll(/^\s{4}(get\w+)\(/gm)].map(([, action]) => action)
-    const ungated = bare.filter((action) => subjectNeededBy(action) !== null)
+  it('asks for nothing outside what a Member reads without asking first', () => {
+    // The built-in Member role reads these and nothing else. A call that needs
+    // any other subject is one a Member is refused, so it has to be gated.
+    const memberReads = new Set<string>(
+      MEMBER_PERMISSIONS.filter((p) => p.action === 'read').map((p) => p.subject)
+    )
+    const ungated = pages.flatMap(({ path, source }) => {
+      // Up to the line that closes the list, not the first `])`, which can
+      // belong to a call inside it.
+      const start = source.indexOf('await Promise.all([')
+      const block = source.slice(start, source.indexOf('\n  ])', start))
+      return [...block.matchAll(/^\s{4}(get\w+)\(/gm)]
+        .map(([, action]) => ({ action, subject: subjectNeededBy(action) }))
+        .filter(
+          ({ subject }) => subject !== null && !memberReads.has(String(subject).toLowerCase())
+        )
+        .map(({ action, subject }) => `${path}: ${action} needs ${subject} and is not gated`)
+    })
     expect(ungated).toEqual([])
   })
 })

@@ -18,6 +18,8 @@ import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActi
 import { VehicleDetailClient } from './vehicle-detail-client'
 import { PageHeader } from '@/components/page-header'
 import { redirect } from 'next/navigation'
+import { PermissionSubject } from '@/lib/permissions'
+import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
 
 export default async function VehicleDetailPage({
   params,
@@ -46,6 +48,13 @@ export default async function VehicleDetailPage({
   const findingsPage = Number(sp.findingsPage) || 1
   const findingsPageSize = Number(sp.findingsPageSize) || 10
 
+  // The inspections and tire hotel panels belong to permissions of their own.
+  // A role without them is not shown the panels, and is not asked for their
+  // data either: a refused call is a wasted query and a refusal in the audit
+  // log on every vehicle somebody opens (lib/viewer-access).
+  const access = await getViewerAccess()
+  const S = PermissionSubject
+
   const [
     result,
     customersResult,
@@ -69,11 +78,11 @@ export default async function VehicleDetailPage({
       SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
       SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
     ]),
-    getVehicleInspections(id),
-    getTemplates(),
+    readIfAllowed(access, S.INSPECTIONS, () => getVehicleInspections(id)),
+    readIfAllowed(access, S.INSPECTIONS, () => getTemplates()),
     getVehicleQuotes(id),
     getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
-    getTireSetsForVehicle(id),
+    readIfAllowed(access, S.TIRE_HOTEL, () => getTireSetsForVehicle(id)),
   ])
 
   if (!result.success || !result.data) {
