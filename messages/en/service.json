@@ -368,6 +368,7 @@
     "date": "Date",
     "startTime": "Start Time",
     "endTime": "End Time",
+    "durationPresets": "Duration presets",
     "technician": "Technician",
     "selectTechnician": "Select technician...",
     "searchOrCreate": "Search or create technician...",

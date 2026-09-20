@@ -368,6 +368,7 @@
     "date": "Fecha",
     "startTime": "Hora de inicio",
     "endTime": "Hora de fin",
+    "durationPresets": "Duración",
     "technician": "Técnico",
     "selectTechnician": "Seleccionar técnico...",
     "searchOrCreate": "Buscar o crear técnico...",

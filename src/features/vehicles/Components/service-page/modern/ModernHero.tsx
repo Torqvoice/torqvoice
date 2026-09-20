@@ -1,5 +1,6 @@
 'use client'
 
+import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useState, type ReactNode } from 'react'
@@ -212,9 +213,8 @@ export function ModernHero({
   // A promise that has passed on a job that is not finished is the one thing
   // in this header that needs somebody to act, so it changes colour.
   const promisedAt = record.promisedAt ? new Date(record.promisedAt) : null
-  const promiseOverdue = Boolean(
-    promisedAt && status !== 'completed' && promisedAt.getTime() < Date.now()
-  )
+  // One rule for the header, the work order list and the board card.
+  const promiseOverdue = isPromiseOverdue(record.promisedAt, status)
 
   const warrantyLabel =
     warranty.warrantyStatus === 'included'

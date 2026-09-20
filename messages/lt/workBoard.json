@@ -157,6 +157,9 @@
     "workBay": "Darbo vieta",
     "status": "Būsena",
     "noTime": "Laikas dar nenustatytas",
-    "none": "Kol kas niekas"
+    "none": "Kol kas niekas",
+    "promised": "Pažadėta",
+    "promiseLate": "Vėluoja",
+    "promiseOverdue": "Klientui pažadėta jau praėjusiam laikui"
   }
 }

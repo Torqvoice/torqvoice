@@ -368,6 +368,7 @@
     "date": "Tarih",
     "startTime": "Başlangıç Saati",
     "endTime": "Bitiş Saati",
+    "durationPresets": "Süre",
     "technician": "Teknisyen",
     "selectTechnician": "Teknisyen seçin...",
     "searchOrCreate": "Teknisyen ara veya oluştur...",

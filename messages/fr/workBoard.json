@@ -157,6 +157,9 @@
     "workBay": "Poste de travail",
     "status": "Statut",
     "noTime": "Pas encore d'horaire",
-    "none": "Personne pour l'instant"
+    "none": "Personne pour l'instant",
+    "promised": "Promis",
+    "promiseLate": "En retard",
+    "promiseOverdue": "Promis au client pour un moment déjà passé"
   }
 }

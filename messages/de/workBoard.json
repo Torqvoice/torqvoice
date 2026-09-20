@@ -157,6 +157,9 @@
     "workBay": "Arbeitsplatz",
     "status": "Status",
     "noTime": "Noch keine Zeit",
-    "none": "Noch niemand"
+    "none": "Noch niemand",
+    "promised": "Zugesagt",
+    "promiseLate": "Überfällig",
+    "promiseOverdue": "Dem Kunden für einen bereits vergangenen Zeitpunkt zugesagt"
   }
 }

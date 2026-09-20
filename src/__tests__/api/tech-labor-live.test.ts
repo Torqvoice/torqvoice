@@ -49,7 +49,9 @@ vi.mock('@/lib/db', () => {
   }
 })
 
-vi.mock('@/lib/document-lock.server', () => ({ assertInvoiceEditable: vi.fn(async () => {}) }))
+vi.mock('@/lib/document-lock.server', () => ({
+  assertInvoiceEditable: vi.fn(async () => undefined),
+}))
 
 vi.mock('@/lib/with-api-auth', async () => {
   const actual = await vi.importActual<typeof import('@/lib/with-api-auth')>('@/lib/with-api-auth')

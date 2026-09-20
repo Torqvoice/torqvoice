@@ -368,6 +368,7 @@
     "date": "Datum",
     "startTime": "Starttijd",
     "endTime": "Eindtijd",
+    "durationPresets": "Duur",
     "technician": "Technicus",
     "selectTechnician": "Selecteer technicus...",
     "searchOrCreate": "Zoek of maak technicus aan...",

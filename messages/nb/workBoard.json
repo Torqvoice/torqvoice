@@ -157,6 +157,9 @@
     "workBay": "Arbeidsplass",
     "status": "Status",
     "noTime": "Ingen tid satt ennå",
-    "none": "Ingen ennå"
+    "none": "Ingen ennå",
+    "promised": "Lovet",
+    "promiseLate": "Forsinket",
+    "promiseOverdue": "Lovet kunden tidligere enn nå"
   }
 }

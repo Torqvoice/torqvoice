@@ -368,6 +368,7 @@
     "date": "Дата",
     "startTime": "Время начала",
     "endTime": "Время окончания",
+    "durationPresets": "Длительность",
     "technician": "Механик",
     "selectTechnician": "Выберите механика...",
     "searchOrCreate": "Поиск или создание механика...",

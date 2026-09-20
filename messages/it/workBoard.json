@@ -157,6 +157,9 @@
     "workBay": "Postazione",
     "status": "Stato",
     "noTime": "Nessun orario ancora",
-    "none": "Ancora nessuno"
+    "none": "Ancora nessuno",
+    "promised": "Promesso",
+    "promiseLate": "In ritardo",
+    "promiseOverdue": "Promesso al cliente per un momento già passato"
   }
 }

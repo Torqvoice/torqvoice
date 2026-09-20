@@ -26,7 +26,8 @@ import { releaseFiles } from '@/lib/files/manager'
 import { serviceRecordFileUrls } from '@/lib/files/collect'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { zonedDayKey } from '@/lib/timezone'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -1116,6 +1117,8 @@ export async function getWorkOrders(params: {
   status?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  /** 'today': what the workshop owes a customer by the end of today. */
+  due?: string
 }) {
   return withAuth(
     async ({ organizationId }) => {
@@ -1125,6 +1128,19 @@ export async function getWorkOrders(params: {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
+
+      // Promised to a customer for today or earlier, and not handed over.
+      // Anything already late belongs to the same answer: it was due before
+      // today and is still owed. "Today" is the workshop's own day, not the
+      // server's, or a shop an hour ahead loses its evening.
+      if (params.due === 'today') {
+        const timeZone = await workshopTimeZone(organizationId)
+        const endOfToday = endOfWorkshopDay(zonedDayKey(new Date(), timeZone), timeZone)
+        if (endOfToday) {
+          where.promisedAt = { not: null, lte: endOfToday }
+          where.AND = [...(where.AND ?? []), { status: { not: 'completed' } }]
+        }
+      }
 
       if (params.status === 'active') {
         where.status = { not: 'completed' }
@@ -1172,6 +1188,12 @@ export async function getWorkOrders(params: {
                 return { techName: dir }
               case 'totalAmount':
                 return { totalAmount: dir }
+              // What the customer was told. A job with no promise made sorts
+              // last either way: it is not late, and it is not "soonest".
+              case 'promisedAt':
+                return {
+                  promisedAt: { sort: dir, nulls: 'last' as const },
+                }
               // Column shows "year make model"; sort make, model, year so
               // identical models group together
               case 'vehicle':

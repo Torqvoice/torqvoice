@@ -157,6 +157,9 @@
     "workBay": "Stanowisko",
     "status": "Status",
     "noTime": "Brak godziny",
-    "none": "Jeszcze nikt"
+    "none": "Jeszcze nikt",
+    "promised": "Obiecane",
+    "promiseLate": "Po terminie",
+    "promiseOverdue": "Obiecane klientowi na termin, który już minął"
   }
 }

@@ -157,6 +157,9 @@
     "workBay": "Çalışma alanı",
     "status": "Durum",
     "noTime": "Henüz saat yok",
-    "none": "Henüz kimse"
+    "none": "Henüz kimse",
+    "promised": "Söz verilen",
+    "promiseLate": "Gecikti",
+    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi"
   }
 }

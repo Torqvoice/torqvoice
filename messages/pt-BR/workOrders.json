@@ -31,7 +31,9 @@
       "status": "Status",
       "tech": "Técnico",
       "date": "Data",
-      "total": "Total"
+      "total": "Total",
+      "promised": "Prometido",
+      "promisedOverdue": "Prometido {date}, atrasado"
     },
     "emailSubject": "Atualização de Status do Veículo: {status}",
     "changeStatus": "Alterar status",
@@ -39,6 +41,10 @@
       "open": "Abrir ordem de serviço",
       "openVehicle": "Abrir veículo",
       "openCustomer": "Abrir cliente"
+    },
+    "dueToday": "Para hoje",
+    "columns": {
+      "label": "Colunas"
     }
   },
   "vehiclePicker": {

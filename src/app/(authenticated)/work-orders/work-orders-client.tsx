@@ -31,12 +31,24 @@ import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import { statusColors } from '@/lib/table-utils'
+import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
+import { useListColumns } from '@/hooks/use-list-columns'
+import { WORK_ORDER_COLUMNS, type WorkOrderColumn } from '@/lib/list-columns'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { updateServiceStatus } from '@/features/vehicles/Actions/serviceActions'
 import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  CalendarClock,
   Car,
+  SlidersHorizontal,
   ExternalLink,
   Loader2,
   Plus,
@@ -62,6 +74,8 @@ interface WorkOrder {
   cost: number
   serviceDate: Date
   startDateTime: Date | null
+  /** When the customer was told the vehicle would be ready. */
+  promisedAt: Date | null
   techName: string | null
   invoiceNumber: string | null
   customer: { id: string; name: string; email: string | null; phone: string | null } | null
@@ -143,6 +157,8 @@ export function WorkOrdersClient({
   currencyCode = 'USD',
   search,
   statusFilter,
+  dueFilter = '',
+  columns: initialColumns,
   sortBy,
   sortOrder,
   smsEnabled = false,
@@ -154,6 +170,10 @@ export function WorkOrdersClient({
   currencyCode?: string
   search: string
   statusFilter: string
+  /** 'today' while the list is showing only what is due today. */
+  dueFilter?: string
+  /** Optional columns this browser keeps on; see lib/list-columns.ts. */
+  columns: string[]
   sortBy: string
   sortOrder: 'asc' | 'desc'
   smsEnabled?: boolean
@@ -161,12 +181,32 @@ export function WorkOrdersClient({
 }) {
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
-  const { formatDate } = useFormatDate()
+  const { formatDate, formatDateTime, formatTime } = useFormatDate()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
   useRememberedSort('workOrders')
+  const { shows, toggle } = useListColumns('workOrders', initialColumns)
+  const dueToday = dueFilter === 'today'
+  /**
+   * The promise in the little space the table can spare: the time alone when
+   * it falls on the day the row already shows, which is the usual case, and
+   * the date otherwise. Always the workshop's own date and time format, never
+   * one of this page's choosing, and the full moment sits on the tooltip.
+   */
+  const promisedLabel = (r: WorkOrder) => {
+    if (!r.promisedAt) return ''
+    const promised = new Date(r.promisedAt)
+    const shown = new Date(r.startDateTime ?? r.serviceDate)
+    return formatDate(promised) === formatDate(shown) ? formatTime(promised) : formatDate(promised)
+  }
+  // Filtering by the promise and then hiding it would answer the question
+  // without showing the answer, so the column comes along while it is on.
+  const showsPromised = shows('promised') || dueToday
+  const visibleColumns = [shows('invoice'), shows('customer'), showsPromised, shows('tech')].filter(
+    Boolean
+  ).length
   const t = useTranslations('workOrders.list')
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
@@ -307,6 +347,19 @@ export function WorkOrdersClient({
             </Button>
           )
         })}
+
+        {/* What the workshop owes a customer by tonight, late ones included.
+            Its own filter rather than a status: a job can be promised for
+            today at any stage of the work. */}
+        <Button
+          variant={dueToday ? 'default' : 'outline'}
+          size="sm"
+          className="h-9 shrink-0 sm:h-8"
+          onClick={() => navigate({ due: dueToday ? undefined : 'today' })}
+        >
+          <CalendarClock className="mr-1.5 h-3.5 w-3.5" />
+          {t('dueToday')}
+        </Button>
       </div>
 
       {/* Toolbar */}
@@ -324,6 +377,35 @@ export function WorkOrdersClient({
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden h-9 shrink-0 md:inline-flex md:h-8"
+              aria-label={t('columns.label')}
+            >
+              <SlidersHorizontal className="h-4 w-4 sm:mr-1 sm:h-3.5 sm:w-3.5" />
+              <span className="hidden sm:inline">{t('columns.label')}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuLabel>{t('columns.label')}</DropdownMenuLabel>
+            {(Object.keys(WORK_ORDER_COLUMNS) as WorkOrderColumn[]).map((column) => (
+              <DropdownMenuCheckboxItem
+                key={column}
+                checked={shows(column)}
+                // A filter by the promise turns the column on for as long as
+                // it lasts, without rewriting what this browser keeps.
+                disabled={column === 'promised' && dueToday}
+                onCheckedChange={(on) => toggle(column, on)}
+                onSelect={(event) => event.preventDefault()}
+              >
+                {t(`table.${column}`)}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           size="sm"
           onClick={() => setShowPicker(true)}
@@ -389,6 +471,17 @@ export function WorkOrdersClient({
                     </span>
                     {r.invoiceNumber && <span className="font-mono">{r.invoiceNumber}</span>}
                     {r.techName && <span className="truncate">{r.techName}</span>}
+                    {/* On a phone there is no room for every promise, so only
+                        a broken one earns a line. */}
+                    {isPromiseOverdue(r.promisedAt, r.status) && r.promisedAt && (
+                      <span
+                        suppressHydrationWarning
+                        className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-500/15 px-1.5 py-0.5 font-medium text-amber-700 dark:text-amber-300"
+                      >
+                        <CalendarClock className="h-3 w-3" aria-hidden="true" />
+                        {t('table.promisedOverdue', { date: promisedLabel(r) })}
+                      </span>
+                    )}
                   </div>
                 </button>
               )
@@ -407,16 +500,18 @@ export function WorkOrdersClient({
         <Table containerClassName="min-h-0 flex-1" className="min-w-[36rem] table-fixed">
           <TableHeader sticky>
             <TableRow>
-              <TableHead className="hidden sm:table-cell w-[100px]">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('invoiceNumber')}
-                >
-                  {t('table.invoice')}
-                  <SortIcon column="invoiceNumber" />
-                </button>
-              </TableHead>
+              {shows('invoice') && (
+                <TableHead className="hidden sm:table-cell w-[100px]">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('invoiceNumber')}
+                  >
+                    {t('table.invoice')}
+                    <SortIcon column="invoiceNumber" />
+                  </button>
+                </TableHead>
+              )}
               <TableHead className="w-[18%]">
                 <button
                   type="button"
@@ -427,16 +522,18 @@ export function WorkOrdersClient({
                   <SortIcon column="vehicle" />
                 </button>
               </TableHead>
-              <TableHead className="hidden w-[14%] md:table-cell">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('customer')}
-                >
-                  {t('table.customer')}
-                  <SortIcon column="customer" />
-                </button>
-              </TableHead>
+              {shows('customer') && (
+                <TableHead className="hidden w-[14%] md:table-cell">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('customer')}
+                  >
+                    {t('table.customer')}
+                    <SortIcon column="customer" />
+                  </button>
+                </TableHead>
+              )}
               <TableHead>
                 <button
                   type="button"
@@ -457,16 +554,18 @@ export function WorkOrdersClient({
                   <SortIcon column="status" />
                 </button>
               </TableHead>
-              <TableHead className="hidden w-[12%] lg:table-cell">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('techName')}
-                >
-                  {t('table.tech')}
-                  <SortIcon column="techName" />
-                </button>
-              </TableHead>
+              {shows('tech') && (
+                <TableHead className="hidden w-[12%] lg:table-cell">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('techName')}
+                  >
+                    {t('table.tech')}
+                    <SortIcon column="techName" />
+                  </button>
+                </TableHead>
+              )}
               <TableHead className="w-[90px]">
                 <button
                   type="button"
@@ -477,6 +576,21 @@ export function WorkOrdersClient({
                   <SortIcon column="serviceDate" />
                 </button>
               </TableHead>
+              {/* What the customer was told. Off unless asked for, and
+                  sortable, so "what is promised soonest" is one click; jobs
+                  with no promise sort last either way. */}
+              {showsPromised && (
+                <TableHead className="w-[84px]">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('promisedAt')}
+                  >
+                    {t('table.promised')}
+                    <SortIcon column="promisedAt" />
+                  </button>
+                </TableHead>
+              )}
               <TableHead className="w-[90px] text-right">
                 <button
                   type="button"
@@ -492,7 +606,7 @@ export function WorkOrdersClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="p-0">
+                <TableCell colSpan={5 + visibleColumns} className="p-0">
                   {emptyState(true)}
                 </TableCell>
               </TableRow>
@@ -514,9 +628,11 @@ export function WorkOrdersClient({
                           router.push(recordHref)
                         })}
                       >
-                        <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
-                          {r.invoiceNumber || '-'}
-                        </TableCell>
+                        {shows('invoice') && (
+                          <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
+                            {r.invoiceNumber || '-'}
+                          </TableCell>
+                        )}
                         <TableCell>
                           {r.vehicle ? (
                             <TableCellLink href={`/vehicles/${r.vehicle.id}`} block>
@@ -535,15 +651,17 @@ export function WorkOrdersClient({
                             </div>
                           )}
                         </TableCell>
-                        <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                          {rowCustomer ? (
-                            <TableCellLink href={`/customers/${rowCustomer.id}`}>
-                              {rowCustomer.name}
-                            </TableCellLink>
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
+                        {shows('customer') && (
+                          <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                            {rowCustomer ? (
+                              <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                                {rowCustomer.name}
+                              </TableCellLink>
+                            ) : (
+                              '-'
+                            )}
+                          </TableCell>
+                        )}
                         <TableCell className="truncate">
                           <span className="font-medium">{r.title}</span>
                         </TableCell>
@@ -555,12 +673,33 @@ export function WorkOrdersClient({
                             {r.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
-                          {r.techName || '-'}
-                        </TableCell>
+                        {shows('tech') && (
+                          <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                            {r.techName || '-'}
+                          </TableCell>
+                        )}
                         <TableCell className="font-mono text-xs">
                           {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                         </TableCell>
+                        {showsPromised && (
+                          <TableCell className="text-xs">
+                            {r.promisedAt ? (
+                              <span
+                                suppressHydrationWarning
+                                title={formatDateTime(new Date(r.promisedAt))}
+                                className={
+                                  isPromiseOverdue(r.promisedAt, r.status)
+                                    ? 'font-semibold text-amber-600 dark:text-amber-400'
+                                    : 'text-muted-foreground'
+                                }
+                              >
+                                {promisedLabel(r)}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                        )}
                         <TableCell className="text-right font-semibold">
                           <span className="inline-flex items-center gap-2">
                             {navigatingId === r.id && (

@@ -31,7 +31,9 @@
       "status": "Status",
       "tech": "Techniker",
       "date": "Datum",
-      "total": "Gesamt"
+      "total": "Gesamt",
+      "promised": "Zugesagt",
+      "promisedOverdue": "Zugesagt {date}, überfällig"
     },
     "emailSubject": "Fahrzeugstatusupdate: {status}",
     "changeStatus": "Status ändern",
@@ -39,6 +41,10 @@
       "open": "Arbeitsauftrag öffnen",
       "openVehicle": "Fahrzeug öffnen",
       "openCustomer": "Kunde öffnen"
+    },
+    "dueToday": "Heute fällig",
+    "columns": {
+      "label": "Spalten"
     }
   },
   "vehiclePicker": {

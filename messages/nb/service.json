@@ -368,6 +368,7 @@
     "date": "Dato",
     "startTime": "Starttid",
     "endTime": "Sluttid",
+    "durationPresets": "Varighet",
     "technician": "Tekniker",
     "selectTechnician": "Velg tekniker...",
     "searchOrCreate": "Søk eller opprett tekniker...",

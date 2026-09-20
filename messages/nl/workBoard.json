@@ -157,6 +157,9 @@
     "workBay": "Werkplek",
     "status": "Status",
     "noTime": "Nog geen tijd",
-    "none": "Nog niemand"
+    "none": "Nog niemand",
+    "promised": "Beloofd",
+    "promiseLate": "Te laat",
+    "promiseOverdue": "Aan de klant beloofd voor een moment dat al voorbij is"
   }
 }

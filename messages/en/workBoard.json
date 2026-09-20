@@ -157,6 +157,9 @@
     "workBay": "Work bay",
     "status": "Status",
     "noTime": "No time set yet",
-    "none": "Nobody yet"
+    "none": "Nobody yet",
+    "promised": "Promised",
+    "promiseLate": "Late",
+    "promiseOverdue": "Promised to the customer before now"
   }
 }

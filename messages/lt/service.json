@@ -368,6 +368,7 @@
     "date": "Data",
     "startTime": "Pradžios laikas",
     "endTime": "Pabaigos laikas",
+    "durationPresets": "Trukmė",
     "technician": "Technikas",
     "selectTechnician": "Pasirinkite techniką...",
     "searchOrCreate": "Ieškoti arba sukurti techniką...",
