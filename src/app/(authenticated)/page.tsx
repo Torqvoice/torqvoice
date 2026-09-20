@@ -3,7 +3,7 @@ import {
   getDashboardStats,
   getUpcomingReminders,
 } from '@/features/vehicles/Actions/dashboardActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   getVehiclesDueForService,
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
     inspectionsDueResult,
   ] = await Promise.all([
     getDashboardStats(),
-    getSettings([
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.PORTAL_ENABLED,

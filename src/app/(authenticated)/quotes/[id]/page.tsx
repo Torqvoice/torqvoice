@@ -1,5 +1,5 @@
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   readWarrantyDefaults,
@@ -18,7 +18,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const { id } = await params
   const [result, settingsResult, presetsResult, inventoryResult, authContext] = await Promise.all([
     getQuote(id),
-    getSettings([
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.DEFAULT_TAX_RATE,
       SETTING_KEYS.TAX_ENABLED,

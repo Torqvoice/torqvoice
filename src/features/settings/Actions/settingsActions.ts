@@ -8,6 +8,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuardSettingKey } from '@/lib/demo'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { armFeatureHints } from '../Lib/armFeatureHints'
+import { MEMBER_READABLE_SETTINGS } from '../Lib/memberReadableSettings'
 import { requireFeature } from '@/lib/features'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { releaseReplacedSettingFiles, settingValuesBefore } from '@/lib/files/settings'
@@ -24,6 +25,32 @@ export async function getSetting(key: SettingKey) {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
     }
   )
+}
+
+/**
+ * How the workshop's work is shown: currency, units, tax and labour defaults,
+ * the address on a document. Readable by every member, because a member who
+ * may open a work order has to see it in the workshop's own currency.
+ *
+ * Only what is named in MEMBER_READABLE_SETTINGS is ever returned. Anything
+ * else asked for is left out rather than refused, so a page that asks for one
+ * key too many still renders, and that key simply is not there: it is read
+ * through `getSettings`, behind the Settings permission, or not at all.
+ */
+export async function getDisplaySettings(keys: SettingKey[]) {
+  return withAuth(async ({ organizationId }) => {
+    const allowed = keys.filter((key) => MEMBER_READABLE_SETTINGS.has(key))
+    if (allowed.length === 0) return {} as Record<string, string>
+
+    const settings = await db.appSetting.findMany({
+      where: { organizationId, key: { in: allowed } },
+      select: { key: true, value: true },
+    })
+
+    const map: Record<string, string> = {}
+    for (const s of settings) map[s.key] = s.value
+    return map
+  })
 }
 
 export async function getSettings(keys?: SettingKey[]) {

@@ -3,7 +3,7 @@ import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
 import { getNotesPaginated } from '@/features/vehicles/Actions/noteActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getVehiclePredictedMileage } from '@/features/vehicles/Actions/predictedMaintenanceActions'
 import { getVehicleInspections } from '@/features/inspections/Actions/inspectionActions'
@@ -63,8 +63,8 @@ export default async function VehicleDetailPage({
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
     getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
-    getSettings([
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
+    getDisplaySettings([
       SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
       SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
       SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,

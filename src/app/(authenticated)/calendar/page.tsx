@@ -1,7 +1,7 @@
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -34,7 +34,7 @@ export default async function CalendarPage({
   const date = parseDateKey(params.date) ?? parseDateKey(todayStr) ?? new Date()
 
   const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : []
-  const settingsResult = await getSettings([
+  const settingsResult = await getDisplaySettings([
     SETTING_KEYS.CURRENCY_CODE,
     SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
   ])
