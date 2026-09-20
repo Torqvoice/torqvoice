@@ -381,6 +381,7 @@
     "assign": "Tilordne til tavle",
     "assigned": "Tilordnet arbeidstavle",
     "failedAssign": "Kunne ikke tilordne",
+    "assignNotAllowed": "Du har ikke tillatelse til å tilordne teknikere. Be en eier eller administrator om å gi rollen din tilgang til å endre arbeidstavlen.",
     "endBeforeStart": "Sluttid må være etter starttid",
     "failedUpdate": "Kunne ikke oppdatere tidsplan",
     "splitCreated": "Jobben går over flere dager — fortsettelse opprettet for neste dag",

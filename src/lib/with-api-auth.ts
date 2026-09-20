@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { runAsActor } from '@/lib/realtime/actor.server'
 import { ZodError } from 'zod'
 import { auth } from './auth'
 import { db } from './db'
@@ -177,14 +178,18 @@ export async function withApiAuth(
   }
 
   try {
-    return await handler({
-      userId,
-      organizationId,
-      role: isSuperAdmin ? 'super_admin' : (membership.role ?? 'member'),
-      isSuperAdmin,
-      isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
-      technicianIds,
-    })
+    // Inside the actor, so a write from the phone tells the desk's screens
+    // that it came from the app and who made it (lib/realtime).
+    return await runAsActor({ userId, name: null, source: 'app' }, () =>
+      handler({
+        userId,
+        organizationId,
+        role: isSuperAdmin ? 'super_admin' : (membership.role ?? 'member'),
+        isSuperAdmin,
+        isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
+        technicianIds,
+      })
+    )
   } catch (err) {
     // Zod messages describe the caller's own payload, so they are safe and
     // genuinely useful to return. Everything else is ours and stays here.

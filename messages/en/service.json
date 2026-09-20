@@ -381,6 +381,7 @@
     "assign": "Assign to Board",
     "assigned": "Assigned to work board",
     "failedAssign": "Failed to assign",
+    "assignNotAllowed": "You don't have permission to assign technicians. Ask an owner or admin to allow work board changes for your role.",
     "endBeforeStart": "End time must be after start time",
     "failedUpdate": "Failed to update schedule times",
     "splitCreated": "Job spans multiple days — continuation created for next day",

@@ -381,6 +381,7 @@
     "assign": "Przypisz do tablicy",
     "assigned": "Przypisano do tablicy roboczej",
     "failedAssign": "Przypisanie nie powiodło się",
+    "assignNotAllowed": "Nie masz uprawnień do przypisywania techników. Poproś właściciela lub administratora o zezwolenie Twojej roli na zmiany na tablicy pracy.",
     "endBeforeStart": "Czas zakończenia musi być po czasie rozpoczęcia",
     "failedUpdate": "Nie udało się zaktualizować harmonogramu",
     "splitCreated": "Zadanie obejmuje wiele dni — kontynuacja utworzona na następny dzień",

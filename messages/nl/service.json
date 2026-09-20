@@ -381,6 +381,7 @@
     "assign": "Toewijzen aan bord",
     "assigned": "Toegewezen aan werkbord",
     "failedAssign": "Toewijzing mislukt",
+    "assignNotAllowed": "Je hebt geen toestemming om monteurs toe te wijzen. Vraag een eigenaar of beheerder om jouw rol wijzigingen op het werkbord toe te staan.",
     "endBeforeStart": "Eindtijd moet na de starttijd zijn",
     "failedUpdate": "Planning bijwerken mislukt",
     "splitCreated": "Taak beslaat meerdere dagen — vervolg aangemaakt voor de volgende dag",

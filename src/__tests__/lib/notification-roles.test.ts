@@ -21,6 +21,7 @@ import { readsNotifications } from '@/lib/notification-roles'
 const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), 'utf-8')
 const SOCKET = 'src/app/api/protected/ws/route.ts'
 const ACTION = 'src/features/notifications/Actions/notificationActions.ts'
+const PROTOCOL = 'src/lib/realtime/protocol.server.ts'
 
 describe('the notification feed', () => {
   it('is for the roles that can already read it', () => {
@@ -34,11 +35,11 @@ describe('the notification feed', () => {
 
   it('is filtered by the socket before a frame goes out', () => {
     const source = read(SOCKET)
-    const listener = source.slice(
-      source.indexOf("notificationBus.on('notification'"),
-      source.indexOf("notificationBus.on('workboard'")
-    )
-    expect(listener).toMatch(/readsNotifications\(client\.role\)/)
+    // The feed travels with the other workshop-wide channels; the filter sits
+    // on the send, so a member who is not an owner or admin simply is not
+    // among the sockets it reaches.
+    const relay = source.slice(source.indexOf("if (message.t !== 'legacy') return"))
+    expect(relay).toMatch(/channel === 'notification' && !readsNotifications\(socket\.role\)/)
   })
 
   it('and the action and the socket share the one rule', () => {
@@ -50,17 +51,20 @@ describe('the notification feed', () => {
   })
 })
 
-describe('the work board channel', () => {
-  it('reaches every member, so a work order stays current for whoever is at it', () => {
+describe('what every member hears', () => {
+  it('connects, whatever their role', () => {
+    // A front desk on a lesser role has to see a work order stay current.
+    expect(read(SOCKET)).not.toMatch(/Insufficient role/)
+  })
+
+  it('is given only the rooms it asked for, and only its own workshop’s', () => {
+    // A record's change goes to that record's room and its workshop's room,
+    // never to every socket on the instance.
     const source = read(SOCKET)
-    // The connection is not refused by role any more.
-    expect(source).not.toMatch(/Insufficient role/)
-    const listener = source.slice(
-      source.indexOf("notificationBus.on('workboard'"),
-      source.indexOf("notificationBus.on('broadcast'")
-    )
-    expect(listener).not.toMatch(/readsNotifications/)
-    // Still only the workshop the event belongs to.
-    expect(listener).toMatch(/client\.organizationId === event\.organizationId/)
+    expect(source).toMatch(/recordRoom\(change\.kind, change\.id\)/)
+    expect(source).toMatch(/orgRoom\(change\.organizationId\)/)
+    // And a room is only joined after the server has checked it belongs to
+    // this socket's workshop (the protocol, which the route hands frames to).
+    expect(read(PROTOCOL)).toMatch(/await mayJoin\(room, client\.organizationId\)/)
   })
 })

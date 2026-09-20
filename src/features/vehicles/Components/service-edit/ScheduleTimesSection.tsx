@@ -310,7 +310,9 @@ export function ScheduleTimesSection({
       void refreshDayLoad()
       if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, techId, bayId)
     } else {
-      toast.error(t('failedAssign'))
+      // A role that may not change the work board is told so, and who can
+      // change that, rather than that "it failed" with nothing to act on.
+      toast.error(res.forbidden ? t('assignNotAllowed') : t('failedAssign'))
       setSelectedTechId(initialTechnicianId || '')
     }
   }

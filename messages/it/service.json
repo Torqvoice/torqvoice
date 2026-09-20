@@ -381,6 +381,7 @@
     "assign": "Assegna alla bacheca",
     "assigned": "Assegnato alla bacheca di lavoro",
     "failedAssign": "Assegnazione fallita",
+    "assignNotAllowed": "Non hai l'autorizzazione per assegnare i tecnici. Chiedi a un proprietario o a un amministratore di consentire al tuo ruolo di modificare la bacheca di lavoro.",
     "endBeforeStart": "L'ora di fine deve essere dopo l'ora di inizio",
     "failedUpdate": "Impossibile aggiornare la pianificazione",
     "splitCreated": "Il lavoro si estende su più giorni — continuazione creata per il giorno successivo",

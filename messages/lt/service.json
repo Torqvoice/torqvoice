@@ -381,6 +381,7 @@
     "assign": "Priskirti lentai",
     "assigned": "Priskirta darbų lentai",
     "failedAssign": "Nepavyko priskirti",
+    "assignNotAllowed": "Neturite leidimo priskirti technikų. Paprašykite savininko arba administratoriaus leisti jūsų rolei keisti darbų lentą.",
     "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko",
     "failedUpdate": "Nepavyko atnaujinti grafiko laikų",
     "splitCreated": "Darbas apima kelias dienas — tęsinys sukurtas kitai dienai",

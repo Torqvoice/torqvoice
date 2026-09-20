@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -34,10 +34,7 @@ function revalidateTireHotel() {
  * of reading out a cuid. Derived from the highest existing number rather than
  * a counter row, which keeps it correct after imports and deletions.
  */
-async function nextReference(
-  tx: Prisma.TransactionClient,
-  organizationId: string
-): Promise<string> {
+async function nextReference(tx: TxClient, organizationId: string): Promise<string> {
   const latest = await tx.tireSet.findFirst({
     where: { organizationId, reference: { not: null } },
     orderBy: { createdAt: 'desc' },
@@ -67,7 +64,7 @@ function measurementRows(measurements: MeasurementInput[] | undefined, userId: s
  * pass the check and overfill the shelf.
  */
 async function assertRoom(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   locationId: string,
   organizationId: string,
   quantity: number,

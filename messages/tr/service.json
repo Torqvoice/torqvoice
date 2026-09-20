@@ -381,6 +381,7 @@
     "assign": "Panoya ata",
     "assigned": "Çalışma panosuna atandı",
     "failedAssign": "Atama başarısız",
+    "assignNotAllowed": "Teknisyen atama izniniz yok. Bir sahipten veya yöneticiden rolünüze iş panosunda değişiklik yapma izni vermesini isteyin.",
     "endBeforeStart": "Bitiş saati başlangıç saatinden sonra olmalıdır",
     "failedUpdate": "Zamanlama güncellenemedi",
     "splitCreated": "İş birden fazla güne yayılıyor — sonraki gün için devam oluşturuldu",
