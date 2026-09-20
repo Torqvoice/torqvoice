@@ -165,6 +165,11 @@
     "deleteRow": "Slett rad",
     "descriptionMissingHint": "Rader uten beskrivelse lagres ikke."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {En mekaniker la til arbeid på denne jobben} other {En mekaniker la til # arbeidslinjer på denne jobben}}",
+    "body": "Den holdes utenfor listen mens du redigerer. Den blir lagret uansett neste gang du lagrer.",
+    "show": "Vis den"
+  },
   "totals": {
     "title": "Totalt",
     "parts": "Deler",

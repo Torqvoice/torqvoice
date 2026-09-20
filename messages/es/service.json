@@ -165,6 +165,11 @@
     "deleteRow": "Eliminar fila",
     "descriptionMissingHint": "Las filas sin descripción no se guardan."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Un técnico añadió mano de obra a este trabajo} other {Un técnico añadió # líneas de mano de obra a este trabajo}}",
+    "body": "Se mantiene fuera de la lista mientras editas. Se guardará de todos modos al guardar.",
+    "show": "Mostrar"
+  },
   "totals": {
     "title": "Totales",
     "parts": "Piezas",

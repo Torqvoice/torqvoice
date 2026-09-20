@@ -57,6 +57,8 @@ import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
 import { rememberWorkOrderLayout, type WorkOrderLayout } from '@/lib/work-order-layout'
 import { registerAnalyticsProperties, track } from '@/lib/analytics'
 import { TryNewLayoutBanner } from './TryNewLayoutBanner'
+import { LaborAddedBanner } from './LaborAddedBanner'
+import { useWorkshopEvents } from '@/features/time-tracking/Components/TimeClockProvider'
 import { ModernDetails } from './modern/ModernDetails'
 import { ModernHero } from './modern/ModernHero'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
@@ -201,6 +203,15 @@ export function ServicePageClient({
     currentUserName,
     record,
     locked: lockState.locked,
+  })
+
+  // A line of work added from the technician app lands here: the page reads
+  // the job again, and the form state decides what to do with the new line
+  // (straight into the list, or held for the banner below while someone is
+  // typing). Only this job's events, and only the ones that add labour.
+  useWorkshopEvents((event) => {
+    if (event.type !== 'job_labor_added' || event.serviceRecordId !== record.id) return
+    router.refresh()
   })
 
   const checkDates = useCallback(async () => {
@@ -573,6 +584,11 @@ export function ServicePageClient({
       )}
 
       {!modern && <TryNewLayoutBanner onTry={() => void switchLayout('modern', 'banner')} />}
+
+      <LaborAddedBanner
+        count={formState.laborAddedElsewhere.length}
+        onShow={formState.applyLaborAddedElsewhere}
+      />
 
       {(lockState.locked || lockState.unlockedAt) && (
         <div className="shrink-0 px-4 pt-3">

@@ -165,6 +165,11 @@
     "deleteRow": "Supprimer la ligne",
     "descriptionMissingHint": "Les lignes sans description ne sont pas enregistrées."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Un technicien a ajouté de la main-d’œuvre à cette intervention} other {Un technicien a ajouté # lignes de main-d’œuvre à cette intervention}}",
+    "body": "Elle reste hors de la liste pendant votre saisie. Votre prochain enregistrement l’inclura de toute façon.",
+    "show": "Afficher"
+  },
   "totals": {
     "title": "Totaux",
     "parts": "Pièces",

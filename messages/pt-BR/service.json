@@ -165,6 +165,11 @@
     "deleteRow": "Excluir linha",
     "descriptionMissingHint": "Linhas sem descrição não são salvas."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Um técnico adicionou mão de obra a esta ordem} other {Um técnico adicionou # linhas de mão de obra a esta ordem}}",
+    "body": "Ela fica fora da lista enquanto você edita. O próximo salvamento a inclui de qualquer forma.",
+    "show": "Mostrar"
+  },
   "totals": {
     "title": "Totais",
     "parts": "Peças",

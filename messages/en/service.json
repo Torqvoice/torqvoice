@@ -165,6 +165,11 @@
     "deleteRow": "Delete row",
     "descriptionMissingHint": "Rows without a description are not saved."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {A technician added labor to this job} other {A technician added # labor lines to this job}}",
+    "body": "It stays out of the list while you are editing. Your next save includes it either way.",
+    "show": "Show it"
+  },
   "totals": {
     "title": "Totals",
     "parts": "Parts",

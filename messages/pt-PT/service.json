@@ -165,6 +165,11 @@
     "deleteRow": "Eliminar linha",
     "descriptionMissingHint": "As linhas sem descrição não são guardadas."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Um técnico adicionou mão de obra a esta folha de obra} other {Um técnico adicionou # linhas de mão de obra a esta folha de obra}}",
+    "body": "Fica fora da lista enquanto edita. A próxima gravação inclui-a de qualquer forma.",
+    "show": "Mostrar"
+  },
   "totals": {
     "title": "Totais",
     "parts": "Peças",

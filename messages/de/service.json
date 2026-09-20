@@ -165,6 +165,11 @@
     "deleteRow": "Zeile löschen",
     "descriptionMissingHint": "Zeilen ohne Beschreibung werden nicht gespeichert."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Ein Techniker hat Arbeit zu diesem Auftrag hinzugefügt} other {Ein Techniker hat # Arbeitspositionen zu diesem Auftrag hinzugefügt}}",
+    "body": "Sie bleibt beim Bearbeiten aus der Liste. Beim nächsten Speichern wird sie ohnehin übernommen.",
+    "show": "Anzeigen"
+  },
   "totals": {
     "title": "Summen",
     "parts": "Teile",

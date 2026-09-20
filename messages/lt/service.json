@@ -165,6 +165,11 @@
     "deleteRow": "Ištrinti eilutę",
     "descriptionMissingHint": "Eilutės be aprašymo neišsaugomos."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Mechanikas pridėjo # darbo eilutę prie šio užsakymo} few {Mechanikas pridėjo # darbo eilutes prie šio užsakymo} many {Mechanikas pridėjo # darbo eilutės prie šio užsakymo} other {Mechanikas pridėjo # darbo eilučių prie šio užsakymo}}",
+    "body": "Kol redaguojate, ji nerodoma sąraše. Kitą kartą išsaugant ji bus įtraukta.",
+    "show": "Rodyti"
+  },
   "totals": {
     "title": "Sumos",
     "parts": "Dalys",

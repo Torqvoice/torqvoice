@@ -56,6 +56,8 @@ export function useServiceActions({
     concerns,
     partItems,
     laborItems,
+    laborItemsForSave,
+    clearLaborAddedElsewhere,
     subtotal,
     taxRate,
     taxInclusive,
@@ -177,7 +179,10 @@ export function useServiceActions({
           confirmed: c.confirmed ?? false,
         })),
       partItems: partItems.filter((p) => p.name),
-      laborItems: laborItems.filter((l) => l.description),
+      // A line a technician added while this page was open goes with the save
+      // even if the offer to show it was never taken: this action replaces
+      // every labour line, so one left out of the payload is deleted.
+      laborItems: laborItemsForSave.filter((l) => l.description),
       subtotal,
       taxRate,
       taxInclusive,
@@ -197,6 +202,7 @@ export function useServiceActions({
     const result = await updateServiceRecord(payload)
 
     if (result.success) {
+      clearLaborAddedElsewhere()
       setHasUnsavedChanges(false)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {

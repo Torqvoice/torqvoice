@@ -165,6 +165,11 @@
     "deleteRow": "Satırı sil",
     "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Bir teknisyen bu işe işçilik ekledi} other {Bir teknisyen bu işe # işçilik satırı ekledi}}",
+    "body": "Siz düzenlerken listeye eklenmez. Bir sonraki kaydetmede yine de kaydedilir.",
+    "show": "Göster"
+  },
   "totals": {
     "title": "Toplamlar",
     "parts": "Parçalar",

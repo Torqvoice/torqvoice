@@ -165,6 +165,11 @@
     "deleteRow": "Elimina riga",
     "descriptionMissingHint": "Le righe senza descrizione non vengono salvate."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Un tecnico ha aggiunto manodopera a questo lavoro} other {Un tecnico ha aggiunto # righe di manodopera a questo lavoro}}",
+    "body": "Resta fuori dall’elenco mentre modifichi. Verrà salvata comunque al prossimo salvataggio.",
+    "show": "Mostra"
+  },
   "totals": {
     "title": "Totali",
     "parts": "Pezzi",
