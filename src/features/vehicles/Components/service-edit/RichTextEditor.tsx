@@ -67,6 +67,10 @@ export function RichTextEditor({
     content,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
+      // Only what somebody typed is a change. The work order autosaves five
+      // seconds after one, so an update reported for anything else is a save
+      // nobody asked for.
+      if (html === lastContentRef.current) return
       lastContentRef.current = html
       onChange(html)
     },
@@ -77,15 +81,21 @@ export function RichTextEditor({
     },
   })
 
+  // Quietly: tiptap reports an update from `setEditable` and `setContent`
+  // unless told not to. Left to its default, mounting this editor marked the
+  // work order as edited, and every page that was merely opened saved itself
+  // five seconds later. With two people on one job each of those saves woke
+  // the other's page, which mounted, which saved: requests without end, and
+  // the job's lines rewritten each time.
   useEffect(() => {
-    editor?.setEditable(editable)
+    editor?.setEditable(editable, false)
   }, [editor, editable])
 
   // Sync editor when content is updated externally (e.g. AI generation)
   useEffect(() => {
     if (editor && content !== lastContentRef.current) {
       lastContentRef.current = content
-      editor.commands.setContent(content)
+      editor.commands.setContent(content, { emitUpdate: false })
     }
   }, [content, editor])
 

@@ -1,5 +1,4 @@
-import { db } from '@/lib/db'
-import type { Prisma } from '@/generated/prisma/client'
+import { db, type TxClient } from '@/lib/db'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 
 /**
@@ -15,7 +14,7 @@ import { documentTotals } from '@/features/settings/Lib/workshopTax'
  */
 export async function retotalServiceRecord(
   serviceRecordId: string,
-  tx: Prisma.TransactionClient | typeof db = db
+  tx: TxClient | typeof db = db
 ): Promise<void> {
   const record = await tx.serviceRecord.findUnique({
     where: { id: serviceRecordId },

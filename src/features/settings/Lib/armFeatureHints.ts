@@ -1,9 +1,8 @@
-import type { Prisma } from '@/generated/prisma/client'
-import { db as prisma } from '@/lib/db'
+import { db as prisma, type TxClient } from '@/lib/db'
 import { SETTING_KEYS } from '../Schema/settingsSchema'
 import { HINT_FOR_SETTING, hintsToArm, parseHintIds } from './featureHints'
 
-type Db = Prisma.TransactionClient | typeof prisma
+type Db = TxClient | typeof prisma
 
 /**
  * Raises the hints for any setting this write is switching on.

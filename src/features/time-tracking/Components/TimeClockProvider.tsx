@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { useRealtime } from '@/features/realtime/RealtimeProvider'
 import { getMyClock, startMyClock, stopMyClock, type MyClock } from '../Actions/timeClockActions'
 import type { JobLaborEvent, JobStatusChangedEvent } from '@/features/vehicles/Lib/jobEvents'
 import type { ClockEvent } from '../Lib/timeEntries'
@@ -51,8 +52,6 @@ interface TimeClockValue {
 
 const TimeClockContext = createContext<TimeClockValue | null>(null)
 
-const RETRY_MS = [1_000, 2_000, 5_000, 10_000, 30_000]
-
 export function TimeClockProvider({
   technicianIds,
   children,
@@ -78,58 +77,32 @@ export function TimeClockProvider({
     void refresh()
   }, [refresh])
 
-  // One socket for the life of the app shell. Mirrors the work board hook:
-  // liveness is a per-run closure so a StrictMode remount cannot leave two
-  // sockets each reconnecting on the other's behalf.
+  // The work board channel, off the app's one socket (features/realtime).
+  // This used to be a WebSocket of its own, with its own authentication and
+  // its own reconnect loop, which is what the app had five of.
+  const realtime = useRealtime()
   useEffect(() => {
-    let alive = true
-    let attempt = 0
-    let timer: ReturnType<typeof setTimeout> | undefined
-    let ws: WebSocket | null = null
-
-    const connect = () => {
-      if (!alive) return
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      ws = new WebSocket(`${protocol}//${window.location.host}/api/protected/ws`)
-      ws.onopen = () => {
-        attempt = 0
-        // Anything that changed while the socket was down.
+    if (!realtime) return
+    const stop = realtime.onLegacy('workboard', (data) => {
+      const event = data as Partial<WorkshopEvent>
+      if (typeof event?.type !== 'string') return
+      const workshopEvent = event as WorkshopEvent
+      if (
+        (workshopEvent.type === 'clock_started' || workshopEvent.type === 'clock_stopped') &&
+        idsRef.current.includes(workshopEvent.technicianId)
+      ) {
         void refresh()
       }
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data)
-          if (msg.type !== 'workboard') return
-          const data = msg.data as Partial<WorkshopEvent>
-          if (typeof data?.type !== 'string') return
-          const workshopEvent = data as WorkshopEvent
-          if (
-            (workshopEvent.type === 'clock_started' || workshopEvent.type === 'clock_stopped') &&
-            idsRef.current.includes(workshopEvent.technicianId)
-          ) {
-            void refresh()
-          }
-          for (const listener of listeners.current) listener(workshopEvent)
-        } catch {
-          /* a frame we do not understand is not worth a broken clock */
-        }
-      }
-      ws.onclose = () => {
-        if (!alive) return
-        const delay = RETRY_MS[Math.min(attempt, RETRY_MS.length - 1)]
-        attempt++
-        timer = setTimeout(connect, delay)
-      }
-      ws.onerror = () => ws?.close()
-    }
+      for (const listener of listeners.current) listener(workshopEvent)
+    })
+    return stop
+  }, [realtime, refresh])
 
-    connect()
-    return () => {
-      alive = false
-      if (timer) clearTimeout(timer)
-      ws?.close()
-    }
-  }, [refresh])
+  // A reconnection means events were missed, so the clock is read again.
+  useEffect(() => {
+    if (!realtime) return
+    return realtime.onResync(() => void refresh())
+  }, [realtime, refresh])
 
   const subscribe = useCallback((listener: Listener) => {
     listeners.current.add(listener)

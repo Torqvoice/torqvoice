@@ -67,6 +67,8 @@ interface UnifiedServiceHeaderProps {
   hasCustomer?: boolean
   /** The invoice-design submenu, when this invoice has a frozen look to change. */
   designMenu?: React.ReactNode
+  /** Who else has this job open, drawn before the actions. */
+  presence?: React.ReactNode
   /** Video call link from a connected calendar, when one exists. */
   meetingUrl?: string | null
   /** Which page this sits on, so the menu can offer the way to the other one. */
@@ -96,6 +98,7 @@ export function UnifiedServiceHeader({
   onNotifyCustomer,
   hasCustomer = false,
   designMenu,
+  presence,
   meetingUrl = null,
   layout = 'classic',
   onSwitchLayout,
@@ -135,6 +138,7 @@ export function UnifiedServiceHeader({
             <p className="truncate text-xs text-muted-foreground">{vehicleName}</p>
           </div>
         </Link>
+        {presence}
         <ServiceHeaderActions
           showSave={activeTab === 'details'}
           downloading={downloading}

@@ -381,6 +381,7 @@
     "assign": "Asignar al tablero",
     "assigned": "Asignado al tablero de trabajo",
     "failedAssign": "Error al asignar",
+    "assignNotAllowed": "No tienes permiso para asignar técnicos. Pide a un propietario o administrador que permita a tu rol modificar el tablero de trabajo.",
     "endBeforeStart": "La hora de fin debe ser posterior a la hora de inicio",
     "failedUpdate": "Error al actualizar el horario",
     "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente",

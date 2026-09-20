@@ -381,6 +381,7 @@
     "assign": "Tafel zuweisen",
     "assigned": "Der Arbeitstafel zugewiesen",
     "failedAssign": "Zuweisung fehlgeschlagen",
+    "assignNotAllowed": "Sie haben keine Berechtigung, Techniker zuzuweisen. Bitten Sie einen Inhaber oder Administrator, Ihrer Rolle Änderungen an der Werkstatttafel zu erlauben.",
     "endBeforeStart": "Endzeit muss nach der Startzeit liegen",
     "failedUpdate": "Zeitplan konnte nicht aktualisiert werden",
     "splitCreated": "Auftrag erstreckt sich über mehrere Tage — Fortsetzung für den nächsten Tag erstellt",

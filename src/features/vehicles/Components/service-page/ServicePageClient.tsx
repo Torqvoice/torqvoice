@@ -58,7 +58,8 @@ import { rememberWorkOrderLayout, type WorkOrderLayout } from '@/lib/work-order-
 import { registerAnalyticsProperties, track } from '@/lib/analytics'
 import { TryNewLayoutBanner } from './TryNewLayoutBanner'
 import { LaborAddedBanner } from './LaborAddedBanner'
-import { useWorkshopEvents } from '@/features/time-tracking/Components/TimeClockProvider'
+import { useLiveRecord } from '@/features/realtime/hooks'
+import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
 import { ModernDetails } from './modern/ModernDetails'
 import { ModernHero } from './modern/ModernHero'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
@@ -205,16 +206,14 @@ export function ServicePageClient({
     locked: lockState.locked,
   })
 
-  // What happened to this job somewhere else: a technician billing their
-  // time from the app, or marking the job complete in the bay. The page reads
-  // the job again, and the form state decides what to do with it: a status
-  // moves the bar at once, a line of work waits for the banner below while
-  // someone is typing. Only this job's events.
-  useWorkshopEvents((event) => {
-    if (event.type !== 'job_labor_added' && event.type !== 'job_status_changed') return
-    if (event.serviceRecordId !== record.id) return
-    router.refresh()
-  })
+  // Anything that happens to this job somewhere else: a technician billing
+  // their time from the app, marking it complete in the bay, or the person at
+  // the next desk saving it. Every write reaches here, because every write
+  // announces itself (lib/realtime), rather than each feature having to
+  // remember to. The page reads the job again and the form state decides what
+  // to do with it: a status moves the bar at once, a line of work waits for
+  // the banner below while somebody is typing.
+  useLiveRecord('serviceRecord', record.id)
 
   const checkDates = useCallback(async () => {
     if (!areDatesExpired || formState.paymentStatus === 'paid') return true
@@ -556,7 +555,12 @@ export function ServicePageClient({
           status={formState.status}
           paymentStatus={formState.paymentStatus}
           warranty={formState.warranty}
-          actions={<ServiceHeaderActions showSave {...headerActionProps} />}
+          actions={
+            <>
+              <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
+              <ServiceHeaderActions showSave {...headerActionProps} />
+            </>
+          }
           title={title}
           onTitleChange={(next) => {
             setTitle(next)
@@ -568,6 +572,7 @@ export function ServicePageClient({
         />
       ) : (
         <UnifiedServiceHeader
+          presence={<PresenceChips kind="serviceRecord" id={record.id} />}
           vehicleId={vehicleId}
           vehicleName={formState.vehicleName}
           title={record.title}

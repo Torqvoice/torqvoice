@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { rewriteFileUrl, rewriteFileUrlsWithin, withFileUrls } from '@/lib/backup/file-urls'
@@ -80,7 +80,7 @@ function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): 
  * and counter sales (top-level records without a vehicle).
  */
 async function importServiceRecordTree(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   sr: Record<string, unknown>,
   opts: {
     organizationId: string

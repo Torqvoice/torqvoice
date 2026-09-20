@@ -381,6 +381,7 @@
     "assign": "Atribuir ao quadro",
     "assigned": "Atribuído ao quadro de trabalho",
     "failedAssign": "Falha ao atribuir",
+    "assignNotAllowed": "Você não tem permissão para atribuir técnicos. Peça a um proprietário ou administrador que permita à sua função alterar o quadro de trabalho.",
     "endBeforeStart": "A hora de término deve ser após a hora de início",
     "failedUpdate": "Falha ao atualizar o agendamento",
     "splitCreated": "O trabalho abrange vários dias. Continuação criada para o dia seguinte",

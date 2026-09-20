@@ -381,6 +381,7 @@
     "assign": "Assigner au tableau",
     "assigned": "Assigné au tableau de travail",
     "failedAssign": "Échec de l'assignation",
+    "assignNotAllowed": "Vous n'avez pas l'autorisation d'affecter des techniciens. Demandez à un propriétaire ou à un administrateur d'autoriser votre rôle à modifier le tableau de travail.",
     "endBeforeStart": "L'heure de fin doit être après l'heure de début",
     "failedUpdate": "Impossible de mettre à jour le planning",
     "splitCreated": "Le travail s'étend sur plusieurs jours — suite créée pour le jour suivant",

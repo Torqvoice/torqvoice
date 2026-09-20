@@ -1,4 +1,4 @@
-import type { Prisma } from '@/generated/prisma/client'
+import type { TxClient } from '@/lib/db'
 
 export interface SetFile {
   fileName: string
@@ -21,11 +21,7 @@ export interface SetFile {
  * season a set is billed. Removing it from the set later leaves the invoice
  * intact, which is the right way round for a document a customer may hold.
  */
-export async function copySetFilesToJob(
-  tx: Prisma.TransactionClient,
-  serviceRecordId: string,
-  files: SetFile[]
-) {
+export async function copySetFilesToJob(tx: TxClient, serviceRecordId: string, files: SetFile[]) {
   const photos = files.filter((file) => file.fileType.startsWith('image/'))
   if (photos.length === 0) return
   await tx.serviceAttachment.createMany({

@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@/generated/prisma/client'
+import type { TxClient } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
 /**
@@ -74,7 +74,14 @@ export const TECHNICIAN_ROLE_NAME = 'Technician'
 /** The value the role dropdown uses for it, alongside `admin` and `member`. */
 export const TECHNICIAN_ROLE_VALUE = 'technician'
 
-type Tx = Pick<PrismaClient, 'role'>
+/**
+ * The role delegate, from the client or from a transaction.
+ *
+ * Both carry the realtime extension now (see TxClient in lib/db), so this
+ * takes the extended shape rather than Prisma's plain one, and the two call
+ * styles stay interchangeable.
+ */
+type Tx = Pick<TxClient, 'role'>
 
 /**
  * The workshop's technician role, made once and reused after that.

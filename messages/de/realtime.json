@@ -1,0 +1,4 @@
+{
+  "alsoHere": "{count, plural, one {Eine weitere Person hat das geöffnet} other {# weitere Personen haben das geöffnet}}",
+  "alsoHereName": "{name} hat das ebenfalls geöffnet"
+}

@@ -78,6 +78,7 @@ export default getRequestConfig(async () => {
   const integrations = (await import(`../../messages/${locale}/integrations.json`)).default
   const timeTracking = (await import(`../../messages/${locale}/timeTracking.json`)).default
   const email = (await import(`../../messages/${locale}/email.json`)).default
+  const realtime = (await import(`../../messages/${locale}/realtime.json`)).default
 
   return {
     locale,
@@ -125,6 +126,7 @@ export default getRequestConfig(async () => {
       integrations,
       timeTracking,
       email,
+      realtime,
     },
   }
 })

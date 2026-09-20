@@ -74,7 +74,8 @@ export function RichTextEditor({
   // Sync external content changes (e.g. when switching between create/edit)
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content)
+      // Putting the saved text in is not an edit, and must not be reported as one.
+      editor.commands.setContent(content, { emitUpdate: false })
     }
   }, [content, editor])
 
