@@ -44,6 +44,7 @@ import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
 import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { TimeClockProvider } from '@/features/time-tracking/Components/TimeClockProvider'
+import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -318,37 +319,42 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       initialSeen={seenHints}
                       pending={[...pendingHints, ...announcements]}
                     >
-                      <TimeClockProvider technicianIds={technicianIds}>
-                        <AppSidebar
-                          companyLogo={data.companyLogo}
-                          organizations={data.organizations}
-                          activeOrgId={data.organizationId}
-                          isSuperAdmin={data.isSuperAdmin}
-                          features={features}
-                          tireHotelEnabled={tireHotelEnabled}
-                          aiEnabled={aiEnabled}
-                          visibleSubjects={visibleSubjects}
-                          announcement={announcements[0] ?? null}
-                          isAdminOrOwner={isOwnerOrAdmin}
-                          counts={sidebarCounts}
-                          isTechnician={technicianIds.length > 0}
-                        />
-                        <SidebarInset>
-                          {/* A flex column with a real height, so the `flex-1` every
+                      {/* One socket for the whole app: record changes, who
+                          else is on a record, and the older workshop-wide
+                          channels the remaining pages still read. */}
+                      <RealtimeProvider>
+                        <TimeClockProvider technicianIds={technicianIds}>
+                          <AppSidebar
+                            companyLogo={data.companyLogo}
+                            organizations={data.organizations}
+                            activeOrgId={data.organizationId}
+                            isSuperAdmin={data.isSuperAdmin}
+                            features={features}
+                            tireHotelEnabled={tireHotelEnabled}
+                            aiEnabled={aiEnabled}
+                            visibleSubjects={visibleSubjects}
+                            announcement={announcements[0] ?? null}
+                            isAdminOrOwner={isOwnerOrAdmin}
+                            counts={sidebarCounts}
+                            isTechnician={technicianIds.length > 0}
+                          />
+                          <SidebarInset>
+                            {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                          <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
-                            {children}
-                          </div>
-                        </SidebarInset>
-                        <SearchCommand />
-                        <PlateLookupCommand />
-                        {isOwnerOrAdmin && <NotificationInitializer />}
-                        <OnlineTracker />
-                        <InstallBanner />
-                      </TimeClockProvider>
+                            <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
+                              {children}
+                            </div>
+                          </SidebarInset>
+                          <SearchCommand />
+                          <PlateLookupCommand />
+                          {isOwnerOrAdmin && <NotificationInitializer />}
+                          <OnlineTracker />
+                          <InstallBanner />
+                        </TimeClockProvider>
+                      </RealtimeProvider>
                     </FeatureHintProvider>
                   </PlateLookupProvider>
                 </ConfirmProvider>

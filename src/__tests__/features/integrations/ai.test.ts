@@ -222,7 +222,9 @@ describe('plan gates', () => {
       .filter((m) => connectorAllowed(m, free))
       .map((m) => m.id)
       .sort()
-    expect(reachable).toEqual(['anthropic', 'openai', 'openai-compatible'])
+    // Speech to text is an AI connector too: dictation is part of what the AI
+    // plan feature pays for, so it is reachable wherever the chat vendors are.
+    expect(reachable).toEqual(['anthropic', 'openai', 'openai-compatible', 'speech-to-text'])
 
     const pro = PLAN_FEATURES.pro
     expect(connectorAllowed(getManifest('openai')!, pro)).toBe(true)

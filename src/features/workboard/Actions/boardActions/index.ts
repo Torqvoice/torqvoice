@@ -7,6 +7,11 @@ export {
   moveJob,
   unassignJob,
 } from './assignments'
-export { scheduleJob, updateServiceTimes, updateInspectionTimes } from './scheduling'
+export {
+  scheduleJob,
+  setPromisedTime,
+  updateServiceTimes,
+  updateInspectionTimes,
+} from './scheduling'
 export { getServiceRecordTechnician } from './queries'
-export { checkSlotAvailability, findNextSlot } from './availability'
+export { checkSlotAvailability, findNextSlot, getTechnicianDayLoad } from './availability'

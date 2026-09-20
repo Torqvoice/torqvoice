@@ -44,6 +44,8 @@ model User {
   organizationMembers    OrganizationMember[]
   dashboardWidgets       DashboardWidget[]
   auditLogs              AuditLog[]
+  openedServiceRecords   ServiceRecord[]        @relation("ServiceRecordCreatedBy")
+  confirmedConcerns      ServiceConcern[]       @relation("ConcernConfirmedBy")
   technicians            Technician[]
   stockMovements         StockMovement[]
   tireWarehouses         TireWarehouse[]

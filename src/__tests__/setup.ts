@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 import fs from 'fs'
 import path from 'path'
+import { IntlMessageFormat } from 'intl-messageformat'
 
 // ---------------------------------------------------------------------------
 // Load all English translation files so the next-intl mock resolves keys to
@@ -28,9 +29,20 @@ function resolve(obj: unknown, keyPath: string): string | undefined {
   return typeof cur === 'string' ? cur : undefined
 }
 
-/** Replace `{name}` placeholders with values from the given record. */
+/**
+ * Formats a message the way next-intl does. Plural and select messages go
+ * through ICU, so a test can assert "2 observations" rather than the raw
+ * template; anything ICU refuses falls back to plain `{name}` replacement.
+ */
 function interpolate(tpl: string, values?: Record<string, unknown>): string {
   if (!values) return tpl
+  if (/\{\s*\w+\s*,\s*(plural|select|selectordinal)\s*,/.test(tpl)) {
+    try {
+      return String(new IntlMessageFormat(tpl, 'en').format(values as Record<string, never>))
+    } catch {
+      // Fall through to the plain replacement below.
+    }
+  }
   return Object.entries(values).reduce(
     (s, [k, v]) => s.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v)),
     tpl

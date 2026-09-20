@@ -13,7 +13,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { FileText, Loader2, Sparkles } from 'lucide-react'
+import { Eye, FileText, Loader2, Lock, Sparkles } from 'lucide-react'
+import { AppCard } from '@/components/app-card'
+import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { RichTextEditor } from './RichTextEditor'
 import type { InitialData } from './form-types'
 import { aiGenerateServiceNotes } from '@/features/ai/Actions/aiActions'
@@ -25,6 +27,10 @@ interface NotesSectionProps {
   onNotesChange: (field: 'invoiceNotes' | 'diagnosticNotes' | 'description', value: string) => void
   serviceRecordId?: string
   aiEnabled?: boolean
+  /** The customer notes print on the invoice, so a locked invoice freezes them. */
+  publicLocked?: boolean
+  /** Only when the internal notes have no save of their own on a locked invoice. */
+  internalLocked?: boolean
 }
 
 function hasContent(html: string): boolean {
@@ -37,8 +43,11 @@ export function NotesSection({
   onNotesChange,
   serviceRecordId,
   aiEnabled,
+  publicLocked = false,
+  internalLocked = false,
 }: NotesSectionProps) {
   const t = useTranslations('service.notes')
+  const modern = useModernWorkOrder()
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
   const [publicNotes, setPublicNotes] = useState(initialData.invoiceNotes || '')
   const [internalNotes, setInternalNotes] = useState(initialData.diagnosticNotes || '')
@@ -56,17 +65,20 @@ export function NotesSection({
     onNotesChange('diagnosticNotes', html)
   }
 
-  const runAiGenerate = async (mode: 'replace' | 'append') => {
+  const runAiGenerate = async (
+    mode: 'replace' | 'append',
+    target: 'public' | 'internal' = noteType
+  ) => {
     if (!serviceRecordId) return
     setGenerating(true)
     try {
       const result = await aiGenerateServiceNotes(serviceRecordId)
       if (result.success && result.data) {
         const html = result.data.replace(/\n/g, '<br>')
-        const currentNotes = noteType === 'public' ? publicNotes : internalNotes
+        const currentNotes = target === 'public' ? publicNotes : internalNotes
         const finalHtml = mode === 'append' ? `${currentNotes}<br><br>${html}` : html
 
-        if (noteType === 'public') {
+        if (target === 'public') {
           setPublicNotes(finalHtml)
           onNotesChange('invoiceNotes', finalHtml)
         } else {
@@ -84,12 +96,15 @@ export function NotesSection({
     }
   }
 
-  const handleAiClick = () => {
+  // The overhauled page shows both notes at once, so the button says which
+  // one it writes to; the classic page writes to the open tab.
+  const handleAiClick = (target: 'public' | 'internal' = noteType) => {
+    setNoteType(target)
     const skipDialog = localStorage.getItem(SKIP_AI_DIALOG_KEY) === 'true'
-    const currentNotes = noteType === 'public' ? publicNotes : internalNotes
+    const currentNotes = target === 'public' ? publicNotes : internalNotes
 
     if (skipDialog && !hasContent(currentNotes)) {
-      runAiGenerate('replace')
+      runAiGenerate('replace', target)
     } else {
       setDontShowAgain(false)
       setShowDialog(true)
@@ -107,6 +122,112 @@ export function NotesSection({
   const notesHaveContent = hasContent(noteType === 'public' ? publicNotes : internalNotes)
   const publicHasContent = hasContent(publicNotes)
   const internalHasContent = hasContent(internalNotes)
+
+  const aiDialog = (
+    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            {t('aiDialogTitle')}
+          </AlertDialogTitle>
+          <AlertDialogDescription>{t('aiDialogDescription')}</AlertDialogDescription>
+        </AlertDialogHeader>
+        {notesHaveContent && (
+          <p className="text-sm text-amber-600 dark:text-amber-400">
+            {t('aiOverwriteDescription')}
+          </p>
+        )}
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="dont-show-again"
+            checked={dontShowAgain}
+            onChange={(e) => setDontShowAgain(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <label htmlFor="dont-show-again" className="text-sm text-muted-foreground">
+            {t('aiDontShowAgain')}
+          </label>
+        </div>
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={() => setShowDialog(false)}>
+            {t('aiOverwriteCancel')}
+          </Button>
+          {notesHaveContent && (
+            <Button variant="outline" onClick={() => handleGenerate('append')}>
+              {t('aiOverwriteAppend')}
+            </Button>
+          )}
+          <Button onClick={() => handleGenerate('replace')}>
+            {notesHaveContent ? t('aiOverwriteReplace') : t('aiGenerate')}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+
+  const isLocked = (target: 'public' | 'internal') =>
+    target === 'public' ? publicLocked : internalLocked
+  const aiButton = (target: 'public' | 'internal') =>
+    aiEnabled && serviceRecordId && !isLocked(target) ? (
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="h-7 gap-1.5 text-xs"
+        onClick={() => handleAiClick(target)}
+        disabled={generating}
+      >
+        {generating && noteType === target ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <Sparkles className="h-3.5 w-3.5" />
+        )}
+        {t('aiWrite')}
+      </Button>
+    ) : null
+
+  // Both notes open at once, side by side: the staff one tinted so nobody
+  // types a remark about the customer into the box that prints on the invoice.
+  if (modern) {
+    return (
+      <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-2" data-testid="notes-section">
+        <div data-testid="notes-internal">
+          <AppCard
+            icon={Lock}
+            title={t('internalTitle')}
+            description={t('internalHelper')}
+            action={aiButton('internal')}
+            className="border-amber-500/30 bg-amber-500/5 hover:border-amber-500/40"
+          >
+            <RichTextEditor
+              content={internalNotes}
+              onChange={handleInternalChange}
+              editable={!internalLocked}
+              placeholder={t('internalPlaceholder')}
+            />
+          </AppCard>
+        </div>
+        <div data-testid="notes-customer">
+          <AppCard
+            icon={Eye}
+            title={t('publicTitle')}
+            description={t('publicHelper')}
+            action={aiButton('public')}
+          >
+            <RichTextEditor
+              content={publicNotes}
+              onChange={handlePublicChange}
+              editable={!publicLocked}
+              placeholder={t('publicPlaceholder')}
+            />
+          </AppCard>
+        </div>
+        {aiDialog}
+      </div>
+    )
+  }
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
@@ -131,13 +252,13 @@ export function NotesSection({
               )}
             </TabsTrigger>
           </TabsList>
-          {aiEnabled && serviceRecordId && (
+          {aiEnabled && serviceRecordId && !isLocked(noteType) && (
             <Button
               type="button"
               variant="ghost"
               size="sm"
               className="h-7 gap-1.5 text-xs"
-              onClick={handleAiClick}
+              onClick={() => handleAiClick()}
               disabled={generating}
             >
               {generating ? (
@@ -154,6 +275,7 @@ export function NotesSection({
           <RichTextEditor
             content={publicNotes}
             onChange={handlePublicChange}
+            editable={!publicLocked}
             placeholder={t('publicPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">{t('publicHelper')}</p>
@@ -163,53 +285,14 @@ export function NotesSection({
           <RichTextEditor
             content={internalNotes}
             onChange={handleInternalChange}
+            editable={!internalLocked}
             placeholder={t('internalPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>
         </TabsContent>
       </Tabs>
 
-      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              {t('aiDialogTitle')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>{t('aiDialogDescription')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          {notesHaveContent && (
-            <p className="text-sm text-amber-600 dark:text-amber-400">
-              {t('aiOverwriteDescription')}
-            </p>
-          )}
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="dont-show-again"
-              checked={dontShowAgain}
-              onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300"
-            />
-            <label htmlFor="dont-show-again" className="text-sm text-muted-foreground">
-              {t('aiDontShowAgain')}
-            </label>
-          </div>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={() => setShowDialog(false)}>
-              {t('aiOverwriteCancel')}
-            </Button>
-            {notesHaveContent && (
-              <Button variant="outline" onClick={() => handleGenerate('append')}>
-                {t('aiOverwriteAppend')}
-              </Button>
-            )}
-            <Button onClick={() => handleGenerate('replace')}>
-              {notesHaveContent ? t('aiOverwriteReplace') : t('aiGenerate')}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {aiDialog}
     </div>
   )
 }

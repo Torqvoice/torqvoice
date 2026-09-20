@@ -62,8 +62,19 @@ describe('export', () => {
     expect(exportSource).toMatch(/tireWarehouse[\s\S]{0,200}locations:\s*true/)
   })
 
-  it.each(['measurements', 'movements', 'treatments'])('pulls %s with the set', (relation) => {
-    expect(exportSource).toMatch(new RegExp(`db\\.tireSet[\\s\\S]{0,400}${relation}`))
+  it.each([
+    'measurements',
+    'movements',
+    'treatments',
+    'images',
+  ])('pulls %s with the set', (relation) => {
+    // `images` are the condition photos of a reading, nested one deeper.
+    expect(exportSource).toMatch(new RegExp(`db\\.tireSet[\\s\\S]{0,800}${relation}`))
+  })
+
+  it('restores a reading’s condition photos, which hang off the reading', () => {
+    expect(importSource).toMatch(/tire condition photos/)
+    expect(importSource).toMatch(/tireMeasurementId: m\.id as string/)
   })
 })
 

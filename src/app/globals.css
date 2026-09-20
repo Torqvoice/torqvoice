@@ -43,6 +43,7 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display-active);
 }
 
 /* ── Light: warm cream + amber/gold primary ── */
@@ -326,6 +327,62 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Font sets (src/lib/font-sets.ts), chosen on the Appearance page.
+
+   The theme's font utilities are inlined, so `font-sans` compiles straight to
+   var(--font-geist-sans) and there is no --font-sans left to override. The
+   swap is therefore made one level down: next/font declares Geist under
+   --font-geist-sans-base, and --font-geist-sans, the name everything uses, is
+   pointed at it here or at another face by a set. Every `font-sans` and
+   `font-mono` in the app follows, and the picker can still draw the default
+   set from the *-base names while another one is active.
+
+   --font-display-active is the heading face: the text face by default, Barlow
+   Condensed in the workshop set, where a heading is also set in capitals and a
+   size up, because a condensed face reads a size smaller than it is. */
+body {
+  --font-geist-sans: var(--font-geist-sans-base);
+  --font-geist-mono: var(--font-geist-mono-base);
+  --font-display-active: var(--font-geist-sans-base);
+}
+html.font-set-workshop body {
+  --font-geist-sans: var(--font-plex-sans);
+  --font-geist-mono: var(--font-plex-mono);
+  --font-display-active: var(--font-barlow-condensed);
+}
+html.font-set-precise body {
+  --font-geist-sans: var(--font-inter);
+  --font-geist-mono: var(--font-jetbrains-mono);
+  --font-display-active: var(--font-inter-tight);
+}
+html.font-set-legible body {
+  --font-geist-sans: var(--font-atkinson);
+  --font-geist-mono: var(--font-atkinson-mono);
+  --font-display-active: var(--font-atkinson);
+}
+/* Inter's clearer forms, where the font file carries them: a slashed zero and
+   a lowercase l with a tail, so a part number cannot be read as a word. A
+   feature a build of the font lacks is simply ignored. */
+html.font-set-precise body {
+  font-feature-settings: 'zero', 'cv05';
+}
+html.font-set-workshop .font-display {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 1.22em;
+  line-height: 1.1;
+}
+/* The work order number: figures in the default set, the heading face in the
+   workshop set, as the mock has it. */
+.order-number {
+  font-family: var(--font-geist-mono);
+}
+html.font-set-workshop .order-number {
+  font-family: var(--font-barlow-condensed);
+  font-size: 1.3em;
+  letter-spacing: 0.01em;
 }
 
 /* Dialogs lock body scroll through react-remove-scroll, which then pushes

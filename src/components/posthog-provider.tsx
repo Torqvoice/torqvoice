@@ -5,6 +5,7 @@
 import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
+import { analyticsStarted } from '@/lib/analytics'
 
 export function PostHogProvider({
   enabled,
@@ -25,6 +26,9 @@ export function PostHogProvider({
         capture_pageview: 'history_change',
         capture_pageleave: true,
       })
+      // Events fired before this effect ran (a page's own mount effects run
+      // first) were held; send them now.
+      analyticsStarted()
     }
   }, [enabled, posthogKey, posthogHost])
 

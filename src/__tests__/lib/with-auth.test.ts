@@ -80,7 +80,11 @@ describe('withAuth', () => {
         { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
       ],
     })
-    expect(result).toEqual({ success: false, error: 'Insufficient permissions' })
+    expect(result).toEqual({
+      success: false,
+      error: 'Insufficient permissions',
+      forbidden: true,
+    })
   })
 
   it('owner bypasses permission check', async () => {
@@ -158,7 +162,11 @@ describe('withAuth', () => {
         { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
       ],
     })
-    expect(result).toEqual({ success: false, error: 'Insufficient permissions' })
+    expect(result).toEqual({
+      success: false,
+      error: 'Insufficient permissions',
+      forbidden: true,
+    })
   })
 
   it('super admin with membership bypasses all permission checks', async () => {

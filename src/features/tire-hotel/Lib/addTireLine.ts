@@ -1,4 +1,4 @@
-import type { Prisma } from '@/generated/prisma/client'
+import type { TxClient } from '@/lib/db'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 
 export type TireLineInput = {
@@ -36,7 +36,7 @@ export type TireLineInput = {
  * commit or roll back together.
  */
 export async function addTireLineToRecord(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   organizationId: string,
   userId: string | null,
   line: TireLineInput

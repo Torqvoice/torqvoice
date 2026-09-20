@@ -8,6 +8,7 @@ import { logAudit } from '@/lib/audit'
 import type { AuditEvent } from '@/lib/audit'
 import type { FeatureGatedError } from '@/lib/features'
 import { publicErrorMessage } from '@/lib/public-error-message'
+import { runAsActor } from '@/lib/realtime/actor.server'
 
 /** What the plan refused, and the number it stopped at when there is one. */
 export type GatedFeature = { feature: string; limit?: number }
@@ -18,6 +19,12 @@ export type ActionResult<T = unknown> = {
   error?: string
   /** Set when the action was refused by the plan rather than by a failure. */
   gated?: GatedFeature
+  /**
+   * Set when this person's role does not allow the action. `error` is an
+   * English sentence for the log; a screen that can say something more useful
+   * than "it failed" (who to ask, what to ask for) checks this instead.
+   */
+  forbidden?: boolean
 }
 
 export type AuthContext = {
@@ -120,12 +127,21 @@ export async function withAuth<T>(
           }).catch(() => {
             /* best-effort */
           })
-          return { success: false, error: 'Insufficient permissions' }
+          return { success: false, error: 'Insufficient permissions', forbidden: true }
         }
       }
     }
 
-    const data = await action(ctx)
+    // Run inside the actor, so every write underneath knows whose it was and
+    // the live update can say who changed the record (lib/realtime).
+    const data = await runAsActor(
+      {
+        userId: ctx.userId,
+        name: session.user.name || session.user.email || null,
+        source: 'web',
+      },
+      () => action(ctx)
+    )
 
     // Post-success audit logging (fire-and-forget, logAudit handles its own errors)
     if (options.audit) {

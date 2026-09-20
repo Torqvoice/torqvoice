@@ -3,8 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { unlink } from 'fs/promises'
-import path from 'path'
+import { releaseFiles } from '@/lib/files/manager'
 
 export async function deleteStatusReport(statusReportId: string) {
   return withAuth(
@@ -16,28 +15,9 @@ export async function deleteStatusReport(statusReportId: string) {
 
       if (!report) throw new Error('Status report not found')
 
-      // Delete video file from disk if present
-      if (report.videoUrl) {
-        try {
-          const match = report.videoUrl.match(/\/services\/(.+)$/)
-          if (match) {
-            const filename = path.basename(match[1])
-            const filePath = path.join(
-              process.cwd(),
-              'data',
-              'uploads',
-              report.organizationId,
-              'services',
-              filename
-            )
-            await unlink(filePath)
-          }
-        } catch {
-          // File may already be deleted
-        }
-      }
-
       await db.statusReport.delete({ where: { id: report.id } })
+      // Its video once the report is gone, from wherever uploads are kept.
+      await releaseFiles([report.videoUrl], { organizationId, reason: 'status report deleted' })
 
       return { deleted: true, statusReportId }
     },

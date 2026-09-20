@@ -3,7 +3,9 @@ import { calculateTotals } from '@/lib/tax'
 import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
-import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSchema'
+import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
+import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
+import type { ConcernRow } from '../service-edit/form-types'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 
@@ -30,7 +32,7 @@ export function useServiceFormState({
   const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
   const [status, setStatus] = useState(initialData.status || 'completed')
-  const [concerns, setConcerns] = useState<ServiceConcernInput[]>(initialData.concerns || [])
+  const [concerns, setConcerns] = useState<ConcernRow[]>(initialData.concerns || [])
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData.partItems || [])
   const { schedule: scheduleCommit, cancel: cancelCommit } = useDeferredCommit()
   const [laborItems, setLaborItems] = useState<ServiceLaborInput[]>(initialData.laborItems || [])
@@ -85,6 +87,63 @@ export function useServiceFormState({
   // "Unsaved changes" would offer a save that can never complete (and keep
   // the beforeunload warning armed). Drop both: the lock has closed every
   // route those edits could take.
+  // A save gives new concerns their ids and stamps who confirmed what; the
+  // page is refreshed after it, and the rows here have to follow. Without
+  // this a concern typed in this session went back without an id on the next
+  // save, was taken for a new one, and the saved row was deleted with every
+  // finding that pointed at it.
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
+  hasUnsavedChangesRef.current = hasUnsavedChanges
+  const savedConcernsKey = JSON.stringify(initialData.concerns ?? [])
+  useEffect(() => {
+    const saved: ConcernRow[] = JSON.parse(savedConcernsKey)
+    setConcerns((current) => reconcileConcernRows(current, saved, hasUnsavedChangesRef.current))
+  }, [savedConcernsKey])
+
+  /**
+   * Lines of work this job gained from somewhere else while the page was
+   * open: a technician billing their time from the app. The page hears about
+   * it on the work board channel and refreshes, which brings the saved lines
+   * back through `initialData`.
+   *
+   * With nothing being edited they simply appear. Mid-edit they are held here
+   * instead, because this form saves labour by replacing every line: taking
+   * the server's list would throw away what is being typed, and leaving the
+   * technician's line out of the next save would throw away their work. So
+   * the page offers them (see the banner on the work order) and the save adds
+   * them whether or not the offer was taken.
+   */
+  /**
+   * The status as the server now has it. A technician marking the job
+   * complete in the bay has to move the bar on the desk's screen, and the
+   * page refreshes on that event, so the saved status arrives here.
+   *
+   * Not while the desk is editing: the status is part of what a save writes,
+   * and replacing a choice someone has just made in the dropdown would send
+   * back the wrong one. Their save wins, and the bar follows it.
+   */
+  const savedStatus = initialData.status
+  useEffect(() => {
+    if (hasUnsavedChangesRef.current || !savedStatus) return
+    setStatus(savedStatus)
+  }, [savedStatus])
+
+  const [laborAddedElsewhere, setLaborAddedElsewhere] = useState<ServiceLaborInput[]>([])
+  const savedLaborKey = JSON.stringify(initialData.laborItems ?? [])
+  const syncedLaborRef = useRef<ServiceLaborInput[]>(initialData.laborItems ?? [])
+  useEffect(() => {
+    const saved: ServiceLaborInput[] = JSON.parse(savedLaborKey)
+    const previous = syncedLaborRef.current
+    syncedLaborRef.current = saved
+    if (!hasUnsavedChangesRef.current) {
+      setLaborItems(saved)
+      setLaborAddedElsewhere([])
+      return
+    }
+    const added = addedLaborLines(previous, saved)
+    if (added.length > 0) setLaborAddedElsewhere((current) => [...current, ...added])
+  }, [savedLaborKey])
+
   useEffect(() => {
     if (!locked) return
     if (autosaveTimer.current) {
@@ -273,6 +332,21 @@ export function useServiceFormState({
     [markDirty]
   )
 
+  const applyLaborAddedElsewhere = useCallback(() => {
+    if (laborAddedElsewhere.length === 0) return
+    dirtySetLaborItems((prev) => [...prev, ...laborAddedElsewhere])
+    setLaborAddedElsewhere([])
+  }, [laborAddedElsewhere, dirtySetLaborItems])
+
+  const clearLaborAddedElsewhere = useCallback(() => setLaborAddedElsewhere([]), [])
+
+  /**
+   * What a save has to write: the list on screen plus anything added
+   * elsewhere that has not been shown yet. A save replaces every labour line
+   * of the job, so a line left out of this is a line deleted.
+   */
+  const laborItemsForSave = [...laborItems, ...laborAddedElsewhere]
+
   const dirtySetDiscountType = useCallback(
     (v: string) => {
       setDiscountType(v)
@@ -382,6 +456,14 @@ export function useServiceFormState({
     updateLabor,
     dirtySetPartItems,
     dirtySetLaborItems,
+    /** Lines added elsewhere that this page has not shown in the list yet. */
+    laborAddedElsewhere,
+    /** Put them in the list, where they are edited and saved like any other. */
+    applyLaborAddedElsewhere,
+    /** The list a save must write: what is on screen, plus those. */
+    laborItemsForSave,
+    /** After a save has written them: they are ordinary saved lines now. */
+    clearLaborAddedElsewhere,
     dirtySetDiscountType,
     dirtySetDiscountValue,
     dirtySetTaxRate,

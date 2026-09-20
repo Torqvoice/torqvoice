@@ -20,6 +20,7 @@ import {
   Download,
   Eye,
   Globe,
+  LayoutTemplate,
   Mail,
   MessageSquare,
   MoreVertical,
@@ -33,6 +34,7 @@ import {
   statusColors,
   statusMessageKeys,
 } from '../service-detail/types'
+import type { WorkOrderLayout } from '@/lib/work-order-layout'
 
 export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'
 
@@ -65,8 +67,14 @@ interface UnifiedServiceHeaderProps {
   hasCustomer?: boolean
   /** The invoice-design submenu, when this invoice has a frozen look to change. */
   designMenu?: React.ReactNode
+  /** Who else has this job open, drawn before the actions. */
+  presence?: React.ReactNode
   /** Video call link from a connected calendar, when one exists. */
   meetingUrl?: string | null
+  /** Which page this sits on, so the menu can offer the way to the other one. */
+  layout?: WorkOrderLayout
+  /** Moves this browser to the other layout. */
+  onSwitchLayout?: () => void
 }
 
 export function UnifiedServiceHeader({
@@ -90,7 +98,10 @@ export function UnifiedServiceHeader({
   onNotifyCustomer,
   hasCustomer = false,
   designMenu,
+  presence,
   meetingUrl = null,
+  layout = 'classic',
+  onSwitchLayout,
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
   const tPreview = useTranslations('common.pdfPreview')
@@ -127,89 +138,25 @@ export function UnifiedServiceHeader({
             <p className="truncate text-xs text-muted-foreground">{vehicleName}</p>
           </div>
         </Link>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          {activeTab === 'details' && (
-            <>
-              {hasUnsavedChanges && (
-                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                  {t('unsavedChanges')}
-                </span>
-              )}
-              {showSaved && !hasUnsavedChanges && (
-                <span className="text-xs font-medium text-green-600 dark:text-green-400">
-                  {t('saved')}
-                </span>
-              )}
-              <IconActionButton
-                type="submit"
-                form="service-record-form"
-                label={t('save')}
-                icon={Save}
-                loading={saving}
-                variant={hasUnsavedChanges ? 'default' : 'outline'}
-                className={hasUnsavedChanges ? 'animate-pulse' : ''}
-              />
-            </>
-          )}
-          <ButtonGroup>
-            <IconActionButton label={tPreview('preview')} icon={Eye} onClick={onPreviewPDF} />
-            <IconActionButton
-              label={t('pdf')}
-              icon={Download}
-              loading={downloading}
-              onClick={onDownloadPDF}
-            />
-            <IconActionButton label={t('email')} icon={Mail} onClick={onShowEmail} />
-            <IconActionButton label={t('share')} icon={Globe} onClick={onShowShare} />
-            {meetingUrl && (
-              <IconActionButton
-                label={t('joinCall')}
-                icon={Video}
-                onClick={() => window.open(meetingUrl, '_blank', 'noopener')}
-              />
-            )}
-            {hasCustomer && onNotifyCustomer && (
-              <IconActionButton
-                label={t('notify')}
-                icon={MessageSquare}
-                onClick={onNotifyCustomer}
-              />
-            )}
-            {/* The row already carries six actions in twelve languages. New
-                ones go in here rather than widening it, and Delete moved in
-                with them: a destructive button one pixel from Share is a
-                misclick waiting to happen. */}
-            <DropdownMenu>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      aria-label={t('moreActions')}
-                    >
-                      <MoreVertical className="size-4" aria-hidden="true" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>{t('moreActions')}</TooltipContent>
-              </Tooltip>
-              <DropdownMenuContent align="end" className="min-w-56">
-                {designMenu && (
-                  <>
-                    {designMenu}
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                <DropdownMenuItem className="text-destructive" onClick={onDelete}>
-                  <Trash2 className="mr-2 size-4" aria-hidden="true" />
-                  {t('delete')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </ButtonGroup>
-        </div>
+        {presence}
+        <ServiceHeaderActions
+          showSave={activeTab === 'details'}
+          downloading={downloading}
+          saving={saving}
+          hasUnsavedChanges={hasUnsavedChanges}
+          showSaved={showSaved}
+          onDownloadPDF={onDownloadPDF}
+          onPreviewPDF={onPreviewPDF}
+          onDelete={onDelete}
+          onShowEmail={onShowEmail}
+          onShowShare={onShowShare}
+          onNotifyCustomer={onNotifyCustomer}
+          hasCustomer={hasCustomer}
+          designMenu={designMenu}
+          meetingUrl={meetingUrl}
+          layout={layout}
+          onSwitchLayout={onSwitchLayout}
+        />
       </div>
       <nav className="flex gap-1 border-b overflow-x-auto scrollbar-none">
         {tabs.map((tab) => (
@@ -231,6 +178,149 @@ export function UnifiedServiceHeader({
           </button>
         ))}
       </nav>
+    </div>
+  )
+}
+
+type ServiceHeaderActionsProps = Pick<
+  UnifiedServiceHeaderProps,
+  | 'downloading'
+  | 'saving'
+  | 'hasUnsavedChanges'
+  | 'showSaved'
+  | 'onDownloadPDF'
+  | 'onPreviewPDF'
+  | 'onDelete'
+  | 'onShowEmail'
+  | 'onShowShare'
+  | 'onNotifyCustomer'
+  | 'hasCustomer'
+  | 'designMenu'
+  | 'meetingUrl'
+  | 'layout'
+  | 'onSwitchLayout'
+> & {
+  /** Save belongs to the details form; the other tabs save as they go. */
+  showSave: boolean
+}
+
+/**
+ * Everything that can be done with the job as a whole: save it, look at the
+ * invoice, send it, tell the customer, and the rest behind the menu. One
+ * component, because the classic header and the overhauled page's own top
+ * both carry it and must not drift apart.
+ */
+export function ServiceHeaderActions({
+  showSave,
+  downloading,
+  saving,
+  hasUnsavedChanges = false,
+  showSaved = false,
+  onDownloadPDF,
+  onPreviewPDF,
+  onDelete,
+  onShowEmail,
+  onShowShare,
+  onNotifyCustomer,
+  hasCustomer = false,
+  designMenu,
+  meetingUrl = null,
+  layout = 'classic',
+  onSwitchLayout,
+}: ServiceHeaderActionsProps) {
+  const t = useTranslations('service.header')
+  const tPreview = useTranslations('common.pdfPreview')
+  const tLayout = useTranslations('service.modern')
+  const modern = layout === 'modern'
+
+  return (
+    <div className="flex shrink-0 flex-wrap items-center gap-2">
+      {showSave && (
+        <>
+          {hasUnsavedChanges && (
+            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+              {t('unsavedChanges')}
+            </span>
+          )}
+          {showSaved && !hasUnsavedChanges && (
+            <span className="text-xs font-medium text-green-600 dark:text-green-400">
+              {t('saved')}
+            </span>
+          )}
+          <IconActionButton
+            type="submit"
+            form="service-record-form"
+            label={t('save')}
+            icon={Save}
+            loading={saving}
+            variant={hasUnsavedChanges ? 'default' : 'outline'}
+            className={hasUnsavedChanges ? 'animate-pulse' : ''}
+          />
+        </>
+      )}
+      <ButtonGroup>
+        <IconActionButton label={tPreview('preview')} icon={Eye} onClick={onPreviewPDF} />
+        <IconActionButton
+          label={t('pdf')}
+          icon={Download}
+          loading={downloading}
+          onClick={onDownloadPDF}
+        />
+        <IconActionButton label={t('email')} icon={Mail} onClick={onShowEmail} />
+        <IconActionButton label={t('share')} icon={Globe} onClick={onShowShare} />
+        {meetingUrl && (
+          <IconActionButton
+            label={t('joinCall')}
+            icon={Video}
+            onClick={() => window.open(meetingUrl, '_blank', 'noopener')}
+          />
+        )}
+        {hasCustomer && onNotifyCustomer && (
+          <IconActionButton label={t('notify')} icon={MessageSquare} onClick={onNotifyCustomer} />
+        )}
+        {/* The row already carries six actions in twelve languages. New
+            ones go in here rather than widening it, and Delete moved in
+            with them: a destructive button one pixel from Share is a
+            misclick waiting to happen. */}
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label={t('moreActions')}
+                >
+                  <MoreVertical className="size-4" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>{t('moreActions')}</TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent align="end" className="min-w-56">
+            {designMenu && (
+              <>
+                {designMenu}
+                <DropdownMenuSeparator />
+              </>
+            )}
+            {onSwitchLayout && (
+              <>
+                <DropdownMenuItem onClick={onSwitchLayout}>
+                  <LayoutTemplate className="mr-2 size-4" aria-hidden="true" />
+                  {modern ? tLayout('backToClassic') : tLayout('invite.menu')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+              <Trash2 className="mr-2 size-4" aria-hidden="true" />
+              {t('delete')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </ButtonGroup>
     </div>
   )
 }

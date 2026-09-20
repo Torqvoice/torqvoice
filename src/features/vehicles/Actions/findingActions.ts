@@ -9,6 +9,7 @@ import {
   resolveFindingSchema,
 } from '../Schema/findingSchema'
 import { revalidatePath } from 'next/cache'
+import { releaseFiles } from '@/lib/files/manager'
 
 export async function getObservationsPaginated(params: {
   page?: number
@@ -313,6 +314,7 @@ export async function deleteFinding(findingId: string) {
       if (!finding) throw new Error('Finding not found')
 
       await db.vehicleFinding.delete({ where: { id: findingId } })
+      await releaseFiles(finding.imageUrls, { organizationId, reason: 'finding deleted' })
       revalidatePath(`/vehicles/${finding.vehicleId}`)
       revalidatePath('/')
       return { findingId }

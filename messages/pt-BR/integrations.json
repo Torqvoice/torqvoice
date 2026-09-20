@@ -60,7 +60,8 @@
       "safety": "Recalls e reclamações de proprietários"
     },
     "ai": {
-      "chat": "Textos e resumos"
+      "chat": "Textos e resumos",
+      "transcribe": "Ditado"
     },
     "payments": {
       "checkout": "Pagar pelo link da fatura"
@@ -156,7 +157,8 @@
       "syncNowHelp": "Sincronizar agora inicia uma passagem imediatamente em vez de esperar a de hora em hora. Consulta 25 veículos por vez e continua sozinha até terminar todos os veículos pendentes."
     },
     "supersedes": "Conectar a {next} desconecta a {current}. Só uma pode estar ativa por vez, então {current} deixa de ser usada assim que {next} entrar no ar.",
-    "batchRetried": "{count, plural, =0 {Nada para tentar de novo} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}"
+    "batchRetried": "{count, plural, =0 {Nada para tentar de novo} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}",
+    "advanced": "Avançado"
   },
   "activity": {
     "title": "Atividade",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Manter os dados de recalls e reclamações atualizados para todos os veículos desta oficina",
         "refreshFleetHelp": "Uma vez por dia, os modelos não atualizados na última semana são buscados de novo, para que a página do veículo nunca espere e um novo recall apareça em até uma semana. Só marca, modelo e ano são enviados."
+      }
+    },
+    "speech-to-text": {
+      "description": "Ditado na ordem de serviço, transcrito por um modelo de voz em vez do navegador: muito mais preciso, em qualquer idioma, e conhece o vocabulário de oficina. É separado do seu provedor de IA, então você pode manter esse como está. Usa a sua própria chave da OpenAI ou um servidor próprio que fale a API de transcrição da OpenAI. A gravação é enviada para ser transcrita e não é guardada.",
+      "fields": {
+        "apiKey": "Chave de API",
+        "apiKeyHelp": "Uma chave da OpenAI, criada em platform.openai.com, em API keys; a OpenAI cobra o uso por minuto. Para um servidor próprio, só se ele pedir uma.",
+        "baseUrl": "Endereço do servidor",
+        "baseUrlHelp": "Deixe vazio para usar a OpenAI. Para um servidor próprio (um Whisper local, LocalAI, Groq), informe onde começa a API no estilo da OpenAI, incluindo o caminho, por exemplo /v1. O Torqvoice acrescenta /audio/transcriptions a esse endereço."
+      },
+      "settings": {
+        "model": "Modelo",
+        "modelHelp": "O modelo de voz a ser usado. gpt-4o-mini-transcribe é preciso e barato; gpt-4o-transcribe é o maior. Um servidor próprio geralmente responde a whisper-1.",
+        "mode": "Quem escolhe como o ditado é transcrito",
+        "modeHelp": "O navegador escreve enquanto você fala, mas é mais fraco, principalmente em idiomas menos falados. O modelo de voz escreve quando você para.",
+        "modeAi": "Sempre o modelo de voz",
+        "modeChoice": "Cada pessoa escolhe: modelo de voz ou navegador"
       }
     }
   },

@@ -230,6 +230,7 @@ export async function createDraftRecord(
   return db.serviceRecord.create({
     data: {
       organizationId,
+      createdById: userId,
       title,
       type: 'maintenance',
       status: 'pending',

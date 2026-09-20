@@ -981,6 +981,18 @@ const SERVICE_PERMISSION = [
   { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
 ]
 
+/**
+ * Seeing the meeting on a work order is part of seeing the work order. It
+ * used to need the Settings permission, because connections are a setting,
+ * while adding or removing the meeting needed only the work order's own: so a
+ * member could put a video call on a job and never be shown it, and was
+ * refused on every work order they opened. Nothing here is a secret: a link
+ * already on the job, and the names of the services that could add one.
+ */
+const SERVICE_READ_PERMISSION = [
+  { action: PermissionAction.READ, subject: PermissionSubject.SERVICES },
+]
+
 export interface ServiceVideoCall {
   /** The link on the work order, from whichever connection put it there. */
   link: {
@@ -1043,7 +1055,7 @@ export async function getServiceVideoCall(serviceRecordId: string) {
         .map((m) => ({ connectorId: m.id, name: m.name, provider: m.meetingProvider }))
       return { link, providers }
     },
-    { requiredPermissions: READ_PERMISSION }
+    { requiredPermissions: SERVICE_READ_PERMISSION }
   )
 }
 

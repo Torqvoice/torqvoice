@@ -78,7 +78,10 @@
     "addTechnician": "Agregar Técnico",
     "standaloneOnly": "Un nombre en el tablero para alguien que no inicia sesión, como un aprendiz o un externo. Para un mecánico que usa la aplicación, añádalo en la página de Equipo.",
     "linkedTo": "Entra como {name}",
-    "linkedManagedOnTeam": "Se gestiona en la página de Equipo, junto con su acceso a la aplicación."
+    "linkedManagedOnTeam": "Se gestiona en la página de Equipo, junto con su acceso a la aplicación.",
+    "skills": "Habilidades",
+    "skillsPlaceholder": "Diagnóstico, certificado en VE",
+    "skillsHint": "Se muestra bajo el nombre donde se reparte el trabajo. Opcional."
   },
   "jobDetail": {
     "viewDetails": "Ver Detalles",
@@ -154,6 +157,9 @@
     "workBay": "Puesto de trabajo",
     "status": "Estado",
     "noTime": "Sin hora todavía",
-    "none": "Nadie todavía"
+    "none": "Nadie todavía",
+    "promised": "Prometido",
+    "promiseLate": "Retrasado",
+    "promiseOverdue": "Prometido al cliente para un momento ya pasado"
   }
 }

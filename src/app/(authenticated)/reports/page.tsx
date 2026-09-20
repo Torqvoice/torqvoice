@@ -1,4 +1,4 @@
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { UpgradePrompt } from '@/components/upgrade-prompt'
@@ -44,7 +44,7 @@ export default async function ReportsPage() {
     )
   }
 
-  const settingsResult = await getSettings([
+  const settingsResult = await getDisplaySettings([
     SETTING_KEYS.CURRENCY_CODE,
     SETTING_KEYS.INVOICE_PRIMARY_COLOR,
   ])

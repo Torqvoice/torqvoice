@@ -3,7 +3,7 @@ import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
 import { getNotesPaginated } from '@/features/vehicles/Actions/noteActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getVehiclePredictedMileage } from '@/features/vehicles/Actions/predictedMaintenanceActions'
 import { getVehicleInspections } from '@/features/inspections/Actions/inspectionActions'
@@ -18,6 +18,8 @@ import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActi
 import { VehicleDetailClient } from './vehicle-detail-client'
 import { PageHeader } from '@/components/page-header'
 import { redirect } from 'next/navigation'
+import { PermissionSubject } from '@/lib/permissions'
+import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
 
 export default async function VehicleDetailPage({
   params,
@@ -46,6 +48,13 @@ export default async function VehicleDetailPage({
   const findingsPage = Number(sp.findingsPage) || 1
   const findingsPageSize = Number(sp.findingsPageSize) || 10
 
+  // The inspections and tire hotel panels belong to permissions of their own.
+  // A role without them is not shown the panels, and is not asked for their
+  // data either: a refused call is a wasted query and a refusal in the audit
+  // log on every vehicle somebody opens (lib/viewer-access).
+  const access = await getViewerAccess()
+  const S = PermissionSubject
+
   const [
     result,
     customersResult,
@@ -63,17 +72,17 @@ export default async function VehicleDetailPage({
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
     getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
-    getSettings([
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
+    getDisplaySettings([
       SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
       SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
       SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
     ]),
-    getVehicleInspections(id),
-    getTemplates(),
+    readIfAllowed(access, S.INSPECTIONS, () => getVehicleInspections(id)),
+    readIfAllowed(access, S.INSPECTIONS, () => getTemplates()),
     getVehicleQuotes(id),
     getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
-    getTireSetsForVehicle(id),
+    readIfAllowed(access, S.TIRE_HOTEL, () => getTireSetsForVehicle(id)),
   ])
 
   if (!result.success || !result.data) {

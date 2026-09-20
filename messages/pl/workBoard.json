@@ -78,7 +78,10 @@
     "addTechnician": "Dodaj Technika",
     "standaloneOnly": "Nazwisko na tablicy dla kogoś, kto się nie loguje, na przykład ucznia lub podwykonawcy. Mechanika korzystającego z aplikacji dodasz na stronie Zespół.",
     "linkedTo": "Loguje się jako {name}",
-    "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji."
+    "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji.",
+    "skills": "Umiejętności",
+    "skillsPlaceholder": "Diagnostyka, certyfikat EV",
+    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne."
   },
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",
@@ -154,6 +157,9 @@
     "workBay": "Stanowisko",
     "status": "Status",
     "noTime": "Brak godziny",
-    "none": "Jeszcze nikt"
+    "none": "Jeszcze nikt",
+    "promised": "Obiecane",
+    "promiseLate": "Po terminie",
+    "promiseOverdue": "Obiecane klientowi na termin, który już minął"
   }
 }

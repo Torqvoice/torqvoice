@@ -3,7 +3,7 @@
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect, type ComponentProps } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { updateServiceStatus } from '@/features/vehicles/Actions/serviceActions'
@@ -45,7 +45,7 @@ import { ServiceImagesManager } from '../service-images-manager'
 import { ServiceVideoManager } from '../service-video-manager'
 import { ServiceDocumentsManager } from '../service-documents-manager'
 import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
-import { UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
+import { ServiceHeaderActions, UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
 
 import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
@@ -53,6 +53,15 @@ import { DetailsLeftColumn } from './DetailsLeftColumn'
 import { DetailsRightColumn } from './DetailsRightColumn'
 import { ObservationsManager, type ObservationsControls } from './ObservationsManager'
 import type { ServicePageClientProps } from './service-page-types'
+import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
+import { rememberWorkOrderLayout, type WorkOrderLayout } from '@/lib/work-order-layout'
+import { registerAnalyticsProperties, track } from '@/lib/analytics'
+import { TryNewLayoutBanner } from './TryNewLayoutBanner'
+import { LaborAddedBanner } from './LaborAddedBanner'
+import { useLiveRecord } from '@/features/realtime/hooks'
+import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
+import { ModernDetails } from './modern/ModernDetails'
+import { ModernHero } from './modern/ModernHero'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
@@ -90,6 +99,8 @@ export function ServicePageClient({
   emailEnabled = false,
   telegramEnabled = false,
   aiEnabled = false,
+  aiTranscription = false,
+  dictationMode = 'choice',
   defaultDueDays = 0,
   defaultMarkupPercent = 0,
   markupAppliesToInventory = false,
@@ -103,6 +114,7 @@ export function ServicePageClient({
   designPinnedAt = null,
   designFollowsRule = null,
   jobClock = { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' },
+  initialLayout = 'classic',
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -116,7 +128,36 @@ export function ServicePageClient({
       ? (initialTab as ServiceTab)
       : 'details'
 
-  const [activeTab, setActiveTab] = useState<ServiceTab>(resolvedInitialTab)
+  const [storedTab, setActiveTab] = useState<ServiceTab>(resolvedInitialTab)
+
+  // Classic until somebody asks for the overhauled page; the server already
+  // read this browser's choice, so the first paint is the right one.
+  const [layout, setLayout] = useState<WorkOrderLayout>(initialLayout)
+
+  // The overhauled page edits the title in its header, outside the form, so
+  // the page holds it and the form carries it as a hidden field. It follows
+  // the record again after every save.
+  const [title, setTitle] = useState(record.title)
+  useEffect(() => {
+    setTitle(record.title)
+  }, [record.title])
+  const modern = layout === 'modern'
+
+  // One view per work order opened, in the layout it opened in; a switch on
+  // the page is its own event and does not count as a second view. The
+  // layout is also put on every later event from this browser, so any chart
+  // (autocaptured clicks included) can be split by it.
+  const layoutRef = useRef(layout)
+  layoutRef.current = layout
+  useEffect(() => {
+    registerAnalyticsProperties({ work_order_layout: layoutRef.current })
+    track('work_order:page_view', { layout: layoutRef.current })
+  }, [record.id])
+  // The overhauled page has no tabs: photos, video, documents and status
+  // reports are all on the job itself. A link to one of the old tabs lands on
+  // the page with that section open or scrolled to.
+  const isFileTab = storedTab === 'images' || storedTab === 'video' || storedTab === 'documents'
+  const activeTab: ServiceTab = modern ? 'details' : storedTab
   // A link to this record with another tab (feedback on a status report, say)
   // changes only the query, so the page is not remounted and has to follow it.
   useEffect(() => {
@@ -164,6 +205,15 @@ export function ServicePageClient({
     record,
     locked: lockState.locked,
   })
+
+  // Anything that happens to this job somewhere else: a technician billing
+  // their time from the app, marking it complete in the bay, or the person at
+  // the next desk saving it. Every write reaches here, because every write
+  // announces itself (lib/realtime), rather than each feature having to
+  // remember to. The page reads the job again and the form state decides what
+  // to do with it: a status moves the bar at once, a line of work waits for
+  // the banner below while somebody is typing.
+  useLiveRecord('serviceRecord', record.id)
 
   const checkDates = useCallback(async () => {
     if (!areDatesExpired || formState.paymentStatus === 'paid') return true
@@ -353,56 +403,198 @@ export function ServicePageClient({
     if (formState.hasUnsavedChanges) return actions.saveNow()
   })
 
+  // Both layouts are the same form, but the plain inputs (title, invoice
+  // number, mileage) are remounted by the switch and would come back showing
+  // the saved value. So what has been typed is saved first.
+  const switchLayout = useCallback(
+    async (next: WorkOrderLayout, source: 'banner' | 'menu' | 'footer') => {
+      // Which way people go, and from where, is what decides when the classic
+      // page can be retired: a switch back is the signal that something is
+      // missing from the new one.
+      track('work_order:layout_switch', {
+        from_layout: next === 'modern' ? 'classic' : 'modern',
+        to_layout: next,
+        source,
+      })
+      registerAnalyticsProperties({ work_order_layout: next })
+      if (formState.hasUnsavedChanges) await actions.saveNow()
+      rememberWorkOrderLayout(next)
+      setLayout(next)
+    },
+    [formState.hasUnsavedChanges, actions]
+  )
+
+  const previewInvoice = async () => {
+    // No expired-dates prompt here: previewing is just looking, and the
+    // check still runs on download, email, and share.
+    if (formState.hasUnsavedChanges) await actions.saveNow()
+    setShowPdfPreview(true)
+  }
+
+  const shareInvoice = async () => {
+    if (!(await checkDates())) return
+    if (formState.hasUnsavedChanges) await actions.saveNow()
+    actions.setShowShareDialog(true)
+  }
+
+  // The classic page gives status reports a tab; the overhauled one has no
+  // tabs and draws them as a section under the job. Same list either way.
+  const statusReportList = (
+    <StatusReportList
+      serviceRecordId={record.id}
+      organizationId={organizationId}
+      vehicleName={formState.vehicleName}
+      customer={
+        customer
+          ? {
+              id: customer.id,
+              name: customer.name,
+              email: customer.email,
+              phone: customer.phone,
+              telegramChatId: customer.telegramChatId || null,
+            }
+          : null
+      }
+      smsEnabled={smsEnabled}
+      emailEnabled={emailEnabled}
+      telegramEnabled={telegramEnabled}
+      initialReports={statusReports}
+    />
+  )
+
+  // What can be done with the job as a whole. The classic header and the
+  // overhauled page's own top carry the same cluster, fed from here.
+  const headerActionProps = {
+    meetingUrl: videoCall.link?.url ?? null,
+    downloading: actions.downloading,
+    saving: formState.loading,
+    hasUnsavedChanges: formState.hasUnsavedChanges,
+    showSaved: formState.showSaved,
+    onDownloadPDF: async () => {
+      if (!(await checkDates())) return
+      if (formState.hasUnsavedChanges) await actions.saveNow()
+      actions.handleDownloadPDF()
+    },
+    onPreviewPDF: previewInvoice,
+    onDelete: actions.handleDelete,
+    onShowEmail: async () => {
+      if (!(await checkDates())) return
+      if (formState.hasUnsavedChanges) await actions.saveNow()
+      actions.setShowEmailDialog(true)
+    },
+    onShowShare: shareInvoice,
+    onNotifyCustomer: handleNotifyCustomer,
+    hasCustomer: !!customer,
+    designMenu: canChangeIssuedDesign ? (
+      <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
+    ) : undefined,
+    layout,
+    onSwitchLayout: () => void switchLayout(modern ? 'classic' : 'modern', 'menu'),
+  }
+
+  // One set of props for each column, handed to whichever layout is showing:
+  // the classic two columns take them as they are, the overhauled page takes
+  // both and lays the same sections out its own way.
+  const leftColumnProps: ComponentProps<typeof DetailsLeftColumn> = {
+    formState,
+    actions,
+    record,
+    tireSet: record.tireSet ?? null,
+    tireHotelEnabled,
+    tireThresholds,
+    unitSystem,
+    currencyCode,
+    defaultLaborRate,
+    inventoryParts,
+    defaultMarkupPercent,
+    markupAppliesToInventory,
+    hasPresets: laborPresets.length > 0,
+    onOpenPresets: () => formState.setShowPresetPicker(true),
+    onScanBarcode: () => formState.setShowBarcodeScanner(true),
+    aiEnabled,
+    vehicleId,
+    findings,
+    onAddFinding: () => obsControlsRef.current?.onAddFinding(),
+    onEditFinding: (f) => obsControlsRef.current?.onEditFinding(f),
+    openObservationsCount: otherObsCount,
+    onShowExistingObservations: () => obsControlsRef.current?.onShowExistingObservations(),
+    jobClock,
+    locked: lockState.locked,
+  }
+
+  const rightColumnProps: ComponentProps<typeof DetailsRightColumn> = {
+    videoCall,
+    smsEnabled,
+    emailEnabled,
+    telegramEnabled,
+    formState,
+    actions,
+    record,
+    vehicleId,
+    organizationId,
+    currencyCode,
+    unitSystem,
+    warrantyTexts,
+    taxEnabled,
+    initialVehicle,
+    boardTechnicians,
+    workBays,
+    orgMembers,
+    notificationHistory,
+    designOptions,
+    designFollowsName,
+    designPinnedAt,
+    designFollowsRule,
+  }
+
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <UnifiedServiceHeader
-        vehicleId={vehicleId}
-        meetingUrl={videoCall.link?.url ?? null}
-        vehicleName={formState.vehicleName}
-        title={record.title}
-        status={formState.status}
-        paymentStatus={formState.paymentStatus}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        tabCounts={{
-          images: imageAttachmentsForManager.length,
-          video: videoAttachments.length,
-          documents: documentAttachments.length,
-          statusReports: statusReports.length,
-        }}
-        downloading={actions.downloading}
-        saving={formState.loading}
-        hasUnsavedChanges={formState.hasUnsavedChanges}
-        showSaved={formState.showSaved}
-        onDownloadPDF={async () => {
-          if (!(await checkDates())) return
-          if (formState.hasUnsavedChanges) await actions.saveNow()
-          actions.handleDownloadPDF()
-        }}
-        onPreviewPDF={async () => {
-          // No expired-dates prompt here: previewing is just looking, and the
-          // check still runs on download, email, and share.
-          if (formState.hasUnsavedChanges) await actions.saveNow()
-          setShowPdfPreview(true)
-        }}
-        onDelete={actions.handleDelete}
-        onShowEmail={async () => {
-          if (!(await checkDates())) return
-          if (formState.hasUnsavedChanges) await actions.saveNow()
-          actions.setShowEmailDialog(true)
-        }}
-        onShowShare={async () => {
-          if (!(await checkDates())) return
-          if (formState.hasUnsavedChanges) await actions.saveNow()
-          actions.setShowShareDialog(true)
-        }}
-        onNotifyCustomer={handleNotifyCustomer}
-        hasCustomer={!!customer}
-        designMenu={
-          canChangeIssuedDesign ? (
-            <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
-          ) : undefined
-        }
+      {modern ? (
+        <ModernHero
+          record={record}
+          status={formState.status}
+          paymentStatus={formState.paymentStatus}
+          warranty={formState.warranty}
+          actions={
+            <>
+              <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
+              <ServiceHeaderActions showSave {...headerActionProps} />
+            </>
+          }
+          title={title}
+          onTitleChange={(next) => {
+            setTitle(next)
+            formState.markDirty()
+          }}
+          type={record.vehicle ? formState.type : undefined}
+          onTypeChange={formState.dirtySetType}
+          locked={lockState.locked}
+        />
+      ) : (
+        <UnifiedServiceHeader
+          presence={<PresenceChips kind="serviceRecord" id={record.id} />}
+          vehicleId={vehicleId}
+          vehicleName={formState.vehicleName}
+          title={record.title}
+          status={formState.status}
+          paymentStatus={formState.paymentStatus}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          tabCounts={{
+            images: imageAttachmentsForManager.length,
+            video: videoAttachments.length,
+            documents: documentAttachments.length,
+            statusReports: statusReports.length,
+          }}
+          {...headerActionProps}
+        />
+      )}
+
+      {!modern && <TryNewLayoutBanner onTry={() => void switchLayout('modern', 'banner')} />}
+
+      <LaborAddedBanner
+        count={formState.laborAddedElsewhere.length}
+        onShow={formState.applyLaborAddedElsewhere}
       />
 
       {(lockState.locked || lockState.unlockedAt) && (
@@ -417,88 +609,71 @@ export function ServicePageClient({
       )}
 
       {activeTab === 'details' && (
-        <>
-          {/* noValidate, and the rules checked in handleSubmit instead. An
-              autosave submits through requestSubmit, which native validation
-              stops with no message and no request; and the rules that matter
-              most here — a priced part with no name, labour with hours and no
-              description — are not ones a `required` attribute can state. */}
-          <form
-            id="service-record-form"
-            ref={formState.formRef}
-            onSubmit={actions.handleSubmit}
-            onInput={formState.markDirty}
-            className="flex min-h-0 flex-1 flex-col"
-            noValidate
-          >
-            {/* A locked invoice offers no editing at all, rather than letting
-                someone retype a line and meet the refusal on save. The
-                fieldset disables every control inside it natively;
-                display:contents keeps the layout exactly as it was. */}
-            <fieldset
-              disabled={lockState.locked}
-              className="contents"
-              aria-label={lockState.locked ? t('invoice.lockedFieldsetLabel') : undefined}
+        <WorkOrderLayoutProvider value={layout}>
+          {modern ? (
+            <ModernDetails
+              {...leftColumnProps}
+              {...rightColumnProps}
+              locked={lockState.locked}
+              lockedLabel={t('invoice.lockedFieldsetLabel')}
+              form={{
+                id: 'service-record-form',
+                ref: formState.formRef,
+                onSubmit: actions.handleSubmit,
+                onInput: formState.markDirty,
+              }}
+              files={{
+                images: imageAttachmentsForManager,
+                videos: videoAttachments,
+                documents: documentAttachments,
+                maxImages: maxImagesPerService,
+                maxDiagnostics: maxDiagnosticsPerService,
+                maxDocuments: maxDocumentsPerService,
+                // A link to one of the classic tabs opens that tab here.
+                initialTab: isFileTab || storedTab === 'statusReports' ? storedTab : undefined,
+                statusReports: { count: statusReports.length, list: statusReportList },
+              }}
+              onPreviewInvoice={previewInvoice}
+              onSendToCustomer={shareInvoice}
+              onBackToClassic={() => void switchLayout('classic', 'footer')}
+              title={title}
+              aiTranscription={aiTranscription}
+              dictationMode={dictationMode}
+              onAddFindingForConcern={(concernId) =>
+                obsControlsRef.current?.onAddFinding(concernId)
+              }
+              scrollToFiles={isFileTab || storedTab === 'statusReports'}
+            />
+          ) : (
+            // noValidate, and the rules checked in handleSubmit instead. An
+            // autosave submits through requestSubmit, which native validation
+            // stops with no message and no request; and the rules that matter
+            // most here — a priced part with no name, labour with hours and no
+            // description — are not ones a `required` attribute can state.
+            <form
+              id="service-record-form"
+              ref={formState.formRef}
+              onSubmit={actions.handleSubmit}
+              onInput={formState.markDirty}
+              className="flex min-h-0 flex-1 flex-col"
+              noValidate
             >
-              <ServiceDetailContent
-                leftColumn={
-                  <DetailsLeftColumn
-                    formState={formState}
-                    actions={actions}
-                    record={record}
-                    tireSet={record.tireSet ?? null}
-                    tireHotelEnabled={tireHotelEnabled}
-                    tireThresholds={tireThresholds}
-                    unitSystem={unitSystem}
-                    currencyCode={currencyCode}
-                    defaultLaborRate={defaultLaborRate}
-                    inventoryParts={inventoryParts}
-                    defaultMarkupPercent={defaultMarkupPercent}
-                    markupAppliesToInventory={markupAppliesToInventory}
-                    hasPresets={laborPresets.length > 0}
-                    onOpenPresets={() => formState.setShowPresetPicker(true)}
-                    onScanBarcode={() => formState.setShowBarcodeScanner(true)}
-                    aiEnabled={aiEnabled}
-                    vehicleId={vehicleId}
-                    findings={findings}
-                    onAddFinding={() => obsControlsRef.current?.onAddFinding()}
-                    onEditFinding={(f) => obsControlsRef.current?.onEditFinding(f)}
-                    openObservationsCount={otherObsCount}
-                    onShowExistingObservations={() =>
-                      obsControlsRef.current?.onShowExistingObservations()
-                    }
-                    jobClock={jobClock}
-                  />
-                }
-                rightColumn={
-                  <DetailsRightColumn
-                    videoCall={videoCall}
-                    smsEnabled={smsEnabled}
-                    emailEnabled={emailEnabled}
-                    telegramEnabled={telegramEnabled}
-                    formState={formState}
-                    actions={actions}
-                    record={record}
-                    vehicleId={vehicleId}
-                    organizationId={organizationId}
-                    currencyCode={currencyCode}
-                    unitSystem={unitSystem}
-                    warrantyTexts={warrantyTexts}
-                    taxEnabled={taxEnabled}
-                    initialVehicle={initialVehicle}
-                    boardTechnicians={boardTechnicians}
-                    workBays={workBays}
-                    orgMembers={orgMembers}
-                    notificationHistory={notificationHistory}
-                    designOptions={designOptions}
-                    designFollowsName={designFollowsName}
-                    designPinnedAt={designPinnedAt}
-                    designFollowsRule={designFollowsRule}
-                  />
-                }
-              />
-            </fieldset>
-          </form>
+              {/* A locked invoice offers no editing at all, rather than letting
+                  someone retype a line and meet the refusal on save. The
+                  fieldset disables every control inside it natively;
+                  display:contents keeps the layout exactly as it was. */}
+              <fieldset
+                disabled={lockState.locked}
+                className="contents"
+                aria-label={lockState.locked ? t('invoice.lockedFieldsetLabel') : undefined}
+              >
+                <ServiceDetailContent
+                  leftColumn={<DetailsLeftColumn {...leftColumnProps} />}
+                  rightColumn={<DetailsRightColumn {...rightColumnProps} />}
+                />
+              </fieldset>
+            </form>
+          )}
           {vehicleId && (
             <ObservationsManager
               vehicleId={vehicleId}
@@ -517,7 +692,7 @@ export function ServicePageClient({
               }}
             />
           )}
-        </>
+        </WorkOrderLayoutProvider>
       )}
 
       {activeTab === 'images' && (
@@ -549,28 +724,7 @@ export function ServicePageClient({
       )}
 
       {activeTab === 'statusReports' && (
-        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-          <StatusReportList
-            serviceRecordId={record.id}
-            organizationId={organizationId}
-            vehicleName={formState.vehicleName}
-            customer={
-              customer
-                ? {
-                    id: customer.id,
-                    name: customer.name,
-                    email: customer.email,
-                    phone: customer.phone,
-                    telegramChatId: customer.telegramChatId || null,
-                  }
-                : null
-            }
-            smsEnabled={smsEnabled}
-            emailEnabled={emailEnabled}
-            telegramEnabled={telegramEnabled}
-            initialReports={statusReports}
-          />
-        </div>
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">{statusReportList}</div>
       )}
 
       <InventoryPickerDialog

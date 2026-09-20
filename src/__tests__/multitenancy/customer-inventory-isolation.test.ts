@@ -33,8 +33,27 @@ vi.mock('@/lib/features', () => ({
   },
 }))
 
+// These tests are about workshop scoping, not files: the file manager and the
+// files a delete collects have tests of their own (src/__tests__/lib/files).
+vi.mock('@/lib/files/collect', () => ({
+  serviceRecordFileUrls: vi.fn(async () => []),
+  inspectionFileUrls: vi.fn(async () => []),
+  vehicleFileUrls: vi.fn(async () => []),
+  quoteFileUrls: vi.fn(async () => []),
+  tireSetFileUrls: vi.fn(async () => []),
+  inventoryPartFileUrls: vi.fn(async () => []),
+}))
+vi.mock('@/lib/files/manager', () => ({
+  releaseFiles: vi.fn(async () => ({ removed: [], kept: [], skipped: [] })),
+  parseStoredFileUrl: vi.fn(() => null),
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
+    // The gallery is rewritten in one transaction; its steps are the mocks below.
+    $transaction: vi.fn(async (steps: unknown) =>
+      Array.isArray(steps) ? Promise.all(steps) : steps
+    ),
     user: { findUnique: vi.fn() },
     customer: {
       findFirst: vi.fn(),
@@ -323,6 +342,7 @@ describe('updateInventoryPart — cross-org isolation', () => {
 
   it('update query always includes organizationId to prevent cross-org writes', async () => {
     setupOrgAOwner()
+    vi.mocked(db.inventoryPart.findFirst).mockResolvedValue({ id: 'part-a' } as any)
     vi.mocked(db.inventoryPart.updateMany).mockResolvedValue({ count: 1 } as any)
 
     await updateInventoryPart({ id: 'part-a', name: 'Updated Filter' })
@@ -336,12 +356,35 @@ describe('updateInventoryPart — cross-org isolation', () => {
 
   it("successfully updates the caller's own inventory part", async () => {
     setupOrgAOwner()
+    vi.mocked(db.inventoryPart.findFirst).mockResolvedValue({ id: 'part-a' } as any)
     vi.mocked(db.inventoryPart.updateMany).mockResolvedValue({ count: 1 } as any)
 
     const result = await updateInventoryPart({ id: 'part-a', name: 'Updated Filter' })
 
     expect(result.success).toBe(true)
     expect((result.data as any).updated).toBe(true)
+  })
+
+  it("never touches another org's gallery: the part is checked before its images", async () => {
+    setupOrgAOwner()
+    // The gallery rows are keyed by the part alone, so without the ownership
+    // check a part id from org B rewrote org B's gallery and deleted its files.
+    vi.mocked(db.inventoryPart.findFirst).mockResolvedValue(null)
+
+    const result = await updateInventoryPart({
+      id: `${ORG_B}-part-id`,
+      gallery: [{ url: `/api/protected/files/${ORG_A}/inventory/new.jpg` }],
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('Part not found')
+    expect(vi.mocked(db.inventoryPart.findFirst)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: `${ORG_B}-part-id`, organizationId: ORG_A }),
+      })
+    )
+    expect(vi.mocked(db.storedImage.deleteMany)).not.toHaveBeenCalled()
+    expect(vi.mocked(db.storedImage.createMany)).not.toHaveBeenCalled()
   })
 })
 

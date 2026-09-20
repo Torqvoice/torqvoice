@@ -129,6 +129,42 @@ export async function setQuoteLock(
   await expect(page.getByText('Invoice settings saved', { exact: true })).toBeVisible()
 }
 
+export interface InvoiceLockSetup {
+  enabled: boolean
+  trigger: 'sent' | 'paid'
+}
+
+/**
+ * Settings → Invoice, the invoice half of "Locking finished documents", saved.
+ * Off by default, so a spec that turns it on turns it off again. Invoices sent
+ * before it was turned on stay editable, so a spec sends its job afterwards.
+ */
+export async function setInvoiceLock(
+  page: Page,
+  { enabled, trigger }: InvoiceLockSetup
+): Promise<void> {
+  await page.goto('/settings/invoice')
+  await settle(page)
+
+  // As with the quote lock: the trigger is disabled while the switch is off.
+  const toggle = page.locator('#invoiceLockEnabled')
+  await setSwitch(toggle, true)
+
+  const wanted =
+    trigger === 'sent' ? 'Once the invoice is sent' : 'Once the invoice is paid in full'
+  const select = page.locator('#invoiceLockTrigger')
+  await expect(async () => {
+    await select.click()
+    await expect(page.getByRole('option', { name: wanted })).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await page.getByRole('option', { name: wanted }).click()
+  await expect(select).toContainText(wanted)
+
+  await setSwitch(toggle, enabled)
+  await page.getByRole('button', { name: 'Save Invoice Settings', exact: true }).click()
+  await expect(page.getByText('Invoice settings saved', { exact: true })).toBeVisible()
+}
+
 /** What the settings page currently offers as the next invoice number. */
 export async function invoiceStartNumber(page: Page): Promise<string> {
   await page.goto('/settings/invoice')

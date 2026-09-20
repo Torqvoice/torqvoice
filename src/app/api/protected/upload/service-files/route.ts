@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { extensionForType } from '@/lib/upload-url'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { writeFile, mkdir, unlink, stat } from 'fs/promises'
+import { writeFile, mkdir, stat } from 'fs/promises'
+import { discardUnsavedUpload } from '@/lib/files/manager'
 import path from 'path'
 import crypto from 'crypto'
 import { execFile } from 'child_process'
@@ -93,15 +94,17 @@ export async function POST(request: NextRequest) {
   const finalPath = path.join(uploadDir, filename)
 
   if (isVideo) {
-    // Write original to temp file, compress, then clean up
-    const tempFilename = `${crypto.randomUUID()}_orig.${file.name.split('.').pop() || 'mp4'}`
+    // Write original to temp file, compress, then clean up. The extension
+    // is the uploaded name's only if it is plainly one: a name is the
+    // client's word, and `a.x/../../y` would otherwise put the file anywhere.
+    const nameExt = file.name.split('.').pop() ?? ''
+    const tempExt = /^[A-Za-z0-9]{1,8}$/.test(nameExt) ? nameExt : 'mp4'
+    const tempFilename = `${crypto.randomUUID()}_orig.${tempExt}`
     const tempPath = path.join(uploadDir, tempFilename)
     await writeFile(tempPath, bytes)
 
     const compressed = await compressVideo(tempPath, finalPath)
-    await unlink(tempPath).catch(() => {
-      /* temp file cleanup */
-    })
+    await discardUnsavedUpload(ctx.organizationId, 'services', tempFilename)
 
     if (!compressed) {
       // Fallback: save original as-is

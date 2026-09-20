@@ -36,7 +36,7 @@ export interface InitialData {
   invoiceNumber?: string
   invoiceDate: string
   invoiceDueDate: string
-  concerns: ServiceConcernInput[]
+  concerns: ConcernRow[]
   partItems: ServicePartInput[]
   laborItems: ServiceLaborInput[]
   attachments: (ServiceAttachmentInput & { includeInInvoice?: boolean })[]
@@ -105,3 +105,12 @@ export const makeEmptyService = (): ServiceLaborInput => ({
   total: 0,
   pricingType: 'service',
 })
+
+/**
+ * A concern in the editor: the fields that are saved, and the confirmation
+ * stamp the server put on it, which is shown and never sent back.
+ */
+export type ConcernRow = ServiceConcernInput & {
+  confirmedAt?: string | null
+  confirmedByName?: string | null
+}

@@ -12,6 +12,8 @@ import { z } from 'zod'
 const addAttachmentSchema = z.object({
   serviceRecordId: z.string(),
   attachment: serviceAttachmentSchema,
+  /** The concern the file is evidence for, when it was added from that concern's row. */
+  concernId: z.string().min(1).optional(),
 })
 
 const CATEGORY_LIMIT_MAP: Record<string, keyof PlanFeatures | undefined> = {
@@ -56,10 +58,21 @@ export async function addServiceAttachment(input: unknown) {
         }
       }
 
+      // A concern on another job, or another workshop's, is not somewhere
+      // this file can be filed.
+      if (data.concernId) {
+        const concern = await db.serviceConcern.findFirst({
+          where: { id: data.concernId, serviceRecordId: record.id },
+          select: { id: true },
+        })
+        if (!concern) throw new Error('Concern not found')
+      }
+
       const attachment = await db.serviceAttachment.create({
         data: {
           ...data.attachment,
           serviceRecordId: record.id,
+          concernId: data.concernId ?? null,
         },
       })
 

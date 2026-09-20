@@ -1,3 +1,4 @@
+import type { TxClient } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
 
 /**
@@ -84,7 +85,7 @@ function stockUnits(quantity: number): number {
  * together.
  */
 export async function reconcileInventoryForParts(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   organizationId: string,
   previous: readonly StockPartLine[],
   next: readonly StockPartLine[],
@@ -154,7 +155,7 @@ export async function reconcileInventoryForParts(
  * Returns false when no row matched — unknown part, or wrong organization.
  */
 export async function recordAbsoluteStockChange(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   organizationId: string,
   inventoryPartId: string,
   newQuantity: number,

@@ -7,6 +7,7 @@ import {
   seededTenantFixtures,
 } from '../../support/db'
 import { settle } from '../../support/hydration'
+import { laborRows } from '../../support/work-order'
 
 /**
  * The contract the technician app is built against.
@@ -301,6 +302,37 @@ test.describe('the technician app', () => {
     // Nothing running, so a second stop is a conflict rather than a crash.
     const again = await phone(device).post('/api/v1/tech/time/stop')
     expect(again.status()).toBe(409)
+  })
+
+  /**
+   * The other half of clocking off: the time is billed onto the job, and the
+   * desk has that job open while it happens.
+   *
+   * A work order saves its labour by replacing every line, so a desk holding
+   * a list read before the technician's line existed deletes that line on its
+   * next save. The page therefore hears about it on the work board channel
+   * and reads the job again, and the line appears without a reload. This is
+   * the whole path: phone, endpoint, socket, browser.
+   */
+  test('bills time onto the job, and the desk sees it without reloading', async ({ page }) => {
+    const description = `E2E bay labour ${stamp}`
+    await page.goto(`/vehicles/${(await seededTenantFixtures()).vehicleId}/service/${jobId}`)
+    await settle(page)
+    // The socket is opened by the app shell after hydration; a line added
+    // before it is listening would only be found by reloading.
+    await expect(laborRows(page)).toHaveCount(0)
+
+    const added = await phone(device).post(`/api/v1/tech/jobs/${jobId}/labor`, {
+      description,
+      hours: 1.5,
+    })
+    expect(added.status()).toBe(201)
+    expect((await added.json()).data.labor.hours).toBe(1.5)
+
+    // No reload anywhere in this test: the page is told.
+    await expect(laborRows(page)).toHaveCount(1, { timeout: 30_000 })
+    await expect(laborRows(page).first()).toHaveValue(description)
+    expect(page.url(), 'the page never navigated').toContain(jobId)
   })
 
   test('asks for a day rather than everything', async () => {

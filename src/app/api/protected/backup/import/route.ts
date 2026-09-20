@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
+import { rewriteFileUrl, rewriteFileUrlsWithin, withFileUrls } from '@/lib/backup/file-urls'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
 import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
@@ -14,7 +15,8 @@ import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
-import { mkdir, rm, writeFile } from 'fs/promises'
+import { mkdir, writeFile } from 'fs/promises'
+import { releaseFilesNotRestored } from '@/lib/files/manager'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
 
@@ -78,7 +80,7 @@ function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): 
  * and counter sales (top-level records without a vehicle).
  */
 async function importServiceRecordTree(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   sr: Record<string, unknown>,
   opts: {
     organizationId: string
@@ -131,6 +133,7 @@ async function importServiceRecordTree(
       serviceDate: toSafeDate(sr.serviceDate as string),
       startDateTime: startDT ?? undefined,
       endDateTime: endDT ?? undefined,
+      promisedAt: sr.promisedAt ? (toSafeDate(sr.promisedAt as string) ?? null) : null,
       shopName: (sr.shopName as string) || null,
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
@@ -152,7 +155,9 @@ async function importServiceRecordTree(
       ...warrantyFromUntyped(sr),
       warrantyExpiresAt: sr.warrantyExpiresAt ? toSafeDate(sr.warrantyExpiresAt as string) : null,
       publicToken: (sr.publicToken as string) || null,
-      technicianId: (sr.technicianId as string) || null,
+      // Only a technician this import restored: a job pointing at one the
+      // backup does not carry would be refused, and take the import with it.
+      technicianId: keptReference(sr.technicianId, opts.technicianIds),
       workBayId: (sr.workBayId as string) || null,
       sortOrder: (sr.sortOrder as number) || 0,
       createdAt: toSafeDate(sr.createdAt as string),
@@ -201,6 +206,13 @@ async function importServiceRecordTree(
         id: c.id as string,
         description: c.description as string,
         sortOrder: (c.sortOrder as number) ?? index,
+        cause: (c.cause as string) || null,
+        correction: (c.correction as string) || null,
+        confirmation: (c.confirmation as string) || null,
+        // When it was confirmed comes back; who does not. The id belongs to
+        // an account in the installation the backup was taken from, and the
+        // same person here has another one, if they are here at all.
+        confirmedAt: c.confirmedAt ? (toSafeDate(c.confirmedAt as string) ?? null) : null,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -222,6 +234,7 @@ async function importServiceRecordTree(
   }
 
   // Service attachments
+  const restoredConcernIds = new Set((concerns ?? []).map((c) => c.id as string))
   const attachments = sr.attachments as Record<string, unknown>[] | undefined
   if (attachments?.length) {
     await tx.serviceAttachment.createMany({
@@ -236,6 +249,8 @@ async function importServiceRecordTree(
         includeInInvoice: a.includeInInvoice !== false,
         createdAt: toSafeDate(a.createdAt as string),
         serviceRecordId: sr.id as string,
+        // The concern it was filed under, when this record restored it above.
+        concernId: keptReference(a.concernId, restoredConcernIds),
       })),
     })
   }
@@ -248,7 +263,8 @@ async function importServiceRecordTree(
     sr.statusReports,
     {
       organizationId: opts.organizationId,
-    }
+    },
+    { fields: ['videoUrl'], organizationId: opts.organizationId }
   )
 
   // Clocked time. This is what a technician's hours were billed from, and in
@@ -301,13 +317,19 @@ async function restoreRows(
   what: string,
   create: (rows: Record<string, unknown>[]) => Promise<unknown>,
   rows: unknown,
-  override: Record<string, unknown> = {}
+  override: Record<string, unknown> = {},
+  files?: { fields: readonly string[]; organizationId: string }
 ) {
   const list = rows as Record<string, unknown>[] | undefined
   if (!list?.length) return
 
   try {
-    await create(list.map((row) => columnsOf(row, override)))
+    await create(
+      list.map((row) => {
+        const columns = columnsOf(row, override)
+        return files ? withFileUrls(row, columns, files.fields, files.organizationId) : columns
+      })
+    )
   } catch (error) {
     // A restore rolls back as a whole, so the only thing left to salvage is
     // knowing which part of the file could not be read back.
@@ -323,21 +345,8 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))
   )
 
-  // Clear only the folders this backup can refill. Wiping the lot took the
-  // portal background and the tire photos with it, and no backup carried
-  // either of them back.
-  const carried = new Set(
-    fileEntries.map((name) => name.split('/')[1]).filter((category) => Boolean(category))
-  )
-  for (const category of carried) {
-    if (!UPLOAD_CATEGORIES.includes(category)) continue
-    try {
-      await rm(path.join(uploadsDir, category), { recursive: true, force: true })
-    } catch {
-      // Folder may not exist yet.
-    }
-  }
-
+  // The backup's files are written first, over whatever has the same name.
+  const restored = new Map<string, Set<string>>()
   for (const filePath of fileEntries) {
     // Supports both formats:
     //   files/{category}/{filename}  (v2 backup)
@@ -358,26 +367,21 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
 
     const fileData = await zip.files[filePath].async('nodebuffer')
     await writeFile(path.join(targetDir, filename), fileData)
-  }
-}
 
-/** Rewrite file URLs to use the importing org's ID */
-function rewriteFileUrl(url: string | null | undefined, newOrgId: string): string | null {
-  if (!url) return null
-  // New format: /api/protected/files/OLD_ORG_ID/category/filename
-  if (url.startsWith('/api/protected/files/')) {
-    return url.replace(/^\/api\/protected\/files\/[^/]+\//, `/api/protected/files/${newOrgId}/`)
+    const names = restored.get(category) ?? new Set<string>()
+    names.add(filename)
+    restored.set(category, names)
   }
-  // Old format (pre-restructure): /api/files/OLD_ORG_ID/category/filename
-  if (url.startsWith('/api/files/')) {
-    return url.replace(/^\/api\/files\/[^/]+\//, `/api/protected/files/${newOrgId}/`)
+
+  // Then the files in those folders that the backup did not bring back go
+  // through the file manager, which keeps any a row still uses. The folders
+  // used to be emptied first, which also took files uploaded after the backup
+  // was made, still used by rows this restore did not replace. Only the
+  // folders the backup carries are looked at: it has nothing to say about
+  // the others (the portal background, the tire photos, when absent).
+  for (const [category, names] of restored) {
+    await releaseFilesNotRestored(organizationId, category, names)
   }
-  // Legacy format: /uploads/category/filename → convert to new format
-  if (url.startsWith('/uploads/')) {
-    const relative = url.replace(/^\/uploads\//, '')
-    return `/api/protected/files/${newOrgId}/${relative}`
-  }
-  return url
 }
 
 export async function POST(request: NextRequest) {
@@ -477,11 +481,10 @@ export async function POST(request: NextRequest) {
       if (data.settings?.length) {
         await tx.appSetting.createMany({
           data: (data.settings as Record<string, unknown>[]).map((s: Record<string, unknown>) => {
-            let value = s.value as string
-            // Rewrite file URLs in settings (e.g. logo paths)
-            if (value?.startsWith('/api/protected/files/') || value?.startsWith('/api/files/')) {
-              value = rewriteFileUrl(value, ctx.organizationId) || value
-            }
+            // A setting's value can be a stored file (the workshop logo, the
+            // portal background), in any of the shapes uploads have had.
+            const value = (rewriteFileUrl(s.value as string, ctx.organizationId) ??
+              s.value) as string
             return {
               id: s.id as string,
               key: s.key as string,
@@ -508,7 +511,11 @@ export async function POST(request: NextRequest) {
             documentType: (d.documentType as string) || 'invoice',
             name: d.name as string,
             layout: (d.layout ?? {}) as Prisma.InputJsonValue,
-            template: (d.template ?? {}) as Prisma.InputJsonValue,
+            // The design's own logo is a stored upload inside the template.
+            template: rewriteFileUrlsWithin(
+              d.template ?? {},
+              ctx.organizationId
+            ) as Prisma.InputJsonValue,
             createdAt: toSafeDate(d.createdAt as string),
             updatedAt: toSafeDate(d.updatedAt as string),
           })),
@@ -524,21 +531,7 @@ export async function POST(request: NextRequest) {
         )
         // Uploads travel under this organisation's id, so every stored
         // upload URL is rewritten the way logo settings are.
-        const rewriteAssets = (value: unknown): unknown => {
-          if (typeof value === 'string' && value.startsWith('/api/protected/files/')) {
-            return rewriteFileUrl(value, ctx.organizationId) ?? value
-          }
-          if (Array.isArray(value)) return value.map(rewriteAssets)
-          if (value && typeof value === 'object') {
-            return Object.fromEntries(
-              Object.entries(value as Record<string, unknown>).map(([k, v]) => [
-                k,
-                rewriteAssets(v),
-              ])
-            )
-          }
-          return value
-        }
+        const rewriteAssets = (value: unknown) => rewriteFileUrlsWithin(value, ctx.organizationId)
         await tx.emailTemplate.createMany({
           data: rows.map((t) => ({
             id: t.id as string,
@@ -558,6 +551,11 @@ export async function POST(request: NextRequest) {
         const rows = (data.documentDesignSnapshots as Record<string, unknown>[]).filter(
           (d) => typeof d.id === 'string' && typeof d.hash === 'string'
         )
+        // The look an invoice was issued with, kept exactly as it was: the
+        // row's hash is taken over its own content, and the logo an issued
+        // document prints comes from the frozen bytes beside it
+        // (issuedLogoSnapshot), not from the URL in here. So the URLs in a
+        // snapshot are left naming the workshop the backup came from.
         await tx.documentDesignSnapshot.createMany({
           data: rows.map((d) => ({
             id: d.id as string,
@@ -613,6 +611,28 @@ export async function POST(request: NextRequest) {
 
       // 4. Insert technicians
       if (data.technicians?.length) {
+        // A technician can be linked to a person's account, and a backup only
+        // carries that account's id. Restored into another installation, or
+        // into this one after the person was removed, the id points at nobody
+        // and the foreign key refuses the whole import. The link is kept only
+        // for people who are members of this workshop today; anybody else
+        // comes back as a board-only technician, name and all, and can be
+        // linked again from the team page.
+        const linkedUserIds = [
+          ...new Set(
+            (data.technicians as Record<string, unknown>[])
+              .map((t) => t.userId)
+              .filter((id): id is string => typeof id === 'string' && id.length > 0)
+          ),
+        ]
+        const members = linkedUserIds.length
+          ? await tx.organizationMember.findMany({
+              where: { organizationId: ctx.organizationId, userId: { in: linkedUserIds } },
+              select: { userId: true },
+            })
+          : []
+        const memberUserIds = new Set(members.map((m) => m.userId))
+
         await tx.technician.createMany({
           data: (data.technicians as Record<string, unknown>[]).map(
             (t: Record<string, unknown>) => ({
@@ -622,7 +642,9 @@ export async function POST(request: NextRequest) {
               isActive: t.isActive !== false,
               sortOrder: (t.sortOrder as number) || 0,
               dailyCapacity: (t.dailyCapacity as number) || 480,
-              userId: (t.userId as string) || null, // memberId from old backups ignored — no FK to users
+              skills: (t.skills as string) || null,
+              // memberId from old backups is ignored: it has no FK to users.
+              userId: typeof t.userId === 'string' && memberUserIds.has(t.userId) ? t.userId : null,
               createdAt: toSafeDate(t.createdAt as string),
               updatedAt: toSafeDate(t.updatedAt as string),
               organizationId: ctx.organizationId,
@@ -733,7 +755,9 @@ export async function POST(request: NextRequest) {
           await restoreRows(
             'inventory images',
             (rows) => tx.storedImage.createMany({ data: rows as never }),
-            part.gallery
+            part.gallery,
+            {},
+            { fields: ['url'], organizationId: ctx.organizationId }
           )
         }
       }
@@ -879,11 +903,12 @@ export async function POST(request: NextRequest) {
 
           const recurring = v.recurringInvoices as Record<string, unknown>[] | undefined
           if (recurring?.length) {
+            // No organizationId on the row: a recurring invoice is the
+            // vehicle's, and the vehicle is this workshop's.
             await restoreRows(
               'recurring invoices',
               (rows) => tx.recurringInvoice.createMany({ data: rows as never }),
-              recurring,
-              { organizationId }
+              recurring
             )
             for (const invoice of recurring) {
               await restoreRows(
@@ -958,13 +983,60 @@ export async function POST(request: NextRequest) {
         }
       }
       if (data.vehicles?.length) {
-        for (const vehicle of data.vehicles as Record<string, unknown>[]) {
-          await restoreRows(
-            'vehicle findings',
-            (rows) => tx.vehicleFinding.createMany({ data: rows as never }),
-            vehicle.findings,
-            { organizationId }
+        const findings = (data.vehicles as Record<string, unknown>[]).flatMap((vehicle) =>
+          ((vehicle.findings as Record<string, unknown>[] | undefined) ?? []).map((finding) => ({
+            finding,
+            vehicleId: vehicle.id as string,
+          }))
+        )
+        if (findings.length > 0) {
+          // A finding names the job it was found in, the job that resolved it
+          // and the concern it answers. Any of the three can be absent from
+          // this restore — a counter sale the backup did not carry, a job
+          // whose vehicle was left out — and one dangling id fails the whole
+          // import, so each is kept only when the row it names is really here.
+          const referencedJobs = findings.flatMap(({ finding }) =>
+            [finding.serviceRecordId, finding.resolvedServiceRecordId].filter(
+              (id): id is string => typeof id === 'string'
+            )
           )
+          const referencedConcerns = findings
+            .map(({ finding }) => finding.concernId)
+            .filter((id): id is string => typeof id === 'string')
+          const [jobRows, concernRows] = await Promise.all([
+            tx.serviceRecord.findMany({
+              where: { id: { in: referencedJobs }, organizationId },
+              select: { id: true },
+            }),
+            tx.serviceConcern.findMany({
+              where: { id: { in: referencedConcerns }, serviceRecord: { organizationId } },
+              select: { id: true },
+            }),
+          ])
+          const restoredJobIds = new Set(jobRows.map((row) => row.id))
+          const restoredConcernIds = new Set(concernRows.map((row) => row.id))
+
+          await tx.vehicleFinding.createMany({
+            data: findings.map(({ finding, vehicleId: findingVehicleId }) => ({
+              id: finding.id as string,
+              description: (finding.description as string) || '',
+              severity: (finding.severity as string) || 'needs_work',
+              status: (finding.status as string) || 'open',
+              notes: (finding.notes as string) || null,
+              imageUrls: ((finding.imageUrls as string[]) || []).map(
+                (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
+              ),
+              createdAt: toSafeDate(finding.createdAt as string),
+              updatedAt: toSafeDate(finding.updatedAt as string),
+              vehicleId: findingVehicleId,
+              serviceRecordId: keptReference(finding.serviceRecordId, restoredJobIds),
+              resolvedServiceRecordId: keptReference(
+                finding.resolvedServiceRecordId,
+                restoredJobIds
+              ),
+              concernId: keptReference(finding.concernId, restoredConcernIds),
+            })),
+          })
         }
       }
 
@@ -1043,7 +1115,9 @@ export async function POST(request: NextRequest) {
           await restoreRows(
             'quote attachments',
             (rows) => tx.quoteAttachment.createMany({ data: rows as never }),
-            q.attachments
+            q.attachments,
+            {},
+            { fields: ['fileUrl'], organizationId: ctx.organizationId }
           )
         }
       }
@@ -1125,7 +1199,9 @@ export async function POST(request: NextRequest) {
                 sortOrder: (item.sortOrder as number) || 0,
                 condition: (item.condition as string) || 'not_inspected',
                 notes: (item.notes as string) || null,
-                imageUrls: (item.imageUrls as string[]) || [],
+                imageUrls: ((item.imageUrls as string[]) || []).map(
+                  (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
+                ),
                 inspectionId: insp.id as string,
               })),
             })
@@ -1200,7 +1276,8 @@ export async function POST(request: NextRequest) {
         'WhatsApp messages',
         (rows) => tx.whatsappMessage.createMany({ data: rows as never }),
         data.whatsappMessages,
-        { organizationId }
+        { organizationId },
+        { fields: ['mediaUrl'], organizationId }
       )
       await restoreRows(
         'Telegram messages',
@@ -1478,6 +1555,19 @@ export async function POST(request: NextRequest) {
                 movementId: null,
               })),
             })
+
+            // The condition photos of each reading. They hang off the
+            // measurement and are deleted with it, so a restore without them
+            // leaves the reading with no evidence behind it.
+            for (const m of measurements) {
+              await restoreRows(
+                'tire condition photos',
+                (rows) => tx.storedImage.createMany({ data: rows as never }),
+                m.images,
+                { tireMeasurementId: m.id as string, inventoryPartId: null },
+                { fields: ['url'], organizationId: ctx.organizationId }
+              )
+            }
           }
 
           const movements = set.movements as Record<string, unknown>[] | undefined
@@ -1508,7 +1598,7 @@ export async function POST(request: NextRequest) {
               data: attachments.map((att) => ({
                 id: att.id as string,
                 fileName: (att.fileName as string) || 'file',
-                fileUrl: (att.fileUrl as string) || '',
+                fileUrl: rewriteFileUrl(att.fileUrl as string, ctx.organizationId) ?? '',
                 fileType: (att.fileType as string) || 'application/octet-stream',
                 fileSize: (att.fileSize as number) || 0,
                 description: (att.description as string) || null,

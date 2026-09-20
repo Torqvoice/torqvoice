@@ -1229,7 +1229,29 @@
     "dateLabel": "Data",
     "dateTimeLabel": "Data e ora",
     "saveSettings": "Salva impostazioni",
-    "saved": "Impostazioni salvate"
+    "saved": "Impostazioni salvate",
+    "fontLabel": "Carattere",
+    "fontHint": "Scegli i caratteri tipografici dell'app. La scelta viene salvata su questo dispositivo.",
+    "fontSampleHeading": "Ordine di lavoro",
+    "fontSampleText": "Sostituire bobina di accensione e candele",
+    "fonts": {
+      "default": {
+        "name": "Predefinito",
+        "description": "Geist, pulito e neutro."
+      },
+      "workshop": {
+        "name": "Officina",
+        "description": "IBM Plex con titoli in maiuscolo condensato, come una scheda di lavoro."
+      },
+      "precise": {
+        "name": "Preciso",
+        "description": "Inter e JetBrains Mono. Pensato per schermate piene di tabelle e cifre."
+      },
+      "legible": {
+        "name": "Leggibile",
+        "description": "Atkinson Hyperlegible. 0 e O, 1 e l non si confondono mai; facile da leggere dall'altra parte dell'officina."
+      }
+    }
   },
   "data": {
     "title": "Gestione dati",

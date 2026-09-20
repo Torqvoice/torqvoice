@@ -126,16 +126,36 @@ export interface TenantFixtures {
   quoteNumber: string
 }
 
+/** A customer and a quote, each taken whole so its id and its words agree. */
+async function pairs(
+  db: Client,
+  organizationId: string
+): Promise<Pick<TenantFixtures, 'customerId' | 'customerName' | 'quoteId' | 'quoteNumber'>> {
+  const customer = await db.query<{ id: string; name: string }>(
+    `select id, name from customers where "organizationId" = $1 order by "createdAt", id limit 1`,
+    [organizationId]
+  )
+  if (!customer.rows[0]) throw new Error('the seeded workshop has no customer')
+
+  const quote = await db.query<{ id: string; quoteNumber: string }>(
+    `select id, "quoteNumber" from quotes
+      where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
+      order by "createdAt", id limit 1`,
+    [organizationId]
+  )
+  if (!quote.rows[0]) throw new Error('the seeded workshop has no numbered quote')
+
+  return {
+    customerId: customer.rows[0].id,
+    customerName: customer.rows[0].name,
+    quoteId: quote.rows[0].id,
+    quoteNumber: quote.rows[0].quoteNumber,
+  }
+}
+
 export async function seededTenantFixtures(): Promise<TenantFixtures> {
   const organizationId = await ownerOrganizationId()
   return withDb(async (db) => {
-    const one = async (sql: string): Promise<string> => {
-      const result = await db.query<{ id: string }>(sql, [organizationId])
-      const id = result.rows[0]?.id
-      if (!id) throw new Error(`the seeded workshop has nothing for: ${sql}`)
-      return id
-    }
-
     /**
      * A vehicle and one of its own jobs, from one row.
      *
@@ -170,20 +190,12 @@ export async function seededTenantFixtures(): Promise<TenantFixtures> {
       vehicleId: job.vehicleId,
       serviceRecordId: job.serviceRecordId,
       vehiclePlate: job.licensePlate,
-      customerId: await one(`select id from customers where "organizationId" = $1 limit 1`),
-      quoteId: await one(
-        `select id from quotes
-          where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
-          limit 1`
-      ),
-      customerName: await one(
-        `select name as id from customers where "organizationId" = $1 limit 1`
-      ),
-      quoteNumber: await one(
-        `select "quoteNumber" as id from quotes
-          where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
-          limit 1`
-      ),
+      // Id and words from one row each, for the same reason the vehicle and
+      // its job come from one row: `limit 1` without an order is not a
+      // promise, and two queries for "a customer" can answer with two
+      // different customers. That way round the id opens one record and the
+      // name that is searched for on it belongs to another.
+      ...(await pairs(db, organizationId)),
     }
   })
 }
@@ -1333,5 +1345,254 @@ export async function jobWithCustomer(organizationId: string): Promise<{
     const row = result.rows[0]
     if (!row) throw new Error('the seeded workshop has no vehicle job with a customer')
     return row
+  })
+}
+
+export interface PlantedVehicleFiles {
+  vehicleImage: string
+  jobPhoto: string
+  /** A tire set's photo, also on the job as a tire hotel copy. */
+  tireSetPhoto: string
+  statusVideo: string
+  inspectionPhoto?: string
+  quoteDocument: string
+  /** A URL naming another workshop, as a row restored from its backup can. */
+  foreignPhoto: string
+}
+
+export interface PlantedVehicle {
+  vehicleId: string
+  serviceRecordId: string
+  tireSetId: string
+  quoteId: string
+  inspected: boolean
+}
+
+/**
+ * A vehicle with every kind of file that can go with it, written straight
+ * into the database so a spec knows exactly which rows point at which file:
+ * its image; a job with a photo, a status report video and the copy of a tire
+ * set's photo; an inspection with a photo on one item (when the workshop has
+ * a template to hang it on); and, pointing at the same vehicle but not
+ * deleted with it, a stored tire set and a quote with a document.
+ */
+export async function plantVehicleWithFiles(
+  organizationId: string,
+  userId: string,
+  files: PlantedVehicleFiles,
+  label: string
+): Promise<PlantedVehicle> {
+  return withDb(async (db) => {
+    const id = () => randomBytes(12).toString('hex')
+    const vehicleId = id()
+    const serviceRecordId = id()
+    const tireSetId = id()
+    const quoteId = id()
+    await db.query(
+      `insert into vehicles (id, make, model, year, "userId", "organizationId", "imageUrl", "updatedAt")
+       values ($1, 'E2E', $2, 2020, $3, $4, $5, now())`,
+      [vehicleId, label, userId, organizationId, files.vehicleImage]
+    )
+    await db.query(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "updatedAt")
+       values ($1, $2, $3, $4, now())`,
+      [serviceRecordId, `${label} job`, vehicleId, organizationId]
+    )
+    await db.query(
+      `insert into tire_sets (id, "organizationId", "userId", "vehicleId", "updatedAt")
+       values ($1, $2, $3, $4, now())`,
+      [tireSetId, organizationId, userId, vehicleId]
+    )
+    await db.query(
+      `insert into tire_set_attachments (id, "organizationId", "tireSetId", "fileName", "fileUrl", "fileType", "fileSize")
+       values ($1, $2, $3, 'rim.jpg', $4, 'image/jpeg', 10)`,
+      [id(), organizationId, tireSetId, files.tireSetPhoto]
+    )
+    for (const [fileUrl, category] of [
+      [files.jobPhoto, 'image'],
+      [files.tireSetPhoto, 'tire_hotel'],
+      [files.foreignPhoto, 'image'],
+    ]) {
+      await db.query(
+        `insert into service_attachments (id, "serviceRecordId", "fileName", "fileUrl", "fileType", "fileSize", category)
+         values ($1, $2, 'photo.jpg', $3, 'image/jpeg', 10, $4)`,
+        [id(), serviceRecordId, fileUrl, category]
+      )
+    }
+    await db.query(
+      `insert into status_reports (id, "publicToken", "organizationId", "serviceRecordId", "videoUrl", "updatedAt")
+       values ($1, $2, $3, $4, $5, now())`,
+      [id(), id(), organizationId, serviceRecordId, files.statusVideo]
+    )
+    await db.query(
+      `insert into quotes (id, title, "userId", "organizationId", "vehicleId", "updatedAt")
+       values ($1, $2, $3, $4, $5, now())`,
+      [quoteId, `${label} quote`, userId, organizationId, vehicleId]
+    )
+    await db.query(
+      `insert into quote_attachments (id, "quoteId", "fileName", "fileUrl", "fileType", "fileSize")
+       values ($1, $2, 'estimate.pdf', $3, 'application/pdf', 10)`,
+      [id(), quoteId, files.quoteDocument]
+    )
+
+    let inspected = false
+    const template = await db.query<{ id: string }>(
+      `select id from inspection_templates where "organizationId" = $1 limit 1`,
+      [organizationId]
+    )
+    if (files.inspectionPhoto && template.rows[0]) {
+      const inspectionId = id()
+      await db.query(
+        `insert into inspections (id, "vehicleId", "organizationId", "templateId", "updatedAt")
+         values ($1, $2, $3, $4, now())`,
+        [inspectionId, vehicleId, organizationId, template.rows[0].id]
+      )
+      await db.query(
+        `insert into inspection_items (id, "inspectionId", name, section, "imageUrls")
+         values ($1, $2, 'Brakes', 'Checks', $3)`,
+        [id(), inspectionId, [files.inspectionPhoto]]
+      )
+      inspected = true
+    }
+    return { vehicleId, serviceRecordId, tireSetId, quoteId, inspected }
+  })
+}
+
+/** Removes what `plantVehicleWithFiles` made that its spec did not delete. */
+export async function removePlantedVehicle(planted: PlantedVehicle): Promise<void> {
+  await withDb(async (db) => {
+    await db.query('delete from quotes where id = $1', [planted.quoteId])
+    await db.query('delete from tire_sets where id = $1', [planted.tireSetId])
+    await db.query('delete from inspections where "vehicleId" = $1', [planted.vehicleId])
+    await db.query('delete from vehicles where id = $1', [planted.vehicleId])
+  })
+}
+
+/**
+ * Every permission refusal logged for one person since a moment in time.
+ *
+ * `withAuth` writes an `auth.permissionDenied` row whenever a role is short of
+ * what an action asked for, which makes the audit log the one place that says
+ * what a page quietly wanted and did not get. A refusal on a page the role is
+ * meant to reach is, by definition, a bug: the page renders anyway, falls back
+ * to a built-in default, and says nothing about it.
+ *
+ * The write is fire-and-forget, so give it a moment to land before counting.
+ */
+export async function permissionDenialsFor(email: string, since: Date): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ message: string }>(
+      `select coalesce(a.message, a.action) as message
+         from audit_logs a
+         join users u on u.id = a."userId"
+        where lower(u.email) = lower($1)
+          and a.action = 'auth.permissionDenied'
+          and a.timestamp >= $2
+        order by a.timestamp`,
+      [email, since]
+    )
+    return result.rows.map((row) => row.message)
+  })
+}
+
+/**
+ * Sets one of a workshop's settings directly, returning what was there before
+ * (null when the key had never been saved), so a spec can put it back.
+ *
+ * The row needs an owner: `app_settings.userId` is not nullable, so a key the
+ * workshop has never saved is attributed to whoever owns the workshop.
+ */
+export async function setWorkshopSetting(
+  organizationId: string,
+  key: string,
+  value: string
+): Promise<string | null> {
+  return withDb(async (db) => {
+    const before = await db.query<{ value: string }>(
+      `select value from app_settings where "organizationId" = $1 and key = $2`,
+      [organizationId, key]
+    )
+    await db.query(
+      `insert into app_settings (id, key, value, "userId", "organizationId")
+       values (gen_random_uuid()::text, $2, $3,
+               (select "userId" from organization_members
+                 where "organizationId" = $1 and role = 'owner' limit 1),
+               $1)
+       on conflict ("organizationId", key) do update set value = excluded.value`,
+      [organizationId, key, value]
+    )
+    return before.rows[0]?.value ?? null
+  })
+}
+
+/**
+ * A custom field on one kind of record, made here so the spec owns it.
+ *
+ * `name` is the key the app stores values under and `label` is what a person
+ * reads, so both are stamped: the point of the field is that its label shows
+ * up on the record, and a name left over from an earlier run would collide on
+ * `(organizationId, name, entityType)`.
+ */
+export async function plantCustomField(
+  organizationId: string,
+  entityType: 'service_record' | 'quote',
+  name: string
+): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into custom_field_definitions
+         (id, name, label, "fieldType", "entityType", "sortOrder", "isActive",
+          "createdAt", "updatedAt", "userId", "organizationId")
+       values (gen_random_uuid()::text, $2, $2, 'text', $3, 0, true, now(), now(),
+               (select "userId" from organization_members
+                 where "organizationId" = $1 and role = 'owner' limit 1),
+               $1)
+       returning id`,
+      [organizationId, name, entityType]
+    )
+    return result.rows[0].id
+  })
+}
+
+/** Removes planted field definitions, and the values written into them. */
+export async function deleteCustomFields(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb(async (db) => {
+    await db.query(`delete from custom_field_values where "fieldId" = any($1::text[])`, [ids])
+    await db.query(`delete from custom_field_definitions where id = any($1::text[])`, [ids])
+  })
+}
+
+/**
+ * The value stored in one custom field for one record, or null.
+ *
+ * Read back to prove a save from the browser reached the database rather than
+ * only the input it was typed into.
+ */
+export async function customFieldValue(fieldId: string, entityId: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ value: string }>(
+      `select value from custom_field_values where "fieldId" = $1 and "entityId" = $2`,
+      [fieldId, entityId]
+    )
+    return result.rows[0]?.value ?? null
+  })
+}
+
+/**
+ * A workshop's own role by name, as `createDefaultRoles` made it.
+ *
+ * The built-in Member role is what the product really hands somebody at the
+ * desk, so a spec about that role has to use that row rather than build an
+ * equivalent permission list by hand: a list assembled in the test would keep
+ * passing after the real role changed underneath it.
+ */
+export async function roleIdNamed(organizationId: string, name: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from roles where "organizationId" = $1 and name = $2 limit 1`,
+      [organizationId, name]
+    )
+    return result.rows[0]?.id ?? null
   })
 }

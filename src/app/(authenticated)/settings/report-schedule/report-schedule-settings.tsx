@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
+import { useDateSettings } from '@/components/date-settings-context'
+import { zonedDateInput } from '@/lib/timezone'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -181,8 +183,13 @@ function ScheduleForm({
   const [dateRange, setDateRange] = useState(schedule?.dateRange || 'last30d')
   const [sections, setSections] = useState<string[]>(schedule?.sections || [...REPORT_SECTIONS])
   const [recipients, setRecipients] = useState<string[]>(schedule?.recipients || [])
+  // The end date is stored as the last moment of that day on the workshop's
+  // clock (`endOfWorkshopDay`), so it is read back on that clock. Read as a
+  // UTC day, it came back a day late anywhere west of UTC, and every save of
+  // the schedule pushed it another day.
+  const { timezone } = useDateSettings()
   const [endDate, setEndDate] = useState(
-    schedule?.endDate ? new Date(schedule.endDate).toISOString().split('T')[0] : ''
+    schedule?.endDate ? zonedDateInput(new Date(schedule.endDate), timezone) : ''
   )
 
   const toggleSection = (section: string) => {

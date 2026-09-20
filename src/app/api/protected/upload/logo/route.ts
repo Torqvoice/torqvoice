@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { writeFile, mkdir, unlink } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { randomUUID } from 'crypto'
-import { db } from '@/lib/db'
 import { cleanImage } from '@/lib/image-upload.server'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { uploadsRoot } from '@/lib/upload-root'
 
 export async function POST(request: Request) {
@@ -48,18 +46,10 @@ export async function POST(request: Request) {
 
     const url = `/api/protected/files/${ctx.organizationId}/logos/${fileName}`
 
-    // Delete old logo file if one exists
-    const oldLogo = await db.appSetting.findFirst({
-      where: { organizationId: ctx.organizationId, key: 'workshop.logo' },
-      select: { value: true },
-    })
-    if (oldLogo?.value) {
-      try {
-        await unlink(resolveUploadPath(oldLogo.value))
-      } catch {
-        // Old file may already be gone
-      }
-    }
+    // Nothing is deleted here. The invoice designer uploads through this
+    // route too, so the file that was the logo can still be in use; the old
+    // file is let go when the setting that pointed at it is saved with a new
+    // value (lib/files/settings.ts), and an upload never saved is swept.
 
     return NextResponse.json({ url, fileName })
   } catch (error) {

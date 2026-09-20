@@ -175,6 +175,14 @@ export async function POST(request: NextRequest) {
             reminders: true,
             serviceRequests: true,
             inspectionStatus: true,
+            // What the workshop saw and did not do yet, with the photographs
+            // that argue for it. Deleted with the vehicle on a restore, so a
+            // backup without them is a one-way loss. The same goes for the
+            // three below: every one of them hangs off the vehicle and was
+            // restored from a key the export never wrote.
+            findings: true,
+            aiMessages: true,
+            recurringInvoices: { include: { templateParts: true, templateLabor: true } },
             serviceRecords: {
               include: {
                 concerns: true,
@@ -307,7 +315,10 @@ export async function POST(request: NextRequest) {
         .findMany({
           where: { organizationId: ctx.organizationId },
           include: {
-            measurements: true,
+            // The condition photos hang off the reading, so they travel with
+            // it; a measurement restored without them loses the evidence for
+            // a worn tire the customer was charged for.
+            measurements: { include: { images: true } },
             movements: true,
             treatments: true,
             attachments: true,

@@ -21,7 +21,8 @@
       "title": "The job needs a title before it can be saved.",
       "negative": "Quantities, hours, prices and costs cannot be negative.",
       "partName": "Every priced part needs a name.",
-      "laborDescription": "Every labour line with hours or a rate needs a description."
+      "laborDescription": "Every labour line with hours or a rate needs a description.",
+      "concernCondition": "A concern with a cause, correction or confirmation needs its condition filled in."
     }
   },
   "header": {
@@ -164,6 +165,11 @@
     "deleteRow": "Delete row",
     "descriptionMissingHint": "Rows without a description are not saved."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {A technician added labor to this job} other {A technician added # labor lines to this job}}",
+    "body": "It stays out of the list while you are editing. Your next save includes it either way.",
+    "show": "Show it"
+  },
   "totals": {
     "title": "Totals",
     "parts": "Parts",
@@ -198,7 +204,9 @@
     "aiOverwriteReplace": "Replace",
     "aiOverwriteAppend": "Append",
     "aiOverwriteCancel": "Cancel",
-    "aiDontShowAgain": "Don't show this again"
+    "aiDontShowAgain": "Don't show this again",
+    "internalTitle": "Internal notes",
+    "publicTitle": "Customer notes"
   },
   "invoice": {
     "title": "Invoice Summary",
@@ -248,7 +256,10 @@
     "failedDelete": "Failed to delete payment",
     "deleteTitle": "Delete Payment",
     "deleteDescription": "This will remove this payment record.",
-    "failedPdf": "Failed to generate PDF invoice"
+    "failedPdf": "Failed to generate PDF invoice",
+    "received": "Payments received",
+    "noneYet": "Nothing paid yet.",
+    "balanceDue": "Balance due"
   },
   "attachments": {
     "deleteTitle": "Delete Attachment",
@@ -357,6 +368,7 @@
     "date": "Date",
     "startTime": "Start Time",
     "endTime": "End Time",
+    "durationPresets": "Duration presets",
     "technician": "Technician",
     "selectTechnician": "Select technician...",
     "searchOrCreate": "Search or create technician...",
@@ -369,6 +381,7 @@
     "assign": "Assign to Board",
     "assigned": "Assigned to work board",
     "failedAssign": "Failed to assign",
+    "assignNotAllowed": "You don't have permission to assign technicians. Ask an owner or admin to allow work board changes for your role.",
     "endBeforeStart": "End time must be after start time",
     "failedUpdate": "Failed to update schedule times",
     "splitCreated": "Job spans multiple days — continuation created for next day",
@@ -394,7 +407,17 @@
     "pickNextAvailable": "Pick next available slot",
     "findingSlot": "Finding a slot…",
     "slotPicked": "Booked into the next free slot",
-    "noSlotFound": "No free slot found in the next few weeks"
+    "noSlotFound": "No free slot found in the next few weeks",
+    "assignedTitle": "Assigned technician",
+    "boardLink": "Work board",
+    "someoneElse": "Someone else",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h free",
+    "loadFull": "Fully booked",
+    "loadOn": "Booked hours on {date}",
+    "promisedAt": "Promised to customer",
+    "promisedPlaceholder": "Not promised yet",
+    "promisedClear": "Clear"
   },
   "notifications": {
     "title": "Customer Notifications",
@@ -447,7 +470,60 @@
     "placeholder": "There is a noise from the back when I brake",
     "remove": "Remove this concern",
     "notAnswered": "Nothing found against this yet",
-    "answered": "{count} finding(s) against this"
+    "answered": "{count, plural, one {# observation against this} other {# observations against this}}",
+    "storyTitle": "Job description",
+    "storyHint": "Condition, cause, correction, confirm. Click a step to open it; one row for each thing the customer mentioned or you observed.",
+    "steps": {
+      "condition": "Condition",
+      "cause": "Cause",
+      "correction": "Correction",
+      "confirm": "Confirm"
+    },
+    "conditionPlaceholder": "What the customer reported, or what you observed",
+    "causePlaceholder": "What testing showed the root cause to be",
+    "correctionPlaceholder": "What was done to fix it",
+    "confirmPlaceholder": "How the fix was checked: test drive, re-scan, symptom gone",
+    "markConfirmed": "Confirmed",
+    "confirmedBy": "Confirmed by {name}, {date}",
+    "confirmedAt": "Confirmed {date}",
+    "confirmedOnSave": "Stamped with your name when you save",
+    "confirmedCount": "{confirmed} of {total} confirmed",
+    "findingsCount": "{count, plural, one {# observation} other {# observations}}",
+    "addFinding": "Add observation",
+    "unconfirmedTitle": "Complete with unconfirmed concerns?",
+    "unconfirmedBody": "{count, plural, one {One concern has not been confirmed as fixed:} other {# concerns have not been confirmed as fixed:}}",
+    "unconfirmedProceed": "Complete anyway",
+    "addMedia": "Add media",
+    "mediaUploading": "Uploading…",
+    "mediaAdded": "{count, plural, one {# file added} other {# files added}}",
+    "mediaFailed": "Could not upload {name}",
+    "mediaTypes": "Choose a photo (JPG, PNG, WebP) or a video.",
+    "dictate": {
+      "start": "Dictate",
+      "listening": "Listening",
+      "startHint": "Speak and it is written here. Nothing is recorded.",
+      "stopHint": "Stop listening",
+      "notAllowed": "The browser was not allowed to use the microphone. Allow it for this site and try again.",
+      "noMicrophone": "No microphone was found.",
+      "failed": "Dictation stopped. Try again.",
+      "startHintServer": "Speak and it is written as you talk. The audio goes to your speech model to be written down and is not kept.",
+      "transcribing": "Finishing…",
+      "language": "Language spoken",
+      "auto": "Auto",
+      "nothingHeard": "Nothing was heard.",
+      "fellBack": "Using the browser's own dictation for now.",
+      "autoLong": "Auto (detect the language)",
+      "engine": "Written down by",
+      "engineAi": "Speech model (more accurate)",
+      "engineBrowser": "Browser (writes as you speak)",
+      "liveFellBack": "Writing in steps of a few seconds instead of word by word."
+    },
+    "stepEmpty": "Not written yet",
+    "removeTitle": "Remove this concern?",
+    "removeBody": "Its condition, cause, correction and confirmation are removed with it when you save the work order.",
+    "removeAttached": "Its observations and media stay on the job, no longer filed under a concern.",
+    "removeConfirm": "Remove concern",
+    "saveFirst": "Save the work order first"
   },
   "videoCall": {
     "title": "Video call",
@@ -493,5 +569,127 @@
       "joinLine": "Join the video call here: {url}",
       "emailSubject": "Video call about your {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Work order status",
+    "back": "Back",
+    "backToClassic": "Back to the classic layout",
+    "openCustomer": "Open customer",
+    "serviceHistory": "Service history",
+    "changeVehicle": "Change vehicle",
+    "vehicleChangesOnSave": "The work order moves to this vehicle when you save.",
+    "phone": "Phone",
+    "email": "Email",
+    "notSet": "Not set",
+    "noCustomer": "No customer on this work order.",
+    "invoiceTitle": "Invoice & payment",
+    "filesTitle": "Files & media",
+    "activity": {
+      "title": "Activity",
+      "messageSent": "Message sent to the customer",
+      "linkShared": "Invoice link shared",
+      "linkViewed": "{count, plural, one {Customer opened the link} other {Customer opened the link # times}}",
+      "paymentTaken": "Payment of {amount} recorded"
+    },
+    "invite": {
+      "title": "The work order page has been overhauled.",
+      "body": "A clearer layout with the same fields. You can switch back at any time.",
+      "try": "Try it now",
+      "dismiss": "Not now",
+      "menu": "Try the new layout"
+    },
+    "promised": "Promised {date}",
+    "promisedOverdue": "Promised {date}, overdue",
+    "opened": "Opened {date}",
+    "openedBy": "Opened {date} by {name}",
+    "editTitle": "Edit title",
+    "titleField": "Title",
+    "media": {
+      "tabs": {
+        "photos": "Photos",
+        "diagnostics": "Diagnostics"
+      },
+      "summary": "{count, plural, one {# file} other {# files}} · shared with the customer only when marked",
+      "customerCanSee": "Customer can see",
+      "showToCustomer": "Show to the customer",
+      "hideFromCustomer": "Hide from the customer",
+      "add": {
+        "image": "Add photos",
+        "document": "Add documents",
+        "diagnostic": "Add diagnostic report",
+        "video": "Add video"
+      },
+      "dropHint": "Drop files or click to browse",
+      "added": "{count, plural, one {# file added} other {# files added}}",
+      "failed": "Could not upload {name}",
+      "wrongType": "Not the right kind of file for this tab: {names}",
+      "limit": "Limit reached ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Paid",
+      "balance": "Balance due",
+      "settled": "Paid in full",
+      "takePayment": "Take payment",
+      "preview": "Preview invoice",
+      "previewShort": "Preview",
+      "send": "Send to customer",
+      "sendShort": "Send"
+    },
+    "vehicleInfo": {
+      "more": "More info",
+      "less": "Less info",
+      "copy": "Copy {label}",
+      "copied": "Copied",
+      "lastInspection": "Last periodic inspection",
+      "purchaseDate": "Purchase date",
+      "purchasePrice": "Purchase price",
+      "overdue": "overdue",
+      "customerSince": "Customer since"
+    }
+  },
+  "photoHandoff": {
+    "button": "Add from phone",
+    "dialogTitle": "Add photos and documents from a phone",
+    "dialogBody": "Take or choose photos, or share a PDF, on any phone. Everything lands straight on this work order.",
+    "expires": "The code works until {time}.",
+    "waiting": "Waiting for photos and documents…",
+    "received": "{count, plural, one {# file received} other {# files received}}",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "failed": "Could not make a code. Try again.",
+    "done": "Done",
+    "pageTitle": "Add photos and documents",
+    "forJob": "Work order {number}",
+    "takePhoto": "Take photo",
+    "choosePhotos": "Choose photos",
+    "hint": "Everything goes straight onto the work order. Take as many photos as you need.",
+    "uploading": "Uploading…",
+    "added": "Added",
+    "notAdded": "Not added",
+    "retry": "Try again",
+    "addedCount": "{count, plural, one {# file added} other {# files added}}",
+    "expiredTitle": "This code has expired",
+    "invalidTitle": "This link does not work",
+    "errors": {
+      "expired": "Ask for a new code at the desk. Each one works for 30 minutes.",
+      "invalid": "Scan the code on the work order again.",
+      "limit": "This work order already has as many photos as it can take.",
+      "type": "Only photos and PDF documents can be added here.",
+      "tooLarge": "That file is too large.",
+      "failed": "The photo was not added. Check the connection and try again.",
+      "codeLimit": "This code has added as many photos as one code can. Scan a new code at the desk."
+    },
+    "concernHeading": "Photos go under this concern",
+    "howTitle": "How it works",
+    "step1": "Point the phone camera at the code and open the link.",
+    "step2": "Take photos, or choose photos or PDF documents already on the phone.",
+    "step3": "They appear on this work order as they arrive.",
+    "noSignIn": "No sign-in needed on the phone.",
+    "customerToo": "Staff can use it, and so can the customer: let them scan it, or send them the link.",
+    "scope": "The link only adds photos and documents to this work order, and stops working after 30 minutes.",
+    "scanHint": "Scan with the phone camera",
+    "chooseDocument": "Upload a document",
+    "privacy": "Only the workshop can see what you add here."
   }
 }

@@ -60,7 +60,8 @@
       "safety": "Atšaukimai ir savininkų skundai"
     },
     "ai": {
-      "chat": "Tekstai ir santraukos"
+      "chat": "Tekstai ir santraukos",
+      "transcribe": "Diktavimas"
     },
     "payments": {
       "checkout": "Mokėti iš sąskaitos nuorodos"
@@ -156,7 +157,8 @@
       "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
     },
     "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
-    "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}"
+    "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}",
+    "advanced": "Išplėstiniai"
   },
   "activity": {
     "title": "Veikla",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Nuolat atnaujinti atšaukimų ir skundų duomenis visoms šių dirbtuvių transporto priemonėms",
         "refreshFleetHelp": "Kartą per dieną modeliai, neatnaujinti per pastarąją savaitę, užklausiami iš naujo, kad transporto priemonės puslapiui niekada nereikėtų laukti, o naujas atšaukimas pasirodytų per savaitę. Siunčiami tik markė, modelis ir metai."
+      }
+    },
+    "speech-to-text": {
+      "description": "Diktavimas darbo užsakyme, kurį užrašo kalbos modelis, o ne naršyklė: daug tiksliau, bet kuria kalba, ir jis žino dirbtuvių žodžius. Atskirta nuo jūsų DI paslaugų teikėjo, todėl jį galite palikti tokį, koks yra. Naudojamas jūsų pačių OpenAI raktas arba jūsų serveris, kalbantis OpenAI transkripcijos API. Įrašas siunčiamas užrašyti ir nesaugomas.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "OpenAI raktas iš platform.openai.com skilties API keys; OpenAI apmokestina naudojimą pagal minutes. Jūsų serveriui tik tada, jei jis jo reikalauja.",
+        "baseUrl": "Serverio adresas",
+        "baseUrlHelp": "Palikite tuščią, jei naudojate OpenAI. Jūsų serveriui (vietiniam Whisper, LocalAI, Groq): kur prasideda jo OpenAI tipo API, įskaitant kelią, pavyzdžiui /v1. Torqvoice prie jo prideda /audio/transcriptions."
+      },
+      "settings": {
+        "model": "Modelis",
+        "modelHelp": "Kurio kalbos modelio prašyti. gpt-4o-mini-transcribe yra tikslus ir pigus; gpt-4o-transcribe yra didesnis. Jūsų serveris paprastai atsako į whisper-1.",
+        "mode": "Kas renkasi, kaip užrašomas diktavimas",
+        "modeHelp": "Naršyklė rašo jums kalbant, bet veikia prasčiau, ypač mažesnėmis kalbomis. Kalbos modelis rašo, kai baigiate kalbėti.",
+        "modeAi": "Visada kalbos modelis",
+        "modeChoice": "Kiekvienas renkasi: kalbos modelis ar naršyklė"
       }
     }
   },

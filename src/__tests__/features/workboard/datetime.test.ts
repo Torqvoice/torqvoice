@@ -24,6 +24,7 @@ function makeJob(startDateTime: string | null, endDateTime: string | null): Work
     status: 'pending',
     startDateTime,
     endDateTime,
+    promisedAt: null,
     vehicle: null,
   }
 }

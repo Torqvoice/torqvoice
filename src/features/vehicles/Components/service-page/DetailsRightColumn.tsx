@@ -134,6 +134,7 @@ export function DetailsRightColumn({
         initialEndDateTime={formState.initialData.endDateTime}
         initialTechnicianId={record.technicianId}
         initialWorkBayId={record.workBayId}
+        initialPromisedAt={record.promisedAt ? new Date(record.promisedAt).toISOString() : null}
         onSaved={formState.flashSaved}
       />
       {videoCall && (

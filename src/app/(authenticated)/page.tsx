@@ -3,7 +3,7 @@ import {
   getDashboardStats,
   getUpcomingReminders,
 } from '@/features/vehicles/Actions/dashboardActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   getVehiclesDueForService,
@@ -14,6 +14,8 @@ import { getQuoteRequests } from '@/features/inspections/Actions/quoteRequestAct
 import { getPendingServiceRequests } from '@/features/customers/Actions/customerActions'
 import { getQuoteResponses } from '@/features/quotes/Actions/quoteResponseActions'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { PermissionSubject } from '@/lib/permissions'
+import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
 import { getFeatures } from '@/lib/features'
 import { getRecentSmsThreads } from '@/features/sms/Actions/smsActions'
 import { getNotifications } from '@/features/notifications/Actions/notificationActions'
@@ -39,6 +41,14 @@ export default async function DashboardPage() {
   // that cannot have a portal never runs it, and the card on the second.
   const portalAllowed = features?.customerPortal ?? false
 
+  // What this person's role may read, asked once. Each card below is only
+  // asked for when it can be answered: a refused call is a wasted query and a
+  // "permission denied" row in the audit log, and a Member opening this page
+  // used to write twelve of them. What is drawn does not change, because a
+  // refused card was never drawn.
+  const access = await getViewerAccess()
+  const S = PermissionSubject
+
   const [
     result,
     settingsResult,
@@ -59,28 +69,34 @@ export default async function DashboardPage() {
     serviceRequestsResult,
     inspectionsDueResult,
   ] = await Promise.all([
-    getDashboardStats(),
-    getSettings([
+    readIfAllowed(access, S.DASHBOARD, () => getDashboardStats()),
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.PORTAL_ENABLED,
     ]),
-    getUpcomingReminders(),
-    getVehiclesDueForService(),
-    getDismissedMaintenanceVehicles(),
-    getInspectionsPaginated({ status: 'in_progress', pageSize: 5 }),
-    getInspectionsPaginated({ status: 'completed', pageSize: 5 }),
-    getQuoteRequests(),
-    getQuoteResponses(),
-    smsEnabled ? getRecentSmsThreads(0, 5) : Promise.resolve(null),
+    readIfAllowed(access, S.DASHBOARD, () => getUpcomingReminders()),
+    readIfAllowed(access, S.VEHICLES, () => getVehiclesDueForService()),
+    readIfAllowed(access, S.VEHICLES, () => getDismissedMaintenanceVehicles()),
+    readIfAllowed(access, S.INSPECTIONS, () =>
+      getInspectionsPaginated({ status: 'in_progress', pageSize: 5 })
+    ),
+    readIfAllowed(access, S.INSPECTIONS, () =>
+      getInspectionsPaginated({ status: 'completed', pageSize: 5 })
+    ),
+    readIfAllowed(access, S.INSPECTIONS, () => getQuoteRequests()),
+    readIfAllowed(access, S.QUOTES, () => getQuoteResponses()),
+    smsEnabled && access.reads(S.CUSTOMERS) ? getRecentSmsThreads(0, 5) : Promise.resolve(null),
     getNotifications(),
     getRecentAuditLogs(10),
-    getRecentObservations(),
-    getMyActiveJobs(),
+    readIfAllowed(access, S.VEHICLES, () => getRecentObservations()),
+    readIfAllowed(access, S.SERVICES, () => getMyActiveJobs()),
     getOnboardingChecklist(),
-    getTireHotelSummary(),
-    portalAllowed ? getPendingServiceRequests() : Promise.resolve(null),
-    getInspectionsDueSummary(),
+    readIfAllowed(access, S.TIRE_HOTEL, () => getTireHotelSummary()),
+    portalAllowed && access.reads(S.CUSTOMERS)
+      ? getPendingServiceRequests()
+      : Promise.resolve(null),
+    readIfAllowed(access, S.VEHICLES, () => getInspectionsDueSummary()),
   ])
 
   const [layoutUser, widgetRows] = auth

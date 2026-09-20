@@ -1229,7 +1229,29 @@
     "dateLabel": "Data",
     "dateTimeLabel": "Data ir laikas",
     "saveSettings": "Išsaugoti nustatymus",
-    "saved": "Nustatymai išsaugoti"
+    "saved": "Nustatymai išsaugoti",
+    "fontLabel": "Šriftas",
+    "fontHint": "Pasirinkite šriftus, kuriais rodoma programa. Pasirinkimas išsaugomas šiame įrenginyje.",
+    "fontSampleHeading": "Darbo užsakymas",
+    "fontSampleText": "Pakeisti uždegimo ritę ir žvakes",
+    "fonts": {
+      "default": {
+        "name": "Numatytasis",
+        "description": "Geist, švarus ir neutralus."
+      },
+      "workshop": {
+        "name": "Dirbtuvės",
+        "description": "IBM Plex su siauromis didžiųjų raidžių antraštėmis, kaip darbo kortelėje."
+      },
+      "precise": {
+        "name": "Tikslus",
+        "description": "Inter ir JetBrains Mono. Sukurta ekranams, pilniems lentelių ir skaičių."
+      },
+      "legible": {
+        "name": "Įskaitomas",
+        "description": "Atkinson Hyperlegible. 0 ir O, 1 ir l niekada neatrodo panašiai; lengva skaityti iš kito dirbtuvių galo."
+      }
+    }
   },
   "data": {
     "title": "Duomenų valdymas",
