@@ -13,5 +13,78 @@
   "selectCustomer": "Klient (opcjonalnie)",
   "noneOption": "Brak",
   "workshopHint": "Nie wybrano klienta ani pojazdu: to ogólne przypomnienie warsztatu.",
-  "workshopReminder": "Warsztat"
+  "workshopReminder": "Warsztat",
+  "import": {
+    "button": "Importuj",
+    "title": "Importuj przypomnienia",
+    "description": "Prześlij plik CSV lub Excel z jednym przypomnieniem w każdym wierszu. Zobaczysz każdy wiersz, zanim cokolwiek zostanie zapisane.",
+    "drop": "Upuść tutaj plik CSV lub Excel",
+    "formats": "CSV lub Excel (.xlsx), do {rows} wierszy",
+    "browse": "Wybierz plik",
+    "reading": "Odczytywanie pliku...",
+    "templateHint": "Zacznij od szablonu, aby kolumny były poprawne.",
+    "templateXlsx": "Szablon Excel",
+    "templateCsv": "Szablon CSV",
+    "columnsTitle": "Kolumny w pliku",
+    "required": {
+      "yes": "Wymagane",
+      "dateOrMileage": "Data lub przebieg",
+      "no": "Opcjonalne"
+    },
+    "columns": {
+      "title": "Co trzeba zrobić, na przykład „Wymiana oleju”.",
+      "dueDate": "Dzień terminu. 2026-10-15 działa zawsze, a formaty takie jak 15.10.2026 lub 10/15/2026 są rozpoznawane.",
+      "dueTime": "Godzina, na przykład 14:30, w strefie czasowej warsztatu. Zostaw puste, jeśli pasuje dowolna pora tego dnia.",
+      "dueMileage": "Stan licznika, przy którym przypada termin, w {unit}.",
+      "description": "Dodatkowe szczegóły.",
+      "licensePlate": "Łączy przypomnienie z pojazdem. Spacje i łączniki są ignorowane.",
+      "vin": "Łączy przypomnienie z pojazdem. Przydatne, gdy nie ma numeru rejestracyjnego.",
+      "customer": "E-mail, numer klienta lub dokładna nazwa. Używane tylko wtedy, gdy wiersz nie ma pojazdu.",
+      "emailNotification": "Tak lub nie. Wysyła e-mail, gdy nadejdzie termin przypomnienia. Powiadomienia w aplikacji są zawsze włączone."
+    },
+    "targetRule": "Wiersz bez pojazdu i bez klienta staje się przypomnieniem warsztatu. Wiersze zgodne z otwartym przypomnieniem są pomijane, więc dwukrotne przesłanie tego samego pliku niczego nie doda.",
+    "summary": {
+      "ready": "Gotowe: {count}",
+      "duplicates": "Już istnieją: {count}",
+      "errors": "Do poprawy: {count}"
+    },
+    "ignoredColumns": "Nieodczytane kolumny: {columns}",
+    "rowLabel": "Wiersz {line}",
+    "untitled": "(bez tytułu)",
+    "issues": {
+      "missingTitle": "Tytuł jest pusty.",
+      "missingDue": "Potrzebna jest data terminu lub przebieg terminu.",
+      "badDate": "Nie udało się odczytać daty „{value}”.",
+      "badTime": "Nie udało się odczytać godziny „{value}”.",
+      "timeWithoutDate": "Godzina wymaga daty terminu.",
+      "badMileage": "Nie udało się odczytać przebiegu „{value}”.",
+      "badEmailNotification": "Powiadomienie e-mail musi mieć wartość tak lub nie, a nie „{value}”.",
+      "vehicleNotFound": "Żaden pojazd nie pasuje do „{value}”.",
+      "vehicleAmbiguous": "Do „{value}” pasuje więcej niż jeden pojazd.",
+      "vehicleMismatch": "Numer rejestracyjny i VIN należą do różnych pojazdów ({value}).",
+      "customerNotFound": "Żaden klient nie pasuje do „{value}”.",
+      "customerAmbiguous": "Do „{value}” pasuje więcej niż jeden klient. Użyj jego e-maila lub numeru klienta.",
+      "duplicateExisting": "Pominięto: to przypomnienie już istnieje.",
+      "duplicateInFile": "Pominięto: powtarza wcześniejszy wiersz w pliku."
+    },
+    "fileErrors": {
+      "demo": "Import jest wyłączony w wersji demo.",
+      "noFile": "Wybierz plik do przesłania.",
+      "tooLarge": "Plik jest większy niż 900 KB. Podziel go i zaimportuj w częściach.",
+      "unsupported": "Prześlij plik .csv lub .xlsx.",
+      "legacyXls": "Starych plików Excel .xls nie można odczytać. Zapisz plik jako .xlsx lub .csv i spróbuj ponownie.",
+      "empty": "Plik nie zawiera wierszy.",
+      "unreadable": "Nie udało się odczytać pliku.",
+      "tooManyRows": "Plik ma więcej niż {limit} wierszy. Podziel go i zaimportuj w częściach.",
+      "noTitleColumn": "W pliku nie ma kolumny „Title”. Pobierz szablon, aby zobaczyć oczekiwane nagłówki."
+    },
+    "chooseAnother": "Wybierz inny plik",
+    "downloadSkipped": "Pobierz pominięte wiersze",
+    "problemColumn": "Problem",
+    "submit": "Importuj {count, plural, one {# przypomnienie} few {# przypomnienia} many {# przypomnień} other {# przypomnienia}}",
+    "nothingToImport": "Nic do zaimportowania",
+    "done": "Zaimportowano {count, plural, one {# przypomnienie} few {# przypomnienia} many {# przypomnień} other {# przypomnienia}}",
+    "doneSkipped": "Pominięto {count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}",
+    "close": "Zamknij"
+  }
 }

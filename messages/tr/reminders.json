@@ -13,5 +13,78 @@
   "selectCustomer": "Müşteri (isteğe bağlı)",
   "noneOption": "Yok",
   "workshopHint": "Müşteri veya araç seçilmedi: bu genel bir atölye hatırlatıcısıdır.",
-  "workshopReminder": "Atölye"
+  "workshopReminder": "Atölye",
+  "import": {
+    "button": "İçe aktar",
+    "title": "Hatırlatmaları içe aktar",
+    "description": "Her satırda bir hatırlatma olan bir CSV veya Excel dosyası yükleyin. Hiçbir şey kaydedilmeden önce her satırı görürsünüz.",
+    "drop": "CSV veya Excel dosyasını buraya bırakın",
+    "formats": "CSV veya Excel (.xlsx), en fazla {rows} satır",
+    "browse": "Dosya seç",
+    "reading": "Dosya okunuyor...",
+    "templateHint": "Sütunların doğru olması için şablonla başlayın.",
+    "templateXlsx": "Excel şablonu",
+    "templateCsv": "CSV şablonu",
+    "columnsTitle": "Dosyadaki sütunlar",
+    "required": {
+      "yes": "Zorunlu",
+      "dateOrMileage": "Tarih veya kilometre",
+      "no": "İsteğe bağlı"
+    },
+    "columns": {
+      "title": "Yapılması gereken iş, örneğin \"Yağ değişimi\".",
+      "dueDate": "Son tarih günü. 2026-10-15 her zaman çalışır, 15.10.2026 veya 10/15/2026 gibi biçimler de algılanır.",
+      "dueTime": "Günün saati, örneğin 14:30, atölyenin saat diliminde. O gün herhangi bir saat için boş bırakın.",
+      "dueMileage": "Hatırlatmanın geleceği kilometre sayacı değeri, {unit} cinsinden.",
+      "description": "Ek ayrıntılar.",
+      "licensePlate": "Hatırlatmayı bir araca bağlar. Boşluklar ve tireler yok sayılır.",
+      "vin": "Hatırlatmayı bir araca bağlar. Plaka olmadığında işe yarar.",
+      "customer": "E-posta, müşteri numarası veya tam ad. Yalnızca satırda araç yoksa kullanılır.",
+      "emailNotification": "Evet veya hayır. Hatırlatmanın zamanı geldiğinde e-posta gönderir. Uygulama içi bildirimler her zaman açıktır."
+    },
+    "targetRule": "Araç ve müşteri içermeyen bir satır atölye hatırlatması olur. Açık bir hatırlatmayla eşleşen satırlar atlanır, bu yüzden aynı dosyayı iki kez yüklemek hiçbir şey eklemez.",
+    "summary": {
+      "ready": "Hazır: {count}",
+      "duplicates": "Zaten var: {count}",
+      "errors": "Düzeltilmeli: {count}"
+    },
+    "ignoredColumns": "Okunmayan sütunlar: {columns}",
+    "rowLabel": "Satır {line}",
+    "untitled": "(başlıksız)",
+    "issues": {
+      "missingTitle": "Başlık boş.",
+      "missingDue": "Bir son tarih veya kilometre sınırı gerekli.",
+      "badDate": "\"{value}\" tarihi okunamadı.",
+      "badTime": "\"{value}\" saati okunamadı.",
+      "timeWithoutDate": "Saat için bir son tarih gerekir.",
+      "badMileage": "\"{value}\" kilometre değeri okunamadı.",
+      "badEmailNotification": "E-posta bildirimi evet veya hayır olmalı, \"{value}\" değil.",
+      "vehicleNotFound": "\"{value}\" ile eşleşen araç yok.",
+      "vehicleAmbiguous": "\"{value}\" ile birden fazla araç eşleşiyor.",
+      "vehicleMismatch": "Plaka ve VIN farklı araçlara ait ({value}).",
+      "customerNotFound": "\"{value}\" ile eşleşen müşteri yok.",
+      "customerAmbiguous": "\"{value}\" ile birden fazla müşteri eşleşiyor. Müşterinin e-postasını veya müşteri numarasını kullanın.",
+      "duplicateExisting": "Atlandı: bu hatırlatma zaten var.",
+      "duplicateInFile": "Atlandı: dosyadaki önceki bir satırı tekrarlıyor."
+    },
+    "fileErrors": {
+      "demo": "Demoda içe aktarma kapalı.",
+      "noFile": "Yüklenecek bir dosya seçin.",
+      "tooLarge": "Dosya 900 KB'tan büyük. Dosyayı bölün ve parçalar halinde içe aktarın.",
+      "unsupported": "Bir .csv veya .xlsx dosyası yükleyin.",
+      "legacyXls": "Eski Excel .xls dosyaları okunamaz. Dosyayı .xlsx veya .csv olarak kaydedip tekrar deneyin.",
+      "empty": "Dosyada satır yok.",
+      "unreadable": "Dosya okunamadı.",
+      "tooManyRows": "Dosyada {limit} satırdan fazla var. Dosyayı bölün ve parçalar halinde içe aktarın.",
+      "noTitleColumn": "Dosyada \"Title\" sütunu yok. Beklenen başlıkları görmek için şablonu indirin."
+    },
+    "chooseAnother": "Başka bir dosya seç",
+    "downloadSkipped": "Atlanan satırları indir",
+    "problemColumn": "Sorun",
+    "submit": "{count, plural, one {# hatırlatmayı} other {# hatırlatmayı}} içe aktar",
+    "nothingToImport": "İçe aktarılacak bir şey yok",
+    "done": "{count, plural, one {# hatırlatma içe aktarıldı} other {# hatırlatma içe aktarıldı}}",
+    "doneSkipped": "{count, plural, one {# satır atlandı} other {# satır atlandı}}",
+    "close": "Kapat"
+  }
 }

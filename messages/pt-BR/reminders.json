@@ -13,5 +13,78 @@
   "selectCustomer": "Cliente (opcional)",
   "noneOption": "Nenhum",
   "workshopHint": "Nenhum cliente ou veículo selecionado: este é um lembrete geral da oficina.",
-  "workshopReminder": "Oficina"
+  "workshopReminder": "Oficina",
+  "import": {
+    "button": "Importar",
+    "title": "Importar lembretes",
+    "description": "Envie um arquivo CSV ou Excel com um lembrete por linha. Você verá cada linha antes que qualquer coisa seja salva.",
+    "drop": "Solte aqui um arquivo CSV ou Excel",
+    "formats": "CSV ou Excel (.xlsx), até {rows} linhas",
+    "browse": "Escolher arquivo",
+    "reading": "Lendo o arquivo...",
+    "templateHint": "Comece pelo modelo para acertar as colunas.",
+    "templateXlsx": "Modelo Excel",
+    "templateCsv": "Modelo CSV",
+    "columnsTitle": "Colunas no arquivo",
+    "required": {
+      "yes": "Obrigatória",
+      "dateOrMileage": "Data ou quilometragem",
+      "no": "Opcional"
+    },
+    "columns": {
+      "title": "O que precisa ser feito, por exemplo \"Troca de óleo\".",
+      "dueDate": "O dia do vencimento. 2026-10-15 sempre funciona, e formatos como 15.10.2026 ou 10/15/2026 são detectados.",
+      "dueTime": "Horário do dia, por exemplo 14:30, no fuso horário da oficina. Deixe em branco para qualquer horário daquele dia.",
+      "dueMileage": "A leitura do hodômetro em que vence, em {unit}.",
+      "description": "Qualquer detalhe extra.",
+      "licensePlate": "Vincula o lembrete a um veículo. Espaços e hífens são ignorados.",
+      "vin": "Vincula o lembrete a um veículo, útil quando não há placa.",
+      "customer": "E-mail, número do cliente ou nome exato. Usado apenas quando a linha não tem veículo.",
+      "emailNotification": "Sim ou não. Envia um e-mail quando o lembrete vence. As notificações no app estão sempre ativas."
+    },
+    "targetRule": "Uma linha sem veículo e sem cliente vira um lembrete da oficina. Linhas que correspondem a um lembrete em aberto são puladas, então enviar o mesmo arquivo duas vezes não adiciona nada.",
+    "summary": {
+      "ready": "Prontos: {count}",
+      "duplicates": "Já existem: {count}",
+      "errors": "Para corrigir: {count}"
+    },
+    "ignoredColumns": "Colunas não lidas: {columns}",
+    "rowLabel": "Linha {line}",
+    "untitled": "(sem título)",
+    "issues": {
+      "missingTitle": "O título está vazio.",
+      "missingDue": "Precisa de uma data de vencimento ou de uma quilometragem de vencimento.",
+      "badDate": "Não foi possível ler a data \"{value}\".",
+      "badTime": "Não foi possível ler o horário \"{value}\".",
+      "timeWithoutDate": "Um horário precisa de uma data de vencimento.",
+      "badMileage": "Não foi possível ler a quilometragem \"{value}\".",
+      "badEmailNotification": "A notificação por e-mail deve ser sim ou não, e não \"{value}\".",
+      "vehicleNotFound": "Nenhum veículo corresponde a \"{value}\".",
+      "vehicleAmbiguous": "Mais de um veículo corresponde a \"{value}\".",
+      "vehicleMismatch": "A placa e o chassi (VIN) pertencem a veículos diferentes ({value}).",
+      "customerNotFound": "Nenhum cliente corresponde a \"{value}\".",
+      "customerAmbiguous": "Mais de um cliente corresponde a \"{value}\". Use o e-mail ou o número do cliente.",
+      "duplicateExisting": "Pulada: este lembrete já existe.",
+      "duplicateInFile": "Pulada: repete uma linha anterior do arquivo."
+    },
+    "fileErrors": {
+      "demo": "A importação está desativada na demonstração.",
+      "noFile": "Escolha um arquivo para enviar.",
+      "tooLarge": "O arquivo é maior que 900 KB. Divida-o e importe em partes.",
+      "unsupported": "Envie um arquivo .csv ou .xlsx.",
+      "legacyXls": "Arquivos antigos do Excel (.xls) não podem ser lidos. Salve o arquivo como .xlsx ou .csv e tente novamente.",
+      "empty": "O arquivo não tem linhas.",
+      "unreadable": "Não foi possível ler o arquivo.",
+      "tooManyRows": "O arquivo tem mais de {limit} linhas. Divida-o e importe em partes.",
+      "noTitleColumn": "O arquivo não tem a coluna \"Title\". Baixe o modelo para ver os cabeçalhos esperados."
+    },
+    "chooseAnother": "Escolher outro arquivo",
+    "downloadSkipped": "Baixar linhas puladas",
+    "problemColumn": "Problema",
+    "submit": "Importar {count, plural, one {# lembrete} other {# lembretes}}",
+    "nothingToImport": "Nada para importar",
+    "done": "{count, plural, one {# lembrete importado} other {# lembretes importados}}",
+    "doneSkipped": "{count, plural, one {# linha pulada} other {# linhas puladas}}",
+    "close": "Fechar"
+  }
 }

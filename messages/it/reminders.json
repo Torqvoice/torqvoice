@@ -13,5 +13,78 @@
   "selectCustomer": "Cliente (opzionale)",
   "noneOption": "Nessuno",
   "workshopHint": "Nessun cliente o veicolo selezionato: promemoria generale dell'officina.",
-  "workshopReminder": "Officina"
+  "workshopReminder": "Officina",
+  "import": {
+    "button": "Importa",
+    "title": "Importa promemoria",
+    "description": "Carica un file CSV o Excel con un promemoria per riga. Vedrai ogni riga prima che venga salvato qualcosa.",
+    "drop": "Trascina qui un file CSV o Excel",
+    "formats": "CSV o Excel (.xlsx), fino a {rows} righe",
+    "browse": "Scegli file",
+    "reading": "Lettura del file...",
+    "templateHint": "Parti dal modello per avere le colonne giuste.",
+    "templateXlsx": "Modello Excel",
+    "templateCsv": "Modello CSV",
+    "columnsTitle": "Colonne nel file",
+    "required": {
+      "yes": "Obbligatoria",
+      "dateOrMileage": "Data o chilometraggio",
+      "no": "Facoltativa"
+    },
+    "columns": {
+      "title": "Cosa va fatto, per esempio «Cambio olio».",
+      "dueDate": "Il giorno di scadenza. 2026-10-15 funziona sempre, e formati come 15.10.2026 o 10/15/2026 vengono riconosciuti.",
+      "dueTime": "Ora del giorno, per esempio 14:30, nel fuso orario dell'officina. Lasciala vuota per un orario qualsiasi di quel giorno.",
+      "dueMileage": "La lettura del contachilometri alla scadenza, in {unit}.",
+      "description": "Eventuali dettagli aggiuntivi.",
+      "licensePlate": "Collega il promemoria a un veicolo. Spazi e trattini vengono ignorati.",
+      "vin": "Collega il promemoria a un veicolo, utile quando manca la targa.",
+      "customer": "Email, numero cliente o nome esatto. Usato solo se la riga non ha un veicolo.",
+      "emailNotification": "Sì o no. Invia un'email alla scadenza del promemoria. Le notifiche in app sono sempre attive."
+    },
+    "targetRule": "Una riga senza veicolo e senza cliente diventa un promemoria dell'officina. Le righe che corrispondono a un promemoria aperto vengono saltate, quindi caricare due volte lo stesso file non aggiunge nulla.",
+    "summary": {
+      "ready": "Pronti: {count}",
+      "duplicates": "Già presenti: {count}",
+      "errors": "Da correggere: {count}"
+    },
+    "ignoredColumns": "Colonne non lette: {columns}",
+    "rowLabel": "Riga {line}",
+    "untitled": "(senza titolo)",
+    "issues": {
+      "missingTitle": "Il titolo è vuoto.",
+      "missingDue": "Serve una data di scadenza o un chilometraggio di scadenza.",
+      "badDate": "Impossibile leggere la data «{value}».",
+      "badTime": "Impossibile leggere l'ora «{value}».",
+      "timeWithoutDate": "Un orario richiede una data di scadenza.",
+      "badMileage": "Impossibile leggere il chilometraggio «{value}».",
+      "badEmailNotification": "La notifica email deve essere sì o no, non «{value}».",
+      "vehicleNotFound": "Nessun veicolo corrisponde a «{value}».",
+      "vehicleAmbiguous": "Più di un veicolo corrisponde a «{value}».",
+      "vehicleMismatch": "La targa e il VIN appartengono a veicoli diversi ({value}).",
+      "customerNotFound": "Nessun cliente corrisponde a «{value}».",
+      "customerAmbiguous": "Più di un cliente corrisponde a «{value}». Usa la sua email o il numero cliente.",
+      "duplicateExisting": "Saltata: questo promemoria esiste già.",
+      "duplicateInFile": "Saltata: ripete una riga precedente del file."
+    },
+    "fileErrors": {
+      "demo": "L'importazione è disattivata nella demo.",
+      "noFile": "Scegli un file da caricare.",
+      "tooLarge": "Il file supera 900 KB. Dividilo e importalo in più parti.",
+      "unsupported": "Carica un file .csv o .xlsx.",
+      "legacyXls": "I vecchi file Excel .xls non possono essere letti. Salva il file come .xlsx o .csv e riprova.",
+      "empty": "Il file non contiene righe.",
+      "unreadable": "Impossibile leggere il file.",
+      "tooManyRows": "Il file ha più di {limit} righe. Dividilo e importalo in più parti.",
+      "noTitleColumn": "Il file non ha una colonna «Title». Scarica il modello per vedere le intestazioni previste."
+    },
+    "chooseAnother": "Scegli un altro file",
+    "downloadSkipped": "Scarica le righe saltate",
+    "problemColumn": "Problema",
+    "submit": "Importa {count, plural, one {# promemoria} other {# promemoria}}",
+    "nothingToImport": "Niente da importare",
+    "done": "{count, plural, one {# promemoria importato} other {# promemoria importati}}",
+    "doneSkipped": "{count, plural, one {# riga saltata} other {# righe saltate}}",
+    "close": "Chiudi"
+  }
 }

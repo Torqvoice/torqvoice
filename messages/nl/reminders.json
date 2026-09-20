@@ -13,5 +13,78 @@
   "selectCustomer": "Klant (optioneel)",
   "noneOption": "Geen",
   "workshopHint": "Geen klant of voertuig gekozen: dit is een algemene werkplaatsherinnering.",
-  "workshopReminder": "Werkplaats"
+  "workshopReminder": "Werkplaats",
+  "import": {
+    "button": "Importeren",
+    "title": "Herinneringen importeren",
+    "description": "Upload een CSV- of Excel-bestand met één herinnering per rij. U ziet elke rij voordat er iets wordt opgeslagen.",
+    "drop": "Sleep een CSV- of Excel-bestand hierheen",
+    "formats": "CSV of Excel (.xlsx), tot {rows} rijen",
+    "browse": "Bestand kiezen",
+    "reading": "Bestand wordt gelezen...",
+    "templateHint": "Begin met het sjabloon, dan kloppen de kolommen.",
+    "templateXlsx": "Excel-sjabloon",
+    "templateCsv": "CSV-sjabloon",
+    "columnsTitle": "Kolommen in het bestand",
+    "required": {
+      "yes": "Verplicht",
+      "dateOrMileage": "Datum of kilometerstand",
+      "no": "Optioneel"
+    },
+    "columns": {
+      "title": "Wat er moet gebeuren, bijvoorbeeld \"Olie verversen\".",
+      "dueDate": "De dag waarop het vervalt. 2026-10-15 werkt altijd, en notaties als 15.10.2026 of 10/15/2026 worden herkend.",
+      "dueTime": "Tijdstip, bijvoorbeeld 14:30, in de tijdzone van de werkplaats. Laat leeg voor elk tijdstip op die dag.",
+      "dueMileage": "De kilometerstand waarop het vervalt, in {unit}.",
+      "description": "Eventuele extra details.",
+      "licensePlate": "Koppelt de herinnering aan een voertuig. Spaties en streepjes worden genegeerd.",
+      "vin": "Koppelt de herinnering aan een voertuig, handig als er geen kenteken is.",
+      "customer": "E-mail, klantnummer of exacte naam. Wordt alleen gebruikt als de rij geen voertuig heeft.",
+      "emailNotification": "Ja of nee. Stuurt een e-mail wanneer de herinnering vervalt. In-app meldingen staan altijd aan."
+    },
+    "targetRule": "Een rij zonder voertuig en zonder klant wordt een werkplaatsherinnering. Rijen die overeenkomen met een openstaande herinnering worden overgeslagen, dus hetzelfde bestand twee keer uploaden voegt niets toe.",
+    "summary": {
+      "ready": "Klaar: {count}",
+      "duplicates": "Bestaan al: {count}",
+      "errors": "Te corrigeren: {count}"
+    },
+    "ignoredColumns": "Niet gelezen kolommen: {columns}",
+    "rowLabel": "Rij {line}",
+    "untitled": "(geen titel)",
+    "issues": {
+      "missingTitle": "De titel is leeg.",
+      "missingDue": "Een vervaldatum of vervalkilometerstand is nodig.",
+      "badDate": "Kan de datum \"{value}\" niet lezen.",
+      "badTime": "Kan de tijd \"{value}\" niet lezen.",
+      "timeWithoutDate": "Een tijd heeft een vervaldatum nodig.",
+      "badMileage": "Kan de kilometerstand \"{value}\" niet lezen.",
+      "badEmailNotification": "E-mailmelding moet ja of nee zijn, niet \"{value}\".",
+      "vehicleNotFound": "Geen voertuig komt overeen met \"{value}\".",
+      "vehicleAmbiguous": "Meer dan één voertuig komt overeen met \"{value}\".",
+      "vehicleMismatch": "Het kenteken en het VIN horen bij verschillende voertuigen ({value}).",
+      "customerNotFound": "Geen klant komt overeen met \"{value}\".",
+      "customerAmbiguous": "Meer dan één klant komt overeen met \"{value}\". Gebruik het e-mailadres of klantnummer.",
+      "duplicateExisting": "Overgeslagen: deze herinnering bestaat al.",
+      "duplicateInFile": "Overgeslagen: herhaalt een eerdere rij in het bestand."
+    },
+    "fileErrors": {
+      "demo": "Importeren is uitgeschakeld in de demo.",
+      "noFile": "Kies een bestand om te uploaden.",
+      "tooLarge": "Het bestand is groter dan 900 KB. Splits het en importeer het in delen.",
+      "unsupported": "Upload een .csv- of .xlsx-bestand.",
+      "legacyXls": "Oude Excel-bestanden (.xls) kunnen niet worden gelezen. Sla het bestand op als .xlsx of .csv en probeer het opnieuw.",
+      "empty": "Het bestand bevat geen rijen.",
+      "unreadable": "Het bestand kon niet worden gelezen.",
+      "tooManyRows": "Het bestand heeft meer dan {limit} rijen. Splits het en importeer het in delen.",
+      "noTitleColumn": "Het bestand heeft geen kolom \"Title\". Download het sjabloon om te zien welke kolomkoppen worden verwacht."
+    },
+    "chooseAnother": "Ander bestand kiezen",
+    "downloadSkipped": "Overgeslagen rijen downloaden",
+    "problemColumn": "Probleem",
+    "submit": "{count, plural, one {# herinnering} other {# herinneringen}} importeren",
+    "nothingToImport": "Niets om te importeren",
+    "done": "{count, plural, one {# herinnering geïmporteerd} other {# herinneringen geïmporteerd}}",
+    "doneSkipped": "{count, plural, one {# rij overgeslagen} other {# rijen overgeslagen}}",
+    "close": "Sluiten"
+  }
 }

@@ -13,5 +13,78 @@
   "selectCustomer": "Kunde (optional)",
   "noneOption": "Keiner",
   "workshopHint": "Kein Kunde oder Fahrzeug gewählt: dies ist eine allgemeine Werkstatt-Erinnerung.",
-  "workshopReminder": "Werkstatt"
+  "workshopReminder": "Werkstatt",
+  "import": {
+    "button": "Importieren",
+    "title": "Erinnerungen importieren",
+    "description": "Laden Sie eine CSV- oder Excel-Datei mit einer Erinnerung pro Zeile hoch. Sie sehen jede Zeile, bevor etwas gespeichert wird.",
+    "drop": "CSV- oder Excel-Datei hier ablegen",
+    "formats": "CSV oder Excel (.xlsx), bis zu {rows} Zeilen",
+    "browse": "Datei auswählen",
+    "reading": "Datei wird gelesen...",
+    "templateHint": "Beginnen Sie mit der Vorlage, damit die Spalten stimmen.",
+    "templateXlsx": "Excel-Vorlage",
+    "templateCsv": "CSV-Vorlage",
+    "columnsTitle": "Spalten in der Datei",
+    "required": {
+      "yes": "Pflichtfeld",
+      "dateOrMileage": "Datum oder Kilometerstand",
+      "no": "Optional"
+    },
+    "columns": {
+      "title": "Was zu tun ist, zum Beispiel „Ölwechsel“.",
+      "dueDate": "Der Tag der Fälligkeit. 2026-10-15 funktioniert immer, Formate wie 15.10.2026 oder 10/15/2026 werden erkannt.",
+      "dueTime": "Uhrzeit, zum Beispiel 14:30, in der Zeitzone der Werkstatt. Leer lassen für eine beliebige Uhrzeit an diesem Tag.",
+      "dueMileage": "Der Tachostand, bei dem die Erinnerung fällig ist, in {unit}.",
+      "description": "Weitere Details.",
+      "licensePlate": "Verknüpft die Erinnerung mit einem Fahrzeug. Leerzeichen und Bindestriche werden ignoriert.",
+      "vin": "Verknüpft die Erinnerung mit einem Fahrzeug. Praktisch, wenn kein Kennzeichen vorhanden ist.",
+      "customer": "E-Mail, Kundennummer oder exakter Name. Wird nur verwendet, wenn die Zeile kein Fahrzeug hat.",
+      "emailNotification": "Ja oder nein. Sendet eine E-Mail, wenn die Erinnerung fällig ist. In-App-Benachrichtigungen sind immer aktiv."
+    },
+    "targetRule": "Eine Zeile ohne Fahrzeug und ohne Kunde wird zur Werkstatt-Erinnerung. Zeilen, die einer offenen Erinnerung entsprechen, werden übersprungen. Dieselbe Datei zweimal hochzuladen fügt also nichts hinzu.",
+    "summary": {
+      "ready": "Bereit: {count}",
+      "duplicates": "Bereits vorhanden: {count}",
+      "errors": "Zu korrigieren: {count}"
+    },
+    "ignoredColumns": "Nicht gelesene Spalten: {columns}",
+    "rowLabel": "Zeile {line}",
+    "untitled": "(ohne Titel)",
+    "issues": {
+      "missingTitle": "Der Titel ist leer.",
+      "missingDue": "Benötigt ein Fälligkeitsdatum oder einen Fälligkeitskilometerstand.",
+      "badDate": "Das Datum „{value}“ konnte nicht gelesen werden.",
+      "badTime": "Die Uhrzeit „{value}“ konnte nicht gelesen werden.",
+      "timeWithoutDate": "Eine Uhrzeit braucht ein Fälligkeitsdatum.",
+      "badMileage": "Der Kilometerstand „{value}“ konnte nicht gelesen werden.",
+      "badEmailNotification": "E-Mail-Benachrichtigung muss ja oder nein sein, nicht „{value}“.",
+      "vehicleNotFound": "Kein Fahrzeug passt zu „{value}“.",
+      "vehicleAmbiguous": "Mehr als ein Fahrzeug passt zu „{value}“.",
+      "vehicleMismatch": "Kennzeichen und FIN gehören zu verschiedenen Fahrzeugen ({value}).",
+      "customerNotFound": "Kein Kunde passt zu „{value}“.",
+      "customerAmbiguous": "Mehr als ein Kunde passt zu „{value}“. Verwenden Sie die E-Mail-Adresse oder die Kundennummer.",
+      "duplicateExisting": "Übersprungen: Diese Erinnerung existiert bereits.",
+      "duplicateInFile": "Übersprungen: wiederholt eine frühere Zeile der Datei."
+    },
+    "fileErrors": {
+      "demo": "Der Import ist in der Demo deaktiviert.",
+      "noFile": "Wählen Sie eine Datei zum Hochladen.",
+      "tooLarge": "Die Datei ist größer als 900 KB. Teilen Sie sie auf und importieren Sie sie in Teilen.",
+      "unsupported": "Laden Sie eine .csv- oder .xlsx-Datei hoch.",
+      "legacyXls": "Alte Excel-Dateien im Format .xls können nicht gelesen werden. Speichern Sie die Datei als .xlsx oder .csv und versuchen Sie es erneut.",
+      "empty": "Die Datei enthält keine Zeilen.",
+      "unreadable": "Die Datei konnte nicht gelesen werden.",
+      "tooManyRows": "Die Datei hat mehr als {limit} Zeilen. Teilen Sie sie auf und importieren Sie sie in Teilen.",
+      "noTitleColumn": "Die Datei hat keine Spalte „Title“. Laden Sie die Vorlage herunter, um die erwarteten Spaltenüberschriften zu sehen."
+    },
+    "chooseAnother": "Andere Datei wählen",
+    "downloadSkipped": "Übersprungene Zeilen herunterladen",
+    "problemColumn": "Problem",
+    "submit": "{count, plural, one {# Erinnerung} other {# Erinnerungen}} importieren",
+    "nothingToImport": "Nichts zu importieren",
+    "done": "{count, plural, one {# Erinnerung importiert} other {# Erinnerungen importiert}}",
+    "doneSkipped": "{count, plural, one {# Zeile übersprungen} other {# Zeilen übersprungen}}",
+    "close": "Schließen"
+  }
 }

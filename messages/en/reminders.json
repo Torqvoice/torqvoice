@@ -13,5 +13,78 @@
   "selectCustomer": "Customer (optional)",
   "noneOption": "None",
   "workshopHint": "No customer or vehicle selected: this is a general workshop reminder.",
-  "workshopReminder": "Workshop"
+  "workshopReminder": "Workshop",
+  "import": {
+    "button": "Import",
+    "title": "Import reminders",
+    "description": "Upload a CSV or Excel file with one reminder per row. You will see every row before anything is saved.",
+    "drop": "Drop a CSV or Excel file here",
+    "formats": "CSV or Excel (.xlsx), up to {rows} rows",
+    "browse": "Choose file",
+    "reading": "Reading the file...",
+    "templateHint": "Start from the template to get the columns right.",
+    "templateXlsx": "Excel template",
+    "templateCsv": "CSV template",
+    "columnsTitle": "Columns in the file",
+    "required": {
+      "yes": "Required",
+      "dateOrMileage": "Date or mileage",
+      "no": "Optional"
+    },
+    "columns": {
+      "title": "What needs doing, for example \"Oil change\".",
+      "dueDate": "The day it is due. 2026-10-15 always works, and formats like 15.10.2026 or 10/15/2026 are detected.",
+      "dueTime": "Time of day, for example 14:30, in the workshop's time zone. Leave it empty for any time that day.",
+      "dueMileage": "The odometer reading it is due at, in {unit}.",
+      "description": "Any extra detail.",
+      "licensePlate": "Links the reminder to a vehicle. Spaces and dashes are ignored.",
+      "vin": "Links the reminder to a vehicle, useful when there is no plate.",
+      "customer": "Email, customer number or exact name. Used only when the row has no vehicle.",
+      "emailNotification": "Yes or no. Sends an email when the reminder is due. In-app notifications are always on."
+    },
+    "targetRule": "A row with no vehicle and no customer becomes a workshop reminder. Rows that match an open reminder are skipped, so uploading the same file twice adds nothing.",
+    "summary": {
+      "ready": "{count} ready",
+      "duplicates": "{count} already exist",
+      "errors": "{count} need fixing"
+    },
+    "ignoredColumns": "Columns not read: {columns}",
+    "rowLabel": "Row {line}",
+    "untitled": "(no title)",
+    "issues": {
+      "missingTitle": "The title is empty.",
+      "missingDue": "Needs a due date or a due mileage.",
+      "badDate": "Could not read the date \"{value}\".",
+      "badTime": "Could not read the time \"{value}\".",
+      "timeWithoutDate": "A time needs a due date.",
+      "badMileage": "Could not read the mileage \"{value}\".",
+      "badEmailNotification": "Email notification should be yes or no, not \"{value}\".",
+      "vehicleNotFound": "No vehicle matches \"{value}\".",
+      "vehicleAmbiguous": "More than one vehicle matches \"{value}\".",
+      "vehicleMismatch": "The plate and the VIN belong to different vehicles ({value}).",
+      "customerNotFound": "No customer matches \"{value}\".",
+      "customerAmbiguous": "More than one customer matches \"{value}\". Use their email or customer number.",
+      "duplicateExisting": "Skipped: this reminder already exists.",
+      "duplicateInFile": "Skipped: repeats an earlier row in the file."
+    },
+    "fileErrors": {
+      "demo": "Importing is turned off on the demo.",
+      "noFile": "Choose a file to upload.",
+      "tooLarge": "The file is larger than 900 KB. Split it and import it in parts.",
+      "unsupported": "Upload a .csv or .xlsx file.",
+      "legacyXls": "Old Excel .xls files can't be read. Save the file as .xlsx or .csv and try again.",
+      "empty": "The file has no rows.",
+      "unreadable": "The file could not be read.",
+      "tooManyRows": "The file has more than {limit} rows. Split it and import it in parts.",
+      "noTitleColumn": "The file has no Title column. Download the template to see the headers it expects."
+    },
+    "chooseAnother": "Choose another file",
+    "downloadSkipped": "Download skipped rows",
+    "problemColumn": "Problem",
+    "submit": "Import {count, plural, one {# reminder} other {# reminders}}",
+    "nothingToImport": "Nothing to import",
+    "done": "{count, plural, one {# reminder imported} other {# reminders imported}}",
+    "doneSkipped": "{count, plural, one {# row skipped} other {# rows skipped}}",
+    "close": "Close"
+  }
 }

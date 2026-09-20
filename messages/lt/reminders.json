@@ -13,5 +13,78 @@
   "selectCustomer": "Klientas (neprivaloma)",
   "noneOption": "Nėra",
   "workshopHint": "Nepasirinktas klientas ar transporto priemonė: tai bendras dirbtuvių priminimas.",
-  "workshopReminder": "Dirbtuvės"
+  "workshopReminder": "Dirbtuvės",
+  "import": {
+    "button": "Importuoti",
+    "title": "Importuoti priminimus",
+    "description": "Įkelkite CSV arba Excel failą, kuriame kiekvienoje eilutėje yra vienas priminimas. Kiekvieną eilutę pamatysite prieš išsaugant.",
+    "drop": "Nutempkite CSV arba Excel failą čia",
+    "formats": "CSV arba Excel (.xlsx), iki {rows} eilučių",
+    "browse": "Pasirinkti failą",
+    "reading": "Skaitomas failas...",
+    "templateHint": "Pradėkite nuo šablono, kad stulpeliai būtų teisingi.",
+    "templateXlsx": "Excel šablonas",
+    "templateCsv": "CSV šablonas",
+    "columnsTitle": "Failo stulpeliai",
+    "required": {
+      "yes": "Privaloma",
+      "dateOrMileage": "Data arba rida",
+      "no": "Neprivaloma"
+    },
+    "columns": {
+      "title": "Ką reikia atlikti, pavyzdžiui, „Alyvos keitimas“.",
+      "dueDate": "Termino diena. 2026-10-15 tinka visada, o tokie formatai kaip 15.10.2026 ar 10/15/2026 atpažįstami automatiškai.",
+      "dueTime": "Paros laikas, pavyzdžiui, 14:30, pagal dirbtuvių laiko juostą. Palikite tuščią, jei tinka bet kuris tos dienos laikas.",
+      "dueMileage": "Ridos rodmuo, kuriam esant sueina terminas, {unit}.",
+      "description": "Bet kokia papildoma informacija.",
+      "licensePlate": "Susieja priminimą su transporto priemone. Tarpai ir brūkšneliai ignoruojami.",
+      "vin": "Susieja priminimą su transporto priemone. Naudinga, kai nėra valstybinio numerio.",
+      "customer": "El. paštas, kliento numeris arba tikslus vardas. Naudojama tik tada, kai eilutėje nėra transporto priemonės.",
+      "emailNotification": "Taip arba ne. Suėjus priminimo terminui išsiunčiamas el. laiškas. Pranešimai programoje įjungti visada."
+    },
+    "targetRule": "Eilutė be transporto priemonės ir be kliento tampa dirbtuvių priminimu. Eilutės, sutampančios su atviru priminimu, praleidžiamos, todėl tą patį failą įkėlus du kartus nieko nepridedama.",
+    "summary": {
+      "ready": "Paruošta: {count}",
+      "duplicates": "Jau yra: {count}",
+      "errors": "Reikia pataisyti: {count}"
+    },
+    "ignoredColumns": "Neskaityti stulpeliai: {columns}",
+    "rowLabel": "Eilutė {line}",
+    "untitled": "(be pavadinimo)",
+    "issues": {
+      "missingTitle": "Pavadinimas tuščias.",
+      "missingDue": "Reikia termino datos arba termino ridos.",
+      "badDate": "Nepavyko nuskaityti datos „{value}“.",
+      "badTime": "Nepavyko nuskaityti laiko „{value}“.",
+      "timeWithoutDate": "Nurodžius laiką, reikia ir termino datos.",
+      "badMileage": "Nepavyko nuskaityti ridos „{value}“.",
+      "badEmailNotification": "El. pašto pranešimas turi būti taip arba ne, o ne „{value}“.",
+      "vehicleNotFound": "Jokia transporto priemonė neatitinka „{value}“.",
+      "vehicleAmbiguous": "„{value}“ atitinka daugiau nei viena transporto priemonė.",
+      "vehicleMismatch": "Valstybinis numeris ir VIN priklauso skirtingoms transporto priemonėms ({value}).",
+      "customerNotFound": "Joks klientas neatitinka „{value}“.",
+      "customerAmbiguous": "„{value}“ atitinka daugiau nei vienas klientas. Naudokite kliento el. paštą arba kliento numerį.",
+      "duplicateExisting": "Praleista: toks priminimas jau yra.",
+      "duplicateInFile": "Praleista: kartoja ankstesnę failo eilutę."
+    },
+    "fileErrors": {
+      "demo": "Demonstracinėje versijoje importavimas išjungtas.",
+      "noFile": "Pasirinkite failą įkėlimui.",
+      "tooLarge": "Failas didesnis nei 900 KB. Padalykite jį ir importuokite dalimis.",
+      "unsupported": "Įkelkite .csv arba .xlsx failą.",
+      "legacyXls": "Senų Excel .xls failų nuskaityti negalima. Išsaugokite failą kaip .xlsx arba .csv ir bandykite dar kartą.",
+      "empty": "Faile nėra eilučių.",
+      "unreadable": "Nepavyko nuskaityti failo.",
+      "tooManyRows": "Faile yra daugiau nei {limit} eilučių. Padalykite jį ir importuokite dalimis.",
+      "noTitleColumn": "Faile nėra stulpelio „Title“. Atsisiųskite šabloną ir pažiūrėkite, kokių antraščių tikimasi."
+    },
+    "chooseAnother": "Pasirinkti kitą failą",
+    "downloadSkipped": "Atsisiųsti praleistas eilutes",
+    "problemColumn": "Problema",
+    "submit": "Importuoti {count, plural, one {# priminimą} few {# priminimus} many {# priminimo} other {# priminimų}}",
+    "nothingToImport": "Nėra ką importuoti",
+    "done": "{count, plural, one {Importuotas # priminimas} few {Importuoti # priminimai} many {Importuota # priminimo} other {Importuota # priminimų}}",
+    "doneSkipped": "{count, plural, one {Praleista # eilutė} few {Praleistos # eilutės} many {Praleista # eilutės} other {Praleista # eilučių}}",
+    "close": "Uždaryti"
+  }
 }

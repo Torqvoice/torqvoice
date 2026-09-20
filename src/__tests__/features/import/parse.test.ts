@@ -53,6 +53,17 @@ describe('import file parsing', () => {
     expect(sheet.rows).toEqual([['2024-03-15', 'AB 12345', '1890.5']])
   })
 
+  it('keeps the time of Excel time and date-time cells', async () => {
+    const wb = new ExcelJS.Workbook()
+    const ws = wb.addWorksheet('Due')
+    ws.addRow(['Date', 'Time'])
+    // How ExcelJS hands back "15.10.2026 14:30" and a bare "09:30".
+    ws.addRow([new Date(Date.UTC(2026, 9, 15, 14, 30)), new Date(Date.UTC(1899, 11, 30, 9, 30))])
+    const buffer = Buffer.from(await wb.xlsx.writeBuffer())
+    const sheet = await parseImportFile(buffer, 'due.xlsx')
+    expect(sheet.rows).toEqual([['2026-10-15 14:30', '09:30']])
+  })
+
   it('reads a workbook that was renamed to .csv', async () => {
     const wb = new ExcelJS.Workbook()
     wb.addWorksheet('S').addRows([['Name'], ['Anna']])
