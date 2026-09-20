@@ -1,6 +1,6 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getBillingHistory } from '@/features/billing/Actions/billingActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
@@ -41,7 +41,7 @@ export default async function BillingPage({
       sortBy,
       sortOrder,
     }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE]),
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
   ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}

@@ -4,7 +4,7 @@ import {
   getInventoryCategories,
   hasAnyReorderPoint,
 } from '@/features/inventory/Actions/inventoryActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { InventoryClient } from './inventory-client'
 import { PageHeader } from '@/components/page-header'
@@ -39,7 +39,7 @@ export default async function InventoryPage({
       lowStock: params.lowStock === '1',
     }),
     getInventoryCategories(),
-    getSettings([
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
       SETTING_KEYS.INVENTORY_DEFAULT_UNIT,

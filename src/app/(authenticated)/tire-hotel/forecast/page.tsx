@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getSetsForForecast } from '@/features/tire-hotel/Actions/tireSetActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { ForecastClient } from './forecast-client'
@@ -17,7 +17,7 @@ export default async function TireForecastPage() {
 
   const [result, settingsResult] = await Promise.all([
     getSetsForForecast(),
-    getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+    getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
   ])
 
   const data = result.success && result.data ? result.data : { sets: [], total: 0, shown: 0 }

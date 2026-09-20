@@ -5,7 +5,7 @@ import {
   getCustomerQuotes,
   getCustomersList,
 } from '@/features/customers/Actions/customerActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getConversation } from '@/features/sms/Actions/smsActions'
 import { getTelegramConversation } from '@/features/telegram/Actions/telegramActions'
@@ -22,7 +22,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const [result, settingsResult, layoutData, customersResult, invoicesResult, quotesResult] =
     await Promise.all([
       getCustomer(id),
-      getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+      getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
       getLayoutData(),
       getCustomersList(),
       getCustomerInvoices(id),

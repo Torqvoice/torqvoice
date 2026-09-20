@@ -4,12 +4,56 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import {
   createFieldDefinitionSchema,
+  entityTypes,
+  type EntityType,
   updateFieldDefinitionSchema,
 } from '../Schema/customFieldSchema'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { requireFeature } from '@/lib/features'
 import { clearedToNull } from '@/lib/clearable'
+
+/**
+ * Whose permission a record's custom fields fall under: the record's own.
+ *
+ * Every one of these used to need the Settings permission, because defining a
+ * field is a setting. But filling one in is not: it is part of the work order
+ * or the quote, the same as its title. A Member who may edit a work order saw
+ * none of the workshop's custom fields on it and could not have saved one,
+ * and was refused on every page load besides. Defining fields stays behind
+ * Settings; reading and filling them follows the record.
+ */
+const RECORD_SUBJECT: Record<EntityType, PermissionSubject> = {
+  service_record: PermissionSubject.SERVICES,
+  quote: PermissionSubject.QUOTES,
+}
+
+function isEntityType(value: unknown): value is EntityType {
+  return typeof value === 'string' && (entityTypes as readonly string[]).includes(value)
+}
+
+/** The permission a call about one record's fields needs. An unknown kind needs Settings. */
+function recordPermission(entityType: unknown, action: PermissionAction) {
+  return [
+    {
+      action,
+      subject: isEntityType(entityType) ? RECORD_SUBJECT[entityType] : PermissionSubject.SETTINGS,
+    },
+  ]
+}
+
+/**
+ * The record has to be this workshop's. These actions are handed a bare id,
+ * and a value row is keyed by it, so without this a caller could attach
+ * values to a record that is not theirs.
+ */
+async function assertOwnRecord(entityId: string, entityType: EntityType, organizationId: string) {
+  const found =
+    entityType === 'quote'
+      ? await db.quote.count({ where: { id: entityId, organizationId } })
+      : await db.serviceRecord.count({ where: { id: entityId, organizationId } })
+  if (found === 0) throw new Error('Record not found')
+}
 
 export async function getFieldDefinitions(entityType?: string) {
   return withAuth(
@@ -24,7 +68,11 @@ export async function getFieldDefinitions(entityType?: string) {
       })
     },
     {
-      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+      // The fields of one kind of record are read to draw that record's form.
+      // The whole list, across kinds, is the settings screen.
+      requiredPermissions: entityType
+        ? recordPermission(entityType, PermissionAction.READ)
+        : [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
     }
   )
 }
@@ -143,6 +191,8 @@ export async function deleteFieldDefinition(fieldId: string) {
 export async function getCustomFieldValues(entityId: string, entityType: string) {
   return withAuth(
     async ({ organizationId }) => {
+      if (!isEntityType(entityType)) throw new Error('Unknown record type')
+      await assertOwnRecord(entityId, entityType, organizationId)
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
@@ -167,9 +217,7 @@ export async function getCustomFieldValues(entityId: string, entityType: string)
         value: valuesMap[def.id] !== undefined ? valuesMap[def.id] : (def.defaultValue ?? ''),
       }))
     },
-    {
-      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
-    }
+    { requiredPermissions: recordPermission(entityType, PermissionAction.READ) }
   )
 }
 
@@ -180,6 +228,8 @@ export async function saveCustomFieldValues(
 ) {
   return withAuth(
     async ({ organizationId }) => {
+      if (!isEntityType(entityType)) throw new Error('Unknown record type')
+      await assertOwnRecord(entityId, entityType, organizationId)
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
       })
@@ -201,10 +251,6 @@ export async function saveCustomFieldValues(
       await db.$transaction(ops)
       return { saved: true }
     },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
-      ],
-    }
+    { requiredPermissions: recordPermission(entityType, PermissionAction.UPDATE) }
   )
 }

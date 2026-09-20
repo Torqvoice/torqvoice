@@ -2,7 +2,7 @@ import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { getServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   readWarrantyDefaults,
@@ -68,7 +68,7 @@ export async function ServiceRecordPage({
     initialLayout,
   ] = await Promise.all([
     getServiceRecord(serviceId),
-    getSettings([
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.DEFAULT_TAX_RATE,

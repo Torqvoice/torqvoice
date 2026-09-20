@@ -3,7 +3,7 @@ import { resolveListColumns } from '@/lib/list-columns.server'
 import { WORK_ORDER_COLUMNS } from '@/lib/list-columns'
 import { getTranslations } from 'next-intl/server'
 import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
@@ -43,7 +43,7 @@ export default async function WorkOrdersPage({
       sortOrder: sort.sortOrder,
       due: params.due,
     }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE]),
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
     getCustomersList(),
     getAuthContext(),

@@ -94,7 +94,12 @@ async function put(root: string, org: string, folder: string, name: string, ageH
   const file = path.join(dir, name)
   await writeFile(file, 'bytes')
   if (ageHours) {
-    const when = new Date(Date.now() - ageHours * 3600_000)
+    // Aged against NOW, not the real clock. The sweep is handed NOW, so a file
+    // aged from today drifts a day further from it every day that passes: on
+    // 20 September a file put here "eight days old" was 6.8 days old as the
+    // sweep measured it, under the week it requires, and every sweep test
+    // quietly became "swept nothing".
+    const when = new Date(NOW - ageHours * 3600_000)
     await utimes(file, when, when)
   }
   return file

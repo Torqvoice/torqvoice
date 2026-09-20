@@ -3,7 +3,7 @@ import {
   getInspection,
   getInspectionTechnicians,
 } from '@/features/inspections/Actions/inspectionActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   InspectionPageClient,
@@ -31,7 +31,7 @@ export default async function InspectionDetailPage({
     authContext?.organizationId ? getFeatures(authContext.organizationId) : null,
     getCommonDefectNotes(id),
     getInspectionTechnicians(),
-    getSettings([SETTING_KEYS.WORKSHOP_ADDRESS]),
+    getDisplaySettings([SETTING_KEYS.WORKSHOP_ADDRESS]),
   ])
 
   return (
