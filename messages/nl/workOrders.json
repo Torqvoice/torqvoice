@@ -31,7 +31,9 @@
       "status": "Status",
       "tech": "Technicus",
       "date": "Datum",
-      "total": "Totaal"
+      "total": "Totaal",
+      "promised": "Beloofd",
+      "promisedOverdue": "Beloofd {date}, te laat"
     },
     "emailSubject": "Voertuigstatus bijgewerkt: {status}",
     "changeStatus": "Status wijzigen",
@@ -39,6 +41,10 @@
       "open": "Werkorder openen",
       "openVehicle": "Voertuig openen",
       "openCustomer": "Klant openen"
+    },
+    "dueToday": "Vandaag klaar",
+    "columns": {
+      "label": "Kolommen"
     }
   },
   "vehiclePicker": {

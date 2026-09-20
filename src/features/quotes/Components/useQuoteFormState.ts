@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useDateSettings } from '@/components/date-settings-context'
 import {
   updateQuote,
   updateQuoteStatus,
@@ -13,6 +14,7 @@ import {
 } from '@/features/quotes/Actions/quoteActions'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals } from '@/lib/tax'
+import { zonedDateInput } from '@/lib/timezone'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
@@ -127,8 +129,14 @@ export function useQuoteFormState({
   const [converting, setConverting] = useState(false)
   const [resolving, setResolving] = useState(false)
 
+  // The day the quote is valid until, as the workshop's calendar has it. The
+  // server reads the saved field in the workshop's zone, so the field has to
+  // be filled in that zone too. Filled from the UTC date instead, every save
+  // east of UTC moved the date a day earlier: a quote valid until the 19th
+  // was sent out valid until the 17th after two saves.
+  const { timezone } = useDateSettings()
   const [defaultValidDate] = useState(() =>
-    quote.validUntil ? new Date(quote.validUntil).toISOString().split('T')[0] : ''
+    quote.validUntil ? zonedDateInput(new Date(quote.validUntil), timezone) : ''
   )
 
   // Track selected vehicle/customer for display (initial from quote data)

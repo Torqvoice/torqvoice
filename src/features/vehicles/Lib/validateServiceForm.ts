@@ -12,6 +12,8 @@
  * without a browser.
  */
 
+import { concernHasStory } from './concernStory'
+
 export type ServiceFormProblem =
   | 'title'
   | 'negative'
@@ -19,6 +21,8 @@ export type ServiceFormProblem =
   | 'partName'
   /** Labour with hours or a rate but nothing said about it. */
   | 'laborDescription'
+  /** A cause, correction or confirmation written against no condition. */
+  | 'concernCondition'
 
 export interface ServiceFormPart {
   name: string
@@ -35,10 +39,19 @@ export interface ServiceFormLabor {
   rate: number | string
 }
 
+export interface ServiceFormConcern {
+  description: string
+  cause?: string | null
+  correction?: string | null
+  confirmation?: string | null
+  confirmed?: boolean
+}
+
 export interface ServiceFormInput {
   title: string
   partItems: ServiceFormPart[]
   laborItems: ServiceFormLabor[]
+  concerns?: ServiceFormConcern[]
 }
 
 function num(value: number | string | null | undefined): number {
@@ -87,6 +100,13 @@ export function findServiceFormProblem(input: ServiceFormInput): ServiceFormProb
   if (input.partItems.some((p) => !p.name.trim() && partRowHasContent(p))) return 'partName'
   if (input.laborItems.some((l) => !l.description.trim() && laborRowHasContent(l))) {
     return 'laborDescription'
+  }
+
+  // A blank concern is dropped on save, as a blank part is. One that has a
+  // cause or a fix written against it and no condition would take that text
+  // with it, so it is refused instead and the row asked to say what it is about.
+  if (input.concerns?.some((c) => !c.description.trim() && concernHasStory(c))) {
+    return 'concernCondition'
   }
 
   return null

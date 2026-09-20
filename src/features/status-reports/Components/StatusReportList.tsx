@@ -163,6 +163,7 @@ export function StatusReportList({
             </a>
           </div>
           <Button
+            type="button"
             size="sm"
             onClick={() => setShowCreate(true)}
             aria-label={t('newReport')}
@@ -229,6 +230,7 @@ export function StatusReportList({
                   </button>
                   <div className="mt-2 flex items-center justify-end gap-1">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9"
@@ -239,6 +241,7 @@ export function StatusReportList({
                     </Button>
                     {customer && (
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-9 w-9"
@@ -249,6 +252,7 @@ export function StatusReportList({
                       </Button>
                     )}
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9"
@@ -258,6 +262,7 @@ export function StatusReportList({
                       <ExternalLink className="h-4 w-4" />
                     </Button>
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9 text-destructive hover:text-destructive"
@@ -340,6 +345,7 @@ export function StatusReportList({
                           >
                             <div className="flex items-center justify-end gap-1">
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2"
@@ -350,6 +356,7 @@ export function StatusReportList({
                               </Button>
                               {customer && (
                                 <Button
+                                  type="button"
                                   variant="ghost"
                                   size="sm"
                                   className="h-7 px-2"
@@ -360,6 +367,7 @@ export function StatusReportList({
                                 </Button>
                               )}
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2"
@@ -369,6 +377,7 @@ export function StatusReportList({
                                 <span className="hidden xl:inline ml-1.5">{t('view')}</span>
                               </Button>
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2 text-destructive hover:text-destructive"

@@ -31,7 +31,9 @@
       "status": "Status",
       "tech": "Tech",
       "date": "Date",
-      "total": "Total"
+      "total": "Total",
+      "promised": "Promised",
+      "promisedOverdue": "Promised {date}, overdue"
     },
     "emailSubject": "Vehicle Status Update: {status}",
     "changeStatus": "Change status",
@@ -39,6 +41,10 @@
       "open": "Open work order",
       "openVehicle": "Open vehicle",
       "openCustomer": "Open customer"
+    },
+    "dueToday": "Due today",
+    "columns": {
+      "label": "Columns"
     }
   },
   "vehiclePicker": {

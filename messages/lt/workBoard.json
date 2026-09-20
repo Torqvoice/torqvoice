@@ -78,7 +78,10 @@
     "addTechnician": "Pridėti techniką",
     "standaloneOnly": "Vardas lentoje tam, kuris neprisijungia: praktikantui ar rangovui. Mechaniką, kuris naudoja programėlę, pridėkite Komandos puslapyje.",
     "linkedTo": "Prisijungia kaip {name}",
-    "linkedManagedOnTeam": "Valdoma Komandos puslapyje kartu su prieiga prie programėlės."
+    "linkedManagedOnTeam": "Valdoma Komandos puslapyje kartu su prieiga prie programėlės.",
+    "skills": "Įgūdžiai",
+    "skillsPlaceholder": "Diagnostika, elektromobilių sertifikatas",
+    "skillsHint": "Rodoma po vardu ten, kur skirstomi darbai. Neprivaloma."
   },
   "jobDetail": {
     "viewDetails": "Peržiūrėti informaciją",
@@ -154,6 +157,9 @@
     "workBay": "Darbo vieta",
     "status": "Būsena",
     "noTime": "Laikas dar nenustatytas",
-    "none": "Kol kas niekas"
+    "none": "Kol kas niekas",
+    "promised": "Pažadėta",
+    "promiseLate": "Vėluoja",
+    "promiseOverdue": "Klientui pažadėta jau praėjusiam laikui"
   }
 }

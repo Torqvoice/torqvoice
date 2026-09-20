@@ -8,6 +8,8 @@ import { GripVertical, Package, Percent, Plus, ScanBarcode, Trash2 } from 'lucid
 import { IconActionButton } from '@/components/icon-action-button'
 import { FieldRow } from '@/components/line-item-field'
 import { cn } from '@/lib/utils'
+import { AppCard } from '@/components/app-card'
+import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -259,6 +261,7 @@ export function PartsEditor({
 }: PartsEditorProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
+  const modern = useModernWorkOrder()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const keyCounterRef = useRef(0)
@@ -368,31 +371,27 @@ export function PartsEditor({
     )
   }, [setPartItems, defaultMarkupPercent, markupAppliesToInventory])
 
-  return (
-    // The details view splits into two resizable columns, so this editor can
-    // be narrower on a wide screen than it is on a phone. It sizes itself off
-    // its own container rather than the viewport.
-    <div className="@container space-y-2 rounded-lg border p-3">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold">{t('title')}</h3>
-        <div className="flex gap-1.5">
-          {defaultMarkupPercent > 0 && partItems.length > 0 && (
-            <IconActionButton
-              label={t('applyMarkup', { percent: defaultMarkupPercent })}
-              icon={Percent}
-              onClick={applyMarkupToAll}
-            />
-          )}
-          {hasInventory && (
-            <IconActionButton label={t('fromInventory')} icon={Package} onClick={onOpenInventory} />
-          )}
-          {onScanBarcode && (
-            <IconActionButton label={t('scanBarcode')} icon={ScanBarcode} onClick={onScanBarcode} />
-          )}
-          <IconActionButton label={t('addPart')} icon={Plus} onClick={addPartAtStart} />
-        </div>
-      </div>
+  const actions = (
+    <div className="flex gap-1.5">
+      {defaultMarkupPercent > 0 && partItems.length > 0 && (
+        <IconActionButton
+          label={t('applyMarkup', { percent: defaultMarkupPercent })}
+          icon={Percent}
+          onClick={applyMarkupToAll}
+        />
+      )}
+      {hasInventory && (
+        <IconActionButton label={t('fromInventory')} icon={Package} onClick={onOpenInventory} />
+      )}
+      {onScanBarcode && (
+        <IconActionButton label={t('scanBarcode')} icon={ScanBarcode} onClick={onScanBarcode} />
+      )}
+      <IconActionButton label={t('addPart')} icon={Plus} onClick={addPartAtStart} />
+    </div>
+  )
 
+  const body = (
+    <>
       {partItems.length > 0 && (
         <>
           <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
@@ -479,6 +478,36 @@ export function PartsEditor({
           <span className="text-sm">{t('addPart')}</span>
         </button>
       )}
+    </>
+  )
+
+  if (modern) {
+    return (
+      <AppCard
+        icon={Package}
+        title={t('title')}
+        badge={partItems.length || undefined}
+        action={actions}
+        // The name suggestions drop below their row, past the card's edge on
+        // the last one; the sheen keeps the corners the card no longer clips.
+        className="@container overflow-visible before:rounded-lg after:rounded-lg"
+        contentClassName="space-y-2 px-3"
+      >
+        {body}
+      </AppCard>
+    )
+  }
+
+  return (
+    // The details view splits into two resizable columns, so this editor can
+    // be narrower on a wide screen than it is on a phone. It sizes itself off
+    // its own container rather than the viewport.
+    <div className="@container space-y-2 rounded-lg border p-3">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold">{t('title')}</h3>
+        {actions}
+      </div>
+      {body}
     </div>
   )
 }

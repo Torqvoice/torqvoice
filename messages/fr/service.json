@@ -21,7 +21,8 @@
       "title": "Le travail doit avoir un titre avant d'être enregistré.",
       "negative": "Les quantités, heures, prix et coûts ne peuvent pas être négatifs.",
       "partName": "Chaque pièce avec un prix doit avoir un nom.",
-      "laborDescription": "Chaque ligne de main-d'œuvre avec des heures ou un taux doit avoir une description."
+      "laborDescription": "Chaque ligne de main-d'œuvre avec des heures ou un taux doit avoir une description.",
+      "concernCondition": "Un point avec une cause, une correction ou un contrôle doit avoir son symptôme renseigné."
     }
   },
   "header": {
@@ -164,6 +165,11 @@
     "deleteRow": "Supprimer la ligne",
     "descriptionMissingHint": "Les lignes sans description ne sont pas enregistrées."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Un technicien a ajouté de la main-d’œuvre à cette intervention} other {Un technicien a ajouté # lignes de main-d’œuvre à cette intervention}}",
+    "body": "Elle reste hors de la liste pendant votre saisie. Votre prochain enregistrement l’inclura de toute façon.",
+    "show": "Afficher"
+  },
   "totals": {
     "title": "Totaux",
     "parts": "Pièces",
@@ -198,7 +204,9 @@
     "aiOverwriteReplace": "Remplacer",
     "aiOverwriteAppend": "Ajouter",
     "aiOverwriteCancel": "Annuler",
-    "aiDontShowAgain": "Ne plus afficher"
+    "aiDontShowAgain": "Ne plus afficher",
+    "internalTitle": "Notes internes",
+    "publicTitle": "Notes client"
   },
   "invoice": {
     "title": "Résumé de la Facture",
@@ -248,7 +256,10 @@
     "failedDelete": "Impossible de supprimer le paiement",
     "deleteTitle": "Supprimer le Paiement",
     "deleteDescription": "Cela supprimera ce dossier de paiement.",
-    "failedPdf": "Impossible de générer la facture PDF"
+    "failedPdf": "Impossible de générer la facture PDF",
+    "received": "Paiements reçus",
+    "noneYet": "Rien de payé pour l'instant.",
+    "balanceDue": "Solde dû"
   },
   "attachments": {
     "deleteTitle": "Supprimer la Pièce Jointe",
@@ -357,6 +368,7 @@
     "date": "Date",
     "startTime": "Heure de début",
     "endTime": "Heure de fin",
+    "durationPresets": "Durée",
     "technician": "Technicien",
     "selectTechnician": "Sélectionner un technicien...",
     "searchOrCreate": "Rechercher ou créer un technicien...",
@@ -394,7 +406,17 @@
     "pickNextAvailable": "Choisir le prochain créneau libre",
     "findingSlot": "Recherche d'un créneau…",
     "slotPicked": "Placé sur le prochain créneau libre",
-    "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines"
+    "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines",
+    "assignedTitle": "Technicien assigné",
+    "boardLink": "Tableau de travail",
+    "someoneElse": "Quelqu'un d'autre",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h libres",
+    "loadFull": "Complet",
+    "loadOn": "Heures réservées le {date}",
+    "promisedAt": "Promis au client",
+    "promisedPlaceholder": "Pas encore promis",
+    "promisedClear": "Effacer"
   },
   "notifications": {
     "title": "Notifications client",
@@ -447,7 +469,60 @@
     "placeholder": "Il y a un bruit à l'arrière quand je freine",
     "remove": "Retirer ce point",
     "notAnswered": "Rien trouvé à ce sujet pour l'instant",
-    "answered": "{count} constat(s) à ce sujet"
+    "answered": "{count} constat(s) à ce sujet",
+    "storyTitle": "Description du travail",
+    "storyHint": "Symptôme, cause, correction, contrôle. Cliquez sur une étape pour l'ouvrir ; une ligne par point signalé par le client ou constaté par vous.",
+    "steps": {
+      "condition": "Symptôme",
+      "cause": "Cause",
+      "correction": "Correction",
+      "confirm": "Contrôle"
+    },
+    "conditionPlaceholder": "Ce que le client a signalé, ou ce que vous avez constaté",
+    "causePlaceholder": "La cause réelle révélée par les tests",
+    "correctionPlaceholder": "Ce qui a été fait pour y remédier",
+    "confirmPlaceholder": "Comment la réparation a été vérifiée : essai routier, nouveau diagnostic, symptôme disparu",
+    "markConfirmed": "Contrôlé",
+    "confirmedBy": "Contrôlé par {name}, {date}",
+    "confirmedAt": "Contrôlé le {date}",
+    "confirmedOnSave": "Signé à votre nom à l'enregistrement",
+    "confirmedCount": "{confirmed} sur {total} contrôlés",
+    "findingsCount": "{count, plural, one {# observation} other {# observations}}",
+    "addFinding": "Ajouter une observation",
+    "unconfirmedTitle": "Terminer avec des points non contrôlés ?",
+    "unconfirmedBody": "{count, plural, one {Un point n'a pas été contrôlé comme réparé :} other {# points n'ont pas été contrôlés comme réparés :}}",
+    "unconfirmedProceed": "Terminer quand même",
+    "addMedia": "Ajouter des médias",
+    "mediaUploading": "Envoi…",
+    "mediaAdded": "{count, plural, one {# fichier ajouté} other {# fichiers ajoutés}}",
+    "mediaFailed": "Impossible d'envoyer {name}",
+    "mediaTypes": "Choisissez une photo (JPG, PNG, WebP) ou une vidéo.",
+    "dictate": {
+      "start": "Dicter",
+      "listening": "À l'écoute",
+      "startHint": "Parlez et le texte s'écrit ici. Rien n'est enregistré.",
+      "stopHint": "Arrêter l'écoute",
+      "notAllowed": "Le navigateur n'a pas été autorisé à utiliser le micro. Autorisez-le pour ce site et réessayez.",
+      "noMicrophone": "Aucun micro trouvé.",
+      "failed": "La dictée s'est arrêtée. Réessayez.",
+      "startHintServer": "Parlez et le texte s'écrit au fil de vos paroles. L'audio est envoyé à votre modèle vocal pour être transcrit et n'est pas conservé.",
+      "transcribing": "Finalisation…",
+      "language": "Langue parlée",
+      "auto": "Auto",
+      "nothingHeard": "Rien n'a été entendu.",
+      "fellBack": "Dictée du navigateur utilisée pour l'instant.",
+      "autoLong": "Auto (détecter la langue)",
+      "engine": "Transcrit par",
+      "engineAi": "Modèle vocal (plus précis)",
+      "engineBrowser": "Navigateur (écrit pendant que vous parlez)",
+      "liveFellBack": "Écriture par tranches de quelques secondes au lieu de mot à mot."
+    },
+    "stepEmpty": "Pas encore rédigé",
+    "removeTitle": "Retirer ce point ?",
+    "removeBody": "Son symptôme, sa cause, sa correction et son contrôle sont retirés avec lui à l'enregistrement de l'ordre de travail.",
+    "removeAttached": "Ses observations et médias restent sur le travail, sans être rattachés à un point.",
+    "removeConfirm": "Retirer le point",
+    "saveFirst": "Enregistrez d'abord l'ordre de travail"
   },
   "videoCall": {
     "title": "Appel vidéo",
@@ -493,5 +568,127 @@
       "joinLine": "Rejoignez l'appel vidéo ici : {url}",
       "emailSubject": "Appel vidéo concernant votre {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Statut de l'ordre de travail",
+    "back": "Retour",
+    "backToClassic": "Revenir à la présentation classique",
+    "openCustomer": "Ouvrir le client",
+    "serviceHistory": "Historique des services",
+    "changeVehicle": "Changer de véhicule",
+    "vehicleChangesOnSave": "L'ordre de travail passe sur ce véhicule à l'enregistrement.",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "notSet": "Non renseigné",
+    "noCustomer": "Aucun client sur cet ordre de travail.",
+    "invoiceTitle": "Facture et paiement",
+    "filesTitle": "Fichiers et médias",
+    "activity": {
+      "title": "Activité",
+      "messageSent": "Message envoyé au client",
+      "linkShared": "Lien de la facture partagé",
+      "linkViewed": "{count, plural, one {Le client a ouvert le lien} other {Le client a ouvert le lien # fois}}",
+      "paymentTaken": "Paiement de {amount} enregistré"
+    },
+    "invite": {
+      "title": "La page de l'ordre de travail a été refaite.",
+      "body": "Une présentation plus claire, avec les mêmes champs. Vous pouvez revenir à l'ancienne à tout moment.",
+      "try": "Essayer maintenant",
+      "dismiss": "Plus tard",
+      "menu": "Essayer la nouvelle présentation"
+    },
+    "promised": "Promis pour le {date}",
+    "promisedOverdue": "Promis pour le {date}, en retard",
+    "opened": "Ouvert le {date}",
+    "openedBy": "Ouvert le {date} par {name}",
+    "editTitle": "Modifier le titre",
+    "titleField": "Titre",
+    "media": {
+      "tabs": {
+        "photos": "Photos",
+        "diagnostics": "Diagnostics"
+      },
+      "summary": "{count, plural, one {# fichier} other {# fichiers}} · montrés au client seulement s'ils sont marqués",
+      "customerCanSee": "Visible par le client",
+      "showToCustomer": "Montrer au client",
+      "hideFromCustomer": "Masquer au client",
+      "add": {
+        "image": "Ajouter des photos",
+        "document": "Ajouter des documents",
+        "diagnostic": "Ajouter un rapport de diagnostic",
+        "video": "Ajouter une vidéo"
+      },
+      "dropHint": "Déposez des fichiers ou cliquez pour parcourir",
+      "added": "{count, plural, one {# fichier ajouté} other {# fichiers ajoutés}}",
+      "failed": "Impossible d'envoyer {name}",
+      "wrongType": "Type de fichier non adapté à cet onglet : {names}",
+      "limit": "Limite atteinte ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Payé",
+      "balance": "Solde dû",
+      "settled": "Payé en totalité",
+      "takePayment": "Encaisser",
+      "preview": "Aperçu de la facture",
+      "previewShort": "Aperçu",
+      "send": "Envoyer au client",
+      "sendShort": "Envoyer"
+    },
+    "vehicleInfo": {
+      "more": "Plus d'infos",
+      "less": "Moins d'infos",
+      "copy": "Copier {label}",
+      "copied": "Copié",
+      "lastInspection": "Dernier contrôle périodique",
+      "purchaseDate": "Date d'achat",
+      "purchasePrice": "Prix d'achat",
+      "overdue": "en retard",
+      "customerSince": "Client depuis"
+    }
+  },
+  "photoHandoff": {
+    "button": "Ajouter depuis le téléphone",
+    "dialogTitle": "Ajouter des photos et des documents depuis un téléphone",
+    "dialogBody": "Prenez ou choisissez des photos, ou partagez un PDF, sur n’importe quel téléphone. Tout arrive directement sur cet ordre de travail.",
+    "expires": "Le code est valable jusqu'à {time}.",
+    "waiting": "En attente de photos et de documents…",
+    "received": "{count, plural, one {# fichier reçu} other {# fichiers reçus}}",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié",
+    "failed": "Impossible de créer un code. Réessayez.",
+    "done": "Terminé",
+    "pageTitle": "Ajouter des photos et des documents",
+    "forJob": "Ordre de travail {number}",
+    "takePhoto": "Prendre une photo",
+    "choosePhotos": "Choisir des photos",
+    "hint": "Tout arrive directement sur l’ordre de travail. Prenez autant de photos que nécessaire.",
+    "uploading": "Envoi…",
+    "added": "Ajoutée",
+    "notAdded": "Non ajoutée",
+    "retry": "Réessayer",
+    "addedCount": "{count, plural, one {# fichier ajouté} other {# fichiers ajoutés}}",
+    "expiredTitle": "Ce code a expiré",
+    "invalidTitle": "Ce lien ne fonctionne pas",
+    "errors": {
+      "expired": "Demandez un nouveau code à l'accueil. Chaque code est valable 30 minutes.",
+      "invalid": "Scannez de nouveau le code sur l'ordre de travail.",
+      "limit": "Cet ordre de travail a déjà autant de photos qu’il peut en contenir.",
+      "type": "Seuls les photos et les documents PDF peuvent être ajoutés ici.",
+      "tooLarge": "Ce fichier est trop volumineux.",
+      "failed": "La photo n'a pas été ajoutée. Vérifiez la connexion et réessayez.",
+      "codeLimit": "Ce code a déjà ajouté autant de photos qu’un code le permet. Scannez un nouveau code à l’accueil."
+    },
+    "concernHeading": "Les photos vont sur ce point",
+    "howTitle": "Comment ça marche",
+    "step1": "Pointez l’appareil photo du téléphone vers le code et ouvrez le lien.",
+    "step2": "Prenez des photos, ou choisissez des photos ou des documents PDF déjà sur le téléphone.",
+    "step3": "Elles apparaissent sur cet ordre de travail dès leur arrivée.",
+    "noSignIn": "Aucune connexion nécessaire sur le téléphone.",
+    "customerToo": "Le personnel peut l’utiliser, et le client aussi : laissez-le scanner le code ou envoyez-lui le lien.",
+    "scope": "Le lien ajoute uniquement des photos et des documents à cet ordre de travail et cesse de fonctionner après 30 minutes.",
+    "scanHint": "Scannez avec l’appareil photo du téléphone",
+    "chooseDocument": "Envoyer un document",
+    "privacy": "Seul l’atelier voit ce que vous ajoutez ici."
   }
 }

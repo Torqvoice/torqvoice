@@ -21,7 +21,8 @@
       "title": "De opdracht heeft een titel nodig voordat deze kan worden opgeslagen.",
       "negative": "Aantallen, uren, prijzen en kosten kunnen niet negatief zijn.",
       "partName": "Elk onderdeel met een prijs heeft een naam nodig.",
-      "laborDescription": "Elke arbeidsregel met uren of tarief heeft een omschrijving nodig."
+      "laborDescription": "Elke arbeidsregel met uren of tarief heeft een omschrijving nodig.",
+      "concernCondition": "Een melding met een oorzaak, oplossing of controle moet een ingevulde klacht hebben."
     }
   },
   "header": {
@@ -164,6 +165,11 @@
     "deleteRow": "Rij verwijderen",
     "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Een monteur heeft arbeid aan deze order toegevoegd} other {Een monteur heeft # arbeidsregels aan deze order toegevoegd}}",
+    "body": "Die blijft buiten de lijst terwijl je bewerkt. Bij je volgende keer opslaan gaat die sowieso mee.",
+    "show": "Tonen"
+  },
   "totals": {
     "title": "Totalen",
     "parts": "Onderdelen",
@@ -198,7 +204,9 @@
     "aiOverwriteReplace": "Vervangen",
     "aiOverwriteAppend": "Toevoegen",
     "aiOverwriteCancel": "Annuleren",
-    "aiDontShowAgain": "Niet meer tonen"
+    "aiDontShowAgain": "Niet meer tonen",
+    "internalTitle": "Interne opmerkingen",
+    "publicTitle": "Opmerkingen voor de klant"
   },
   "invoice": {
     "title": "Factuursamenvatting",
@@ -248,7 +256,10 @@
     "failedDelete": "Betaling verwijderen mislukt",
     "deleteTitle": "Betaling verwijderen",
     "deleteDescription": "Dit zal deze betalingsrecord verwijderen.",
-    "failedPdf": "PDF-factuur genereren mislukt"
+    "failedPdf": "PDF-factuur genereren mislukt",
+    "received": "Ontvangen betalingen",
+    "noneYet": "Nog niets betaald.",
+    "balanceDue": "Verschuldigd bedrag"
   },
   "attachments": {
     "deleteTitle": "Bijlage verwijderen",
@@ -357,6 +368,7 @@
     "date": "Datum",
     "startTime": "Starttijd",
     "endTime": "Eindtijd",
+    "durationPresets": "Duur",
     "technician": "Technicus",
     "selectTechnician": "Selecteer technicus...",
     "searchOrCreate": "Zoek of maak technicus aan...",
@@ -394,7 +406,17 @@
     "pickNextAvailable": "Kies eerstvolgende vrije slot",
     "findingSlot": "Slot zoeken…",
     "slotPicked": "Ingepland op het eerstvolgende vrije slot",
-    "noSlotFound": "Geen vrij slot gevonden in de komende weken"
+    "noSlotFound": "Geen vrij slot gevonden in de komende weken",
+    "assignedTitle": "Toegewezen technicus",
+    "boardLink": "Werkbord",
+    "someoneElse": "Iemand anders",
+    "loadOf": "{booked} / {capacity} u",
+    "loadFree": "{hours} u vrij",
+    "loadFull": "Volgeboekt",
+    "loadOn": "Geboekte uren op {date}",
+    "promisedAt": "Toegezegd aan klant",
+    "promisedPlaceholder": "Nog niet toegezegd",
+    "promisedClear": "Wissen"
   },
   "notifications": {
     "title": "Klantmeldingen",
@@ -447,7 +469,60 @@
     "placeholder": "Er komt een geluid van achteren als ik rem",
     "remove": "Dit punt verwijderen",
     "notAnswered": "Hier is nog niets op gevonden",
-    "answered": "{count} bevinding(en) hierop"
+    "answered": "{count} bevinding(en) hierop",
+    "storyTitle": "Werkomschrijving",
+    "storyHint": "Klacht, oorzaak, oplossing, controle. Klik op een stap om die te openen; één regel voor elk punt dat de klant noemde of dat u zelf zag.",
+    "steps": {
+      "condition": "Klacht",
+      "cause": "Oorzaak",
+      "correction": "Oplossing",
+      "confirm": "Controle"
+    },
+    "conditionPlaceholder": "Wat de klant meldde, of wat u zelf zag",
+    "causePlaceholder": "Wat uit het testen bleek de werkelijke oorzaak te zijn",
+    "correctionPlaceholder": "Wat er is gedaan om het op te lossen",
+    "confirmPlaceholder": "Hoe de oplossing is gecontroleerd: proefrit, nieuwe scan, symptoom weg",
+    "markConfirmed": "Bevestigd",
+    "confirmedBy": "Bevestigd door {name}, {date}",
+    "confirmedAt": "Bevestigd op {date}",
+    "confirmedOnSave": "Krijgt uw naam wanneer u opslaat",
+    "confirmedCount": "{confirmed} van {total} bevestigd",
+    "findingsCount": "{count, plural, one {# observatie} other {# observaties}}",
+    "addFinding": "Observatie toevoegen",
+    "unconfirmedTitle": "Afronden met onbevestigde meldingen?",
+    "unconfirmedBody": "{count, plural, one {Van één melding is niet bevestigd dat die is verholpen:} other {Van # meldingen is niet bevestigd dat ze zijn verholpen:}}",
+    "unconfirmedProceed": "Toch afronden",
+    "addMedia": "Media toevoegen",
+    "mediaUploading": "Bezig met uploaden…",
+    "mediaAdded": "{count, plural, one {# bestand toegevoegd} other {# bestanden toegevoegd}}",
+    "mediaFailed": "Kon {name} niet uploaden",
+    "mediaTypes": "Kies een foto (JPG, PNG, WebP) of een video.",
+    "dictate": {
+      "start": "Dicteren",
+      "listening": "Luistert",
+      "startHint": "Spreek en het wordt hier uitgeschreven. Er wordt niets opgenomen.",
+      "stopHint": "Stoppen met luisteren",
+      "notAllowed": "De browser mocht de microfoon niet gebruiken. Sta het toe voor deze site en probeer het opnieuw.",
+      "noMicrophone": "Geen microfoon gevonden.",
+      "failed": "Dicteren gestopt. Probeer het opnieuw.",
+      "startHintServer": "Spreek en het wordt uitgeschreven terwijl u praat. Het geluid gaat naar uw spraakmodel om uit te schrijven en wordt niet bewaard.",
+      "transcribing": "Bezig met afronden…",
+      "language": "Gesproken taal",
+      "auto": "Automatisch",
+      "nothingHeard": "Er werd niets gehoord.",
+      "fellBack": "Voorlopig wordt het dicteren van de browser zelf gebruikt.",
+      "autoLong": "Automatisch (taal herkennen)",
+      "engine": "Uitgeschreven door",
+      "engineAi": "Spraakmodel (nauwkeuriger)",
+      "engineBrowser": "Browser (schrijft mee terwijl u spreekt)",
+      "liveFellBack": "Schrijft in stappen van een paar seconden in plaats van woord voor woord."
+    },
+    "stepEmpty": "Nog niet ingevuld",
+    "removeTitle": "Deze melding verwijderen?",
+    "removeBody": "De klacht, oorzaak, oplossing en controle worden mee verwijderd wanneer u de werkorder opslaat.",
+    "removeAttached": "De bijbehorende observaties en media blijven bij de klus, alleen niet meer onder een melding.",
+    "removeConfirm": "Melding verwijderen",
+    "saveFirst": "Sla eerst de werkorder op"
   },
   "videoCall": {
     "title": "Videogesprek",
@@ -493,5 +568,127 @@
       "joinLine": "Neem hier deel aan het videogesprek: {url}",
       "emailSubject": "Videogesprek over je {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Status van de werkorder",
+    "back": "Terug",
+    "backToClassic": "Terug naar de klassieke indeling",
+    "openCustomer": "Klant openen",
+    "serviceHistory": "Servicegeschiedenis",
+    "changeVehicle": "Voertuig wijzigen",
+    "vehicleChangesOnSave": "De werkorder gaat bij opslaan over naar dit voertuig.",
+    "phone": "Telefoon",
+    "email": "E-mail",
+    "notSet": "Niet ingevuld",
+    "noCustomer": "Geen klant op deze werkorder.",
+    "invoiceTitle": "Factuur en betaling",
+    "filesTitle": "Bestanden en media",
+    "activity": {
+      "title": "Activiteit",
+      "messageSent": "Bericht naar de klant gestuurd",
+      "linkShared": "Factuurlink gedeeld",
+      "linkViewed": "{count, plural, one {Klant heeft de link geopend} other {Klant heeft de link # keer geopend}}",
+      "paymentTaken": "Betaling van {amount} geregistreerd"
+    },
+    "invite": {
+      "title": "De werkorderpagina is vernieuwd.",
+      "body": "Een overzichtelijkere indeling met dezelfde velden. U kunt altijd terugschakelen.",
+      "try": "Nu proberen",
+      "dismiss": "Niet nu",
+      "menu": "Nieuwe indeling proberen"
+    },
+    "promised": "Toegezegd voor {date}",
+    "promisedOverdue": "Toegezegd voor {date}, te laat",
+    "opened": "Geopend op {date}",
+    "openedBy": "Geopend op {date} door {name}",
+    "editTitle": "Titel bewerken",
+    "titleField": "Titel",
+    "media": {
+      "tabs": {
+        "photos": "Foto's",
+        "diagnostics": "Diagnose"
+      },
+      "summary": "{count, plural, one {# bestand} other {# bestanden}} · alleen gemarkeerde worden met de klant gedeeld",
+      "customerCanSee": "Zichtbaar voor klant",
+      "showToCustomer": "Aan de klant tonen",
+      "hideFromCustomer": "Voor de klant verbergen",
+      "add": {
+        "image": "Foto's toevoegen",
+        "document": "Documenten toevoegen",
+        "diagnostic": "Diagnostisch verslag toevoegen",
+        "video": "Video toevoegen"
+      },
+      "dropHint": "Sleep bestanden hierheen of klik om te bladeren",
+      "added": "{count, plural, one {# bestand toegevoegd} other {# bestanden toegevoegd}}",
+      "failed": "Kon {name} niet uploaden",
+      "wrongType": "Niet het juiste soort bestand voor dit tabblad: {names}",
+      "limit": "Limiet bereikt ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Totaal",
+      "paid": "Betaald",
+      "balance": "Verschuldigd bedrag",
+      "settled": "Volledig betaald",
+      "takePayment": "Betaling ontvangen",
+      "preview": "Voorbeeld factuur",
+      "previewShort": "Voorbeeld",
+      "send": "Naar klant sturen",
+      "sendShort": "Sturen"
+    },
+    "vehicleInfo": {
+      "more": "Meer info",
+      "less": "Minder info",
+      "copy": "{label} kopiëren",
+      "copied": "Gekopieerd",
+      "lastInspection": "Laatste periodieke keuring",
+      "purchaseDate": "Aankoopdatum",
+      "purchasePrice": "Aankoopprijs",
+      "overdue": "verlopen",
+      "customerSince": "Klant sinds"
+    }
+  },
+  "photoHandoff": {
+    "button": "Toevoegen via telefoon",
+    "dialogTitle": "Foto’s en documenten toevoegen met een telefoon",
+    "dialogBody": "Maak of kies foto’s, of deel een pdf, op elke telefoon. Alles komt direct bij deze werkorder.",
+    "expires": "De code werkt tot {time}.",
+    "waiting": "Wachten op foto’s en documenten…",
+    "received": "{count, plural, one {# bestand ontvangen} other {# bestanden ontvangen}}",
+    "copyLink": "Link kopiëren",
+    "linkCopied": "Link gekopieerd",
+    "failed": "Kon geen code maken. Probeer het opnieuw.",
+    "done": "Klaar",
+    "pageTitle": "Foto’s en documenten toevoegen",
+    "forJob": "Werkorder {number}",
+    "takePhoto": "Foto maken",
+    "choosePhotos": "Foto's kiezen",
+    "hint": "Alles komt direct bij de werkorder. Maak zoveel foto’s als u nodig hebt.",
+    "uploading": "Bezig met uploaden…",
+    "added": "Toegevoegd",
+    "notAdded": "Niet toegevoegd",
+    "retry": "Opnieuw proberen",
+    "addedCount": "{count, plural, one {# bestand toegevoegd} other {# bestanden toegevoegd}}",
+    "expiredTitle": "Deze code is verlopen",
+    "invalidTitle": "Deze link werkt niet",
+    "errors": {
+      "expired": "Vraag bij de balie om een nieuwe code. Elke code werkt 30 minuten.",
+      "invalid": "Scan de code op de werkorder opnieuw.",
+      "limit": "Deze werkorder heeft al zoveel foto’s als erbij kunnen.",
+      "type": "Hier kunnen alleen foto’s en pdf-documenten worden toegevoegd.",
+      "tooLarge": "Dat bestand is te groot.",
+      "failed": "De foto is niet toegevoegd. Controleer de verbinding en probeer het opnieuw.",
+      "codeLimit": "Met deze code zijn al zoveel foto’s toegevoegd als één code toestaat. Scan een nieuwe code bij de balie."
+    },
+    "concernHeading": "De foto’s horen bij deze melding",
+    "howTitle": "Zo werkt het",
+    "step1": "Richt de camera van de telefoon op de code en open de link.",
+    "step2": "Maak foto’s, of kies foto’s of pdf-documenten die al op de telefoon staan.",
+    "step3": "Ze verschijnen bij deze werkorder zodra ze binnenkomen.",
+    "noSignIn": "Op de telefoon is geen inlog nodig.",
+    "customerToo": "Medewerkers kunnen het gebruiken, en de klant ook: laat hem de code scannen of stuur hem de link.",
+    "scope": "De link voegt alleen foto’s en documenten toe aan deze werkorder en werkt 30 minuten.",
+    "scanHint": "Scan met de camera van de telefoon",
+    "chooseDocument": "Document uploaden",
+    "privacy": "Alleen de werkplaats ziet wat u hier toevoegt."
   }
 }

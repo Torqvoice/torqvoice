@@ -1229,7 +1229,29 @@
     "dateLabel": "Data",
     "dateTimeLabel": "Data i czas",
     "saveSettings": "Zapisz ustawienia",
-    "saved": "Ustawienia zapisane"
+    "saved": "Ustawienia zapisane",
+    "fontLabel": "Czcionka",
+    "fontHint": "Wybierz kroje pisma używane w aplikacji. Wybór jest zapisywany na tym urządzeniu.",
+    "fontSampleHeading": "Zlecenie",
+    "fontSampleText": "Wymiana cewki zapłonowej i świec zapłonowych",
+    "fonts": {
+      "default": {
+        "name": "Domyślna",
+        "description": "Geist, czysta i neutralna."
+      },
+      "workshop": {
+        "name": "Warsztatowa",
+        "description": "IBM Plex z wąskimi wersalikami w nagłówkach, jak na karcie zlecenia."
+      },
+      "precise": {
+        "name": "Precyzyjna",
+        "description": "Inter i JetBrains Mono. Stworzona dla ekranów pełnych tabel i liczb."
+      },
+      "legible": {
+        "name": "Czytelna",
+        "description": "Atkinson Hyperlegible. 0 i O, 1 i l nigdy nie wyglądają podobnie; łatwo czytać z drugiego końca warsztatu."
+      }
+    }
   },
   "data": {
     "title": "Zarządzanie danymi",

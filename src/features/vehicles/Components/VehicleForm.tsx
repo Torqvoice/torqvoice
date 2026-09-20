@@ -34,6 +34,8 @@ import {
 import { DocsLink } from '@/components/docs-link'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
+import { useDateSettings } from '@/components/date-settings-context'
+import { inspectionDueInput } from '../Lib/inspectionDueInput'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
@@ -104,6 +106,7 @@ export function VehicleForm({
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('vehicles.form')
+  const { timezone } = useDateSettings()
   const tc = useTranslations('common.buttons')
   const format = useFormatter()
   const [loading, setLoading] = useState(false)
@@ -737,7 +740,11 @@ export function VehicleForm({
                     type="date"
                     defaultValue={
                       vehicle?.inspectionStatus?.dueAt
-                        ? new Date(vehicle.inspectionStatus.dueAt).toISOString().slice(0, 10)
+                        ? inspectionDueInput(
+                            vehicle.inspectionStatus.dueAt,
+                            vehicle.inspectionStatus.source,
+                            timezone
+                          )
                         : ''
                     }
                   />

@@ -16,6 +16,8 @@ import {
 import type { MeasurementInput } from '../Schema/tireHotelSchema'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 import { auditDetails } from '@/lib/audit'
+import { releaseFiles } from '@/lib/files/manager'
+import { tireSetFileUrls } from '@/lib/files/collect'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const CREATE = [{ action: PermissionAction.CREATE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -963,7 +965,11 @@ export async function deleteTireSet(id: string) {
         throw new Error('Check the set out before deleting it, so the shelf count stays right')
       }
 
+      // Its photos and documents go with it, except any a work order still
+      // shows: those were copied onto the job and the file manager keeps them.
+      const files = await tireSetFileUrls(organizationId, [id])
       await db.tireSet.delete({ where: { id } })
+      await releaseFiles(files, { organizationId, reason: 'tire set deleted' })
       revalidateTireHotel()
       return { id, reference: set.reference }
     },

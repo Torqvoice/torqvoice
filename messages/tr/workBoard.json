@@ -78,7 +78,10 @@
     "addTechnician": "Teknisyen Ekle",
     "standaloneOnly": "Panoda giriş yapmayan biri için bir isim, örneğin çırak ya da taşeron. Uygulamayı kullanan bir tamirciyi Ekip sayfasından ekleyin.",
     "linkedTo": "{name} olarak giriş yapar",
-    "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir."
+    "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir.",
+    "skills": "Uzmanlıklar",
+    "skillsPlaceholder": "Arıza tespiti, elektrikli araç sertifikalı",
+    "skillsHint": "İşlerin dağıtıldığı yerde adın altında gösterilir. İsteğe bağlı."
   },
   "jobDetail": {
     "viewDetails": "Ayrıntıları Görüntüle",
@@ -154,6 +157,9 @@
     "workBay": "Çalışma alanı",
     "status": "Durum",
     "noTime": "Henüz saat yok",
-    "none": "Henüz kimse"
+    "none": "Henüz kimse",
+    "promised": "Söz verilen",
+    "promiseLate": "Gecikti",
+    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi"
   }
 }

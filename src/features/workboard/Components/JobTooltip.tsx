@@ -3,11 +3,13 @@
 import { CalendarClock, ClipboardCheck, User, Wrench } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { type ClockFormat, formatClockRange } from '../utils/clock'
 import { getDurationMinutes, getJobDateRange } from '../utils/datetime'
 import { normalizeStatus } from '../utils/job-colors'
 import { formatDuration } from './DurationSlider'
+import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 
 /** Status strings as the translation file spells them. */
 const STATUS_KEY: Record<string, string> = {
@@ -103,6 +105,15 @@ export function JobTooltip({
           />
           {bayName && <Row label={t('workBay')} value={bayName} />}
           {statusKey && <Row label={t('status')} value={tStatus(statusKey)} />}
+          {/* The marker on the block says a promise is broken; this says when
+              it was for, which is what somebody phoning the customer needs. */}
+          {job.promisedAt && (
+            <Row
+              label={t('promised')}
+              value={formatPromised(job.promisedAt, timeFormat)}
+              late={isPromiseOverdue(job.promisedAt, job.status)}
+            />
+          )}
         </dl>
       </TooltipContent>
     </Tooltip>
@@ -116,11 +127,39 @@ export function JobTooltip({
  * contrast on both the near-black light-theme tooltip and the near-white dark
  * one. Fading the tooltip's own text colour tracks the inversion.
  */
-function Row({ label, value, colour }: { label: string; value: string; colour?: string | null }) {
+/** The promised moment, in the board's own clock format. */
+function formatPromised(promisedAt: string, timeFormat: ClockFormat): string {
+  const at = new Date(promisedAt)
+  const time = formatClockRange(
+    at.getHours() * 60 + at.getMinutes(),
+    at.getHours() * 60 + at.getMinutes(),
+    timeFormat
+  ).split(' - ')[0]
+  return `${at.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} ${time}`
+}
+
+function Row({
+  label,
+  value,
+  colour,
+  late,
+}: {
+  label: string
+  value: string
+  colour?: string | null
+  /** A promise already broken, coloured like the marker on the block. */
+  late?: boolean
+}) {
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-background/70">{label}</dt>
-      <dd className="flex items-center gap-1.5 text-right">
+      <dd
+        suppressHydrationWarning
+        className={cn(
+          'flex items-center gap-1.5 text-right',
+          late && 'font-semibold text-amber-300'
+        )}
+      >
         {colour && (
           <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: colour }} />
         )}

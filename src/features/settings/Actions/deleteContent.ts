@@ -3,8 +3,14 @@
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
-import { safeUploadPath } from '@/lib/resolve-upload-path'
-import { unlink } from 'fs/promises'
+import { releaseFiles } from '@/lib/files/manager'
+import {
+  inspectionFileUrls,
+  inventoryPartFileUrls,
+  quoteFileUrls,
+  serviceRecordFileUrls,
+  vehicleFileUrls,
+} from '@/lib/files/collect'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { demoGuard } from '@/lib/demo'
@@ -41,30 +47,32 @@ export async function deleteContent(input: unknown) {
       }
 
       const deleted: string[] = []
-      const filesToClean: string[] = []
+      // File URLs of everything deleted below, let go at the end: the file
+      // manager deletes the ones nothing uses any more and keeps the rest (a
+      // tire set's photo that was also on a job stays with the set).
+      const filesToRelease: (string | null | undefined)[] = []
+      const idsOf = async <T extends { id: string }>(rows: Promise<T[]>) =>
+        (await rows).map((row) => row.id)
 
       // --- Vehicles ---
       // Cascades: ServiceRecord (-> PartItem, LaborItem, ServiceAttachment, Payment),
       //           Note, FuelLog, Reminder, Quote (vehicle-linked), RecurringInvoice
       if (selections.vehicles) {
-        // Collect files to clean up
-        const vehicleImages = await db.vehicle.findMany({
-          where: { organizationId },
-          select: { imageUrl: true },
-        })
-        for (const v of vehicleImages) {
-          const vehiclePath = safeUploadPath(v.imageUrl)
-          if (vehiclePath) filesToClean.push(vehiclePath)
-        }
-
-        const attachments = await db.serviceAttachment.findMany({
-          where: { serviceRecord: { organizationId } },
-          select: { fileUrl: true },
-        })
-        for (const att of attachments) {
-          const attPath = safeUploadPath(att.fileUrl)
-          if (attPath) filesToClean.push(attPath)
-        }
+        // Every vehicle's files (its image, jobs, status reports, inspections,
+        // findings), and the counter sales' files, which no vehicle holds.
+        const vehicleIds = await idsOf(
+          db.vehicle.findMany({ where: { organizationId }, select: { id: true } })
+        )
+        const counterSaleIds = await idsOf(
+          db.serviceRecord.findMany({
+            where: { organizationId, vehicleId: null },
+            select: { id: true },
+          })
+        )
+        filesToRelease.push(
+          ...(await vehicleFileUrls(organizationId, vehicleIds)),
+          ...(await serviceRecordFileUrls(organizationId, counterSaleIds))
+        )
 
         await db.vehicle.deleteMany({ where: { organizationId } })
         // Counter sales have no vehicle so the cascade above misses them, but
@@ -79,6 +87,10 @@ export async function deleteContent(input: unknown) {
       // If vehicles were already deleted, vehicle-linked quotes are gone via cascade.
       // This handles org-level quotes (and any remaining if vehicles weren't deleted).
       if (selections.quotes) {
+        const quoteIds = await idsOf(
+          db.quote.findMany({ where: { organizationId }, select: { id: true } })
+        )
+        filesToRelease.push(...(await quoteFileUrls(organizationId, quoteIds)))
         await db.quote.deleteMany({ where: { organizationId } })
         deleted.push('quotes')
       }
@@ -93,7 +105,14 @@ export async function deleteContent(input: unknown) {
 
       // --- Inspections ---
       // Cascades: InspectionItem, InspectionQuoteRequest
+      const collectInspectionFiles = async () => {
+        const inspectionIds = await idsOf(
+          db.inspection.findMany({ where: { organizationId }, select: { id: true } })
+        )
+        filesToRelease.push(...(await inspectionFileUrls(organizationId, inspectionIds)))
+      }
       if (selections.inspections) {
+        await collectInspectionFiles()
         await db.inspection.deleteMany({ where: { organizationId } })
         deleted.push('inspections')
       }
@@ -110,6 +129,7 @@ export async function deleteContent(input: unknown) {
       // Inspections reference templates (no cascade), so delete remaining inspections first.
       if (selections.inspectionTemplates) {
         if (!selections.inspections) {
+          await collectInspectionFiles()
           await db.inspection.deleteMany({ where: { organizationId } })
           deleted.push('inspections')
         }
@@ -119,14 +139,10 @@ export async function deleteContent(input: unknown) {
 
       // --- Inventory ---
       if (selections.inventory) {
-        const parts = await db.inventoryPart.findMany({
-          where: { organizationId },
-          select: { imageUrl: true },
-        })
-        for (const part of parts) {
-          const partPath = safeUploadPath(part.imageUrl)
-          if (partPath) filesToClean.push(partPath)
-        }
+        const partIds = await idsOf(
+          db.inventoryPart.findMany({ where: { organizationId }, select: { id: true } })
+        )
+        filesToRelease.push(...(await inventoryPartFileUrls(organizationId, partIds)))
 
         await db.inventoryPart.deleteMany({ where: { organizationId } })
         deleted.push('inventory')
@@ -157,14 +173,8 @@ export async function deleteContent(input: unknown) {
         deleted.push('customFields')
       }
 
-      // Clean up files from disk (best effort)
-      for (const filePath of filesToClean) {
-        try {
-          await unlink(filePath)
-        } catch {
-          // File may already be missing
-        }
-      }
+      // Files of everything deleted above, once it is gone (never throws).
+      await releaseFiles(filesToRelease, { organizationId, reason: 'content deleted in settings' })
 
       revalidatePath('/')
       revalidatePath('/vehicles')

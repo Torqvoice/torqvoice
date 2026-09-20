@@ -1229,7 +1229,29 @@
     "dateLabel": "Dato",
     "dateTimeLabel": "Dato og tid",
     "saveSettings": "Lagre innstillinger",
-    "saved": "Innstillinger lagret"
+    "saved": "Innstillinger lagret",
+    "fontLabel": "Skrift",
+    "fontHint": "Velg skrifttypene appen bruker. Valget lagres på denne enheten.",
+    "fontSampleHeading": "Arbeidsordre",
+    "fontSampleText": "Bytt tennspole og tennplugger",
+    "fonts": {
+      "default": {
+        "name": "Standard",
+        "description": "Geist, ren og nøytral."
+      },
+      "workshop": {
+        "name": "Verksted",
+        "description": "IBM Plex med smale store bokstaver i overskriftene, som på et arbeidskort."
+      },
+      "precise": {
+        "name": "Presis",
+        "description": "Inter og JetBrains Mono. Laget for skjermer fulle av tabeller og tall."
+      },
+      "legible": {
+        "name": "Lettlest",
+        "description": "Atkinson Hyperlegible. 0 og O, 1 og l ligner aldri på hverandre; lett å lese fra andre siden av verkstedet."
+      }
+    }
   },
   "data": {
     "title": "Datahåndtering",

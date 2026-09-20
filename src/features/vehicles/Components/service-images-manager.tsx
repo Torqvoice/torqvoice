@@ -1,7 +1,7 @@
 'use client'
 
 import { interactiveRow } from '@/lib/interactive-row'
-import { useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -43,6 +43,12 @@ export function ServiceImagesManager({
 }: ServiceImagesManagerProps) {
   const t = useTranslations('service')
   const [images, setImages] = useState<Attachment[]>(initialImages)
+  // The list follows the job: a file added elsewhere on the page (from a
+  // concern's row) arrives with the refreshed record and belongs here too.
+  const savedKey = initialImages.map((a) => a.id).join(',')
+  useEffect(() => {
+    setImages(initialImages)
+  }, [savedKey]) // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the ids, not the array's identity
   const atLimit = maxImages !== undefined && images.length >= maxImages
   const [uploading, setUploading] = useState(false)
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)

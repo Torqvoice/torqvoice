@@ -19,6 +19,8 @@ export const HIDDEN_COLUMNS: readonly string[] = [
   'publicToken',
   'issuedData',
   'editUnlockedById',
+  'createdById',
+  'concernId',
   'telegramChatId',
 ]
 
@@ -62,6 +64,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'serviceDate',
     'startDateTime',
     'endDateTime',
+    'promisedAt',
     'shopName',
     'techName',
     'parts',
@@ -303,6 +306,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'isActive',
     'sortOrder',
     'dailyCapacity',
+    'skills',
     'userId',
     'organizationId',
     'createdAt',

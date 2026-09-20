@@ -36,6 +36,19 @@ export interface CredentialField {
   default?: string
   /** i18n key with guidance on where the value comes from */
   help?: string
+  /**
+   * A field almost nobody fills in. The connect page keeps it behind an
+   * "Advanced" fold, shut unless it already holds a value, so the usual case
+   * is one box and not a question about what the second one is for.
+   */
+  advanced?: boolean
+  /**
+   * Only offered on a self-hosted install, for a field that is an address the
+   * workshop types in. The registry drops it from the manifest on the cloud
+   * instance, so it is neither drawn nor accepted there: on our server such
+   * an address would be a way to reach whatever runs next to it.
+   */
+  selfHostedOnly?: boolean
 }
 
 /**

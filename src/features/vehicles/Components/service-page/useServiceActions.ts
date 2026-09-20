@@ -56,6 +56,8 @@ export function useServiceActions({
     concerns,
     partItems,
     laborItems,
+    laborItemsForSave,
+    clearLaborAddedElsewhere,
     subtotal,
     taxRate,
     taxInclusive,
@@ -117,6 +119,7 @@ export function useServiceActions({
       title: getVisible('title') ?? '',
       partItems,
       laborItems,
+      concerns,
     })
     if (problem) {
       toast.error(t(`page.problems.${problem}`))
@@ -163,11 +166,23 @@ export function useServiceActions({
       invoiceDate: optionalText('invoiceDate'),
       invoiceDueDate: optionalText('invoiceDueDate'),
       // Blank rows are somebody halfway through typing, not a concern.
+      // Only the saved fields: the stamp of who confirmed is the server's.
       concerns: concerns
         .filter((c) => c.description.trim())
-        .map((c, index) => ({ ...c, description: c.description.trim(), sortOrder: index })),
+        .map((c, index) => ({
+          id: c.id,
+          description: c.description.trim(),
+          sortOrder: index,
+          cause: c.cause ?? null,
+          correction: c.correction ?? null,
+          confirmation: c.confirmation ?? null,
+          confirmed: c.confirmed ?? false,
+        })),
       partItems: partItems.filter((p) => p.name),
-      laborItems: laborItems.filter((l) => l.description),
+      // A line a technician added while this page was open goes with the save
+      // even if the offer to show it was never taken: this action replaces
+      // every labour line, so one left out of the payload is deleted.
+      laborItems: laborItemsForSave.filter((l) => l.description),
       subtotal,
       taxRate,
       taxInclusive,
@@ -187,6 +202,7 @@ export function useServiceActions({
     const result = await updateServiceRecord(payload)
 
     if (result.success) {
+      clearLaborAddedElsewhere()
       setHasUnsavedChanges(false)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {

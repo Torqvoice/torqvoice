@@ -317,6 +317,10 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
   },
   { model: 'TireMeasurement', option: 'tireHotel', nestedUnder: 'TireSet', restore: 'replace' },
+  // The same model twice on purpose: a stored image belongs either to an
+  // inventory part's gallery or to a tire reading's condition photos, and
+  // each parent has to carry its own or the rows are lost with it.
+  { model: 'StoredImage', option: 'tireHotel', nestedUnder: 'TireMeasurement', restore: 'replace' },
 ]
 
 /**

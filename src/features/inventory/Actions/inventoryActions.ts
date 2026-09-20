@@ -11,8 +11,8 @@ import {
 import { onInventoryChanged } from '../Lib/onInventoryChanged'
 import { Prisma } from '@/generated/prisma/client'
 import { z } from 'zod'
-import { unlink } from 'fs/promises'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { releaseFiles, parseStoredFileUrl } from '@/lib/files/manager'
+import { inventoryPartFileUrls } from '@/lib/files/collect'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeBarcode, withBarcodeConflictMessage } from '../Lib/barcode'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -204,38 +204,47 @@ export async function updateInventoryPart(input: unknown) {
       assertOwnUploads(data, organizationId)
       const { id, gallery: galleryData, ...updateData } = data
 
+      // The part has to be this workshop's before its gallery is touched: the
+      // gallery rows are keyed by the part alone.
+      const owned = await db.inventoryPart.findFirst({
+        where: { id, organizationId },
+        select: { id: true },
+      })
+      if (!owned) throw new Error('Part not found')
+
+      // The images the part had before a change to them, let go at the end
+      // once nothing uses them (the new gallery keeps the ones it still has).
+      const replacedImages =
+        galleryData !== undefined || 'imageUrl' in updateData
+          ? await inventoryPartFileUrls(organizationId, [id])
+          : []
+
       // Handle gallery updates
       if (galleryData !== undefined) {
-        // Clean up old files that are no longer in the gallery
-        const existingImages = await db.storedImage.findMany({ where: { inventoryPartId: id } })
-        const newUrls = new Set(galleryData.map((g) => g.url))
-        for (const old of existingImages) {
-          if (!newUrls.has(old.url)) {
-            try {
-              await unlink(resolveUploadPath(old.url))
-            } catch {
-              /* already gone */
-            }
-          }
-        }
-        // Replace all gallery records
-        await db.storedImage.deleteMany({ where: { inventoryPartId: id } })
-        if (galleryData.length > 0) {
-          await db.storedImage.createMany({
-            data: galleryData.map((img, i) => ({
-              url: img.url,
-              fileName: img.fileName || null,
-              description: img.description || null,
-              sortOrder: i,
-              inventoryPartId: id,
-            })),
-          })
-        }
-        // Update imageUrl for backward compat
-        await db.inventoryPart.updateMany({
-          where: { id, organizationId },
-          data: { imageUrl: galleryData[0]?.url || null },
-        })
+        // Replace all gallery records, and the main image with the first, in
+        // one transaction: never a moment where the part has no images and a
+        // cleanup elsewhere would take them for unused.
+        await db.$transaction([
+          db.storedImage.deleteMany({ where: { inventoryPartId: id } }),
+          ...(galleryData.length > 0
+            ? [
+                db.storedImage.createMany({
+                  data: galleryData.map((img, i) => ({
+                    url: img.url,
+                    fileName: img.fileName || null,
+                    description: img.description || null,
+                    sortOrder: i,
+                    inventoryPartId: id,
+                  })),
+                }),
+              ]
+            : []),
+          // Update imageUrl for backward compat
+          db.inventoryPart.updateMany({
+            where: { id, organizationId },
+            data: { imageUrl: galleryData[0]?.url || null },
+          }),
+        ])
       }
 
       const nextBarcode =
@@ -264,6 +273,7 @@ export async function updateInventoryPart(input: unknown) {
         })
       )
       if (result.count === 0) throw new Error('Part not found')
+      await releaseFiles(replacedImages, { organizationId, reason: 'inventory images replaced' })
       await onInventoryChanged(organizationId)
       return { updated: true, partId: id }
     },
@@ -285,30 +295,13 @@ export async function updateInventoryPart(input: unknown) {
 export async function deleteInventoryPart(partId: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const part = await db.inventoryPart.findFirst({
-        where: { id: partId, organizationId },
-        select: { imageUrl: true, gallery: { select: { url: true } } },
-      })
+      const files = await inventoryPartFileUrls(organizationId, [partId])
 
       const result = await db.inventoryPart.deleteMany({
         where: { id: partId, organizationId },
       })
       if (result.count === 0) throw new Error('Part not found')
-
-      if (part) {
-        const allUrls = [part.imageUrl, ...part.gallery.map((g) => g.url)].filter(
-          Boolean
-        ) as string[]
-        // Deduplicate URLs before deleting files
-        const uniqueUrls = [...new Set(allUrls)]
-        for (const url of uniqueUrls) {
-          try {
-            await unlink(resolveUploadPath(url))
-          } catch {
-            /* already gone */
-          }
-        }
-      }
+      await releaseFiles(files, { organizationId, reason: 'inventory part deleted' })
 
       await onInventoryChanged(organizationId)
       return { deleted: true, partId }
@@ -333,28 +326,12 @@ export async function deleteInventoryParts(partIds: string[]) {
     async ({ userId, organizationId }) => {
       if (partIds.length === 0) throw new Error('No parts selected')
 
-      // Gather image URLs before deleting
-      const parts = await db.inventoryPart.findMany({
-        where: { id: { in: partIds }, organizationId },
-        select: { imageUrl: true, gallery: { select: { url: true } } },
-      })
+      const files = await inventoryPartFileUrls(organizationId, partIds)
 
       const result = await db.inventoryPart.deleteMany({
         where: { id: { in: partIds }, organizationId },
       })
-
-      // Clean up associated image files
-      const allUrls = parts
-        .flatMap((part) => [part.imageUrl, ...part.gallery.map((g) => g.url)])
-        .filter(Boolean) as string[]
-      const uniqueUrls = [...new Set(allUrls)]
-      for (const url of uniqueUrls) {
-        try {
-          await unlink(resolveUploadPath(url))
-        } catch {
-          /* already gone */
-        }
-      }
+      await releaseFiles(files, { organizationId, reason: 'inventory parts deleted' })
 
       await onInventoryChanged(organizationId)
       return { deleted: result.count }
@@ -485,17 +462,18 @@ export async function applyMarkupToAll(input: unknown) {
   )
 }
 
+/**
+ * Images uploaded on the part form and then abandoned (the form was
+ * cancelled). Only this workshop's inventory images, and only those no row
+ * uses: the file manager checks both, so a URL naming another workshop, a
+ * saved part's image or a path with `..` in it is left alone.
+ */
 export async function deleteOrphanedUploads(fileUrls: string[]) {
   return withAuth(async ({ organizationId }) => {
-    for (const url of fileUrls) {
-      // Only allow deleting files belonging to this org's inventory folder
-      if (!url.includes(`/${organizationId}/inventory/`)) continue
-      try {
-        await unlink(resolveUploadPath(url))
-      } catch {
-        // File may already be gone — ignore
-      }
-    }
+    const inventoryOnly = (Array.isArray(fileUrls) ? fileUrls : []).filter(
+      (url) => parseStoredFileUrl(url)?.folder === 'inventory'
+    )
+    await releaseFiles(inventoryOnly, { organizationId, reason: 'abandoned inventory uploads' })
     return { success: true }
   })
 }

@@ -41,6 +41,7 @@ function job(
     status: 'pending',
     startDateTime: start,
     endDateTime: end,
+    promisedAt: null,
     vehicle: null,
     ...extra,
   }

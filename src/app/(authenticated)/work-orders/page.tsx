@@ -1,4 +1,6 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { resolveListColumns } from '@/lib/list-columns.server'
+import { WORK_ORDER_COLUMNS } from '@/lib/list-columns'
 import { getTranslations } from 'next-intl/server'
 import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
@@ -21,6 +23,8 @@ export default async function WorkOrdersPage({
     status?: string
     sortBy?: string
     sortOrder?: string
+    /** 'today': only what is promised to a customer by the end of today. */
+    due?: string
   }>
 }) {
   const params = await searchParams
@@ -28,6 +32,7 @@ export default async function WorkOrdersPage({
     sortBy: 'serviceDate',
     sortOrder: 'desc',
   })
+  const columns = await resolveListColumns('workOrders', WORK_ORDER_COLUMNS)
   const [result, settingsResult, vehiclesResult, customersResult, authCtx] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
@@ -36,6 +41,7 @@ export default async function WorkOrdersPage({
       status: params.status,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
+      due: params.due,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
@@ -84,6 +90,8 @@ export default async function WorkOrdersPage({
           currencyCode={currencyCode}
           search={params.search || ''}
           statusFilter={params.status || 'all'}
+          dueFilter={params.due === 'today' ? 'today' : ''}
+          columns={columns}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
           smsEnabled={features?.sms ?? false}

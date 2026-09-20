@@ -26,6 +26,8 @@ import { findCompletionBlockers, summariseBlockers } from '../Lib/completion'
 import { clearedToNull } from '@/lib/clearable'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { startOfZonedDay, zonedDayKey, zonedParts } from '@/lib/timezone'
+import { releaseFiles } from '@/lib/files/manager'
+import { inspectionFileUrls } from '@/lib/files/collect'
 
 export async function getInspectionsPaginated(params: {
   page?: number
@@ -315,6 +317,12 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
         },
       })
 
+      // A photo taken off the item is not deleted here. The page sends its
+      // whole list with every save, and a list from a stale screen (another
+      // device, or a save racing an upload) would otherwise cost a file that
+      // is still wanted. One that is really unused is picked up by the file
+      // sweep a week later, into the trash (lib/files/manager.ts).
+
       return updated
     },
     {
@@ -528,7 +536,10 @@ export async function deleteInspection(id: string) {
       })
       if (!inspection) throw new Error('Inspection not found')
 
+      // Its items cascade with it, and their photos are let go afterwards.
+      const files = await inspectionFileUrls(organizationId, [id])
       await db.inspection.deleteMany({ where: { id, organizationId } })
+      await releaseFiles(files, { organizationId, reason: 'inspection deleted' })
       revalidatePath('/inspections')
       revalidatePath(`/vehicles/${inspection.vehicleId}`)
       return { inspectionId: id }
@@ -657,7 +668,7 @@ export async function getInspectionTechnicians() {
  */
 export async function createWorkOrderFromInspection(id: string) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       const inspection = await db.inspection.findFirst({
         where: { id, organizationId },
         include: {
@@ -728,6 +739,7 @@ export async function createWorkOrderFromInspection(id: string) {
         const created = await tx.serviceRecord.create({
           data: {
             organizationId,
+            createdById: userId,
             title: `${vehicleName} — inspection repairs`,
             description: `Raised from the inspection carried out on ${zonedDayKey(inspection.createdAt, timeZone)}.`,
             type: 'repair',

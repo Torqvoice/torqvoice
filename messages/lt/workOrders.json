@@ -31,7 +31,9 @@
       "status": "Būsena",
       "tech": "Technikas",
       "date": "Data",
-      "total": "Suma"
+      "total": "Suma",
+      "promised": "Pažadėta",
+      "promisedOverdue": "Pažadėta {date}, vėluoja"
     },
     "emailSubject": "Transporto priemonės būsenos atnaujinimas: {status}",
     "changeStatus": "Keisti būseną",
@@ -39,6 +41,10 @@
       "open": "Atidaryti darbo užsakymą",
       "openVehicle": "Atidaryti transporto priemonę",
       "openCustomer": "Atidaryti klientą"
+    },
+    "dueToday": "Šiandienai",
+    "columns": {
+      "label": "Stulpeliai"
     }
   },
   "vehiclePicker": {

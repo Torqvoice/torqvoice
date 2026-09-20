@@ -19,6 +19,21 @@ vi.mock('@/lib/lib/invoice-utils', () => ({
   resolveInvoicePrefix: vi.fn((p: string) => p),
 }))
 
+// These tests are about workshop scoping, not files: the file manager and the
+// files a delete collects have tests of their own (src/__tests__/lib/files).
+vi.mock('@/lib/files/collect', () => ({
+  serviceRecordFileUrls: vi.fn(async () => []),
+  inspectionFileUrls: vi.fn(async () => []),
+  vehicleFileUrls: vi.fn(async () => []),
+  quoteFileUrls: vi.fn(async () => []),
+  tireSetFileUrls: vi.fn(async () => []),
+  inventoryPartFileUrls: vi.fn(async () => []),
+}))
+vi.mock('@/lib/files/manager', () => ({
+  releaseFiles: vi.fn(async () => ({ removed: [], kept: [], skipped: [] })),
+  parseStoredFileUrl: vi.fn(() => null),
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },

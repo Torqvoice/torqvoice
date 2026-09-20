@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
   documentTotals,
   readWorkshopTax,
@@ -20,12 +21,13 @@ import { withAuth } from '@/lib/with-auth'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { unlink } from 'fs/promises'
 import { randomUUID } from 'crypto'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { releaseFiles } from '@/lib/files/manager'
+import { serviceRecordFileUrls } from '@/lib/files/collect'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { zonedDayKey } from '@/lib/timezone'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -221,11 +223,16 @@ export async function getServiceRecord(recordId: string) {
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
         include: {
-          concerns: { orderBy: { sortOrder: 'asc' } },
+          concerns: {
+            orderBy: { sortOrder: 'asc' },
+            include: { confirmedBy: { select: { name: true } } },
+          },
           partItems: true,
           laborItems: true,
           attachments: true,
           payments: { orderBy: { date: 'desc' } },
+          // Who opened the job, for the line under its number.
+          createdBy: { select: { name: true } },
           // A tire job is meaningless without knowing which set and which
           // shelf, so it travels with the record rather than being fetched
           // separately by whatever screen happens to need it.
@@ -262,6 +269,12 @@ export async function getServiceRecord(recordId: string) {
               company: true,
               telegramChatId: true,
               invoiceDesignId: true,
+              customerNumber: true,
+              taxId: true,
+              taxExempt: true,
+              reminderOptOut: true,
+              notes: true,
+              createdAt: true,
             },
           },
           vehicle: {
@@ -273,6 +286,18 @@ export async function getServiceRecord(recordId: string) {
               vin: true,
               licensePlate: true,
               mileage: true,
+              // The facts card's "More info": what the desk would otherwise
+              // open the vehicle page to read (and copy) mid-job.
+              color: true,
+              fuelType: true,
+              transmission: true,
+              engineSize: true,
+              engineCode: true,
+              purchaseDate: true,
+              purchasePrice: true,
+              inspectionStatus: {
+                select: { dueAt: true, lastAt: true, source: true, registered: true },
+              },
               customer: {
                 select: {
                   id: true,
@@ -283,6 +308,12 @@ export async function getServiceRecord(recordId: string) {
                   company: true,
                   telegramChatId: true,
                   invoiceDesignId: true,
+                  customerNumber: true,
+                  taxId: true,
+                  taxExempt: true,
+                  reminderOptOut: true,
+                  notes: true,
+                  createdAt: true,
                 },
               },
             },
@@ -441,6 +472,7 @@ export async function createServiceRecord(input: unknown) {
           data: {
             ...recordData,
             organizationId,
+            createdById: userId,
             // Only vehicle-less records link a customer directly; vehicle-linked
             // records always resolve their customer through the vehicle.
             customerId: data.vehicleId ? null : data.customerId,
@@ -505,11 +537,13 @@ export async function createServiceRecord(input: unknown) {
         }
 
         if (concerns && concerns.length > 0) {
+          const now = new Date()
           await tx.serviceConcern.createMany({
             data: concerns.map((concern, index) => ({
               description: concern.description,
               sortOrder: concern.sortOrder ?? index,
               serviceRecordId: created.id,
+              ...concernStoryData(concern, null, userId, now),
             })),
           })
         }
@@ -791,8 +825,10 @@ export async function updateServiceRecord(input: unknown) {
         if (concerns !== undefined) {
           const existingConcerns = await tx.serviceConcern.findMany({
             where: { serviceRecordId: id },
-            select: { id: true },
+            select: { id: true, confirmedAt: true, confirmedById: true },
           })
+          const existingById = new Map(existingConcerns.map((concern) => [concern.id, concern]))
+          const now = new Date()
           const keptIds = new Set(
             concerns.map((concern) => concern.id).filter((cid): cid is string => Boolean(cid))
           )
@@ -811,12 +847,21 @@ export async function updateServiceRecord(input: unknown) {
             if (concern.id && keptIds.has(concern.id)) {
               const { count } = await tx.serviceConcern.updateMany({
                 where: { id: concern.id, serviceRecordId: id },
-                data: { description: concern.description, sortOrder },
+                data: {
+                  description: concern.description,
+                  sortOrder,
+                  ...concernStoryData(concern, existingById.get(concern.id) ?? null, userId, now),
+                },
               })
               if (count > 0) continue
             }
             await tx.serviceConcern.create({
-              data: { description: concern.description, sortOrder, serviceRecordId: id },
+              data: {
+                description: concern.description,
+                sortOrder,
+                serviceRecordId: id,
+                ...concernStoryData(concern, null, userId, now),
+              },
             })
           }
         }
@@ -869,14 +914,11 @@ export async function updateServiceRecord(input: unknown) {
         }
       }
 
-      // Delete removed attachment files from disk (after successful DB transaction)
-      for (const fileUrl of removedFileUrls) {
-        try {
-          await unlink(resolveUploadPath(fileUrl))
-        } catch (err) {
-          console.warn(`[updateServiceRecord] Failed to delete file "${fileUrl}":`, err)
-        }
-      }
+      // Files of removed attachments, let go after the transaction committed.
+      await releaseFiles(removedFileUrls, {
+        organizationId,
+        reason: 'work order attachments replaced',
+      })
 
       // Notify workboard if status changed
       if (record.status !== existing.status) {
@@ -979,6 +1021,48 @@ export async function updateServiceStatus(recordId: string, status: string) {
   )
 }
 
+/**
+ * Saves the job's internal notes on their own. The work order's Save goes
+ * through updateServiceRecord, which refuses a locked invoice outright; the
+ * internal notes are not part of what the lock freezes (they are never printed
+ * or shared), so a locked job still takes them through here.
+ */
+export async function updateInternalNotes(recordId: string, html: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      if (typeof html !== 'string' || html.length > 200_000) throw new Error('Invalid notes')
+      const notes = html
+      const record = await db.serviceRecord.findFirst({
+        where: { id: recordId, organizationId },
+        select: { id: true, invoiceNumber: true, vehicleId: true },
+      })
+      if (!record) throw new Error('Record not found')
+
+      await db.serviceRecord.update({
+        where: { id: record.id },
+        // The editor reports an emptied box as one empty paragraph.
+        data: { diagnosticNotes: notes && notes !== '<p></p>' ? notes : null },
+      })
+
+      if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
+      else revalidatePath(`/sales/${record.id}`)
+      return { id: record.id, invoiceNumber: record.invoiceNumber }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'service.update',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
+        metadata: { serviceRecordId: result.id, field: 'diagnosticNotes' },
+      }),
+    }
+  )
+}
+
 export async function toggleManuallyPaid(recordId: string) {
   return withAuth(
     async ({ organizationId }) => {
@@ -1033,6 +1117,8 @@ export async function getWorkOrders(params: {
   status?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  /** 'today': what the workshop owes a customer by the end of today. */
+  due?: string
 }) {
   return withAuth(
     async ({ organizationId }) => {
@@ -1042,6 +1128,19 @@ export async function getWorkOrders(params: {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
+
+      // Promised to a customer for today or earlier, and not handed over.
+      // Anything already late belongs to the same answer: it was due before
+      // today and is still owed. "Today" is the workshop's own day, not the
+      // server's, or a shop an hour ahead loses its evening.
+      if (params.due === 'today') {
+        const timeZone = await workshopTimeZone(organizationId)
+        const endOfToday = endOfWorkshopDay(zonedDayKey(new Date(), timeZone), timeZone)
+        if (endOfToday) {
+          where.promisedAt = { not: null, lte: endOfToday }
+          where.AND = [...(where.AND ?? []), { status: { not: 'completed' } }]
+        }
+      }
 
       if (params.status === 'active') {
         where.status = { not: 'completed' }
@@ -1089,6 +1188,12 @@ export async function getWorkOrders(params: {
                 return { techName: dir }
               case 'totalAmount':
                 return { totalAmount: dir }
+              // What the customer was told. A job with no promise made sorts
+              // last either way: it is not late, and it is not "soonest".
+              case 'promisedAt':
+                return {
+                  promisedAt: { sort: dir, nulls: 'last' as const },
+                }
               // Column shows "year make model"; sort make, model, year so
               // identical models group together
               case 'vehicle':
@@ -1144,18 +1249,13 @@ export async function deleteServiceRecord(recordId: string) {
       await assertInvoiceEditable(recordId, organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
-        include: { attachments: true },
       })
       if (!record) throw new Error('Record not found')
 
-      // Clean up attachment files from disk
-      for (const attachment of record.attachments) {
-        try {
-          await unlink(resolveUploadPath(attachment.fileUrl))
-        } catch (err) {
-          console.warn(`[deleteServiceRecord] Failed to delete file "${attachment.fileUrl}":`, err)
-        }
-      }
+      // Its attachments and status report videos, read now and let go once
+      // the record is gone. A tire set's photo on this job is shared with the
+      // set and stays, as does anything else still in use.
+      const files = await serviceRecordFileUrls(organizationId, [recordId])
 
       // Restock any inventory-linked parts, then delete the record (its parts
       // cascade-delete). Both happen in one transaction so stock is only
@@ -1175,6 +1275,7 @@ export async function deleteServiceRecord(recordId: string) {
         })
         await tx.serviceRecord.delete({ where: { id: recordId } })
       })
+      await releaseFiles(files, { organizationId, reason: 'work order deleted' })
 
       revalidatePath('/')
       if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
@@ -1207,21 +1308,12 @@ export async function deleteServiceAttachment(attachmentId: string) {
       })
       if (!attachment) throw new Error('Attachment not found')
 
-      // Delete file from disk. Not for tire hotel copies: those rows point at
-      // the tire set's own uploads, so only the reference goes and the set
-      // keeps its file.
-      if (attachment.category !== 'tire_hotel') {
-        try {
-          await unlink(resolveUploadPath(attachment.fileUrl))
-        } catch (err) {
-          console.warn(
-            `[deleteServiceAttachment] Failed to delete file "${attachment.fileUrl}":`,
-            err
-          )
-        }
-      }
-
       await db.serviceAttachment.delete({ where: { id: attachmentId } })
+
+      // Then the file, unless something still uses it: a tire hotel copy points
+      // at the tire set's own upload, which the set keeps; a photo sent on
+      // WhatsApp stays for the conversation.
+      await releaseFiles([attachment.fileUrl], { organizationId, reason: 'attachment deleted' })
 
       const { vehicleId, id: serviceId } = attachment.serviceRecord
       revalidatePath(

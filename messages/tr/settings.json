@@ -1229,7 +1229,29 @@
     "dateLabel": "Tarih",
     "dateTimeLabel": "Tarih & Saat",
     "saveSettings": "Ayarları Kaydet",
-    "saved": "Ayarlar kaydedildi"
+    "saved": "Ayarlar kaydedildi",
+    "fontLabel": "Yazı tipi",
+    "fontHint": "Uygulamada kullanılacak yazı tiplerini seçin. Seçim bu cihazda kaydedilir.",
+    "fontSampleHeading": "İş emri",
+    "fontSampleText": "Ateşleme bobinini ve bujileri değiştir",
+    "fonts": {
+      "default": {
+        "name": "Varsayılan",
+        "description": "Geist, sade ve nötr."
+      },
+      "workshop": {
+        "name": "Atölye",
+        "description": "Dar büyük harfli başlıklarla IBM Plex, bir iş kartı gibi."
+      },
+      "precise": {
+        "name": "Hassas",
+        "description": "Inter ve JetBrains Mono. Tablo ve rakamlarla dolu ekranlar için yapıldı."
+      },
+      "legible": {
+        "name": "Okunaklı",
+        "description": "Atkinson Hyperlegible. 0 ile O, 1 ile l asla birbirine benzemez; atölyenin öbür ucundan bile kolayca okunur."
+      }
+    }
   },
   "data": {
     "title": "Veri Yönetimi",

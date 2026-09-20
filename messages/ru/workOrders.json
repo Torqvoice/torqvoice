@@ -31,7 +31,9 @@
       "status": "Статус",
       "tech": "Механик",
       "date": "Дата",
-      "total": "Итого"
+      "total": "Итого",
+      "promised": "Обещано",
+      "promisedOverdue": "Обещано {date}, просрочено"
     },
     "emailSubject": "Обновление статуса транспортного средства: {status}",
     "changeStatus": "Изменить статус",
@@ -39,6 +41,10 @@
       "open": "Открыть заказ-наряд",
       "openVehicle": "Открыть автомобиль",
       "openCustomer": "Открыть клиента"
+    },
+    "dueToday": "Срок сегодня",
+    "columns": {
+      "label": "Столбцы"
     }
   },
   "vehiclePicker": {

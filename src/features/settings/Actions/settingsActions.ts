@@ -10,6 +10,7 @@ import { assertOwnUploads } from '@/lib/upload-url'
 import { armFeatureHints } from '../Lib/armFeatureHints'
 import { requireFeature } from '@/lib/features'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { releaseReplacedSettingFiles, settingValuesBefore } from '@/lib/files/settings'
 
 export async function getSetting(key: SettingKey) {
   return withAuth(
@@ -62,11 +63,14 @@ export async function setSetting(key: SettingKey, value: string) {
       assertOwnUploads(value, organizationId)
       await assertPlanAllowsSetting(organizationId, { [key]: value })
       await armFeatureHints(db, organizationId, userId, { [key]: value })
+      const before = await settingValuesBefore(organizationId, [key])
       const setting = await db.appSetting.upsert({
         where: { organizationId_key: { organizationId, key } },
         update: { value },
         create: { userId, organizationId, key, value },
       })
+      // A logo or background replaced or removed: its file is let go.
+      await releaseReplacedSettingFiles(organizationId, before, { [key]: value })
       // See setSettings: sibling settings pages read each other's values.
       revalidatePath('/settings', 'layout')
       return setting
@@ -86,6 +90,7 @@ export async function setSettings(entries: Record<string, string>) {
       for (const key of Object.keys(entries)) demoGuardSettingKey(key)
       assertOwnUploads(entries, organizationId)
       await armFeatureHints(db, organizationId, userId, entries)
+      const before = await settingValuesBefore(organizationId, Object.keys(entries))
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>
           db.appSetting.upsert({
@@ -95,6 +100,7 @@ export async function setSettings(entries: Record<string, string>) {
           })
         )
       )
+      await releaseReplacedSettingFiles(organizationId, before, entries)
       // "layout" so the sibling settings pages pick it up too: company details
       // saved here feed the previews over on /settings/templates.
       revalidatePath('/settings', 'layout')

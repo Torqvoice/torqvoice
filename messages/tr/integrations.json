@@ -60,7 +60,8 @@
       "safety": "Geri çağırmalar ve sahip şikâyetleri"
     },
     "ai": {
-      "chat": "Metinler ve özetler"
+      "chat": "Metinler ve özetler",
+      "transcribe": "Dikte"
     },
     "payments": {
       "checkout": "Fatura bağlantısından ödeme"
@@ -156,7 +157,8 @@
       "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
-    "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}"
+    "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
+    "advanced": "Gelişmiş"
   },
   "activity": {
     "title": "Aktivite",
@@ -577,6 +579,23 @@
       "settings": {
         "refreshFleet": "Bu atölyedeki her araç için geri çağırma ve şikâyet verilerini güncel tut",
         "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
+      }
+    },
+    "speech-to-text": {
+      "description": "İş emrindeki dikte, tarayıcı yerine bir konuşma modeli tarafından yazıya dökülür: çok daha doğrudur, her dilde çalışır ve atölye terimlerini bilir. Yapay zekâ sağlayıcınızdan ayrıdır, o yüzden onu olduğu gibi bırakabilirsiniz. Kendi OpenAI anahtarınızı ya da OpenAI'nin transkripsiyon API'siyle çalışan kendi sunucunuzu kullanır. Kayıt yazıya dökülmek üzere gönderilir ve saklanmaz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "platform.openai.com adresinde API keys bölümünden alınan bir OpenAI anahtarı; OpenAI kullanımı dakika başına faturalandırır. Kendi sunucunuz için yalnızca sunucu bir anahtar isterse.",
+        "baseUrl": "Sunucu adresi",
+        "baseUrlHelp": "OpenAI kullanmak için boş bırakın. Kendi sunucunuz için (yerel bir Whisper, LocalAI, Groq) OpenAI tarzı API'sinin başladığı adres, yol dahil, örneğin /v1. Torqvoice bunun sonuna /audio/transcriptions ekler."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "İstenecek konuşma modeli. gpt-4o-mini-transcribe doğru ve ucuzdur; gpt-4o-transcribe daha büyük olanıdır. Kendi sunucunuz genellikle whisper-1 adına yanıt verir.",
+        "mode": "Diktenin nasıl yazıya döküleceğini kim seçer",
+        "modeHelp": "Tarayıcı siz konuşurken yazar ama daha zayıftır, özellikle az konuşulan dillerde. Konuşma modeli siz durduğunuzda yazar.",
+        "modeAi": "Her zaman konuşma modeli",
+        "modeChoice": "Herkes kendisi seçer: konuşma modeli veya tarayıcı"
       }
     }
   },

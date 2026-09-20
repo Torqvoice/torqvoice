@@ -3,6 +3,7 @@ import type WebSocket from 'ws'
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
+import { readsNotifications } from '@/lib/notification-roles'
 
 // Required so Next.js route validator recognizes this as a valid route module
 export function GET() {
@@ -19,12 +20,16 @@ export interface TaggedWebSocket extends WebSocket {
 // Track all authenticated clients in a Set so the bus listener can broadcast
 const clients = new Set<TaggedWebSocket>()
 
-// Single listener on the global bus — broadcasts to matching org clients
+// Single listener on the global bus — broadcasts to matching org clients.
+// Notifications are the workshop's own feed, which the panel serves to owners
+// and admins only (notificationActions.getNotifications), so the socket holds
+// the same line: every member may connect, not every member is told this.
 notificationBus.on('notification', (notification: { organizationId: string }) => {
   const payload = JSON.stringify({ type: 'notification', data: notification })
   for (const client of clients) {
     if (
       client.organizationId === notification.organizationId &&
+      readsNotifications(client.role) &&
       client.readyState === 1 // OPEN
     ) {
       client.send(payload)
@@ -129,12 +134,12 @@ export function UPGRADE(ws: WebSocket, _server: unknown, _request: IncomingMessa
         return
       }
 
-      const isAdminOrOwner = membership.role === 'owner' || membership.role === 'admin'
-      if (!isAdminOrOwner) {
-        ws.close(4003, 'Insufficient role')
-        return
-      }
-
+      // Every member of the workshop may listen. What they are told is
+      // decided per channel above: work board events (a clock started, a line
+      // of work added) reach everyone, because they say only which record
+      // changed and each listener then reads it back through the actions that
+      // check its own permissions. The notification feed stays with the roles
+      // that can already read it.
       client.userId = session.userId
       client.organizationId = membership.organizationId
       client.role = membership.role

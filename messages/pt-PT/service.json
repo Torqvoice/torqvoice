@@ -21,7 +21,8 @@
       "title": "A ordem de serviço precisa de um título antes de ser guardada.",
       "negative": "Quantidades, horas, preços e custos não podem ser negativos.",
       "partName": "Todas as peças com preço precisam de um nome.",
-      "laborDescription": "Todas as linhas de mão de obra com horas ou taxa precisam de uma descrição."
+      "laborDescription": "Todas as linhas de mão de obra com horas ou taxa precisam de uma descrição.",
+      "concernCondition": "Uma queixa com causa, correção ou confirmação tem de ter a condição preenchida."
     }
   },
   "header": {
@@ -164,6 +165,11 @@
     "deleteRow": "Eliminar linha",
     "descriptionMissingHint": "As linhas sem descrição não são guardadas."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {Um técnico adicionou mão de obra a esta folha de obra} other {Um técnico adicionou # linhas de mão de obra a esta folha de obra}}",
+    "body": "Fica fora da lista enquanto edita. A próxima gravação inclui-a de qualquer forma.",
+    "show": "Mostrar"
+  },
   "totals": {
     "title": "Totais",
     "parts": "Peças",
@@ -198,7 +204,9 @@
     "aiOverwriteReplace": "Substituir",
     "aiOverwriteAppend": "Acrescentar",
     "aiOverwriteCancel": "Cancelar",
-    "aiDontShowAgain": "Não mostrar novamente"
+    "aiDontShowAgain": "Não mostrar novamente",
+    "internalTitle": "Notas internas",
+    "publicTitle": "Notas para o cliente"
   },
   "invoice": {
     "title": "Resumo da fatura",
@@ -248,7 +256,10 @@
     "failedDelete": "Não foi possível eliminar o pagamento",
     "deleteTitle": "Eliminar pagamento",
     "deleteDescription": "Isto remove o registo deste pagamento.",
-    "failedPdf": "Não foi possível gerar o PDF da fatura"
+    "failedPdf": "Não foi possível gerar o PDF da fatura",
+    "received": "Pagamentos recebidos",
+    "noneYet": "Ainda nada pago.",
+    "balanceDue": "Valor em dívida"
   },
   "attachments": {
     "deleteTitle": "Eliminar anexo",
@@ -357,6 +368,7 @@
     "date": "Data",
     "startTime": "Hora de início",
     "endTime": "Hora de fim",
+    "durationPresets": "Duração",
     "technician": "Técnico",
     "selectTechnician": "Selecionar técnico...",
     "searchOrCreate": "Pesquisar ou criar técnico...",
@@ -394,7 +406,17 @@
     "pickNextAvailable": "Escolher o próximo horário livre",
     "findingSlot": "A procurar um horário…",
     "slotPicked": "Marcado no próximo horário livre",
-    "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas"
+    "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas",
+    "assignedTitle": "Técnico atribuído",
+    "boardLink": "Quadro de trabalho",
+    "someoneElse": "Outra pessoa",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h livres",
+    "loadFull": "Sem horas livres",
+    "loadOn": "Horas marcadas a {date}",
+    "promisedAt": "Prometido ao cliente",
+    "promisedPlaceholder": "Ainda não prometido",
+    "promisedClear": "Limpar"
   },
   "notifications": {
     "title": "Notificações ao cliente",
@@ -447,7 +469,60 @@
     "placeholder": "Faz um barulho atrás quando travo",
     "remove": "Remover esta queixa",
     "notAnswered": "Ainda nada encontrado sobre isto",
-    "answered": "{count} observação(ões) sobre isto"
+    "answered": "{count} observação(ões) sobre isto",
+    "storyTitle": "Descrição do trabalho",
+    "storyHint": "Condição, causa, correção, confirmação. Clique num passo para o abrir; uma linha por cada coisa que o cliente referiu ou que observou.",
+    "steps": {
+      "condition": "Condição",
+      "cause": "Causa",
+      "correction": "Correção",
+      "confirm": "Confirmação"
+    },
+    "conditionPlaceholder": "O que o cliente referiu ou o que observou",
+    "causePlaceholder": "O que os testes mostraram ser a causa de origem",
+    "correctionPlaceholder": "O que foi feito para o resolver",
+    "confirmPlaceholder": "Como a reparação foi verificada: ensaio em estrada, nova leitura de diagnóstico, sintoma desaparecido",
+    "markConfirmed": "Confirmada",
+    "confirmedBy": "Confirmada por {name}, {date}",
+    "confirmedAt": "Confirmada a {date}",
+    "confirmedOnSave": "Fica com o seu nome quando guardar",
+    "confirmedCount": "{confirmed} de {total} confirmadas",
+    "findingsCount": "{count, plural, one {# observação} other {# observações}}",
+    "addFinding": "Adicionar observação",
+    "unconfirmedTitle": "Concluir com queixas por confirmar?",
+    "unconfirmedBody": "{count, plural, one {Há uma queixa que ainda não foi confirmada como resolvida:} other {Há # queixas que ainda não foram confirmadas como resolvidas:}}",
+    "unconfirmedProceed": "Concluir na mesma",
+    "addMedia": "Adicionar multimédia",
+    "mediaUploading": "A carregar…",
+    "mediaAdded": "{count, plural, one {# ficheiro adicionado} other {# ficheiros adicionados}}",
+    "mediaFailed": "Não foi possível carregar {name}",
+    "mediaTypes": "Escolha uma fotografia (JPG, PNG, WebP) ou um vídeo.",
+    "dictate": {
+      "start": "Ditar",
+      "listening": "A ouvir",
+      "startHint": "Fale e o texto aparece aqui. Nada é gravado.",
+      "stopHint": "Parar de ouvir",
+      "notAllowed": "O navegador não teve autorização para usar o microfone. Autorize-o para este site e tente novamente.",
+      "noMicrophone": "Não foi encontrado nenhum microfone.",
+      "failed": "O ditado parou. Tente novamente.",
+      "startHintServer": "Fale e o texto vai aparecendo enquanto fala. O áudio é enviado para o seu modelo de voz para ser transcrito e não é guardado.",
+      "transcribing": "A concluir…",
+      "language": "Idioma falado",
+      "auto": "Automático",
+      "nothingHeard": "Não se ouviu nada.",
+      "fellBack": "Por agora, a usar o ditado do próprio navegador.",
+      "autoLong": "Automático (detetar o idioma)",
+      "engine": "Transcrito por",
+      "engineAi": "Modelo de voz (mais preciso)",
+      "engineBrowser": "Navegador (escreve enquanto fala)",
+      "liveFellBack": "A escrever em blocos de alguns segundos em vez de palavra a palavra."
+    },
+    "stepEmpty": "Ainda por preencher",
+    "removeTitle": "Remover esta queixa?",
+    "removeBody": "A condição, a causa, a correção e a confirmação são removidas com ela quando guardar a ordem de serviço.",
+    "removeAttached": "As observações e os ficheiros multimédia ficam no trabalho, mas deixam de estar associados a uma queixa.",
+    "removeConfirm": "Remover queixa",
+    "saveFirst": "Guarde primeiro a ordem de serviço"
   },
   "videoCall": {
     "title": "Videochamada",
@@ -493,5 +568,127 @@
       "joinLine": "Entre na videochamada aqui: {url}",
       "emailSubject": "Videochamada sobre a sua viatura {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Estado da ordem de serviço",
+    "back": "Voltar",
+    "backToClassic": "Voltar ao layout clássico",
+    "openCustomer": "Abrir cliente",
+    "serviceHistory": "Histórico de serviços",
+    "changeVehicle": "Mudar de viatura",
+    "vehicleChangesOnSave": "A ordem de serviço passa para esta viatura quando guardar.",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "notSet": "Não definido",
+    "noCustomer": "Nenhum cliente nesta ordem de serviço.",
+    "invoiceTitle": "Fatura e pagamento",
+    "filesTitle": "Ficheiros e multimédia",
+    "activity": {
+      "title": "Atividade",
+      "messageSent": "Mensagem enviada ao cliente",
+      "linkShared": "Link da fatura partilhado",
+      "linkViewed": "{count, plural, one {O cliente abriu o link} other {O cliente abriu o link # vezes}}",
+      "paymentTaken": "Pagamento de {amount} registado"
+    },
+    "invite": {
+      "title": "A página da ordem de serviço foi renovada.",
+      "body": "Um layout mais claro com os mesmos campos. Pode voltar ao anterior a qualquer momento.",
+      "try": "Experimentar agora",
+      "dismiss": "Agora não",
+      "menu": "Experimentar o novo layout"
+    },
+    "promised": "Prometida para {date}",
+    "promisedOverdue": "Prometida para {date}, em atraso",
+    "opened": "Aberta a {date}",
+    "openedBy": "Aberta a {date} por {name}",
+    "editTitle": "Editar título",
+    "titleField": "Título",
+    "media": {
+      "tabs": {
+        "photos": "Fotografias",
+        "diagnostics": "Diagnóstico"
+      },
+      "summary": "{count, plural, one {# ficheiro} other {# ficheiros}} · o cliente só vê o que estiver marcado",
+      "customerCanSee": "Visível para o cliente",
+      "showToCustomer": "Mostrar ao cliente",
+      "hideFromCustomer": "Ocultar do cliente",
+      "add": {
+        "image": "Adicionar fotografias",
+        "document": "Adicionar documentos",
+        "diagnostic": "Adicionar relatório de diagnóstico",
+        "video": "Adicionar vídeo"
+      },
+      "dropHint": "Largue ficheiros aqui ou clique para procurar",
+      "added": "{count, plural, one {# ficheiro adicionado} other {# ficheiros adicionados}}",
+      "failed": "Não foi possível carregar {name}",
+      "wrongType": "Tipo de ficheiro errado para este separador: {names}",
+      "limit": "Limite atingido ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Pago",
+      "balance": "Valor em dívida",
+      "settled": "Pago na totalidade",
+      "takePayment": "Receber pagamento",
+      "preview": "Pré-visualizar fatura",
+      "previewShort": "Pré-visualizar",
+      "send": "Enviar ao cliente",
+      "sendShort": "Enviar"
+    },
+    "vehicleInfo": {
+      "more": "Mais informações",
+      "less": "Menos informações",
+      "copy": "Copiar {label}",
+      "copied": "Copiado",
+      "lastInspection": "Última inspeção periódica",
+      "purchaseDate": "Data de compra",
+      "purchasePrice": "Preço de compra",
+      "overdue": "em atraso",
+      "customerSince": "Cliente desde"
+    }
+  },
+  "photoHandoff": {
+    "button": "Adicionar pelo telemóvel",
+    "dialogTitle": "Adicionar fotografias e documentos a partir de um telemóvel",
+    "dialogBody": "Tire ou escolha fotografias, ou partilhe um PDF, em qualquer telemóvel. Tudo vai diretamente para esta ordem de trabalho.",
+    "expires": "O código é válido até às {time}.",
+    "waiting": "À espera de fotografias e documentos…",
+    "received": "{count, plural, one {# ficheiro recebido} other {# ficheiros recebidos}}",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado",
+    "failed": "Não foi possível criar o código. Tente novamente.",
+    "done": "Concluído",
+    "pageTitle": "Adicionar fotografias e documentos",
+    "forJob": "Ordem de serviço {number}",
+    "takePhoto": "Tirar fotografia",
+    "choosePhotos": "Escolher fotografias",
+    "hint": "Tudo vai diretamente para a ordem de trabalho. Tire as fotografias de que precisar.",
+    "uploading": "A carregar…",
+    "added": "Adicionada",
+    "notAdded": "Não adicionada",
+    "retry": "Tentar novamente",
+    "addedCount": "{count, plural, one {# ficheiro adicionado} other {# ficheiros adicionados}}",
+    "expiredTitle": "Este código expirou",
+    "invalidTitle": "Este link não funciona",
+    "errors": {
+      "expired": "Peça um novo código ao balcão. Cada código é válido durante 30 minutos.",
+      "invalid": "Leia novamente o código na ordem de serviço.",
+      "limit": "Esta ordem de trabalho já tem todas as fotografias que comporta.",
+      "type": "Aqui só é possível adicionar fotografias e documentos PDF.",
+      "tooLarge": "Esse ficheiro é demasiado grande.",
+      "failed": "A fotografia não foi adicionada. Verifique a ligação e tente novamente.",
+      "codeLimit": "Este código já adicionou todas as fotografias que um código permite. Leia um novo código no balcão."
+    },
+    "concernHeading": "As fotografias ficam associadas a esta queixa",
+    "howTitle": "Como funciona",
+    "step1": "Aponte a câmara do telemóvel para o código e abra a ligação.",
+    "step2": "Tire fotografias, ou escolha fotografias ou documentos PDF que já estão no telemóvel.",
+    "step3": "Aparecem nesta ordem de trabalho à medida que chegam.",
+    "noSignIn": "Não é preciso iniciar sessão no telemóvel.",
+    "customerToo": "A equipa pode utilizá-lo, e o cliente também: deixe-o ler o código ou envie-lhe a ligação.",
+    "scope": "A ligação só adiciona fotografias e documentos a esta ordem de trabalho e deixa de funcionar ao fim de 30 minutos.",
+    "scanHint": "Leia com a câmara do telemóvel",
+    "chooseDocument": "Carregar um documento",
+    "privacy": "Só a oficina vê o que adiciona aqui."
   }
 }

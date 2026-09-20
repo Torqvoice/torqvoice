@@ -21,6 +21,7 @@ export async function register() {
       syncSubscriptions,
       processRecurringInvoices,
       cleanupPortalSessions,
+      sweepOrphanFilesDaily,
       cleanupAuditLogs,
       processReportSchedules,
       processWebhookDeliveries,
@@ -38,6 +39,7 @@ export async function register() {
     syncSubscriptions()
     processRecurringInvoices()
     cleanupPortalSessions()
+    sweepOrphanFilesDaily()
     cleanupAuditLogs()
     processReportSchedules()
     startDemoResetCron()

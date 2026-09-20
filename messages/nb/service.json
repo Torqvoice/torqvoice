@@ -21,7 +21,8 @@
       "title": "Jobben må ha en tittel før den kan lagres.",
       "negative": "Antall, timer, priser og kostnader kan ikke være negative.",
       "partName": "Alle deler med pris må ha et navn.",
-      "laborDescription": "Alle arbeidslinjer med timer eller sats må ha en beskrivelse."
+      "laborDescription": "Alle arbeidslinjer med timer eller sats må ha en beskrivelse.",
+      "concernCondition": "Et punkt med årsak, utbedring eller kontroll må ha tilstanden fylt ut."
     }
   },
   "header": {
@@ -164,6 +165,11 @@
     "deleteRow": "Slett rad",
     "descriptionMissingHint": "Rader uten beskrivelse lagres ikke."
   },
+  "liveLabor": {
+    "title": "{count, plural, one {En mekaniker la til arbeid på denne jobben} other {En mekaniker la til # arbeidslinjer på denne jobben}}",
+    "body": "Den holdes utenfor listen mens du redigerer. Den blir lagret uansett neste gang du lagrer.",
+    "show": "Vis den"
+  },
   "totals": {
     "title": "Totalt",
     "parts": "Deler",
@@ -198,7 +204,9 @@
     "aiOverwriteReplace": "Erstatt",
     "aiOverwriteAppend": "Legg til",
     "aiOverwriteCancel": "Avbryt",
-    "aiDontShowAgain": "Ikke vis dette igjen"
+    "aiDontShowAgain": "Ikke vis dette igjen",
+    "internalTitle": "Interne notater",
+    "publicTitle": "Notater til kunden"
   },
   "invoice": {
     "title": "Fakturaoversikt",
@@ -248,7 +256,10 @@
     "failedDelete": "Kunne ikke slette betaling",
     "deleteTitle": "Slett betaling",
     "deleteDescription": "Dette vil fjerne denne betalingsregistreringen.",
-    "failedPdf": "Kunne ikke generere PDF-faktura"
+    "failedPdf": "Kunne ikke generere PDF-faktura",
+    "received": "Mottatte betalinger",
+    "noneYet": "Ingenting betalt ennå.",
+    "balanceDue": "Utestående"
   },
   "attachments": {
     "deleteTitle": "Slett vedlegg",
@@ -357,6 +368,7 @@
     "date": "Dato",
     "startTime": "Starttid",
     "endTime": "Sluttid",
+    "durationPresets": "Varighet",
     "technician": "Tekniker",
     "selectTechnician": "Velg tekniker...",
     "searchOrCreate": "Søk eller opprett tekniker...",
@@ -394,7 +406,17 @@
     "pickNextAvailable": "Velg neste ledige tid",
     "findingSlot": "Finner en tid…",
     "slotPicked": "Booket inn på neste ledige tid",
-    "noSlotFound": "Fant ingen ledig tid de neste ukene"
+    "noSlotFound": "Fant ingen ledig tid de neste ukene",
+    "assignedTitle": "Tilordnet tekniker",
+    "boardLink": "Arbeidstavle",
+    "someoneElse": "Noen andre",
+    "loadOf": "{booked} / {capacity} t",
+    "loadFree": "{hours} t ledig",
+    "loadFull": "Fullbooket",
+    "loadOn": "Bookede timer {date}",
+    "promisedAt": "Lovet kunden",
+    "promisedPlaceholder": "Ikke lovet ennå",
+    "promisedClear": "Fjern"
   },
   "notifications": {
     "title": "Kundevarsler",
@@ -447,7 +469,60 @@
     "placeholder": "Det kommer en lyd bakfra når jeg bremser",
     "remove": "Fjern dette punktet",
     "notAnswered": "Ingenting funnet på dette ennå",
-    "answered": "{count} funn på dette"
+    "answered": "{count} funn på dette",
+    "storyTitle": "Jobbeskrivelse",
+    "storyHint": "Tilstand, årsak, utbedring, kontroll. Klikk på et steg for å åpne det; én rad for hver ting kunden nevnte eller du observerte.",
+    "steps": {
+      "condition": "Tilstand",
+      "cause": "Årsak",
+      "correction": "Utbedring",
+      "confirm": "Kontroll"
+    },
+    "conditionPlaceholder": "Hva kunden meldte, eller hva du observerte",
+    "causePlaceholder": "Hva testingen viste var den egentlige årsaken",
+    "correctionPlaceholder": "Hva som ble gjort for å rette det",
+    "confirmPlaceholder": "Hvordan utbedringen ble kontrollert: prøvekjøring, ny skanning, symptomet borte",
+    "markConfirmed": "Kontrollert",
+    "confirmedBy": "Kontrollert av {name}, {date}",
+    "confirmedAt": "Kontrollert {date}",
+    "confirmedOnSave": "Stemples med navnet ditt når du lagrer",
+    "confirmedCount": "{confirmed} av {total} kontrollert",
+    "findingsCount": "{count, plural, one {# observasjon} other {# observasjoner}}",
+    "addFinding": "Legg til observasjon",
+    "unconfirmedTitle": "Fullføre med punkter som ikke er kontrollert?",
+    "unconfirmedBody": "{count, plural, one {Ett punkt er ikke kontrollert som utbedret:} other {# punkter er ikke kontrollert som utbedret:}}",
+    "unconfirmedProceed": "Fullfør likevel",
+    "addMedia": "Legg til media",
+    "mediaUploading": "Laster opp…",
+    "mediaAdded": "{count, plural, one {# fil lagt til} other {# filer lagt til}}",
+    "mediaFailed": "Kunne ikke laste opp {name}",
+    "mediaTypes": "Velg et bilde (JPG, PNG, WebP) eller en video.",
+    "dictate": {
+      "start": "Dikter",
+      "listening": "Lytter",
+      "startHint": "Snakk, så skrives det her. Ingenting tas opp.",
+      "stopHint": "Slutt å lytte",
+      "notAllowed": "Nettleseren fikk ikke bruke mikrofonen. Gi dette nettstedet tilgang og prøv igjen.",
+      "noMicrophone": "Fant ingen mikrofon.",
+      "failed": "Dikteringen stoppet. Prøv igjen.",
+      "startHintServer": "Snakk, så skrives det mens du snakker. Lyden går til talemodellen din for å skrives ned og lagres ikke.",
+      "transcribing": "Gjør ferdig…",
+      "language": "Språk som snakkes",
+      "auto": "Auto",
+      "nothingHeard": "Ingenting ble hørt.",
+      "fellBack": "Bruker nettleserens egen diktering inntil videre.",
+      "autoLong": "Auto (gjenkjenn språket)",
+      "engine": "Skrives ned av",
+      "engineAi": "Talemodell (mer nøyaktig)",
+      "engineBrowser": "Nettleser (skriver mens du snakker)",
+      "liveFellBack": "Skriver i bolker på noen sekunder i stedet for ord for ord."
+    },
+    "stepEmpty": "Ikke skrevet ennå",
+    "removeTitle": "Fjerne dette punktet?",
+    "removeBody": "Tilstand, årsak, utbedring og kontroll fjernes sammen med det når du lagrer arbeidsordren.",
+    "removeAttached": "Observasjonene og mediene blir liggende på jobben, men ikke lenger under et punkt.",
+    "removeConfirm": "Fjern punktet",
+    "saveFirst": "Lagre arbeidsordren først"
   },
   "videoCall": {
     "title": "Videosamtale",
@@ -493,5 +568,127 @@
       "joinLine": "Bli med i videosamtalen her: {url}",
       "emailSubject": "Videosamtale om din {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Status for arbeidsordren",
+    "back": "Tilbake",
+    "backToClassic": "Tilbake til den klassiske visningen",
+    "openCustomer": "Åpne kunde",
+    "serviceHistory": "Servicehistorikk",
+    "changeVehicle": "Bytt kjøretøy",
+    "vehicleChangesOnSave": "Arbeidsordren flyttes til dette kjøretøyet når du lagrer.",
+    "phone": "Telefon",
+    "email": "E-post",
+    "notSet": "Ikke satt",
+    "noCustomer": "Ingen kunde på denne arbeidsordren.",
+    "invoiceTitle": "Faktura og betaling",
+    "filesTitle": "Filer og media",
+    "activity": {
+      "title": "Aktivitet",
+      "messageSent": "Melding sendt til kunden",
+      "linkShared": "Fakturalenke delt",
+      "linkViewed": "{count, plural, one {Kunden åpnet lenken} other {Kunden åpnet lenken # ganger}}",
+      "paymentTaken": "Betaling på {amount} registrert"
+    },
+    "invite": {
+      "title": "Arbeidsordresiden er fornyet.",
+      "body": "En ryddigere visning med de samme feltene. Du kan bytte tilbake når som helst.",
+      "try": "Prøv nå",
+      "dismiss": "Ikke nå",
+      "menu": "Prøv den nye visningen"
+    },
+    "promised": "Lovet {date}",
+    "promisedOverdue": "Lovet {date}, forsinket",
+    "opened": "Åpnet {date}",
+    "openedBy": "Åpnet {date} av {name}",
+    "editTitle": "Rediger tittel",
+    "titleField": "Tittel",
+    "media": {
+      "tabs": {
+        "photos": "Bilder",
+        "diagnostics": "Diagnostikk"
+      },
+      "summary": "{count, plural, one {# fil} other {# filer}} · deles med kunden bare når de er merket",
+      "customerCanSee": "Kunden kan se",
+      "showToCustomer": "Vis for kunden",
+      "hideFromCustomer": "Skjul for kunden",
+      "add": {
+        "image": "Legg til bilder",
+        "document": "Legg til dokumenter",
+        "diagnostic": "Legg til diagnoserapport",
+        "video": "Legg til video"
+      },
+      "dropHint": "Slipp filer her eller klikk for å velge",
+      "added": "{count, plural, one {# fil lagt til} other {# filer lagt til}}",
+      "failed": "Kunne ikke laste opp {name}",
+      "wrongType": "Feil filtype for denne fanen: {names}",
+      "limit": "Grensen er nådd ({count}/{max})"
+    },
+    "moneyBar": {
+      "total": "Totalt",
+      "paid": "Betalt",
+      "balance": "Utestående",
+      "settled": "Fullt betalt",
+      "takePayment": "Ta imot betaling",
+      "preview": "Forhåndsvis faktura",
+      "previewShort": "Forhåndsvis",
+      "send": "Send til kunden",
+      "sendShort": "Send"
+    },
+    "vehicleInfo": {
+      "more": "Mer info",
+      "less": "Mindre info",
+      "copy": "Kopier {label}",
+      "copied": "Kopiert",
+      "lastInspection": "Forrige EU-kontroll",
+      "purchaseDate": "Kjøpsdato",
+      "purchasePrice": "Kjøpspris",
+      "overdue": "forfalt",
+      "customerSince": "Kunde siden"
+    }
+  },
+  "photoHandoff": {
+    "button": "Legg til fra mobil",
+    "dialogTitle": "Legg til bilder og dokumenter fra en telefon",
+    "dialogBody": "Ta eller velg bilder, eller del en PDF, på en hvilken som helst telefon. Alt havner rett på denne arbeidsordren.",
+    "expires": "Koden virker til {time}.",
+    "waiting": "Venter på bilder og dokumenter…",
+    "received": "{count, plural, one {# fil mottatt} other {# filer mottatt}}",
+    "copyLink": "Kopier lenke",
+    "linkCopied": "Lenke kopiert",
+    "failed": "Kunne ikke lage en kode. Prøv igjen.",
+    "done": "Ferdig",
+    "pageTitle": "Legg til bilder og dokumenter",
+    "forJob": "Arbeidsordre {number}",
+    "takePhoto": "Ta bilde",
+    "choosePhotos": "Velg bilder",
+    "hint": "Alt havner rett på arbeidsordren. Ta så mange bilder du trenger.",
+    "uploading": "Laster opp…",
+    "added": "Lagt til",
+    "notAdded": "Ikke lagt til",
+    "retry": "Prøv igjen",
+    "addedCount": "{count, plural, one {# fil lagt til} other {# filer lagt til}}",
+    "expiredTitle": "Denne koden har utløpt",
+    "invalidTitle": "Denne lenken virker ikke",
+    "errors": {
+      "expired": "Be om en ny kode i skranken. Hver kode virker i 30 minutter.",
+      "invalid": "Skann koden på arbeidsordren på nytt.",
+      "limit": "Denne arbeidsordren har allerede så mange bilder som den kan ta.",
+      "type": "Her kan du bare legge til bilder og PDF-dokumenter.",
+      "tooLarge": "Filen er for stor.",
+      "failed": "Bildet ble ikke lagt til. Sjekk tilkoblingen og prøv igjen.",
+      "codeLimit": "Denne koden har lagt til så mange bilder som én kode kan. Skann en ny kode i resepsjonen."
+    },
+    "concernHeading": "Bildene legges under dette punktet",
+    "howTitle": "Slik fungerer det",
+    "step1": "Rett telefonkameraet mot koden og åpne lenken.",
+    "step2": "Ta bilder, eller velg bilder eller PDF-dokumenter som allerede ligger på telefonen.",
+    "step3": "De dukker opp på denne arbeidsordren etter hvert som de kommer inn.",
+    "noSignIn": "Ingen innlogging på telefonen.",
+    "customerToo": "Ansatte kan bruke den, og det kan kunden også: la kunden skanne koden, eller send lenken.",
+    "scope": "Lenken kan bare legge til bilder og dokumenter på denne arbeidsordren, og slutter å virke etter 30 minutter.",
+    "scanHint": "Skann med telefonkameraet",
+    "chooseDocument": "Last opp et dokument",
+    "privacy": "Bare verkstedet ser det du legger til her."
   }
 }

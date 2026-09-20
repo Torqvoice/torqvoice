@@ -37,6 +37,8 @@ import {
   detectDateFormat,
   detectDecimalSeparator,
 } from '../Lib/normalize'
+import { releaseFiles } from '@/lib/files/manager'
+import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
 
 // ── Input shapes ──────────────────────────────────────────────────────────────
 
@@ -657,6 +659,29 @@ export async function undoImportBatch(batchId: string) {
       if (!batch) throw new Error('Import not found')
       if (batch.status !== 'completed') throw new Error('This import has already been undone')
 
+      // Anything added to the imported jobs and vehicles since (photos taken
+      // on an imported job) goes with them; the files are let go afterwards.
+      const [batchRecords, batchVehicles] = await Promise.all([
+        db.serviceRecord.findMany({
+          where: { importBatchId: batchId, organizationId },
+          select: { id: true },
+        }),
+        db.vehicle.findMany({
+          where: { importBatchId: batchId, organizationId },
+          select: { id: true },
+        }),
+      ])
+      const files = [
+        ...(await serviceRecordFileUrls(
+          organizationId,
+          batchRecords.map((r) => r.id)
+        )),
+        ...(await vehicleFileUrls(
+          organizationId,
+          batchVehicles.map((v) => v.id)
+        )),
+      ]
+
       const result = await db.$transaction(async (tx) => {
         const serviceRecords = await tx.serviceRecord.deleteMany({
           where: { importBatchId: batchId, organizationId },
@@ -677,6 +702,7 @@ export async function undoImportBatch(batchId: string) {
           customers: customers.count,
         }
       })
+      await releaseFiles(files, { organizationId, reason: 'import undone' })
 
       revalidatePath('/customers')
       revalidatePath('/vehicles')

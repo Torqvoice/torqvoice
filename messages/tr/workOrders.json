@@ -31,7 +31,9 @@
       "status": "Durum",
       "tech": "Teknisyen",
       "date": "Tarih",
-      "total": "Toplam"
+      "total": "Toplam",
+      "promised": "Söz verilen",
+      "promisedOverdue": "{date} için söz verildi, gecikti"
     },
     "emailSubject": "Araç Durum Güncellemesi: {status}",
     "changeStatus": "Durumu değiştir",
@@ -39,6 +41,10 @@
       "open": "İş emrini aç",
       "openVehicle": "Aracı aç",
       "openCustomer": "Müşteriyi aç"
+    },
+    "dueToday": "Bugün teslim",
+    "columns": {
+      "label": "Sütunlar"
     }
   },
   "vehiclePicker": {
