@@ -113,6 +113,21 @@ export function useServiceFormState({
    * the page offers them (see the banner on the work order) and the save adds
    * them whether or not the offer was taken.
    */
+  /**
+   * The status as the server now has it. A technician marking the job
+   * complete in the bay has to move the bar on the desk's screen, and the
+   * page refreshes on that event, so the saved status arrives here.
+   *
+   * Not while the desk is editing: the status is part of what a save writes,
+   * and replacing a choice someone has just made in the dropdown would send
+   * back the wrong one. Their save wins, and the bar follows it.
+   */
+  const savedStatus = initialData.status
+  useEffect(() => {
+    if (hasUnsavedChangesRef.current || !savedStatus) return
+    setStatus(savedStatus)
+  }, [savedStatus])
+
   const [laborAddedElsewhere, setLaborAddedElsewhere] = useState<ServiceLaborInput[]>([])
   const savedLaborKey = JSON.stringify(initialData.laborItems ?? [])
   const syncedLaborRef = useRef<ServiceLaborInput[]>(initialData.laborItems ?? [])

@@ -205,12 +205,14 @@ export function ServicePageClient({
     locked: lockState.locked,
   })
 
-  // A line of work added from the technician app lands here: the page reads
-  // the job again, and the form state decides what to do with the new line
-  // (straight into the list, or held for the banner below while someone is
-  // typing). Only this job's events, and only the ones that add labour.
+  // What happened to this job somewhere else: a technician billing their
+  // time from the app, or marking the job complete in the bay. The page reads
+  // the job again, and the form state decides what to do with it: a status
+  // moves the bar at once, a line of work waits for the banner below while
+  // someone is typing. Only this job's events.
   useWorkshopEvents((event) => {
-    if (event.type !== 'job_labor_added' || event.serviceRecordId !== record.id) return
+    if (event.type !== 'job_labor_added' && event.type !== 'job_status_changed') return
+    if (event.serviceRecordId !== record.id) return
     router.refresh()
   })
 

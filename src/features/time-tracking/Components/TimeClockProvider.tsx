@@ -13,7 +13,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { getMyClock, startMyClock, stopMyClock, type MyClock } from '../Actions/timeClockActions'
-import type { JobLaborEvent } from '@/features/vehicles/Lib/jobEvents'
+import type { JobLaborEvent, JobStatusChangedEvent } from '@/features/vehicles/Lib/jobEvents'
 import type { ClockEvent } from '../Lib/timeEntries'
 import { formatMinutes } from '../Lib/timesheet'
 
@@ -31,7 +31,7 @@ import { formatMinutes } from '../Lib/timesheet'
  * coming and going); those go to the board's own hook, and anything this
  * provider does not name is passed along untouched for a listener to ignore.
  */
-export type WorkshopEvent = ClockEvent | JobLaborEvent
+export type WorkshopEvent = ClockEvent | JobLaborEvent | JobStatusChangedEvent
 
 type Listener = (event: WorkshopEvent) => void
 

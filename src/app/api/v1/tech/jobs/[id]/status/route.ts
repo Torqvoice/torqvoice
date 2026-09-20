@@ -1,6 +1,6 @@
 import { z } from 'zod'
+import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
 import { db } from '@/lib/db'
-import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry, stopEntry } from '@/features/time-tracking/Lib/timeEntries'
@@ -41,7 +41,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
           status: true,
           title: true,
           vehicleId: true,
-          vehicle: { select: { licensePlate: true } },
+          // Enough for the board to draw the card if this puts the job back
+          // in its unassigned list.
+          vehicle: {
+            select: { id: true, make: true, model: true, year: true, licensePlate: true },
+          },
         },
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
@@ -72,12 +76,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         select: { id: true, status: true },
       })
 
-      // Puts it on the work board immediately, the same way the board's own
-      // changes reach the technician.
-      notificationBus.emit('workboard', {
-        type: 'job_updated',
+      // Puts it on the desk's screens immediately: the board moves the card,
+      // and a work order page open on this job moves its status bar. Same
+      // event the web's own status change sends, so both have one listener.
+      announceJobStatusChanged({
         organizationId: ctx.organizationId,
-        job: updated,
+        serviceRecordId: updated.id,
+        status: updated.status,
+        serviceRecord: {
+          id: job.id,
+          title: job.title,
+          status: updated.status,
+          vehicle: job.vehicle,
+        },
       })
 
       // Tells the desk, unless the shop has turned it off.
