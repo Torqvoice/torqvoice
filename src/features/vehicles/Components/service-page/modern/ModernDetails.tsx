@@ -145,10 +145,15 @@ export function ModernDetails(props: ModernDetailsProps) {
   // The workshop's own status the job carries. Held here as well as on the
   // record so the stepper answers at once, before the page has been re-read.
   const [customStatus, setCustomStatus] = useState(record.customStatus ?? null)
-  const recordCustomId = record.customStatus?.id ?? null
+  // Keyed on what is drawn, not on the object: the record arrives as a new
+  // object on every refresh, and a status renamed or recoloured in settings
+  // keeps its id while what the stepper shows has changed.
+  const recordCustomKey = record.customStatus
+    ? `${record.customStatus.id}:${record.customStatus.name}:${record.customStatus.color}`
+    : ''
   useEffect(() => {
     setCustomStatus(record.customStatus ?? null)
-  }, [recordCustomId]) // eslint-disable-line react-hooks/exhaustive-deps -- keyed on which status, not the object's identity
+  }, [recordCustomKey]) // eslint-disable-line react-hooks/exhaustive-deps -- see above
 
   const changeStatus = async (next: string, custom: WorkOrderStatusOption | null = null) => {
     const open = formState.concerns.filter((c) => c.description.trim() && !c.confirmed)
