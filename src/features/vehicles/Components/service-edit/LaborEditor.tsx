@@ -134,7 +134,9 @@ function SortableLaborRow({
                 : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
             }`}
             onClick={() => updateLabor(index, 'pricingType', isService ? 'hourly' : 'service')}
-            title={isService ? t('switchToHourlyHint') : t('switchToServiceHint')}
+            // Says what the line is now, then that a click changes it. It used to
+            // describe the other mode, so hovering SVC read "Hourly".
+            title={isService ? t('serviceHint') : t('hourlyHint')}
           >
             {isService ? t('serviceTag') : t('hourlyTag')}
           </button>

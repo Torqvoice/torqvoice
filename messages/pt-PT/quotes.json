@@ -96,8 +96,8 @@
     "qtyOrHours": "Unidades / Horas",
     "hourlyTag": "HORA",
     "serviceTag": "SERV",
-    "switchToHourlyHint": "À hora: calculado pelas horas trabalhadas (horas × preço/hora). Clique para alterar.",
-    "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
+    "hourlyHint": "À hora: calculado pelas horas trabalhadas (horas × preço/hora). Clique para alterar.",
+    "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
     "deleteRow": "Eliminar linha",
     "excludeFromTotal": "Não somar ao total"
   },

@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Check in tires",
+    "sectionOwner": "Customer and vehicle",
+    "back": "Back",
+    "next": "Next",
+    "stepStorage": "Shelf and prep",
+    "stepReview": "Review",
     "description": "Record what arrived, then choose where it goes.",
     "customer": "Customer",
     "selectCustomer": "Select customer",

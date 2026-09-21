@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Receber pneus",
+    "sectionOwner": "Cliente e viatura",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "stepStorage": "Prateleira e preparação",
+    "stepReview": "Rever",
     "description": "Registe o que chegou e escolha onde guardar.",
     "customer": "Cliente",
     "selectCustomer": "Selecionar cliente",

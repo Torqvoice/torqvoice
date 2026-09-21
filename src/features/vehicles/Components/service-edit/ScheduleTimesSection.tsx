@@ -415,7 +415,7 @@ export function ScheduleTimesSection({
       : null
 
   const techPickerContent = (
-    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+    <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
       <Command shouldFilter={true}>
         <CommandInput
           placeholder={t('searchOrCreate')}

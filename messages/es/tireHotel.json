@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Recibir neumáticos",
+    "sectionOwner": "Cliente y vehículo",
+    "back": "Volver",
+    "next": "Siguiente",
+    "stepStorage": "Estante y preparación",
+    "stepReview": "Revisar",
     "description": "Registra lo que llega y elige dónde se guarda.",
     "customer": "Cliente",
     "selectCustomer": "Seleccionar cliente",

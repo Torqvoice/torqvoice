@@ -213,9 +213,11 @@ export function ModernDetails(props: ModernDetailsProps) {
   }, {})
 
   const storeTires =
-    !tireSet && tireHotelEnabled && record.vehicle ? (
+    tireHotelEnabled && record.vehicle ? (
       <StoreTiresButton
         serviceRecordId={record.id}
+        hasSet={!!tireSet}
+        canBill={!locked}
         vehicle={{
           id: record.vehicle.id,
           make: record.vehicle.make,
@@ -308,7 +310,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                     />
                   )}
 
-                  {storeTires && <div className="flex justify-end">{storeTires}</div>}
+                  {storeTires}
                   {tireSet && (
                     <TireSetBanner
                       set={tireSet}

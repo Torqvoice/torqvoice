@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Ta inn dekk",
+    "sectionOwner": "Kunde og kjøretøy",
+    "back": "Tilbake",
+    "next": "Neste",
+    "stepStorage": "Hylle og klargjøring",
+    "stepReview": "Se over",
     "description": "Registrer hva som kom inn, og velg hvor det skal stå.",
     "customer": "Kunde",
     "selectCustomer": "Velg kunde",

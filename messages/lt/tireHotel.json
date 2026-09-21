@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Priimti padangas",
+    "sectionOwner": "Klientas ir transporto priemonė",
+    "back": "Atgal",
+    "next": "Toliau",
+    "stepStorage": "Lentyna ir paruošimas",
+    "stepReview": "Peržiūra",
     "description": "Užfiksuokite, kas atvyko, ir pasirinkite, kur padėti.",
     "customer": "Klientas",
     "selectCustomer": "Pasirinkti klientą",

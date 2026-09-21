@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Przyjmij opony",
+    "sectionOwner": "Klient i pojazd",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "stepStorage": "Półka i przygotowanie",
+    "stepReview": "Podsumowanie",
     "description": "Zapisz, co przyjechało, i wybierz, gdzie ma stać.",
     "customer": "Klient",
     "selectCustomer": "Wybierz klienta",

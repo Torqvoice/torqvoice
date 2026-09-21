@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Lastik kabul et",
+    "sectionOwner": "Müşteri ve araç",
+    "back": "Geri",
+    "next": "İleri",
+    "stepStorage": "Raf ve hazırlık",
+    "stepReview": "Gözden geçir",
     "description": "Gelenleri kaydedin, sonra nereye konacağını seçin.",
     "customer": "Müşteri",
     "selectCustomer": "Müşteri seç",

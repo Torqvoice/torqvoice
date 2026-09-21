@@ -158,8 +158,8 @@
     "qtyOrHours": "Enhet / Timer",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
-    "switchToServiceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
+    "hourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
+    "serviceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
     "deleteRow": "Slett rad",
     "descriptionMissingHint": "Rader uten beskrivelse lagres ikke."
   },

@@ -158,8 +158,8 @@
     "subtotal": "Darbų tarpinė suma: {amount}",
     "hourlyTag": "VAL",
     "serviceTag": "PSL",
-    "switchToHourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
-    "switchToServiceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
+    "hourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
+    "serviceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
     "deleteRow": "Ištrinti eilutę",
     "descriptionMissingHint": "Eilutės be aprašymo neišsaugomos."
   },

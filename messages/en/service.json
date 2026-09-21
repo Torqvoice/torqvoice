@@ -158,8 +158,8 @@
     "subtotal": "Labor Subtotal: {amount}",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "hourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
+    "serviceHint": "Service: priced as a flat fee per unit. Click to switch.",
     "deleteRow": "Delete row",
     "descriptionMissingHint": "Rows without a description are not saved."
   },

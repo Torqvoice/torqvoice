@@ -158,8 +158,8 @@
     "qtyOrHours": "Einheit / Stunden",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
-    "switchToServiceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
+    "hourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
+    "serviceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
     "deleteRow": "Zeile löschen",
     "descriptionMissingHint": "Zeilen ohne Beschreibung werden nicht gespeichert."
   },

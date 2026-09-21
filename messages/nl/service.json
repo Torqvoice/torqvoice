@@ -158,8 +158,8 @@
     "qtyOrHours": "Eenheid / Uren",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
-    "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
+    "hourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
+    "serviceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Rij verwijderen",
     "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen."
   },

@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Réceptionner des pneus",
+    "sectionOwner": "Client et véhicule",
+    "back": "Retour",
+    "next": "Suivant",
+    "stepStorage": "Étagère et préparation",
+    "stepReview": "Vérifier",
     "description": "Enregistrez ce qui arrive, puis choisissez où le ranger.",
     "customer": "Client",
     "selectCustomer": "Choisir un client",

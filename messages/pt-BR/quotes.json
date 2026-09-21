@@ -96,8 +96,8 @@
     "qtyOrHours": "Unidade / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
-    "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
+    "hourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
+    "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
     "deleteRow": "Excluir linha",
     "excludeFromTotal": "Não somar ao total"
   },

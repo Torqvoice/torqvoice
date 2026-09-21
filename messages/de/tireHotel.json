@@ -72,6 +72,11 @@
   },
   "checkIn": {
     "title": "Reifen einlagern",
+    "sectionOwner": "Kunde und Fahrzeug",
+    "back": "Zurück",
+    "next": "Weiter",
+    "stepStorage": "Regal und Vorbereitung",
+    "stepReview": "Überprüfen",
     "description": "Erfassen Sie, was angekommen ist, und wählen Sie den Lagerplatz.",
     "customer": "Kunde",
     "selectCustomer": "Kunde auswählen",

@@ -158,8 +158,8 @@
     "qtyOrHours": "Unità / Ore",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
-    "switchToServiceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
+    "hourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
+    "serviceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
     "deleteRow": "Elimina riga",
     "descriptionMissingHint": "Le righe senza descrizione non vengono salvate."
   },
