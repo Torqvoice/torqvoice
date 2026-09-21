@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Photos",
-        "diagnostics": "Diagnostics"
+        "diagnostics": "Diagnostics",
+        "dropoff": "Drop-off"
       },
       "summary": "{count, plural, one {# file} other {# files}} · shared with the customer only when marked",
       "customerCanSee": "Customer can see",
@@ -615,13 +616,15 @@
         "image": "Add photos",
         "document": "Add documents",
         "diagnostic": "Add diagnostic report",
-        "video": "Add video"
+        "video": "Add video",
+        "dropoff": "Add drop-off photos"
       },
       "dropHint": "Drop files or click to browse",
       "added": "{count, plural, one {# file added} other {# files added}}",
       "failed": "Could not upload {name}",
       "wrongType": "Not the right kind of file for this tab: {names}",
-      "limit": "Limit reached ({count}/{max})"
+      "limit": "Limit reached ({count}/{max})",
+      "dropoffHint": "The car as it arrived, with the time each photo was taken. Kept for the workshop, not shown to the customer unless you choose to."
     },
     "moneyBar": {
       "total": "Total",
@@ -688,6 +691,40 @@
     "scope": "The link only adds photos and documents to this work order, and stops working after 30 minutes.",
     "scanHint": "Scan with the phone camera",
     "chooseDocument": "Upload a document",
-    "privacy": "Only the workshop can see what you add here."
+    "privacy": "Only the workshop can see what you add here.",
+    "dropoff": {
+      "button": "Drop-off photos",
+      "dialogTitle": "Photograph the car as it arrives",
+      "dialogBody": "A walk round the car before work starts: four sides, the odometer and any damage already there. It is your record if a scratch is ever questioned.",
+      "step2": "Follow the list on the phone: one photo for each side, the odometer, and any damage.",
+      "scope": "The link only adds drop-off photos to this work order, and stops working after 30 minutes.",
+      "pageTitle": "The car as it arrives",
+      "pageBody": "Take each photo in turn. Add a close-up of any damage that is already there.",
+      "retake": "Retake",
+      "slots": {
+        "front": "Front",
+        "right": "Right side",
+        "rear": "Rear",
+        "left": "Left side",
+        "odometer": "Odometer",
+        "other": "Damage or other"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Pay code",
+    "title": "Pay by scanning",
+    "body": "The customer scans this with their phone camera, the invoice opens, and they pay there.",
+    "sharesInvoice": "Showing the code shares the invoice with the customer, the same as sending it. From then on the invoice keeps the details it has now.",
+    "show": "Show the code",
+    "failed": "The code could not be made. Try again.",
+    "toPay": "To pay",
+    "scanHint": "Scan with the phone camera",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "waiting": "Waiting for the payment. This updates on its own.",
+    "paid": "Payment received",
+    "paidBody": "The payment is on the work order.",
+    "done": "Done"
   }
 }

@@ -9,7 +9,10 @@ import { MediaGrid } from './MediaGrid'
 import { PhotoHandoffButton } from '../PhotoHandoffButton'
 import type { ServicePageClientProps } from '../service-page-types'
 
-type FileTab = 'images' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
+type FileTab = 'images' | 'dropoff' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
+
+/** A walk round a car is a handful of shots; this is the phone route's cap too. */
+const MAX_DROPOFF = 30
 
 /** A plan with no cap says so with a number nobody will reach. */
 const capOf = (max: number) => (max >= 999999 ? undefined : max)
@@ -18,6 +21,8 @@ interface FilesMediaCardProps {
   serviceRecordId: string
   customerId?: string
   images: ServicePageClientProps['imageAttachmentsForManager']
+  /** Photos of the car as it arrived. Absent on a page that does not load them. */
+  dropoff?: ServicePageClientProps['imageAttachmentsForManager']
   videos: ServicePageClientProps['videoAttachments']
   documents: ServicePageClientProps['documentAttachments']
   maxImages: number
@@ -50,6 +55,7 @@ export function FilesMediaCard({
   serviceRecordId,
   customerId,
   images,
+  dropoff = [],
   videos,
   documents,
   maxImages,
@@ -74,6 +80,7 @@ export function FilesMediaCard({
       count: images.length,
       max: capOf(maxImages),
     },
+    { value: 'dropoff', label: t('modern.media.tabs.dropoff'), count: dropoff.length },
     {
       value: 'documents',
       label: t('header.tabs.documents'),
@@ -97,7 +104,7 @@ export function FilesMediaCard({
         ]
       : []),
   ]
-  const total = images.length + videos.length + documents.length
+  const total = images.length + dropoff.length + videos.length + documents.length
 
   return (
     <div
@@ -122,7 +129,12 @@ export function FilesMediaCard({
               {t('modern.media.summary', { count: total })}
             </span>
             {/* For the photo taken out at the car: a code the phone scans. */}
-            <PhotoHandoffButton serviceRecordId={serviceRecordId} />
+            {/* On the drop-off tab the same button hands over the walk round
+                the car instead. */}
+            <PhotoHandoffButton
+              serviceRecordId={serviceRecordId}
+              purpose={tab === 'dropoff' ? 'dropoff' : 'photos'}
+            />
           </div>
         }
         contentClassName="p-0"
@@ -166,6 +178,20 @@ export function FilesMediaCard({
               max={capOf(maxImages)}
               customerId={customerId}
             />
+          )}
+          {tab === 'dropoff' && (
+            <>
+              <p className="px-5 pt-4 text-[13px] text-muted-foreground">
+                {t('modern.media.dropoffHint')}
+              </p>
+              <MediaGrid
+                key="dropoff"
+                kind="dropoff"
+                serviceRecordId={serviceRecordId}
+                files={dropoff}
+                max={MAX_DROPOFF}
+              />
+            </>
           )}
           {tab === 'documents' && (
             <MediaGrid

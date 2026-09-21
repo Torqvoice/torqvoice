@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Photos",
-        "diagnostics": "Diagnostics"
+        "diagnostics": "Diagnostics",
+        "dropoff": "Réception"
       },
       "summary": "{count, plural, one {# fichier} other {# fichiers}} · montrés au client seulement s'ils sont marqués",
       "customerCanSee": "Visible par le client",
@@ -615,13 +616,15 @@
         "image": "Ajouter des photos",
         "document": "Ajouter des documents",
         "diagnostic": "Ajouter un rapport de diagnostic",
-        "video": "Ajouter une vidéo"
+        "video": "Ajouter une vidéo",
+        "dropoff": "Ajouter des photos de réception"
       },
       "dropHint": "Déposez des fichiers ou cliquez pour parcourir",
       "added": "{count, plural, one {# fichier ajouté} other {# fichiers ajoutés}}",
       "failed": "Impossible d'envoyer {name}",
       "wrongType": "Type de fichier non adapté à cet onglet : {names}",
-      "limit": "Limite atteinte ({count}/{max})"
+      "limit": "Limite atteinte ({count}/{max})",
+      "dropoffHint": "Le véhicule tel qu’il est arrivé, avec l’heure de chaque photo. Conservé pour l’atelier, non montré au client sauf si vous le choisissez."
     },
     "moneyBar": {
       "total": "Total",
@@ -688,6 +691,40 @@
     "scope": "Le lien ajoute uniquement des photos et des documents à cet ordre de travail et cesse de fonctionner après 30 minutes.",
     "scanHint": "Scannez avec l’appareil photo du téléphone",
     "chooseDocument": "Envoyer un document",
-    "privacy": "Seul l’atelier voit ce que vous ajoutez ici."
+    "privacy": "Seul l’atelier voit ce que vous ajoutez ici.",
+    "dropoff": {
+      "button": "Photos de réception",
+      "dialogTitle": "Photographier le véhicule à son arrivée",
+      "dialogBody": "Un tour du véhicule avant de commencer : les quatre côtés, le compteur et les dégâts déjà présents. C’est votre preuve si une rayure est contestée un jour.",
+      "step2": "Suivez la liste sur le téléphone : une photo par côté, le compteur et les dégâts.",
+      "scope": "Le lien n’ajoute que des photos de réception à cet ordre de réparation et cesse de fonctionner après 30 minutes.",
+      "pageTitle": "Le véhicule à son arrivée",
+      "pageBody": "Prenez chaque photo dans l’ordre. Ajoutez un gros plan des dégâts déjà présents.",
+      "retake": "Reprendre",
+      "slots": {
+        "front": "Avant",
+        "right": "Côté droit",
+        "rear": "Arrière",
+        "left": "Côté gauche",
+        "odometer": "Compteur",
+        "other": "Dégât ou autre"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Code de paiement",
+    "title": "Payer en scannant",
+    "body": "Le client le scanne avec l’appareil photo de son téléphone, la facture s’ouvre et il paie sur place.",
+    "sharesInvoice": "Afficher le code partage la facture avec le client, comme un envoi. À partir de là, la facture conserve les informations qu’elle contient maintenant.",
+    "show": "Afficher le code",
+    "failed": "Le code n’a pas pu être créé. Réessayez.",
+    "toPay": "À payer",
+    "scanHint": "Scanner avec l’appareil photo du téléphone",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié",
+    "waiting": "En attente du paiement. La mise à jour est automatique.",
+    "paid": "Paiement reçu",
+    "paidBody": "Le paiement figure sur l’ordre de réparation.",
+    "done": "Terminé"
   }
 }

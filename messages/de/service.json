@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Fotos",
-        "diagnostics": "Diagnose"
+        "diagnostics": "Diagnose",
+        "dropoff": "Annahme"
       },
       "summary": "{count, plural, one {# Datei} other {# Dateien}} · nur markierte werden mit dem Kunden geteilt",
       "customerCanSee": "Für Kunden sichtbar",
@@ -615,13 +616,15 @@
         "image": "Fotos hinzufügen",
         "document": "Dokumente hinzufügen",
         "diagnostic": "Diagnosebericht hinzufügen",
-        "video": "Video hinzufügen"
+        "video": "Video hinzufügen",
+        "dropoff": "Annahmefotos hinzufügen"
       },
       "dropHint": "Dateien hier ablegen oder zum Durchsuchen klicken",
       "added": "{count, plural, one {# Datei hinzugefügt} other {# Dateien hinzugefügt}}",
       "failed": "{name} konnte nicht hochgeladen werden",
       "wrongType": "Nicht die richtige Dateiart für diesen Tab: {names}",
-      "limit": "Limit erreicht ({count}/{max})"
+      "limit": "Limit erreicht ({count}/{max})",
+      "dropoffHint": "Das Fahrzeug, wie es ankam, mit der Aufnahmezeit jedes Fotos. Für die Werkstatt, für den Kunden nur sichtbar, wenn Sie es wählen."
     },
     "moneyBar": {
       "total": "Gesamt",
@@ -688,6 +691,40 @@
     "scope": "Der Link fügt nur Fotos und Dokumente zu diesem Auftrag hinzu und funktioniert 30 Minuten lang.",
     "scanHint": "Mit der Handykamera scannen",
     "chooseDocument": "Dokument hochladen",
-    "privacy": "Nur die Werkstatt sieht, was Sie hier hinzufügen."
+    "privacy": "Nur die Werkstatt sieht, was Sie hier hinzufügen.",
+    "dropoff": {
+      "button": "Annahmefotos",
+      "dialogTitle": "Das Fahrzeug bei der Annahme fotografieren",
+      "dialogBody": "Ein Rundgang ums Fahrzeug vor Arbeitsbeginn: vier Seiten, Kilometerstand und vorhandene Schäden. Das ist Ihr Nachweis, falls ein Kratzer später strittig wird.",
+      "step2": "Der Liste auf dem Handy folgen: ein Foto je Seite, der Kilometerstand und vorhandene Schäden.",
+      "scope": "Der Link fügt diesem Arbeitsauftrag nur Annahmefotos hinzu und funktioniert nach 30 Minuten nicht mehr.",
+      "pageTitle": "Das Fahrzeug bei der Annahme",
+      "pageBody": "Die Fotos der Reihe nach aufnehmen. Vorhandene Schäden zusätzlich in Nahaufnahme.",
+      "retake": "Neu aufnehmen",
+      "slots": {
+        "front": "Vorne",
+        "right": "Rechte Seite",
+        "rear": "Hinten",
+        "left": "Linke Seite",
+        "odometer": "Kilometerstand",
+        "other": "Schaden oder Sonstiges"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Zahlcode",
+    "title": "Per Scan bezahlen",
+    "body": "Der Kunde scannt den Code mit der Handykamera, die Rechnung öffnet sich, und er bezahlt dort.",
+    "sharesInvoice": "Mit dem Anzeigen des Codes wird die Rechnung mit dem Kunden geteilt, genau wie beim Senden. Ab dann behält die Rechnung die Angaben, die sie jetzt hat.",
+    "show": "Code anzeigen",
+    "failed": "Der Code konnte nicht erstellt werden. Bitte erneut versuchen.",
+    "toPay": "Zu zahlen",
+    "scanHint": "Mit der Handykamera scannen",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Link kopiert",
+    "waiting": "Warten auf die Zahlung. Das aktualisiert sich von selbst.",
+    "paid": "Zahlung eingegangen",
+    "paidBody": "Die Zahlung steht auf dem Arbeitsauftrag.",
+    "done": "Fertig"
   }
 }

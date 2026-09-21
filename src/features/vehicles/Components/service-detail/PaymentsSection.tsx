@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -46,6 +46,8 @@ interface PaymentsSectionProps {
    * brought into view. The number only has to change; its value means nothing.
    */
   openFormSignal?: number
+  /** One more way to be paid, drawn beside "Record payment": the pay code. */
+  extraAction?: ReactNode
 }
 
 export function PaymentsSection({
@@ -62,6 +64,7 @@ export function PaymentsSection({
   paymentLoading,
   deletingPayment,
   openFormSignal = 0,
+  extraAction = null,
 }: PaymentsSectionProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.payments')
@@ -258,10 +261,13 @@ export function PaymentsSection({
         {showForm ? (
           paymentForm
         ) : (
-          <Button type="button" className="h-11 w-full" onClick={() => setShowForm(true)}>
-            <Plus className="mr-1 h-4 w-4" />
-            {t('recordPayment')}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button type="button" className="h-11 w-full" onClick={() => setShowForm(true)}>
+              <Plus className="mr-1 h-4 w-4" />
+              {t('recordPayment')}
+            </Button>
+            {extraAction && <div className="[&>button]:h-10 [&>button]:w-full">{extraAction}</div>}
+          </div>
         )}
       </div>
     )
@@ -311,6 +317,7 @@ export function PaymentsSection({
               <Plus className="mr-1 h-3 w-3" />
               {t('recordPayment')}
             </Button>
+            {extraAction && <div className="[&>button]:h-7 [&>button]:text-xs">{extraAction}</div>}
           </div>
         </div>
 

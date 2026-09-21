@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Foto's",
-        "diagnostics": "Diagnose"
+        "diagnostics": "Diagnose",
+        "dropoff": "Inname"
       },
       "summary": "{count, plural, one {# bestand} other {# bestanden}} · alleen gemarkeerde worden met de klant gedeeld",
       "customerCanSee": "Zichtbaar voor klant",
@@ -615,13 +616,15 @@
         "image": "Foto's toevoegen",
         "document": "Documenten toevoegen",
         "diagnostic": "Diagnostisch verslag toevoegen",
-        "video": "Video toevoegen"
+        "video": "Video toevoegen",
+        "dropoff": "Innamefoto’s toevoegen"
       },
       "dropHint": "Sleep bestanden hierheen of klik om te bladeren",
       "added": "{count, plural, one {# bestand toegevoegd} other {# bestanden toegevoegd}}",
       "failed": "Kon {name} niet uploaden",
       "wrongType": "Niet het juiste soort bestand voor dit tabblad: {names}",
-      "limit": "Limiet bereikt ({count}/{max})"
+      "limit": "Limiet bereikt ({count}/{max})",
+      "dropoffHint": "De auto zoals die binnenkwam, met het tijdstip van elke foto. Bewaard voor de werkplaats, niet zichtbaar voor de klant tenzij u dat kiest."
     },
     "moneyBar": {
       "total": "Totaal",
@@ -688,6 +691,40 @@
     "scope": "De link voegt alleen foto’s en documenten toe aan deze werkorder en werkt 30 minuten.",
     "scanHint": "Scan met de camera van de telefoon",
     "chooseDocument": "Document uploaden",
-    "privacy": "Alleen de werkplaats ziet wat u hier toevoegt."
+    "privacy": "Alleen de werkplaats ziet wat u hier toevoegt.",
+    "dropoff": {
+      "button": "Innamefoto’s",
+      "dialogTitle": "Fotografeer de auto bij binnenkomst",
+      "dialogBody": "Een rondje om de auto voordat het werk begint: vier zijden, de kilometerstand en schade die er al is. Het is uw bewijs als er ooit over een kras wordt gediscussieerd.",
+      "step2": "Volg de lijst op de telefoon: één foto per zijde, de kilometerstand en eventuele schade.",
+      "scope": "De link voegt alleen innamefoto’s toe aan deze werkorder en werkt na 30 minuten niet meer.",
+      "pageTitle": "De auto bij binnenkomst",
+      "pageBody": "Maak de foto’s op volgorde. Voeg een close-up toe van schade die er al is.",
+      "retake": "Opnieuw",
+      "slots": {
+        "front": "Voorkant",
+        "right": "Rechterzijde",
+        "rear": "Achterkant",
+        "left": "Linkerzijde",
+        "odometer": "Kilometerstand",
+        "other": "Schade of anders"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Betaalcode",
+    "title": "Betalen door te scannen",
+    "body": "De klant scant dit met de camera van de telefoon, de factuur opent en daar wordt betaald.",
+    "sharesInvoice": "Door de code te tonen wordt de factuur met de klant gedeeld, net als bij verzenden. Vanaf dan behoudt de factuur de gegevens die ze nu heeft.",
+    "show": "Code tonen",
+    "failed": "De code kon niet worden gemaakt. Probeer het opnieuw.",
+    "toPay": "Te betalen",
+    "scanHint": "Scan met de camera van de telefoon",
+    "copyLink": "Link kopiëren",
+    "linkCopied": "Link gekopieerd",
+    "waiting": "Wachten op de betaling. Dit werkt zichzelf bij.",
+    "paid": "Betaling ontvangen",
+    "paidBody": "De betaling staat op de werkorder.",
+    "done": "Klaar"
   }
 }

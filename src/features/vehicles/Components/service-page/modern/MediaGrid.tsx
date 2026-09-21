@@ -23,13 +23,14 @@ import { updateServiceAttachment } from '@/features/vehicles/Actions/updateServi
 import { deleteServiceAttachment } from '@/features/vehicles/Actions/serviceActions'
 import { SendPhotoToWhatsapp } from '@/features/whatsapp/Components/SendPhotoToWhatsapp'
 import { compressImage } from '@/lib/compress-image'
+import { isDropoffSlot } from '@/lib/dropoff-slots'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { ImageCarousel } from '../../service-detail/ImageCarousel'
 import { formatFileSize } from '../../service-detail/types'
 import type { Attachment } from '../service-page-types'
 
-export type MediaKind = 'image' | 'document' | 'diagnostic' | 'video'
+export type MediaKind = 'image' | 'document' | 'diagnostic' | 'video' | 'dropoff'
 
 const KINDS: Record<
   MediaKind,
@@ -52,6 +53,14 @@ const KINDS: Record<
     accept: '.pdf,.csv,.txt',
     types: () => true,
     tint: 'bg-teal-500/10 text-teal-700 dark:text-teal-300',
+  },
+  // The car as it arrived. Photographs, like 'image', but a record for the
+  // workshop rather than something for the invoice.
+  dropoff: {
+    icon: Camera,
+    accept: '.jpg,.jpeg,.png,.webp',
+    types: (type) => ['image/jpeg', 'image/png', 'image/webp'].includes(type),
+    tint: 'bg-sky-500/10 text-sky-700 dark:text-sky-300',
   },
   video: {
     icon: Film,
@@ -84,7 +93,7 @@ interface MediaGridProps {
 export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: MediaGridProps) {
   const t = useTranslations('service')
   const router = useRouter()
-  const { formatDate } = useFormatDate()
+  const { formatDate, formatDateTime } = useFormatDate()
   const inputRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<Attachment[]>(files)
   const [uploading, setUploading] = useState(false)
@@ -103,6 +112,15 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
   const config = KINDS[kind]
   const Icon = config.icon
   const atLimit = max !== undefined && items.length >= max
+  const isPhotos = kind === 'image' || kind === 'dropoff'
+
+  // A drop-off photo taken from the phone's list carries which shot it is as
+  // its description ('front', 'odometer'). That is shown in words, and stays
+  // the shot's name until somebody types a caption of their own.
+  const captionOf = (file: Attachment) =>
+    kind === 'dropoff' && isDropoffSlot(file.description)
+      ? t(`photoHandoff.dropoff.slots.${file.description}`)
+      : file.description || ''
 
   const upload = async (list: FileList | File[]) => {
     let chosen = Array.from(list)
@@ -119,7 +137,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
       }
       if (chosen.length > room) {
         toast.warning(
-          t(kind === 'image' ? 'images.onlyUploading' : 'documents.onlyUploading', {
+          t(isPhotos ? 'images.onlyUploading' : 'documents.onlyUploading', {
             count: room,
           })
         )
@@ -132,7 +150,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
     let added = 0
     for (let file of chosen) {
       try {
-        if (kind === 'image') file = await compressImage(file)
+        if (isPhotos) file = await compressImage(file)
         const body = new FormData()
         body.append('file', file)
         const res = await fetch('/api/protected/upload/service-files', { method: 'POST', body })
@@ -153,7 +171,8 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
             // Shown to the customer unless somebody says otherwise, as the
             // classic tabs do. For a video that means the shared link, which
             // plays it; the printed invoice has nothing to draw for one.
-            includeInInvoice: true,
+            // A drop-off photo is the workshop's own record, so it starts hidden.
+            includeInInvoice: kind !== 'dropoff',
           },
         })
         if (result.success && result.data) {
@@ -198,7 +217,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
   }
 
   const saveCaption = async (file: Attachment, caption: string) => {
-    if ((file.description ?? '') === caption) return
+    if ((file.description ?? '') === caption || captionOf(file) === caption) return
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, description: caption } : f)))
     await updateServiceAttachment({ id: file.id, description: caption })
   }
@@ -316,7 +335,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
               {/* The caption is the file's name until somebody gives it a
                   better one; it reads as text and is a field when clicked. */}
               <input
-                defaultValue={file.description || ''}
+                defaultValue={captionOf(file)}
                 placeholder={file.fileName}
                 aria-label={t('images.description')}
                 onBlur={(e) => void saveCaption(file, e.target.value.trim())}
@@ -324,7 +343,10 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
               />
               <div className="flex items-center justify-between gap-2">
                 <p className="truncate text-xs text-muted-foreground" suppressHydrationWarning>
-                  {formatDate(file.createdAt)} · {formatFileSize(file.fileSize)}
+                  {/* To the minute for a drop-off photo: when it was taken is
+                      the point of it. */}
+                  {kind === 'dropoff' ? formatDateTime(file.createdAt) : formatDate(file.createdAt)}{' '}
+                  · {formatFileSize(file.fileSize)}
                 </p>
                 {isImage && customerId && (
                   <SendPhotoToWhatsapp
@@ -411,7 +433,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
         </DialogContent>
       </Dialog>
 
-      {kind === 'image' && (
+      {isPhotos && (
         <ImageCarousel
           images={items}
           currentIndex={carouselIndex}

@@ -59,6 +59,7 @@ export default async function PhotoHandoffPage({ params }: { params: Promise<{ t
     <PhotoHandoffClient
       token={token}
       brand={brand}
+      purpose={check.handoff.purpose}
       job={{
         number: job.invoiceNumber?.trim() || null,
         plate: job.vehicle?.licensePlate ?? null,

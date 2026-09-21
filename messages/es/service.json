@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Fotos",
-        "diagnostics": "Diagnóstico"
+        "diagnostics": "Diagnóstico",
+        "dropoff": "Recepción"
       },
       "summary": "{count, plural, one {# archivo} other {# archivos}} · se comparten con el cliente solo si se marcan",
       "customerCanSee": "Visible para el cliente",
@@ -615,13 +616,15 @@
         "image": "Añadir fotos",
         "document": "Añadir documentos",
         "diagnostic": "Añadir informe de diagnóstico",
-        "video": "Añadir vídeo"
+        "video": "Añadir vídeo",
+        "dropoff": "Añadir fotos de recepción"
       },
       "dropHint": "Suelta archivos aquí o haz clic para explorar",
       "added": "{count, plural, one {# archivo añadido} other {# archivos añadidos}}",
       "failed": "No se pudo subir {name}",
       "wrongType": "No es el tipo de archivo adecuado para esta pestaña: {names}",
-      "limit": "Límite alcanzado ({count}/{max})"
+      "limit": "Límite alcanzado ({count}/{max})",
+      "dropoffHint": "El coche tal como llegó, con la hora de cada foto. Se guarda para el taller y no se muestra al cliente salvo que usted lo decida."
     },
     "moneyBar": {
       "total": "Total",
@@ -688,6 +691,40 @@
     "scope": "El enlace solo añade fotos y documentos a esta orden de trabajo y deja de funcionar a los 30 minutos.",
     "scanHint": "Escanea con la cámara del móvil",
     "chooseDocument": "Subir un documento",
-    "privacy": "Solo el taller ve lo que añades aquí."
+    "privacy": "Solo el taller ve lo que añades aquí.",
+    "dropoff": {
+      "button": "Fotos de recepción",
+      "dialogTitle": "Fotografiar el coche a su llegada",
+      "dialogBody": "Una vuelta al coche antes de empezar: los cuatro lados, el cuentakilómetros y los daños que ya tenga. Es su prueba si algún día se discute un arañazo.",
+      "step2": "Siga la lista en el móvil: una foto de cada lado, el cuentakilómetros y los daños.",
+      "scope": "El enlace solo añade fotos de recepción a esta orden de trabajo y deja de funcionar a los 30 minutos.",
+      "pageTitle": "El coche a su llegada",
+      "pageBody": "Haga cada foto por orden. Añada un primer plano de los daños que ya existan.",
+      "retake": "Repetir",
+      "slots": {
+        "front": "Frontal",
+        "right": "Lado derecho",
+        "rear": "Trasera",
+        "left": "Lado izquierdo",
+        "odometer": "Cuentakilómetros",
+        "other": "Daño u otro"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Código de pago",
+    "title": "Pagar escaneando",
+    "body": "El cliente lo escanea con la cámara del móvil, se abre la factura y paga allí.",
+    "sharesInvoice": "Mostrar el código comparte la factura con el cliente, igual que enviarla. Desde ese momento la factura conserva los datos que tiene ahora.",
+    "show": "Mostrar el código",
+    "failed": "No se pudo crear el código. Inténtalo de nuevo.",
+    "toPay": "A pagar",
+    "scanHint": "Escanear con la cámara del móvil",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado",
+    "waiting": "Esperando el pago. Se actualiza solo.",
+    "paid": "Pago recibido",
+    "paidBody": "El pago ya está en la orden de trabajo.",
+    "done": "Listo"
   }
 }

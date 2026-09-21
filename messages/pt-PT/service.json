@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Fotografias",
-        "diagnostics": "Diagnóstico"
+        "diagnostics": "Diagnóstico",
+        "dropoff": "Receção"
       },
       "summary": "{count, plural, one {# ficheiro} other {# ficheiros}} · o cliente só vê o que estiver marcado",
       "customerCanSee": "Visível para o cliente",
@@ -615,13 +616,15 @@
         "image": "Adicionar fotografias",
         "document": "Adicionar documentos",
         "diagnostic": "Adicionar relatório de diagnóstico",
-        "video": "Adicionar vídeo"
+        "video": "Adicionar vídeo",
+        "dropoff": "Adicionar fotos de receção"
       },
       "dropHint": "Largue ficheiros aqui ou clique para procurar",
       "added": "{count, plural, one {# ficheiro adicionado} other {# ficheiros adicionados}}",
       "failed": "Não foi possível carregar {name}",
       "wrongType": "Tipo de ficheiro errado para este separador: {names}",
-      "limit": "Limite atingido ({count}/{max})"
+      "limit": "Limite atingido ({count}/{max})",
+      "dropoffHint": "A viatura como chegou, com a hora de cada foto. Fica para a oficina e não é mostrada ao cliente, salvo se o escolher."
     },
     "moneyBar": {
       "total": "Total",
@@ -688,6 +691,40 @@
     "scope": "A ligação só adiciona fotografias e documentos a esta ordem de trabalho e deixa de funcionar ao fim de 30 minutos.",
     "scanHint": "Leia com a câmara do telemóvel",
     "chooseDocument": "Carregar um documento",
-    "privacy": "Só a oficina vê o que adiciona aqui."
+    "privacy": "Só a oficina vê o que adiciona aqui.",
+    "dropoff": {
+      "button": "Fotos de receção",
+      "dialogTitle": "Fotografe a viatura à chegada",
+      "dialogBody": "Uma volta à viatura antes de começar: os quatro lados, o conta-quilómetros e os danos já existentes. É a sua prova se um risco for contestado.",
+      "step2": "Siga a lista no telemóvel: uma foto de cada lado, o conta-quilómetros e os danos.",
+      "scope": "A ligação só adiciona fotos de receção a esta ordem de reparação e deixa de funcionar ao fim de 30 minutos.",
+      "pageTitle": "A viatura à chegada",
+      "pageBody": "Tire cada foto por ordem. Adicione um grande plano dos danos já existentes.",
+      "retake": "Repetir",
+      "slots": {
+        "front": "Frente",
+        "right": "Lado direito",
+        "rear": "Traseira",
+        "left": "Lado esquerdo",
+        "odometer": "Conta-quilómetros",
+        "other": "Dano ou outro"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Código de pagamento",
+    "title": "Pagar com leitura do código",
+    "body": "O cliente lê o código com a câmara do telemóvel, a fatura abre e paga aí.",
+    "sharesInvoice": "Mostrar o código partilha a fatura com o cliente, tal como enviá-la. A partir daí a fatura mantém os dados que tem agora.",
+    "show": "Mostrar o código",
+    "failed": "Não foi possível criar o código. Tente novamente.",
+    "toPay": "A pagar",
+    "scanHint": "Leia com a câmara do telemóvel",
+    "copyLink": "Copiar ligação",
+    "linkCopied": "Ligação copiada",
+    "waiting": "A aguardar o pagamento. Atualiza sozinho.",
+    "paid": "Pagamento recebido",
+    "paidBody": "O pagamento está na ordem de reparação.",
+    "done": "Concluir"
   }
 }

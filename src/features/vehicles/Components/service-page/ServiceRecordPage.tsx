@@ -32,6 +32,7 @@ import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
+import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { PageHeader } from '@/components/page-header'
 import { getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -146,6 +147,11 @@ export async function ServiceRecordPage({
     (b) => ({ id: b.id, name: b.name })
   )
   const organizationId = authContext?.organizationId || ''
+  // Whether a customer can pay the shared invoice online, which is what the
+  // pay code at the desk is for.
+  const onlinePayments = organizationId
+    ? (await offeredPaymentProviders(organizationId)).length > 0
+    : false
   const lockState = organizationId
     ? await getInvoiceLockState(serviceId, organizationId)
     : { locked: false, reason: null, unlockedAt: null }
@@ -303,6 +309,11 @@ export async function ServiceRecordPage({
         a.category === 'image' || (a.category === 'tire_hotel' && a.fileType.startsWith('image/'))
     )
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
+  // The car as it arrived. Its own list: these are not the job's photos and
+  // do not go on the invoice unless somebody chooses to show one.
+  const dropoffAttachments = allAttachments
+    .filter((a) => a.category === 'dropoff')
+    .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? false }))
   const videoAttachments = allAttachments
     .filter((a) => a.category === 'video')
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
@@ -367,6 +378,7 @@ export async function ServiceRecordPage({
         orgMembers={orgMembersResult.success && orgMembersResult.data ? orgMembersResult.data : []}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}
+        dropoffAttachments={dropoffAttachments}
         videoAttachments={videoAttachments}
         documentAttachments={documentAttachments}
         maxImagesPerService={features?.maxImagesPerService ?? 999999}
@@ -379,6 +391,7 @@ export async function ServiceRecordPage({
         aiTranscription={aiTranscription}
         dictationMode={dictation.mode}
         tireHotelEnabled={tireHotel.enabled}
+        onlinePayments={onlinePayments}
         tireThresholds={{
           summerReplace: tireHotel.summerReplaceMm,
           winterReplace: tireHotel.winterReplaceMm,

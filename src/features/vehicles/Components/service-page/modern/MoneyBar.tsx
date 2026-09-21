@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { CreditCard, Eye, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,8 @@ interface MoneyBarProps {
   onTakePayment: () => void
   onPreview: () => void
   onSend: () => void
+  /** The pay code button, when online payment is connected. */
+  payCode?: ReactNode
 }
 
 /**
@@ -36,6 +39,7 @@ export function MoneyBar({
   onTakePayment,
   onPreview,
   onSend,
+  payCode,
 }: MoneyBarProps) {
   const t = useTranslations('service.modern.moneyBar')
   const formatCurrency = useFormatCurrency()
@@ -89,6 +93,7 @@ export function MoneyBar({
             <CreditCard className="mr-1.5 h-4 w-4" />
             {t('takePayment')}
           </Button>
+          {payCode}
           <Button type="button" size="sm" variant="outline" onClick={onPreview}>
             <Eye className="mr-1.5 h-4 w-4" />
             <span className="hidden sm:inline">{t('preview')}</span>

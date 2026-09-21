@@ -3,7 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { createPhotoHandoffToken } from '@/lib/photo-handoff'
+import { createPhotoHandoffToken, type PhotoHandoffPurpose } from '@/lib/photo-handoff'
 
 /**
  * A code for the work order's "Add photos from phone": a signed link that
@@ -16,6 +16,8 @@ import { createPhotoHandoffToken } from '@/lib/photo-handoff'
 export async function createPhotoHandoffLink(input: {
   serviceRecordId: string
   concernId?: string | null
+  /** 'dropoff' for the walk round the car as it arrives; see lib/photo-handoff.ts. */
+  purpose?: PhotoHandoffPurpose
 }) {
   return withAuth(
     async ({ organizationId, userId }) => {
@@ -38,7 +40,9 @@ export async function createPhotoHandoffLink(input: {
       const { token, expiresAt } = createPhotoHandoffToken({
         organizationId,
         serviceRecordId: job.id,
-        concernId,
+        // Drop-off photos are of the whole car, never of one complaint.
+        concernId: input.purpose === 'dropoff' ? null : concernId,
+        purpose: input.purpose === 'dropoff' ? 'dropoff' : 'photos',
         userId,
       })
       return { token, expiresAt: expiresAt.toISOString() }
@@ -65,7 +69,7 @@ export async function countPhotosSince(input: { serviceRecordId: string; since: 
         where: {
           serviceRecordId: input.serviceRecordId,
           serviceRecord: { organizationId },
-          category: { in: ['image', 'document'] },
+          category: { in: ['image', 'document', 'dropoff'] },
           createdAt: { gte: since },
         },
       })

@@ -13,6 +13,7 @@ import {
   TriangleAlert,
 } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
+import { DROPOFF_SLOTS, type DropoffSlot } from '@/lib/dropoff-slots'
 import { cn } from '@/lib/utils'
 
 type Problem = 'expired' | 'invalid'
@@ -22,6 +23,8 @@ interface Upload {
   file: File
   /** An object URL for a photo; a document has no picture to show. */
   preview: string | null
+  /** Which shot of the drop-off walk this is; absent on an ordinary code. */
+  slot?: DropoffSlot
   status: 'queued' | 'uploading' | 'added' | 'failed'
   error?: string
 }
@@ -53,6 +56,10 @@ function initials(name: string): string {
  * it is picked, one at a time so a weak signal outdoors is not swamped, and
  * each tile says whether it made it, with a retry when it did not.
  *
+ * A drop-off code asks for something narrower: the walk round the car as it
+ * arrives. The page lists the shots, each opens the camera, and each is ticked
+ * off as it lands, so whoever holds the phone knows when they are done.
+ *
  * It is the workshop's page as far as the person holding the phone can tell:
  * its name and logo at the top, the car underneath, and nothing of the job's
  * contents.
@@ -61,11 +68,13 @@ export function PhotoHandoffClient({
   token,
   brand,
   job,
+  purpose = 'photos',
   problem: initialProblem,
 }: {
   token: string
   brand: { name: string; logoUrl: string | null } | null
   job?: { number: string | null; plate: string | null; vehicle: string | null }
+  purpose?: 'photos' | 'dropoff'
   problem?: Problem
 }) {
   const t = useTranslations('service.photoHandoff')
@@ -76,6 +85,10 @@ export function PhotoHandoffClient({
   const libraryRef = useRef<HTMLInputElement>(null)
   const documentRef = useRef<HTMLInputElement>(null)
   const sending = useRef(false)
+  // The shot the camera was opened for. A ref, because the file input's
+  // change event arrives after the camera closes and must still know.
+  const pendingSlot = useRef<DropoffSlot | null>(null)
+  const dropoff = purpose === 'dropoff'
   const uploadsRef = useRef<Upload[]>([])
   uploadsRef.current = uploads
 
@@ -99,6 +112,7 @@ export function PhotoHandoffClient({
       }
       const body = new FormData()
       body.append('file', file)
+      if (item.slot) body.append('slot', item.slot)
       try {
         const res = await fetch(`/api/public/photo-handoff/${encodeURIComponent(token)}`, {
           method: 'POST',
@@ -156,10 +170,21 @@ export function PhotoHandoffClient({
         key: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         file,
         preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+        slot: pendingSlot.current ?? undefined,
         status: 'queued' as const,
       }))
     setUploads((prev) => [...added.reverse(), ...prev])
+    pendingSlot.current = null
   }
+
+  const shoot = (slot: DropoffSlot) => {
+    pendingSlot.current = slot
+    cameraRef.current?.click()
+  }
+
+  /** How the latest photo for a shot is doing; 'other' is never finished. */
+  const slotState = (slot: DropoffSlot) =>
+    slot === 'other' ? undefined : uploads.find((item) => item.slot === slot)?.status
 
   const onPicked = (e: React.ChangeEvent<HTMLInputElement>) => {
     add(e.target.files)
@@ -197,7 +222,9 @@ export function PhotoHandoffClient({
         )}
 
         <section className="rounded-2xl border border-border/70 bg-card p-5 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_16px_40px_-20px_rgb(0_0_0/0.25)]">
-          <h1 className="text-xl font-semibold tracking-tight">{t('pageTitle')}</h1>
+          <h1 className="text-xl font-semibold tracking-tight">
+            {t(dropoff ? 'dropoff.pageTitle' : 'pageTitle')}
+          </h1>
           {job && (job.number || job.plate || job.vehicle) && (
             <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-muted-foreground">
               {job.plate && (
@@ -229,6 +256,68 @@ export function PhotoHandoffClient({
                 </p>
               </div>
             </div>
+          ) : dropoff ? (
+            <>
+              <p className="mt-3 text-sm text-muted-foreground">{t('dropoff.pageBody')}</p>
+              <ul className="mt-4 space-y-2" data-testid="dropoff-slots">
+                {DROPOFF_SLOTS.map((slot) => {
+                  const state = slotState(slot)
+                  const done = state === 'added'
+                  return (
+                    <li key={slot}>
+                      <button
+                        type="button"
+                        onClick={() => shoot(slot)}
+                        data-slot={slot}
+                        data-state={state ?? 'todo'}
+                        className={cn(
+                          'flex h-14 w-full cursor-pointer items-center gap-3 rounded-xl border px-4 text-left text-base font-medium transition-colors active:bg-muted',
+                          done ? 'border-emerald-600/40 bg-emerald-600/10' : 'bg-background',
+                          slot === 'other' && 'border-dashed'
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                            done ? 'bg-emerald-600 text-white' : 'bg-primary/10 text-primary'
+                          )}
+                        >
+                          {done ? (
+                            <Check className="h-4 w-4" aria-hidden="true" />
+                          ) : state === 'uploading' || state === 'queued' ? (
+                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                          ) : (
+                            <Camera className="h-4 w-4" aria-hidden="true" />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate">
+                          {t(`dropoff.slots.${slot}`)}
+                        </span>
+                        {done && (
+                          <span className="shrink-0 text-xs font-normal text-muted-foreground">
+                            {t('dropoff.retake')}
+                          </span>
+                        )}
+                        {state === 'failed' && (
+                          <span className="shrink-0 text-xs font-normal text-destructive">
+                            {t('notAdded')}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+              <input
+                ref={cameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                data-testid="photo-handoff-camera"
+                onChange={onPicked}
+              />
+            </>
           ) : (
             <>
               <div className="mt-5 grid grid-cols-2 gap-2.5">

@@ -481,6 +481,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                       paymentLoading={actions.paymentLoading}
                       deletingPayment={actions.deletingPayment}
                       openFormSignal={paymentSignal}
+                      extraAction={props.payCode}
                     />
                   </div>
                 </AppCard>
@@ -562,6 +563,7 @@ export function ModernDetails(props: ModernDetailsProps) {
         balance={formState.balanceDue}
         currencyCode={currencyCode}
         onTakePayment={() => setPaymentSignal((n) => n + 1)}
+        payCode={props.payCode}
         onPreview={props.onPreviewInvoice}
         onSend={props.onSendToCustomer}
       />

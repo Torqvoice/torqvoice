@@ -77,6 +77,8 @@ export interface ServicePageClientProps {
   orgMembers?: OrgMemberOption[]
   currentUserName: string
   imageAttachmentsForManager: Attachment[]
+  /** Photos of the car as it arrived, kept apart from the job's photos. */
+  dropoffAttachments?: Attachment[]
   videoAttachments: Attachment[]
   documentAttachments: Attachment[]
   maxImagesPerService: number
@@ -93,6 +95,8 @@ export interface ServicePageClientProps {
   dictationMode?: 'ai' | 'choice'
   /** Gates the "Store tires" action, by plan and by the org's own switch. */
   tireHotelEnabled?: boolean
+  /** A payment vendor is connected, so the shared invoice can be paid online. */
+  onlinePayments?: boolean
   /** The work order's video call, and the connected services that could add one. */
   videoCall?: ServiceVideoCall
   /** The workshop's tread limits, so a set checked in here grades correctly. */

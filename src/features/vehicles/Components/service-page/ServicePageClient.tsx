@@ -3,6 +3,7 @@
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
+import { PayCodeButton } from './PayCodeButton'
 import { useState, useCallback, useMemo, useRef, useEffect, type ComponentProps } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
@@ -76,6 +77,7 @@ export function ServicePageClient({
   unitSystem,
   warrantyTexts,
   tireHotelEnabled = false,
+  onlinePayments = false,
   videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
@@ -89,6 +91,7 @@ export function ServicePageClient({
   orgMembers = [],
   currentUserName,
   imageAttachmentsForManager,
+  dropoffAttachments = [],
   videoAttachments,
   documentAttachments,
   maxImagesPerService,
@@ -495,6 +498,19 @@ export function ServicePageClient({
   // One set of props for each column, handed to whichever layout is showing:
   // the classic two columns take them as they are, the overhauled page takes
   // both and lays the same sections out its own way.
+  // The invoice's link as a code for the customer at the desk. One element,
+  // drawn wherever a payment is taken: beside "Record payment" on both
+  // layouts, and on the overhauled page's money bar.
+  const payCode = onlinePayments ? (
+    <PayCodeButton
+      serviceRecordId={record.id}
+      organizationId={organizationId}
+      publicToken={record.publicToken ?? null}
+      balance={formState.balanceDue}
+      currencyCode={currencyCode}
+    />
+  ) : null
+
   const leftColumnProps: ComponentProps<typeof DetailsLeftColumn> = {
     formState,
     actions,
@@ -520,6 +536,7 @@ export function ServicePageClient({
     onShowExistingObservations: () => obsControlsRef.current?.onShowExistingObservations(),
     jobClock,
     locked: lockState.locked,
+    payCode,
   }
 
   const rightColumnProps: ComponentProps<typeof DetailsRightColumn> = {
@@ -623,6 +640,7 @@ export function ServicePageClient({
               }}
               files={{
                 images: imageAttachmentsForManager,
+                dropoff: dropoffAttachments,
                 videos: videoAttachments,
                 documents: documentAttachments,
                 maxImages: maxImagesPerService,

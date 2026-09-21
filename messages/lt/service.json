@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Nuotraukos",
-        "diagnostics": "Diagnostika"
+        "diagnostics": "Diagnostika",
+        "dropoff": "Priėmimas"
       },
       "summary": "{count, plural, one {# failas} few {# failai} many {# failo} other {# failų}} · klientui rodomi tik pažymėti",
       "customerCanSee": "Klientas mato",
@@ -615,13 +616,15 @@
         "image": "Pridėti nuotraukų",
         "document": "Pridėti dokumentų",
         "diagnostic": "Pridėti diagnostikos ataskaitą",
-        "video": "Pridėti vaizdo įrašą"
+        "video": "Pridėti vaizdo įrašą",
+        "dropoff": "Pridėti priėmimo nuotraukų"
       },
       "dropHint": "Nutempkite failus arba spustelėkite, kad pasirinktumėte",
       "added": "{count, plural, one {Pridėtas # failas} few {Pridėti # failai} many {Pridėta # failo} other {Pridėta # failų}}",
       "failed": "Nepavyko įkelti {name}",
       "wrongType": "Netinkamas failo tipas šiam skirtukui: {names}",
-      "limit": "Pasiekta riba ({count}/{max})"
+      "limit": "Pasiekta riba ({count}/{max})",
+      "dropoffHint": "Automobilis toks, koks atvyko, su kiekvienos nuotraukos laiku. Saugoma dirbtuvėms, klientui nerodoma, nebent pasirinksite."
     },
     "moneyBar": {
       "total": "Iš viso",
@@ -688,6 +691,40 @@
     "scope": "Nuoroda tik prideda nuotraukas ir dokumentus prie šio darbo užsakymo ir nustoja veikti po 30 minučių.",
     "scanHint": "Nuskenuokite telefono kamera",
     "chooseDocument": "Įkelti dokumentą",
-    "privacy": "Tai, ką čia pridėsite, mato tik servisas."
+    "privacy": "Tai, ką čia pridėsite, mato tik servisas.",
+    "dropoff": {
+      "button": "Priėmimo nuotraukos",
+      "dialogTitle": "Nufotografuokite automobilį atvykus",
+      "dialogBody": "Apeikite automobilį prieš pradėdami darbą: keturios pusės, odometras ir jau esami pažeidimai. Tai jūsų įrodymas, jei kada nors kils ginčas dėl įbrėžimo.",
+      "step2": "Sekite sąrašą telefone: po nuotrauką kiekvienai pusei, odometras ir pažeidimai.",
+      "scope": "Nuoroda tik prideda priėmimo nuotraukas prie šio darbo užsakymo ir nustoja veikti po 30 minučių.",
+      "pageTitle": "Automobilis atvykus",
+      "pageBody": "Fotografuokite iš eilės. Pridėkite jau esamų pažeidimų stambų planą.",
+      "retake": "Perfotografuoti",
+      "slots": {
+        "front": "Priekis",
+        "right": "Dešinė pusė",
+        "rear": "Galas",
+        "left": "Kairė pusė",
+        "odometer": "Odometras",
+        "other": "Pažeidimas ar kita"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Mokėjimo kodas",
+    "title": "Mokėti nuskenavus",
+    "body": "Klientas nuskenuoja kodą telefono kamera, atsidaro sąskaita ir jis sumoka ten.",
+    "sharesInvoice": "Parodžius kodą, sąskaita bendrinama su klientu, taip pat kaip ją išsiuntus. Nuo tada sąskaita išlaiko dabartinius duomenis.",
+    "show": "Rodyti kodą",
+    "failed": "Kodo sukurti nepavyko. Bandykite dar kartą.",
+    "toPay": "Mokėti",
+    "scanHint": "Nuskenuokite telefono kamera",
+    "copyLink": "Kopijuoti nuorodą",
+    "linkCopied": "Nuoroda nukopijuota",
+    "waiting": "Laukiama mokėjimo. Atsinaujina savaime.",
+    "paid": "Mokėjimas gautas",
+    "paidBody": "Mokėjimas įrašytas darbo užsakyme.",
+    "done": "Atlikta"
   }
 }

@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Fotoğraflar",
-        "diagnostics": "Tanı"
+        "diagnostics": "Tanı",
+        "dropoff": "Teslim alma"
       },
       "summary": "{count, plural, one {# dosya} other {# dosya}} · yalnızca işaretlenenler müşteriyle paylaşılır",
       "customerCanSee": "Müşteri görebilir",
@@ -615,13 +616,15 @@
         "image": "Fotoğraf ekle",
         "document": "Belge ekle",
         "diagnostic": "Tanı raporu ekle",
-        "video": "Video ekle"
+        "video": "Video ekle",
+        "dropoff": "Teslim alma fotoğrafı ekle"
       },
       "dropHint": "Dosyaları bırakın veya göz atmak için tıklayın",
       "added": "{count, plural, one {# dosya eklendi} other {# dosya eklendi}}",
       "failed": "{name} yüklenemedi",
       "wrongType": "Bu sekmeye uygun dosya türü değil: {names}",
-      "limit": "Sınıra ulaşıldı ({count}/{max})"
+      "limit": "Sınıra ulaşıldı ({count}/{max})",
+      "dropoffHint": "Aracın geldiği hali, her fotoğrafın çekildiği saatle. Atölye için saklanır, siz seçmedikçe müşteriye gösterilmez."
     },
     "moneyBar": {
       "total": "Toplam",
@@ -688,6 +691,40 @@
     "scope": "Bağlantı yalnızca bu iş emrine fotoğraf ve belge ekler ve 30 dakika sonra çalışmaz.",
     "scanHint": "Telefon kamerasıyla okutun",
     "chooseDocument": "Belge yükle",
-    "privacy": "Buraya eklediklerinizi yalnızca servis görür."
+    "privacy": "Buraya eklediklerinizi yalnızca servis görür.",
+    "dropoff": {
+      "button": "Teslim alma fotoğrafları",
+      "dialogTitle": "Aracı geldiği haliyle fotoğraflayın",
+      "dialogBody": "İşe başlamadan önce aracın çevresinde bir tur: dört taraf, kilometre sayacı ve mevcut hasarlar. Bir çizik tartışma konusu olursa kanıtınız budur.",
+      "step2": "Telefondaki listeyi izleyin: her taraf için bir fotoğraf, kilometre sayacı ve hasarlar.",
+      "scope": "Bağlantı bu iş emrine yalnızca teslim alma fotoğrafı ekler ve 30 dakika sonra çalışmaz.",
+      "pageTitle": "Araç geldiği haliyle",
+      "pageBody": "Fotoğrafları sırayla çekin. Mevcut hasarların yakın çekimini ekleyin.",
+      "retake": "Yeniden çek",
+      "slots": {
+        "front": "Ön",
+        "right": "Sağ taraf",
+        "rear": "Arka",
+        "left": "Sol taraf",
+        "odometer": "Kilometre sayacı",
+        "other": "Hasar veya diğer"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Ödeme kodu",
+    "title": "Tarayarak öde",
+    "body": "Müşteri bunu telefon kamerasıyla tarar, fatura açılır ve oradan öder.",
+    "sharesInvoice": "Kodu göstermek, faturayı göndermekle aynı şekilde müşteriyle paylaşır. O andan sonra fatura şu anki bilgilerini korur.",
+    "show": "Kodu göster",
+    "failed": "Kod oluşturulamadı. Tekrar deneyin.",
+    "toPay": "Ödenecek",
+    "scanHint": "Telefon kamerasıyla tarayın",
+    "copyLink": "Bağlantıyı kopyala",
+    "linkCopied": "Bağlantı kopyalandı",
+    "waiting": "Ödeme bekleniyor. Kendiliğinden güncellenir.",
+    "paid": "Ödeme alındı",
+    "paidBody": "Ödeme iş emrine işlendi.",
+    "done": "Tamam"
   }
 }
