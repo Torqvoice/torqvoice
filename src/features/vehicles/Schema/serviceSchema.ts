@@ -33,7 +33,9 @@ export const serviceAttachmentSchema = z.object({
   fileUrl: uploadUrlSchema,
   fileType: z.string(),
   fileSize: z.number(),
-  category: z.enum(['image', 'diagnostic', 'document', 'video']).default('diagnostic'),
+  // 'dropoff' is a photo of the car as it arrived: kept apart from the job's
+  // photos and off the invoice unless somebody chooses otherwise.
+  category: z.enum(['image', 'diagnostic', 'document', 'video', 'dropoff']).default('diagnostic'),
   description: z.string().optional(),
   includeInInvoice: z.boolean().default(true),
 })

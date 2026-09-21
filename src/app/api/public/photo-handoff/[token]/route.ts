@@ -7,6 +7,7 @@ import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { discardUnsavedUpload } from '@/lib/files/manager'
 import { compressPhoto } from '@/lib/image-upload.server'
+import { type DropoffSlot, isDropoffSlot } from '@/lib/dropoff-slots'
 import { PHOTO_HANDOFF_TTL_SECONDS, verifyPhotoHandoffToken } from '@/lib/photo-handoff'
 import { rateLimit } from '@/lib/rate-limit'
 import { uploadsRoot } from '@/lib/upload-root'
@@ -53,6 +54,8 @@ const MAX_PDF_BYTES = 10 * 1024 * 1024
 const PER_CODE = 30
 const PHOTOS_PER_JOB = 100
 const PDFS_PER_JOB = 20
+/** A walk round a car is six shots and a few of the damage; thirty is generous. */
+const DROPOFF_PER_JOB = 30
 const RATE_PER_MINUTE = 30
 
 function refuse(status: number, code: string) {
@@ -72,7 +75,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const { token } = await params
   const check = verifyPhotoHandoffToken(token)
   if (!check.ok) return refuse(check.reason === 'expired' ? 410 : 404, check.reason)
-  const { organizationId, serviceRecordId, concernId, userId, expiresAt } = check.handoff
+  const { organizationId, serviceRecordId, concernId, purpose, userId, expiresAt } = check.handoff
+  const dropoff = purpose === 'dropoff'
 
   const job = await db.serviceRecord.findFirst({
     where: { id: serviceRecordId, organizationId },
@@ -93,10 +97,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const file = form?.get('file')
   if (!(file instanceof File)) return refuse(400, 'noFile')
   const isPdf = file.type === PDF_TYPE
+  // The walk round the car is photographs. Paperwork has the ordinary code.
+  if (dropoff && isPdf) return refuse(400, 'type')
   if (!isPdf && !PHOTO_TYPES.has(file.type)) return refuse(400, 'type')
   if (file.size === 0) return refuse(400, 'empty')
   if (file.size > (isPdf ? MAX_PDF_BYTES : MAX_BYTES)) return refuse(400, 'tooLarge')
-  const category = isPdf ? 'document' : 'image'
+  const category = dropoff ? 'dropoff' : isPdf ? 'document' : 'image'
+  // Which shot this is, from the fixed list and nothing else: the value is
+  // stored and shown on the work order.
+  const slotField = form?.get('slot')
+  const slot: DropoffSlot | null = !dropoff ? null : isDropoffSlot(slotField) ? slotField : 'other'
 
   // Counted before anything is decoded or written: the cheap refusals first.
   const issuedAt = new Date((expiresAt - PHOTO_HANDOFF_TTL_SECONDS) * 1000)
@@ -106,14 +116,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
     db.serviceAttachment.count({
       where: {
         serviceRecordId: job.id,
-        category: { in: ['image', 'document'] },
+        category: { in: ['image', 'document', 'dropoff'] },
         createdAt: { gte: issuedAt },
       },
     }),
   ])
-  const jobCap = isPdf
-    ? Math.min(features.maxDocumentsPerService, PDFS_PER_JOB)
-    : Math.min(features.maxImagesPerService, PHOTOS_PER_JOB)
+  const jobCap = dropoff
+    ? DROPOFF_PER_JOB
+    : isPdf
+      ? Math.min(features.maxDocumentsPerService, PDFS_PER_JOB)
+      : Math.min(features.maxImagesPerService, PHOTOS_PER_JOB)
   if (onJob >= jobCap) return refuse(409, 'limit')
   if (sinceCode >= PER_CODE) return refuse(409, 'codeLimit')
 
@@ -155,7 +167,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
         // added on the page does. A document does not: an invoice download
         // appends every attached PDF, and a customer's paperwork should not
         // reach the invoice before the workshop has looked at it.
-        includeInInvoice: !isPdf,
+        //
+        // Nor does a drop-off photo. It is the workshop's record of the car as
+        // it arrived, for the day somebody says a scratch is new; the desk can
+        // still choose to show one.
+        includeInInvoice: !isPdf && !dropoff,
+        description: slot,
         serviceRecordId: job.id,
         concernId: concern?.id ?? null,
       },

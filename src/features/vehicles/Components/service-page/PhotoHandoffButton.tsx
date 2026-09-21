@@ -43,6 +43,7 @@ export function PhotoHandoffButton({
   serviceRecordId,
   concernId = null,
   concernLabel,
+  purpose = 'photos',
   variant = 'button',
   disabled = false,
   disabledReason,
@@ -51,6 +52,11 @@ export function PhotoHandoffButton({
   concernId?: string | null
   /** The concern in the customer's words, so both screens say which one the photos go under. */
   concernLabel?: string
+  /**
+   * 'dropoff' hands the phone the walk round the car as it arrives: a fixed
+   * list of shots, kept under the job's Drop-off tab and off the invoice.
+   */
+  purpose?: 'photos' | 'dropoff'
   /** A small button in a card header, or a quiet text link in a row. */
   variant?: 'button' | 'link'
   disabled?: boolean
@@ -74,7 +80,7 @@ export function PhotoHandoffButton({
     setError(false)
     setReceived(0)
     receivedRef.current = 0
-    createPhotoHandoffLink({ serviceRecordId, concernId })
+    createPhotoHandoffLink({ serviceRecordId, concernId, purpose })
       .then((result) => {
         if (cancelled) return
         if (!result.success || !result.data) {
@@ -96,7 +102,7 @@ export function PhotoHandoffButton({
     return () => {
       cancelled = true
     }
-  }, [open, serviceRecordId, concernId])
+  }, [open, serviceRecordId, concernId, purpose])
 
   // Photos arriving while the code is up are shown as they land.
   useEffect(() => {
@@ -132,7 +138,7 @@ export function PhotoHandoffButton({
         className="flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-default disabled:opacity-50 disabled:hover:text-muted-foreground"
       >
         <Smartphone className="h-3 w-3" aria-hidden="true" />
-        {t('button')}
+        {t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
       </button>
     ) : (
       <Button
@@ -145,7 +151,7 @@ export function PhotoHandoffButton({
         className="h-7 gap-1.5 text-xs"
       >
         <Smartphone className="h-3.5 w-3.5" aria-hidden="true" />
-        {t('button')}
+        {t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
       </Button>
     )
 
@@ -160,7 +166,8 @@ export function PhotoHandoffButton({
         : concernLabel.trim()
       : null
 
-  const steps = [t('step1'), t('step2'), t('step3')]
+  const dropoff = purpose === 'dropoff'
+  const steps = [t('step1'), t(dropoff ? 'dropoff.step2' : 'step2'), t('step3')]
 
   return (
     <>
@@ -178,8 +185,12 @@ export function PhotoHandoffButton({
                   <Smartphone className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <div className="space-y-1.5">
-                  <DialogTitle className="text-lg">{t('dialogTitle')}</DialogTitle>
-                  <DialogDescription>{t('dialogBody')}</DialogDescription>
+                  <DialogTitle className="text-lg">
+                    {t(dropoff ? 'dropoff.dialogTitle' : 'dialogTitle')}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {t(dropoff ? 'dropoff.dialogBody' : 'dialogBody')}
+                  </DialogDescription>
                 </div>
               </DialogHeader>
 
@@ -219,7 +230,7 @@ export function PhotoHandoffButton({
                 <div className="space-y-1 text-xs text-muted-foreground">
                   <p className="font-medium text-foreground">{t('noSignIn')}</p>
                   <p>{t('customerToo')}</p>
-                  <p>{t('scope')}</p>
+                  <p>{t(dropoff ? 'dropoff.scope' : 'scope')}</p>
                 </div>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
 import { ConcernsSection } from '../service-edit/ConcernsSection'
@@ -58,6 +59,8 @@ interface DetailsLeftColumnProps {
   jobClock: JobClock
   /** A locked invoice: the notes editors go read-only, which the fieldset cannot do for them. */
   locked?: boolean
+  /** The pay code button, when online payment is connected. Drawn where payments are taken. */
+  payCode?: ReactNode
 }
 
 export function DetailsLeftColumn({
@@ -85,6 +88,7 @@ export function DetailsLeftColumn({
   onShowExistingObservations,
   jobClock,
   locked = false,
+  payCode = null,
 }: DetailsLeftColumnProps) {
   const tClock = useTranslations('timeTracking.job')
   // Which concerns somebody has actually looked at. Counted here rather than
@@ -213,6 +217,7 @@ export function DetailsLeftColumn({
           onTogglePaid={actions.handleTogglePaid}
           paymentLoading={actions.paymentLoading}
           deletingPayment={actions.deletingPayment}
+          extraAction={payCode}
         />
         <InvoiceSummary
           hasPartItems={formState.partItems.length > 0}

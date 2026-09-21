@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Zdjęcia",
-        "diagnostics": "Diagnostyka"
+        "diagnostics": "Diagnostyka",
+        "dropoff": "Przyjęcie"
       },
       "summary": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# pliku}} · widoczne dla klienta tylko po oznaczeniu",
       "customerCanSee": "Widoczne dla klienta",
@@ -615,13 +616,15 @@
         "image": "Dodaj zdjęcia",
         "document": "Dodaj dokumenty",
         "diagnostic": "Dodaj raport diagnostyczny",
-        "video": "Dodaj wideo"
+        "video": "Dodaj wideo",
+        "dropoff": "Dodaj zdjęcia przyjęcia"
       },
       "dropHint": "Upuść pliki lub kliknij, aby wybrać",
       "added": "{count, plural, one {Dodano # plik} few {Dodano # pliki} many {Dodano # plików} other {Dodano # pliku}}",
       "failed": "Nie udało się przesłać {name}",
       "wrongType": "Nieodpowiedni rodzaj pliku dla tej karty: {names}",
-      "limit": "Osiągnięto limit ({count}/{max})"
+      "limit": "Osiągnięto limit ({count}/{max})",
+      "dropoffHint": "Auto w stanie, w jakim przyjechało, z godziną każdego zdjęcia. Dla warsztatu, niewidoczne dla klienta, chyba że zdecydujesz inaczej."
     },
     "moneyBar": {
       "total": "Razem",
@@ -688,6 +691,40 @@
     "scope": "Link tylko dodaje zdjęcia i dokumenty do tego zlecenia i przestaje działać po 30 minutach.",
     "scanHint": "Zeskanuj aparatem telefonu",
     "chooseDocument": "Prześlij dokument",
-    "privacy": "To, co tu dodasz, widzi tylko warsztat."
+    "privacy": "To, co tu dodasz, widzi tylko warsztat.",
+    "dropoff": {
+      "button": "Zdjęcia przyjęcia",
+      "dialogTitle": "Sfotografuj auto przy przyjęciu",
+      "dialogBody": "Obejście auta przed rozpoczęciem pracy: cztery strony, licznik i istniejące uszkodzenia. To Twój dowód, gdyby rysa została kiedyś zakwestionowana.",
+      "step2": "Postępuj według listy w telefonie: po jednym zdjęciu każdej strony, licznik i uszkodzenia.",
+      "scope": "Link dodaje tylko zdjęcia przyjęcia do tego zlecenia i przestaje działać po 30 minutach.",
+      "pageTitle": "Auto przy przyjęciu",
+      "pageBody": "Rób zdjęcia po kolei. Dodaj zbliżenie istniejących uszkodzeń.",
+      "retake": "Powtórz",
+      "slots": {
+        "front": "Przód",
+        "right": "Prawa strona",
+        "rear": "Tył",
+        "left": "Lewa strona",
+        "odometer": "Licznik",
+        "other": "Uszkodzenie lub inne"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Kod płatności",
+    "title": "Zapłać, skanując",
+    "body": "Klient skanuje kod aparatem telefonu, otwiera się faktura i płaci na miejscu.",
+    "sharesInvoice": "Pokazanie kodu udostępnia fakturę klientowi, tak samo jak jej wysłanie. Od tej chwili faktura zachowuje dane, które ma teraz.",
+    "show": "Pokaż kod",
+    "failed": "Nie udało się utworzyć kodu. Spróbuj ponownie.",
+    "toPay": "Do zapłaty",
+    "scanHint": "Zeskanuj aparatem telefonu",
+    "copyLink": "Kopiuj link",
+    "linkCopied": "Link skopiowany",
+    "waiting": "Oczekiwanie na płatność. Odświeża się samo.",
+    "paid": "Płatność otrzymana",
+    "paidBody": "Płatność jest na zleceniu.",
+    "done": "Gotowe"
   }
 }

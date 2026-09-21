@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Fotos",
-        "diagnostics": "Diagnóstico"
+        "diagnostics": "Diagnóstico",
+        "dropoff": "Entrada"
       },
       "summary": "{count, plural, one {# arquivo} other {# arquivos}} · o cliente só vê o que estiver marcado",
       "customerCanSee": "Visível para o cliente",
@@ -615,13 +616,15 @@
         "image": "Adicionar fotos",
         "document": "Adicionar documentos",
         "diagnostic": "Adicionar relatório de diagnóstico",
-        "video": "Adicionar vídeo"
+        "video": "Adicionar vídeo",
+        "dropoff": "Adicionar fotos de entrada"
       },
       "dropHint": "Arraste arquivos aqui ou clique para procurar",
       "added": "{count, plural, one {# arquivo adicionado} other {# arquivos adicionados}}",
       "failed": "Não foi possível enviar {name}",
       "wrongType": "Tipo de arquivo errado para esta aba: {names}",
-      "limit": "Limite atingido ({count}/{max})"
+      "limit": "Limite atingido ({count}/{max})",
+      "dropoffHint": "O carro como chegou, com a hora de cada foto. Fica com a oficina e não é mostrado ao cliente, a menos que você escolha."
     },
     "moneyBar": {
       "total": "Total",
@@ -688,6 +691,40 @@
     "scope": "O link só adiciona fotos e documentos a esta ordem de serviço e para de funcionar após 30 minutos.",
     "scanHint": "Escaneie com a câmera do celular",
     "chooseDocument": "Enviar um documento",
-    "privacy": "Só a oficina vê o que você adiciona aqui."
+    "privacy": "Só a oficina vê o que você adiciona aqui.",
+    "dropoff": {
+      "button": "Fotos de entrada",
+      "dialogTitle": "Fotografe o carro na chegada",
+      "dialogBody": "Uma volta no carro antes de começar: os quatro lados, o hodômetro e os danos que já existem. É a sua prova se um risco for questionado.",
+      "step2": "Siga a lista no celular: uma foto de cada lado, o hodômetro e os danos.",
+      "scope": "O link só adiciona fotos de entrada a esta ordem de serviço e para de funcionar após 30 minutos.",
+      "pageTitle": "O carro na chegada",
+      "pageBody": "Tire cada foto em ordem. Adicione um close dos danos que já existem.",
+      "retake": "Refazer",
+      "slots": {
+        "front": "Frente",
+        "right": "Lado direito",
+        "rear": "Traseira",
+        "left": "Lado esquerdo",
+        "odometer": "Hodômetro",
+        "other": "Dano ou outro"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Código de pagamento",
+    "title": "Pagar escaneando",
+    "body": "O cliente escaneia com a câmera do celular, a fatura abre e ele paga ali.",
+    "sharesInvoice": "Mostrar o código compartilha a fatura com o cliente, do mesmo modo que enviá-la. A partir daí a fatura mantém os dados que tem agora.",
+    "show": "Mostrar o código",
+    "failed": "Não foi possível criar o código. Tente novamente.",
+    "toPay": "A pagar",
+    "scanHint": "Escaneie com a câmera do celular",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado",
+    "waiting": "Aguardando o pagamento. Atualiza sozinho.",
+    "paid": "Pagamento recebido",
+    "paidBody": "O pagamento está na ordem de serviço.",
+    "done": "Concluir"
   }
 }

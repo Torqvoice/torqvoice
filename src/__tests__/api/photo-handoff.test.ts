@@ -41,12 +41,15 @@ const HANDOFF = {
   organizationId: 'org-1',
   serviceRecordId: 'job-1',
   concernId: 'concern-1',
+  purpose: 'photos' as const,
   userId: 'user-1',
 }
+const DROPOFF = { ...HANDOFF, concernId: null, purpose: 'dropoff' as const }
 
-function post(token: string, file?: File) {
+function post(token: string, file?: File, slot?: string) {
   const body = new FormData()
   if (file) body.append('file', file)
+  if (slot) body.append('slot', slot)
   return POST(
     new Request(`http://app.test/api/public/photo-handoff/${token}`, { method: 'POST', body }),
     {
@@ -254,5 +257,57 @@ describe('the phone upload route', () => {
       gte: Date
     }
     expect(Math.abs(sinceShown.gte.getTime() - now)).toBeLessThan(1000)
+  })
+  // The walk round the car as it arrives: a code of its own, signed as such.
+  it('carries its purpose in the signature, and an ordinary code stays an ordinary code', () => {
+    const dropoff = verifyPhotoHandoffToken(createPhotoHandoffToken(DROPOFF).token)
+    expect(dropoff.ok && dropoff.handoff.purpose).toBe('dropoff')
+    const ordinary = verifyPhotoHandoffToken(createPhotoHandoffToken(HANDOFF).token)
+    expect(ordinary.ok && ordinary.handoff.purpose).toBe('photos')
+  })
+
+  it('files a drop-off photo on its own, off the invoice, named for its shot', async () => {
+    const { token } = createPhotoHandoffToken(DROPOFF)
+    const res = await post(token, photo(), 'odometer')
+    expect(res.status).toBe(201)
+    expect(vi.mocked(db.serviceAttachment.create).mock.calls[0][0].data).toMatchObject({
+      category: 'dropoff',
+      includeInInvoice: false,
+      description: 'odometer',
+      concernId: null,
+    })
+  })
+
+  it('takes nothing the phone says about the shot except a name from the list', async () => {
+    const { token } = createPhotoHandoffToken(DROPOFF)
+    await post(token, photo(), '<b>front</b>')
+    expect(vi.mocked(db.serviceAttachment.create).mock.calls[0][0].data.description).toBe('other')
+  })
+
+  it('ignores a shot name on an ordinary code', async () => {
+    const { token } = createPhotoHandoffToken(HANDOFF)
+    await post(token, photo(), 'front')
+    expect(vi.mocked(db.serviceAttachment.create).mock.calls[0][0].data).toMatchObject({
+      category: 'image',
+      includeInInvoice: true,
+      description: null,
+    })
+  })
+
+  it('refuses a document on a drop-off code', async () => {
+    const { token } = createPhotoHandoffToken(DROPOFF)
+    const res = await post(token, pdf())
+    expect(res.status).toBe(400)
+    expect(await res.json()).toEqual({ code: 'type' })
+    expect(db.serviceAttachment.create).not.toHaveBeenCalled()
+  })
+
+  it('stops at thirty drop-off photos on a job, whatever the plan allows for photos', async () => {
+    vi.mocked(db.serviceAttachment.count).mockResolvedValueOnce(30).mockResolvedValueOnce(0)
+    const { token } = createPhotoHandoffToken(DROPOFF)
+    expect(await (await post(token, photo(), 'front')).json()).toEqual({ code: 'limit' })
+    expect(vi.mocked(db.serviceAttachment.count).mock.calls[0][0]?.where).toMatchObject({
+      category: 'dropoff',
+    })
   })
 })

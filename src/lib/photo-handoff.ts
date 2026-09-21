@@ -23,11 +23,21 @@ export const PHOTO_HANDOFF_TTL_SECONDS = 30 * 60
 
 const PREFIX = 'ph1'
 
+/**
+ * What the phone is being asked for. 'photos' is the ordinary code: any photo
+ * or PDF, filed with the job's files. 'dropoff' is the walk round the car as
+ * it arrives: photos only, a fixed list of shots, kept in a place of their own
+ * and off the invoice. It is part of the signed payload, so a phone cannot
+ * turn one kind of code into the other.
+ */
+export type PhotoHandoffPurpose = 'photos' | 'dropoff'
+
 export interface PhotoHandoff {
   organizationId: string
   serviceRecordId: string
   /** File the photos under this concern. */
   concernId: string | null
+  purpose: PhotoHandoffPurpose
   /** Who showed the code, for the record of who added the photos. */
   userId: string
   /** Unix seconds. */
@@ -56,6 +66,8 @@ export function createPhotoHandoffToken(
       o: handoff.organizationId,
       r: handoff.serviceRecordId,
       c: handoff.concernId,
+      // Left out of an ordinary code, so those stay as short as they were.
+      ...(handoff.purpose === 'dropoff' ? { k: 'dropoff' } : {}),
       u: handoff.userId,
       e: expiresAt,
     })
@@ -80,25 +92,33 @@ export function verifyPhotoHandoffToken(token: string, now = Date.now()): PhotoH
     return { ok: false, reason: 'invalid' }
   }
 
-  let payload: { o?: unknown; r?: unknown; c?: unknown; u?: unknown; e?: unknown }
+  let payload: { o?: unknown; r?: unknown; c?: unknown; k?: unknown; u?: unknown; e?: unknown }
   try {
     payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
   } catch {
     return { ok: false, reason: 'invalid' }
   }
-  const { o, r, c, u, e } = payload
+  const { o, r, c, k, u, e } = payload
   if (
     typeof o !== 'string' ||
     typeof r !== 'string' ||
     typeof u !== 'string' ||
     typeof e !== 'number' ||
-    (c !== null && typeof c !== 'string')
+    (c !== null && typeof c !== 'string') ||
+    (k !== undefined && k !== 'dropoff')
   ) {
     return { ok: false, reason: 'invalid' }
   }
   if (e * 1000 <= now) return { ok: false, reason: 'expired' }
   return {
     ok: true,
-    handoff: { organizationId: o, serviceRecordId: r, concernId: c, userId: u, expiresAt: e },
+    handoff: {
+      organizationId: o,
+      serviceRecordId: r,
+      concernId: c,
+      purpose: k === 'dropoff' ? 'dropoff' : 'photos',
+      userId: u,
+      expiresAt: e,
+    },
   }
 }

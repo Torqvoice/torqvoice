@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Foto",
-        "diagnostics": "Diagnosi"
+        "diagnostics": "Diagnosi",
+        "dropoff": "Accettazione"
       },
       "summary": "{count, plural, one {# file} other {# file}} · condivisi con il cliente solo se contrassegnati",
       "customerCanSee": "Visibile al cliente",
@@ -615,13 +616,15 @@
         "image": "Aggiungi foto",
         "document": "Aggiungi documenti",
         "diagnostic": "Aggiungi rapporto diagnostico",
-        "video": "Aggiungi video"
+        "video": "Aggiungi video",
+        "dropoff": "Aggiungi foto di accettazione"
       },
       "dropHint": "Trascina qui i file o clicca per sfogliare",
       "added": "{count, plural, one {# file aggiunto} other {# file aggiunti}}",
       "failed": "Impossibile caricare {name}",
       "wrongType": "Tipo di file non adatto a questa scheda: {names}",
-      "limit": "Limite raggiunto ({count}/{max})"
+      "limit": "Limite raggiunto ({count}/{max})",
+      "dropoffHint": "L’auto com’era all’arrivo, con l’ora di ogni foto. Resta all’officina e non è mostrata al cliente, salvo tua scelta."
     },
     "moneyBar": {
       "total": "Totale",
@@ -688,6 +691,40 @@
     "scope": "Il link aggiunge solo foto e documenti a questo ordine di lavoro e smette di funzionare dopo 30 minuti.",
     "scanHint": "Inquadra con la fotocamera del telefono",
     "chooseDocument": "Carica un documento",
-    "privacy": "Solo l’officina vede ciò che aggiungi qui."
+    "privacy": "Solo l’officina vede ciò che aggiungi qui.",
+    "dropoff": {
+      "button": "Foto di accettazione",
+      "dialogTitle": "Fotografa l’auto all’arrivo",
+      "dialogBody": "Un giro intorno all’auto prima di iniziare: i quattro lati, il contachilometri e i danni già presenti. È la tua prova se un graffio viene contestato.",
+      "step2": "Segui l’elenco sul telefono: una foto per lato, il contachilometri e gli eventuali danni.",
+      "scope": "Il link aggiunge solo foto di accettazione a questo ordine di lavoro e smette di funzionare dopo 30 minuti.",
+      "pageTitle": "L’auto all’arrivo",
+      "pageBody": "Scatta ogni foto in ordine. Aggiungi un primo piano dei danni già presenti.",
+      "retake": "Rifai",
+      "slots": {
+        "front": "Anteriore",
+        "right": "Lato destro",
+        "rear": "Posteriore",
+        "left": "Lato sinistro",
+        "odometer": "Contachilometri",
+        "other": "Danno o altro"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Codice di pagamento",
+    "title": "Paga con una scansione",
+    "body": "Il cliente lo inquadra con la fotocamera del telefono, si apre la fattura e paga da lì.",
+    "sharesInvoice": "Mostrare il codice condivide la fattura con il cliente, come inviarla. Da quel momento la fattura mantiene i dati che ha ora.",
+    "show": "Mostra il codice",
+    "failed": "Impossibile creare il codice. Riprova.",
+    "toPay": "Da pagare",
+    "scanHint": "Inquadra con la fotocamera del telefono",
+    "copyLink": "Copia link",
+    "linkCopied": "Link copiato",
+    "waiting": "In attesa del pagamento. Si aggiorna da solo.",
+    "paid": "Pagamento ricevuto",
+    "paidBody": "Il pagamento è registrato sull’ordine di lavoro.",
+    "done": "Fatto"
   }
 }

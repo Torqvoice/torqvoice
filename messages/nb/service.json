@@ -605,7 +605,8 @@
     "media": {
       "tabs": {
         "photos": "Bilder",
-        "diagnostics": "Diagnostikk"
+        "diagnostics": "Diagnostikk",
+        "dropoff": "Innlevering"
       },
       "summary": "{count, plural, one {# fil} other {# filer}} · deles med kunden bare når de er merket",
       "customerCanSee": "Kunden kan se",
@@ -615,13 +616,15 @@
         "image": "Legg til bilder",
         "document": "Legg til dokumenter",
         "diagnostic": "Legg til diagnoserapport",
-        "video": "Legg til video"
+        "video": "Legg til video",
+        "dropoff": "Legg til innleveringsbilder"
       },
       "dropHint": "Slipp filer her eller klikk for å velge",
       "added": "{count, plural, one {# fil lagt til} other {# filer lagt til}}",
       "failed": "Kunne ikke laste opp {name}",
       "wrongType": "Feil filtype for denne fanen: {names}",
-      "limit": "Grensen er nådd ({count}/{max})"
+      "limit": "Grensen er nådd ({count}/{max})",
+      "dropoffHint": "Bilen slik den kom inn, med tidspunktet for hvert bilde. Beholdes av verkstedet og vises ikke til kunden med mindre du velger det."
     },
     "moneyBar": {
       "total": "Totalt",
@@ -688,6 +691,40 @@
     "scope": "Lenken kan bare legge til bilder og dokumenter på denne arbeidsordren, og slutter å virke etter 30 minutter.",
     "scanHint": "Skann med telefonkameraet",
     "chooseDocument": "Last opp et dokument",
-    "privacy": "Bare verkstedet ser det du legger til her."
+    "privacy": "Bare verkstedet ser det du legger til her.",
+    "dropoff": {
+      "button": "Bilder ved innlevering",
+      "dialogTitle": "Fotografer bilen når den kommer",
+      "dialogBody": "En runde rundt bilen før arbeidet starter: fire sider, kilometerstanden og skader som allerede finnes. Det er dokumentasjonen din hvis en ripe blir diskutert.",
+      "step2": "Følg listen på telefonen: ett bilde av hver side, kilometerstanden og eventuelle skader.",
+      "scope": "Lenken legger bare til innleveringsbilder på denne arbeidsordren, og slutter å virke etter 30 minutter.",
+      "pageTitle": "Bilen ved innlevering",
+      "pageBody": "Ta bildene etter tur. Legg til et nærbilde av skader som allerede finnes.",
+      "retake": "Ta på nytt",
+      "slots": {
+        "front": "Foran",
+        "right": "Høyre side",
+        "rear": "Bak",
+        "left": "Venstre side",
+        "odometer": "Kilometerstand",
+        "other": "Skade eller annet"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Betalingskode",
+    "title": "Betal ved å skanne",
+    "body": "Kunden skanner denne med mobilkameraet, fakturaen åpnes, og de betaler der.",
+    "sharesInvoice": "Når koden vises, deles fakturaen med kunden, på samme måte som når den sendes. Fra da av beholder fakturaen opplysningene den har nå.",
+    "show": "Vis koden",
+    "failed": "Koden kunne ikke lages. Prøv igjen.",
+    "toPay": "Å betale",
+    "scanHint": "Skann med mobilkameraet",
+    "copyLink": "Kopier lenke",
+    "linkCopied": "Lenke kopiert",
+    "waiting": "Venter på betalingen. Dette oppdateres av seg selv.",
+    "paid": "Betaling mottatt",
+    "paidBody": "Betalingen er ført på arbeidsordren.",
+    "done": "Ferdig"
   }
 }
