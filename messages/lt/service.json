@@ -103,9 +103,7 @@
     "design": "Sąskaitos dizainas",
     "designDefault": "Dirbtuvės numatytasis",
     "designFollowing": "Numatytasis ({name})",
-    "designPinned": "Ši sąskaita klientą pasiekė {date}, todėl išlaiko dizainą, su kuriuo iškeliavo. Čia padarytas pasirinkimas suveiks tik atrakinus ir išsiuntus iš naujo. Savininkas gali pakeisti dizainą dabar per Sąskaitos dizainas ⋮ meniu viršuje.",
     "designSaved": "Sąskaitos dizainas atnaujintas",
-    "designSavedPinned": "Išsaugota. Ši sąskaita išlaiko dizainą, su kuriuo buvo išsiųsta, kol nebus atrakinta ir išsiųsta iš naujo.",
     "designFollowingRule": "Numatytasis ({name}, {rule})",
     "designRule": {
       "parts_sale": "Tik dalių pardavimas"

@@ -103,9 +103,7 @@
     "design": "Rechnungsdesign",
     "designDefault": "Werkstatt-Standard",
     "designFollowing": "Standard ({name})",
-    "designPinned": "Diese Rechnung erreichte den Kunden am {date} und behält daher das Design, mit dem sie hinausging. Eine Auswahl hier greift erst, nachdem sie entsperrt und erneut versendet wurde. Ein Inhaber kann das Design jetzt über Rechnungsdesign im ⋮-Menü oben ändern.",
     "designSaved": "Rechnungsdesign aktualisiert",
-    "designSavedPinned": "Gespeichert. Diese Rechnung behält das Design, mit dem sie versendet wurde, bis sie entsperrt und erneut versendet wird.",
     "designFollowingRule": "Standard ({name}, {rule})",
     "designRule": {
       "parts_sale": "Reiner Teileverkauf"

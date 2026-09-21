@@ -103,9 +103,7 @@
     "design": "Design de facture",
     "designDefault": "Défaut de l'atelier",
     "designFollowing": "Défaut ({name})",
-    "designPinned": "Cette facture est parvenue au client le {date}, elle conserve donc le design avec lequel elle est partie. Un choix fait ici ne s'applique qu'après déverrouillage et nouvel envoi. Un propriétaire peut changer le design maintenant via Design de la facture dans le menu ⋮ en haut.",
     "designSaved": "Design de facture mis à jour",
-    "designSavedPinned": "Enregistré. Cette facture conserve le design avec lequel elle a été envoyée jusqu'à ce qu'elle soit déverrouillée et renvoyée.",
     "designFollowingRule": "Par défaut ({name}, {rule})",
     "designRule": {
       "parts_sale": "Vente de pièces seule"

@@ -103,9 +103,7 @@
     "design": "Design della fattura",
     "designDefault": "Predefinito dell'officina",
     "designFollowing": "Predefinito ({name})",
-    "designPinned": "Questa fattura è arrivata al cliente il {date}, quindi mantiene il design con cui è uscita. Una scelta fatta qui vale solo dopo che è stata sbloccata e inviata di nuovo. Un titolare può cambiare il design ora da Design della fattura nel menu ⋮ in alto.",
     "designSaved": "Design della fattura aggiornato",
-    "designSavedPinned": "Salvato. Questa fattura mantiene il design con cui è stata inviata finché non viene sbloccata e inviata di nuovo.",
     "designFollowingRule": "Predefinito ({name}, {rule})",
     "designRule": {
       "parts_sale": "Vendita solo ricambi"

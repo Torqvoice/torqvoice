@@ -52,7 +52,6 @@ interface DetailsRightColumnProps {
   telegramEnabled?: boolean
   designOptions?: DesignOption[]
   designFollowsName?: string | null
-  designPinnedAt?: string | null
   designFollowsRule?: DesignAutoRule | null
 }
 
@@ -77,7 +76,6 @@ export function DetailsRightColumn({
   telegramEnabled = false,
   designOptions = [],
   designFollowsName = null,
-  designPinnedAt = null,
   designFollowsRule = null,
 }: DetailsRightColumnProps) {
   const router = useRouter()
@@ -112,7 +110,6 @@ export function DetailsRightColumn({
         designOptions={designOptions}
         designId={record.designId ?? null}
         designFollowsName={designFollowsName}
-        designPinnedAt={designPinnedAt}
         designFollowsRule={designFollowsRule}
       />
       <BasicInfoSection

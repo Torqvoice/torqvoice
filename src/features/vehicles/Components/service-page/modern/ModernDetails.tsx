@@ -441,7 +441,6 @@ export function ModernDetails(props: ModernDetailsProps) {
                         designOptions={props.designOptions}
                         designId={record.designId ?? null}
                         designFollowsName={props.designFollowsName}
-                        designPinnedAt={props.designPinnedAt}
                         designFollowsRule={props.designFollowsRule}
                       />
                     </div>

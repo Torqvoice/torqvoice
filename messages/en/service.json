@@ -103,9 +103,7 @@
     "design": "Invoice design",
     "designDefault": "Workshop default",
     "designFollowing": "Default ({name})",
-    "designPinned": "This invoice reached the customer on {date}, so it keeps the design it went out with. A choice here applies only after it is unlocked and sent again. An owner can change the design now from Invoice design in the ⋮ menu at the top.",
     "designSaved": "Invoice design updated",
-    "designSavedPinned": "Saved. This invoice keeps the design it was sent with until it is unlocked and sent again.",
     "designFollowingRule": "Default ({name}, {rule})",
     "designRule": {
       "parts_sale": "Parts-Only Sale"

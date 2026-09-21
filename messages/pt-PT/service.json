@@ -103,9 +103,7 @@
     "design": "Design da fatura",
     "designDefault": "Predefinido da oficina",
     "designFollowing": "Predefinido ({name})",
-    "designPinned": "Esta fatura chegou ao cliente em {date}, por isso mantém o design com que foi enviada. Uma escolha aqui só se aplica depois de ser desbloqueada e enviada de novo. Um proprietário pode mudar o design agora em Design da fatura, no menu ⋮ no topo.",
     "designSaved": "Design da fatura atualizado",
-    "designSavedPinned": "Guardado. Esta fatura mantém o design com que foi enviada até ser desbloqueada e enviada de novo.",
     "designFollowingRule": "Predefinido ({name}, {rule})",
     "designRule": {
       "parts_sale": "Venda só de peças"

@@ -103,9 +103,7 @@
     "design": "Fatura tasarımı",
     "designDefault": "Atölye varsayılanı",
     "designFollowing": "Varsayılan ({name})",
-    "designPinned": "Bu fatura müşteriye {date} tarihinde ulaştı, bu yüzden çıktığı tasarımı korur. Buradaki seçim ancak kilidi açılıp yeniden gönderildikten sonra geçerli olur. Bir sahip tasarımı şimdi üstteki ⋮ menüsündeki Fatura tasarımı ile değiştirebilir.",
     "designSaved": "Fatura tasarımı güncellendi",
-    "designSavedPinned": "Kaydedildi. Bu fatura, kilidi açılıp yeniden gönderilene kadar gönderildiği tasarımı korur.",
     "designFollowingRule": "Varsayılan ({name}, {rule})",
     "designRule": {
       "parts_sale": "Yalnızca parça satışı"

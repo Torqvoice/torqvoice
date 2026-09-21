@@ -103,9 +103,7 @@
     "design": "Fakturadesign",
     "designDefault": "Verkstedets standard",
     "designFollowing": "Standard ({name})",
-    "designPinned": "Denne fakturaen nådde kunden {date}, så den beholder designet den gikk ut med. Et valg her gjelder først etter at den låses opp og sendes på nytt. En eier kan endre designet nå fra Fakturadesign i ⋮-menyen øverst.",
     "designSaved": "Fakturadesign oppdatert",
-    "designSavedPinned": "Lagret. Denne fakturaen beholder designet den ble sendt med til den låses opp og sendes på nytt.",
     "designFollowingRule": "Standard ({name}, {rule})",
     "designRule": {
       "parts_sale": "Kun delesalg"
