@@ -103,9 +103,7 @@
     "design": "Factuurontwerp",
     "designDefault": "Standaard van de werkplaats",
     "designFollowing": "Standaard ({name})",
-    "designPinned": "Deze factuur bereikte de klant op {date} en houdt dus het ontwerp waarmee ze is uitgegaan. Een keuze hier geldt pas nadat ze is ontgrendeld en opnieuw verstuurd. Een eigenaar kan het ontwerp nu wijzigen via Factuurontwerp in het ⋮-menu bovenaan.",
     "designSaved": "Factuurontwerp bijgewerkt",
-    "designSavedPinned": "Opgeslagen. Deze factuur houdt het ontwerp waarmee ze is verstuurd totdat ze wordt ontgrendeld en opnieuw verstuurd.",
     "designFollowingRule": "Standaard ({name}, {rule})",
     "designRule": {
       "parts_sale": "Alleen onderdelenverkoop"
@@ -160,8 +158,8 @@
     "qtyOrHours": "Eenheid / Uren",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
-    "switchToServiceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
+    "hourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
+    "serviceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Rij verwijderen",
     "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen."
   },

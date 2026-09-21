@@ -103,13 +103,16 @@ export function DetailsLeftColumn({
     />
   )
 
-  // No set on this job yet. The tires that came off the car are standing in the
-  // corner while the desk writes it up, so the offer to store them belongs here
-  // rather than three screens away.
+  // The tires that came off the car are standing in the corner while the desk
+  // writes the job up, so the offer to store them belongs here rather than
+  // three screens away. Rendered even once the job has its set, when it shows
+  // no button: the label dialog it opens has to outlive that moment.
   const storeTires =
-    !tireSet && tireHotelEnabled && record.vehicle ? (
+    tireHotelEnabled && record.vehicle ? (
       <StoreTiresButton
         serviceRecordId={record.id}
+        hasSet={!!tireSet}
+        canBill={!locked}
         vehicle={{
           id: record.vehicle.id,
           make: record.vehicle.make,
@@ -131,7 +134,7 @@ export function DetailsLeftColumn({
           invoice sidebar cares about, so they belong here rather than spanning
           both columns. */}
       {concerns}
-      {storeTires && <div className="flex justify-end">{storeTires}</div>}
+      {storeTires}
 
       {tireSet && (
         <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />

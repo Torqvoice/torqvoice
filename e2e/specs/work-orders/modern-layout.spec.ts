@@ -170,12 +170,16 @@ test.describe('the overhauled work order page', () => {
     // The money bar is a desktop thing: the page already carries its totals,
     // payment form, preview and send, and a phone has no height to spare.
     await expect(page.getByTestId('money-bar')).toBeHidden()
+    // What it leaves behind is the running total, in the flow under the parts,
+    // so adding a line on a small screen still shows what it did to the bill.
+    await expect(page.getByTestId('money-line')).toBeVisible()
     // The header's second line is which job this is; when it was opened is
     // left for a wider screen.
     await expect(page.getByTestId('service-opened')).toBeHidden()
 
-    // Each stage of the status stepper stays in its own space: a label is cut
-    // short rather than running into the next stage.
+    // Each control of the status stepper stays in its own space: a label is
+    // cut short rather than running into the next. Three stages and the
+    // waiting-for-parts hold beside the second, four buttons in all.
     const stages = await page
       .getByTestId('status-stepper')
       .getByRole('button')

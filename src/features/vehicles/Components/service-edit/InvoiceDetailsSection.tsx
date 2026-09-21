@@ -47,8 +47,6 @@ interface InvoiceDetailsSectionProps {
   designId?: string | null
   /** What "default" resolves to for this invoice, when it has a name. */
   designFollowsName?: string | null
-  /** When the sheet was frozen, ISO. Set only while it prints from that copy. */
-  designPinnedAt?: string | null
   /** Set when a design rule, not the customer or the default, is what "default" means here. */
   designFollowsRule?: DesignAutoRule | null
   /**
@@ -73,7 +71,6 @@ export function InvoiceDetailsSection({
   designOptions = [],
   designId = null,
   designFollowsName = null,
-  designPinnedAt = null,
   designFollowsRule = null,
   part,
 }: InvoiceDetailsSectionProps) {
@@ -95,10 +92,7 @@ export function InvoiceDetailsSection({
     const result = await setInvoiceDesign(initialData.id, value === FOLLOW_DEFAULT ? null : value)
     setSavingDesign(false)
     if (result.success) {
-      // An issued invoice prints from the copy it was sent with, so the choice
-      // is saved but not visible yet. Saying "updated" here sends people off
-      // to email a sheet that still carries the old design.
-      toast.success(designPinnedAt ? t('designSavedPinned') : t('designSaved'))
+      toast.success(t('designSaved'))
       router.refresh()
     } else {
       setDesign(previous)
@@ -255,11 +249,6 @@ export function InvoiceDetailsSection({
               ))}
             </SelectContent>
           </Select>
-          {designPinnedAt && (
-            <p className="text-xs text-muted-foreground">
-              {t('designPinned', { date: new Date(designPinnedAt).toLocaleDateString() })}
-            </p>
-          )}
         </div>
       )}
     </>

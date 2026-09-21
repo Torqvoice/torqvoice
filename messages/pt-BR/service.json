@@ -103,9 +103,7 @@
     "design": "Design da fatura",
     "designDefault": "Padrão da oficina",
     "designFollowing": "Padrão ({name})",
-    "designPinned": "Esta fatura chegou ao cliente em {date}, então mantém o design com que saiu. Uma escolha aqui só vale depois de destravar e enviar de novo. Um proprietário pode mudar o design agora em Design da fatura no menu ⋮ no topo.",
     "designSaved": "Design da fatura atualizado",
-    "designSavedPinned": "Salvo. Esta fatura mantém o design com que foi enviada até ser destravada e enviada de novo.",
     "designFollowingRule": "Padrão ({name}, {rule})",
     "designRule": {
       "parts_sale": "Venda apenas de peças"
@@ -160,8 +158,8 @@
     "qtyOrHours": "Unidade / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
-    "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
+    "hourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
+    "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
     "deleteRow": "Excluir linha",
     "descriptionMissingHint": "Linhas sem descrição não são salvas."
   },

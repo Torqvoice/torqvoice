@@ -543,7 +543,6 @@ export function ServicePageClient({
     notificationHistory,
     designOptions,
     designFollowsName,
-    designPinnedAt,
     designFollowsRule,
   }
 

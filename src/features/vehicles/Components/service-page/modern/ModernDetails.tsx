@@ -35,7 +35,7 @@ import { WarrantySection } from '../WarrantySection'
 import { ActivityCard } from './ActivityCard'
 import { FilesMediaCard } from './FilesMediaCard'
 import { JobFactsCard } from './JobFactsCard'
-import { MoneyBar } from './MoneyBar'
+import { MoneyBar, MoneyLine } from './MoneyBar'
 import { StatusStepper } from './StatusStepper'
 
 type LeftProps = ComponentProps<typeof DetailsLeftColumn>
@@ -213,9 +213,11 @@ export function ModernDetails(props: ModernDetailsProps) {
   }, {})
 
   const storeTires =
-    !tireSet && tireHotelEnabled && record.vehicle ? (
+    tireHotelEnabled && record.vehicle ? (
       <StoreTiresButton
         serviceRecordId={record.id}
+        hasSet={!!tireSet}
+        canBill={!locked}
         vehicle={{
           id: record.vehicle.id,
           make: record.vehicle.make,
@@ -308,7 +310,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                     />
                   )}
 
-                  {storeTires && <div className="flex justify-end">{storeTires}</div>}
+                  {storeTires}
                   {tireSet && (
                     <TireSetBanner
                       set={tireSet}
@@ -345,6 +347,14 @@ export function ModernDetails(props: ModernDetailsProps) {
                     markupAppliesToInventory={props.markupAppliesToInventory}
                   />
                 </Lockable>
+
+                {/* Below `lg` only, where there is no money bar. */}
+                <MoneyLine
+                  total={formState.displayTotal}
+                  paid={formState.totalPaid}
+                  balance={formState.balanceDue}
+                  currencyCode={currencyCode}
+                />
 
                 <FilesMediaCard serviceRecordId={record.id} customerId={customer?.id} {...files} />
 
@@ -403,16 +413,6 @@ export function ModernDetails(props: ModernDetailsProps) {
                   }
                 />
 
-                <Lockable locked={locked} label={lockedLabel}>
-                  <WarrantySection
-                    value={formState.warranty}
-                    onChange={formState.dirtySetWarranty}
-                    texts={props.warrantyTexts}
-                    distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
-                    serviceDate={formState.initialData.serviceDate}
-                  />
-                </Lockable>
-
                 <AppCard
                   icon={Receipt}
                   title={t('modern.invoiceTitle')}
@@ -441,7 +441,6 @@ export function ModernDetails(props: ModernDetailsProps) {
                         designOptions={props.designOptions}
                         designId={record.designId ?? null}
                         designFollowsName={props.designFollowsName}
-                        designPinnedAt={props.designPinnedAt}
                         designFollowsRule={props.designFollowsRule}
                       />
                     </div>
@@ -485,6 +484,18 @@ export function ModernDetails(props: ModernDetailsProps) {
                     />
                   </div>
                 </AppCard>
+
+                {/* Under the invoice, not over it: the warranty is set once, the
+                    invoice card is used on every job. */}
+                <Lockable locked={locked} label={lockedLabel}>
+                  <WarrantySection
+                    value={formState.warranty}
+                    onChange={formState.dirtySetWarranty}
+                    texts={props.warrantyTexts}
+                    distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
+                    serviceDate={formState.initialData.serviceDate}
+                  />
+                </Lockable>
 
                 {record.publicToken && (
                   <SharedLinkCard

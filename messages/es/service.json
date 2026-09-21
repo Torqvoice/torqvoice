@@ -103,9 +103,7 @@
     "design": "Diseño de factura",
     "designDefault": "Predeterminado del taller",
     "designFollowing": "Predeterminado ({name})",
-    "designPinned": "Esta factura llegó al cliente el {date}, así que mantiene el diseño con el que salió. Una elección aquí se aplica solo después de desbloquearla y volver a enviarla. Un propietario puede cambiar el diseño ahora desde Diseño de la factura en el menú ⋮ de arriba.",
     "designSaved": "Diseño de factura actualizado",
-    "designSavedPinned": "Guardado. Esta factura mantiene el diseño con el que se envió hasta que se desbloquee y se vuelva a enviar.",
     "designFollowingRule": "Predeterminado ({name}, {rule})",
     "designRule": {
       "parts_sale": "Venta solo de piezas"
@@ -160,8 +158,8 @@
     "qtyOrHours": "Unidad / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
-    "switchToServiceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
+    "hourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
+    "serviceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
     "deleteRow": "Eliminar fila",
     "descriptionMissingHint": "Las filas sin descripción no se guardan."
   },

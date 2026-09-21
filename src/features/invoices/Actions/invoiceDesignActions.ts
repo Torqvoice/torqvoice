@@ -11,6 +11,12 @@ import { ISSUED_WHERE, issuedDesignState, reapplyDesign } from '../Lib/reapplyDe
  * Chooses which design one invoice prints with. Null goes back to following
  * the customer's design and the workshop's default. Refused on a locked
  * invoice like any other edit: what a locked invoice prints is settled.
+ *
+ * An invoice that was shared or sent but is still open to edits takes the
+ * choice at once, the way it takes a new labor line. Its frozen look is moved
+ * to the chosen design; the workshop and customer details it was issued with
+ * stay as they were. Saving the choice and leaving the sheet unchanged made
+ * the picker look broken on every invoice whose link had been shared.
  */
 export async function setInvoiceDesign(recordId: string, designId: string | null) {
   return withAuth(
@@ -34,6 +40,9 @@ export async function setInvoiceDesign(recordId: string, designId: string | null
         where: { id: recordId },
         data: { designId: designId || null },
       })
+      // After the write: following the default is resolved from the record's
+      // own choice. A draft is skipped, it prints from the live design already.
+      await reapplyDesign(organizationId, [recordId], designId || null)
 
       revalidatePath(
         record.vehicleId

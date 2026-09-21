@@ -103,9 +103,7 @@
     "design": "Projekt faktury",
     "designDefault": "Domyślny warsztatu",
     "designFollowing": "Domyślny ({name})",
-    "designPinned": "Ta faktura trafiła do klienta {date}, więc zachowuje projekt, z którym wyszła. Wybór tutaj zadziała dopiero po odblokowaniu i ponownej wysyłce. Właściciel może zmienić projekt teraz przez Projekt faktury w menu ⋮ u góry.",
     "designSaved": "Projekt faktury zaktualizowany",
-    "designSavedPinned": "Zapisano. Ta faktura zachowuje projekt, z którym została wysłana, dopóki nie zostanie odblokowana i wysłana ponownie.",
     "designFollowingRule": "Domyślny ({name}, {rule})",
     "designRule": {
       "parts_sale": "Sprzedaż samych części"
@@ -160,8 +158,8 @@
     "qtyOrHours": "Jednostka / Godziny",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
-    "switchToServiceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
+    "hourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
+    "serviceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
     "deleteRow": "Usuń wiersz",
     "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane."
   },

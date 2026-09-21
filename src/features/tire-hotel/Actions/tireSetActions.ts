@@ -15,6 +15,10 @@ import {
 } from '../Schema/tireHotelSchema'
 import type { MeasurementInput } from '../Schema/tireHotelSchema'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
+import { addLinesToJob, checkInJobLines } from '../Lib/jobLines'
+import { parseTreatmentPrices } from '../Lib/treatments'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { auditDetails } from '@/lib/audit'
 import { releaseFiles } from '@/lib/files/manager'
 import { tireSetFileUrls } from '@/lib/files/collect'
@@ -43,6 +47,41 @@ async function nextReference(tx: TxClient, organizationId: string): Promise<stri
   const parsed = Number(latest?.reference)
   const next = Number.isFinite(parsed) && parsed > 0 ? parsed + 1 : 1
   return String(next)
+}
+
+/**
+ * The storage fee and prep a check-in asks to have put on its job.
+ *
+ * Refused outright on a locked invoice, before anything is stored: adding
+ * lines is an edit to what the invoice says is owed. The dialog does not
+ * offer billing there, so reaching this with a locked job is a stale page,
+ * and storing the tires while silently dropping the charge would be worse
+ * than asking the desk to look again.
+ */
+async function linesForJob(
+  organizationId: string,
+  data: {
+    serviceRecordId?: string | null
+    treatments?: string[]
+    billing?: { storageAmount?: number; treatments?: string[] } | null
+  },
+  set: { size: string | null; quantity: number }
+) {
+  if (!data.serviceRecordId || !data.billing) return []
+  const lines = await checkInJobLines(organizationId, set, data.treatments ?? [], data.billing)
+  if (lines.length === 0) return lines
+
+  // Storing tires is the tire hotel's permission; charging for it writes to a
+  // work order, which is its own. Asked through withAuth so the rules, and the
+  // audit row for a refusal, are the ones every other edit to a job gets.
+  const mayEditJob = await withAuth(async () => true, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
+  })
+  if (!mayEditJob.success) {
+    throw new Error('You do not have permission to add charges to this work order')
+  }
+  await assertInvoiceEditable(data.serviceRecordId, organizationId)
+  return lines
 }
 
 function measurementRows(measurements: MeasurementInput[] | undefined, userId: string) {
@@ -273,6 +312,38 @@ export async function getTireSet(id: string) {
 }
 
 /**
+ * The figures the check-in dialog shows when it is opened from a job: what
+ * storage costs and what each kind of prep costs. Shown so the desk can see
+ * what is about to land on the work order; the prep prices are read again on
+ * save rather than trusted from the form.
+ */
+export async function getCheckInPrices() {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+      const rows = await db.appSetting.findMany({
+        where: {
+          organizationId,
+          key: {
+            in: [
+              SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE,
+              SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES,
+            ],
+          },
+        },
+        select: { key: true, value: true },
+      })
+      const byKey = new Map(rows.map((row) => [row.key, row.value]))
+      return {
+        storagePrice: Number(byKey.get(SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE)) || 0,
+        treatmentPrices: parseTreatmentPrices(byKey.get(SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES)),
+      }
+    },
+    { requiredPermissions: READ }
+  )
+}
+
+/**
  * Arrival. Creates the set, records the intake measurements, logs the
  * movement and claims shelf space, all in one transaction, because a set
  * that exists without a location or without its arrival logged is a set
@@ -283,6 +354,10 @@ export async function checkInTireSet(input: unknown) {
     async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
       const data = checkInSchema.parse(input)
+      const jobLines = await linesForJob(organizationId, data, {
+        size: data.size || null,
+        quantity: data.quantity,
+      })
 
       const created = await db.$transaction(async (tx) => {
         const location = await assertRoom(tx, data.locationId, organizationId, data.quantity)
@@ -371,6 +446,7 @@ export async function checkInTireSet(input: unknown) {
               data: { tireSetId: set.id },
             })
           }
+          if (record) await addLinesToJob(tx, record.id, jobLines)
         }
 
         return { ...set, locationCode: location.code }
@@ -530,6 +606,14 @@ export async function returnTireSet(input: unknown) {
     async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
       const data = returnSetSchema.parse(input)
+      const known = await db.tireSet.findFirst({
+        where: { id: data.id, organizationId },
+        select: { size: true, quantity: true },
+      })
+      const jobLines = await linesForJob(organizationId, data, {
+        size: known?.size ?? null,
+        quantity: data.quantity ?? known?.quantity ?? 0,
+      })
 
       const returned = await db.$transaction(async (tx) => {
         const set = await tx.tireSet.findFirst({
@@ -594,6 +678,7 @@ export async function returnTireSet(input: unknown) {
               data: { tireSetId: set.id },
             })
           }
+          if (record) await addLinesToJob(tx, record.id, jobLines)
         }
 
         const updated = await tx.tireSet.update({

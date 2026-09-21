@@ -18,8 +18,8 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tDescriptionPlaceholder,
   tHourlyTag,
   tServiceTag,
-  tSwitchToHourly,
-  tSwitchToService,
+  tHourlyHint,
+  tServiceHint,
   tQty,
   tHours,
   tDeleteRow,
@@ -33,8 +33,9 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tDescriptionPlaceholder: string
   tHourlyTag: string
   tServiceTag: string
-  tSwitchToHourly: string
-  tSwitchToService: string
+  /** Each describes its own mode and says a click switches; shown on that mode's tag. */
+  tHourlyHint: string
+  tServiceHint: string
   tQty: string
   tHours: string
   tDeleteRow: string
@@ -62,7 +63,7 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
               : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
           }`}
           onClick={() => onUpdate(index, 'pricingType', isService ? 'hourly' : 'service')}
-          title={isService ? tSwitchToHourly : tSwitchToService}
+          title={isService ? tServiceHint : tHourlyHint}
         >
           {isService ? tServiceTag : tHourlyTag}
         </button>
@@ -185,8 +186,8 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
                 tDescriptionPlaceholder={t('labor.descriptionPlaceholder')}
                 tHourlyTag={t('labor.hourlyTag')}
                 tServiceTag={t('labor.serviceTag')}
-                tSwitchToHourly={t('labor.switchToHourlyHint')}
-                tSwitchToService={t('labor.switchToServiceHint')}
+                tHourlyHint={t('labor.hourlyHint')}
+                tServiceHint={t('labor.serviceHint')}
                 tQty={t('labor.qty')}
                 tHours={t('labor.hours')}
                 tDeleteRow={t('labor.deleteRow')}
