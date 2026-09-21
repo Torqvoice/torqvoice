@@ -176,7 +176,10 @@
     "service_videoCall_send": "Lien d'appel vidéo envoyé",
     "timeEntry_create": "Entrée de temps ajoutée",
     "timeEntry_update": "Entrée de temps corrigée",
-    "timeEntry_delete": "Entrée de temps supprimée"
+    "timeEntry_delete": "Entrée de temps supprimée",
+    "settings_workOrderStatus_create": "Statut d’ordre ajouté",
+    "settings_workOrderStatus_update": "Statut d’ordre modifié",
+    "settings_workOrderStatus_archive": "Statut d’ordre retiré"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",

@@ -33,6 +33,7 @@ import { ServicePageClient } from '@/features/vehicles/Components/service-page/S
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
+import { listWorkOrderStatuses } from '@/features/work-order-statuses/Actions/workOrderStatusActions'
 import { PageHeader } from '@/components/page-header'
 import { getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -67,6 +68,7 @@ export async function ServiceRecordPage({
     designOptionsResult,
     jobClockResult,
     initialLayout,
+    workOrderStatusesResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
     getDisplaySettings([
@@ -94,6 +96,7 @@ export async function ServiceRecordPage({
     listDesignOptions('invoice'),
     getJobClock(serviceId),
     resolveWorkOrderLayout(),
+    listWorkOrderStatuses(),
   ])
 
   if (!result.success || !result.data) {
@@ -392,6 +395,11 @@ export async function ServiceRecordPage({
         dictationMode={dictation.mode}
         tireHotelEnabled={tireHotel.enabled}
         onlinePayments={onlinePayments}
+        workOrderStatuses={
+          workOrderStatusesResult.success && workOrderStatusesResult.data
+            ? workOrderStatusesResult.data
+            : []
+        }
         tireThresholds={{
           summerReplace: tireHotel.summerReplaceMm,
           winterReplace: tireHotel.winterReplaceMm,

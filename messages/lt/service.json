@@ -587,7 +587,8 @@
       "messageSent": "Žinutė išsiųsta klientui",
       "linkShared": "Pasidalyta sąskaitos nuoroda",
       "linkViewed": "{count, plural, one {Klientas atidarė nuorodą # kartą} few {Klientas atidarė nuorodą # kartus} many {Klientas atidarė nuorodą # karto} other {Klientas atidarė nuorodą # kartų}}",
-      "paymentTaken": "Užregistruotas {amount} mokėjimas"
+      "paymentTaken": "Užregistruotas {amount} mokėjimas",
+      "statusSet": "Būsena pakeista į {status}"
     },
     "invite": {
       "title": "Darbo užsakymo puslapis atnaujintas.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Pirkimo kaina",
       "overdue": "pavėluota",
       "customerSince": "Klientas nuo"
-    }
+    },
+    "moreStatuses": "Daugiau būsenų"
   },
   "photoHandoff": {
     "button": "Pridėti iš telefono",
@@ -726,5 +728,8 @@
     "paid": "Mokėjimas gautas",
     "paidBody": "Mokėjimas įrašytas darbo užsakyme.",
     "done": "Atlikta"
+  },
+  "customStatus": {
+    "defaultMessage": "Sveiki, {customer_name}, naujiena apie jūsų {vehicle}: {status}. {company_name}"
   }
 }

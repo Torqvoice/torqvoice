@@ -1,3 +1,4 @@
+import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
@@ -97,6 +98,8 @@ export interface ServicePageClientProps {
   tireHotelEnabled?: boolean
   /** A payment vendor is connected, so the shared invoice can be paid online. */
   onlinePayments?: boolean
+  /** The workshop's own statuses, for the menus on the status stepper. */
+  workOrderStatuses?: WorkOrderStatusOption[]
   /** The work order's video call, and the connected services that could add one. */
   videoCall?: ServiceVideoCall
   /** The workshop's tread limits, so a set checked in here grades correctly. */

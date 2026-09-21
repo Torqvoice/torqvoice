@@ -108,6 +108,16 @@ model ServiceRecord {
   tireSetId String?
   tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
 
+  /// One of the workshop's own statuses, under the stage `status` names
+  /// ("Ready for pickup" under completed). A label with a colour and a
+  /// follow-up, never something the system decides by: whether a job is open,
+  /// shows in the portal or stops a clock is read from `status` alone. Cleared
+  /// whenever `status` moves, since it belongs to the stage it was chosen under.
+  customStatusId    String?
+  customStatus      WorkOrderStatus? @relation(fields: [customStatusId], references: [id], onDelete: SetNull)
+  /// When that status was chosen, for "Ready for pickup since 14:02".
+  customStatusSince DateTime?
+
   /// Null for parts-only / counter sales; such records use customerId
   /// (or neither, for anonymous walk-in sales)
   vehicleId String?
@@ -165,6 +175,7 @@ model ServiceRecord {
   @@index([customerId])
   @@index([inspectionId])
   @@index([importBatchId])
+  @@index([customStatusId])
   @@map("service_records")
 }
 
@@ -360,4 +371,35 @@ model RecurringLabor {
   recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
 
   @@map("recurring_labor")
+}
+
+/// A status the workshop defined for its work orders, filed under one of the
+/// three fixed stages. The stages are what the app reads; these are what the
+/// workshop calls the steps in between, with what should happen when a job
+/// reaches one.
+model WorkOrderStatus {
+  id              String    @id @default(cuid())
+  name            String
+  /// 'pending' | 'in-progress' | 'completed': the stage it sits under.
+  stage           String
+  /// A colour name from the app's palette, not a hex value, so it follows the theme.
+  color           String    @default("slate")
+  sortOrder       Int       @default(0)
+  /// Offer to tell the customer when a job reaches this status. Asked, never
+  /// sent on its own.
+  notifyCustomer  Boolean   @default(false)
+  /// The message that offer starts from, with {tokens}. Null uses the app's own.
+  messageTemplate String?
+  /// Removed from the menus but kept, so jobs that carry it still say what it was.
+  archivedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  serviceRecords ServiceRecord[]
+
+  @@index([organizationId, stage, sortOrder])
+  @@map("work_order_statuses")
 }

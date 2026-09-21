@@ -176,7 +176,10 @@
     "service_videoCall_send": "Link zum Videoanruf gesendet",
     "timeEntry_create": "Zeiteintrag hinzugefügt",
     "timeEntry_update": "Zeiteintrag korrigiert",
-    "timeEntry_delete": "Zeiteintrag gelöscht"
+    "timeEntry_delete": "Zeiteintrag gelöscht",
+    "settings_workOrderStatus_create": "Auftragsstatus hinzugefügt",
+    "settings_workOrderStatus_update": "Auftragsstatus geändert",
+    "settings_workOrderStatus_archive": "Auftragsstatus entfernt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",

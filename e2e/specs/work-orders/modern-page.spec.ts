@@ -467,10 +467,16 @@ test.describe('the overhauled work order page', () => {
         'false'
       )
 
-      // Still moving: the status, saved on its own.
-      await stepper(page)
-        .getByRole('button', { name: /Waiting Parts/ })
-        .click()
+      // Still moving: the status, saved on its own. "Waiting Parts" is filed
+      // under "In Progress", in the menu behind that stage's arrow, and the
+      // stage then reads "In Progress: Waiting Parts".
+      await expect(async () => {
+        await page.getByTestId('status-menu-in-progress').click()
+        await expect(page.getByRole('menuitem', { name: 'Waiting Parts' })).toBeVisible({
+          timeout: 2_000,
+        })
+      }).toPass({ timeout: 30_000 })
+      await page.getByRole('menuitem', { name: 'Waiting Parts' }).click()
       await expectStatus(page, /Waiting Parts/)
 
       // Still written: the internal notes, saved on their own.

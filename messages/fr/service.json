@@ -587,7 +587,8 @@
       "messageSent": "Message envoyé au client",
       "linkShared": "Lien de la facture partagé",
       "linkViewed": "{count, plural, one {Le client a ouvert le lien} other {Le client a ouvert le lien # fois}}",
-      "paymentTaken": "Paiement de {amount} enregistré"
+      "paymentTaken": "Paiement de {amount} enregistré",
+      "statusSet": "Statut passé à {status}"
     },
     "invite": {
       "title": "La page de l'ordre de travail a été refaite.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Prix d'achat",
       "overdue": "en retard",
       "customerSince": "Client depuis"
-    }
+    },
+    "moreStatuses": "Autres statuts"
   },
   "photoHandoff": {
     "button": "Ajouter depuis le téléphone",
@@ -726,5 +728,8 @@
     "paid": "Paiement reçu",
     "paidBody": "Le paiement figure sur l’ordre de réparation.",
     "done": "Terminé"
+  },
+  "customStatus": {
+    "defaultMessage": "Bonjour {customer_name}, des nouvelles de votre {vehicle} : {status}. {company_name}"
   }
 }

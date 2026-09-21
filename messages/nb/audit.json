@@ -176,7 +176,10 @@
     "service_videoCall_send": "Sendte lenke til videosamtale",
     "timeEntry_create": "La til tidsoppføring",
     "timeEntry_update": "Korrigerte tidsoppføring",
-    "timeEntry_delete": "Slettet tidsoppføring"
+    "timeEntry_delete": "Slettet tidsoppføring",
+    "settings_workOrderStatus_create": "La til status for arbeidsordre",
+    "settings_workOrderStatus_update": "Endret status for arbeidsordre",
+    "settings_workOrderStatus_archive": "Fjernet status for arbeidsordre"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

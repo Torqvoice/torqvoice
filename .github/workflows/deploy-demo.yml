@@ -76,6 +76,12 @@ jobs:
           VIRTUAL_HOST: "demo.torqvoice.com"
           DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.DEMO_BETTER_AUTH_SECRET }}
+          # Optional. Next encrypts what a server action closes over with a key
+          # made fresh by every build, so a tab left open across a deploy can
+          # no longer be read by the new container. A fixed key keeps those tabs
+          # working. 32 random bytes, base64: `openssl rand -base64 32`. Left
+          # unset, the build's own key is used, as before.
+          NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${{ secrets.DEMO_NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
           APP_URL: "https://demo.torqvoice.com"
           DEMO_USER_EMAIL: "demo@torqvoice.com"
           DEMO_USER_PASSWORD: "demo"
@@ -87,7 +93,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/demo
           cd $HOME/torqvoice-deploy/demo
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|DEMO_|POSTHOG_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|DEMO_|POSTHOG_|NEXT_SERVER_ACTIONS_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
@@ -109,6 +115,7 @@ jobs:
                 LETSENCRYPT_HOST: ${VIRTUAL_HOST}
                 DATABASE_URL: ${DATABASE_URL}
                 BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+                NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
                 NEXT_PUBLIC_APP_URL: ${APP_URL}
                 DEMO_MODE: "true"
                 DEMO_USER_EMAIL: ${DEMO_USER_EMAIL}

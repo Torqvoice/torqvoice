@@ -1,47 +1,67 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Check, PackageSearch } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import {
+  STAGES,
+  type Stage,
+  WAITING_PARTS,
+  type WorkOrderStatusOption,
+  stageOf,
+  statusColorClasses,
+} from '@/features/work-order-statuses/Lib/stages'
 import { statusMessageKeys } from '../../service-detail/types'
 
-/**
- * The stages every job passes through. Waiting for parts is not one of them:
- * it is a hold on a job that is under way, and most jobs never have it. Drawn
- * as a fourth stage it was ticked as done on every completed job, including
- * the ones that never waited for anything.
- */
-const STAGES = ['pending', 'in-progress', 'completed'] as const
-const WAITING = 'waiting-parts'
+/** What the stepper shows as chosen under a stage: the built-in hold, or one of the workshop's own. */
+type Chosen = { id: string; name: string; color: string } | null
 
 /**
- * The job's status as a line it travels along: a marker for each stage, joined
- * by a track that fills behind the job as it moves. Stages that are done carry
- * a tick, the current one is the solid marker with its name in full weight,
- * and what is still ahead is an outline. No box around it: it is a property
- * of the page, not a card on it.
+ * The job's status as a line it travels along: a marker for each of the three
+ * stages, joined by a track that fills behind the job as it moves. Stages that
+ * are done carry a tick, the current one is the solid marker with its name in
+ * full weight, and what is still ahead is an outline. No box around it: it is
+ * a property of the page, not a card on it.
  *
- * Waiting for parts sits on the line as a hold beside "in progress": a pill
- * that is off until somebody sets it, amber while the job is held, and gone
- * back to off when work resumes. It is still one of the four statuses the
- * record stores; only the drawing changed.
+ * A stage that has statuses filed under it carries a small arrow. The menu
+ * behind it lists them: "Waiting for parts", which the app has always had,
+ * under "in progress", and whatever the workshop defined in settings under
+ * the stage it chose. Picking one moves the job to that stage and names the
+ * status in one step; the name then sits beside the stage in its own colour.
+ * A stage with nothing under it has no arrow, so a workshop that defines no
+ * statuses sees three stages and one arrow, and nothing else changes for it.
  *
- * Clicking a stage sets the status exactly as the select on the classic page
- * does, saved with the rest of the form. It sits inside the form's fieldset,
- * so a locked invoice disables it with everything else.
+ * It sits outside the form's lock: a locked invoice still moves along.
  */
 export function StatusStepper({
   status,
+  customStatus = null,
+  options = [],
   onChange,
 }: {
   status: string
-  onChange: (status: string) => void
+  /** The workshop's own status the job carries, archived or not. */
+  customStatus?: { id: string; name: string; color: string } | null
+  /** The workshop's statuses that can be chosen. */
+  options?: WorkOrderStatusOption[]
+  /** A stage alone, or a stage with one of the workshop's statuses under it. */
+  onChange: (status: string, custom: WorkOrderStatusOption | null) => void
 }) {
   const t = useTranslations('service')
-  const waiting = status === WAITING
-  // A held job is under way, so it stands where "in progress" does.
-  const current = STAGES.indexOf((waiting ? 'in-progress' : status) as (typeof STAGES)[number])
-  const waitingLabel = t(`basicInfo.statusOptions.${statusMessageKeys[WAITING]}`)
+  const current = STAGES.indexOf(stageOf(status))
+  const waitingLabel = t(`basicInfo.statusOptions.${statusMessageKeys[WAITING_PARTS]}`)
+
+  const chosen: Chosen =
+    status === WAITING_PARTS
+      ? { id: WAITING_PARTS, name: waitingLabel, color: 'amber' }
+      : customStatus
 
   return (
     <nav
@@ -55,21 +75,24 @@ export function StatusStepper({
         const isCurrent = i === current
         const isDone = i < current
         const isLast = i === STAGES.length - 1
-        // While the job is held, the hold is the current step and this stage
-        // is where it is held.
-        const isHeld = isCurrent && waiting
         const label = t(`basicInfo.statusOptions.${statusMessageKeys[stage]}`)
+        const under = options.filter((option) => option.stage === stage)
+        const hasMenu = under.length > 0 || stage === 'in-progress'
+        const sub = isCurrent ? chosen : null
+        const name = sub ? `${label}: ${sub.name}` : label
         return (
           <div key={stage} className={cn('flex min-w-0 items-center', !isLast && 'flex-1')}>
             <button
               type="button"
-              aria-current={isCurrent && !isHeld ? 'step' : undefined}
+              aria-current={isCurrent ? 'step' : undefined}
               // Named even where only its number shows, for screen readers and
               // for the tooltip on a stage whose label is cut short.
-              aria-label={label}
-              title={label}
+              aria-label={name}
+              title={name}
               onClick={() => {
-                if (!isCurrent || isHeld) onChange(stage)
+                // Clicking the stage a status sits under goes back to the
+                // plain stage, which is how a hold is lifted.
+                if (!isCurrent || sub) onChange(stage, null)
               }}
               // Allowed to shrink, so a long label (or a longer language) is
               // cut with an ellipsis instead of running into the next stage.
@@ -79,10 +102,7 @@ export function StatusStepper({
                 className={cn(
                   'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold tabular-nums transition-colors',
                   isCurrent &&
-                    !isHeld &&
                     'border-primary bg-primary text-primary-foreground ring-4 ring-primary/15',
-                  isHeld &&
-                    'border-amber-500/60 bg-amber-500/15 text-amber-700 dark:text-amber-400',
                   isDone && 'border-primary/60 bg-primary/15 text-primary',
                   !isCurrent &&
                     !isDone &&
@@ -96,37 +116,37 @@ export function StatusStepper({
               <span
                 className={cn(
                   'min-w-0 truncate py-px text-[13px] leading-none',
-                  isCurrent && !isHeld
+                  isCurrent
                     ? 'font-semibold text-foreground'
                     : 'hidden text-muted-foreground group-hover/step:text-foreground group-disabled/step:group-hover/step:text-muted-foreground @2xl:inline'
                 )}
               >
                 {label}
               </span>
+              {sub && (
+                <span
+                  data-testid="status-sub"
+                  className={cn(
+                    'min-w-0 truncate rounded-full border px-2 py-0.5 text-[12px] font-medium leading-none',
+                    statusColorClasses(sub.color).chip
+                  )}
+                >
+                  {sub.name}
+                </span>
+              )}
             </button>
 
-            {stage === 'in-progress' && (
-              <button
-                type="button"
-                data-testid="status-waiting"
-                aria-current={waiting ? 'step' : undefined}
-                aria-pressed={waiting}
-                aria-label={waitingLabel}
-                title={waitingLabel}
-                onClick={() => onChange(waiting ? 'in-progress' : WAITING)}
-                className={cn(
-                  'group/hold ml-1 flex min-w-0 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-2 py-1 text-[12px] leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default',
-                  waiting
-                    ? 'border-amber-500/50 bg-amber-500/15 font-semibold text-amber-700 ring-4 ring-amber-500/10 dark:text-amber-400'
-                    : 'border-dashed border-border text-muted-foreground hover:border-amber-500/50 hover:text-foreground disabled:hover:border-border disabled:hover:text-muted-foreground'
-                )}
-              >
-                <PackageSearch className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                {/* Named while it is on, and wherever there is room for it. */}
-                <span className={cn('truncate', !waiting && 'hidden @2xl:inline')}>
-                  {waitingLabel}
-                </span>
-              </button>
+            {hasMenu && (
+              <StageMenu
+                stage={stage}
+                stageLabel={label}
+                waitingLabel={waitingLabel}
+                moreLabel={t('modern.moreStatuses')}
+                under={under}
+                chosenId={sub?.id ?? null}
+                isCurrent={isCurrent}
+                onChange={onChange}
+              />
             )}
 
             {!isLast && (
@@ -142,5 +162,78 @@ export function StatusStepper({
         )
       })}
     </nav>
+  )
+}
+
+/** The arrow beside a stage, and the statuses filed under it. */
+function StageMenu({
+  stage,
+  stageLabel,
+  waitingLabel,
+  moreLabel,
+  under,
+  chosenId,
+  isCurrent,
+  onChange,
+}: {
+  stage: Stage
+  stageLabel: string
+  waitingLabel: string
+  moreLabel: string
+  under: WorkOrderStatusOption[]
+  chosenId: string | null
+  isCurrent: boolean
+  onChange: (status: string, custom: WorkOrderStatusOption | null) => void
+}) {
+  const row = 'flex cursor-pointer items-center gap-2 text-[13px]'
+  const tick = (on: boolean) => (
+    <Check className={cn('ml-auto h-3.5 w-3.5', on ? 'opacity-100' : 'opacity-0')} />
+  )
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          data-testid={`status-menu-${stage}`}
+          // The same words on every arrow, on purpose: the stage's own button
+          // is the one that carries its name.
+          aria-label={moreLabel}
+          title={moreLabel}
+          className="flex h-6 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground outline-none transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
+        >
+          <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="min-w-52">
+        <DropdownMenuItem className={row} onSelect={() => onChange(stage, null)}>
+          <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />
+          {stageLabel}
+          {tick(isCurrent && chosenId === null)}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {stage === 'in-progress' && (
+          <DropdownMenuItem className={row} onSelect={() => onChange(WAITING_PARTS, null)}>
+            <span
+              className={cn('h-2 w-2 shrink-0 rounded-full', statusColorClasses('amber').dot)}
+            />
+            {waitingLabel}
+            {tick(chosenId === WAITING_PARTS)}
+          </DropdownMenuItem>
+        )}
+        {under.map((option) => (
+          <DropdownMenuItem
+            key={option.id}
+            className={row}
+            onSelect={() => onChange(stage, option)}
+          >
+            <span
+              className={cn('h-2 w-2 shrink-0 rounded-full', statusColorClasses(option.color).dot)}
+            />
+            <span className="min-w-0 truncate">{option.name}</span>
+            {tick(chosenId === option.id)}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

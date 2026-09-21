@@ -4,6 +4,7 @@ import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
 import { PayCodeButton } from './PayCodeButton'
+import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import { useState, useCallback, useMemo, useRef, useEffect, type ComponentProps } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
@@ -78,6 +79,7 @@ export function ServicePageClient({
   warrantyTexts,
   tireHotelEnabled = false,
   onlinePayments = false,
+  workOrderStatuses = [],
   videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
@@ -303,6 +305,35 @@ export function ServicePageClient({
     setNotifyMessage(message)
     setShowNotifyDialog(true)
   }, [formState.status, customer, record.vehicle, record.title]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // One of the workshop's own statuses asked for the customer to be told. The
+  // message is the status's own, or a plain one naming it; either way it opens
+  // in the dialog to be read and changed before anything is sent.
+  const handleNotifyForStatus = useCallback(
+    async (option: WorkOrderStatusOption) => {
+      if (!customer) return
+      const tplResult = await getSmsTemplates()
+      const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+      const vehicle = record.vehicle
+        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+        : record.title
+      const message = interpolateSmsTemplate(
+        // Read raw: the text carries {tokens} of its own, which are filled in
+        // below and are not message arguments.
+        option.messageTemplate?.trim() ||
+          String(t.raw('customStatus.defaultMessage')).replace('{status}', option.name),
+        {
+          customer_name: customer.name,
+          vehicle,
+          company_name: tplData?.companyName || '',
+          current_user: tplData?.currentUser || '',
+        }
+      )
+      setNotifyMessage(message)
+      setShowNotifyDialog(true)
+    },
+    [customer, record.vehicle, record.title, t]
+  )
 
   // Observations state
   const tf = useTranslations('vehicles.findings')
@@ -630,6 +661,8 @@ export function ServicePageClient({
             <ModernDetails
               {...leftColumnProps}
               {...rightColumnProps}
+              workOrderStatuses={workOrderStatuses}
+              onNotifyForStatus={handleNotifyForStatus}
               locked={lockState.locked}
               lockedLabel={t('invoice.lockedFieldsetLabel')}
               form={{

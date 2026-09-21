@@ -40,6 +40,15 @@ export function ActivityCard({ record, currencyCode, notificationHistory }: Acti
       detail: n.body,
     })
   }
+  // When the job reached the workshop's own status it carries now ("Ready for
+  // pickup"). Only the current one: nothing records the ones before it.
+  if (record.customStatus && record.customStatusSince) {
+    items.push({
+      key: 'custom-status',
+      at: new Date(record.customStatusSince),
+      text: t('modern.activity.statusSet', { status: record.customStatus.name }),
+    })
+  }
   if (record.sharedAt) {
     items.push({
       key: 'shared',

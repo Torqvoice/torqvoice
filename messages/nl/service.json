@@ -587,7 +587,8 @@
       "messageSent": "Bericht naar de klant gestuurd",
       "linkShared": "Factuurlink gedeeld",
       "linkViewed": "{count, plural, one {Klant heeft de link geopend} other {Klant heeft de link # keer geopend}}",
-      "paymentTaken": "Betaling van {amount} geregistreerd"
+      "paymentTaken": "Betaling van {amount} geregistreerd",
+      "statusSet": "Status gezet op {status}"
     },
     "invite": {
       "title": "De werkorderpagina is vernieuwd.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Aankoopprijs",
       "overdue": "verlopen",
       "customerSince": "Klant sinds"
-    }
+    },
+    "moreStatuses": "Meer statussen"
   },
   "photoHandoff": {
     "button": "Toevoegen via telefoon",
@@ -726,5 +728,8 @@
     "paid": "Betaling ontvangen",
     "paidBody": "De betaling staat op de werkorder.",
     "done": "Klaar"
+  },
+  "customStatus": {
+    "defaultMessage": "Hallo {customer_name}, een update over uw {vehicle}: {status}. {company_name}"
   }
 }

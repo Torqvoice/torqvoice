@@ -38,6 +38,7 @@ import {
   Plug,
   ClipboardCheck,
   ShieldCheck,
+  ListChecks,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -103,6 +104,7 @@ const settingsCategories: SettingsCategory[] = [
     key: 'workshop',
     items: [
       { key: 'workshop', href: '/settings/workshop', icon: Wrench },
+      { key: 'workOrderStatuses', href: '/settings/work-order-statuses', icon: ListChecks },
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
       { key: 'inspectionReminders', href: '/settings/inspection-reminders', icon: ClipboardCheck },
       { key: 'alerts', href: '/settings/alerts', icon: BellRing },

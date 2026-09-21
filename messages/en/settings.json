@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "Email templates",
         "description": "What your invoice, quote and report emails say"
+      },
+      "workOrderStatuses": {
+        "title": "Work order statuses",
+        "description": "Your own steps, and who gets told"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Drag to reorder",
     "dragHandleKeyboard": "Drag, or use the arrow keys, to move this block",
     "tagDoesNotFit": "The tag does not fit in this field."
+  },
+  "workOrderStatuses": {
+    "title": "Work order statuses",
+    "description": "Your own names for the steps a job goes through. Each sits under one of the three stages and shows up in that stage's menu on every work order.",
+    "cardTitle": "Stages and statuses",
+    "suggestionsLabel": "Quick add",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Ready for pickup",
+        "message": "Hi {customer_name}, your {vehicle} is ready for pickup. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Waiting for customer"
+      },
+      "waitingForApproval": {
+        "name": "Waiting for approval",
+        "message": "Hi {customer_name}, we need your approval before we continue on your {vehicle}. Please get in touch. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Before work starts. The job counts as open.",
+      "in-progress": "While the vehicle is being worked on. The job counts as open.",
+      "completed": "The work is done. The customer can see and pay the invoice, and the job leaves the technician's list."
+    },
+    "add": "Add status",
+    "builtIn": "Built in",
+    "asksToNotify": "Offers to notify",
+    "notifyHint": "When a job reaches this status, offer to send the customer a message. Nothing is sent until you confirm it.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "edit": "Edit",
+    "remove": "Remove",
+    "empty": "No statuses of your own here yet.",
+    "removeTitle": "Remove {name}?",
+    "removeBody": "It leaves the menus. Jobs that carry it keep showing it.",
+    "addTitle": "New status",
+    "editTitle": "Edit status",
+    "dialogBody": "A status is a name with a colour. The stage it sits under decides how the job is treated.",
+    "name": "Name",
+    "namePlaceholder": "Ready for pickup",
+    "stage": "Stage",
+    "color": "Colour",
+    "notify": "Offer to notify the customer",
+    "message": "Message",
+    "tokens": "Insert:",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Status saved",
+    "failed": "Could not save the status",
+    "messageEmptyHint": "Left empty, the text above is sent.",
+    "useSuggested": "Edit this text"
   }
 }

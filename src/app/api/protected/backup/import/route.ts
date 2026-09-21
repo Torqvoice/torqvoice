@@ -1,3 +1,4 @@
+import { isStage } from '@/features/work-order-statuses/Lib/stages'
 import { NextRequest, NextResponse } from 'next/server'
 import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
@@ -91,6 +92,8 @@ async function importServiceRecordTree(
     timeZone: string
     /** Technicians restored by this import. See the time entries below. */
     technicianIds: ReadonlySet<string>
+    /** The workshop's own statuses restored by this import. */
+    workOrderStatusIds: ReadonlySet<string>
     /**
      * Designs and snapshots restored by this import. A reference to one the
      * backup did not carry is dropped rather than left dangling: the record
@@ -159,6 +162,14 @@ async function importServiceRecordTree(
       // backup does not carry would be refused, and take the import with it.
       technicianId: keptReference(sr.technicianId, opts.technicianIds),
       workBayId: (sr.workBayId as string) || null,
+      // Only a status this import restored. A backup made without the workshop
+      // configuration carries jobs that name statuses it does not hold; those
+      // jobs keep their stage and lose the label, rather than failing the import.
+      customStatusId: keptReference(sr.customStatusId, opts.workOrderStatusIds),
+      customStatusSince:
+        sr.customStatusSince && opts.workOrderStatusIds.has(sr.customStatusId as string)
+          ? toSafeDate(sr.customStatusSince as string)
+          : null,
       sortOrder: (sr.sortOrder as number) || 0,
       createdAt: toSafeDate(sr.createdAt as string),
       updatedAt: toSafeDate(sr.updatedAt as string),
@@ -463,6 +474,7 @@ export async function POST(request: NextRequest) {
         LaborPreset: () => tx.laborPreset.deleteMany({ where: { organizationId } }),
         Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
         ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
+        WorkOrderStatus: () => tx.workOrderStatus.deleteMany({ where: { organizationId } }),
         AppSetting: () => tx.appSetting.deleteMany({ where: { organizationId } }),
         DocumentDesign: () => tx.documentDesign.deleteMany({ where: { organizationId } }),
         EmailTemplate: () => tx.emailTemplate.deleteMany({ where: { organizationId } }),
@@ -684,6 +696,31 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      // 4c. Insert the workshop's own work order statuses. Service records
+      // point at them, so they have to exist before any job is restored.
+      const workOrderStatusIds = new Set<string>()
+      if (data.workOrderStatuses?.length) {
+        const rows = (data.workOrderStatuses as Record<string, unknown>[]).filter(
+          (s) => typeof s.id === 'string' && typeof s.name === 'string' && isStage(s.stage)
+        )
+        await tx.workOrderStatus.createMany({
+          data: rows.map((s) => ({
+            id: s.id as string,
+            name: s.name as string,
+            stage: s.stage as string,
+            color: (s.color as string) || 'slate',
+            sortOrder: (s.sortOrder as number) || 0,
+            notifyCustomer: s.notifyCustomer === true,
+            messageTemplate: (s.messageTemplate as string) || null,
+            archivedAt: s.archivedAt ? toSafeDate(s.archivedAt as string) : null,
+            createdAt: toSafeDate(s.createdAt as string),
+            updatedAt: toSafeDate(s.updatedAt as string),
+            organizationId: ctx.organizationId,
+          })),
+        })
+        for (const s of rows) workOrderStatusIds.add(s.id as string)
+      }
+
       // 5. Insert custom field definitions
       if (data.customFieldDefinitions?.length) {
         for (const def of data.customFieldDefinitions as Record<string, unknown>[]) {
@@ -873,6 +910,7 @@ export async function POST(request: NextRequest) {
                 workDayStartTime,
                 timeZone,
                 technicianIds,
+                workOrderStatusIds,
                 designIds,
                 designSnapshotIds,
                 assetSnapshotIds,
@@ -959,6 +997,7 @@ export async function POST(request: NextRequest) {
             workDayStartTime,
             timeZone,
             technicianIds,
+            workOrderStatusIds,
             designIds,
             designSnapshotIds,
             assetSnapshotIds,

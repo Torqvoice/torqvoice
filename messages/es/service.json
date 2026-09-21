@@ -587,7 +587,8 @@
       "messageSent": "Mensaje enviado al cliente",
       "linkShared": "Enlace de la factura compartido",
       "linkViewed": "{count, plural, one {El cliente abrió el enlace} other {El cliente abrió el enlace # veces}}",
-      "paymentTaken": "Pago de {amount} registrado"
+      "paymentTaken": "Pago de {amount} registrado",
+      "statusSet": "Estado cambiado a {status}"
     },
     "invite": {
       "title": "La página de la orden de trabajo se ha renovado.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Precio de compra",
       "overdue": "vencida",
       "customerSince": "Cliente desde"
-    }
+    },
+    "moreStatuses": "Más estados"
   },
   "photoHandoff": {
     "button": "Añadir desde el móvil",
@@ -726,5 +728,8 @@
     "paid": "Pago recibido",
     "paidBody": "El pago ya está en la orden de trabajo.",
     "done": "Listo"
+  },
+  "customStatus": {
+    "defaultMessage": "Hola {customer_name}, novedades sobre su {vehicle}: {status}. {company_name}"
   }
 }

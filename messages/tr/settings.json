@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "E-posta şablonları",
         "description": "Fatura, teklif ve rapor e-postalarınızın metni"
+      },
+      "workOrderStatuses": {
+        "title": "İş emri durumları",
+        "description": "Kendi adımlarınız ve kime haber verileceği"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Yeniden sıralamak için sürükleyin",
     "dragHandleKeyboard": "Bu bloğu taşımak için sürükleyin ya da ok tuşlarını kullanın",
     "tagDoesNotFit": "Etiket bu alana sığmıyor."
+  },
+  "workOrderStatuses": {
+    "title": "İş emri durumları",
+    "description": "Bir işin geçtiği adımlar için kendi adlarınız. Her durum üç aşamadan birine bağlıdır ve her iş emrinde o aşamanın menüsünde görünür.",
+    "cardTitle": "Aşamalar ve durumlar",
+    "suggestionsLabel": "Hızlı ekle",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Teslime hazır",
+        "message": "Merhaba {customer_name}, {vehicle} aracınız teslime hazır. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Müşteri bekleniyor"
+      },
+      "waitingForApproval": {
+        "name": "Onay bekleniyor",
+        "message": "Merhaba {customer_name}, {vehicle} aracınızda devam etmeden önce onayınıza ihtiyacımız var. Lütfen bize ulaşın. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "İş başlamadan önce. İş açık sayılır.",
+      "in-progress": "Araç üzerinde çalışılırken. İş açık sayılır.",
+      "completed": "İş tamamlandı. Müşteri faturayı görüp ödeyebilir ve iş teknisyenin listesinden çıkar."
+    },
+    "add": "Durum ekle",
+    "builtIn": "Yerleşik",
+    "asksToNotify": "Bildirim önerir",
+    "notifyHint": "Bir iş bu duruma geldiğinde müşteriye mesaj göndermek önerilir. Siz onaylamadan hiçbir şey gönderilmez.",
+    "moveUp": "Yukarı taşı",
+    "moveDown": "Aşağı taşı",
+    "edit": "Düzenle",
+    "remove": "Kaldır",
+    "empty": "Burada henüz kendi durumunuz yok.",
+    "removeTitle": "{name} kaldırılsın mı?",
+    "removeBody": "Menülerden çıkar. Onu taşıyan işler göstermeye devam eder.",
+    "addTitle": "Yeni durum",
+    "editTitle": "Durumu düzenle",
+    "dialogBody": "Durum, rengi olan bir addır. Bağlı olduğu aşama, işin nasıl ele alınacağını belirler.",
+    "name": "Ad",
+    "namePlaceholder": "Teslime hazır",
+    "stage": "Aşama",
+    "color": "Renk",
+    "notify": "Müşteriye haber vermeyi öner",
+    "message": "Mesaj",
+    "tokens": "Ekle:",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saved": "Durum kaydedildi",
+    "failed": "Durum kaydedilemedi",
+    "messageEmptyHint": "Boş bırakılırsa yukarıdaki metin gönderilir.",
+    "useSuggested": "Bu metni düzenle"
   }
 }

@@ -1,3 +1,4 @@
+import { statusColumns } from '@/features/work-order-statuses/Lib/stages'
 import { z } from 'zod'
 import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
 import { db } from '@/lib/db'
@@ -72,7 +73,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
       const updated = await db.serviceRecord.update({
         where: { id: job.id },
-        data: { status },
+        // The phone moves the stage; a status of the workshop's own belonged
+        // to the stage it left.
+        data: statusColumns(status),
         select: { id: true, status: true },
       })
 

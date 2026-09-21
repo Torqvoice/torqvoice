@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "Modèles d'e-mail",
         "description": "Ce que disent vos e-mails de facture, devis et rapport"
+      },
+      "workOrderStatuses": {
+        "title": "Statuts des ordres",
+        "description": "Vos propres étapes, et qui est prévenu"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Glisser pour réorganiser",
     "dragHandleKeyboard": "Glisser, ou utiliser les touches fléchées, pour déplacer ce bloc",
     "tagDoesNotFit": "La balise ne tient pas dans ce champ."
+  },
+  "workOrderStatuses": {
+    "title": "Statuts des ordres de réparation",
+    "description": "Vos propres noms pour les étapes d’un travail. Chacun appartient à l’une des trois phases et apparaît dans le menu de cette phase sur chaque ordre de réparation.",
+    "cardTitle": "Phases et statuts",
+    "suggestionsLabel": "Ajout rapide",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Prêt à être récupéré",
+        "message": "Bonjour {customer_name}, votre {vehicle} est prêt à être récupéré. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "En attente du client"
+      },
+      "waitingForApproval": {
+        "name": "En attente d’accord",
+        "message": "Bonjour {customer_name}, nous avons besoin de votre accord avant de poursuivre sur votre {vehicle}. Merci de nous contacter. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Avant le début des travaux. Le travail compte comme ouvert.",
+      "in-progress": "Pendant l’intervention sur le véhicule. Le travail compte comme ouvert.",
+      "completed": "Le travail est terminé. Le client peut voir et payer la facture, et le travail quitte la liste du technicien."
+    },
+    "add": "Ajouter un statut",
+    "builtIn": "Intégré",
+    "asksToNotify": "Propose de prévenir",
+    "notifyHint": "Lorsqu’un travail atteint ce statut, il est proposé d’envoyer un message au client. Rien n’est envoyé sans votre confirmation.",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "edit": "Modifier",
+    "remove": "Retirer",
+    "empty": "Aucun statut personnel ici pour l’instant.",
+    "removeTitle": "Retirer {name} ?",
+    "removeBody": "Il disparaît des menus. Les travaux qui le portent continuent de l’afficher.",
+    "addTitle": "Nouveau statut",
+    "editTitle": "Modifier le statut",
+    "dialogBody": "Un statut est un nom avec une couleur. La phase à laquelle il appartient décide du traitement du travail.",
+    "name": "Nom",
+    "namePlaceholder": "Prêt à être récupéré",
+    "stage": "Phase",
+    "color": "Couleur",
+    "notify": "Proposer de prévenir le client",
+    "message": "Message",
+    "tokens": "Insérer :",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saved": "Statut enregistré",
+    "failed": "Impossible d’enregistrer le statut",
+    "messageEmptyHint": "Si le champ reste vide, le texte ci-dessus est envoyé.",
+    "useSuggested": "Modifier ce texte"
   }
 }

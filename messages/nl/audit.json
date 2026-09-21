@@ -176,7 +176,10 @@
     "service_videoCall_send": "Link videogesprek verstuurd",
     "timeEntry_create": "Tijdregistratie toegevoegd",
     "timeEntry_update": "Tijdregistratie gecorrigeerd",
-    "timeEntry_delete": "Tijdregistratie verwijderd"
+    "timeEntry_delete": "Tijdregistratie verwijderd",
+    "settings_workOrderStatus_create": "Werkorderstatus toegevoegd",
+    "settings_workOrderStatus_update": "Werkorderstatus gewijzigd",
+    "settings_workOrderStatus_archive": "Werkorderstatus verwijderd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

@@ -71,6 +71,7 @@ model Organization {
   tireWarehouses              TireWarehouse[]
   tireLocations               TireLocation[]
   tireSets                    TireSet[]
+  workOrderStatuses           WorkOrderStatus[]
   tireSetAttachments          TireSetAttachment[]
   tireMovements               TireMovement[]
   tireTreatments              TireTreatment[]

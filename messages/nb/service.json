@@ -587,7 +587,8 @@
       "messageSent": "Melding sendt til kunden",
       "linkShared": "Fakturalenke delt",
       "linkViewed": "{count, plural, one {Kunden åpnet lenken} other {Kunden åpnet lenken # ganger}}",
-      "paymentTaken": "Betaling på {amount} registrert"
+      "paymentTaken": "Betaling på {amount} registrert",
+      "statusSet": "Status satt til {status}"
     },
     "invite": {
       "title": "Arbeidsordresiden er fornyet.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Kjøpspris",
       "overdue": "forfalt",
       "customerSince": "Kunde siden"
-    }
+    },
+    "moreStatuses": "Flere statuser"
   },
   "photoHandoff": {
     "button": "Legg til fra mobil",
@@ -726,5 +728,8 @@
     "paid": "Betaling mottatt",
     "paidBody": "Betalingen er ført på arbeidsordren.",
     "done": "Ferdig"
+  },
+  "customStatus": {
+    "defaultMessage": "Hei {customer_name}, en oppdatering om din {vehicle}: {status}. {company_name}"
   }
 }

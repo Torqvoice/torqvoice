@@ -63,13 +63,31 @@ import { useTranslations } from 'next-intl'
 import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
+import { statusColorClasses } from '@/features/work-order-statuses/Lib/stages'
+import { cn } from '@/lib/utils'
 import { ListEmpty } from '@/components/list-empty'
+
+/** The workshop's own status, in its colour, beside the stage. */
+function CustomStatusChip({ status }: { status: { name: string; color: string } }) {
+  return (
+    <span
+      className={cn(
+        'max-w-40 truncate rounded-full border px-2 py-0.5 text-xs font-medium',
+        statusColorClasses(status.color).chip
+      )}
+    >
+      {status.name}
+    </span>
+  )
+}
 
 interface WorkOrder {
   id: string
   title: string
   type: string
   status: string
+  /** One of the workshop's own statuses, under the stage `status` names. */
+  customStatus?: { name: string; color: string } | null
   totalAmount: number
   cost: number
   serviceDate: Date
@@ -466,6 +484,7 @@ export function WorkOrdersClient({
                     <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ''}`}>
                       {r.status}
                     </Badge>
+                    {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                     <span className="font-mono">
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                     </span>
@@ -666,12 +685,15 @@ export function WorkOrdersClient({
                           <span className="font-medium">{r.title}</span>
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${statusColors[r.status] || ''}`}
-                          >
-                            {r.status}
-                          </Badge>
+                          <div className="flex flex-wrap items-center gap-1">
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${statusColors[r.status] || ''}`}
+                            >
+                              {r.status}
+                            </Badge>
+                            {r.customStatus && <CustomStatusChip status={r.customStatus} />}
+                          </div>
                         </TableCell>
                         {shows('tech') && (
                           <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">

@@ -334,6 +334,14 @@ export async function POST(request: NextRequest) {
     // Everything a workshop configures that is not a key/value setting: none
     // of it was in a backup before, so a restore rebuilt an empty shop.
     queries.push(
+      // Archived ones too: a finished job still names the status it carried.
+      db.workOrderStatus
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.workOrderStatuses = result
+        })
+    )
+    queries.push(
       db.laborPreset
         .findMany({
           where: { organizationId: ctx.organizationId },

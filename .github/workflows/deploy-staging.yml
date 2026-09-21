@@ -38,6 +38,12 @@ jobs:
           POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           BACKUP_HEARTBEAT_TOKEN: ${{ secrets.BACKUP_HEARTBEAT_TOKEN }}
           INTEGRATIONS_ENCRYPTION_KEY: ${{ secrets.STAGING_INTEGRATIONS_ENCRYPTION_KEY }}
+          # Optional. Next encrypts what a server action closes over with a key
+          # made fresh by every build, so a tab left open across a deploy can
+          # no longer be read by the new container. A fixed key keeps those tabs
+          # working. 32 random bytes, base64: `openssl rand -base64 32`. Left
+          # unset, the build's own key is used, as before.
+          NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${{ secrets.STAGING_NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
           GOOGLE_INTEGRATION_CLIENT_ID: ${{ secrets.STAGING_GOOGLE_INTEGRATION_CLIENT_ID }}
           GOOGLE_INTEGRATION_CLIENT_SECRET: ${{ secrets.STAGING_GOOGLE_INTEGRATION_CLIENT_SECRET }}
           GOOGLE_AUTH_CLIENT_ID: ${{ secrets.STAGING_GOOGLE_AUTH_CLIENT_ID }}
@@ -52,7 +58,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/staging
           cd $HOME/torqvoice-deploy/staging
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_|NEXT_SERVER_ACTIONS_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
@@ -84,6 +90,7 @@ jobs:
                 POSTHOG_HOST: ${POSTHOG_HOST}
                 BACKUP_HEARTBEAT_TOKEN: ${BACKUP_HEARTBEAT_TOKEN}
                 INTEGRATIONS_ENCRYPTION_KEY: ${INTEGRATIONS_ENCRYPTION_KEY}
+                NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
                 GOOGLE_INTEGRATION_CLIENT_ID: ${GOOGLE_INTEGRATION_CLIENT_ID}
                 GOOGLE_INTEGRATION_CLIENT_SECRET: ${GOOGLE_INTEGRATION_CLIENT_SECRET}
                 GOOGLE_AUTH_CLIENT_ID: ${GOOGLE_AUTH_CLIENT_ID}

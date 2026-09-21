@@ -59,6 +59,9 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'description',
     'type',
     'status',
+    // The workshop's own status under that stage, and when it was chosen.
+    'customStatusId',
+    'customStatusSince',
     'cost',
     'mileage',
     'serviceDate',

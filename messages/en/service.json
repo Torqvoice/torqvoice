@@ -587,7 +587,8 @@
       "messageSent": "Message sent to the customer",
       "linkShared": "Invoice link shared",
       "linkViewed": "{count, plural, one {Customer opened the link} other {Customer opened the link # times}}",
-      "paymentTaken": "Payment of {amount} recorded"
+      "paymentTaken": "Payment of {amount} recorded",
+      "statusSet": "Status set to {status}"
     },
     "invite": {
       "title": "The work order page has been overhauled.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Purchase price",
       "overdue": "overdue",
       "customerSince": "Customer since"
-    }
+    },
+    "moreStatuses": "More statuses"
   },
   "photoHandoff": {
     "button": "Add from phone",
@@ -726,5 +728,8 @@
     "paid": "Payment received",
     "paidBody": "The payment is on the work order.",
     "done": "Done"
+  },
+  "customStatus": {
+    "defaultMessage": "Hi {customer_name}, an update on your {vehicle}: {status}. {company_name}"
   }
 }

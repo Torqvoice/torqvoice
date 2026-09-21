@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "Modelos de e-mail",
         "description": "O que dizem os seus e-mails de fatura, orçamento e relatório"
+      },
+      "workOrderStatuses": {
+        "title": "Estados das ordens",
+        "description": "Os seus próprios passos, e quem é avisado"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Arraste para reordenar",
     "dragHandleKeyboard": "Arraste, ou use as teclas de seta, para mover este bloco",
     "tagDoesNotFit": "A etiqueta não cabe neste campo."
+  },
+  "workOrderStatuses": {
+    "title": "Estados das ordens de reparação",
+    "description": "Os seus próprios nomes para os passos de um trabalho. Cada um pertence a uma das três fases e aparece no menu dessa fase em todas as ordens de reparação.",
+    "cardTitle": "Fases e estados",
+    "suggestionsLabel": "Adição rápida",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Pronta para levantamento",
+        "message": "Olá {customer_name}, a sua {vehicle} está pronta para levantamento. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "A aguardar o cliente"
+      },
+      "waitingForApproval": {
+        "name": "A aguardar aprovação",
+        "message": "Olá {customer_name}, precisamos da sua aprovação antes de continuar o trabalho na sua {vehicle}. Contacte-nos. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Antes de o trabalho começar. O trabalho conta como aberto.",
+      "in-progress": "Enquanto se trabalha na viatura. O trabalho conta como aberto.",
+      "completed": "O trabalho está concluído. O cliente pode ver e pagar a fatura, e o trabalho sai da lista do técnico."
+    },
+    "add": "Adicionar estado",
+    "builtIn": "Integrado",
+    "asksToNotify": "Propõe avisar",
+    "notifyHint": "Quando um trabalho chega a este estado, é proposto enviar uma mensagem ao cliente. Nada é enviado sem a sua confirmação.",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "edit": "Editar",
+    "remove": "Remover",
+    "empty": "Ainda não há estados próprios aqui.",
+    "removeTitle": "Remover {name}?",
+    "removeBody": "Sai dos menus. Os trabalhos que o têm continuam a mostrá-lo.",
+    "addTitle": "Novo estado",
+    "editTitle": "Editar estado",
+    "dialogBody": "Um estado é um nome com uma cor. A fase a que pertence decide como o trabalho é tratado.",
+    "name": "Nome",
+    "namePlaceholder": "Pronta para levantamento",
+    "stage": "Fase",
+    "color": "Cor",
+    "notify": "Propor avisar o cliente",
+    "message": "Mensagem",
+    "tokens": "Inserir:",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saved": "Estado guardado",
+    "failed": "Não foi possível guardar o estado",
+    "messageEmptyHint": "Se ficar vazio, é enviado o texto acima.",
+    "useSuggested": "Editar este texto"
   }
 }

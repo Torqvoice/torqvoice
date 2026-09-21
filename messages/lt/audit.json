@@ -176,7 +176,10 @@
     "service_videoCall_send": "Išsiųsta vaizdo skambučio nuoroda",
     "timeEntry_create": "Pridėtas laiko įrašas",
     "timeEntry_update": "Pataisytas laiko įrašas",
-    "timeEntry_delete": "Ištrintas laiko įrašas"
+    "timeEntry_delete": "Ištrintas laiko įrašas",
+    "settings_workOrderStatus_create": "Pridėta užsakymo būsena",
+    "settings_workOrderStatus_update": "Pakeista užsakymo būsena",
+    "settings_workOrderStatus_archive": "Pašalinta užsakymo būsena"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",

@@ -176,7 +176,10 @@
     "service_videoCall_send": "Enlace de videollamada enviado",
     "timeEntry_create": "Entrada de tiempo añadida",
     "timeEntry_update": "Entrada de tiempo corregida",
-    "timeEntry_delete": "Entrada de tiempo eliminada"
+    "timeEntry_delete": "Entrada de tiempo eliminada",
+    "settings_workOrderStatus_create": "Estado de orden añadido",
+    "settings_workOrderStatus_update": "Estado de orden modificado",
+    "settings_workOrderStatus_archive": "Estado de orden quitado"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
