@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "E-Mail-Vorlagen",
         "description": "Was Ihre E-Mails zu Rechnung, Angebot und Bericht sagen"
+      },
+      "workOrderStatuses": {
+        "title": "Auftragsstatus",
+        "description": "Eigene Schritte, und wer informiert wird"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Zum Verschieben ziehen",
     "dragHandleKeyboard": "Ziehen Sie diesen Block oder verschieben Sie ihn mit den Pfeiltasten",
     "tagDoesNotFit": "Das Tag passt nicht in dieses Feld."
+  },
+  "workOrderStatuses": {
+    "title": "Auftragsstatus",
+    "description": "Ihre eigenen Namen für die Schritte eines Auftrags. Jeder Status gehört zu einer der drei Phasen und erscheint im Menü dieser Phase auf jedem Arbeitsauftrag.",
+    "cardTitle": "Phasen und Status",
+    "suggestionsLabel": "Schnell hinzufügen",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Abholbereit",
+        "message": "Hallo {customer_name}, Ihr {vehicle} ist abholbereit. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Warten auf Kunden"
+      },
+      "waitingForApproval": {
+        "name": "Warten auf Freigabe",
+        "message": "Hallo {customer_name}, wir benötigen Ihre Freigabe, bevor wir an Ihrem {vehicle} weiterarbeiten. Bitte melden Sie sich. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Bevor die Arbeit beginnt. Der Auftrag gilt als offen.",
+      "in-progress": "Während am Fahrzeug gearbeitet wird. Der Auftrag gilt als offen.",
+      "completed": "Die Arbeit ist erledigt. Der Kunde kann die Rechnung sehen und bezahlen, und der Auftrag verschwindet aus der Liste des Mechanikers."
+    },
+    "add": "Status hinzufügen",
+    "builtIn": "Integriert",
+    "asksToNotify": "Bietet Benachrichtigung an",
+    "notifyHint": "Erreicht ein Auftrag diesen Status, wird angeboten, dem Kunden eine Nachricht zu senden. Nichts wird ohne Ihre Bestätigung gesendet.",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "empty": "Hier gibt es noch keine eigenen Status.",
+    "removeTitle": "{name} entfernen?",
+    "removeBody": "Er verschwindet aus den Menüs. Aufträge, die ihn tragen, zeigen ihn weiterhin.",
+    "addTitle": "Neuer Status",
+    "editTitle": "Status bearbeiten",
+    "dialogBody": "Ein Status ist ein Name mit einer Farbe. Die Phase, zu der er gehört, bestimmt, wie der Auftrag behandelt wird.",
+    "name": "Name",
+    "namePlaceholder": "Abholbereit",
+    "stage": "Phase",
+    "color": "Farbe",
+    "notify": "Benachrichtigung des Kunden anbieten",
+    "message": "Nachricht",
+    "tokens": "Einfügen:",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saved": "Status gespeichert",
+    "failed": "Der Status konnte nicht gespeichert werden",
+    "messageEmptyHint": "Bleibt das Feld leer, wird der Text oben gesendet.",
+    "useSuggested": "Diesen Text bearbeiten"
   }
 }

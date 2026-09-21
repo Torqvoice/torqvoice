@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "Modelos de e-mail",
         "description": "O que dizem seus e-mails de fatura, orçamento e relatório"
+      },
+      "workOrderStatuses": {
+        "title": "Status das ordens",
+        "description": "Suas próprias etapas, e quem é avisado"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Arraste para reordenar",
     "dragHandleKeyboard": "Arraste, ou use as teclas de seta, para mover este bloco",
     "tagDoesNotFit": "A tag não cabe neste campo."
+  },
+  "workOrderStatuses": {
+    "title": "Status das ordens de serviço",
+    "description": "Seus próprios nomes para as etapas de um serviço. Cada um pertence a uma das três fases e aparece no menu dessa fase em toda ordem de serviço.",
+    "cardTitle": "Fases e status",
+    "suggestionsLabel": "Adição rápida",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Pronto para retirada",
+        "message": "Olá {customer_name}, seu {vehicle} está pronto para retirada. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Aguardando o cliente"
+      },
+      "waitingForApproval": {
+        "name": "Aguardando aprovação",
+        "message": "Olá {customer_name}, precisamos da sua aprovação antes de continuar o serviço no seu {vehicle}. Entre em contato. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Antes de o serviço começar. O serviço conta como aberto.",
+      "in-progress": "Enquanto o veículo está em serviço. O serviço conta como aberto.",
+      "completed": "O serviço está concluído. O cliente pode ver e pagar a fatura, e o serviço sai da lista do técnico."
+    },
+    "add": "Adicionar status",
+    "builtIn": "Integrado",
+    "asksToNotify": "Oferece avisar",
+    "notifyHint": "Quando um serviço chega a este status, é oferecido enviar uma mensagem ao cliente. Nada é enviado sem a sua confirmação.",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "edit": "Editar",
+    "remove": "Remover",
+    "empty": "Ainda não há status próprios aqui.",
+    "removeTitle": "Remover {name}?",
+    "removeBody": "Ele sai dos menus. Os serviços que o têm continuam a mostrá-lo.",
+    "addTitle": "Novo status",
+    "editTitle": "Editar status",
+    "dialogBody": "Um status é um nome com uma cor. A fase a que pertence decide como o serviço é tratado.",
+    "name": "Nome",
+    "namePlaceholder": "Pronto para retirada",
+    "stage": "Fase",
+    "color": "Cor",
+    "notify": "Oferecer avisar o cliente",
+    "message": "Mensagem",
+    "tokens": "Inserir:",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saved": "Status salvo",
+    "failed": "Não foi possível salvar o status",
+    "messageEmptyHint": "Se ficar vazio, o texto acima é enviado.",
+    "useSuggested": "Editar este texto"
   }
 }

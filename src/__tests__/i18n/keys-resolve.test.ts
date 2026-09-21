@@ -76,18 +76,18 @@ function requestedKeys(): { file: string; key: string; hasArgs: boolean }[] {
       if (counts.get(binding) !== 1) continue
       // The trailing group tells us whether anything followed the key, which
       // is what says the call passed values for the message's placeholders.
-      const call = new RegExp(
-        `\\b${binding}(?:\\.rich|\\.raw)?\\(\\s*['"]([\\w.]+)['"]\\s*(,?)`,
-        'g'
-      )
+      const call = new RegExp(`\\b${binding}(\\.rich|\\.raw)?\\(\\s*['"]([\\w.]+)['"]\\s*(,?)`, 'g')
       for (const m of src.matchAll(call)) {
         // `t(`prefix.${code}`)` leaves a trailing dot on the literal part.
         // The key is assembled at runtime and there is nothing to check.
-        if (m[1].endsWith('.')) continue
+        if (m[2].endsWith('.')) continue
         found.push({
           file: path.relative(ROOT, file),
-          key: `${namespace}.${m[1]}`,
-          hasArgs: m[2] === ',',
+          key: `${namespace}.${m[2]}`,
+          // `t.raw` hands the text back unformatted, so it never needs
+          // values: that is how a message carrying {tokens} for something
+          // else (an SMS template) is read without next-intl filling them.
+          hasArgs: m[3] === ',' || m[1] === '.raw',
         })
       }
     }

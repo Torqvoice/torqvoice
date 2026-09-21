@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "E-postmaler",
         "description": "Hva e-postene for faktura, tilbud og rapport sier"
+      },
+      "workOrderStatuses": {
+        "title": "Statuser for arbeidsordre",
+        "description": "Dine egne steg, og hvem som får beskjed"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Dra for å endre rekkefølge",
     "dragHandleKeyboard": "Dra, eller bruk piltastene, for å flytte denne blokken",
     "tagDoesNotFit": "Taggen får ikke plass i dette feltet."
+  },
+  "workOrderStatuses": {
+    "title": "Statuser for arbeidsordre",
+    "description": "Dine egne navn på stegene en jobb går gjennom. Hver status ligger under ett av de tre stadiene og vises i menyen til det stadiet på alle arbeidsordre.",
+    "cardTitle": "Stadier og statuser",
+    "suggestionsLabel": "Hurtigvalg",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Klar til henting",
+        "message": "Hei {customer_name}, din {vehicle} er klar til henting. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Venter på kunde"
+      },
+      "waitingForApproval": {
+        "name": "Venter på godkjenning",
+        "message": "Hei {customer_name}, vi trenger din godkjenning før vi fortsetter på din {vehicle}. Ta kontakt med oss. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Før arbeidet starter. Jobben regnes som åpen.",
+      "in-progress": "Mens det arbeides på kjøretøyet. Jobben regnes som åpen.",
+      "completed": "Arbeidet er ferdig. Kunden kan se og betale fakturaen, og jobben forsvinner fra mekanikerens liste."
+    },
+    "add": "Legg til status",
+    "builtIn": "Innebygd",
+    "asksToNotify": "Tilbyr varsling",
+    "notifyHint": "Når en jobb får denne statusen, tilbys det å sende kunden en melding. Ingenting sendes før du bekrefter.",
+    "moveUp": "Flytt opp",
+    "moveDown": "Flytt ned",
+    "edit": "Rediger",
+    "remove": "Fjern",
+    "empty": "Ingen egne statuser her ennå.",
+    "removeTitle": "Fjerne {name}?",
+    "removeBody": "Den forsvinner fra menyene. Jobber som har den, viser den fortsatt.",
+    "addTitle": "Ny status",
+    "editTitle": "Rediger status",
+    "dialogBody": "En status er et navn med en farge. Stadiet den ligger under, avgjør hvordan jobben behandles.",
+    "name": "Navn",
+    "namePlaceholder": "Klar til henting",
+    "stage": "Stadium",
+    "color": "Farge",
+    "notify": "Tilby å varsle kunden",
+    "message": "Melding",
+    "tokens": "Sett inn:",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "saved": "Status lagret",
+    "failed": "Kunne ikke lagre statusen",
+    "messageEmptyHint": "Står feltet tomt, sendes teksten over.",
+    "useSuggested": "Rediger denne teksten"
   }
 }

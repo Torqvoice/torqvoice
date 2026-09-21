@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "El. laiškų šablonai",
         "description": "Ką rašo sąskaitų, pasiūlymų ir ataskaitų laiškai"
+      },
+      "workOrderStatuses": {
+        "title": "Užsakymų būsenos",
+        "description": "Jūsų žingsniai ir kam pranešama"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Tempkite, kad pertvarkytumėte",
     "dragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte šį bloką",
     "tagDoesNotFit": "Žymė netelpa į šį laukelį."
+  },
+  "workOrderStatuses": {
+    "title": "Darbo užsakymų būsenos",
+    "description": "Jūsų pačių pavadinimai darbo žingsniams. Kiekviena būsena priklauso vienam iš trijų etapų ir rodoma to etapo meniu kiekviename darbo užsakyme.",
+    "cardTitle": "Etapai ir būsenos",
+    "suggestionsLabel": "Greitas pridėjimas",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Paruošta atsiimti",
+        "message": "Sveiki, {customer_name}, jūsų {vehicle} paruoštas atsiimti. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Laukiama kliento"
+      },
+      "waitingForApproval": {
+        "name": "Laukiama patvirtinimo",
+        "message": "Sveiki, {customer_name}, prieš tęsdami darbus su jūsų {vehicle} turime gauti jūsų patvirtinimą. Susisiekite su mumis. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Prieš pradedant darbą. Darbas laikomas atviru.",
+      "in-progress": "Kol dirbama su transporto priemone. Darbas laikomas atviru.",
+      "completed": "Darbas atliktas. Klientas gali matyti ir apmokėti sąskaitą, o darbas dingsta iš techniko sąrašo."
+    },
+    "add": "Pridėti būseną",
+    "builtIn": "Įtaisyta",
+    "asksToNotify": "Siūlo pranešti",
+    "notifyHint": "Kai darbas pasiekia šią būseną, siūloma išsiųsti klientui žinutę. Niekas nesiunčiama, kol nepatvirtinate.",
+    "moveUp": "Aukštyn",
+    "moveDown": "Žemyn",
+    "edit": "Redaguoti",
+    "remove": "Pašalinti",
+    "empty": "Čia dar nėra jūsų būsenų.",
+    "removeTitle": "Pašalinti {name}?",
+    "removeBody": "Ji dingsta iš meniu. Darbai, kurie ją turi, ją rodo toliau.",
+    "addTitle": "Nauja būsena",
+    "editTitle": "Redaguoti būseną",
+    "dialogBody": "Būsena yra pavadinimas su spalva. Etapas, kuriam ji priklauso, lemia, kaip traktuojamas darbas.",
+    "name": "Pavadinimas",
+    "namePlaceholder": "Paruošta atsiimti",
+    "stage": "Etapas",
+    "color": "Spalva",
+    "notify": "Siūlyti pranešti klientui",
+    "message": "Žinutė",
+    "tokens": "Įterpti:",
+    "cancel": "Atšaukti",
+    "save": "Išsaugoti",
+    "saved": "Būsena išsaugota",
+    "failed": "Nepavyko išsaugoti būsenos",
+    "messageEmptyHint": "Palikus tuščią, siunčiamas aukščiau esantis tekstas.",
+    "useSuggested": "Redaguoti šį tekstą"
   }
 }

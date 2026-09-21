@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "Modelli email",
         "description": "Cosa dicono le email di fattura, preventivo e rapporto"
+      },
+      "workOrderStatuses": {
+        "title": "Stati degli ordini",
+        "description": "I tuoi passaggi, e chi viene avvisato"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Trascina per riordinare",
     "dragHandleKeyboard": "Trascina, o usa i tasti freccia, per spostare questo blocco",
     "tagDoesNotFit": "Il tag non entra in questo campo."
+  },
+  "workOrderStatuses": {
+    "title": "Stati degli ordini di lavoro",
+    "description": "I tuoi nomi per i passaggi di un lavoro. Ognuno appartiene a una delle tre fasi e compare nel menu di quella fase su ogni ordine di lavoro.",
+    "cardTitle": "Fasi e stati",
+    "suggestionsLabel": "Aggiunta rapida",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Pronto per il ritiro",
+        "message": "Ciao {customer_name}, la tua {vehicle} è pronta per il ritiro. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "In attesa del cliente"
+      },
+      "waitingForApproval": {
+        "name": "In attesa di approvazione",
+        "message": "Ciao {customer_name}, ci serve la tua approvazione prima di proseguire sulla tua {vehicle}. Contattaci. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Prima dell’inizio dei lavori. Il lavoro risulta aperto.",
+      "in-progress": "Mentre si lavora sul veicolo. Il lavoro risulta aperto.",
+      "completed": "Il lavoro è finito. Il cliente può vedere e pagare la fattura e il lavoro esce dalla lista del tecnico."
+    },
+    "add": "Aggiungi stato",
+    "builtIn": "Integrato",
+    "asksToNotify": "Propone l’avviso",
+    "notifyHint": "Quando un lavoro raggiunge questo stato, viene proposto di inviare un messaggio al cliente. Nulla viene inviato senza la tua conferma.",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù",
+    "edit": "Modifica",
+    "remove": "Rimuovi",
+    "empty": "Nessuno stato personale qui per ora.",
+    "removeTitle": "Rimuovere {name}?",
+    "removeBody": "Sparisce dai menu. I lavori che lo hanno continuano a mostrarlo.",
+    "addTitle": "Nuovo stato",
+    "editTitle": "Modifica stato",
+    "dialogBody": "Uno stato è un nome con un colore. La fase a cui appartiene decide come viene trattato il lavoro.",
+    "name": "Nome",
+    "namePlaceholder": "Pronto per il ritiro",
+    "stage": "Fase",
+    "color": "Colore",
+    "notify": "Proponi di avvisare il cliente",
+    "message": "Messaggio",
+    "tokens": "Inserisci:",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "saved": "Stato salvato",
+    "failed": "Impossibile salvare lo stato",
+    "messageEmptyHint": "Se lasciato vuoto, viene inviato il testo qui sopra.",
+    "useSuggested": "Modifica questo testo"
   }
 }

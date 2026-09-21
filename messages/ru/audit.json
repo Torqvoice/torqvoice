@@ -176,7 +176,10 @@
     "service_videoCall_send": "Отправлена ссылка на видеозвонок",
     "timeEntry_create": "Добавлена запись времени",
     "timeEntry_update": "Исправлена запись времени",
-    "timeEntry_delete": "Удалена запись времени"
+    "timeEntry_delete": "Удалена запись времени",
+    "settings_workOrderStatus_create": "Добавлен статус заказ-наряда",
+    "settings_workOrderStatus_update": "Изменён статус заказ-наряда",
+    "settings_workOrderStatus_archive": "Удалён статус заказ-наряда"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",

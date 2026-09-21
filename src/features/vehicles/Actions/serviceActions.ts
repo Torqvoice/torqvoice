@@ -20,6 +20,7 @@ import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
+import { isSystemStatus, statusColumns } from '@/features/work-order-statuses/Lib/stages'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { randomUUID } from 'crypto'
 import { releaseFiles } from '@/lib/files/manager'
@@ -233,6 +234,9 @@ export async function getServiceRecord(recordId: string) {
           payments: { orderBy: { date: 'desc' } },
           // Who opened the job, for the line under its number.
           createdBy: { select: { name: true } },
+          // The workshop's own status, archived or not: a job keeps saying
+          // what it was called after the status has left the menus.
+          customStatus: { select: { id: true, name: true, color: true, stage: true } },
           // A tire job is meaningless without knowing which set and which
           // shelf, so it travels with the record rather than being fetched
           // separately by whatever screen happens to need it.
@@ -738,6 +742,13 @@ export async function updateServiceRecord(input: unknown) {
           where: { id },
           data: {
             ...recordData,
+            // The form carries the stage, not the workshop's own status, which
+            // is chosen and saved on its own. So a save that moves the stage
+            // drops a status that belonged to the old one, and a save that
+            // leaves the stage alone leaves the status alone.
+            ...(recordData.status !== undefined && recordData.status !== existing.status
+              ? { customStatusId: null, customStatusSince: null }
+              : {}),
             taxComponents: splitTax?.taxComponents,
             // Attaching a vehicle to a counter sale: the direct customer link is
             // cleared so the invoice follows the vehicle's customer again.
@@ -963,9 +974,33 @@ export async function updateServiceRecord(input: unknown) {
   )
 }
 
-export async function updateServiceStatus(recordId: string, status: string) {
+/**
+ * Moves a job along. `customStatusId` names one of the workshop's own
+ * statuses, which has to sit under the stage being moved to; without one the
+ * job stands at the plain stage and lets go of whatever status it carried,
+ * since that belonged to the stage it left. See work-order-statuses/Lib/stages.
+ */
+export async function updateServiceStatus(
+  recordId: string,
+  status: string,
+  customStatusId: string | null = null
+) {
   return withAuth(
     async ({ organizationId }) => {
+      // Written as it arrived until now; every screen that reads it keeps a
+      // closed list, so a stray value made the job vanish from half of them.
+      if (!isSystemStatus(status)) throw new Error('Unknown status')
+      const custom = customStatusId
+        ? await db.workOrderStatus.findFirst({
+            where: { id: customStatusId, organizationId, archivedAt: null },
+            select: { id: true, name: true, stage: true },
+          })
+        : null
+      if (customStatusId && !custom) throw new Error('Status not found')
+      if (custom && custom.stage !== status) {
+        throw new Error('That status belongs to another stage')
+      }
+
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
         include: {
@@ -978,7 +1013,7 @@ export async function updateServiceStatus(recordId: string, status: string) {
 
       await db.serviceRecord.update({
         where: { id: recordId },
-        data: { status },
+        data: statusColumns(status, custom),
       })
 
       notificationBus.emit('workboard', {
@@ -999,7 +1034,7 @@ export async function updateServiceStatus(recordId: string, status: string) {
       revalidatePath('/services')
       if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
       else revalidatePath(`/sales/${recordId}`)
-      return { success: true, recordId, status }
+      return { success: true, recordId, status, customStatus: custom?.name ?? null }
     },
     {
       requiredPermissions: [
@@ -1015,7 +1050,11 @@ export async function updateServiceStatus(recordId: string, status: string) {
           key: 'service_status',
           params: { status: result.status.replaceAll('-', '_') },
         },
-        metadata: { serviceRecordId: result.recordId, status: result.status },
+        metadata: {
+          serviceRecordId: result.recordId,
+          status: result.status,
+          ...(result.customStatus ? { customStatus: result.customStatus } : {}),
+        },
       }),
     }
   )
@@ -1163,6 +1202,8 @@ export async function getWorkOrders(params: {
         db.serviceRecord.findMany({
           where,
           include: {
+            // The workshop's own status, shown beside the stage in the list.
+            customStatus: { select: { name: true, color: true } },
             customer: { select: { id: true, name: true, email: true, phone: true } },
             vehicle: {
               select: {

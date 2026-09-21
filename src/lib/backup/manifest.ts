@@ -248,6 +248,15 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 87,
   },
+  // The workshop's own work order statuses. Jobs point at them and let go when
+  // one is removed (SetNull), so they are cleared after the jobs.
+  {
+    model: 'WorkOrderStatus',
+    key: 'workOrderStatuses',
+    option: 'workshopConfig',
+    restore: 'replace',
+    clearOrder: 88,
+  },
   // Members keep pointing at their role, so a restore fills gaps rather than
   // clearing the table.
   { model: 'Role', key: 'roles', option: 'workshopConfig', restore: 'merge' },

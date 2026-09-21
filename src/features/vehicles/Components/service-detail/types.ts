@@ -43,6 +43,9 @@ export interface ServiceDetail {
   description: string | null
   type: string
   status: string
+  /** One of the workshop's own statuses, under the stage `status` names. */
+  customStatus?: { id: string; name: string; color: string; stage: string } | null
+  customStatusSince?: Date | string | null
   cost: number
   mileage: number | null
   serviceDate: Date

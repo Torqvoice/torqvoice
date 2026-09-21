@@ -176,7 +176,10 @@
     "service_videoCall_send": "Wysłano link do rozmowy wideo",
     "timeEntry_create": "Dodano wpis czasu",
     "timeEntry_update": "Poprawiono wpis czasu",
-    "timeEntry_delete": "Usunięto wpis czasu"
+    "timeEntry_delete": "Usunięto wpis czasu",
+    "settings_workOrderStatus_create": "Dodano status zlecenia",
+    "settings_workOrderStatus_update": "Zmieniono status zlecenia",
+    "settings_workOrderStatus_archive": "Usunięto status zlecenia"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",

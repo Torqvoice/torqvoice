@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "E-mailsjablonen",
         "description": "Wat je e-mails voor factuur, offerte en rapport zeggen"
+      },
+      "workOrderStatuses": {
+        "title": "Werkorderstatussen",
+        "description": "Uw eigen stappen, en wie bericht krijgt"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Sleep om te herschikken",
     "dragHandleKeyboard": "Sleep, of gebruik de pijltjestoetsen, om dit blok te verplaatsen",
     "tagDoesNotFit": "De tag past niet in dit veld."
+  },
+  "workOrderStatuses": {
+    "title": "Werkorderstatussen",
+    "description": "Uw eigen namen voor de stappen van een opdracht. Elke status hoort bij een van de drie fasen en staat in het menu van die fase op elke werkorder.",
+    "cardTitle": "Fasen en statussen",
+    "suggestionsLabel": "Snel toevoegen",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Klaar om op te halen",
+        "message": "Hallo {customer_name}, uw {vehicle} staat klaar om opgehaald te worden. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Wacht op klant"
+      },
+      "waitingForApproval": {
+        "name": "Wacht op akkoord",
+        "message": "Hallo {customer_name}, we hebben uw akkoord nodig voordat we verdergaan met uw {vehicle}. Neem contact met ons op. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Voordat het werk begint. De opdracht telt als open.",
+      "in-progress": "Terwijl er aan het voertuig wordt gewerkt. De opdracht telt als open.",
+      "completed": "Het werk is klaar. De klant kan de factuur zien en betalen, en de opdracht verdwijnt uit de lijst van de monteur."
+    },
+    "add": "Status toevoegen",
+    "builtIn": "Ingebouwd",
+    "asksToNotify": "Biedt melding aan",
+    "notifyHint": "Als een opdracht deze status krijgt, wordt aangeboden de klant een bericht te sturen. Er wordt niets verstuurd zonder uw bevestiging.",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "edit": "Bewerken",
+    "remove": "Verwijderen",
+    "empty": "Hier staan nog geen eigen statussen.",
+    "removeTitle": "{name} verwijderen?",
+    "removeBody": "De status verdwijnt uit de menu’s. Opdrachten die hem hebben, blijven hem tonen.",
+    "addTitle": "Nieuwe status",
+    "editTitle": "Status bewerken",
+    "dialogBody": "Een status is een naam met een kleur. De fase waaronder hij valt, bepaalt hoe de opdracht wordt behandeld.",
+    "name": "Naam",
+    "namePlaceholder": "Klaar om op te halen",
+    "stage": "Fase",
+    "color": "Kleur",
+    "notify": "Aanbieden de klant te informeren",
+    "message": "Bericht",
+    "tokens": "Invoegen:",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "saved": "Status opgeslagen",
+    "failed": "De status kon niet worden opgeslagen",
+    "messageEmptyHint": "Blijft het veld leeg, dan wordt de tekst hierboven verstuurd.",
+    "useSuggested": "Deze tekst bewerken"
   }
 }

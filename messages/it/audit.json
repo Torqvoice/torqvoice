@@ -176,7 +176,10 @@
     "service_videoCall_send": "Link videochiamata inviato",
     "timeEntry_create": "Voce oraria aggiunta",
     "timeEntry_update": "Voce oraria corretta",
-    "timeEntry_delete": "Voce oraria eliminata"
+    "timeEntry_delete": "Voce oraria eliminata",
+    "settings_workOrderStatus_create": "Stato ordine aggiunto",
+    "settings_workOrderStatus_update": "Stato ordine modificato",
+    "settings_workOrderStatus_archive": "Stato ordine rimosso"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",

@@ -176,7 +176,10 @@
     "service_videoCall_send": "Görüntülü görüşme bağlantısı gönderildi",
     "timeEntry_create": "Zaman kaydı eklendi",
     "timeEntry_update": "Zaman kaydı düzeltildi",
-    "timeEntry_delete": "Zaman kaydı silindi"
+    "timeEntry_delete": "Zaman kaydı silindi",
+    "settings_workOrderStatus_create": "İş emri durumu eklendi",
+    "settings_workOrderStatus_update": "İş emri durumu değiştirildi",
+    "settings_workOrderStatus_archive": "İş emri durumu kaldırıldı"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",

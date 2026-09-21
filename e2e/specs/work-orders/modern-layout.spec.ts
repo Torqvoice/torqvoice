@@ -178,8 +178,10 @@ test.describe('the overhauled work order page', () => {
     await expect(page.getByTestId('service-opened')).toBeHidden()
 
     // Each control of the status stepper stays in its own space: a label is
-    // cut short rather than running into the next. Three stages and the
-    // waiting-for-parts hold beside the second, four buttons in all.
+    // cut short rather than running into the next. Three stages, and the
+    // arrow beside "In Progress" that opens the statuses filed under it
+    // (always there, for "Waiting Parts"): four buttons in all on a workshop
+    // that has defined no statuses of its own.
     const stages = await page
       .getByTestId('status-stepper')
       .getByRole('button')

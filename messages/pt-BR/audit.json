@@ -176,7 +176,10 @@
     "service_videoCall_send": "Link da videochamada enviado",
     "timeEntry_create": "Registro de tempo adicionado",
     "timeEntry_update": "Registro de tempo corrigido",
-    "timeEntry_delete": "Registro de tempo excluído"
+    "timeEntry_delete": "Registro de tempo excluído",
+    "settings_workOrderStatus_create": "Status de ordem adicionado",
+    "settings_workOrderStatus_update": "Status de ordem alterado",
+    "settings_workOrderStatus_archive": "Status de ordem removido"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",

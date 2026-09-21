@@ -587,7 +587,8 @@
       "messageSent": "Mensagem enviada ao cliente",
       "linkShared": "Link da fatura partilhado",
       "linkViewed": "{count, plural, one {O cliente abriu o link} other {O cliente abriu o link # vezes}}",
-      "paymentTaken": "Pagamento de {amount} registado"
+      "paymentTaken": "Pagamento de {amount} registado",
+      "statusSet": "Estado alterado para {status}"
     },
     "invite": {
       "title": "A página da ordem de serviço foi renovada.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Preço de compra",
       "overdue": "em atraso",
       "customerSince": "Cliente desde"
-    }
+    },
+    "moreStatuses": "Mais estados"
   },
   "photoHandoff": {
     "button": "Adicionar pelo telemóvel",
@@ -726,5 +728,8 @@
     "paid": "Pagamento recebido",
     "paidBody": "O pagamento está na ordem de reparação.",
     "done": "Concluir"
+  },
+  "customStatus": {
+    "defaultMessage": "Olá {customer_name}, uma atualização sobre a sua {vehicle}: {status}. {company_name}"
   }
 }

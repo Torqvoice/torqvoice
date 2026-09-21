@@ -587,7 +587,8 @@
       "messageSent": "Клиенту отправлено сообщение",
       "linkShared": "Отправлена ссылка на счёт",
       "linkViewed": "{count, plural, =1 {Клиент открыл ссылку} one {Клиент открыл ссылку # раз} few {Клиент открыл ссылку # раза} many {Клиент открыл ссылку # раз} other {Клиент открыл ссылку # раза}}",
-      "paymentTaken": "Записан платёж {amount}"
+      "paymentTaken": "Записан платёж {amount}",
+      "statusSet": "Статус изменён на {status}"
     },
     "invite": {
       "title": "Страница заказ-наряда обновлена.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Цена покупки",
       "overdue": "просрочен",
       "customerSince": "Клиент с"
-    }
+    },
+    "moreStatuses": "Другие статусы"
   },
   "photoHandoff": {
     "button": "Добавить с телефона",
@@ -726,5 +728,8 @@
     "paid": "Оплата получена",
     "paidBody": "Оплата отражена в заказ-наряде.",
     "done": "Готово"
+  },
+  "customStatus": {
+    "defaultMessage": "Здравствуйте, {customer_name}! Новости о вашем {vehicle}: {status}. {company_name}"
   }
 }

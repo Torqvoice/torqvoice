@@ -587,7 +587,8 @@
       "messageSent": "Wysłano wiadomość do klienta",
       "linkShared": "Udostępniono link do faktury",
       "linkViewed": "{count, plural, =1 {Klient otworzył link} one {Klient otworzył link # raz} few {Klient otworzył link # razy} many {Klient otworzył link # razy} other {Klient otworzył link # razy}}",
-      "paymentTaken": "Zarejestrowano płatność {amount}"
+      "paymentTaken": "Zarejestrowano płatność {amount}",
+      "statusSet": "Status ustawiony na {status}"
     },
     "invite": {
       "title": "Strona zlecenia została przebudowana.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Cena zakupu",
       "overdue": "po terminie",
       "customerSince": "Klient od"
-    }
+    },
+    "moreStatuses": "Więcej statusów"
   },
   "photoHandoff": {
     "button": "Dodaj z telefonu",
@@ -726,5 +728,8 @@
     "paid": "Płatność otrzymana",
     "paidBody": "Płatność jest na zleceniu.",
     "done": "Gotowe"
+  },
+  "customStatus": {
+    "defaultMessage": "Dzień dobry {customer_name}, aktualizacja dotycząca {vehicle}: {status}. {company_name}"
   }
 }

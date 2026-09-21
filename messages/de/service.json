@@ -587,7 +587,8 @@
       "messageSent": "Nachricht an den Kunden gesendet",
       "linkShared": "Rechnungslink geteilt",
       "linkViewed": "{count, plural, one {Kunde hat den Link geöffnet} other {Kunde hat den Link # Mal geöffnet}}",
-      "paymentTaken": "Zahlung von {amount} aufgezeichnet"
+      "paymentTaken": "Zahlung von {amount} aufgezeichnet",
+      "statusSet": "Status auf {status} gesetzt"
     },
     "invite": {
       "title": "Die Seite für Arbeitsaufträge wurde überarbeitet.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Kaufpreis",
       "overdue": "überfällig",
       "customerSince": "Kunde seit"
-    }
+    },
+    "moreStatuses": "Weitere Status"
   },
   "photoHandoff": {
     "button": "Vom Handy hinzufügen",
@@ -726,5 +728,8 @@
     "paid": "Zahlung eingegangen",
     "paidBody": "Die Zahlung steht auf dem Arbeitsauftrag.",
     "done": "Fertig"
+  },
+  "customStatus": {
+    "defaultMessage": "Hallo {customer_name}, ein Update zu Ihrem {vehicle}: {status}. {company_name}"
   }
 }

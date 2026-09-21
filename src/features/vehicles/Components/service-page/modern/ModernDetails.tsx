@@ -36,12 +36,17 @@ import { ActivityCard } from './ActivityCard'
 import { FilesMediaCard } from './FilesMediaCard'
 import { JobFactsCard } from './JobFactsCard'
 import { MoneyBar, MoneyLine } from './MoneyBar'
+import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import { StatusStepper } from './StatusStepper'
 
 type LeftProps = ComponentProps<typeof DetailsLeftColumn>
 type RightProps = ComponentProps<typeof DetailsRightColumn>
 
 export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof LeftProps> {
+  /** The workshop's own statuses, for the menus on the stepper. */
+  workOrderStatuses?: WorkOrderStatusOption[]
+  /** Offers to tell the customer about a status that asks for it. */
+  onNotifyForStatus?: (status: WorkOrderStatusOption) => void
   /**
    * A locked invoice disables what it freezes: the lines, totals, invoice
    * fields, warranty, notes and custom fields. Status, booking, clock,
@@ -137,7 +142,15 @@ export function ModernDetails(props: ModernDetailsProps) {
   const confirmUnconfirmed = useConfirm()
   // Bumped by the bar's "Take payment": the payments form opens and scrolls into view.
   const [paymentSignal, setPaymentSignal] = useState(0)
-  const changeStatus = async (next: string) => {
+  // The workshop's own status the job carries. Held here as well as on the
+  // record so the stepper answers at once, before the page has been re-read.
+  const [customStatus, setCustomStatus] = useState(record.customStatus ?? null)
+  const recordCustomId = record.customStatus?.id ?? null
+  useEffect(() => {
+    setCustomStatus(record.customStatus ?? null)
+  }, [recordCustomId]) // eslint-disable-line react-hooks/exhaustive-deps -- keyed on which status, not the object's identity
+
+  const changeStatus = async (next: string, custom: WorkOrderStatusOption | null = null) => {
     const open = formState.concerns.filter((c) => c.description.trim() && !c.confirmed)
     if (next === 'completed' && open.length > 0) {
       const ok = await confirmUnconfirmed({
@@ -149,22 +162,30 @@ export function ModernDetails(props: ModernDetailsProps) {
       })
       if (!ok) return
     }
-    if (!locked) {
+    // A plain move between stages, with none of the workshop's statuses on
+    // either side of it, goes with the form as it always has.
+    if (!locked && !custom && !customStatus) {
       formState.dirtySetStatus(next)
       return
     }
-    // A locked invoice refuses the form's save, but the lock freezes what the
-    // invoice says is owed, not how far along the job is. So the status is
-    // saved on its own, the way the work board moves a card.
-    const previous = formState.status
+    // Everything else is saved on its own, the way the work board moves a
+    // card. A locked invoice refuses the form's save, but the lock freezes
+    // what the invoice says is owed, not how far along the job is. And one of
+    // the workshop's statuses is not a field of the form at all: it is chosen,
+    // and dropped, here.
+    const previous = { status: formState.status, custom: customStatus }
     formState.setStatus(next)
-    const result = await updateServiceStatus(record.id, next)
+    setCustomStatus(custom)
+    const result = await updateServiceStatus(record.id, next, custom?.id ?? null)
     if (result.success) {
       formState.flashSaved()
       router.refresh()
+      // Asked, never sent: the desk decides whether this customer hears.
+      if (custom?.notifyCustomer) props.onNotifyForStatus?.(custom)
     } else {
-      formState.setStatus(previous)
-      toast.error(t('page.failedUpdate'))
+      formState.setStatus(previous.status)
+      setCustomStatus(previous.custom)
+      toast.error(result.error || t('page.failedUpdate'))
     }
   }
 
@@ -262,7 +283,12 @@ export function ModernDetails(props: ModernDetailsProps) {
               value={formState.initialData.serviceDate || new Date().toISOString().split('T')[0]}
             />
             {/* Outside the lock: a locked invoice still moves along. */}
-            <StatusStepper status={formState.status} onChange={(next) => void changeStatus(next)} />
+            <StatusStepper
+              status={formState.status}
+              customStatus={customStatus}
+              options={props.workOrderStatuses}
+              onChange={(next, custom) => void changeStatus(next, custom)}
+            />
 
             {/* The side column gives way before the job does: the parts and labour
             editors turn into a table at 672px of their own, so two columns

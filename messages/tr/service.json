@@ -587,7 +587,8 @@
       "messageSent": "Müşteriye mesaj gönderildi",
       "linkShared": "Fatura bağlantısı paylaşıldı",
       "linkViewed": "{count, plural, one {Müşteri bağlantıyı açtı} other {Müşteri bağlantıyı # kez açtı}}",
-      "paymentTaken": "{amount} tutarında ödeme kaydedildi"
+      "paymentTaken": "{amount} tutarında ödeme kaydedildi",
+      "statusSet": "Durum {status} olarak ayarlandı"
     },
     "invite": {
       "title": "İş emri sayfası yenilendi.",
@@ -647,7 +648,8 @@
       "purchasePrice": "Satın alma fiyatı",
       "overdue": "gecikmiş",
       "customerSince": "Müşteri olma tarihi"
-    }
+    },
+    "moreStatuses": "Diğer durumlar"
   },
   "photoHandoff": {
     "button": "Telefondan ekle",
@@ -726,5 +728,8 @@
     "paid": "Ödeme alındı",
     "paidBody": "Ödeme iş emrine işlendi.",
     "done": "Tamam"
+  },
+  "customStatus": {
+    "defaultMessage": "Merhaba {customer_name}, {vehicle} aracınızla ilgili bir güncelleme: {status}. {company_name}"
   }
 }

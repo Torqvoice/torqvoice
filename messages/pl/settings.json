@@ -142,6 +142,10 @@
       "emailTemplates": {
         "title": "Szablony e-mail",
         "description": "Co mówią e-maile z fakturą, ofertą i raportem"
+      },
+      "workOrderStatuses": {
+        "title": "Statusy zleceń",
+        "description": "Własne etapy i kto dostaje wiadomość"
       }
     },
     "pro": "PRO",
@@ -2490,5 +2494,56 @@
     "dragHandle": "Przeciągnij, aby zmienić kolejność",
     "dragHandleKeyboard": "Przeciągnij lub użyj klawiszy strzałek, aby przenieść ten blok",
     "tagDoesNotFit": "Tag nie mieści się w tym polu."
+  },
+  "workOrderStatuses": {
+    "title": "Statusy zleceń",
+    "description": "Własne nazwy kroków, przez które przechodzi zlecenie. Każdy należy do jednego z trzech etapów i pojawia się w menu tego etapu na każdym zleceniu.",
+    "cardTitle": "Etapy i statusy",
+    "suggestionsLabel": "Szybkie dodawanie",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Gotowe do odbioru",
+        "message": "Dzień dobry {customer_name}, Państwa {vehicle} jest gotowy do odbioru. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Oczekiwanie na klienta"
+      },
+      "waitingForApproval": {
+        "name": "Oczekiwanie na akceptację",
+        "message": "Dzień dobry {customer_name}, potrzebujemy Państwa akceptacji, zanim będziemy kontynuować prace przy {vehicle}. Prosimy o kontakt. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Przed rozpoczęciem pracy. Zlecenie liczy się jako otwarte.",
+      "in-progress": "Gdy trwają prace przy pojeździe. Zlecenie liczy się jako otwarte.",
+      "completed": "Praca jest wykonana. Klient może zobaczyć i opłacić fakturę, a zlecenie znika z listy mechanika."
+    },
+    "add": "Dodaj status",
+    "builtIn": "Wbudowany",
+    "asksToNotify": "Proponuje powiadomienie",
+    "notifyHint": "Gdy zlecenie osiągnie ten status, pojawi się propozycja wysłania wiadomości do klienta. Nic nie zostanie wysłane bez potwierdzenia.",
+    "moveUp": "W górę",
+    "moveDown": "W dół",
+    "edit": "Edytuj",
+    "remove": "Usuń",
+    "empty": "Nie ma tu jeszcze własnych statusów.",
+    "removeTitle": "Usunąć {name}?",
+    "removeBody": "Znika z menu. Zlecenia, które go mają, nadal go pokazują.",
+    "addTitle": "Nowy status",
+    "editTitle": "Edytuj status",
+    "dialogBody": "Status to nazwa z kolorem. Etap, do którego należy, decyduje o tym, jak traktowane jest zlecenie.",
+    "name": "Nazwa",
+    "namePlaceholder": "Gotowe do odbioru",
+    "stage": "Etap",
+    "color": "Kolor",
+    "notify": "Proponuj powiadomienie klienta",
+    "message": "Wiadomość",
+    "tokens": "Wstaw:",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saved": "Status zapisany",
+    "failed": "Nie udało się zapisać statusu",
+    "messageEmptyHint": "Jeśli pole pozostanie puste, zostanie wysłany tekst powyżej.",
+    "useSuggested": "Edytuj ten tekst"
   }
 }
