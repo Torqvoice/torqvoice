@@ -363,6 +363,7 @@
     "quantity": "Ant.",
     "noStockItem": "Ingen lagervare, pris settes manuelt",
     "storeTires": "Legg dekk på hotell",
+    "noneStored": "Ingen dekk lagret fra denne jobben",
     "storage": "Lagring",
     "storageFee": "Gebyr",
     "storagePeriod": "Periode",

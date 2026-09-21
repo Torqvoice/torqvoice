@@ -363,6 +363,7 @@
     "quantity": "Adet",
     "noStockItem": "Stok kalemi yok, fiyat elle girilir",
     "storeTires": "Lastikleri depola",
+    "noneStored": "Bu işten depolanan lastik yok",
     "storage": "Depolama",
     "storageFee": "Ücret",
     "storagePeriod": "Dönem",

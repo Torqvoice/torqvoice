@@ -363,6 +363,7 @@
     "quantity": "Ilość",
     "noStockItem": "Brak pozycji magazynowej, cena ręczna",
     "storeTires": "Przechowaj opony",
+    "noneStored": "Brak opon przechowywanych z tego zlecenia",
     "storage": "Przechowywanie",
     "storageFee": "Opłata",
     "storagePeriod": "Okres",

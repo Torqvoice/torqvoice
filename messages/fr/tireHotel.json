@@ -363,6 +363,7 @@
     "quantity": "Qté",
     "noStockItem": "Pas d’article en stock, prix saisi à la main",
     "storeTires": "Stocker les pneus",
+    "noneStored": "Aucun pneu stocké pour cette intervention",
     "storage": "Stockage",
     "storageFee": "Frais",
     "storagePeriod": "Période",

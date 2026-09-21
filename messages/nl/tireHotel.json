@@ -363,6 +363,7 @@
     "quantity": "Aantal",
     "noStockItem": "Geen voorraadartikel, prijs handmatig",
     "storeTires": "Banden opslaan",
+    "noneStored": "Geen banden opgeslagen vanuit deze opdracht",
     "storage": "Opslag",
     "storageFee": "Kosten",
     "storagePeriod": "Periode",

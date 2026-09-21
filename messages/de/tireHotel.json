@@ -363,6 +363,7 @@
     "quantity": "Anz.",
     "noStockItem": "Kein Lagerartikel, Preis von Hand",
     "storeTires": "Reifen einlagern",
+    "noneStored": "Keine Reifen aus diesem Auftrag eingelagert",
     "storage": "Lagerung",
     "storageFee": "Gebühr",
     "storagePeriod": "Zeitraum",

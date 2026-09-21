@@ -363,6 +363,7 @@
     "quantity": "Qty",
     "noStockItem": "No stock item, priced by hand",
     "storeTires": "Store tires",
+    "noneStored": "No tires stored from this job",
     "storage": "Storage",
     "storageFee": "Fee",
     "storagePeriod": "Period",

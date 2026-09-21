@@ -35,7 +35,7 @@ import { WarrantySection } from '../WarrantySection'
 import { ActivityCard } from './ActivityCard'
 import { FilesMediaCard } from './FilesMediaCard'
 import { JobFactsCard } from './JobFactsCard'
-import { MoneyBar } from './MoneyBar'
+import { MoneyBar, MoneyLine } from './MoneyBar'
 import { StatusStepper } from './StatusStepper'
 
 type LeftProps = ComponentProps<typeof DetailsLeftColumn>
@@ -348,6 +348,14 @@ export function ModernDetails(props: ModernDetailsProps) {
                   />
                 </Lockable>
 
+                {/* Below `lg` only, where there is no money bar. */}
+                <MoneyLine
+                  total={formState.displayTotal}
+                  paid={formState.totalPaid}
+                  balance={formState.balanceDue}
+                  currencyCode={currencyCode}
+                />
+
                 <FilesMediaCard serviceRecordId={record.id} customerId={customer?.id} {...files} />
 
                 {/* Outside the lock: the customer notes freeze with the invoice,
@@ -404,16 +412,6 @@ export function ModernDetails(props: ModernDetailsProps) {
                           ])
                   }
                 />
-
-                <Lockable locked={locked} label={lockedLabel}>
-                  <WarrantySection
-                    value={formState.warranty}
-                    onChange={formState.dirtySetWarranty}
-                    texts={props.warrantyTexts}
-                    distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
-                    serviceDate={formState.initialData.serviceDate}
-                  />
-                </Lockable>
 
                 <AppCard
                   icon={Receipt}
@@ -486,6 +484,18 @@ export function ModernDetails(props: ModernDetailsProps) {
                     />
                   </div>
                 </AppCard>
+
+                {/* Under the invoice, not over it: the warranty is set once, the
+                    invoice card is used on every job. */}
+                <Lockable locked={locked} label={lockedLabel}>
+                  <WarrantySection
+                    value={formState.warranty}
+                    onChange={formState.dirtySetWarranty}
+                    texts={props.warrantyTexts}
+                    distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
+                    serviceDate={formState.initialData.serviceDate}
+                  />
+                </Lockable>
 
                 {record.publicToken && (
                   <SharedLinkCard

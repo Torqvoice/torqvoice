@@ -363,6 +363,7 @@
     "quantity": "Qtd.",
     "noStockItem": "Sem artigo de stock, preço manual",
     "storeTires": "Guardar pneus",
+    "noneStored": "Nenhum pneu armazenado deste serviço",
     "storage": "Armazenamento",
     "storageFee": "Valor",
     "storagePeriod": "Período",

@@ -99,13 +99,16 @@ export function StoreTiresButton({
   return (
     <>
       {!hasSet && (
-        <div className="flex justify-end">
+        // A row of its own rather than a button adrift between two cards: it
+        // says what the state is, and the banner that replaces it once a set
+        // is stored sits in the same place.
+        <div className="flex min-w-0 items-center gap-3 rounded-lg border border-dashed border-card-edge px-4 py-2">
+          <Warehouse className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">
+            {t('job.noneStored')}
+          </span>
           <Button size="sm" variant="outline" onClick={handleOpen} disabled={loading}>
-            {loading ? (
-              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Warehouse className="mr-1.5 h-3.5 w-3.5" />
-            )}
+            {loading && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
             {t('job.storeTires')}
           </Button>
         </div>

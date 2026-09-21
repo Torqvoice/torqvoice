@@ -363,6 +363,7 @@
     "quantity": "Kiekis",
     "noStockItem": "Nėra sandėlio prekės, kaina įvedama ranka",
     "storeTires": "Padėti padangas saugoti",
+    "noneStored": "Iš šio darbo padangų nesaugoma",
     "storage": "Saugojimas",
     "storageFee": "Mokestis",
     "storagePeriod": "Laikotarpis",

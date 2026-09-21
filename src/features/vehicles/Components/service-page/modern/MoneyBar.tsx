@@ -104,3 +104,53 @@ export function MoneyBar({
     </div>
   )
 }
+
+/**
+ * The same figures in the flow of the page, under the parts, wherever the bar
+ * is not drawn. The bar stays off a phone or tablet for the reason above, but
+ * that left the total in the invoice card at the very end of a single column,
+ * so somebody adding parts on a tablet never saw it move. This costs the
+ * screen nothing while it is scrolled past, and it sits where the lines are
+ * being typed.
+ */
+export function MoneyLine({
+  total,
+  paid,
+  balance,
+  currencyCode,
+}: Pick<MoneyBarProps, 'total' | 'paid' | 'balance' | 'currencyCode'>) {
+  const t = useTranslations('service.modern.moneyBar')
+  const formatCurrency = useFormatCurrency()
+  const settled = total > 0 && balance <= 0
+
+  return (
+    <dl
+      data-testid="money-line"
+      className="flex flex-wrap items-baseline justify-end gap-x-5 gap-y-1 rounded-lg border border-card-edge bg-card px-5 py-3 lg:hidden"
+    >
+      <div className="flex items-baseline gap-1.5">
+        <dt className="text-xs text-muted-foreground">{t('total')}</dt>
+        <dd className="font-mono text-sm tabular-nums">{formatCurrency(total, currencyCode)}</dd>
+      </div>
+      {paid > 0 && (
+        <div className="flex items-baseline gap-1.5">
+          <dt className="text-xs text-muted-foreground">{t('paid')}</dt>
+          <dd className="font-mono text-sm tabular-nums">{formatCurrency(paid, currencyCode)}</dd>
+        </div>
+      )}
+      <div className="flex items-baseline gap-2">
+        <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {settled ? t('settled') : t('balance')}
+        </dt>
+        <dd
+          className={cn(
+            'order-number text-lg font-bold leading-none tabular-nums',
+            settled && 'text-emerald-600 dark:text-emerald-400'
+          )}
+        >
+          {formatCurrency(balance, currencyCode)}
+        </dd>
+      </div>
+    </dl>
+  )
+}

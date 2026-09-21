@@ -363,6 +363,7 @@
     "quantity": "Cant.",
     "noStockItem": "Sin artículo de inventario, precio manual",
     "storeTires": "Guardar neumáticos",
+    "noneStored": "No hay neumáticos almacenados de este trabajo",
     "storage": "Almacenaje",
     "storageFee": "Importe",
     "storagePeriod": "Periodo",
