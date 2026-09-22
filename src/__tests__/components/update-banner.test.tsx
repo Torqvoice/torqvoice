@@ -1,11 +1,12 @@
 /**
  * The "we deployed something" strip.
  *
- * The behaviour worth pinning is that it lets itself out. Almost nobody
- * presses the X, so without the six-hour clock the notice rides along until
- * the next release and stops being read at all. The clock is per browser, but
- * expiry writes the version server-side exactly as a real dismissal does, so
- * the banner does not come back on the user's other devices.
+ * Two things worth pinning. It only speaks for a minor or major release: a
+ * patch is recorded as seen and shows nothing, because a strip for every
+ * daily release was never read and never went away. And it lets itself out:
+ * the hour runs on the user record from the first sighting on any
+ * device, and expiry writes the version server-side exactly as a dismissal
+ * does, so the banner does not come back anywhere.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
@@ -15,21 +16,30 @@ import { BannerSlotProvider } from '@/components/banner-slot'
 vi.mock('next-intl', () => ({ useTranslations: () => (key: string) => key }))
 
 const markVersionSeen = vi.fn()
+const markUpdateBannerShown = vi.fn()
 vi.mock('@/features/users/Actions/versionActions', () => ({
   markVersionSeen: (version: string) => markVersionSeen(version),
+  markUpdateBannerShown: (version: string) => markUpdateBannerShown(version),
 }))
 
 const { UpdateBanner } = await import('@/components/update-banner')
 
-const SIX_HOURS = 6 * 60 * 60 * 1000
+const ONE_HOUR = 60 * 60 * 1000
 
 /** The banner only renders inside the slot it competes for. */
-function show(lastSeenVersion: string | null = '1.0.0') {
+function show({
+  currentVersion = 'v1.1.0',
+  lastSeenVersion = 'v1.0.0' as string | null,
+  shownVersion = null as string | null,
+  shownAt = null as string | null,
+} = {}) {
   return render(
     <BannerSlotProvider>
       <UpdateBanner
-        currentVersion="1.1.0"
+        currentVersion={currentVersion}
         lastSeenVersion={lastSeenVersion}
+        shownVersion={shownVersion}
+        shownAt={shownAt}
         releaseNotesUrl="https://example.test/releases"
       />
     </BannerSlotProvider>
@@ -41,8 +51,8 @@ function shown() {
 }
 
 beforeEach(() => {
-  localStorage.clear()
   markVersionSeen.mockClear()
+  markUpdateBannerShown.mockClear()
   vi.useFakeTimers({ shouldAdvanceTime: true })
 })
 
@@ -51,9 +61,18 @@ afterEach(() => {
 })
 
 describe('the update banner', () => {
-  it('announces a version the account has not seen', () => {
+  it('announces a minor release the account has not seen, and starts its clock', () => {
     show()
     expect(shown()).not.toBeNull()
+    expect(markUpdateBannerShown).toHaveBeenCalledWith('v1.1.0')
+    expect(markVersionSeen).not.toHaveBeenCalled()
+  })
+
+  it('says nothing for a patch release, and records it as seen', () => {
+    show({ currentVersion: 'v1.0.1' })
+    expect(shown()).toBeNull()
+    expect(markVersionSeen).toHaveBeenCalledWith('v1.0.1')
+    expect(markUpdateBannerShown).not.toHaveBeenCalled()
   })
 
   it('stays gone once dismissed, and records the version', () => {
@@ -62,54 +81,50 @@ describe('the update banner', () => {
       screen.getByRole('button').click()
     })
     expect(shown()).toBeNull()
-    expect(markVersionSeen).toHaveBeenCalledWith('1.1.0')
+    expect(markVersionSeen).toHaveBeenCalledWith('v1.1.0')
   })
 
-  it('lets itself out six hours after it first appeared', () => {
+  it('lets itself out an hour after it first appeared', () => {
     show()
     expect(shown()).not.toBeNull()
 
     act(() => {
-      vi.advanceTimersByTime(SIX_HOURS)
+      vi.advanceTimersByTime(ONE_HOUR)
     })
 
     expect(shown()).toBeNull()
-    expect(markVersionSeen).toHaveBeenCalledWith('1.1.0')
+    expect(markVersionSeen).toHaveBeenCalledWith('v1.1.0')
   })
 
-  it('keeps the clock running across reloads rather than restarting it', () => {
-    show().unmount()
-
-    // Five hours later, in a fresh tab: one hour left, not six.
-    vi.setSystemTime(Date.now() + 5 * 60 * 60 * 1000)
-    show()
+  it('runs the clock from the first sighting on any device, not from this load', () => {
+    show({
+      shownVersion: 'v1.1.0',
+      shownAt: new Date(Date.now() - 50 * 60 * 1000).toISOString(),
+    })
     expect(shown()).not.toBeNull()
+    expect(markUpdateBannerShown).not.toHaveBeenCalled()
 
     act(() => {
-      vi.advanceTimersByTime(60 * 60 * 1000)
+      vi.advanceTimersByTime(10 * 60 * 1000)
     })
     expect(shown()).toBeNull()
   })
 
-  it('goes straight away when the six hours passed while the app was closed', () => {
-    show().unmount()
-
-    vi.setSystemTime(Date.now() + SIX_HOURS + 1000)
-    show()
-
+  it('goes straight away when the hour passed while the app was closed', () => {
+    show({ shownVersion: 'v1.1.0', shownAt: new Date(Date.now() - ONE_HOUR - 1000).toISOString() })
     expect(shown()).toBeNull()
-    expect(markVersionSeen).toHaveBeenCalledWith('1.1.0')
-  })
-
-  it('gives the next release its own six hours', () => {
-    localStorage.setItem('update-banner-first-seen', `1.0.0|${Date.now() - SIX_HOURS - 1000}`)
-    show()
-    expect(shown()).not.toBeNull()
+    expect(markVersionSeen).toHaveBeenCalledWith('v1.1.0')
   })
 
   it('says nothing to an account seeing the app for the first time', () => {
-    show(null)
+    show({ lastSeenVersion: null })
     expect(shown()).toBeNull()
-    expect(markVersionSeen).toHaveBeenCalledWith('1.1.0')
+    expect(markVersionSeen).toHaveBeenCalledWith('v1.1.0')
+  })
+
+  it('says nothing in development', () => {
+    show({ currentVersion: 'development' })
+    expect(shown()).toBeNull()
+    expect(markVersionSeen).not.toHaveBeenCalled()
   })
 })

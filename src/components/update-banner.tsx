@@ -3,99 +3,73 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { X } from 'lucide-react'
-import { markVersionSeen } from '@/features/users/Actions/versionActions'
+import { markUpdateBannerShown, markVersionSeen } from '@/features/users/Actions/versionActions'
+import { decideUpdateBanner } from '@/lib/update-banner-rule'
 import { BANNER_PRIORITY, useBannerSlot } from './banner-slot'
 
 /**
- * How long the banner stays up when nobody touches it. Six hours is a full
- * working day of chances to read it; past that it has stopped being a notice
- * and become part of the header.
- */
-const AUTO_DISMISS_MS = 6 * 60 * 60 * 1000
-
-/** `<version>|<epoch ms>`: when this release's banner first appeared here. */
-const FIRST_SEEN_KEY = 'update-banner-first-seen'
-
-function firstSeenAt(version: string): number {
-  try {
-    const [seenVersion, at] = (localStorage.getItem(FIRST_SEEN_KEY) ?? '').split('|')
-    return seenVersion === version ? Number(at) || 0 : 0
-  } catch {
-    // localStorage unavailable; the clock restarts on this visit
-    return 0
-  }
-}
-
-function rememberFirstSeen(version: string, at: number) {
-  try {
-    localStorage.setItem(FIRST_SEEN_KEY, `${version}|${at}`)
-  } catch {
-    // localStorage unavailable; the banner then runs its six hours from now
-  }
-}
-
-/**
- * One-time "the app was updated" notice, shown when the running APP_VERSION
- * differs from the version stored on the user record. Dismissing (or opening
- * the release notes) stores the current version server-side, so the banner
- * appears exactly once per account per release, on any device.
+ * The "the app was updated" strip, shown when the running APP_VERSION is a
+ * minor or major release the account has not seen. A patch release says
+ * nothing: it is recorded as seen and the next comparison starts from it.
+ * The rule, and the hour the strip stays up, are in
+ * lib/update-banner-rule.ts; this only draws what it decides.
+ *
+ * Dismissing (or opening the release notes) stores the version on the user
+ * record, so the banner appears exactly once per account per release, on any
+ * device. So does letting it expire: the clock is on the user record too,
+ * started the first time this release's banner appeared anywhere.
  */
 export function UpdateBanner({
   currentVersion,
   lastSeenVersion,
+  shownVersion,
+  shownAt,
   releaseNotesUrl,
 }: {
   currentVersion: string
   lastSeenVersion: string | null
+  /** The release the banner was last stamped as shown for, and when (ISO). */
+  shownVersion: string | null
+  shownAt: string | null
   releaseNotesUrl: string
 }) {
   const t = useTranslations('common.updateBanner')
   const [dismissed, setDismissed] = useState(false)
 
   const neverSeeded = lastSeenVersion === null
-  const show =
-    !dismissed &&
-    !neverSeeded &&
-    currentVersion !== 'development' &&
-    lastSeenVersion !== currentVersion
+  const decision = neverSeeded
+    ? null
+    : decideUpdateBanner(
+        { lastSeenVersion, updateBannerVersion: shownVersion, updateBannerShownAt: shownAt },
+        currentVersion
+      )
+  const show = !dismissed && decision?.kind === 'show'
 
   const acknowledge = useCallback(() => {
     setDismissed(true)
     markVersionSeen(currentVersion)
   }, [currentVersion])
 
-  // First load ever for this account: seed silently so a brand-new user is
-  // not greeted with "what's new" for a version they never used.
   useEffect(() => {
-    if (neverSeeded && currentVersion !== 'development') {
-      markVersionSeen(currentVersion)
-    }
-  }, [neverSeeded, currentVersion])
-
-  // Hardly anyone presses the X, so the banner otherwise rides along until the
-  // next release. Six hours after it first appeared it acknowledges itself.
-  // The clock lives in this browser, but the acknowledgement is the same
-  // server-side write as the X, so it clears the banner on every device.
-  useEffect(() => {
-    if (!show) return
-
-    const now = Date.now()
-    let since = firstSeenAt(currentVersion)
-    if (!since) {
-      since = now
-      rememberFirstSeen(currentVersion, now)
-    }
-
-    const remaining = since + AUTO_DISMISS_MS - now
-    if (remaining <= 0) {
-      acknowledge()
+    if (currentVersion === 'development') return
+    // First load ever for this account: seed silently so a brand-new user is
+    // not greeted with "what's new" for a version they never used. A patch
+    // release, and a banner whose hour ran out while the app was closed,
+    // are recorded the same way, without anything on screen.
+    if (neverSeeded || decision?.kind === 'silent' || decision?.kind === 'expired') {
+      if (lastSeenVersion !== currentVersion) markVersionSeen(currentVersion)
       return
     }
+    if (decision?.kind === 'show' && decision.stamp) markUpdateBannerShown(currentVersion)
+  }, [neverSeeded, decision?.kind, currentVersion, lastSeenVersion]) // eslint-disable-line react-hooks/exhaustive-deps -- `decision.stamp` follows `kind`
 
-    // Also covers a tab left open across the deadline.
-    const timer = setTimeout(acknowledge, remaining)
+  // A tab left open across the deadline: the strip lets itself out, with the
+  // same write the X makes, so it clears on every device.
+  useEffect(() => {
+    if (!show || decision?.kind !== 'show') return
+    const timer = setTimeout(acknowledge, Math.max(0, decision.expiresAt - Date.now()))
     return () => clearTimeout(timer)
-  }, [show, currentVersion, acknowledge])
+  }, [show, decision, acknowledge])
 
   // Last in the queue. Interesting, never urgent, and it waits behind an
   // outage notice rather than sitting under one.

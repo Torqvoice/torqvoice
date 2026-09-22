@@ -284,6 +284,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <UpdateBanner
               currentVersion={process.env.APP_VERSION || 'development'}
               lastSeenVersion={data.lastSeenVersion}
+              shownVersion={data.updateBannerVersion}
+              shownAt={data.updateBannerShownAt?.toISOString() ?? null}
               releaseNotesUrl={
                 process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
               }
