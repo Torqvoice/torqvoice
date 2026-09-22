@@ -250,7 +250,13 @@ export function JobClockSection({
                   style={{ backgroundColor: e.technicianColor }}
                   aria-hidden
                 />
-                <span className="min-w-0 flex-1 truncate font-medium">{e.technicianName}</span>
+                {/* The row wraps, so the name is given room before anything else
+                    is: in a narrow column it was squeezed to three letters while
+                    the times and the badge kept their width. The full name is
+                    in the tooltip for the cases the room still is not enough. */}
+                <span className="min-w-32 flex-1 truncate font-medium" title={e.technicianName}>
+                  {e.technicianName}
+                </span>
                 <span className="tabular-nums text-muted-foreground">
                   {formatTime(e.startedAt)}
                   {' – '}

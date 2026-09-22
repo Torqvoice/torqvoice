@@ -69,7 +69,7 @@ export function CountryPicker({
       </PopoverTrigger>
 
       {/* Fixed height, so the list does not grow and shrink as it scrolls. */}
-      <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+      <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0" align="start">
         <Command>
           <CommandInput placeholder={t('team.countrySearch')} />
           <CommandList className="max-h-64">
