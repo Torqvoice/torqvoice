@@ -308,10 +308,13 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
                   }
                   className={tileAction}
                 >
+                  {/* The icon is the state, the tooltip is the action: an open
+                      eye means the customer can see this. Drawn the other way
+                      round it read as "hidden" on every visible photo. */}
                   {file.includeInInvoice ? (
-                    <EyeOff className="h-3.5 w-3.5" />
-                  ) : (
                     <Eye className="h-3.5 w-3.5" />
+                  ) : (
+                    <EyeOff className="h-3.5 w-3.5" />
                   )}
                 </button>
                 <button
