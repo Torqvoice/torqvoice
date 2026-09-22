@@ -51,6 +51,33 @@ export function useRecordChanges(
 }
 
 /**
+ * Whether a change is this page's own save coming back, which it must not
+ * answer: the page has already shown the result, and re-reading would fight
+ * the form somebody is typing in.
+ *
+ * Only a change from another web page of the same person can be that. One
+ * from the technician app is never an echo of a browser, whoever is signed
+ * in on the phone, and a one-person shop is signed in on both: for a while
+ * the desk ignored its own phone finishing a job, because the check read the
+ * user and not the source, and the phone holds no presence to say it is a
+ * second device.
+ *
+ * Between two of the person's own web pages, presence decides: a save on the
+ * laptop has to reach their own tablet in the bay, and the room's `devices`
+ * count says whether there is one.
+ */
+export function isOwnEcho(
+  change: RecordChange,
+  me: Me | null | undefined,
+  presence: PresenceUser[] | undefined
+): boolean {
+  if (change.by.source !== 'web') return false
+  if (!change.by.userId || !me || change.by.userId !== me.userId) return false
+  const mine = presence?.find((user) => user.userId === me.userId)
+  return !mine || mine.devices < 2
+}
+
+/**
  * The record kept current on screen: re-read the page's own server data when
  * it changes somewhere else.
  *
@@ -101,15 +128,12 @@ export function useLiveRecord(
     id,
     useCallback(
       (change) => {
-        const me = realtime?.getState().me
-        if (change?.by.userId && change.by.userId === me?.userId && id) {
-          // Unless this person has the record open somewhere else as well: a
-          // save on the laptop has to reach their own tablet in the bay. The
-          // room's presence says so, as `devices`, when the page shows chips.
-          const mine = realtime
-            ?.presenceOf(recordRoom(kind, id))
-            .find((user) => user.userId === me.userId)
-          if (!mine || mine.devices < 2) return
+        if (
+          change &&
+          id &&
+          isOwnEcho(change, realtime?.getState().me, realtime?.presenceOf(recordRoom(kind, id)))
+        ) {
+          return
         }
         onChange.current?.(change)
         governor.current?.request()
