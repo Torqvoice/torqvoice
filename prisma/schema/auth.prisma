@@ -24,6 +24,11 @@ model User {
   /// App version this user last saw/dismissed the update banner for.
   /// Null = never seeded (seeded silently on first load, no banner).
   lastSeenVersion  String?
+  /// The release the update banner is up for, and when it first appeared to
+  /// this user on any device. The hour it stays up runs from here, so a
+  /// second device does not restart them and a closed tab cannot stop them.
+  updateBannerVersion String?
+  updateBannerShownAt DateTime?
   /// Per-user dashboard grid layout (card positions/sizes/hidden set).
   /// Null = default layout. Shape validated in dashboardLayoutActions.
   dashboardLayout  Json?
