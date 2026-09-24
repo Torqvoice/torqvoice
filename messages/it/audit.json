@@ -78,9 +78,9 @@
     "settings_updateInvoiceLayout": "Layout fattura aggiornato",
     "settings_updateQuoteLayout": "Layout preventivo aggiornato",
     "settings_updatePortalSlug": "URL portale aggiornato",
-    "inspectionTemplate_create": "Modello di ispezione creato",
-    "inspectionTemplate_update": "Modello di ispezione aggiornato",
-    "inspectionTemplate_delete": "Modello di ispezione eliminato",
+    "inspectionTemplate_create": "Checklist di ispezione creata",
+    "inspectionTemplate_update": "Checklist di ispezione aggiornata",
+    "inspectionTemplate_delete": "Checklist di ispezione eliminata",
     "customField_create": "Campo personalizzato creato",
     "customField_update": "Campo personalizzato aggiornato",
     "customField_delete": "Campo personalizzato eliminato",
@@ -104,7 +104,8 @@
     "webhook_delete": "Webhook eliminato",
     "webhook_rotateSecret": "Segreto webhook ruotato",
     "inspection_reopen": "Ispezione riaperta",
-    "inspectionTemplate_import": "Modello di ispezione importato",
+    "inspectionTemplate_import": "Checklist di ispezione importata",
+    "inspectionTemplate_translate": "Checklist di ispezione tradotte",
     "scheduled_message_create": "Messaggio pianificato creato",
     "scheduled_message_update": "Messaggio pianificato aggiornato",
     "scheduled_message_delete": "Messaggio pianificato eliminato",
@@ -179,7 +180,9 @@
     "timeEntry_delete": "Voce oraria eliminata",
     "settings_workOrderStatus_create": "Stato ordine aggiunto",
     "settings_workOrderStatus_update": "Stato ordine modificato",
-    "settings_workOrderStatus_archive": "Stato ordine rimosso"
+    "settings_workOrderStatus_archive": "Stato ordine rimosso",
+    "inspection_photo_added": "Foto di ispezione aggiunta",
+    "inspection_file_added": "File di ispezione aggiunto"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -196,12 +199,12 @@
     "finding_delete": "Rilievo {id} eliminato",
     "finding_resolve": "Rilievo «{description}» risolto",
     "finding_update": "Rilievo «{description}» aggiornato",
-    "inspectionTemplate_create": "Modello di controllo «{name}» creato",
-    "inspectionTemplate_createFromPreset": "Modello di controllo «{name}» creato da una preimpostazione",
-    "inspectionTemplate_delete": "Modello di controllo «{name}» eliminato",
-    "inspectionTemplate_duplicate": "Modello di controllo duplicato in «{name}»",
-    "inspectionTemplate_import": "{count, plural, one {# modello di controllo importato} other {# modelli di controllo importati}} da un pacchetto",
-    "inspectionTemplate_update": "Modello di controllo «{name}» aggiornato",
+    "inspectionTemplate_create": "Ha creato la checklist di ispezione \"{name}\"",
+    "inspectionTemplate_createFromPreset": "Ha creato la checklist di ispezione \"{name}\" da un modello",
+    "inspectionTemplate_delete": "Ha eliminato la checklist di ispezione \"{name}\"",
+    "inspectionTemplate_duplicate": "Ha duplicato la checklist di ispezione in \"{name}\"",
+    "inspectionTemplate_import": "Ha importato {count, plural, one {# checklist di ispezione} other {# checklist di ispezione}} da un pacchetto",
+    "inspectionTemplate_update": "Ha aggiornato la checklist di ispezione \"{name}\"",
     "inspection_complete": "Controllo {id} completato",
     "inspection_create": "Controllo {id} creato",
     "inspection_delete": "Controllo {id} eliminato",
@@ -325,6 +328,7 @@
     "timeEntry_create": "Aggiunti {minutes} minuti per {technician} su \"{job}\"",
     "timeEntry_update": "Voce oraria di {technician} su \"{job}\" corretta a {minutes} minuti",
     "timeEntry_stop": "Timer di {technician} su \"{job}\" fermato a {minutes} minuti",
-    "timeEntry_delete": "Voce oraria {id} eliminata"
+    "timeEntry_delete": "Voce oraria {id} eliminata",
+    "inspection_phoneUpload": "Aggiunto un file da telefono all'ispezione {ref}"
   }
 }

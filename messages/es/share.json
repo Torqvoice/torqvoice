@@ -157,14 +157,16 @@
       "attention": "Deficiencia leve",
       "fail": "Deficiencia grave",
       "dangerous": "Deficiencia peligrosa",
-      "not_inspected": "No inspeccionado"
+      "not_inspected": "No inspeccionado",
+      "not_applicable": "No aplicable"
     },
     "basic": {
       "pass": "Apto",
       "attention": "Atención",
       "fail": "No apto",
       "dangerous": "Peligroso",
-      "not_inspected": "No inspeccionado"
+      "not_inspected": "No inspeccionado",
+      "not_applicable": "No aplicable"
     },
     "result": {
       "pass": "Favorable",
@@ -194,10 +196,13 @@
     "summary": "Resumen",
     "progressLabel": "{graded} puntos evaluados",
     "limit": "Límite",
+    "rangeMin": "mín.",
+    "rangeMax": "máx.",
     "viewPhoto": "Ver foto",
     "deficienciesFound": "Deficiencias detectadas ({count})",
     "allResults": "Todos los resultados",
-    "privacyNotice": "Este informe se lo facilita el taller que realizó la inspección. Cualquier persona con este enlace puede consultarlo, así que le rogamos que no lo reenvíe. Contacte con el taller para retirar el enlace o solicitar la supresión de sus datos."
+    "privacyNotice": "Este informe se lo facilita el taller que realizó la inspección. Cualquier persona con este enlace puede consultarlo, así que le rogamos que no lo reenvíe. Contacte con el taller para retirar el enlace o solicitar la supresión de sus datos.",
+    "inspectionPhotos": "Fotos y documentos"
   },
   "terms": {
     "title": "Términos de venta",

@@ -51,6 +51,7 @@ model DocumentDesignSnapshot {
   createdAt      DateTime     @default(now())
 
   serviceRecords ServiceRecord[]
+  inspections    Inspection[]
 
   @@unique([organizationId, hash])
   @@map("document_design_snapshots")

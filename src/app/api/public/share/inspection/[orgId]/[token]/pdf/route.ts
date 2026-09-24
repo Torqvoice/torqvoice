@@ -7,13 +7,21 @@ import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import React from 'react'
 import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { loadInspectionPhotos } from '@/features/inspections/Lib/inspectionPhotos'
+import {
+  loadInspectionOverviewPhotos,
+  loadInspectionPhotos,
+} from '@/features/inspections/Lib/inspectionPhotos'
+import {
+  appendCertificateDocuments,
+  certificateDocuments,
+} from '@/features/inspections/Lib/certificateDocuments'
 import { inspectionPrintLabels } from '@/features/inspections/Lib/inspectionLabels'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
 
 export async function GET(
   _request: Request,
@@ -36,6 +44,40 @@ export async function GET(
       pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default
     }
 
+    // The share link names the inspection; the designed certificate, when the
+    // workshop has one, is then the same document the workshop downloads.
+    const shared = await db.inspection.findFirst({
+      where: { publicToken: token, organizationId: orgId },
+      select: { id: true },
+    })
+    if (!shared) {
+      return NextResponse.json({ error: 'Inspection not found' }, { status: 404 })
+    }
+    const sharedSettings = await db.appSetting.findMany({
+      where: { organizationId: orgId, key: { in: ['portal.enabled'] } },
+    })
+    const sharedOrg = await db.organization.findUnique({
+      where: { id: orgId },
+      select: { portalSlug: true },
+    })
+    const designed = await buildCertificatePdfBuffer({
+      inspectionId: shared.id,
+      organizationId: orgId,
+      locale,
+      audience: 'customer',
+      portalUrl: sharedSettings.some((s) => s.key === 'portal.enabled' && s.value === 'true')
+        ? `${getAppBaseUrl()}/portal/${sharedOrg?.portalSlug || orgId}`
+        : undefined,
+    })
+    if (designed) {
+      return new NextResponse(designed.body, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${designed.fileName}"`,
+        },
+      })
+    }
+
     const inspection = await db.inspection.findFirst({
       where: { publicToken: token, organizationId: orgId },
       include: {
@@ -55,6 +97,8 @@ export async function GET(
         },
         template: { select: { name: true, severityScale: true, country: true } },
         items: { orderBy: { sortOrder: 'asc' } },
+        // What the workshop chose to show of the files on the inspection itself.
+        attachments: { where: { includeInReport: true }, orderBy: { createdAt: 'asc' } },
       },
     })
 
@@ -129,6 +173,19 @@ export async function GET(
       )
     }
 
+    let overviewPhotos: Awaited<ReturnType<typeof loadInspectionOverviewPhotos>>['photos'] = []
+    try {
+      const overview = await loadInspectionOverviewPhotos(inspection.attachments)
+      overviewPhotos = overview.photos
+      photosOmitted += overview.omitted
+    } catch (error) {
+      console.error(
+        '[Public Inspection PDF] Overview photo embedding failed, rendering without them:',
+        error
+      )
+    }
+    const documents = certificateDocuments(inspection.attachments)
+
     const element = React.createElement(InspectionPDF, {
       data: inspection,
       workshop: {
@@ -146,22 +203,23 @@ export async function GET(
       labels,
       photos,
       photosOmitted,
+      overviewPhotos,
+      attachedDocuments: documents.map((document) => document.fileName),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
     const buffer = await renderToBuffer(element)
+    // The signed forms follow the certificate as pages of their own.
+    const body = await appendCertificateDocuments(buffer, documents)
 
     const vehicleName = `${inspection.vehicle.year}-${inspection.vehicle.make}-${inspection.vehicle.model}`
     const fileName = `Inspection-${vehicleName}.pdf`
 
-    return new NextResponse(
-      buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer,
-      {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${fileName}"`,
-        },
-      }
-    )
+    return new NextResponse(body, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${fileName}"`,
+      },
+    })
   } catch (error) {
     console.error('[Public Inspection PDF] Error:', error)
     return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })

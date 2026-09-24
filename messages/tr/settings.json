@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Tüm araç denetimleri ve sonuçları",
     "contentTechnicians": "Teknisyenler",
     "contentTechniciansDescription": "Tüm teknisyen profilleri. Bağlı kayıtların bağlantısı kaldırılacak.",
-    "contentInspectionTemplates": "Denetim Şablonları",
-    "contentInspectionTemplatesDescription": "Tüm denetim şablonları ve bölümleri. Önce denetimleri silin.",
+    "contentInspectionTemplates": "Muayene kontrol listeleri",
+    "contentInspectionTemplatesDescription": "Tüm muayene kontrol listeleri ve bölümleri. Önce muayeneleri silin.",
     "contentNotifications": "Bildirimler",
     "contentNotificationsDescription": "Tüm sistem bildirimleri",
     "contentSmsMessages": "SMS Mesajları",
@@ -656,7 +656,13 @@
       "bank_account": "Banka hesabı",
       "footer": "Alt bilgi",
       "general": "Genel",
-      "telegram_qr": "Telegram QR kodu"
+      "telegram_qr": "Telegram QR kodu",
+      "result": "Sonuç",
+      "test_details": "Test bilgileri",
+      "defects": "Kusurlar",
+      "results_table": "Tüm sonuçlar",
+      "inspection_photos": "Fotoğraflar",
+      "signature": "İmza"
     },
     "fields": {
       "customer_name": "Müşteri adı",
@@ -688,7 +694,25 @@
       "invoice_number": "Fatura No",
       "customer_number": "Müşteri No",
       "date": "Tarih",
-      "portal_link": "Portal bağlantısı"
+      "portal_link": "Portal bağlantısı",
+      "test_date": "Test tarihi",
+      "test_location": "Test yeri",
+      "inspector": "Muayene görevlisi",
+      "certificate_number": "Sertifika numarası",
+      "vehicle_category": "Araç kategorisi",
+      "odometer": "Kilometre",
+      "next_test_due": "Sonraki test",
+      "defect_notes": "Notlar",
+      "defect_photos": "Fotoğraflar",
+      "passed_checks": "Geçen kontroller",
+      "not_applicable_checks": "Uygulanamayan kontroller",
+      "check_notes": "Notlar sütunu",
+      "result_detail": "Açıklama",
+      "result_summary": "Nota göre sayılar",
+      "combined_table": "Tüm bölümler için tek tablo",
+      "inspector_line": "Görevli satırı",
+      "inspector_name": "Görevlinin adını yazdır",
+      "date_line": "Tarih satırı"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Ayrıntılı",
         "description": "Başlık üstte, araç tek başına, iki tablo ve tüm isteğe bağlı bloklar"
+      },
+      "certificate-regulator": {
+        "name": "Mevzuata uygun",
+        "description": "Sade ve bantsız, serifli: her kontrol notu ve açıklamasıyla, fotoğraflar, imza satırı"
+      },
+      "certificate-standard": {
+        "name": "Standart",
+        "description": "Başlığın altında sonuç, araç ve test yan yana, her kusur notu ve fotoğrafıyla, ardından bölüm bölüm geçmeyen kontroller"
+      },
+      "certificate-customer": {
+        "name": "Müşteri raporu",
+        "description": "Bantlı sayfa, büyük ve ortalanmış sonuç, fotoğraflı kusurlar, genel fotoğraflar ve geçmeyen kontrollerin kısa bir tablosu"
+      },
+      "certificate-compact": {
+        "name": "Kompakt",
+        "description": "Filolar için tek sayfa: küçük yazı, başlığın yanında sonuç, notsuz tüm sonuçlar, fotoğraflar, imza satırı"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Şablonlar",
     "invoiceDescription": "PDF fatura ve tekliflerinizin görünümünü özelleştirin.",
-    "inspectionsDescription": "Muayene kontrol listelerini ve çoklu nokta şablonlarını yönetin.",
+    "inspectionsDescription": "Teknisyenlerinizin muayene sırasında izlediği kontrol listeleri.",
     "smsDescription": "Müşterilere gönderilen SMS mesajlarını özelleştirin.",
     "tabs": {
       "invoice": "Fatura",
       "quotation": "Teklif",
-      "inspections": "Muayeneler",
+      "inspections": "Muayene\nkontrol listeleri",
       "sms": "SMS",
-      "layout": "Düzen"
+      "layout": "Düzen",
+      "certificates": "Muayene\nsertifikaları"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",
@@ -849,7 +890,8 @@
     "goToLayout": "Düzen ve bölümler",
     "openDesigner": "Tasarımcıyı aç",
     "designerIntro": "Bir başlangıç noktası seçin, sonra her şeyi değiştirmek için tasarımcıyı açın.",
-    "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda."
+    "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda.",
+    "certificatesDescription": "Tamamlanan bir muayenenin yazdırıp paylaştığı sertifikayı tasarlayın."
   },
   "payment": {
     "readMore": "Devamını oku",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Teknisyenler",
     "optTechniciansDesc": "Teknisyen profilleri ve çalışma panosu atamaları",
     "optInspections": "Denetimler",
-    "optInspectionsDesc": "Denetim şablonları, denetimler ve sonuçlar",
+    "optInspectionsDesc": "Muayene kontrol listeleri, muayeneler ve sonuçlar",
     "optAuditLogs": "Denetim Günlükleri",
     "optAuditLogsDesc": "Etkinlik ve değişiklik geçmişi",
     "optSmsMessages": "Mesajlar",
@@ -2060,7 +2102,19 @@
       "slogan": "Güvenebileceğiniz kaliteli hizmet",
       "paymentTerms": "14 gün içinde ödenir",
       "footerNote": "İş birliğiniz için teşekkürler",
-      "value": "Örnek"
+      "value": "Örnek",
+      "testLocation": "Liman Caddesi 12, Springfield",
+      "certificateNotes": "Lastikler yasal sınıra yakın; bir sonraki testten önce değiştirilmesi beklenir.",
+      "checkBrakeHoses": "Fren hortumları",
+      "checkBrakeHosesNote": "Sol ön hortumda hafif sürtünme izi, dış katman henüz aşınmamış.",
+      "sectionBrakes": "Fren donanımı",
+      "checkBrakePedal": "Servis freni pedalı",
+      "checkBrakeFluid": "Fren hidroliği",
+      "sectionLighting": "Aydınlatma donanımı",
+      "checkHeadlamps": "Far durumu",
+      "checkFogLamp": "Arka sis lambası",
+      "photoFront": "Ön",
+      "photoOdometer": "Kilometre sayacı"
     },
     "logoUpload": "Logo yükle",
     "logoReplace": "Logoyu değiştir",
@@ -2096,7 +2150,9 @@
     "setDefault": "Varsayılan yap",
     "defaultSet": "\"{name}\" artık kullanımda",
     "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı",
-    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz."
+    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz.",
+    "certificate": "Muayene sertifikası",
+    "resultWidthHint": "Boş bırakılırsa satırı kaplar. Punto girerseniz bant daralır ve hizalamanın seçtiği tarafa yerleşir; sütunda sütun genişliğini alır."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

@@ -50,7 +50,7 @@ export const designTemplateSchema = z
   })
   .passthrough()
 
-export const DESIGN_DOCUMENT_TYPES: DocumentType[] = ['invoice', 'quote']
+export const DESIGN_DOCUMENT_TYPES: DocumentType[] = ['invoice', 'quote', 'certificate']
 
 /** A stored layout and template read back as they were written, or null. */
 function parseStoredSource(layout: unknown, template: unknown): DesignSource | null {
@@ -181,6 +181,7 @@ export function materializeDesignSource(source: DesignSource): DesignSource {
 export function savedDesignFromRow(row: {
   id: string
   name: string
+  documentType?: string
   updatedAt: Date
   layout: unknown
   template: unknown
@@ -191,6 +192,9 @@ export function savedDesignFromRow(row: {
   return {
     id: row.id,
     name: row.name,
+    documentType: DESIGN_DOCUMENT_TYPES.includes(row.documentType as DocumentType)
+      ? (row.documentType as DocumentType)
+      : undefined,
     savedAt: row.updatedAt.toISOString(),
     layout: mergeWithDefaults(source.layout),
     template: source.template,

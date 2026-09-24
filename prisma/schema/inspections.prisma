@@ -71,6 +71,8 @@ model InspectionTemplateItem {
 
   required          Boolean  @default(false)
   photoRequired     Boolean  @default(false)
+  /// The check may be graded "not applicable": the vehicle has no such part.
+  allowNotApplicable Boolean @default(true)
   // Defect severity applied when a measurement falls outside min/max.
   defaultSeverity   String?
   // Phrases this workshop wants offered when a defect is recorded against the
@@ -128,9 +130,18 @@ model Inspection {
   inspectorName     String?
   testLocation      String?
 
+  /// The certificate design as it was when the inspection was completed, so a
+  /// design edited later never changes a certificate a customer already has.
+  /// Null on inspections completed before designs existed, or by a workshop
+  /// that has never designed one; those print the built-in sheet.
+  designSnapshotId String?
+  designSnapshot   DocumentDesignSnapshot? @relation(fields: [designSnapshotId], references: [id], onDelete: SetNull)
+
   organizationId String
 
   items          InspectionItem[]
+  attachments    InspectionAttachment[]
+  statusReports  StatusReport[]
   quoteRequests  InspectionQuoteRequest[]
   quotes         Quote[]
   serviceRecords ServiceRecord[]
@@ -139,10 +150,36 @@ model Inspection {
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
   @@index([vehicleId])
+  @@index([designSnapshotId])
   @@index([organizationId])
   @@index([technicianId])
   @@index([workBayId])
   @@map("inspections")
+}
+
+/// Files filed on the inspection as a whole rather than on one check: the
+/// overview photos, a video of the walk round, the regulator's own paper form
+/// once it is filled in and signed. A photo that is the evidence for a single
+/// check stays on that check (InspectionItem.imageUrls), next to its grade.
+model InspectionAttachment {
+  id              String   @id @default(cuid())
+  fileName        String
+  fileUrl         String
+  fileType        String
+  fileSize        Int
+  /// "image", "document" or "video".
+  category        String   @default("image")
+  description     String?
+  /// Shown to the customer on the shared inspection link. Photos start shown,
+  /// documents start hidden: paperwork is the workshop's until it says so.
+  includeInReport Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  inspectionId String
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@map("inspection_attachments")
 }
 
 model InspectionItem {
@@ -166,6 +203,8 @@ model InspectionItem {
   choices           String[] @default([])
   required          Boolean  @default(false)
   photoRequired     Boolean  @default(false)
+  /// The check may be graded "not applicable": the vehicle has no such part.
+  allowNotApplicable Boolean @default(true)
   defaultSeverity   String?
   defectSuggestions String[] @default([])
 

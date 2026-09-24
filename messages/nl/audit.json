@@ -78,9 +78,9 @@
     "settings_updateInvoiceLayout": "Factuurlay-out bijgewerkt",
     "settings_updateQuoteLayout": "Offertelay-out bijgewerkt",
     "settings_updatePortalSlug": "Portal-URL bijgewerkt",
-    "inspectionTemplate_create": "Inspectiesjabloon aangemaakt",
-    "inspectionTemplate_update": "Inspectiesjabloon bijgewerkt",
-    "inspectionTemplate_delete": "Inspectiesjabloon verwijderd",
+    "inspectionTemplate_create": "Inspectiechecklist gemaakt",
+    "inspectionTemplate_update": "Inspectiechecklist bijgewerkt",
+    "inspectionTemplate_delete": "Inspectiechecklist verwijderd",
     "customField_create": "Aangepast veld aangemaakt",
     "customField_update": "Aangepast veld bijgewerkt",
     "customField_delete": "Aangepast veld verwijderd",
@@ -104,7 +104,8 @@
     "webhook_delete": "Webhook verwijderd",
     "webhook_rotateSecret": "Webhook-geheim geroteerd",
     "inspection_reopen": "Inspectie heropend",
-    "inspectionTemplate_import": "Inspectiesjabloon geïmporteerd",
+    "inspectionTemplate_import": "Inspectiechecklist geïmporteerd",
+    "inspectionTemplate_translate": "Inspectiechecklists vertaald",
     "scheduled_message_create": "Gepland bericht aangemaakt",
     "scheduled_message_update": "Gepland bericht bijgewerkt",
     "scheduled_message_delete": "Gepland bericht verwijderd",
@@ -179,7 +180,9 @@
     "timeEntry_delete": "Tijdregistratie verwijderd",
     "settings_workOrderStatus_create": "Werkorderstatus toegevoegd",
     "settings_workOrderStatus_update": "Werkorderstatus gewijzigd",
-    "settings_workOrderStatus_archive": "Werkorderstatus verwijderd"
+    "settings_workOrderStatus_archive": "Werkorderstatus verwijderd",
+    "inspection_photo_added": "Keuringsfoto toegevoegd",
+    "inspection_file_added": "Keuringsbestand toegevoegd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -196,12 +199,12 @@
     "finding_delete": "Bevinding {id} verwijderd",
     "finding_resolve": "Bevinding \"{description}\" afgehandeld",
     "finding_update": "Bevinding \"{description}\" bijgewerkt",
-    "inspectionTemplate_create": "Keuringssjabloon \"{name}\" aangemaakt",
-    "inspectionTemplate_createFromPreset": "Keuringssjabloon \"{name}\" aangemaakt vanuit een voorinstelling",
-    "inspectionTemplate_delete": "Keuringssjabloon \"{name}\" verwijderd",
-    "inspectionTemplate_duplicate": "Keuringssjabloon gekopieerd naar \"{name}\"",
-    "inspectionTemplate_import": "{count, plural, one {# keuringssjabloon} other {# keuringssjablonen}} geïmporteerd uit een pakket",
-    "inspectionTemplate_update": "Keuringssjabloon \"{name}\" bijgewerkt",
+    "inspectionTemplate_create": "Heeft inspectiechecklist \"{name}\" gemaakt",
+    "inspectionTemplate_createFromPreset": "Heeft inspectiechecklist \"{name}\" gemaakt vanuit een voorinstelling",
+    "inspectionTemplate_delete": "Heeft inspectiechecklist \"{name}\" verwijderd",
+    "inspectionTemplate_duplicate": "Heeft inspectiechecklist gedupliceerd naar \"{name}\"",
+    "inspectionTemplate_import": "Heeft {count, plural, one {# inspectiechecklist} other {# inspectiechecklists}} uit een pakket geïmporteerd",
+    "inspectionTemplate_update": "Heeft inspectiechecklist \"{name}\" bijgewerkt",
     "inspection_complete": "Keuring {id} afgerond",
     "inspection_create": "Keuring {id} aangemaakt",
     "inspection_delete": "Keuring {id} verwijderd",
@@ -325,6 +328,7 @@
     "timeEntry_create": "{minutes} minuten toegevoegd voor {technician} op \"{job}\"",
     "timeEntry_update": "Tijdregistratie van {technician} op \"{job}\" gecorrigeerd naar {minutes} minuten",
     "timeEntry_stop": "Klok van {technician} op \"{job}\" gestopt op {minutes} minuten",
-    "timeEntry_delete": "Tijdregistratie {id} verwijderd"
+    "timeEntry_delete": "Tijdregistratie {id} verwijderd",
+    "inspection_phoneUpload": "Bestand vanaf een telefoon toegevoegd aan keuring {ref}"
   }
 }

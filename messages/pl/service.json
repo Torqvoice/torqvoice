@@ -649,7 +649,9 @@
       "overdue": "po terminie",
       "customerSince": "Klient od"
     },
-    "moreStatuses": "Więcej statusów"
+    "moreStatuses": "Więcej statusów",
+    "fromInspection": "Z przeglądu {name}, {date}",
+    "startInspection": "Rozpocznij przegląd"
   },
   "photoHandoff": {
     "button": "Dodaj z telefonu",

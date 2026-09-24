@@ -171,6 +171,8 @@
     "vehicleCategory": "Kjøretøygruppe",
     "nextTestDue": "Neste kontroll",
     "limit": "Grenseverdi",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "overallResult": "Kontrollresultat",
     "deficiencies": "Mangler funnet",
     "reading": "Måleverdi",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "Kjøretøyet er godkjent. Utbedre de mindre manglene uten unødig opphold.",
     "resultDetailFail": "Kjøretøyet er ikke godkjent. Manglene må utbedres og kjøretøyet kontrolleres på nytt.",
     "resultDetailFailDangerous": "Kjøretøyet må ikke brukes på offentlig vei før de farlige manglene er utbedret.",
-    "resultDetailIncomplete": "Denne kontrollen pågår fortsatt."
+    "resultDetailIncomplete": "Denne kontrollen pågår fortsatt.",
+    "attachments": "Bilder og dokumenter",
+    "attachedDocuments": "Vedlagte dokumenter: {names}",
+    "euNotApplicable": "Ikke aktuelt",
+    "basicNotApplicable": "Ikke aktuelt",
+    "allResults": "Alle resultater",
+    "signature": "Signatur",
+    "sectionColumn": "Seksjon"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIKK",

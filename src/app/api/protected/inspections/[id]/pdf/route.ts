@@ -8,10 +8,18 @@ import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import React from 'react'
 import { readFile } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { loadInspectionPhotos } from '@/features/inspections/Lib/inspectionPhotos'
+import {
+  loadInspectionOverviewPhotos,
+  loadInspectionPhotos,
+} from '@/features/inspections/Lib/inspectionPhotos'
+import {
+  appendCertificateDocuments,
+  certificateDocuments,
+} from '@/features/inspections/Lib/certificateDocuments'
 import { inspectionPrintLabels } from '@/features/inspections/Lib/inspectionLabels'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -32,6 +40,24 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     const { id } = await params
 
+    // A workshop that has designed its certificate prints from the design
+    // (frozen onto the inspection when it was completed); the rest print the
+    // built-in sheet below, unchanged.
+    const designed = await buildCertificatePdfBuffer({
+      inspectionId: id,
+      organizationId: ctx.organizationId,
+      locale,
+      audience: 'workshop',
+    })
+    if (designed) {
+      return new NextResponse(designed.body, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${designed.fileName}"`,
+        },
+      })
+    }
+
     const [inspection, settings, org] = await Promise.all([
       db.inspection.findFirst({
         where: { id, organizationId: ctx.organizationId },
@@ -49,6 +75,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
           },
           template: { select: { name: true, severityScale: true, country: true } },
           items: { orderBy: { sortOrder: 'asc' } },
+          // What the workshop chose to show of the files on the inspection itself.
+          attachments: { where: { includeInReport: true }, orderBy: { createdAt: 'asc' } },
         },
       }),
       db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
@@ -114,6 +142,19 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       console.error('[Inspection PDF] Photo embedding failed, rendering without photos:', error)
     }
 
+    let overviewPhotos: Awaited<ReturnType<typeof loadInspectionOverviewPhotos>>['photos'] = []
+    try {
+      const overview = await loadInspectionOverviewPhotos(inspection.attachments)
+      overviewPhotos = overview.photos
+      photosOmitted += overview.omitted
+    } catch (error) {
+      console.error(
+        '[Inspection PDF] Overview photo embedding failed, rendering without them:',
+        error
+      )
+    }
+    const documents = certificateDocuments(inspection.attachments)
+
     const element = React.createElement(InspectionPDF, {
       data: inspection,
       workshop: {
@@ -130,22 +171,23 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       labels,
       photos,
       photosOmitted,
+      overviewPhotos,
+      attachedDocuments: documents.map((document) => document.fileName),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
     const buffer = await renderToBuffer(element)
+    // The signed forms follow the certificate as pages of their own.
+    const body = await appendCertificateDocuments(buffer, documents)
 
     const vehicleName = `${inspection.vehicle.year}-${inspection.vehicle.make}-${inspection.vehicle.model}`
     const fileName = `Inspection-${vehicleName}.pdf`
 
-    return new NextResponse(
-      buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer,
-      {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${fileName}"`,
-        },
-      }
-    )
+    return new NextResponse(body, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${fileName}"`,
+      },
+    })
   } catch (error) {
     console.error('[Inspection PDF] Error:', error)
     return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })

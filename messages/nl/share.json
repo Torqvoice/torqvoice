@@ -157,14 +157,16 @@
       "attention": "Klein gebrek",
       "fail": "Groot gebrek",
       "dangerous": "Gevaarlijk gebrek",
-      "not_inspected": "Niet gekeurd"
+      "not_inspected": "Niet gekeurd",
+      "not_applicable": "Niet van toepassing"
     },
     "basic": {
       "pass": "Goedgekeurd",
       "attention": "Aandacht",
       "fail": "Afgekeurd",
       "dangerous": "Gevaarlijk",
-      "not_inspected": "Niet gekeurd"
+      "not_inspected": "Niet gekeurd",
+      "not_applicable": "Niet van toepassing"
     },
     "result": {
       "pass": "Goedgekeurd",
@@ -194,10 +196,13 @@
     "summary": "Samenvatting",
     "progressLabel": "{graded} punten beoordeeld",
     "limit": "Grenswaarde",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "viewPhoto": "Foto bekijken",
     "deficienciesFound": "Vastgestelde gebreken ({count})",
     "allResults": "Alle resultaten",
-    "privacyNotice": "Dit rapport wordt u verstrekt door de werkplaats die de keuring heeft uitgevoerd. Iedereen met deze link kan het bekijken; stuur de link daarom niet door. Neem contact op met de werkplaats om de link in te trekken of uw gegevens te laten wissen."
+    "privacyNotice": "Dit rapport wordt u verstrekt door de werkplaats die de keuring heeft uitgevoerd. Iedereen met deze link kan het bekijken; stuur de link daarom niet door. Neem contact op met de werkplaats om de link in te trekken of uw gegevens te laten wissen.",
+    "inspectionPhotos": "Foto's en documenten"
   },
   "terms": {
     "title": "Verkoopvoorwaarden",

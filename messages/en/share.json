@@ -157,14 +157,16 @@
       "attention": "Minor defect",
       "fail": "Major defect",
       "dangerous": "Dangerous defect",
-      "not_inspected": "Not inspected"
+      "not_inspected": "Not inspected",
+      "not_applicable": "Not applicable"
     },
     "basic": {
       "pass": "Pass",
       "attention": "Attention",
       "fail": "Fail",
       "dangerous": "Dangerous",
-      "not_inspected": "Not inspected"
+      "not_inspected": "Not inspected",
+      "not_applicable": "Not applicable"
     },
     "result": {
       "pass": "Pass",
@@ -194,10 +196,13 @@
     "summary": "Summary",
     "progressLabel": "{graded} checks graded",
     "limit": "Limit",
+    "rangeMin": "min",
+    "rangeMax": "max",
     "viewPhoto": "View photo",
     "deficienciesFound": "Deficiencies found ({count})",
     "allResults": "All results",
-    "privacyNotice": "This report is shared with you by the workshop that carried out the inspection. It is available to anyone holding this link, so please do not forward it. Contact the workshop to have the link withdrawn or your data erased."
+    "privacyNotice": "This report is shared with you by the workshop that carried out the inspection. It is available to anyone holding this link, so please do not forward it. Contact the workshop to have the link withdrawn or your data erased.",
+    "inspectionPhotos": "Photos and documents"
   },
   "terms": {
     "title": "Terms of Sale",

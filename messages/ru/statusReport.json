@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Спасибо за ваш отзыв!",
     "feedbackError": "Не удалось отправить отзыв",
     "submitting": "Отправка...",
-    "poweredBy": "Работает на"
+    "poweredBy": "Работает на",
+    "vehicleLabel": "Автомобиль",
+    "plate": "Номер: {plate}",
+    "inspectionTitle": "Осмотр",
+    "messageFromTechnician": "Сообщение от механика",
+    "videoUnsupported": "Ваш браузер не поддерживает видео."
   },
   "list": {
     "title": "Отчёты о состоянии",

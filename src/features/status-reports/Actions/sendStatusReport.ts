@@ -16,52 +16,42 @@ export async function sendStatusReport(input: unknown) {
       demoGuard()
       const data = sendStatusReportSchema.parse(input)
 
-      // Get the status report with service record and customer info
+      // The report with whatever it is about, and that record's customer.
+      const contact = { id: true, name: true, email: true, phone: true, telegramChatId: true }
+      const car = {
+        year: true,
+        make: true,
+        model: true,
+        licensePlate: true,
+        mileage: true,
+        customer: { select: contact },
+      }
       const report = await db.statusReport.findFirst({
         where: { id: data.statusReportId, organizationId },
         include: {
           serviceRecord: {
-            include: {
-              customer: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  phone: true,
-                  telegramChatId: true,
-                },
-              },
-              vehicle: {
-                include: {
-                  customer: {
-                    select: {
-                      id: true,
-                      name: true,
-                      email: true,
-                      phone: true,
-                      telegramChatId: true,
-                    },
-                  },
-                },
-              },
-            },
+            select: { title: true, customer: { select: contact }, vehicle: { select: car } },
+          },
+          inspection: {
+            select: { template: { select: { name: true } }, vehicle: { select: car } },
           },
         },
       })
 
       if (!report) throw new Error('Status report not found')
 
-      const customer = report.serviceRecord.customer ?? report.serviceRecord.vehicle?.customer
+      const subject = report.serviceRecord ?? report.inspection
+      const vehicle = subject?.vehicle ?? null
+      const customer = report.serviceRecord?.customer ?? vehicle?.customer ?? null
       if (!customer) throw new Error('No customer linked to this vehicle')
 
       // Build the public URL for the status report
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const publicUrl = `${appUrl}/share/status-report/${organizationId}/${report.publicToken}`
 
-      const vehicle = report.serviceRecord.vehicle
       const vehicleName = vehicle
         ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`
-        : report.serviceRecord.title
+        : (report.serviceRecord?.title ?? report.inspection?.template.name ?? '')
 
       const t = await getTranslations('statusReport.notify')
       const messageBody = data.customMessage

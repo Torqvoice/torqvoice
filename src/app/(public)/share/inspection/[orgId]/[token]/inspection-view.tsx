@@ -1,10 +1,11 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import {
+  Ban,
   Check,
   CheckCircle2,
   Download,
@@ -18,6 +19,8 @@ import {
 } from 'lucide-react'
 import { QuoteRequestDialog } from '@/features/inspections/Components/QuoteRequestDialog'
 import { MediaLightbox, type LightboxImage } from '@/features/inspections/Components/MediaLightbox'
+import { SpecSheet } from '@/features/invoice-designer/Render/SpecSheet'
+import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
@@ -75,6 +78,14 @@ interface InspectionRecord {
   }
   template: { name: string; severityScale?: string | null; country?: string | null }
   items: InspectionItem[]
+  /** Files on the inspection as a whole that the workshop chose to show. */
+  attachments?: {
+    id: string
+    fileName: string
+    fileUrl: string
+    fileType: string
+    description: string | null
+  }[]
 }
 
 const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: string }>> = {
@@ -82,6 +93,7 @@ const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: strin
   attention: TriangleAlert,
   fail: XCircle,
   dangerous: OctagonAlert,
+  not_applicable: Ban,
   not_inspected: Minus,
 }
 
@@ -101,6 +113,7 @@ export function InspectionView({
   quoteShareUrl,
   portalUrl,
   serviceType = 'automotive',
+  spec,
 }: {
   inspection: InspectionRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -115,8 +128,16 @@ export function InspectionView({
   quoteShareUrl?: string
   portalUrl?: string
   serviceType?: 'automotive' | 'marine'
+  /**
+   * The certificate the workshop designed, built from this inspection. When
+   * it is here it is the report: the same sheet the designer shows and the
+   * PDF prints, so what the customer reads on screen is what they download.
+   * Without it the page draws the built-in report below.
+   */
+  spec?: DocumentSpec
 }) {
   const t = useTranslations('share.inspection')
+  const locale = useLocale()
   const tc = useTranslations('share.common')
 
   const fmt = dateFormat || DEFAULT_DATE_FORMAT
@@ -165,6 +186,10 @@ export function InspectionView({
     }))
   }, [gradedItems])
 
+  const files = inspection.attachments ?? []
+  // The designed sheet prints the photographs and names the documents, but
+  // paper cannot play a video or open a file, so those stay listed under it.
+  const listedFiles = spec ? files.filter((file) => !file.fileType.startsWith('image/')) : files
   const images = useMemo<LightboxImage[]>(() => {
     const list: LightboxImage[] = []
     for (const item of gradedItems) {
@@ -172,8 +197,13 @@ export function InspectionView({
         if (!isVideo(url)) list.push({ url, caption: item.name })
       }
     }
+    for (const file of files) {
+      if (file.fileType.startsWith('image/')) {
+        list.push({ url: file.fileUrl, caption: file.description || t('inspectionPhotos') })
+      }
+    }
     return list
-  }, [gradedItems])
+  }, [gradedItems, files, t])
 
   const counts = countConditions(gradedItems)
   const result = deriveTestResult(gradedItems)
@@ -233,7 +263,7 @@ export function InspectionView({
       item.measuredValue !== null &&
       item.measuredValue !== undefined
     ) {
-      const range = formatRange(item)
+      const range = formatRange(item, { min: t('rangeMin'), max: t('rangeMax'), locale })
       return (
         <p className="mt-1 text-sm">
           <span className="font-medium">
@@ -285,145 +315,149 @@ export function InspectionView({
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
-      {/* Workshop header */}
-      <header
-        className="mb-6 rounded-xl border p-6"
-        style={{ borderTopColor: primaryColor, borderTopWidth: '4px' }}
-      >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            {logoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoUrl} alt="" className="mb-3 h-12 object-contain" />
-            )}
-            <p className="text-xl font-bold">{workshop.name}</p>
-            {workshop.address && (
-              <p className="whitespace-pre-wrap text-sm text-gray-500">{workshop.address}</p>
-            )}
-            {workshop.phone && <p className="text-sm text-gray-500">{workshop.phone}</p>}
-            {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
-          </div>
-          <div className="flex items-center gap-2 sm:text-right">
-            <ShieldCheck
-              className="hidden h-6 w-6 sm:block"
-              style={{ color: primaryColor }}
-              aria-hidden="true"
-            />
-            <div>
-              <h1 className="text-lg font-bold">{t('title')}</h1>
-              <p className="text-sm text-gray-500">{inspection.template.name}</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Overall result */}
-      <section
-        aria-labelledby="result-heading"
-        className={`mb-6 rounded-xl border-2 p-5 ${resultToken.soft}`}
-      >
-        <h2 id="result-heading" className="text-xl font-bold">
-          {t(`result.${result}`)}
-        </h2>
-        <p className="mt-1 text-sm">{t(`resultDetail.${result}`)}</p>
-      </section>
-
-      {/* Test details */}
-      <section aria-labelledby="details-heading" className="mb-6 rounded-lg border p-4">
-        <h2 id="details-heading" className="mb-3 text-xs font-semibold uppercase text-gray-500">
-          {t('testDetails')}
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <dl className="space-y-1.5">
-            <div>
-              <dt className="text-xs text-gray-500">
-                {serviceType === 'marine' ? t('vesselLabel') : t('vehicle')}
-              </dt>
-              <dd className="font-semibold">
-                {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
-              </dd>
-            </div>
-            {inspection.vehicle.vin && (
+      {!spec && (
+        <>
+          {/* Workshop header */}
+          <header
+            className="mb-6 rounded-xl border p-6"
+            style={{ borderTopColor: primaryColor, borderTopWidth: '4px' }}
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <dt className="text-xs text-gray-500">
-                  {serviceType === 'marine' ? 'HIN' : 'VIN'}
-                </dt>
-                <dd className="font-mono text-sm break-all">{inspection.vehicle.vin}</dd>
+                {logoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoUrl} alt="" className="mb-3 h-12 object-contain" />
+                )}
+                <p className="text-xl font-bold">{workshop.name}</p>
+                {workshop.address && (
+                  <p className="whitespace-pre-wrap text-sm text-gray-500">{workshop.address}</p>
+                )}
+                {workshop.phone && <p className="text-sm text-gray-500">{workshop.phone}</p>}
+                {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
               </div>
-            )}
-            {inspection.vehicle.licensePlate && (
-              <div>
-                <dt className="text-xs text-gray-500">{t('plateLabel')}</dt>
-                <dd className="font-mono text-sm">{inspection.vehicle.licensePlate}</dd>
-              </div>
-            )}
-            {inspection.mileage !== null && (
-              <div>
-                <dt className="text-xs text-gray-500">
-                  {serviceType === 'marine' ? t('engineHoursLabel') : t('odometerLabel')}
-                </dt>
-                <dd className="text-sm">{inspection.mileage.toLocaleString()}</dd>
-              </div>
-            )}
-            {inspection.vehicle.customer && (
-              <div>
-                <dt className="text-xs text-gray-500">{t('customer')}</dt>
-                <dd className="text-sm">{inspection.vehicle.customer.name}</dd>
-              </div>
-            )}
-          </dl>
-          <dl className="space-y-1.5">
-            {detailRows.map((row) => (
-              <div key={row.label}>
-                <dt className="text-xs text-gray-500">{row.label}</dt>
-                <dd className="text-sm">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* Summary */}
-      <section aria-labelledby="summary-heading" className="mb-6 rounded-lg border p-4">
-        <h2 id="summary-heading" className="sr-only">
-          {t('summary')}
-        </h2>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="text-sm text-gray-500">
-            <span className="font-semibold text-gray-900 dark:text-gray-100">
-              {counts.inspected}
-            </span>{' '}
-            {t('inspected')}
-          </p>
-          {(['pass', 'attention', 'fail', 'dangerous'] as const)
-            .filter((c) => scale === 'eu' || c !== 'dangerous')
-            .map((c) => (
-              <p key={c} className="flex items-center gap-1.5 text-sm">
-                <span
-                  className={`h-3 w-3 rounded-full ${CONDITION_TOKENS[c].bar}`}
+              <div className="flex items-center gap-2 sm:text-right">
+                <ShieldCheck
+                  className="hidden h-6 w-6 sm:block"
+                  style={{ color: primaryColor }}
                   aria-hidden="true"
                 />
-                <span className="font-medium">{counts[c]}</span>
-                <span className="text-gray-500">{conditionText(c)}</span>
+                <div>
+                  <h1 className="text-lg font-bold">{t('title')}</h1>
+                  <p className="text-sm text-gray-500">{inspection.template.name}</p>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Overall result */}
+          <section
+            aria-labelledby="result-heading"
+            className={`mb-6 rounded-xl border-2 p-5 ${resultToken.soft}`}
+          >
+            <h2 id="result-heading" className="text-xl font-bold">
+              {t(`result.${result}`)}
+            </h2>
+            <p className="mt-1 text-sm">{t(`resultDetail.${result}`)}</p>
+          </section>
+
+          {/* Test details */}
+          <section aria-labelledby="details-heading" className="mb-6 rounded-lg border p-4">
+            <h2 id="details-heading" className="mb-3 text-xs font-semibold uppercase text-gray-500">
+              {t('testDetails')}
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <dl className="space-y-1.5">
+                <div>
+                  <dt className="text-xs text-gray-500">
+                    {serviceType === 'marine' ? t('vesselLabel') : t('vehicle')}
+                  </dt>
+                  <dd className="font-semibold">
+                    {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
+                  </dd>
+                </div>
+                {inspection.vehicle.vin && (
+                  <div>
+                    <dt className="text-xs text-gray-500">
+                      {serviceType === 'marine' ? 'HIN' : 'VIN'}
+                    </dt>
+                    <dd className="font-mono text-sm break-all">{inspection.vehicle.vin}</dd>
+                  </div>
+                )}
+                {inspection.vehicle.licensePlate && (
+                  <div>
+                    <dt className="text-xs text-gray-500">{t('plateLabel')}</dt>
+                    <dd className="font-mono text-sm">{inspection.vehicle.licensePlate}</dd>
+                  </div>
+                )}
+                {inspection.mileage !== null && (
+                  <div>
+                    <dt className="text-xs text-gray-500">
+                      {serviceType === 'marine' ? t('engineHoursLabel') : t('odometerLabel')}
+                    </dt>
+                    <dd className="text-sm">{inspection.mileage.toLocaleString()}</dd>
+                  </div>
+                )}
+                {inspection.vehicle.customer && (
+                  <div>
+                    <dt className="text-xs text-gray-500">{t('customer')}</dt>
+                    <dd className="text-sm">{inspection.vehicle.customer.name}</dd>
+                  </div>
+                )}
+              </dl>
+              <dl className="space-y-1.5">
+                {detailRows.map((row) => (
+                  <div key={row.label}>
+                    <dt className="text-xs text-gray-500">{row.label}</dt>
+                    <dd className="text-sm">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </section>
+
+          {/* Summary */}
+          <section aria-labelledby="summary-heading" className="mb-6 rounded-lg border p-4">
+            <h2 id="summary-heading" className="sr-only">
+              {t('summary')}
+            </h2>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <p className="text-sm text-gray-500">
+                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                  {counts.inspected}
+                </span>{' '}
+                {t('inspected')}
               </p>
-            ))}
-        </div>
-        <div
-          className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
-          role="img"
-          aria-label={t('progressLabel', { graded: counts.inspected })}
-        >
-          {(['pass', 'attention', 'fail', 'dangerous'] as const).map((c) =>
-            counts[c] > 0 ? (
-              <div
-                key={c}
-                className={CONDITION_TOKENS[c].bar}
-                style={{ width: `${(counts[c] / Math.max(counts.inspected, 1)) * 100}%` }}
-              />
-            ) : null
-          )}
-        </div>
-      </section>
+              {(['pass', 'attention', 'fail', 'dangerous'] as const)
+                .filter((c) => scale === 'eu' || c !== 'dangerous')
+                .map((c) => (
+                  <p key={c} className="flex items-center gap-1.5 text-sm">
+                    <span
+                      className={`h-3 w-3 rounded-full ${CONDITION_TOKENS[c].bar}`}
+                      aria-hidden="true"
+                    />
+                    <span className="font-medium">{counts[c]}</span>
+                    <span className="text-gray-500">{conditionText(c)}</span>
+                  </p>
+                ))}
+            </div>
+            <div
+              className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
+              role="img"
+              aria-label={t('progressLabel', { graded: counts.inspected })}
+            >
+              {(['pass', 'attention', 'fail', 'dangerous'] as const).map((c) =>
+                counts[c] > 0 ? (
+                  <div
+                    key={c}
+                    className={CONDITION_TOKENS[c].bar}
+                    style={{ width: `${(counts[c] / Math.max(counts.inspected, 1)) * 100}%` }}
+                  />
+                ) : null
+              )}
+            </div>
+          </section>
+        </>
+      )}
 
       {/* Quote available */}
       {quoteShareUrl && (
@@ -491,89 +525,156 @@ export function InspectionView({
         </Button>
       </div>
 
-      {/* Deficiencies first — this is what the report is for */}
-      {hasDefects && (
-        <section aria-labelledby="defects-heading" className="mb-6">
-          <h2 id="defects-heading" className="mb-3 text-base font-bold">
-            {t('deficienciesFound', { count: defects.length })}
+      {/* The saved design, drawn by the same engine as the designer and the
+          printed PDF. The sheet is its own paper, so it stands on the page
+          rather than being boxed inside another card. */}
+      {spec && <SpecSheet spec={spec} />}
+
+      {!spec && (
+        <>
+          {/* Deficiencies first — this is what the report is for */}
+          {hasDefects && (
+            <section aria-labelledby="defects-heading" className="mb-6">
+              <h2 id="defects-heading" className="mb-3 text-base font-bold">
+                {t('deficienciesFound', { count: defects.length })}
+              </h2>
+              <ul className="space-y-2">
+                {defects.map((item) => {
+                  const token = CONDITION_TOKENS[item.condition as Condition]
+                  const Icon = CONDITION_ICONS[item.condition as Condition]
+                  return (
+                    <li key={item.id} className={`rounded-lg border p-3 ${token.soft}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-sm font-medium">
+                          {item.code && <span className="mr-2 font-mono text-xs">{item.code}</span>}
+                          {item.name}
+                        </p>
+                        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold">
+                          <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                          {gradedText(item.condition as Condition)}
+                        </span>
+                      </div>
+                      {item.notes && (
+                        <p className="mt-1 whitespace-pre-wrap text-sm">{item.notes}</p>
+                      )}
+                      {renderValue(item)}
+                      {renderMedia(item)}
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          )}
+
+          {/* Full results */}
+          <section aria-labelledby="all-results-heading" className="space-y-4">
+            <h2 id="all-results-heading" className="text-base font-bold">
+              {t('allResults')}
+            </h2>
+            {sections.map((section) => (
+              <div key={section.name} className="overflow-hidden rounded-lg border">
+                <h3
+                  className="border-b px-4 py-3 font-semibold"
+                  style={{ backgroundColor: `${primaryColor}12` }}
+                >
+                  {section.code && (
+                    <span className="mr-2 font-mono text-xs text-gray-500">{section.code}</span>
+                  )}
+                  {section.name}
+                </h3>
+                <ul className="divide-y">
+                  {section.items.map((item) => {
+                    const condition = item.condition as Condition
+                    const token = CONDITION_TOKENS[condition]
+                    const Icon = CONDITION_ICONS[condition]
+                    return (
+                      <li key={item.id} className="px-4 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-sm font-medium">
+                            {item.code && (
+                              <span className="mr-2 font-mono text-xs text-gray-500">
+                                {item.code}
+                              </span>
+                            )}
+                            {item.name}
+                          </p>
+                          <span
+                            className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium ${token.soft}`}
+                          >
+                            <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                            {gradedText(condition)}
+                          </span>
+                        </div>
+                        {item.notes && (
+                          <p className="mt-1 whitespace-pre-wrap text-sm text-gray-500">
+                            {item.notes}
+                          </p>
+                        )}
+                        {renderValue(item)}
+                        {renderMedia(item)}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+          </section>
+        </>
+      )}
+
+      {listedFiles.length > 0 && (
+        <section aria-labelledby="files-heading" className="mt-6 rounded-lg border p-4">
+          <h2 id="files-heading" className="mb-3 text-xs font-semibold uppercase text-gray-500">
+            {t('inspectionPhotos')}
           </h2>
-          <ul className="space-y-2">
-            {defects.map((item) => {
-              const token = CONDITION_TOKENS[item.condition as Condition]
-              const Icon = CONDITION_ICONS[item.condition as Condition]
-              return (
-                <li key={item.id} className={`rounded-lg border p-3 ${token.soft}`}>
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm font-medium">
-                      {item.code && <span className="mr-2 font-mono text-xs">{item.code}</span>}
-                      {item.name}
-                    </p>
-                    <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold">
-                      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                      {gradedText(item.condition as Condition)}
-                    </span>
-                  </div>
-                  {item.notes && <p className="mt-1 whitespace-pre-wrap text-sm">{item.notes}</p>}
-                  {renderValue(item)}
-                  {renderMedia(item)}
-                </li>
-              )
-            })}
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {listedFiles.map((file) => (
+              <li key={file.id} className="min-w-0">
+                {file.fileType.startsWith('image/') ? (
+                  <button
+                    type="button"
+                    onClick={() => openImage(file.fileUrl)}
+                    className="block w-full overflow-hidden rounded-lg border focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    aria-label={`${t('viewPhoto')}: ${file.description || file.fileName}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={file.fileUrl}
+                      alt={file.description || file.fileName}
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </button>
+                ) : file.fileType.startsWith('video/') ? (
+                  // eslint-disable-next-line jsx-a11y/media-has-caption
+                  <video
+                    src={file.fileUrl}
+                    controls
+                    playsInline
+                    className="aspect-[4/3] w-full rounded-lg border bg-black"
+                  />
+                ) : (
+                  <a
+                    href={file.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 rounded-lg border px-2 text-center text-xs hover:bg-muted"
+                  >
+                    <FileText className="h-6 w-6 text-gray-500" aria-hidden="true" />
+                    <span className="line-clamp-2 break-all">{file.fileName}</span>
+                  </a>
+                )}
+                {file.description && (
+                  <p className="mt-1 truncate text-xs text-gray-600 dark:text-gray-300">
+                    {file.description}
+                  </p>
+                )}
+              </li>
+            ))}
           </ul>
         </section>
       )}
 
-      {/* Full results */}
-      <section aria-labelledby="all-results-heading" className="space-y-4">
-        <h2 id="all-results-heading" className="text-base font-bold">
-          {t('allResults')}
-        </h2>
-        {sections.map((section) => (
-          <div key={section.name} className="overflow-hidden rounded-lg border">
-            <h3
-              className="border-b px-4 py-3 font-semibold"
-              style={{ backgroundColor: `${primaryColor}12` }}
-            >
-              {section.code && (
-                <span className="mr-2 font-mono text-xs text-gray-500">{section.code}</span>
-              )}
-              {section.name}
-            </h3>
-            <ul className="divide-y">
-              {section.items.map((item) => {
-                const condition = item.condition as Condition
-                const token = CONDITION_TOKENS[condition]
-                const Icon = CONDITION_ICONS[condition]
-                return (
-                  <li key={item.id} className="px-4 py-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="text-sm font-medium">
-                        {item.code && (
-                          <span className="mr-2 font-mono text-xs text-gray-500">{item.code}</span>
-                        )}
-                        {item.name}
-                      </p>
-                      <span
-                        className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium ${token.soft}`}
-                      >
-                        <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                        {gradedText(condition)}
-                      </span>
-                    </div>
-                    {item.notes && (
-                      <p className="mt-1 whitespace-pre-wrap text-sm text-gray-500">{item.notes}</p>
-                    )}
-                    {renderValue(item)}
-                    {renderMedia(item)}
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        ))}
-      </section>
-
-      {inspection.notes && (
+      {!spec && inspection.notes && (
         <section aria-labelledby="notes-heading" className="mt-6 rounded-lg border p-4">
           <h2 id="notes-heading" className="mb-2 text-xs font-semibold uppercase text-gray-500">
             {t('notes')}

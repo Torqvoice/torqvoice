@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Tutte le ispezioni dei veicoli e i relativi risultati",
     "contentTechnicians": "Tecnici",
     "contentTechniciansDescription": "Tutti i profili dei tecnici. I record collegati verranno scollegati.",
-    "contentInspectionTemplates": "Modelli di ispezione",
-    "contentInspectionTemplatesDescription": "Tutti i modelli di ispezione e le relative sezioni. Eliminare prima le ispezioni.",
+    "contentInspectionTemplates": "Checklist di ispezione",
+    "contentInspectionTemplatesDescription": "Tutte le checklist di ispezione e le loro sezioni. Elimina prima le ispezioni.",
     "contentNotifications": "Notifiche",
     "contentNotificationsDescription": "Tutte le notifiche di sistema",
     "contentSmsMessages": "Messaggi SMS",
@@ -656,7 +656,13 @@
       "bank_account": "Conto bancario",
       "footer": "Piè di pagina",
       "general": "Generale",
-      "telegram_qr": "QR Telegram"
+      "telegram_qr": "QR Telegram",
+      "result": "Esito",
+      "test_details": "Dettagli del controllo",
+      "defects": "Difetti",
+      "results_table": "Tutti gli esiti",
+      "inspection_photos": "Foto",
+      "signature": "Firma"
     },
     "fields": {
       "customer_name": "Nome cliente",
@@ -688,7 +694,25 @@
       "invoice_number": "N. fattura",
       "customer_number": "N. cliente",
       "date": "Data",
-      "portal_link": "Link al portale"
+      "portal_link": "Link al portale",
+      "test_date": "Data del controllo",
+      "test_location": "Luogo del controllo",
+      "inspector": "Ispettore",
+      "certificate_number": "Numero del certificato",
+      "vehicle_category": "Categoria del veicolo",
+      "odometer": "Chilometraggio",
+      "next_test_due": "Prossimo controllo",
+      "defect_notes": "Note",
+      "defect_photos": "Foto",
+      "passed_checks": "Controlli superati",
+      "not_applicable_checks": "Controlli non applicabili",
+      "check_notes": "Colonna note",
+      "result_detail": "Spiegazione",
+      "result_summary": "Conteggio per esito",
+      "combined_table": "Una sola tabella per tutte le sezioni",
+      "inspector_line": "Riga dell'ispettore",
+      "inspector_name": "Stampa il nome dell'ispettore",
+      "date_line": "Riga della data"
     },
     "presetsTitle": "Partire da una disposizione",
     "presetsHint": "Sostituisce la disposizione qui sotto. Nulla viene salvato finché non salvi.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Dettagliata",
         "description": "Titolo in alto, veicolo da solo, entrambe le tabelle e ogni blocco opzionale"
+      },
+      "certificate-regulator": {
+        "name": "Normativo",
+        "description": "Sobrio e senza fascia, in serif: ogni controllo con esito e nota, le foto, una riga per la firma"
+      },
+      "certificate-standard": {
+        "name": "Standard",
+        "description": "L'esito sotto il titolo, veicolo e controllo affiancati, ogni difetto con nota e foto, poi i controlli non superati per sezione"
+      },
+      "certificate-customer": {
+        "name": "Report per il cliente",
+        "description": "Un foglio con fascia, l'esito grande e centrato, i difetti con foto, le foto d'insieme e una breve tabella dei controlli non superati"
+      },
+      "certificate-compact": {
+        "name": "Compatto",
+        "description": "Una pagina per le flotte: caratteri piccoli, l'esito accanto al titolo, tutti gli esiti senza note, le foto, una riga per la firma"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Modelli",
     "invoiceDescription": "Personalizza l'aspetto delle tue fatture e preventivi PDF.",
-    "inspectionsDescription": "Gestisci le checklist di ispezione e i modelli multi-punto.",
+    "inspectionsDescription": "Le checklist che i tuoi tecnici seguono durante un'ispezione.",
     "smsDescription": "Personalizza i messaggi SMS inviati ai clienti.",
     "tabs": {
       "invoice": "Fattura",
       "quotation": "Preventivo",
-      "inspections": "Ispezioni",
+      "inspections": "Checklist\nispezione",
       "sms": "SMS",
-      "layout": "Layout"
+      "layout": "Layout",
+      "certificates": "Certificati\nispezione"
     },
     "presets": "Preset modello",
     "primaryColor": "Colore primario",
@@ -849,7 +890,8 @@
     "goToLayout": "Disposizione e sezioni",
     "openDesigner": "Apri il designer",
     "designerIntro": "Scegli un punto di partenza, poi apri il designer per cambiare tutto.",
-    "designerHint": "Colori, caratteri, spaziature e tutte le sezioni sono nel designer."
+    "designerHint": "Colori, caratteri, spaziature e tutte le sezioni sono nel designer.",
+    "certificatesDescription": "Progetta il certificato che un'ispezione completata stampa e condivide."
   },
   "payment": {
     "readMore": "Scopri di più",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Tecnici",
     "optTechniciansDesc": "Profili dei tecnici e assegnazioni alla bacheca di lavoro",
     "optInspections": "Ispezioni",
-    "optInspectionsDesc": "Modelli di ispezione, ispezioni e risultati",
+    "optInspectionsDesc": "Checklist di ispezione, ispezioni e risultati",
     "optAuditLogs": "Registri di audit",
     "optAuditLogsDesc": "Cronologia delle attività e delle modifiche",
     "optSmsMessages": "Messaggi",
@@ -2060,7 +2102,19 @@
       "slogan": "Un servizio di qualità di cui fidarsi",
       "paymentTerms": "Pagamento entro 14 giorni",
       "footerNote": "Grazie per averci scelto",
-      "value": "Esempio"
+      "value": "Esempio",
+      "testLocation": "Via del Porto 12, Springfield",
+      "certificateNotes": "Gli pneumatici sono vicini al limite di legge; prevedere la sostituzione prima del prossimo controllo.",
+      "checkBrakeHoses": "Tubi flessibili dei freni",
+      "checkBrakeHosesNote": "Lieve sfregamento sul tubo anteriore sinistro, strato esterno ancora integro.",
+      "sectionBrakes": "Impianto frenante",
+      "checkBrakePedal": "Pedale del freno di servizio",
+      "checkBrakeFluid": "Liquido dei freni",
+      "sectionLighting": "Dispositivi di illuminazione",
+      "checkHeadlamps": "Stato dei proiettori",
+      "checkFogLamp": "Retronebbia",
+      "photoFront": "Frontale",
+      "photoOdometer": "Contachilometri"
     },
     "logoUpload": "Carica logo",
     "logoReplace": "Sostituisci logo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Imposta come predefinito",
     "defaultSet": "«{name}» è ora in uso",
     "couldNotSetDefault": "Impossibile impostare il design predefinito",
-    "fieldFixedSlot": "Viene sempre stampato nello stesso punto, quindi non può essere spostato."
+    "fieldFixedSlot": "Viene sempre stampato nello stesso punto, quindi non può essere spostato.",
+    "certificate": "Certificato di ispezione",
+    "resultWidthHint": "Vuoto occupa tutta la riga. Un valore restringe la fascia, che si posiziona sul lato scelto dall'allineamento; in una colonna prende la larghezza della colonna."
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

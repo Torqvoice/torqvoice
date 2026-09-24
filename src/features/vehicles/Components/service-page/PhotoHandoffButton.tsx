@@ -20,6 +20,10 @@ import {
   countPhotosSince,
   createPhotoHandoffLink,
 } from '@/features/vehicles/Actions/photoHandoffActions'
+import {
+  countInspectionMedia,
+  createInspectionHandoffLink,
+} from '@/features/inspections/Actions/attachmentActions'
 
 /** Matches PHOTO_HANDOFF_TTL_SECONDS in lib/photo-handoff.ts, which is server-only. */
 const CODE_LIFETIME_MS = 30 * 60 * 1000
@@ -38,17 +42,31 @@ const CONCERN_SHOWN = 200
  *
  * While the dialog is open it counts what has arrived and refreshes the page
  * as photos come in, so the desk sees them land without reloading.
+ *
+ * Given an `inspectionId` instead, it hands over an inspection: one code for
+ * the whole checklist, and the phone picks the check each photo is for.
  */
 export function PhotoHandoffButton({
-  serviceRecordId,
+  serviceRecordId = '',
+  inspectionId,
+  inspectionItemId,
+  inspectionItemLabel,
   concernId = null,
   concernLabel,
   purpose = 'photos',
   variant = 'button',
   disabled = false,
   disabledReason,
+  className,
+  compact = false,
 }: {
-  serviceRecordId: string
+  serviceRecordId?: string
+  /** Hands over this inspection rather than a work order. */
+  inspectionId?: string
+  /** The check the phone should open on; the code still covers the whole inspection. */
+  inspectionItemId?: string
+  /** That check's name, for the dialog's wording. */
+  inspectionItemLabel?: string
   concernId?: string | null
   /** The concern in the customer's words, so both screens say which one the photos go under. */
   concernLabel?: string
@@ -61,8 +79,13 @@ export function PhotoHandoffButton({
   variant?: 'button' | 'link'
   disabled?: boolean
   disabledReason?: string
+  /** Sizing for the button variant, where it sits among other buttons. */
+  className?: string
+  /** Icon only below a laptop width, in a bar that has become icons. */
+  compact?: boolean
 }) {
   const t = useTranslations('service.photoHandoff')
+  const ti = useTranslations('inspections.phone')
   const router = useRouter()
   const { formatTime } = useFormatDate()
   const [open, setOpen] = useState(false)
@@ -71,6 +94,9 @@ export function PhotoHandoffButton({
   const [received, setReceived] = useState(0)
   const [copied, setCopied] = useState(false)
   const receivedRef = useRef(0)
+  // An inspection's count is a total (a check's photos carry no time), so
+  // what has arrived is counted from the first answer.
+  const baselineRef = useRef<number | null>(null)
 
   // A fresh code every time the dialog opens: the last one may have lapsed.
   useEffect(() => {
@@ -80,7 +106,11 @@ export function PhotoHandoffButton({
     setError(false)
     setReceived(0)
     receivedRef.current = 0
-    createPhotoHandoffLink({ serviceRecordId, concernId, purpose })
+    baselineRef.current = null
+    const request = inspectionId
+      ? createInspectionHandoffLink(inspectionId)
+      : createPhotoHandoffLink({ serviceRecordId, concernId, purpose })
+    request
       .then((result) => {
         if (cancelled) return
         if (!result.success || !result.data) {
@@ -89,7 +119,9 @@ export function PhotoHandoffButton({
         }
         const expiresAt = new Date(result.data.expiresAt)
         setLink({
-          url: `${window.location.origin}/p/${result.data.token}`,
+          // The check is a hint in the address, not part of the permission:
+          // the route checks any check named against the inspection anyway.
+          url: `${window.location.origin}/p/${result.data.token}${inspectionItemId ? `?item=${encodeURIComponent(inspectionItemId)}` : ''}`,
           expiresAt,
           // Counted from the server's own clock (the code's issue time), so a
           // desk computer whose clock is off cannot hide a photo.
@@ -102,15 +134,22 @@ export function PhotoHandoffButton({
     return () => {
       cancelled = true
     }
-  }, [open, serviceRecordId, concernId, purpose])
+  }, [open, serviceRecordId, inspectionId, inspectionItemId, concernId, purpose])
 
   // Photos arriving while the code is up are shown as they land.
   useEffect(() => {
     if (!open || !link) return
+    const count = async () => {
+      if (!inspectionId) return countPhotosSince({ serviceRecordId, since: link.since })
+      const total = await countInspectionMedia(inspectionId)
+      if (!total.success || typeof total.data !== 'number') return total
+      if (baselineRef.current === null) baselineRef.current = total.data
+      return { ...total, data: Math.max(0, total.data - baselineRef.current) }
+    }
+    // The first answer sets an inspection's baseline, so ask straight away.
+    if (inspectionId) void count().catch(() => null)
     const timer = setInterval(async () => {
-      const result = await countPhotosSince({ serviceRecordId, since: link.since }).catch(
-        () => null
-      )
+      const result = await count().catch(() => null)
       if (!result?.success || typeof result.data !== 'number') return
       if (result.data > receivedRef.current) {
         receivedRef.current = result.data
@@ -119,7 +158,7 @@ export function PhotoHandoffButton({
       }
     }, POLL_MS)
     return () => clearInterval(timer)
-  }, [open, link, serviceRecordId, router])
+  }, [open, link, serviceRecordId, inspectionId, router])
 
   useEffect(() => {
     if (!copied) return
@@ -148,10 +187,14 @@ export function PhotoHandoffButton({
         disabled={disabled}
         onClick={() => setOpen(true)}
         data-testid="photo-handoff-open"
-        className="h-7 gap-1.5 text-xs"
+        aria-label={t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
+        title={compact ? t(purpose === 'dropoff' ? 'dropoff.button' : 'button') : undefined}
+        className={cn('h-7 gap-1.5 text-xs', compact && 'px-2.5 lg:px-3', className)}
       >
         <Smartphone className="h-3.5 w-3.5" aria-hidden="true" />
-        {t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
+        <span className={compact ? 'hidden lg:inline' : undefined}>
+          {t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
+        </span>
       </Button>
     )
 
@@ -167,7 +210,12 @@ export function PhotoHandoffButton({
       : null
 
   const dropoff = purpose === 'dropoff'
-  const steps = [t('step1'), t(dropoff ? 'dropoff.step2' : 'step2'), t('step3')]
+  const forCheck = !!inspectionId && !!inspectionItemId
+  const steps = forCheck
+    ? [t('step1'), ti('stepItem2'), ti('step3')]
+    : inspectionId
+      ? [t('step1'), ti('step2'), ti('step3')]
+      : [t('step1'), t(dropoff ? 'dropoff.step2' : 'step2'), t('step3')]
 
   return (
     <>
@@ -186,10 +234,18 @@ export function PhotoHandoffButton({
                 </span>
                 <div className="space-y-1.5">
                   <DialogTitle className="text-lg">
-                    {t(dropoff ? 'dropoff.dialogTitle' : 'dialogTitle')}
+                    {forCheck
+                      ? ti('dialogTitleItem', { name: inspectionItemLabel ?? '' })
+                      : inspectionId
+                        ? ti('dialogTitle')
+                        : t(dropoff ? 'dropoff.dialogTitle' : 'dialogTitle')}
                   </DialogTitle>
                   <DialogDescription>
-                    {t(dropoff ? 'dropoff.dialogBody' : 'dialogBody')}
+                    {forCheck
+                      ? ti('dialogBodyItem')
+                      : inspectionId
+                        ? ti('dialogBody')
+                        : t(dropoff ? 'dropoff.dialogBody' : 'dialogBody')}
                   </DialogDescription>
                 </div>
               </DialogHeader>
@@ -230,7 +286,7 @@ export function PhotoHandoffButton({
                 <div className="space-y-1 text-xs text-muted-foreground">
                   <p className="font-medium text-foreground">{t('noSignIn')}</p>
                   <p>{t('customerToo')}</p>
-                  <p>{t(dropoff ? 'dropoff.scope' : 'scope')}</p>
+                  <p>{inspectionId ? ti('scope') : t(dropoff ? 'dropoff.scope' : 'scope')}</p>
                 </div>
               </div>
             </div>

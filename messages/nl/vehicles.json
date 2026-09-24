@@ -114,7 +114,7 @@
   "inspections": {
     "newInspection": "Nieuwe keuring",
     "empty": "Nog geen keuringen",
-    "template": "Sjabloon",
+    "template": "Checklist",
     "progress": "Voortgang",
     "status": "Status",
     "date": "Datum",

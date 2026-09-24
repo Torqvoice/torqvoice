@@ -78,9 +78,9 @@
     "settings_updateInvoiceLayout": "Обновлён макет счёта",
     "settings_updateQuoteLayout": "Обновлён макет предложения",
     "settings_updatePortalSlug": "Обновлён адрес портала",
-    "inspectionTemplate_create": "Создан шаблон осмотра",
-    "inspectionTemplate_update": "Обновлён шаблон осмотра",
-    "inspectionTemplate_delete": "Удалён шаблон осмотра",
+    "inspectionTemplate_create": "Создан чек-лист осмотра",
+    "inspectionTemplate_update": "Обновлён чек-лист осмотра",
+    "inspectionTemplate_delete": "Удалён чек-лист осмотра",
     "customField_create": "Создано пользовательское поле",
     "customField_update": "Обновлено пользовательское поле",
     "customField_delete": "Удалено пользовательское поле",
@@ -104,7 +104,8 @@
     "webhook_delete": "Удалён вебхук",
     "webhook_rotateSecret": "Обновлён секрет вебхука",
     "inspection_reopen": "Осмотр открыт заново",
-    "inspectionTemplate_import": "Импортирован шаблон осмотра",
+    "inspectionTemplate_import": "Импортирован чек-лист осмотра",
+    "inspectionTemplate_translate": "Чек-листы осмотра переведены",
     "scheduled_message_create": "Создано запланированное сообщение",
     "scheduled_message_update": "Обновлено запланированное сообщение",
     "scheduled_message_delete": "Удалено запланированное сообщение",
@@ -179,7 +180,9 @@
     "timeEntry_delete": "Удалена запись времени",
     "settings_workOrderStatus_create": "Добавлен статус заказ-наряда",
     "settings_workOrderStatus_update": "Изменён статус заказ-наряда",
-    "settings_workOrderStatus_archive": "Удалён статус заказ-наряда"
+    "settings_workOrderStatus_archive": "Удалён статус заказ-наряда",
+    "inspection_photo_added": "Добавлено фото осмотра",
+    "inspection_file_added": "Добавлен файл осмотра"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -196,12 +199,12 @@
     "finding_delete": "Удалена неисправность {id}",
     "finding_resolve": "Устранена неисправность «{description}»",
     "finding_update": "Обновлена неисправность «{description}»",
-    "inspectionTemplate_create": "Создан шаблон проверки «{name}»",
-    "inspectionTemplate_createFromPreset": "Создан шаблон проверки «{name}» из готового набора",
-    "inspectionTemplate_delete": "Удалён шаблон проверки «{name}»",
-    "inspectionTemplate_duplicate": "Шаблон проверки скопирован как «{name}»",
-    "inspectionTemplate_import": "Импортировано из пакета {count, plural, one {# шаблон проверки} few {# шаблона проверки} many {# шаблонов проверки} other {# шаблона проверки}}",
-    "inspectionTemplate_update": "Обновлён шаблон проверки «{name}»",
+    "inspectionTemplate_create": "Создан чек-лист осмотра «{name}»",
+    "inspectionTemplate_createFromPreset": "Создан чек-лист осмотра «{name}» из шаблона",
+    "inspectionTemplate_delete": "Удалён чек-лист осмотра «{name}»",
+    "inspectionTemplate_duplicate": "Чек-лист осмотра продублирован в «{name}»",
+    "inspectionTemplate_import": "Импортировано из пакета: {count, plural, one {# чек-лист осмотра} few {# чек-листа осмотра} many {# чек-листов осмотра} other {# чек-листа осмотра}}",
+    "inspectionTemplate_update": "Обновлён чек-лист осмотра «{name}»",
     "inspection_complete": "Завершена проверка {id}",
     "inspection_create": "Создана проверка {id}",
     "inspection_delete": "Удалена проверка {id}",
@@ -325,6 +328,7 @@
     "timeEntry_create": "Добавлено {minutes} мин для {technician} по заказу «{job}»",
     "timeEntry_update": "Запись времени {technician} по заказу «{job}» исправлена на {minutes} мин",
     "timeEntry_stop": "Таймер {technician} по заказу «{job}» остановлен на {minutes} мин",
-    "timeEntry_delete": "Удалена запись времени {id}"
+    "timeEntry_delete": "Удалена запись времени {id}",
+    "inspection_phoneUpload": "Добавлен файл с телефона к осмотру {ref}"
   }
 }

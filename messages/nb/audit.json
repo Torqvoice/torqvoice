@@ -78,9 +78,9 @@
     "settings_updateInvoiceLayout": "Oppdaterte fakturalayout",
     "settings_updateQuoteLayout": "Oppdaterte tilbudslayout",
     "settings_updatePortalSlug": "Oppdaterte portal-URL",
-    "inspectionTemplate_create": "Opprettet inspeksjonsmal",
-    "inspectionTemplate_update": "Oppdaterte inspeksjonsmal",
-    "inspectionTemplate_delete": "Slettet inspeksjonsmal",
+    "inspectionTemplate_create": "Opprettet inspeksjonssjekkliste",
+    "inspectionTemplate_update": "Oppdaterte inspeksjonssjekkliste",
+    "inspectionTemplate_delete": "Slettet inspeksjonssjekkliste",
     "customField_create": "Opprettet egendefinert felt",
     "customField_update": "Oppdaterte egendefinert felt",
     "customField_delete": "Slettet egendefinert felt",
@@ -104,7 +104,8 @@
     "webhook_delete": "Slettet webhook",
     "webhook_rotateSecret": "Roterte webhook-hemmelighet",
     "inspection_reopen": "Gjenåpnet inspeksjon",
-    "inspectionTemplate_import": "Importerte inspeksjonsmal",
+    "inspectionTemplate_import": "Importerte inspeksjonssjekkliste",
+    "inspectionTemplate_translate": "Oversatte inspeksjonssjekklister",
     "scheduled_message_create": "Opprettet planlagt melding",
     "scheduled_message_update": "Oppdaterte planlagt melding",
     "scheduled_message_delete": "Slettet planlagt melding",
@@ -179,7 +180,9 @@
     "timeEntry_delete": "Slettet tidsoppføring",
     "settings_workOrderStatus_create": "La til status for arbeidsordre",
     "settings_workOrderStatus_update": "Endret status for arbeidsordre",
-    "settings_workOrderStatus_archive": "Fjernet status for arbeidsordre"
+    "settings_workOrderStatus_archive": "Fjernet status for arbeidsordre",
+    "inspection_photo_added": "La til kontrollbilde",
+    "inspection_file_added": "La til kontrollfil"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -196,12 +199,12 @@
     "finding_delete": "Slettet funn {id}",
     "finding_resolve": "Lukket funn «{description}»",
     "finding_update": "Oppdaterte funn «{description}»",
-    "inspectionTemplate_create": "Opprettet kontrollmal «{name}»",
-    "inspectionTemplate_createFromPreset": "Opprettet kontrollmal «{name}» fra en ferdigmal",
-    "inspectionTemplate_delete": "Slettet kontrollmal «{name}»",
-    "inspectionTemplate_duplicate": "Kopierte kontrollmal til «{name}»",
-    "inspectionTemplate_import": "Importerte {count, plural, one {# kontrollmal} other {# kontrollmaler}} fra en pakke",
-    "inspectionTemplate_update": "Oppdaterte kontrollmal «{name}»",
+    "inspectionTemplate_create": "Opprettet inspeksjonssjekklisten «{name}»",
+    "inspectionTemplate_createFromPreset": "Opprettet inspeksjonssjekklisten «{name}» fra en mal",
+    "inspectionTemplate_delete": "Slettet inspeksjonssjekklisten «{name}»",
+    "inspectionTemplate_duplicate": "Dupliserte inspeksjonssjekklisten til «{name}»",
+    "inspectionTemplate_import": "Importerte {count, plural, one {# inspeksjonssjekkliste} other {# inspeksjonssjekklister}} fra en pakke",
+    "inspectionTemplate_update": "Oppdaterte inspeksjonssjekklisten «{name}»",
     "inspection_complete": "Fullførte kontroll {id}",
     "inspection_create": "Opprettet kontroll {id}",
     "inspection_delete": "Slettet kontroll {id}",
@@ -325,6 +328,7 @@
     "timeEntry_create": "La til {minutes} minutter for {technician} på «{job}»",
     "timeEntry_update": "Korrigerte tidsoppføringen til {technician} på «{job}» til {minutes} minutter",
     "timeEntry_stop": "Stoppet klokken til {technician} på «{job}» ved {minutes} minutter",
-    "timeEntry_delete": "Slettet tidsoppføring {id}"
+    "timeEntry_delete": "Slettet tidsoppføring {id}",
+    "inspection_phoneUpload": "La til en fil fra telefon på kontroll {ref}"
   }
 }

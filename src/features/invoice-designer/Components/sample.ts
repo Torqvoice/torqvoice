@@ -352,6 +352,134 @@ export function buildSampleData(
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Observations'),
+      test_details: L('testDetails', 'Test details'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
+      inspection_photos: L('photos', 'Photos'),
+      signature: L('signature', 'Signature'),
+    },
+    ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
+  }
+}
+
+/** A small grey square, so the photo blocks have something to place. */
+const SAMPLE_PHOTO = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="158" height="119"><rect width="158" height="119" fill="#e5e7eb"/><path d="M40 84l28-32 22 26 14-16 24 22H40z" fill="#9ca3af"/><circle cx="112" cy="40" r="9" fill="#9ca3af"/></svg>'
+)}`
+
+/**
+ * The certificate's own part of the sample: a car that passed with one
+ * minor defect, so every block has something to draw, and the fields of the
+ * test details panel worded the way the print words them.
+ */
+function sampleCertificate(
+  t: SampleT,
+  labels: PrintLabels,
+  values: Record<string, string>,
+  sample: SampleTables
+): Pick<DocumentData, 'fields' | 'meta' | 'certificate' | 'notes' | 'attachedDocuments'> {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const grade = (key: string, fallback: string) => L(key, fallback)
+  return {
+    fields: {
+      ...values,
+      // A certificate carries no bank details in its footer.
+      bank_account: '',
+      customer_tax_id: '',
+      test_date: `${L('testDate', 'Date of test')}: ${sample.date}`,
+      test_location: `${L('testLocation', 'Place of test')}: ${values.company_address || t('sample.testLocation')}`,
+      inspector: `${L('inspector', 'Inspector')}: Jamie Lee`,
+      certificate_number: `${L('certificateNumber', 'Certificate number')}: CERT-2026-0042`,
+      vehicle_category: `${L('vehicleCategory', 'Vehicle category')}: M1`,
+      odometer: values.mileage,
+      next_test_due: `${L('nextTestDue', 'Next test due')}: ${sample.due}`,
+    },
+    meta: {
+      title: L('title', 'VEHICLE INSPECTION'),
+      number: 'CERT-2026-0042',
+      date: sample.date,
+      due: sample.due,
+    },
+    notes: { html: `<p>${t('sample.certificateNotes')}</p>` },
+    attachedDocuments: [
+      fillTemplate(L('seeAppendedPages', '{name} (see appended pages)'), {
+        name: 'signed-inspection-form.pdf',
+      }),
+    ],
+    certificate: {
+      result: {
+        label: L('resultPassMinor', 'Pass with minor defects'),
+        detail: L(
+          'resultDetailPassMinor',
+          'The vehicle passes. Repair the minor deficiencies without undue delay.'
+        ),
+        color: { bg: '#fef9c3', text: '#713f12' },
+      },
+      summary: `11 × ${grade('euPass', 'No defect')} · 1 × ${grade('euAttention', 'Minor defect')} · 1 × ${grade('euNotApplicable', 'Not applicable')}`,
+      defects: [
+        {
+          code: '1.1.13',
+          name: t('sample.checkBrakeHoses'),
+          grade: `1 — ${grade('euAttention', 'Minor defect')}`,
+          color: { bg: '#fef9c3', text: '#713f12' },
+          notes: t('sample.checkBrakeHosesNote'),
+          photos: [SAMPLE_PHOTO],
+        },
+      ],
+      sections: [
+        {
+          code: '1',
+          name: t('sample.sectionBrakes'),
+          rows: [
+            {
+              code: '1.1.1',
+              name: t('sample.checkBrakePedal'),
+              grade: grade('euPass', 'No defect'),
+              notes: null,
+              kind: 'pass',
+            },
+            {
+              code: '1.1.13',
+              name: t('sample.checkBrakeHoses'),
+              grade: `1 — ${grade('euAttention', 'Minor defect')}`,
+              notes: t('sample.checkBrakeHosesNote'),
+              kind: 'defect',
+            },
+            {
+              code: '1.1.17',
+              name: t('sample.checkBrakeFluid'),
+              grade: grade('euPass', 'No defect'),
+              notes: null,
+              kind: 'pass',
+            },
+          ],
+        },
+        {
+          code: '4',
+          name: t('sample.sectionLighting'),
+          rows: [
+            {
+              code: '4.1.1',
+              name: t('sample.checkHeadlamps'),
+              grade: grade('euPass', 'No defect'),
+              notes: null,
+              kind: 'pass',
+            },
+            {
+              code: '4.5.1',
+              name: t('sample.checkFogLamp'),
+              grade: grade('euNotApplicable', 'Not applicable'),
+              notes: null,
+              kind: 'not_applicable',
+            },
+          ],
+        },
+      ],
+      photos: [
+        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
+        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
+      ],
+      signature: { inspector: 'Jamie Lee', date: sample.date },
     },
   }
 }

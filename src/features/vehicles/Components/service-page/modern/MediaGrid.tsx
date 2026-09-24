@@ -70,9 +70,44 @@ const KINDS: Record<
   },
 }
 
+type Result<T = unknown> = { success: boolean; data?: T; error?: string }
+
+/**
+ * Where the tiles are saved. A work order's own actions unless the grid is
+ * handed another record's, which is how the inspection page shows its files
+ * with the same tiles.
+ */
+export interface MediaStore {
+  add: (attachment: {
+    fileName: string
+    fileUrl: string
+    fileType: string
+    fileSize: number
+    category: MediaKind
+    includeInInvoice: boolean
+  }) => Promise<Result<Attachment>>
+  update: (input: {
+    id: string
+    includeInInvoice?: boolean
+    description?: string
+  }) => Promise<Result>
+  remove: (id: string) => Promise<Result>
+}
+
+function serviceStore(serviceRecordId: string): MediaStore {
+  return {
+    add: (attachment) =>
+      addServiceAttachment({ serviceRecordId, attachment }) as Promise<Result<Attachment>>,
+    update: (input) => updateServiceAttachment(input),
+    remove: (id) => deleteServiceAttachment(id),
+  }
+}
+
 interface MediaGridProps {
   kind: MediaKind
   serviceRecordId: string
+  /** Saves somewhere other than the work order's attachments. */
+  store?: MediaStore
   files: Attachment[]
   /** The plan's cap for this kind of file; absent means no cap. */
   max?: number
@@ -90,7 +125,15 @@ interface MediaGridProps {
  * the customer would give it: a marked file is printed on the invoice and
  * shown on the shared link, an unmarked one stays in the workshop.
  */
-export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: MediaGridProps) {
+export function MediaGrid({
+  kind,
+  serviceRecordId,
+  store: customStore,
+  files,
+  max,
+  customerId,
+}: MediaGridProps) {
+  const store = customStore ?? serviceStore(serviceRecordId)
   const t = useTranslations('service')
   const router = useRouter()
   const { formatDate, formatDateTime } = useFormatDate()
@@ -160,20 +203,17 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
           continue
         }
         const data = await res.json()
-        const result = await addServiceAttachment({
-          serviceRecordId,
-          attachment: {
-            fileName: data.fileName,
-            fileUrl: data.url,
-            fileType: data.fileType,
-            fileSize: data.fileSize,
-            category: kind,
-            // Shown to the customer unless somebody says otherwise, as the
-            // classic tabs do. For a video that means the shared link, which
-            // plays it; the printed invoice has nothing to draw for one.
-            // A drop-off photo is the workshop's own record, so it starts hidden.
-            includeInInvoice: kind !== 'dropoff',
-          },
+        const result = await store.add({
+          fileName: data.fileName,
+          fileUrl: data.url,
+          fileType: data.fileType,
+          fileSize: data.fileSize,
+          category: kind,
+          // Shown to the customer unless somebody says otherwise, as the
+          // classic tabs do. For a video that means the shared link, which
+          // plays it; the printed invoice has nothing to draw for one.
+          // A drop-off photo is the workshop's own record, so it starts hidden.
+          includeInInvoice: kind !== 'dropoff',
         })
         if (result.success && result.data) {
           setItems((prev) => [...prev, result.data as Attachment])
@@ -195,7 +235,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
   const toggleVisible = async (file: Attachment) => {
     const next = !file.includeInInvoice
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: next } : f)))
-    const result = await updateServiceAttachment({ id: file.id, includeInInvoice: next })
+    const result = await store.update({ id: file.id, includeInInvoice: next })
     if (!result.success) {
       setItems((prev) =>
         prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: !next } : f))
@@ -206,7 +246,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
 
   const remove = async (file: Attachment) => {
     setBusyId(file.id)
-    const result = await deleteServiceAttachment(file.id)
+    const result = await store.remove(file.id)
     setBusyId(null)
     if (result.success) {
       setItems((prev) => prev.filter((f) => f.id !== file.id))
@@ -219,7 +259,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
   const saveCaption = async (file: Attachment, caption: string) => {
     if ((file.description ?? '') === caption || captionOf(file) === caption) return
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, description: caption } : f)))
-    await updateServiceAttachment({ id: file.id, description: caption })
+    await store.update({ id: file.id, description: caption })
   }
 
   const tileAction =
@@ -351,7 +391,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
                   {kind === 'dropoff' ? formatDateTime(file.createdAt) : formatDate(file.createdAt)}{' '}
                   · {formatFileSize(file.fileSize)}
                 </p>
-                {isImage && customerId && (
+                {isImage && customerId && !customStore && (
                   <SendPhotoToWhatsapp
                     customerId={customerId}
                     fileUrl={file.fileUrl}
@@ -420,7 +460,7 @@ export function MediaGrid({ kind, serviceRecordId, files, max, customerId }: Med
       />
 
       <Dialog open={playing !== null} onOpenChange={(open) => !open && setPlaying(null)}>
-        <DialogContent className="max-w-3xl p-3">
+        <DialogContent className="max-w-3xl p-3" aria-describedby={undefined}>
           <DialogTitle className="truncate pr-8 text-sm">
             {playing?.description || playing?.fileName}
           </DialogTitle>

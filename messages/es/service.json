@@ -649,7 +649,9 @@
       "overdue": "vencida",
       "customerSince": "Cliente desde"
     },
-    "moreStatuses": "Más estados"
+    "moreStatuses": "Más estados",
+    "fromInspection": "De la inspección {name}, {date}",
+    "startInspection": "Iniciar inspección"
   },
   "photoHandoff": {
     "button": "Añadir desde el móvil",

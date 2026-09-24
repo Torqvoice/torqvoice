@@ -21,6 +21,7 @@ import {
 } from '../Lib/defectCatalogue'
 import { CONDITION_TOKENS, type Condition, type SeverityScale } from '../Lib/conditions'
 import { useConditionLabels } from '../Lib/useConditionLabels'
+import { useInspectionLibrary } from '../Lib/useInspectionLibrary'
 
 /** How many phrases sit inline before the rest move into the search popover. */
 const INLINE_LIMIT = 5
@@ -61,12 +62,14 @@ export function DefectSuggestions({
   const sourceLabel = (source: DefectSuggestion['source']) => t(`source.${source}`)
   const { label: gradeLabel } = useConditionLabels(scale)
   const [open, setOpen] = useState(false)
+  const lib = useInspectionLibrary()
 
   const suggestions = useMemo(
     () =>
       rankSuggestions(check, {
         scale,
         preferred: currentCondition,
+        lib,
         history: (history ?? [])
           .filter(
             (h): h is { text: string; severity: DefectSeverity } =>
@@ -74,7 +77,7 @@ export function DefectSuggestions({
           )
           .map((h) => ({ text: h.text, severity: h.severity })),
       }),
-    [check, scale, currentCondition, history]
+    [check, scale, currentCondition, history, lib]
   )
 
   if (suggestions.length === 0) return null

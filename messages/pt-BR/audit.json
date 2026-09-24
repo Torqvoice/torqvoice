@@ -78,9 +78,9 @@
     "settings_updateInvoiceLayout": "Layout da fatura atualizado",
     "settings_updateQuoteLayout": "Layout do orçamento atualizado",
     "settings_updatePortalSlug": "URL do portal atualizada",
-    "inspectionTemplate_create": "Modelo de inspeção criado",
-    "inspectionTemplate_update": "Modelo de inspeção atualizado",
-    "inspectionTemplate_delete": "Modelo de inspeção excluído",
+    "inspectionTemplate_create": "Checklist de inspeção criado",
+    "inspectionTemplate_update": "Checklist de inspeção atualizado",
+    "inspectionTemplate_delete": "Checklist de inspeção excluído",
     "customField_create": "Campo personalizado criado",
     "customField_update": "Campo personalizado atualizado",
     "customField_delete": "Campo personalizado excluído",
@@ -104,7 +104,8 @@
     "webhook_delete": "Webhook excluído",
     "webhook_rotateSecret": "Segredo do webhook rotacionado",
     "inspection_reopen": "Inspeção reaberta",
-    "inspectionTemplate_import": "Modelo de inspeção importado",
+    "inspectionTemplate_import": "Checklist de inspeção importado",
+    "inspectionTemplate_translate": "Checklists de inspeção traduzidos",
     "scheduled_message_create": "Mensagem agendada criada",
     "scheduled_message_update": "Mensagem agendada atualizada",
     "scheduled_message_delete": "Mensagem agendada excluída",
@@ -179,7 +180,9 @@
     "timeEntry_delete": "Registro de tempo excluído",
     "settings_workOrderStatus_create": "Status de ordem adicionado",
     "settings_workOrderStatus_update": "Status de ordem alterado",
-    "settings_workOrderStatus_archive": "Status de ordem removido"
+    "settings_workOrderStatus_archive": "Status de ordem removido",
+    "inspection_photo_added": "Adicionou foto de inspeção",
+    "inspection_file_added": "Adicionou arquivo de inspeção"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -196,12 +199,12 @@
     "finding_delete": "Constatação {id} excluída",
     "finding_resolve": "Constatação \"{description}\" resolvida",
     "finding_update": "Constatação \"{description}\" atualizada",
-    "inspectionTemplate_create": "Modelo de inspeção \"{name}\" criado",
-    "inspectionTemplate_createFromPreset": "Modelo de inspeção \"{name}\" criado a partir de uma predefinição",
-    "inspectionTemplate_delete": "Modelo de inspeção \"{name}\" excluído",
-    "inspectionTemplate_duplicate": "Modelo de inspeção duplicado como \"{name}\"",
-    "inspectionTemplate_import": "{count, plural, one {# modelo de inspeção importado} other {# modelos de inspeção importados}} de um pacote",
-    "inspectionTemplate_update": "Modelo de inspeção \"{name}\" atualizado",
+    "inspectionTemplate_create": "Criou o checklist de inspeção \"{name}\"",
+    "inspectionTemplate_createFromPreset": "Criou o checklist de inspeção \"{name}\" a partir de um modelo",
+    "inspectionTemplate_delete": "Excluiu o checklist de inspeção \"{name}\"",
+    "inspectionTemplate_duplicate": "Duplicou o checklist de inspeção em \"{name}\"",
+    "inspectionTemplate_import": "Importou {count, plural, one {# checklist de inspeção} other {# checklists de inspeção}} de um pacote",
+    "inspectionTemplate_update": "Atualizou o checklist de inspeção \"{name}\"",
     "inspection_complete": "Inspeção {id} concluída",
     "inspection_create": "Inspeção {id} criada",
     "inspection_delete": "Inspeção {id} excluída",
@@ -325,6 +328,7 @@
     "timeEntry_create": "Adicionados {minutes} minutos para {technician} em \"{job}\"",
     "timeEntry_update": "Registro de tempo de {technician} em \"{job}\" corrigido para {minutes} minutos",
     "timeEntry_stop": "Relógio de {technician} em \"{job}\" parado em {minutes} minutos",
-    "timeEntry_delete": "Registro de tempo {id} excluído"
+    "timeEntry_delete": "Registro de tempo {id} excluído",
+    "inspection_phoneUpload": "Adicionou um arquivo pelo celular à inspeção {ref}"
   }
 }

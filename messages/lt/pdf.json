@@ -171,6 +171,8 @@
     "vehicleCategory": "Transporto priemonės kategorija",
     "nextTestDue": "Kita apžiūra",
     "limit": "Ribinė vertė",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "overallResult": "Apžiūros rezultatas",
     "deficiencies": "Nustatyti trūkumai",
     "reading": "Rodmuo",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "Transporto priemonė tinkama naudoti. Nedelsdami pašalinkite nedidelius trūkumus.",
     "resultDetailFail": "Transporto priemonė netinkama. Trūkumus reikia pašalinti ir atlikti pakartotinę apžiūrą.",
     "resultDetailFailDangerous": "Transporto priemone draudžiama važiuoti viešaisiais keliais, kol nebus pašalinti pavojingi trūkumai.",
-    "resultDetailIncomplete": "Ši apžiūra dar vyksta."
+    "resultDetailIncomplete": "Ši apžiūra dar vyksta.",
+    "attachments": "Nuotraukos ir dokumentai",
+    "attachedDocuments": "Pridėti dokumentai: {names}",
+    "euNotApplicable": "Netaikoma",
+    "basicNotApplicable": "Netaikoma",
+    "allResults": "Visi rezultatai",
+    "signature": "Parašas",
+    "sectionColumn": "Skyrius"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "PASLAUGŲ ISTORIJA",

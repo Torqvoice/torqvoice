@@ -649,7 +649,9 @@
       "overdue": "en retard",
       "customerSince": "Client depuis"
     },
-    "moreStatuses": "Autres statuts"
+    "moreStatuses": "Autres statuts",
+    "fromInspection": "Issu de l'inspection {name}, {date}",
+    "startInspection": "Commencer l'inspection"
   },
   "photoHandoff": {
     "button": "Ajouter depuis le téléphone",

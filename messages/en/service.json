@@ -649,7 +649,9 @@
       "overdue": "overdue",
       "customerSince": "Customer since"
     },
-    "moreStatuses": "More statuses"
+    "moreStatuses": "More statuses",
+    "fromInspection": "From inspection {name}, {date}",
+    "startInspection": "Start inspection"
   },
   "photoHandoff": {
     "button": "Add from phone",

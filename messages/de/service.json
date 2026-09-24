@@ -649,7 +649,9 @@
       "overdue": "überfällig",
       "customerSince": "Kunde seit"
     },
-    "moreStatuses": "Weitere Status"
+    "moreStatuses": "Weitere Status",
+    "fromInspection": "Aus Inspektion {name}, {date}",
+    "startInspection": "Inspektion starten"
   },
   "photoHandoff": {
     "button": "Vom Handy hinzufügen",

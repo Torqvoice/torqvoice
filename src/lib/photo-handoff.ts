@@ -22,6 +22,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 export const PHOTO_HANDOFF_TTL_SECONDS = 30 * 60
 
 const PREFIX = 'ph1'
+/** An inspection's code. A prefix of its own, so neither kind can pass for the other. */
+const INSPECTION_PREFIX = 'ih1'
 
 /**
  * What the phone is being asked for. 'photos' is the ordinary code: any photo
@@ -50,10 +52,25 @@ function signingSecret(): string {
   return secret
 }
 
-function sign(body: string): string {
+function sign(body: string, prefix = PREFIX): string {
   // The prefix is part of what is signed, so a token of another kind signed
   // with the same secret can never be passed off as one of these.
-  return createHmac('sha256', signingSecret()).update(`${PREFIX}.${body}`).digest('base64url')
+  return createHmac('sha256', signingSecret()).update(`${prefix}.${body}`).digest('base64url')
+}
+
+/** The body of a token with this prefix, when its signature holds. */
+function signedBody(token: string, prefix: string): string | null {
+  const parts = token.split('.')
+  if (parts.length !== 3 || parts[0] !== prefix) return null
+  const [, body, signature] = parts
+  const expected = sign(body, prefix)
+  if (
+    signature.length !== expected.length ||
+    !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  ) {
+    return null
+  }
+  return body
 }
 
 export function createPhotoHandoffToken(
@@ -81,16 +98,8 @@ export type PhotoHandoffCheck =
 
 /** Reads a token back. Expiry is told apart from a bad token so the phone can say which. */
 export function verifyPhotoHandoffToken(token: string, now = Date.now()): PhotoHandoffCheck {
-  const parts = token.split('.')
-  if (parts.length !== 3 || parts[0] !== PREFIX) return { ok: false, reason: 'invalid' }
-  const [, body, signature] = parts
-  const expected = sign(body)
-  if (
-    signature.length !== expected.length ||
-    !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
-  ) {
-    return { ok: false, reason: 'invalid' }
-  }
+  const body = signedBody(token, PREFIX)
+  if (!body) return { ok: false, reason: 'invalid' }
 
   let payload: { o?: unknown; r?: unknown; c?: unknown; k?: unknown; u?: unknown; e?: unknown }
   try {
@@ -121,4 +130,72 @@ export function verifyPhotoHandoffToken(token: string, now = Date.now()): PhotoH
       expiresAt: e,
     },
   }
+}
+
+/**
+ * The same kind of code for an inspection: the phone can add photos to any of
+ * its checks, and photos or documents to the inspection as a whole. One code
+ * covers the whole checklist, and the phone picks the check, because nobody
+ * walking round a car wants to scan a new code for every brake line.
+ */
+export interface InspectionHandoff {
+  organizationId: string
+  inspectionId: string
+  /** Who showed the code, for the record of who added the photos. */
+  userId: string
+  /** Unix seconds. */
+  expiresAt: number
+}
+
+export function isInspectionHandoffToken(token: string): boolean {
+  return token.startsWith(`${INSPECTION_PREFIX}.`)
+}
+
+export function createInspectionHandoffToken(
+  handoff: Omit<InspectionHandoff, 'expiresAt'>,
+  now = Date.now()
+): { token: string; expiresAt: Date } {
+  const expiresAt = Math.floor(now / 1000) + PHOTO_HANDOFF_TTL_SECONDS
+  const body = Buffer.from(
+    JSON.stringify({
+      o: handoff.organizationId,
+      i: handoff.inspectionId,
+      u: handoff.userId,
+      e: expiresAt,
+    })
+  ).toString('base64url')
+  return {
+    token: `${INSPECTION_PREFIX}.${body}.${sign(body, INSPECTION_PREFIX)}`,
+    expiresAt: new Date(expiresAt * 1000),
+  }
+}
+
+export type InspectionHandoffCheck =
+  | { ok: true; handoff: InspectionHandoff }
+  | { ok: false; reason: 'invalid' | 'expired' }
+
+export function verifyInspectionHandoffToken(
+  token: string,
+  now = Date.now()
+): InspectionHandoffCheck {
+  const body = signedBody(token, INSPECTION_PREFIX)
+  if (!body) return { ok: false, reason: 'invalid' }
+
+  let payload: { o?: unknown; i?: unknown; u?: unknown; e?: unknown }
+  try {
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+  } catch {
+    return { ok: false, reason: 'invalid' }
+  }
+  const { o, i, u, e } = payload
+  if (
+    typeof o !== 'string' ||
+    typeof i !== 'string' ||
+    typeof u !== 'string' ||
+    typeof e !== 'number'
+  ) {
+    return { ok: false, reason: 'invalid' }
+  }
+  if (e * 1000 <= now) return { ok: false, reason: 'expired' }
+  return { ok: true, handoff: { organizationId: o, inspectionId: i, userId: u, expiresAt: e } }
 }

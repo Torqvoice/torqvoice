@@ -1164,12 +1164,21 @@ export async function POST(request: NextRequest) {
       // 9. Insert inspection templates with nested sections and items
       if (data.inspectionTemplates?.length) {
         for (const tmpl of data.inspectionTemplates as Record<string, unknown>[]) {
+          // Every column, including the regulatory profile and the package
+          // provenance: a template restored as a bare name would regrade every
+          // later inspection on the wrong scale and lose its library link.
           await tx.inspectionTemplate.create({
             data: {
               id: tmpl.id as string,
               name: tmpl.name as string,
               description: (tmpl.description as string) || null,
               isDefault: (tmpl.isDefault as boolean) || false,
+              country: (tmpl.country as string) || null,
+              standard: (tmpl.standard as string) ?? 'custom',
+              severityScale: (tmpl.severityScale as string) || 'eu',
+              packageId: (tmpl.packageId as string) || null,
+              packageVersion: (tmpl.packageVersion as string) || null,
+              packageSource: (tmpl.packageSource as string) || null,
               createdAt: toSafeDate(tmpl.createdAt as string),
               updatedAt: toSafeDate(tmpl.updatedAt as string),
               organizationId: ctx.organizationId,
@@ -1183,18 +1192,37 @@ export async function POST(request: NextRequest) {
                 data: {
                   id: sec.id as string,
                   name: sec.name as string,
+                  description: (sec.description as string) || null,
+                  code: (sec.code as string) || null,
                   sortOrder: (sec.sortOrder as number) || 0,
                   templateId: tmpl.id as string,
                 },
               })
 
+              // The whole check definition: what it measures, its limits, its
+              // rules and its wording. A check restored as a name alone would
+              // stop grading readings and forget that a photo was required.
               const items = sec.items as Record<string, unknown>[] | undefined
               if (items?.length) {
                 await tx.inspectionTemplateItem.createMany({
                   data: items.map((item) => ({
                     id: item.id as string,
                     name: item.name as string,
+                    description: (item.description as string) || null,
+                    code: (item.code as string) || null,
                     sortOrder: (item.sortOrder as number) || 0,
+                    inputType: (item.inputType as string) || 'condition',
+                    unit: (item.unit as string) || null,
+                    minValue: typeof item.minValue === 'number' ? item.minValue : null,
+                    maxValue: typeof item.maxValue === 'number' ? item.maxValue : null,
+                    choices: Array.isArray(item.choices) ? (item.choices as string[]) : [],
+                    required: item.required === true,
+                    photoRequired: item.photoRequired === true,
+                    allowNotApplicable: item.allowNotApplicable !== false,
+                    defaultSeverity: (item.defaultSeverity as string) || null,
+                    defectSuggestions: Array.isArray(item.defectSuggestions)
+                      ? (item.defectSuggestions as string[])
+                      : [],
                     sectionId: sec.id as string,
                   })),
                 })
@@ -1207,6 +1235,9 @@ export async function POST(request: NextRequest) {
       // 10. Insert inspections with items and quote requests
       if (data.inspections?.length) {
         for (const insp of data.inspections as Record<string, unknown>[]) {
+          // The certificate fields too: an issued certificate restored without
+          // its number, inspector and next test date is not the document that
+          // was handed to the customer.
           await tx.inspection.create({
             data: {
               id: insp.id as string,
@@ -1218,6 +1249,18 @@ export async function POST(request: NextRequest) {
               publicToken: (insp.publicToken as string) || null,
               completedAt: toSafeDate(insp.completedAt as string) ?? null,
               sortOrder: (insp.sortOrder as number) || 0,
+              severityScale: (insp.severityScale as string) || null,
+              country: (insp.country as string) || null,
+              vehicleCategory: (insp.vehicleCategory as string) || null,
+              nextTestDue: toSafeDate(insp.nextTestDue as string) ?? null,
+              certificateNumber: (insp.certificateNumber as string) || null,
+              inspectorName: (insp.inspectorName as string) || null,
+              testLocation: (insp.testLocation as string) || null,
+              // Import batches are not in a backup, so the row cannot point at
+              // one; the same as the relation's own answer when a batch is deleted.
+              importBatchId: null,
+              // The frozen certificate design, when the snapshot came back too.
+              designSnapshotId: keptReference(insp.designSnapshotId, designSnapshotIds),
               createdAt: toSafeDate(insp.createdAt as string),
               updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,
@@ -1228,6 +1271,9 @@ export async function POST(request: NextRequest) {
             },
           })
 
+          // Each check as it was copied from the template and then graded:
+          // the reading, the limits it was graded against, the rules and the
+          // free text, not only the grade and the note.
           const inspItems = insp.items as Record<string, unknown>[] | undefined
           if (inspItems?.length) {
             await tx.inspectionItem.createMany({
@@ -1241,10 +1287,57 @@ export async function POST(request: NextRequest) {
                 imageUrls: ((item.imageUrls as string[]) || []).map(
                   (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
                 ),
+                description: (item.description as string) || null,
+                code: (item.code as string) || null,
+                sectionCode: (item.sectionCode as string) || null,
+                inputType: (item.inputType as string) || 'condition',
+                unit: (item.unit as string) || null,
+                minValue: typeof item.minValue === 'number' ? item.minValue : null,
+                maxValue: typeof item.maxValue === 'number' ? item.maxValue : null,
+                choices: Array.isArray(item.choices) ? (item.choices as string[]) : [],
+                required: item.required === true,
+                photoRequired: item.photoRequired === true,
+                allowNotApplicable: item.allowNotApplicable !== false,
+                defaultSeverity: (item.defaultSeverity as string) || null,
+                defectSuggestions: Array.isArray(item.defectSuggestions)
+                  ? (item.defectSuggestions as string[])
+                  : [],
+                measuredValue: typeof item.measuredValue === 'number' ? item.measuredValue : null,
+                textValue: (item.textValue as string) || null,
                 inspectionId: insp.id as string,
               })),
             })
           }
+
+          const inspFiles = insp.attachments as Record<string, unknown>[] | undefined
+          if (inspFiles?.length) {
+            await tx.inspectionAttachment.createMany({
+              data: inspFiles.map((file) => ({
+                id: file.id as string,
+                fileName: file.fileName as string,
+                fileUrl:
+                  rewriteFileUrl(file.fileUrl as string, ctx.organizationId) ??
+                  (file.fileUrl as string),
+                fileType: file.fileType as string,
+                fileSize: (file.fileSize as number) || 0,
+                category: (file.category as string) || 'image',
+                description: (file.description as string) || null,
+                includeInReport: file.includeInReport !== false,
+                createdAt: toSafeDate(file.createdAt as string),
+                inspectionId: insp.id as string,
+              })),
+            })
+          }
+
+          // Status reports sent from the inspection, as a job's are restored
+          // with the job.
+          await restoreRows(
+            'inspection status reports',
+            (rows) => tx.statusReport.createMany({ data: rows as never }),
+            insp.statusReports,
+            { organizationId: ctx.organizationId, inspectionId: insp.id as string },
+            { fields: ['videoUrl'], organizationId: ctx.organizationId }
+          )
 
           const quoteReqs = insp.quoteRequests as Record<string, unknown>[] | undefined
           if (quoteReqs?.length) {
@@ -1260,6 +1353,34 @@ export async function POST(request: NextRequest) {
               })),
             })
           }
+        }
+      }
+
+      // 10b. The jobs and quotes raised from an inspection point back at it.
+      // Both were restored before the inspections existed, so the link is
+      // written now, and only where the inspection came back with the backup.
+      if (data.inspections?.length) {
+        const restoredInspections = new Set(
+          (data.inspections as Record<string, unknown>[]).map((insp) => insp.id as string)
+        )
+        const linked = (rows: unknown) =>
+          ((rows as Record<string, unknown>[] | undefined) ?? []).filter(
+            (row) =>
+              typeof row.inspectionId === 'string' && restoredInspections.has(row.inspectionId)
+          )
+        for (const vehicle of (data.vehicles as Record<string, unknown>[] | undefined) ?? []) {
+          for (const sr of linked(vehicle.serviceRecords)) {
+            await tx.serviceRecord.updateMany({
+              where: { id: sr.id as string, organizationId: ctx.organizationId },
+              data: { inspectionId: sr.inspectionId as string },
+            })
+          }
+        }
+        for (const q of linked(data.quotes)) {
+          await tx.quote.updateMany({
+            where: { id: q.id as string, organizationId: ctx.organizationId },
+            data: { inspectionId: q.inspectionId as string },
+          })
         }
       }
 

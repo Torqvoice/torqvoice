@@ -13,7 +13,7 @@ import { AppCard } from '@/components/app-card'
 import { toast } from 'sonner'
 import { setSetting } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { layoutPresets } from '@/features/settings/Schema/layoutPresets'
+import { presetsFor } from '@/features/settings/Schema/layoutPresets'
 import { Check, Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
@@ -39,7 +39,7 @@ interface TemplateValues {
   logoSize: number
 }
 
-type TabType = 'invoice' | 'quotation' | 'inspections' | 'sms'
+type TabType = 'invoice' | 'quotation' | 'certificates' | 'inspections' | 'sms'
 
 interface WorkshopPreviewInfo {
   name?: string
@@ -139,6 +139,23 @@ function ColorRow({
  * with the sheet in front of you, rather than split across a colour form here
  * and an arrangement editor two clicks away.
  */
+/**
+ * A tab's name, on two lines when the translation carries a line break: the
+ * first line at the tab's size, the second smaller and quieter, so
+ * "Inspection / Checklists" and "Inspection / Certificates" read as one
+ * family without widening the row.
+ */
+function TabLabel({ text }: { text: string }) {
+  const [first, ...rest] = text.split('\n')
+  if (rest.length === 0) return <>{text}</>
+  return (
+    <span className="flex flex-col items-center leading-tight">
+      <span>{first}</span>
+      <span className="text-[11px] font-normal opacity-75">{rest.join(' ')}</span>
+    </span>
+  )
+}
+
 function TemplateTab({
   documentType,
   workshop,
@@ -146,7 +163,7 @@ function TemplateTab({
   savedDesigns = [],
   activeDesign = '',
 }: {
-  documentType: 'invoice' | 'quote'
+  documentType: 'invoice' | 'quote' | 'certificate'
   workshop?: WorkshopPreviewInfo
   logoUrl?: string
   savedDesigns?: SavedDesign[]
@@ -229,8 +246,6 @@ function TemplateTab({
                   )}
                   <Link
                     href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
-                    target="_blank"
-                    rel="noopener"
                     className="block"
                   >
                     <div className="flex justify-center">
@@ -284,14 +299,12 @@ function TemplateTab({
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {layoutPresets.map((preset) => {
+        {presetsFor(documentType).map((preset) => {
           const active = activeDesign === `preset:${preset.id}`
           return (
             <Link
               key={preset.id}
               href={`/invoice-designer?doc=${documentType}&preset=${preset.id}`}
-              target="_blank"
-              rel="noopener"
               className={cn(
                 'relative rounded-lg border p-3 text-left transition-colors hover:bg-muted',
                 active && 'border-primary'
@@ -326,7 +339,7 @@ function TemplateTab({
       <div className="flex items-center justify-between gap-4 border-t pt-4">
         <p className="text-xs text-muted-foreground">{t('templates.designerHint')}</p>
         <Button asChild variant="outline">
-          <Link href={`/invoice-designer?doc=${documentType}`} target="_blank" rel="noopener">
+          <Link href={`/invoice-designer?doc=${documentType}`}>
             {t('templates.openDesigner')} →
           </Link>
         </Button>
@@ -514,6 +527,7 @@ export function TemplateSettings({
   initialInvoiceValues,
   initialQuoteValues,
   inspectionTemplates = [],
+  checklistLanguage = null,
   smsEnabled = false,
   initialSmsTemplates = {},
   logoUrl,
@@ -521,11 +535,13 @@ export function TemplateSettings({
   invoiceLayoutConfig,
   quoteLayoutConfig,
   savedDesigns = [],
-  activeDesigns = { invoice: '', quote: '' },
+  activeDesigns = { invoice: '', quote: '', certificate: '' },
 }: {
   initialInvoiceValues: TemplateValues
   initialQuoteValues: TemplateValues
   inspectionTemplates?: InspectionTemplate[]
+  /** The language the built-in checklists are written in, when any are installed. */
+  checklistLanguage?: string | null
   smsEnabled?: boolean
   initialSmsTemplates?: Record<string, string>
   logoUrl?: string
@@ -533,7 +549,7 @@ export function TemplateSettings({
   invoiceLayoutConfig?: InvoiceLayoutConfig
   quoteLayoutConfig?: InvoiceLayoutConfig
   savedDesigns?: SavedDesign[]
-  activeDesigns?: { invoice: string; quote: string }
+  activeDesigns?: { invoice: string; quote: string; certificate: string }
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -609,7 +625,7 @@ export function TemplateSettings({
           <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
           {/* Colors live here and arrangement lives there, which is easy to
               get lost in. Each page says where the other half is. */}
-          {tab !== 'inspections' && tab !== 'sms' && (
+          {tab !== 'inspections' && tab !== 'sms' && tab !== 'certificates' && (
             <Link
               href="/settings/invoice?tab=layout"
               className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
@@ -621,9 +637,11 @@ export function TemplateSettings({
         <p className="text-sm text-muted-foreground">
           {tab === 'inspections'
             ? t('templates.inspectionsDescription')
-            : tab === 'sms'
-              ? t('templates.smsDescription')
-              : t('templates.invoiceDescription')}
+            : tab === 'certificates'
+              ? t('templates.certificatesDescription')
+              : tab === 'sms'
+                ? t('templates.smsDescription')
+                : t('templates.invoiceDescription')}
         </p>
       </div>
 
@@ -633,56 +651,78 @@ export function TemplateSettings({
           type="button"
           onClick={() => setTab('invoice')}
           className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
             tab === 'invoice'
               ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          {t('templates.tabs.invoice')}
+          <TabLabel text={t('templates.tabs.invoice')} />
         </button>
         <button
           type="button"
           onClick={() => setTab('quotation')}
           className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
             tab === 'quotation'
               ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          {t('templates.tabs.quotation')}
+          <TabLabel text={t('templates.tabs.quotation')} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('certificates')}
+          className={cn(
+            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
+            tab === 'certificates'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <TabLabel text={t('templates.tabs.certificates')} />
         </button>
         <button
           type="button"
           onClick={() => setTab('inspections')}
           className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
             tab === 'inspections'
               ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          {t('templates.tabs.inspections')}
+          <TabLabel text={t('templates.tabs.inspections')} />
         </button>
         {smsEnabled && (
           <button
             type="button"
             onClick={() => setTab('sms')}
             className={cn(
-              'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+              'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
               tab === 'sms'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
-            {t('templates.tabs.sms')}
+            <TabLabel text={t('templates.tabs.sms')} />
           </button>
         )}
       </div>
 
       {tab === 'inspections' ? (
-        <TemplateListClient templates={inspectionTemplates} />
+        <TemplateListClient templates={inspectionTemplates} checklistLanguage={checklistLanguage} />
+      ) : tab === 'certificates' ? (
+        <ReadOnlyWrapper>
+          <TemplateTab
+            documentType="certificate"
+            workshop={workshop}
+            logoUrl={logoUrl}
+            savedDesigns={savedDesigns.filter((design) => design.documentType === 'certificate')}
+            activeDesign={activeDesigns.certificate}
+          />
+        </ReadOnlyWrapper>
       ) : tab === 'sms' ? (
         <>
           <ReadOnlyWrapper>
@@ -705,7 +745,9 @@ export function TemplateSettings({
                 documentType="invoice"
                 workshop={workshop}
                 logoUrl={logoUrl}
-                savedDesigns={savedDesigns}
+                savedDesigns={savedDesigns.filter(
+                  (design) => design.documentType !== 'certificate'
+                )}
                 activeDesign={activeDesigns.invoice}
               />
             ) : (
@@ -713,7 +755,9 @@ export function TemplateSettings({
                 documentType="quote"
                 workshop={workshop}
                 logoUrl={logoUrl}
-                savedDesigns={savedDesigns}
+                savedDesigns={savedDesigns.filter(
+                  (design) => design.documentType !== 'certificate'
+                )}
                 activeDesign={activeDesigns.quote}
               />
             )}

@@ -3,6 +3,7 @@ import {
   DEFAULT_INTERVAL_MONTHS,
   TEST_INTERVALS,
   addInterval,
+  dueDateInstant,
   matchInterval,
   toISODate,
 } from '@/features/inspections/Lib/testIntervals'
@@ -52,5 +53,24 @@ describe('test intervals', () => {
     expect(toISODate(null)).toBe('')
     expect(toISODate(undefined)).toBe('')
     expect(toISODate('not a date')).toBe('')
+  })
+
+  it('reads the day on the workshop calendar, whatever clock the runtime has', () => {
+    // 23:30 UTC on 14 August is already 15 August in Oslo. The server renders
+    // in UTC and the browser in Oslo; both must land on the same day and the
+    // same interval, or the page refuses to hydrate.
+    const completed = new Date('2026-08-14T23:30:00Z')
+    expect(toISODate(completed, 'Europe/Oslo')).toBe('2026-08-15')
+    expect(toISODate(completed, 'UTC')).toBe('2026-08-14')
+    expect(addInterval(completed, 24, 'Europe/Oslo')).toBe('2028-08-15')
+    expect(matchInterval(completed, '2028-08-15', 'Europe/Oslo')?.label).toBe('2 years')
+    expect(matchInterval(completed, '2028-08-14', 'Europe/Oslo')).toBeUndefined()
+  })
+
+  it('stores a chosen day as midnight in the workshop, not wherever the browser is', () => {
+    expect(dueDateInstant('2028-08-15', 'Europe/Oslo').toISOString()).toBe(
+      '2028-08-14T22:00:00.000Z'
+    )
+    expect(toISODate(dueDateInstant('2028-08-15', 'Europe/Oslo'), 'Europe/Oslo')).toBe('2028-08-15')
   })
 })

@@ -171,6 +171,8 @@
     "vehicleCategory": "Fahrzeugklasse",
     "nextTestDue": "Nächste Prüfung fällig",
     "limit": "Grenzwert",
+    "rangeMin": "mind.",
+    "rangeMax": "max.",
     "overallResult": "Prüfergebnis",
     "deficiencies": "Festgestellte Mängel",
     "reading": "Messwert",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "Das Fahrzeug hat bestanden. Beheben Sie die geringen Mängel ohne unnötige Verzögerung.",
     "resultDetailFail": "Das Fahrzeug hat nicht bestanden. Die Mängel müssen behoben und das Fahrzeug erneut geprüft werden.",
     "resultDetailFailDangerous": "Das Fahrzeug darf bis zur Behebung der gefährlichen Mängel nicht im öffentlichen Straßenverkehr genutzt werden.",
-    "resultDetailIncomplete": "Diese Prüfung läuft noch."
+    "resultDetailIncomplete": "Diese Prüfung läuft noch.",
+    "attachments": "Fotos und Dokumente",
+    "attachedDocuments": "Beigefügte Dokumente: {names}",
+    "euNotApplicable": "Nicht zutreffend",
+    "basicNotApplicable": "Nicht zutreffend",
+    "allResults": "Alle Ergebnisse",
+    "signature": "Unterschrift",
+    "sectionColumn": "Abschnitt"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIE",

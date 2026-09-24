@@ -85,7 +85,7 @@ describe('package format', () => {
 
 describe('package registry', () => {
   it('has the inspection template type registered', () => {
-    expect(getInstaller(INSPECTION_TEMPLATE_TYPE)?.label).toBe('inspection template')
+    expect(getInstaller(INSPECTION_TEMPLATE_TYPE)?.label).toBe('checklist')
   })
 
   it('refuses a content type this version cannot install', () => {

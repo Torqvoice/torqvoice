@@ -32,7 +32,10 @@ import { createStatusReport } from '../Actions/createStatusReport'
 interface CreateStatusReportDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  serviceRecordId: string
+  /** The work order the report is about, or... */
+  serviceRecordId?: string
+  /** ...the inspection. One of the two. */
+  inspectionId?: string
   vehicleName: string
   customer: {
     id: string
@@ -51,6 +54,7 @@ export function CreateStatusReportDialog({
   open,
   onOpenChange,
   serviceRecordId,
+  inspectionId,
   vehicleName,
   onCreated,
 }: CreateStatusReportDialogProps) {
@@ -124,7 +128,7 @@ export function CreateStatusReportDialog({
     setSubmitting(true)
     try {
       const result = await createStatusReport({
-        serviceRecordId,
+        ...(inspectionId ? { inspectionId } : { serviceRecordId }),
         title: title || undefined,
         message: message || undefined,
         videoUrl,

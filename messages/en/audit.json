@@ -78,9 +78,9 @@
     "settings_updateInvoiceLayout": "Updated Invoice Layout",
     "settings_updateQuoteLayout": "Updated Quote Layout",
     "settings_updatePortalSlug": "Updated Portal Slug",
-    "inspectionTemplate_create": "Created Inspection Template",
-    "inspectionTemplate_update": "Updated Inspection Template",
-    "inspectionTemplate_delete": "Deleted Inspection Template",
+    "inspectionTemplate_create": "Created Inspection Checklist",
+    "inspectionTemplate_update": "Updated Inspection Checklist",
+    "inspectionTemplate_delete": "Deleted Inspection Checklist",
     "customField_create": "Created Custom Field",
     "customField_update": "Updated Custom Field",
     "customField_delete": "Deleted Custom Field",
@@ -104,7 +104,8 @@
     "webhook_delete": "Deleted Webhook",
     "webhook_rotateSecret": "Rotated Webhook Secret",
     "inspection_reopen": "Reopened Inspection",
-    "inspectionTemplate_import": "Imported Inspection Template",
+    "inspectionTemplate_import": "Imported Inspection Checklist",
+    "inspectionTemplate_translate": "Translated Inspection Checklists",
     "scheduled_message_create": "Created Scheduled Message",
     "scheduled_message_update": "Updated Scheduled Message",
     "scheduled_message_delete": "Deleted Scheduled Message",
@@ -179,7 +180,9 @@
     "timeEntry_delete": "Deleted time entry",
     "settings_workOrderStatus_create": "Added Work Order Status",
     "settings_workOrderStatus_update": "Changed Work Order Status",
-    "settings_workOrderStatus_archive": "Removed Work Order Status"
+    "settings_workOrderStatus_archive": "Removed Work Order Status",
+    "inspection_photo_added": "Added Inspection Photo",
+    "inspection_file_added": "Added Inspection File"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -196,12 +199,12 @@
     "finding_delete": "Deleted finding {id}",
     "finding_resolve": "Resolved finding \"{description}\"",
     "finding_update": "Updated finding \"{description}\"",
-    "inspectionTemplate_create": "Created inspection template \"{name}\"",
-    "inspectionTemplate_createFromPreset": "Created inspection template \"{name}\" from a preset",
-    "inspectionTemplate_delete": "Deleted inspection template \"{name}\"",
-    "inspectionTemplate_duplicate": "Duplicated inspection template into \"{name}\"",
-    "inspectionTemplate_import": "Imported {count, plural, one {# inspection template} other {# inspection templates}} from a package",
-    "inspectionTemplate_update": "Updated inspection template \"{name}\"",
+    "inspectionTemplate_create": "Created inspection checklist \"{name}\"",
+    "inspectionTemplate_createFromPreset": "Created inspection checklist \"{name}\" from a preset",
+    "inspectionTemplate_delete": "Deleted inspection checklist \"{name}\"",
+    "inspectionTemplate_duplicate": "Duplicated inspection checklist into \"{name}\"",
+    "inspectionTemplate_import": "Imported {count, plural, one {# inspection checklist} other {# inspection checklists}} from a package",
+    "inspectionTemplate_update": "Updated inspection checklist \"{name}\"",
     "inspection_complete": "Completed inspection {id}",
     "inspection_create": "Created inspection {id}",
     "inspection_delete": "Deleted inspection {id}",
@@ -325,6 +328,7 @@
     "timeEntry_create": "Added {minutes} minutes for {technician} on \"{job}\"",
     "timeEntry_update": "Corrected time entry for {technician} on \"{job}\" to {minutes} minutes",
     "timeEntry_stop": "Stopped the clock for {technician} on \"{job}\" at {minutes} minutes",
-    "timeEntry_delete": "Deleted time entry {id}"
+    "timeEntry_delete": "Deleted time entry {id}",
+    "inspection_phoneUpload": "Added a file from a phone to inspection {ref}"
   }
 }

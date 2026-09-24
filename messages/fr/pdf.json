@@ -171,6 +171,8 @@
     "vehicleCategory": "Catégorie du véhicule",
     "nextTestDue": "Prochain contrôle",
     "limit": "Limite",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "overallResult": "Résultat du contrôle",
     "deficiencies": "Défaillances constatées",
     "reading": "Mesure",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "Le véhicule est accepté. Réparez les défaillances mineures sans délai excessif.",
     "resultDetailFail": "Le véhicule est refusé. Les défaillances doivent être réparées et le véhicule doit repasser au contrôle.",
     "resultDetailFailDangerous": "Le véhicule ne doit pas circuler sur la voie publique tant que les défaillances critiques ne sont pas réparées.",
-    "resultDetailIncomplete": "Ce contrôle est toujours en cours."
+    "resultDetailIncomplete": "Ce contrôle est toujours en cours.",
+    "attachments": "Photos et documents",
+    "attachedDocuments": "Documents joints : {names}",
+    "euNotApplicable": "Sans objet",
+    "basicNotApplicable": "Sans objet",
+    "allResults": "Tous les résultats",
+    "signature": "Signature",
+    "sectionColumn": "Section"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTORIQUE D'ENTRETIEN",

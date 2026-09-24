@@ -649,7 +649,9 @@
       "overdue": "scaduta",
       "customerSince": "Cliente dal"
     },
-    "moreStatuses": "Altri stati"
+    "moreStatuses": "Altri stati",
+    "fromInspection": "Dall'ispezione {name}, {date}",
+    "startInspection": "Avvia ispezione"
   },
   "photoHandoff": {
     "button": "Aggiungi dal telefono",

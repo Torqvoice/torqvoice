@@ -159,6 +159,13 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
   const router = useRouter()
   const t = useTranslations('settings')
   const currentLocale = useLocale()
+  // Shows the workshop's saved language rather than the viewer's own. The
+  // sidebar switcher changes only the viewer's, so showing that here made a
+  // workshop still saved as another language look already switched.
+  const savedWorkshopLocale = settings[SETTING_KEYS.WORKSHOP_LOCALE]
+  const workshopLocale = (locales as readonly string[]).includes(savedWorkshopLocale)
+    ? savedWorkshopLocale
+    : currentLocale
   const [saving, setSaving] = useState(false)
   const [currencyOpen, setCurrencyOpen] = useState(false)
   const [timezoneOpen, setTimezoneOpen] = useState(false)
@@ -245,11 +252,12 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
 
   const handleForceCustomerLocaleChange = async (value: boolean) => {
     setForceCustomerLocale(value)
-    // Snapshot the admin's current locale so force mode always has a target,
-    // even on existing installs where workshop.locale was never written.
+    // Writes the language this page shows, so force mode always has a target
+    // on installs where workshop.locale was never written, without replacing a
+    // saved workshop language with whatever the admin happens to be browsing in.
     await setSettings({
       [SETTING_KEYS.FORCE_CUSTOMER_LOCALE]: String(value),
-      [SETTING_KEYS.WORKSHOP_LOCALE]: currentLocale,
+      [SETTING_KEYS.WORKSHOP_LOCALE]: workshopLocale,
     })
     router.refresh()
   }
@@ -263,7 +271,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
         <p className="text-sm text-muted-foreground">{t('localization.languageDescription')}</p>
         <div className="space-y-2">
           <Label>{t('localization.language')}</Label>
-          <Select value={currentLocale} onValueChange={handleLanguageChange}>
+          <Select value={workshopLocale} onValueChange={handleLanguageChange}>
             <SelectTrigger className="w-64">
               <SelectValue />
             </SelectTrigger>

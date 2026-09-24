@@ -89,7 +89,7 @@ export function countCustomWording(data: PackagedTemplate): number {
 
 registerInstaller({
   type: INSPECTION_TEMPLATE_TYPE,
-  label: 'inspection template',
+  label: 'checklist',
   schema: packagedTemplateSchema,
   describe: describeTemplate,
 })

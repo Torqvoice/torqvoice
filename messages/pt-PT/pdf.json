@@ -171,6 +171,8 @@
     "vehicleCategory": "Categoria da viatura",
     "nextTestDue": "Próxima inspeção",
     "limit": "Limite",
+    "rangeMin": "mín.",
+    "rangeMax": "máx.",
     "overallResult": "Resultado da inspeção",
     "deficiencies": "Deficiências detetadas",
     "reading": "Leitura",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "A viatura foi aprovada. As deficiências ligeiras devem ser reparadas sem demora injustificada.",
     "resultDetailFail": "A viatura foi reprovada. As deficiências têm de ser reparadas e a viatura sujeita a reinspeção.",
     "resultDetailFailDangerous": "A viatura não pode circular na via pública enquanto as deficiências perigosas não forem reparadas.",
-    "resultDetailIncomplete": "Esta inspeção ainda está em curso."
+    "resultDetailIncomplete": "Esta inspeção ainda está em curso.",
+    "attachments": "Fotografias e documentos",
+    "attachedDocuments": "Documentos anexados: {names}",
+    "euNotApplicable": "Não aplicável",
+    "basicNotApplicable": "Não aplicável",
+    "allResults": "Todos os resultados",
+    "signature": "Assinatura",
+    "sectionColumn": "Secção"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTÓRICO DE SERVIÇOS",

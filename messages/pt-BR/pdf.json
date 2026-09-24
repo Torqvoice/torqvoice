@@ -171,6 +171,8 @@
     "vehicleCategory": "Categoria do veículo",
     "nextTestDue": "Próxima inspeção",
     "limit": "Limite",
+    "rangeMin": "mín.",
+    "rangeMax": "máx.",
     "overallResult": "Resultado da inspeção",
     "deficiencies": "Deficiências encontradas",
     "reading": "Leitura",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "O veículo foi aprovado. Repare as deficiências leves sem demora indevida.",
     "resultDetailFail": "O veículo foi reprovado. As deficiências devem ser reparadas e o veículo reinspecionado.",
     "resultDetailFailDangerous": "O veículo não deve circular em via pública até que as deficiências perigosas sejam reparadas.",
-    "resultDetailIncomplete": "Esta inspeção ainda está em andamento."
+    "resultDetailIncomplete": "Esta inspeção ainda está em andamento.",
+    "attachments": "Fotos e documentos",
+    "attachedDocuments": "Documentos anexados: {names}",
+    "euNotApplicable": "Não aplicável",
+    "basicNotApplicable": "Não aplicável",
+    "allResults": "Todos os resultados",
+    "signature": "Assinatura",
+    "sectionColumn": "Seção"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTÓRICO DE SERVIÇO",

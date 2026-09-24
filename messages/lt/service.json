@@ -649,7 +649,9 @@
       "overdue": "pavėluota",
       "customerSince": "Klientas nuo"
     },
-    "moreStatuses": "Daugiau būsenų"
+    "moreStatuses": "Daugiau būsenų",
+    "fromInspection": "Iš apžiūros {name}, {date}",
+    "startInspection": "Pradėti apžiūrą"
   },
   "photoHandoff": {
     "button": "Pridėti iš telefono",

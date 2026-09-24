@@ -287,6 +287,8 @@ export async function POST(request: NextRequest) {
           where: { organizationId: ctx.organizationId },
           include: {
             items: true,
+            attachments: true,
+            statusReports: true,
             quoteRequests: true,
           },
         })

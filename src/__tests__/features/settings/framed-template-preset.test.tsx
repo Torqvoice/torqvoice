@@ -208,8 +208,11 @@ describe('framed template preset', () => {
       'customer',
       'general',
       'notes',
+      'result',
       'service',
+      'signature',
       'telegram_qr',
+      'test_details',
       'vehicle',
       'warranty',
     ])

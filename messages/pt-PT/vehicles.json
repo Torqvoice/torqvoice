@@ -114,7 +114,7 @@
   "inspections": {
     "newInspection": "Nova Inspeção",
     "empty": "Ainda não há inspeções",
-    "template": "Modelo",
+    "template": "Lista de verificação",
     "progress": "Progresso",
     "status": "Estado",
     "date": "Data",

@@ -6,7 +6,22 @@ import { createTemplateSchema, updateTemplateSchema } from '../Schema/templateSc
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import type { TemplateSectionInput } from '../Schema/templateSchema'
-import { TEMPLATE_PRESETS, presetPackageId, presetToTemplateCreate } from '../Lib/templatePresets'
+import {
+  PRESET_NAMESPACE,
+  TEMPLATE_PRESETS,
+  presetPackageId,
+  presetToTemplateCreate,
+  resolvePreset,
+} from '../Lib/templatePresets'
+import {
+  type InspectionLibrary,
+  loadAllInspectionLibraries,
+  loadInspectionLibrary,
+} from '../Lib/inspectionLibrary'
+import { buildLibraryIndex, isBuiltinTemplate, planRelocalization } from '../Lib/presetLocalization'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { type Locale, locales } from '@/i18n/config'
+import { getLocale } from 'next-intl/server'
 import { clearedToNull } from '@/lib/clearable'
 
 /**
@@ -33,6 +48,7 @@ function buildSectionCreates(sections: TemplateSectionInput[]) {
         choices: item.choices ?? [],
         required: item.required,
         photoRequired: item.photoRequired,
+        allowNotApplicable: item.allowNotApplicable,
         defaultSeverity: item.defaultSeverity ?? null,
         defectSuggestions: item.defectSuggestions ?? [],
       })),
@@ -250,9 +266,10 @@ export async function createTemplateFromPreset(presetId: string) {
       if (!preset) throw new Error('Preset not found')
 
       const isFirst = (await db.inspectionTemplate.count({ where: { organizationId } })) === 0
+      const lib = await loadInspectionLibrary(await libraryLocale(organizationId))
 
       const template = await db.inspectionTemplate.create({
-        data: presetToTemplateCreate(preset, organizationId, isFirst),
+        data: presetToTemplateCreate(preset, organizationId, isFirst, lib),
         include: { sections: { include: { items: true } } },
       })
 
@@ -320,6 +337,7 @@ export async function duplicateTemplate(id: string) {
                   choices: item.choices,
                   required: item.required,
                   photoRequired: item.photoRequired,
+                  allowNotApplicable: item.allowNotApplicable,
                   defaultSeverity: item.defaultSeverity,
                   defectSuggestions: item.defectSuggestions,
                 })),
@@ -377,14 +395,48 @@ async function readHandledPresets(organizationId: string): Promise<Set<string>> 
   }
 }
 
+/** The language built-in checklists were last written in, per organization. */
+const PRESETS_LOCALE_KEY = 'inspections.presetsLocale'
+
+const isLocale = (value: string | null | undefined): value is Locale =>
+  !!value && (locales as readonly string[]).includes(value)
+
+/**
+ * The language to write built-in checklists in: the workshop's language when
+ * one is set in Settings → Localization. Without one, the language they were
+ * last written in stays, so two colleagues browsing in different languages do
+ * not rewrite the checklists back and forth; only a first install falls back
+ * to the viewer's own.
+ */
+async function libraryLocale(organizationId: string): Promise<Locale> {
+  const rows = await db.appSetting.findMany({
+    where: {
+      organizationId,
+      key: { in: [SETTING_KEYS.WORKSHOP_LOCALE, PRESETS_LOCALE_KEY] },
+    },
+    select: { key: true, value: true },
+  })
+  const workshop = rows.find((r) => r.key === SETTING_KEYS.WORKSHOP_LOCALE)?.value
+  if (isLocale(workshop)) return workshop
+  const written = rows.find((r) => r.key === PRESETS_LOCALE_KEY)?.value
+  if (isLocale(written)) return written
+  const viewer = await getLocale()
+  return isLocale(viewer) ? viewer : 'en'
+}
+
 /**
  * Brings the organization's list up to the current library.
  *
  * Runs on read rather than behind a button, so a workshop that has been using
  * Torqvoice for a year gets the new checklists without being told to go and
- * fetch them. It writes nothing once every preset has been handled.
+ * fetch them. It writes nothing once every preset has been handled and the
+ * checklists are already in the workshop's language.
  */
 async function syncPresetLibrary(organizationId: string, userId: string) {
+  const locale = await libraryLocale(organizationId)
+  const lib = await loadInspectionLibrary(locale)
+  await relocalizeBuiltinTemplates(organizationId, userId, locale, lib)
+
   const handled = await readHandledPresets(organizationId)
   const pending = LIBRARY_PRESETS.filter((p) => !handled.has(p.id))
   if (pending.length === 0) return 0
@@ -399,7 +451,9 @@ async function syncPresetLibrary(organizationId: string, userId: string) {
   const installedIds = new Set(existing.map((t) => t.packageId).filter(Boolean))
   const takenNames = new Set(existing.map((t) => t.name.trim().toLowerCase()))
   const toCreate = pending.filter(
-    (p) => !installedIds.has(presetPackageId(p)) && !takenNames.has(p.name.trim().toLowerCase())
+    (p) =>
+      !installedIds.has(presetPackageId(p)) &&
+      !takenNames.has(resolvePreset(p, lib).name.trim().toLowerCase())
   )
 
   if (toCreate.length > 0) {
@@ -412,7 +466,8 @@ async function syncPresetLibrary(organizationId: string, userId: string) {
           data: presetToTemplateCreate(
             preset,
             organizationId,
-            !hasDefault && preset.id === 'standard-multipoint'
+            !hasDefault && preset.id === 'standard-multipoint',
+            lib
           ),
         })
       )
@@ -435,6 +490,138 @@ async function syncPresetLibrary(organizationId: string, userId: string) {
 }
 
 /**
+ * Rewrites the untouched text of installed built-in checklists into the
+ * workshop's language: once for checklists installed in English before the
+ * library was translated, and again whenever the workshop changes language.
+ * Text the workshop edited is not recognised as built-in and stays as it is.
+ * Past inspections keep the wording they were recorded with.
+ */
+async function relocalizeBuiltinTemplates(
+  organizationId: string,
+  userId: string,
+  locale: Locale,
+  lib: InspectionLibrary,
+  { force = false }: { force?: boolean } = {}
+) {
+  if (!force) {
+    const marker = await db.appSetting.findFirst({
+      where: { organizationId, key: PRESETS_LOCALE_KEY },
+      select: { value: true },
+    })
+    if (marker?.value === locale) return
+  }
+
+  const templates = await db.inspectionTemplate.findMany({
+    where: { organizationId, packageId: { startsWith: `${PRESET_NAMESPACE}/` } },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      packageId: true,
+      sections: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          items: { select: { id: true, name: true, description: true, choices: true } },
+        },
+      },
+    },
+  })
+
+  const index = buildLibraryIndex(await loadAllInspectionLibraries())
+  const writes = templates.filter(isBuiltinTemplate).flatMap((template) => {
+    const plan = planRelocalization(template, lib, index)
+    return [
+      ...(plan.template
+        ? [db.inspectionTemplate.update({ where: { id: template.id }, data: plan.template })]
+        : []),
+      ...plan.sections.map(({ id, data }) =>
+        db.inspectionTemplateSection.update({ where: { id }, data })
+      ),
+      ...plan.items.map(({ id, data }) =>
+        db.inspectionTemplateItem.update({ where: { id }, data })
+      ),
+    ]
+  })
+
+  await db.$transaction([
+    ...writes,
+    db.appSetting.upsert({
+      where: { organizationId_key: { organizationId, key: PRESETS_LOCALE_KEY } },
+      create: { organizationId, key: PRESETS_LOCALE_KEY, value: locale, userId },
+      update: { value: locale },
+    }),
+  ])
+}
+
+/**
+ * The language the workshop's built-in checklists were last written in, or
+ * null when it has none installed. The checklists page compares it with the
+ * viewer's language to offer a translation, since a workshop language saved
+ * long ago would otherwise keep them in a language nobody there reads.
+ */
+export async function getChecklistLanguage() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const [marker, builtin] = await Promise.all([
+        db.appSetting.findFirst({
+          where: { organizationId, key: PRESETS_LOCALE_KEY },
+          select: { value: true },
+        }),
+        db.inspectionTemplate.count({
+          where: { organizationId, packageId: { startsWith: `${PRESET_NAMESPACE}/` } },
+        }),
+      ])
+      return builtin > 0 && isLocale(marker?.value) ? marker.value : null
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS },
+      ],
+    }
+  )
+}
+
+/**
+ * Makes `locale` the workshop's language and rewrites the untouched text of
+ * its built-in checklists into it. Saving the workshop language too means
+ * checklists added later arrive in the same language.
+ */
+export async function translateChecklists(locale: string) {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      if (!isLocale(locale)) throw new Error('Unsupported language')
+      await db.appSetting.upsert({
+        where: { organizationId_key: { organizationId, key: SETTING_KEYS.WORKSHOP_LOCALE } },
+        create: { organizationId, key: SETTING_KEYS.WORKSHOP_LOCALE, value: locale, userId },
+        update: { value: locale },
+      })
+      await relocalizeBuiltinTemplates(
+        organizationId,
+        userId,
+        locale,
+        await loadInspectionLibrary(locale),
+        { force: true }
+      )
+      revalidatePath('/settings/templates')
+      return { locale }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS },
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+      audit: ({ result }) => ({
+        action: 'inspectionTemplate.translate',
+        entity: 'InspectionTemplate',
+        metadata: { locale: result.locale },
+      }),
+    }
+  )
+}
+
+/**
  * Puts back any library checklist the workshop no longer has, ignoring the
  * handled marker. This is the deliberate "I deleted that and want it back"
  * path, which is why it is a button rather than something that happens on load.
@@ -448,8 +635,11 @@ export async function restoreMissingPresets() {
       })
       const installedIds = new Set(existing.map((t) => t.packageId).filter(Boolean))
       const takenNames = new Set(existing.map((t) => t.name.trim().toLowerCase()))
+      const lib = await loadInspectionLibrary(await libraryLocale(organizationId))
       const missing = LIBRARY_PRESETS.filter(
-        (p) => !installedIds.has(presetPackageId(p)) && !takenNames.has(p.name.trim().toLowerCase())
+        (p) =>
+          !installedIds.has(presetPackageId(p)) &&
+          !takenNames.has(resolvePreset(p, lib).name.trim().toLowerCase())
       )
       if (missing.length === 0) return { added: 0 }
 
@@ -460,7 +650,8 @@ export async function restoreMissingPresets() {
             data: presetToTemplateCreate(
               preset,
               organizationId,
-              !hasDefault && preset.id === 'standard-multipoint'
+              !hasDefault && preset.id === 'standard-multipoint',
+              lib
             ),
           })
         )

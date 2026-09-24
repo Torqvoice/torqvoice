@@ -114,7 +114,7 @@
   "inspections": {
     "newInspection": "Nuova Ispezione",
     "empty": "Nessuna ispezione ancora",
-    "template": "Modello",
+    "template": "Checklist",
     "progress": "Avanzamento",
     "status": "Stato",
     "date": "Data",

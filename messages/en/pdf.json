@@ -171,6 +171,8 @@
     "vehicleCategory": "Vehicle category",
     "nextTestDue": "Next test due",
     "limit": "Limit",
+    "rangeMin": "min",
+    "rangeMax": "max",
     "overallResult": "Result of the test",
     "deficiencies": "Deficiencies found",
     "reading": "Reading",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "The vehicle passes. Repair the minor deficiencies without undue delay.",
     "resultDetailFail": "The vehicle fails. The deficiencies must be repaired and the vehicle retested.",
     "resultDetailFailDangerous": "The vehicle must not be used on the public road until the dangerous deficiencies are repaired.",
-    "resultDetailIncomplete": "This inspection is still in progress."
+    "resultDetailIncomplete": "This inspection is still in progress.",
+    "attachments": "Photos and documents",
+    "attachedDocuments": "Attached documents: {names}",
+    "euNotApplicable": "Not applicable",
+    "basicNotApplicable": "Not applicable",
+    "allResults": "All results",
+    "signature": "Signature",
+    "sectionColumn": "Section"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICE HISTORY",

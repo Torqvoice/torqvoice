@@ -157,14 +157,16 @@
       "attention": "Hafif kusur",
       "fail": "Ağır kusur",
       "dangerous": "Tehlikeli kusur",
-      "not_inspected": "Muayene edilmedi"
+      "not_inspected": "Muayene edilmedi",
+      "not_applicable": "Uygulanamaz"
     },
     "basic": {
       "pass": "Geçti",
       "attention": "Dikkat",
       "fail": "Kaldı",
       "dangerous": "Tehlikeli",
-      "not_inspected": "Muayene edilmedi"
+      "not_inspected": "Muayene edilmedi",
+      "not_applicable": "Uygulanamaz"
     },
     "result": {
       "pass": "Geçti",
@@ -194,10 +196,13 @@
     "summary": "Özet",
     "progressLabel": "{graded} kontrol değerlendirildi",
     "limit": "Sınır değer",
+    "rangeMin": "en az",
+    "rangeMax": "en fazla",
     "viewPhoto": "Fotoğrafı gör",
     "deficienciesFound": "Tespit edilen kusurlar ({count})",
     "allResults": "Tüm sonuçlar",
-    "privacyNotice": "Bu rapor, muayeneyi yapan servis tarafından sizinle paylaşılmıştır. Bu bağlantıya sahip herkes raporu görebilir, lütfen iletmeyin. Bağlantının geri çekilmesi veya verilerinizin silinmesi için servisle iletişime geçin."
+    "privacyNotice": "Bu rapor, muayeneyi yapan servis tarafından sizinle paylaşılmıştır. Bu bağlantıya sahip herkes raporu görebilir, lütfen iletmeyin. Bağlantının geri çekilmesi veya verilerinizin silinmesi için servisle iletişime geçin.",
+    "inspectionPhotos": "Fotoğraflar ve belgeler"
   },
   "terms": {
     "title": "Satış Koşulları",

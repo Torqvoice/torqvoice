@@ -649,7 +649,9 @@
       "overdue": "forfalt",
       "customerSince": "Kunde siden"
     },
-    "moreStatuses": "Flere statuser"
+    "moreStatuses": "Flere statuser",
+    "fromInspection": "Fra inspeksjon {name}, {date}",
+    "startInspection": "Start inspeksjon"
   },
   "photoHandoff": {
     "button": "Legg til fra mobil",

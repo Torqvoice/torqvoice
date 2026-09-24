@@ -75,6 +75,11 @@ export const FILE_REFERENCES: FileReference[] = [
   { model: 'InventoryPart', field: 'imageUrl', sql: text('inventory_parts', 'imageUrl') },
   { model: 'StoredImage', field: 'url', sql: text('stored_images', 'url') },
   { model: 'InspectionItem', field: 'imageUrls', sql: array('inspection_items', 'imageUrls') },
+  {
+    model: 'InspectionAttachment',
+    field: 'fileUrl',
+    sql: text('inspection_attachments', 'fileUrl'),
+  },
   { model: 'VehicleFinding', field: 'imageUrls', sql: array('vehicle_findings', 'imageUrls') },
   { model: 'StatusReport', field: 'videoUrl', sql: text('status_reports', 'videoUrl') },
   { model: 'WhatsappMessage', field: 'mediaUrl', sql: text('whatsapp_messages', 'mediaUrl') },

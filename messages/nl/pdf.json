@@ -171,6 +171,8 @@
     "vehicleCategory": "Voertuigcategorie",
     "nextTestDue": "Volgende keuring",
     "limit": "Grenswaarde",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "overallResult": "Keuringsresultaat",
     "deficiencies": "Vastgestelde gebreken",
     "reading": "Meetwaarde",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "Het voertuig is goedgekeurd. Herstel de kleine gebreken zonder onnodig uitstel.",
     "resultDetailFail": "Het voertuig is afgekeurd. De gebreken moeten worden hersteld en het voertuig opnieuw gekeurd.",
     "resultDetailFailDangerous": "Het voertuig mag niet op de openbare weg worden gebruikt totdat de gevaarlijke gebreken zijn hersteld.",
-    "resultDetailIncomplete": "Deze keuring loopt nog."
+    "resultDetailIncomplete": "Deze keuring loopt nog.",
+    "attachments": "Foto's en documenten",
+    "attachedDocuments": "Bijgevoegde documenten: {names}",
+    "euNotApplicable": "Niet van toepassing",
+    "basicNotApplicable": "Niet van toepassing",
+    "allResults": "Alle resultaten",
+    "signature": "Handtekening",
+    "sectionColumn": "Sectie"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEGESCHIEDENIS",

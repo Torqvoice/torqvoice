@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Alle kjøretøyinspeksjoner og resultater",
     "contentTechnicians": "Teknikere",
     "contentTechniciansDescription": "Alle teknikerprofiler. Tilknyttede poster vil bli frakoblet.",
-    "contentInspectionTemplates": "Inspeksjonsmaler",
-    "contentInspectionTemplatesDescription": "Alle inspeksjonsmaler og seksjoner. Slett inspeksjoner først.",
+    "contentInspectionTemplates": "Inspeksjonssjekklister",
+    "contentInspectionTemplatesDescription": "Alle inspeksjonssjekklister og seksjonene deres. Slett inspeksjonene først.",
     "contentNotifications": "Varsler",
     "contentNotificationsDescription": "Alle systemvarsler",
     "contentSmsMessages": "SMS-meldinger",
@@ -656,7 +656,13 @@
       "bank_account": "Bankkonto",
       "footer": "Bunntekst",
       "general": "Generelt",
-      "telegram_qr": "QR-kode for Telegram"
+      "telegram_qr": "QR-kode for Telegram",
+      "result": "Resultat",
+      "test_details": "Testdetaljer",
+      "defects": "Mangler",
+      "results_table": "Alle resultater",
+      "inspection_photos": "Bilder",
+      "signature": "Signatur"
     },
     "fields": {
       "customer_name": "Kundenavn",
@@ -688,7 +694,25 @@
       "invoice_number": "Fakturanr.",
       "customer_number": "Kundenr.",
       "date": "Dato",
-      "portal_link": "Portallenke"
+      "portal_link": "Portallenke",
+      "test_date": "Testdato",
+      "test_location": "Teststed",
+      "inspector": "Kontrollør",
+      "certificate_number": "Sertifikatnummer",
+      "vehicle_category": "Kjøretøykategori",
+      "odometer": "Kilometerstand",
+      "next_test_due": "Neste test",
+      "defect_notes": "Merknader",
+      "defect_photos": "Bilder",
+      "passed_checks": "Beståtte kontroller",
+      "not_applicable_checks": "Ikke aktuelle kontroller",
+      "check_notes": "Merknadskolonne",
+      "result_detail": "Forklaring",
+      "result_summary": "Antall per vurdering",
+      "combined_table": "Én tabell for alle seksjoner",
+      "inspector_line": "Linje for kontrollør",
+      "inspector_name": "Skriv ut kontrollørens navn",
+      "date_line": "Datolinje"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Detaljert",
         "description": "Tittel øverst, kjøretøyet for seg, begge tabeller og alle valgfrie blokker"
+      },
+      "certificate-regulator": {
+        "name": "Forskriftsmessig",
+        "description": "Nøkternt uten bånd, med seriffer: hver kontroll med vurdering og merknad, bildene, en signaturlinje"
+      },
+      "certificate-standard": {
+        "name": "Standard",
+        "description": "Resultatet under tittelen, bil og test side om side, hver mangel med merknad og bilde, deretter de ikke beståtte kontrollene etter seksjon"
+      },
+      "certificate-customer": {
+        "name": "Kunderapport",
+        "description": "Et ark med bånd, resultatet stort og sentrert, mangler med bilder, rundgangsbildene og én kort tabell over de ikke beståtte kontrollene"
+      },
+      "certificate-compact": {
+        "name": "Kompakt",
+        "description": "Én side for flåter: liten skrift, resultatet ved siden av tittelen, alle resultater uten merknader, bildene, en signaturlinje"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Maler",
     "invoiceDescription": "Tilpass utseendet på PDF-fakturaer og tilbud.",
-    "inspectionsDescription": "Administrer inspeksjonssjekklister og flerpunktsmaler.",
+    "inspectionsDescription": "Sjekklistene teknikerne dine går gjennom under en inspeksjon.",
     "smsDescription": "Tilpass SMS-meldingene som sendes til kunder.",
     "tabs": {
       "invoice": "Faktura",
       "quotation": "Tilbud",
-      "inspections": "Inspeksjoner",
+      "inspections": "Inspeksjons-\nsjekklister",
       "sms": "SMS",
-      "layout": "Oppsett"
+      "layout": "Oppsett",
+      "certificates": "Inspeksjons-\nsertifikater"
     },
     "presets": "Malforhåndsvisninger",
     "primaryColor": "Primærfarge",
@@ -849,7 +890,8 @@
     "goToLayout": "Oppsett og seksjoner",
     "openDesigner": "Åpne designeren",
     "designerIntro": "Velg et utgangspunkt, og åpne designeren for å endre alt.",
-    "designerHint": "Farger, skrifter, avstander og alle seksjoner ligger i designeren."
+    "designerHint": "Farger, skrifter, avstander og alle seksjoner ligger i designeren.",
+    "certificatesDescription": "Utform sertifikatet en fullført inspeksjon skriver ut og deler."
   },
   "payment": {
     "readMore": "Les mer",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Teknikere",
     "optTechniciansDesc": "Teknikerprofiler og arbeidsbordsoppgaver",
     "optInspections": "Inspeksjoner",
-    "optInspectionsDesc": "Inspeksjonsmaler, inspeksjoner og resultater",
+    "optInspectionsDesc": "Inspeksjonssjekklister, inspeksjoner og resultater",
     "optAuditLogs": "Aktivitetslogg",
     "optAuditLogsDesc": "Aktivitets- og endringshistorikk",
     "optSmsMessages": "Meldinger",
@@ -2060,7 +2102,19 @@
       "slogan": "Kvalitetsservice du kan stole på",
       "paymentTerms": "Betales innen 14 dager",
       "footerNote": "Takk for handelen",
-      "value": "Eksempel"
+      "value": "Eksempel",
+      "testLocation": "Havnegata 12, Springfield",
+      "certificateNotes": "Dekkene er nær lovlig grense; regn med å bytte dem før neste test.",
+      "checkBrakeHoses": "Bremseslanger",
+      "checkBrakeHosesNote": "Lett gnag på venstre fremre slange, ikke gjennom ytterlaget ennå.",
+      "sectionBrakes": "Bremseutstyr",
+      "checkBrakePedal": "Driftsbremsepedal",
+      "checkBrakeFluid": "Bremsevæske",
+      "sectionLighting": "Lysutstyr",
+      "checkHeadlamps": "Frontlyktenes tilstand",
+      "checkFogLamp": "Tåkelys bak",
+      "photoFront": "Front",
+      "photoOdometer": "Kilometerteller"
     },
     "logoUpload": "Last opp logo",
     "logoReplace": "Bytt logo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Bruk som standard",
     "defaultSet": "«{name}» er nå i bruk",
     "couldNotSetDefault": "Kunne ikke sette standarddesignet",
-    "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes."
+    "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes.",
+    "certificate": "Inspeksjonssertifikat",
+    "resultWidthHint": "Tomt fyller raden. Angi punkter for et smalere bånd; det legger seg på siden justeringen velger, og i en kolonne tar det kolonnens bredde."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

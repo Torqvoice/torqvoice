@@ -391,8 +391,6 @@ export function CustomerDetailClient({
                 {customer.invoiceDesign && (
                   <Link
                     href={`/invoice-designer?doc=invoice&design=${customer.invoiceDesign.id}`}
-                    target="_blank"
-                    rel="noopener"
                     title={t('invoiceDesignBadgeHint')}
                     className="flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary hover:bg-primary/20"
                   >

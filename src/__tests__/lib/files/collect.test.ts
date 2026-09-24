@@ -10,6 +10,7 @@ vi.mock('@/lib/db', () => ({
     serviceAttachment: { findMany: vi.fn() },
     statusReport: { findMany: vi.fn() },
     inspectionItem: { findMany: vi.fn() },
+    inspectionAttachment: { findMany: vi.fn() },
     vehicle: { findMany: vi.fn() },
     quoteAttachment: { findMany: vi.fn() },
     tireSetAttachment: { findMany: vi.fn() },
@@ -45,6 +46,9 @@ beforeEach(() => {
   vi.mocked(db.inspectionItem.findMany)
     .mockReset()
     .mockResolvedValue([{ imageUrls: ['services/i1.jpg', 'services/i2.jpg'] }] as never)
+  vi.mocked(db.inspectionAttachment.findMany)
+    .mockReset()
+    .mockResolvedValue([{ fileUrl: 'services/form.pdf' }] as never)
   vi.mocked(db.vehicle.findMany).mockReset()
   vi.mocked(db.quoteAttachment.findMany)
     .mockReset()
@@ -72,9 +76,25 @@ describe('files that go with a delete', () => {
     })
   })
 
-  it('an inspection: the photos on its items', async () => {
-    expect(await inspectionFileUrls(ORG, ['in-1'])).toEqual(['services/i1.jpg', 'services/i2.jpg'])
+  it('an inspection: the photos on its items, the files on the inspection and its report videos', async () => {
+    vi.mocked(db.statusReport.findMany).mockResolvedValueOnce([
+      { videoUrl: 'services/walk-round.mp4' },
+    ] as never)
+    expect(await inspectionFileUrls(ORG, ['in-1'])).toEqual([
+      'services/i1.jpg',
+      'services/i2.jpg',
+      'services/form.pdf',
+      'services/walk-round.mp4',
+    ])
+    expect(where(db.statusReport.findMany)).toEqual({
+      inspectionId: { in: ['in-1'] },
+      organizationId: ORG,
+    })
     expect(where(db.inspectionItem.findMany)).toEqual({
+      inspectionId: { in: ['in-1'] },
+      inspection: { organizationId: ORG },
+    })
+    expect(where(db.inspectionAttachment.findMany)).toEqual({
       inspectionId: { in: ['in-1'] },
       inspection: { organizationId: ORG },
     })
@@ -101,6 +121,10 @@ describe('files that go with a delete', () => {
       null,
       'services/i1.jpg',
       'services/i2.jpg',
+      'services/form.pdf',
+      // The inspection's own status report videos, from the same mock.
+      'services/v.mp4',
+      null,
     ])
     expect(where(db.vehicle.findMany)).toEqual({ id: { in: ['v-1'] }, organizationId: ORG })
     // Only the jobs and inspections of vehicles this workshop owns.

@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Todas las inspecciones de vehículos y sus resultados",
     "contentTechnicians": "Técnicos",
     "contentTechniciansDescription": "Todos los perfiles de técnicos. Los registros vinculados se desvincularán.",
-    "contentInspectionTemplates": "Plantillas de inspección",
-    "contentInspectionTemplatesDescription": "Todas las plantillas de inspección y sus secciones. Elimine primero las inspecciones.",
+    "contentInspectionTemplates": "Listas de comprobación de inspección",
+    "contentInspectionTemplatesDescription": "Todas las listas de comprobación de inspección y sus secciones. Elimina primero las inspecciones.",
     "contentNotifications": "Notificaciones",
     "contentNotificationsDescription": "Todas las notificaciones del sistema",
     "contentSmsMessages": "Mensajes SMS",
@@ -656,7 +656,13 @@
       "bank_account": "Cuenta bancaria",
       "footer": "Pie de página",
       "general": "General",
-      "telegram_qr": "QR de Telegram"
+      "telegram_qr": "QR de Telegram",
+      "result": "Resultado",
+      "test_details": "Datos de la prueba",
+      "defects": "Defectos",
+      "results_table": "Todos los resultados",
+      "inspection_photos": "Fotos",
+      "signature": "Firma"
     },
     "fields": {
       "customer_name": "Nombre del cliente",
@@ -688,7 +694,25 @@
       "invoice_number": "N.º de factura",
       "customer_number": "N.º de cliente",
       "date": "Fecha",
-      "portal_link": "Enlace al portal"
+      "portal_link": "Enlace al portal",
+      "test_date": "Fecha de la prueba",
+      "test_location": "Lugar de la prueba",
+      "inspector": "Inspector",
+      "certificate_number": "Número de certificado",
+      "vehicle_category": "Categoría del vehículo",
+      "odometer": "Cuentakilómetros",
+      "next_test_due": "Próxima prueba",
+      "defect_notes": "Notas",
+      "defect_photos": "Fotos",
+      "passed_checks": "Comprobaciones superadas",
+      "not_applicable_checks": "Comprobaciones no aplicables",
+      "check_notes": "Columna de notas",
+      "result_detail": "Explicación",
+      "result_summary": "Recuento por valoración",
+      "combined_table": "Una sola tabla para todas las secciones",
+      "inspector_line": "Línea del inspector",
+      "inspector_name": "Imprimir el nombre del inspector",
+      "date_line": "Línea de fecha"
     },
     "presetsTitle": "Empezar con una disposición",
     "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Detallada",
         "description": "Título arriba, vehículo aparte, ambas tablas y todos los bloques opcionales"
+      },
+      "certificate-regulator": {
+        "name": "Reglamentario",
+        "description": "Sobrio y sin banda, en serif: cada comprobación con su valoración y nota, las fotos, una línea para firmar"
+      },
+      "certificate-standard": {
+        "name": "Estándar",
+        "description": "El veredicto bajo el título, el vehículo y la prueba lado a lado, cada defecto con su nota y foto, y después las comprobaciones no superadas por sección"
+      },
+      "certificate-customer": {
+        "name": "Informe para el cliente",
+        "description": "Una hoja con banda, el veredicto grande y centrado, defectos con fotos, las fotos generales y una tabla breve de las comprobaciones no superadas"
+      },
+      "certificate-compact": {
+        "name": "Compacto",
+        "description": "Una página para flotas: letra pequeña, el veredicto junto al título, todos los resultados sin notas, las fotos, una línea para firmar"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Plantillas",
     "invoiceDescription": "Personalice la apariencia de sus facturas y cotizaciones PDF.",
-    "inspectionsDescription": "Administre listas de verificación de inspecciones y plantillas multipunto.",
+    "inspectionsDescription": "Las listas de comprobación que tus técnicos recorren durante una inspección.",
     "smsDescription": "Personalice los mensajes SMS enviados a los clientes.",
     "tabs": {
       "invoice": "Factura",
       "quotation": "Cotización",
-      "inspections": "Inspecciones",
+      "inspections": "Listas de\ninspección",
       "sms": "SMS",
-      "layout": "Disposición"
+      "layout": "Disposición",
+      "certificates": "Certificados de\ninspección"
     },
     "presets": "Presets de plantilla",
     "primaryColor": "Color primario",
@@ -849,7 +890,8 @@
     "goToLayout": "Diseño y secciones",
     "openDesigner": "Abrir el diseñador",
     "designerIntro": "Elige un punto de partida y abre el diseñador para cambiar lo que quieras.",
-    "designerHint": "Los colores, las fuentes, los espacios y todas las secciones están en el diseñador."
+    "designerHint": "Los colores, las fuentes, los espacios y todas las secciones están en el diseñador.",
+    "certificatesDescription": "Diseña el certificado que imprime y comparte una inspección completada."
   },
   "payment": {
     "readMore": "Leer más",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Técnicos",
     "optTechniciansDesc": "Perfiles de técnicos y asignaciones de tablero de trabajo",
     "optInspections": "Inspecciones",
-    "optInspectionsDesc": "Plantillas de inspección, inspecciones y resultados",
+    "optInspectionsDesc": "Listas de comprobación, inspecciones y resultados",
     "optAuditLogs": "Registros de auditoría",
     "optAuditLogsDesc": "Historial de actividad y cambios",
     "optSmsMessages": "Mensajes",
@@ -2060,7 +2102,19 @@
       "slogan": "Calidad de servicio en la que puedes confiar",
       "paymentTerms": "Pago en 14 días",
       "footerNote": "Gracias por confiar en nosotros",
-      "value": "Ejemplo"
+      "value": "Ejemplo",
+      "testLocation": "Calle del Puerto 12, Springfield",
+      "certificateNotes": "Los neumáticos están cerca del límite legal; conviene sustituirlos antes de la próxima prueba.",
+      "checkBrakeHoses": "Latiguillos de freno",
+      "checkBrakeHosesNote": "Ligero roce en el latiguillo delantero izquierdo, sin atravesar la capa exterior.",
+      "sectionBrakes": "Equipo de frenado",
+      "checkBrakePedal": "Pedal del freno de servicio",
+      "checkBrakeFluid": "Líquido de frenos",
+      "sectionLighting": "Equipo de alumbrado",
+      "checkHeadlamps": "Estado de los faros",
+      "checkFogLamp": "Luz antiniebla trasera",
+      "photoFront": "Frontal",
+      "photoOdometer": "Cuentakilómetros"
     },
     "logoUpload": "Subir logotipo",
     "logoReplace": "Cambiar logotipo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Establecer como predeterminado",
     "defaultSet": "«{name}» está ahora en uso",
     "couldNotSetDefault": "No se pudo establecer el diseño predeterminado",
-    "fieldFixedSlot": "Siempre se imprime en el mismo lugar, así que no se puede mover."
+    "fieldFixedSlot": "Siempre se imprime en el mismo lugar, así que no se puede mover.",
+    "certificate": "Certificado de inspección",
+    "resultWidthHint": "Vacío ocupa toda la fila. Con un valor la banda se estrecha y se coloca en el lado que marca la alineación; en una columna ocupa el ancho de la columna."
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

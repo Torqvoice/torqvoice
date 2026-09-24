@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Visos transporto priemonių apžiūros ir jų rezultatai",
     "contentTechnicians": "Technikai",
     "contentTechniciansDescription": "Visi technikų profiliai. Susieti įrašai bus atsiejami.",
-    "contentInspectionTemplates": "Apžiūrų šablonai",
-    "contentInspectionTemplatesDescription": "Visi apžiūrų šablonai ir jų skyriai. Pirmiausia ištrinkite apžiūras.",
+    "contentInspectionTemplates": "Apžiūros kontroliniai sąrašai",
+    "contentInspectionTemplatesDescription": "Visi apžiūros kontroliniai sąrašai ir jų skyriai. Pirmiausia ištrinkite apžiūras.",
     "contentNotifications": "Pranešimai",
     "contentNotificationsDescription": "Visi sistemos pranešimai",
     "contentSmsMessages": "SMS žinutės",
@@ -656,7 +656,13 @@
       "bank_account": "Banko sąskaita",
       "footer": "Poraštė",
       "general": "Bendra",
-      "telegram_qr": "Telegram QR"
+      "telegram_qr": "Telegram QR",
+      "result": "Rezultatas",
+      "test_details": "Patikros duomenys",
+      "defects": "Defektai",
+      "results_table": "Visi rezultatai",
+      "inspection_photos": "Nuotraukos",
+      "signature": "Parašas"
     },
     "fields": {
       "customer_name": "Kliento vardas",
@@ -688,7 +694,25 @@
       "invoice_number": "Sąskaitos Nr.",
       "customer_number": "Kliento Nr.",
       "date": "Data",
-      "portal_link": "Portalo nuoroda"
+      "portal_link": "Portalo nuoroda",
+      "test_date": "Patikros data",
+      "test_location": "Patikros vieta",
+      "inspector": "Tikrintojas",
+      "certificate_number": "Sertifikato numeris",
+      "vehicle_category": "Transporto priemonės kategorija",
+      "odometer": "Rida",
+      "next_test_due": "Kita patikra",
+      "defect_notes": "Pastabos",
+      "defect_photos": "Nuotraukos",
+      "passed_checks": "Išlaikyti patikrinimai",
+      "not_applicable_checks": "Netaikomi patikrinimai",
+      "check_notes": "Pastabų stulpelis",
+      "result_detail": "Paaiškinimas",
+      "result_summary": "Kiekis pagal įvertinimą",
+      "combined_table": "Viena lentelė visiems skyriams",
+      "inspector_line": "Tikrintojo eilutė",
+      "inspector_name": "Spausdinti tikrintojo vardą",
+      "date_line": "Datos eilutė"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Išsamus",
         "description": "Antraštė viršuje, transporto priemonė atskirai, abi lentelės ir visi blokai"
+      },
+      "certificate-regulator": {
+        "name": "Reglamentinis",
+        "description": "Paprastas be juostos, serifiniu šriftu: kiekvienas patikrinimas su įvertinimu ir pastaba, nuotraukos, parašo eilutė"
+      },
+      "certificate-standard": {
+        "name": "Standartinis",
+        "description": "Verdiktas po pavadinimu, automobilis ir patikra greta, kiekvienas defektas su pastaba ir nuotrauka, tada neišlaikyti patikrinimai pagal skyrius"
+      },
+      "certificate-customer": {
+        "name": "Ataskaita klientui",
+        "description": "Lapas su juosta, verdiktas didelis ir centre, defektai su nuotraukomis, apžvalginės nuotraukos ir trumpa neišlaikytų patikrinimų lentelė"
+      },
+      "certificate-compact": {
+        "name": "Kompaktiškas",
+        "description": "Vienas lapas parkui: smulkus šriftas, verdiktas šalia pavadinimo, visi rezultatai be pastabų, nuotraukos, parašo eilutė"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Šablonai",
     "invoiceDescription": "Pritaikykite savo PDF sąskaitų ir pasiūlymų išvaizdą.",
-    "inspectionsDescription": "Valdykite apžiūrų kontrolinius sąrašus ir daugiabalių šablonus.",
+    "inspectionsDescription": "Kontroliniai sąrašai, kuriuos jūsų technikai pereina apžiūros metu.",
     "smsDescription": "Pritaikykite SMS žinutes, siunčiamas klientams.",
     "tabs": {
       "invoice": "Sąskaita",
       "quotation": "Pasiūlymas",
-      "inspections": "Apžiūros",
+      "inspections": "Apžiūros\nkontroliniai sąrašai",
       "sms": "SMS",
-      "layout": "Išdėstymas"
+      "layout": "Išdėstymas",
+      "certificates": "Apžiūros\nsertifikatai"
     },
     "presets": "Šablonų presetai",
     "primaryColor": "Pagrindinė spalva",
@@ -849,7 +890,8 @@
     "goToLayout": "Išdėstymas ir skiltys",
     "openDesigner": "Atverti dizainerį",
     "designerIntro": "Pasirinkite pradžios tašką ir atverkite dizainerį, kad pakeistumėte viską.",
-    "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje."
+    "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje.",
+    "certificatesDescription": "Sukurkite sertifikatą, kurį spausdina ir dalijasi užbaigta apžiūra."
   },
   "payment": {
     "readMore": "Skaityti daugiau",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Technikai",
     "optTechniciansDesc": "Technikų profiliai ir darbų lentos priskyrimai",
     "optInspections": "Apžiūros",
-    "optInspectionsDesc": "Apžiūrų šablonai, apžiūros ir rezultatai",
+    "optInspectionsDesc": "Apžiūros kontroliniai sąrašai, apžiūros ir rezultatai",
     "optAuditLogs": "Audito žurnalai",
     "optAuditLogsDesc": "Veiklos ir pakeitimų istorija",
     "optSmsMessages": "Žinutės",
@@ -2060,7 +2102,19 @@
       "slogan": "Kokybiškas aptarnavimas, kuriuo galite pasitikėti",
       "paymentTerms": "Apmokėti per 14 dienų",
       "footerNote": "Ačiū, kad renkatės mus",
-      "value": "Pavyzdys"
+      "value": "Pavyzdys",
+      "testLocation": "Uosto g. 12, Springfield",
+      "certificateNotes": "Padangos artėja prie leistinos ribos; iki kitos patikros tikriausiai reikės keisti.",
+      "checkBrakeHoses": "Stabdžių žarnelės",
+      "checkBrakeHosesNote": "Nedidelis nusitrynimas ant kairės priekinės žarnelės, išorinis sluoksnis nepažeistas.",
+      "sectionBrakes": "Stabdžių įranga",
+      "checkBrakePedal": "Darbinio stabdžio pedalas",
+      "checkBrakeFluid": "Stabdžių skystis",
+      "sectionLighting": "Apšvietimo įranga",
+      "checkHeadlamps": "Priekinių žibintų būklė",
+      "checkFogLamp": "Galinis rūko žibintas",
+      "photoFront": "Priekis",
+      "photoOdometer": "Odometras"
     },
     "logoUpload": "Įkelti logotipą",
     "logoReplace": "Pakeisti logotipą",
@@ -2096,7 +2150,9 @@
     "setDefault": "Nustatyti kaip numatytąjį",
     "defaultSet": "„{name}“ dabar naudojamas",
     "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino",
-    "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti."
+    "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti.",
+    "certificate": "Apžiūros sertifikatas",
+    "resultWidthHint": "Tuščia užima visą eilutę. Nurodžius taškus juosta susiaurėja ir atsiduria lygiavimo pusėje; stulpelyje ji užima stulpelio plotį."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

@@ -171,6 +171,8 @@
     "vehicleCategory": "Categoria del veicolo",
     "nextTestDue": "Prossima revisione",
     "limit": "Limite",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "overallResult": "Esito del controllo",
     "deficiencies": "Carenze riscontrate",
     "reading": "Misura",
@@ -179,7 +181,14 @@
     "resultDetailPassMinor": "Il veicolo è idoneo. Riparare le carenze lievi senza indebito ritardo.",
     "resultDetailFail": "Il veicolo non è idoneo. Le carenze devono essere riparate e il veicolo deve essere ricontrollato.",
     "resultDetailFailDangerous": "Il veicolo non deve circolare su strada pubblica finché le carenze pericolose non sono riparate.",
-    "resultDetailIncomplete": "Questo controllo è ancora in corso."
+    "resultDetailIncomplete": "Questo controllo è ancora in corso.",
+    "attachments": "Foto e documenti",
+    "attachedDocuments": "Documenti allegati: {names}",
+    "euNotApplicable": "Non applicabile",
+    "basicNotApplicable": "Non applicabile",
+    "allResults": "Tutti gli esiti",
+    "signature": "Firma",
+    "sectionColumn": "Sezione"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "STORICO ASSISTENZA",

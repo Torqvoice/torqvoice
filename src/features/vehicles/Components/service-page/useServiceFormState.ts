@@ -175,6 +175,51 @@ export function useServiceFormState({
     })
   }
 
+  /**
+   * Leaving the page by a link saves first.
+   *
+   * The autosave waits five seconds after the last edit, and the beforeunload
+   * warning only covers leaving the site: a title retyped and then the back
+   * arrow pressed within those seconds went nowhere, and in-app navigation
+   * raised no warning about it. So a click on any link to another page of
+   * the app is held until the pending save has run, and the same click is
+   * then let through; a save the rules refuse has already said why, and the
+   * edit stays on screen to be fixed.
+   */
+  const saveNowRef = useRef(saveNow)
+  saveNowRef.current = saveNow
+  const releasedLink = useRef<HTMLAnchorElement | null>(null)
+  useEffect(() => {
+    if (!hasUnsavedChanges) return
+    const handler = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      const anchor = (event.target as Element | null)?.closest?.('a[href]')
+      if (!(anchor instanceof HTMLAnchorElement)) return
+      // The click this handler released after saving: let it through.
+      if (releasedLink.current === anchor) {
+        releasedLink.current = null
+        return
+      }
+      if (anchor.target && anchor.target !== '_self') return
+      if (anchor.hasAttribute('download')) return
+      const destination = new URL(anchor.href, window.location.href)
+      if (destination.origin !== window.location.origin) return
+      const here = `${window.location.pathname}${window.location.search}`
+      if (`${destination.pathname}${destination.search}` === here) return
+
+      event.preventDefault()
+      event.stopPropagation()
+      void saveNowRef.current().then(() => {
+        if (hasUnsavedChangesRef.current) return
+        releasedLink.current = anchor
+        anchor.click()
+      })
+    }
+    document.addEventListener('click', handler, true)
+    return () => document.removeEventListener('click', handler, true)
+  }, [hasUnsavedChanges])
+
   // Custom fields save callback ref
   const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
 
