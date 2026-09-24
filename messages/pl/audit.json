@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Zmieniono status zlecenia",
     "settings_workOrderStatus_archive": "Usunięto status zlecenia",
     "inspection_photo_added": "Dodano zdjęcie przeglądu",
-    "inspection_file_added": "Dodano plik przeglądu"
+    "inspection_file_added": "Dodano plik przeglądu",
+    "signature_save": "Zapisano podpis",
+    "signature_remove": "Usunięto podpis"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",

@@ -100,8 +100,31 @@ model OrganizationMember {
   roleId     String?
   customRole Role?   @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
+  signature MemberSignature?
+
   @@unique([userId, organizationId])
   @@map("organization_members")
+}
+
+/// A member's handwritten signature, drawn or uploaded in account settings,
+/// for the Signature section of the documents they issue.
+///
+/// Kept per workshop rather than per person: a mechanic who works for two
+/// shops signs each one's paper, and leaving a workshop takes the signature
+/// with the membership. The image is held in the row (a PNG or JPEG of a few
+/// kilobytes) so a document can print it without the upload folder, and so
+/// replacing it never touches a file an issued invoice still needs; issued
+/// documents keep their own copy in DocumentAssetSnapshot.
+model MemberSignature {
+  id        String             @id @default(cuid())
+  memberId  String             @unique
+  member    OrganizationMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  mimeType  String
+  data      Bytes
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@map("member_signatures")
 }
 
 model Role {

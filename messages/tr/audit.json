@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "İş emri durumu değiştirildi",
     "settings_workOrderStatus_archive": "İş emri durumu kaldırıldı",
     "inspection_photo_added": "Muayene fotoğrafı eklendi",
-    "inspection_file_added": "Muayene dosyası eklendi"
+    "inspection_file_added": "Muayene dosyası eklendi",
+    "signature_save": "İmza kaydedildi",
+    "signature_remove": "İmza kaldırıldı"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",

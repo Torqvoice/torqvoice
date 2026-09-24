@@ -61,6 +61,11 @@ export interface DesignerWorkshop {
   paymentTerms: string
   logoUrl: string
   /**
+   * The signature of whoever has the designer open, so the Signature section
+   * previews with their own hand. Unset shows a stand-in.
+   */
+  signatureUrl?: string
+  /**
    * The taxes the workshop splits its tax into, when it does (GST and QST).
    * The sample job is then taxed the workshop's way, one line per tax, with
    * each registration number under the business details, so the canvas

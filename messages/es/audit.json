@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Estado de orden modificado",
     "settings_workOrderStatus_archive": "Estado de orden quitado",
     "inspection_photo_added": "Añadió foto de inspección",
-    "inspection_file_added": "Añadió archivo de inspección"
+    "inspection_file_added": "Añadió archivo de inspección",
+    "signature_save": "Guardó la firma",
+    "signature_remove": "Eliminó la firma"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",

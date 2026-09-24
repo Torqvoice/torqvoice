@@ -95,12 +95,13 @@ describe('fields that print in a place of their own', () => {
     )
   })
 
-  it('is the six the sheet actually has', () => {
+  it('is the ten the sheet actually has', () => {
     // Named, so that gaining or losing one is a decision rather than a drift.
     expect(FIXED_SLOT_FIELDS).toEqual({
       header: ['logo', 'company_name'],
       document_title: ['title'],
       footer: ['footer_note', 'portal_link', 'logo'],
+      signature: ['signature_image', 'inspector_line', 'inspector_name', 'date_line'],
     })
   })
 

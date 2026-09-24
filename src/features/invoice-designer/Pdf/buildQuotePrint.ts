@@ -94,6 +94,8 @@ export interface QuotePrintInput {
   currencyCode?: string
   currencyFormat?: 'symbol' | 'code'
   logoDataUri?: string
+  /** Who signs the sheet, for a layout with the Signature section on. */
+  signer?: { name: string; dataUri?: string }
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
@@ -357,6 +359,14 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     payment: [],
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
+    signature: {
+      heading: L('signature', 'Signature'),
+      name: input.signer?.name ?? '',
+      nameCaption: L('signedBy', 'Signed by'),
+      date: createdDate,
+      dateCaption: L('signatureDate', 'Date'),
+      image: input.signer?.dataUri,
+    },
     sectionLabels: {
       customer: L('to', 'To'),
       vehicle: L('vehicle', 'Vehicle'),

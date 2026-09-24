@@ -239,6 +239,9 @@ export const BUILTIN_SECTIONS = [
   { id: 'attached_documents', name: 'Attached Documents' },
   { id: 'warranty', name: 'Warranty' },
   { id: 'bank_account', name: 'Bank Account' },
+  // Above the footer, where a signature goes on paper. Off until a workshop
+  // switches it on, so no sheet gains a signature line by a deploy.
+  { id: 'signature', name: 'Signature' },
   { id: 'footer', name: 'Footer' },
   { id: 'telegram_qr', name: 'Telegram QR' },
   { id: 'general', name: 'General' },
@@ -378,10 +381,16 @@ export const BUILTIN_DEFECTS_FIELDS = [
   { id: 'defect_photos', name: 'Photos' },
 ] as const
 
-/** What the signature block draws: the lines, and whether the name is printed. */
+/**
+ * What the signature block draws: the signer's saved signature, the line,
+ * whether the name is printed under it, and the date. The line and name ids
+ * are from when only certificates were signed, by an inspector; they are kept
+ * so saved layouts still mean what they did.
+ */
 export const BUILTIN_SIGNATURE_FIELDS = [
-  { id: 'inspector_line', name: 'Inspector line' },
-  { id: 'inspector_name', name: "Inspector's name" },
+  { id: 'signature_image', name: 'Signature' },
+  { id: 'inspector_line', name: 'Signature line' },
+  { id: 'inspector_name', name: "Signer's name" },
   { id: 'date_line', name: 'Date line' },
 ] as const
 
@@ -497,6 +506,9 @@ export const FIXED_SLOT_FIELDS: Record<string, readonly string[]> = {
   header: ['logo', 'company_name'],
   document_title: ['title'],
   footer: ['footer_note', 'portal_link', 'logo'],
+  // The signature sits on its line, the name under it and the date beside:
+  // where each goes is the shape of a signature block, not an order.
+  signature: ['signature_image', 'inspector_line', 'inspector_name', 'date_line'],
 }
 
 /** Whether this field prints where the list puts it, or in a slot of its own. */
@@ -594,9 +606,15 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
  *
  * `items_table` is one because it replaces the separate parts and labor tables
  * rather than joining them, and `document_title` because the standard headers
- * already print the title themselves.
+ * already print the title themselves. `signature` because most invoices and
+ * quotes go out unsigned.
  */
-const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>(['general', 'telegram_qr', 'items_table'])
+const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
+  'general',
+  'telegram_qr',
+  'items_table',
+  'signature',
+])
 /** A signature line is a choice; most certificates are issued unsigned. */
 const HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS = new Set<string>(['slogan', 'signature'])
 

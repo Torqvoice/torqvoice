@@ -12,6 +12,7 @@ import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { templateConfigFromSource } from '@/features/invoice-designer/Lib/designSource'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import { buildCertificatePrintSpec } from '@/features/inspections/Pdf/buildCertificatePrint'
+import { certificateSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import {
   certificateDesignSource,
   loadCertificateLabels,
@@ -165,6 +166,7 @@ export default async function PublicInspectionPage({
       workshop: { ...workshop, slogan: settingsMap['workshop.slogan'] || undefined },
       labels,
       logoDataUri: toPublic(documentLogoPath(settingsMap, 'certificate')) || undefined,
+      signatureDataUri: await certificateSignatureDataUri(orgId, inspection),
       torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),
       dateFormat: settingsMap['workshop.dateFormat'] || undefined,
       timezone: settingsMap['workshop.timezone'] || undefined,

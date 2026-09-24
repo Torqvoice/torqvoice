@@ -43,6 +43,7 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
         }
       : null,
     technicianName: a.data.technician?.name || a.data.techName || null,
+    signerName: a.signer.name || null,
     findings: (a.data.findings ?? []).map((f) => ({
       description: f.description,
       severity: f.severity,
@@ -83,12 +84,16 @@ export async function issueInvoice(
   const assembly = await assembleInvoicePrint(recordId, { mode: 'live' })
   if (!assembly) return false
 
-  const [issuedDesignSnapshotId, issuedLogoSnapshotId] = await Promise.all([
-    ensureDesignSnapshot(organizationId, assembly.designSource),
-    assembly.logoDataUri
-      ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
-      : Promise.resolve(null),
-  ])
+  const [issuedDesignSnapshotId, issuedLogoSnapshotId, issuedSignatureSnapshotId] =
+    await Promise.all([
+      ensureDesignSnapshot(organizationId, assembly.designSource),
+      assembly.logoDataUri
+        ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
+        : Promise.resolve(null),
+      assembly.signer.dataUri
+        ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
+        : Promise.resolve(null),
+    ])
 
   await db.serviceRecord.update({
     where: { id: recordId },
@@ -98,6 +103,7 @@ export async function issueInvoice(
       issuedAt: reason === 'backfill' ? (record.sentAt ?? new Date()) : new Date(),
       issuedDesignSnapshotId,
       issuedLogoSnapshotId,
+      issuedSignatureSnapshotId,
       issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
     },
   })

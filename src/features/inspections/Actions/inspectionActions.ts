@@ -4,7 +4,14 @@ import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { createQuoteRecord } from '@/features/quotes/Lib/createQuoteRecord'
 import { createQuoteSchema } from '@/features/quotes/Schema/quoteSchema'
 import { getTranslations } from 'next-intl/server'
-import { ensureDesignSnapshot } from '@/features/invoice-designer/Lib/designSnapshots'
+import {
+  ensureAssetSnapshot,
+  ensureDesignSnapshot,
+} from '@/features/invoice-designer/Lib/designSnapshots'
+import {
+  inspectorUserId,
+  memberSignatureDataUri,
+} from '@/features/signatures/Lib/memberSignature.server'
 import { liveCertificateDesign } from '../Pdf/certificateDesign'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
@@ -478,12 +485,22 @@ export async function completeInspection(id: string) {
         ? await ensureDesignSnapshot(organizationId, liveDesign)
         : null
 
+      // The inspector's signature, frozen with the design for the same reason.
+      const signatureDataUri = await memberSignatureDataUri(
+        organizationId,
+        await inspectorUserId(inspection, userId)
+      )
+      const signatureSnapshotId = signatureDataUri
+        ? await ensureAssetSnapshot(organizationId, signatureDataUri)
+        : null
+
       await db.inspection.updateMany({
         where: { id, organizationId },
         data: {
           status: 'completed',
           completedAt: new Date(),
           designSnapshotId,
+          signatureSnapshotId,
           ...(inspection.inspectorName ? {} : { inspectorName }),
         },
       })

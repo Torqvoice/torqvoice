@@ -237,8 +237,14 @@ export function InvoiceDesigner({
     if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
     if (!companyWorkshop.paymentTerms?.trim()) ids.push('payment_terms')
     if (!telegramBotLink) ids.push('telegram_qr')
+    if (!companyWorkshop.signatureUrl) ids.push('signature')
     return new Set(ids)
-  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms, telegramBotLink])
+  }, [
+    companyWorkshop.slogan,
+    companyWorkshop.paymentTerms,
+    companyWorkshop.signatureUrl,
+    telegramBotLink,
+  ])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
@@ -1113,6 +1119,7 @@ export function InvoiceDesigner({
           orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
           onOrgNumberLabel={setOrgNumberLabel}
           telegramBotLink={telegramBotLink}
+          signatureSet={Boolean(companyWorkshop.signatureUrl)}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

@@ -356,11 +356,33 @@ export function buildSampleData(
       defects: L('deficiencies', 'Deficiencies found'),
       results_table: L('allResults', 'All results'),
       inspection_photos: L('photos', 'Photos'),
-      signature: L('signature', 'Signature'),
     },
+    signature:
+      docType === 'certificate'
+        ? {
+            heading: L('signature', 'Signature'),
+            name: 'Jamie Lee',
+            nameCaption: L('inspector', 'Inspector'),
+            date: sample.date,
+            dateCaption: L('testDate', 'Date of test'),
+            image: workshop.signatureUrl || SAMPLE_SIGNATURE,
+          }
+        : {
+            heading: L('signature', 'Signature'),
+            name: 'Jamie Lee',
+            nameCaption: L('signedBy', 'Signed by'),
+            date: sample.date,
+            dateCaption: L('signatureDate', 'Date'),
+            image: workshop.signatureUrl || SAMPLE_SIGNATURE,
+          },
     ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
   }
 }
+
+/** A stroke of a pen, for a designer whose user has not saved a signature yet. */
+const SAMPLE_SIGNATURE = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="170" height="44" viewBox="0 0 170 44"><path d="M6 32c8-14 14-24 18-22s-6 22-2 24 10-18 16-18-2 16 4 16 8-12 14-12 0 10 6 10 10-14 16-14-4 12 2 12 12-8 20-10 20 2 34-2" fill="none" stroke="#1e3a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+)}`
 
 /** A small grey square, so the photo blocks have something to place. */
 const SAMPLE_PHOTO = `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -479,7 +501,6 @@ function sampleCertificate(
         { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
         { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
       ],
-      signature: { inspector: 'Jamie Lee', date: sample.date },
     },
   }
 }

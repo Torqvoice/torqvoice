@@ -102,6 +102,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'issuedAt',
     'issuedDesignSnapshotId',
     'issuedLogoSnapshotId',
+    'issuedSignatureSnapshotId',
     'bookingSource',
     'editUnlockedAt',
     'tireSetId',
@@ -340,6 +341,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'organizationId',
     'importBatchId',
     'designSnapshotId',
+    'signatureSnapshotId',
   ],
   inspection_items: [
     'id',

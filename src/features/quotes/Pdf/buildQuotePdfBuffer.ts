@@ -21,6 +21,7 @@ import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { PDFDocument } from 'pdf-lib'
 import React from 'react'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
@@ -140,7 +141,7 @@ export async function buildQuotePdfBuffer(
     }
   }
 
-  const [labels, logoDataUri, features, customFields, layoutRow] = await Promise.all([
+  const [labels, logoDataUri, features, customFields, layoutRow, signer] = await Promise.all([
     // The same words the invoice and the public quote page use, marine
     // vocabulary and the workshop's tax and registration captions included.
     loadPrintLabels(locale, settingsMap, 'quote'),
@@ -150,6 +151,8 @@ export async function buildQuotePdfBuffer(
     db.appSetting.findUnique({
       where: { organizationId_key: { organizationId, key: 'quote.layoutConfig' } },
     }),
+    // Whoever wrote the quote signs it.
+    documentSigner(organizationId, quote.userId),
   ])
 
   const element = React.createElement(QuotePDF, {
@@ -167,6 +170,7 @@ export async function buildQuotePdfBuffer(
       | 'symbol'
       | 'code',
     logoDataUri,
+    signer,
     // The mark comes off for the plans that paid to remove it.
     torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,

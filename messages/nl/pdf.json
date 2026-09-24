@@ -205,6 +205,9 @@
     "mileageColMarine": "Motoruren"
   },
   "common": {
-    "poweredBy": "Mogelijk gemaakt door"
+    "poweredBy": "Mogelijk gemaakt door",
+    "signature": "Handtekening",
+    "signedBy": "Ondertekend door",
+    "signatureDate": "Datum"
   }
 }

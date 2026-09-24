@@ -96,9 +96,9 @@ describe('the sections a default sheet prints', () => {
   it('accounts for every section the designer offers', () => {
     // The guard on the two lists above: a section added to the schema
     // tomorrow is either on the default sheet, and so covered by the
-    // hides-it test, or one of the three known to start off. Neither, and
+    // hides-it test, or one of the four known to start off. Neither, and
     // this fails rather than quietly leaving a block untested.
-    const offByDefault = ['items_table', 'telegram_qr', 'general']
+    const offByDefault = ['items_table', 'telegram_qr', 'general', 'signature']
     expect([...DEFAULT_SHEET, ...offByDefault].sort()).toEqual(
       BUILTIN_SECTIONS.map((section) => section.id).sort()
     )
@@ -112,6 +112,13 @@ describe('the sections a default sheet prints', () => {
       section.id === 'items_table' ? { visible: true } : undefined
     )
     expect(printed(spec)).toContain('items_table')
+  })
+
+  it('prints the signature block when it is switched on', () => {
+    // Off by default because most invoices and quotes go out unsigned.
+    expect(DEFAULT_SHEET).not.toContain('signature')
+    const spec = specWith((section) => (section.id === 'signature' ? { visible: true } : undefined))
+    expect(printed(spec)).toContain('signature')
   })
 
   it.each(['telegram_qr', 'general'])('leaves %s off the sheet with nothing to print', (id) => {

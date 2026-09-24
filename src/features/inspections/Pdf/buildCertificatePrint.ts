@@ -87,6 +87,8 @@ export interface CertificatePrintInput {
   workshop?: { name: string; address: string; phone: string; email: string; slogan?: string }
   labels?: Record<string, string>
   logoDataUri?: string
+  /** The inspector's saved signature, drawn on the signature line. */
+  signatureDataUri?: string
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
@@ -279,7 +281,6 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
       })),
     })),
     photos: input.overviewPhotos ?? [],
-    signature: { inspector, date: testDate },
   }
 
   const documentData: DocumentData = {
@@ -312,9 +313,16 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
       defects: L('deficiencies', 'Deficiencies found'),
       results_table: L('allResults', 'All results'),
       inspection_photos: L('photos', 'Photos'),
-      signature: L('signature', 'Signature'),
     },
     certificate,
+    signature: {
+      heading: L('signature', 'Signature'),
+      name: inspector,
+      nameCaption: L('inspector', 'Inspector'),
+      date: testDate,
+      dateCaption: L('testDate', 'Date of test'),
+      image: input.signatureDataUri,
+    },
   }
 
   const primary = template?.primaryColor || '#d97706'

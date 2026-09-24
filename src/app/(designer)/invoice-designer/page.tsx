@@ -18,6 +18,7 @@ import { INVOICE_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 import { telegramBotLink as botLinkOf } from '@/features/invoices/Lib/telegramQr'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
+import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 
 export default async function InvoiceDesignerPage({
   searchParams,
@@ -45,6 +46,7 @@ export default async function InvoiceDesignerPage({
     telegramBotUsername,
     certificateLayout,
     certificateDesigns,
+    signatureUrl,
   ] = await Promise.all([
     getSettings(),
     getInvoiceLayoutConfig(),
@@ -68,6 +70,7 @@ export default async function InvoiceDesignerPage({
     getOrgTelegramBotUsername(data.organizationId),
     getCertificateLayoutConfig(),
     listDocumentDesigns('certificate'),
+    memberSignatureDataUri(data.organizationId, data.userId),
   ])
 
   // Somebody is looking at the designer, so the workshop knows it exists. Only
@@ -140,6 +143,7 @@ export default async function InvoiceDesignerPage({
           orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
           paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
           logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+          signatureUrl,
           taxComponents: readWorkshopTax(settings).components,
         }}
         customFields={

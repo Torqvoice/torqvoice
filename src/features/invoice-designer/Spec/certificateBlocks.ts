@@ -23,7 +23,7 @@ const PHOTO_HEIGHT = 119
 /** Photographs per row on an A4 sheet at the default margin. */
 const PHOTOS_PER_ROW = 3
 
-function headingStyle(look: ReturnType<typeof lookOf>, size: number): TextStyle {
+export function headingStyle(look: ReturnType<typeof lookOf>, size: number): TextStyle {
   return {
     color: look.label,
     fontSize: scale(size, 0.72),
@@ -378,82 +378,4 @@ export function inspectionPhotosBlock(
   }
   children.push(...photoRows(certificate.photos, look.muted, size))
   return { kind: 'stack', id: section.id, gap: 6, children }
-}
-
-/**
- * A line for the inspector to sign, and the date beside it. Either line can
- * be left off, and the inspector's name under the line can be withheld for
- * a certificate that is signed by hand.
- */
-export function signatureBlock(
-  section: InvoiceSection,
-  theme: DocumentTheme,
-  data: DocumentData
-): Node | null {
-  const certificate = data.certificate
-  if (!certificate) return null
-  const fields = new Set(sectionFields(section))
-  const withInspector = fields.has('inspector_line')
-  const withDate = fields.has('date_line')
-  if (!withInspector && !withDate) return null
-  const look = lookOf(section, theme)
-  const size = look.fontSize ?? theme.fontSize
-  const boxed = section.boxed === true
-  const line = (caption: string, value: string): Node => ({
-    kind: 'stack',
-    gap: 3,
-    children: [
-      { kind: 'spacer', height: 22 },
-      { kind: 'spacer', height: 0.75, color: look.border || look.text },
-      // An empty value still takes its line, so the two columns stay level.
-      {
-        kind: 'text',
-        text: value || ' ',
-        style: { color: look.text, fontSize: scale(size, 0.92) },
-      },
-      { kind: 'text', text: caption, style: { color: look.muted, fontSize: scale(size, 0.72) } },
-    ],
-  })
-  const lines: { width: 'flex'; node: Node }[] = []
-  if (withInspector) {
-    lines.push({
-      width: 'flex',
-      node: line(
-        label(data, 'inspector', 'Inspector'),
-        fields.has('inspector_name') ? certificate.signature.inspector : ''
-      ),
-    })
-  }
-  if (withDate) {
-    lines.push({
-      width: 'flex',
-      node: line(label(data, 'testDate', 'Date of test'), certificate.signature.date),
-    })
-  }
-  return {
-    kind: 'stack',
-    id: section.id,
-    gap: 6,
-    style: boxed
-      ? {
-          background: look.fill || '#f3f4f6',
-          borderColor: look.border,
-          borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
-          radius: 3,
-          padding: look.padding ?? 10,
-        }
-      : undefined,
-    children: [
-      ...(section.heading !== false
-        ? [
-            {
-              kind: 'text' as const,
-              text: data.sectionLabels.signature ?? label(data, 'signature', 'Signature'),
-              style: headingStyle(look, size),
-            },
-          ]
-        : []),
-      { kind: 'row', gap: 24, children: lines },
-    ],
-  }
 }

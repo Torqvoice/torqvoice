@@ -50,6 +50,8 @@ export interface InvoicePrintInput {
   pdfAttachmentNames?: string[]
   otherAttachmentNames?: string[]
   logoDataUri?: string
+  /** Who signs the sheet, for a layout with the Signature section on. */
+  signer?: { name: string; dataUri?: string }
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   portalUrl?: string
@@ -449,6 +451,14 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       : undefined,
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
+    signature: {
+      heading: L('signature', 'Signature'),
+      name: input.signer?.name ?? '',
+      nameCaption: L('signedBy', 'Signed by'),
+      date: serviceDate,
+      dateCaption: L('signatureDate', 'Date'),
+      image: input.signer?.dataUri,
+    },
     sectionLabels: {
       customer: L('billTo', 'Bill To'),
       vehicle: L('vehicle', 'Vehicle'),

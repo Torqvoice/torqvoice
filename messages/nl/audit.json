@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Werkorderstatus gewijzigd",
     "settings_workOrderStatus_archive": "Werkorderstatus verwijderd",
     "inspection_photo_added": "Keuringsfoto toegevoegd",
-    "inspection_file_added": "Keuringsbestand toegevoegd"
+    "inspection_file_added": "Keuringsbestand toegevoegd",
+    "signature_save": "Handtekening opgeslagen",
+    "signature_remove": "Handtekening verwijderd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

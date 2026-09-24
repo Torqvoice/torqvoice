@@ -16,9 +16,9 @@ import {
   inspectionPhotosBlock,
   resultBlock,
   resultsTableBlock,
-  signatureBlock,
   testDetailsBlock,
 } from './certificateBlocks'
+import { signatureBlock } from './signatureBlock'
 
 /**
  * The single description of a document.
@@ -101,6 +101,24 @@ export interface DocumentData {
   sectionLabels: Record<string, string>
   /** What a certificate prints beyond the shared fields; absent on any other document. */
   certificate?: CertificateData
+  /**
+   * Who signs the sheet and when, already worded. Absent means the document
+   * has no Signature section to fill, and the section draws nothing.
+   */
+  signature?: DocumentSignature
+}
+
+export interface DocumentSignature {
+  /** The section's heading. */
+  heading: string
+  /** The signer's name, printed under the line when the layout asks for it. */
+  name: string
+  /** What the line is for: "Inspector", "Authorised signature". */
+  nameCaption: string
+  date: string
+  dateCaption: string
+  /** The signer's saved signature as a PNG or JPEG data URI. */
+  image?: string
 }
 
 export interface DocumentTheme {
@@ -1803,6 +1821,7 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return resultsTableBlock(section, theme, data)
     case 'inspection_photos':
       return inspectionPhotosBlock(section, theme, data)
+    // Every document's; see signatureBlock.ts.
     case 'signature':
       return signatureBlock(section, theme, data)
     default:

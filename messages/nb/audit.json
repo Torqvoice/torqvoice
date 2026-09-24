@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Endret status for arbeidsordre",
     "settings_workOrderStatus_archive": "Fjernet status for arbeidsordre",
     "inspection_photo_added": "La til kontrollbilde",
-    "inspection_file_added": "La til kontrollfil"
+    "inspection_file_added": "La til kontrollfil",
+    "signature_save": "Lagret signatur",
+    "signature_remove": "Fjernet signatur"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

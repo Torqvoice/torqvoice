@@ -205,6 +205,9 @@
     "mileageColMarine": "Horas Motor"
   },
   "common": {
-    "poweredBy": "Desarrollado por"
+    "poweredBy": "Desarrollado por",
+    "signature": "Firma",
+    "signedBy": "Firmado por",
+    "signatureDate": "Fecha"
   }
 }

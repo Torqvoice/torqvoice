@@ -13,6 +13,7 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 
 export const revalidate = 60
 
@@ -200,6 +201,9 @@ export default async function PublicQuotePage({
     ? undefined
     : await getTorqvoiceLogoDataUri()
 
+  // Whoever wrote the quote signs it.
+  const signer = await documentSigner(orgId, quote.userId)
+
   const spec = buildQuotePrintSpec({
     data: quote,
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
@@ -207,6 +211,7 @@ export default async function PublicQuotePage({
     currencyCode,
     currencyFormat,
     logoDataUri: logoUrl || undefined,
+    signer,
     torqvoiceLogoDataUri,
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,

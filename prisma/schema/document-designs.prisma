@@ -57,10 +57,11 @@ model DocumentDesignSnapshot {
   @@map("document_design_snapshots")
 }
 
-/// A file as it was when a document was issued. Today that is the logo: the
-/// upload route deletes the previous file when a new one arrives, so a path
-/// alone would leave old invoices printing the new mark, or none. Keyed by
-/// content hash for the same reason as the design snapshots.
+/// A file as it was when a document was issued: the logo, and the signature
+/// of whoever issued it. The upload route deletes the previous logo when a
+/// new one arrives and a member can redraw their signature, so a reference to
+/// the live one would leave old paper printing the new mark, or none. Keyed
+/// by content hash for the same reason as the design snapshots.
 model DocumentAssetSnapshot {
   id             String       @id @default(cuid())
   organizationId String
@@ -70,7 +71,9 @@ model DocumentAssetSnapshot {
   data           Bytes
   createdAt      DateTime     @default(now())
 
-  serviceRecords ServiceRecord[]
+  serviceRecords       ServiceRecord[] @relation("IssuedLogoSnapshot")
+  signedServiceRecords ServiceRecord[] @relation("IssuedSignatureSnapshot")
+  signedInspections    Inspection[]
 
   @@unique([organizationId, hash])
   @@map("document_asset_snapshots")

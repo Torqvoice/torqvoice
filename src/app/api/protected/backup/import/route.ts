@@ -179,6 +179,7 @@ async function importServiceRecordTree(
       issuedAt: sr.issuedAt ? toSafeDate(sr.issuedAt as string) : null,
       issuedDesignSnapshotId: keptReference(sr.issuedDesignSnapshotId, opts.designSnapshotIds),
       issuedLogoSnapshotId: keptReference(sr.issuedLogoSnapshotId, opts.assetSnapshotIds),
+      issuedSignatureSnapshotId: keptReference(sr.issuedSignatureSnapshotId, opts.assetSnapshotIds),
       issuedData:
         sr.issuedData && typeof sr.issuedData === 'object'
           ? (sr.issuedData as Prisma.InputJsonValue)
@@ -1261,6 +1262,7 @@ export async function POST(request: NextRequest) {
               importBatchId: null,
               // The frozen certificate design, when the snapshot came back too.
               designSnapshotId: keptReference(insp.designSnapshotId, designSnapshotIds),
+              signatureSnapshotId: keptReference(insp.signatureSnapshotId, assetSnapshotIds),
               createdAt: toSafeDate(insp.createdAt as string),
               updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,

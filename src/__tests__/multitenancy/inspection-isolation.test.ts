@@ -46,6 +46,8 @@ vi.mock('@/lib/db', () => ({
     },
     // Completion reads the certificate design settings to freeze them.
     appSetting: { findMany: vi.fn() },
+    // Completing freezes the inspector's signature; nobody here has one.
+    memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
   },
 }))
 

@@ -38,6 +38,8 @@ vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
+    // Completing freezes the inspector's signature; nobody here has one.
+    memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
     quote: {
       findFirst: vi.fn(),
       findMany: vi.fn(),

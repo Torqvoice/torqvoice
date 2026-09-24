@@ -76,6 +76,8 @@ export const issuedInvoiceDataSchema = z
       .nullable()
       .optional(),
     technicianName: z.string().nullable().optional(),
+    /** Who signed the sheet; the signature itself is issuedSignatureSnapshot. */
+    signerName: z.string().nullable().optional(),
     findings: z
       .array(
         z
