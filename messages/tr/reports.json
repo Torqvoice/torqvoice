@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Önceki sayfa",
     "nextPage": "Sonraki sayfa"
-  }
+  },
+  "completedOnly": "Yalnızca tamamlananlar",
+  "completedOnlyHint": "Yalnızca tamamlandı olarak işaretlenen iş emirlerini göster. Bir sonraki sefer için hatırlanır."
 }

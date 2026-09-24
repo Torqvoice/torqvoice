@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Ankstesnis puslapis",
     "nextPage": "Kitas puslapis"
-  }
+  },
+  "completedOnly": "Tik užbaigti",
+  "completedOnlyHint": "Rodyti tik užsakymus, pažymėtus kaip užbaigti. Įsimenama kitam kartui."
 }

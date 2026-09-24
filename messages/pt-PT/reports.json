@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Página anterior",
     "nextPage": "Página seguinte"
-  }
+  },
+  "completedOnly": "Só concluídas",
+  "completedOnlyHint": "Mostra só as ordens de reparação marcadas como concluídas. Fica guardado para a próxima vez."
 }

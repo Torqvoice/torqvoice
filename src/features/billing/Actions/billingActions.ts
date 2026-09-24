@@ -66,6 +66,8 @@ export async function getBillingHistory(params: {
   status?: string
   /** 'unviewed' keeps only invoices that went out and were never opened. */
   delivery?: string
+  /** Only work orders marked completed. */
+  completedOnly?: boolean
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }) {
@@ -101,6 +103,11 @@ export async function getBillingHistory(params: {
           statusCondition = Prisma.empty
         }
 
+        // Finished work only, for a workshop that bills a job once it is done.
+        const completedCondition = params.completedOnly
+          ? Prisma.sql`AND sr.status = 'completed'`
+          : Prisma.empty
+
         // Sent but never opened. A draft nobody has sent is not a chase, and
         // neither is one the customer has read, so both fall out here.
         const deliveryCondition =
@@ -124,6 +131,7 @@ export async function getBillingHistory(params: {
           LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
           WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
+          ${completedCondition}
         ) sub
         WHERE 1=1 ${statusCondition} ${deliveryCondition}
       `)
@@ -202,6 +210,7 @@ export async function getBillingHistory(params: {
           LEFT JOIN "public"."customers" c ON c.id = COALESCE(sr."customerId", v."customerId")
           WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
+          ${completedCondition}
         ) sub
         WHERE 1=1 ${statusCondition} ${deliveryCondition}
         ORDER BY ${(() => {

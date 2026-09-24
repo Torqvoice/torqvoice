@@ -25,7 +25,9 @@
     "deliveryViewed": "Aberta",
     "deliveryViewedOn": "Aberta pela última vez a {date}",
     "filterUnviewed": "Não abertas",
-    "filterUnviewedHint": "Faturas enviadas que nunca foram abertas"
+    "filterUnviewedHint": "Faturas enviadas que nunca foram abertas",
+    "filterCompleted": "Só concluídas",
+    "filterCompletedHint": "Mostra só as ordens de reparação marcadas como concluídas. Fica guardado para a próxima vez."
   },
   "recurring": {
     "title": "Recorrente",

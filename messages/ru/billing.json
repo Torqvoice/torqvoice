@@ -25,7 +25,9 @@
     "deliveryViewed": "Открыт",
     "deliveryViewedOn": "Последний просмотр {date}",
     "filterUnviewed": "Не открыты",
-    "filterUnviewedHint": "Счета, которые отправлены, но ни разу не открыты"
+    "filterUnviewedHint": "Счета, которые отправлены, но ни разу не открыты",
+    "filterCompleted": "Только завершённые",
+    "filterCompletedHint": "Показывать только заказ-наряды со статусом «завершён». Запоминается на следующий раз."
   },
   "recurring": {
     "title": "Периодические",

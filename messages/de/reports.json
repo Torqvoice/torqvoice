@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Vorherige Seite",
     "nextPage": "Nächste Seite"
-  }
+  },
+  "completedOnly": "Nur abgeschlossene",
+  "completedOnlyHint": "Nur als abgeschlossen markierte Aufträge anzeigen. Wird für das nächste Mal gespeichert."
 }
