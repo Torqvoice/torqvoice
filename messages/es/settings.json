@@ -620,7 +620,31 @@
     "reapplyFailed": "No se pudo volver a aplicar el diseño",
     "sectionSending": "Envío",
     "attachPdfLabel": "Adjuntar el PDF a los correos",
-    "attachPdfHint": "El valor predeterminado para cada factura, presupuesto e inspección que envíes por correo. Activado: el cliente recibe el PDF adjunto. Desactivado: recibe un enlace al documento y el contador de visitas te dice cuándo lo abrió, para que puedas insistir con los que nadie ha mirado. Puedes cambiarlo para un envío concreto en el diálogo de compartir."
+    "attachPdfHint": "El valor predeterminado para cada factura, presupuesto e inspección que envíes por correo. Activado: el cliente recibe el PDF adjunto. Desactivado: recibe un enlace al documento y el contador de visitas te dice cuándo lo abrió, para que puedas insistir con los que nadie ha mirado. Puedes cambiarlo para un envío concreto en el diálogo de compartir.",
+    "shopFee": {
+      "title": "Cargo de taller",
+      "description": "Un cargo por consumibles del taller, como trapos, limpiadores, lubricantes y gestión de residuos, que se añade a cada nueva orden de trabajo y presupuesto como una línea propia.",
+      "enabled": "Aplicar cargo de taller",
+      "enabledHint": "Las nuevas órdenes de trabajo y presupuestos reciben el cargo como una línea. Se puede quitar de un trabajo concreto. Los trabajos existentes no cambian.",
+      "defaultLabel": "Consumibles de taller",
+      "label": "Nombre en la factura",
+      "appliesTo": "Se aplica a",
+      "appliesToBoth": "Órdenes de trabajo y presupuestos",
+      "appliesToWorkOrders": "Solo órdenes de trabajo",
+      "appliesToQuotes": "Solo presupuestos",
+      "mode": "Cómo se calcula",
+      "modeFlat": "Importe fijo",
+      "modePercent": "Porcentaje",
+      "amount": "Importe",
+      "amountHint": "El mismo importe en cada trabajo. Se puede cambiar en un trabajo concreto.",
+      "percent": "Porcentaje (%)",
+      "base": "Porcentaje de",
+      "baseLabor": "Mano de obra",
+      "baseLaborParts": "Mano de obra y piezas",
+      "cap": "Cargo máximo",
+      "capHint": "El cargo nunca supera este importe. Déjalo vacío para no fijar un máximo.",
+      "capPlaceholder": "Sin máximo"
+    }
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",

@@ -161,7 +161,11 @@
     "hourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
     "serviceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
     "deleteRow": "Zeile löschen",
-    "descriptionMissingHint": "Zeilen ohne Beschreibung werden nicht gespeichert."
+    "descriptionMissingHint": "Zeilen ohne Beschreibung werden nicht gespeichert.",
+    "shopFeeTag": "Pauschale",
+    "shopFeeHintFlat": "Die Werkstattpauschale aus den Einstellungen als fester Betrag. Ändern Sie den Preis für diesen Auftrag oder löschen Sie die Position.",
+    "shopFeeHintPercentLabor": "Die Werkstattpauschale aus den Einstellungen: {percent} % der Arbeit dieses Auftrags. Löschen Sie die Position, um sie wegzulassen.",
+    "shopFeeHintPercentAll": "Die Werkstattpauschale aus den Einstellungen: {percent} % von Arbeit und Teilen dieses Auftrags. Löschen Sie die Position, um sie wegzulassen."
   },
   "liveLabor": {
     "title": "{count, plural, one {Ein Techniker hat Arbeit zu diesem Auftrag hinzugefügt} other {Ein Techniker hat # Arbeitspositionen zu diesem Auftrag hinzugefügt}}",

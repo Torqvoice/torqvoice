@@ -161,7 +161,11 @@
     "hourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
     "serviceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
     "deleteRow": "Ištrinti eilutę",
-    "descriptionMissingHint": "Eilutės be aprašymo neišsaugomos."
+    "descriptionMissingHint": "Eilutės be aprašymo neišsaugomos.",
+    "shopFeeTag": "Mokestis",
+    "shopFeeHintFlat": "Dirbtuvių mokestis iš nustatymų, fiksuota suma. Pakeiskite kainą šiam darbui arba ištrinkite eilutę, kad jo neliktų.",
+    "shopFeeHintPercentLabor": "Dirbtuvių mokestis iš nustatymų: {percent} % šio darbo darbų sumos. Ištrinkite eilutę, kad jo neliktų.",
+    "shopFeeHintPercentAll": "Dirbtuvių mokestis iš nustatymų: {percent} % šio darbo darbų ir dalių sumos. Ištrinkite eilutę, kad jo neliktų."
   },
   "liveLabor": {
     "title": "{count, plural, one {Mechanikas pridėjo # darbo eilutę prie šio užsakymo} few {Mechanikas pridėjo # darbo eilutes prie šio užsakymo} many {Mechanikas pridėjo # darbo eilutės prie šio užsakymo} other {Mechanikas pridėjo # darbo eilučių prie šio užsakymo}}",

@@ -8,6 +8,8 @@ import { Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { QuoteLaborInput } from './quote-page-types'
+import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
+import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
 
 const QuoteLaborRow = memo(function QuoteLaborRow({
   labor,
@@ -42,6 +44,8 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tExcludeFromTotal: string
 }) {
   const isService = labor.pricingType === 'service'
+  const isFee = isShopFeeLine(labor)
+  const feeLocked = useShopFeeLocked()
   const formatCurrency = useFormatCurrency()
   return (
     <div
@@ -55,25 +59,30 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
           rows={1}
           className="min-h-9 flex-1 resize-none"
         />
-        <button
-          type="button"
-          className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
-            isService
-              ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
-              : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
-          }`}
-          onClick={() => onUpdate(index, 'pricingType', isService ? 'hourly' : 'service')}
-          title={isService ? tServiceHint : tHourlyHint}
-        >
-          {isService ? tServiceTag : tHourlyTag}
-        </button>
+        {isFee ? (
+          <ShopFeeTag />
+        ) : (
+          <button
+            type="button"
+            className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
+              isService
+                ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
+                : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
+            }`}
+            onClick={() => onUpdate(index, 'pricingType', isService ? 'hourly' : 'service')}
+            title={isService ? tServiceHint : tHourlyHint}
+          >
+            {isService ? tServiceTag : tHourlyTag}
+          </button>
+        )}
       </div>
       <Input
         type="number"
         min="0"
-        step={isService ? '1' : '0.1'}
-        placeholder={isService ? tQty : tHours}
+        step={isService || isFee ? '1' : '0.1'}
+        placeholder={isService || isFee ? tQty : tHours}
         value={labor.hours}
+        disabled={isFee}
         onChange={(e) => onUpdate(index, 'hours', e.target.value)}
       />
       <Input
@@ -81,6 +90,7 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
         min="0"
         step="0.01"
         value={labor.rate}
+        disabled={isFee && feeLocked}
         onChange={(e) => onUpdate(index, 'rate', e.target.value)}
       />
       <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">

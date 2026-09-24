@@ -7,6 +7,7 @@ import { roundMoney } from '@/features/inventory/Lib/partPricing'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { announceLaborAdded } from '@/features/vehicles/Lib/jobEvents'
+import { refreshShopFeeLines } from '@/features/vehicles/Lib/shopFeeLines'
 
 /**
  * Adds a line of work to the job.
@@ -81,6 +82,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         // Same recalculation the parts path does, in the same transaction, so
         // the job's totals can never disagree with its lines.
+        await refreshShopFeeLines(tx, job.id, ctx.organizationId)
+
         const [partsAgg, laborAgg] = await Promise.all([
           tx.servicePart.aggregate({ where: { serviceRecordId: job.id }, _sum: { total: true } }),
           tx.serviceLabor.aggregate({ where: { serviceRecordId: job.id }, _sum: { total: true } }),

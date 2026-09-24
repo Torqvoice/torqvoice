@@ -5,6 +5,11 @@ import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeLinesLast,
+} from '@/features/settings/Lib/shopFee'
+import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
   warrantyTextsOf,
@@ -81,6 +86,7 @@ export async function ServiceRecordPage({
       SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
       SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
+      ...SHOP_FEE_SETTING_KEYS,
       ...WARRANTY_SETTING_KEYS,
     ]),
     getInventoryPartsList(),
@@ -120,6 +126,7 @@ export async function ServiceRecordPage({
   const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
+  const shopFee = readShopFee(settings)
   const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0
   const { defaultMarkupPercent, markupAppliesToInventory } = readPartsPricingSettings(settings, {
     defaultMarkupPercent: SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
@@ -273,12 +280,12 @@ export async function ServiceRecordPage({
       // parts and inventory reconciliation restocks the "removed" part.
       inventoryPartId: p.inventoryPartId ?? undefined,
     })),
-    laborItems: record.laborItems.map((l) => ({
+    laborItems: shopFeeLinesLast(record.laborItems).map((l) => ({
       description: l.description,
       hours: l.hours,
       rate: l.rate,
       total: l.total,
-      pricingType: (l.pricingType as 'hourly' | 'service') || 'hourly',
+      pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
     })),
     attachments: [],
     subtotal: record.subtotal,
@@ -372,6 +379,7 @@ export async function ServiceRecordPage({
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
+        shopFee={shopFee}
         initialData={initialData}
         inventoryParts={inventoryParts}
         laborPresets={laborPresets}

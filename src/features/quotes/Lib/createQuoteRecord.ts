@@ -2,6 +2,13 @@ import 'server-only'
 
 import { db } from '@/lib/db'
 import {
+  isShopFeeLine,
+  newShopFeeLine,
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeFor,
+} from '@/features/settings/Lib/shopFee'
+import {
   documentTotals,
   readWorkshopTax,
   taxFieldsForNewDocument,
@@ -48,6 +55,7 @@ export async function createQuoteRecord(
           'workshop.quoteValidDays',
           ...WORKSHOP_TAX_SETTING_KEYS,
           ...WARRANTY_SETTING_KEYS,
+          ...SHOP_FEE_SETTING_KEYS,
         ],
       },
     },
@@ -65,6 +73,27 @@ export async function createQuoteRecord(
       select: { id: true },
     })
     if (!inspection) throw new Error('Inspection not found')
+  }
+
+  // The workshop's shop fee, priced for the lines the quote starts with. A
+  // caller that already carries one (a copied quote) keeps its own. Most
+  // quotes start empty, so a percentage fee starts at nothing; the line is
+  // written all the same, as on a work order, and the editor re-prices it as
+  // lines are added. Without the line there is nothing to re-price.
+  let feeAdded = false
+  const shopFee = shopFeeFor(readShopFee(settingsMap), 'quote')
+  if (shopFee && !(data.laborItems ?? []).some(isShopFeeLine)) {
+    const labor = (data.laborItems ?? []).reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0)
+    const parts = (data.partItems ?? []).reduce((sum, p) => sum + p.total, 0)
+    const feeLine = newShopFeeLine(shopFee, { labor, parts })
+    data.laborItems = [...(data.laborItems ?? []), { ...feeLine, excluded: false }]
+    if (feeLine.total > 0) {
+      data.subtotal += feeLine.total
+      if (data.discountType === 'percentage') {
+        data.discountAmount = data.subtotal * (data.discountValue / 100)
+      }
+      feeAdded = true
+    }
   }
 
   // Apply default tax rate from settings when the caller hasn't set one.
@@ -92,6 +121,18 @@ export async function createQuoteRecord(
   // split-tax workshop's quote prints GST and QST apart from the start.
   // A rate the caller set by hand is one figure and stays one.
   const taxRate = data.taxRate > 0 ? data.taxRate : defaultTaxRate
+  // The fee moved the subtotal, so the caller's tax and total are recomputed.
+  if (feeAdded) {
+    const totals = documentTotals({
+      subtotal: data.subtotal,
+      discountAmount: data.discountAmount,
+      taxRate,
+      taxInclusive,
+      taxComponents: null,
+    })
+    data.taxAmount = totals.taxAmount
+    data.totalAmount = totals.totalAmount
+  }
   const splitTax =
     taxRate > 0 && taxRate === workshopTax.rate && !customerExempt
       ? documentTotals({

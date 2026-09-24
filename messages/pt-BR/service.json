@@ -161,7 +161,11 @@
     "hourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
     "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
     "deleteRow": "Excluir linha",
-    "descriptionMissingHint": "Linhas sem descrição não são salvas."
+    "descriptionMissingHint": "Linhas sem descrição não são salvas.",
+    "shopFeeTag": "Taxa",
+    "shopFeeHintFlat": "A taxa de oficina das Configurações, como valor fixo. Altere o preço para este serviço ou exclua a linha para removê-la.",
+    "shopFeeHintPercentLabor": "A taxa de oficina das Configurações: {percent} % da mão de obra deste serviço. Exclua a linha para removê-la.",
+    "shopFeeHintPercentAll": "A taxa de oficina das Configurações: {percent} % da mão de obra e das peças deste serviço. Exclua a linha para removê-la."
   },
   "liveLabor": {
     "title": "{count, plural, one {Um técnico adicionou mão de obra a esta ordem} other {Um técnico adicionou # linhas de mão de obra a esta ordem}}",

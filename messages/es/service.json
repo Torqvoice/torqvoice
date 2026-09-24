@@ -161,7 +161,11 @@
     "hourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
     "serviceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
     "deleteRow": "Eliminar fila",
-    "descriptionMissingHint": "Las filas sin descripción no se guardan."
+    "descriptionMissingHint": "Las filas sin descripción no se guardan.",
+    "shopFeeTag": "Cargo",
+    "shopFeeHintFlat": "El cargo de taller de Ajustes, como importe fijo. Cambia el precio para este trabajo o borra la línea para quitarlo.",
+    "shopFeeHintPercentLabor": "El cargo de taller de Ajustes: {percent} % de la mano de obra de este trabajo. Borra la línea para quitarlo.",
+    "shopFeeHintPercentAll": "El cargo de taller de Ajustes: {percent} % de la mano de obra y las piezas de este trabajo. Borra la línea para quitarlo."
   },
   "liveLabor": {
     "title": "{count, plural, one {Un técnico añadió mano de obra a este trabajo} other {Un técnico añadió # líneas de mano de obra a este trabajo}}",

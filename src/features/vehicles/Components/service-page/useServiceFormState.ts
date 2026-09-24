@@ -5,6 +5,11 @@ import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
 import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
+import {
+  recalculateShopFeeLines,
+  shopFeeLinesLast,
+  type ShopFeeConfig,
+} from '@/features/settings/Lib/shopFee'
 import type { ConcernRow } from '../service-edit/form-types'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
@@ -16,12 +21,15 @@ export function useServiceFormState({
   currentUserName,
   record,
   locked = false,
+  shopFee = null,
 }: {
   vehicleId: string | null
   initialData: InitialData
   defaultTaxRate: number
   currentUserName: string
   record: ServiceDetail
+  /** The workshop's shop fee; a percentage one is re-priced as lines change. */
+  shopFee?: ShopFeeConfig | null
   /** A locked invoice refuses saves, so it must not queue one. */
   locked?: boolean
 }) {
@@ -244,6 +252,20 @@ export function useServiceFormState({
 
   // Computed totals
   const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0)
+
+  // A percentage shop fee follows the lines it is a percentage of. Returns the
+  // same array when the fee is already right, so this settles after one pass.
+  // A fee that did move is a change to save: the workshop's percentage may
+  // have changed since the job was last saved, and the PDF prints the saved
+  // figure, so the screen must not show one fee and the invoice another.
+  useEffect(() => {
+    if (locked) return
+    const next = recalculateShopFeeLines(laborItems, partsSubtotal, shopFee)
+    if (next === laborItems) return
+    setLaborItems(next)
+    markDirty()
+  }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
+
   // Internal-only: what the parts cost the workshop before markup. Shown in
   // the totals card for the mechanic, never on the PDF or share views.
   const partsCostSubtotal = partItems.reduce(
@@ -388,9 +410,10 @@ export function useServiceFormState({
   /**
    * What a save has to write: the list on screen plus anything added
    * elsewhere that has not been shown yet. A save replaces every labour line
-   * of the job, so a line left out of this is a line deleted.
+   * of the job, so a line left out of this is a line deleted. The shop fee
+   * goes last, under the work it is charged on.
    */
-  const laborItemsForSave = [...laborItems, ...laborAddedElsewhere]
+  const laborItemsForSave = shopFeeLinesLast([...laborItems, ...laborAddedElsewhere])
 
   const dirtySetDiscountType = useCallback(
     (v: string) => {

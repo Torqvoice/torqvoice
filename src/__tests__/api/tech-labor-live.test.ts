@@ -33,6 +33,8 @@ vi.mock('@/lib/db', () => {
     serviceLabor: {
       create: vi.fn(async () => state.labor),
       aggregate: vi.fn(async () => ({ _sum: { total: 1350 } })),
+      // A percentage shop fee is re-priced before the job is re-totalled.
+      findMany: vi.fn(async () => []),
     },
     servicePart: { aggregate: vi.fn(async () => ({ _sum: { total: 0 } })) },
     serviceRecord: { update: vi.fn(async () => ({})) },

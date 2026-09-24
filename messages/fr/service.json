@@ -161,7 +161,11 @@
     "hourlyHint": "À l'heure : facturé selon les heures travaillées (heures × taux/h). Cliquez pour changer.",
     "serviceHint": "Forfait : facturé au prix fixe par unité. Cliquez pour changer.",
     "deleteRow": "Supprimer la ligne",
-    "descriptionMissingHint": "Les lignes sans description ne sont pas enregistrées."
+    "descriptionMissingHint": "Les lignes sans description ne sont pas enregistrées.",
+    "shopFeeTag": "Frais",
+    "shopFeeHintFlat": "Les frais d'atelier des Paramètres, en montant fixe. Modifiez le prix pour cette intervention ou supprimez la ligne pour les retirer.",
+    "shopFeeHintPercentLabor": "Les frais d'atelier des Paramètres : {percent} % de la main-d'œuvre de cette intervention. Supprimez la ligne pour les retirer.",
+    "shopFeeHintPercentAll": "Les frais d'atelier des Paramètres : {percent} % de la main-d'œuvre et des pièces de cette intervention. Supprimez la ligne pour les retirer."
   },
   "liveLabor": {
     "title": "{count, plural, one {Un technicien a ajouté de la main-d’œuvre à cette intervention} other {Un technicien a ajouté # lignes de main-d’œuvre à cette intervention}}",

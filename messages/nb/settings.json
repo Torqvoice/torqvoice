@@ -620,7 +620,31 @@
     "reapplyFailed": "Kunne ikke bruke designet på nytt",
     "sectionSending": "Utsending",
     "attachPdfLabel": "Legg ved PDF i e-post",
-    "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen."
+    "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen.",
+    "shopFee": {
+      "title": "Verkstedgebyr",
+      "description": "Et gebyr for forbruksmateriell som filler, rensemidler, smøremidler og avfallshåndtering, lagt til hver nye arbeidsordre og hvert nye tilbud som en egen linje.",
+      "enabled": "Ta verkstedgebyr",
+      "enabledHint": "Nye arbeidsordrer og tilbud får gebyret som en linje. Det kan fjernes fra en enkelt jobb. Eksisterende jobber endres ikke.",
+      "defaultLabel": "Forbruksmateriell",
+      "label": "Navn på fakturaen",
+      "appliesTo": "Gjelder for",
+      "appliesToBoth": "Arbeidsordrer og tilbud",
+      "appliesToWorkOrders": "Bare arbeidsordrer",
+      "appliesToQuotes": "Bare tilbud",
+      "mode": "Hvordan det beregnes",
+      "modeFlat": "Fast beløp",
+      "modePercent": "Prosent",
+      "amount": "Beløp",
+      "amountHint": "Samme beløp på hver jobb. Det kan endres på en enkelt jobb.",
+      "percent": "Prosent (%)",
+      "base": "Prosent av",
+      "baseLabor": "Arbeid",
+      "baseLaborParts": "Arbeid og deler",
+      "cap": "Høyeste gebyr",
+      "capHint": "Gebyret blir aldri høyere enn dette. La feltet stå tomt for ingen øvre grense.",
+      "capPlaceholder": "Ingen øvre grense"
+    }
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",

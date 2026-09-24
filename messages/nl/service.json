@@ -161,7 +161,11 @@
     "hourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
     "serviceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Rij verwijderen",
-    "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen."
+    "descriptionMissingHint": "Regels zonder omschrijving worden niet opgeslagen.",
+    "shopFeeTag": "Toeslag",
+    "shopFeeHintFlat": "De werkplaatstoeslag uit Instellingen, als vast bedrag. Pas de prijs voor deze klus aan of verwijder de regel om hem weg te laten.",
+    "shopFeeHintPercentLabor": "De werkplaatstoeslag uit Instellingen: {percent} % van de arbeid op deze klus. Verwijder de regel om hem weg te laten.",
+    "shopFeeHintPercentAll": "De werkplaatstoeslag uit Instellingen: {percent} % van de arbeid en onderdelen op deze klus. Verwijder de regel om hem weg te laten."
   },
   "liveLabor": {
     "title": "{count, plural, one {Een monteur heeft arbeid aan deze order toegevoegd} other {Een monteur heeft # arbeidsregels aan deze order toegevoegd}}",

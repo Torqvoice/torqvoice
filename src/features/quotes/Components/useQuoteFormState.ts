@@ -18,6 +18,11 @@ import { zonedDateInput } from '@/lib/timezone'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
+import {
+  recalculateShopFeeLines,
+  shopFeeLinesLast,
+  type ShopFeeConfig,
+} from '@/features/settings/Lib/shopFee'
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
 import { emptyPart, makeEmptyLabor, makeEmptyService } from './quote-page-types'
@@ -45,6 +50,7 @@ export function useQuoteFormState({
   taxEnabled,
   defaultLaborRate,
   locked = false,
+  shopFee = null,
   t,
 }: {
   quote: QuoteRecord
@@ -54,6 +60,8 @@ export function useQuoteFormState({
   defaultLaborRate: number
   /** A locked quote refuses saves, so it must not queue one. */
   locked?: boolean
+  /** The workshop's shop fee; a percentage one is re-priced as lines change. */
+  shopFee?: ShopFeeConfig | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }) {
@@ -99,12 +107,12 @@ export function useQuoteFormState({
   )
   const { schedule: scheduleCommit, cancel: cancelCommit } = useDeferredCommit()
   const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(
-    quote.laborItems.map((l) => ({
+    shopFeeLinesLast(quote.laborItems).map((l) => ({
       description: l.description,
       hours: l.hours,
       rate: l.rate,
       total: l.total,
-      pricingType: (l.pricingType as 'hourly' | 'service') || 'hourly',
+      pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
       excluded: l.excluded ?? false,
     }))
   )
@@ -256,6 +264,16 @@ export function useQuoteFormState({
     () => laborItems.reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0),
     [laborItems]
   )
+  // A percentage shop fee follows the lines the customer is being quoted for.
+  // A fee that moved is a change to save, or the PDF would print the old one.
+  useEffect(() => {
+    if (locked) return
+    const next = recalculateShopFeeLines(laborItems, partsSubtotal, shopFee)
+    if (next === laborItems) return
+    setLaborItems(next)
+    markDirty()
+  }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
+
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount =
     discountType === 'percentage'
@@ -427,7 +445,7 @@ export function useQuoteFormState({
         vehicleId,
         notes,
         partItems: partItems.filter((p) => p.name),
-        laborItems: laborItems.filter((l) => l.description),
+        laborItems: shopFeeLinesLast(laborItems.filter((l) => l.description)),
         subtotal,
         taxRate,
         taxInclusive,

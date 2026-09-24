@@ -620,7 +620,31 @@
     "reapplyFailed": "Kon het ontwerp niet opnieuw toepassen",
     "sectionSending": "Verzenden",
     "attachPdfLabel": "De pdf aan e-mails toevoegen",
-    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster."
+    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster.",
+    "shopFee": {
+      "title": "Werkplaatstoeslag",
+      "description": "Een toeslag voor verbruiksmaterialen zoals poetsdoeken, reinigers, smeermiddelen en afvalverwerking, als eigen regel toegevoegd aan elke nieuwe werkorder en offerte.",
+      "enabled": "Werkplaatstoeslag rekenen",
+      "enabledHint": "Nieuwe werkorders en offertes krijgen de toeslag als regel. Hij kan per klus worden verwijderd. Bestaande klussen veranderen niet.",
+      "defaultLabel": "Klein materiaal",
+      "label": "Naam op de factuur",
+      "appliesTo": "Geldt voor",
+      "appliesToBoth": "Werkorders en offertes",
+      "appliesToWorkOrders": "Alleen werkorders",
+      "appliesToQuotes": "Alleen offertes",
+      "mode": "Berekening",
+      "modeFlat": "Vast bedrag",
+      "modePercent": "Percentage",
+      "amount": "Bedrag",
+      "amountHint": "Hetzelfde bedrag op elke klus. Het kan per klus worden aangepast.",
+      "percent": "Percentage (%)",
+      "base": "Percentage van",
+      "baseLabor": "Arbeid",
+      "baseLaborParts": "Arbeid en onderdelen",
+      "cap": "Maximale toeslag",
+      "capHint": "De toeslag wordt nooit hoger dan dit bedrag. Laat leeg voor geen maximum.",
+      "capPlaceholder": "Geen maximum"
+    }
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",

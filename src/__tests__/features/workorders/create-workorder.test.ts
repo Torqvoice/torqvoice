@@ -948,3 +948,50 @@ describe('createDraftServiceRecord — tax injection', () => {
     )
   })
 })
+
+describe('createDraftServiceRecord — shop fee', () => {
+  const FEE_SETTINGS = [
+    { key: 'invoice.shopFeeEnabled', value: 'true' },
+    { key: 'invoice.shopFeeLabel', value: 'Shop supplies' },
+    { key: 'invoice.shopFeeMode', value: 'flat' },
+    { key: 'invoice.shopFeeAmount', value: '12.5' },
+    { key: 'workshop.defaultTaxRate', value: '25' },
+  ]
+
+  function setupDraft(settings: { key: string; value: string }[]) {
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(settings as any)
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-fee' } as any)
+  }
+
+  it('starts a new work order with the flat fee as its own line, totalled', async () => {
+    setupDraft(FEE_SETTINGS)
+    await createDraftServiceRecord(VEHICLE_ID, new Date(2026, 2, 8, 9, 0, 0))
+
+    const data = vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as any
+    expect(data.laborItems.create).toEqual([
+      { description: 'Shop supplies', hours: 1, rate: 12.5, total: 12.5, pricingType: 'shopFee' },
+    ])
+    expect(data.subtotal).toBe(12.5)
+    expect(data.totalAmount).toBeCloseTo(15.625, 3)
+  })
+
+  it('adds nothing when the fee is for quotes only', async () => {
+    setupDraft([...FEE_SETTINGS, { key: 'invoice.shopFeeAppliesTo', value: 'quotes' }])
+    await createDraftServiceRecord(VEHICLE_ID, new Date(2026, 2, 8, 9, 0, 0))
+
+    const data = vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as any
+    expect(data.laborItems).toBeUndefined()
+  })
+
+  it('adds nothing when the workshop charges no fee', async () => {
+    setupDraft([])
+    await createDraftServiceRecord(VEHICLE_ID, new Date(2026, 2, 8, 9, 0, 0))
+
+    const data = vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as any
+    expect(data.laborItems).toBeUndefined()
+  })
+})

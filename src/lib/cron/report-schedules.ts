@@ -17,6 +17,7 @@ import {
   zonedParts,
 } from '@/lib/timezone'
 import { shiftWorkshopTime, workshopMonthKey } from '@/lib/workshop-datetime'
+import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 // --------------- date helpers ---------------
@@ -282,7 +283,7 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
       technician: { select: { name: true } },
       totalAmount: true,
       cost: true,
-      laborItems: { select: { hours: true } },
+      laborItems: { select: { hours: true, pricingType: true } },
     },
   })
   const byTech: Record<
@@ -296,7 +297,10 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
       byTech[key] = { techName: name, jobCount: 0, totalRevenue: 0, totalLaborHours: 0 }
     byTech[key].jobCount += 1
     byTech[key].totalRevenue += r.totalAmount > 0 ? r.totalAmount : r.cost
-    byTech[key].totalLaborHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
+    byTech[key].totalLaborHours += r.laborItems.reduce(
+      (s, l) => s + (isShopFeeLine(l) ? 0 : l.hours),
+      0
+    )
   }
   const technicians = Object.values(byTech)
     .map((d) => ({
@@ -383,7 +387,7 @@ async function fetchJobAnalytics(orgId: string, start: Date, end: Date, timeZone
       cost: true,
       serviceDate: true,
       startDateTime: true,
-      laborItems: { select: { hours: true } },
+      laborItems: { select: { hours: true, pricingType: true } },
     },
   })
   const totalValue = records.reduce((s, r) => s + (r.totalAmount > 0 ? r.totalAmount : r.cost), 0)
@@ -394,7 +398,10 @@ async function fetchJobAnalytics(orgId: string, start: Date, end: Date, timeZone
     if (!byType[r.type]) byType[r.type] = { count: 0, totalValue: 0, totalHours: 0 }
     byType[r.type].count += 1
     byType[r.type].totalValue += r.totalAmount > 0 ? r.totalAmount : r.cost
-    byType[r.type].totalHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
+    byType[r.type].totalHours += r.laborItems.reduce(
+      (s, l) => s + (isShopFeeLine(l) ? 0 : l.hours),
+      0
+    )
     const _d = r.startDateTime ?? r.serviceDate
     dayCount[zonedParts(_d, timeZone).weekday] += 1
     const month = workshopMonthKey(_d, timeZone)

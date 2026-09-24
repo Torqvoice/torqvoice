@@ -1,6 +1,7 @@
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { readShopFee, SHOP_FEE_SETTING_KEYS } from '@/features/settings/Lib/shopFee'
 import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
@@ -25,6 +26,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       SETTING_KEYS.DEFAULT_LABOR_RATE,
       SETTING_KEYS.UNIT_SYSTEM,
       ...WARRANTY_SETTING_KEYS,
+      ...SHOP_FEE_SETTING_KEYS,
     ]),
     getLaborPresetsList(),
     getInventoryPartsList(),
@@ -81,6 +83,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
+        shopFee={readShopFee(settings)}
         warrantyTexts={warrantyTextsOf(readWarrantyDefaults(settings))}
         distanceUnit={settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'km' : 'mi'}
         laborPresets={laborPresets}

@@ -620,7 +620,31 @@
     "reapplyFailed": "Impossibile riapplicare il design",
     "sectionSending": "Invio",
     "attachPdfLabel": "Allega il PDF alle email",
-    "attachPdfHint": "L'impostazione predefinita per ogni fattura, preventivo e controllo che invii via email. Attivo: il cliente riceve il PDF in allegato. Disattivo: riceve invece un link al documento e il contatore delle visualizzazioni indica quando lo ha aperto, così puoi sollecitare quelli che nessuno ha guardato. Puoi cambiarlo per un singolo invio nella finestra di condivisione."
+    "attachPdfHint": "L'impostazione predefinita per ogni fattura, preventivo e controllo che invii via email. Attivo: il cliente riceve il PDF in allegato. Disattivo: riceve invece un link al documento e il contatore delle visualizzazioni indica quando lo ha aperto, così puoi sollecitare quelli che nessuno ha guardato. Puoi cambiarlo per un singolo invio nella finestra di condivisione.",
+    "shopFee": {
+      "title": "Contributo officina",
+      "description": "Un contributo per i materiali di consumo dell'officina, come stracci, detergenti, lubrificanti e smaltimento, aggiunto a ogni nuovo ordine di lavoro e preventivo come riga a sé.",
+      "enabled": "Applica il contributo officina",
+      "enabledHint": "I nuovi ordini di lavoro e preventivi ricevono il contributo come riga. Si può togliere da un singolo lavoro. I lavori esistenti non cambiano.",
+      "defaultLabel": "Materiali di consumo",
+      "label": "Nome in fattura",
+      "appliesTo": "Si applica a",
+      "appliesToBoth": "Ordini di lavoro e preventivi",
+      "appliesToWorkOrders": "Solo ordini di lavoro",
+      "appliesToQuotes": "Solo preventivi",
+      "mode": "Come viene calcolato",
+      "modeFlat": "Importo fisso",
+      "modePercent": "Percentuale",
+      "amount": "Importo",
+      "amountHint": "Lo stesso importo su ogni lavoro. Si può modificare su un singolo lavoro.",
+      "percent": "Percentuale (%)",
+      "base": "Percentuale di",
+      "baseLabor": "Manodopera",
+      "baseLaborParts": "Manodopera e ricambi",
+      "cap": "Contributo massimo",
+      "capHint": "Il contributo non supera mai questo importo. Lascia vuoto per nessun massimo.",
+      "capPlaceholder": "Nessun massimo"
+    }
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",

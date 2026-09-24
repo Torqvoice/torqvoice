@@ -8,7 +8,12 @@ import { netLineTotal } from '@/lib/tax'
 import { TaxByRateTable } from '../Lib/taxByRate'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
+import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+
+/** Hours a labour line stands for. A shop fee line is one unit of a charge, not an hour. */
+const laborHours = (line: { hours: number; pricingType: string }) =>
+  isShopFeeLine(line) ? 0 : line.hours
 
 /**
  * The report window on the workshop's calendar. The picker sends bare
@@ -248,7 +253,7 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
           technician: { select: { name: true } },
           totalAmount: true,
           cost: true,
-          laborItems: { select: { hours: true } },
+          laborItems: { select: { hours: true, pricingType: true } },
         },
       })
 
@@ -265,7 +270,7 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
           byTech[key] = { techName: displayName, jobCount: 0, totalRevenue: 0, totalLaborHours: 0 }
         byTech[key].jobCount += 1
         byTech[key].totalRevenue += r.totalAmount > 0 ? r.totalAmount : r.cost
-        byTech[key].totalLaborHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
+        byTech[key].totalLaborHours += r.laborItems.reduce((s, l) => s + laborHours(l), 0)
       }
 
       const technicians = Object.values(byTech)
@@ -313,7 +318,10 @@ export async function getTechnicianTimeReport(params: { startDate?: string; endD
             startDateTime: { gte: start, lt: end },
             technicianId: { not: null },
           },
-          select: { technicianId: true, laborItems: { select: { hours: true } } },
+          select: {
+            technicianId: true,
+            laborItems: { select: { hours: true, pricingType: true } },
+          },
         }),
         db.technician.findMany({
           where: { organizationId },
@@ -346,7 +354,7 @@ export async function getTechnicianTimeReport(params: { startDate?: string; endD
       }
       for (const rec of records) {
         if (!rec.technicianId) continue
-        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + l.hours, 0)
+        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + laborHours(l), 0)
       }
 
       const names = new Map(
@@ -489,7 +497,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
           cost: true,
           serviceDate: true,
           startDateTime: true,
-          laborItems: { select: { hours: true } },
+          laborItems: { select: { hours: true, pricingType: true } },
         },
       })
 
@@ -506,7 +514,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
         if (!byType[r.type]) byType[r.type] = { count: 0, totalValue: 0, totalHours: 0 }
         byType[r.type].count += 1
         byType[r.type].totalValue += r.totalAmount > 0 ? r.totalAmount : r.cost
-        byType[r.type].totalHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
+        byType[r.type].totalHours += r.laborItems.reduce((s, l) => s + laborHours(l), 0)
       }
 
       const topServiceTypes = Object.entries(byType)
@@ -853,7 +861,7 @@ export async function getVehicleReport(params: {
               total: true,
             },
           },
-          laborItems: { select: { hours: true, total: true } },
+          laborItems: { select: { hours: true, total: true, pricingType: true } },
         },
         orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
       })
@@ -883,7 +891,7 @@ export async function getVehicleReport(params: {
           (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
           0
         )
-        const laborHrs = r.laborItems.reduce((s, l) => s + l.hours, 0)
+        const laborHrs = r.laborItems.reduce((s, l) => s + laborHours(l), 0)
         totalPartsUsed += r.partItems.reduce((s, p) => s + p.quantity, 0)
         totalLaborHours += laborHrs
 
@@ -955,7 +963,7 @@ export async function getVehicleReport(params: {
           date: zonedDayKey(r.startDateTime ?? r.serviceDate, tz),
           totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
           partsCount: r.partItems.reduce((s, p) => s + p.quantity, 0),
-          laborHours: r.laborItems.reduce((s, l) => s + l.hours, 0),
+          laborHours: r.laborItems.reduce((s, l) => s + laborHours(l), 0),
           techName: r.technician?.name ?? r.techName ?? null,
         })),
       }
