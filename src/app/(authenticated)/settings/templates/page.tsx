@@ -33,6 +33,7 @@ export default async function TemplatePage() {
     organization,
     invoiceDesigns,
     quoteDesigns,
+    certificateDesigns,
   ] = await Promise.all([
     getSettings([
       SETTING_KEYS.INVOICE_PRIMARY_COLOR,
@@ -57,6 +58,7 @@ export default async function TemplatePage() {
       SETTING_KEYS.COMPANY_LOGO,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
       SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
+      SETTING_KEYS.CERTIFICATE_ACTIVE_DESIGN,
       SETTING_KEYS.WORKSHOP_ADDRESS,
       SETTING_KEYS.WORKSHOP_SLOGAN,
       SETTING_KEYS.WORKSHOP_PHONE,
@@ -82,6 +84,7 @@ export default async function TemplatePage() {
     }),
     listDocumentDesigns('invoice'),
     listDocumentDesigns('quote'),
+    listDocumentDesigns('certificate'),
   ])
 
   const settings = result.success && result.data ? result.data : {}
@@ -98,6 +101,7 @@ export default async function TemplatePage() {
   const savedDesigns: SavedDesign[] = [
     ...(invoiceDesigns.success && invoiceDesigns.data ? invoiceDesigns.data : []),
     ...(quoteDesigns.success && quoteDesigns.data ? quoteDesigns.data : []),
+    ...(certificateDesigns.success && certificateDesigns.data ? certificateDesigns.data : []),
   ]
 
   // The preview is meant to look like this workshop's own paper, so it gets the
@@ -163,6 +167,7 @@ export default async function TemplatePage() {
       activeDesigns={{
         invoice: settings[SETTING_KEYS.INVOICE_ACTIVE_DESIGN] || '',
         quote: settings[SETTING_KEYS.QUOTE_ACTIVE_DESIGN] || '',
+        certificate: settings[SETTING_KEYS.CERTIFICATE_ACTIVE_DESIGN] || '',
       }}
       invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}

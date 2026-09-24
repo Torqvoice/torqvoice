@@ -183,7 +183,10 @@
     "attachments": "Fotos und Dokumente",
     "attachedDocuments": "Beigefügte Dokumente: {names}",
     "euNotApplicable": "Nicht zutreffend",
-    "basicNotApplicable": "Nicht zutreffend"
+    "basicNotApplicable": "Nicht zutreffend",
+    "allResults": "Alle Ergebnisse",
+    "signature": "Unterschrift",
+    "sectionColumn": "Abschnitt"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIE",

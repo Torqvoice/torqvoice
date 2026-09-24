@@ -24,7 +24,7 @@ import { requireFeature } from '@/lib/features'
 import { releaseReplacedSettingFiles, settingValuesBefore } from '@/lib/files/settings'
 import { releaseFiles } from '@/lib/files/manager'
 
-const documentTypeSchema = z.enum(['invoice', 'quote'])
+const documentTypeSchema = z.enum(['invoice', 'quote', 'certificate'])
 
 const saveDesignSchema = z.object({
   id: z.string().optional(),

@@ -149,6 +149,12 @@ export const invoiceLayoutConfigSchema = z.object({
    * classic look those organizations have always mailed out.
    */
   version: z.number().int().optional(),
+  /**
+   * Which document this arranges. Absent means an invoice or a quote, which
+   * share one section list; a certificate has sections of its own, so its
+   * layout has to say so to be merged with the right defaults.
+   */
+  documentType: z.enum(['invoice', 'quote', 'certificate']).optional(),
 })
 
 /** Stamped on every layout the designer saves. */
@@ -238,6 +244,37 @@ export const BUILTIN_SECTIONS = [
   { id: 'general', name: 'General' },
 ] as const
 
+/**
+ * What a completed inspection prints. The letterhead, title strip, customer
+ * and vehicle panels, notes, attachments and footer are the shared ones; the
+ * rest is the test: what it found, in the order a reader wants it.
+ */
+export const CERTIFICATE_SECTIONS = [
+  { id: 'header', name: 'Header' },
+  { id: 'document_title', name: 'Document Title' },
+  { id: 'slogan', name: 'Slogan' },
+  { id: 'result', name: 'Result' },
+  { id: 'customer', name: 'Customer' },
+  { id: 'vehicle', name: 'Vehicle' },
+  { id: 'test_details', name: 'Test Details' },
+  { id: 'defects', name: 'Defects' },
+  { id: 'results_table', name: 'All Results' },
+  { id: 'inspection_photos', name: 'Photos' },
+  { id: 'notes', name: 'Notes' },
+  { id: 'attached_documents', name: 'Attached Documents' },
+  { id: 'signature', name: 'Signature' },
+  { id: 'footer', name: 'Footer' },
+] as const
+
+export type LayoutDocumentType = 'invoice' | 'quote' | 'certificate'
+
+/** The sections a document is built from. */
+export function sectionsFor(
+  documentType: LayoutDocumentType | undefined
+): ReadonlyArray<{ id: string; name: string }> {
+  return documentType === 'certificate' ? CERTIFICATE_SECTIONS : BUILTIN_SECTIONS
+}
+
 export const BUILTIN_CUSTOMER_FIELDS = [
   { id: 'customer_name', name: 'Customer Name' },
   { id: 'customer_company', name: 'Customer Company' },
@@ -318,6 +355,45 @@ export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'due_date', name: 'Due Date' },
 ] as const
 
+/** The facts Annex IV wants on a certificate, each one a switch. */
+export const BUILTIN_TEST_DETAILS_FIELDS = [
+  { id: 'test_date', name: 'Date of test' },
+  { id: 'test_location', name: 'Place of test' },
+  { id: 'inspector', name: 'Inspector' },
+  { id: 'certificate_number', name: 'Certificate number' },
+  { id: 'vehicle_category', name: 'Vehicle category' },
+  { id: 'odometer', name: 'Odometer' },
+  { id: 'next_test_due', name: 'Next test due' },
+] as const
+
+/** What the result band says under the verdict. */
+export const BUILTIN_RESULT_FIELDS = [
+  { id: 'result_detail', name: 'Explanation' },
+  { id: 'result_summary', name: 'Counts' },
+] as const
+
+/** What each defect carries beside its grade. */
+export const BUILTIN_DEFECTS_FIELDS = [
+  { id: 'defect_notes', name: 'Notes' },
+  { id: 'defect_photos', name: 'Photos' },
+] as const
+
+/** What the signature block draws: the lines, and whether the name is printed. */
+export const BUILTIN_SIGNATURE_FIELDS = [
+  { id: 'inspector_line', name: 'Inspector line' },
+  { id: 'inspector_name', name: "Inspector's name" },
+  { id: 'date_line', name: 'Date line' },
+] as const
+
+/** Which rows the full results table prints beyond the defects. */
+export const BUILTIN_RESULTS_TABLE_FIELDS = [
+  { id: 'passed_checks', name: 'Passed checks' },
+  { id: 'not_applicable_checks', name: 'Not applicable checks' },
+  { id: 'check_notes', name: 'Notes column' },
+  /** Every check in one table with a section column, instead of a table per section. */
+  { id: 'combined_table', name: 'One table' },
+] as const
+
 /**
  * Fields that printed before they had a switch, by section.
  *
@@ -381,6 +457,11 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'service',
   'bank_account',
   'general',
+  'test_details',
+  'result',
+  'signature',
+  'defects',
+  'results_table',
 ])
 
 /** Sections that print inside a panel and can have it taken away. */
@@ -393,6 +474,9 @@ export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
   'attached_documents',
   'warranty',
   'telegram_qr',
+  'test_details',
+  'signature',
+  'result',
 ])
 
 /** Sections that can be placed in left/right columns */
@@ -430,6 +514,9 @@ export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
   'notes',
   'attached_documents',
   'bank_account',
+  'test_details',
+  'signature',
+  'result',
 ])
 
 /** Sections that MUST be full-width (cannot be in columns) */
@@ -441,6 +528,9 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'labor_table',
   'footer',
   'telegram_qr',
+  'defects',
+  'results_table',
+  'inspection_photos',
 ])
 
 /** Default column assignment for column-eligible sections */
@@ -448,6 +538,7 @@ const DEFAULT_COLUMN: Record<string, 'left' | 'right'> = {
   customer: 'left',
   vehicle: 'left',
   service: 'right',
+  test_details: 'right',
 }
 
 // ---------------------------------------------------------------------------
@@ -477,6 +568,21 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
       }))
     case 'general':
       return [] // no built-in fields, only custom fields
+    case 'test_details':
+      return BUILTIN_TEST_DETAILS_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'result':
+      return BUILTIN_RESULT_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'signature':
+      return BUILTIN_SIGNATURE_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'defects':
+      return BUILTIN_DEFECTS_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'results_table':
+      // Every row and the notes beside them; a table per section unless the
+      // design asks for one.
+      return BUILTIN_RESULTS_TABLE_FIELDS.map((f) => ({
+        id: f.id,
+        visible: f.id !== 'combined_table',
+      }))
     default:
       return undefined
   }
@@ -490,20 +596,30 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
  * already print the title themselves.
  */
 const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>(['general', 'telegram_qr', 'items_table'])
+/** A signature line is a choice; most certificates are issued unsigned. */
+const HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS = new Set<string>(['slogan', 'signature'])
 
 export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
+  return getDefaultLayout('invoice')
+}
+
+/** The default arrangement for a document: every section, in its built-in order. */
+export function getDefaultLayout(documentType: LayoutDocumentType): InvoiceLayoutConfig {
+  const certificate = documentType === 'certificate'
+  const hidden = certificate ? HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS : HIDDEN_BY_DEFAULT_SECTIONS
   return {
-    sections: BUILTIN_SECTIONS.map((s, index) => {
+    sections: sectionsFor(documentType).map((s, index) => {
       const fields = getDefaultFieldsForSection(s.id)
       const column = DEFAULT_COLUMN[s.id]
       return {
         id: s.id,
-        visible: !HIDDEN_BY_DEFAULT_SECTIONS.has(s.id),
+        visible: !hidden.has(s.id),
         order: index,
         ...(column ? { column } : {}),
         ...(fields ? { fields } : {}),
       }
     }),
+    ...(certificate ? { documentType: 'certificate' as const } : {}),
   }
 }
 
@@ -584,6 +700,16 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_DOCUMENT_TITLE_FIELDS
     case 'footer':
       return BUILTIN_FOOTER_FIELDS
+    case 'test_details':
+      return BUILTIN_TEST_DETAILS_FIELDS
+    case 'result':
+      return BUILTIN_RESULT_FIELDS
+    case 'signature':
+      return BUILTIN_SIGNATURE_FIELDS
+    case 'defects':
+      return BUILTIN_DEFECTS_FIELDS
+    case 'results_table':
+      return BUILTIN_RESULTS_TABLE_FIELDS
     default:
       return []
   }
@@ -599,6 +725,11 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_BANK_ACCOUNT_FIELDS,
     ...BUILTIN_DOCUMENT_TITLE_FIELDS,
     ...BUILTIN_FOOTER_FIELDS,
+    ...BUILTIN_TEST_DETAILS_FIELDS,
+    ...BUILTIN_RESULT_FIELDS,
+    ...BUILTIN_SIGNATURE_FIELDS,
+    ...BUILTIN_DEFECTS_FIELDS,
+    ...BUILTIN_RESULTS_TABLE_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
 }
@@ -633,7 +764,10 @@ export function materializeHiddenSection(
 // ---------------------------------------------------------------------------
 
 export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceLayoutConfig {
-  const defaults = getDefaultInvoiceLayout()
+  // A certificate layout says so and is filled in from the certificate's
+  // sections; anything else is an invoice or a quote, which share theirs.
+  const documentType = saved.documentType === 'certificate' ? 'certificate' : 'invoice'
+  const defaults = getDefaultLayout(documentType)
 
   if (!saved.sections || saved.sections.length === 0) {
     return saved.version !== undefined ? { ...defaults, version: saved.version } : defaults
@@ -726,6 +860,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     ...(saved.document ? { document: saved.document } : {}),
     ...(saved.anchors ? { anchors: saved.anchors } : {}),
     ...(saved.version !== undefined ? { version: saved.version } : {}),
+    ...(documentType === 'certificate' ? { documentType } : {}),
   }
 }
 

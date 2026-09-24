@@ -5,6 +5,9 @@ ALTER TABLE "inspection_items" ADD COLUMN     "allowNotApplicable" BOOLEAN NOT N
 ALTER TABLE "inspection_template_items" ADD COLUMN     "allowNotApplicable" BOOLEAN NOT NULL DEFAULT true;
 
 -- AlterTable
+ALTER TABLE "inspections" ADD COLUMN     "designSnapshotId" TEXT;
+
+-- AlterTable
 ALTER TABLE "status_reports" ADD COLUMN     "inspectionId" TEXT,
 ALTER COLUMN "serviceRecordId" DROP NOT NULL;
 
@@ -28,7 +31,13 @@ CREATE TABLE "inspection_attachments" (
 CREATE INDEX "inspection_attachments_inspectionId_idx" ON "inspection_attachments"("inspectionId");
 
 -- CreateIndex
+CREATE INDEX "inspections_designSnapshotId_idx" ON "inspections"("designSnapshotId");
+
+-- CreateIndex
 CREATE INDEX "status_reports_inspectionId_idx" ON "status_reports"("inspectionId");
+
+-- AddForeignKey
+ALTER TABLE "inspections" ADD CONSTRAINT "inspections_designSnapshotId_fkey" FOREIGN KEY ("designSnapshotId") REFERENCES "document_design_snapshots"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "inspection_attachments" ADD CONSTRAINT "inspection_attachments_inspectionId_fkey" FOREIGN KEY ("inspectionId") REFERENCES "inspections"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -130,6 +130,13 @@ model Inspection {
   inspectorName     String?
   testLocation      String?
 
+  /// The certificate design as it was when the inspection was completed, so a
+  /// design edited later never changes a certificate a customer already has.
+  /// Null on inspections completed before designs existed, or by a workshop
+  /// that has never designed one; those print the built-in sheet.
+  designSnapshotId String?
+  designSnapshot   DocumentDesignSnapshot? @relation(fields: [designSnapshotId], references: [id], onDelete: SetNull)
+
   organizationId String
 
   items          InspectionItem[]
@@ -143,6 +150,7 @@ model Inspection {
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
   @@index([vehicleId])
+  @@index([designSnapshotId])
   @@index([organizationId])
   @@index([technicianId])
   @@index([workBayId])

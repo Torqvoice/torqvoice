@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "All vehicle inspections and their results",
     "contentTechnicians": "Technicians",
     "contentTechniciansDescription": "All technician profiles. Linked records will be unlinked.",
-    "contentInspectionTemplates": "Inspection Templates",
-    "contentInspectionTemplatesDescription": "All inspection templates and their sections. Delete inspections first.",
+    "contentInspectionTemplates": "Inspection checklists",
+    "contentInspectionTemplatesDescription": "All inspection checklists and their sections. Delete inspections first.",
     "contentNotifications": "Notifications",
     "contentNotificationsDescription": "All system notifications",
     "contentSmsMessages": "SMS Messages",
@@ -656,7 +656,13 @@
       "bank_account": "Bank Account",
       "footer": "Footer",
       "general": "General",
-      "telegram_qr": "Telegram QR"
+      "telegram_qr": "Telegram QR",
+      "result": "Result",
+      "test_details": "Test details",
+      "defects": "Defects",
+      "results_table": "All results",
+      "inspection_photos": "Photos",
+      "signature": "Signature"
     },
     "fields": {
       "customer_name": "Customer Name",
@@ -688,7 +694,25 @@
       "invoice_number": "Invoice No.",
       "customer_number": "Customer No.",
       "date": "Date",
-      "portal_link": "Portal Link"
+      "portal_link": "Portal Link",
+      "test_date": "Date of test",
+      "test_location": "Place of test",
+      "inspector": "Inspector",
+      "certificate_number": "Certificate number",
+      "vehicle_category": "Vehicle category",
+      "odometer": "Odometer",
+      "next_test_due": "Next test due",
+      "defect_notes": "Notes",
+      "defect_photos": "Photos",
+      "passed_checks": "Passed checks",
+      "not_applicable_checks": "Not applicable checks",
+      "check_notes": "Notes column",
+      "result_detail": "Explanation",
+      "result_summary": "Counts per grade",
+      "combined_table": "One table for all sections",
+      "inspector_line": "Inspector line",
+      "inspector_name": "Print the inspector's name",
+      "date_line": "Date line"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Detailed",
         "description": "Title up top, vehicle on its own, both tables and every optional block"
+      },
+      "certificate-regulator": {
+        "name": "Regulatory",
+        "description": "Plain and unbanded, in a serif: every check with its grade and note, the photos, a line to sign"
+      },
+      "certificate-standard": {
+        "name": "Standard",
+        "description": "The verdict under the title, the car and the test side by side, each defect with its note and photo, then every check by section"
+      },
+      "certificate-customer": {
+        "name": "Customer report",
+        "description": "A banded sheet with the verdict centred and large, defects with photos, the walk-round photos, and one short table of every check"
+      },
+      "certificate-compact": {
+        "name": "Compact",
+        "description": "One page for a fleet: small type, the verdict beside the title, the full results without notes, the photos, a line to sign"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Templates",
     "invoiceDescription": "Customize the appearance of your PDF invoices and quotes.",
-    "inspectionsDescription": "Manage inspection checklists and multi-point templates.",
+    "inspectionsDescription": "The checklists your technicians work through during an inspection.",
     "smsDescription": "Customize the SMS messages sent to customers.",
     "tabs": {
       "invoice": "Invoice",
       "quotation": "Quotation",
-      "inspections": "Inspections",
+      "inspections": "Inspection\nChecklists",
       "sms": "SMS",
-      "layout": "Layout"
+      "layout": "Layout",
+      "certificates": "Inspection\nCertificates"
     },
     "presets": "Template Presets",
     "primaryColor": "Primary Color",
@@ -849,7 +890,8 @@
     "goToLayout": "Layout and sections",
     "openDesigner": "Open Template Designer",
     "designerIntro": "Pick a starting point, then open the designer to change anything.",
-    "designerHint": "Colors, fonts, spacing and every section live in the designer."
+    "designerHint": "Colors, fonts, spacing and every section live in the designer.",
+    "certificatesDescription": "Design the certificate a completed inspection prints and shares."
   },
   "payment": {
     "readMore": "Read More",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Technicians",
     "optTechniciansDesc": "Technician profiles and workboard assignments",
     "optInspections": "Inspections",
-    "optInspectionsDesc": "Inspection templates, inspections, and results",
+    "optInspectionsDesc": "Inspection checklists, inspections, and results",
     "optAuditLogs": "Audit Logs",
     "optAuditLogsDesc": "Activity and change history",
     "optSmsMessages": "Messages",
@@ -2060,7 +2102,19 @@
       "slogan": "Quality service you can trust",
       "paymentTerms": "Due within 14 days",
       "footerNote": "Thank you for your business",
-      "value": "Sample"
+      "value": "Sample",
+      "testLocation": "12 Harbour Road, Springfield",
+      "certificateNotes": "Tyres are close to the legal limit; expect to replace them before the next test.",
+      "checkBrakeHoses": "Brake hoses",
+      "checkBrakeHosesNote": "Slight chafing on the left front hose, not yet through the outer layer.",
+      "sectionBrakes": "Braking equipment",
+      "checkBrakePedal": "Service brake pedal",
+      "checkBrakeFluid": "Brake fluid",
+      "sectionLighting": "Lighting equipment",
+      "checkHeadlamps": "Headlamp condition",
+      "checkFogLamp": "Rear fog lamp",
+      "photoFront": "Front",
+      "photoOdometer": "Odometer"
     },
     "logoUpload": "Upload logo",
     "logoReplace": "Replace logo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Set as default",
     "defaultSet": "\"{name}\" is now in use",
     "couldNotSetDefault": "Could not set the default design",
-    "fieldFixedSlot": "Always prints in the same place, so it cannot be moved."
+    "fieldFixedSlot": "Always prints in the same place, so it cannot be moved.",
+    "certificate": "Inspection certificate",
+    "resultWidthHint": "Empty spans the row. Set points to make the band narrower; it then sits at the side the alignment picks, and in a column it takes the column's width."
   },
   "preview": {
     "title": "Brake Service & Oil Change",

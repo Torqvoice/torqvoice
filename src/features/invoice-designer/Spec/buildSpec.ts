@@ -10,6 +10,15 @@ import {
 import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import type { Block, DocumentSpec, Node, Placement, TextStyle } from './documentSpec'
 import { DEFAULT_LINE_HEIGHT } from '../Pdf/measure'
+import type { CertificateData } from './certificateData'
+import {
+  defectsBlock,
+  inspectionPhotosBlock,
+  resultBlock,
+  resultsTableBlock,
+  signatureBlock,
+  testDetailsBlock,
+} from './certificateBlocks'
 
 /**
  * The single description of a document.
@@ -90,6 +99,8 @@ export interface DocumentData {
   branding?: { logoDataUri: string }
   portalUrl?: string
   sectionLabels: Record<string, string>
+  /** What a certificate prints beyond the shared fields; absent on any other document. */
+  certificate?: CertificateData
 }
 
 export interface DocumentTheme {
@@ -146,7 +157,7 @@ export function mixColors(from: string, to: string, amount: number) {
 }
 
 /** One section's resolved look: its own overrides over the document's. */
-function lookOf(section: InvoiceSection, theme: DocumentTheme) {
+export function lookOf(section: InvoiceSection, theme: DocumentTheme) {
   const s = section.style
   const text = s?.textColor || theme.text
   return {
@@ -224,17 +235,19 @@ function autoEmphasis(section: InvoiceSection): boolean {
   return !section.fields?.some((f) => f.bold !== undefined)
 }
 
-const scale = (base: number, factor: number) => Math.max(5, Math.round(base * factor * 10) / 10)
+export const scale = (base: number, factor: number) =>
+  Math.max(5, Math.round(base * factor * 10) / 10)
 
 /** A translated string, or the English the sheet has always printed. */
-const label = (data: DocumentData, key: string, fallback: string) => data.labels[key] || fallback
+export const label = (data: DocumentData, key: string, fallback: string) =>
+  data.labels[key] || fallback
 
 /**
  * The column heads every table wears. The default is the sheet's ink reversed
  * out; classic keeps the tinted primary band with darkened primary text the
  * old sheets printed. A fill the section sets itself wins in both.
  */
-function tableHead(look: ReturnType<typeof lookOf>, theme: DocumentTheme, size: number) {
+export function tableHead(look: ReturnType<typeof lookOf>, theme: DocumentTheme, size: number) {
   if (theme.classic && !look.fill) {
     return {
       background: mixColors(theme.background || '#ffffff', theme.primary, 0.1),
@@ -252,7 +265,7 @@ function tableHead(look: ReturnType<typeof lookOf>, theme: DocumentTheme, size: 
 }
 
 /** A labelled panel: the customer, the vehicle, the service, the extras. */
-function panel(
+export function panel(
   section: InvoiceSection,
   theme: DocumentTheme,
   data: DocumentData,
@@ -1779,6 +1792,19 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return telegramBlock(section, theme, data)
     case 'footer':
       return footer(section, theme, data)
+    // The certificate's own sections; see certificateBlocks.ts.
+    case 'result':
+      return resultBlock(section, theme, data)
+    case 'test_details':
+      return testDetailsBlock(section, theme, data)
+    case 'defects':
+      return defectsBlock(section, theme, data)
+    case 'results_table':
+      return resultsTableBlock(section, theme, data)
+    case 'inspection_photos':
+      return inspectionPhotosBlock(section, theme, data)
+    case 'signature':
+      return signatureBlock(section, theme, data)
     default:
       return null
   }

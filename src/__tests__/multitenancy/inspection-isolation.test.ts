@@ -44,6 +44,8 @@ vi.mock('@/lib/db', () => ({
       findFirst: vi.fn(),
       update: vi.fn(),
     },
+    // Completion reads the certificate design settings to freeze them.
+    appSetting: { findMany: vi.fn() },
   },
 }))
 
@@ -170,6 +172,8 @@ describe('completeInspection — cross-org isolation', () => {
       items: [],
     } as any)
     vi.mocked(db.inspection.updateMany).mockResolvedValue({ count: 1 } as any)
+    // No certificate design saved, so completion has nothing to freeze.
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
 
     await completeInspection('insp-a')
 

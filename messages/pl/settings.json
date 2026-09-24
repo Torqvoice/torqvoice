@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Wszystkie inspekcje pojazdów i ich wyniki",
     "contentTechnicians": "Technicy",
     "contentTechniciansDescription": "Wszystkie profile techników. Powiązane rekordy zostaną odłączone.",
-    "contentInspectionTemplates": "Szablony inspekcji",
-    "contentInspectionTemplatesDescription": "Wszystkie szablony inspekcji i ich sekcje. Najpierw usuń inspekcje.",
+    "contentInspectionTemplates": "Listy kontrolne przeglądów",
+    "contentInspectionTemplatesDescription": "Wszystkie listy kontrolne przeglądów i ich sekcje. Najpierw usuń przeglądy.",
     "contentNotifications": "Powiadomienia",
     "contentNotificationsDescription": "Wszystkie powiadomienia systemowe",
     "contentSmsMessages": "Wiadomości SMS",
@@ -656,7 +656,13 @@
       "bank_account": "Konto bankowe",
       "footer": "Stopka",
       "general": "Ogólne",
-      "telegram_qr": "QR Telegrama"
+      "telegram_qr": "QR Telegrama",
+      "result": "Wynik",
+      "test_details": "Dane badania",
+      "defects": "Usterki",
+      "results_table": "Wszystkie wyniki",
+      "inspection_photos": "Zdjęcia",
+      "signature": "Podpis"
     },
     "fields": {
       "customer_name": "Nazwa klienta",
@@ -688,7 +694,25 @@
       "invoice_number": "Nr faktury",
       "customer_number": "Nr klienta",
       "date": "Data",
-      "portal_link": "Link do portalu"
+      "portal_link": "Link do portalu",
+      "test_date": "Data badania",
+      "test_location": "Miejsce badania",
+      "inspector": "Diagnosta",
+      "certificate_number": "Numer certyfikatu",
+      "vehicle_category": "Kategoria pojazdu",
+      "odometer": "Przebieg",
+      "next_test_due": "Następne badanie",
+      "defect_notes": "Uwagi",
+      "defect_photos": "Zdjęcia",
+      "passed_checks": "Pozycje zaliczone",
+      "not_applicable_checks": "Pozycje nie dotyczy",
+      "check_notes": "Kolumna uwag",
+      "result_detail": "Objaśnienie",
+      "result_summary": "Liczba według oceny",
+      "combined_table": "Jedna tabela dla wszystkich sekcji",
+      "inspector_line": "Linia diagnosty",
+      "inspector_name": "Drukuj nazwisko diagnosty",
+      "date_line": "Linia daty"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Szczegółowy",
         "description": "Tytuł na górze, pojazd osobno, obie tabele i wszystkie bloki opcjonalne"
+      },
+      "certificate-regulator": {
+        "name": "Urzędowy",
+        "description": "Prosty, bez pasa, szeryfowy: każda pozycja z oceną i uwagą, zdjęcia, miejsce na podpis"
+      },
+      "certificate-standard": {
+        "name": "Standardowy",
+        "description": "Werdykt pod tytułem, pojazd i badanie obok siebie, każda usterka z uwagą i zdjęciem, potem każda pozycja według sekcji"
+      },
+      "certificate-customer": {
+        "name": "Raport dla klienta",
+        "description": "Arkusz z pasem, werdykt duży i wyśrodkowany, usterki ze zdjęciami, zdjęcia ogólne i jedna krótka tabela wszystkich pozycji"
+      },
+      "certificate-compact": {
+        "name": "Kompaktowy",
+        "description": "Jedna strona dla flot: mała czcionka, werdykt obok tytułu, wszystkie wyniki bez uwag, zdjęcia, miejsce na podpis"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Szablony",
     "invoiceDescription": "Dostosuj wygląd faktur i wycen PDF.",
-    "inspectionsDescription": "Zarządzaj listami kontrolnymi inspekcji i szablonami wielopunktowymi.",
+    "inspectionsDescription": "Listy kontrolne, które Twoi mechanicy przechodzą podczas przeglądu.",
     "smsDescription": "Dostosuj wiadomości SMS wysyłane do klientów.",
     "tabs": {
       "invoice": "Faktura",
       "quotation": "Wycena",
-      "inspections": "Inspekcje",
+      "inspections": "Listy kontrolne\nprzeglądów",
       "sms": "SMS",
-      "layout": "Układ"
+      "layout": "Układ",
+      "certificates": "Certyfikaty\nprzeglądów"
     },
     "presets": "Gotowe szablony",
     "primaryColor": "Kolor główny",
@@ -849,7 +890,8 @@
     "goToLayout": "Układ i sekcje",
     "openDesigner": "Otwórz kreator",
     "designerIntro": "Wybierz punkt wyjścia, a potem otwórz kreator, aby zmienić wszystko.",
-    "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze."
+    "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze.",
+    "certificatesDescription": "Zaprojektuj certyfikat, który drukuje i udostępnia zakończony przegląd."
   },
   "payment": {
     "readMore": "Czytaj więcej",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Technicy",
     "optTechniciansDesc": "Profile techników i przypisania do tablicy pracy",
     "optInspections": "Inspekcje",
-    "optInspectionsDesc": "Szablony inspekcji, inspekcje i wyniki",
+    "optInspectionsDesc": "Listy kontrolne, przeglądy i wyniki",
     "optAuditLogs": "Dzienniki audytu",
     "optAuditLogsDesc": "Historia aktywności i zmian",
     "optSmsMessages": "Wiadomości",
@@ -2060,7 +2102,19 @@
       "slogan": "Jakość, której możesz zaufać",
       "paymentTerms": "Płatne w ciągu 14 dni",
       "footerNote": "Dziękujemy za współpracę",
-      "value": "Przykład"
+      "value": "Przykład",
+      "testLocation": "ul. Portowa 12, Springfield",
+      "certificateNotes": "Opony są blisko dopuszczalnej granicy; przed następnym badaniem prawdopodobnie do wymiany.",
+      "checkBrakeHoses": "Przewody hamulcowe",
+      "checkBrakeHosesNote": "Lekkie przetarcie lewego przedniego przewodu, warstwa zewnętrzna nienaruszona.",
+      "sectionBrakes": "Układ hamulcowy",
+      "checkBrakePedal": "Pedał hamulca roboczego",
+      "checkBrakeFluid": "Płyn hamulcowy",
+      "sectionLighting": "Oświetlenie",
+      "checkHeadlamps": "Stan reflektorów",
+      "checkFogLamp": "Tylne światło przeciwmgłowe",
+      "photoFront": "Przód",
+      "photoOdometer": "Licznik"
     },
     "logoUpload": "Prześlij logo",
     "logoReplace": "Zmień logo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Ustaw jako domyślny",
     "defaultSet": "„{name}” jest teraz w użyciu",
     "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu",
-    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść."
+    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść.",
+    "certificate": "Certyfikat przeglądu",
+    "resultWidthHint": "Puste wypełnia wiersz. Wpisz punkty, by zwęzić pasek; ułoży się po stronie wskazanej przez wyrównanie, a w kolumnie zajmie jej szerokość."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

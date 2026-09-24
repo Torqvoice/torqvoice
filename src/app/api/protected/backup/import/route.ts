@@ -1259,6 +1259,8 @@ export async function POST(request: NextRequest) {
               // Import batches are not in a backup, so the row cannot point at
               // one; the same as the relation's own answer when a batch is deleted.
               importBatchId: null,
+              // The frozen certificate design, when the snapshot came back too.
+              designSnapshotId: keptReference(insp.designSnapshotId, designSnapshotIds),
               createdAt: toSafeDate(insp.createdAt as string),
               updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,

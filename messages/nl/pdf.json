@@ -183,7 +183,10 @@
     "attachments": "Foto's en documenten",
     "attachedDocuments": "Bijgevoegde documenten: {names}",
     "euNotApplicable": "Niet van toepassing",
-    "basicNotApplicable": "Niet van toepassing"
+    "basicNotApplicable": "Niet van toepassing",
+    "allResults": "Alle resultaten",
+    "signature": "Handtekening",
+    "sectionColumn": "Sectie"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEGESCHIEDENIS",

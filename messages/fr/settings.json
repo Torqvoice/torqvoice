@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Toutes les inspections de véhicules et leurs résultats",
     "contentTechnicians": "Techniciens",
     "contentTechniciansDescription": "Tous les profils de techniciens. Les enregistrements liés seront dissociés.",
-    "contentInspectionTemplates": "Modèles d'inspection",
-    "contentInspectionTemplatesDescription": "Tous les modèles d'inspection et leurs sections. Supprimez d'abord les inspections.",
+    "contentInspectionTemplates": "Listes de contrôle d'inspection",
+    "contentInspectionTemplatesDescription": "Toutes les listes de contrôle d'inspection et leurs sections. Supprimez d'abord les inspections.",
     "contentNotifications": "Notifications",
     "contentNotificationsDescription": "Toutes les notifications système",
     "contentSmsMessages": "Messages SMS",
@@ -656,7 +656,13 @@
       "bank_account": "Compte bancaire",
       "footer": "Pied de page",
       "general": "Général",
-      "telegram_qr": "QR Telegram"
+      "telegram_qr": "QR Telegram",
+      "result": "Résultat",
+      "test_details": "Détails du contrôle",
+      "defects": "Défauts",
+      "results_table": "Tous les résultats",
+      "inspection_photos": "Photos",
+      "signature": "Signature"
     },
     "fields": {
       "customer_name": "Nom du client",
@@ -688,7 +694,25 @@
       "invoice_number": "N° de facture",
       "customer_number": "N° de client",
       "date": "Date",
-      "portal_link": "Lien du portail"
+      "portal_link": "Lien du portail",
+      "test_date": "Date du contrôle",
+      "test_location": "Lieu du contrôle",
+      "inspector": "Contrôleur",
+      "certificate_number": "Numéro de certificat",
+      "vehicle_category": "Catégorie du véhicule",
+      "odometer": "Kilométrage",
+      "next_test_due": "Prochain contrôle",
+      "defect_notes": "Remarques",
+      "defect_photos": "Photos",
+      "passed_checks": "Contrôles réussis",
+      "not_applicable_checks": "Contrôles sans objet",
+      "check_notes": "Colonne remarques",
+      "result_detail": "Explication",
+      "result_summary": "Nombre par note",
+      "combined_table": "Un seul tableau pour toutes les sections",
+      "inspector_line": "Ligne du contrôleur",
+      "inspector_name": "Imprimer le nom du contrôleur",
+      "date_line": "Ligne de date"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Détaillée",
         "description": "Titre en haut, véhicule seul, les deux tableaux et tous les blocs optionnels"
+      },
+      "certificate-regulator": {
+        "name": "Réglementaire",
+        "description": "Sobre et sans bandeau, en serif : chaque contrôle avec sa note et sa remarque, les photos, une ligne de signature"
+      },
+      "certificate-standard": {
+        "name": "Standard",
+        "description": "Le verdict sous le titre, le véhicule et le contrôle côte à côte, chaque défaut avec sa note et sa photo, puis chaque contrôle par section"
+      },
+      "certificate-customer": {
+        "name": "Rapport client",
+        "description": "Une feuille à bandeau, le verdict grand et centré, les défauts en photos, les photos du tour du véhicule et un tableau court de tous les contrôles"
+      },
+      "certificate-compact": {
+        "name": "Compact",
+        "description": "Une page pour une flotte : petits caractères, le verdict à côté du titre, tous les résultats sans remarques, les photos, une ligne de signature"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Modèles",
     "invoiceDescription": "Personnalisez l'apparence de vos factures et devis PDF.",
-    "inspectionsDescription": "Gerez les listes de contrôle d'inspection et les modèles multi-points.",
+    "inspectionsDescription": "Les listes de contrôle que vos techniciens suivent pendant une inspection.",
     "smsDescription": "Personnalisez les messages SMS envoyés aux clients.",
     "tabs": {
       "invoice": "Facture",
       "quotation": "Devis",
-      "inspections": "Inspections",
+      "inspections": "Listes\nd'inspection",
       "sms": "SMS",
-      "layout": "Mise en page"
+      "layout": "Mise en page",
+      "certificates": "Certificats\nd'inspection"
     },
     "presets": "Presets de modèle",
     "primaryColor": "Couleur primaire",
@@ -849,7 +890,8 @@
     "goToLayout": "Disposition et sections",
     "openDesigner": "Ouvrir le concepteur",
     "designerIntro": "Choisissez un point de départ, puis ouvrez le concepteur pour tout modifier.",
-    "designerHint": "Les couleurs, les polices, les espacements et toutes les sections sont dans le concepteur."
+    "designerHint": "Les couleurs, les polices, les espacements et toutes les sections sont dans le concepteur.",
+    "certificatesDescription": "Concevez le certificat qu'une inspection terminée imprime et partage."
   },
   "payment": {
     "readMore": "En savoir plus",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Techniciens",
     "optTechniciansDesc": "Profils des techniciens et affectations au tableau de travail",
     "optInspections": "Inspections",
-    "optInspectionsDesc": "Modèles d'inspection, inspections et résultats",
+    "optInspectionsDesc": "Listes de contrôle, inspections et résultats",
     "optAuditLogs": "Journaux d'audit",
     "optAuditLogsDesc": "Historique des activités et des modifications",
     "optSmsMessages": "Messages",
@@ -2060,7 +2102,19 @@
       "slogan": "Un service de qualité en toute confiance",
       "paymentTerms": "Payable sous 14 jours",
       "footerNote": "Merci de votre confiance",
-      "value": "Exemple"
+      "value": "Exemple",
+      "testLocation": "12 rue du Port, Springfield",
+      "certificateNotes": "Les pneus approchent de la limite légale ; prévoir leur remplacement avant le prochain contrôle.",
+      "checkBrakeHoses": "Flexibles de frein",
+      "checkBrakeHosesNote": "Léger frottement sur le flexible avant gauche, couche extérieure intacte.",
+      "sectionBrakes": "Équipement de freinage",
+      "checkBrakePedal": "Pédale de frein de service",
+      "checkBrakeFluid": "Liquide de frein",
+      "sectionLighting": "Équipement d'éclairage",
+      "checkHeadlamps": "État des projecteurs",
+      "checkFogLamp": "Feu de brouillard arrière",
+      "photoFront": "Avant",
+      "photoOdometer": "Compteur"
     },
     "logoUpload": "Importer un logo",
     "logoReplace": "Remplacer le logo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Définir par défaut",
     "defaultSet": "« {name} » est maintenant utilisé",
     "couldNotSetDefault": "Impossible de définir le design par défaut",
-    "fieldFixedSlot": "S'imprime toujours au même endroit et ne peut pas être déplacé."
+    "fieldFixedSlot": "S'imprime toujours au même endroit et ne peut pas être déplacé.",
+    "certificate": "Certificat d'inspection",
+    "resultWidthHint": "Vide occupe toute la ligne. Une valeur rétrécit le bandeau, placé du côté choisi par l'alignement ; dans une colonne il prend la largeur de la colonne."
   },
   "preview": {
     "title": "Révision des freins et vidange",

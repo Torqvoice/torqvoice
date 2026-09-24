@@ -21,6 +21,7 @@ import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
 
 export async function GET(
   _request: Request,
@@ -41,6 +42,40 @@ export async function GET(
       pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default
     } catch {
       pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default
+    }
+
+    // The share link names the inspection; the designed certificate, when the
+    // workshop has one, is then the same document the workshop downloads.
+    const shared = await db.inspection.findFirst({
+      where: { publicToken: token, organizationId: orgId },
+      select: { id: true },
+    })
+    if (!shared) {
+      return NextResponse.json({ error: 'Inspection not found' }, { status: 404 })
+    }
+    const sharedSettings = await db.appSetting.findMany({
+      where: { organizationId: orgId, key: { in: ['portal.enabled'] } },
+    })
+    const sharedOrg = await db.organization.findUnique({
+      where: { id: orgId },
+      select: { portalSlug: true },
+    })
+    const designed = await buildCertificatePdfBuffer({
+      inspectionId: shared.id,
+      organizationId: orgId,
+      locale,
+      audience: 'customer',
+      portalUrl: sharedSettings.some((s) => s.key === 'portal.enabled' && s.value === 'true')
+        ? `${getAppBaseUrl()}/portal/${sharedOrg?.portalSlug || orgId}`
+        : undefined,
+    })
+    if (designed) {
+      return new NextResponse(designed.body, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${designed.fileName}"`,
+        },
+      })
     }
 
     const inspection = await db.inspection.findFirst({

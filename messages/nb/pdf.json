@@ -183,7 +183,10 @@
     "attachments": "Bilder og dokumenter",
     "attachedDocuments": "Vedlagte dokumenter: {names}",
     "euNotApplicable": "Ikke aktuelt",
-    "basicNotApplicable": "Ikke aktuelt"
+    "basicNotApplicable": "Ikke aktuelt",
+    "allResults": "Alle resultater",
+    "signature": "Signatur",
+    "sectionColumn": "Seksjon"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIKK",

@@ -18,11 +18,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
+import {
+  buildLayoutFromPreset,
+  layoutPresets,
+  presetsFor,
+} from '@/features/settings/Schema/layoutPresets'
+import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
 import {
   COLUMN_ELIGIBLE_SECTIONS,
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
+  getDefaultLayout,
   materializeHiddenSection,
   mergeWithDefaults,
   type InvoiceDocumentStyle,
@@ -31,6 +37,7 @@ import {
   type InvoiceSectionStyle,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import {
+  saveCertificateLayoutConfig,
   saveInvoiceLayoutConfig,
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
@@ -68,8 +75,10 @@ export function InvoiceDesigner({
   initialView,
   invoiceLayout,
   quoteLayout,
+  certificateLayout,
   invoiceTemplate,
   quoteTemplate,
+  certificateTemplate,
   initialSavedDesigns = [],
   initialPresetId,
   initialDesignId,
@@ -83,8 +92,11 @@ export function InvoiceDesigner({
   initialView: 'gallery' | 'designer'
   invoiceLayout?: InvoiceLayoutConfig
   quoteLayout?: InvoiceLayoutConfig
+  certificateLayout?: InvoiceLayoutConfig
   invoiceTemplate: DesignerTemplate
   quoteTemplate: DesignerTemplate
+  /** The certificate's look; it falls back to the invoice's when never set. */
+  certificateTemplate?: DesignerTemplate
   initialSavedDesigns?: SavedDesign[]
   /** A preset to arrive with already applied, from settings' starting points. */
   initialPresetId?: string
@@ -113,24 +125,31 @@ export function InvoiceDesigner({
     : undefined
   const initialPreset =
     !initialDesign && initialPresetId
-      ? layoutPresets.find((p) => p.id === initialPresetId)
+      ? presetsFor(initialDocumentType).find((p) => p.id === initialPresetId)
       : undefined
   const arrivedWith = initialDesign ?? initialPreset
   const [view, setView] = useState<'gallery' | 'designer'>(arrivedWith ? 'designer' : initialView)
   const [docType, setDocType] = useState<DocumentType>(initialDocumentType)
   // Each document places its own entity's fields: quotes carry quote fields.
-  const customFields = docType === 'quote' ? quoteCustomFields : serviceCustomFields
+  // A certificate has no workshop-defined fields of its own.
+  const customFields =
+    docType === 'quote' ? quoteCustomFields : docType === 'certificate' ? [] : serviceCustomFields
   const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>(() => {
     const base = {
       invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
       quote: quoteLayout ?? getDefaultInvoiceLayout(),
+      certificate: certificateLayout ?? getDefaultLayout('certificate'),
     }
     if (initialDesign) base[initialDocumentType] = mergeWithDefaults(initialDesign.layout)
     else if (initialPreset) base[initialDocumentType] = buildLayoutFromPreset(initialPreset)
     return base
   })
   const [templates, setTemplates] = useState<Record<DocumentType, DesignerTemplate>>(() => {
-    const base = { invoice: invoiceTemplate, quote: quoteTemplate }
+    const base = {
+      invoice: invoiceTemplate,
+      quote: quoteTemplate,
+      certificate: certificateTemplate ?? invoiceTemplate,
+    }
     if (initialDesign) {
       base[initialDocumentType] = { ...initialDesign.template }
     } else if (initialPreset) {
@@ -150,6 +169,7 @@ export function InvoiceDesigner({
   const [dirty, setDirty] = useState<Record<DocumentType, boolean>>({
     invoice: !!arrivedWith && initialDocumentType === 'invoice',
     quote: !!arrivedWith && initialDocumentType === 'quote',
+    certificate: !!arrivedWith && initialDocumentType === 'certificate',
   })
   // The preset or design in the URL is a one-shot instruction, consumed
   // above. Left in the address bar it would re-apply itself on every refresh,
@@ -169,7 +189,7 @@ export function InvoiceDesigner({
   // saved layout, which reads as the design changing by itself. The browser
   // asks first, so losing the work is a choice rather than a surprise.
   useEffect(() => {
-    if (!dirty.invoice && !dirty.quote) return
+    if (!dirty.invoice && !dirty.quote && !dirty.certificate) return
     const warn = (event: BeforeUnloadEvent) => {
       event.preventDefault()
       // Chrome still wants the legacy channel to show the dialog.
@@ -184,12 +204,21 @@ export function InvoiceDesigner({
     const base = {
       invoice: initialActiveDesigns?.invoice ?? '',
       quote: initialActiveDesigns?.quote ?? '',
+      certificate: initialActiveDesigns?.certificate ?? '',
     }
     if (initialDesign) base[initialDocumentType] = `design:${initialDesign.id}`
     else if (initialPreset) base[initialDocumentType] = `preset:${initialPreset.id}`
     return base
   })
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(initialSavedDesigns)
+  // An invoice design is a starting point for a quote and the other way
+  // round; a certificate's sections are its own, so its designs and the
+  // others' never appear on each other's canvas.
+  const galleryDesigns = savedDesigns.filter((design) =>
+    docType === 'certificate'
+      ? design.documentType === 'certificate'
+      : design.documentType !== 'certificate'
+  )
   /** Open state and draft name for the save-design dialog. */
   const [namingDesign, setNamingDesign] = useState(false)
   const [designName, setDesignName] = useState(initialDesign?.name ?? '')
@@ -243,6 +272,7 @@ export function InvoiceDesigner({
    */
   const printLabels = useMemo<PrintLabels>(() => {
     const pdf = messages.pdf ?? {}
+    if (docType === 'certificate') return certificateLabels(pdf)
     return withOrgNumberLabel(
       {
         ...(pdf.invoice ?? {}),
@@ -397,6 +427,7 @@ export function InvoiceDesigner({
       setActiveDesigns((prev) => ({
         invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
         quote: prev.quote === `design:${design.id}` ? '' : prev.quote,
+        certificate: prev.certificate === `design:${design.id}` ? '' : prev.certificate,
       }))
       if (designName.trim().toLowerCase() === design.name.trim().toLowerCase()) {
         setDesignName('')
@@ -624,7 +655,7 @@ export function InvoiceDesigner({
 
     setSaving(true)
     try {
-      const prefix = docType === 'invoice' ? 'invoice' : 'quote'
+      const prefix = docType
 
       // The stamp that graduates this organization from the classic
       // pre-designer rendering to whatever this designer shows. The row needs
@@ -655,7 +686,11 @@ export function InvoiceDesigner({
       }
 
       await Promise.all([
-        docType === 'invoice' ? saveInvoiceLayoutConfig(stamped) : saveQuoteLayoutConfig(stamped),
+        docType === 'invoice'
+          ? saveInvoiceLayoutConfig(stamped)
+          : docType === 'quote'
+            ? saveQuoteLayoutConfig(stamped)
+            : saveCertificateLayoutConfig(stamped),
         setSettings({
           [`${prefix}.primaryColor`]: template.primaryColor,
           [`${prefix}.backgroundColor`]: template.backgroundColor,
@@ -719,11 +754,11 @@ export function InvoiceDesigner({
           <h1 className="mb-1.5 mt-2 text-[30px] tracking-tight">{t('galleryTitle')}</h1>
           <p className="mb-8 text-[15px] text-[#5b6068]">{t('galleryHint')}</p>
 
-          {savedDesigns.length > 0 && (
+          {galleryDesigns.length > 0 && (
             <>
               <h2 className="mb-3 text-[15px] font-semibold">{t('yourDesigns')}</h2>
               <div className="mb-8 grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
-                {savedDesigns.map((design) => {
+                {galleryDesigns.map((design) => {
                   const active = activeDesigns[docType] === `design:${design.id}`
                   return (
                     <div
@@ -765,7 +800,7 @@ export function InvoiceDesigner({
           )}
 
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
-            {layoutPresets.map((preset) => {
+            {presetsFor(docType).map((preset) => {
               const active = activeDesigns[docType] === `preset:${preset.id}`
               return (
                 <button
@@ -812,7 +847,7 @@ export function InvoiceDesigner({
         </button>
 
         <div className="flex gap-0.5 rounded-lg bg-[#f0f1f4] p-[3px]">
-          {(['invoice', 'quote'] as DocumentType[]).map((type) => (
+          {(['invoice', 'quote', 'certificate'] as DocumentType[]).map((type) => (
             <button
               key={type}
               type="button"
@@ -929,7 +964,7 @@ export function InvoiceDesigner({
             // the generic default just moved things nobody had touched.
             const active = activeDesigns[docType] ?? ''
             const basisPreset = active.startsWith('preset:')
-              ? layoutPresets.find((p) => p.id === active.slice('preset:'.length))
+              ? presetsFor(docType).find((p) => p.id === active.slice('preset:'.length))
               : undefined
             const basisDesign = active.startsWith('design:')
               ? savedDesigns.find((d) => d.id === active.slice('design:'.length))

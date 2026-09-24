@@ -6,6 +6,7 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { readWorkshopTax } from '@/features/settings/Lib/workshopTax'
 import {
+  getCertificateLayoutConfig,
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
@@ -42,6 +43,8 @@ export default async function InvoiceDesignerPage({
     invoiceDesigns,
     quoteDesigns,
     telegramBotUsername,
+    certificateLayout,
+    certificateDesigns,
   ] = await Promise.all([
     getSettings(),
     getInvoiceLayoutConfig(),
@@ -63,6 +66,8 @@ export default async function InvoiceDesignerPage({
     listDocumentDesigns('invoice'),
     listDocumentDesigns('quote'),
     getOrgTelegramBotUsername(data.organizationId),
+    getCertificateLayoutConfig(),
+    listDocumentDesigns('certificate'),
   ])
 
   // Somebody is looking at the designer, so the workshop knows it exists. Only
@@ -78,10 +83,13 @@ export default async function InvoiceDesignerPage({
   const savedDesigns: SavedDesign[] = [
     ...(invoiceDesigns.success && invoiceDesigns.data ? invoiceDesigns.data : []),
     ...(quoteDesigns.success && quoteDesigns.data ? quoteDesigns.data : []),
+    // A certificate's sections are its own, so its designs stay a family
+    // apart: the gallery shows them only on the certificate canvas.
+    ...(certificateDesigns.success && certificateDesigns.data ? certificateDesigns.data : []),
   ]
   const { doc, view, preset, design } = await searchParams
 
-  const templateFor = (prefix: 'invoice' | 'quote') => ({
+  const templateFor = (prefix: 'invoice' | 'quote' | 'certificate') => ({
     primaryColor:
       settings[`${prefix}.primaryColor`] ||
       settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] ||
@@ -103,18 +111,23 @@ export default async function InvoiceDesignerPage({
     <>
       {announcementLive && <DismissOnArrival id={INVOICE_DESIGNER_ANNOUNCEMENT} />}
       <InvoiceDesigner
-        initialDocumentType={doc === 'quote' ? 'quote' : 'invoice'}
+        initialDocumentType={
+          doc === 'quote' ? 'quote' : doc === 'certificate' ? 'certificate' : 'invoice'
+        }
         initialView={view === 'designer' ? 'designer' : 'gallery'}
         initialPresetId={preset}
         initialDesignId={design}
         initialActiveDesigns={{
           invoice: settings['invoice.activeDesign'] || '',
           quote: settings['quote.activeDesign'] || '',
+          certificate: settings['certificate.activeDesign'] || '',
         }}
         invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
         quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
+        certificateLayout={certificateLayout.success ? certificateLayout.data : undefined}
         invoiceTemplate={templateFor('invoice')}
         quoteTemplate={templateFor('quote')}
+        certificateTemplate={templateFor('certificate')}
         initialSavedDesigns={savedDesigns}
         telegramBotLink={telegramBotUsername ? botLinkOf(telegramBotUsername) : undefined}
         workshop={{

@@ -183,7 +183,10 @@
     "attachments": "Foto e documenti",
     "attachedDocuments": "Documenti allegati: {names}",
     "euNotApplicable": "Non applicabile",
-    "basicNotApplicable": "Non applicabile"
+    "basicNotApplicable": "Non applicabile",
+    "allResults": "Tutti gli esiti",
+    "signature": "Firma",
+    "sectionColumn": "Sezione"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "STORICO ASSISTENZA",

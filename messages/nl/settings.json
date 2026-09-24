@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Alle voertuiginspecties en hun resultaten",
     "contentTechnicians": "Technici",
     "contentTechniciansDescription": "Alle techniciprofielen. Gekoppelde records worden ontkoppeld.",
-    "contentInspectionTemplates": "Inspectiesjablonen",
-    "contentInspectionTemplatesDescription": "Alle inspectiesjablonen en secties. Verwijder eerst de inspecties.",
+    "contentInspectionTemplates": "Inspectiechecklists",
+    "contentInspectionTemplatesDescription": "Alle inspectiechecklists en hun secties. Verwijder eerst de inspecties.",
     "contentNotifications": "Meldingen",
     "contentNotificationsDescription": "Alle systeemmeldingen",
     "contentSmsMessages": "SMS-berichten",
@@ -656,7 +656,13 @@
       "bank_account": "Bankrekening",
       "footer": "Voettekst",
       "general": "Algemeen",
-      "telegram_qr": "Telegram-QR"
+      "telegram_qr": "Telegram-QR",
+      "result": "Resultaat",
+      "test_details": "Keuringsgegevens",
+      "defects": "Gebreken",
+      "results_table": "Alle resultaten",
+      "inspection_photos": "Foto's",
+      "signature": "Handtekening"
     },
     "fields": {
       "customer_name": "Klantnaam",
@@ -688,7 +694,25 @@
       "invoice_number": "Factuurnr.",
       "customer_number": "Klantnr.",
       "date": "Datum",
-      "portal_link": "Portaallink"
+      "portal_link": "Portaallink",
+      "test_date": "Keuringsdatum",
+      "test_location": "Keuringslocatie",
+      "inspector": "Keurmeester",
+      "certificate_number": "Certificaatnummer",
+      "vehicle_category": "Voertuigcategorie",
+      "odometer": "Kilometerstand",
+      "next_test_due": "Volgende keuring",
+      "defect_notes": "Opmerkingen",
+      "defect_photos": "Foto's",
+      "passed_checks": "Geslaagde controles",
+      "not_applicable_checks": "Niet-toepasselijke controles",
+      "check_notes": "Kolom opmerkingen",
+      "result_detail": "Toelichting",
+      "result_summary": "Aantal per beoordeling",
+      "combined_table": "Eén tabel voor alle secties",
+      "inspector_line": "Regel keurmeester",
+      "inspector_name": "Naam van de keurmeester afdrukken",
+      "date_line": "Datumregel"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Uitgebreid",
         "description": "Titel bovenaan, voertuig apart, beide tabellen en alle optionele blokken"
+      },
+      "certificate-regulator": {
+        "name": "Wettelijk",
+        "description": "Sober en zonder band, in serif: elke controle met beoordeling en opmerking, de foto's, een handtekeningregel"
+      },
+      "certificate-standard": {
+        "name": "Standaard",
+        "description": "Het oordeel onder de titel, auto en keuring naast elkaar, elk gebrek met opmerking en foto, daarna elke controle per sectie"
+      },
+      "certificate-customer": {
+        "name": "Klantrapport",
+        "description": "Een blad met band, het oordeel groot en gecentreerd, gebreken met foto's, de rondgangfoto's en één korte tabel van alle controles"
+      },
+      "certificate-compact": {
+        "name": "Compact",
+        "description": "Eén pagina voor wagenparken: kleine letters, het oordeel naast de titel, alle resultaten zonder opmerkingen, de foto's, een handtekeningregel"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Sjablonen",
     "invoiceDescription": "Pas het uiterlijk van uw PDF-facturen en offertes aan.",
-    "inspectionsDescription": "Beheer inspectiechecklists en meerpuntssjablonen.",
+    "inspectionsDescription": "De checklists die je monteurs tijdens een inspectie doorlopen.",
     "smsDescription": "Pas de SMS-berichten aan die naar klanten worden gestuurd.",
     "tabs": {
       "invoice": "Factuur",
       "quotation": "Offerte",
-      "inspections": "Inspecties",
+      "inspections": "Inspectie-\nchecklists",
       "sms": "SMS",
-      "layout": "Indeling"
+      "layout": "Indeling",
+      "certificates": "Inspectie-\ncertificaten"
     },
     "presets": "Sjabloonpresets",
     "primaryColor": "Primaire kleur",
@@ -849,7 +890,8 @@
     "goToLayout": "Indeling en secties",
     "openDesigner": "Ontwerper openen",
     "designerIntro": "Kies een startpunt en open de ontwerper om alles aan te passen.",
-    "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper."
+    "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper.",
+    "certificatesDescription": "Ontwerp het certificaat dat een afgeronde inspectie afdrukt en deelt."
   },
   "payment": {
     "readMore": "Lees meer",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Technici",
     "optTechniciansDesc": "Techniciprofielen en werkbordtoewijzingen",
     "optInspections": "Inspecties",
-    "optInspectionsDesc": "Inspectiesjablonen, inspecties en resultaten",
+    "optInspectionsDesc": "Inspectiechecklists, inspecties en resultaten",
     "optAuditLogs": "Auditlogboeken",
     "optAuditLogsDesc": "Activiteiten- en wijzigingsgeschiedenis",
     "optSmsMessages": "Berichten",
@@ -2060,7 +2102,19 @@
       "slogan": "Kwaliteit waar u op kunt bouwen",
       "paymentTerms": "Betaling binnen 14 dagen",
       "footerNote": "Bedankt voor uw opdracht",
-      "value": "Voorbeeld"
+      "value": "Voorbeeld",
+      "testLocation": "Havenweg 12, Springfield",
+      "certificateNotes": "De banden zitten dicht bij de wettelijke limiet; reken op vervanging voor de volgende keuring.",
+      "checkBrakeHoses": "Remslangen",
+      "checkBrakeHosesNote": "Lichte schuurplek op de linker voorslang, buitenlaag nog intact.",
+      "sectionBrakes": "Reminrichting",
+      "checkBrakePedal": "Bedrijfsrempedaal",
+      "checkBrakeFluid": "Remvloeistof",
+      "sectionLighting": "Verlichting",
+      "checkHeadlamps": "Staat van de koplampen",
+      "checkFogLamp": "Mistachterlicht",
+      "photoFront": "Voorkant",
+      "photoOdometer": "Kilometerteller"
     },
     "logoUpload": "Logo uploaden",
     "logoReplace": "Logo vervangen",
@@ -2096,7 +2150,9 @@
     "setDefault": "Als standaard instellen",
     "defaultSet": "\"{name}\" is nu in gebruik",
     "couldNotSetDefault": "Kon het standaardontwerp niet instellen",
-    "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst."
+    "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst.",
+    "certificate": "Inspectiecertificaat",
+    "resultWidthHint": "Leeg vult de rij. Met een waarde wordt de band smaller en komt aan de kant die de uitlijning kiest; in een kolom neemt hij de kolombreedte."
   },
   "preview": {
     "title": "Remservice en oliewissel",

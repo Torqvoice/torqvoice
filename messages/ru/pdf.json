@@ -183,7 +183,10 @@
     "attachments": "Фото и документы",
     "attachedDocuments": "Приложенные документы: {names}",
     "euNotApplicable": "Не применимо",
-    "basicNotApplicable": "Не применимо"
+    "basicNotApplicable": "Не применимо",
+    "allResults": "Все результаты",
+    "signature": "Подпись",
+    "sectionColumn": "Раздел"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "ИСТОРИЯ ОБСЛУЖИВАНИЯ",

@@ -49,6 +49,7 @@ import {
   createQuoteFromInspection,
 } from '../Actions/inspectionActions'
 import { InspectionShareDialog } from './InspectionShareDialog'
+import { InspectionNotesCard } from './InspectionNotesCard'
 import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { WorkOrderFromInspectionDialog } from './WorkOrderFromInspectionDialog'
 import { cn } from '@/lib/utils'
@@ -809,6 +810,12 @@ export function InspectionPageClient({
               )}
             </div>
           </section>
+
+          <InspectionNotesCard
+            inspectionId={inspection.id}
+            notes={inspection.notes}
+            disabled={isCompleted}
+          />
 
           <nav aria-labelledby="inspection-sections" className="bg-card rounded-lg border p-4">
             <h2 id="inspection-sections" className="text-sm font-semibold">

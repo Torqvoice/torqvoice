@@ -556,25 +556,26 @@ export function InspectionItemRow({
       </div>
 
       {/* {t("recordedValue")} */}
+      {/* A reading is a number: a box the size of one, on one line with its
+          label and the limit it is graded against, not a form field. */}
       {inputType === 'measurement' && (
-        <div className="mt-3 flex flex-wrap items-end gap-2">
-          <div className="space-y-1">
-            <label htmlFor={`${fieldId}-value`} className="text-muted-foreground text-xs">
-              {item.unit ? t('readingUnit', { unit: item.unit }) : t('reading')}
-            </label>
-            <Input
-              id={`${fieldId}-value`}
-              inputMode="decimal"
-              value={measured}
-              onChange={(e) => setMeasured(e.target.value)}
-              onBlur={handleMeasurementBlur}
-              disabled={isCompleted}
-              aria-describedby={describedBy || undefined}
-              className="h-11 w-32"
-            />
-          </div>
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <label htmlFor={`${fieldId}-value`} className="text-muted-foreground text-xs">
+            {item.unit ? t('readingUnit', { unit: item.unit }) : t('reading')}
+          </label>
+          <Input
+            id={`${fieldId}-value`}
+            inputMode="decimal"
+            value={measured}
+            onChange={(e) => setMeasured(e.target.value)}
+            onBlur={handleMeasurementBlur}
+            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+            disabled={isCompleted}
+            aria-describedby={describedBy || undefined}
+            className="h-8 w-24 px-2 text-sm tabular-nums"
+          />
           {range && (
-            <p className="text-muted-foreground pb-3 text-xs">
+            <p className="text-muted-foreground text-xs">
               <span className="font-medium">{t('limit', { range })}</span>
             </p>
           )}
@@ -582,7 +583,7 @@ export function InspectionItemRow({
       )}
 
       {inputType === 'text' && (
-        <div className="mt-3 space-y-1">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
           <label htmlFor={`${fieldId}-text`} className="text-muted-foreground text-xs">
             {t('recordedValue')}
           </label>
@@ -593,14 +594,15 @@ export function InspectionItemRow({
             onBlur={() =>
               !isCompleted && textValue !== (item.textValue ?? '') && save({ textValue })
             }
+            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
             disabled={isCompleted}
-            className="h-11"
+            className="h-8 w-full px-2 text-sm sm:w-72"
           />
         </div>
       )}
 
       {inputType === 'choice' && (item.choices?.length ?? 0) > 0 && (
-        <div className="mt-3 space-y-1">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
           <label htmlFor={`${fieldId}-choice`} className="text-muted-foreground text-xs">
             {t('answer')}
           </label>
@@ -612,7 +614,7 @@ export function InspectionItemRow({
               save({ textValue: v })
             }}
           >
-            <SelectTrigger id={`${fieldId}-choice`} className="h-11 w-full sm:w-64">
+            <SelectTrigger id={`${fieldId}-choice`} className="h-8 w-full text-sm sm:w-56">
               <SelectValue placeholder={t('selectAnswer')} />
             </SelectTrigger>
             <SelectContent>

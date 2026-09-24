@@ -4,6 +4,8 @@ import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { createQuoteRecord } from '@/features/quotes/Lib/createQuoteRecord'
 import { createQuoteSchema } from '@/features/quotes/Schema/quoteSchema'
 import { getTranslations } from 'next-intl/server'
+import { ensureDesignSnapshot } from '@/features/invoice-designer/Lib/designSnapshots'
+import { liveCertificateDesign } from '../Pdf/buildCertificatePdfBuffer'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
@@ -460,11 +462,28 @@ export async function completeInspection(id: string) {
         inspectorName = user?.name ?? null
       }
 
+      // The certificate design as it is today, frozen onto the inspection the
+      // way an issued invoice freezes its design: a design edited next year
+      // must not relabel a certificate a customer already holds. Nothing to
+      // freeze for a workshop that has never designed one; those print the
+      // built-in sheet, which does not change.
+      const settingRows = await db.appSetting.findMany({
+        where: { organizationId, key: { startsWith: 'certificate.' } },
+        select: { key: true, value: true },
+      })
+      const certificateSettings: Record<string, string> = {}
+      for (const row of settingRows) certificateSettings[row.key] = row.value
+      const liveDesign = liveCertificateDesign(certificateSettings)
+      const designSnapshotId = liveDesign
+        ? await ensureDesignSnapshot(organizationId, liveDesign)
+        : null
+
       await db.inspection.updateMany({
         where: { id, organizationId },
         data: {
           status: 'completed',
           completedAt: new Date(),
+          designSnapshotId,
           ...(inspection.inspectorName ? {} : { inspectorName }),
         },
       })

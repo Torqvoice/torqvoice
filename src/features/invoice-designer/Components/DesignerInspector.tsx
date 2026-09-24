@@ -530,6 +530,37 @@ export function DesignerInspector({
             </Group>
           )}
 
+          {section.id === 'result' && (
+            <Group title={t('panelStyle')}>
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('alignment')}</div>
+                <Choice
+                  value={style.align ?? 'left'}
+                  options={[
+                    { value: 'left', label: t('columnLeft') },
+                    { value: 'center', label: t('alignCenter') },
+                    { value: 'right', label: t('columnRight') },
+                  ]}
+                  onChange={(align) => setStyle({ align: align as 'left' | 'center' | 'right' })}
+                />
+              </div>
+              <Row label={t('totalsWidth')}>
+                <input
+                  type="number"
+                  min={140}
+                  max={515}
+                  value={style.width ?? ''}
+                  placeholder={t('auto')}
+                  onChange={(e) =>
+                    setStyle({ width: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                  className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+                />
+              </Row>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('resultWidthHint')}</p>
+            </Group>
+          )}
+
           {section.id === 'totals' && (
             <Group title={t('panelStyle')}>
               <Choice

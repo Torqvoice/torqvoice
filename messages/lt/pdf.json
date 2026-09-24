@@ -183,7 +183,10 @@
     "attachments": "Nuotraukos ir dokumentai",
     "attachedDocuments": "Pridėti dokumentai: {names}",
     "euNotApplicable": "Netaikoma",
-    "basicNotApplicable": "Netaikoma"
+    "basicNotApplicable": "Netaikoma",
+    "allResults": "Visi rezultatai",
+    "signature": "Parašas",
+    "sectionColumn": "Skyrius"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "PASLAUGŲ ISTORIJA",

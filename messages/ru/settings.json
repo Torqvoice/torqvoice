@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Все осмотры транспортных средств и их результаты",
     "contentTechnicians": "Механики",
     "contentTechniciansDescription": "Все профили механиков. Связанные записи будут отвязаны.",
-    "contentInspectionTemplates": "Шаблоны осмотров",
-    "contentInspectionTemplatesDescription": "Все шаблоны осмотров и их разделы. Сначала удалите осмотры.",
+    "contentInspectionTemplates": "Чек-листы осмотров",
+    "contentInspectionTemplatesDescription": "Все чек-листы осмотров и их разделы. Сначала удалите осмотры.",
     "contentNotifications": "Уведомления",
     "contentNotificationsDescription": "Все системные уведомления",
     "contentSmsMessages": "SMS-сообщения",
@@ -656,7 +656,13 @@
       "bank_account": "Банковский счёт",
       "footer": "Подвал",
       "general": "Общие",
-      "telegram_qr": "QR Telegram"
+      "telegram_qr": "QR Telegram",
+      "result": "Результат",
+      "test_details": "Данные проверки",
+      "defects": "Дефекты",
+      "results_table": "Все результаты",
+      "inspection_photos": "Фото",
+      "signature": "Подпись"
     },
     "fields": {
       "customer_name": "Имя клиента",
@@ -688,7 +694,25 @@
       "invoice_number": "№ счёта",
       "customer_number": "№ клиента",
       "date": "Дата",
-      "portal_link": "Ссылка на портал"
+      "portal_link": "Ссылка на портал",
+      "test_date": "Дата проверки",
+      "test_location": "Место проверки",
+      "inspector": "Инспектор",
+      "certificate_number": "Номер сертификата",
+      "vehicle_category": "Категория ТС",
+      "odometer": "Пробег",
+      "next_test_due": "Следующая проверка",
+      "defect_notes": "Примечания",
+      "defect_photos": "Фото",
+      "passed_checks": "Пройденные пункты",
+      "not_applicable_checks": "Неприменимые пункты",
+      "check_notes": "Столбец примечаний",
+      "result_detail": "Пояснение",
+      "result_summary": "Количество по оценкам",
+      "combined_table": "Одна таблица для всех разделов",
+      "inspector_line": "Строка инспектора",
+      "inspector_name": "Печатать имя инспектора",
+      "date_line": "Строка даты"
     },
     "presetsTitle": "Начать с расположения",
     "presetsHint": "Заменяет расположение ниже. Ничего не сохранится, пока вы не сохраните.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Подробное",
         "description": "Заголовок сверху, автомобиль отдельно, обе таблицы и все блоки"
+      },
+      "certificate-regulator": {
+        "name": "Нормативный",
+        "description": "Строгий, без полосы, с засечками: каждый пункт с оценкой и примечанием, фото, строка для подписи"
+      },
+      "certificate-standard": {
+        "name": "Стандартный",
+        "description": "Вердикт под заголовком, автомобиль и проверка рядом, каждый дефект с примечанием и фото, затем все пункты по разделам"
+      },
+      "certificate-customer": {
+        "name": "Отчёт для клиента",
+        "description": "Лист с полосой, крупный вердикт по центру, дефекты с фото, общие фотографии и одна короткая таблица всех пунктов"
+      },
+      "certificate-compact": {
+        "name": "Компактный",
+        "description": "Одна страница для автопарка: мелкий шрифт, вердикт рядом с заголовком, все результаты без примечаний, фото, строка для подписи"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Шаблоны",
     "invoiceDescription": "Настройте внешний вид PDF-счетов и предложений.",
-    "inspectionsDescription": "Управляйте чек-листами осмотров и шаблонами многоточечного контроля.",
+    "inspectionsDescription": "Чек-листы, по которым ваши механики проводят осмотр.",
     "smsDescription": "Настройте SMS-сообщения, отправляемые клиентам.",
     "tabs": {
       "invoice": "Счёт",
       "quotation": "Предложение",
-      "inspections": "Осмотры",
+      "inspections": "Чек-листы\nосмотров",
       "sms": "SMS",
-      "layout": "Макет"
+      "layout": "Макет",
+      "certificates": "Сертификаты\nосмотров"
     },
     "presets": "Предустановки шаблонов",
     "primaryColor": "Основной цвет",
@@ -849,7 +890,8 @@
     "goToLayout": "Расположение и разделы",
     "openDesigner": "Открыть дизайнер",
     "designerIntro": "Выберите отправную точку и откройте дизайнер, чтобы изменить всё.",
-    "designerHint": "Цвета, шрифты, отступы и все разделы находятся в дизайнере."
+    "designerHint": "Цвета, шрифты, отступы и все разделы находятся в дизайнере.",
+    "certificatesDescription": "Оформите сертификат, который печатает и отправляет завершённый осмотр."
   },
   "payment": {
     "readMore": "Подробнее",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Механики",
     "optTechniciansDesc": "Профили механиков и назначения на доску работ",
     "optInspections": "Осмотры",
-    "optInspectionsDesc": "Шаблоны осмотров, осмотры и результаты",
+    "optInspectionsDesc": "Чек-листы осмотров, осмотры и результаты",
     "optAuditLogs": "Журналы аудита",
     "optAuditLogsDesc": "История активности и изменений",
     "optSmsMessages": "Сообщения",
@@ -2060,7 +2102,19 @@
       "slogan": "Качественный сервис, которому можно доверять",
       "paymentTerms": "Оплата в течение 14 дней",
       "footerNote": "Благодарим за обращение",
-      "value": "Пример"
+      "value": "Пример",
+      "testLocation": "ул. Портовая 12, Спрингфилд",
+      "certificateNotes": "Шины близки к допустимому пределу; до следующей проверки их, вероятно, придётся заменить.",
+      "checkBrakeHoses": "Тормозные шланги",
+      "checkBrakeHosesNote": "Небольшая потёртость левого переднего шланга, наружный слой цел.",
+      "sectionBrakes": "Тормозная система",
+      "checkBrakePedal": "Педаль рабочего тормоза",
+      "checkBrakeFluid": "Тормозная жидкость",
+      "sectionLighting": "Световые приборы",
+      "checkHeadlamps": "Состояние фар",
+      "checkFogLamp": "Задний противотуманный фонарь",
+      "photoFront": "Спереди",
+      "photoOdometer": "Одометр"
     },
     "logoUpload": "Загрузить логотип",
     "logoReplace": "Заменить логотип",
@@ -2096,7 +2150,9 @@
     "setDefault": "Сделать основным",
     "defaultSet": "«{name}» теперь используется",
     "couldNotSetDefault": "Не удалось установить дизайн по умолчанию",
-    "fieldFixedSlot": "Всегда печатается на одном и том же месте, поэтому переместить нельзя."
+    "fieldFixedSlot": "Всегда печатается на одном и том же месте, поэтому переместить нельзя.",
+    "certificate": "Сертификат осмотра",
+    "resultWidthHint": "Пусто — на всю строку. Укажите пункты, чтобы сузить полосу; она встанет со стороны, заданной выравниванием, а в колонке займёт её ширину."
   },
   "preview": {
     "title": "Обслуживание тормозов и замена масла",

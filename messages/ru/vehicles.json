@@ -114,7 +114,7 @@
   "inspections": {
     "newInspection": "Новый осмотр",
     "empty": "Осмотров пока нет",
-    "template": "Шаблон",
+    "template": "Чек-лист",
     "progress": "Прогресс",
     "status": "Статус",
     "date": "Дата",

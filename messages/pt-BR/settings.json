@@ -302,8 +302,8 @@
     "contentInspectionsDescription": "Todas as inspeções de veículos e seus resultados",
     "contentTechnicians": "Técnicos",
     "contentTechniciansDescription": "Todos os perfis de técnicos. Registros vinculados serão desvinculados.",
-    "contentInspectionTemplates": "Modelos de inspeção",
-    "contentInspectionTemplatesDescription": "Todos os modelos de inspeção e suas seções. Exclua as inspeções primeiro.",
+    "contentInspectionTemplates": "Checklists de inspeção",
+    "contentInspectionTemplatesDescription": "Todos os checklists de inspeção e suas seções. Exclua as inspeções primeiro.",
     "contentNotifications": "Notificações",
     "contentNotificationsDescription": "Todas as notificações do sistema",
     "contentSmsMessages": "Mensagens SMS",
@@ -656,7 +656,13 @@
       "bank_account": "Conta bancária",
       "footer": "Rodapé",
       "general": "Geral",
-      "telegram_qr": "QR do Telegram"
+      "telegram_qr": "QR do Telegram",
+      "result": "Resultado",
+      "test_details": "Dados do teste",
+      "defects": "Defeitos",
+      "results_table": "Todos os resultados",
+      "inspection_photos": "Fotos",
+      "signature": "Assinatura"
     },
     "fields": {
       "customer_name": "Nome do cliente",
@@ -688,7 +694,25 @@
       "invoice_number": "Nº da fatura",
       "customer_number": "Nº do cliente",
       "date": "Data",
-      "portal_link": "Link do portal"
+      "portal_link": "Link do portal",
+      "test_date": "Data do teste",
+      "test_location": "Local do teste",
+      "inspector": "Inspetor",
+      "certificate_number": "Número do certificado",
+      "vehicle_category": "Categoria do veículo",
+      "odometer": "Hodômetro",
+      "next_test_due": "Próximo teste",
+      "defect_notes": "Observações",
+      "defect_photos": "Fotos",
+      "passed_checks": "Itens aprovados",
+      "not_applicable_checks": "Itens não aplicáveis",
+      "check_notes": "Coluna de observações",
+      "result_detail": "Explicação",
+      "result_summary": "Contagem por avaliação",
+      "combined_table": "Uma tabela para todas as seções",
+      "inspector_line": "Linha do inspetor",
+      "inspector_name": "Imprimir o nome do inspetor",
+      "date_line": "Linha da data"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",
@@ -716,6 +740,22 @@
       "detailed": {
         "name": "Detalhada",
         "description": "Título no topo, veículo sozinho, as duas tabelas e todos os blocos opcionais"
+      },
+      "certificate-regulator": {
+        "name": "Regulamentar",
+        "description": "Sóbrio e sem faixa, em serifa: cada item com avaliação e nota, as fotos, uma linha para assinar"
+      },
+      "certificate-standard": {
+        "name": "Padrão",
+        "description": "O veredito sob o título, carro e teste lado a lado, cada defeito com nota e foto, depois cada item por seção"
+      },
+      "certificate-customer": {
+        "name": "Relatório ao cliente",
+        "description": "Uma folha com faixa, o veredito grande e centralizado, defeitos com fotos, as fotos gerais e uma tabela curta de todos os itens"
+      },
+      "certificate-compact": {
+        "name": "Compacto",
+        "description": "Uma página para frotas: letra pequena, o veredito ao lado do título, todos os resultados sem notas, as fotos, uma linha para assinar"
       }
     },
     "style": {
@@ -738,14 +778,15 @@
   "templates": {
     "title": "Modelos",
     "invoiceDescription": "Personalize a aparência das suas faturas e orçamentos PDF.",
-    "inspectionsDescription": "Gerencie listas de verificação de inspeção e modelos multiponto.",
+    "inspectionsDescription": "Os checklists que seus técnicos percorrem durante uma inspeção.",
     "smsDescription": "Personalize as mensagens SMS enviadas aos clientes.",
     "tabs": {
       "invoice": "Fatura",
       "quotation": "Orçamento",
-      "inspections": "Inspeções",
+      "inspections": "Checklists de\ninspeção",
       "sms": "SMS",
-      "layout": "Layout"
+      "layout": "Layout",
+      "certificates": "Certificados de\ninspeção"
     },
     "presets": "Presets de modelo",
     "primaryColor": "Cor primária",
@@ -849,7 +890,8 @@
     "goToLayout": "Disposição e seções",
     "openDesigner": "Abrir o designer",
     "designerIntro": "Escolha um ponto de partida e abra o designer para mudar tudo.",
-    "designerHint": "Cores, fontes, espaçamento e todas as seções ficam no designer."
+    "designerHint": "Cores, fontes, espaçamento e todas as seções ficam no designer.",
+    "certificatesDescription": "Desenhe o certificado que uma inspeção concluída imprime e compartilha."
   },
   "payment": {
     "readMore": "Saiba mais",
@@ -1278,7 +1320,7 @@
     "optTechnicians": "Técnicos",
     "optTechniciansDesc": "Perfis de técnicos e atribuições do quadro de trabalho",
     "optInspections": "Inspeções",
-    "optInspectionsDesc": "Modelos de inspeção, inspeções e resultados",
+    "optInspectionsDesc": "Checklists de inspeção, inspeções e resultados",
     "optAuditLogs": "Registros de auditoria",
     "optAuditLogsDesc": "Histórico de atividades e alterações",
     "optSmsMessages": "Mensagens",
@@ -2060,7 +2102,19 @@
       "slogan": "Serviço de qualidade em que você pode confiar",
       "paymentTerms": "Pagamento em 14 dias",
       "footerNote": "Obrigado pela preferência",
-      "value": "Exemplo"
+      "value": "Exemplo",
+      "testLocation": "Rua do Porto 12, Springfield",
+      "certificateNotes": "Os pneus estão perto do limite legal; prevê-se a troca antes do próximo teste.",
+      "checkBrakeHoses": "Mangueiras de freio",
+      "checkBrakeHosesNote": "Leve desgaste na mangueira dianteira esquerda, sem atravessar a camada externa.",
+      "sectionBrakes": "Sistema de freios",
+      "checkBrakePedal": "Pedal do freio de serviço",
+      "checkBrakeFluid": "Fluido de freio",
+      "sectionLighting": "Iluminação",
+      "checkHeadlamps": "Estado dos faróis",
+      "checkFogLamp": "Luz de neblina traseira",
+      "photoFront": "Frente",
+      "photoOdometer": "Hodômetro"
     },
     "logoUpload": "Enviar logotipo",
     "logoReplace": "Substituir logotipo",
@@ -2096,7 +2150,9 @@
     "setDefault": "Definir como padrão",
     "defaultSet": "\"{name}\" está em uso agora",
     "couldNotSetDefault": "Não foi possível definir o design padrão",
-    "fieldFixedSlot": "Sempre é impresso no mesmo lugar, portanto não pode ser movido."
+    "fieldFixedSlot": "Sempre é impresso no mesmo lugar, portanto não pode ser movido.",
+    "certificate": "Certificado de inspeção",
+    "resultWidthHint": "Vazio ocupa a linha inteira. Com um valor a faixa fica mais estreita e se posiciona no lado do alinhamento; em uma coluna ocupa a largura da coluna."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

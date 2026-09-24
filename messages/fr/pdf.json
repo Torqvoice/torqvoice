@@ -183,7 +183,10 @@
     "attachments": "Photos et documents",
     "attachedDocuments": "Documents joints : {names}",
     "euNotApplicable": "Sans objet",
-    "basicNotApplicable": "Sans objet"
+    "basicNotApplicable": "Sans objet",
+    "allResults": "Tous les résultats",
+    "signature": "Signature",
+    "sectionColumn": "Section"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTORIQUE D'ENTRETIEN",

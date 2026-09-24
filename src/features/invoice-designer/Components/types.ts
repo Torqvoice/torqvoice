@@ -2,7 +2,12 @@ import type { TaxComponentDefinition } from '@/lib/tax'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { DesignAutoRule } from '../Lib/designRules'
 
-export type DocumentType = 'invoice' | 'quote'
+/**
+ * The documents the designer draws. A certificate is what a completed
+ * inspection prints: the same sheet machinery as an invoice, fed grades
+ * instead of prices.
+ */
+export type DocumentType = 'invoice' | 'quote' | 'certificate'
 
 /** The template settings the designer edits, as strings the way settings store them. */
 export interface DesignerTemplate {
@@ -34,6 +39,8 @@ export interface DesignerTemplate {
 export interface SavedDesign {
   id: string
   name: string
+  /** Which document the design was saved for; absent on rows written before certificates. */
+  documentType?: DocumentType
   savedAt: string
   layout: InvoiceLayoutConfig
   template: DesignerTemplate

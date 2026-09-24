@@ -183,7 +183,10 @@
     "attachments": "Fotoğraflar ve belgeler",
     "attachedDocuments": "Ekli belgeler: {names}",
     "euNotApplicable": "Uygulanamaz",
-    "basicNotApplicable": "Uygulanamaz"
+    "basicNotApplicable": "Uygulanamaz",
+    "allResults": "Tüm sonuçlar",
+    "signature": "İmza",
+    "sectionColumn": "Bölüm"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVİS GEÇMİŞİ",

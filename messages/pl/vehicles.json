@@ -114,7 +114,7 @@
   "inspections": {
     "newInspection": "Nowy przegląd",
     "empty": "Brak przeglądów",
-    "template": "Szablon",
+    "template": "Lista kontrolna",
     "progress": "Postęp",
     "status": "Status",
     "date": "Data",

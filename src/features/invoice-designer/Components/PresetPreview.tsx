@@ -1,5 +1,7 @@
 'use client'
 
+import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
+
 import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
 import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
@@ -34,11 +36,14 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
     const pdf = messages.pdf ?? {}
     // The same label resolution the print path applies: quote wording over the
     // invoice's where the two differ.
-    const labels: PrintLabels = {
-      ...(pdf.invoice ?? {}),
-      ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-      ...(pdf.common ?? {}),
-    }
+    const labels: PrintLabels =
+      docType === 'certificate'
+        ? certificateLabels(pdf)
+        : {
+            ...(pdf.invoice ?? {}),
+            ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
+            ...(pdf.common ?? {}),
+          }
     return buildSampleData(
       {
         name: workshop?.name ?? '',

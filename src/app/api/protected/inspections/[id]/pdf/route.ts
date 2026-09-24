@@ -19,6 +19,7 @@ import {
 import { inspectionPrintLabels } from '@/features/inspections/Lib/inspectionLabels'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -38,6 +39,24 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     const { id } = await params
+
+    // A workshop that has designed its certificate prints from the design
+    // (frozen onto the inspection when it was completed); the rest print the
+    // built-in sheet below, unchanged.
+    const designed = await buildCertificatePdfBuffer({
+      inspectionId: id,
+      organizationId: ctx.organizationId,
+      locale,
+      audience: 'workshop',
+    })
+    if (designed) {
+      return new NextResponse(designed.body, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${designed.fileName}"`,
+        },
+      })
+    }
 
     const [inspection, settings, org] = await Promise.all([
       db.inspection.findFirst({
