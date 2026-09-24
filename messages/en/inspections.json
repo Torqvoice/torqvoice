@@ -134,7 +134,14 @@
     "linkWorkOrder": "Link to work order",
     "notes": "Inspection notes",
     "notesHint": "Printed on the certificate and shown to the customer.",
-    "notesPlaceholder": "Anything the customer should know beyond the graded checks…"
+    "notesPlaceholder": "Anything the customer should know beyond the graded checks…",
+    "quoteRequestHeading": "Quote request",
+    "quoteRequestedBy": "Requested by {name} on {date}",
+    "quoteRequestedOn": "Requested on {date}",
+    "quoteRequestMissingChecks": "{count} requested check(s) are no longer on the checklist.",
+    "createQuoteFromRequest": "Create quote from request",
+    "quoteFromRequestNote": "Raised from the customer's quote request on the inspection link.",
+    "quoteCustomerSaid": "Customer's message: {message}"
   },
   "item": {
     "required": "(required)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Upload failed",
     "uploadFailedFor": "Could not upload {name}",
     "reopenToChange": "Reopen the inspection to add photos",
-    "tapToClear": "Tap again to clear the grade"
+    "tapToClear": "Tap again to clear the grade",
+    "quoteRequested": "Quote requested"
   },
   "suggestions": {
     "title": "Common defects",

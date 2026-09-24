@@ -355,6 +355,15 @@ export function InspectionPageClient({
     [inspection.items, grades, photoCounts]
   )
   const pendingQuoteRequest = inspection.quoteRequests?.[0] ?? null
+  // The checks the customer ticked, in checklist order; a check deleted since
+  // the request is counted rather than shown.
+  const requestedChecks = useMemo(() => {
+    const wanted = new Set(pendingQuoteRequest?.selectedItemIds ?? [])
+    return inspection.items.filter((item) => wanted.has(item.id))
+  }, [inspection.items, pendingQuoteRequest])
+  const missingRequestedChecks =
+    (pendingQuoteRequest?.selectedItemIds.length ?? 0) - requestedChecks.length
+  const requestedIds = useMemo(() => new Set(requestedChecks.map((i) => i.id)), [requestedChecks])
   const workOrder = inspection.serviceRecords?.[0] ?? null
   const notInspected = counts.total - counts.inspected
 
@@ -593,6 +602,91 @@ export function InspectionPageClient({
             )}
           </section>
 
+          {/* What the customer asked to have priced, from their link. Kept
+              in view whether or not a quote exists yet: a second request can
+              follow a first quote, and the desk must see both. */}
+          {pendingQuoteRequest && (
+            <section
+              aria-labelledby="inspection-quote-request"
+              data-testid="quote-request-card"
+              className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2
+                    id="inspection-quote-request"
+                    className="flex items-center gap-2 text-base font-semibold"
+                  >
+                    <MessageSquareText
+                      className="h-4 w-4 text-amber-700 dark:text-amber-300"
+                      aria-hidden="true"
+                    />
+                    {t('quoteRequestHeading')}
+                  </h2>
+                  <p className="text-muted-foreground mt-0.5 text-sm">
+                    {inspection.vehicle.customer?.name
+                      ? t('quoteRequestedBy', {
+                          name: inspection.vehicle.customer.name,
+                          date: formatDate(new Date(pendingQuoteRequest.createdAt)),
+                        })
+                      : t('quoteRequestedOn', {
+                          date: formatDate(new Date(pendingQuoteRequest.createdAt)),
+                        })}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={handleCreateQuoteFromInspection}
+                  disabled={isCreatingQuote}
+                  data-testid="quote-request-create"
+                >
+                  {isCreatingQuote ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <FileText className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  {t('createQuoteFromRequest')}
+                </Button>
+              </div>
+              {pendingQuoteRequest.message && (
+                <blockquote className="mt-3 border-l-2 border-amber-500/50 pl-3 text-sm whitespace-pre-wrap">
+                  {pendingQuoteRequest.message}
+                </blockquote>
+              )}
+              <ul className="mt-3 divide-y rounded-md border bg-background">
+                {requestedChecks.map((item) => {
+                  const condition = (grades[item.id] ?? item.condition) as Condition
+                  return (
+                    <li
+                      key={item.id}
+                      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-2 text-sm"
+                    >
+                      <span className="flex min-w-0 items-baseline gap-2">
+                        {item.code && (
+                          <span className="text-muted-foreground font-mono text-xs">
+                            {item.code}
+                          </span>
+                        )}
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-muted-foreground truncate text-xs">
+                          {item.section}
+                        </span>
+                      </span>
+                      <Badge variant="outline" className={CONDITION_TOKENS[condition].soft}>
+                        {graded(condition)}
+                      </Badge>
+                    </li>
+                  )
+                })}
+              </ul>
+              {missingRequestedChecks > 0 && (
+                <p className="text-muted-foreground mt-2 text-xs">
+                  {t('quoteRequestMissingChecks', { count: missingRequestedChecks })}
+                </p>
+              )}
+            </section>
+          )}
+
           <InspectionCertificateCard
             inspection={inspection}
             technicians={technicians}
@@ -661,6 +755,7 @@ export function InspectionPageClient({
                       country={country}
                       isCompleted={isCompleted}
                       history={defectHistory[item.name]}
+                      quoteRequested={requestedIds.has(item.id)}
                       onOpenImage={openImage}
                       onSaveState={handleSaveState}
                       onChanged={(itemId, change) => {

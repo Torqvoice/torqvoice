@@ -266,7 +266,7 @@ export const certificatePresets: LayoutPreset[] = [
   {
     // The everyday certificate: the verdict under the title, the car and the
     // test beside each other, what was wrong with a note and a photo, and
-    // every check by section after it.
+    // the failed checks by section after it.
     id: 'certificate-standard',
     documentType: 'certificate',
     template: { primaryColor: '#d97706', headerStyle: 'standard', fontFamily: 'Helvetica' },
@@ -334,7 +334,7 @@ export const certificatePresets: LayoutPreset[] = [
   {
     // For the customer: a banded sheet with the verdict centred and large,
     // every defect with its photograph, the walk-round photographs, and one
-    // short table of every check without the notes column.
+    // short table of the checks that were not OK.
     id: 'certificate-customer',
     documentType: 'certificate',
     template: { primaryColor: '#2563eb', headerStyle: 'modern', fontFamily: 'Open Sans' },
@@ -355,7 +355,7 @@ export const certificatePresets: LayoutPreset[] = [
       'footer',
     ],
     columns: { customer: 'left', vehicle: 'right', test_details: 'right' },
-    fields: { results_table: ['passed_checks', 'not_applicable_checks', 'combined_table'] },
+    fields: { results_table: ['combined_table'] },
     styles: { result: { align: 'center', padding: 16, fontSize: 11 } },
     headerFields: ALL_HEADER_FIELDS,
     footerFields: ['footer_note', 'portal_link'],

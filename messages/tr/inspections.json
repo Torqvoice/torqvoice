@@ -134,7 +134,14 @@
     "linkWorkOrder": "İş emrine bağla",
     "notes": "Muayene notları",
     "notesHint": "Sertifikaya yazdırılır ve müşteriye gösterilir.",
-    "notesPlaceholder": "Müşterinin notlanan kontroller dışında bilmesi gerekenler…"
+    "notesPlaceholder": "Müşterinin notlanan kontroller dışında bilmesi gerekenler…",
+    "quoteRequestHeading": "Teklif talebi",
+    "quoteRequestedBy": "{name} tarafından {date} tarihinde istendi",
+    "quoteRequestedOn": "{date} tarihinde istendi",
+    "quoteRequestMissingChecks": "İstenen {count} madde artık kontrol listesinde değil.",
+    "createQuoteFromRequest": "Talepten teklif oluştur",
+    "quoteFromRequestNote": "Müşterinin muayene bağlantısındaki teklif talebinden oluşturuldu.",
+    "quoteCustomerSaid": "Müşterinin mesajı: {message}"
   },
   "item": {
     "required": "(zorunlu)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Yükleme başarısız",
     "uploadFailedFor": "{name} yüklenemedi",
     "reopenToChange": "Fotoğraf eklemek için muayeneyi yeniden açın",
-    "tapToClear": "Notu kaldırmak için tekrar dokunun"
+    "tapToClear": "Notu kaldırmak için tekrar dokunun",
+    "quoteRequested": "Teklif istendi"
   },
   "suggestions": {
     "title": "Sık görülen kusurlar",

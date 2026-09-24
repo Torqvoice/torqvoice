@@ -117,12 +117,29 @@ describe('the certificate a completed inspection prints', () => {
     expect(JSON.stringify(block('defects'))).toContain('data:image/jpeg;base64,AA==')
   })
 
-  it('prints every graded check by section and leaves the ungraded one out', () => {
+  it('lists the checks that were not OK by default, and every graded check when asked', () => {
     const t = texts(block('results_table'))
-    expect(t).toContain('Tow bar')
-    expect(t).toContain('Lights')
+    expect(t).toContain('Brake hose')
+    expect(t).toContain('Wipers')
+    expect(t).not.toContain('Tow bar')
+    expect(t).not.toContain('Lights')
     expect(t).not.toContain('Horn')
-    expect(t.some((s) => s.startsWith('4. Lighting'))).toBe(true)
+
+    const layout = getDefaultLayout('certificate')
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'results_table'
+        ? { ...section, fields: section.fields?.map((f) => ({ ...f, visible: true })) }
+        : section
+    )
+    const everything = buildCertificatePrintSpec({
+      data: data() as any,
+      layoutConfig: layout,
+    }) as any
+    const all = texts(everything.blocks.find((b: any) => b.id === 'results_table')?.content)
+    expect(all).toContain('Tow bar')
+    expect(all).toContain('Lights')
+    expect(all).not.toContain('Horn')
+    expect(all.some((s) => s.includes('4. Lighting'))).toBe(true)
   })
 
   it('names the strip after the certificate, not an invoice', () => {

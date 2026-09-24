@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standard",
-        "description": "Resultatet under tittelen, bil og test side om side, hver mangel med merknad og bilde, deretter hver kontroll etter seksjon"
+        "description": "Resultatet under tittelen, bil og test side om side, hver mangel med merknad og bilde, deretter de ikke beståtte kontrollene etter seksjon"
       },
       "certificate-customer": {
         "name": "Kunderapport",
-        "description": "Et ark med bånd, resultatet stort og sentrert, mangler med bilder, rundgangsbildene og én kort tabell over alle kontroller"
+        "description": "Et ark med bånd, resultatet stort og sentrert, mangler med bilder, rundgangsbildene og én kort tabell over de ikke beståtte kontrollene"
       },
       "certificate-compact": {
         "name": "Kompakt",

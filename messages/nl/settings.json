@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standaard",
-        "description": "Het oordeel onder de titel, auto en keuring naast elkaar, elk gebrek met opmerking en foto, daarna elke controle per sectie"
+        "description": "Het oordeel onder de titel, auto en keuring naast elkaar, elk gebrek met opmerking en foto, daarna de niet-geslaagde controles per sectie"
       },
       "certificate-customer": {
         "name": "Klantrapport",
-        "description": "Een blad met band, het oordeel groot en gecentreerd, gebreken met foto's, de rondgangfoto's en één korte tabel van alle controles"
+        "description": "Een blad met band, het oordeel groot en gecentreerd, gebreken met foto's, de rondgangfoto's en een korte tabel van de niet-geslaagde controles"
       },
       "certificate-compact": {
         "name": "Compact",

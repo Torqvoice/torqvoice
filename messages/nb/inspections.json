@@ -134,7 +134,14 @@
     "linkWorkOrder": "Knytt til arbeidsordre",
     "notes": "Merknader til inspeksjonen",
     "notesHint": "Skrives på sertifikatet og vises til kunden.",
-    "notesPlaceholder": "Alt kunden bør vite utover de vurderte kontrollene…"
+    "notesPlaceholder": "Alt kunden bør vite utover de vurderte kontrollene…",
+    "quoteRequestHeading": "Tilbudsforespørsel",
+    "quoteRequestedBy": "Bedt om av {name} den {date}",
+    "quoteRequestedOn": "Bedt om den {date}",
+    "quoteRequestMissingChecks": "{count} etterspurt(e) punkt(er) er ikke lenger på sjekklisten.",
+    "createQuoteFromRequest": "Opprett tilbud fra forespørselen",
+    "quoteFromRequestNote": "Opprettet fra kundens tilbudsforespørsel på kontrollenken.",
+    "quoteCustomerSaid": "Kundens melding: {message}"
   },
   "item": {
     "required": "(påkrevd)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Opplasting mislyktes",
     "uploadFailedFor": "Kunne ikke laste opp {name}",
     "reopenToChange": "Gjenåpne inspeksjonen for å legge til bilder",
-    "tapToClear": "Trykk igjen for å fjerne vurderingen"
+    "tapToClear": "Trykk igjen for å fjerne vurderingen",
+    "quoteRequested": "Tilbud ønsket"
   },
   "suggestions": {
     "title": "Vanlige mangler",

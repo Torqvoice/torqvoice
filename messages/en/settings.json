@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standard",
-        "description": "The verdict under the title, the car and the test side by side, each defect with its note and photo, then every check by section"
+        "description": "The verdict under the title, the car and the test side by side, each defect with its note and photo, then the failed checks by section"
       },
       "certificate-customer": {
         "name": "Customer report",
-        "description": "A banded sheet with the verdict centred and large, defects with photos, the walk-round photos, and one short table of every check"
+        "description": "A banded sheet with the verdict centred and large, defects with photos, the walk-round photos, and a short table of the failed checks"
       },
       "certificate-compact": {
         "name": "Compact",

@@ -577,11 +577,12 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
     case 'defects':
       return BUILTIN_DEFECTS_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'results_table':
-      // Every row and the notes beside them; a table per section unless the
-      // design asks for one.
+      // Only the checks that were not OK, with their notes, a table per
+      // section: what a reader wants to know. Passed and not-applicable rows
+      // and the one-table form are switches a design turns on.
       return BUILTIN_RESULTS_TABLE_FIELDS.map((f) => ({
         id: f.id,
-        visible: f.id !== 'combined_table',
+        visible: f.id === 'check_notes',
       }))
     default:
       return undefined

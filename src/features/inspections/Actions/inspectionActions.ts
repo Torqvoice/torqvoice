@@ -5,7 +5,7 @@ import { createQuoteRecord } from '@/features/quotes/Lib/createQuoteRecord'
 import { createQuoteSchema } from '@/features/quotes/Schema/quoteSchema'
 import { getTranslations } from 'next-intl/server'
 import { ensureDesignSnapshot } from '@/features/invoice-designer/Lib/designSnapshots'
-import { liveCertificateDesign } from '../Pdf/buildCertificatePdfBuffer'
+import { liveCertificateDesign } from '../Pdf/certificateDesign'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
@@ -804,6 +804,11 @@ export async function createWorkOrderFromInspection(
  * every check that was not OK, worst first, each carrying the technician's
  * note. Built here from what the database holds rather than from what the
  * page was showing, so a note typed after the page loaded is on the quote.
+ *
+ * When the customer has asked for a quote from their link, the quote is
+ * their request: only the checks they ticked, in checklist order, and their
+ * message carried in the quote's notes. Pricing what they did not ask for
+ * is a conversation for the desk, not a line to surprise them with.
  */
 export async function createQuoteFromInspection(id: string) {
   return withAuth(
@@ -816,12 +821,25 @@ export async function createQuoteFromInspection(id: string) {
           },
           template: { select: { name: true } },
           items: { orderBy: { sortOrder: 'asc' } },
+          quoteRequests: {
+            where: { status: 'pending' },
+            select: { id: true, message: true, selectedItemIds: true },
+            orderBy: { createdAt: 'desc' as const },
+            take: 1,
+          },
         },
       })
       if (!inspection) throw new Error('Inspection not found')
 
       const t = await getTranslations('inspections.page')
       const vehicle = inspection.vehicle
+      const request = inspection.quoteRequests?.[0] ?? null
+      const requested = request
+        ? inspection.items.filter((item) => request.selectedItemIds.includes(item.id))
+        : []
+      // A request whose checks were all deleted since falls back to the defects.
+      const lines = requested.length > 0 ? requested : defectsWorstFirst(inspection.items)
+      const message = request?.message?.trim()
       const quote = await createQuoteRecord(
         { organizationId, userId },
         createQuoteSchema.parse({
@@ -832,10 +850,14 @@ export async function createQuoteFromInspection(id: string) {
           customerId: vehicle.customerId ?? undefined,
           inspectionId: inspection.id,
           status: 'draft',
-          laborItems: [
-            inspection.template.name,
-            ...defectsWorstFirst(inspection.items).map(defectLineText),
-          ].map((description) => ({ description, hours: 0, rate: 0, total: 0 })),
+          notes: request
+            ? [t('quoteFromRequestNote'), message ? t('quoteCustomerSaid', { message }) : '']
+                .filter(Boolean)
+                .join('\n')
+            : undefined,
+          laborItems: [inspection.template.name, ...lines.map(defectLineText)].map(
+            (description) => ({ description, hours: 0, rate: 0, total: 0 })
+          ),
         })
       )
 

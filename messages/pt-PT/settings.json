@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Padrão",
-        "description": "O veredito sob o título, carro e teste lado a lado, cada defeito com nota e fotografia, depois cada item por secção"
+        "description": "O veredito sob o título, carro e teste lado a lado, cada defeito com nota e fotografia, depois os itens reprovados por secção"
       },
       "certificate-customer": {
         "name": "Relatório ao cliente",
-        "description": "Uma folha com faixa, o veredito grande e centrado, defeitos com fotografias, as fotografias gerais e uma tabela curta de todos os itens"
+        "description": "Uma folha com faixa, o veredito grande e centrado, defeitos com fotografias, as fotografias gerais e uma tabela curta dos itens reprovados"
       },
       "certificate-compact": {
         "name": "Compacto",

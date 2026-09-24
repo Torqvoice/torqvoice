@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standard",
-        "description": "Das Ergebnis unter dem Titel, Fahrzeug und Prüfung nebeneinander, jeder Mangel mit Anmerkung und Foto, dann jede Prüfung nach Abschnitt"
+        "description": "Das Ergebnis unter dem Titel, Fahrzeug und Prüfung nebeneinander, jeder Mangel mit Anmerkung und Foto, dann die beanstandeten Prüfungen nach Abschnitt"
       },
       "certificate-customer": {
         "name": "Kundenbericht",
-        "description": "Ein Blatt mit Band, das Ergebnis groß und mittig, Mängel mit Fotos, die Rundgangsfotos und eine kurze Tabelle aller Prüfungen"
+        "description": "Ein Blatt mit Band, das Ergebnis groß und mittig, Mängel mit Fotos, die Rundgangsfotos und eine kurze Tabelle der beanstandeten Prüfungen"
       },
       "certificate-compact": {
         "name": "Kompakt",

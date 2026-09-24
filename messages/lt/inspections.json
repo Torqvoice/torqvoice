@@ -134,7 +134,14 @@
     "linkWorkOrder": "Susieti su užsakymu",
     "notes": "Apžiūros pastabos",
     "notesHint": "Spausdinama sertifikate ir rodoma klientui.",
-    "notesPlaceholder": "Viskas, ką klientas turėtų žinoti be įvertintų patikrinimų…"
+    "notesPlaceholder": "Viskas, ką klientas turėtų žinoti be įvertintų patikrinimų…",
+    "quoteRequestHeading": "Pasiūlymo užklausa",
+    "quoteRequestedBy": "Užklausė {name}, {date}",
+    "quoteRequestedOn": "Užklausta {date}",
+    "quoteRequestMissingChecks": "{count} užklausto (-ų) punkto (-ų) sąraše nebėra.",
+    "createQuoteFromRequest": "Sukurti pasiūlymą iš užklausos",
+    "quoteFromRequestNote": "Sukurta iš kliento pasiūlymo užklausos apžiūros nuorodoje.",
+    "quoteCustomerSaid": "Kliento žinutė: {message}"
   },
   "item": {
     "required": "(privaloma)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Nepavyko įkelti",
     "uploadFailedFor": "Nepavyko įkelti {name}",
     "reopenToChange": "Atidarykite apžiūrą iš naujo, kad pridėtumėte nuotraukų",
-    "tapToClear": "Bakstelėkite dar kartą, kad pašalintumėte įvertinimą"
+    "tapToClear": "Bakstelėkite dar kartą, kad pašalintumėte įvertinimą",
+    "quoteRequested": "Prašoma pasiūlymo"
   },
   "suggestions": {
     "title": "Dažni trūkumai",

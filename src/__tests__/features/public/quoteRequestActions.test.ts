@@ -146,6 +146,35 @@ describe('createQuoteRequest', () => {
     )
   })
 
+  it('names the requested checks in the notification, and counts the rest', async () => {
+    mockFindInspection.mockResolvedValue({
+      ...INSPECTION,
+      items: [
+        { id: 'item-1', name: 'Brake hose' },
+        { id: 'item-2', name: 'Tyres' },
+        { id: 'item-3', name: 'Wipers' },
+        { id: 'item-4', name: 'Horn' },
+      ],
+    } as any)
+    mockFindRequest.mockResolvedValue(null)
+    await createQuoteRequest({
+      inspectionId: 'insp-1',
+      publicToken: 'pub-tok-1',
+      selectedItemIds: ['item-1', 'item-2', 'item-3', 'item-4'],
+    })
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message:
+          'Jane Smith requested a quote for Brake hose, Tyres, Wipers and 1 more from an inspection',
+      })
+    )
+    // Only the ticked checks are looked up, in checklist order.
+    expect((mockFindInspection.mock.calls[0][0] as any).include.items).toMatchObject({
+      where: { id: { in: ['item-1', 'item-2', 'item-3', 'item-4'] } },
+      orderBy: { sortOrder: 'asc' },
+    })
+  })
+
   it('uses customer name in notification message', async () => {
     mockFindInspection.mockResolvedValue(INSPECTION as any)
     mockFindRequest.mockResolvedValue(null)

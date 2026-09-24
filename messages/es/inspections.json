@@ -134,7 +134,14 @@
     "linkWorkOrder": "Vincular a la orden",
     "notes": "Notas de la inspección",
     "notesHint": "Se imprime en el certificado y se muestra al cliente.",
-    "notesPlaceholder": "Todo lo que el cliente deba saber más allá de las comprobaciones…"
+    "notesPlaceholder": "Todo lo que el cliente deba saber más allá de las comprobaciones…",
+    "quoteRequestHeading": "Solicitud de presupuesto",
+    "quoteRequestedBy": "Solicitado por {name} el {date}",
+    "quoteRequestedOn": "Solicitado el {date}",
+    "quoteRequestMissingChecks": "{count} punto(s) solicitado(s) ya no están en la lista.",
+    "createQuoteFromRequest": "Crear presupuesto de la solicitud",
+    "quoteFromRequestNote": "Creado a partir de la solicitud de presupuesto del cliente en el enlace de la inspección.",
+    "quoteCustomerSaid": "Mensaje del cliente: {message}"
   },
   "item": {
     "required": "(obligatorio)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Error al subir",
     "uploadFailedFor": "No se pudo subir {name}",
     "reopenToChange": "Reabre la inspección para añadir fotos",
-    "tapToClear": "Toca de nuevo para borrar la valoración"
+    "tapToClear": "Toca de nuevo para borrar la valoración",
+    "quoteRequested": "Presupuesto solicitado"
   },
   "suggestions": {
     "title": "Deficiencias habituales",

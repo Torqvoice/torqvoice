@@ -134,7 +134,14 @@
     "linkWorkOrder": "Привязать к заказу",
     "notes": "Примечания к осмотру",
     "notesHint": "Печатаются в сертификате и видны клиенту.",
-    "notesPlaceholder": "Всё, что клиенту стоит знать помимо оценённых пунктов…"
+    "notesPlaceholder": "Всё, что клиенту стоит знать помимо оценённых пунктов…",
+    "quoteRequestHeading": "Запрос сметы",
+    "quoteRequestedBy": "Запросил(а) {name}, {date}",
+    "quoteRequestedOn": "Запрошено {date}",
+    "quoteRequestMissingChecks": "{count} запрошенных пункт(ов) больше нет в чек-листе.",
+    "createQuoteFromRequest": "Создать смету по запросу",
+    "quoteFromRequestNote": "Создано по запросу сметы клиента по ссылке на осмотр.",
+    "quoteCustomerSaid": "Сообщение клиента: {message}"
   },
   "item": {
     "required": "(обязательно)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Не удалось загрузить",
     "uploadFailedFor": "Не удалось загрузить {name}",
     "reopenToChange": "Откройте осмотр заново, чтобы добавить фото",
-    "tapToClear": "Нажмите ещё раз, чтобы снять оценку"
+    "tapToClear": "Нажмите ещё раз, чтобы снять оценку",
+    "quoteRequested": "Запрошена смета"
   },
   "suggestions": {
     "title": "Типичные неисправности",

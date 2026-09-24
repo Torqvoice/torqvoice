@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standardowy",
-        "description": "Werdykt pod tytułem, pojazd i badanie obok siebie, każda usterka z uwagą i zdjęciem, potem każda pozycja według sekcji"
+        "description": "Werdykt pod tytułem, pojazd i badanie obok siebie, każda usterka z uwagą i zdjęciem, potem niezaliczone pozycje według sekcji"
       },
       "certificate-customer": {
         "name": "Raport dla klienta",
-        "description": "Arkusz z pasem, werdykt duży i wyśrodkowany, usterki ze zdjęciami, zdjęcia ogólne i jedna krótka tabela wszystkich pozycji"
+        "description": "Arkusz z pasem, werdykt duży i wyśrodkowany, usterki ze zdjęciami, zdjęcia ogólne i krótka tabela niezaliczonych pozycji"
       },
       "certificate-compact": {
         "name": "Kompaktowy",

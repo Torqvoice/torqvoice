@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standard",
-        "description": "L'esito sotto il titolo, veicolo e controllo affiancati, ogni difetto con nota e foto, poi ogni controllo per sezione"
+        "description": "L'esito sotto il titolo, veicolo e controllo affiancati, ogni difetto con nota e foto, poi i controlli non superati per sezione"
       },
       "certificate-customer": {
         "name": "Report per il cliente",
-        "description": "Un foglio con fascia, l'esito grande e centrato, i difetti con foto, le foto d'insieme e una breve tabella di tutti i controlli"
+        "description": "Un foglio con fascia, l'esito grande e centrato, i difetti con foto, le foto d'insieme e una breve tabella dei controlli non superati"
       },
       "certificate-compact": {
         "name": "Compatto",

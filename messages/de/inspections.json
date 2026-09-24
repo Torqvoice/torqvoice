@@ -134,7 +134,14 @@
     "linkWorkOrder": "Mit Auftrag verknüpfen",
     "notes": "Anmerkungen zur Inspektion",
     "notesHint": "Wird auf dem Zertifikat gedruckt und dem Kunden angezeigt.",
-    "notesPlaceholder": "Alles, was der Kunde über die bewerteten Prüfungen hinaus wissen sollte…"
+    "notesPlaceholder": "Alles, was der Kunde über die bewerteten Prüfungen hinaus wissen sollte…",
+    "quoteRequestHeading": "Angebotsanfrage",
+    "quoteRequestedBy": "Angefragt von {name} am {date}",
+    "quoteRequestedOn": "Angefragt am {date}",
+    "quoteRequestMissingChecks": "{count} angefragte Prüfpunkt(e) stehen nicht mehr auf der Checkliste.",
+    "createQuoteFromRequest": "Angebot aus Anfrage anlegen",
+    "quoteFromRequestNote": "Erstellt aus der Angebotsanfrage des Kunden über den Prüfbericht-Link.",
+    "quoteCustomerSaid": "Nachricht des Kunden: {message}"
   },
   "item": {
     "required": "(Pflicht)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Upload fehlgeschlagen",
     "uploadFailedFor": "{name} konnte nicht hochgeladen werden",
     "reopenToChange": "Inspektion wieder öffnen, um Fotos hinzuzufügen",
-    "tapToClear": "Erneut tippen, um die Bewertung zu löschen"
+    "tapToClear": "Erneut tippen, um die Bewertung zu löschen",
+    "quoteRequested": "Angebot angefragt"
   },
   "suggestions": {
     "title": "Häufige Mängel",

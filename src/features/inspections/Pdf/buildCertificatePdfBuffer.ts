@@ -8,19 +8,14 @@ import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
-import { isDesignerLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
-import {
-  designSourceFromSettings,
-  designSourceFromSnapshot,
-  templateConfigFromSource,
-  type DesignSource,
-} from '@/features/invoice-designer/Lib/designSource'
+import { templateConfigFromSource } from '@/features/invoice-designer/Lib/designSource'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { CertificatePDF } from '../Components/CertificatePDF'
-import { inspectionPrintLabels } from '../Lib/inspectionLabels'
-import { certificateLabels } from '../Lib/certificateLabels'
 import { appendCertificateDocuments, certificateDocuments } from '../Lib/certificateDocuments'
 import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspectionPhotos'
+import { certificateDesignSource, loadCertificateLabels } from './certificateDesign'
+
+export { certificateDesignSource, liveCertificateDesign } from './certificateDesign'
 
 /**
  * The one place a designed certificate becomes a PDF, for the workshop's
@@ -32,14 +27,6 @@ import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspe
  * before designs existed, so a workshop that never opens the designer sees
  * no change.
  */
-
-async function loadPdfMessages(locale: string) {
-  try {
-    return (await import(`../../../../messages/${locale}/pdf.json`)).default
-  } catch {
-    return (await import(`../../../../messages/en/pdf.json`)).default
-  }
-}
 
 async function logoDataUriFor(settingsMap: Record<string, string>): Promise<string | undefined> {
   const logoPath = documentLogoPath(settingsMap, 'certificate')
@@ -59,30 +46,6 @@ async function logoDataUriFor(settingsMap: Record<string, string>): Promise<stri
   } catch {
     return undefined
   }
-}
-
-/** The design this inspection prints from, or null when it has none. */
-export async function certificateDesignSource(
-  organizationId: string,
-  inspection: { designSnapshotId: string | null },
-  settingsMap: Record<string, string>
-): Promise<DesignSource | null> {
-  if (inspection.designSnapshotId) {
-    const snapshot = await db.documentDesignSnapshot.findFirst({
-      where: { id: inspection.designSnapshotId, organizationId },
-      select: { layout: true, template: true },
-    })
-    const frozen = snapshot ? designSourceFromSnapshot(snapshot.layout, snapshot.template) : null
-    if (frozen) return frozen
-  }
-  const live = designSourceFromSettings(settingsMap, 'certificate')
-  return isDesignerLayout(live.layout) ? live : null
-}
-
-/** The live certificate design, for freezing when an inspection is completed. */
-export function liveCertificateDesign(settingsMap: Record<string, string>): DesignSource | null {
-  const live = designSourceFromSettings(settingsMap, 'certificate')
-  return isDesignerLayout(live.layout) ? live : null
 }
 
 export async function buildCertificatePdfBuffer({
@@ -136,8 +99,7 @@ export async function buildCertificatePdfBuffer({
   const source = await certificateDesignSource(organizationId, inspection, settingsMap)
   if (!source) return null
 
-  const pdfMessages = await loadPdfMessages(locale)
-  const labels = certificateLabels(pdfMessages, inspectionPrintLabels(pdfMessages, settingsMap))
+  const labels = await loadCertificateLabels(locale, settingsMap)
 
   const [logoDataUri, features] = await Promise.all([
     logoDataUriFor(settingsMap),

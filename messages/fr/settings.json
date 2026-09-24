@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standard",
-        "description": "Le verdict sous le titre, le véhicule et le contrôle côte à côte, chaque défaut avec sa note et sa photo, puis chaque contrôle par section"
+        "description": "Le verdict sous le titre, le véhicule et le contrôle côte à côte, chaque défaut avec sa note et sa photo, puis les contrôles non conformes par section"
       },
       "certificate-customer": {
         "name": "Rapport client",
-        "description": "Une feuille à bandeau, le verdict grand et centré, les défauts en photos, les photos du tour du véhicule et un tableau court de tous les contrôles"
+        "description": "Une feuille à bandeau, le verdict grand et centré, les défauts en photos, les photos du tour du véhicule et un tableau court des contrôles non conformes"
       },
       "certificate-compact": {
         "name": "Compact",

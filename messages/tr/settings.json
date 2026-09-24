@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standart",
-        "description": "Başlığın altında sonuç, araç ve test yan yana, her kusur notu ve fotoğrafıyla, ardından bölüm bölüm her kontrol"
+        "description": "Başlığın altında sonuç, araç ve test yan yana, her kusur notu ve fotoğrafıyla, ardından bölüm bölüm geçmeyen kontroller"
       },
       "certificate-customer": {
         "name": "Müşteri raporu",
-        "description": "Bantlı sayfa, büyük ve ortalanmış sonuç, fotoğraflı kusurlar, genel fotoğraflar ve tüm kontrollerin kısa bir tablosu"
+        "description": "Bantlı sayfa, büyük ve ortalanmış sonuç, fotoğraflı kusurlar, genel fotoğraflar ve geçmeyen kontrollerin kısa bir tablosu"
       },
       "certificate-compact": {
         "name": "Kompakt",

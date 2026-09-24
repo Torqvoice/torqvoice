@@ -59,6 +59,8 @@ vi.mock('@/features/inspections/Components/QuoteRequestDialog', () => ({
 }))
 
 import { InspectionView } from '@/app/(public)/share/inspection/[orgId]/[token]/inspection-view'
+import { buildCertificatePrintSpec } from '@/features/inspections/Pdf/buildCertificatePrint'
+import { getDefaultLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { toast } from 'sonner'
 
 const WORKSHOP = {
@@ -456,6 +458,73 @@ describe('InspectionView', () => {
       await userEvent.click(screen.getByAltText('Oil Level 1').closest('button')!)
       await userEvent.keyboard('{Escape}')
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('a designed certificate', () => {
+    // The sheet the workshop designed, built from this very inspection the
+    // way the page builds it.
+    const SPEC = buildCertificatePrintSpec({
+      data: {
+        ...BASE_INSPECTION,
+        severityScale: 'eu',
+        country: null,
+        vehicleCategory: null,
+        nextTestDue: null,
+        certificateNumber: 'CERT-77',
+        inspectorName: null,
+        testLocation: null,
+        template: { name: 'Full Inspection', severityScale: 'eu', country: null },
+      },
+      workshop: WORKSHOP,
+      layoutConfig: getDefaultLayout('certificate'),
+    })
+
+    it('draws the sheet instead of the built-in report, and keeps the actions', () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        spec: SPEC,
+        inspection: {
+          ...BASE_INSPECTION,
+          attachments: [
+            {
+              id: 'f-img',
+              fileName: 'front.jpg',
+              fileUrl: '/api/public/files/tok/front.jpg',
+              fileType: 'image/jpeg',
+              description: null,
+            },
+            {
+              id: 'f-doc',
+              fileName: 'regulator-form.pdf',
+              fileUrl: '/api/public/files/tok/regulator-form.pdf',
+              fileType: 'application/pdf',
+              description: null,
+            },
+          ],
+        },
+      }
+      render(<InspectionView {...props} />)
+      // The sheet carries the certificate's own data.
+      expect(screen.getAllByText('CERT-77').length).toBeGreaterThan(0)
+      // The hand-built report stays home: no page heading, no summary strip.
+      expect(screen.queryByText('Vehicle Inspection')).not.toBeInTheDocument()
+      expect(screen.queryByRole('region', { name: 'Summary' })).not.toBeInTheDocument()
+      // The customer can still ask for a quote and download the PDF.
+      expect(screen.getByRole('button', { name: /request/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument()
+      // Photos are on the sheet; a document the sheet can only name stays a link.
+      expect(screen.queryByAltText('front.jpg')).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /regulator-form\.pdf/ })).toHaveAttribute(
+        'href',
+        '/api/public/files/tok/regulator-form.pdf'
+      )
+    })
+
+    it('draws the built-in report when there is no design', () => {
+      render(<InspectionView {...DEFAULT_PROPS} />)
+      expect(screen.getByText('Vehicle Inspection')).toBeInTheDocument()
+      expect(screen.getByText('Quality Auto')).toBeInTheDocument()
     })
   })
 })

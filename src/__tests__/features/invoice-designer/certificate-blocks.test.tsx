@@ -105,31 +105,31 @@ describe('the sections a default certificate prints', () => {
 })
 
 describe('the certificate switches', () => {
-  it('drops the passed and not-applicable rows from the full results when asked', () => {
-    const all = textsOf(
+  it('lists only the checks that were not OK until a design asks for the rest', () => {
+    const defectsOnly = textsOf(
       blockOf(
         specWith(() => undefined),
         'results_table'
       )
     )
-    expect(all).toContain('sample.checkBrakePedal')
-    expect(all).toContain('sample.checkFogLamp')
+    expect(defectsOnly).toContain('sample.checkBrakeHoses')
+    expect(defectsOnly).not.toContain('sample.checkBrakePedal')
+    expect(defectsOnly).not.toContain('sample.checkFogLamp')
 
-    const defectsOnly = specWith((section) =>
+    const all = specWith((section) =>
       section.id === 'results_table'
         ? {
             fields: [
-              { id: 'passed_checks', visible: false },
-              { id: 'not_applicable_checks', visible: false },
+              { id: 'passed_checks', visible: true },
+              { id: 'not_applicable_checks', visible: true },
               { id: 'check_notes', visible: true },
             ],
           }
         : undefined
     )
-    const texts = textsOf(blockOf(defectsOnly, 'results_table'))
-    expect(texts).toContain('sample.checkBrakeHoses')
-    expect(texts).not.toContain('sample.checkBrakePedal')
-    expect(texts).not.toContain('sample.checkFogLamp')
+    const texts = textsOf(blockOf(all, 'results_table'))
+    expect(texts).toContain('sample.checkBrakePedal')
+    expect(texts).toContain('sample.checkFogLamp')
   })
 
   it('puts every check in one table with a section column when asked', () => {
@@ -143,6 +143,7 @@ describe('the certificate switches', () => {
       walk(block)
       return out
     }
+    // Only the section with a defect prints by default, so one table.
     expect(
       tablesIn(
         blockOf(
@@ -150,7 +151,7 @@ describe('the certificate switches', () => {
           'results_table'
         )
       )
-    ).toHaveLength(2)
+    ).toHaveLength(1)
 
     const combined = specWith((section) =>
       section.id === 'results_table'

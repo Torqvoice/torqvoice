@@ -134,7 +134,14 @@
     "linkWorkOrder": "Lier à l'ordre de travail",
     "notes": "Remarques sur l'inspection",
     "notesHint": "Imprimées sur le certificat et visibles par le client.",
-    "notesPlaceholder": "Ce que le client doit savoir au-delà des contrôles notés…"
+    "notesPlaceholder": "Ce que le client doit savoir au-delà des contrôles notés…",
+    "quoteRequestHeading": "Demande de devis",
+    "quoteRequestedBy": "Demandé par {name} le {date}",
+    "quoteRequestedOn": "Demandé le {date}",
+    "quoteRequestMissingChecks": "{count} point(s) demandé(s) ne figurent plus sur la liste.",
+    "createQuoteFromRequest": "Créer un devis à partir de la demande",
+    "quoteFromRequestNote": "Créé à partir de la demande de devis du client sur le lien de l'inspection.",
+    "quoteCustomerSaid": "Message du client : {message}"
   },
   "item": {
     "required": "(obligatoire)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Échec du téléversement",
     "uploadFailedFor": "Impossible de téléverser {name}",
     "reopenToChange": "Rouvrez l'inspection pour ajouter des photos",
-    "tapToClear": "Appuyez à nouveau pour effacer la note"
+    "tapToClear": "Appuyez à nouveau pour effacer la note",
+    "quoteRequested": "Devis demandé"
   },
   "suggestions": {
     "title": "Défaillances courantes",

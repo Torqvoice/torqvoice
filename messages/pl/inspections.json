@@ -134,7 +134,14 @@
     "linkWorkOrder": "Powiąż ze zleceniem",
     "notes": "Uwagi do przeglądu",
     "notesHint": "Drukowane na certyfikacie i widoczne dla klienta.",
-    "notesPlaceholder": "Wszystko, co klient powinien wiedzieć poza ocenionymi pozycjami…"
+    "notesPlaceholder": "Wszystko, co klient powinien wiedzieć poza ocenionymi pozycjami…",
+    "quoteRequestHeading": "Prośba o wycenę",
+    "quoteRequestedBy": "Poprosił(a) {name} dnia {date}",
+    "quoteRequestedOn": "Poproszono dnia {date}",
+    "quoteRequestMissingChecks": "{count} pozycji z prośby nie ma już na liście kontrolnej.",
+    "createQuoteFromRequest": "Utwórz wycenę z prośby",
+    "quoteFromRequestNote": "Utworzono z prośby klienta o wycenę na linku do przeglądu.",
+    "quoteCustomerSaid": "Wiadomość klienta: {message}"
   },
   "item": {
     "required": "(wymagane)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Przesyłanie nie powiodło się",
     "uploadFailedFor": "Nie udało się przesłać {name}",
     "reopenToChange": "Otwórz przegląd ponownie, aby dodać zdjęcia",
-    "tapToClear": "Dotknij ponownie, aby usunąć ocenę"
+    "tapToClear": "Dotknij ponownie, aby usunąć ocenę",
+    "quoteRequested": "Poproszono o wycenę"
   },
   "suggestions": {
     "title": "Typowe usterki",

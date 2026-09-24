@@ -134,7 +134,14 @@
     "linkWorkOrder": "Collega all'ordine",
     "notes": "Note sull'ispezione",
     "notesHint": "Stampate sul certificato e mostrate al cliente.",
-    "notesPlaceholder": "Tutto ciò che il cliente dovrebbe sapere oltre ai controlli…"
+    "notesPlaceholder": "Tutto ciò che il cliente dovrebbe sapere oltre ai controlli…",
+    "quoteRequestHeading": "Richiesta di preventivo",
+    "quoteRequestedBy": "Richiesto da {name} il {date}",
+    "quoteRequestedOn": "Richiesto il {date}",
+    "quoteRequestMissingChecks": "{count} punto/i richiesto/i non sono più nella lista.",
+    "createQuoteFromRequest": "Crea preventivo dalla richiesta",
+    "quoteFromRequestNote": "Creato dalla richiesta di preventivo del cliente sul link dell'ispezione.",
+    "quoteCustomerSaid": "Messaggio del cliente: {message}"
   },
   "item": {
     "required": "(obbligatorio)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Caricamento non riuscito",
     "uploadFailedFor": "Impossibile caricare {name}",
     "reopenToChange": "Riapri l'ispezione per aggiungere foto",
-    "tapToClear": "Tocca di nuovo per cancellare la valutazione"
+    "tapToClear": "Tocca di nuovo per cancellare la valutazione",
+    "quoteRequested": "Preventivo richiesto"
   },
   "suggestions": {
     "title": "Carenze frequenti",

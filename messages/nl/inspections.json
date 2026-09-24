@@ -134,7 +134,14 @@
     "linkWorkOrder": "Koppelen aan werkorder",
     "notes": "Opmerkingen bij de inspectie",
     "notesHint": "Wordt op het certificaat afgedrukt en aan de klant getoond.",
-    "notesPlaceholder": "Alles wat de klant moet weten naast de beoordeelde controles…"
+    "notesPlaceholder": "Alles wat de klant moet weten naast de beoordeelde controles…",
+    "quoteRequestHeading": "Offerteaanvraag",
+    "quoteRequestedBy": "Aangevraagd door {name} op {date}",
+    "quoteRequestedOn": "Aangevraagd op {date}",
+    "quoteRequestMissingChecks": "{count} aangevraagd(e) punt(en) staan niet meer op de checklist.",
+    "createQuoteFromRequest": "Offerte maken van aanvraag",
+    "quoteFromRequestNote": "Aangemaakt uit de offerteaanvraag van de klant via de inspectielink.",
+    "quoteCustomerSaid": "Bericht van de klant: {message}"
   },
   "item": {
     "required": "(verplicht)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Uploaden mislukt",
     "uploadFailedFor": "{name} kon niet worden geüpload",
     "reopenToChange": "Heropen de inspectie om foto's toe te voegen",
-    "tapToClear": "Tik nogmaals om de beoordeling te wissen"
+    "tapToClear": "Tik nogmaals om de beoordeling te wissen",
+    "quoteRequested": "Offerte gevraagd"
   },
   "suggestions": {
     "title": "Veelvoorkomende gebreken",

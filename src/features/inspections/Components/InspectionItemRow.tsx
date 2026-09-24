@@ -26,6 +26,7 @@ import {
   Camera,
   Check,
   Loader2,
+  MessageSquareText,
   Minus,
   OctagonAlert,
   TriangleAlert,
@@ -205,6 +206,7 @@ export function InspectionItemRow({
   country = null,
   isCompleted,
   history,
+  quoteRequested = false,
   onOpenImage,
   onChanged,
   onSaveState,
@@ -217,6 +219,8 @@ export function InspectionItemRow({
   isCompleted: boolean
   /** Wording this workshop has used before on a check of this name. */
   history?: { text: string; severity: string }[]
+  /** The customer asked for this check to be priced, from their link. */
+  quoteRequested?: boolean
   /** Opens the shared lightbox on the given URL. */
   onOpenImage: (url: string) => void
   /** Lets the page recompute the summary without a server round-trip. */
@@ -477,6 +481,15 @@ export function InspectionItemRow({
             <span>{item.name}</span>
             {item.required && (
               <span className="text-muted-foreground text-xs font-normal">{t('required')}</span>
+            )}
+            {quoteRequested && (
+              <span
+                data-testid="quote-requested-marker"
+                className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-medium text-amber-800 dark:text-amber-300"
+              >
+                <MessageSquareText className="h-3 w-3" aria-hidden="true" />
+                {t('quoteRequested')}
+              </span>
             )}
             {isSaving && (
               <>

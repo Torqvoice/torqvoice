@@ -747,11 +747,11 @@
       },
       "certificate-standard": {
         "name": "Standartinis",
-        "description": "Verdiktas po pavadinimu, automobilis ir patikra greta, kiekvienas defektas su pastaba ir nuotrauka, tada visi patikrinimai pagal skyrius"
+        "description": "Verdiktas po pavadinimu, automobilis ir patikra greta, kiekvienas defektas su pastaba ir nuotrauka, tada neišlaikyti patikrinimai pagal skyrius"
       },
       "certificate-customer": {
         "name": "Ataskaita klientui",
-        "description": "Lapas su juosta, verdiktas didelis ir centre, defektai su nuotraukomis, apžvalginės nuotraukos ir trumpa visų patikrinimų lentelė"
+        "description": "Lapas su juosta, verdiktas didelis ir centre, defektai su nuotraukomis, apžvalginės nuotraukos ir trumpa neišlaikytų patikrinimų lentelė"
       },
       "certificate-compact": {
         "name": "Kompaktiškas",

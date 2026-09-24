@@ -134,7 +134,14 @@
     "linkWorkOrder": "Associar à ordem",
     "notes": "Observações da inspeção",
     "notesHint": "Impressas no certificado e mostradas ao cliente.",
-    "notesPlaceholder": "Tudo o que o cliente deve saber além dos itens avaliados…"
+    "notesPlaceholder": "Tudo o que o cliente deve saber além dos itens avaliados…",
+    "quoteRequestHeading": "Pedido de orçamento",
+    "quoteRequestedBy": "Pedido por {name} em {date}",
+    "quoteRequestedOn": "Pedido em {date}",
+    "quoteRequestMissingChecks": "{count} item(ns) pedido(s) já não estão na lista.",
+    "createQuoteFromRequest": "Criar orçamento a partir do pedido",
+    "quoteFromRequestNote": "Criado a partir do pedido de orçamento do cliente na ligação da inspeção.",
+    "quoteCustomerSaid": "Mensagem do cliente: {message}"
   },
   "item": {
     "required": "(obrigatório)",
@@ -164,7 +171,8 @@
     "uploadFailed": "Falha no carregamento",
     "uploadFailedFor": "Não foi possível carregar {name}",
     "reopenToChange": "Reabra a inspeção para adicionar fotografias",
-    "tapToClear": "Toque de novo para limpar a avaliação"
+    "tapToClear": "Toque de novo para limpar a avaliação",
+    "quoteRequested": "Orçamento pedido"
   },
   "suggestions": {
     "title": "Deficiências comuns",
