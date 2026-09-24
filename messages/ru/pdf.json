@@ -205,6 +205,9 @@
     "mileageColMarine": "Моточасы"
   },
   "common": {
-    "poweredBy": "Работает на"
+    "poweredBy": "Работает на",
+    "signature": "Подпись",
+    "signedBy": "Подписал(а)",
+    "signatureDate": "Дата"
   }
 }

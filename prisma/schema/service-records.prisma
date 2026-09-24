@@ -80,18 +80,22 @@ model ServiceRecord {
   /// title cannot rewrite paper already issued, and a preview and a re-send
   /// always show the same sheet. Only an owner's unlock followed by a send
   /// captures a fresh copy: the corrected one.
-  issuedAt               DateTime?
+  issuedAt                  DateTime?
   /// The look at issue. Restrict: a snapshot referenced by an invoice is a
   /// record and cannot be removed.
-  issuedDesignSnapshotId String?
-  issuedDesignSnapshot   DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
-  issuedLogoSnapshotId   String?
-  issuedLogoSnapshot     DocumentAssetSnapshot?  @relation(fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
+  issuedDesignSnapshotId    String?
+  issuedDesignSnapshot      DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
+  issuedLogoSnapshotId      String?
+  issuedLogoSnapshot        DocumentAssetSnapshot?  @relation("IssuedLogoSnapshot", fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
+  /// The signature of whoever opened the job, as it was at issue. Null when
+  /// they had none, or the invoice was issued before signatures existed.
+  issuedSignatureSnapshotId String?
+  issuedSignatureSnapshot   DocumentAssetSnapshot?  @relation("IssuedSignatureSnapshot", fields: [issuedSignatureSnapshotId], references: [id], onDelete: Restrict)
   /// Everything else the sheet printed that the record does not own: the
   /// workshop's details and payment settings, the customer, the vehicle, the
   /// technician's name, the findings and the custom fields. Shape in
   /// issuedInvoice.ts; read leniently so old snapshots render on new code.
-  issuedData             Json?
+  issuedData                Json?
 
   /// Set when an owner or admin deliberately reopens a locked document.
   /// Nullable rather than a boolean so the audit trail can show when, and the
@@ -171,6 +175,7 @@ model ServiceRecord {
   @@index([designId])
   @@index([issuedDesignSnapshotId])
   @@index([issuedLogoSnapshotId])
+  @@index([issuedSignatureSnapshotId])
   @@index([organizationId])
   @@index([customerId])
   @@index([inspectionId])
@@ -203,11 +208,11 @@ model ServiceConcern {
   /// The rest of the story this concern starts: condition, cause, correction,
   /// confirmation. `description` is the condition. The cause is the sentence
   /// the customer is told; the structured findings hang off `findings` below.
-  cause        String?
+  cause         String?
   /// What was done about it.
-  correction   String?
+  correction    String?
   /// How the fix was checked: the test drive, the re-scan, the symptom gone.
-  confirmation String?
+  confirmation  String?
   /// Set when somebody ticks the concern as confirmed, cleared when unticked.
   /// Stamped by the server from the session, never taken from the client.
   confirmedAt   DateTime?

@@ -125,6 +125,7 @@ export default async function PublicInvoicePage({
     invoiceSettings: assembly.invoiceSettings,
     paymentSummary: assembly.paymentSummary,
     logoDataUri: assembly.logoDataUri,
+    signer: assembly.signer,
     template: assembly.template,
     torqvoiceLogoDataUri,
     telegramQrDataUri: telegramQr?.dataUri,

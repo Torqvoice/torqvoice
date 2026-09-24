@@ -205,6 +205,9 @@
     "mileageColMarine": "Godziny Silnika"
   },
   "common": {
-    "poweredBy": "Obsługiwane przez"
+    "poweredBy": "Obsługiwane przez",
+    "signature": "Podpis",
+    "signedBy": "Podpisał(a)",
+    "signatureDate": "Data"
   }
 }

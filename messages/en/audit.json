@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Changed Work Order Status",
     "settings_workOrderStatus_archive": "Removed Work Order Status",
     "inspection_photo_added": "Added Inspection Photo",
-    "inspection_file_added": "Added Inspection File"
+    "inspection_file_added": "Added Inspection File",
+    "signature_save": "Saved Signature",
+    "signature_remove": "Removed Signature"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",

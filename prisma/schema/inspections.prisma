@@ -134,8 +134,12 @@ model Inspection {
   /// design edited later never changes a certificate a customer already has.
   /// Null on inspections completed before designs existed, or by a workshop
   /// that has never designed one; those print the built-in sheet.
-  designSnapshotId String?
-  designSnapshot   DocumentDesignSnapshot? @relation(fields: [designSnapshotId], references: [id], onDelete: SetNull)
+  designSnapshotId    String?
+  designSnapshot      DocumentDesignSnapshot? @relation(fields: [designSnapshotId], references: [id], onDelete: SetNull)
+  /// The inspector's signature as it was at completion, for the same reason:
+  /// a redrawn signature never changes a certificate already issued.
+  signatureSnapshotId String?
+  signatureSnapshot   DocumentAssetSnapshot?  @relation(fields: [signatureSnapshotId], references: [id], onDelete: SetNull)
 
   organizationId String
 
@@ -151,6 +155,7 @@ model Inspection {
 
   @@index([vehicleId])
   @@index([designSnapshotId])
+  @@index([signatureSnapshotId])
   @@index([organizationId])
   @@index([technicianId])
   @@index([workBayId])

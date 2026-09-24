@@ -205,6 +205,9 @@
     "mileageColMarine": "Variklio val."
   },
   "common": {
-    "poweredBy": "Sukurta su"
+    "poweredBy": "Sukurta su",
+    "signature": "Parašas",
+    "signedBy": "Pasirašė",
+    "signatureDate": "Data"
   }
 }

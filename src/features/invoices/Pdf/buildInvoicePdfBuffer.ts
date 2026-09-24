@@ -79,6 +79,7 @@ export async function renderInvoicePdf(
     invoiceSettings: assembly.invoiceSettings,
     paymentSummary: assembly.paymentSummary,
     logoDataUri: assembly.logoDataUri,
+    signer: assembly.signer,
     template: assembly.template,
     torqvoiceLogoDataUri,
     portalUrl,

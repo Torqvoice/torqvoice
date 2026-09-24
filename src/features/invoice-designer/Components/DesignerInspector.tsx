@@ -343,6 +343,7 @@ export function DesignerInspector({
   orgNumberLabelDefault,
   onOrgNumberLabel,
   telegramBotLink,
+  signatureSet,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -373,6 +374,8 @@ export function DesignerInspector({
   onOrgNumberLabel: (value: string) => void
   /** The connected Telegram bot's link; the block is a stand-in without one. */
   telegramBotLink?: string
+  /** Whether the person designing has saved a signature, or the canvas shows a stand-in. */
+  signatureSet: boolean
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -777,6 +780,25 @@ export function DesignerInspector({
                   className="font-medium text-[#2563eb] underline underline-offset-2"
                 >
                   {t('telegramQrLink')}
+                </a>
+              </p>
+            </Group>
+          )}
+
+          {/* Whose hand it is depends on the document, so nothing here sets
+              it: each person saves their own, and the sheet prints the
+              signature of whoever issued it. */}
+          {section.id === 'signature' && (
+            <Group title={t('signatureWhose')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {signatureSet ? t('signatureOwnHint') : t('signaturePlaceholderHint')}{' '}
+                <a
+                  href="/settings/account"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('signatureLink')}
                 </a>
               </p>
             </Group>

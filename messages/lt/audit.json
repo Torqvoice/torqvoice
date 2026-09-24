@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Pakeista užsakymo būsena",
     "settings_workOrderStatus_archive": "Pašalinta užsakymo būsena",
     "inspection_photo_added": "Pridėta apžiūros nuotrauka",
-    "inspection_file_added": "Pridėtas apžiūros failas"
+    "inspection_file_added": "Pridėtas apžiūros failas",
+    "signature_save": "Išsaugotas parašas",
+    "signature_remove": "Pašalintas parašas"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",

@@ -10,6 +10,7 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { templateConfigFromSource } from '@/features/invoice-designer/Lib/designSource'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
+import { certificateSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import { CertificatePDF } from '../Components/CertificatePDF'
 import { appendCertificateDocuments, certificateDocuments } from '../Lib/certificateDocuments'
 import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspectionPhotos'
@@ -101,9 +102,10 @@ export async function buildCertificatePdfBuffer({
 
   const labels = await loadCertificateLabels(locale, settingsMap)
 
-  const [logoDataUri, features] = await Promise.all([
+  const [logoDataUri, features, signatureDataUri] = await Promise.all([
     logoDataUriFor(settingsMap),
     getFeatures(organizationId),
+    certificateSignatureDataUri(organizationId, inspection),
   ])
 
   // Photos are an enhancement; the certificate is the document.
@@ -128,6 +130,7 @@ export async function buildCertificatePdfBuffer({
     },
     labels,
     logoDataUri,
+    signatureDataUri,
     torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,

@@ -30,6 +30,7 @@ export function QuotePDF({
   currencyCode = 'USD',
   currencyFormat = 'symbol',
   logoDataUri,
+  signer,
   torqvoiceLogoDataUri,
   dateFormat,
   timezone,
@@ -49,6 +50,7 @@ export function QuotePDF({
   currencyCode?: string
   currencyFormat?: 'symbol' | 'code'
   logoDataUri?: string
+  signer?: { name: string; dataUri?: string }
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
@@ -70,6 +72,7 @@ export function QuotePDF({
     currencyCode,
     currencyFormat,
     logoDataUri,
+    signer,
     torqvoiceLogoDataUri,
     dateFormat,
     timezone,

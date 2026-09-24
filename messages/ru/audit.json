@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Изменён статус заказ-наряда",
     "settings_workOrderStatus_archive": "Удалён статус заказ-наряда",
     "inspection_photo_added": "Добавлено фото осмотра",
-    "inspection_file_added": "Добавлен файл осмотра"
+    "inspection_file_added": "Добавлен файл осмотра",
+    "signature_save": "Сохранена подпись",
+    "signature_remove": "Удалена подпись"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",

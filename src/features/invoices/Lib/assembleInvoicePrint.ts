@@ -45,6 +45,7 @@ import {
   designRuleSubjectOf,
   findRuleDesign,
 } from '@/features/invoice-designer/Lib/designRules.server'
+import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import { readIssuedInvoiceData, rendersFromIssue, type IssuedInvoiceData } from './issuedInvoice'
 
 const PARTY_SELECT = {
@@ -82,6 +83,9 @@ const RECORD_INCLUDE = {
   },
   issuedDesignSnapshot: true,
   issuedLogoSnapshot: true,
+  issuedSignatureSnapshot: true,
+  // Whoever opened the job signs it.
+  createdBy: { select: { id: true, name: true } },
 }
 
 export type InvoiceRecordForPrint = NonNullable<Awaited<ReturnType<typeof loadRecord>>>
@@ -116,11 +120,18 @@ export interface InvoicePrintAssembly {
   template: TemplateConfig
   layoutConfig: InvoiceLayoutConfig
   logoDataUri?: string
+  /** Who signs the sheet: whoever opened the job, with their saved signature. */
+  signer: PrintSigner
   paymentSummary?: PaymentSummary
   /** The look in the shape a snapshot stores. */
   designSource: DesignSource
   /** What the print labels derive from: the frozen service type and tax label. */
   labelSettings: Record<string, string>
+}
+
+export interface PrintSigner {
+  name: string
+  dataUri?: string
 }
 
 const MIME_BY_EXT: Record<string, string> = {
@@ -319,7 +330,7 @@ async function assembleLive(
   settingsMap: Record<string, string>
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
-  const [findings, customFields, look] = await Promise.all([
+  const [findings, customFields, look, signatureDataUri] = await Promise.all([
     db.vehicleFinding.findMany({
       where: { serviceRecordId: record.id, status: { not: 'resolved' } },
       select: { description: true, severity: true, notes: true },
@@ -327,6 +338,7 @@ async function assembleLive(
     }),
     getCustomFieldsForPrint(organizationId, record.id, 'service_record'),
     currentLook(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
+    memberSignatureDataUri(organizationId, record.createdBy?.id),
   ])
   const { designSource, logoDataUri } = look
 
@@ -366,6 +378,7 @@ async function assembleLive(
     template,
     layoutConfig: template.layoutConfig!,
     logoDataUri,
+    signer: { name: record.createdBy?.name ?? '', dataUri: signatureDataUri },
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
     labelSettings: {
@@ -438,6 +451,14 @@ function assembleFrozen(
     template,
     layoutConfig: template.layoutConfig!,
     logoDataUri,
+    // Invoices issued before signatures existed froze no signer, and print
+    // the line unsigned rather than borrowing today's signature.
+    signer: {
+      name: frozen.signerName ?? '',
+      dataUri: record.issuedSignatureSnapshot
+        ? assetDataUri(record.issuedSignatureSnapshot)
+        : undefined,
+    },
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
     labelSettings: {

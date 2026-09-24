@@ -182,7 +182,9 @@
     "settings_workOrderStatus_update": "Auftragsstatus geändert",
     "settings_workOrderStatus_archive": "Auftragsstatus entfernt",
     "inspection_photo_added": "Prüfungsfoto hinzugefügt",
-    "inspection_file_added": "Prüfungsdatei hinzugefügt"
+    "inspection_file_added": "Prüfungsdatei hinzugefügt",
+    "signature_save": "Unterschrift gespeichert",
+    "signature_remove": "Unterschrift entfernt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",

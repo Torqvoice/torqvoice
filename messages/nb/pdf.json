@@ -205,6 +205,9 @@
     "mileageColMarine": "Motortimer"
   },
   "common": {
-    "poweredBy": "Drevet av"
+    "poweredBy": "Drevet av",
+    "signature": "Signatur",
+    "signedBy": "Signert av",
+    "signatureDate": "Dato"
   }
 }

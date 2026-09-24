@@ -205,6 +205,9 @@
     "mileageColMarine": "Motor Saati"
   },
   "common": {
-    "poweredBy": "Destekleyen"
+    "poweredBy": "Destekleyen",
+    "signature": "İmza",
+    "signedBy": "İmzalayan",
+    "signatureDate": "Tarih"
   }
 }

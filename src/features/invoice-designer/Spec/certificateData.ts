@@ -44,5 +44,4 @@ export interface CertificateData {
   sections: { code: string | null; name: string; rows: CertificateResultRow[] }[]
   /** Photographs of the vehicle as a whole, with the captions the desk gave them. */
   photos: { dataUri: string; caption: string | null }[]
-  signature: { inspector: string; date: string }
 }

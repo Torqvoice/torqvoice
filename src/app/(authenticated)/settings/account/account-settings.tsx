@@ -2,6 +2,7 @@
 
 import { AppCard } from '@/components/app-card'
 import { SignedInDevices } from './signed-in-devices'
+import { SignatureCard } from '@/features/signatures/Components/SignatureCard'
 import type { SignedInDevice } from '@/features/settings/Actions/sessionActions'
 import { useState, useEffect } from 'react'
 import { useSession } from '@/lib/auth-client'
@@ -44,11 +45,14 @@ export function AccountSettings({
   emailVerified: initialEmailVerified,
   emailVerificationRequired,
   devices,
+  signature,
 }: {
   twoFactorEnabled: boolean
   emailVerified: boolean
   emailVerificationRequired: boolean
   devices: SignedInDevice[]
+  /** The caller's saved signature for this workshop, as a data URI. */
+  signature: string | null
 }) {
   const { data: session } = useSession()
   const router = useRouter()
@@ -356,6 +360,8 @@ export function AccountSettings({
           </Button>
         </div>
       </AppCard>
+
+      <SignatureCard initial={signature} />
 
       {/* Change Password */}
       <AppCard

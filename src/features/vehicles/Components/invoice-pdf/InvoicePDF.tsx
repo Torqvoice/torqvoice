@@ -30,6 +30,7 @@ export function InvoicePDF({
   otherAttachments = [],
   pdfAttachmentNames = [],
   logoDataUri,
+  signer,
   template,
   torqvoiceLogoDataUri,
   portalUrl,
@@ -45,6 +46,7 @@ export function InvoicePDF({
   otherAttachments?: OtherAttachment[]
   pdfAttachmentNames?: string[]
   logoDataUri?: string
+  signer?: { name: string; dataUri?: string }
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   portalUrl?: string
@@ -60,6 +62,7 @@ export function InvoicePDF({
     pdfAttachmentNames,
     otherAttachmentNames: otherAttachments.map((att) => att.fileName),
     logoDataUri,
+    signer,
     template,
     torqvoiceLogoDataUri,
     portalUrl,
