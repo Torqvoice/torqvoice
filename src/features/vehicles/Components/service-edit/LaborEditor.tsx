@@ -1,5 +1,7 @@
 'use client'
 
+import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
+import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -93,6 +95,8 @@ function SortableLaborRow({
     : undefined
 
   const isService = labor.pricingType === 'service'
+  const isFee = isShopFeeLine(labor)
+  const feeLocked = useShopFeeLocked()
 
   return (
     <div
@@ -126,28 +130,33 @@ function SortableLaborRow({
               descriptionMissing && 'border-destructive focus-visible:ring-destructive'
             )}
           />
-          <button
-            type="button"
-            className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
-              isService
-                ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
-                : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
-            }`}
-            onClick={() => updateLabor(index, 'pricingType', isService ? 'hourly' : 'service')}
-            // Says what the line is now, then that a click changes it. It used to
-            // describe the other mode, so hovering SVC read "Hourly".
-            title={isService ? t('serviceHint') : t('hourlyHint')}
-          >
-            {isService ? t('serviceTag') : t('hourlyTag')}
-          </button>
+          {isFee ? (
+            <ShopFeeTag />
+          ) : (
+            <button
+              type="button"
+              className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
+                isService
+                  ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
+                  : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
+              }`}
+              onClick={() => updateLabor(index, 'pricingType', isService ? 'hourly' : 'service')}
+              // Says what the line is now, then that a click changes it. It used to
+              // describe the other mode, so hovering SVC read "Hourly".
+              title={isService ? t('serviceHint') : t('hourlyHint')}
+            >
+              {isService ? t('serviceTag') : t('hourlyTag')}
+            </button>
+          )}
         </div>
-        <FieldRow label={isService ? t('qty') : t('hours')}>
+        <FieldRow label={isService || isFee ? t('qty') : t('hours')}>
           <Input
             type="number"
             min="0"
-            step={isService ? '1' : 'any'}
-            placeholder={isService ? t('qty') : t('hours')}
+            step={isService || isFee ? '1' : 'any'}
+            placeholder={isService || isFee ? t('qty') : t('hours')}
             value={labor.hours}
+            disabled={isFee}
             onChange={(e) => updateLabor(index, 'hours', e.target.value)}
           />
         </FieldRow>
@@ -157,6 +166,7 @@ function SortableLaborRow({
             min="0"
             step="0.01"
             value={labor.rate}
+            disabled={isFee && feeLocked}
             onChange={(e) => updateLabor(index, 'rate', e.target.value)}
           />
         </FieldRow>

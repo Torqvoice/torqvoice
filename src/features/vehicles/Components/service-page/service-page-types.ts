@@ -1,3 +1,4 @@
+import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
@@ -64,6 +65,8 @@ export interface ServicePageClientProps {
   defaultTaxRate: number
   taxEnabled: boolean
   defaultLaborRate: number
+  /** The workshop's shop fee, for re-pricing a percentage one as lines change. */
+  shopFee?: ShopFeeConfig | null
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
   initialVehicle: {

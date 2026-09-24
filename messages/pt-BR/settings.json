@@ -620,7 +620,31 @@
     "reapplyFailed": "Não foi possível reaplicar o design",
     "sectionSending": "Envio",
     "attachPdfLabel": "Anexar o PDF aos e-mails",
-    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento."
+    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento.",
+    "shopFee": {
+      "title": "Taxa de oficina",
+      "description": "Uma taxa para materiais de consumo da oficina, como panos, produtos de limpeza, lubrificantes e descarte, adicionada a cada nova ordem de serviço e orçamento como uma linha própria.",
+      "enabled": "Cobrar taxa de oficina",
+      "enabledHint": "Novas ordens de serviço e orçamentos recebem a taxa como uma linha. Ela pode ser removida de um serviço específico. Serviços existentes não mudam.",
+      "defaultLabel": "Materiais de consumo",
+      "label": "Nome na fatura",
+      "appliesTo": "Aplica-se a",
+      "appliesToBoth": "Ordens de serviço e orçamentos",
+      "appliesToWorkOrders": "Somente ordens de serviço",
+      "appliesToQuotes": "Somente orçamentos",
+      "mode": "Como é cobrada",
+      "modeFlat": "Valor fixo",
+      "modePercent": "Porcentagem",
+      "amount": "Valor",
+      "amountHint": "O mesmo valor em todo serviço. Pode ser alterado em um serviço específico.",
+      "percent": "Porcentagem (%)",
+      "base": "Porcentagem de",
+      "baseLabor": "Mão de obra",
+      "baseLaborParts": "Mão de obra e peças",
+      "cap": "Taxa máxima",
+      "capHint": "A taxa nunca passa deste valor. Deixe em branco para não ter máximo.",
+      "capPlaceholder": "Sem máximo"
+    }
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",

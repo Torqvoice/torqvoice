@@ -620,7 +620,31 @@
     "reapplyFailed": "Nepavyko pritaikyti dizaino iš naujo",
     "sectionSending": "Siuntimas",
     "attachPdfLabel": "Prie el. laiškų pridėti PDF",
-    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange."
+    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange.",
+    "shopFee": {
+      "title": "Dirbtuvių mokestis",
+      "description": "Mokestis už dirbtuvių eksploatacines medžiagas, pavyzdžiui, šluostes, valiklius, tepalus ir atliekų tvarkymą, pridedamas prie kiekvieno naujo darbo užsakymo ir pasiūlymo atskira eilute.",
+      "enabled": "Taikyti dirbtuvių mokestį",
+      "enabledHint": "Nauji darbo užsakymai ir pasiūlymai gauna mokestį atskira eilute. Jį galima pašalinti iš atskiro darbo. Esami darbai nekeičiami.",
+      "defaultLabel": "Eksploatacinės medžiagos",
+      "label": "Pavadinimas sąskaitoje",
+      "appliesTo": "Taikoma",
+      "appliesToBoth": "Darbo užsakymams ir pasiūlymams",
+      "appliesToWorkOrders": "Tik darbo užsakymams",
+      "appliesToQuotes": "Tik pasiūlymams",
+      "mode": "Kaip skaičiuojamas",
+      "modeFlat": "Fiksuota suma",
+      "modePercent": "Procentas",
+      "amount": "Suma",
+      "amountHint": "Ta pati suma kiekvienam darbui. Ją galima pakeisti atskiram darbui.",
+      "percent": "Procentas (%)",
+      "base": "Procentas nuo",
+      "baseLabor": "Darbo",
+      "baseLaborParts": "Darbo ir dalių",
+      "cap": "Didžiausias mokestis",
+      "capHint": "Mokestis niekada neviršija šios sumos. Palikite tuščią, jei ribos nėra.",
+      "capPlaceholder": "Be ribos"
+    }
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",

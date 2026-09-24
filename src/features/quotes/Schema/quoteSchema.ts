@@ -30,7 +30,7 @@ export const quoteLaborSchema = z.object({
   hours: z.coerce.number().min(0).default(0),
   rate: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
-  pricingType: z.enum(['hourly', 'service']).default('hourly'),
+  pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
   excluded: z.boolean().optional().default(false),
 })
 

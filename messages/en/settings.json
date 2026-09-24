@@ -620,7 +620,31 @@
     "reapplyFailed": "Could not re-apply the design",
     "sectionSending": "Sending",
     "attachPdfLabel": "Attach the PDF to emails",
-    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog."
+    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog.",
+    "shopFee": {
+      "title": "Shop fee",
+      "description": "A charge for shop supplies, such as rags, cleaners, lubricants and disposal, added to every new work order and quote as its own line.",
+      "enabled": "Charge a shop fee",
+      "enabledHint": "New work orders and quotes get the fee as a line. It can be removed from a single job. Existing jobs are not changed.",
+      "defaultLabel": "Shop supplies",
+      "label": "Name on the invoice",
+      "appliesTo": "Applies to",
+      "appliesToBoth": "Work orders and quotes",
+      "appliesToWorkOrders": "Work orders only",
+      "appliesToQuotes": "Quotes only",
+      "mode": "How it is charged",
+      "modeFlat": "Flat amount",
+      "modePercent": "Percentage",
+      "amount": "Amount",
+      "amountHint": "The same amount on every job. It can be changed on a single job.",
+      "percent": "Percentage (%)",
+      "base": "Percentage of",
+      "baseLabor": "Labor",
+      "baseLaborParts": "Labor and parts",
+      "cap": "Maximum fee",
+      "capHint": "The fee never comes to more than this. Leave empty for no maximum.",
+      "capPlaceholder": "No maximum"
+    }
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

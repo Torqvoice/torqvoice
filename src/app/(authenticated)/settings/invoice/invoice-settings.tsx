@@ -30,6 +30,7 @@ import {
   Loader2,
   Lock,
   Palette,
+  Receipt,
   Save,
 } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
@@ -171,6 +172,27 @@ export function InvoiceSettings({
     settings[SETTING_KEYS.QUOTE_LOCK_TRIGGER] || 'accepted'
   )
   const [attachPdf, setAttachPdf] = useState(settings[SETTING_KEYS.EMAIL_ATTACH_PDF] !== 'false')
+  const [shopFeeEnabled, setShopFeeEnabled] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_ENABLED] === 'true'
+  )
+  const [shopFeeLabel, setShopFeeLabel] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_LABEL] || t('invoice.shopFee.defaultLabel')
+  )
+  const [shopFeeMode, setShopFeeMode] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_MODE] === 'percent' ? 'percent' : 'flat'
+  )
+  const [shopFeeAmount, setShopFeeAmount] = useState(settings[SETTING_KEYS.SHOP_FEE_AMOUNT] || '')
+  const [shopFeePercent, setShopFeePercent] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_PERCENT] || ''
+  )
+  const [shopFeeBase, setShopFeeBase] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_BASE] === 'laborParts' ? 'laborParts' : 'labor'
+  )
+  const [shopFeeCap, setShopFeeCap] = useState(settings[SETTING_KEYS.SHOP_FEE_CAP] || '')
+  const [shopFeeAppliesTo, setShopFeeAppliesTo] = useState(() => {
+    const v = settings[SETTING_KEYS.SHOP_FEE_APPLIES_TO]
+    return v === 'workOrders' || v === 'quotes' ? v : 'both'
+  })
   // The three paragraphs on what a lock freezes are worth reading once, not
   // every time somebody comes to change a due date. Folded away by default.
   const [lockDetailsOpen, setLockDetailsOpen] = useState(false)
@@ -189,6 +211,14 @@ export function InvoiceSettings({
       [SETTING_KEYS.QUOTE_LOCK_ENABLED]: quoteLockEnabled ? 'true' : 'false',
       [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: quoteLockTrigger,
       [SETTING_KEYS.EMAIL_ATTACH_PDF]: attachPdf ? 'true' : 'false',
+      [SETTING_KEYS.SHOP_FEE_ENABLED]: shopFeeEnabled ? 'true' : 'false',
+      [SETTING_KEYS.SHOP_FEE_LABEL]: shopFeeLabel.trim(),
+      [SETTING_KEYS.SHOP_FEE_MODE]: shopFeeMode,
+      [SETTING_KEYS.SHOP_FEE_AMOUNT]: shopFeeAmount,
+      [SETTING_KEYS.SHOP_FEE_PERCENT]: shopFeePercent,
+      [SETTING_KEYS.SHOP_FEE_BASE]: shopFeeBase,
+      [SETTING_KEYS.SHOP_FEE_CAP]: shopFeeCap,
+      [SETTING_KEYS.SHOP_FEE_APPLIES_TO]: shopFeeAppliesTo,
     })
     setSaving(false)
     router.refresh()
@@ -429,6 +459,116 @@ export function InvoiceSettings({
                 checked={attachPdf}
                 onCheckedChange={setAttachPdf}
               />
+            </AppCard>
+
+            <AppCard
+              icon={Receipt}
+              title={t('invoice.shopFee.title')}
+              description={t('invoice.shopFee.description')}
+              contentClassName="space-y-5"
+            >
+              <SwitchRow
+                id="shopFeeEnabled"
+                label={t('invoice.shopFee.enabled')}
+                hint={t('invoice.shopFee.enabledHint')}
+                checked={shopFeeEnabled}
+                onCheckedChange={setShopFeeEnabled}
+              />
+              {shopFeeEnabled && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field id="shopFeeLabel" label={t('invoice.shopFee.label')}>
+                    <Input
+                      id="shopFeeLabel"
+                      value={shopFeeLabel}
+                      onChange={(e) => setShopFeeLabel(e.target.value)}
+                    />
+                  </Field>
+                  <Field id="shopFeeAppliesTo" label={t('invoice.shopFee.appliesTo')}>
+                    <Select value={shopFeeAppliesTo} onValueChange={setShopFeeAppliesTo}>
+                      <SelectTrigger id="shopFeeAppliesTo">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="both">{t('invoice.shopFee.appliesToBoth')}</SelectItem>
+                        <SelectItem value="workOrders">
+                          {t('invoice.shopFee.appliesToWorkOrders')}
+                        </SelectItem>
+                        <SelectItem value="quotes">
+                          {t('invoice.shopFee.appliesToQuotes')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field id="shopFeeMode" label={t('invoice.shopFee.mode')}>
+                    <Select value={shopFeeMode} onValueChange={setShopFeeMode}>
+                      <SelectTrigger id="shopFeeMode">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="flat">{t('invoice.shopFee.modeFlat')}</SelectItem>
+                        <SelectItem value="percent">{t('invoice.shopFee.modePercent')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  {shopFeeMode === 'flat' ? (
+                    <Field
+                      id="shopFeeAmount"
+                      label={t('invoice.shopFee.amount')}
+                      hint={t('invoice.shopFee.amountHint')}
+                    >
+                      <Input
+                        id="shopFeeAmount"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={shopFeeAmount}
+                        onChange={(e) => setShopFeeAmount(e.target.value)}
+                      />
+                    </Field>
+                  ) : (
+                    <>
+                      <Field id="shopFeePercent" label={t('invoice.shopFee.percent')}>
+                        <Input
+                          id="shopFeePercent"
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          value={shopFeePercent}
+                          onChange={(e) => setShopFeePercent(e.target.value)}
+                        />
+                      </Field>
+                      <Field id="shopFeeBase" label={t('invoice.shopFee.base')}>
+                        <Select value={shopFeeBase} onValueChange={setShopFeeBase}>
+                          <SelectTrigger id="shopFeeBase">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="labor">{t('invoice.shopFee.baseLabor')}</SelectItem>
+                            <SelectItem value="laborParts">
+                              {t('invoice.shopFee.baseLaborParts')}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                      <Field
+                        id="shopFeeCap"
+                        label={t('invoice.shopFee.cap')}
+                        hint={t('invoice.shopFee.capHint')}
+                      >
+                        <Input
+                          id="shopFeeCap"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder={t('invoice.shopFee.capPlaceholder')}
+                          value={shopFeeCap}
+                          onChange={(e) => setShopFeeCap(e.target.value)}
+                        />
+                      </Field>
+                    </>
+                  )}
+                </div>
+              )}
             </AppCard>
 
             <AppCard

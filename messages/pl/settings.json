@@ -620,7 +620,31 @@
     "reapplyFailed": "Nie udało się ponownie nałożyć projektu",
     "sectionSending": "Wysyłka",
     "attachPdfLabel": "Dołączaj PDF do wiadomości e-mail",
-    "attachPdfHint": "Domyślne ustawienie dla każdej faktury, oferty i przeglądu wysyłanych e-mailem. Włączone: klient dostaje PDF w załączniku. Wyłączone: dostaje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył, więc możesz przypomnieć się tym, którzy jeszcze nie zajrzeli. Dla pojedynczej wysyłki zmienisz to w oknie udostępniania."
+    "attachPdfHint": "Domyślne ustawienie dla każdej faktury, oferty i przeglądu wysyłanych e-mailem. Włączone: klient dostaje PDF w załączniku. Wyłączone: dostaje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył, więc możesz przypomnieć się tym, którzy jeszcze nie zajrzeli. Dla pojedynczej wysyłki zmienisz to w oknie udostępniania.",
+    "shopFee": {
+      "title": "Opłata warsztatowa",
+      "description": "Opłata za materiały eksploatacyjne warsztatu, takie jak czyściwo, środki czyszczące, smary i utylizacja, dodawana do każdego nowego zlecenia i oferty jako osobna pozycja.",
+      "enabled": "Naliczaj opłatę warsztatową",
+      "enabledHint": "Nowe zlecenia i oferty otrzymują opłatę jako pozycję. Można ją usunąć z pojedynczego zlecenia. Istniejące zlecenia się nie zmieniają.",
+      "defaultLabel": "Materiały warsztatowe",
+      "label": "Nazwa na fakturze",
+      "appliesTo": "Dotyczy",
+      "appliesToBoth": "Zleceń i ofert",
+      "appliesToWorkOrders": "Tylko zleceń",
+      "appliesToQuotes": "Tylko ofert",
+      "mode": "Sposób naliczania",
+      "modeFlat": "Stała kwota",
+      "modePercent": "Procent",
+      "amount": "Kwota",
+      "amountHint": "Ta sama kwota przy każdym zleceniu. Można ją zmienić w pojedynczym zleceniu.",
+      "percent": "Procent (%)",
+      "base": "Procent od",
+      "baseLabor": "Robocizny",
+      "baseLaborParts": "Robocizny i części",
+      "cap": "Maksymalna opłata",
+      "capHint": "Opłata nigdy nie przekroczy tej kwoty. Zostaw puste, aby nie ustalać maksimum.",
+      "capPlaceholder": "Bez maksimum"
+    }
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",

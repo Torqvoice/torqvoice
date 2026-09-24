@@ -1,4 +1,5 @@
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
+import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 
 /**
  * What a job gained in lines of work while a page was open.
@@ -23,6 +24,7 @@ export function addedLaborLines(
   }
   const added: ServiceLaborInput[] = []
   for (const line of after) {
+    if (isShopFeeLine(line)) continue
     const k = key(line)
     const left = remaining.get(k) ?? 0
     if (left > 0) remaining.set(k, left - 1)

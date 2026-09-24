@@ -7,6 +7,14 @@ import { db } from '@/lib/db'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import {
+  isShopFeeLine,
+  newShopFeeLine,
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeFor,
+} from '@/features/settings/Lib/shopFee'
+import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
   warrantyExpiryFor,
@@ -424,7 +432,9 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         db.appSetting.findMany({
           where: {
             organizationId,
-            key: { in: ['workshop.invoicePrefix', ...WARRANTY_SETTING_KEYS] },
+            key: {
+              in: ['workshop.invoicePrefix', ...WARRANTY_SETTING_KEYS, ...SHOP_FEE_SETTING_KEYS],
+            },
           },
         }),
         db.organization.findUnique({
@@ -534,6 +544,19 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
               serviceRecordId: created.id,
             })),
           })
+        }
+
+        // A fee the workshop charges on work orders but not on quotes goes on
+        // here, priced for what the customer accepted, and the job re-totalled.
+        // A quote that carried the fee already brought it across above.
+        const jobFee = shopFeeFor(readShopFee(settingsMap), 'workOrder')
+        if (jobFee && !includedLabor.some(isShopFeeLine)) {
+          const feeLine = newShopFeeLine(jobFee, {
+            labor: includedLabor.reduce((sum, l) => sum + l.total, 0),
+            parts: includedParts.reduce((sum, p) => sum + p.total, 0),
+          })
+          await tx.serviceLabor.create({ data: { ...feeLine, serviceRecordId: created.id } })
+          await retotalServiceRecord(created.id, tx)
         }
 
         // Copy attachments from quote to service record

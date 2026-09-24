@@ -34,6 +34,19 @@ export const SETTING_KEYS = {
   INVOICE_SHOW_ORG_NUMBER: 'invoice.showOrgNumber',
   INVOICE_LINE_ITEMS_INCL_TAX: 'invoice.lineItemsInclTax',
   INVOICE_DUE_DAYS: 'invoice.dueDays',
+  /** See src/features/settings/Lib/shopFee.ts. */
+  SHOP_FEE_ENABLED: 'invoice.shopFeeEnabled',
+  SHOP_FEE_LABEL: 'invoice.shopFeeLabel',
+  /** 'flat' | 'percent' */
+  SHOP_FEE_MODE: 'invoice.shopFeeMode',
+  SHOP_FEE_AMOUNT: 'invoice.shopFeeAmount',
+  SHOP_FEE_PERCENT: 'invoice.shopFeePercent',
+  /** 'labor' | 'laborParts': what a percentage fee is a percentage of. */
+  SHOP_FEE_BASE: 'invoice.shopFeeBase',
+  /** Largest a percentage fee may come to; empty for no cap. */
+  SHOP_FEE_CAP: 'invoice.shopFeeCap',
+  /** 'both' | 'workOrders' | 'quotes': which new documents get the fee. */
+  SHOP_FEE_APPLIES_TO: 'invoice.shopFeeAppliesTo',
   /** See src/lib/document-lock.ts for what these freeze and when. */
   INVOICE_LOCK_ENABLED: 'invoice.lockEnabled',
   INVOICE_LOCK_TRIGGER: 'invoice.lockTrigger',
@@ -288,6 +301,14 @@ export const invoiceSettingsSchema = z.object({
   [SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: z.string().optional(),
   [SETTING_KEYS.INVOICE_DUE_DAYS]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_ENABLED]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_LABEL]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_MODE]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_AMOUNT]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_PERCENT]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_BASE]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_CAP]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_APPLIES_TO]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_ENABLED]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: z.string().optional(),
   [SETTING_KEYS.QUOTE_LOCK_ENABLED]: z.string().optional(),

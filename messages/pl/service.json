@@ -161,7 +161,11 @@
     "hourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
     "serviceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
     "deleteRow": "Usuń wiersz",
-    "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane."
+    "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane.",
+    "shopFeeTag": "Opłata",
+    "shopFeeHintFlat": "Opłata warsztatowa z Ustawień jako stała kwota. Zmień cenę dla tego zlecenia lub usuń pozycję, aby ją pominąć.",
+    "shopFeeHintPercentLabor": "Opłata warsztatowa z Ustawień: {percent} % robocizny w tym zleceniu. Usuń pozycję, aby ją pominąć.",
+    "shopFeeHintPercentAll": "Opłata warsztatowa z Ustawień: {percent} % robocizny i części w tym zleceniu. Usuń pozycję, aby ją pominąć."
   },
   "liveLabor": {
     "title": "{count, plural, one {Mechanik dodał pozycję robocizny do tego zlecenia} few {Mechanik dodał # pozycje robocizny do tego zlecenia} many {Mechanik dodał # pozycji robocizny do tego zlecenia} other {Mechanik dodał # pozycji robocizny do tego zlecenia}}",

@@ -161,7 +161,11 @@
     "hourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
     "serviceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
     "deleteRow": "Elimina riga",
-    "descriptionMissingHint": "Le righe senza descrizione non vengono salvate."
+    "descriptionMissingHint": "Le righe senza descrizione non vengono salvate.",
+    "shopFeeTag": "Contributo",
+    "shopFeeHintFlat": "Il contributo officina dalle Impostazioni, come importo fisso. Cambia il prezzo per questo lavoro o elimina la riga per toglierlo.",
+    "shopFeeHintPercentLabor": "Il contributo officina dalle Impostazioni: {percent} % della manodopera di questo lavoro. Elimina la riga per toglierlo.",
+    "shopFeeHintPercentAll": "Il contributo officina dalle Impostazioni: {percent} % di manodopera e ricambi di questo lavoro. Elimina la riga per toglierlo."
   },
   "liveLabor": {
     "title": "{count, plural, one {Un tecnico ha aggiunto manodopera a questo lavoro} other {Un tecnico ha aggiunto # righe di manodopera a questo lavoro}}",

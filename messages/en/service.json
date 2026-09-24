@@ -161,7 +161,11 @@
     "hourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "serviceHint": "Service: priced as a flat fee per unit. Click to switch.",
     "deleteRow": "Delete row",
-    "descriptionMissingHint": "Rows without a description are not saved."
+    "descriptionMissingHint": "Rows without a description are not saved.",
+    "shopFeeTag": "Fee",
+    "shopFeeHintFlat": "The shop fee from Settings, as a flat amount. Change the price for this job, or delete the line to leave it off.",
+    "shopFeeHintPercentLabor": "The shop fee from Settings: {percent} % of the labor on this job. Delete the line to leave it off.",
+    "shopFeeHintPercentAll": "The shop fee from Settings: {percent} % of the labor and parts on this job. Delete the line to leave it off."
   },
   "liveLabor": {
     "title": "{count, plural, one {A technician added labor to this job} other {A technician added # labor lines to this job}}",

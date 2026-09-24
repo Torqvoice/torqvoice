@@ -620,7 +620,31 @@
     "reapplyFailed": "Impossible de réappliquer le design",
     "sectionSending": "Envoi",
     "attachPdfLabel": "Joindre le PDF aux e-mails",
-    "attachPdfHint": "La valeur par défaut pour chaque facture, devis et inspection que vous envoyez par e-mail. Activé : le client reçoit le PDF en pièce jointe. Désactivé : il reçoit un lien vers le document, et le compteur de consultations indique quand il l'a ouvert, ce qui permet de relancer ceux que personne n'a regardés. Vous pouvez le changer pour un envoi précis dans la fenêtre de partage."
+    "attachPdfHint": "La valeur par défaut pour chaque facture, devis et inspection que vous envoyez par e-mail. Activé : le client reçoit le PDF en pièce jointe. Désactivé : il reçoit un lien vers le document, et le compteur de consultations indique quand il l'a ouvert, ce qui permet de relancer ceux que personne n'a regardés. Vous pouvez le changer pour un envoi précis dans la fenêtre de partage.",
+    "shopFee": {
+      "title": "Frais d'atelier",
+      "description": "Des frais pour les consommables de l'atelier, comme les chiffons, nettoyants, lubrifiants et le traitement des déchets, ajoutés à chaque nouvel ordre de réparation et devis sur une ligne à part.",
+      "enabled": "Facturer des frais d'atelier",
+      "enabledHint": "Les nouveaux ordres de réparation et devis reçoivent les frais sur une ligne. Ils peuvent être retirés d'une intervention. Les interventions existantes ne changent pas.",
+      "defaultLabel": "Fournitures d'atelier",
+      "label": "Libellé sur la facture",
+      "appliesTo": "S'applique aux",
+      "appliesToBoth": "Ordres de réparation et devis",
+      "appliesToWorkOrders": "Ordres de réparation seulement",
+      "appliesToQuotes": "Devis seulement",
+      "mode": "Mode de calcul",
+      "modeFlat": "Montant fixe",
+      "modePercent": "Pourcentage",
+      "amount": "Montant",
+      "amountHint": "Le même montant sur chaque intervention. Il peut être modifié sur une intervention.",
+      "percent": "Pourcentage (%)",
+      "base": "Pourcentage de",
+      "baseLabor": "Main-d'œuvre",
+      "baseLaborParts": "Main-d'œuvre et pièces",
+      "cap": "Frais maximum",
+      "capHint": "Les frais ne dépassent jamais ce montant. Laissez vide pour ne fixer aucun maximum.",
+      "capPlaceholder": "Aucun maximum"
+    }
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",

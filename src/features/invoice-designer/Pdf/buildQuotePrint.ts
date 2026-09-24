@@ -1,4 +1,5 @@
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
+import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
@@ -114,7 +115,9 @@ function fillTemplate(template: string, values: Record<string, string>): string 
 }
 
 export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
-  const { data, workshop, template } = input
+  const { workshop, template } = input
+  // The fee under the work, and a fee of nothing left out.
+  const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
   const L = (key: string, fallback: string) => labels[key] || fallback
 
@@ -220,7 +223,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
       qty: String(l.hours),
-      unit: l.pricingType === 'service' ? L('unit', 'unit') : L('hrs', 'hrs'),
+      unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
       price: money(shown(l.rate)),
       total: money(shown(l.total)),
@@ -248,7 +251,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   }))
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
-    const isService = l.pricingType === 'service'
+    // A shop fee prints as one unit at its price, like a service line.
+    const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
       qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,

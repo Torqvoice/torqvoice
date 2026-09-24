@@ -1,9 +1,16 @@
 import { db, type TxClient } from '@/lib/db'
 import {
+  documentTotals,
   readWorkshopTax,
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  newShopFeeLine,
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeFor,
+} from '@/features/settings/Lib/shopFee'
 import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
@@ -67,6 +74,7 @@ export async function createDraftRecord(
             SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE,
             ...WORKSHOP_TAX_SETTING_KEYS,
             ...WARRANTY_SETTING_KEYS,
+            ...SHOP_FEE_SETTING_KEYS,
             'workboard.workDayStart',
           ],
         },
@@ -233,6 +241,24 @@ export async function createDraftRecord(
     ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
     : EMPTY_WARRANTY
 
+  // The workshop's shop fee, on work done to a vehicle. A counter sale is
+  // parts over the desk and uses none of the supplies the fee pays for.
+  const shopFee = isShopWork ? shopFeeFor(readShopFee(settingsMap), 'workOrder') : null
+  const feeLine = shopFee ? newShopFeeLine(shopFee) : null
+  const feeTotals =
+    feeLine && feeLine.total > 0
+      ? {
+          subtotal: feeLine.total,
+          ...documentTotals({
+            subtotal: feeLine.total,
+            discountAmount: 0,
+            taxRate: taxFields.taxRate,
+            taxInclusive: taxFields.taxInclusive,
+            taxComponents: taxFields.taxComponents,
+          }),
+        }
+      : null
+
   return writer.serviceRecord.create({
     data: {
       organizationId,
@@ -248,6 +274,8 @@ export async function createDraftRecord(
       workBayId: opts.workBayId || undefined,
       invoiceNumber,
       ...taxFields,
+      ...(feeTotals ?? {}),
+      ...(feeLine ? { laborItems: { create: [feeLine] } } : {}),
       ...warranty,
       warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
       serviceDate,

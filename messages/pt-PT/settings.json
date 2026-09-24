@@ -620,7 +620,31 @@
     "reapplyFailed": "Não foi possível voltar a aplicar o design",
     "sectionSending": "Envio",
     "attachPdfLabel": "Anexar o PDF aos e-mails",
-    "attachPdfHint": "A predefinição para cada fatura, orçamento e inspeção que envia por e-mail. Ativada: o cliente recebe o PDF em anexo. Desativada: recebe um link para o documento, e o contador de visualizações indica quando o abriu, para poder insistir com quem ainda não o viu. Pode alterar isto num envio específico na janela de partilha."
+    "attachPdfHint": "A predefinição para cada fatura, orçamento e inspeção que envia por e-mail. Ativada: o cliente recebe o PDF em anexo. Desativada: recebe um link para o documento, e o contador de visualizações indica quando o abriu, para poder insistir com quem ainda não o viu. Pode alterar isto num envio específico na janela de partilha.",
+    "shopFee": {
+      "title": "Taxa de oficina",
+      "description": "Uma taxa para consumíveis da oficina, como panos, produtos de limpeza, lubrificantes e tratamento de resíduos, acrescentada a cada nova ordem de reparação e orçamento numa linha própria.",
+      "enabled": "Cobrar taxa de oficina",
+      "enabledHint": "As novas ordens de reparação e orçamentos recebem a taxa numa linha. Pode ser retirada de um trabalho. Os trabalhos existentes não são alterados.",
+      "defaultLabel": "Consumíveis de oficina",
+      "label": "Nome na fatura",
+      "appliesTo": "Aplica-se a",
+      "appliesToBoth": "Ordens de reparação e orçamentos",
+      "appliesToWorkOrders": "Apenas ordens de reparação",
+      "appliesToQuotes": "Apenas orçamentos",
+      "mode": "Forma de cálculo",
+      "modeFlat": "Valor fixo",
+      "modePercent": "Percentagem",
+      "amount": "Valor",
+      "amountHint": "O mesmo valor em cada trabalho. Pode ser alterado num trabalho.",
+      "percent": "Percentagem (%)",
+      "base": "Percentagem de",
+      "baseLabor": "Mão de obra",
+      "baseLaborParts": "Mão de obra e peças",
+      "cap": "Taxa máxima",
+      "capHint": "A taxa nunca ultrapassa este valor. Deixe em branco para não ter máximo.",
+      "capPlaceholder": "Sem máximo"
+    }
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o seletor de largura para colocar secções lado a lado. Secções consecutivas de meia largura (E/D) são apresentadas em duas colunas.",

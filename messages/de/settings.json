@@ -620,7 +620,31 @@
     "reapplyFailed": "Design konnte nicht erneut angewendet werden",
     "sectionSending": "Versand",
     "attachPdfLabel": "PDF an E-Mails anhängen",
-    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern."
+    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern.",
+    "shopFee": {
+      "title": "Werkstattpauschale",
+      "description": "Eine Pauschale für Verbrauchsmaterial wie Putztücher, Reiniger, Schmierstoffe und Entsorgung, die jedem neuen Auftrag und Angebot als eigene Position hinzugefügt wird.",
+      "enabled": "Werkstattpauschale berechnen",
+      "enabledHint": "Neue Aufträge und Angebote erhalten die Pauschale als Position. Sie kann bei einzelnen Aufträgen entfernt werden. Bestehende Aufträge bleiben unverändert.",
+      "defaultLabel": "Kleinmaterial",
+      "label": "Bezeichnung auf der Rechnung",
+      "appliesTo": "Gilt für",
+      "appliesToBoth": "Aufträge und Angebote",
+      "appliesToWorkOrders": "Nur Aufträge",
+      "appliesToQuotes": "Nur Angebote",
+      "mode": "Berechnung",
+      "modeFlat": "Fester Betrag",
+      "modePercent": "Prozentsatz",
+      "amount": "Betrag",
+      "amountHint": "Derselbe Betrag bei jedem Auftrag. Er kann bei einzelnen Aufträgen geändert werden.",
+      "percent": "Prozentsatz (%)",
+      "base": "Prozent von",
+      "baseLabor": "Arbeit",
+      "baseLaborParts": "Arbeit und Teile",
+      "cap": "Höchstbetrag",
+      "capHint": "Die Pauschale wird nie höher als dieser Betrag. Leer lassen für keinen Höchstbetrag.",
+      "capPlaceholder": "Kein Höchstbetrag"
+    }
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",

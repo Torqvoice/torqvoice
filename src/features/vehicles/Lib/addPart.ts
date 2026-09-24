@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { refreshShopFeeLines } from './shopFeeLines'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
@@ -79,6 +80,8 @@ export async function addPart(args: {
         serviceRecordId: record.id,
       },
     })
+
+    await refreshShopFeeLines(tx, record.id, organizationId)
 
     const [partsAgg, laborAgg] = await Promise.all([
       tx.servicePart.aggregate({

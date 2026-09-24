@@ -25,7 +25,7 @@ export const serviceLaborSchema = z.object({
   hours: z.coerce.number().min(0).default(0),
   rate: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
-  pricingType: z.enum(['hourly', 'service']).default('hourly'),
+  pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
 })
 
 export const serviceAttachmentSchema = z.object({

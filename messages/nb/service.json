@@ -161,7 +161,11 @@
     "hourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
     "serviceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
     "deleteRow": "Slett rad",
-    "descriptionMissingHint": "Rader uten beskrivelse lagres ikke."
+    "descriptionMissingHint": "Rader uten beskrivelse lagres ikke.",
+    "shopFeeTag": "Gebyr",
+    "shopFeeHintFlat": "Verkstedgebyret fra Innstillinger, som et fast beløp. Endre prisen for denne jobben, eller slett linjen for å fjerne det.",
+    "shopFeeHintPercentLabor": "Verkstedgebyret fra Innstillinger: {percent} % av arbeidet på denne jobben. Slett linjen for å fjerne det.",
+    "shopFeeHintPercentAll": "Verkstedgebyret fra Innstillinger: {percent} % av arbeid og deler på denne jobben. Slett linjen for å fjerne det."
   },
   "liveLabor": {
     "title": "{count, plural, one {En mekaniker la til arbeid på denne jobben} other {En mekaniker la til # arbeidslinjer på denne jobben}}",

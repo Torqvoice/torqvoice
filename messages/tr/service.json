@@ -161,7 +161,11 @@
     "hourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
     "serviceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
     "deleteRow": "Satırı sil",
-    "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez."
+    "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez.",
+    "shopFeeTag": "Ücret",
+    "shopFeeHintFlat": "Ayarlar'daki atölye ücreti, sabit tutar olarak. Bu iş için fiyatı değiştirin veya kaldırmak için satırı silin.",
+    "shopFeeHintPercentLabor": "Ayarlar'daki atölye ücreti: bu işteki işçiliğin % {percent} kadarı. Kaldırmak için satırı silin.",
+    "shopFeeHintPercentAll": "Ayarlar'daki atölye ücreti: bu işteki işçilik ve parçaların % {percent} kadarı. Kaldırmak için satırı silin."
   },
   "liveLabor": {
     "title": "{count, plural, one {Bir teknisyen bu işe işçilik ekledi} other {Bir teknisyen bu işe # işçilik satırı ekledi}}",
