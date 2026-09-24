@@ -196,6 +196,8 @@
     "summary": "Zusammenfassung",
     "progressLabel": "{graded} Prüfpunkte bewertet",
     "limit": "Grenzwert",
+    "rangeMin": "mind.",
+    "rangeMax": "max.",
     "viewPhoto": "Foto ansehen",
     "deficienciesFound": "Festgestellte Mängel ({count})",
     "allResults": "Alle Ergebnisse",

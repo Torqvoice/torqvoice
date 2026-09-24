@@ -267,9 +267,12 @@ export function InspectionCertificateCard({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={NO_TECHNICIAN}>{t('notRecorded')}</SelectItem>
-              {VEHICLE_CATEGORIES.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {c.label}
+              {VEHICLE_CATEGORIES.map((code) => (
+                <SelectItem key={code} value={code}>
+                  <span className="flex gap-2">
+                    <span className="font-medium">{code}</span>
+                    <span className="text-muted-foreground">{t(`categories.${code}`)}</span>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>

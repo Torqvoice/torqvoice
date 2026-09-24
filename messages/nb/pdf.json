@@ -171,6 +171,8 @@
     "vehicleCategory": "Kjøretøygruppe",
     "nextTestDue": "Neste kontroll",
     "limit": "Grenseverdi",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "overallResult": "Kontrollresultat",
     "deficiencies": "Mangler funnet",
     "reading": "Måleverdi",

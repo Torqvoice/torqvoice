@@ -171,6 +171,8 @@
     "vehicleCategory": "Araç sınıfı",
     "nextTestDue": "Sonraki muayene",
     "limit": "Sınır değer",
+    "rangeMin": "en az",
+    "rangeMax": "en fazla",
     "overallResult": "Muayene sonucu",
     "deficiencies": "Tespit edilen kusurlar",
     "reading": "Ölçüm",

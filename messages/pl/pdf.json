@@ -171,6 +171,8 @@
     "vehicleCategory": "Kategoria pojazdu",
     "nextTestDue": "Następne badanie",
     "limit": "Wartość graniczna",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "overallResult": "Wynik badania",
     "deficiencies": "Stwierdzone usterki",
     "reading": "Odczyt",

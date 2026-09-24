@@ -1,5 +1,6 @@
 import type { Condition, InputType, SeverityScale } from './conditions'
 import { EN_LIBRARY, type InspectionLibrary, libraryText } from './inspectionLibrary'
+import { NO_SECTIONS, NO_STANDARD } from './norwayControlPoints'
 
 /**
  * Starting points for the template builder.
@@ -756,10 +757,12 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
   {
     id: 'no-eu-kontroll',
     country: 'NO',
-    standard: 'eu-2014-45',
+    // Statens vegvesen's own instruks, not the Directive's Annex: Norway
+    // numbers, words and grades its control points differently.
+    standard: NO_STANDARD,
     severityScale: 'eu',
     group: 'regulatory',
-    sections: EU_SECTIONS,
+    sections: NO_SECTIONS,
   },
   {
     id: 'de-hauptuntersuchung',

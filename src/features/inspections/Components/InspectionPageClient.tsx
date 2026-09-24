@@ -753,6 +753,7 @@ export function InspectionPageClient({
                       inspectionId={inspection.id}
                       scale={scale}
                       country={country}
+                      standard={inspection.template.standard ?? null}
                       isCompleted={isCompleted}
                       history={defectHistory[item.name]}
                       quoteRequested={requestedIds.has(item.id)}

@@ -171,6 +171,8 @@
     "vehicleCategory": "Категория ТС",
     "nextTestDue": "Следующая проверка",
     "limit": "Предельное значение",
+    "rangeMin": "мин.",
+    "rangeMax": "макс.",
     "overallResult": "Результат проверки",
     "deficiencies": "Выявленные неисправности",
     "reading": "Показание",

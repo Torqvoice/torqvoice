@@ -236,7 +236,7 @@ export function InspectionPDF({
       item.measuredValue !== null &&
       item.measuredValue !== undefined
     ) {
-      const range = formatRange(item)
+      const range = formatRange(item, { min: label('rangeMin'), max: label('rangeMax') })
       const reading = `${item.measuredValue}${item.unit ? ` ${item.unit}` : ''}`
       return range ? `${reading} · ${label('limit')}: ${range}` : reading
     }

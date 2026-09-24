@@ -1,5 +1,6 @@
 import type { Condition, SeverityScale } from './conditions'
 import { EN_LIBRARY, type InspectionLibrary, libraryText } from './inspectionLibrary'
+import { NO_DEFECTS_BY_CODE, NO_STANDARD } from './norwayControlPoints'
 
 /**
  * Ready-made defect descriptions, so a technician picks the wording instead of
@@ -679,6 +680,8 @@ export interface SuggestionCheck {
   sectionCode?: string | null
   /** Phrases the workshop configured on this check in the template builder. */
   defectSuggestions?: string[] | null
+  /** The template's regime. Norway's instruks has its own codes and wording. */
+  standard?: string | null
 }
 
 const normalise = (text: string) => text.trim().toLowerCase().replace(/\s+/g, ' ')
@@ -698,20 +701,26 @@ function catalogueFor(check: SuggestionCheck, lib: InspectionLibrary): DefectSug
   const found: DefectSuggestion[] = []
 
   const code = check.code?.trim()
+  // The Norwegian instruks numbers its points differently from the Directive,
+  // so its codes are looked up in its own table and never in the Annex's.
+  const norway = check.standard === NO_STANDARD
+  const byCode = norway ? NO_DEFECTS_BY_CODE : BY_CODE
   if (code) {
-    if (BY_CODE[code]) found.push(...entries('regulation', BY_CODE[code], lib))
+    if (byCode[code]) found.push(...entries('regulation', byCode[code], lib))
 
     // "1.1.13" has no entry of its own → try "1.1", then "1". A template can
     // reference a check at whatever depth suits it and still get useful text.
     const parts = code.split('.')
     for (let i = parts.length - 1; i > 0 && found.length === 0; i--) {
       const parent = parts.slice(0, i).join('.')
-      if (BY_CODE[parent]) found.push(...entries('regulation', BY_CODE[parent], lib))
+      if (byCode[parent]) found.push(...entries('regulation', byCode[parent], lib))
     }
   }
 
   const section = (check.sectionCode ?? code ?? '').split('.')[0]
-  if (BY_SECTION[section]) found.push(...entries('regulation', BY_SECTION[section], lib))
+  if (!norway && BY_SECTION[section]) {
+    found.push(...entries('regulation', BY_SECTION[section], lib))
+  }
 
   for (const { group, match, suggestions } of BY_KEYWORD) {
     if (match.test(check.name) || matchesStems(check.name, lib.defectKeywords[group])) {

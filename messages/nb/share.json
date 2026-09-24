@@ -196,6 +196,8 @@
     "summary": "Sammendrag",
     "progressLabel": "{graded} punkter vurdert",
     "limit": "Grenseverdi",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "viewPhoto": "Se bilde",
     "deficienciesFound": "Mangler funnet ({count})",
     "allResults": "Alle resultater",

@@ -196,6 +196,8 @@
     "summary": "Podsumowanie",
     "progressLabel": "Oceniono {graded} pozycji",
     "limit": "Wartość graniczna",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "viewPhoto": "Zobacz zdjęcie",
     "deficienciesFound": "Stwierdzone usterki ({count})",
     "allResults": "Wszystkie wyniki",

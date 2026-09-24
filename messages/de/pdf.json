@@ -171,6 +171,8 @@
     "vehicleCategory": "Fahrzeugklasse",
     "nextTestDue": "Nächste Prüfung fällig",
     "limit": "Grenzwert",
+    "rangeMin": "mind.",
+    "rangeMax": "max.",
     "overallResult": "Prüfergebnis",
     "deficiencies": "Festgestellte Mängel",
     "reading": "Messwert",

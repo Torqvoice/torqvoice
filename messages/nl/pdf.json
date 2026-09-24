@@ -171,6 +171,8 @@
     "vehicleCategory": "Voertuigcategorie",
     "nextTestDue": "Volgende keuring",
     "limit": "Grenswaarde",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "overallResult": "Keuringsresultaat",
     "deficiencies": "Vastgestelde gebreken",
     "reading": "Meetwaarde",

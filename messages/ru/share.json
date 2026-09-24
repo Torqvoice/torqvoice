@@ -196,6 +196,8 @@
     "summary": "Сводка",
     "progressLabel": "Оценено пунктов: {graded}",
     "limit": "Предельное значение",
+    "rangeMin": "мин.",
+    "rangeMax": "макс.",
     "viewPhoto": "Смотреть фото",
     "deficienciesFound": "Выявленные неисправности ({count})",
     "allResults": "Все результаты",

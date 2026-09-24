@@ -171,6 +171,8 @@
     "vehicleCategory": "Vehicle category",
     "nextTestDue": "Next test due",
     "limit": "Limit",
+    "rangeMin": "min",
+    "rangeMax": "max",
     "overallResult": "Result of the test",
     "deficiencies": "Deficiencies found",
     "reading": "Reading",

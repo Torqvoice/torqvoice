@@ -171,6 +171,8 @@
     "vehicleCategory": "Transporto priemonės kategorija",
     "nextTestDue": "Kita apžiūra",
     "limit": "Ribinė vertė",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "overallResult": "Apžiūros rezultatas",
     "deficiencies": "Nustatyti trūkumai",
     "reading": "Rodmuo",

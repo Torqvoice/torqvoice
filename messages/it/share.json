@@ -196,6 +196,8 @@
     "summary": "Riepilogo",
     "progressLabel": "{graded} controlli valutati",
     "limit": "Limite",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "viewPhoto": "Vedi foto",
     "deficienciesFound": "Carenze riscontrate ({count})",
     "allResults": "Tutti i risultati",

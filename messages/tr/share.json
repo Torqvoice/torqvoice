@@ -196,6 +196,8 @@
     "summary": "Özet",
     "progressLabel": "{graded} kontrol değerlendirildi",
     "limit": "Sınır değer",
+    "rangeMin": "en az",
+    "rangeMax": "en fazla",
     "viewPhoto": "Fotoğrafı gör",
     "deficienciesFound": "Tespit edilen kusurlar ({count})",
     "allResults": "Tüm sonuçlar",

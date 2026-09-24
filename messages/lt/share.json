@@ -196,6 +196,8 @@
     "summary": "Santrauka",
     "progressLabel": "Įvertinta patikrų: {graded}",
     "limit": "Ribinė vertė",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "viewPhoto": "Žiūrėti nuotrauką",
     "deficienciesFound": "Nustatyti trūkumai ({count})",
     "allResults": "Visi rezultatai",

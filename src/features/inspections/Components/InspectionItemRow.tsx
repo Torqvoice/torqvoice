@@ -34,7 +34,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { updateInspectionItem } from '../Actions/inspectionActions'
@@ -204,6 +204,7 @@ export function InspectionItemRow({
   inspectionId,
   scale,
   country = null,
+  standard = null,
   isCompleted,
   history,
   quoteRequested = false,
@@ -216,6 +217,8 @@ export function InspectionItemRow({
   inspectionId?: string
   scale: SeverityScale
   country?: string | null
+  /** The regime the template follows; picks whose defect wording is offered. */
+  standard?: string | null
   isCompleted: boolean
   /** Wording this workshop has used before on a check of this name. */
   history?: { text: string; severity: string }[]
@@ -229,6 +232,7 @@ export function InspectionItemRow({
   onSaveState?: (itemId: string, state: 'saving' | 'saved' | 'error') => void
 }) {
   const t = useTranslations('inspections.item')
+  const locale = useLocale()
   const router = useRouter()
   const fieldId = useId()
   const nameId = `${fieldId}-name`
@@ -260,7 +264,7 @@ export function InspectionItemRow({
   const notesRef = useRef<HTMLTextAreaElement>(null)
 
   const inputType = item.inputType ?? 'condition'
-  const range = formatRange(item)
+  const range = formatRange(item, { min: t('rangeMin'), max: t('rangeMax'), locale })
   const token = CONDITION_TOKENS[condition] ?? CONDITION_TOKENS.not_inspected
   const needsPhoto = !!item.photoRequired && isDefect(condition) && imageUrls.length === 0
 
@@ -672,6 +676,7 @@ export function InspectionItemRow({
                 code: item.code,
                 sectionCode: item.sectionCode,
                 defectSuggestions: item.defectSuggestions,
+                standard,
               }}
               scale={scale}
               currentCondition={condition}

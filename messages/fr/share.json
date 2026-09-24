@@ -196,6 +196,8 @@
     "summary": "Synthèse",
     "progressLabel": "{graded} points contrôlés",
     "limit": "Limite",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "viewPhoto": "Voir la photo",
     "deficienciesFound": "Défaillances constatées ({count})",
     "allResults": "Tous les résultats",

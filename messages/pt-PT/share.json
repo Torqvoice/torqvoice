@@ -196,6 +196,8 @@
     "summary": "Resumo",
     "progressLabel": "{graded} pontos avaliados",
     "limit": "Limite",
+    "rangeMin": "mín.",
+    "rangeMax": "máx.",
     "viewPhoto": "Ver foto",
     "deficienciesFound": "Deficiências detetadas ({count})",
     "allResults": "Todos os resultados",

@@ -196,6 +196,8 @@
     "summary": "Summary",
     "progressLabel": "{graded} checks graded",
     "limit": "Limit",
+    "rangeMin": "min",
+    "rangeMax": "max",
     "viewPhoto": "View photo",
     "deficienciesFound": "Deficiencies found ({count})",
     "allResults": "All results",

@@ -171,6 +171,8 @@
     "vehicleCategory": "Catégorie du véhicule",
     "nextTestDue": "Prochain contrôle",
     "limit": "Limite",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "overallResult": "Résultat du contrôle",
     "deficiencies": "Défaillances constatées",
     "reading": "Mesure",

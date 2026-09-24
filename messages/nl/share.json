@@ -196,6 +196,8 @@
     "summary": "Samenvatting",
     "progressLabel": "{graded} punten beoordeeld",
     "limit": "Grenswaarde",
+    "rangeMin": "min.",
+    "rangeMax": "max.",
     "viewPhoto": "Foto bekijken",
     "deficienciesFound": "Vastgestelde gebreken ({count})",
     "allResults": "Alle resultaten",

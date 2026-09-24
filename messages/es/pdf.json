@@ -171,6 +171,8 @@
     "vehicleCategory": "Categoría del vehículo",
     "nextTestDue": "Próxima inspección",
     "limit": "Límite",
+    "rangeMin": "mín.",
+    "rangeMax": "máx.",
     "overallResult": "Resultado de la inspección",
     "deficiencies": "Deficiencias detectadas",
     "reading": "Lectura",

@@ -432,19 +432,30 @@ export function gradeMeasurement(
     : 'fail'
 }
 
-/** "1.6–8 mm", "min 1.6 mm", "max 4 bar" — the range shown next to the input. */
-export function formatRange(check: {
-  minValue?: number | null
-  maxValue?: number | null
-  unit?: string | null
-}): string | null {
+/**
+ * "1.6–8 mm", "min 1.6 mm", "max 4 bar": the range shown next to the input.
+ * `min`/`max` are the reader's words for the bounds, and `locale` formats the
+ * numbers with the reader's decimal separator; both default to English.
+ */
+export function formatRange(
+  check: {
+    minValue?: number | null
+    maxValue?: number | null
+    unit?: string | null
+  },
+  { min = 'min', max = 'max', locale }: { min?: string; max?: string; locale?: string } = {}
+): string | null {
   const { minValue, maxValue, unit } = check
   const suffix = unit ? ` ${unit}` : ''
   const hasMin = minValue !== null && minValue !== undefined
   const hasMax = maxValue !== null && maxValue !== undefined
-  if (hasMin && hasMax) return `${minValue}–${maxValue}${suffix}`
-  if (hasMin) return `min ${minValue}${suffix}`
-  if (hasMax) return `max ${maxValue}${suffix}`
+  const num = (value: number) =>
+    locale
+      ? new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(value)
+      : String(value)
+  if (hasMin && hasMax) return `${num(minValue)}–${num(maxValue)}${suffix}`
+  if (hasMin) return `${min} ${num(minValue)}${suffix}`
+  if (hasMax) return `${max} ${num(maxValue)}${suffix}`
   return null
 }
 
@@ -452,20 +463,21 @@ export function formatRange(check: {
 /* Vehicle categories (Regulation (EU) 2018/858 / Directive 2014/45/EU Art. 2) */
 /* -------------------------------------------------------------------------- */
 
-export const VEHICLE_CATEGORIES: { value: string; label: string }[] = [
-  { value: 'M1', label: 'M1 — Passenger car (up to 8 seats)' },
-  { value: 'M2', label: 'M2 — Bus or coach, up to 5 t' },
-  { value: 'M3', label: 'M3 — Bus or coach, over 5 t' },
-  { value: 'N1', label: 'N1 — Goods vehicle, up to 3.5 t' },
-  { value: 'N2', label: 'N2 — Goods vehicle, 3.5 t to 12 t' },
-  { value: 'N3', label: 'N3 — Goods vehicle, over 12 t' },
-  { value: 'O1', label: 'O1 — Trailer, up to 0.75 t' },
-  { value: 'O2', label: 'O2 — Trailer, 0.75 t to 3.5 t' },
-  { value: 'O3', label: 'O3 — Trailer, 3.5 t to 10 t' },
-  { value: 'O4', label: 'O4 — Trailer, over 10 t' },
-  { value: 'L3e', label: 'L3e — Motorcycle' },
-  { value: 'L4e', label: 'L4e — Motorcycle with sidecar' },
-  { value: 'L5e', label: 'L5e — Powered tricycle' },
-  { value: 'L7e', label: 'L7e — Heavy quadricycle' },
-  { value: 'T', label: 'T — Wheeled tractor' },
-]
+/** Category codes; their names live in `inspections.certificate.categories`. */
+export const VEHICLE_CATEGORIES = [
+  'M1',
+  'M2',
+  'M3',
+  'N1',
+  'N2',
+  'N3',
+  'O1',
+  'O2',
+  'O3',
+  'O4',
+  'L3e',
+  'L4e',
+  'L5e',
+  'L7e',
+  'T',
+] as const

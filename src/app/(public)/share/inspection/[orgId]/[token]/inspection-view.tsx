@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import {
@@ -137,6 +137,7 @@ export function InspectionView({
   spec?: DocumentSpec
 }) {
   const t = useTranslations('share.inspection')
+  const locale = useLocale()
   const tc = useTranslations('share.common')
 
   const fmt = dateFormat || DEFAULT_DATE_FORMAT
@@ -262,7 +263,7 @@ export function InspectionView({
       item.measuredValue !== null &&
       item.measuredValue !== undefined
     ) {
-      const range = formatRange(item)
+      const range = formatRange(item, { min: t('rangeMin'), max: t('rangeMax'), locale })
       return (
         <p className="mt-1 text-sm">
           <span className="font-medium">
