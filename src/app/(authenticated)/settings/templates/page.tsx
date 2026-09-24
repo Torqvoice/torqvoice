@@ -6,7 +6,7 @@ import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
-import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { getChecklistLanguage, getTemplates } from '@/features/inspections/Actions/templateActions'
 import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
 import {
@@ -88,6 +88,8 @@ export default async function TemplatePage() {
   ])
 
   const settings = result.success && result.data ? result.data : {}
+  // After getTemplates, whose sync may just have written the checklists.
+  const checklistLanguage = await getChecklistLanguage()
   const inspectionTemplates =
     inspectionTemplatesResult.success && inspectionTemplatesResult.data
       ? inspectionTemplatesResult.data
@@ -159,6 +161,7 @@ export default async function TemplatePage() {
         logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,
       }}
       inspectionTemplates={inspectionTemplates}
+      checklistLanguage={checklistLanguage.success ? (checklistLanguage.data ?? null) : null}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}

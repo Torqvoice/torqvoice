@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Roterte webhook-hemmelighet",
     "inspection_reopen": "Gjenåpnet inspeksjon",
     "inspectionTemplate_import": "Importerte inspeksjonssjekkliste",
+    "inspectionTemplate_translate": "Oversatte inspeksjonssjekklister",
     "scheduled_message_create": "Opprettet planlagt melding",
     "scheduled_message_update": "Oppdaterte planlagt melding",
     "scheduled_message_delete": "Slettet planlagt melding",

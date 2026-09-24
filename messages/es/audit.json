@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Secreto de webhook rotado",
     "inspection_reopen": "Inspección reabierta",
     "inspectionTemplate_import": "Lista de comprobación importada",
+    "inspectionTemplate_translate": "Listas de inspección traducidas",
     "scheduled_message_create": "Mensaje programado creado",
     "scheduled_message_update": "Mensaje programado actualizado",
     "scheduled_message_delete": "Mensaje programado eliminado",

@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Webhook gizli anahtarı yenilendi",
     "inspection_reopen": "Muayene yeniden açıldı",
     "inspectionTemplate_import": "Muayene kontrol listesi içe aktarıldı",
+    "inspectionTemplate_translate": "Muayene kontrol listeleri çevrildi",
     "scheduled_message_create": "Zamanlanmış mesaj oluşturuldu",
     "scheduled_message_update": "Zamanlanmış mesaj güncellendi",
     "scheduled_message_delete": "Zamanlanmış mesaj silindi",

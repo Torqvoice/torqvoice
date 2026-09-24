@@ -50,11 +50,11 @@ import {
   Settings2,
   Trash2,
 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { createTemplate, updateTemplate } from '../Actions/templateActions'
 import { COMMON_UNITS, INPUT_TYPES, type InputType, type SeverityScale } from '../Lib/conditions'
-import { TEMPLATE_COUNTRIES } from '../Lib/templatePresets'
+import { templateCountries } from '../Lib/templatePresets'
 import { clearableInput } from '@/lib/clearable'
 
 /**
@@ -673,6 +673,7 @@ export function TemplateForm({
   template?: TemplateFormData
 }) {
   const t = useTranslations('inspections.builder')
+  const locale = useLocale()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const isEdit = !!template
@@ -823,7 +824,7 @@ export function TemplateForm({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">{t('notCountrySpecific')}</SelectItem>
-                    {TEMPLATE_COUNTRIES.map((c) => (
+                    {templateCountries(locale).map((c) => (
                       <SelectItem key={c.code} value={c.code}>
                         {c.name}
                       </SelectItem>

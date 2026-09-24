@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Zrotowano sekret webhooka",
     "inspection_reopen": "Otwarto inspekcję ponownie",
     "inspectionTemplate_import": "Zaimportowano listę kontrolną przeglądu",
+    "inspectionTemplate_translate": "Przetłumaczono listy kontrolne przeglądu",
     "scheduled_message_create": "Utworzono zaplanowaną wiadomość",
     "scheduled_message_update": "Zaktualizowano zaplanowaną wiadomość",
     "scheduled_message_delete": "Usunięto zaplanowaną wiadomość",

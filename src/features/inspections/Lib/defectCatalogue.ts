@@ -1,4 +1,5 @@
 import type { Condition, SeverityScale } from './conditions'
+import { EN_LIBRARY, type InspectionLibrary, libraryText } from './inspectionLibrary'
 
 /**
  * Ready-made defect descriptions, so a technician picks the wording instead of
@@ -24,10 +25,15 @@ export interface DefectSuggestion {
   source: 'workshop' | 'history' | 'regulation' | 'general'
 }
 
-type CatalogueEntry = [text: string, severity: DefectSeverity]
+/** The phrase is a key into the library's `defects` table, in the technician's language. */
+type CatalogueEntry = [key: string, severity: DefectSeverity]
 
-const entries = (source: DefectSuggestion['source'], list: CatalogueEntry[]): DefectSuggestion[] =>
-  list.map(([text, severity]) => ({ text, severity, source }))
+const entries = (
+  source: DefectSuggestion['source'],
+  list: CatalogueEntry[],
+  lib: InspectionLibrary
+): DefectSuggestion[] =>
+  list.map(([key, severity]) => ({ text: libraryText(lib, 'defects', key), severity, source }))
 
 /* -------------------------------------------------------------------------- */
 /* Annex I reasons for failure, by check code                                 */
@@ -36,460 +42,451 @@ const entries = (source: DefectSuggestion['source'], list: CatalogueEntry[]): De
 const BY_CODE: Record<string, CatalogueEntry[]> = {
   // 0. Identification
   '0.1': [
-    ['Registration plate missing', 'fail'],
-    ['Registration plate insecure or likely to fall off', 'fail'],
-    ['Inscription missing, illegible or does not match the vehicle documents', 'fail'],
+    ['registrationPlateMissing', 'fail'],
+    ['registrationPlateInsecureLikelyFallOff', 'fail'],
+    ['inscriptionMissingIllegibleDoesNotMatch', 'fail'],
   ],
   '0.2': [
-    ['VIN missing or not to be found', 'fail'],
-    [
-      'VIN incomplete, illegible, obviously falsified or does not match the vehicle documents',
-      'fail',
-    ],
-    ['Vehicle documents illegible or contain a factual inaccuracy', 'attention'],
+    ['vinMissingNotFound', 'fail'],
+    ['vinIncompleteIllegibleObviouslyFalsifiedDoes', 'fail'],
+    ['vehicleDocumentsIllegibleContainFactualInaccuracy', 'attention'],
   ],
 
   // 1. Braking equipment
   '1.1.2': [
-    ['Excessive travel or insufficient reserve travel of the brake control', 'fail'],
-    ['Brake control not releasing correctly', 'attention'],
-    ['Anti-slip provision on the brake pedal missing, loose or worn smooth', 'fail'],
+    ['excessiveTravelInsufficientReserveTravelBrake', 'fail'],
+    ['brakeControlNotReleasingCorrectly', 'attention'],
+    ['antiSlipProvisionBrakePedalMissing', 'fail'],
   ],
   '1.1.3': [
-    ['Pressure build-up time insufficient for effective braking', 'fail'],
-    [
-      'Insufficient pressure to assist braking at least twice after the warning has operated',
-      'dangerous',
-    ],
-    ['Air or antifreeze leak', 'fail'],
-    ['External damage likely to affect the function of the braking system', 'dangerous'],
+    ['pressureBuildUpTimeInsufficientEffective', 'fail'],
+    ['insufficientPressureAssistBrakingLeastTwice', 'dangerous'],
+    ['airAntifreezeLeak', 'fail'],
+    ['externalDamageLikelyAffectFunctionBraking', 'dangerous'],
   ],
   '1.1.4': [
-    ['Gauge or indicator malfunctioning or defective', 'attention'],
-    ['Low pressure not identifiable', 'fail'],
+    ['gaugeIndicatorMalfunctioningDefective', 'attention'],
+    ['lowPressureNotIdentifiable', 'fail'],
   ],
   '1.1.6': [
-    ['Parking brake control not holding, ratchet locking incorrectly', 'fail'],
-    ['Excessive wear at the control pivot or in the ratchet mechanism', 'attention'],
-    ['Excessive movement of the control indicating incorrect adjustment', 'attention'],
-    ['Actuator missing, damaged or inoperative', 'fail'],
+    ['parkingBrakeControlNotHoldingRatchet', 'fail'],
+    ['excessiveWearControlPivotRatchetMechanism', 'attention'],
+    ['excessiveMovementControlIndicatingIncorrectAdjustment', 'attention'],
+    ['actuatorMissingDamagedInoperative', 'fail'],
   ],
   '1.1.10': [
-    ['Servo unit defective or ineffective', 'fail'],
-    ['Servo unit inoperative', 'dangerous'],
-    ['Master cylinder defective but brake still operating', 'fail'],
-    ['Master cylinder leaking', 'fail'],
-    ['Brake fluid reservoir level below the minimum mark', 'attention'],
-    ['Brake fluid reservoir cap missing', 'attention'],
+    ['servoUnitDefectiveIneffective', 'fail'],
+    ['servoUnitInoperative', 'dangerous'],
+    ['masterCylinderDefectiveButBrakeStill', 'fail'],
+    ['masterCylinderLeaking', 'fail'],
+    ['brakeFluidReservoirLevelBelowMinimum', 'attention'],
+    ['brakeFluidReservoirCapMissing', 'attention'],
   ],
   '1.1.11': [
-    ['Imminent risk of failure or fracture of a rigid pipe', 'dangerous'],
-    ['Pipes or joints leaking', 'dangerous'],
-    ['Pipes damaged or excessively corroded', 'fail'],
-    ['Pipe misplaced with a risk of damage', 'fail'],
+    ['imminentRiskFailureFractureRigidPipe', 'dangerous'],
+    ['pipesJointsLeaking', 'dangerous'],
+    ['pipesDamagedExcessivelyCorroded', 'fail'],
+    ['pipeMisplacedRiskDamage', 'fail'],
   ],
   '1.1.12': [
-    ['Imminent risk of failure or fracture of a flexible hose', 'dangerous'],
-    ['Hoses damaged, chafing, twisted or too short', 'attention'],
-    ['Hoses or couplings leaking', 'dangerous'],
-    ['Hoses bulging under pressure', 'fail'],
-    ['Hoses porous or cord damaged', 'dangerous'],
+    ['imminentRiskFailureFractureFlexibleHose', 'dangerous'],
+    ['hosesDamagedChafingTwistedTooShort', 'attention'],
+    ['hosesCouplingsLeaking', 'dangerous'],
+    ['hosesBulgingUnderPressure', 'fail'],
+    ['hosesPorousCordDamaged', 'dangerous'],
   ],
   '1.1.13': [
-    ['Linings or pads worn down to the wear indicator', 'fail'],
-    ['Linings or pads worn beyond the wear indicator, metal to metal contact', 'dangerous'],
-    ['Linings or pads contaminated with oil, grease or other material', 'fail'],
-    ['Linings or pads contaminated, braking effect seriously reduced', 'dangerous'],
-    ['Lining or pad missing or incorrectly mounted', 'dangerous'],
+    ['liningsPadsWornDownWearIndicator', 'fail'],
+    ['liningsPadsWornBeyondWearIndicator', 'dangerous'],
+    ['liningsPadsContaminatedOilGreaseOther', 'fail'],
+    ['liningsPadsContaminatedBrakingEffectSeriously', 'dangerous'],
+    ['liningPadMissingIncorrectlyMounted', 'dangerous'],
   ],
   '1.1.14': [
-    ['Drum or disc excessively worn, scored, cracked, insecure or fractured', 'dangerous'],
-    ['Drum or disc contaminated with oil, grease or other material', 'fail'],
-    ['Drum or disc contaminated, braking effect seriously reduced', 'dangerous'],
-    ['Drum or disc missing', 'dangerous'],
-    ['Back plate insecure', 'fail'],
+    ['drumDiscExcessivelyWornScoredCracked', 'dangerous'],
+    ['drumDiscContaminatedOilGreaseOther', 'fail'],
+    ['drumDiscContaminatedBrakingEffectSeriously', 'dangerous'],
+    ['drumDiscMissing', 'dangerous'],
+    ['backPlateInsecure', 'fail'],
   ],
   '1.1.15': [
-    ['Cable damaged or knotted', 'fail'],
-    ['Component excessively worn or corroded', 'fail'],
-    ['Cable, rod or joint insecure', 'fail'],
-    ['Cable guide defective', 'fail'],
-    ['Restriction of free movement of the braking system', 'fail'],
+    ['cableDamagedKnotted', 'fail'],
+    ['componentExcessivelyWornCorroded', 'fail'],
+    ['cableRodJointInsecure', 'fail'],
+    ['cableGuideDefective', 'fail'],
+    ['restrictionFreeMovementBrakingSystem', 'fail'],
   ],
   '1.1.16': [
-    ['Actuator cracked or damaged', 'fail'],
-    ['Actuator leaking', 'fail'],
-    ['Actuator insecure or inadequately mounted', 'fail'],
-    ['Actuator severely corroded', 'fail'],
+    ['actuatorCrackedDamaged', 'fail'],
+    ['actuatorLeaking', 'fail'],
+    ['actuatorInsecureInadequatelyMounted', 'fail'],
+    ['actuatorSeverelyCorroded', 'fail'],
   ],
   '1.1.17': [
-    ['Linkage defective', 'fail'],
-    ['Linkage incorrectly adjusted', 'fail'],
-    ['Valve seized or inoperative', 'fail'],
-    ['Valve missing where required', 'dangerous'],
+    ['linkageDefective', 'fail'],
+    ['linkageIncorrectlyAdjusted', 'fail'],
+    ['valveSeizedInoperative', 'fail'],
+    ['valveMissingWhereRequired', 'dangerous'],
   ],
   '1.1.21': [
-    ['Other system device damaged, and the braking system operates adversely', 'fail'],
-    ['Air leakage causing a noticeable drop in pressure', 'fail'],
-    ['Any component insecure or inadequately mounted', 'fail'],
-    ['Unsafe modification to a component', 'fail'],
+    ['otherSystemDeviceDamagedBrakingSystem', 'fail'],
+    ['airLeakageCausingNoticeableDropPressure', 'fail'],
+    ['anyComponentInsecureInadequatelyMounted', 'fail'],
+    ['unsafeModificationComponent', 'fail'],
   ],
   '1.2.1': [
-    ['Inadequate braking force at one or more wheels', 'fail'],
-    ['No braking force at one or more wheels', 'dangerous'],
-    ['Braking force at any wheel less than 70% of the greatest force on the same axle', 'fail'],
-    ['Excessive fluctuation in braking force through any full wheel revolution', 'fail'],
-    ['Abnormally long delay in the operation of the brakes at any wheel', 'fail'],
+    ['inadequateBrakingForceOneMoreWheels', 'fail'],
+    ['noBrakingForceOneMoreWheels', 'dangerous'],
+    ['brakingForceAnyWheelLessThan', 'fail'],
+    ['excessiveFluctuationBrakingForceThroughAny', 'fail'],
+    ['abnormallyLongDelayOperationBrakesAny', 'fail'],
   ],
   '1.2.2': [
-    ['Braking rate below the minimum required', 'fail'],
-    ['Braking rate less than 50% of the required value', 'dangerous'],
+    ['brakingRateBelowMinimumRequired', 'fail'],
+    ['brakingRateLessThan50Required', 'dangerous'],
   ],
   '1.4.2': [
-    ['Parking brake rate below the minimum required', 'fail'],
-    ['Parking brake rate less than 50% of the required value', 'dangerous'],
-    ['Parking brake does not hold the vehicle on a gradient', 'fail'],
+    ['parkingBrakeRateBelowMinimumRequired', 'fail'],
+    ['parkingBrakeRateLessThan50', 'dangerous'],
+    ['parkingBrakeDoesNotHoldVehicle', 'fail'],
   ],
   '1.6': [
-    ['ABS warning device indicates a malfunction', 'fail'],
-    ['ABS warning device inoperative', 'fail'],
-    ['ABS wheel speed sensor missing or damaged', 'fail'],
-    ['ABS wiring damaged', 'fail'],
-    ['ABS system inoperative', 'fail'],
+    ['absWarningDeviceIndicatesMalfunction', 'fail'],
+    ['absWarningDeviceInoperative', 'fail'],
+    ['absWheelSpeedSensorMissingDamaged', 'fail'],
+    ['absWiringDamaged', 'fail'],
+    ['absSystemInoperative', 'fail'],
   ],
   '1.7': [
-    ['EBS warning device indicates a malfunction', 'fail'],
-    ['EBS warning device inoperative', 'fail'],
+    ['ebsWarningDeviceIndicatesMalfunction', 'fail'],
+    ['ebsWarningDeviceInoperative', 'fail'],
   ],
   '1.8': [
-    ['Brake fluid contaminated', 'fail'],
-    ['Brake fluid boiling point too low or water content too high', 'fail'],
-    ['Brake fluid at or below the minimum level', 'attention'],
+    ['brakeFluidContaminated', 'fail'],
+    ['brakeFluidBoilingPointTooLow', 'fail'],
+    ['brakeFluidBelowMinimumLevel', 'attention'],
   ],
 
   // 2. Steering
   '2.1': [
-    ['Steering box shaft turning stiffly', 'fail'],
-    ['Steering box shaft excessively worn', 'fail'],
-    ['Excessive movement of the steering box', 'fail'],
-    ['Steering box leaking', 'attention'],
-    ['Steering box dripping oil', 'fail'],
-    ['Steering component insecure, cracked or excessively worn', 'fail'],
-    ['Steering component insecure to the point of affecting safety', 'dangerous'],
+    ['steeringBoxShaftTurningStiffly', 'fail'],
+    ['steeringBoxShaftExcessivelyWorn', 'fail'],
+    ['excessiveMovementSteeringBox', 'fail'],
+    ['steeringBoxLeaking', 'attention'],
+    ['steeringBoxDrippingOil', 'fail'],
+    ['steeringComponentInsecureCrackedExcessivelyWorn', 'fail'],
+    ['steeringComponentInsecurePointAffectingSafety', 'dangerous'],
   ],
   '2.2': [
-    ['Relative movement between the steering wheel and the column, indicating looseness', 'fail'],
-    ['Steering wheel retaining device missing', 'dangerous'],
-    ['Column bearings or couplings excessively worn', 'fail'],
-    ['Excessive vertical or radial movement of the steering wheel hub', 'fail'],
-    ['Handlebars cracked or insecure on the fork stem', 'dangerous'],
+    ['relativeMovementBetweenSteeringWheelColumn', 'fail'],
+    ['steeringWheelRetainingDeviceMissing', 'dangerous'],
+    ['columnBearingsCouplingsExcessivelyWorn', 'fail'],
+    ['excessiveVerticalRadialMovementSteeringWheel', 'fail'],
+    ['handlebarsCrackedInsecureForkStem', 'dangerous'],
   ],
   '2.3': [
-    ['Excessive free play at the steering wheel or handlebars', 'fail'],
-    ['Free play so excessive that safe steering is affected', 'dangerous'],
+    ['excessiveFreePlaySteeringWheelHandlebars', 'fail'],
+    ['freePlaySoExcessiveThatSafe', 'dangerous'],
   ],
   '2.4': [
-    ['Wheel alignment outside the manufacturer specification', 'attention'],
-    ['Alignment causing abnormal or uneven tyre wear', 'fail'],
+    ['wheelAlignmentOutsideManufacturerSpecification', 'attention'],
+    ['alignmentCausingAbnormalUnevenTyreWear', 'fail'],
   ],
   '2.6': [
-    ['Power steering system leaking', 'attention'],
-    ['Insufficient power steering fluid, below the minimum mark', 'attention'],
-    ['Power steering mechanism not functioning', 'fail'],
-    ['Power steering mechanism cracked or insecure', 'fail'],
-    ['Steering wheel or handlebars misaligned or incompatible with the road wheels', 'fail'],
+    ['powerSteeringSystemLeaking', 'attention'],
+    ['insufficientPowerSteeringFluidBelowMinimum', 'attention'],
+    ['powerSteeringMechanismNotFunctioning', 'fail'],
+    ['powerSteeringMechanismCrackedInsecure', 'fail'],
+    ['steeringWheelHandlebarsMisalignedIncompatibleRoad', 'fail'],
   ],
 
   // 3. Visibility
   '3.1': [
-    [
-      'Obstruction within the driver field of vision that materially affects the forward or side view',
-      'fail',
-    ],
-    ['Obstruction that seriously affects the view through the windscreen', 'dangerous'],
+    ['obstructionWithinDriverFieldVisionThat', 'fail'],
+    ['obstructionThatSeriouslyAffectsViewThrough', 'dangerous'],
   ],
   '3.2': [
-    ['Glass cracked or discoloured', 'attention'],
-    ['Cracked or discoloured glass within the swept area of the windscreen', 'fail'],
-    ['Glass not conforming to the applicable requirements', 'fail'],
-    ['Condition of the glass seriously impairing visibility', 'dangerous'],
-    ['Chip within the driver critical vision area', 'fail'],
+    ['glassCrackedDiscoloured', 'attention'],
+    ['crackedDiscolouredGlassWithinSweptArea', 'fail'],
+    ['glassNotConformingApplicableRequirements', 'fail'],
+    ['conditionGlassSeriouslyImpairingVisibility', 'dangerous'],
+    ['chipWithinDriverCriticalVisionArea', 'fail'],
   ],
   '3.3': [
-    ['Mirror or device missing or not fitted as required', 'fail'],
-    ['Mirror or device defective, loose or insecure', 'attention'],
-    ['Mirror or device with an insufficient field of vision', 'fail'],
+    ['mirrorDeviceMissingNotFittedAs', 'fail'],
+    ['mirrorDeviceDefectiveLooseInsecure', 'attention'],
+    ['mirrorDeviceInsufficientFieldVision', 'fail'],
   ],
   '3.4': [
-    ['Wipers not operating or missing', 'fail'],
-    ['Wiper blade defective', 'attention'],
-    ['Wiper blade missing or obviously ineffective', 'fail'],
-    ['Wiper smearing or juddering across the swept area', 'attention'],
+    ['wipersNotOperatingMissing', 'fail'],
+    ['wiperBladeDefective', 'attention'],
+    ['wiperBladeMissingObviouslyIneffective', 'fail'],
+    ['wiperSmearingJudderingAcrossSweptArea', 'attention'],
   ],
   '3.5': [
-    ['Washers not operating adequately', 'attention'],
-    ['Washers not operating at all', 'fail'],
-    ['Washer fluid reservoir empty', 'attention'],
+    ['washersNotOperatingAdequately', 'attention'],
+    ['washersNotOperatingAll', 'fail'],
+    ['washerFluidReservoirEmpty', 'attention'],
   ],
-  '3.6': [['Demisting or defrosting system inoperative or clearly not functioning', 'attention']],
+  '3.6': [['demistingDefrostingSystemInoperativeClearlyNot', 'attention']],
 
   // 4. Lamps, reflectors and electrical equipment
   '4.1.1': [
-    ['Light source or lamp defective or missing', 'attention'],
-    ['Two light sources or lamps defective or missing', 'fail'],
-    ['Projection system slightly defective', 'attention'],
-    ['Projection system severely defective or missing', 'fail'],
-    ['Lamp insecurely attached', 'attention'],
-    ['Lens heavily clouded, reducing light output', 'attention'],
-    ['Colour of emitted light not compliant', 'fail'],
+    ['lightSourceLampDefectiveMissing', 'attention'],
+    ['twoLightSourcesLampsDefectiveMissing', 'fail'],
+    ['projectionSystemSlightlyDefective', 'attention'],
+    ['projectionSystemSeverelyDefectiveMissing', 'fail'],
+    ['lampInsecurelyAttached', 'attention'],
+    ['lensHeavilyCloudedReducingLightOutput', 'attention'],
+    ['colourEmittedLightNotCompliant', 'fail'],
   ],
-  '4.1.2': [['Headlamp aim outside the required limits', 'attention']],
+  '4.1.2': [['headlampAimOutsideRequiredLimits', 'attention']],
   '4.2': [
-    ['Light source or lamp defective', 'attention'],
-    ['Lens defective', 'attention'],
-    ['Lamp insecurely attached, with a serious risk of falling off', 'fail'],
-    ['Colour of emitted light not compliant', 'fail'],
+    ['lightSourceLampDefective', 'attention'],
+    ['lensDefective', 'attention'],
+    ['lampInsecurelyAttachedSeriousRiskFalling', 'fail'],
+    ['colourEmittedLightNotCompliant', 'fail'],
   ],
   '4.3': [
-    ['Stop lamp not operating', 'fail'],
-    ['One stop lamp of a pair not operating', 'attention'],
-    ['No stop lamp operating at all', 'dangerous'],
-    ['Stop lamp operating permanently', 'fail'],
+    ['stopLampNotOperating', 'fail'],
+    ['oneStopLampPairNotOperating', 'attention'],
+    ['noStopLampOperatingAll', 'dangerous'],
+    ['stopLampOperatingPermanently', 'fail'],
   ],
   '4.4': [
-    ['Indicator or hazard lamp not operating', 'fail'],
-    ['Flashing rate outside the required range', 'attention'],
-    ['Colour of emitted light not compliant', 'fail'],
-    ['Indicator tell-tale inoperative', 'attention'],
+    ['indicatorHazardLampNotOperating', 'fail'],
+    ['flashingRateOutsideRequiredRange', 'attention'],
+    ['colourEmittedLightNotCompliant', 'fail'],
+    ['indicatorTellTaleInoperative', 'attention'],
   ],
   '4.5': [
-    ['Fog lamp not operating', 'attention'],
-    ['Fog lamp incorrectly aimed', 'attention'],
-    ['Rear fog lamp operating permanently', 'attention'],
+    ['fogLampNotOperating', 'attention'],
+    ['fogLampIncorrectlyAimed', 'attention'],
+    ['rearFogLampOperatingPermanently', 'attention'],
   ],
   '4.6': [
-    ['Reversing lamp not operating', 'attention'],
-    ['Reversing lamp operating permanently or showing to the rear when not in reverse', 'fail'],
+    ['reversingLampNotOperating', 'attention'],
+    ['reversingLampOperatingPermanentlyShowingRear', 'fail'],
   ],
-  '4.7': [['Registration plate lamp not operating or missing', 'attention']],
+  '4.7': [['registrationPlateLampNotOperatingMissing', 'attention']],
   '4.8': [
-    ['Reflector defective, damaged or missing', 'attention'],
-    ['Conspicuity marking damaged, dirty or partly missing', 'attention'],
-    ['Reflector colour not compliant', 'fail'],
+    ['reflectorDefectiveDamagedMissing', 'attention'],
+    ['conspicuityMarkingDamagedDirtyPartlyMissing', 'attention'],
+    ['reflectorColourNotCompliant', 'fail'],
   ],
   '4.9': [
-    ['Tell-tale not operating', 'attention'],
-    ['Tell-tale indicating a malfunction of a safety-related system', 'fail'],
+    ['tellTaleNotOperating', 'attention'],
+    ['tellTaleIndicatingMalfunctionSafetyRelated', 'fail'],
   ],
   '4.10': [
-    ['Fixed components insecure or damaged', 'attention'],
-    ['Insulation damaged or deteriorated', 'attention'],
-    ['Trailer electrical connection not functioning', 'fail'],
+    ['fixedComponentsInsecureDamaged', 'attention'],
+    ['insulationDamagedDeteriorated', 'attention'],
+    ['trailerElectricalConnectionNotFunctioning', 'fail'],
   ],
   '4.11': [
-    ['Wiring insecure or inadequately secured', 'attention'],
-    ['Wiring insulation damaged or deteriorated', 'fail'],
-    ['Wiring damaged with a risk of fire or sparking', 'dangerous'],
-    ['Excessively deteriorated wiring in the engine bay or near hot components', 'fail'],
+    ['wiringInsecureInadequatelySecured', 'attention'],
+    ['wiringInsulationDamagedDeteriorated', 'fail'],
+    ['wiringDamagedRiskFireSparking', 'dangerous'],
+    ['excessivelyDeterioratedWiringEngineBayNear', 'fail'],
   ],
   '4.13': [
-    ['Battery insecure', 'attention'],
-    ['Battery leaking', 'fail'],
-    ['Battery leaking corrosive electrolyte', 'dangerous'],
-    ['Battery switch defective', 'fail'],
-    ['Battery terminals corroded or loose', 'attention'],
-    ['Battery state of charge below the serviceable threshold', 'attention'],
+    ['batteryInsecure', 'attention'],
+    ['batteryLeaking', 'fail'],
+    ['batteryLeakingCorrosiveElectrolyte', 'dangerous'],
+    ['batterySwitchDefective', 'fail'],
+    ['batteryTerminalsCorrodedLoose', 'attention'],
+    ['batteryStateChargeBelowServiceableThreshold', 'attention'],
   ],
 
   // 5. Axles, wheels, tyres and suspension
   '5.1.1': [
-    ['Axle cracked or deformed', 'dangerous'],
-    ['Axle insecurely attached to the vehicle', 'fail'],
-    ['Unsafe modification to an axle', 'dangerous'],
+    ['axleCrackedDeformed', 'dangerous'],
+    ['axleInsecurelyAttachedVehicle', 'fail'],
+    ['unsafeModificationAxle', 'dangerous'],
   ],
   '5.1.3': [
-    ['Wheel bearing with excessive play', 'fail'],
-    ['Wheel bearing too tight or seizing', 'dangerous'],
-    ['Wheel bearing noisy under load', 'fail'],
+    ['wheelBearingExcessivePlay', 'fail'],
+    ['wheelBearingTooTightSeizing', 'dangerous'],
+    ['wheelBearingNoisyUnderLoad', 'fail'],
   ],
   '5.2.1': [
-    ['Wheel fracture or defective welding', 'dangerous'],
-    ['Wheel retaining rings not correctly fitted', 'dangerous'],
-    ['Wheel badly distorted or worn', 'fail'],
-    ['Wheel nuts or studs missing or loose', 'dangerous'],
-    ['Wheel size or type not compatible and affecting road safety', 'fail'],
+    ['wheelFractureDefectiveWelding', 'dangerous'],
+    ['wheelRetainingRingsNotCorrectlyFitted', 'dangerous'],
+    ['wheelBadlyDistortedWorn', 'fail'],
+    ['wheelNutsStudsMissingLoose', 'dangerous'],
+    ['wheelSizeTypeNotCompatibleAffecting', 'fail'],
   ],
   '5.2.3': [
-    ['Tread depth below the legal minimum', 'fail'],
-    ['Tread wear indicator visible', 'fail'],
-    ['Tyre severely damaged or cut', 'fail'],
-    ['Tyre cords visible or damaged', 'dangerous'],
-    ['Tyres of different size or construction on the same axle', 'fail'],
-    ['Tyre load index or speed rating not compliant with the vehicle', 'fail'],
-    ['Tyre rubbing against another component', 'attention'],
-    ['Tyre seriously rubbing against another component', 'fail'],
-    ['Uneven wear across the tread indicating an alignment or suspension fault', 'attention'],
-    ['Tyre pressure outside the manufacturer specification', 'attention'],
-    ['Tyre perished or showing sidewall cracking with age', 'attention'],
+    ['treadDepthBelowLegalMinimum', 'fail'],
+    ['treadWearIndicatorVisible', 'fail'],
+    ['tyreSeverelyDamagedCut', 'fail'],
+    ['tyreCordsVisibleDamaged', 'dangerous'],
+    ['tyresDifferentSizeConstructionSameAxle', 'fail'],
+    ['tyreLoadIndexSpeedRatingNot', 'fail'],
+    ['tyreRubbingAgainstAnotherComponent', 'attention'],
+    ['tyreSeriouslyRubbingAgainstAnotherComponent', 'fail'],
+    ['unevenWearAcrossTreadIndicatingAlignment', 'attention'],
+    ['tyrePressureOutsideManufacturerSpecification', 'attention'],
+    ['tyrePerishedShowingSidewallCrackingAge', 'attention'],
   ],
   '5.3.1': [
-    ['Springs insecurely attached to the chassis or axle', 'fail'],
-    ['Spring component damaged or cracked', 'fail'],
-    ['Spring missing or broken', 'dangerous'],
-    ['Stabiliser bar or link worn or insecure', 'fail'],
+    ['springsInsecurelyAttachedChassisAxle', 'fail'],
+    ['springComponentDamagedCracked', 'fail'],
+    ['springMissingBroken', 'dangerous'],
+    ['stabiliserBarLinkWornInsecure', 'fail'],
   ],
   '5.3.2': [
-    ['Shock absorbers insecure', 'attention'],
-    ['Shock absorbers insecure with a risk of detachment', 'fail'],
-    ['Shock absorber damaged, showing signs of severe leakage or malfunction', 'fail'],
-    ['Shock absorber missing', 'fail'],
+    ['shockAbsorbersInsecure', 'attention'],
+    ['shockAbsorbersInsecureRiskDetachment', 'fail'],
+    ['shockAbsorberDamagedShowingSignsSevere', 'fail'],
+    ['shockAbsorberMissing', 'fail'],
   ],
   '5.3.4': [
-    ['Suspension arm, rod or joint excessively worn', 'fail'],
-    ['Joint with excessive play, seriously affecting stability', 'dangerous'],
-    ['Rubber bush perished, split or missing', 'fail'],
-    ['Dust cover split or missing', 'attention'],
-    ['Component insecure or badly corroded', 'fail'],
+    ['suspensionArmRodJointExcessivelyWorn', 'fail'],
+    ['jointExcessivePlaySeriouslyAffectingStability', 'dangerous'],
+    ['rubberBushPerishedSplitMissing', 'fail'],
+    ['dustCoverSplitMissing', 'attention'],
+    ['componentInsecureBadlyCorroded', 'fail'],
   ],
 
   // 6. Chassis and chassis attachments
   '6.1.1': [
-    ['Slight damage to a member or crossmember', 'attention'],
-    ['Serious damage to a member or crossmember', 'fail'],
-    ['Insecurity of a member or crossmember', 'fail'],
-    ['Excessive corrosion affecting the rigidity of the assembly', 'fail'],
-    ['Corrosion perforating a structural or load-bearing member', 'dangerous'],
-    ['Unsafe repair or modification to the structure', 'dangerous'],
+    ['slightDamageMemberCrossmember', 'attention'],
+    ['seriousDamageMemberCrossmember', 'fail'],
+    ['insecurityMemberCrossmember', 'fail'],
+    ['excessiveCorrosionAffectingRigidityAssembly', 'fail'],
+    ['corrosionPerforatingStructuralLoadBearingMember', 'dangerous'],
+    ['unsafeRepairModificationStructure', 'dangerous'],
   ],
   '6.1.2': [
-    ['Exhaust system insecure or leaking', 'fail'],
-    ['Fumes entering the cab or passenger compartment', 'fail'],
-    ['Fumes entering the cab in a quantity dangerous to the health of the occupants', 'dangerous'],
-    ['Exhaust silencer defective, missing or bypassed', 'fail'],
+    ['exhaustSystemInsecureLeaking', 'fail'],
+    ['fumesEnteringCabPassengerCompartment', 'fail'],
+    ['fumesEnteringCabQuantityDangerousHealth', 'dangerous'],
+    ['exhaustSilencerDefectiveMissingBypassed', 'fail'],
   ],
   '6.1.3': [
-    ['Fuel tank or pipes insecure', 'fail'],
-    ['Fuel leaking or filler cap missing or ineffective', 'fail'],
-    ['Fuel leaking with a risk of fire', 'dangerous'],
-    ['Fuel pipes chafing or damaged', 'fail'],
-    ['Heat shield missing or ineffective', 'fail'],
+    ['fuelTankPipesInsecure', 'fail'],
+    ['fuelLeakingFillerCapMissingIneffective', 'fail'],
+    ['fuelLeakingRiskFire', 'dangerous'],
+    ['fuelPipesChafingDamaged', 'fail'],
+    ['heatShieldMissingIneffective', 'fail'],
   ],
-  '6.1.6': [['Spare wheel carrier insecure or in an unsatisfactory condition', 'attention']],
+  '6.1.6': [['spareWheelCarrierInsecureUnsatisfactoryCondition', 'attention']],
   '6.1.7': [
-    ['Coupling device damaged, defective or cracked', 'fail'],
-    ['Coupling device excessively worn', 'fail'],
-    ['Coupling device defective to the point of risking detachment', 'dangerous'],
-    ['Safety device missing, damaged or not functioning', 'fail'],
+    ['couplingDeviceDamagedDefectiveCracked', 'fail'],
+    ['couplingDeviceExcessivelyWorn', 'fail'],
+    ['couplingDeviceDefectivePointRiskingDetachment', 'dangerous'],
+    ['safetyDeviceMissingDamagedNotFunctioning', 'fail'],
   ],
   '6.2.1': [
-    ['Panel or component loose or damaged, likely to cause injury', 'fail'],
-    ['Body pillar insecure', 'fail'],
-    ['Ingress of engine or exhaust fumes', 'dangerous'],
-    ['Corrosion in an area that could injure an occupant or another road user', 'fail'],
-    ['Sharp edge or protrusion likely to cause injury', 'fail'],
+    ['panelComponentLooseDamagedLikelyCause', 'fail'],
+    ['bodyPillarInsecure', 'fail'],
+    ['ingressEngineExhaustFumes', 'dangerous'],
+    ['corrosionAreaThatCouldInjureOccupant', 'fail'],
+    ['sharpEdgeProtrusionLikelyCauseInjury', 'fail'],
   ],
   '6.2.3': [
-    ['Door or hatch does not open or close properly', 'fail'],
-    ['Door or hatch liable to open unintentionally or fails to stay closed', 'dangerous'],
-    ['Door, hinge, catch or pillar deteriorated', 'attention'],
+    ['doorHatchDoesNotOpenClose', 'fail'],
+    ['doorHatchLiableOpenUnintentionallyFails', 'dangerous'],
+    ['doorHingeCatchPillarDeteriorated', 'attention'],
   ],
   '6.2.4': [
-    ['Floor insecure or badly deteriorated', 'fail'],
-    ['Floor insufficiently secure to be safe to stand on', 'dangerous'],
+    ['floorInsecureBadlyDeteriorated', 'fail'],
+    ['floorInsufficientlySecureSafeStand', 'dangerous'],
   ],
   '6.2.5': [
-    ['Seat with a defective structure', 'fail'],
-    ['Seat insecurely mounted', 'dangerous'],
-    ['Seat adjustment mechanism not functioning correctly', 'fail'],
+    ['seatDefectiveStructure', 'fail'],
+    ['seatInsecurelyMounted', 'dangerous'],
+    ['seatAdjustmentMechanismNotFunctioningCorrectly', 'fail'],
   ],
   '6.2.7': [
-    ['Step or foot rest insecure', 'attention'],
-    ['Step insecure to the point of risking injury', 'fail'],
+    ['stepFootRestInsecure', 'attention'],
+    ['stepInsecurePointRiskingInjury', 'fail'],
   ],
   '6.2.11': [
-    ['Mudguard missing, loose or badly corroded', 'attention'],
-    ['Insufficient clearance to the wheel or spray suppression ineffective', 'attention'],
+    ['mudguardMissingLooseBadlyCorroded', 'attention'],
+    ['insufficientClearanceWheelSpraySuppressionIneffective', 'attention'],
   ],
 
   // 7. Other equipment
   '7.1': [
-    ['Belt anchorage badly deteriorated', 'fail'],
-    ['Anchorage deteriorated to the point of affecting stability', 'dangerous'],
-    ['Belt damaged, with a cut or sign of overstretching', 'fail'],
-    ['Belt frayed or dirty but serviceable', 'attention'],
-    ['Belt retractor or buckle not operating correctly', 'fail'],
-    ['Belt missing where one is required', 'fail'],
-    ['Airbag or SRS warning lamp indicates a system failure', 'fail'],
+    ['beltAnchorageBadlyDeteriorated', 'fail'],
+    ['anchorageDeterioratedPointAffectingStability', 'dangerous'],
+    ['beltDamagedCutSignOverstretching', 'fail'],
+    ['beltFrayedDirtyButServiceable', 'attention'],
+    ['beltRetractorBuckleNotOperatingCorrectly', 'fail'],
+    ['beltMissingWhereOneRequired', 'fail'],
+    ['airbagSrsWarningLampIndicatesSystem', 'fail'],
   ],
   '7.2': [
-    ['Fire extinguisher missing where required', 'attention'],
-    ['Fire extinguisher out of service date or discharged', 'attention'],
-    ['Fire extinguisher not securely mounted', 'attention'],
+    ['fireExtinguisherMissingWhereRequired', 'attention'],
+    ['fireExtinguisherOutServiceDateDischarged', 'attention'],
+    ['fireExtinguisherNotSecurelyMounted', 'attention'],
   ],
   '7.3': [
-    ['Device not functioning to prevent the vehicle being driven away', 'attention'],
-    ['Device defective or locking unintentionally', 'fail'],
+    ['deviceNotFunctioningPreventVehicleBeing', 'attention'],
+    ['deviceDefectiveLockingUnintentionally', 'fail'],
   ],
-  '7.4': [['Warning triangle missing or incomplete', 'attention']],
-  '7.5': [['First aid kit missing, incomplete or out of date', 'attention']],
+  '7.4': [['warningTriangleMissingIncomplete', 'attention']],
+  '7.5': [['firstAidKitMissingIncompleteOut', 'attention']],
   '7.7': [
-    ['Audible warning device not working at all', 'fail'],
-    ['Control insecure or device sounding intermittently', 'attention'],
-    ['Tone not compliant or clearly inadequate', 'attention'],
+    ['audibleWarningDeviceNotWorkingAll', 'fail'],
+    ['controlInsecureDeviceSoundingIntermittently', 'attention'],
+    ['toneNotCompliantClearlyInadequate', 'attention'],
   ],
   '7.8': [
-    ['Speedometer not fitted where required', 'fail'],
-    ['Speedometer not functioning', 'attention'],
-    ['Speedometer not illuminated', 'attention'],
+    ['speedometerNotFittedWhereRequired', 'fail'],
+    ['speedometerNotFunctioning', 'attention'],
+    ['speedometerNotIlluminated', 'attention'],
   ],
   '7.9': [
-    ['Tachograph missing where required', 'fail'],
-    ['Tachograph not functioning or seals broken', 'fail'],
-    ['Tachograph calibration plate missing, illegible or out of date', 'fail'],
-    ['Obvious evidence of tampering or manipulation', 'fail'],
+    ['tachographMissingWhereRequired', 'fail'],
+    ['tachographNotFunctioningSealsBroken', 'fail'],
+    ['tachographCalibrationPlateMissingIllegibleOut', 'fail'],
+    ['obviousEvidenceTamperingManipulation', 'fail'],
   ],
   '7.10': [
-    ['Speed limitation device missing where required', 'fail'],
-    ['Speed limitation device evidently not functioning', 'fail'],
-    ['Speed limitation device set to the wrong speed or seals missing', 'fail'],
+    ['speedLimitationDeviceMissingWhereRequired', 'fail'],
+    ['speedLimitationDeviceEvidentlyNotFunctioning', 'fail'],
+    ['speedLimitationDeviceSetWrongSpeed', 'fail'],
   ],
   '7.11': [
-    ['Odometer obviously manipulated to misrepresent the mileage', 'fail'],
-    ['Odometer obviously not functioning', 'attention'],
+    ['odometerObviouslyManipulatedMisrepresentMileage', 'fail'],
+    ['odometerObviouslyNotFunctioning', 'attention'],
   ],
   '7.12': [
-    ['ESC wheel speed sensor missing or damaged', 'fail'],
-    ['ESC wiring damaged', 'fail'],
-    ['ESC warning device indicates a malfunction', 'fail'],
-    ['ESC system inoperative', 'fail'],
+    ['escWheelSpeedSensorMissingDamaged', 'fail'],
+    ['escWiringDamaged', 'fail'],
+    ['escWarningDeviceIndicatesMalfunction', 'fail'],
+    ['escSystemInoperative', 'fail'],
   ],
 
   // 8. Nuisance
   '8.1': [
-    ['Noise level exceeding the permitted level', 'fail'],
-    ['Part of the noise suppression system loose, damaged, missing or obviously modified', 'fail'],
-    ['Part of the noise suppression system likely to increase the noise level', 'dangerous'],
+    ['noiseLevelExceedingPermittedLevel', 'fail'],
+    ['partNoiseSuppressionSystemLooseDamaged', 'fail'],
+    ['partNoiseSuppressionSystemLikelyIncrease', 'dangerous'],
   ],
   '8.2.1.2': [
-    ['CO content exceeding the permitted level', 'fail'],
-    ['Lambda outside the range 1 ± 0.03 or not to the manufacturer specification', 'fail'],
-    ['Emission control equipment missing, modified or obviously defective', 'fail'],
-    ['Engine management indicating a serious malfunction', 'fail'],
+    ['coContentExceedingPermittedLevel', 'fail'],
+    ['lambdaOutsideRange1003', 'fail'],
+    ['emissionControlEquipmentMissingModifiedObviously', 'fail'],
+    ['engineManagementIndicatingSeriousMalfunction', 'fail'],
   ],
   '8.2.2.1': [
-    ['Emission control equipment missing or obviously defective', 'fail'],
-    ['Diesel particulate filter obviously modified or removed', 'fail'],
-    ['EGR or SCR system obviously defective or bypassed', 'fail'],
+    ['emissionControlEquipmentMissingObviouslyDefective', 'fail'],
+    ['dieselParticulateFilterObviouslyModifiedRemoved', 'fail'],
+    ['egrScrSystemObviouslyDefectiveBypassed', 'fail'],
   ],
   '8.2.2.2': [
-    ['Smoke opacity exceeding the level recorded on the manufacturer plate', 'fail'],
-    ['Excessive smoke obscuring the view of other road users', 'dangerous'],
-    ['Smoke opacity exceeding the applicable limit', 'fail'],
+    ['smokeOpacityExceedingLevelRecordedManufacturer', 'fail'],
+    ['excessiveSmokeObscuringViewOtherRoad', 'dangerous'],
+    ['smokeOpacityExceedingApplicableLimit', 'fail'],
   ],
   '8.5': [
-    ['Excessive fluid leak likely to harm the environment or endanger other road users', 'fail'],
-    ['Constant formation of drops presenting a very serious risk', 'dangerous'],
-    ['Seepage or weeping without dripping', 'attention'],
+    ['excessiveFluidLeakLikelyHarmEnvironment', 'fail'],
+    ['constantFormationDropsPresentingVerySerious', 'dangerous'],
+    ['seepageWeepingWithoutDripping', 'attention'],
   ],
 }
 
@@ -499,44 +496,44 @@ const BY_CODE: Record<string, CatalogueEntry[]> = {
 
 const BY_SECTION: Record<string, CatalogueEntry[]> = {
   '1': [
-    ['Component excessively worn', 'fail'],
-    ['Component insecure or inadequately mounted', 'fail'],
-    ['Leak from the braking system', 'fail'],
-    ['Braking performance reduced', 'fail'],
+    ['componentExcessivelyWorn', 'fail'],
+    ['componentInsecureInadequatelyMounted', 'fail'],
+    ['leakFromBrakingSystem', 'fail'],
+    ['brakingPerformanceReduced', 'fail'],
   ],
   '2': [
-    ['Excessive play in the steering', 'fail'],
-    ['Component worn, insecure or damaged', 'fail'],
-    ['Leak from the steering system', 'attention'],
+    ['excessivePlaySteering', 'fail'],
+    ['componentWornInsecureDamaged', 'fail'],
+    ['leakFromSteeringSystem', 'attention'],
   ],
   '3': [
-    ['Visibility impaired', 'fail'],
-    ['Component defective, missing or ineffective', 'attention'],
+    ['visibilityImpaired', 'fail'],
+    ['componentDefectiveMissingIneffective', 'attention'],
   ],
   '4': [
-    ['Lamp not operating', 'fail'],
-    ['Lamp defective, damaged or insecure', 'attention'],
-    ['Colour of emitted light not compliant', 'fail'],
+    ['lampNotOperating', 'fail'],
+    ['lampDefectiveDamagedInsecure', 'attention'],
+    ['colourEmittedLightNotCompliant', 'fail'],
   ],
   '5': [
-    ['Component excessively worn', 'fail'],
-    ['Component insecure or damaged', 'fail'],
-    ['Excessive play', 'fail'],
+    ['componentExcessivelyWorn', 'fail'],
+    ['componentInsecureDamaged', 'fail'],
+    ['excessivePlay', 'fail'],
   ],
   '6': [
-    ['Corrosion affecting the structure', 'fail'],
-    ['Component insecure, loose or damaged', 'fail'],
-    ['Leak from the system', 'fail'],
+    ['corrosionAffectingStructure', 'fail'],
+    ['componentInsecureLooseDamaged', 'fail'],
+    ['leakFromSystem', 'fail'],
   ],
   '7': [
-    ['Equipment missing where required', 'fail'],
-    ['Equipment defective or not functioning', 'fail'],
-    ['Equipment out of service date', 'attention'],
+    ['equipmentMissingWhereRequired', 'fail'],
+    ['equipmentDefectiveNotFunctioning', 'fail'],
+    ['equipmentOutServiceDate', 'attention'],
   ],
   '8': [
-    ['Emission or noise level exceeding the permitted limit', 'fail'],
-    ['Control equipment missing, modified or defective', 'fail'],
-    ['Fluid leak', 'attention'],
+    ['emissionNoiseLevelExceedingPermittedLimit', 'fail'],
+    ['controlEquipmentMissingModifiedDefective', 'fail'],
+    ['fluidLeak', 'attention'],
   ],
 }
 
@@ -544,113 +541,132 @@ const BY_SECTION: Record<string, CatalogueEntry[]> = {
 /* Keyword fallbacks, for checklists that carry no regulation codes           */
 /* -------------------------------------------------------------------------- */
 
-const BY_KEYWORD: { match: RegExp; suggestions: CatalogueEntry[] }[] = [
+/**
+ * `match` covers English names; `group` names the library's `defectKeywords`
+ * entry, a comma-separated list of word stems for checks named in the
+ * workshop's own language.
+ */
+const BY_KEYWORD: {
+  group: keyof InspectionLibrary['defectKeywords']
+  match: RegExp
+  suggestions: CatalogueEntry[]
+}[] = [
   {
+    group: 'brakes',
     match: /\b(pad|disc|drum|brake|caliper)\b/i,
     suggestions: [
-      ['Worn close to the minimum thickness, replacement due soon', 'attention'],
-      ['Worn below the minimum thickness', 'fail'],
-      ['Scored, cracked or corroded', 'fail'],
-      ['Contaminated with oil or grease', 'fail'],
-      ['Seized or binding', 'fail'],
+      ['wornCloseMinimumThicknessReplacementDue', 'attention'],
+      ['wornBelowMinimumThickness', 'fail'],
+      ['scoredCrackedCorroded', 'fail'],
+      ['contaminatedOilGrease', 'fail'],
+      ['seizedBinding', 'fail'],
     ],
   },
   {
+    group: 'tyres',
     match: /\b(tyre|tire|tread|wheel)\b/i,
     suggestions: [
-      ['Tread approaching the legal minimum', 'attention'],
-      ['Tread below the legal minimum', 'fail'],
-      ['Uneven or edge wear', 'attention'],
-      ['Sidewall damage, bulge or cut', 'dangerous'],
-      ['Perished with age or cracking', 'attention'],
-      ['Pressure incorrect', 'attention'],
+      ['treadApproachingLegalMinimum', 'attention'],
+      ['treadBelowLegalMinimum', 'fail'],
+      ['unevenEdgeWear', 'attention'],
+      ['sidewallDamageBulgeCut', 'dangerous'],
+      ['perishedAgeCracking', 'attention'],
+      ['pressureIncorrect', 'attention'],
     ],
   },
   {
+    group: 'fluids',
     match: /\b(oil|coolant|fluid|leak|grease)\b/i,
     suggestions: [
-      ['Level low, topped up', 'attention'],
-      ['Seepage, no dripping', 'attention'],
-      ['Active leak, dripping', 'fail'],
-      ['Fluid contaminated or overdue for replacement', 'attention'],
+      ['levelLowToppedUp', 'attention'],
+      ['seepageNoDripping', 'attention'],
+      ['activeLeakDripping', 'fail'],
+      ['fluidContaminatedOverdueReplacement', 'attention'],
     ],
   },
   {
+    group: 'lights',
     match: /\b(lamp|light|bulb|headlamp|indicator|beam)\b/i,
     suggestions: [
-      ['Bulb blown', 'fail'],
-      ['Lens cracked, clouded or discoloured', 'attention'],
-      ['Aim incorrect', 'attention'],
-      ['Insecure or water ingress', 'attention'],
+      ['bulbBlown', 'fail'],
+      ['lensCrackedCloudedDiscoloured', 'attention'],
+      ['aimIncorrect', 'attention'],
+      ['insecureWaterIngress', 'attention'],
     ],
   },
   {
+    group: 'beltsHoses',
     match: /\b(belt|hose|pipe)\b/i,
     suggestions: [
-      ['Perished, cracked or glazed', 'attention'],
-      ['Chafing against an adjacent component', 'fail'],
-      ['Split or leaking', 'fail'],
-      ['Tension incorrect', 'attention'],
+      ['perishedCrackedGlazed', 'attention'],
+      ['chafingAgainstAdjacentComponent', 'fail'],
+      ['splitLeaking', 'fail'],
+      ['tensionIncorrect', 'attention'],
     ],
   },
   {
+    group: 'battery',
     match: /\b(battery|charge|voltage|alternator)\b/i,
     suggestions: [
-      ['State of charge low', 'attention'],
-      ['Terminals corroded or loose', 'attention'],
-      ['Fails a load test, replacement due', 'fail'],
-      ['Casing damaged or leaking', 'fail'],
+      ['stateChargeLow', 'attention'],
+      ['terminalsCorrodedLoose', 'attention'],
+      ['failsLoadTestReplacementDue', 'fail'],
+      ['casingDamagedLeaking', 'fail'],
     ],
   },
   {
+    group: 'suspension',
     match: /\b(suspension|shock|damper|spring|bush|joint|bearing)\b/i,
     suggestions: [
-      ['Excessive play', 'fail'],
-      ['Bush perished or split', 'fail'],
-      ['Leaking or ineffective', 'fail'],
-      ['Corroded or insecure', 'fail'],
-      ['Noisy under load', 'attention'],
+      ['excessivePlay', 'fail'],
+      ['bushPerishedSplit', 'fail'],
+      ['leakingIneffective', 'fail'],
+      ['corrodedInsecure', 'fail'],
+      ['noisyUnderLoad', 'attention'],
     ],
   },
   {
+    group: 'exhaust',
     match: /\b(exhaust|emission|smoke|silencer|dpf|catalyst)\b/i,
     suggestions: [
-      ['Blowing at a joint', 'fail'],
-      ['Corroded, repair due soon', 'attention'],
-      ['Mounting perished or insecure', 'attention'],
-      ['Emissions above the limit', 'fail'],
+      ['blowingJoint', 'fail'],
+      ['corrodedRepairDueSoon', 'attention'],
+      ['mountingPerishedInsecure', 'attention'],
+      ['emissionsAboveLimit', 'fail'],
     ],
   },
   {
+    group: 'glass',
     match: /\b(wiper|washer|screen|windscreen|glass|mirror)\b/i,
     suggestions: [
-      ['Blade smearing or juddering', 'attention'],
-      ['Chip or crack outside the swept area', 'attention'],
-      ['Chip or crack in the driver vision area', 'fail'],
-      ['Washer jet blocked or misaligned', 'attention'],
+      ['bladeSmearingJuddering', 'attention'],
+      ['chipCrackOutsideSweptArea', 'attention'],
+      ['chipCrackDriverVisionArea', 'fail'],
+      ['washerJetBlockedMisaligned', 'attention'],
     ],
   },
   {
+    group: 'filters',
     match: /\b(filter|air|cabin|pollen)\b/i,
     suggestions: [
-      ['Dirty, replacement recommended', 'attention'],
-      ['Heavily contaminated, replacement due', 'fail'],
+      ['dirtyReplacementRecommended', 'attention'],
+      ['heavilyContaminatedReplacementDue', 'fail'],
     ],
   },
 ]
 
 /** Always offered, so there is a phrase to hand even for an unusual check. */
 const GENERAL: CatalogueEntry[] = [
-  ['Worn, within limits, monitor at next service', 'attention'],
-  ['Worn beyond the serviceable limit', 'fail'],
-  ['Damaged', 'fail'],
-  ['Corroded', 'attention'],
-  ['Insecure or loose', 'fail'],
-  ['Leaking', 'fail'],
-  ['Missing', 'fail'],
-  ['Not working', 'fail'],
-  ['Excessive play', 'fail'],
-  ['Advisory only, no action needed yet', 'attention'],
+  ['wornWithinLimitsMonitorNextService', 'attention'],
+  ['wornBeyondServiceableLimit', 'fail'],
+  ['damaged', 'fail'],
+  ['corroded', 'attention'],
+  ['insecureLoose', 'fail'],
+  ['leaking', 'fail'],
+  ['missing', 'fail'],
+  ['notWorking', 'fail'],
+  ['excessivePlay', 'fail'],
+  ['advisoryOnlyNoActionNeededYet', 'attention'],
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -667,31 +683,43 @@ export interface SuggestionCheck {
 
 const normalise = (text: string) => text.trim().toLowerCase().replace(/\s+/g, ' ')
 
+/** Whether a check name contains one of a locale's comma-separated stems. */
+function matchesStems(name: string, stems: string | undefined): boolean {
+  if (!stems) return false
+  const lower = name.toLocaleLowerCase()
+  return stems
+    .split(',')
+    .map((stem) => stem.trim().toLocaleLowerCase())
+    .some((stem) => stem.length > 0 && lower.includes(stem))
+}
+
 /** Catalogue entries for a check, most specific source first. */
-function catalogueFor(check: SuggestionCheck): DefectSuggestion[] {
+function catalogueFor(check: SuggestionCheck, lib: InspectionLibrary): DefectSuggestion[] {
   const found: DefectSuggestion[] = []
 
   const code = check.code?.trim()
   if (code) {
-    if (BY_CODE[code]) found.push(...entries('regulation', BY_CODE[code]))
+    if (BY_CODE[code]) found.push(...entries('regulation', BY_CODE[code], lib))
 
     // "1.1.13" has no entry of its own → try "1.1", then "1". A template can
     // reference a check at whatever depth suits it and still get useful text.
     const parts = code.split('.')
     for (let i = parts.length - 1; i > 0 && found.length === 0; i--) {
       const parent = parts.slice(0, i).join('.')
-      if (BY_CODE[parent]) found.push(...entries('regulation', BY_CODE[parent]))
+      if (BY_CODE[parent]) found.push(...entries('regulation', BY_CODE[parent], lib))
     }
   }
 
   const section = (check.sectionCode ?? code ?? '').split('.')[0]
-  if (BY_SECTION[section]) found.push(...entries('regulation', BY_SECTION[section]))
+  if (BY_SECTION[section]) found.push(...entries('regulation', BY_SECTION[section], lib))
 
-  for (const { match, suggestions } of BY_KEYWORD) {
-    if (match.test(check.name)) found.push(...entries('general', suggestions))
+  for (const { group, match, suggestions } of BY_KEYWORD) {
+    if (match.test(check.name) || matchesStems(check.name, lib.defectKeywords[group])) {
+      found.push(...entries('general', suggestions, lib))
+    }
   }
 
-  found.push(...entries('general', GENERAL))
+  found.push(...entries('general', GENERAL, lib))
   return found
 }
 
@@ -713,8 +741,11 @@ export function rankSuggestions(
     scale = 'eu',
     history = [],
     preferred,
+    lib = EN_LIBRARY,
   }: {
     scale?: SeverityScale
+    /** The catalogue's language, normally the technician's. */
+    lib?: InspectionLibrary
     /** Phrases this organization has used before on this check, most used first. */
     history?: { text: string; severity: DefectSeverity }[]
     preferred?: Condition
@@ -737,7 +768,7 @@ export function rankSuggestions(
     source: 'history',
   }))
 
-  const all = [...workshop, ...past, ...catalogueFor(check)]
+  const all = [...workshop, ...past, ...catalogueFor(check, lib)]
 
   const seen = new Set<string>()
   const deduped = all.filter((s) => {

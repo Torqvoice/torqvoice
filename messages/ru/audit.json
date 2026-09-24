@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Обновлён секрет вебхука",
     "inspection_reopen": "Осмотр открыт заново",
     "inspectionTemplate_import": "Импортирован чек-лист осмотра",
+    "inspectionTemplate_translate": "Чек-листы осмотра переведены",
     "scheduled_message_create": "Создано запланированное сообщение",
     "scheduled_message_update": "Обновлено запланированное сообщение",
     "scheduled_message_delete": "Удалено запланированное сообщение",

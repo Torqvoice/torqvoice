@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Atnaujintas webhook’o slaptasis raktas",
     "inspection_reopen": "Apžiūra atverta iš naujo",
     "inspectionTemplate_import": "Importuotas apžiūros kontrolinis sąrašas",
+    "inspectionTemplate_translate": "Apžiūros kontroliniai sąrašai išversti",
     "scheduled_message_create": "Sukurta suplanuota žinutė",
     "scheduled_message_update": "Atnaujinta suplanuota žinutė",
     "scheduled_message_delete": "Ištrinta suplanuota žinutė",

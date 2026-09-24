@@ -527,6 +527,7 @@ export function TemplateSettings({
   initialInvoiceValues,
   initialQuoteValues,
   inspectionTemplates = [],
+  checklistLanguage = null,
   smsEnabled = false,
   initialSmsTemplates = {},
   logoUrl,
@@ -539,6 +540,8 @@ export function TemplateSettings({
   initialInvoiceValues: TemplateValues
   initialQuoteValues: TemplateValues
   inspectionTemplates?: InspectionTemplate[]
+  /** The language the built-in checklists are written in, when any are installed. */
+  checklistLanguage?: string | null
   smsEnabled?: boolean
   initialSmsTemplates?: Record<string, string>
   logoUrl?: string
@@ -709,7 +712,7 @@ export function TemplateSettings({
       </div>
 
       {tab === 'inspections' ? (
-        <TemplateListClient templates={inspectionTemplates} />
+        <TemplateListClient templates={inspectionTemplates} checklistLanguage={checklistLanguage} />
       ) : tab === 'certificates' ? (
         <ReadOnlyWrapper>
           <TemplateTab

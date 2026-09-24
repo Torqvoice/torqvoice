@@ -105,6 +105,7 @@
     "webhook_rotateSecret": "Webhook-geheim geroteerd",
     "inspection_reopen": "Inspectie heropend",
     "inspectionTemplate_import": "Inspectiechecklist geïmporteerd",
+    "inspectionTemplate_translate": "Inspectiechecklists vertaald",
     "scheduled_message_create": "Gepland bericht aangemaakt",
     "scheduled_message_update": "Gepland bericht bijgewerkt",
     "scheduled_message_delete": "Gepland bericht verwijderd",
