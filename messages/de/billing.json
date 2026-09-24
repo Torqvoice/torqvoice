@@ -25,7 +25,9 @@
     "deliveryViewed": "Geöffnet",
     "deliveryViewedOn": "Zuletzt geöffnet {date}",
     "filterUnviewed": "Nicht geöffnet",
-    "filterUnviewedHint": "Rechnungen, die gesendet, aber nie geöffnet wurden"
+    "filterUnviewedHint": "Rechnungen, die gesendet, aber nie geöffnet wurden",
+    "filterCompleted": "Nur abgeschlossene",
+    "filterCompletedHint": "Nur als abgeschlossen markierte Aufträge anzeigen. Wird für das nächste Mal gespeichert."
   },
   "recurring": {
     "title": "Wiederkehrend",

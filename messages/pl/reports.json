@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Poprzednia strona",
     "nextPage": "Następna strona"
-  }
+  },
+  "completedOnly": "Tylko zakończone",
+  "completedOnlyHint": "Pokazuj tylko zlecenia oznaczone jako zakończone. Zapamiętywane na następny raz."
 }

@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Vorige pagina",
     "nextPage": "Volgende pagina"
-  }
+  },
+  "completedOnly": "Alleen afgerond",
+  "completedOnlyHint": "Toon alleen werkorders die als afgerond zijn gemarkeerd. Wordt onthouden voor de volgende keer."
 }

@@ -25,7 +25,9 @@
     "deliveryViewed": "Görüntülendi",
     "deliveryViewedOn": "Son açılma {date}",
     "filterUnviewed": "Görüntülenmeyen",
-    "filterUnviewedHint": "Gönderilen ancak hiç açılmayan faturalar"
+    "filterUnviewedHint": "Gönderilen ancak hiç açılmayan faturalar",
+    "filterCompleted": "Yalnızca tamamlananlar",
+    "filterCompletedHint": "Yalnızca tamamlandı olarak işaretlenen iş emirlerini göster. Bir sonraki sefer için hatırlanır."
   },
   "recurring": {
     "title": "Tekrarlayan",

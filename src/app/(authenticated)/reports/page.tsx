@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getTranslations } from 'next-intl/server'
+import { cookies } from 'next/headers'
+import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
 import ReportsClient from './reports-client'
 
 export default async function ReportsPage() {
@@ -61,6 +63,9 @@ export default async function ReportsPage() {
           currencyCode={currencyCode}
           primaryColor={primaryColor}
           organizationName={organizationName}
+          initialCompletedOnly={parseCompletedOnlyCookie(
+            (await cookies()).get(COMPLETED_ONLY_COOKIE)?.value
+          ).has('reports')}
         />
       </div>
     </>

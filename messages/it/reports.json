@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Pagina precedente",
     "nextPage": "Pagina successiva"
-  }
+  },
+  "completedOnly": "Solo completati",
+  "completedOnlyHint": "Mostra solo gli ordini di lavoro segnati come completati. Viene ricordato per la prossima volta."
 }

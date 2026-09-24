@@ -25,7 +25,9 @@
     "deliveryViewed": "Peržiūrėta",
     "deliveryViewedOn": "Paskutinį kartą atidaryta {date}",
     "filterUnviewed": "Neperžiūrėtos",
-    "filterUnviewedHint": "Sąskaitos, kurios išsiųstos, bet niekada neatidarytos"
+    "filterUnviewedHint": "Sąskaitos, kurios išsiųstos, bet niekada neatidarytos",
+    "filterCompleted": "Tik užbaigti",
+    "filterCompletedHint": "Rodyti tik užsakymus, pažymėtus kaip užbaigti. Įsimenama kitam kartui."
   },
   "recurring": {
     "title": "Periodinės",

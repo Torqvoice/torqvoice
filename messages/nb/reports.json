@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Forrige side",
     "nextPage": "Neste side"
-  }
+  },
+  "completedOnly": "Kun fullførte",
+  "completedOnlyHint": "Vis bare arbeidsordrer som er merket som fullført. Huskes til neste gang."
 }

@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Página anterior",
     "nextPage": "Próxima página"
-  }
+  },
+  "completedOnly": "Somente concluídas",
+  "completedOnlyHint": "Mostra somente ordens de serviço marcadas como concluídas. Fica salvo para a próxima vez."
 }
