@@ -222,7 +222,10 @@
     "addAndSelect": "Dodaj i wybierz",
     "technicianAdded": "Dodano i wybrano: {name}",
     "technicianFailed": "Nie udało się dodać diagnosty",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "saving": "Zapisywanie…",
+    "savedAt": "Zapisano {time}",
+    "savesAsYouGo": "Dane zapisują się w trakcie wypełniania"
   },
   "templates": {
     "title": "Szablony inspekcji",

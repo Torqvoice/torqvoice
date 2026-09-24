@@ -178,6 +178,33 @@ function ProgressRail({
   )
 }
 
+/**
+ * The thin rule under a section header: how much of the section is graded,
+ * in the grades' own colours, the rest left as the muted track.
+ */
+function SectionRule({ counts }: { counts: ReturnType<typeof countConditions> }) {
+  const segments = (
+    [
+      ['pass', counts.pass],
+      ['attention', counts.attention],
+      ['fail', counts.fail],
+      ['dangerous', counts.dangerous],
+      ['not_applicable', counts.notApplicable],
+    ] as const
+  ).filter(([, value]) => value > 0)
+  return (
+    <div className="bg-muted flex h-0.5 w-full overflow-hidden" aria-hidden="true">
+      {segments.map(([key, value]) => (
+        <div
+          key={key}
+          className={CONDITION_TOKENS[key].bar}
+          style={{ width: `${(value / Math.max(counts.total, 1)) * 100}%` }}
+        />
+      ))}
+    </div>
+  )
+}
+
 function CountChip({
   condition,
   value,
@@ -573,42 +600,56 @@ export function InspectionPageClient({
             isCompleted={isCompleted}
           />
 
-          {/* Checks */}
+          {/* Checks: one card per section, drawn like a stamped page of the
+              paper form. The name is set in the display face, the section
+              code is printed large and faint at the right like a stamp, and
+              a thin rule under the header shows how much is graded and in
+              which grades. */}
           {sections.map((section, index) => {
             const sectionCounts = countConditions(
               section.items.map((i) => ({ condition: grades[i.id] ?? i.condition }))
             )
             const worst = worstCondition(section.items.map((i) => grades[i.id] ?? i.condition))
+            const clean = sectionCounts.notInspected === 0 && !isDefect(worst)
+            const rawCode = section.code ?? String(index + 1)
+            const stamp = /^\d+$/.test(rawCode) ? rawCode.padStart(2, '0') : rawCode
             return (
               <section
                 key={section.name}
                 id={`section-${index}`}
                 aria-labelledby={`section-${index}-heading`}
-                className="bg-card scroll-mt-36 rounded-lg border"
+                className="bg-card scroll-mt-36 overflow-hidden rounded-lg border"
               >
-                <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
+                <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2">
                   <h2
                     id={`section-${index}-heading`}
-                    className="flex items-baseline gap-2 text-sm font-semibold"
+                    className="font-display min-w-0 truncate text-lg font-semibold tracking-wide uppercase"
                   >
-                    {section.code && (
-                      <span className="text-muted-foreground font-mono text-xs">
-                        {section.code}
-                      </span>
-                    )}
                     {section.name}
                   </h2>
-                  <div className="flex items-center gap-3">
+                  <div className="flex shrink-0 items-center gap-3">
                     {isDefect(worst) && (
                       <Badge variant="outline" className={CONDITION_TOKENS[worst].soft}>
                         {graded(worst)}
                       </Badge>
                     )}
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-muted-foreground text-xs tabular-nums">
                       {t('graded', { graded: sectionCounts.inspected, total: sectionCounts.total })}
+                    </span>
+                    <span
+                      className={cn(
+                        'font-display select-none text-3xl leading-none font-bold tracking-wide',
+                        clean
+                          ? 'text-emerald-600/45 dark:text-emerald-400/45'
+                          : 'text-foreground/15'
+                      )}
+                      aria-hidden="true"
+                    >
+                      {stamp}
                     </span>
                   </div>
                 </header>
+                <SectionRule counts={sectionCounts} />
                 <ul className="space-y-2 p-3">
                   {section.items.map((item) => (
                     <InspectionItemRow

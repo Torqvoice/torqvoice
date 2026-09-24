@@ -222,7 +222,10 @@
     "addAndSelect": "Добавить и выбрать",
     "technicianAdded": "{name} добавлен и выбран",
     "technicianFailed": "Не удалось добавить механика",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "saving": "Сохранение…",
+    "savedAt": "Сохранено в {time}",
+    "savesAsYouGo": "Данные сохраняются по мере заполнения"
   },
   "templates": {
     "title": "Шаблоны осмотра",

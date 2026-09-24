@@ -222,7 +222,10 @@
     "addAndSelect": "Toevoegen en selecteren",
     "technicianAdded": "{name} toegevoegd en geselecteerd",
     "technicianFailed": "De monteur kon niet worden toegevoegd",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "saving": "Opslaan…",
+    "savedAt": "Opgeslagen {time}",
+    "savesAsYouGo": "Gegevens worden opgeslagen terwijl je ze invult"
   },
   "templates": {
     "title": "Inspectiesjablonen",

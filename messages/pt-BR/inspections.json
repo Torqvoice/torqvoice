@@ -222,7 +222,10 @@
     "addAndSelect": "Adicionar e selecionar",
     "technicianAdded": "{name} adicionado e selecionado",
     "technicianFailed": "Não foi possível adicionar o técnico",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "saving": "Salvando…",
+    "savedAt": "Salvo às {time}",
+    "savesAsYouGo": "Os dados são salvos conforme você preenche"
   },
   "templates": {
     "title": "Modelos de inspeção",

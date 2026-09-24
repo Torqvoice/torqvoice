@@ -222,7 +222,10 @@
     "addAndSelect": "Legg til og velg",
     "technicianAdded": "{name} er lagt til og valgt",
     "technicianFailed": "Kunne ikke legge til mekanikeren",
-    "cancel": "Avbryt"
+    "cancel": "Avbryt",
+    "saving": "Lagrer…",
+    "savedAt": "Lagret {time}",
+    "savesAsYouGo": "Detaljene lagres etter hvert som du fyller dem inn"
   },
   "templates": {
     "title": "Inspeksjonsmaler",

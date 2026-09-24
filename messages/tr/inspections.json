@@ -222,7 +222,10 @@
     "addAndSelect": "Ekle ve seç",
     "technicianAdded": "{name} eklendi ve seçildi",
     "technicianFailed": "Teknisyen eklenemedi",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "saving": "Kaydediliyor…",
+    "savedAt": "{time} kaydedildi",
+    "savesAsYouGo": "Bilgiler siz doldurdukça kaydedilir"
   },
   "templates": {
     "title": "Muayene şablonları",

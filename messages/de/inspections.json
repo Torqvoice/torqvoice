@@ -222,7 +222,10 @@
     "addAndSelect": "Hinzufügen und auswählen",
     "technicianAdded": "{name} hinzugefügt und ausgewählt",
     "technicianFailed": "Der Mechaniker konnte nicht hinzugefügt werden",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "saving": "Wird gespeichert…",
+    "savedAt": "Gespeichert {time}",
+    "savesAsYouGo": "Angaben werden beim Ausfüllen gespeichert"
   },
   "templates": {
     "title": "Inspektionsvorlagen",

@@ -222,7 +222,10 @@
     "addAndSelect": "Pridėti ir pasirinkti",
     "technicianAdded": "{name} pridėtas ir pasirinktas",
     "technicianFailed": "Nepavyko pridėti mechaniko",
-    "cancel": "Atšaukti"
+    "cancel": "Atšaukti",
+    "saving": "Įrašoma…",
+    "savedAt": "Įrašyta {time}",
+    "savesAsYouGo": "Duomenys įrašomi pildant"
   },
   "templates": {
     "title": "Apžiūrų šablonai",

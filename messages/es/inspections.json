@@ -222,7 +222,10 @@
     "addAndSelect": "Añadir y seleccionar",
     "technicianAdded": "{name} añadido y seleccionado",
     "technicianFailed": "No se pudo añadir al técnico",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "saving": "Guardando…",
+    "savedAt": "Guardado {time}",
+    "savesAsYouGo": "Los datos se guardan a medida que los completas"
   },
   "templates": {
     "title": "Plantillas de inspección",

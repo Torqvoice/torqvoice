@@ -222,7 +222,10 @@
     "addAndSelect": "Add and select",
     "technicianAdded": "{name} added and selected",
     "technicianFailed": "Could not add the technician",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "savedAt": "Saved {time}",
+    "savesAsYouGo": "Details save as you fill them in"
   },
   "templates": {
     "title": "Inspection templates",

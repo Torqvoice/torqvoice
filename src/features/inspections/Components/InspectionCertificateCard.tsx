@@ -134,6 +134,44 @@ export function InspectionCertificateCard({
       return
     }
     setTechnicianId(value)
+    commit({ technicianId: value === NO_TECHNICIAN ? null : value })
+  }
+
+  /**
+   * Each field saves itself as it is left: the odometer on blur, a select or
+   * a date as soon as it is picked. Before this the fields waited for the
+   * Save button, and a reload in between threw them away. Only what changed
+   * is sent, so two fields edited in quick succession never overwrite each
+   * other with a stale value. The page is refreshed after, which also moves
+   * the "unsaved" marker off.
+   */
+  const [autosaving, setAutosaving] = useState(0)
+  const [autosavedAt, setAutosavedAt] = useState<Date | null>(null)
+  const commit = (
+    patch: Partial<{
+      mileage: number | null
+      vehicleCategory: string | null
+      certificateNumber: string | null
+      technicianId: string | null
+      testLocation: string | null
+      nextTestDue: Date | null
+    }>
+  ) => {
+    if (isCompleted) return
+    setAutosaving((n) => n + 1)
+    updateInspectionDetails(inspection.id, patch)
+      .then((result) => {
+        if (result.success) {
+          setAutosavedAt(new Date())
+          router.refresh()
+        } else {
+          toast.error(result.error || t('saveFailed'))
+        }
+      })
+      .finally(() => setAutosaving((n) => n - 1))
+  }
+  const blurOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') e.currentTarget.blur()
   }
 
   const handleSave = () => {
@@ -216,7 +254,14 @@ export function InspectionCertificateCard({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${fieldId}-category`}>{t('vehicleCategory')}</Label>
-          <Select value={vehicleCategory} onValueChange={setVehicleCategory} disabled={isCompleted}>
+          <Select
+            value={vehicleCategory}
+            onValueChange={(value) => {
+              setVehicleCategory(value)
+              commit({ vehicleCategory: value === NO_TECHNICIAN ? null : value })
+            }}
+            disabled={isCompleted}
+          >
             <SelectTrigger id={`${fieldId}-category`}>
               <SelectValue placeholder={t('notRecorded')} />
             </SelectTrigger>
@@ -240,6 +285,11 @@ export function InspectionCertificateCard({
             inputMode="numeric"
             value={mileage}
             onChange={(e) => /^\d*$/.test(e.target.value) && setMileage(e.target.value)}
+            onBlur={() => {
+              if (mileage !== persisted.mileage)
+                commit({ mileage: mileage === '' ? null : Number(mileage) })
+            }}
+            onKeyDown={blurOnEnter}
             disabled={isCompleted}
           />
         </div>
@@ -250,6 +300,12 @@ export function InspectionCertificateCard({
             id={`${fieldId}-certificate`}
             value={certificateNumber}
             onChange={(e) => setCertificateNumber(e.target.value)}
+            onBlur={() => {
+              if (certificateNumber !== persisted.certificateNumber) {
+                commit({ certificateNumber: certificateNumber || null })
+              }
+            }}
+            onKeyDown={blurOnEnter}
             placeholder={t('optional')}
             disabled={isCompleted}
           />
@@ -264,6 +320,11 @@ export function InspectionCertificateCard({
             id={`${fieldId}-location`}
             value={testLocation}
             onChange={(e) => setTestLocation(e.target.value)}
+            onBlur={() => {
+              if (testLocation !== persisted.testLocation)
+                commit({ testLocation: testLocation || null })
+            }}
+            onKeyDown={blurOnEnter}
             placeholder={workshopAddress || t('placeholderAddress')}
             disabled={isCompleted}
           />
@@ -274,7 +335,10 @@ export function InspectionCertificateCard({
                   <span>{t('differsFromWorkshop')}</span>
                   <button
                     type="button"
-                    onClick={() => setTestLocation(workshopAddress)}
+                    onClick={() => {
+                      setTestLocation(workshopAddress)
+                      commit({ testLocation: workshopAddress || null })
+                    }}
                     className="text-primary inline-flex items-center gap-1 hover:underline"
                   >
                     <RotateCcw className="h-3 w-3" aria-hidden="true" />
@@ -307,7 +371,10 @@ export function InspectionCertificateCard({
               <DateInput
                 id={`${fieldId}-next`}
                 value={nextTestDue}
-                onChange={setNextTestDue}
+                onChange={(value) => {
+                  setNextTestDue(value)
+                  commit({ nextTestDue: value ? dueDateInstant(value, timezone) : null })
+                }}
                 placeholder={t('notSet')}
               />
             </div>
@@ -320,9 +387,11 @@ export function InspectionCertificateCard({
                       key={interval.months}
                       type="button"
                       aria-pressed={selected}
-                      onClick={() =>
-                        setNextTestDue(addInterval(testDate, interval.months, timezone))
-                      }
+                      onClick={() => {
+                        const value = addInterval(testDate, interval.months, timezone)
+                        setNextTestDue(value)
+                        commit({ nextTestDue: dueDateInstant(value, timezone) })
+                      }}
                       className={`focus-visible:ring-ring rounded-full border px-2.5 py-1.5 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                         selected
                           ? 'bg-primary text-primary-foreground border-primary'
@@ -341,16 +410,28 @@ export function InspectionCertificateCard({
       </div>
 
       {!isCompleted && (
-        <div className="flex items-center justify-end gap-3 border-t px-4 py-3">
-          {isDirty && (
-            <p className="text-muted-foreground text-xs" role="status">
-              {t('unsaved')}
-            </p>
+        <div className="flex min-h-11 items-center justify-end gap-3 border-t px-4 py-2">
+          <p className="text-muted-foreground text-xs" role="status">
+            {autosaving > 0
+              ? t('saving')
+              : isDirty
+                ? t('unsaved')
+                : autosavedAt
+                  ? t('savedAt', {
+                      time: autosavedAt.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }),
+                    })
+                  : t('savesAsYouGo')}
+          </p>
+          {/* Only for an edit a field's own save refused: everything else has gone already. */}
+          {isDirty && autosaving === 0 && (
+            <Button type="button" size="sm" onClick={handleSave} disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              {t('saveDetails')}
+            </Button>
           )}
-          <Button type="button" size="sm" onClick={handleSave} disabled={isPending || !isDirty}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-            {t('saveDetails')}
-          </Button>
         </div>
       )}
 
