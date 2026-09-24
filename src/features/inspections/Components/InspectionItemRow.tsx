@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useRef, useState, useTransition } from 'react'
+import { useEffect, useId, useRef, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import {
+  Ban,
   Camera,
   Check,
   Loader2,
@@ -31,9 +32,13 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 import { updateInspectionItem } from '../Actions/inspectionActions'
+import { addInspectionItemMedia, removeInspectionItemMedia } from '../Actions/attachmentActions'
+import { PhotoHandoffButton } from '@/features/vehicles/Components/service-page/PhotoHandoffButton'
 import { DefectSuggestions } from './DefectSuggestions'
 import type { DefectSuggestion } from '../Lib/defectCatalogue'
 import {
@@ -66,6 +71,8 @@ export interface InspectionItemData {
   choices?: string[]
   required?: boolean
   photoRequired?: boolean
+  /** The template lets this check be graded "not applicable". */
+  allowNotApplicable?: boolean
   defaultSeverity?: string | null
   defectSuggestions?: string[] | null
   measuredValue?: number | null
@@ -77,6 +84,7 @@ const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: strin
   attention: TriangleAlert,
   fail: XCircle,
   dangerous: OctagonAlert,
+  not_applicable: Ban,
   not_inspected: Minus,
 }
 
@@ -97,11 +105,16 @@ function parseReading(raw: string): number | null {
  * keeps the group to one tab stop, and every option carries its own icon and
  * visible text so the grade never depends on colour alone (WCAG 2.1 SC 1.4.1).
  * Targets are 44px tall, which the previous 32px icon-only circles were not.
+ *
+ * "Not inspected" is the starting state, not a grade, so it has no button
+ * and a fresh check shows nothing lit. Tapping the lit grade again clears
+ * it. "Not applicable" is a grade, offered where the template allows it.
  */
 function GradeControl({
   value,
   scale,
   country,
+  allowNotApplicable = false,
   labelledBy,
   disabled,
   onChange,
@@ -110,12 +123,17 @@ function GradeControl({
   scale: SeverityScale
   /** Drives the national defect code shown on each grade, if any. */
   country: string | null
+  allowNotApplicable?: boolean
   labelledBy: string
   disabled?: boolean
   onChange: (next: Condition, options?: { focusNotes?: boolean }) => void
 }) {
   const { graded, hint, short } = useConditionLabels(scale, country)
-  const steps: Condition[] = [...SCALE_STEPS[scale], 'not_inspected']
+  const tItem = useTranslations('inspections.item')
+  const steps: Condition[] = [
+    ...SCALE_STEPS[scale],
+    ...(allowNotApplicable ? (['not_applicable'] as const) : []),
+  ]
   const refs = useRef<(HTMLButtonElement | null)[]>([])
 
   const focusStep = (index: number) => {
@@ -158,10 +176,11 @@ function GradeControl({
             type="button"
             role="radio"
             aria-checked={checked}
-            aria-label={`${graded(step)}. ${hint(step)}`}
+            aria-label={`${graded(step)}. ${checked ? tItem('tapToClear') : hint(step)}`}
+            title={checked ? tItem('tapToClear') : undefined}
             tabIndex={index === activeIndex ? 0 : -1}
             disabled={disabled}
-            onClick={() => onChange(step)}
+            onClick={() => onChange(checked ? 'not_inspected' : step)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             className={`focus-visible:ring-ring inline-flex h-11 min-w-[4.25rem] items-center justify-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60 ${
               checked
@@ -181,6 +200,7 @@ function GradeControl({
 
 export function InspectionItemRow({
   item,
+  inspectionId,
   scale,
   country = null,
   isCompleted,
@@ -190,6 +210,8 @@ export function InspectionItemRow({
   onSaveState,
 }: {
   item: InspectionItemData
+  /** For the phone code: the code covers the inspection, and opens on this check. */
+  inspectionId?: string
   scale: SeverityScale
   country?: string | null
   isCompleted: boolean
@@ -203,6 +225,7 @@ export function InspectionItemRow({
   onSaveState?: (itemId: string, state: 'saving' | 'saved' | 'error') => void
 }) {
   const t = useTranslations('inspections.item')
+  const router = useRouter()
   const fieldId = useId()
   const nameId = `${fieldId}-name`
 
@@ -215,6 +238,14 @@ export function InspectionItemRow({
   )
   const [textValue, setTextValue] = useState(item.textValue ?? '')
   const [imageUrls, setImageUrls] = useState<string[]>(item.imageUrls ?? [])
+  // Photos can arrive from a phone while this row is on screen. The page
+  // refreshes as they land, and the row follows what the server holds.
+  const serverPhotos = (item.imageUrls ?? []).join('|')
+  useEffect(() => {
+    const next = serverPhotos ? serverPhotos.split('|') : []
+    setImageUrls(next)
+    onChanged(item.id, { condition, photoCount: next.length })
+  }, [serverPhotos]) // eslint-disable-line react-hooks/exhaustive-deps -- follows the server's list only
   const [showNotes, setShowNotes] = useState(!!item.notes)
   const [notesRequired, setNotesRequired] = useState(false)
   const [showClearDialog, setShowClearDialog] = useState(false)
@@ -229,17 +260,20 @@ export function InspectionItemRow({
   const token = CONDITION_TOKENS[condition] ?? CONDITION_TOKENS.not_inspected
   const needsPhoto = !!item.photoRequired && isDefect(condition) && imageUrls.length === 0
 
+  /**
+   * Saves the grade, the note and the reading. Photos are not part of it: they
+   * are added and removed one by one (see handleUpload), so a save from this
+   * screen can never write back a list that is missing a photo a phone added.
+   */
   const save = (patch: {
     condition?: Condition
     notes?: string
-    imageUrls?: string[]
     measuredValue?: number | null
     textValue?: string | null
   }) => {
     const next = {
       condition: patch.condition ?? condition,
       notes: patch.notes ?? notes,
-      imageUrls: patch.imageUrls ?? imageUrls,
       measuredValue:
         patch.measuredValue !== undefined ? patch.measuredValue : parseReading(measured),
       textValue: patch.textValue !== undefined ? patch.textValue : textValue || null,
@@ -250,15 +284,11 @@ export function InspectionItemRow({
         condition: next.condition,
         // '' clears notes; the action turns it into null.
         notes: next.notes,
-        imageUrls: next.imageUrls,
         measuredValue: next.measuredValue,
         textValue: next.textValue,
       })
       if (result.success) {
-        onChanged(item.id, {
-          condition: next.condition,
-          photoCount: next.imageUrls.length,
-        })
+        onChanged(item.id, { condition: next.condition, photoCount: imageUrls.length })
         onSaveState?.(item.id, 'saved')
       } else {
         onSaveState?.(item.id, 'error')
@@ -353,9 +383,15 @@ export function InspectionItemRow({
         else toast.error(data.error || t('uploadFailedFor', { name: file.name }))
       }
       if (uploaded.length > 0) {
-        const next = [...imageUrls, ...uploaded]
-        setImageUrls(next)
-        save({ imageUrls: next })
+        const result = await addInspectionItemMedia({ itemId: item.id, urls: uploaded })
+        if (result.success && result.data) {
+          setImageUrls(result.data)
+          onChanged(item.id, { condition, photoCount: result.data.length })
+          // The page's photo viewer lists what the server holds.
+          router.refresh()
+        } else {
+          toast.error(result.error || t('uploadFailed'))
+        }
       }
     } catch {
       toast.error(t('uploadFailed'))
@@ -365,11 +401,19 @@ export function InspectionItemRow({
     }
   }
 
-  const handleRemoveFile = (index: number) => {
+  const handleRemoveFile = async (index: number) => {
     if (isCompleted) return
-    const next = imageUrls.filter((_, i) => i !== index)
-    setImageUrls(next)
-    save({ imageUrls: next })
+    const url = imageUrls[index]
+    if (!url) return
+    setImageUrls((prev) => prev.filter((u) => u !== url))
+    const result = await removeInspectionItemMedia({ itemId: item.id, url })
+    if (result.success && result.data) {
+      setImageUrls(result.data)
+      onChanged(item.id, { condition, photoCount: result.data.length })
+    } else {
+      setImageUrls((prev) => (prev.includes(url) ? prev : [...prev, url]))
+      toast.error(result.error || t('saveFailed'))
+    }
   }
 
   /**
@@ -400,12 +444,27 @@ export function InspectionItemRow({
     .filter(Boolean)
     .join(' ')
 
+  // What is left to do reads from the frame alone: a check nobody has graded
+  // sits in a dashed frame on a faint ground, a graded one in a solid frame
+  // with a stripe in its grade's colour down the left edge, and a defect
+  // keeps its tinted ground so it stands out from the passes around it.
+  const graded = condition !== 'not_inspected'
   return (
     <li
-      className={`rounded-lg border p-3 transition-colors ${
-        isDefect(condition) ? token.soft : 'bg-card'
-      }`}
+      data-graded={graded}
+      className={cn(
+        'relative rounded-lg border p-3 transition-colors',
+        !graded && 'border-dashed bg-muted/30',
+        graded && 'pl-4',
+        graded && (isDefect(condition) ? token.soft : 'bg-card')
+      )}
     >
+      {graded && (
+        <span
+          className={cn('absolute inset-y-2 left-0 w-1 rounded-r-full', token.bar)}
+          aria-hidden="true"
+        />
+      )}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           <p
@@ -441,6 +500,7 @@ export function InspectionItemRow({
             value={condition}
             scale={scale}
             country={country}
+            allowNotApplicable={item.allowNotApplicable ?? true}
             labelledBy={nameId}
             disabled={isCompleted}
             onChange={applyCondition}
@@ -480,6 +540,17 @@ export function InspectionItemRow({
               tabIndex={-1}
               onChange={handleUpload}
             />
+            {/* The same photo from a phone out at the car: a code that opens on this check. */}
+            {inspectionId && (
+              <PhotoHandoffButton
+                inspectionId={inspectionId}
+                inspectionItemId={item.id}
+                inspectionItemLabel={item.name}
+                variant="link"
+                disabled={isCompleted}
+                disabledReason={t('reopenToChange')}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -630,7 +701,7 @@ export function InspectionItemRow({
                   variant="destructive"
                   size="icon"
                   className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
-                  onClick={() => handleRemoveFile(index)}
+                  onClick={() => void handleRemoveFile(index)}
                   aria-label={t('removePhoto', { index: index + 1, name: item.name })}
                 >
                   <X className="h-3 w-3" aria-hidden="true" />

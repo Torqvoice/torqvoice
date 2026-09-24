@@ -5,28 +5,32 @@
       "attention": "Carenza lieve",
       "fail": "Carenza grave",
       "dangerous": "Carenza pericolosa",
-      "not_inspected": "Non controllato"
+      "not_inspected": "Non controllato",
+      "not_applicable": "Non applicabile"
     },
     "basic": {
       "pass": "Superato",
       "attention": "Attenzione",
       "fail": "Non superato",
       "dangerous": "Pericoloso",
-      "not_inspected": "Non controllato"
+      "not_inspected": "Non controllato",
+      "not_applicable": "Non applicabile"
     },
     "short": {
       "pass": "OK",
       "attention": "Lieve",
       "fail": "Grave",
       "dangerous": "Pericolosa",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "N/A"
     },
     "hint": {
       "pass": "Conforme ai requisiti. Nulla da segnalare.",
       "attention": "Nessun effetto rilevante sulla sicurezza. Il veicolo è idoneo; riparare quando conviene.",
       "fail": "Può pregiudicare la sicurezza o incidere sull'ambiente. Il veicolo non è idoneo; riparare e ricontrollare.",
       "dangerous": "Pericolo diretto e immediato per la sicurezza stradale. Il veicolo non deve circolare.",
-      "not_inspected": "Questo punto non è stato eseguito."
+      "not_inspected": "Questo punto non è stato eseguito.",
+      "not_applicable": "Il veicolo non ha questa parte, quindi non c'era nulla da controllare."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Vedi commessa",
     "createQuote": "Crea preventivo",
     "viewQuote": "Vedi preventivo",
-    "needsDefect": "Disponibile quando è registrata una carenza",
     "workOrderRaised": "Commessa {number} creata da questa ispezione il {date}",
     "open": "Apri",
     "quoteCreated": "Preventivo creato da {name} il {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Impossibile riaprire l'ispezione",
     "deleteFailed": "Impossibile eliminare l'ispezione",
     "quoteFailed": "Impossibile creare il preventivo",
-    "workOrderFailed": "Impossibile creare la commessa"
+    "workOrderFailed": "Impossibile creare la commessa",
+    "workOrderDefectsTitle": "{count, plural, one {Aggiungere il punto da seguire?} other {Aggiungere i # punti da seguire?}}",
+    "workOrderDefectsBody": "Ognuno diventa una riga dell'ordine di lavoro, con la nota del tecnico, dopo la riga dell'ispezione.",
+    "workOrderDefectsMore": "e altri {count}",
+    "workOrderInspectionOnly": "Solo l'ispezione",
+    "workOrderAddDefects": "{count, plural, one {Aggiungi # punto} other {Aggiungi # punti}}",
+    "raisedFromInspection": "Creato dall'ispezione eseguita il {date}.",
+    "quoteTitle": "{vehicle} - Preventivo ispezione",
+    "preview": "Anteprima certificato",
+    "nextStep": "Prossimo passo",
+    "nextStepWorkOrderHint": "Metti le riparazioni, o solo l'ispezione, su un ordine per la lavagna.",
+    "nextStepQuoteHint": "Quota prima i difetti per l'approvazione del cliente.",
+    "linkWorkOrderTitle": "Ordine di lavoro per questa ispezione",
+    "linkWorkOrderBody": "Crea un nuovo ordine o collega l'ispezione a uno già prenotato per questo veicolo.",
+    "createNewWorkOrder": "Crea nuovo",
+    "createNewWorkOrderHint": "Un nuovo ordine per questo veicolo, numerato e sulla lavagna.",
+    "linkExistingWorkOrder": "Collega a esistente",
+    "loadingWorkOrders": "Ricerca degli ordini aperti…",
+    "noOpenWorkOrders": "Nessun ordine aperto per questo veicolo.",
+    "workOrderLinked": "Collegata all'ordine {number}",
+    "next": "Avanti",
+    "previousStep": "Indietro",
+    "linkWorkOrder": "Collega all'ordine"
   },
   "item": {
     "required": "(obbligatorio)",
@@ -134,7 +159,9 @@
     "cancel": "Annulla",
     "saveFailed": "Impossibile salvare questo punto",
     "uploadFailed": "Caricamento non riuscito",
-    "uploadFailedFor": "Impossibile caricare {name}"
+    "uploadFailedFor": "Impossibile caricare {name}",
+    "reopenToChange": "Riapri l'ispezione per aggiungere foto",
+    "tapToClear": "Tocca di nuovo per cancellare la valutazione"
   },
   "suggestions": {
     "title": "Carenze frequenti",
@@ -331,7 +358,8 @@
     "severityAttention": "Carenza lieve",
     "severityFail": "Carenza grave",
     "severityDangerous": "Carenza pericolosa",
-    "answersPlaceholder": "Completo, Parziale, Nessuno"
+    "answersPlaceholder": "Completo, Parziale, Nessuno",
+    "allowNotApplicable": "Può essere valutato \"non applicabile\""
   },
   "packages": {
     "exportTitle": "Esporta «{name}»",
@@ -393,5 +421,39 @@
     "copied": "Link copiato negli appunti",
     "generated": "Link di condivisione creato",
     "revoked": "Link di condivisione revocato"
+  },
+  "phone": {
+    "pageTitle": "Foto dell'ispezione",
+    "wholeTitle": "L'intera ispezione",
+    "wholeBody": "Foto d'insieme e documenti come il modulo di ispezione firmato.",
+    "wholeShort": "Ispezione",
+    "checksTitle": "Foto di un controllo",
+    "checksBody": "Tocca un controllo per fotografarlo. La foto compare accanto alla sua valutazione.",
+    "checksClosed": "Questa ispezione è completata, quindi i suoi controlli non accettano altre foto. Puoi comunque aggiungere all'intera ispezione.",
+    "search": "Trova un controllo",
+    "noMatch": "Nessun controllo corrisponde.",
+    "defectsTitle": "Da seguire ({count})",
+    "photoNeeded": "Foto mancante",
+    "photoCount": "{count, plural, one {# foto} other {# foto}}",
+    "chooseFor": "Scegli foto per {name}",
+    "completedError": "Questa ispezione è stata completata. Chiedi all'officina di riaprirla.",
+    "limitError": "Questo controllo o questa ispezione ha già tutte le foto possibili.",
+    "invalid": "Scansiona di nuovo il codice dell'ispezione.",
+    "dialogTitle": "Aggiungi foto da un telefono",
+    "dialogBody": "Fotografa ogni controllo sul posto, oppure aggiungi foto d'insieme e documenti all'intera ispezione. Tutto arriva direttamente su questa ispezione.",
+    "step2": "Scegli un controllo sul telefono e scatta la foto, oppure aggiungila all'intera ispezione.",
+    "step3": "Compaiono su questa ispezione man mano che arrivano.",
+    "scope": "Il link aggiunge solo foto e documenti a questa ispezione e smette di funzionare dopo 30 minuti.",
+    "dialogTitleItem": "Aggiungi foto di {name} da un telefono",
+    "dialogBodyItem": "Fotografa questo controllo sul posto. La foto finisce accanto al suo esito; il telefono può aggiungere anche agli altri controlli.",
+    "stepItem2": "Scatta la foto con il telefono; va su questo controllo.",
+    "focusTitle": "Il controllo per cui è stato mostrato questo codice"
+  },
+  "files": {
+    "title": "Foto e documenti",
+    "hint": "Per l'ispezione nel suo insieme. La foto di un singolo controllo va su quel controllo.",
+    "photos": "Foto",
+    "documents": "Documenti",
+    "video": "Video"
   }
 }

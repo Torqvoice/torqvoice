@@ -179,7 +179,9 @@
     "timeEntry_delete": "Zaman kaydı silindi",
     "settings_workOrderStatus_create": "İş emri durumu eklendi",
     "settings_workOrderStatus_update": "İş emri durumu değiştirildi",
-    "settings_workOrderStatus_archive": "İş emri durumu kaldırıldı"
+    "settings_workOrderStatus_archive": "İş emri durumu kaldırıldı",
+    "inspection_photo_added": "Muayene fotoğrafı eklendi",
+    "inspection_file_added": "Muayene dosyası eklendi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -325,6 +327,7 @@
     "timeEntry_create": "{technician} için \"{job}\" işine {minutes} dakika eklendi",
     "timeEntry_update": "{technician} için \"{job}\" işindeki zaman kaydı {minutes} dakika olarak düzeltildi",
     "timeEntry_stop": "{technician} için \"{job}\" işindeki sayaç {minutes} dakikada durduruldu",
-    "timeEntry_delete": "{id} zaman kaydı silindi"
+    "timeEntry_delete": "{id} zaman kaydı silindi",
+    "inspection_phoneUpload": "{ref} muayenesine telefondan dosya eklendi"
   }
 }

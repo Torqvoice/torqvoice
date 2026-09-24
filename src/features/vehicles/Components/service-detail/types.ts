@@ -53,6 +53,8 @@ export interface ServiceDetail {
   /** When the job was opened, and by whom when a person opened it. */
   createdAt?: Date
   createdBy?: { name: string | null } | null
+  /** The inspection the job was raised from, when it was. */
+  inspection?: { id: string; createdAt: Date | string; template: { name: string } } | null
   /** When the customer was told the vehicle would be ready. */
   promisedAt?: Date | null
   shopName: string | null

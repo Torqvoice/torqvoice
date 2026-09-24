@@ -179,7 +179,9 @@
     "timeEntry_delete": "Voce oraria eliminata",
     "settings_workOrderStatus_create": "Stato ordine aggiunto",
     "settings_workOrderStatus_update": "Stato ordine modificato",
-    "settings_workOrderStatus_archive": "Stato ordine rimosso"
+    "settings_workOrderStatus_archive": "Stato ordine rimosso",
+    "inspection_photo_added": "Foto di ispezione aggiunta",
+    "inspection_file_added": "File di ispezione aggiunto"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -325,6 +327,7 @@
     "timeEntry_create": "Aggiunti {minutes} minuti per {technician} su \"{job}\"",
     "timeEntry_update": "Voce oraria di {technician} su \"{job}\" corretta a {minutes} minuti",
     "timeEntry_stop": "Timer di {technician} su \"{job}\" fermato a {minutes} minuti",
-    "timeEntry_delete": "Voce oraria {id} eliminata"
+    "timeEntry_delete": "Voce oraria {id} eliminata",
+    "inspection_phoneUpload": "Aggiunto un file da telefono all'ispezione {ref}"
   }
 }

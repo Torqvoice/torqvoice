@@ -1,4 +1,4 @@
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import {
   readWorkshopTax,
   taxFieldsForNewDocument,
@@ -46,8 +46,14 @@ export async function createDraftRecord(
     technicianId?: string
     /** Bay the job was booked into, when it was created from the work board. */
     workBayId?: string
+    /**
+     * The transaction the record is written in, when the caller has more to
+     * write that must land with it or not at all. Reads stay on the pool.
+     */
+    tx?: TxClient
   }
 ) {
+  const writer = opts.tx ?? db
   const [settings, org, currentUser, timeZone] = await Promise.all([
     db.appSetting.findMany({
       where: {
@@ -152,7 +158,7 @@ export async function createDraftRecord(
   const invoiceNumber = `${prefix}${nextNum}`
 
   if (startNumber && nextNum === startNumber) {
-    await db.appSetting.updateMany({
+    await writer.appSetting.updateMany({
       where: { organizationId, key: 'workshop.invoiceStartNumber' },
       data: { value: '' },
     })
@@ -227,7 +233,7 @@ export async function createDraftRecord(
     ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
     : EMPTY_WARRANTY
 
-  return db.serviceRecord.create({
+  return writer.serviceRecord.create({
     data: {
       organizationId,
       createdById: userId,

@@ -8,7 +8,10 @@ import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/s
 import { useState, useCallback, useMemo, useRef, useEffect, type ComponentProps } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
-import { updateServiceStatus } from '@/features/vehicles/Actions/serviceActions'
+import {
+  updateServiceRecordTitle,
+  updateServiceStatus,
+} from '@/features/vehicles/Actions/serviceActions'
 import { useConfirm } from '@/components/confirm-dialog'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { useTranslations } from 'next-intl'
@@ -611,7 +614,18 @@ export function ServicePageClient({
           title={title}
           onTitleChange={(next) => {
             setTitle(next)
-            formState.markDirty()
+            // Saved the moment the field is left, on its own, not with the
+            // form's autosave five seconds later: a rename followed by the
+            // back arrow inside those seconds was lost. Only a refused save
+            // marks the form dirty, so the ordinary path can try again.
+            void updateServiceRecordTitle(record.id, next).then((result) => {
+              if (result.success) {
+                formState.flashSaved()
+              } else {
+                toast.error(result.error || t('page.failedUpdate'))
+                formState.markDirty()
+              }
+            })
           }}
           type={record.vehicle ? formState.type : undefined}
           onTypeChange={formState.dirtySetType}

@@ -99,8 +99,12 @@ const FALLBACK: Record<string, string> = {
   reading: 'Reading',
   limit: 'Limit',
   noDeficiencies: 'No deficiencies were recorded.',
+  euNotApplicable: 'Not applicable',
+  basicNotApplicable: 'Not applicable',
   photos: 'Photos',
   photosOmitted: '{count} further photo(s) not included to keep this file a sensible size.',
+  attachments: 'Photos and documents',
+  attachedDocuments: 'Attached documents: {names}',
 }
 
 export function InspectionPDF({
@@ -115,6 +119,8 @@ export function InspectionPDF({
   labels = {},
   photos = {},
   photosOmitted = 0,
+  overviewPhotos = [],
+  attachedDocuments = [],
 }: {
   data: InspectionData
   workshop?: WorkshopInfo
@@ -129,6 +135,10 @@ export function InspectionPDF({
   photos?: Record<string, { dataUri: string }[]>
   /** Photos left out because of the size budget, so the page can say so. */
   photosOmitted?: number
+  /** Photos filed on the inspection as a whole that the workshop chose to show. */
+  overviewPhotos?: { dataUri: string; caption: string | null }[]
+  /** Names of the PDF documents appended after this page, so the reader knows to turn to them. */
+  attachedDocuments?: string[]
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -146,7 +156,8 @@ export function InspectionPDF({
   const label = (key: string) => labels[key] || FALLBACK[key] || key
   const isBasic = (data.severityScale ?? data.template.severityScale) === 'basic'
   const conditionText = (condition: Condition) => {
-    const suffix = condition.charAt(0).toUpperCase() + condition.slice(1)
+    // not_applicable -> NotApplicable, the key's spelling in pdf.json.
+    const suffix = condition.replace(/(^|_)([a-z])/g, (_, __, c: string) => c.toUpperCase())
     return label(`${isBasic ? 'basic' : 'eu'}${suffix}`)
   }
   // Several member states record defects by grade number rather than by name,
@@ -706,6 +717,34 @@ export function InspectionPDF({
           <Text style={{ fontSize: 7, color: gray, marginTop: 4 }}>
             {fillTemplate(label('photosOmitted'), { count: String(photosOmitted) })}
           </Text>
+        )}
+
+        {(overviewPhotos.length > 0 || attachedDocuments.length > 0) && (
+          <View style={{ marginBottom: 12 }} wrap={false}>
+            <Text style={styles.sectionTitle}>{label('attachments')}</Text>
+            {overviewPhotos.length > 0 && (
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+                {overviewPhotos.map((photo, i) => (
+                  <View key={i} style={{ width: 158 }}>
+                    <Image
+                      src={photo.dataUri}
+                      style={{ width: 158, height: 119, borderRadius: 3, objectFit: 'cover' }}
+                    />
+                    {photo.caption && (
+                      <Text style={{ fontSize: 7, color: gray, marginTop: 2 }}>
+                        {photo.caption}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+            {attachedDocuments.length > 0 && (
+              <Text style={{ fontSize: 8, color: gray, marginTop: 6 }}>
+                {fillTemplate(label('attachedDocuments'), { names: attachedDocuments.join(', ') })}
+              </Text>
+            )}
+          </View>
         )}
 
         {portalUrl && (

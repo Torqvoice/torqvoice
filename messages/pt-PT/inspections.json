@@ -5,28 +5,32 @@
       "attention": "Deficiência ligeira",
       "fail": "Deficiência grave",
       "dangerous": "Deficiência perigosa",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "basic": {
       "pass": "Aprovado",
       "attention": "Atenção",
       "fail": "Reprovado",
       "dangerous": "Perigoso",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "short": {
       "pass": "OK",
       "attention": "Ligeira",
       "fail": "Grave",
       "dangerous": "Perigosa",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "N/A"
     },
     "hint": {
       "pass": "Cumpre os requisitos. Nada a assinalar.",
       "attention": "Sem efeito significativo na segurança. O veículo é aprovado; reparar quando for oportuno.",
       "fail": "Pode comprometer a segurança ou afetar o ambiente. O veículo é reprovado; reparar e sujeitar a reinspeção.",
       "dangerous": "Risco direto e imediato para a segurança rodoviária. O veículo não deve circular.",
-      "not_inspected": "Este item não foi verificado."
+      "not_inspected": "Este item não foi verificado.",
+      "not_applicable": "O veículo não tem essa peça, pelo que não havia nada a testar."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Ver ordem de serviço",
     "createQuote": "Criar orçamento",
     "viewQuote": "Ver orçamento",
-    "needsDefect": "Disponível assim que for registada uma deficiência",
     "workOrderRaised": "Ordem de serviço {number} criada a partir desta inspeção a {date}",
     "open": "Abrir",
     "quoteCreated": "Orçamento criado por {name} a {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Não foi possível reabrir a inspeção",
     "deleteFailed": "Não foi possível eliminar a inspeção",
     "quoteFailed": "Não foi possível criar o orçamento",
-    "workOrderFailed": "Não foi possível criar a ordem de serviço"
+    "workOrderFailed": "Não foi possível criar a ordem de serviço",
+    "workOrderDefectsTitle": "{count, plural, one {Adicionar o ponto que precisa de atenção?} other {Adicionar os # pontos que precisam de atenção?}}",
+    "workOrderDefectsBody": "Cada um passa a ser uma linha da ordem de trabalho, com a nota do técnico, depois da linha da inspeção.",
+    "workOrderDefectsMore": "e mais {count}",
+    "workOrderInspectionOnly": "Só a inspeção",
+    "workOrderAddDefects": "{count, plural, one {Adicionar # ponto} other {Adicionar # pontos}}",
+    "raisedFromInspection": "Criado a partir da inspeção realizada em {date}.",
+    "quoteTitle": "{vehicle} - Orçamento da inspeção",
+    "preview": "Pré-visualizar certificado",
+    "nextStep": "Próximo passo",
+    "nextStepWorkOrderHint": "Coloque as reparações, ou só a inspeção, numa ordem para o quadro.",
+    "nextStepQuoteHint": "Orce os defeitos para o cliente aprovar primeiro.",
+    "linkWorkOrderTitle": "Ordem de trabalho para esta inspeção",
+    "linkWorkOrderBody": "Crie uma nova ordem ou associe a inspeção a uma já marcada para este veículo.",
+    "createNewWorkOrder": "Criar nova",
+    "createNewWorkOrderHint": "Uma nova ordem para este veículo, numerada e no quadro.",
+    "linkExistingWorkOrder": "Associar a existente",
+    "loadingWorkOrders": "A procurar ordens abertas…",
+    "noOpenWorkOrders": "Nenhuma ordem aberta para este veículo.",
+    "workOrderLinked": "Associada à ordem {number}",
+    "next": "Seguinte",
+    "previousStep": "Voltar",
+    "linkWorkOrder": "Associar à ordem"
   },
   "item": {
     "required": "(obrigatório)",
@@ -134,7 +159,9 @@
     "cancel": "Cancelar",
     "saveFailed": "Não foi possível guardar este item",
     "uploadFailed": "Falha no carregamento",
-    "uploadFailedFor": "Não foi possível carregar {name}"
+    "uploadFailedFor": "Não foi possível carregar {name}",
+    "reopenToChange": "Reabra a inspeção para adicionar fotografias",
+    "tapToClear": "Toque de novo para limpar a avaliação"
   },
   "suggestions": {
     "title": "Deficiências comuns",
@@ -331,7 +358,8 @@
     "severityAttention": "Deficiência ligeira",
     "severityFail": "Deficiência grave",
     "severityDangerous": "Deficiência perigosa",
-    "answersPlaceholder": "Completo, Parcial, Nenhum"
+    "answersPlaceholder": "Completo, Parcial, Nenhum",
+    "allowNotApplicable": "Pode ser avaliado como \"não aplicável\""
   },
   "packages": {
     "exportTitle": "Exportar “{name}”",
@@ -393,5 +421,39 @@
     "copied": "Link copiado para a área de transferência",
     "generated": "Link de partilha criado",
     "revoked": "Link de partilha revogado"
+  },
+  "phone": {
+    "pageTitle": "Fotografias da inspeção",
+    "wholeTitle": "A inspeção inteira",
+    "wholeBody": "Fotografias gerais e documentos como o formulário de inspeção assinado.",
+    "wholeShort": "Inspeção",
+    "checksTitle": "Fotografias de um ponto",
+    "checksBody": "Toque num ponto para o fotografar. A fotografia aparece ao lado da avaliação.",
+    "checksClosed": "Esta inspeção está concluída, por isso os seus pontos já não aceitam fotografias. Ainda pode adicionar à inspeção inteira.",
+    "search": "Procurar um ponto",
+    "noMatch": "Nenhum ponto corresponde.",
+    "defectsTitle": "Precisam de atenção ({count})",
+    "photoNeeded": "Falta fotografia",
+    "photoCount": "{count, plural, one {# fotografia} other {# fotografias}}",
+    "chooseFor": "Escolher fotografias para {name}",
+    "completedError": "Esta inspeção foi concluída. Peça à oficina para a reabrir.",
+    "limitError": "Este ponto ou esta inspeção já tem o máximo de fotografias possível.",
+    "invalid": "Leia novamente o código da inspeção.",
+    "dialogTitle": "Adicionar fotografias a partir de um telemóvel",
+    "dialogBody": "Fotografe cada ponto no local, ou adicione fotografias gerais e documentos à inspeção inteira. Tudo chega diretamente a esta inspeção.",
+    "step2": "Escolha um ponto no telemóvel e tire a fotografia, ou adicione-a à inspeção inteira.",
+    "step3": "Aparecem nesta inspeção à medida que chegam.",
+    "scope": "A ligação só adiciona fotografias e documentos a esta inspeção e deixa de funcionar ao fim de 30 minutos.",
+    "dialogTitleItem": "Adicionar fotografias de {name} a partir de um telemóvel",
+    "dialogBodyItem": "Fotografe este item no local. A fotografia fica junto à avaliação; o telemóvel também pode adicionar aos outros itens.",
+    "stepItem2": "Tire a fotografia no telemóvel; fica neste item.",
+    "focusTitle": "O item para o qual este código foi mostrado"
+  },
+  "files": {
+    "title": "Fotografias e documentos",
+    "hint": "Para a inspeção no seu todo. A fotografia de um só ponto fica nesse ponto.",
+    "photos": "Fotografias",
+    "documents": "Documentos",
+    "video": "Vídeo"
   }
 }

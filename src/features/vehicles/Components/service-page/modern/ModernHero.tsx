@@ -4,7 +4,7 @@ import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useState, type ReactNode } from 'react'
-import { ArrowLeft, CalendarClock, Pencil, Shield } from 'lucide-react'
+import { ArrowLeft, CalendarClock, ClipboardCheck, Pencil, Shield } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { useFormatDate } from '@/lib/use-format-date'
+import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
 import type { WarrantyFields } from '@/lib/warranty'
 import {
   paymentStatusColors,
@@ -190,7 +191,7 @@ export function ModernHero({
   locked = false,
 }: ModernHeroProps) {
   const t = useTranslations('service')
-  const { formatDateTime } = useFormatDate()
+  const { formatDate, formatDateTime } = useFormatDate()
 
   const customer = record.customer ?? record.vehicle?.customer ?? null
   const vehicle = record.vehicle
@@ -207,6 +208,7 @@ export function ModernHero({
     />
   )
 
+  const [showStartInspection, setShowStartInspection] = useState(false)
   const opened = record.createdAt ? new Date(record.createdAt) : null
   const openedBy = record.createdBy?.name ? shortName(record.createdBy.name) : null
 
@@ -224,144 +226,187 @@ export function ModernHero({
       : null
 
   return (
-    // Two lines and no more: this stays on screen while the page scrolls, so
-    // every pixel of it is taken from the job. The back arrow stands where the
-    // breadcrumb line was, and the vehicle it named is in the second line.
-    <header
-      data-testid="service-hero"
-      className="@container shrink-0 border-b bg-background px-4 py-2"
-    >
-      <div className="mx-auto flex w-full max-w-[calc(1800px-2rem)] flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link
-            href={vehicle ? `/vehicles/${vehicle.id}` : '/work-orders'}
-            aria-label={t('modern.back')}
-            className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          </Link>
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <h1
-                className={cn(
-                  'min-w-0 break-words text-xl font-bold leading-tight tracking-tight',
-                  // Figures in the default font set, the heading face in the workshop one.
-                  number ? 'order-number' : 'font-display'
-                )}
-                data-testid="service-number"
-              >
-                {number ?? titleEditor}
-              </h1>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span
-                  className={cn(pill, 'border-primary bg-primary text-primary-foreground')}
-                  data-testid="service-status"
+    <>
+      {/* Two lines and no more: this stays on screen while the page scrolls, so
+        every pixel of it is taken from the job. The back arrow stands where the
+        breadcrumb line was, and the vehicle it named is in the second line. */}
+      <header
+        data-testid="service-hero"
+        className="@container shrink-0 border-b bg-background px-4 py-2"
+      >
+        <div className="mx-auto flex w-full max-w-[calc(1800px-2rem)] flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href={vehicle ? `/vehicles/${vehicle.id}` : '/work-orders'}
+              aria-label={t('modern.back')}
+              className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <h1
+                  className={cn(
+                    'min-w-0 break-words text-xl font-bold leading-tight tracking-tight',
+                    // Figures in the default font set, the heading face in the workshop one.
+                    number ? 'order-number' : 'font-display'
+                  )}
+                  data-testid="service-number"
                 >
-                  {statusMessageKeys[status]
-                    ? t(`basicInfo.statusOptions.${statusMessageKeys[status]}`)
-                    : status}
-                </span>
-                <span className={cn(pill, paymentStatusColors[paymentStatus])}>
-                  {paymentStatusLabels[paymentStatus] || t('header.unpaid')}
-                </span>
-                {type && onTypeChange && (
-                  <Select value={type} onValueChange={onTypeChange} disabled={locked}>
-                    <SelectTrigger
-                      aria-label={t('basicInfo.type')}
-                      data-testid="service-type"
-                      // The same box as the pills beside it: the trigger's own height and
-                      // padding are for a form field, and made this one taller.
-                      className="h-6 gap-1 rounded-md px-2.5 py-0 text-xs font-semibold leading-none shadow-none data-[size=default]:h-6 [&_svg:not([class*='size-'])]:size-3"
+                  {number ?? titleEditor}
+                </h1>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span
+                    className={cn(pill, 'border-primary bg-primary text-primary-foreground')}
+                    data-testid="service-status"
+                  >
+                    {statusMessageKeys[status]
+                      ? t(`basicInfo.statusOptions.${statusMessageKeys[status]}`)
+                      : status}
+                  </span>
+                  <span className={cn(pill, paymentStatusColors[paymentStatus])}>
+                    {paymentStatusLabels[paymentStatus] || t('header.unpaid')}
+                  </span>
+                  {type && onTypeChange && (
+                    <Select value={type} onValueChange={onTypeChange} disabled={locked}>
+                      <SelectTrigger
+                        aria-label={t('basicInfo.type')}
+                        data-testid="service-type"
+                        // The same box as the pills beside it: the trigger's own height and
+                        // padding are for a form field, and made this one taller.
+                        className="h-6 gap-1 rounded-md px-2.5 py-0 text-xs font-semibold leading-none shadow-none data-[size=default]:h-6 [&_svg:not([class*='size-'])]:size-3"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SERVICE_TYPES.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {t(`basicInfo.typeOptions.${option}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {promisedAt && (
+                    <span
+                      data-testid="service-promised"
+                      suppressHydrationWarning
+                      className={cn(
+                        pill,
+                        promiseOverdue
+                          ? 'border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                          : 'border-border text-muted-foreground'
+                      )}
                     >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SERVICE_TYPES.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {t(`basicInfo.typeOptions.${option}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                {promisedAt && (
-                  <span
-                    data-testid="service-promised"
-                    suppressHydrationWarning
-                    className={cn(
-                      pill,
-                      promiseOverdue
-                        ? 'border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300'
-                        : 'border-border text-muted-foreground'
-                    )}
-                  >
-                    <CalendarClock className="h-3 w-3" aria-hidden="true" />
-                    {t(promiseOverdue ? 'modern.promisedOverdue' : 'modern.promised', {
-                      date: formatDateTime(promisedAt),
-                    })}
-                  </span>
-                )}
-                {warrantyLabel && (
-                  <span
-                    className={cn(
-                      pill,
-                      'border-teal-600/25 bg-teal-600/10 text-teal-700 dark:text-teal-300'
-                    )}
-                  >
-                    <Shield className="h-3 w-3" aria-hidden="true" />
-                    {t('warranty.title')} · {warrantyLabel}
-                  </span>
-                )}
+                      <CalendarClock className="h-3 w-3" aria-hidden="true" />
+                      {t(promiseOverdue ? 'modern.promisedOverdue' : 'modern.promised', {
+                        date: formatDateTime(promisedAt),
+                      })}
+                    </span>
+                  )}
+                  {warrantyLabel && (
+                    <span
+                      className={cn(
+                        pill,
+                        'border-teal-600/25 bg-teal-600/10 text-teal-700 dark:text-teal-300'
+                      )}
+                    >
+                      <Shield className="h-3 w-3" aria-hidden="true" />
+                      {t('warranty.title')} · {warrantyLabel}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* A little air under the number: the two lines are different
+              {/* A little air under the number: the two lines are different
                 things, and ran together when they touched. */}
-            <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
-              {number && titleEditor}
-              {number && (customer || vehicle) && <span aria-hidden="true">·</span>}
-              {customer && (
-                <Link href={`/customers/${customer.id}`} className={factLink}>
-                  {customer.name}
-                </Link>
-              )}
-              {customer && vehicle && <span aria-hidden="true">·</span>}
-              {vehicle && (
-                <Link href={`/vehicles/${vehicle.id}`} className={factLink}>
-                  {vehicle.year} {vehicle.make} {vehicle.model}
-                </Link>
-              )}
-              {vehicle?.licensePlate && (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <Link
-                    href={`/vehicles/${vehicle.id}`}
-                    className={cn(factLink, 'font-mono text-foreground')}
-                  >
-                    {vehicle.licensePlate}
+              <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+                {number && titleEditor}
+                {number && (customer || vehicle) && <span aria-hidden="true">·</span>}
+                {customer && (
+                  <Link href={`/customers/${customer.id}`} className={factLink}>
+                    {customer.name}
                   </Link>
-                </>
-              )}
-              {/* Left out on a phone or tablet: the line is for which job this
+                )}
+                {customer && vehicle && <span aria-hidden="true">·</span>}
+                {vehicle && (
+                  <Link href={`/vehicles/${vehicle.id}`} className={factLink}>
+                    {vehicle.year} {vehicle.make} {vehicle.model}
+                  </Link>
+                )}
+                {vehicle?.licensePlate && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <Link
+                      href={`/vehicles/${vehicle.id}`}
+                      className={cn(factLink, 'font-mono text-foreground')}
+                    >
+                      {vehicle.licensePlate}
+                    </Link>
+                  </>
+                )}
+                {/* Left out on a phone or tablet: the line is for which job this
                   is, and on a small screen when it was opened pushed the plate
                   onto a line of its own. `contents` keeps the dot and the text
                   in the row's own gaps from lg up, where the money bar starts too. */}
-              {opened && (
-                <span className="hidden lg:contents">
-                  <span aria-hidden="true">·</span>
-                  <span suppressHydrationWarning data-testid="service-opened">
-                    {openedBy
-                      ? t('modern.openedBy', { date: formatDateTime(opened), name: openedBy })
-                      : t('modern.opened', { date: formatDateTime(opened) })}
+                {/* The inspection the job came from: what is being repaired
+                  was photographed and graded there, so the link is here. */}
+                {record.inspection && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <Link
+                      href={`/inspections/${record.inspection.id}`}
+                      className={factLink}
+                      data-testid="service-from-inspection"
+                    >
+                      {t('modern.fromInspection', {
+                        name: record.inspection.template.name,
+                        date: formatDate(record.inspection.createdAt),
+                      })}
+                    </Link>
+                  </>
+                )}
+                {/* A job booked as an inspection with no checklist yet: start it
+                  here, and it lands on this booking rather than beside it. */}
+                {!record.inspection && record.type === 'inspection' && vehicle && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowStartInspection(true)}
+                      className={cn(factLink, 'inline-flex items-center gap-1 text-primary')}
+                      data-testid="service-start-inspection"
+                    >
+                      <ClipboardCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t('modern.startInspection')}
+                    </button>
+                  </>
+                )}
+                {opened && (
+                  <span className="hidden lg:contents">
+                    <span aria-hidden="true">·</span>
+                    <span suppressHydrationWarning data-testid="service-opened">
+                      {openedBy
+                        ? t('modern.openedBy', { date: formatDateTime(opened), name: openedBy })
+                        : t('modern.opened', { date: formatDateTime(opened) })}
+                    </span>
                   </span>
-                </span>
-              )}
-            </p>
+                )}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {actions}
-      </div>
-    </header>
+          {actions}
+        </div>
+      </header>
+      {vehicle && (
+        <NewInspectionDialog
+          open={showStartInspection}
+          onOpenChange={setShowStartInspection}
+          preselectedVehicleId={vehicle.id}
+          serviceRecordId={record.id}
+        />
+      )}
+    </>
   )
 }

@@ -649,7 +649,9 @@
       "overdue": "просрочен",
       "customerSince": "Клиент с"
     },
-    "moreStatuses": "Другие статусы"
+    "moreStatuses": "Другие статусы",
+    "fromInspection": "Из осмотра {name}, {date}",
+    "startInspection": "Начать осмотр"
   },
   "photoHandoff": {
     "button": "Добавить с телефона",

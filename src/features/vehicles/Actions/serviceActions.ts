@@ -234,6 +234,11 @@ export async function getServiceRecord(recordId: string) {
           payments: { orderBy: { date: 'desc' } },
           // Who opened the job, for the line under its number.
           createdBy: { select: { name: true } },
+          // The inspection it was raised from, for the link beside it: the
+          // photos of what is being repaired live there.
+          inspection: {
+            select: { id: true, createdAt: true, template: { select: { name: true } } },
+          },
           // The workshop's own status, archived or not: a job keeps saying
           // what it was called after the status has left the menus.
           customStatus: { select: { id: true, name: true, color: true, stage: true } },
@@ -1097,6 +1102,47 @@ export async function updateInternalNotes(recordId: string, html: string) {
         entityId: result.id,
         details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
         metadata: { serviceRecordId: result.id, field: 'diagnosticNotes' },
+      }),
+    }
+  )
+}
+
+/**
+ * Renames a job the moment the title field is left.
+ *
+ * The title used to travel with the rest of the form on the autosave five
+ * seconds later, and a rename followed by the back arrow inside those
+ * seconds was lost. It is one column, so it goes straight to the row.
+ */
+export async function updateServiceRecordTitle(recordId: string, title: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const next = typeof title === 'string' ? title.trim() : ''
+      if (!next || next.length > 200) throw new Error('Invalid title')
+      await assertInvoiceEditable(recordId, organizationId)
+      const record = await db.serviceRecord.findFirst({
+        where: { id: recordId, organizationId },
+        select: { id: true, invoiceNumber: true, vehicleId: true },
+      })
+      if (!record) throw new Error('Record not found')
+
+      await db.serviceRecord.update({ where: { id: record.id }, data: { title: next } })
+
+      revalidatePath('/work-orders')
+      if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
+      else revalidatePath(`/sales/${record.id}`)
+      return { id: record.id, invoiceNumber: record.invoiceNumber, title: next }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'service.update',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
+        metadata: { serviceRecordId: result.id, field: 'title' },
       }),
     }
   )

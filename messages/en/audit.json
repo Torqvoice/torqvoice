@@ -179,7 +179,9 @@
     "timeEntry_delete": "Deleted time entry",
     "settings_workOrderStatus_create": "Added Work Order Status",
     "settings_workOrderStatus_update": "Changed Work Order Status",
-    "settings_workOrderStatus_archive": "Removed Work Order Status"
+    "settings_workOrderStatus_archive": "Removed Work Order Status",
+    "inspection_photo_added": "Added Inspection Photo",
+    "inspection_file_added": "Added Inspection File"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -325,6 +327,7 @@
     "timeEntry_create": "Added {minutes} minutes for {technician} on \"{job}\"",
     "timeEntry_update": "Corrected time entry for {technician} on \"{job}\" to {minutes} minutes",
     "timeEntry_stop": "Stopped the clock for {technician} on \"{job}\" at {minutes} minutes",
-    "timeEntry_delete": "Deleted time entry {id}"
+    "timeEntry_delete": "Deleted time entry {id}",
+    "inspection_phoneUpload": "Added a file from a phone to inspection {ref}"
   }
 }

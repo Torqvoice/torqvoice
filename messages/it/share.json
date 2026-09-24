@@ -157,14 +157,16 @@
       "attention": "Carenza lieve",
       "fail": "Carenza grave",
       "dangerous": "Carenza pericolosa",
-      "not_inspected": "Non controllato"
+      "not_inspected": "Non controllato",
+      "not_applicable": "Non applicabile"
     },
     "basic": {
       "pass": "Superato",
       "attention": "Attenzione",
       "fail": "Non superato",
       "dangerous": "Pericoloso",
-      "not_inspected": "Non controllato"
+      "not_inspected": "Non controllato",
+      "not_applicable": "Non applicabile"
     },
     "result": {
       "pass": "Esito favorevole",
@@ -197,7 +199,8 @@
     "viewPhoto": "Vedi foto",
     "deficienciesFound": "Carenze riscontrate ({count})",
     "allResults": "Tutti i risultati",
-    "privacyNotice": "Questo rapporto le viene fornito dall'officina che ha eseguito il controllo. È consultabile da chiunque disponga di questo link: la preghiamo di non inoltrarlo. Contatti l'officina per revocare il link o cancellare i suoi dati."
+    "privacyNotice": "Questo rapporto le viene fornito dall'officina che ha eseguito il controllo. È consultabile da chiunque disponga di questo link: la preghiamo di non inoltrarlo. Contatti l'officina per revocare il link o cancellare i suoi dati.",
+    "inspectionPhotos": "Foto e documenti"
   },
   "terms": {
     "title": "Condizioni di Vendita",

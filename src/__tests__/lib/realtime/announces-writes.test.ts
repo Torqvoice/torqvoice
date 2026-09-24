@@ -130,6 +130,28 @@ describe('a row that belongs to a record', () => {
       'clock',
     ])
   })
+  it('tells the inspection about a status report sent from it, and the job about its own', async () => {
+    const org = async () => 'org-1'
+    await write(
+      'StatusReport',
+      'create',
+      { data: { inspectionId: 'insp-1', serviceRecordId: null } },
+      { id: 'rep-1', inspectionId: 'insp-1', serviceRecordId: null },
+      org
+    )
+    await write(
+      'StatusReport',
+      'create',
+      { data: { serviceRecordId: 'job-1' } },
+      { id: 'rep-2', serviceRecordId: 'job-1', inspectionId: null },
+      org
+    )
+
+    expect(published).toEqual([
+      { kind: 'inspection', id: 'insp-1', organizationId: 'org-1', hint: 'statusReports' },
+      { kind: 'serviceRecord', id: 'job-1', organizationId: 'org-1', hint: 'statusReports' },
+    ])
+  })
 })
 
 describe('a bulk write', () => {
@@ -193,6 +215,10 @@ describe('the models it knows', () => {
     for (const [model, child] of Object.entries(REALTIME_CHILD_MODELS)) {
       expect(Object.values(REALTIME_RECORD_MODELS), model).toContain(child.parent)
       expect(child.fk, model).toMatch(/Id$/)
+      if (child.also) {
+        expect(Object.values(REALTIME_RECORD_MODELS), model).toContain(child.also.parent)
+        expect(child.also.fk, model).toMatch(/Id$/)
+      }
     }
   })
 })

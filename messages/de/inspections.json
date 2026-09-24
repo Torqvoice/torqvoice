@@ -5,28 +5,32 @@
       "attention": "Geringer Mangel",
       "fail": "Erheblicher Mangel",
       "dangerous": "Gefährlicher Mangel",
-      "not_inspected": "Nicht geprüft"
+      "not_inspected": "Nicht geprüft",
+      "not_applicable": "Nicht zutreffend"
     },
     "basic": {
       "pass": "Bestanden",
       "attention": "Achtung",
       "fail": "Durchgefallen",
       "dangerous": "Gefährlich",
-      "not_inspected": "Nicht geprüft"
+      "not_inspected": "Nicht geprüft",
+      "not_applicable": "Nicht zutreffend"
     },
     "short": {
       "pass": "OK",
       "attention": "Gering",
       "fail": "Erheblich",
       "dangerous": "Gefährlich",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "n. z."
     },
     "hint": {
       "pass": "Erfüllt die Anforderungen. Nichts zu melden.",
       "attention": "Ohne wesentliche Auswirkung auf die Sicherheit. Fahrzeug besteht; bei Gelegenheit beheben.",
       "fail": "Kann die Sicherheit beeinträchtigen oder die Umwelt belasten. Fahrzeug besteht nicht; beheben und nachprüfen lassen.",
       "dangerous": "Unmittelbare Gefahr für die Verkehrssicherheit. Das Fahrzeug darf nicht gefahren werden.",
-      "not_inspected": "Dieser Prüfpunkt wurde nicht durchgeführt."
+      "not_inspected": "Dieser Prüfpunkt wurde nicht durchgeführt.",
+      "not_applicable": "Das Fahrzeug hat kein solches Teil, es gab nichts zu prüfen."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Auftrag anzeigen",
     "createQuote": "Angebot anlegen",
     "viewQuote": "Angebot anzeigen",
-    "needsDefect": "Verfügbar, sobald ein Mangel erfasst ist",
     "workOrderRaised": "Auftrag {number} am {date} aus dieser Inspektion angelegt",
     "open": "Öffnen",
     "quoteCreated": "Angebot von {name} am {date} angelegt",
@@ -106,7 +109,29 @@
     "reopenFailed": "Inspektion konnte nicht wieder geöffnet werden",
     "deleteFailed": "Inspektion konnte nicht gelöscht werden",
     "quoteFailed": "Angebot konnte nicht angelegt werden",
-    "workOrderFailed": "Auftrag konnte nicht angelegt werden"
+    "workOrderFailed": "Auftrag konnte nicht angelegt werden",
+    "workOrderDefectsTitle": "{count, plural, one {Den Punkt mit Handlungsbedarf hinzufügen?} other {Die # Punkte mit Handlungsbedarf hinzufügen?}}",
+    "workOrderDefectsBody": "Jeder wird eine Zeile im Arbeitsauftrag, mit der Notiz des Technikers, nach der Zeile für die Prüfung.",
+    "workOrderDefectsMore": "und {count} weitere",
+    "workOrderInspectionOnly": "Nur die Prüfung",
+    "workOrderAddDefects": "{count, plural, one {# Punkt hinzufügen} other {# Punkte hinzufügen}}",
+    "raisedFromInspection": "Erstellt aus der Inspektion vom {date}.",
+    "quoteTitle": "{vehicle} - Angebot nach Inspektion",
+    "preview": "Zertifikat-Vorschau",
+    "nextStep": "Nächster Schritt",
+    "nextStepWorkOrderHint": "Die Reparaturen, oder nur die Inspektion, als Auftrag auf die Tafel.",
+    "nextStepQuoteHint": "Die Mängel zuerst für die Freigabe des Kunden bepreisen.",
+    "linkWorkOrderTitle": "Auftrag für diese Inspektion",
+    "linkWorkOrderBody": "Neuen Auftrag anlegen oder die Inspektion mit einem bereits gebuchten Auftrag für dieses Fahrzeug verknüpfen.",
+    "createNewWorkOrder": "Neu anlegen",
+    "createNewWorkOrderHint": "Ein neuer Auftrag für dieses Fahrzeug, nummeriert und auf der Tafel.",
+    "linkExistingWorkOrder": "Mit bestehendem verknüpfen",
+    "loadingWorkOrders": "Offene Aufträge werden gesucht…",
+    "noOpenWorkOrders": "Keine offenen Aufträge für dieses Fahrzeug.",
+    "workOrderLinked": "Mit Auftrag {number} verknüpft",
+    "next": "Weiter",
+    "previousStep": "Zurück",
+    "linkWorkOrder": "Mit Auftrag verknüpfen"
   },
   "item": {
     "required": "(Pflicht)",
@@ -134,7 +159,9 @@
     "cancel": "Abbrechen",
     "saveFailed": "Dieser Prüfpunkt konnte nicht gespeichert werden",
     "uploadFailed": "Upload fehlgeschlagen",
-    "uploadFailedFor": "{name} konnte nicht hochgeladen werden"
+    "uploadFailedFor": "{name} konnte nicht hochgeladen werden",
+    "reopenToChange": "Inspektion wieder öffnen, um Fotos hinzuzufügen",
+    "tapToClear": "Erneut tippen, um die Bewertung zu löschen"
   },
   "suggestions": {
     "title": "Häufige Mängel",
@@ -331,7 +358,8 @@
     "severityAttention": "Geringer Mangel",
     "severityFail": "Erheblicher Mangel",
     "severityDangerous": "Gefährlicher Mangel",
-    "answersPlaceholder": "Vollständig, Teilweise, Keine"
+    "answersPlaceholder": "Vollständig, Teilweise, Keine",
+    "allowNotApplicable": "Darf als „nicht zutreffend“ bewertet werden"
   },
   "packages": {
     "exportTitle": "„{name}“ exportieren",
@@ -393,5 +421,39 @@
     "copied": "Link in die Zwischenablage kopiert",
     "generated": "Freigabelink erstellt",
     "revoked": "Freigabelink zurückgezogen"
+  },
+  "phone": {
+    "pageTitle": "Fotos zur Prüfung",
+    "wholeTitle": "Die ganze Prüfung",
+    "wholeBody": "Übersichtsfotos und Dokumente wie das unterschriebene Prüfformular.",
+    "wholeShort": "Prüfung",
+    "checksTitle": "Fotos zu einem Prüfpunkt",
+    "checksBody": "Tippen Sie auf einen Prüfpunkt, um ihn zu fotografieren. Das Foto erscheint neben seiner Bewertung.",
+    "checksClosed": "Diese Prüfung ist abgeschlossen, ihre Prüfpunkte nehmen keine Fotos mehr an. Zur ganzen Prüfung können Sie weiterhin etwas hinzufügen.",
+    "search": "Prüfpunkt suchen",
+    "noMatch": "Kein Prüfpunkt passt dazu.",
+    "defectsTitle": "Handlungsbedarf ({count})",
+    "photoNeeded": "Foto fehlt",
+    "photoCount": "{count, plural, one {# Foto} other {# Fotos}}",
+    "chooseFor": "Fotos für {name} auswählen",
+    "completedError": "Diese Prüfung wurde abgeschlossen. Bitten Sie die Werkstatt, sie wieder zu öffnen.",
+    "limitError": "Dieser Prüfpunkt oder diese Prüfung hat bereits so viele Fotos wie möglich.",
+    "invalid": "Scannen Sie den Code auf der Prüfung erneut.",
+    "dialogTitle": "Fotos vom Handy hinzufügen",
+    "dialogBody": "Fotografieren Sie jeden Prüfpunkt vor Ort oder fügen Sie der ganzen Prüfung Übersichtsfotos und Dokumente hinzu. Alles landet direkt in dieser Prüfung.",
+    "step2": "Wählen Sie auf dem Handy einen Prüfpunkt und machen Sie das Foto, oder fügen Sie es der ganzen Prüfung hinzu.",
+    "step3": "Sie erscheinen in dieser Prüfung, sobald sie ankommen.",
+    "scope": "Der Link fügt dieser Prüfung nur Fotos und Dokumente hinzu und funktioniert nach 30 Minuten nicht mehr.",
+    "dialogTitleItem": "Fotos von {name} vom Handy hinzufügen",
+    "dialogBodyItem": "Fotografieren Sie diese Prüfung vor Ort. Das Foto landet neben der Bewertung; das Handy kann auch zu anderen Prüfungen hinzufügen.",
+    "stepItem2": "Machen Sie das Foto mit dem Handy; es landet bei dieser Prüfung.",
+    "focusTitle": "Die Prüfung, für die dieser Code gezeigt wurde"
+  },
+  "files": {
+    "title": "Fotos und Dokumente",
+    "hint": "Für die Prüfung als Ganzes. Ein Foto eines einzelnen Prüfpunkts gehört zu diesem Prüfpunkt.",
+    "photos": "Fotos",
+    "documents": "Dokumente",
+    "video": "Video"
   }
 }

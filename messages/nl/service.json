@@ -649,7 +649,9 @@
       "overdue": "verlopen",
       "customerSince": "Klant sinds"
     },
-    "moreStatuses": "Meer statussen"
+    "moreStatuses": "Meer statussen",
+    "fromInspection": "Uit inspectie {name}, {date}",
+    "startInspection": "Inspectie starten"
   },
   "photoHandoff": {
     "button": "Toevoegen via telefoon",

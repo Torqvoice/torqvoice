@@ -179,7 +179,11 @@
     "resultDetailPassMinor": "Transporto priemonė tinkama naudoti. Nedelsdami pašalinkite nedidelius trūkumus.",
     "resultDetailFail": "Transporto priemonė netinkama. Trūkumus reikia pašalinti ir atlikti pakartotinę apžiūrą.",
     "resultDetailFailDangerous": "Transporto priemone draudžiama važiuoti viešaisiais keliais, kol nebus pašalinti pavojingi trūkumai.",
-    "resultDetailIncomplete": "Ši apžiūra dar vyksta."
+    "resultDetailIncomplete": "Ši apžiūra dar vyksta.",
+    "attachments": "Nuotraukos ir dokumentai",
+    "attachedDocuments": "Pridėti dokumentai: {names}",
+    "euNotApplicable": "Netaikoma",
+    "basicNotApplicable": "Netaikoma"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "PASLAUGŲ ISTORIJA",

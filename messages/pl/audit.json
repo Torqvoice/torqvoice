@@ -179,7 +179,9 @@
     "timeEntry_delete": "Usunięto wpis czasu",
     "settings_workOrderStatus_create": "Dodano status zlecenia",
     "settings_workOrderStatus_update": "Zmieniono status zlecenia",
-    "settings_workOrderStatus_archive": "Usunięto status zlecenia"
+    "settings_workOrderStatus_archive": "Usunięto status zlecenia",
+    "inspection_photo_added": "Dodano zdjęcie przeglądu",
+    "inspection_file_added": "Dodano plik przeglądu"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -325,6 +327,7 @@
     "timeEntry_create": "Dodano {minutes} min dla {technician} w zleceniu „{job}”",
     "timeEntry_update": "Poprawiono wpis czasu {technician} w zleceniu „{job}” na {minutes} min",
     "timeEntry_stop": "Zatrzymano zegar {technician} w zleceniu „{job}” na {minutes} min",
-    "timeEntry_delete": "Usunięto wpis czasu {id}"
+    "timeEntry_delete": "Usunięto wpis czasu {id}",
+    "inspection_phoneUpload": "Dodano plik z telefonu do przeglądu {ref}"
   }
 }

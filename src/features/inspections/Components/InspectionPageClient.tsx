@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { type ComponentProps, type ComponentType, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  ChevronRight,
   ArrowLeft,
   CheckCircle2,
   Download,
@@ -37,17 +38,25 @@ import {
   Wrench,
   Share2,
   Trash2,
+  Eye,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
   completeInspection,
-  createWorkOrderFromInspection,
   deleteInspection,
   reopenInspection,
+  createQuoteFromInspection,
 } from '../Actions/inspectionActions'
-import { createQuote } from '@/features/quotes/Actions/quoteActions'
 import { InspectionShareDialog } from './InspectionShareDialog'
+import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
+import { WorkOrderFromInspectionDialog } from './WorkOrderFromInspectionDialog'
+import { cn } from '@/lib/utils'
+import {
+  InspectionFilesCard,
+  type InspectionAttachmentData,
+  type InspectionStatusReportData,
+} from './InspectionFilesCard'
 import { InspectionCertificateCard, type TechnicianOption } from './InspectionCertificateCard'
 import { InspectionItemRow, type InspectionItemData } from './InspectionItemRow'
 import { MediaLightbox, type LightboxImage } from './MediaLightbox'
@@ -90,7 +99,13 @@ export interface InspectionData {
     vin: string | null
     licensePlate: string | null
     mileage: number
-    customer: { id: string; name: string; email: string | null; phone: string | null } | null
+    customer: {
+      id: string
+      name: string
+      email: string | null
+      phone: string | null
+      telegramChatId?: string | null
+    } | null
   }
   template: {
     id: string
@@ -101,6 +116,7 @@ export interface InspectionData {
   }
   technician?: { id: string; name: string } | null
   items: InspectionItemData[]
+  attachments?: InspectionAttachmentData[]
   quotes: {
     id: string
     quoteNumber: string | null
@@ -133,8 +149,16 @@ function ProgressRail({
   counts: ReturnType<typeof countConditions>
   label: string
 }) {
-  const segments = (['pass', 'attention', 'fail', 'dangerous'] as const)
-    .map((key) => ({ key, value: counts[key] }))
+  const segments = (
+    [
+      ['pass', counts.pass],
+      ['attention', counts.attention],
+      ['fail', counts.fail],
+      ['dangerous', counts.dangerous],
+      ['not_applicable', counts.notApplicable],
+    ] as const
+  )
+    .map(([key, value]) => ({ key, value }))
     .filter((s) => s.value > 0)
 
   return (
@@ -177,15 +201,23 @@ function CountChip({
 
 export function InspectionPageClient({
   inspection,
+  organizationId,
   smsEnabled = false,
   emailEnabled = false,
+  telegramEnabled = false,
+  statusReports = [],
   defectHistory = {},
   technicians = [],
   workshopAddress = '',
 }: {
   inspection: InspectionData
+  /** For the share links of the inspection's status reports. */
+  organizationId: string
   smsEnabled?: boolean
   emailEnabled?: boolean
+  telegramEnabled?: boolean
+  /** Video reports sent to the customer from this inspection. */
+  statusReports?: InspectionStatusReportData[]
   /** Wording this workshop has used before, keyed by check name. */
   defectHistory?: Record<string, { text: string; severity: string }[]>
   technicians?: TechnicianOption[]
@@ -202,6 +234,8 @@ export function InspectionPageClient({
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [isCreatingQuote, setIsCreatingQuote] = useState(false)
   const [isCreatingWorkOrder, setIsCreatingWorkOrder] = useState(false)
+  const [showWorkOrderDialog, setShowWorkOrderDialog] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   // The checklist saves each check as it is graded, which is only reassuring if
@@ -328,48 +362,19 @@ export function InspectionPageClient({
     setLightboxIndex(index >= 0 ? index : null)
   }
 
+  /**
+   * The quote is built on the server from what the database holds: the
+   * inspection line, then every check that was not OK with the note as it
+   * was saved, not as this page last saw it.
+   */
   const handleCreateQuoteFromInspection = async () => {
     setIsCreatingQuote(true)
-    const created = await createQuote({
-      title: `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model} - Inspection Quote`,
-      vehicleId: inspection.vehicle.id,
-      customerId: inspection.vehicle.customer?.id || undefined,
-      inspectionId: inspection.id,
-      status: 'draft',
-      laborItems: defectItems.map((item) => ({
-        description: `${item.name}${item.notes ? ` - ${item.notes}` : ''}`,
-        hours: 0,
-        rate: 0,
-        total: 0,
-      })),
-      subtotal: 0,
-      taxRate: 0,
-      taxAmount: 0,
-      discountValue: 0,
-      discountAmount: 0,
-      totalAmount: 0,
-    })
+    const created = await createQuoteFromInspection(inspection.id)
     if (created.success && created.data) {
       router.push(`/quotes/${created.data.id}`)
     } else {
       toast.error(created.error || t('quoteFailed'))
       setIsCreatingQuote(false)
-    }
-  }
-
-  /**
-   * Straight to a job, no quote. Plenty of customers just say "fix it", and
-   * making them wait for an estimate they have already approved out loud is
-   * the slowest possible way to start work.
-   */
-  const handleCreateWorkOrder = async () => {
-    setIsCreatingWorkOrder(true)
-    const created = await createWorkOrderFromInspection(inspection.id)
-    if (created.success && created.data) {
-      router.push(`/vehicles/${created.data.vehicleId}/service/${created.data.id}`)
-    } else {
-      toast.error(created.error || t('workOrderFailed'))
-      setIsCreatingWorkOrder(false)
     }
   }
 
@@ -463,91 +468,44 @@ export function InspectionPageClient({
                           })
                         : t('savesAsYouGo')}
                 </p>
-                <Button
+                <BarButton
                   variant="outline"
-                  size="sm"
+                  icon={savingIds.size > 0 ? Loader2 : Save}
+                  spinning={savingIds.size > 0}
+                  label={t('save')}
                   onClick={handleSaveNow}
                   disabled={savingIds.size > 0}
-                >
-                  {savingIds.size > 0 ? (
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
-                  ) : (
-                    <Save className="mr-1 h-4 w-4" aria-hidden="true" />
-                  )}
-                  {t('save')}
-                </Button>
+                />
               </div>
             )}
             {isCompleted ? (
-              <Button variant="outline" size="sm" onClick={() => setShowReopenDialog(true)}>
-                <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
-                {t('reopen')}
-              </Button>
+              <BarButton
+                variant="outline"
+                icon={RotateCcw}
+                label={t('reopen')}
+                onClick={() => setShowReopenDialog(true)}
+              />
             ) : (
-              <Button size="sm" onClick={() => setShowCompleteDialog(true)}>
-                <CheckCircle2 className="mr-1 h-4 w-4" aria-hidden="true" />
-                {t('complete')}
-              </Button>
+              <BarButton
+                icon={CheckCircle2}
+                label={t('complete')}
+                onClick={() => setShowCompleteDialog(true)}
+              />
             )}
-            {/* Rendered whether or not there is anything to raise yet, and
-                disabled when there is not. Showing and hiding them as the
-                first defect is graded shifts everything else in the bar. */}
-            {workOrder ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
-                }
-              >
-                <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
-                {t('viewWorkOrder')}
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isCreatingWorkOrder || defectItems.length === 0}
-                title={defectItems.length === 0 ? t('needsDefect') : undefined}
-                onClick={handleCreateWorkOrder}
-              >
-                {isCreatingWorkOrder ? (
-                  <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
-                )}
-                {t('createWorkOrder')}
-              </Button>
-            )}
-            {inspection.quotes.length > 0 ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
-              >
-                <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
-                {t('viewQuote')}
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isCreatingQuote || defectItems.length === 0}
-                title={defectItems.length === 0 ? t('needsDefect') : undefined}
-                onClick={handleCreateQuoteFromInspection}
-              >
-                {isCreatingQuote ? (
-                  <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
-                )}
-                {t('createQuote')}
-              </Button>
-            )}
-            <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
-              <Share2 className="mr-1 h-4 w-4" aria-hidden="true" />
-              {t('share')}
-            </Button>
+            {/* The certificate as the customer will get it, without leaving the page. */}
+            <BarButton
+              variant="outline"
+              icon={Eye}
+              label={t('preview')}
+              onClick={() => setShowPreview(true)}
+              data-testid="inspection-preview"
+            />
+            <BarButton
+              variant="outline"
+              icon={Share2}
+              label={t('share')}
+              onClick={() => setShowShareDialog(true)}
+            />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -607,86 +565,6 @@ export function InspectionPageClient({
             )}
           </section>
 
-          {workOrder && (
-            <div className="flex items-center gap-3 rounded-lg border border-blue-500/30 bg-blue-50 p-3 dark:bg-blue-950/30">
-              <Wrench
-                className="h-5 w-5 shrink-0 text-blue-700 dark:text-blue-300"
-                aria-hidden="true"
-              />
-              <p className="min-w-0 flex-1 text-sm text-blue-900 dark:text-blue-100">
-                {t('workOrderRaised', {
-                  number: workOrder.invoiceNumber ?? '',
-                  date: formatDate(new Date(workOrder.createdAt)),
-                })}
-              </p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="shrink-0"
-                onClick={() =>
-                  router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
-                }
-              >
-                {t('open')}
-              </Button>
-            </div>
-          )}
-
-          {/* Quote status */}
-          {inspection.quotes.length > 0 ? (
-            <div className="flex items-center gap-3 rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 dark:bg-emerald-950/30">
-              <FileText
-                className="h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-300"
-                aria-hidden="true"
-              />
-              <p className="min-w-0 flex-1 text-sm text-emerald-900 dark:text-emerald-100">
-                {t('quoteCreated', {
-                  name: inspection.quotes[0].user.name,
-                  date: formatDate(new Date(inspection.quotes[0].createdAt)),
-                })}
-              </p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="shrink-0"
-                onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
-              >
-                {t('viewQuote')}
-              </Button>
-            </div>
-          ) : pendingQuoteRequest ? (
-            <div className="flex items-start gap-3 rounded-lg border border-amber-500/40 bg-amber-50 p-3 dark:bg-amber-950/30">
-              <MessageSquareText
-                className="mt-0.5 h-5 w-5 shrink-0 text-amber-800 dark:text-amber-300"
-                aria-hidden="true"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                  {t('quoteRequested', { count: pendingQuoteRequest.selectedItemIds.length })}
-                </p>
-                {pendingQuoteRequest.message && (
-                  <p className="mt-0.5 text-sm text-amber-900/80 dark:text-amber-200/80">
-                    &ldquo;{pendingQuoteRequest.message}&rdquo;
-                  </p>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-2"
-                  disabled={isCreatingQuote}
-                  onClick={handleCreateQuoteFromInspection}
-                >
-                  {isCreatingQuote ? (
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
-                  ) : (
-                    <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
-                  )}
-                  {t('createQuote')}
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
           <InspectionCertificateCard
             inspection={inspection}
             technicians={technicians}
@@ -736,6 +614,7 @@ export function InspectionPageClient({
                     <InspectionItemRow
                       key={item.id}
                       item={item}
+                      inspectionId={inspection.id}
                       scale={scale}
                       country={country}
                       isCompleted={isCompleted}
@@ -752,10 +631,97 @@ export function InspectionPageClient({
               </section>
             )
           })}
+
+          <InspectionFilesCard
+            inspectionId={inspection.id}
+            attachments={inspection.attachments ?? []}
+            organizationId={organizationId}
+            vehicleName={`${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`}
+            customer={
+              inspection.vehicle.customer
+                ? {
+                    id: inspection.vehicle.customer.id,
+                    name: inspection.vehicle.customer.name,
+                    email: inspection.vehicle.customer.email,
+                    phone: inspection.vehicle.customer.phone,
+                    telegramChatId: inspection.vehicle.customer.telegramChatId ?? null,
+                  }
+                : null
+            }
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            telegramEnabled={telegramEnabled}
+            statusReports={statusReports}
+          />
         </main>
 
         {/* Sidebar */}
-        <aside className="space-y-4 lg:sticky lg:top-36">
+        {/* Sticky, and no taller than what is left of the viewport under the
+            action bar: a sidebar taller than the screen used to pin its top
+            and hide its bottom until the checklist had scrolled all the way
+            down. Scrolling over it now scrolls it, and the page after it. */}
+        <aside className="space-y-4 lg:sticky lg:top-36 lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto lg:overscroll-y-contain lg:pr-1">
+          {/* What happens with what was found: a job for the board, or a
+              price for the customer first. Once one exists it is linked here. */}
+          <section aria-labelledby="inspection-next-step" className="bg-card rounded-lg border p-4">
+            <h2 id="inspection-next-step" className="text-sm font-semibold">
+              {t('nextStep')}
+            </h2>
+            <div className="mt-3 space-y-2">
+              {workOrder ? (
+                <NextStepRow
+                  icon={Wrench}
+                  text={t('workOrderRaised', {
+                    number: workOrder.invoiceNumber ?? '',
+                    date: formatDate(new Date(workOrder.createdAt)),
+                  })}
+                  action={t('viewWorkOrder')}
+                  tone="done"
+                  onAction={() =>
+                    router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
+                  }
+                  testId="next-step-work-order"
+                />
+              ) : (
+                <NextStepRow
+                  icon={Wrench}
+                  text={t('nextStepWorkOrderHint')}
+                  action={t('createWorkOrder')}
+                  busy={isCreatingWorkOrder}
+                  onAction={() => setShowWorkOrderDialog(true)}
+                  testId="next-step-work-order"
+                />
+              )}
+              {inspection.quotes.length > 0 ? (
+                <NextStepRow
+                  icon={FileText}
+                  text={t('quoteCreated', {
+                    name: inspection.quotes[0].user.name,
+                    date: formatDate(new Date(inspection.quotes[0].createdAt)),
+                  })}
+                  action={t('viewQuote')}
+                  tone="done"
+                  onAction={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
+                  testId="next-step-quote"
+                />
+              ) : (
+                <NextStepRow
+                  icon={pendingQuoteRequest ? MessageSquareText : FileText}
+                  tone={pendingQuoteRequest ? 'attention' : undefined}
+                  text={
+                    pendingQuoteRequest
+                      ? t('quoteRequested', { count: pendingQuoteRequest.selectedItemIds.length })
+                      : t('nextStepQuoteHint')
+                  }
+                  detail={pendingQuoteRequest?.message ?? undefined}
+                  action={t('createQuote')}
+                  busy={isCreatingQuote}
+                  onAction={handleCreateQuoteFromInspection}
+                  testId="next-step-quote"
+                />
+              )}
+            </div>
+          </section>
           <section aria-labelledby="inspection-progress" className="bg-card rounded-lg border p-4">
             <h2 id="inspection-progress" className="text-sm font-semibold">
               {t('progress')}
@@ -786,6 +752,13 @@ export function InspectionPageClient({
                 label={gradeLabel('attention')}
               />
               <CountChip condition="fail" value={counts.fail} label={gradeLabel('fail')} />
+              {counts.notApplicable > 0 && (
+                <CountChip
+                  condition="not_applicable"
+                  value={counts.notApplicable}
+                  label={gradeLabel('not_applicable')}
+                />
+              )}
               {scale === 'eu' && (
                 <CountChip
                   condition="dangerous"
@@ -902,6 +875,29 @@ export function InspectionPageClient({
         </aside>
       </div>
 
+      <PdfPreviewDialog
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        url={`/api/protected/inspections/${inspection.id}/pdf`}
+      />
+
+      {/* Work order: a new job or an open one, and whether the defects come along */}
+      <WorkOrderFromInspectionDialog
+        open={showWorkOrderDialog}
+        onOpenChange={setShowWorkOrderDialog}
+        inspectionId={inspection.id}
+        defects={defectItems.map((item) => ({
+          id: item.id,
+          name: item.name,
+          condition: grades[item.id] ?? item.condition,
+          sortOrder: item.sortOrder,
+        }))}
+        onDone={(job) => {
+          setIsCreatingWorkOrder(true)
+          router.push(`/vehicles/${job.vehicleId}/service/${job.id}`)
+        }}
+      />
+
       {/* Complete confirmation */}
       <AlertDialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
         <AlertDialogContent>
@@ -1009,5 +1005,115 @@ export function InspectionPageClient({
         onNavigate={setLightboxIndex}
       />
     </div>
+  )
+}
+
+/**
+ * One action in the bar. On a phone or a tablet the bar is icons, each with
+ * its name as the accessible label and tooltip; from a laptop up the label
+ * is drawn beside the icon. Same name either way, so tests and screen
+ * readers find "Complete" whatever the width.
+ */
+function BarButton({
+  icon: Icon,
+  label,
+  spinning = false,
+  className,
+  ...props
+}: Omit<ComponentProps<typeof Button>, 'children'> & {
+  icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>
+  label: string
+  spinning?: boolean
+}) {
+  return (
+    <Button
+      size="sm"
+      aria-label={label}
+      title={label}
+      className={cn('px-2.5 lg:px-3', className)}
+      {...props}
+    >
+      <Icon className={cn('h-4 w-4 lg:mr-1', spinning && 'animate-spin')} aria-hidden="true" />
+      <span className="hidden lg:inline">{label}</span>
+    </Button>
+  )
+}
+
+/**
+ * One tile of the next-step card. The whole tile is the button: the action
+ * is its heading, the reason sits under it, and a chevron says it goes
+ * somewhere. Once the thing exists the tile turns green and reads as a link
+ * to it; a customer's pending quote request turns it amber.
+ */
+function NextStepRow({
+  icon: Icon,
+  text,
+  detail,
+  action,
+  onAction,
+  busy = false,
+  tone,
+  testId,
+}: {
+  icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>
+  text: string
+  detail?: string
+  action: string
+  onAction: () => void
+  busy?: boolean
+  tone?: 'done' | 'attention'
+  testId: string
+}) {
+  const tile =
+    tone === 'done'
+      ? 'border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10'
+      : tone === 'attention'
+        ? 'border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10'
+        : 'border-border bg-background hover:bg-muted/60'
+  const bubble =
+    tone === 'done'
+      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+      : tone === 'attention'
+        ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300'
+        : 'bg-primary/10 text-primary'
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={onAction}
+      data-testid={testId}
+      className={cn(
+        'group flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-colors',
+        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none disabled:cursor-default disabled:opacity-70',
+        tile
+      )}
+    >
+      <span
+        className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full', bubble)}
+        aria-hidden="true"
+      >
+        {tone === 'done' ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{action}</span>
+        <span className="text-muted-foreground block text-xs leading-snug">{text}</span>
+        {detail && (
+          <span className="text-muted-foreground mt-1 block truncate text-xs italic">
+            &ldquo;{detail}&rdquo;
+          </span>
+        )}
+      </span>
+      {busy ? (
+        <Loader2
+          className="text-muted-foreground h-4 w-4 shrink-0 animate-spin"
+          aria-hidden="true"
+        />
+      ) : (
+        <ChevronRight
+          className="text-muted-foreground h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      )}
+    </button>
   )
 }

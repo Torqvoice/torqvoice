@@ -18,6 +18,7 @@ export const templateItemSchema = z.object({
   choices: z.array(z.string()).default([]),
   required: z.boolean().default(false),
   photoRequired: z.boolean().default(false),
+  allowNotApplicable: z.boolean().default(true),
   defaultSeverity: z.enum(['attention', 'fail', 'dangerous']).nullable().optional(),
   defectSuggestions: z.array(z.string()).default([]),
 })

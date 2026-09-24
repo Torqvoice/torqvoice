@@ -157,14 +157,16 @@
       "attention": "Deficiência leve",
       "fail": "Deficiência grave",
       "dangerous": "Deficiência perigosa",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "basic": {
       "pass": "Aprovado",
       "attention": "Atenção",
       "fail": "Reprovado",
       "dangerous": "Perigoso",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "result": {
       "pass": "Aprovado",
@@ -197,7 +199,8 @@
     "viewPhoto": "Ver foto",
     "deficienciesFound": "Deficiências encontradas ({count})",
     "allResults": "Todos os resultados",
-    "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados."
+    "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados.",
+    "inspectionPhotos": "Fotos e documentos"
   },
   "terms": {
     "title": "Termos de Venda",

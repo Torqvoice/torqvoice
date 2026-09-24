@@ -25,6 +25,8 @@ export interface PresetItem {
   choices?: string[]
   required?: boolean
   photoRequired?: boolean
+  /** May be graded "not applicable": not every vehicle has the part. */
+  allowNotApplicable?: boolean
   defaultSeverity?: Extract<Condition, 'attention' | 'fail' | 'dangerous'>
 }
 
@@ -910,6 +912,7 @@ export function presetToTemplateCreate(
             choices: item.choices ?? [],
             required: item.required ?? false,
             photoRequired: item.photoRequired ?? false,
+            allowNotApplicable: item.allowNotApplicable ?? true,
             defaultSeverity: item.defaultSeverity ?? null,
             defectSuggestions: [],
           })),

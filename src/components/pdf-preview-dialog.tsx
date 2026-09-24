@@ -51,7 +51,8 @@ export function PdfPreviewDialog({ open, onOpenChange, url }: PdfPreviewDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[90vh] flex-col sm:max-w-5xl">
+      {/* The document is the content; there is nothing to say about it that the title does not. */}
+      <DialogContent className="flex h-[90vh] flex-col sm:max-w-5xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
         </DialogHeader>

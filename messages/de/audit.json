@@ -179,7 +179,9 @@
     "timeEntry_delete": "Zeiteintrag gelöscht",
     "settings_workOrderStatus_create": "Auftragsstatus hinzugefügt",
     "settings_workOrderStatus_update": "Auftragsstatus geändert",
-    "settings_workOrderStatus_archive": "Auftragsstatus entfernt"
+    "settings_workOrderStatus_archive": "Auftragsstatus entfernt",
+    "inspection_photo_added": "Prüfungsfoto hinzugefügt",
+    "inspection_file_added": "Prüfungsdatei hinzugefügt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -325,6 +327,7 @@
     "timeEntry_create": "{minutes} Minuten für {technician} auf \"{job}\" hinzugefügt",
     "timeEntry_update": "Zeiteintrag für {technician} auf \"{job}\" auf {minutes} Minuten korrigiert",
     "timeEntry_stop": "Uhr für {technician} auf \"{job}\" bei {minutes} Minuten gestoppt",
-    "timeEntry_delete": "Zeiteintrag {id} gelöscht"
+    "timeEntry_delete": "Zeiteintrag {id} gelöscht",
+    "inspection_phoneUpload": "Datei vom Handy zur Prüfung {ref} hinzugefügt"
   }
 }

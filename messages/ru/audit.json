@@ -179,7 +179,9 @@
     "timeEntry_delete": "Удалена запись времени",
     "settings_workOrderStatus_create": "Добавлен статус заказ-наряда",
     "settings_workOrderStatus_update": "Изменён статус заказ-наряда",
-    "settings_workOrderStatus_archive": "Удалён статус заказ-наряда"
+    "settings_workOrderStatus_archive": "Удалён статус заказ-наряда",
+    "inspection_photo_added": "Добавлено фото осмотра",
+    "inspection_file_added": "Добавлен файл осмотра"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -325,6 +327,7 @@
     "timeEntry_create": "Добавлено {minutes} мин для {technician} по заказу «{job}»",
     "timeEntry_update": "Запись времени {technician} по заказу «{job}» исправлена на {minutes} мин",
     "timeEntry_stop": "Таймер {technician} по заказу «{job}» остановлен на {minutes} мин",
-    "timeEntry_delete": "Удалена запись времени {id}"
+    "timeEntry_delete": "Удалена запись времени {id}",
+    "inspection_phoneUpload": "Добавлен файл с телефона к осмотру {ref}"
   }
 }

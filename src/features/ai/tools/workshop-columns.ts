@@ -358,6 +358,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'choices',
     'required',
     'photoRequired',
+    'allowNotApplicable',
     'defaultSeverity',
     'defectSuggestions',
     'measuredValue',

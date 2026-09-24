@@ -179,7 +179,11 @@
     "resultDetailPassMinor": "Kjøretøyet er godkjent. Utbedre de mindre manglene uten unødig opphold.",
     "resultDetailFail": "Kjøretøyet er ikke godkjent. Manglene må utbedres og kjøretøyet kontrolleres på nytt.",
     "resultDetailFailDangerous": "Kjøretøyet må ikke brukes på offentlig vei før de farlige manglene er utbedret.",
-    "resultDetailIncomplete": "Denne kontrollen pågår fortsatt."
+    "resultDetailIncomplete": "Denne kontrollen pågår fortsatt.",
+    "attachments": "Bilder og dokumenter",
+    "attachedDocuments": "Vedlagte dokumenter: {names}",
+    "euNotApplicable": "Ikke aktuelt",
+    "basicNotApplicable": "Ikke aktuelt"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIKK",

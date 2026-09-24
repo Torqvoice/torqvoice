@@ -5,28 +5,32 @@
       "attention": "Usterka drobna",
       "fail": "Usterka poważna",
       "dangerous": "Usterka stwarzająca zagrożenie",
-      "not_inspected": "Nie sprawdzono"
+      "not_inspected": "Nie sprawdzono",
+      "not_applicable": "Nie dotyczy"
     },
     "basic": {
       "pass": "Pozytywny",
       "attention": "Uwaga",
       "fail": "Negatywny",
       "dangerous": "Niebezpieczne",
-      "not_inspected": "Nie sprawdzono"
+      "not_inspected": "Nie sprawdzono",
+      "not_applicable": "Nie dotyczy"
     },
     "short": {
       "pass": "OK",
       "attention": "Drobna",
       "fail": "Poważna",
       "dangerous": "Zagrożenie",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "Nd."
     },
     "hint": {
       "pass": "Spełnia wymagania. Nie ma czego zgłaszać.",
       "attention": "Bez istotnego wpływu na bezpieczeństwo. Pojazd uzyskuje wynik pozytywny; usunąć przy okazji.",
       "fail": "Może pogorszyć bezpieczeństwo lub oddziaływać na środowisko. Wynik negatywny; usunąć i poddać badaniu ponownemu.",
       "dangerous": "Bezpośrednie i natychmiastowe zagrożenie dla bezpieczeństwa ruchu. Pojazdem nie wolno jechać.",
-      "not_inspected": "Ta pozycja nie została wykonana."
+      "not_inspected": "Ta pozycja nie została wykonana.",
+      "not_applicable": "Pojazd nie ma takiej części, więc nie było czego sprawdzać."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Zobacz zlecenie",
     "createQuote": "Utwórz wycenę",
     "viewQuote": "Zobacz wycenę",
-    "needsDefect": "Dostępne, gdy zostanie zapisana usterka",
     "workOrderRaised": "Zlecenie {number} utworzone z tej inspekcji dnia {date}",
     "open": "Otwórz",
     "quoteCreated": "Wycena utworzona przez {name} dnia {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Nie udało się otworzyć inspekcji ponownie",
     "deleteFailed": "Nie udało się usunąć inspekcji",
     "quoteFailed": "Nie udało się utworzyć wyceny",
-    "workOrderFailed": "Nie udało się utworzyć zlecenia"
+    "workOrderFailed": "Nie udało się utworzyć zlecenia",
+    "workOrderDefectsTitle": "{count, plural, one {Dodać punkt wymagający uwagi?} few {Dodać # punkty wymagające uwagi?} many {Dodać # punktów wymagających uwagi?} other {Dodać # punktu wymagającego uwagi?}}",
+    "workOrderDefectsBody": "Każdy stanie się pozycją zlecenia, z notatką technika, po pozycji za przegląd.",
+    "workOrderDefectsMore": "i jeszcze {count}",
+    "workOrderInspectionOnly": "Tylko przegląd",
+    "workOrderAddDefects": "{count, plural, one {Dodaj # punkt} few {Dodaj # punkty} many {Dodaj # punktów} other {Dodaj # punktu}}",
+    "raisedFromInspection": "Utworzono na podstawie przeglądu wykonanego {date}.",
+    "quoteTitle": "{vehicle} - Wycena po przeglądzie",
+    "preview": "Podgląd certyfikatu",
+    "nextStep": "Następny krok",
+    "nextStepWorkOrderHint": "Umieść naprawy, albo sam przegląd, na zleceniu na tablicy.",
+    "nextStepQuoteHint": "Najpierw wyceń usterki do zatwierdzenia przez klienta.",
+    "linkWorkOrderTitle": "Zlecenie dla tego przeglądu",
+    "linkWorkOrderBody": "Utwórz nowe zlecenie lub powiąż przegląd ze zleceniem już zarezerwowanym dla tego pojazdu.",
+    "createNewWorkOrder": "Utwórz nowe",
+    "createNewWorkOrderHint": "Nowe zlecenie dla tego pojazdu, z numerem i na tablicy.",
+    "linkExistingWorkOrder": "Powiąż z istniejącym",
+    "loadingWorkOrders": "Szukanie otwartych zleceń…",
+    "noOpenWorkOrders": "Brak otwartych zleceń dla tego pojazdu.",
+    "workOrderLinked": "Powiązano ze zleceniem {number}",
+    "next": "Dalej",
+    "previousStep": "Wstecz",
+    "linkWorkOrder": "Powiąż ze zleceniem"
   },
   "item": {
     "required": "(wymagane)",
@@ -134,7 +159,9 @@
     "cancel": "Anuluj",
     "saveFailed": "Nie udało się zapisać tej pozycji",
     "uploadFailed": "Przesyłanie nie powiodło się",
-    "uploadFailedFor": "Nie udało się przesłać {name}"
+    "uploadFailedFor": "Nie udało się przesłać {name}",
+    "reopenToChange": "Otwórz przegląd ponownie, aby dodać zdjęcia",
+    "tapToClear": "Dotknij ponownie, aby usunąć ocenę"
   },
   "suggestions": {
     "title": "Typowe usterki",
@@ -331,7 +358,8 @@
     "severityAttention": "Usterka drobna",
     "severityFail": "Usterka poważna",
     "severityDangerous": "Usterka stwarzająca zagrożenie",
-    "answersPlaceholder": "Pełna, Częściowa, Brak"
+    "answersPlaceholder": "Pełna, Częściowa, Brak",
+    "allowNotApplicable": "Może być oceniony jako „nie dotyczy”"
   },
   "packages": {
     "exportTitle": "Eksportuj „{name}”",
@@ -393,5 +421,39 @@
     "copied": "Link skopiowany do schowka",
     "generated": "Link do udostępniania utworzony",
     "revoked": "Link do udostępniania wycofany"
+  },
+  "phone": {
+    "pageTitle": "Zdjęcia do przeglądu",
+    "wholeTitle": "Cały przegląd",
+    "wholeBody": "Zdjęcia ogólne i dokumenty, takie jak podpisany formularz przeglądu.",
+    "wholeShort": "Przegląd",
+    "checksTitle": "Zdjęcia punktu kontroli",
+    "checksBody": "Dotknij punktu, aby go sfotografować. Zdjęcie pojawi się obok jego oceny.",
+    "checksClosed": "Ten przegląd jest zakończony, więc jego punkty nie przyjmują już zdjęć. Nadal możesz dodawać do całego przeglądu.",
+    "search": "Znajdź punkt",
+    "noMatch": "Żaden punkt nie pasuje.",
+    "defectsTitle": "Wymagają uwagi ({count})",
+    "photoNeeded": "Brak zdjęcia",
+    "photoCount": "{count, plural, one {# zdjęcie} few {# zdjęcia} many {# zdjęć} other {# zdjęcia}}",
+    "chooseFor": "Wybierz zdjęcia dla: {name}",
+    "completedError": "Ten przegląd został zakończony. Poproś warsztat o ponowne otwarcie.",
+    "limitError": "Ten punkt lub przegląd ma już maksymalną liczbę zdjęć.",
+    "invalid": "Zeskanuj ponownie kod z przeglądu.",
+    "dialogTitle": "Dodaj zdjęcia z telefonu",
+    "dialogBody": "Sfotografuj każdy punkt na miejscu albo dodaj zdjęcia ogólne i dokumenty do całego przeglądu. Wszystko trafia od razu do tego przeglądu.",
+    "step2": "Wybierz punkt na telefonie i zrób zdjęcie albo dodaj je do całego przeglądu.",
+    "step3": "Pojawiają się w tym przeglądzie w miarę napływania.",
+    "scope": "Link dodaje tylko zdjęcia i dokumenty do tego przeglądu i przestaje działać po 30 minutach.",
+    "dialogTitleItem": "Dodaj zdjęcia {name} z telefonu",
+    "dialogBodyItem": "Sfotografuj tę pozycję na miejscu. Zdjęcie trafi obok oceny; z telefonu można też dodać do innych pozycji.",
+    "stepItem2": "Zrób zdjęcie telefonem; trafi do tej pozycji.",
+    "focusTitle": "Pozycja, dla której pokazano ten kod"
+  },
+  "files": {
+    "title": "Zdjęcia i dokumenty",
+    "hint": "Dla przeglądu jako całości. Zdjęcie jednego punktu należy do tego punktu.",
+    "photos": "Zdjęcia",
+    "documents": "Dokumenty",
+    "video": "Wideo"
   }
 }

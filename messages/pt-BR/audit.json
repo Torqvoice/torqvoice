@@ -179,7 +179,9 @@
     "timeEntry_delete": "Registro de tempo excluído",
     "settings_workOrderStatus_create": "Status de ordem adicionado",
     "settings_workOrderStatus_update": "Status de ordem alterado",
-    "settings_workOrderStatus_archive": "Status de ordem removido"
+    "settings_workOrderStatus_archive": "Status de ordem removido",
+    "inspection_photo_added": "Adicionou foto de inspeção",
+    "inspection_file_added": "Adicionou arquivo de inspeção"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -325,6 +327,7 @@
     "timeEntry_create": "Adicionados {minutes} minutos para {technician} em \"{job}\"",
     "timeEntry_update": "Registro de tempo de {technician} em \"{job}\" corrigido para {minutes} minutos",
     "timeEntry_stop": "Relógio de {technician} em \"{job}\" parado em {minutes} minutos",
-    "timeEntry_delete": "Registro de tempo {id} excluído"
+    "timeEntry_delete": "Registro de tempo {id} excluído",
+    "inspection_phoneUpload": "Adicionou um arquivo pelo celular à inspeção {ref}"
   }
 }

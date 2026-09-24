@@ -157,14 +157,16 @@
       "attention": "Usterka drobna",
       "fail": "Usterka poważna",
       "dangerous": "Usterka stwarzająca zagrożenie",
-      "not_inspected": "Nie sprawdzono"
+      "not_inspected": "Nie sprawdzono",
+      "not_applicable": "Nie dotyczy"
     },
     "basic": {
       "pass": "Pozytywny",
       "attention": "Uwaga",
       "fail": "Negatywny",
       "dangerous": "Niebezpieczne",
-      "not_inspected": "Nie sprawdzono"
+      "not_inspected": "Nie sprawdzono",
+      "not_applicable": "Nie dotyczy"
     },
     "result": {
       "pass": "Wynik pozytywny",
@@ -197,7 +199,8 @@
     "viewPhoto": "Zobacz zdjęcie",
     "deficienciesFound": "Stwierdzone usterki ({count})",
     "allResults": "Wszystkie wyniki",
-    "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane."
+    "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane.",
+    "inspectionPhotos": "Zdjęcia i dokumenty"
   },
   "terms": {
     "title": "Warunki sprzedaży",

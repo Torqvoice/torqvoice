@@ -52,7 +52,12 @@
     "feedbackSubmitted": "¡Gracias por su opinión!",
     "feedbackError": "Error al enviar la opinión",
     "submitting": "Enviando...",
-    "poweredBy": "Desarrollado por"
+    "poweredBy": "Desarrollado por",
+    "vehicleLabel": "Vehículo",
+    "plate": "Matrícula: {plate}",
+    "inspectionTitle": "Inspección",
+    "messageFromTechnician": "Mensaje del técnico",
+    "videoUnsupported": "Su navegador no admite el elemento de vídeo."
   },
   "list": {
     "title": "Informes de estado",

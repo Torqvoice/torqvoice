@@ -5,28 +5,32 @@
       "attention": "Deficiencia leve",
       "fail": "Deficiencia grave",
       "dangerous": "Deficiencia peligrosa",
-      "not_inspected": "No inspeccionado"
+      "not_inspected": "No inspeccionado",
+      "not_applicable": "No aplicable"
     },
     "basic": {
       "pass": "Apto",
       "attention": "Atención",
       "fail": "No apto",
       "dangerous": "Peligroso",
-      "not_inspected": "No inspeccionado"
+      "not_inspected": "No inspeccionado",
+      "not_applicable": "No aplicable"
     },
     "short": {
       "pass": "OK",
       "attention": "Leve",
       "fail": "Grave",
       "dangerous": "Peligrosa",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "N/A"
     },
     "hint": {
       "pass": "Cumple los requisitos. Nada que señalar.",
       "attention": "Sin efecto significativo sobre la seguridad. El vehículo es apto; subsanar cuando convenga.",
       "fail": "Puede perjudicar la seguridad o afectar al medio ambiente. El vehículo no es apto; subsanar y volver a inspeccionar.",
       "dangerous": "Riesgo directo e inmediato para la seguridad vial. El vehículo no debe circular.",
-      "not_inspected": "Este punto no se ha realizado."
+      "not_inspected": "Este punto no se ha realizado.",
+      "not_applicable": "El vehículo no tiene esa pieza, así que no había nada que comprobar."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Ver orden de trabajo",
     "createQuote": "Crear presupuesto",
     "viewQuote": "Ver presupuesto",
-    "needsDefect": "Disponible cuando se registre una deficiencia",
     "workOrderRaised": "Orden de trabajo {number} creada desde esta inspección el {date}",
     "open": "Abrir",
     "quoteCreated": "Presupuesto creado por {name} el {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "No se pudo reabrir la inspección",
     "deleteFailed": "No se pudo eliminar la inspección",
     "quoteFailed": "No se pudo crear el presupuesto",
-    "workOrderFailed": "No se pudo crear la orden de trabajo"
+    "workOrderFailed": "No se pudo crear la orden de trabajo",
+    "workOrderDefectsTitle": "{count, plural, one {¿Añadir el punto que requiere atención?} other {¿Añadir los # puntos que requieren atención?}}",
+    "workOrderDefectsBody": "Cada uno se convierte en una línea de la orden de trabajo, con la nota del técnico, después de la línea de la inspección.",
+    "workOrderDefectsMore": "y {count} más",
+    "workOrderInspectionOnly": "Solo la inspección",
+    "workOrderAddDefects": "{count, plural, one {Añadir # punto} other {Añadir # puntos}}",
+    "raisedFromInspection": "Creado a partir de la inspección realizada el {date}.",
+    "quoteTitle": "{vehicle} - Presupuesto de inspección",
+    "preview": "Vista previa del certificado",
+    "nextStep": "Siguiente paso",
+    "nextStepWorkOrderHint": "Pon las reparaciones, o solo la inspección, en una orden para el tablero.",
+    "nextStepQuoteHint": "Presupuesta los defectos para que el cliente apruebe primero.",
+    "linkWorkOrderTitle": "Orden de trabajo para esta inspección",
+    "linkWorkOrderBody": "Crea una orden nueva o vincula la inspección a una ya reservada para este vehículo.",
+    "createNewWorkOrder": "Crear nueva",
+    "createNewWorkOrderHint": "Una orden nueva para este vehículo, numerada y en el tablero.",
+    "linkExistingWorkOrder": "Vincular a una existente",
+    "loadingWorkOrders": "Buscando órdenes abiertas…",
+    "noOpenWorkOrders": "No hay órdenes abiertas para este vehículo.",
+    "workOrderLinked": "Vinculada a la orden {number}",
+    "next": "Siguiente",
+    "previousStep": "Atrás",
+    "linkWorkOrder": "Vincular a la orden"
   },
   "item": {
     "required": "(obligatorio)",
@@ -134,7 +159,9 @@
     "cancel": "Cancelar",
     "saveFailed": "No se pudo guardar este punto",
     "uploadFailed": "Error al subir",
-    "uploadFailedFor": "No se pudo subir {name}"
+    "uploadFailedFor": "No se pudo subir {name}",
+    "reopenToChange": "Reabre la inspección para añadir fotos",
+    "tapToClear": "Toca de nuevo para borrar la valoración"
   },
   "suggestions": {
     "title": "Deficiencias habituales",
@@ -331,7 +358,8 @@
     "severityAttention": "Deficiencia leve",
     "severityFail": "Deficiencia grave",
     "severityDangerous": "Deficiencia peligrosa",
-    "answersPlaceholder": "Completo, Parcial, Ninguno"
+    "answersPlaceholder": "Completo, Parcial, Ninguno",
+    "allowNotApplicable": "Puede marcarse como \"no aplicable\""
   },
   "packages": {
     "exportTitle": "Exportar «{name}»",
@@ -393,5 +421,39 @@
     "copied": "Enlace copiado al portapapeles",
     "generated": "Enlace de compartición creado",
     "revoked": "Enlace de compartición revocado"
+  },
+  "phone": {
+    "pageTitle": "Fotos de la inspección",
+    "wholeTitle": "Toda la inspección",
+    "wholeBody": "Fotos generales y documentos como el formulario de inspección firmado.",
+    "wholeShort": "Inspección",
+    "checksTitle": "Fotos de un punto",
+    "checksBody": "Toca un punto para fotografiarlo. La foto aparece junto a su calificación.",
+    "checksClosed": "Esta inspección está completada, así que sus puntos ya no admiten fotos. Aún puedes añadir a toda la inspección.",
+    "search": "Buscar un punto",
+    "noMatch": "Ningún punto coincide.",
+    "defectsTitle": "Requieren atención ({count})",
+    "photoNeeded": "Falta foto",
+    "photoCount": "{count, plural, one {# foto} other {# fotos}}",
+    "chooseFor": "Elegir fotos para {name}",
+    "completedError": "Esta inspección se completó. Pide en el taller que la reabran.",
+    "limitError": "Este punto o esta inspección ya tiene todas las fotos que admite.",
+    "invalid": "Vuelve a escanear el código de la inspección.",
+    "dialogTitle": "Añadir fotos desde un teléfono",
+    "dialogBody": "Fotografía cada punto donde está, o añade fotos generales y documentos a toda la inspección. Todo llega directamente a esta inspección.",
+    "step2": "Elige un punto en el teléfono y haz la foto, o añádela a toda la inspección.",
+    "step3": "Aparecen en esta inspección a medida que llegan.",
+    "scope": "El enlace solo añade fotos y documentos a esta inspección y deja de funcionar a los 30 minutos.",
+    "dialogTitleItem": "Añadir fotos de {name} desde un teléfono",
+    "dialogBodyItem": "Fotografía esta comprobación donde está. La foto queda junto a su valoración; el teléfono también puede añadir a otras comprobaciones.",
+    "stepItem2": "Haz la foto con el teléfono; se guarda en esta comprobación.",
+    "focusTitle": "La comprobación para la que se mostró este código"
+  },
+  "files": {
+    "title": "Fotos y documentos",
+    "hint": "Para la inspección en conjunto. La foto de un solo punto va en ese punto.",
+    "photos": "Fotos",
+    "documents": "Documentos",
+    "video": "Vídeo"
   }
 }

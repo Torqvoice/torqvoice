@@ -5,28 +5,32 @@
       "attention": "Hafif kusur",
       "fail": "Ağır kusur",
       "dangerous": "Tehlikeli kusur",
-      "not_inspected": "Muayene edilmedi"
+      "not_inspected": "Muayene edilmedi",
+      "not_applicable": "Uygulanamaz"
     },
     "basic": {
       "pass": "Geçti",
       "attention": "Dikkat",
       "fail": "Kaldı",
       "dangerous": "Tehlikeli",
-      "not_inspected": "Muayene edilmedi"
+      "not_inspected": "Muayene edilmedi",
+      "not_applicable": "Uygulanamaz"
     },
     "short": {
       "pass": "OK",
       "attention": "Hafif",
       "fail": "Ağır",
       "dangerous": "Tehlikeli",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "Yok"
     },
     "hint": {
       "pass": "Gereklilikleri karşılıyor. Bildirilecek bir şey yok.",
       "attention": "Güvenlik üzerinde kayda değer etkisi yok. Araç geçer; uygun bir zamanda giderin.",
       "fail": "Güvenliği zayıflatabilir veya çevreyi etkileyebilir. Araç kalır; giderin ve yeniden muayene ettirin.",
       "dangerous": "Trafik güvenliği için doğrudan ve acil tehlike. Araç kullanılmamalıdır.",
-      "not_inspected": "Bu madde uygulanmadı."
+      "not_inspected": "Bu madde uygulanmadı.",
+      "not_applicable": "Araçta böyle bir parça yok, test edilecek bir şey yoktu."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "İş emrini gör",
     "createQuote": "Teklif oluştur",
     "viewQuote": "Teklifi gör",
-    "needsDefect": "Bir kusur kaydedildiğinde kullanılabilir",
     "workOrderRaised": "{date} tarihinde bu muayeneden {number} numaralı iş emri oluşturuldu",
     "open": "Aç",
     "quoteCreated": "Teklif {name} tarafından {date} tarihinde oluşturuldu",
@@ -106,7 +109,29 @@
     "reopenFailed": "Muayene yeniden açılamadı",
     "deleteFailed": "Muayene silinemedi",
     "quoteFailed": "Teklif oluşturulamadı",
-    "workOrderFailed": "İş emri oluşturulamadı"
+    "workOrderFailed": "İş emri oluşturulamadı",
+    "workOrderDefectsTitle": "{count, plural, one {İlgi gereken kalem eklensin mi?} other {İlgi gereken # kalem eklensin mi?}}",
+    "workOrderDefectsBody": "Her biri, muayene satırından sonra, teknisyenin notuyla iş emrinde bir satır olur.",
+    "workOrderDefectsMore": "ve {count} tane daha",
+    "workOrderInspectionOnly": "Yalnızca muayene",
+    "workOrderAddDefects": "{count, plural, one {# kalem ekle} other {# kalem ekle}}",
+    "raisedFromInspection": "{date} tarihinde yapılan muayeneden oluşturuldu.",
+    "quoteTitle": "{vehicle} - Muayene teklifi",
+    "preview": "Sertifika önizlemesi",
+    "nextStep": "Sonraki adım",
+    "nextStepWorkOrderHint": "Onarımları ya da yalnızca muayeneyi panoya bir iş emri olarak ekleyin.",
+    "nextStepQuoteHint": "Önce müşterinin onayı için kusurları fiyatlandırın.",
+    "linkWorkOrderTitle": "Bu muayene için iş emri",
+    "linkWorkOrderBody": "Yeni bir iş emri oluşturun ya da muayeneyi bu araç için zaten kayıtlı bir işe bağlayın.",
+    "createNewWorkOrder": "Yeni oluştur",
+    "createNewWorkOrderHint": "Bu araç için numaralı, panoya eklenmiş yeni bir iş emri.",
+    "linkExistingWorkOrder": "Mevcut olana bağla",
+    "loadingWorkOrders": "Açık işler aranıyor…",
+    "noOpenWorkOrders": "Bu araç için açık iş yok.",
+    "workOrderLinked": "{number} numaralı iş emrine bağlandı",
+    "next": "İleri",
+    "previousStep": "Geri",
+    "linkWorkOrder": "İş emrine bağla"
   },
   "item": {
     "required": "(zorunlu)",
@@ -134,7 +159,9 @@
     "cancel": "İptal",
     "saveFailed": "Bu madde kaydedilemedi",
     "uploadFailed": "Yükleme başarısız",
-    "uploadFailedFor": "{name} yüklenemedi"
+    "uploadFailedFor": "{name} yüklenemedi",
+    "reopenToChange": "Fotoğraf eklemek için muayeneyi yeniden açın",
+    "tapToClear": "Notu kaldırmak için tekrar dokunun"
   },
   "suggestions": {
     "title": "Sık görülen kusurlar",
@@ -331,7 +358,8 @@
     "severityAttention": "Hafif kusur",
     "severityFail": "Ağır kusur",
     "severityDangerous": "Tehlikeli kusur",
-    "answersPlaceholder": "Tam, Kısmi, Yok"
+    "answersPlaceholder": "Tam, Kısmi, Yok",
+    "allowNotApplicable": "\"Uygulanamaz\" olarak değerlendirilebilir"
   },
   "packages": {
     "exportTitle": "“{name}” dışa aktar",
@@ -393,5 +421,39 @@
     "copied": "Bağlantı panoya kopyalandı",
     "generated": "Paylaşım bağlantısı oluşturuldu",
     "revoked": "Paylaşım bağlantısı geri alındı"
+  },
+  "phone": {
+    "pageTitle": "Muayene fotoğrafları",
+    "wholeTitle": "Muayenenin tamamı",
+    "wholeBody": "Genel fotoğraflar ve imzalı muayene formu gibi belgeler.",
+    "wholeShort": "Muayene",
+    "checksTitle": "Bir kontrol noktasının fotoğrafları",
+    "checksBody": "Fotoğraflamak için bir kontrol noktasına dokunun. Fotoğraf değerlendirmesinin yanında görünür.",
+    "checksClosed": "Bu muayene tamamlandı, kontrol noktalarına artık fotoğraf eklenemez. Muayenenin tamamına eklemeye devam edebilirsiniz.",
+    "search": "Kontrol noktası bul",
+    "noMatch": "Eşleşen kontrol noktası yok.",
+    "defectsTitle": "İlgi gerekiyor ({count})",
+    "photoNeeded": "Fotoğraf gerekli",
+    "photoCount": "{count, plural, one {# fotoğraf} other {# fotoğraf}}",
+    "chooseFor": "{name} için fotoğraf seç",
+    "completedError": "Bu muayene tamamlandı. Servisten yeniden açmasını isteyin.",
+    "limitError": "Bu kontrol noktası veya muayene zaten alabileceği kadar fotoğrafa sahip.",
+    "invalid": "Muayenedeki kodu yeniden tarayın.",
+    "dialogTitle": "Telefondan fotoğraf ekle",
+    "dialogBody": "Her kontrol noktasını yerinde fotoğraflayın ya da muayenenin tamamına genel fotoğraflar ve belgeler ekleyin. Her şey doğrudan bu muayeneye gelir.",
+    "step2": "Telefonda bir kontrol noktası seçip fotoğrafı çekin ya da muayenenin tamamına ekleyin.",
+    "step3": "Geldikçe bu muayenede görünürler.",
+    "scope": "Bağlantı yalnızca bu muayeneye fotoğraf ve belge ekler ve 30 dakika sonra çalışmayı bırakır.",
+    "dialogTitleItem": "Telefondan {name} fotoğrafı ekle",
+    "dialogBodyItem": "Bu kontrolü olduğu yerde fotoğraflayın. Fotoğraf notunun yanına gelir; telefondan diğer kontrollere de eklenebilir.",
+    "stepItem2": "Fotoğrafı telefonda çekin; bu kontrole eklenir.",
+    "focusTitle": "Bu kodun gösterildiği kontrol"
+  },
+  "files": {
+    "title": "Fotoğraflar ve belgeler",
+    "hint": "Muayenenin bütünü için. Tek bir kontrol noktasının fotoğrafı o noktaya aittir.",
+    "photos": "Fotoğraflar",
+    "documents": "Belgeler",
+    "video": "Video"
   }
 }

@@ -157,14 +157,16 @@
       "attention": "Geringer Mangel",
       "fail": "Erheblicher Mangel",
       "dangerous": "Gefährlicher Mangel",
-      "not_inspected": "Nicht geprüft"
+      "not_inspected": "Nicht geprüft",
+      "not_applicable": "Nicht zutreffend"
     },
     "basic": {
       "pass": "Bestanden",
       "attention": "Achtung",
       "fail": "Durchgefallen",
       "dangerous": "Gefährlich",
-      "not_inspected": "Nicht geprüft"
+      "not_inspected": "Nicht geprüft",
+      "not_applicable": "Nicht zutreffend"
     },
     "result": {
       "pass": "Bestanden",
@@ -197,7 +199,8 @@
     "viewPhoto": "Foto ansehen",
     "deficienciesFound": "Festgestellte Mängel ({count})",
     "allResults": "Alle Ergebnisse",
-    "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen."
+    "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen.",
+    "inspectionPhotos": "Fotos und Dokumente"
   },
   "terms": {
     "title": "Verkaufsbedingungen",

@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Bedankt voor uw feedback!",
     "feedbackError": "Feedback verzenden mislukt",
     "submitting": "Bezig met verzenden...",
-    "poweredBy": "Mogelijk gemaakt door"
+    "poweredBy": "Mogelijk gemaakt door",
+    "vehicleLabel": "Voertuig",
+    "plate": "Kenteken: {plate}",
+    "inspectionTitle": "Inspectie",
+    "messageFromTechnician": "Bericht van de monteur",
+    "videoUnsupported": "Uw browser ondersteunt het video-element niet."
   },
   "list": {
     "title": "Statusrapporten",

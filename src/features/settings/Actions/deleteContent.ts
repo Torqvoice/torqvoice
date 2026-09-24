@@ -104,7 +104,7 @@ export async function deleteContent(input: unknown) {
       }
 
       // --- Inspections ---
-      // Cascades: InspectionItem, InspectionQuoteRequest
+      // Cascades: InspectionItem, InspectionAttachment, InspectionQuoteRequest, StatusReport
       const collectInspectionFiles = async () => {
         const inspectionIds = await idsOf(
           db.inspection.findMany({ where: { organizationId }, select: { id: true } })

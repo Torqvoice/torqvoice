@@ -179,7 +179,11 @@
     "resultDetailPassMinor": "Araç geçti. Hafif kusurları gecikmeden giderin.",
     "resultDetailFail": "Araç kaldı. Kusurlar giderilmeli ve araç yeniden muayene edilmelidir.",
     "resultDetailFailDangerous": "Tehlikeli kusurlar giderilene kadar araç karayolunda kullanılmamalıdır.",
-    "resultDetailIncomplete": "Bu muayene hâlâ devam ediyor."
+    "resultDetailIncomplete": "Bu muayene hâlâ devam ediyor.",
+    "attachments": "Fotoğraflar ve belgeler",
+    "attachedDocuments": "Ekli belgeler: {names}",
+    "euNotApplicable": "Uygulanamaz",
+    "basicNotApplicable": "Uygulanamaz"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVİS GEÇMİŞİ",

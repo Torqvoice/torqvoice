@@ -649,7 +649,9 @@
       "overdue": "gecikmiş",
       "customerSince": "Müşteri olma tarihi"
     },
-    "moreStatuses": "Diğer durumlar"
+    "moreStatuses": "Diğer durumlar",
+    "fromInspection": "{name} muayenesinden, {date}",
+    "startInspection": "Muayeneyi başlat"
   },
   "photoHandoff": {
     "button": "Telefondan ekle",

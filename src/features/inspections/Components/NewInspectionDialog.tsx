@@ -30,6 +30,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
 import { createInspection } from '../Actions/inspectionActions'
+import { getTemplates } from '../Actions/templateActions'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 
 interface TemplateOption {
@@ -49,13 +50,17 @@ interface VehicleOption {
 export function NewInspectionDialog({
   open,
   onOpenChange,
-  templates,
+  templates: givenTemplates,
   preselectedVehicleId,
+  serviceRecordId,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  templates: TemplateOption[]
+  /** The workshop's templates; fetched here when the opener has none to hand. */
+  templates?: TemplateOption[]
   preselectedVehicleId?: string
+  /** The booked job this inspection is started from; it is linked to the inspection. */
+  serviceRecordId?: string
 }) {
   const t = useTranslations('inspections.new')
   const router = useRouter()
@@ -63,6 +68,23 @@ export function NewInspectionDialog({
   const [isPending, startTransition] = useTransition()
   const [vehicles, setVehicles] = useState<VehicleOption[]>([])
   const [loadingVehicles, setLoadingVehicles] = useState(false)
+  const [fetchedTemplates, setFetchedTemplates] = useState<TemplateOption[]>([])
+  const templates = givenTemplates ?? fetchedTemplates
+
+  useEffect(() => {
+    if (!open || givenTemplates) return
+    getTemplates().then((result) => {
+      if (result.success && result.data) {
+        setFetchedTemplates(
+          result.data.map((template) => ({
+            id: template.id,
+            name: template.name,
+            isDefault: template.isDefault,
+          }))
+        )
+      }
+    })
+  }, [open, givenTemplates])
 
   const defaultTemplate = templates.find((t) => t.isDefault)
   const [vehicleId, setVehicleId] = useState(preselectedVehicleId || '')
@@ -105,6 +127,7 @@ export function NewInspectionDialog({
         vehicleId,
         templateId,
         mileage: mileage ? parseInt(mileage, 10) : undefined,
+        serviceRecordId,
       })
 
       if (result.success && result.data) {

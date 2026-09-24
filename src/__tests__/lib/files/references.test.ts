@@ -47,6 +47,8 @@ const NOT_FILES: Record<string, string> = {
   'QuoteAttachment.fileType': 'a MIME type',
   'TireSetAttachment.fileName': 'a label',
   'TireSetAttachment.fileType': 'a MIME type',
+  'InspectionAttachment.fileName': 'a label',
+  'InspectionAttachment.fileType': 'a MIME type',
   'StoredImage.fileName': 'a label',
   'StatusReport.videoFileName': 'a label',
   'WhatsappMessage.mediaFilename': 'a label',

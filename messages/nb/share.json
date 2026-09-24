@@ -157,14 +157,16 @@
       "attention": "Mindre mangel",
       "fail": "Vesentlig mangel",
       "dangerous": "Farlig mangel",
-      "not_inspected": "Ikke kontrollert"
+      "not_inspected": "Ikke kontrollert",
+      "not_applicable": "Ikke aktuelt"
     },
     "basic": {
       "pass": "Godkjent",
       "attention": "Merknad",
       "fail": "Ikke godkjent",
       "dangerous": "Farlig",
-      "not_inspected": "Ikke kontrollert"
+      "not_inspected": "Ikke kontrollert",
+      "not_applicable": "Ikke aktuelt"
     },
     "result": {
       "pass": "Godkjent",
@@ -197,7 +199,8 @@
     "viewPhoto": "Se bilde",
     "deficienciesFound": "Mangler funnet ({count})",
     "allResults": "Alle resultater",
-    "privacyNotice": "Denne rapporten deles med deg av verkstedet som utførte kontrollen. Alle som har lenken kan se den, så ikke send den videre. Ta kontakt med verkstedet for å trekke tilbake lenken eller få slettet opplysningene dine."
+    "privacyNotice": "Denne rapporten deles med deg av verkstedet som utførte kontrollen. Alle som har lenken kan se den, så ikke send den videre. Ta kontakt med verkstedet for å trekke tilbake lenken eller få slettet opplysningene dine.",
+    "inspectionPhotos": "Bilder og dokumenter"
   },
   "terms": {
     "title": "Salgsvilkår",

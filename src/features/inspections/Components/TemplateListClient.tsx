@@ -69,6 +69,7 @@ interface TemplateSection {
     choices?: string[]
     required?: boolean
     photoRequired?: boolean
+    allowNotApplicable?: boolean
     defaultSeverity?: string | null
     defectSuggestions?: string[]
   }[]

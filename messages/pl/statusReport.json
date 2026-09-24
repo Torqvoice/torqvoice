@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Dziękujemy za opinię!",
     "feedbackError": "Nie udało się wysłać opinii",
     "submitting": "Wysyłanie...",
-    "poweredBy": "Obsługiwane przez"
+    "poweredBy": "Obsługiwane przez",
+    "vehicleLabel": "Pojazd",
+    "plate": "Rejestracja: {plate}",
+    "inspectionTitle": "Przegląd",
+    "messageFromTechnician": "Wiadomość od mechanika",
+    "videoUnsupported": "Twoja przeglądarka nie obsługuje elementu wideo."
   },
   "list": {
     "title": "Raporty statusu",

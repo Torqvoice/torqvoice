@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Takk for tilbakemeldingen!",
     "feedbackError": "Kunne ikke sende tilbakemelding",
     "submitting": "Sender...",
-    "poweredBy": "Drevet av"
+    "poweredBy": "Drevet av",
+    "vehicleLabel": "Kjøretøy",
+    "plate": "Skilt: {plate}",
+    "inspectionTitle": "Inspeksjon",
+    "messageFromTechnician": "Melding fra tekniker",
+    "videoUnsupported": "Nettleseren din støtter ikke videoelementet."
   },
   "list": {
     "title": "Statusrapporter",

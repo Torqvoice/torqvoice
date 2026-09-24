@@ -314,6 +314,12 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'StoredImage', option: 'inventory', nestedUnder: 'InventoryPart', restore: 'replace' },
   { model: 'InspectionItem', option: 'inspections', nestedUnder: 'Inspection', restore: 'replace' },
   {
+    model: 'InspectionAttachment',
+    option: 'inspections',
+    nestedUnder: 'Inspection',
+    restore: 'replace',
+  },
+  {
     model: 'InspectionTemplateSection',
     option: 'inspections',
     nestedUnder: 'InspectionTemplate',

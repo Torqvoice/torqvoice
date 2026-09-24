@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Merci pour votre avis !",
     "feedbackError": "Échec de l'envoi de l'avis",
     "submitting": "Envoi en cours...",
-    "poweredBy": "Propulsé par"
+    "poweredBy": "Propulsé par",
+    "vehicleLabel": "Véhicule",
+    "plate": "Immatriculation : {plate}",
+    "inspectionTitle": "Inspection",
+    "messageFromTechnician": "Message du technicien",
+    "videoUnsupported": "Votre navigateur ne prend pas en charge la vidéo."
   },
   "list": {
     "title": "Rapports d'état",

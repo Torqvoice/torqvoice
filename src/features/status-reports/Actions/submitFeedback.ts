@@ -26,6 +26,20 @@ export async function submitStatusReportFeedback(input: unknown) {
           },
         },
       },
+      inspection: {
+        select: {
+          id: true,
+          template: { select: { name: true } },
+          vehicle: {
+            select: {
+              year: true,
+              make: true,
+              model: true,
+              customer: { select: { name: true } },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -42,23 +56,35 @@ export async function submitStatusReportFeedback(input: unknown) {
     },
   })
 
-  // Notify the organization about the feedback
-  const vehicle = report.serviceRecord.vehicle
+  // Notify the organization about the feedback, on whichever record the
+  // report was sent from.
+  const job = report.serviceRecord
+  const inspection = report.inspection
+  const vehicle = job?.vehicle ?? inspection?.vehicle ?? null
   const vehicleName = vehicle
     ? [vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(' ')
-    : report.serviceRecord.title
-  const customerName = (report.serviceRecord.customer ?? vehicle?.customer)?.name ?? 'Customer'
+    : (job?.title ?? inspection?.template.name ?? '')
+  const customerName = (job?.customer ?? vehicle?.customer)?.name ?? 'Customer'
+  const excerpt = data.feedback.length > 100 ? `${data.feedback.slice(0, 100)}...` : data.feedback
 
   await notify({
     organizationId: report.organizationId,
     type: 'status_report_feedback',
     title: 'New Status Report Feedback',
-    message: `${customerName} responded to the status report for ${vehicleName}: "${data.feedback.length > 100 ? data.feedback.slice(0, 100) + '...' : data.feedback}"`,
-    entityType: 'ServiceRecord',
-    entityId: report.serviceRecord.id,
-    entityUrl: report.serviceRecord.vehicleId
-      ? `/vehicles/${report.serviceRecord.vehicleId}/service/${report.serviceRecord.id}?tab=statusReports`
-      : `/sales/${report.serviceRecord.id}?tab=statusReports`,
+    message: `${customerName} responded to the status report for ${vehicleName}: "${excerpt}"`,
+    ...(job
+      ? {
+          entityType: 'ServiceRecord',
+          entityId: job.id,
+          entityUrl: job.vehicleId
+            ? `/vehicles/${job.vehicleId}/service/${job.id}?tab=statusReports`
+            : `/sales/${job.id}?tab=statusReports`,
+        }
+      : {
+          entityType: 'Inspection',
+          entityId: inspection?.id ?? report.id,
+          entityUrl: `/inspections/${inspection?.id}#inspection-files`,
+        }),
   })
 
   return { success: true }

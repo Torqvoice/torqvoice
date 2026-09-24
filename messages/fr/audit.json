@@ -179,7 +179,9 @@
     "timeEntry_delete": "Entrée de temps supprimée",
     "settings_workOrderStatus_create": "Statut d’ordre ajouté",
     "settings_workOrderStatus_update": "Statut d’ordre modifié",
-    "settings_workOrderStatus_archive": "Statut d’ordre retiré"
+    "settings_workOrderStatus_archive": "Statut d’ordre retiré",
+    "inspection_photo_added": "Photo d'inspection ajoutée",
+    "inspection_file_added": "Fichier d'inspection ajouté"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -325,6 +327,7 @@
     "timeEntry_create": "{minutes} minutes ajoutées pour {technician} sur « {job} »",
     "timeEntry_update": "Entrée de temps de {technician} sur « {job} » corrigée à {minutes} minutes",
     "timeEntry_stop": "Pointage de {technician} sur « {job} » arrêté à {minutes} minutes",
-    "timeEntry_delete": "Entrée de temps {id} supprimée"
+    "timeEntry_delete": "Entrée de temps {id} supprimée",
+    "inspection_phoneUpload": "Fichier ajouté depuis un téléphone à l'inspection {ref}"
   }
 }

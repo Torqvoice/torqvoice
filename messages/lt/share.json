@@ -157,14 +157,16 @@
       "attention": "Nedidelis trūkumas",
       "fail": "Didelis trūkumas",
       "dangerous": "Pavojingas trūkumas",
-      "not_inspected": "Netikrinta"
+      "not_inspected": "Netikrinta",
+      "not_applicable": "Netaikoma"
     },
     "basic": {
       "pass": "Tinkama",
       "attention": "Dėmesio",
       "fail": "Netinkama",
       "dangerous": "Pavojinga",
-      "not_inspected": "Netikrinta"
+      "not_inspected": "Netikrinta",
+      "not_applicable": "Netaikoma"
     },
     "result": {
       "pass": "Teigiamas",
@@ -197,7 +199,8 @@
     "viewPhoto": "Žiūrėti nuotrauką",
     "deficienciesFound": "Nustatyti trūkumai ({count})",
     "allResults": "Visi rezultatai",
-    "privacyNotice": "Šią ataskaitą jums pateikia dirbtuvės, atlikusios apžiūrą. Ją gali peržiūrėti kiekvienas, turintis šią nuorodą, todėl neperduokite jos kitiems. Kreipkitės į dirbtuves, jei norite, kad nuoroda būtų panaikinta arba jūsų duomenys ištrinti."
+    "privacyNotice": "Šią ataskaitą jums pateikia dirbtuvės, atlikusios apžiūrą. Ją gali peržiūrėti kiekvienas, turintis šią nuorodą, todėl neperduokite jos kitiems. Kreipkitės į dirbtuves, jei norite, kad nuoroda būtų panaikinta arba jūsų duomenys ištrinti.",
+    "inspectionPhotos": "Nuotraukos ir dokumentai"
   },
   "terms": {
     "title": "Pardavimo sąlygos",

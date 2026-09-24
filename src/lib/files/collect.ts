@@ -36,14 +36,31 @@ export async function serviceRecordFileUrls(organizationId: string, serviceRecor
   return [...attachments.map((a) => a.fileUrl), ...reports.map((r) => r.videoUrl)] as Urls
 }
 
-/** An inspection: the photos on its items. */
+/**
+ * An inspection: the photos on its items, the files on the inspection itself,
+ * and the videos of the status reports sent from it.
+ */
 export async function inspectionFileUrls(organizationId: string, inspectionIds: string[]) {
   if (inspectionIds.length === 0) return []
-  const items = await db.inspectionItem.findMany({
-    where: { inspectionId: { in: inspectionIds }, inspection: { organizationId } },
-    select: { imageUrls: true },
-  })
-  return items.flatMap((item) => item.imageUrls) as Urls
+  const [items, attachments, reports] = await Promise.all([
+    db.inspectionItem.findMany({
+      where: { inspectionId: { in: inspectionIds }, inspection: { organizationId } },
+      select: { imageUrls: true },
+    }),
+    db.inspectionAttachment.findMany({
+      where: { inspectionId: { in: inspectionIds }, inspection: { organizationId } },
+      select: { fileUrl: true },
+    }),
+    db.statusReport.findMany({
+      where: { inspectionId: { in: inspectionIds }, organizationId },
+      select: { videoUrl: true },
+    }),
+  ])
+  return [
+    ...items.flatMap((item) => item.imageUrls),
+    ...attachments.map((a) => a.fileUrl),
+    ...reports.map((r) => r.videoUrl),
+  ] as Urls
 }
 
 /**

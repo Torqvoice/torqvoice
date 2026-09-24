@@ -5,28 +5,32 @@
       "attention": "Minor defect",
       "fail": "Major defect",
       "dangerous": "Dangerous defect",
-      "not_inspected": "Not inspected"
+      "not_inspected": "Not inspected",
+      "not_applicable": "Not applicable"
     },
     "basic": {
       "pass": "Pass",
       "attention": "Attention",
       "fail": "Fail",
       "dangerous": "Dangerous",
-      "not_inspected": "Not inspected"
+      "not_inspected": "Not inspected",
+      "not_applicable": "Not applicable"
     },
     "short": {
       "pass": "OK",
       "attention": "Minor",
       "fail": "Major",
       "dangerous": "Danger",
-      "not_inspected": "N/A"
+      "not_inspected": "N/A",
+      "not_applicable": "N/A"
     },
     "hint": {
       "pass": "Meets requirements. Nothing to report.",
       "attention": "No significant effect on safety. Vehicle passes; repair when convenient.",
       "fail": "May prejudice safety or affect the environment. Vehicle fails; repair and retest.",
       "dangerous": "Direct and immediate risk to road safety. The vehicle must not be driven.",
-      "not_inspected": "This check has not been carried out."
+      "not_inspected": "This check has not been carried out.",
+      "not_applicable": "The vehicle has no such part, so there was nothing to test."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "View work order",
     "createQuote": "Create quote",
     "viewQuote": "View quote",
-    "needsDefect": "Available once a defect has been recorded",
     "workOrderRaised": "Work order {number} raised from this inspection on {date}",
     "open": "Open",
     "quoteCreated": "Quote created by {name} on {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Failed to reopen inspection",
     "deleteFailed": "Failed to delete inspection",
     "quoteFailed": "Failed to create quote",
-    "workOrderFailed": "Failed to create work order"
+    "workOrderFailed": "Failed to create work order",
+    "workOrderDefectsTitle": "{count, plural, one {Add the item that needs attention?} other {Add the # items that need attention?}}",
+    "workOrderDefectsBody": "Each one becomes a line on the work order, with the technician's note, after the line for the inspection.",
+    "workOrderDefectsMore": "{count, plural, one {and # more} other {and # more}}",
+    "workOrderInspectionOnly": "Inspection only",
+    "workOrderAddDefects": "{count, plural, one {Add # item} other {Add # items}}",
+    "raisedFromInspection": "Raised from the inspection carried out on {date}.",
+    "quoteTitle": "{vehicle} - Inspection quote",
+    "preview": "Preview certificate",
+    "nextStep": "Next step",
+    "nextStepWorkOrderHint": "Put the repairs, or just the inspection, on a job for the board.",
+    "nextStepQuoteHint": "Price the defects for the customer to approve first.",
+    "linkWorkOrderTitle": "Work order for this inspection",
+    "linkWorkOrderBody": "Create a new job, or link the inspection to one already booked for this car.",
+    "createNewWorkOrder": "Create new",
+    "createNewWorkOrderHint": "A new job for this car, numbered and put on the board.",
+    "linkExistingWorkOrder": "Link to existing",
+    "loadingWorkOrders": "Looking for open jobs…",
+    "noOpenWorkOrders": "No open jobs for this vehicle.",
+    "workOrderLinked": "Linked to work order {number}",
+    "next": "Next",
+    "previousStep": "Back",
+    "linkWorkOrder": "Link to work order"
   },
   "item": {
     "required": "(required)",
@@ -134,7 +159,9 @@
     "cancel": "Cancel",
     "saveFailed": "Could not save this check",
     "uploadFailed": "Upload failed",
-    "uploadFailedFor": "Could not upload {name}"
+    "uploadFailedFor": "Could not upload {name}",
+    "reopenToChange": "Reopen the inspection to add photos",
+    "tapToClear": "Tap again to clear the grade"
   },
   "suggestions": {
     "title": "Common defects",
@@ -331,7 +358,8 @@
     "severityAttention": "Minor defect",
     "severityFail": "Major defect",
     "severityDangerous": "Dangerous defect",
-    "answersPlaceholder": "Full, Partial, None"
+    "answersPlaceholder": "Full, Partial, None",
+    "allowNotApplicable": "May be graded \"not applicable\""
   },
   "packages": {
     "exportTitle": "Export \"{name}\"",
@@ -393,5 +421,39 @@
     "copied": "Link copied to clipboard",
     "generated": "Share link generated",
     "revoked": "Share link revoked"
+  },
+  "phone": {
+    "pageTitle": "Inspection photos",
+    "wholeTitle": "The whole inspection",
+    "wholeBody": "Overview photos, and documents such as the signed inspection form.",
+    "wholeShort": "Inspection",
+    "checksTitle": "Photos on a check",
+    "checksBody": "Tap a check to photograph it. The photo appears next to its grade.",
+    "checksClosed": "This inspection is completed, so its checks take no more photos. You can still add to the whole inspection.",
+    "search": "Find a check",
+    "noMatch": "No check matches that.",
+    "defectsTitle": "{count, plural, one {Needs attention (#)} other {Need attention (#)}}",
+    "photoNeeded": "Photo needed",
+    "photoCount": "{count, plural, one {# photo} other {# photos}}",
+    "chooseFor": "Choose photos for {name}",
+    "completedError": "This inspection was completed. Ask at the desk to reopen it.",
+    "limitError": "This check or inspection already holds as many photos as it can.",
+    "invalid": "Scan the code on the inspection again.",
+    "dialogTitle": "Add photos from a phone",
+    "dialogBody": "Photograph each check where it is, or add overview photos and documents to the whole inspection. Everything lands straight on this inspection.",
+    "step2": "Pick a check on the phone and take the photo, or add to the whole inspection.",
+    "step3": "They appear on this inspection as they arrive.",
+    "scope": "The link only adds photos and documents to this inspection, and stops working after 30 minutes.",
+    "dialogTitleItem": "Add photos of {name} from a phone",
+    "dialogBodyItem": "Photograph this check where it is. The photo lands next to its grade; the phone can add to the other checks too.",
+    "stepItem2": "Take the photo on the phone; it goes on this check.",
+    "focusTitle": "The check this code was shown for"
+  },
+  "files": {
+    "title": "Photos and documents",
+    "hint": "For the inspection as a whole. A photo of one check belongs on that check.",
+    "photos": "Photos",
+    "documents": "Documents",
+    "video": "Video"
   }
 }

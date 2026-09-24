@@ -43,6 +43,12 @@ export default async function PublicInspectionPage({
       },
       template: { select: { name: true, severityScale: true, country: true } },
       items: { orderBy: { sortOrder: 'asc' } },
+      // Only what the workshop chose to show the customer.
+      attachments: {
+        where: { includeInReport: true },
+        orderBy: { createdAt: 'asc' },
+        select: { id: true, fileName: true, fileUrl: true, fileType: true, description: true },
+      },
       quotes: {
         where: { publicToken: { not: null } },
         select: { publicToken: true },
@@ -112,16 +118,23 @@ export default async function PublicInspectionPage({
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
-  // Rewrite image URLs on inspection items for public access
+  // Uploads are addressed through the signed-in file route, in either of the
+  // forms it has had; the customer has no session, so each is rewritten to
+  // the route this link's token opens. Before this only the older form was,
+  // and every photo uploaded since showed the customer a broken image.
+  const toPublic = (url: string) => {
+    const match = url.match(/^\/api\/(?:protected\/)?files\/[^/]+\/(.+)$/)
+    return match ? `/api/public/files/${token}/${match[1]}` : url
+  }
   const publicInspection = {
     ...inspection,
     items: inspection.items.map((item) => ({
       ...item,
-      imageUrls: item.imageUrls.map((url) => {
-        const match = url.match(/^\/api\/files\/[^/]+\/(.+)$/)
-        if (match) return `/api/public/files/${token}/${match[1]}`
-        return url
-      }),
+      imageUrls: item.imageUrls.map(toPublic),
+    })),
+    attachments: inspection.attachments.map((file) => ({
+      ...file,
+      fileUrl: toPublic(file.fileUrl),
     })),
   }
 

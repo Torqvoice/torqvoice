@@ -5,28 +5,32 @@
       "attention": "Deficiência leve",
       "fail": "Deficiência grave",
       "dangerous": "Deficiência perigosa",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "basic": {
       "pass": "Aprovado",
       "attention": "Atenção",
       "fail": "Reprovado",
       "dangerous": "Perigoso",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "short": {
       "pass": "OK",
       "attention": "Leve",
       "fail": "Grave",
       "dangerous": "Perigosa",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "N/A"
     },
     "hint": {
       "pass": "Atende aos requisitos. Nada a relatar.",
       "attention": "Sem efeito relevante sobre a segurança. O veículo é aprovado; reparar quando der.",
       "fail": "Pode prejudicar a segurança ou afetar o meio ambiente. O veículo é reprovado; reparar e reinspecionar.",
       "dangerous": "Risco direto e imediato à segurança viária. O veículo não deve ser conduzido.",
-      "not_inspected": "Este item não foi executado."
+      "not_inspected": "Este item não foi executado.",
+      "not_applicable": "O veículo não tem essa peça, então não havia o que testar."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Ver ordem de serviço",
     "createQuote": "Criar orçamento",
     "viewQuote": "Ver orçamento",
-    "needsDefect": "Disponível assim que uma deficiência for registrada",
     "workOrderRaised": "Ordem de serviço {number} criada a partir desta inspeção em {date}",
     "open": "Abrir",
     "quoteCreated": "Orçamento criado por {name} em {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Não foi possível reabrir a inspeção",
     "deleteFailed": "Não foi possível excluir a inspeção",
     "quoteFailed": "Não foi possível criar o orçamento",
-    "workOrderFailed": "Não foi possível criar a ordem de serviço"
+    "workOrderFailed": "Não foi possível criar a ordem de serviço",
+    "workOrderDefectsTitle": "{count, plural, one {Adicionar o item que precisa de atenção?} other {Adicionar os # itens que precisam de atenção?}}",
+    "workOrderDefectsBody": "Cada um vira uma linha na ordem de serviço, com a nota do técnico, depois da linha da inspeção.",
+    "workOrderDefectsMore": "e mais {count}",
+    "workOrderInspectionOnly": "Só a inspeção",
+    "workOrderAddDefects": "{count, plural, one {Adicionar # item} other {Adicionar # itens}}",
+    "raisedFromInspection": "Criado a partir da inspeção realizada em {date}.",
+    "quoteTitle": "{vehicle} - Orçamento da inspeção",
+    "preview": "Pré-visualizar certificado",
+    "nextStep": "Próximo passo",
+    "nextStepWorkOrderHint": "Coloque os reparos, ou só a inspeção, em uma ordem para o quadro.",
+    "nextStepQuoteHint": "Orce os defeitos para o cliente aprovar primeiro.",
+    "linkWorkOrderTitle": "Ordem de serviço para esta inspeção",
+    "linkWorkOrderBody": "Crie uma nova ordem ou vincule a inspeção a uma já agendada para este veículo.",
+    "createNewWorkOrder": "Criar nova",
+    "createNewWorkOrderHint": "Uma nova ordem para este veículo, numerada e no quadro.",
+    "linkExistingWorkOrder": "Vincular a existente",
+    "loadingWorkOrders": "Procurando ordens abertas…",
+    "noOpenWorkOrders": "Nenhuma ordem aberta para este veículo.",
+    "workOrderLinked": "Vinculada à ordem {number}",
+    "next": "Avançar",
+    "previousStep": "Voltar",
+    "linkWorkOrder": "Vincular à ordem"
   },
   "item": {
     "required": "(obrigatório)",
@@ -134,7 +159,9 @@
     "cancel": "Cancelar",
     "saveFailed": "Não foi possível salvar este item",
     "uploadFailed": "Falha no envio",
-    "uploadFailedFor": "Não foi possível enviar {name}"
+    "uploadFailedFor": "Não foi possível enviar {name}",
+    "reopenToChange": "Reabra a inspeção para adicionar fotos",
+    "tapToClear": "Toque de novo para limpar a avaliação"
   },
   "suggestions": {
     "title": "Deficiências comuns",
@@ -331,7 +358,8 @@
     "severityAttention": "Deficiência leve",
     "severityFail": "Deficiência grave",
     "severityDangerous": "Deficiência perigosa",
-    "answersPlaceholder": "Completo, Parcial, Nenhum"
+    "answersPlaceholder": "Completo, Parcial, Nenhum",
+    "allowNotApplicable": "Pode ser avaliado como \"não aplicável\""
   },
   "packages": {
     "exportTitle": "Exportar “{name}”",
@@ -393,5 +421,39 @@
     "copied": "Link copiado para a área de transferência",
     "generated": "Link de compartilhamento criado",
     "revoked": "Link de compartilhamento revogado"
+  },
+  "phone": {
+    "pageTitle": "Fotos da inspeção",
+    "wholeTitle": "A inspeção inteira",
+    "wholeBody": "Fotos gerais e documentos como o formulário de inspeção assinado.",
+    "wholeShort": "Inspeção",
+    "checksTitle": "Fotos de um item",
+    "checksBody": "Toque em um item para fotografá-lo. A foto aparece ao lado da avaliação.",
+    "checksClosed": "Esta inspeção foi concluída, então seus itens não aceitam mais fotos. Você ainda pode adicionar à inspeção inteira.",
+    "search": "Encontrar um item",
+    "noMatch": "Nenhum item corresponde.",
+    "defectsTitle": "Precisam de atenção ({count})",
+    "photoNeeded": "Falta foto",
+    "photoCount": "{count, plural, one {# foto} other {# fotos}}",
+    "chooseFor": "Escolher fotos para {name}",
+    "completedError": "Esta inspeção foi concluída. Peça à oficina para reabri-la.",
+    "limitError": "Este item ou esta inspeção já tem o máximo de fotos possível.",
+    "invalid": "Escaneie o código da inspeção novamente.",
+    "dialogTitle": "Adicionar fotos pelo celular",
+    "dialogBody": "Fotografe cada item no lugar, ou adicione fotos gerais e documentos à inspeção inteira. Tudo chega direto nesta inspeção.",
+    "step2": "Escolha um item no celular e tire a foto, ou adicione à inspeção inteira.",
+    "step3": "Elas aparecem nesta inspeção conforme chegam.",
+    "scope": "O link só adiciona fotos e documentos a esta inspeção e para de funcionar após 30 minutos.",
+    "dialogTitleItem": "Adicionar fotos de {name} pelo celular",
+    "dialogBodyItem": "Fotografe este item onde ele está. A foto fica ao lado da avaliação; o celular também pode adicionar aos outros itens.",
+    "stepItem2": "Tire a foto no celular; ela vai para este item.",
+    "focusTitle": "O item para o qual este código foi mostrado"
+  },
+  "files": {
+    "title": "Fotos e documentos",
+    "hint": "Para a inspeção como um todo. A foto de um único item fica nesse item.",
+    "photos": "Fotos",
+    "documents": "Documentos",
+    "video": "Vídeo"
   }
 }

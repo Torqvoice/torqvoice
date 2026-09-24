@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Obrigado pelo seu comentário!",
     "feedbackError": "Não foi possível enviar o comentário",
     "submitting": "A enviar...",
-    "poweredBy": "Desenvolvido por"
+    "poweredBy": "Desenvolvido por",
+    "vehicleLabel": "Veículo",
+    "plate": "Matrícula: {plate}",
+    "inspectionTitle": "Inspeção",
+    "messageFromTechnician": "Mensagem do técnico",
+    "videoUnsupported": "O seu browser não suporta o elemento de vídeo."
   },
   "list": {
     "title": "Relatórios de estado",

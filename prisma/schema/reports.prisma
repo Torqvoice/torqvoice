@@ -15,8 +15,13 @@ model StatusReport {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  serviceRecordId String
-  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+  /// A report belongs to a work order or to an inspection, never both and
+  /// never neither: what the customer is being shown a video of.
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -25,6 +30,7 @@ model StatusReport {
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
 
   @@index([serviceRecordId])
+  @@index([inspectionId])
   @@index([organizationId])
   @@index([publicToken])
   @@index([expiresAt])

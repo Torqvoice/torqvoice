@@ -179,7 +179,9 @@
     "timeEntry_delete": "Slettet tidsoppføring",
     "settings_workOrderStatus_create": "La til status for arbeidsordre",
     "settings_workOrderStatus_update": "Endret status for arbeidsordre",
-    "settings_workOrderStatus_archive": "Fjernet status for arbeidsordre"
+    "settings_workOrderStatus_archive": "Fjernet status for arbeidsordre",
+    "inspection_photo_added": "La til kontrollbilde",
+    "inspection_file_added": "La til kontrollfil"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -325,6 +327,7 @@
     "timeEntry_create": "La til {minutes} minutter for {technician} på «{job}»",
     "timeEntry_update": "Korrigerte tidsoppføringen til {technician} på «{job}» til {minutes} minutter",
     "timeEntry_stop": "Stoppet klokken til {technician} på «{job}» ved {minutes} minutter",
-    "timeEntry_delete": "Slettet tidsoppføring {id}"
+    "timeEntry_delete": "Slettet tidsoppføring {id}",
+    "inspection_phoneUpload": "La til en fil fra telefon på kontroll {ref}"
   }
 }

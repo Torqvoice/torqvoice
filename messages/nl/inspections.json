@@ -5,28 +5,32 @@
       "attention": "Klein gebrek",
       "fail": "Groot gebrek",
       "dangerous": "Gevaarlijk gebrek",
-      "not_inspected": "Niet gekeurd"
+      "not_inspected": "Niet gekeurd",
+      "not_applicable": "Niet van toepassing"
     },
     "basic": {
       "pass": "Goedgekeurd",
       "attention": "Aandacht",
       "fail": "Afgekeurd",
       "dangerous": "Gevaarlijk",
-      "not_inspected": "Niet gekeurd"
+      "not_inspected": "Niet gekeurd",
+      "not_applicable": "Niet van toepassing"
     },
     "short": {
       "pass": "OK",
       "attention": "Klein",
       "fail": "Groot",
       "dangerous": "Gevaarlijk",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "N.v.t."
     },
     "hint": {
       "pass": "Voldoet aan de eisen. Niets te melden.",
       "attention": "Geen wezenlijk effect op de veiligheid. Voertuig is goedgekeurd; herstel wanneer het uitkomt.",
       "fail": "Kan de veiligheid schaden of het milieu belasten. Voertuig is afgekeurd; herstellen en opnieuw laten keuren.",
       "dangerous": "Direct en onmiddellijk gevaar voor de verkeersveiligheid. Het voertuig mag niet rijden.",
-      "not_inspected": "Dit punt is niet uitgevoerd."
+      "not_inspected": "Dit punt is niet uitgevoerd.",
+      "not_applicable": "Het voertuig heeft dit onderdeel niet, dus er was niets te controleren."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Werkorder bekijken",
     "createQuote": "Offerte aanmaken",
     "viewQuote": "Offerte bekijken",
-    "needsDefect": "Beschikbaar zodra een gebrek is vastgelegd",
     "workOrderRaised": "Werkorder {number} op {date} vanuit deze inspectie aangemaakt",
     "open": "Openen",
     "quoteCreated": "Offerte aangemaakt door {name} op {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Inspectie kon niet worden heropend",
     "deleteFailed": "Inspectie kon niet worden verwijderd",
     "quoteFailed": "Offerte kon niet worden aangemaakt",
-    "workOrderFailed": "Werkorder kon niet worden aangemaakt"
+    "workOrderFailed": "Werkorder kon niet worden aangemaakt",
+    "workOrderDefectsTitle": "{count, plural, one {Het punt dat aandacht nodig heeft toevoegen?} other {De # punten die aandacht nodig hebben toevoegen?}}",
+    "workOrderDefectsBody": "Elk punt wordt een regel op de werkorder, met de notitie van de monteur, na de regel voor de keuring.",
+    "workOrderDefectsMore": "en nog {count}",
+    "workOrderInspectionOnly": "Alleen de keuring",
+    "workOrderAddDefects": "{count, plural, one {# punt toevoegen} other {# punten toevoegen}}",
+    "raisedFromInspection": "Aangemaakt op basis van de inspectie van {date}.",
+    "quoteTitle": "{vehicle} - Offerte na inspectie",
+    "preview": "Certificaat bekijken",
+    "nextStep": "Volgende stap",
+    "nextStepWorkOrderHint": "Zet de reparaties, of alleen de inspectie, op een werkorder voor het bord.",
+    "nextStepQuoteHint": "Prijs eerst de gebreken voor goedkeuring door de klant.",
+    "linkWorkOrderTitle": "Werkorder voor deze inspectie",
+    "linkWorkOrderBody": "Maak een nieuwe werkorder, of koppel de inspectie aan een die al voor dit voertuig is geboekt.",
+    "createNewWorkOrder": "Nieuwe maken",
+    "createNewWorkOrderHint": "Een nieuwe werkorder voor dit voertuig, genummerd en op het bord.",
+    "linkExistingWorkOrder": "Koppelen aan bestaande",
+    "loadingWorkOrders": "Open werkorders zoeken…",
+    "noOpenWorkOrders": "Geen open werkorders voor dit voertuig.",
+    "workOrderLinked": "Gekoppeld aan werkorder {number}",
+    "next": "Volgende",
+    "previousStep": "Terug",
+    "linkWorkOrder": "Koppelen aan werkorder"
   },
   "item": {
     "required": "(verplicht)",
@@ -134,7 +159,9 @@
     "cancel": "Annuleren",
     "saveFailed": "Dit punt kon niet worden opgeslagen",
     "uploadFailed": "Uploaden mislukt",
-    "uploadFailedFor": "{name} kon niet worden geüpload"
+    "uploadFailedFor": "{name} kon niet worden geüpload",
+    "reopenToChange": "Heropen de inspectie om foto's toe te voegen",
+    "tapToClear": "Tik nogmaals om de beoordeling te wissen"
   },
   "suggestions": {
     "title": "Veelvoorkomende gebreken",
@@ -331,7 +358,8 @@
     "severityAttention": "Klein gebrek",
     "severityFail": "Groot gebrek",
     "severityDangerous": "Gevaarlijk gebrek",
-    "answersPlaceholder": "Volledig, Gedeeltelijk, Geen"
+    "answersPlaceholder": "Volledig, Gedeeltelijk, Geen",
+    "allowNotApplicable": "Mag als \"niet van toepassing\" worden beoordeeld"
   },
   "packages": {
     "exportTitle": "“{name}” exporteren",
@@ -393,5 +421,39 @@
     "copied": "Link gekopieerd naar klembord",
     "generated": "Deellink aangemaakt",
     "revoked": "Deellink ingetrokken"
+  },
+  "phone": {
+    "pageTitle": "Foto's bij de keuring",
+    "wholeTitle": "De hele keuring",
+    "wholeBody": "Overzichtsfoto's en documenten zoals het ondertekende keuringsformulier.",
+    "wholeShort": "Keuring",
+    "checksTitle": "Foto's bij een controlepunt",
+    "checksBody": "Tik op een controlepunt om het te fotograferen. De foto verschijnt naast de beoordeling.",
+    "checksClosed": "Deze keuring is afgerond, dus de controlepunten nemen geen foto's meer aan. Aan de hele keuring kun je nog iets toevoegen.",
+    "search": "Zoek een controlepunt",
+    "noMatch": "Geen controlepunt komt overeen.",
+    "defectsTitle": "Aandacht nodig ({count})",
+    "photoNeeded": "Foto nodig",
+    "photoCount": "{count, plural, one {# foto} other {# foto's}}",
+    "chooseFor": "Kies foto's voor {name}",
+    "completedError": "Deze keuring is afgerond. Vraag de werkplaats om hem te heropenen.",
+    "limitError": "Dit controlepunt of deze keuring heeft al zoveel foto's als mogelijk.",
+    "invalid": "Scan de code op de keuring opnieuw.",
+    "dialogTitle": "Foto's toevoegen vanaf een telefoon",
+    "dialogBody": "Fotografeer elk controlepunt ter plekke, of voeg overzichtsfoto's en documenten toe aan de hele keuring. Alles komt direct op deze keuring terecht.",
+    "step2": "Kies een controlepunt op de telefoon en maak de foto, of voeg hem toe aan de hele keuring.",
+    "step3": "Ze verschijnen op deze keuring zodra ze binnenkomen.",
+    "scope": "De link voegt alleen foto's en documenten toe aan deze keuring en werkt na 30 minuten niet meer.",
+    "dialogTitleItem": "Foto's van {name} toevoegen vanaf een telefoon",
+    "dialogBodyItem": "Fotografeer deze controle ter plekke. De foto komt naast de beoordeling; de telefoon kan ook aan andere controles toevoegen.",
+    "stepItem2": "Maak de foto met de telefoon; die komt bij deze controle.",
+    "focusTitle": "De controle waarvoor deze code is getoond"
+  },
+  "files": {
+    "title": "Foto's en documenten",
+    "hint": "Voor de keuring als geheel. Een foto van één controlepunt hoort bij dat punt.",
+    "photos": "Foto's",
+    "documents": "Documenten",
+    "video": "Video"
   }
 }

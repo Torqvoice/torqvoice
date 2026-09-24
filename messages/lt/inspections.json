@@ -5,28 +5,32 @@
       "attention": "Nedidelis trūkumas",
       "fail": "Didelis trūkumas",
       "dangerous": "Pavojingas trūkumas",
-      "not_inspected": "Netikrinta"
+      "not_inspected": "Netikrinta",
+      "not_applicable": "Netaikoma"
     },
     "basic": {
       "pass": "Tinkama",
       "attention": "Dėmesio",
       "fail": "Netinkama",
       "dangerous": "Pavojinga",
-      "not_inspected": "Netikrinta"
+      "not_inspected": "Netikrinta",
+      "not_applicable": "Netaikoma"
     },
     "short": {
       "pass": "OK",
       "attention": "Nedidelis",
       "fail": "Didelis",
       "dangerous": "Pavojingas",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "Netaik."
     },
     "hint": {
       "pass": "Atitinka reikalavimus. Pastabų nėra.",
       "attention": "Reikšmingos įtakos saugai neturi. Transporto priemonė tinkama; pašalinkite progai pasitaikius.",
       "fail": "Gali pakenkti saugai arba aplinkai. Netinkama; pašalinkite ir atlikite pakartotinę apžiūrą.",
       "dangerous": "Tiesioginis ir neatidėliotinas pavojus eismo saugumui. Transporto priemone važiuoti negalima.",
-      "not_inspected": "Šis punktas nebuvo atliktas."
+      "not_inspected": "Šis punktas nebuvo atliktas.",
+      "not_applicable": "Automobilis tokios dalies neturi, todėl nebuvo ko tikrinti."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Žiūrėti darbo užsakymą",
     "createQuote": "Sukurti pasiūlymą",
     "viewQuote": "Žiūrėti pasiūlymą",
-    "needsDefect": "Galima, kai užfiksuojamas trūkumas",
     "workOrderRaised": "Darbo užsakymas {number} sukurtas iš šios apžiūros {date}",
     "open": "Atverti",
     "quoteCreated": "Pasiūlymą sukūrė {name} {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Nepavyko atverti apžiūros iš naujo",
     "deleteFailed": "Nepavyko pašalinti apžiūros",
     "quoteFailed": "Nepavyko sukurti pasiūlymo",
-    "workOrderFailed": "Nepavyko sukurti darbo užsakymo"
+    "workOrderFailed": "Nepavyko sukurti darbo užsakymo",
+    "workOrderDefectsTitle": "{count, plural, one {Pridėti # punktą, kuriam reikia dėmesio?} few {Pridėti # punktus, kuriems reikia dėmesio?} many {Pridėti # punkto, kuriems reikia dėmesio?} other {Pridėti # punktų, kuriems reikia dėmesio?}}",
+    "workOrderDefectsBody": "Kiekvienas taps užsakymo eilute su meistro pastaba, po apžiūros eilutės.",
+    "workOrderDefectsMore": "ir dar {count}",
+    "workOrderInspectionOnly": "Tik apžiūra",
+    "workOrderAddDefects": "{count, plural, one {Pridėti # punktą} few {Pridėti # punktus} many {Pridėti # punkto} other {Pridėti # punktų}}",
+    "raisedFromInspection": "Sukurta pagal {date} atliktą apžiūrą.",
+    "quoteTitle": "{vehicle} - Apžiūros pasiūlymas",
+    "preview": "Sertifikato peržiūra",
+    "nextStep": "Kitas žingsnis",
+    "nextStepWorkOrderHint": "Perkelkite remontą arba tik apžiūrą į užsakymą lentoje.",
+    "nextStepQuoteHint": "Pirmiausia įkainokite defektus kliento patvirtinimui.",
+    "linkWorkOrderTitle": "Šios apžiūros užsakymas",
+    "linkWorkOrderBody": "Sukurkite naują užsakymą arba susiekite apžiūrą su jau užregistruotu šio automobilio užsakymu.",
+    "createNewWorkOrder": "Sukurti naują",
+    "createNewWorkOrderHint": "Naujas šio automobilio užsakymas, sunumeruotas ir lentoje.",
+    "linkExistingWorkOrder": "Susieti su esamu",
+    "loadingWorkOrders": "Ieškoma atvirų užsakymų…",
+    "noOpenWorkOrders": "Šiam automobiliui atvirų užsakymų nėra.",
+    "workOrderLinked": "Susieta su užsakymu {number}",
+    "next": "Toliau",
+    "previousStep": "Atgal",
+    "linkWorkOrder": "Susieti su užsakymu"
   },
   "item": {
     "required": "(privaloma)",
@@ -134,7 +159,9 @@
     "cancel": "Atšaukti",
     "saveFailed": "Nepavyko įrašyti šio punkto",
     "uploadFailed": "Nepavyko įkelti",
-    "uploadFailedFor": "Nepavyko įkelti {name}"
+    "uploadFailedFor": "Nepavyko įkelti {name}",
+    "reopenToChange": "Atidarykite apžiūrą iš naujo, kad pridėtumėte nuotraukų",
+    "tapToClear": "Bakstelėkite dar kartą, kad pašalintumėte įvertinimą"
   },
   "suggestions": {
     "title": "Dažni trūkumai",
@@ -331,7 +358,8 @@
     "severityAttention": "Nedidelis trūkumas",
     "severityFail": "Didelis trūkumas",
     "severityDangerous": "Pavojingas trūkumas",
-    "answersPlaceholder": "Pilna, Dalinė, Nėra"
+    "answersPlaceholder": "Pilna, Dalinė, Nėra",
+    "allowNotApplicable": "Galima įvertinti „netaikoma“"
   },
   "packages": {
     "exportTitle": "Eksportuoti „{name}“",
@@ -393,5 +421,39 @@
     "copied": "Nuoroda nukopijuota į iškarpinę",
     "generated": "Bendrinimo nuoroda sukurta",
     "revoked": "Bendrinimo nuoroda atšaukta"
+  },
+  "phone": {
+    "pageTitle": "Apžiūros nuotraukos",
+    "wholeTitle": "Visa apžiūra",
+    "wholeBody": "Bendros nuotraukos ir dokumentai, pavyzdžiui, pasirašyta apžiūros forma.",
+    "wholeShort": "Apžiūra",
+    "checksTitle": "Patikros punkto nuotraukos",
+    "checksBody": "Palieskite punktą, kad jį nufotografuotumėte. Nuotrauka atsiras šalia jo įvertinimo.",
+    "checksClosed": "Ši apžiūra baigta, todėl jos punktams nuotraukų pridėti nebegalima. Prie visos apžiūros vis dar galite pridėti.",
+    "search": "Rasti punktą",
+    "noMatch": "Nė vienas punktas neatitinka.",
+    "defectsTitle": "Reikia dėmesio ({count})",
+    "photoNeeded": "Reikia nuotraukos",
+    "photoCount": "{count, plural, one {# nuotrauka} few {# nuotraukos} many {# nuotraukos} other {# nuotraukų}}",
+    "chooseFor": "Pasirinkti nuotraukas: {name}",
+    "completedError": "Ši apžiūra baigta. Paprašykite dirbtuvių ją vėl atidaryti.",
+    "limitError": "Šis punktas ar apžiūra jau turi didžiausią leistiną nuotraukų skaičių.",
+    "invalid": "Dar kartą nuskaitykite apžiūros kodą.",
+    "dialogTitle": "Pridėti nuotraukas iš telefono",
+    "dialogBody": "Nufotografuokite kiekvieną punktą vietoje arba pridėkite bendras nuotraukas ir dokumentus prie visos apžiūros. Viskas iškart patenka į šią apžiūrą.",
+    "step2": "Telefone pasirinkite punktą ir nufotografuokite arba pridėkite prie visos apžiūros.",
+    "step3": "Jos atsiranda šioje apžiūroje, kai tik atkeliauja.",
+    "scope": "Nuoroda tik prideda nuotraukas ir dokumentus prie šios apžiūros ir po 30 minučių nustoja veikti.",
+    "dialogTitleItem": "Pridėti {name} nuotraukų iš telefono",
+    "dialogBodyItem": "Nufotografuokite šį patikrinimą vietoje. Nuotrauka atsiduria šalia įvertinimo; telefonu galima pridėti ir prie kitų patikrinimų.",
+    "stepItem2": "Nufotografuokite telefonu; nuotrauka pridedama prie šio patikrinimo.",
+    "focusTitle": "Patikrinimas, kuriam parodytas šis kodas"
+  },
+  "files": {
+    "title": "Nuotraukos ir dokumentai",
+    "hint": "Visai apžiūrai. Vieno punkto nuotrauka priklauso tam punktui.",
+    "photos": "Nuotraukos",
+    "documents": "Dokumentai",
+    "video": "Vaizdo įrašai"
   }
 }

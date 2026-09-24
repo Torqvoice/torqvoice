@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Geri bildiriminiz için teşekkürler!",
     "feedbackError": "Geri bildirim gönderilemedi",
     "submitting": "Gönderiliyor...",
-    "poweredBy": "Altyapı"
+    "poweredBy": "Altyapı",
+    "vehicleLabel": "Araç",
+    "plate": "Plaka: {plate}",
+    "inspectionTitle": "Muayene",
+    "messageFromTechnician": "Teknisyenden mesaj",
+    "videoUnsupported": "Tarayıcınız video öğesini desteklemiyor."
   },
   "list": {
     "title": "Durum Raporları",

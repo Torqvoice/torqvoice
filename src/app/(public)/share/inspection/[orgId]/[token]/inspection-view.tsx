@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import {
+  Ban,
   Check,
   CheckCircle2,
   Download,
@@ -75,6 +76,14 @@ interface InspectionRecord {
   }
   template: { name: string; severityScale?: string | null; country?: string | null }
   items: InspectionItem[]
+  /** Files on the inspection as a whole that the workshop chose to show. */
+  attachments?: {
+    id: string
+    fileName: string
+    fileUrl: string
+    fileType: string
+    description: string | null
+  }[]
 }
 
 const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: string }>> = {
@@ -82,6 +91,7 @@ const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: strin
   attention: TriangleAlert,
   fail: XCircle,
   dangerous: OctagonAlert,
+  not_applicable: Ban,
   not_inspected: Minus,
 }
 
@@ -165,6 +175,7 @@ export function InspectionView({
     }))
   }, [gradedItems])
 
+  const files = inspection.attachments ?? []
   const images = useMemo<LightboxImage[]>(() => {
     const list: LightboxImage[] = []
     for (const item of gradedItems) {
@@ -172,8 +183,13 @@ export function InspectionView({
         if (!isVideo(url)) list.push({ url, caption: item.name })
       }
     }
+    for (const file of files) {
+      if (file.fileType.startsWith('image/')) {
+        list.push({ url: file.fileUrl, caption: file.description || t('inspectionPhotos') })
+      }
+    }
     return list
-  }, [gradedItems])
+  }, [gradedItems, files, t])
 
   const counts = countConditions(gradedItems)
   const result = deriveTestResult(gradedItems)
@@ -572,6 +588,58 @@ export function InspectionView({
           </div>
         ))}
       </section>
+
+      {files.length > 0 && (
+        <section aria-labelledby="files-heading" className="mt-6 rounded-lg border p-4">
+          <h2 id="files-heading" className="mb-3 text-xs font-semibold uppercase text-gray-500">
+            {t('inspectionPhotos')}
+          </h2>
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {files.map((file) => (
+              <li key={file.id} className="min-w-0">
+                {file.fileType.startsWith('image/') ? (
+                  <button
+                    type="button"
+                    onClick={() => openImage(file.fileUrl)}
+                    className="block w-full overflow-hidden rounded-lg border focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    aria-label={`${t('viewPhoto')}: ${file.description || file.fileName}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={file.fileUrl}
+                      alt={file.description || file.fileName}
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </button>
+                ) : file.fileType.startsWith('video/') ? (
+                  // eslint-disable-next-line jsx-a11y/media-has-caption
+                  <video
+                    src={file.fileUrl}
+                    controls
+                    playsInline
+                    className="aspect-[4/3] w-full rounded-lg border bg-black"
+                  />
+                ) : (
+                  <a
+                    href={file.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 rounded-lg border px-2 text-center text-xs hover:bg-muted"
+                  >
+                    <FileText className="h-6 w-6 text-gray-500" aria-hidden="true" />
+                    <span className="line-clamp-2 break-all">{file.fileName}</span>
+                  </a>
+                )}
+                {file.description && (
+                  <p className="mt-1 truncate text-xs text-gray-600 dark:text-gray-300">
+                    {file.description}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {inspection.notes && (
         <section aria-labelledby="notes-heading" className="mt-6 rounded-lg border p-4">

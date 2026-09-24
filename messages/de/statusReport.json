@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Vielen Dank für Ihr Feedback!",
     "feedbackError": "Feedback konnte nicht gesendet werden",
     "submitting": "Wird gesendet...",
-    "poweredBy": "Bereitgestellt von"
+    "poweredBy": "Bereitgestellt von",
+    "vehicleLabel": "Fahrzeug",
+    "plate": "Kennzeichen: {plate}",
+    "inspectionTitle": "Inspektion",
+    "messageFromTechnician": "Nachricht vom Techniker",
+    "videoUnsupported": "Ihr Browser unterstützt das Videoelement nicht."
   },
   "list": {
     "title": "Statusberichte",

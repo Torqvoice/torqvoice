@@ -47,18 +47,33 @@ const RECORD_MODELS: Record<string, RecordKind> = {
  * Rows that belong to one of those records: the foreign key that says which,
  * and the hint a page can use to react more precisely than "something changed".
  */
-const CHILD_MODELS: Record<string, { parent: RecordKind; fk: string; hint: string }> = {
+const CHILD_MODELS: Record<
+  string,
+  {
+    parent: RecordKind
+    fk: string
+    hint: string
+    /** A second record the row can belong to instead, when the first key is empty. */
+    also?: { parent: RecordKind; fk: string }
+  }
+> = {
   ServiceLabor: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'labor' },
   ServicePart: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'parts' },
   ServiceAttachment: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'attachments' },
   ServiceConcern: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'concerns' },
-  StatusReport: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'statusReports' },
+  StatusReport: {
+    parent: 'serviceRecord',
+    fk: 'serviceRecordId',
+    hint: 'statusReports',
+    also: { parent: 'inspection', fk: 'inspectionId' },
+  },
   TimeEntry: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'clock' },
   Payment: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'payments' },
   QuotePart: { parent: 'quote', fk: 'quoteId', hint: 'parts' },
   QuoteLabor: { parent: 'quote', fk: 'quoteId', hint: 'labor' },
   QuoteAttachment: { parent: 'quote', fk: 'quoteId', hint: 'attachments' },
   InspectionItem: { parent: 'inspection', fk: 'inspectionId', hint: 'items' },
+  InspectionAttachment: { parent: 'inspection', fk: 'inspectionId', hint: 'attachments' },
   VehicleFinding: { parent: 'vehicle', fk: 'vehicleId', hint: 'findings' },
   TireSetAttachment: { parent: 'tireSet', fk: 'tireSetId', hint: 'attachments' },
   TireMeasurement: { parent: 'tireSet', fk: 'tireSetId', hint: 'measurements' },
@@ -234,24 +249,36 @@ async function announce(
   }
 
   if (!child) return
+  // A status report is a work order's or an inspection's: whichever key the
+  // write names is the record that is told.
+  const links = [child, ...(child.also ? [{ ...child.also, hint: child.hint }] : [])]
   if (action === 'bulk') {
-    const parents = bulkParentIds(child.fk, args)
-    for (const id of parents) {
-      const organizationId =
-        organizationFrom(args, result) ?? (await organizationOf(child.parent, id, hooks))
-      if (!organizationId) continue
-      remember(id, organizationId)
-      publishRecordChange({
-        by,
-        kind: child.parent,
-        id,
-        organizationId,
-        hint: child.hint,
-      })
+    for (const link of links) {
+      const parents = bulkParentIds(link.fk, args)
+      for (const id of parents) {
+        const organizationId =
+          organizationFrom(args, result) ?? (await organizationOf(link.parent, id, hooks))
+        if (!organizationId) continue
+        remember(id, organizationId)
+        publishRecordChange({
+          by,
+          kind: link.parent,
+          id,
+          organizationId,
+          hint: link.hint,
+        })
+      }
+      if (parents.length > 0) return
     }
-    if (parents.length > 0) return
   }
-  const parentId = action === 'bulk' ? null : parentIdFrom(child.fk, args, result)
+  const owner =
+    action === 'bulk'
+      ? null
+      : (links
+          .map((link) => ({ link, id: parentIdFrom(link.fk, args, result) }))
+          .find((entry) => entry.id !== null) ?? null)
+  const parentId = owner?.id ?? null
+  const parent = owner?.link.parent ?? child.parent
   if (!parentId) {
     // A bulk write over children names no parent: the workshop hears it if
     // the write said which one, and otherwise nothing is announced.
@@ -268,12 +295,12 @@ async function announce(
     return
   }
   const organizationId =
-    organizationFrom(args, result) ?? (await organizationOf(child.parent, parentId, hooks))
+    organizationFrom(args, result) ?? (await organizationOf(parent, parentId, hooks))
   if (!organizationId) return
   remember(parentId, organizationId)
   publishRecordChange({
     by,
-    kind: child.parent,
+    kind: parent,
     id: parentId,
     organizationId,
     hint: child.hint,

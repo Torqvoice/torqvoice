@@ -4,13 +4,15 @@ export const createInspectionSchema = z.object({
   vehicleId: z.string().min(1, 'Vehicle is required'),
   templateId: z.string().min(1, 'Template is required'),
   mileage: z.coerce.number().int().min(0).optional(),
+  /** The booked job this inspection is the work of, when started from one. */
+  serviceRecordId: z.string().min(1).optional(),
 })
 
 export const updateInspectionItemSchema = z.object({
   // "attention" is the EU minor category and "fail" the major one; see
   // Lib/conditions.ts for why the stored names differ from the EU wording.
   condition: z
-    .enum(['pass', 'fail', 'attention', 'dangerous', 'not_inspected'])
+    .enum(['pass', 'fail', 'attention', 'dangerous', 'not_applicable', 'not_inspected'])
     .default('not_inspected'),
   notes: z.string().optional(),
   imageUrls: z.array(z.string()).optional(),

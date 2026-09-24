@@ -66,7 +66,10 @@ interface StatusReportSummary {
 }
 
 interface StatusReportListProps {
-  serviceRecordId: string
+  /** The work order the reports are about, or... */
+  serviceRecordId?: string
+  /** ...the inspection. One of the two. */
+  inspectionId?: string
   organizationId: string
   vehicleName: string
   customer: {
@@ -91,6 +94,7 @@ const STATUS_VARIANT: Record<string, string> = {
 
 export function StatusReportList({
   serviceRecordId,
+  inspectionId,
   organizationId,
   vehicleName,
   customer,
@@ -430,7 +434,7 @@ export function StatusReportList({
           if (!open) setDetailReport(null)
         }}
       >
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
           {detailReport && (
             <>
               <DialogHeader>
@@ -528,6 +532,7 @@ export function StatusReportList({
         open={showCreate}
         onOpenChange={setShowCreate}
         serviceRecordId={serviceRecordId}
+        inspectionId={inspectionId}
         vehicleName={vehicleName}
         customer={customer}
         smsEnabled={smsEnabled}

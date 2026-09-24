@@ -5,28 +5,32 @@
       "attention": "Défaillance mineure",
       "fail": "Défaillance majeure",
       "dangerous": "Défaillance critique",
-      "not_inspected": "Non contrôlé"
+      "not_inspected": "Non contrôlé",
+      "not_applicable": "Sans objet"
     },
     "basic": {
       "pass": "Conforme",
       "attention": "Attention",
       "fail": "Non conforme",
       "dangerous": "Dangereux",
-      "not_inspected": "Non contrôlé"
+      "not_inspected": "Non contrôlé",
+      "not_applicable": "Sans objet"
     },
     "short": {
       "pass": "OK",
       "attention": "Mineure",
       "fail": "Majeure",
       "dangerous": "Critique",
-      "not_inspected": "–"
+      "not_inspected": "–",
+      "not_applicable": "S.O."
     },
     "hint": {
       "pass": "Conforme aux exigences. Rien à signaler.",
       "attention": "Sans effet notable sur la sécurité. Le véhicule est accepté ; à réparer à l'occasion.",
       "fail": "Peut compromettre la sécurité ou affecter l'environnement. Le véhicule est refusé ; à réparer et recontrôler.",
       "dangerous": "Danger direct et immédiat pour la sécurité routière. Le véhicule ne doit pas circuler.",
-      "not_inspected": "Ce point n'a pas été contrôlé."
+      "not_inspected": "Ce point n'a pas été contrôlé.",
+      "not_applicable": "Le véhicule n'a pas cet élément, il n'y avait rien à contrôler."
     }
   },
   "results": {
@@ -64,7 +68,6 @@
     "viewWorkOrder": "Voir l'ordre de réparation",
     "createQuote": "Créer un devis",
     "viewQuote": "Voir le devis",
-    "needsDefect": "Disponible dès qu'une défaillance est constatée",
     "workOrderRaised": "Ordre de réparation {number} créé depuis cette inspection le {date}",
     "open": "Ouvrir",
     "quoteCreated": "Devis créé par {name} le {date}",
@@ -106,7 +109,29 @@
     "reopenFailed": "Impossible de rouvrir l'inspection",
     "deleteFailed": "Impossible de supprimer l'inspection",
     "quoteFailed": "Impossible de créer le devis",
-    "workOrderFailed": "Impossible de créer l'ordre de réparation"
+    "workOrderFailed": "Impossible de créer l'ordre de réparation",
+    "workOrderDefectsTitle": "{count, plural, one {Ajouter le point à traiter ?} other {Ajouter les # points à traiter ?}}",
+    "workOrderDefectsBody": "Chacun devient une ligne de l'ordre de travail, avec la note du technicien, après la ligne de l'inspection.",
+    "workOrderDefectsMore": "et {count} de plus",
+    "workOrderInspectionOnly": "Inspection seule",
+    "workOrderAddDefects": "{count, plural, one {Ajouter # point} other {Ajouter # points}}",
+    "raisedFromInspection": "Créé à partir de l'inspection effectuée le {date}.",
+    "quoteTitle": "{vehicle} - Devis d'inspection",
+    "preview": "Aperçu du certificat",
+    "nextStep": "Étape suivante",
+    "nextStepWorkOrderHint": "Mettez les réparations, ou seulement l'inspection, sur un ordre pour le tableau.",
+    "nextStepQuoteHint": "Chiffrez d'abord les défauts pour l'accord du client.",
+    "linkWorkOrderTitle": "Ordre de travail pour cette inspection",
+    "linkWorkOrderBody": "Créez un nouvel ordre, ou liez l'inspection à un ordre déjà réservé pour ce véhicule.",
+    "createNewWorkOrder": "Créer un nouvel ordre",
+    "createNewWorkOrderHint": "Un nouvel ordre pour ce véhicule, numéroté et placé sur le tableau.",
+    "linkExistingWorkOrder": "Lier à un ordre existant",
+    "loadingWorkOrders": "Recherche des ordres ouverts…",
+    "noOpenWorkOrders": "Aucun ordre ouvert pour ce véhicule.",
+    "workOrderLinked": "Liée à l'ordre {number}",
+    "next": "Suivant",
+    "previousStep": "Retour",
+    "linkWorkOrder": "Lier à l'ordre de travail"
   },
   "item": {
     "required": "(obligatoire)",
@@ -134,7 +159,9 @@
     "cancel": "Annuler",
     "saveFailed": "Impossible d'enregistrer ce point",
     "uploadFailed": "Échec du téléversement",
-    "uploadFailedFor": "Impossible de téléverser {name}"
+    "uploadFailedFor": "Impossible de téléverser {name}",
+    "reopenToChange": "Rouvrez l'inspection pour ajouter des photos",
+    "tapToClear": "Appuyez à nouveau pour effacer la note"
   },
   "suggestions": {
     "title": "Défaillances courantes",
@@ -331,7 +358,8 @@
     "severityAttention": "Défaillance mineure",
     "severityFail": "Défaillance majeure",
     "severityDangerous": "Défaillance critique",
-    "answersPlaceholder": "Complet, Partiel, Aucun"
+    "answersPlaceholder": "Complet, Partiel, Aucun",
+    "allowNotApplicable": "Peut être noté « sans objet »"
   },
   "packages": {
     "exportTitle": "Exporter « {name} »",
@@ -393,5 +421,39 @@
     "copied": "Lien copié dans le presse-papiers",
     "generated": "Lien de partage créé",
     "revoked": "Lien de partage révoqué"
+  },
+  "phone": {
+    "pageTitle": "Photos de l'inspection",
+    "wholeTitle": "Toute l'inspection",
+    "wholeBody": "Photos d'ensemble, et documents comme le formulaire d'inspection signé.",
+    "wholeShort": "Inspection",
+    "checksTitle": "Photos d'un point de contrôle",
+    "checksBody": "Touchez un point pour le photographier. La photo s'affiche à côté de son évaluation.",
+    "checksClosed": "Cette inspection est terminée, ses points n'acceptent plus de photos. Vous pouvez toujours ajouter à l'inspection entière.",
+    "search": "Trouver un point",
+    "noMatch": "Aucun point ne correspond.",
+    "defectsTitle": "À traiter ({count})",
+    "photoNeeded": "Photo requise",
+    "photoCount": "{count, plural, one {# photo} other {# photos}}",
+    "chooseFor": "Choisir des photos pour {name}",
+    "completedError": "Cette inspection est terminée. Demandez à l'atelier de la rouvrir.",
+    "limitError": "Ce point ou cette inspection contient déjà autant de photos que possible.",
+    "invalid": "Scannez à nouveau le code de l'inspection.",
+    "dialogTitle": "Ajouter des photos depuis un téléphone",
+    "dialogBody": "Photographiez chaque point sur place, ou ajoutez des photos d'ensemble et des documents à toute l'inspection. Tout arrive directement sur cette inspection.",
+    "step2": "Choisissez un point sur le téléphone et prenez la photo, ou ajoutez-la à toute l'inspection.",
+    "step3": "Elles apparaissent sur cette inspection dès leur arrivée.",
+    "scope": "Le lien ajoute uniquement des photos et des documents à cette inspection et cesse de fonctionner après 30 minutes.",
+    "dialogTitleItem": "Ajouter des photos de {name} depuis un téléphone",
+    "dialogBodyItem": "Photographiez ce contrôle sur place. La photo se place à côté de sa note ; le téléphone peut aussi ajouter aux autres contrôles.",
+    "stepItem2": "Prenez la photo avec le téléphone ; elle est rattachée à ce contrôle.",
+    "focusTitle": "Le contrôle pour lequel ce code a été affiché"
+  },
+  "files": {
+    "title": "Photos et documents",
+    "hint": "Pour l'inspection dans son ensemble. La photo d'un seul point va sur ce point.",
+    "photos": "Photos",
+    "documents": "Documents",
+    "video": "Vidéo"
   }
 }

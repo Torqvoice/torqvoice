@@ -17,7 +17,14 @@
  * major one. Only `dangerous` is new. Templates that predate the EU scale keep
  * grading on the `basic` scale and never offer the dangerous step.
  */
-export const CONDITIONS = ['pass', 'attention', 'fail', 'dangerous', 'not_inspected'] as const
+export const CONDITIONS = [
+  'pass',
+  'attention',
+  'fail',
+  'dangerous',
+  'not_applicable',
+  'not_inspected',
+] as const
 
 export type Condition = (typeof CONDITIONS)[number]
 
@@ -31,7 +38,9 @@ export const SCALE_STEPS: Record<SeverityScale, Condition[]> = {
 
 /** Higher means worse. Used to roll section and inspection results up. */
 const SEVERITY_RANK: Record<Condition, number> = {
-  not_inspected: -1,
+  not_inspected: -2,
+  // Graded, but with nothing to say: the vehicle has no such part.
+  not_applicable: -1,
   pass: 0,
   attention: 1,
   fail: 2,
@@ -138,6 +147,18 @@ export const CONDITION_TOKENS: Record<Condition, ConditionToken> = {
     fg: 'text-red-900 dark:text-red-200',
     pdf: { bg: '#fecaca', text: '#450a0a' },
     bar: 'bg-red-900',
+  },
+  not_applicable: {
+    key: 'not_applicable',
+    label: 'Not applicable',
+    basicLabel: 'Not applicable',
+    short: 'N/A',
+    hint: 'The vehicle has no such part, so there was nothing to test.',
+    soft: 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700',
+    solid: 'bg-slate-600 text-white border-slate-600 dark:bg-slate-500 dark:border-slate-500',
+    fg: 'text-slate-600 dark:text-slate-300',
+    pdf: { bg: '#e2e8f0', text: '#334155' },
+    bar: 'bg-slate-400',
   },
   not_inspected: {
     key: 'not_inspected',
@@ -281,6 +302,8 @@ export interface ConditionCounts {
   attention: number
   fail: number
   dangerous: number
+  /** Graded as not applicable: counted as inspected, never as a defect. */
+  notApplicable: number
   notInspected: number
 }
 
@@ -292,10 +315,15 @@ export function countConditions(items: { condition: string }[]): ConditionCounts
     attention: 0,
     fail: 0,
     dangerous: 0,
+    notApplicable: 0,
     notInspected: 0,
   }
   for (const item of items) {
     switch (item.condition) {
+      case 'not_applicable':
+        counts.notApplicable++
+        counts.inspected++
+        break
       case 'pass':
         counts.pass++
         counts.inspected++
