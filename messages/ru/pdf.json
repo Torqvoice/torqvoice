@@ -209,5 +209,27 @@
     "signature": "Подпись",
     "signedBy": "Подписал(а)",
     "signatureDate": "Дата"
+  },
+  "workOrder": {
+    "title": "ЗАКАЗ-НАРЯД",
+    "orderNumberLabel": "№ заказа",
+    "customer": "Клиент",
+    "plateLabel": "Госномер",
+    "jobDetails": "Детали заказа",
+    "status": "Статус: {status}",
+    "technician": "Механик: {tech}",
+    "scheduled": "Запланировано: {date}",
+    "promised": "Обещано: {date}",
+    "workBay": "Пост: {bay}",
+    "statusPending": "Ожидает",
+    "statusInProgress": "В работе",
+    "statusWaitingParts": "Ожидание запчастей",
+    "statusCompleted": "Завершён",
+    "concerns": "Обращения клиента",
+    "workRequested": "Запрошенные работы",
+    "checklist": "Работы",
+    "scanToOpen": "Отсканируйте, чтобы открыть этот заказ-наряд",
+    "customerSignature": "Подпись клиента",
+    "printedOn": "Напечатано {date}"
   }
 }

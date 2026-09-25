@@ -708,7 +708,12 @@
       "defects": "Difetti",
       "results_table": "Tutti gli esiti",
       "inspection_photos": "Foto",
-      "signature": "Firma"
+      "signature": "Firma",
+      "job_details": "Dettagli del lavoro",
+      "job_qr": "Apri sul telefono",
+      "concerns": "Richieste del cliente",
+      "job_description": "Lavoro richiesto",
+      "work_checklist": "Elenco lavori"
     },
     "fields": {
       "customer_name": "Nome cliente",
@@ -759,7 +764,13 @@
       "inspector_line": "Riga della firma",
       "inspector_name": "Nome del firmatario",
       "date_line": "Riga della data",
-      "signature_image": "Firma"
+      "signature_image": "Firma",
+      "status": "Stato",
+      "technician": "Tecnico",
+      "scheduled": "Programmato",
+      "promised": "Promesso",
+      "work_bay": "Postazione",
+      "customer_line": "Riga della firma del cliente"
     },
     "presetsTitle": "Partire da una disposizione",
     "presetsHint": "Sostituisce la disposizione qui sotto. Nulla viene salvato finché non salvi.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Compatto",
         "description": "Una pagina per le flotte: caratteri piccoli, l'esito accanto al titolo, tutti gli esiti senza note, le foto, una riga per la firma"
+      },
+      "work-order-standard": {
+        "name": "Standard",
+        "description": "La copia da banco più completa nel vostro colore: cliente e veicolo per intero, il servizio, i rilievi e la garanzia accanto ai lavori e ai prezzi"
+      },
+      "work-order-job-sheet": {
+        "name": "Scheda di lavoro",
+        "description": "Per la bacheca: la targa in grande, i dati del lavoro, le attività come caselle da spuntare, un codice per aprirla sul telefono e nessun prezzo"
+      },
+      "work-order-compact": {
+        "name": "Compatto",
+        "description": "Nero su bianco, una pagina: nome e telefono del cliente, l'auto, il lavoro, la manodopera con i prezzi ed entrambe le firme. Ciò che ogni ordine di lavoro stampa finché non salvate un design"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Checklist\nispezione",
       "sms": "SMS",
       "layout": "Layout",
-      "certificates": "Certificati\nispezione"
+      "certificates": "Certificati\nispezione",
+      "workOrders": "Ordini\ndi lavoro"
     },
     "presets": "Preset modello",
     "primaryColor": "Colore primario",
@@ -938,7 +962,8 @@
     "openDesigner": "Apri il designer",
     "designerIntro": "Scegli un punto di partenza, poi apri il designer per cambiare tutto.",
     "designerHint": "Colori, caratteri, spaziature e tutte le sezioni sono nel designer.",
-    "certificatesDescription": "Progetta il certificato che un'ispezione completata stampa e condivide."
+    "certificatesDescription": "Progetta il certificato che un'ispezione completata stampa e condivide.",
+    "workOrdersDescription": "Progetta il foglio che stampa un ordine di lavoro: ciò che firma il cliente e ciò che il tecnico prende dalla bacheca."
   },
   "payment": {
     "readMore": "Scopri di più",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Stato dei proiettori",
       "checkFogLamp": "Retronebbia",
       "photoFront": "Frontale",
-      "photoOdometer": "Contachilometri"
+      "photoOdometer": "Contachilometri",
+      "concernNoise": "Rumore di sfregamento davanti in frenata",
+      "concernNoiseDetail": "Pastiglie e dischi anteriori usurati; sostituiti",
+      "concernWarningLight": "Spia accesa sul cruscotto dalla settimana scorsa",
+      "workRequested": "Sostituire pastiglie e dischi anteriori, azzerare l'indicatore di manutenzione e provare su strada.",
+      "checklistTestDrive": "Prova su strada"
     },
     "logoUpload": "Carica logo",
     "logoReplace": "Sostituisci logo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Impossibile impostare il design predefinito",
     "fieldFixedSlot": "Viene sempre stampato nello stesso punto, quindi non può essere spostato.",
     "certificate": "Certificato di ispezione",
-    "resultWidthHint": "Vuoto occupa tutta la riga. Un valore restringe la fascia, che si posiziona sul lato scelto dall'allineamento; in una colonna prende la larghezza della colonna."
+    "resultWidthHint": "Vuoto occupa tutta la riga. Un valore restringe la fascia, che si posiziona sul lato scelto dall'allineamento; in una colonna prende la larghezza della colonna.",
+    "work_order": "Ordine di lavoro"
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

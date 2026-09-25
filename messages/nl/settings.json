@@ -708,7 +708,12 @@
       "defects": "Gebreken",
       "results_table": "Alle resultaten",
       "inspection_photos": "Foto's",
-      "signature": "Handtekening"
+      "signature": "Handtekening",
+      "job_details": "Opdrachtgegevens",
+      "job_qr": "Openen op telefoon",
+      "concerns": "Klachten van de klant",
+      "job_description": "Gevraagd werk",
+      "work_checklist": "Werkchecklist"
     },
     "fields": {
       "customer_name": "Klantnaam",
@@ -759,7 +764,13 @@
       "inspector_line": "Handtekeningregel",
       "inspector_name": "Naam van de ondertekenaar",
       "date_line": "Datumregel",
-      "signature_image": "Handtekening"
+      "signature_image": "Handtekening",
+      "status": "Status",
+      "technician": "Monteur",
+      "scheduled": "Gepland",
+      "promised": "Toegezegd",
+      "work_bay": "Werkplek",
+      "customer_line": "Handtekeningregel klant"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Compact",
         "description": "Eén pagina voor wagenparken: kleine letters, het oordeel naast de titel, alle resultaten zonder opmerkingen, de foto's, een handtekeningregel"
+      },
+      "work-order-standard": {
+        "name": "Standaard",
+        "description": "De vollere baliekopie in uw kleur: de hele klant en het voertuig, de service, de bevindingen en de garantie naast het werk en de prijzen"
+      },
+      "work-order-job-sheet": {
+        "name": "Werkbon",
+        "description": "Voor het bord: het kenteken groot, de feiten van de opdracht, het werk als vakjes om af te vinken, een code om hem op de telefoon te openen en geen prijzen"
+      },
+      "work-order-compact": {
+        "name": "Compact",
+        "description": "Zwart op wit, één pagina: naam en telefoon van de klant, de auto, de opdracht, het werk met prijzen en beide handtekeningen. Wat elke werkorder afdrukt tot u een ontwerp opslaat"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Inspectie-\nchecklists",
       "sms": "SMS",
       "layout": "Indeling",
-      "certificates": "Inspectie-\ncertificaten"
+      "certificates": "Inspectie-\ncertificaten",
+      "workOrders": "Werk-\norders"
     },
     "presets": "Sjabloonpresets",
     "primaryColor": "Primaire kleur",
@@ -938,7 +962,8 @@
     "openDesigner": "Ontwerper openen",
     "designerIntro": "Kies een startpunt en open de ontwerper om alles aan te passen.",
     "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper.",
-    "certificatesDescription": "Ontwerp het certificaat dat een afgeronde inspectie afdrukt en deelt."
+    "certificatesDescription": "Ontwerp het certificaat dat een afgeronde inspectie afdrukt en deelt.",
+    "workOrdersDescription": "Ontwerp het blad dat een werkorder afdrukt: wat de klant tekent en wat de monteur van het bord pakt."
   },
   "payment": {
     "readMore": "Lees meer",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Staat van de koplampen",
       "checkFogLamp": "Mistachterlicht",
       "photoFront": "Voorkant",
-      "photoOdometer": "Kilometerteller"
+      "photoOdometer": "Kilometerteller",
+      "concernNoise": "Schurend geluid voor bij het remmen",
+      "concernNoiseDetail": "Remblokken en -schijven voor versleten; vervangen",
+      "concernWarningLight": "Waarschuwingslampje op het dashboard sinds vorige week",
+      "workRequested": "Remblokken en -schijven voor vervangen, service-indicator resetten en proefrit maken.",
+      "checklistTestDrive": "Proefrit"
     },
     "logoUpload": "Logo uploaden",
     "logoReplace": "Logo vervangen",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Kon het standaardontwerp niet instellen",
     "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst.",
     "certificate": "Inspectiecertificaat",
-    "resultWidthHint": "Leeg vult de rij. Met een waarde wordt de band smaller en komt aan de kant die de uitlijning kiest; in een kolom neemt hij de kolombreedte."
+    "resultWidthHint": "Leeg vult de rij. Met een waarde wordt de band smaller en komt aan de kant die de uitlijning kiest; in een kolom neemt hij de kolombreedte.",
+    "work_order": "Werkorder"
   },
   "preview": {
     "title": "Remservice en oliewissel",

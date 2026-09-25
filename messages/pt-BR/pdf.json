@@ -209,5 +209,27 @@
     "signature": "Assinatura",
     "signedBy": "Assinado por",
     "signatureDate": "Data"
+  },
+  "workOrder": {
+    "title": "ORDEM DE SERVIÇO",
+    "orderNumberLabel": "Nº da OS",
+    "customer": "Cliente",
+    "plateLabel": "Placa",
+    "jobDetails": "Detalhes do serviço",
+    "status": "Status: {status}",
+    "technician": "Técnico: {tech}",
+    "scheduled": "Agendado: {date}",
+    "promised": "Prometido: {date}",
+    "workBay": "Box: {bay}",
+    "statusPending": "Pendente",
+    "statusInProgress": "Em andamento",
+    "statusWaitingParts": "Aguardando peças",
+    "statusCompleted": "Concluído",
+    "concerns": "Reclamações do cliente",
+    "workRequested": "Serviço solicitado",
+    "checklist": "Serviços",
+    "scanToOpen": "Escaneie para abrir esta ordem de serviço",
+    "customerSignature": "Assinatura do cliente",
+    "printedOn": "Impresso em {date}"
   }
 }

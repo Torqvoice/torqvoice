@@ -289,6 +289,7 @@ export function ServicePageClient({
     completed: SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
   }
   const [showPdfPreview, setShowPdfPreview] = useState(false)
+  const [showWorkOrderPreview, setShowWorkOrderPreview] = useState(false)
   const [showNotifyDialog, setShowNotifyDialog] = useState(false)
   const [notifyMessage, setNotifyMessage] = useState('')
 
@@ -516,6 +517,11 @@ export function ServicePageClient({
       actions.handleDownloadPDF()
     },
     onPreviewPDF: previewInvoice,
+    // The sheet says the job as it stands, so what has been typed goes in first.
+    onPrintWorkOrder: async () => {
+      if (formState.hasUnsavedChanges) await actions.saveNow()
+      setShowWorkOrderPreview(true)
+    },
     onDelete: actions.handleDelete,
     onShowEmail: async () => {
       if (!(await checkDates())) return
@@ -830,6 +836,12 @@ export function ServicePageClient({
           open={showPdfPreview}
           onOpenChange={setShowPdfPreview}
           url={`/api/protected/services/${record.id}/pdf`}
+        />
+
+        <PdfPreviewDialog
+          open={showWorkOrderPreview}
+          onOpenChange={setShowWorkOrderPreview}
+          url={`/api/protected/services/${record.id}/work-order-pdf`}
         />
 
         <SendEmailDialog

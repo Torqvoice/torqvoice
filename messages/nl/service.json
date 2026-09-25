@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Alleen het uiterlijk verandert. De werkplaatsgegevens, de klant, de betalingsvoorwaarden en de bedragen blijven precies zoals ze zijn verstuurd. Het huidige ontwerp wordt niet bewaard, dus dit kan niet ongedaan worden gemaakt.",
     "designPickConfirm": "Ontwerp wijzigen",
     "designPickDone": "De factuur wordt nu afgedrukt met {name}",
-    "designPickFailed": "Kon het ontwerp niet wijzigen"
+    "designPickFailed": "Kon het ontwerp niet wijzigen",
+    "printWorkOrder": "Werkorder afdrukken"
   },
   "basicInfo": {
     "title": "Basisinformatie",

@@ -209,5 +209,27 @@
     "signature": "Unterschrift",
     "signedBy": "Unterzeichnet von",
     "signatureDate": "Datum"
+  },
+  "workOrder": {
+    "title": "ARBEITSAUFTRAG",
+    "orderNumberLabel": "Auftrags-Nr.",
+    "customer": "Kunde",
+    "plateLabel": "Kennzeichen",
+    "jobDetails": "Auftragsdetails",
+    "status": "Status: {status}",
+    "technician": "Techniker: {tech}",
+    "scheduled": "Geplant: {date}",
+    "promised": "Zugesagt: {date}",
+    "workBay": "Platz: {bay}",
+    "statusPending": "Offen",
+    "statusInProgress": "In Arbeit",
+    "statusWaitingParts": "Wartet auf Teile",
+    "statusCompleted": "Abgeschlossen",
+    "concerns": "Kundenanliegen",
+    "workRequested": "Gewünschte Arbeiten",
+    "checklist": "Arbeiten",
+    "scanToOpen": "Scannen, um diesen Auftrag zu öffnen",
+    "customerSignature": "Unterschrift Kunde",
+    "printedOn": "Gedruckt am {date}"
   }
 }

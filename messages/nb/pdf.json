@@ -209,5 +209,27 @@
     "signature": "Signatur",
     "signedBy": "Signert av",
     "signatureDate": "Dato"
+  },
+  "workOrder": {
+    "title": "ARBEIDSORDRE",
+    "orderNumberLabel": "Ordrenr.",
+    "customer": "Kunde",
+    "plateLabel": "Reg.nr.",
+    "jobDetails": "Jobbdetaljer",
+    "status": "Status: {status}",
+    "technician": "Tekniker: {tech}",
+    "scheduled": "Planlagt: {date}",
+    "promised": "Lovet: {date}",
+    "workBay": "Plass: {bay}",
+    "statusPending": "Venter",
+    "statusInProgress": "Pågår",
+    "statusWaitingParts": "Venter på deler",
+    "statusCompleted": "Fullført",
+    "concerns": "Kundens henvendelser",
+    "workRequested": "Ønsket arbeid",
+    "checklist": "Arbeid",
+    "scanToOpen": "Skann for å åpne denne arbeidsordren",
+    "customerSignature": "Kundens signatur",
+    "printedOn": "Skrevet ut {date}"
   }
 }

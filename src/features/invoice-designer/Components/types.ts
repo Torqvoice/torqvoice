@@ -5,9 +5,10 @@ import type { DesignAutoRule } from '../Lib/designRules'
 /**
  * The documents the designer draws. A certificate is what a completed
  * inspection prints: the same sheet machinery as an invoice, fed grades
- * instead of prices.
+ * instead of prices. A work order is the job while it is open: the sheet
+ * the customer signs and the technician takes off the board.
  */
-export type DocumentType = 'invoice' | 'quote' | 'certificate'
+export type DocumentType = 'invoice' | 'quote' | 'certificate' | 'work_order'
 
 /** The template settings the designer edits, as strings the way settings store them. */
 export interface DesignerTemplate {

@@ -209,5 +209,27 @@
     "signature": "Assinatura",
     "signedBy": "Assinado por",
     "signatureDate": "Data"
+  },
+  "workOrder": {
+    "title": "ORDEM DE TRABALHO",
+    "orderNumberLabel": "N.º da ordem",
+    "customer": "Cliente",
+    "plateLabel": "Matrícula",
+    "jobDetails": "Detalhes do trabalho",
+    "status": "Estado: {status}",
+    "technician": "Técnico: {tech}",
+    "scheduled": "Agendado: {date}",
+    "promised": "Prometido: {date}",
+    "workBay": "Posto: {bay}",
+    "statusPending": "Pendente",
+    "statusInProgress": "Em curso",
+    "statusWaitingParts": "À espera de peças",
+    "statusCompleted": "Concluído",
+    "concerns": "Reclamações do cliente",
+    "workRequested": "Trabalho pedido",
+    "checklist": "Trabalhos",
+    "scanToOpen": "Digitalize para abrir esta ordem de trabalho",
+    "customerSignature": "Assinatura do cliente",
+    "printedOn": "Impresso em {date}"
   }
 }

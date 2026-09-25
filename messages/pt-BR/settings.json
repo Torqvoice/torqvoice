@@ -708,7 +708,12 @@
       "defects": "Defeitos",
       "results_table": "Todos os resultados",
       "inspection_photos": "Fotos",
-      "signature": "Assinatura"
+      "signature": "Assinatura",
+      "job_details": "Detalhes do serviço",
+      "job_qr": "Abrir no celular",
+      "concerns": "Reclamações do cliente",
+      "job_description": "Serviço solicitado",
+      "work_checklist": "Lista de serviços"
     },
     "fields": {
       "customer_name": "Nome do cliente",
@@ -759,7 +764,13 @@
       "inspector_line": "Linha de assinatura",
       "inspector_name": "Nome de quem assina",
       "date_line": "Linha da data",
-      "signature_image": "Assinatura"
+      "signature_image": "Assinatura",
+      "status": "Status",
+      "technician": "Técnico",
+      "scheduled": "Agendado",
+      "promised": "Prometido",
+      "work_bay": "Box",
+      "customer_line": "Linha de assinatura do cliente"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Compacto",
         "description": "Uma página para frotas: letra pequena, o veredito ao lado do título, todos os resultados sem notas, as fotos, uma linha para assinar"
+      },
+      "work-order-standard": {
+        "name": "Padrão",
+        "description": "A cópia de balcão mais completa na sua cor: o cliente e o veículo inteiros, o serviço, as observações e a garantia ao lado do trabalho e dos preços"
+      },
+      "work-order-job-sheet": {
+        "name": "Ficha de serviço",
+        "description": "Para o quadro: a placa em destaque, os dados do serviço, as tarefas como caixas para marcar, um código para abrir no celular e sem preços"
+      },
+      "work-order-compact": {
+        "name": "Compacto",
+        "description": "Preto no branco, uma página: nome e telefone do cliente, o carro, o serviço, a mão de obra com preços e as duas assinaturas. O que toda ordem de serviço imprime até você salvar um design"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Checklists de\ninspeção",
       "sms": "SMS",
       "layout": "Layout",
-      "certificates": "Certificados de\ninspeção"
+      "certificates": "Certificados de\ninspeção",
+      "workOrders": "Ordens\nde serviço"
     },
     "presets": "Presets de modelo",
     "primaryColor": "Cor primária",
@@ -938,7 +962,8 @@
     "openDesigner": "Abrir o designer",
     "designerIntro": "Escolha um ponto de partida e abra o designer para mudar tudo.",
     "designerHint": "Cores, fontes, espaçamento e todas as seções ficam no designer.",
-    "certificatesDescription": "Desenhe o certificado que uma inspeção concluída imprime e compartilha."
+    "certificatesDescription": "Desenhe o certificado que uma inspeção concluída imprime e compartilha.",
+    "workOrdersDescription": "Desenhe a folha que uma ordem de serviço imprime: o que o cliente assina e o que o técnico pega do quadro."
   },
   "payment": {
     "readMore": "Saiba mais",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Estado dos faróis",
       "checkFogLamp": "Luz de neblina traseira",
       "photoFront": "Frente",
-      "photoOdometer": "Hodômetro"
+      "photoOdometer": "Hodômetro",
+      "concernNoise": "Barulho de raspagem na frente ao frear",
+      "concernNoiseDetail": "Pastilhas e discos dianteiros gastos; substituídos",
+      "concernWarningLight": "Luz de aviso no painel desde a semana passada",
+      "workRequested": "Substituir pastilhas e discos dianteiros, zerar o indicador de revisão e fazer teste de rua.",
+      "checklistTestDrive": "Teste de rua"
     },
     "logoUpload": "Enviar logotipo",
     "logoReplace": "Substituir logotipo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Não foi possível definir o design padrão",
     "fieldFixedSlot": "Sempre é impresso no mesmo lugar, portanto não pode ser movido.",
     "certificate": "Certificado de inspeção",
-    "resultWidthHint": "Vazio ocupa a linha inteira. Com um valor a faixa fica mais estreita e se posiciona no lado do alinhamento; em uma coluna ocupa a largura da coluna."
+    "resultWidthHint": "Vazio ocupa a linha inteira. Com um valor a faixa fica mais estreita e se posiciona no lado do alinhamento; em uma coluna ocupa a largura da coluna.",
+    "work_order": "Ordem de serviço"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

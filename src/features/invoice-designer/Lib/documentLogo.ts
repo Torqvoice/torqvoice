@@ -14,13 +14,15 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
  */
 export function documentLogoPath(
   settings: Record<string, string | undefined | null>,
-  documentType: 'invoice' | 'quote' | 'certificate'
+  documentType: 'invoice' | 'quote' | 'certificate' | 'work_order'
 ): string {
   const own =
     documentType === 'quote'
       ? settings[SETTING_KEYS.QUOTE_LOGO]
       : documentType === 'certificate'
         ? settings[SETTING_KEYS.CERTIFICATE_LOGO]
-        : settings[SETTING_KEYS.INVOICE_LOGO]
+        : documentType === 'work_order'
+          ? settings[SETTING_KEYS.WORK_ORDER_LOGO]
+          : settings[SETTING_KEYS.INVOICE_LOGO]
   return own?.trim() || settings[SETTING_KEYS.COMPANY_LOGO]?.trim() || ''
 }

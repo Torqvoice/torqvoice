@@ -20,6 +20,7 @@ type LayoutSettingKey =
   | typeof SETTING_KEYS.INVOICE_LAYOUT_CONFIG
   | typeof SETTING_KEYS.QUOTE_LAYOUT_CONFIG
   | typeof SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG
+  | typeof SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG
 
 async function loadLayoutConfig(
   organizationId: string,
@@ -37,11 +38,19 @@ async function loadLayoutConfig(
   if (!setting?.value) {
     return key === SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG
       ? getDefaultLayout('certificate')
-      : getDefaultInvoiceLayout()
+      : key === SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG
+        ? getDefaultLayout('work_order')
+        : getDefaultInvoiceLayout()
   }
 
   const parsed = JSON.parse(setting.value)
-  return mergeWithDefaults(parsed)
+  // A work order layout is read as one whatever the row says, so a row saved
+  // before the stamp existed is still filled in from its own sections.
+  return mergeWithDefaults(
+    key === SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG
+      ? { ...parsed, documentType: 'work_order' }
+      : parsed
+  )
 }
 
 async function persistLayoutConfig(
@@ -228,6 +237,43 @@ export async function saveCertificateLayoutConfig(config: InvoiceLayoutConfig) {
         organizationId,
         SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG,
         config
+      )
+
+      revalidatePath('/settings/templates')
+      return validated
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+      audit: () => ({
+        action: 'settings.updateInvoiceLayout',
+        entity: 'AppSetting',
+        details: { key: 'settings_updateInvoiceLayout' },
+      }),
+    }
+  )
+}
+
+/** The work order's saved arrangement, or the work order defaults. */
+export async function getWorkOrderLayoutConfig() {
+  return withAuth(
+    async ({ organizationId }) =>
+      loadLayoutConfig(organizationId, SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG),
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
+}
+
+export async function saveWorkOrderLayoutConfig(config: InvoiceLayoutConfig) {
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const validated = await persistLayoutConfig(
+        userId,
+        organizationId,
+        SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG,
+        { ...config, documentType: 'work_order' }
       )
 
       revalidatePath('/settings/templates')

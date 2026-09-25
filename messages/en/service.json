@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Only the look changes. The workshop details, the customer, the payment terms and the totals stay exactly as they were sent. The design it prints with now is not kept, so this cannot be undone.",
     "designPickConfirm": "Change the design",
     "designPickDone": "This invoice now prints with {name}",
-    "designPickFailed": "Could not change the design"
+    "designPickFailed": "Could not change the design",
+    "printWorkOrder": "Print work order"
   },
   "basicInfo": {
     "title": "Basic Information",

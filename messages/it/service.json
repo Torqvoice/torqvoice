@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Cambia solo l'aspetto. I dati dell'officina, il cliente, le condizioni di pagamento e gli importi restano esattamente come sono stati inviati. Il design attuale non viene conservato, quindi l'operazione non è reversibile.",
     "designPickConfirm": "Cambia il design",
     "designPickDone": "La fattura ora viene stampata con {name}",
-    "designPickFailed": "Impossibile cambiare il design"
+    "designPickFailed": "Impossibile cambiare il design",
+    "printWorkOrder": "Stampa ordine di lavoro"
   },
   "basicInfo": {
     "title": "Informazioni di Base",

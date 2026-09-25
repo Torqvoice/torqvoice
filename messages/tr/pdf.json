@@ -209,5 +209,27 @@
     "signature": "İmza",
     "signedBy": "İmzalayan",
     "signatureDate": "Tarih"
+  },
+  "workOrder": {
+    "title": "İŞ EMRİ",
+    "orderNumberLabel": "İş emri No.",
+    "customer": "Müşteri",
+    "plateLabel": "Plaka",
+    "jobDetails": "İş ayrıntıları",
+    "status": "Durum: {status}",
+    "technician": "Teknisyen: {tech}",
+    "scheduled": "Planlanan: {date}",
+    "promised": "Söz verilen: {date}",
+    "workBay": "Alan: {bay}",
+    "statusPending": "Beklemede",
+    "statusInProgress": "Devam ediyor",
+    "statusWaitingParts": "Parça bekleniyor",
+    "statusCompleted": "Tamamlandı",
+    "concerns": "Müşteri şikayetleri",
+    "workRequested": "İstenen iş",
+    "checklist": "İşler",
+    "scanToOpen": "Bu iş emrini açmak için tarayın",
+    "customerSignature": "Müşteri imzası",
+    "printedOn": "Yazdırma tarihi {date}"
   }
 }

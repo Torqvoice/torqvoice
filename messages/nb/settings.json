@@ -708,7 +708,12 @@
       "defects": "Mangler",
       "results_table": "Alle resultater",
       "inspection_photos": "Bilder",
-      "signature": "Signatur"
+      "signature": "Signatur",
+      "job_details": "Jobbdetaljer",
+      "job_qr": "Åpne på telefonen",
+      "concerns": "Kundens henvendelser",
+      "job_description": "Ønsket arbeid",
+      "work_checklist": "Sjekkliste for arbeid"
     },
     "fields": {
       "customer_name": "Kundenavn",
@@ -719,7 +724,7 @@
       "customer_tax_id": "Org.nr / MVA-nr",
       "vehicle_name": "Kjøretøy",
       "vin": "VIN",
-      "license_plate": "Reg.nr",
+      "license_plate": "Registreringsnummer",
       "mileage": "Kilometerstand",
       "service_title": "Tjenestetittel",
       "service_type": "Tjenestetype",
@@ -759,7 +764,13 @@
       "inspector_line": "Signaturlinje",
       "inspector_name": "Underskriverens navn",
       "date_line": "Datolinje",
-      "signature_image": "Signatur"
+      "signature_image": "Signatur",
+      "status": "Status",
+      "technician": "Tekniker",
+      "scheduled": "Planlagt",
+      "promised": "Lovet",
+      "work_bay": "Arbeidsplass",
+      "customer_line": "Signaturlinje for kunde"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Kompakt",
         "description": "Én side for flåter: liten skrift, resultatet ved siden av tittelen, alle resultater uten merknader, bildene, en signaturlinje"
+      },
+      "work-order-standard": {
+        "name": "Standard",
+        "description": "Den fyldigere diskkopien i din farge: hele kunden og kjøretøyet, servicen, funnene og garantien ved siden av arbeidet og prisene"
+      },
+      "work-order-job-sheet": {
+        "name": "Arbeidsark",
+        "description": "Til tavla: skiltet stort, fakta om jobben, arbeidet som bokser å krysse av, en kode som åpner den på telefonen, og ingen priser"
+      },
+      "work-order-compact": {
+        "name": "Kompakt",
+        "description": "Svart på hvitt, én side: kundens navn og telefon, bilen, jobben, arbeidet med priser og begge signaturene. Det hver arbeidsordre skriver ut til du lagrer et design"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Inspeksjons-\nsjekklister",
       "sms": "SMS",
       "layout": "Oppsett",
-      "certificates": "Inspeksjons-\nsertifikater"
+      "certificates": "Inspeksjons-\nsertifikater",
+      "workOrders": "Arbeids-\nordrer"
     },
     "presets": "Malforhåndsvisninger",
     "primaryColor": "Primærfarge",
@@ -938,7 +962,8 @@
     "openDesigner": "Åpne designeren",
     "designerIntro": "Velg et utgangspunkt, og åpne designeren for å endre alt.",
     "designerHint": "Farger, skrifter, avstander og alle seksjoner ligger i designeren.",
-    "certificatesDescription": "Utform sertifikatet en fullført inspeksjon skriver ut og deler."
+    "certificatesDescription": "Utform sertifikatet en fullført inspeksjon skriver ut og deler.",
+    "workOrdersDescription": "Utform arket en arbeidsordre skriver ut: det kunden signerer og det teknikeren tar med seg fra tavla."
   },
   "payment": {
     "readMore": "Les mer",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Frontlyktenes tilstand",
       "checkFogLamp": "Tåkelys bak",
       "photoFront": "Front",
-      "photoOdometer": "Kilometerteller"
+      "photoOdometer": "Kilometerteller",
+      "concernNoise": "Skrapelyd foran ved bremsing",
+      "concernNoiseDetail": "Klosser og skiver foran slitt; byttet",
+      "concernWarningLight": "Varsellampe i dashbordet siden forrige uke",
+      "workRequested": "Bytt bremseklosser og skiver foran, nullstill serviceindikatoren og prøvekjør.",
+      "checklistTestDrive": "Prøvekjøring"
     },
     "logoUpload": "Last opp logo",
     "logoReplace": "Bytt logo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Kunne ikke sette standarddesignet",
     "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes.",
     "certificate": "Inspeksjonssertifikat",
-    "resultWidthHint": "Tomt fyller raden. Angi punkter for et smalere bånd; det legger seg på siden justeringen velger, og i en kolonne tar det kolonnens bredde."
+    "resultWidthHint": "Tomt fyller raden. Angi punkter for et smalere bånd; det legger seg på siden justeringen velger, og i en kolonne tar det kolonnens bredde.",
+    "work_order": "Arbeidsordre"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

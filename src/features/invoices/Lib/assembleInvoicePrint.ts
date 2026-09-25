@@ -247,6 +247,7 @@ export function liveInvoiceSettings(settingsMap: Record<string, string>): Invoic
     currencyFormat: settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol',
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
+    timeFormat: settingsMap['workshop.timeFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
   }
 }

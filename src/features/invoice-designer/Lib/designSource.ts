@@ -5,6 +5,7 @@ import {
   mergeWithDefaults,
   type InvoiceLayoutConfig,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { WORK_ORDER_TEMPLATE_DEFAULTS } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { DesignerTemplate, DocumentType, SavedDesign } from '../Components/types'
 import { isDesignAutoRule } from './designRules'
@@ -50,7 +51,12 @@ export const designTemplateSchema = z
   })
   .passthrough()
 
-export const DESIGN_DOCUMENT_TYPES: DocumentType[] = ['invoice', 'quote', 'certificate']
+export const DESIGN_DOCUMENT_TYPES: DocumentType[] = [
+  'invoice',
+  'quote',
+  'certificate',
+  'work_order',
+]
 
 /** A stored layout and template read back as they were written, or null. */
 function parseStoredSource(layout: unknown, template: unknown): DesignSource | null {
@@ -117,11 +123,19 @@ export function designSourceFromSettings(
   documentType: DocumentType
 ): DesignSource {
   const p = documentType
+  // A work order starts black on white with a compact letterhead: a sheet
+  // printed all day long, not one sent to a customer.
+  const defaults =
+    documentType === 'work_order'
+      ? WORK_ORDER_TEMPLATE_DEFAULTS
+      : { primaryColor: '#d97706', headerStyle: 'standard' }
   return {
     layout: parseLayoutSetting(settings[`${p}.layoutConfig`]),
     template: {
       primaryColor:
-        settings[`${p}.primaryColor`] || settings[`${p}.template.primaryColor`] || '#d97706',
+        settings[`${p}.primaryColor`] ||
+        settings[`${p}.template.primaryColor`] ||
+        defaults.primaryColor,
       backgroundColor: settings[`${p}.backgroundColor`] || '',
       textColor: settings[`${p}.textColor`] || '',
       companyTextColor: settings[`${p}.companyTextColor`] || '',
@@ -132,7 +146,9 @@ export function designSourceFromSettings(
       fontFamily:
         settings[`${p}.fontFamily`] || settings[`${p}.template.fontFamily`] || 'Helvetica',
       headerStyle:
-        settings[`${p}.headerStyle`] || settings[`${p}.template.headerStyle`] || 'standard',
+        settings[`${p}.headerStyle`] ||
+        settings[`${p}.template.headerStyle`] ||
+        defaults.headerStyle,
       logoSize: Number(settings[`${p}.logoSize`]) || 100,
       logoUrl: settings[`${p}.logo`] || '',
       showLogo: (settings[`${p}.showLogo`] ?? settings[`${p}.template.showLogo`]) !== 'false',

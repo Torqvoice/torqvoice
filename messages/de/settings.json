@@ -708,7 +708,12 @@
       "defects": "Mängel",
       "results_table": "Alle Ergebnisse",
       "inspection_photos": "Fotos",
-      "signature": "Unterschrift"
+      "signature": "Unterschrift",
+      "job_details": "Auftragsdetails",
+      "job_qr": "Auf dem Handy öffnen",
+      "concerns": "Kundenanliegen",
+      "job_description": "Gewünschte Arbeiten",
+      "work_checklist": "Arbeitscheckliste"
     },
     "fields": {
       "customer_name": "Kundenname",
@@ -759,7 +764,13 @@
       "inspector_line": "Unterschriftszeile",
       "inspector_name": "Name des Unterzeichners",
       "date_line": "Datumszeile",
-      "signature_image": "Unterschrift"
+      "signature_image": "Unterschrift",
+      "status": "Status",
+      "technician": "Techniker",
+      "scheduled": "Geplant",
+      "promised": "Zugesagt",
+      "work_bay": "Arbeitsplatz",
+      "customer_line": "Unterschriftszeile Kunde"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",
     "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Kompakt",
         "description": "Eine Seite für Flotten: kleine Schrift, das Ergebnis neben dem Titel, alle Ergebnisse ohne Anmerkungen, die Fotos, eine Unterschriftszeile"
+      },
+      "work-order-standard": {
+        "name": "Standard",
+        "description": "Die ausführlichere Tresenkopie in Ihrer Farbe: Kunde und Fahrzeug vollständig, der Service, die Befunde und die Garantie neben den Arbeiten und Preisen"
+      },
+      "work-order-job-sheet": {
+        "name": "Arbeitskarte",
+        "description": "Für die Tafel: Kennzeichen groß, die Fakten zum Auftrag, die Arbeiten als Kästchen zum Abhaken, ein Code zum Öffnen am Handy und keine Preise"
+      },
+      "work-order-compact": {
+        "name": "Kompakt",
+        "description": "Schwarz auf Weiß, eine Seite: Name und Telefon des Kunden, das Fahrzeug, der Auftrag, die Arbeiten mit Preisen und beide Unterschriften. Was jeder Arbeitsauftrag druckt, bis Sie ein Design speichern"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Inspektions-\nChecklisten",
       "sms": "SMS",
       "layout": "Layout",
-      "certificates": "Inspektions-\nZertifikate"
+      "certificates": "Inspektions-\nZertifikate",
+      "workOrders": "Arbeits-\naufträge"
     },
     "presets": "Vorlagen-Presets",
     "primaryColor": "Primärfarbe",
@@ -938,7 +962,8 @@
     "openDesigner": "Vorlagen-Designer öffnen",
     "designerIntro": "Wählen Sie einen Ausgangspunkt und öffnen Sie den Designer, um alles zu ändern.",
     "designerHint": "Farben, Schriften, Abstände und alle Abschnitte liegen im Designer.",
-    "certificatesDescription": "Gestalten Sie das Zertifikat, das eine abgeschlossene Inspektion druckt und teilt."
+    "certificatesDescription": "Gestalten Sie das Zertifikat, das eine abgeschlossene Inspektion druckt und teilt.",
+    "workOrdersDescription": "Gestalten Sie das Blatt, das ein Arbeitsauftrag druckt: was der Kunde unterschreibt und was der Techniker von der Tafel nimmt."
   },
   "payment": {
     "readMore": "Mehr erfahren",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Zustand der Scheinwerfer",
       "checkFogLamp": "Nebelschlussleuchte",
       "photoFront": "Vorne",
-      "photoOdometer": "Kilometerstand"
+      "photoOdometer": "Kilometerstand",
+      "concernNoise": "Schleifgeräusch vorne beim Bremsen",
+      "concernNoiseDetail": "Bremsbeläge und -scheiben vorne verschlissen; ersetzt",
+      "concernWarningLight": "Warnleuchte im Armaturenbrett seit letzter Woche",
+      "workRequested": "Bremsbeläge und -scheiben vorne ersetzen, Serviceanzeige zurücksetzen und Probefahrt.",
+      "checklistTestDrive": "Probefahrt"
     },
     "logoUpload": "Logo hochladen",
     "logoReplace": "Logo ersetzen",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden",
     "fieldFixedSlot": "Wird immer an derselben Stelle gedruckt und kann nicht verschoben werden.",
     "certificate": "Inspektionszertifikat",
-    "resultWidthHint": "Leer füllt die Zeile. Mit einem Wert wird das Band schmaler und sitzt an der Seite, die die Ausrichtung wählt; in einer Spalte nimmt es die Spaltenbreite."
+    "resultWidthHint": "Leer füllt die Zeile. Mit einem Wert wird das Band schmaler und sitzt an der Seite, die die Ausrichtung wählt; in einer Spalte nimmt es die Spaltenbreite.",
+    "work_order": "Arbeitsauftrag"
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

@@ -10,6 +10,9 @@ const SIGNATURE_HEIGHT = 44
 /**
  * Whoever issued the document signs it: a line with their signature drawn on
  * it when they have saved one, their name under it, and the date beside.
+ * Beside those, when the design asks, an empty line for the customer, with
+ * their name under it and a date of its own: the work order a customer
+ * signs at the counter, or a quote they accept on paper.
  *
  * Every piece is a switch, because paper differs: a certificate is often
  * signed by hand, so the line prints empty; an invoice may carry the image
@@ -27,7 +30,9 @@ export function signatureBlock(
   const withImage = fields.has('signature_image') && Boolean(signature.image)
   const withLine = fields.has('inspector_line')
   const withDate = fields.has('date_line')
-  if (!withLine && !withImage && !withDate) return null
+  // A customer line needs a customer side: a certificate has none.
+  const withCustomer = fields.has('customer_line') && signature.customerCaption !== undefined
+  if (!withLine && !withImage && !withDate && !withCustomer) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const boxed = section.boxed === true
@@ -51,10 +56,13 @@ export function signatureBlock(
       ...(withLine || !opts.image
         ? [{ kind: 'spacer' as const, height: 0.75, color: look.border || look.text }]
         : []),
-      // An empty value still takes its line, so the two columns stay level.
+      // An empty value still takes its line, so the columns stay level. A
+      // plain space collapses to nothing on the designer's canvas and the
+      // column's rule then sinks below its neighbours'; a non-breaking one
+      // keeps the line's height in both renderers.
       {
         kind: 'text',
-        text: opts.value || ' ',
+        text: opts.value || '\u00a0',
         style: { color: look.text, fontSize: scale(size, 0.92) },
       },
       {
@@ -76,11 +84,29 @@ export function signatureBlock(
       }),
     })
   }
-  if (withDate) {
+  // The issuer's date only when the issuer has a line; a date beside nothing
+  // reads as a mistake.
+  if (withDate && (withLine || withImage || !withCustomer)) {
     columns.push({
       width: 'flex',
       node: column({ caption: signature.dateCaption, value: signature.date }),
     })
+  }
+  if (withCustomer) {
+    columns.push({
+      width: 'flex',
+      node: column({
+        caption: signature.customerCaption ?? '',
+        value: fields.has('inspector_name') ? (signature.customerName ?? '') : '',
+      }),
+    })
+    // The customer's date is theirs to write, so its line prints empty.
+    if (withDate) {
+      columns.push({
+        width: 'flex',
+        node: column({ caption: signature.dateCaption, value: '' }),
+      })
+    }
   }
   return {
     kind: 'stack',

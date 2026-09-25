@@ -266,6 +266,7 @@ export function buildSampleData(
       customerNumber: sample.customerNumber,
       date: sample.date,
       due: sample.due,
+      plate: 'AB 12345',
     },
     items: sample.items.map((item) => ({
       n: String(item.n),
@@ -352,6 +353,7 @@ export function buildSampleData(
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Observations'),
+      job_details: L('jobDetails', 'Job details'),
       test_details: L('testDetails', 'Test details'),
       defects: L('deficiencies', 'Deficiencies found'),
       results_table: L('allResults', 'All results'),
@@ -374,8 +376,76 @@ export function buildSampleData(
             date: sample.date,
             dateCaption: L('signatureDate', 'Date'),
             image: workshop.signatureUrl || SAMPLE_SIGNATURE,
+            // The customer's line has a customer on every document but the
+            // certificate, so the switch for it has something to show.
+            customerName: values.customer_name,
+            customerCaption: L('customerSignature', 'Customer signature'),
           },
     ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
+    ...(docType === 'work_order' ? sampleWorkOrder(t, labels, values, sample) : {}),
+  }
+}
+
+/**
+ * A code that goes nowhere, drawn as a pattern, so the designer can place
+ * and size the block that the printed sheet fills with a real one.
+ */
+const SAMPLE_QR = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 21 21" shape-rendering="crispEdges"><rect width="21" height="21" fill="#fff"/><path fill="#111" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0zM2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM8 0h1v1H8zM10 0h2v1h-2zM8 2h2v1H8zM11 2h1v2h-1zM9 4h1v2H9zM11 5h2v1h-2zM0 8h1v1H0zM2 8h3v1H2zM6 8h2v1H6zM9 8h1v1H9zM12 8h2v1h-2zM15 8h1v1h-1zM18 8h3v1h-3zM1 10h2v1H1zM4 10h1v1H4zM7 10h3v1H7zM11 10h1v1h-1zM13 10h2v1h-2zM16 10h1v1h-1zM19 10h2v1h-2zM0 12h1v1H0zM3 12h2v1H3zM6 12h1v1H6zM8 12h3v1H8zM12 12h1v1h-1zM14 12h3v1h-3zM18 12h1v1h-1zM20 12h1v1h-1zM8 14h1v2H8zM10 14h2v1h-2zM13 14h1v1h-1zM15 14h1v1h-1zM17 14h2v1h-2zM20 14h1v1h-1zM9 16h2v1H9zM12 16h2v1h-2zM15 16h1v1h-1zM17 16h1v1h-1zM19 16h2v1h-2zM8 18h1v1H8zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h3v1h-3zM18 18h1v1h-1zM20 18h1v1h-1zM9 20h3v1H9zM13 20h2v1h-2zM16 20h2v1h-2zM19 20h1v1h-1z"/></svg>'
+)}`
+
+/**
+ * The work order's own part of the sample: a job that is open, booked and
+ * with a technician, two things the customer came in with, the work as a
+ * checklist, and a code to scan.
+ */
+function sampleWorkOrder(
+  t: SampleT,
+  labels: PrintLabels,
+  values: Record<string, string>,
+  sample: SampleTables
+): Pick<DocumentData, 'fields' | 'meta' | 'workOrder' | 'payment' | 'portalUrl'> {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  return {
+    fields: {
+      ...values,
+      bank_account: '',
+      status: fillTemplate(L('status', 'Status: {status}'), {
+        status: L('statusInProgress', 'In progress'),
+      }),
+      technician: fillTemplate(L('technician', 'Technician: {tech}'), { tech: 'Jamie Lee' }),
+      scheduled: fillTemplate(L('scheduled', 'Scheduled: {date}'), {
+        date: `${sample.date} 08:30`,
+      }),
+      promised: fillTemplate(L('promised', 'Promised: {date}'), { date: `${sample.date} 16:00` }),
+      work_bay: fillTemplate(L('workBay', 'Bay: {bay}'), { bay: '2' }),
+      footer_note: `${t('sample.footerNote')} · ${fillTemplate(L('printedOn', 'Printed {date}'), {
+        date: sample.date,
+      })}`,
+    },
+    meta: {
+      title: L('title', 'WORK ORDER'),
+      number: '2026-0042',
+      customerNumber: sample.customerNumber,
+      date: sample.date,
+      plate: 'AB 12345',
+    },
+    // A job that is still open has no bank details and no portal link to
+    // print; its totals already end at the total, like a quote's.
+    payment: [],
+    portalUrl: undefined,
+    workOrder: {
+      concerns: [
+        { description: t('sample.concernNoise'), detail: t('sample.concernNoiseDetail') },
+        { description: t('sample.concernWarningLight') },
+      ],
+      description: { html: `<p>${t('sample.workRequested')}</p>` },
+      checklist: sample.items
+        .filter((item) => !item.sku)
+        .map((item) => ({ label: item.desc, detail: `${item.qty} ${item.unit}` }))
+        .concat([{ label: t('sample.checklistTestDrive'), detail: '' }]),
+      qr: { dataUri: SAMPLE_QR, label: L('scanToOpen', 'Scan to open this work order') },
+    },
   }
 }
 

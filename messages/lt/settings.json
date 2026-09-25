@@ -708,7 +708,12 @@
       "defects": "Defektai",
       "results_table": "Visi rezultatai",
       "inspection_photos": "Nuotraukos",
-      "signature": "Parašas"
+      "signature": "Parašas",
+      "job_details": "Darbo duomenys",
+      "job_qr": "Atidaryti telefone",
+      "concerns": "Kliento nusiskundimai",
+      "job_description": "Užsakyti darbai",
+      "work_checklist": "Darbų sąrašas"
     },
     "fields": {
       "customer_name": "Kliento vardas",
@@ -759,7 +764,13 @@
       "inspector_line": "Parašo eilutė",
       "inspector_name": "Pasirašiusiojo vardas",
       "date_line": "Datos eilutė",
-      "signature_image": "Parašas"
+      "signature_image": "Parašas",
+      "status": "Būsena",
+      "technician": "Technikas",
+      "scheduled": "Suplanuota",
+      "promised": "Pažadėta",
+      "work_bay": "Darbo vieta",
+      "customer_line": "Kliento parašo eilutė"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Kompaktiškas",
         "description": "Vienas lapas parkui: smulkus šriftas, verdiktas šalia pavadinimo, visi rezultatai be pastabų, nuotraukos, parašo eilutė"
+      },
+      "work-order-standard": {
+        "name": "Standartinis",
+        "description": "Išsamesnė prekystalio kopija jūsų spalva: visas klientas ir transporto priemonė, paslauga, pastebėjimai ir garantija šalia darbų ir kainų"
+      },
+      "work-order-job-sheet": {
+        "name": "Darbo lapas",
+        "description": "Lentai: didelis valstybinis numeris, darbo faktai, darbai kaip langeliai pažymėti, kodas atidaryti telefone ir jokių kainų"
+      },
+      "work-order-compact": {
+        "name": "Kompaktiškas",
+        "description": "Juoda ant balto, vienas puslapis: kliento vardas ir telefonas, automobilis, darbas, darbai su kainomis ir abu parašai. Tai, ką spausdina kiekvienas darbo užsakymas, kol neišsaugosite dizaino"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Apžiūros\nkontroliniai sąrašai",
       "sms": "SMS",
       "layout": "Išdėstymas",
-      "certificates": "Apžiūros\nsertifikatai"
+      "certificates": "Apžiūros\nsertifikatai",
+      "workOrders": "Darbo\nužsakymai"
     },
     "presets": "Šablonų presetai",
     "primaryColor": "Pagrindinė spalva",
@@ -938,7 +962,8 @@
     "openDesigner": "Atverti dizainerį",
     "designerIntro": "Pasirinkite pradžios tašką ir atverkite dizainerį, kad pakeistumėte viską.",
     "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje.",
-    "certificatesDescription": "Sukurkite sertifikatą, kurį spausdina ir dalijasi užbaigta apžiūra."
+    "certificatesDescription": "Sukurkite sertifikatą, kurį spausdina ir dalijasi užbaigta apžiūra.",
+    "workOrdersDescription": "Sukurkite lapą, kurį spausdina darbo užsakymas: ką pasirašo klientas ir ką technikas pasiima nuo lentos."
   },
   "payment": {
     "readMore": "Skaityti daugiau",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Priekinių žibintų būklė",
       "checkFogLamp": "Galinis rūko žibintas",
       "photoFront": "Priekis",
-      "photoOdometer": "Odometras"
+      "photoOdometer": "Odometras",
+      "concernNoise": "Šlifavimo garsas priekyje stabdant",
+      "concernNoiseDetail": "Priekinės kaladėlės ir diskai nusidėvėję; pakeisti",
+      "concernWarningLight": "Įspėjamoji lemputė prietaisų skydelyje nuo praėjusios savaitės",
+      "workRequested": "Pakeisti priekines stabdžių kaladėles ir diskus, atstatyti aptarnavimo indikatorių ir išbandyti kelyje.",
+      "checklistTestDrive": "Bandomasis važiavimas"
     },
     "logoUpload": "Įkelti logotipą",
     "logoReplace": "Pakeisti logotipą",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino",
     "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti.",
     "certificate": "Apžiūros sertifikatas",
-    "resultWidthHint": "Tuščia užima visą eilutę. Nurodžius taškus juosta susiaurėja ir atsiduria lygiavimo pusėje; stulpelyje ji užima stulpelio plotį."
+    "resultWidthHint": "Tuščia užima visą eilutę. Nurodžius taškus juosta susiaurėja ir atsiduria lygiavimo pusėje; stulpelyje ji užima stulpelio plotį.",
+    "work_order": "Darbo užsakymas"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

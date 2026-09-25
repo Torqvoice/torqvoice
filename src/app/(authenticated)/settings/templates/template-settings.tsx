@@ -39,7 +39,7 @@ interface TemplateValues {
   logoSize: number
 }
 
-type TabType = 'invoice' | 'quotation' | 'certificates' | 'inspections' | 'sms'
+type TabType = 'invoice' | 'quotation' | 'workOrders' | 'certificates' | 'inspections' | 'sms'
 
 interface WorkshopPreviewInfo {
   name?: string
@@ -163,7 +163,7 @@ function TemplateTab({
   savedDesigns = [],
   activeDesign = '',
 }: {
-  documentType: 'invoice' | 'quote' | 'certificate'
+  documentType: 'invoice' | 'quote' | 'certificate' | 'work_order'
   workshop?: WorkshopPreviewInfo
   logoUrl?: string
   savedDesigns?: SavedDesign[]
@@ -535,7 +535,7 @@ export function TemplateSettings({
   invoiceLayoutConfig,
   quoteLayoutConfig,
   savedDesigns = [],
-  activeDesigns = { invoice: '', quote: '', certificate: '' },
+  activeDesigns = { invoice: '', quote: '', certificate: '', work_order: '' },
 }: {
   initialInvoiceValues: TemplateValues
   initialQuoteValues: TemplateValues
@@ -549,7 +549,7 @@ export function TemplateSettings({
   invoiceLayoutConfig?: InvoiceLayoutConfig
   quoteLayoutConfig?: InvoiceLayoutConfig
   savedDesigns?: SavedDesign[]
-  activeDesigns?: { invoice: string; quote: string; certificate: string }
+  activeDesigns?: { invoice: string; quote: string; certificate: string; work_order: string }
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -625,23 +625,28 @@ export function TemplateSettings({
           <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
           {/* Colors live here and arrangement lives there, which is easy to
               get lost in. Each page says where the other half is. */}
-          {tab !== 'inspections' && tab !== 'sms' && tab !== 'certificates' && (
-            <Link
-              href="/settings/invoice?tab=layout"
-              className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-            >
-              {t('templates.goToLayout')}
-            </Link>
-          )}
+          {tab !== 'inspections' &&
+            tab !== 'sms' &&
+            tab !== 'certificates' &&
+            tab !== 'workOrders' && (
+              <Link
+                href="/settings/invoice?tab=layout"
+                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+              >
+                {t('templates.goToLayout')}
+              </Link>
+            )}
         </div>
         <p className="text-sm text-muted-foreground">
           {tab === 'inspections'
             ? t('templates.inspectionsDescription')
             : tab === 'certificates'
               ? t('templates.certificatesDescription')
-              : tab === 'sms'
-                ? t('templates.smsDescription')
-                : t('templates.invoiceDescription')}
+              : tab === 'workOrders'
+                ? t('templates.workOrdersDescription')
+                : tab === 'sms'
+                  ? t('templates.smsDescription')
+                  : t('templates.invoiceDescription')}
         </p>
       </div>
 
@@ -670,6 +675,18 @@ export function TemplateSettings({
           )}
         >
           <TabLabel text={t('templates.tabs.quotation')} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('workOrders')}
+          className={cn(
+            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
+            tab === 'workOrders'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <TabLabel text={t('templates.tabs.workOrders')} />
         </button>
         <button
           type="button"
@@ -713,6 +730,16 @@ export function TemplateSettings({
 
       {tab === 'inspections' ? (
         <TemplateListClient templates={inspectionTemplates} checklistLanguage={checklistLanguage} />
+      ) : tab === 'workOrders' ? (
+        <ReadOnlyWrapper>
+          <TemplateTab
+            documentType="work_order"
+            workshop={workshop}
+            logoUrl={logoUrl}
+            savedDesigns={savedDesigns.filter((design) => design.documentType === 'work_order')}
+            activeDesign={activeDesigns.work_order}
+          />
+        </ReadOnlyWrapper>
       ) : tab === 'certificates' ? (
         <ReadOnlyWrapper>
           <TemplateTab
@@ -746,7 +773,8 @@ export function TemplateSettings({
                 workshop={workshop}
                 logoUrl={logoUrl}
                 savedDesigns={savedDesigns.filter(
-                  (design) => design.documentType !== 'certificate'
+                  (design) =>
+                    design.documentType !== 'certificate' && design.documentType !== 'work_order'
                 )}
                 activeDesign={activeDesigns.invoice}
               />
@@ -756,7 +784,8 @@ export function TemplateSettings({
                 workshop={workshop}
                 logoUrl={logoUrl}
                 savedDesigns={savedDesigns.filter(
-                  (design) => design.documentType !== 'certificate'
+                  (design) =>
+                    design.documentType !== 'certificate' && design.documentType !== 'work_order'
                 )}
                 activeDesign={activeDesigns.quote}
               />

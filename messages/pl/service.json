@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Zmienia się tylko wygląd. Dane warsztatu, klient, warunki płatności i kwoty pozostają dokładnie takie, jakie zostały wysłane. Obecny projekt nie jest zachowywany, więc tej operacji nie można cofnąć.",
     "designPickConfirm": "Zmień projekt",
     "designPickDone": "Faktura drukuje się teraz z projektem {name}",
-    "designPickFailed": "Nie udało się zmienić projektu"
+    "designPickFailed": "Nie udało się zmienić projektu",
+    "printWorkOrder": "Drukuj zlecenie"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",
