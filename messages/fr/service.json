@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Seule l'apparence change. Les coordonnées de l'atelier, le client, les conditions de paiement et les montants restent exactement tels qu'ils ont été envoyés. Le design actuel n'est pas conservé, l'action est donc irréversible.",
     "designPickConfirm": "Changer le design",
     "designPickDone": "La facture s'imprime maintenant avec {name}",
-    "designPickFailed": "Impossible de changer le design"
+    "designPickFailed": "Impossible de changer le design",
+    "printWorkOrder": "Imprimer l'ordre de travail"
   },
   "basicInfo": {
     "title": "Informations de Base",

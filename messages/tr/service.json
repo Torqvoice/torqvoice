@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Yalnızca görünüm değişir. Servis bilgileri, müşteri, ödeme koşulları ve tutarlar gönderildiği gibi kalır. Şu anki tasarım saklanmaz, bu yüzden bu işlem geri alınamaz.",
     "designPickConfirm": "Tasarımı değiştir",
     "designPickDone": "Fatura artık {name} tasarımıyla yazdırılıyor",
-    "designPickFailed": "Tasarım değiştirilemedi"
+    "designPickFailed": "Tasarım değiştirilemedi",
+    "printWorkOrder": "İş emrini yazdır"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",

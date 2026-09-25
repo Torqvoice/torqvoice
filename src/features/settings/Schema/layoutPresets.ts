@@ -3,8 +3,13 @@ import {
   type InvoiceLayoutConfig,
   type InvoiceSectionStyle,
   type LayoutDocumentType,
+  BUILTIN_CUSTOMER_FIELDS,
   BUILTIN_FOOTER_FIELDS,
   BUILTIN_HEADER_FIELDS,
+  BUILTIN_JOB_DETAILS_FIELDS,
+  BUILTIN_VEHICLE_FIELDS,
+  WORK_ORDER_DOCUMENT_STYLE,
+  WORK_ORDER_TEMPLATE_DEFAULTS,
   getDefaultLayout,
   sectionsFor,
 } from './invoiceLayoutSchema'
@@ -393,9 +398,144 @@ export const certificatePresets: LayoutPreset[] = [
   },
 ]
 
+/**
+ * Starting points for a work order: the sheet a job prints while it is open.
+ * The customer's copy carries the prices and two lines to sign; the board
+ * copy carries the work as a checklist, the code that opens the job on a
+ * phone, and no prices at all.
+ */
+export const workOrderPresets: LayoutPreset[] = [
+  {
+    // What every work order prints until a design says otherwise: black on
+    // white, one page, only what the technician and the customer need. Kept
+    // equal to the built-in default, which the test holds it to.
+    id: 'work-order-compact',
+    documentType: 'work_order',
+    template: {
+      primaryColor: WORK_ORDER_TEMPLATE_DEFAULTS.primaryColor,
+      headerStyle: WORK_ORDER_TEMPLATE_DEFAULTS.headerStyle,
+      fontFamily: 'Helvetica',
+    },
+    document: { ...WORK_ORDER_DOCUMENT_STYLE },
+    order: [
+      'document_title',
+      'customer',
+      'vehicle',
+      'concerns',
+      'job_description',
+      'parts_table',
+      'labor_table',
+      'totals',
+      'signature',
+      'footer',
+    ],
+    columns: { customer: 'left', vehicle: 'right' },
+    plain: [
+      'customer',
+      'vehicle',
+      'job_details',
+      'job_qr',
+      'concerns',
+      'job_description',
+      'notes',
+      'signature',
+    ],
+    fields: {
+      customer: ['customer_name', 'customer_phone'],
+      vehicle: ['vehicle_name', 'license_plate', 'mileage'],
+      document_title: ['title', 'invoice_number', 'date', 'license_plate'],
+      job_details: ['status', 'technician', 'scheduled', 'promised'],
+      signature: ['inspector_line', 'inspector_name', 'date_line', 'customer_line'],
+    },
+    styles: {
+      labor_table: { backgroundColor: '#ffffff', borderWidth: 0.5 },
+      parts_table: { backgroundColor: '#ffffff', borderWidth: 0.5 },
+    },
+    headerFields: ['logo', 'company_name', 'company_address', 'company_phone'],
+    footerFields: ['footer_note'],
+  },
+  {
+    // The fuller counter copy: the whole customer and vehicle, the service,
+    // the findings, the warranty, in the workshop's colour.
+    id: 'work-order-standard',
+    documentType: 'work_order',
+    template: { primaryColor: '#d97706', headerStyle: 'standard', fontFamily: 'Helvetica' },
+    document: { fontSize: 10, rowPadding: 5, margin: 40, stripes: true },
+    order: [
+      'header',
+      'document_title',
+      'customer',
+      'vehicle',
+      'service',
+      'job_details',
+      'job_qr',
+      'concerns',
+      'job_description',
+      'labor_table',
+      'parts_table',
+      'findings',
+      'totals',
+      'notes',
+      'attached_documents',
+      'warranty',
+      'signature',
+      'footer',
+    ],
+    columns: {
+      customer: 'left',
+      vehicle: 'left',
+      service: 'right',
+      job_details: 'right',
+      job_qr: 'right',
+    },
+    fields: {
+      customer: BUILTIN_CUSTOMER_FIELDS.map((f) => f.id as string),
+      vehicle: BUILTIN_VEHICLE_FIELDS.map((f) => f.id as string),
+      job_details: BUILTIN_JOB_DETAILS_FIELDS.map((f) => f.id as string),
+    },
+    styles: { labor_table: {}, parts_table: {} },
+    headerFields: ALL_HEADER_FIELDS,
+    footerFields: ['footer_note', 'portal_link'],
+  },
+  {
+    // The board copy: the plate large in the strip, the job's facts, the
+    // work as boxes to tick, the code to scan, and nothing about money.
+    id: 'work-order-job-sheet',
+    documentType: 'work_order',
+    template: { primaryColor: '#111827', headerStyle: 'compact', fontFamily: 'Helvetica' },
+    document: { accentColor: '#111827', fontSize: 10, rowPadding: 6, stripes: false },
+    order: [
+      'header',
+      'document_title',
+      'vehicle',
+      'customer',
+      'job_details',
+      'job_qr',
+      'concerns',
+      'job_description',
+      'work_checklist',
+      'findings',
+      'notes',
+      'signature',
+      'footer',
+    ],
+    columns: { vehicle: 'left', customer: 'left', job_details: 'right', job_qr: 'right' },
+    plain: ['customer', 'vehicle', 'job_details', 'job_qr', 'concerns', 'job_description', 'notes'],
+    fields: {
+      document_title: ['title', 'invoice_number', 'license_plate', 'date'],
+      job_details: ['status', 'technician', 'scheduled', 'promised', 'work_bay'],
+      signature: ['inspector_line', 'inspector_name', 'date_line'],
+    },
+    headerFields: ['logo', 'company_name', 'company_phone'],
+    footerFields: ['footer_note'],
+  },
+]
+
 /** The starting points for one document. */
 export function presetsFor(documentType: LayoutDocumentType): LayoutPreset[] {
-  return documentType === 'certificate' ? certificatePresets : layoutPresets
+  if (documentType === 'certificate') return certificatePresets
+  if (documentType === 'work_order') return workOrderPresets
+  return layoutPresets
 }
 
 /**
@@ -444,6 +584,6 @@ export function buildLayoutFromPreset(preset: LayoutPreset): InvoiceLayoutConfig
   return {
     sections,
     ...(preset.document ? { document: preset.document } : {}),
-    ...(documentType === 'certificate' ? { documentType } : {}),
+    ...(documentType !== 'invoice' ? { documentType } : {}),
   }
 }

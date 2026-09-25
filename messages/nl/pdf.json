@@ -209,5 +209,27 @@
     "signature": "Handtekening",
     "signedBy": "Ondertekend door",
     "signatureDate": "Datum"
+  },
+  "workOrder": {
+    "title": "WERKORDER",
+    "orderNumberLabel": "Werkordernr.",
+    "customer": "Klant",
+    "plateLabel": "Kenteken",
+    "jobDetails": "Opdrachtgegevens",
+    "status": "Status: {status}",
+    "technician": "Monteur: {tech}",
+    "scheduled": "Gepland: {date}",
+    "promised": "Toegezegd: {date}",
+    "workBay": "Werkplek: {bay}",
+    "statusPending": "In afwachting",
+    "statusInProgress": "In uitvoering",
+    "statusWaitingParts": "Wacht op onderdelen",
+    "statusCompleted": "Afgerond",
+    "concerns": "Klachten van de klant",
+    "workRequested": "Gevraagd werk",
+    "checklist": "Werk",
+    "scanToOpen": "Scan om deze werkorder te openen",
+    "customerSignature": "Handtekening klant",
+    "printedOn": "Afgedrukt op {date}"
   }
 }

@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Bare utseendet endres. Verkstedopplysningene, kunden, betalingsbetingelsene og beløpene står nøyaktig som de ble sendt. Designet den skrives ut med nå tas ikke vare på, så dette kan ikke angres.",
     "designPickConfirm": "Endre designet",
     "designPickDone": "Fakturaen skrives nå ut med {name}",
-    "designPickFailed": "Kunne ikke endre designet"
+    "designPickFailed": "Kunne ikke endre designet",
+    "printWorkOrder": "Skriv ut arbeidsordre"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",

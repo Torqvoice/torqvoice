@@ -135,6 +135,8 @@ export interface InvoiceSettingsProps {
   currencyFormat?: 'symbol' | 'code'
   unitSystem?: string
   dateFormat?: string
+  /** How a time of day is written where the sheet prints one: '12h' or '24h'. */
+  timeFormat?: string
   timezone?: string
 }
 

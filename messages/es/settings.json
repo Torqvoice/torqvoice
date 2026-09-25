@@ -708,7 +708,12 @@
       "defects": "Defectos",
       "results_table": "Todos los resultados",
       "inspection_photos": "Fotos",
-      "signature": "Firma"
+      "signature": "Firma",
+      "job_details": "Datos del trabajo",
+      "job_qr": "Abrir en el móvil",
+      "concerns": "Inquietudes del cliente",
+      "job_description": "Trabajo solicitado",
+      "work_checklist": "Lista de trabajos"
     },
     "fields": {
       "customer_name": "Nombre del cliente",
@@ -759,7 +764,13 @@
       "inspector_line": "Línea de firma",
       "inspector_name": "Nombre del firmante",
       "date_line": "Línea de fecha",
-      "signature_image": "Firma"
+      "signature_image": "Firma",
+      "status": "Estado",
+      "technician": "Técnico",
+      "scheduled": "Programado",
+      "promised": "Prometido",
+      "work_bay": "Puesto",
+      "customer_line": "Línea de firma del cliente"
     },
     "presetsTitle": "Empezar con una disposición",
     "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Compacto",
         "description": "Una página para flotas: letra pequeña, el veredicto junto al título, todos los resultados sin notas, las fotos, una línea para firmar"
+      },
+      "work-order-standard": {
+        "name": "Estándar",
+        "description": "La copia de mostrador más completa en su color: el cliente y el vehículo enteros, el servicio, las observaciones y la garantía junto al trabajo y los precios"
+      },
+      "work-order-job-sheet": {
+        "name": "Hoja de taller",
+        "description": "Para el tablero: la matrícula grande, los datos del trabajo, las tareas como casillas para marcar, un código para abrirlo en el móvil y sin precios"
+      },
+      "work-order-compact": {
+        "name": "Compacto",
+        "description": "Negro sobre blanco, una página: nombre y teléfono del cliente, el coche, el trabajo, la mano de obra con precios y ambas firmas. Lo que imprime toda orden de trabajo hasta que guarde un diseño"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Listas de\ninspección",
       "sms": "SMS",
       "layout": "Disposición",
-      "certificates": "Certificados de\ninspección"
+      "certificates": "Certificados de\ninspección",
+      "workOrders": "Órdenes\nde trabajo"
     },
     "presets": "Presets de plantilla",
     "primaryColor": "Color primario",
@@ -938,7 +962,8 @@
     "openDesigner": "Abrir el diseñador",
     "designerIntro": "Elige un punto de partida y abre el diseñador para cambiar lo que quieras.",
     "designerHint": "Los colores, las fuentes, los espacios y todas las secciones están en el diseñador.",
-    "certificatesDescription": "Diseña el certificado que imprime y comparte una inspección completada."
+    "certificatesDescription": "Diseña el certificado que imprime y comparte una inspección completada.",
+    "workOrdersDescription": "Diseñe la hoja que imprime una orden de trabajo: lo que firma el cliente y lo que el técnico recoge del tablero."
   },
   "payment": {
     "readMore": "Leer más",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Estado de los faros",
       "checkFogLamp": "Luz antiniebla trasera",
       "photoFront": "Frontal",
-      "photoOdometer": "Cuentakilómetros"
+      "photoOdometer": "Cuentakilómetros",
+      "concernNoise": "Ruido de roce delante al frenar",
+      "concernNoiseDetail": "Pastillas y discos delanteros desgastados; sustituidos",
+      "concernWarningLight": "Testigo encendido en el cuadro desde la semana pasada",
+      "workRequested": "Sustituir pastillas y discos delanteros, reiniciar el indicador de servicio y probar en carretera.",
+      "checklistTestDrive": "Prueba en carretera"
     },
     "logoUpload": "Subir logotipo",
     "logoReplace": "Cambiar logotipo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "No se pudo establecer el diseño predeterminado",
     "fieldFixedSlot": "Siempre se imprime en el mismo lugar, así que no se puede mover.",
     "certificate": "Certificado de inspección",
-    "resultWidthHint": "Vacío ocupa toda la fila. Con un valor la banda se estrecha y se coloca en el lado que marca la alineación; en una columna ocupa el ancho de la columna."
+    "resultWidthHint": "Vacío ocupa toda la fila. Con un valor la banda se estrecha y se coloca en el lado que marca la alineación; en una columna ocupa el ancho de la columna.",
+    "work_order": "Orden de trabajo"
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

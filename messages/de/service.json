@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Nur das Aussehen ändert sich. Werkstattangaben, Kunde, Zahlungsbedingungen und Beträge bleiben genau so, wie sie versendet wurden. Das jetzige Design wird nicht aufbewahrt, das lässt sich also nicht rückgängig machen.",
     "designPickConfirm": "Design ändern",
     "designPickDone": "Die Rechnung wird jetzt mit {name} gedruckt",
-    "designPickFailed": "Design konnte nicht geändert werden"
+    "designPickFailed": "Design konnte nicht geändert werden",
+    "printWorkOrder": "Arbeitsauftrag drucken"
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",

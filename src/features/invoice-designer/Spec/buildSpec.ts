@@ -57,6 +57,8 @@ export interface DocumentData {
     customerNumber?: string
     date: string
     due?: string
+    /** The plate, for the strip's own cell of it. */
+    plate?: string
   }
   items: {
     n: string
@@ -101,6 +103,8 @@ export interface DocumentData {
   sectionLabels: Record<string, string>
   /** What a certificate prints beyond the shared fields; absent on any other document. */
   certificate?: CertificateData
+  /** What a work order prints beyond the shared fields; absent on any other document. */
+  workOrder?: WorkOrderData
   /**
    * Who signs the sheet and when, already worded. Absent means the document
    * has no Signature section to fill, and the section draws nothing.
@@ -119,6 +123,28 @@ export interface DocumentSignature {
   dateCaption: string
   /** The signer's saved signature as a PNG or JPEG data URI. */
   image?: string
+  /**
+   * The customer's line: who signs it and what it is called. Absent means the
+   * document has nobody on the other side of the counter, and the customer
+   * line switch draws nothing.
+   */
+  customerName?: string
+  customerCaption?: string
+}
+
+/**
+ * The work order's own part of the sheet. Everything is already worded, the
+ * way the rest of the document is, so the blocks only draw.
+ */
+export interface WorkOrderData {
+  /** What the customer came in with, in the order they said it. */
+  concerns: { description: string; detail?: string }[]
+  /** The job's description, as paragraphs. */
+  description?: { html?: string }
+  /** The work to do, one box each; the detail is hours or a part count. */
+  checklist: { label: string; detail?: string }[]
+  /** A code that opens the job on a phone, with the line under it. */
+  qr?: { dataUri: string; label: string }
 }
 
 export interface DocumentTheme {
@@ -856,6 +882,8 @@ function documentTitle(
         return [label(data, 'dateLabel', 'Date'), data.meta.date]
       case 'due_date':
         return data.meta.due ? [label(data, 'dueDateLabel', 'Due'), data.meta.due] : null
+      case 'license_plate':
+        return data.meta.plate ? [label(data, 'plateLabel', 'Plate'), data.meta.plate] : null
       default:
         return null
     }
@@ -1623,12 +1651,14 @@ function paymentBlock(
   }
 }
 
-function telegramBlock(
+/** A code with its line under it: the Telegram chat, or the job on a phone. */
+function qrBlock(
   section: InvoiceSection,
   theme: DocumentTheme,
-  data: DocumentData
+  qr: { dataUri: string; label: string } | undefined,
+  side: number
 ): Node | null {
-  if (!data.telegramQr) return null
+  if (!qr) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   return {
@@ -1640,13 +1670,226 @@ function telegramBlock(
         ? { background: look.fill || '#fafafa', radius: 6, padding: look.padding ?? 10 }
         : { background: look.fill, padding: look.padding ?? 10 },
     children: [
-      { kind: 'image', src: data.telegramQr.dataUri, maxWidth: 56, maxHeight: 56, align: 'center' },
+      { kind: 'image', src: qr.dataUri, maxWidth: side, maxHeight: side, align: 'center' },
       {
         kind: 'text',
-        text: data.telegramQr.label,
+        text: qr.label,
         style: { color: look.muted, fontSize: scale(size, 0.72), align: 'center' },
       },
     ],
+  }
+}
+
+function telegramBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  return qrBlock(section, theme, data.telegramQr, 56)
+}
+
+/**
+ * The code that opens this job on a phone. Larger than the Telegram code,
+ * because it is scanned off a board from arm's length, not off a letter.
+ */
+function jobQrBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  return qrBlock(section, theme, data.workOrder?.qr, 84)
+}
+
+/** The panel dress the notes wear, for the work order's prose blocks. */
+function proseBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  heading: string,
+  html: string | undefined
+): Node | null {
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+  if (!html || html.replace(/<[^>]*>/g, '').trim().length === 0) return null
+  const children: Node[] = []
+  if (section.heading !== false) {
+    children.push({
+      kind: 'text',
+      text: heading,
+      style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
+    })
+  }
+  children.push({
+    kind: 'richtext',
+    html,
+    style: { color: look.text, fontSize: scale(size, 0.92) },
+  })
+  const boxed = section.boxed !== false
+  return {
+    kind: 'stack',
+    id: section.id,
+    gap: 3,
+    style: {
+      background: look.fill || (boxed ? '#f3f4f6' : undefined),
+      borderColor: look.border,
+      borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
+      radius: boxed ? 3 : 0,
+      padding: look.padding ?? 10,
+    },
+    children,
+  }
+}
+
+/** What the customer came in with, numbered in the order they said it. */
+function concernsBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  const concerns = data.workOrder?.concerns ?? []
+  if (!concerns.length) return null
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+  const children: Node[] = []
+  if (section.heading !== false) {
+    children.push({
+      kind: 'text',
+      text: label(data, 'concerns', 'Customer concerns'),
+      style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
+    })
+  }
+  concerns.forEach((concern, i) => {
+    children.push({
+      kind: 'row',
+      gap: 6,
+      align: 'start',
+      children: [
+        {
+          width: 14,
+          node: {
+            kind: 'text',
+            text: `${i + 1}.`,
+            style: { color: look.muted, fontSize: scale(size, 0.92), bold: true },
+          },
+        },
+        {
+          width: 'flex',
+          node: {
+            kind: 'stack',
+            gap: 1,
+            children: [
+              {
+                kind: 'text',
+                text: concern.description,
+                style: { color: look.text, fontSize: scale(size, 0.92) },
+              },
+              ...(concern.detail
+                ? [
+                    {
+                      kind: 'text' as const,
+                      text: concern.detail,
+                      style: { color: look.muted, fontSize: scale(size, 0.82) },
+                    },
+                  ]
+                : []),
+            ],
+          },
+        },
+      ],
+    })
+  })
+  const boxed = section.boxed !== false
+  return {
+    kind: 'stack',
+    id: section.id,
+    gap: 4,
+    style: {
+      background: look.fill || (boxed ? '#f3f4f6' : undefined),
+      borderColor: look.border,
+      borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
+      radius: boxed ? 3 : 0,
+      padding: look.padding ?? 10,
+    },
+    children,
+  }
+}
+
+/** The side of a tick box, in points. */
+const TICK_BOX = 9
+
+/**
+ * The work, one empty box per line, for the copy that goes on the board: a
+ * technician ticks each job off with a pen. Hours or counts sit at the
+ * right; prices are the tables' business, not this one's.
+ */
+function checklistBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  const rows = data.workOrder?.checklist ?? []
+  if (!rows.length) return null
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+  const ink = look.border || look.text
+  const children: Node[] = []
+  if (section.heading !== false) {
+    children.push({
+      kind: 'text',
+      text: label(data, 'checklist', 'Work'),
+      style: theme.classic
+        ? { color: look.text, bold: true, fontSize: scale(size, 1.2) }
+        : { color: look.label, bold: true, fontSize: scale(size, 1.05) },
+    })
+  }
+  for (const row of rows) {
+    children.push({
+      kind: 'row',
+      gap: 7,
+      align: 'center',
+      children: [
+        {
+          width: TICK_BOX,
+          node: {
+            kind: 'stack',
+            style: { borderColor: ink, borderWidth: 0.9, radius: 1.5 },
+            children: [{ kind: 'spacer', height: TICK_BOX - 1.8 }],
+          },
+        },
+        {
+          width: 'flex',
+          node: { kind: 'text', text: row.label, style: { color: look.text, fontSize: size } },
+        },
+        ...(row.detail
+          ? [
+              {
+                width: 70,
+                node: {
+                  kind: 'text' as const,
+                  text: row.detail,
+                  style: { color: look.muted, fontSize: scale(size, 0.9), align: 'right' as const },
+                },
+              },
+            ]
+          : []),
+      ],
+    })
+    children.push({ kind: 'spacer', height: 0.5, color: look.border || '#eceef1' })
+  }
+  const boxed = section.boxed !== false
+  return {
+    kind: 'stack',
+    id: section.id,
+    gap: theme.rowPadding,
+    style: boxed
+      ? {
+          background: look.fill,
+          borderColor: look.border || '#e3e5e9',
+          borderWidth: look.ruleWidth ?? 0.75,
+          radius: 3,
+          padding: look.padding ?? 10,
+        }
+      : { background: look.fill, padding: look.padding ?? 0 },
+    children,
   }
 }
 
@@ -1810,6 +2053,22 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return telegramBlock(section, theme, data)
     case 'footer':
       return footer(section, theme, data)
+    // The work order's own sections.
+    case 'job_details':
+      return panel(section, theme, data, sectionFields(section))
+    case 'job_qr':
+      return jobQrBlock(section, theme, data)
+    case 'concerns':
+      return concernsBlock(section, theme, data)
+    case 'job_description':
+      return proseBlock(
+        section,
+        theme,
+        label(data, 'workRequested', 'Work requested'),
+        data.workOrder?.description?.html
+      )
+    case 'work_checklist':
+      return checklistBlock(section, theme, data)
     // The certificate's own sections; see certificateBlocks.ts.
     case 'result':
       return resultBlock(section, theme, data)

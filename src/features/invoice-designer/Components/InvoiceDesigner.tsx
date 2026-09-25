@@ -40,7 +40,9 @@ import {
   saveCertificateLayoutConfig,
   saveInvoiceLayoutConfig,
   saveQuoteLayoutConfig,
+  saveWorkOrderLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
+import { workOrderLabels } from '../Lib/workOrderLabels'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
@@ -76,9 +78,11 @@ export function InvoiceDesigner({
   invoiceLayout,
   quoteLayout,
   certificateLayout,
+  workOrderLayout,
   invoiceTemplate,
   quoteTemplate,
   certificateTemplate,
+  workOrderTemplate,
   initialSavedDesigns = [],
   initialPresetId,
   initialDesignId,
@@ -93,10 +97,13 @@ export function InvoiceDesigner({
   invoiceLayout?: InvoiceLayoutConfig
   quoteLayout?: InvoiceLayoutConfig
   certificateLayout?: InvoiceLayoutConfig
+  workOrderLayout?: InvoiceLayoutConfig
   invoiceTemplate: DesignerTemplate
   quoteTemplate: DesignerTemplate
   /** The certificate's look; it falls back to the invoice's when never set. */
   certificateTemplate?: DesignerTemplate
+  /** The work order's look; it falls back to the invoice's when never set. */
+  workOrderTemplate?: DesignerTemplate
   initialSavedDesigns?: SavedDesign[]
   /** A preset to arrive with already applied, from settings' starting points. */
   initialPresetId?: string
@@ -139,6 +146,7 @@ export function InvoiceDesigner({
       invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
       quote: quoteLayout ?? getDefaultInvoiceLayout(),
       certificate: certificateLayout ?? getDefaultLayout('certificate'),
+      work_order: workOrderLayout ?? getDefaultLayout('work_order'),
     }
     if (initialDesign) base[initialDocumentType] = mergeWithDefaults(initialDesign.layout)
     else if (initialPreset) base[initialDocumentType] = buildLayoutFromPreset(initialPreset)
@@ -149,6 +157,7 @@ export function InvoiceDesigner({
       invoice: invoiceTemplate,
       quote: quoteTemplate,
       certificate: certificateTemplate ?? invoiceTemplate,
+      work_order: workOrderTemplate ?? invoiceTemplate,
     }
     if (initialDesign) {
       base[initialDocumentType] = { ...initialDesign.template }
@@ -170,6 +179,7 @@ export function InvoiceDesigner({
     invoice: !!arrivedWith && initialDocumentType === 'invoice',
     quote: !!arrivedWith && initialDocumentType === 'quote',
     certificate: !!arrivedWith && initialDocumentType === 'certificate',
+    work_order: !!arrivedWith && initialDocumentType === 'work_order',
   })
   // The preset or design in the URL is a one-shot instruction, consumed
   // above. Left in the address bar it would re-apply itself on every refresh,
@@ -189,7 +199,7 @@ export function InvoiceDesigner({
   // saved layout, which reads as the design changing by itself. The browser
   // asks first, so losing the work is a choice rather than a surprise.
   useEffect(() => {
-    if (!dirty.invoice && !dirty.quote && !dirty.certificate) return
+    if (!dirty.invoice && !dirty.quote && !dirty.certificate && !dirty.work_order) return
     const warn = (event: BeforeUnloadEvent) => {
       event.preventDefault()
       // Chrome still wants the legacy channel to show the dialog.
@@ -205,6 +215,7 @@ export function InvoiceDesigner({
       invoice: initialActiveDesigns?.invoice ?? '',
       quote: initialActiveDesigns?.quote ?? '',
       certificate: initialActiveDesigns?.certificate ?? '',
+      work_order: initialActiveDesigns?.work_order ?? '',
     }
     if (initialDesign) base[initialDocumentType] = `design:${initialDesign.id}`
     else if (initialPreset) base[initialDocumentType] = `preset:${initialPreset.id}`
@@ -212,12 +223,12 @@ export function InvoiceDesigner({
   })
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(initialSavedDesigns)
   // An invoice design is a starting point for a quote and the other way
-  // round; a certificate's sections are its own, so its designs and the
-  // others' never appear on each other's canvas.
+  // round; a certificate's and a work order's sections are their own, so
+  // their designs and the others' never appear on each other's canvas.
   const galleryDesigns = savedDesigns.filter((design) =>
-    docType === 'certificate'
-      ? design.documentType === 'certificate'
-      : design.documentType !== 'certificate'
+    docType === 'certificate' || docType === 'work_order'
+      ? design.documentType === docType
+      : design.documentType !== 'certificate' && design.documentType !== 'work_order'
   )
   /** Open state and draft name for the save-design dialog. */
   const [namingDesign, setNamingDesign] = useState(false)
@@ -279,6 +290,9 @@ export function InvoiceDesigner({
   const printLabels = useMemo<PrintLabels>(() => {
     const pdf = messages.pdf ?? {}
     if (docType === 'certificate') return certificateLabels(pdf)
+    if (docType === 'work_order') {
+      return withOrgNumberLabel(workOrderLabels(pdf), workshop.orgNumberLabel)
+    }
     return withOrgNumberLabel(
       {
         ...(pdf.invoice ?? {}),
@@ -434,6 +448,7 @@ export function InvoiceDesigner({
         invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
         quote: prev.quote === `design:${design.id}` ? '' : prev.quote,
         certificate: prev.certificate === `design:${design.id}` ? '' : prev.certificate,
+        work_order: prev.work_order === `design:${design.id}` ? '' : prev.work_order,
       }))
       if (designName.trim().toLowerCase() === design.name.trim().toLowerCase()) {
         setDesignName('')
@@ -696,7 +711,9 @@ export function InvoiceDesigner({
           ? saveInvoiceLayoutConfig(stamped)
           : docType === 'quote'
             ? saveQuoteLayoutConfig(stamped)
-            : saveCertificateLayoutConfig(stamped),
+            : docType === 'certificate'
+              ? saveCertificateLayoutConfig(stamped)
+              : saveWorkOrderLayoutConfig(stamped),
         setSettings({
           [`${prefix}.primaryColor`]: template.primaryColor,
           [`${prefix}.backgroundColor`]: template.backgroundColor,
@@ -853,7 +870,7 @@ export function InvoiceDesigner({
         </button>
 
         <div className="flex gap-0.5 rounded-lg bg-[#f0f1f4] p-[3px]">
-          {(['invoice', 'quote', 'certificate'] as DocumentType[]).map((type) => (
+          {(['invoice', 'quote', 'work_order', 'certificate'] as DocumentType[]).map((type) => (
             <button
               key={type}
               type="button"

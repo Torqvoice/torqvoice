@@ -708,7 +708,12 @@
       "defects": "Usterki",
       "results_table": "Wszystkie wyniki",
       "inspection_photos": "Zdjęcia",
-      "signature": "Podpis"
+      "signature": "Podpis",
+      "job_details": "Szczegóły zlecenia",
+      "job_qr": "Otwórz na telefonie",
+      "concerns": "Uwagi klienta",
+      "job_description": "Zlecone prace",
+      "work_checklist": "Lista prac"
     },
     "fields": {
       "customer_name": "Nazwa klienta",
@@ -719,7 +724,7 @@
       "customer_tax_id": "NIP klienta",
       "vehicle_name": "Pojazd",
       "vin": "VIN",
-      "license_plate": "Tablica rejestracyjna",
+      "license_plate": "Numer rejestracyjny",
       "mileage": "Przebieg",
       "service_title": "Tytuł usługi",
       "service_type": "Typ usługi",
@@ -759,7 +764,13 @@
       "inspector_line": "Linia podpisu",
       "inspector_name": "Imię i nazwisko podpisującego",
       "date_line": "Linia daty",
-      "signature_image": "Podpis"
+      "signature_image": "Podpis",
+      "status": "Status",
+      "technician": "Technik",
+      "scheduled": "Zaplanowano",
+      "promised": "Obiecano",
+      "work_bay": "Stanowisko",
+      "customer_line": "Linia podpisu klienta"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Kompaktowy",
         "description": "Jedna strona dla flot: mała czcionka, werdykt obok tytułu, wszystkie wyniki bez uwag, zdjęcia, miejsce na podpis"
+      },
+      "work-order-standard": {
+        "name": "Standardowy",
+        "description": "Pełniejsza kopia dla lady w twoim kolorze: cały klient i pojazd, usługa, spostrzeżenia i gwarancja obok prac i cen"
+      },
+      "work-order-job-sheet": {
+        "name": "Karta pracy",
+        "description": "Na tablicę: duża rejestracja, fakty o zleceniu, prace jako pola do odhaczenia, kod otwierający je na telefonie i żadnych cen"
+      },
+      "work-order-compact": {
+        "name": "Kompaktowy",
+        "description": "Czarno na białym, jedna strona: imię i telefon klienta, samochód, zlecenie, prace z cenami i oba podpisy. To, co drukuje każde zlecenie, dopóki nie zapiszesz projektu"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Listy kontrolne\nprzeglądów",
       "sms": "SMS",
       "layout": "Układ",
-      "certificates": "Certyfikaty\nprzeglądów"
+      "certificates": "Certyfikaty\nprzeglądów",
+      "workOrders": "Zlecenia"
     },
     "presets": "Gotowe szablony",
     "primaryColor": "Kolor główny",
@@ -938,7 +962,8 @@
     "openDesigner": "Otwórz kreator",
     "designerIntro": "Wybierz punkt wyjścia, a potem otwórz kreator, aby zmienić wszystko.",
     "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze.",
-    "certificatesDescription": "Zaprojektuj certyfikat, który drukuje i udostępnia zakończony przegląd."
+    "certificatesDescription": "Zaprojektuj certyfikat, który drukuje i udostępnia zakończony przegląd.",
+    "workOrdersDescription": "Zaprojektuj arkusz drukowany ze zlecenia: to, co podpisuje klient, i to, co technik zdejmuje z tablicy."
   },
   "payment": {
     "readMore": "Czytaj więcej",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Stan reflektorów",
       "checkFogLamp": "Tylne światło przeciwmgłowe",
       "photoFront": "Przód",
-      "photoOdometer": "Licznik"
+      "photoOdometer": "Licznik",
+      "concernNoise": "Zgrzytanie z przodu przy hamowaniu",
+      "concernNoiseDetail": "Przednie klocki i tarcze zużyte; wymienione",
+      "concernWarningLight": "Kontrolka na desce rozdzielczej od zeszłego tygodnia",
+      "workRequested": "Wymienić przednie klocki i tarcze hamulcowe, zresetować wskaźnik serwisu i wykonać jazdę próbną.",
+      "checklistTestDrive": "Jazda próbna"
     },
     "logoUpload": "Prześlij logo",
     "logoReplace": "Zmień logo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu",
     "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść.",
     "certificate": "Certyfikat przeglądu",
-    "resultWidthHint": "Puste wypełnia wiersz. Wpisz punkty, by zwęzić pasek; ułoży się po stronie wskazanej przez wyrównanie, a w kolumnie zajmie jej szerokość."
+    "resultWidthHint": "Puste wypełnia wiersz. Wpisz punkty, by zwęzić pasek; ułoży się po stronie wskazanej przez wyrównanie, a w kolumnie zajmie jej szerokość.",
+    "work_order": "Zlecenie"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

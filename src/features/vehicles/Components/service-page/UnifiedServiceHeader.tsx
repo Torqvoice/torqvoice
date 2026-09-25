@@ -27,6 +27,7 @@ import {
   Save,
   Trash2,
   Video,
+  Printer,
 } from 'lucide-react'
 import {
   paymentStatusColors,
@@ -60,6 +61,8 @@ interface UnifiedServiceHeaderProps {
   showSaved?: boolean
   onDownloadPDF: () => void
   onPreviewPDF: () => void
+  /** The work order as a sheet to print and sign, opened in the preview. */
+  onPrintWorkOrder?: () => void
   onDelete: () => void
   onShowEmail: () => void
   onShowShare: () => void
@@ -92,6 +95,7 @@ export function UnifiedServiceHeader({
   showSaved = false,
   onDownloadPDF,
   onPreviewPDF,
+  onPrintWorkOrder,
   onDelete,
   onShowEmail,
   onShowShare,
@@ -147,6 +151,7 @@ export function UnifiedServiceHeader({
           showSaved={showSaved}
           onDownloadPDF={onDownloadPDF}
           onPreviewPDF={onPreviewPDF}
+          onPrintWorkOrder={onPrintWorkOrder}
           onDelete={onDelete}
           onShowEmail={onShowEmail}
           onShowShare={onShowShare}
@@ -190,6 +195,7 @@ type ServiceHeaderActionsProps = Pick<
   | 'showSaved'
   | 'onDownloadPDF'
   | 'onPreviewPDF'
+  | 'onPrintWorkOrder'
   | 'onDelete'
   | 'onShowEmail'
   | 'onShowShare'
@@ -218,6 +224,7 @@ export function ServiceHeaderActions({
   showSaved = false,
   onDownloadPDF,
   onPreviewPDF,
+  onPrintWorkOrder,
   onDelete,
   onShowEmail,
   onShowShare,
@@ -299,6 +306,15 @@ export function ServiceHeaderActions({
             <TooltipContent>{t('moreActions')}</TooltipContent>
           </Tooltip>
           <DropdownMenuContent align="end" className="min-w-56">
+            {onPrintWorkOrder && (
+              <>
+                <DropdownMenuItem onClick={onPrintWorkOrder}>
+                  <Printer className="mr-2 size-4" aria-hidden="true" />
+                  {t('printWorkOrder')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
             {designMenu && (
               <>
                 {designMenu}

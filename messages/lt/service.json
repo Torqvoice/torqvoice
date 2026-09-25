@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Keičiasi tik išvaizda. Serviso duomenys, klientas, mokėjimo sąlygos ir sumos lieka tokie, kokie buvo išsiųsti. Dabartinis dizainas nesaugomas, todėl to atšaukti nepavyks.",
     "designPickConfirm": "Keisti dizainą",
     "designPickDone": "Sąskaita dabar spausdinama su {name}",
-    "designPickFailed": "Nepavyko pakeisti dizaino"
+    "designPickFailed": "Nepavyko pakeisti dizaino",
+    "printWorkOrder": "Spausdinti darbo užsakymą"
   },
   "basicInfo": {
     "title": "Pagrindinė informacija",

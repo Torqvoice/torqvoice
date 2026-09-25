@@ -209,5 +209,27 @@
     "signature": "Signature",
     "signedBy": "Signed by",
     "signatureDate": "Date"
+  },
+  "workOrder": {
+    "title": "WORK ORDER",
+    "orderNumberLabel": "Work order No.",
+    "customer": "Customer",
+    "plateLabel": "Plate",
+    "jobDetails": "Job details",
+    "status": "Status: {status}",
+    "technician": "Technician: {tech}",
+    "scheduled": "Scheduled: {date}",
+    "promised": "Promised: {date}",
+    "workBay": "Bay: {bay}",
+    "statusPending": "Pending",
+    "statusInProgress": "In progress",
+    "statusWaitingParts": "Waiting for parts",
+    "statusCompleted": "Completed",
+    "concerns": "Customer concerns",
+    "workRequested": "Work requested",
+    "checklist": "Work",
+    "scanToOpen": "Scan to open this work order",
+    "customerSignature": "Customer signature",
+    "printedOn": "Printed {date}"
   }
 }

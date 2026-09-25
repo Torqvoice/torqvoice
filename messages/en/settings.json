@@ -708,7 +708,12 @@
       "defects": "Defects",
       "results_table": "All results",
       "inspection_photos": "Photos",
-      "signature": "Signature"
+      "signature": "Signature",
+      "job_details": "Job Details",
+      "job_qr": "Open on Phone",
+      "concerns": "Customer Concerns",
+      "job_description": "Work Requested",
+      "work_checklist": "Work Checklist"
     },
     "fields": {
       "customer_name": "Customer Name",
@@ -759,7 +764,13 @@
       "inspector_line": "Signature line",
       "inspector_name": "Signer's name",
       "date_line": "Date line",
-      "signature_image": "Signature"
+      "signature_image": "Signature",
+      "status": "Status",
+      "technician": "Technician",
+      "scheduled": "Scheduled",
+      "promised": "Promised",
+      "work_bay": "Work Bay",
+      "customer_line": "Customer signature line"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Compact",
         "description": "One page for a fleet: small type, the verdict beside the title, the full results without notes, the photos, a line to sign"
+      },
+      "work-order-standard": {
+        "name": "Standard",
+        "description": "The fuller counter copy in your colour: the whole customer and vehicle, the service, the findings and the warranty beside the work and the prices"
+      },
+      "work-order-job-sheet": {
+        "name": "Job sheet",
+        "description": "For the board: the plate large, the facts of the job, the work as boxes to tick, a code to open it on a phone, and no prices"
+      },
+      "work-order-compact": {
+        "name": "Compact",
+        "description": "Black on white, one page: the customer's name and phone, the car, the job, the work with prices and both signatures. What every work order prints until you save a design"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Inspection\nChecklists",
       "sms": "SMS",
       "layout": "Layout",
-      "certificates": "Inspection\nCertificates"
+      "certificates": "Inspection\nCertificates",
+      "workOrders": "Work\nOrders"
     },
     "presets": "Template Presets",
     "primaryColor": "Primary Color",
@@ -938,7 +962,8 @@
     "openDesigner": "Open Template Designer",
     "designerIntro": "Pick a starting point, then open the designer to change anything.",
     "designerHint": "Colors, fonts, spacing and every section live in the designer.",
-    "certificatesDescription": "Design the certificate a completed inspection prints and shares."
+    "certificatesDescription": "Design the certificate a completed inspection prints and shares.",
+    "workOrdersDescription": "Design the sheet a work order prints: what the customer signs and what the technician takes off the board."
   },
   "payment": {
     "readMore": "Read More",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Headlamp condition",
       "checkFogLamp": "Rear fog lamp",
       "photoFront": "Front",
-      "photoOdometer": "Odometer"
+      "photoOdometer": "Odometer",
+      "concernNoise": "Grinding noise from the front when braking",
+      "concernNoiseDetail": "Front pads and discs worn; replaced",
+      "concernWarningLight": "Warning light on the dashboard since last week",
+      "workRequested": "Replace front brake pads and discs, reset the service indicator and road test.",
+      "checklistTestDrive": "Road test"
     },
     "logoUpload": "Upload logo",
     "logoReplace": "Replace logo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Could not set the default design",
     "fieldFixedSlot": "Always prints in the same place, so it cannot be moved.",
     "certificate": "Inspection certificate",
-    "resultWidthHint": "Empty spans the row. Set points to make the band narrower; it then sits at the side the alignment picks, and in a column it takes the column's width."
+    "resultWidthHint": "Empty spans the row. Set points to make the band narrower; it then sits at the side the alignment picks, and in a column it takes the column's width.",
+    "work_order": "Work order"
   },
   "preview": {
     "title": "Brake Service & Oil Change",

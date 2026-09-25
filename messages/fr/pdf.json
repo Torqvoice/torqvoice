@@ -209,5 +209,27 @@
     "signature": "Signature",
     "signedBy": "Signé par",
     "signatureDate": "Date"
+  },
+  "workOrder": {
+    "title": "ORDRE DE TRAVAIL",
+    "orderNumberLabel": "N° d'ordre",
+    "customer": "Client",
+    "plateLabel": "Plaque",
+    "jobDetails": "Détails du travail",
+    "status": "Statut : {status}",
+    "technician": "Technicien : {tech}",
+    "scheduled": "Planifié : {date}",
+    "promised": "Promis : {date}",
+    "workBay": "Poste : {bay}",
+    "statusPending": "En attente",
+    "statusInProgress": "En cours",
+    "statusWaitingParts": "En attente de pièces",
+    "statusCompleted": "Terminé",
+    "concerns": "Demandes du client",
+    "workRequested": "Travaux demandés",
+    "checklist": "Travaux",
+    "scanToOpen": "Scannez pour ouvrir cet ordre de travail",
+    "customerSignature": "Signature du client",
+    "printedOn": "Imprimé le {date}"
   }
 }

@@ -9,6 +9,7 @@ import {
   getCertificateLayoutConfig,
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
+  getWorkOrderLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
 import { listDocumentDesigns } from '@/features/invoice-designer/Actions/documentDesignActions'
@@ -16,6 +17,7 @@ import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceD
 import { DismissOnArrival } from '@/components/feature-hint'
 import { INVOICE_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
+import { WORK_ORDER_TEMPLATE_DEFAULTS } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { telegramBotLink as botLinkOf } from '@/features/invoices/Lib/telegramQr'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
@@ -47,6 +49,8 @@ export default async function InvoiceDesignerPage({
     certificateLayout,
     certificateDesigns,
     signatureUrl,
+    workOrderLayout,
+    workOrderDesigns,
   ] = await Promise.all([
     getSettings(),
     getInvoiceLayoutConfig(),
@@ -71,6 +75,8 @@ export default async function InvoiceDesignerPage({
     getCertificateLayoutConfig(),
     listDocumentDesigns('certificate'),
     memberSignatureDataUri(data.organizationId, data.userId),
+    getWorkOrderLayoutConfig(),
+    listDocumentDesigns('work_order'),
   ])
 
   // Somebody is looking at the designer, so the workshop knows it exists. Only
@@ -89,14 +95,19 @@ export default async function InvoiceDesignerPage({
     // A certificate's sections are its own, so its designs stay a family
     // apart: the gallery shows them only on the certificate canvas.
     ...(certificateDesigns.success && certificateDesigns.data ? certificateDesigns.data : []),
+    // The work order's designs are a family of their own for the same reason.
+    ...(workOrderDesigns.success && workOrderDesigns.data ? workOrderDesigns.data : []),
   ]
   const { doc, view, preset, design } = await searchParams
 
-  const templateFor = (prefix: 'invoice' | 'quote' | 'certificate') => ({
+  const templateFor = (prefix: 'invoice' | 'quote' | 'certificate' | 'work_order') => ({
+    // A work order does not borrow the invoice's colour: it starts black on
+    // white, the way it prints until a design is saved for it.
     primaryColor:
       settings[`${prefix}.primaryColor`] ||
-      settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] ||
-      '#d97706',
+      (prefix === 'work_order'
+        ? WORK_ORDER_TEMPLATE_DEFAULTS.primaryColor
+        : settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706'),
     backgroundColor: settings[`${prefix}.backgroundColor`] || '',
     textColor: settings[`${prefix}.textColor`] || '',
     companyTextColor: settings[`${prefix}.companyTextColor`] || '',
@@ -105,7 +116,9 @@ export default async function InvoiceDesignerPage({
     frameSide: settings[`${prefix}.frameSide`] || 'left',
     frameRadius: Number(settings[`${prefix}.frameRadius`]) || 0,
     fontFamily: settings[`${prefix}.fontFamily`] || 'Helvetica',
-    headerStyle: settings[`${prefix}.headerStyle`] || 'standard',
+    headerStyle:
+      settings[`${prefix}.headerStyle`] ||
+      (prefix === 'work_order' ? WORK_ORDER_TEMPLATE_DEFAULTS.headerStyle : 'standard'),
     logoSize: Number(settings[`${prefix}.logoSize`]) || 100,
     logoUrl: settings[`${prefix}.logo`] || '',
   })
@@ -115,7 +128,13 @@ export default async function InvoiceDesignerPage({
       {announcementLive && <DismissOnArrival id={INVOICE_DESIGNER_ANNOUNCEMENT} />}
       <InvoiceDesigner
         initialDocumentType={
-          doc === 'quote' ? 'quote' : doc === 'certificate' ? 'certificate' : 'invoice'
+          doc === 'quote'
+            ? 'quote'
+            : doc === 'certificate'
+              ? 'certificate'
+              : doc === 'work_order'
+                ? 'work_order'
+                : 'invoice'
         }
         initialView={view === 'designer' ? 'designer' : 'gallery'}
         initialPresetId={preset}
@@ -124,13 +143,16 @@ export default async function InvoiceDesignerPage({
           invoice: settings['invoice.activeDesign'] || '',
           quote: settings['quote.activeDesign'] || '',
           certificate: settings['certificate.activeDesign'] || '',
+          work_order: settings['work_order.activeDesign'] || '',
         }}
         invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
         quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
         certificateLayout={certificateLayout.success ? certificateLayout.data : undefined}
+        workOrderLayout={workOrderLayout.success ? workOrderLayout.data : undefined}
         invoiceTemplate={templateFor('invoice')}
         quoteTemplate={templateFor('quote')}
         certificateTemplate={templateFor('certificate')}
+        workOrderTemplate={templateFor('work_order')}
         initialSavedDesigns={savedDesigns}
         telegramBotLink={telegramBotUsername ? botLinkOf(telegramBotUsername) : undefined}
         workshop={{

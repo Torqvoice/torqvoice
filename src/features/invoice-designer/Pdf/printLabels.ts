@@ -6,9 +6,13 @@
 
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { isMarineWorkshop, type PdfMessages, withMarineDocumentLabels } from '../Lib/marineLabels'
+import { withWorkOrderLabels } from '../Lib/workOrderLabels'
 
-/** Which document's wording wins where the invoice and the quote differ. */
-export type PrintDocumentType = 'invoice' | 'quote'
+/**
+ * Which document's wording wins where the invoice and the quote differ. A
+ * work order takes the invoice's vocabulary and lays its own on top.
+ */
+export type PrintDocumentType = 'invoice' | 'quote' | 'work_order'
 
 async function loadPdfMessages(locale: string): Promise<PdfMessages> {
   try {
@@ -36,7 +40,10 @@ export async function loadPrintLabels(
   }
 
   if (isMarineWorkshop(settingsMap)) {
-    labels = withMarineDocumentLabels(labels, pdfMessages, documentType)
+    labels = withMarineDocumentLabels(labels, pdfMessages, quote ? 'quote' : 'invoice')
+  }
+  if (documentType === 'work_order') {
+    labels = withWorkOrderLabels(labels, pdfMessages.workOrder)
   }
 
   const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()

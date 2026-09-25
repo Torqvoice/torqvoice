@@ -708,7 +708,12 @@
       "defects": "Défauts",
       "results_table": "Tous les résultats",
       "inspection_photos": "Photos",
-      "signature": "Signature"
+      "signature": "Signature",
+      "job_details": "Détails du travail",
+      "job_qr": "Ouvrir sur le téléphone",
+      "concerns": "Demandes du client",
+      "job_description": "Travaux demandés",
+      "work_checklist": "Liste des travaux"
     },
     "fields": {
       "customer_name": "Nom du client",
@@ -759,7 +764,13 @@
       "inspector_line": "Ligne de signature",
       "inspector_name": "Nom du signataire",
       "date_line": "Ligne de date",
-      "signature_image": "Signature"
+      "signature_image": "Signature",
+      "status": "Statut",
+      "technician": "Technicien",
+      "scheduled": "Planifié",
+      "promised": "Promis",
+      "work_bay": "Poste",
+      "customer_line": "Ligne de signature du client"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Compact",
         "description": "Une page pour une flotte : petits caractères, le verdict à côté du titre, tous les résultats sans remarques, les photos, une ligne de signature"
+      },
+      "work-order-standard": {
+        "name": "Standard",
+        "description": "La copie de comptoir plus complète, à votre couleur : le client et le véhicule en entier, la prestation, les constats et la garantie à côté des travaux et des prix"
+      },
+      "work-order-job-sheet": {
+        "name": "Fiche de travail",
+        "description": "Pour le tableau : la plaque en grand, les faits du travail, les tâches à cocher, un code pour l'ouvrir sur le téléphone et aucun prix"
+      },
+      "work-order-compact": {
+        "name": "Compact",
+        "description": "Noir sur blanc, une page : le nom et le téléphone du client, la voiture, le travail, la main-d'œuvre avec les prix et les deux signatures. Ce que chaque ordre de travail imprime tant que vous n'enregistrez pas de design"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Listes\nd'inspection",
       "sms": "SMS",
       "layout": "Mise en page",
-      "certificates": "Certificats\nd'inspection"
+      "certificates": "Certificats\nd'inspection",
+      "workOrders": "Ordres\nde travail"
     },
     "presets": "Presets de modèle",
     "primaryColor": "Couleur primaire",
@@ -938,7 +962,8 @@
     "openDesigner": "Ouvrir le concepteur",
     "designerIntro": "Choisissez un point de départ, puis ouvrez le concepteur pour tout modifier.",
     "designerHint": "Les couleurs, les polices, les espacements et toutes les sections sont dans le concepteur.",
-    "certificatesDescription": "Concevez le certificat qu'une inspection terminée imprime et partage."
+    "certificatesDescription": "Concevez le certificat qu'une inspection terminée imprime et partage.",
+    "workOrdersDescription": "Concevez la feuille qu'imprime un ordre de travail : ce que le client signe et ce que le technicien prend au tableau."
   },
   "payment": {
     "readMore": "En savoir plus",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "État des projecteurs",
       "checkFogLamp": "Feu de brouillard arrière",
       "photoFront": "Avant",
-      "photoOdometer": "Compteur"
+      "photoOdometer": "Compteur",
+      "concernNoise": "Bruit de frottement à l'avant au freinage",
+      "concernNoiseDetail": "Plaquettes et disques avant usés ; remplacés",
+      "concernWarningLight": "Voyant allumé au tableau de bord depuis la semaine dernière",
+      "workRequested": "Remplacer les plaquettes et disques avant, réinitialiser l'indicateur d'entretien et faire un essai routier.",
+      "checklistTestDrive": "Essai routier"
     },
     "logoUpload": "Importer un logo",
     "logoReplace": "Remplacer le logo",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Impossible de définir le design par défaut",
     "fieldFixedSlot": "S'imprime toujours au même endroit et ne peut pas être déplacé.",
     "certificate": "Certificat d'inspection",
-    "resultWidthHint": "Vide occupe toute la ligne. Une valeur rétrécit le bandeau, placé du côté choisi par l'alignement ; dans une colonne il prend la largeur de la colonne."
+    "resultWidthHint": "Vide occupe toute la ligne. Une valeur rétrécit le bandeau, placé du côté choisi par l'alignement ; dans une colonne il prend la largeur de la colonne.",
+    "work_order": "Ordre de travail"
   },
   "preview": {
     "title": "Révision des freins et vidange",

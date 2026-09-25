@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Só a aparência muda. Os dados da oficina, o cliente, as condições de pagamento e os valores continuam exatamente como foram enviados. O design atual não é guardado, então isso não pode ser desfeito.",
     "designPickConfirm": "Mudar o design",
     "designPickDone": "A fatura agora é impressa com {name}",
-    "designPickFailed": "Não foi possível alterar o design"
+    "designPickFailed": "Não foi possível alterar o design",
+    "printWorkOrder": "Imprimir ordem de serviço"
   },
   "basicInfo": {
     "title": "Informações Básicas",

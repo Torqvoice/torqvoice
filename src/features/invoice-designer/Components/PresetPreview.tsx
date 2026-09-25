@@ -1,6 +1,7 @@
 'use client'
 
 import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
+import { workOrderLabels } from '../Lib/workOrderLabels'
 
 import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
@@ -39,11 +40,13 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
     const labels: PrintLabels =
       docType === 'certificate'
         ? certificateLabels(pdf)
-        : {
-            ...(pdf.invoice ?? {}),
-            ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-            ...(pdf.common ?? {}),
-          }
+        : docType === 'work_order'
+          ? workOrderLabels(pdf)
+          : {
+              ...(pdf.invoice ?? {}),
+              ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
+              ...(pdf.common ?? {}),
+            }
     return buildSampleData(
       {
         name: workshop?.name ?? '',

@@ -209,5 +209,27 @@
     "signature": "Podpis",
     "signedBy": "Podpisał(a)",
     "signatureDate": "Data"
+  },
+  "workOrder": {
+    "title": "ZLECENIE",
+    "orderNumberLabel": "Nr zlecenia",
+    "customer": "Klient",
+    "plateLabel": "Nr rej.",
+    "jobDetails": "Szczegóły zlecenia",
+    "status": "Status: {status}",
+    "technician": "Technik: {tech}",
+    "scheduled": "Zaplanowano: {date}",
+    "promised": "Obiecano: {date}",
+    "workBay": "Stanowisko: {bay}",
+    "statusPending": "Oczekujące",
+    "statusInProgress": "W toku",
+    "statusWaitingParts": "Oczekiwanie na części",
+    "statusCompleted": "Zakończone",
+    "concerns": "Uwagi klienta",
+    "workRequested": "Zlecone prace",
+    "checklist": "Prace",
+    "scanToOpen": "Zeskanuj, aby otworzyć to zlecenie",
+    "customerSignature": "Podpis klienta",
+    "printedOn": "Wydrukowano {date}"
   }
 }

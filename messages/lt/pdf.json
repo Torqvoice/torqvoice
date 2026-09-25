@@ -209,5 +209,27 @@
     "signature": "Parašas",
     "signedBy": "Pasirašė",
     "signatureDate": "Data"
+  },
+  "workOrder": {
+    "title": "DARBO UŽSAKYMAS",
+    "orderNumberLabel": "Užsakymo Nr.",
+    "customer": "Klientas",
+    "plateLabel": "Valst. Nr.",
+    "jobDetails": "Darbo duomenys",
+    "status": "Būsena: {status}",
+    "technician": "Technikas: {tech}",
+    "scheduled": "Suplanuota: {date}",
+    "promised": "Pažadėta: {date}",
+    "workBay": "Vieta: {bay}",
+    "statusPending": "Laukiama",
+    "statusInProgress": "Vykdoma",
+    "statusWaitingParts": "Laukiama dalių",
+    "statusCompleted": "Baigta",
+    "concerns": "Kliento nusiskundimai",
+    "workRequested": "Užsakyti darbai",
+    "checklist": "Darbai",
+    "scanToOpen": "Nuskenuokite, kad atidarytumėte šį darbo užsakymą",
+    "customerSignature": "Kliento parašas",
+    "printedOn": "Išspausdinta {date}"
   }
 }

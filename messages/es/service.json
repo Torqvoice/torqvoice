@@ -55,7 +55,8 @@
     "designPickConfirmBody": "Solo cambia el aspecto. Los datos del taller, el cliente, las condiciones de pago y los importes se mantienen tal como se enviaron. El diseño actual no se conserva, así que esto no se puede deshacer.",
     "designPickConfirm": "Cambiar el diseño",
     "designPickDone": "La factura ya se imprime con {name}",
-    "designPickFailed": "No se pudo cambiar el diseño"
+    "designPickFailed": "No se pudo cambiar el diseño",
+    "printWorkOrder": "Imprimir orden de trabajo"
   },
   "basicInfo": {
     "title": "Información Básica",

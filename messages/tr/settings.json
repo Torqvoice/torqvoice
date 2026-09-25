@@ -708,7 +708,12 @@
       "defects": "Kusurlar",
       "results_table": "Tüm sonuçlar",
       "inspection_photos": "Fotoğraflar",
-      "signature": "İmza"
+      "signature": "İmza",
+      "job_details": "İş ayrıntıları",
+      "job_qr": "Telefonda aç",
+      "concerns": "Müşteri şikayetleri",
+      "job_description": "İstenen iş",
+      "work_checklist": "İş kontrol listesi"
     },
     "fields": {
       "customer_name": "Müşteri adı",
@@ -759,7 +764,13 @@
       "inspector_line": "İmza satırı",
       "inspector_name": "İmzalayanın adı",
       "date_line": "Tarih satırı",
-      "signature_image": "İmza"
+      "signature_image": "İmza",
+      "status": "Durum",
+      "technician": "Teknisyen",
+      "scheduled": "Planlanan",
+      "promised": "Söz verilen",
+      "work_bay": "Çalışma alanı",
+      "customer_line": "Müşteri imza satırı"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
@@ -803,6 +814,18 @@
       "certificate-compact": {
         "name": "Kompakt",
         "description": "Filolar için tek sayfa: küçük yazı, başlığın yanında sonuç, notsuz tüm sonuçlar, fotoğraflar, imza satırı"
+      },
+      "work-order-standard": {
+        "name": "Standart",
+        "description": "Kendi renginizde daha dolu tezgâh kopyası: müşteri ve aracın tamamı, servis, bulgular ve garanti, işler ve fiyatların yanında"
+      },
+      "work-order-job-sheet": {
+        "name": "İş kağıdı",
+        "description": "Pano için: büyük plaka, işin bilgileri, işaretlenecek kutular halinde işler, telefonda açmak için bir kod ve fiyat yok"
+      },
+      "work-order-compact": {
+        "name": "Kompakt",
+        "description": "Beyaz üzerine siyah, tek sayfa: müşterinin adı ve telefonu, araç, iş, fiyatlarıyla işçilik ve iki imza. Bir tasarım kaydedene kadar her iş emrinin yazdırdığı sayfa"
       }
     },
     "style": {
@@ -833,7 +856,8 @@
       "inspections": "Muayene\nkontrol listeleri",
       "sms": "SMS",
       "layout": "Düzen",
-      "certificates": "Muayene\nsertifikaları"
+      "certificates": "Muayene\nsertifikaları",
+      "workOrders": "İş\nemirleri"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",
@@ -938,7 +962,8 @@
     "openDesigner": "Tasarımcıyı aç",
     "designerIntro": "Bir başlangıç noktası seçin, sonra her şeyi değiştirmek için tasarımcıyı açın.",
     "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda.",
-    "certificatesDescription": "Tamamlanan bir muayenenin yazdırıp paylaştığı sertifikayı tasarlayın."
+    "certificatesDescription": "Tamamlanan bir muayenenin yazdırıp paylaştığı sertifikayı tasarlayın.",
+    "workOrdersDescription": "Bir iş emrinin yazdırdığı sayfayı tasarlayın: müşterinin imzaladığı ve teknisyenin panodan aldığı sayfa."
   },
   "payment": {
     "readMore": "Devamını oku",
@@ -2161,7 +2186,12 @@
       "checkHeadlamps": "Far durumu",
       "checkFogLamp": "Arka sis lambası",
       "photoFront": "Ön",
-      "photoOdometer": "Kilometre sayacı"
+      "photoOdometer": "Kilometre sayacı",
+      "concernNoise": "Frenlerken önden sürtünme sesi",
+      "concernNoiseDetail": "Ön balatalar ve diskler aşınmış; değiştirildi",
+      "concernWarningLight": "Geçen haftadan beri göstergede uyarı ışığı",
+      "workRequested": "Ön fren balatalarını ve disklerini değiştir, servis göstergesini sıfırla ve yol testi yap.",
+      "checklistTestDrive": "Yol testi"
     },
     "logoUpload": "Logo yükle",
     "logoReplace": "Logoyu değiştir",
@@ -2203,7 +2233,8 @@
     "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı",
     "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz.",
     "certificate": "Muayene sertifikası",
-    "resultWidthHint": "Boş bırakılırsa satırı kaplar. Punto girerseniz bant daralır ve hizalamanın seçtiği tarafa yerleşir; sütunda sütun genişliğini alır."
+    "resultWidthHint": "Boş bırakılırsa satırı kaplar. Punto girerseniz bant daralır ve hizalamanın seçtiği tarafa yerleşir; sütunda sütun genişliğini alır.",
+    "work_order": "İş emri"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",
