@@ -713,7 +713,8 @@
       "job_qr": "Открыть на телефоне",
       "concerns": "Обращения клиента",
       "job_description": "Запрошенные работы",
-      "work_checklist": "Чек-лист работ"
+      "work_checklist": "Чек-лист работ",
+      "condition_map": "Состояние автомобиля"
     },
     "fields": {
       "customer_name": "Имя клиента",
@@ -770,7 +771,9 @@
       "scheduled": "Запланировано",
       "promised": "Обещано",
       "work_bay": "Пост",
-      "customer_line": "Строка подписи клиента"
+      "customer_line": "Строка подписи клиента",
+      "legend": "Легенда",
+      "previous_marks": "Прежние отметки"
     },
     "presetsTitle": "Начать с расположения",
     "presetsHint": "Заменяет расположение ниже. Ничего не сохранится, пока вы не сохраните.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Передние колодки и диски изношены; заменены",
       "concernWarningLight": "Индикатор на панели горит с прошлой недели",
       "workRequested": "Заменить передние колодки и диски, сбросить индикатор ТО и провести тест-драйв.",
-      "checklistTestDrive": "Тест-драйв"
+      "checklistTestDrive": "Тест-драйв",
+      "markScratch": "Царапина от ключа вдоль двери, 20 см",
+      "markDent": "Вмятина под ручкой, краска цела",
+      "markChip": "Сколы в нижней части бампера",
+      "viewTop": "Сверху",
+      "viewLeft": "Левая сторона",
+      "viewRight": "Правая сторона",
+      "viewFront": "Спереди",
+      "viewRear": "Сзади",
+      "panelLeftRearDoor": "Левая задняя дверь",
+      "panelLeftFrontDoor": "Левая передняя дверь",
+      "panelFrontBumper": "Передний бампер",
+      "kindScratch": "Царапина",
+      "kindDent": "Вмятина",
+      "kindChip": "Скол",
+      "severityMinor": "Небольшое",
+      "severityMajor": "Серьёзное",
+      "markPrevious": "зафиксировано ранее"
     },
     "logoUpload": "Загрузить логотип",
     "logoReplace": "Заменить логотип",

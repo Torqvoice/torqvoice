@@ -713,7 +713,8 @@
       "job_qr": "Apri sul telefono",
       "concerns": "Richieste del cliente",
       "job_description": "Lavoro richiesto",
-      "work_checklist": "Elenco lavori"
+      "work_checklist": "Elenco lavori",
+      "condition_map": "Stato del veicolo"
     },
     "fields": {
       "customer_name": "Nome cliente",
@@ -770,7 +771,9 @@
       "scheduled": "Programmato",
       "promised": "Promesso",
       "work_bay": "Postazione",
-      "customer_line": "Riga della firma del cliente"
+      "customer_line": "Riga della firma del cliente",
+      "legend": "Legenda",
+      "previous_marks": "Segni precedenti"
     },
     "presetsTitle": "Partire da una disposizione",
     "presetsHint": "Sostituisce la disposizione qui sotto. Nulla viene salvato finché non salvi.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Pastiglie e dischi anteriori usurati; sostituiti",
       "concernWarningLight": "Spia accesa sul cruscotto dalla settimana scorsa",
       "workRequested": "Sostituire pastiglie e dischi anteriori, azzerare l'indicatore di manutenzione e provare su strada.",
-      "checklistTestDrive": "Prova su strada"
+      "checklistTestDrive": "Prova su strada",
+      "markScratch": "Graffio da chiave lungo la porta, 20 cm",
+      "markDent": "Ammaccatura sotto la maniglia, vernice intatta",
+      "markChip": "Scheggiature nella parte bassa del paraurti",
+      "viewTop": "Dall'alto",
+      "viewLeft": "Lato sinistro",
+      "viewRight": "Lato destro",
+      "viewFront": "Anteriore",
+      "viewRear": "Posteriore",
+      "panelLeftRearDoor": "Porta posteriore sinistra",
+      "panelLeftFrontDoor": "Porta anteriore sinistra",
+      "panelFrontBumper": "Paraurti anteriore",
+      "kindScratch": "Graffio",
+      "kindDent": "Ammaccatura",
+      "kindChip": "Scheggiatura",
+      "severityMinor": "Lieve",
+      "severityMajor": "Grave",
+      "markPrevious": "registrato in precedenza"
     },
     "logoUpload": "Carica logo",
     "logoReplace": "Sostituisci logo",

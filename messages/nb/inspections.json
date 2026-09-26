@@ -378,13 +378,15 @@
       "condition": "Mangelvurdering",
       "measurement": "Måling",
       "text": "Fritekst",
-      "choice": "Valg"
+      "choice": "Valg",
+      "condition_map": "Tilstandskart"
     },
     "inputHint": {
       "condition": "Mekanikeren vurderer punktet etter mangelskalaen.",
       "measurement": "Registrerer et tall med benevning, vurdert automatisk mot et intervall.",
       "text": "Registrerer en skreven observasjon, for eksempel et dekkmerke eller en feilkode.",
-      "choice": "Mekanikeren velger ett av flere faste svar."
+      "choice": "Mekanikeren velger ett av flere faste svar.",
+      "condition_map": "En tegning av kjøretøyet der bulker, riper og steinsprut merkes av, hver med notat og bilde."
     },
     "cancel": "Avbryt",
     "create": "Opprett sjekkliste",

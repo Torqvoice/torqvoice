@@ -184,7 +184,9 @@
     "inspection_photo_added": "Adicionou fotografia de inspeção",
     "inspection_file_added": "Adicionou ficheiro de inspeção",
     "signature_save": "Guardou a assinatura",
-    "signature_remove": "Removeu a assinatura"
+    "signature_remove": "Removeu a assinatura",
+    "conditionMark_add": "Marca de estado adicionada",
+    "conditionMark_remove": "Marca de estado removida"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Registo de tempo de {technician} em \"{job}\" corrigido para {minutes} minutos",
     "timeEntry_stop": "Relógio de {technician} em \"{job}\" parado aos {minutes} minutos",
     "timeEntry_delete": "Registo de tempo {id} eliminado",
-    "inspection_phoneUpload": "Adicionou um ficheiro a partir de um telemóvel à inspeção {ref}"
+    "inspection_phoneUpload": "Adicionou um ficheiro a partir de um telemóvel à inspeção {ref}",
+    "condition_mark_add": "Adicionou uma marca ao mapa de estado",
+    "condition_mark_remove": "Removeu uma marca do mapa de estado"
   }
 }

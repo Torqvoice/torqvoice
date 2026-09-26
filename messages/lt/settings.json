@@ -713,7 +713,8 @@
       "job_qr": "Atidaryti telefone",
       "concerns": "Kliento nusiskundimai",
       "job_description": "Užsakyti darbai",
-      "work_checklist": "Darbų sąrašas"
+      "work_checklist": "Darbų sąrašas",
+      "condition_map": "Transporto priemonės būklė"
     },
     "fields": {
       "customer_name": "Kliento vardas",
@@ -770,7 +771,9 @@
       "scheduled": "Suplanuota",
       "promised": "Pažadėta",
       "work_bay": "Darbo vieta",
-      "customer_line": "Kliento parašo eilutė"
+      "customer_line": "Kliento parašo eilutė",
+      "legend": "Legenda",
+      "previous_marks": "Ankstesnės žymos"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Priekinės kaladėlės ir diskai nusidėvėję; pakeisti",
       "concernWarningLight": "Įspėjamoji lemputė prietaisų skydelyje nuo praėjusios savaitės",
       "workRequested": "Pakeisti priekines stabdžių kaladėles ir diskus, atstatyti aptarnavimo indikatorių ir išbandyti kelyje.",
-      "checklistTestDrive": "Bandomasis važiavimas"
+      "checklistTestDrive": "Bandomasis važiavimas",
+      "markScratch": "Rakto įbrėžimas išilgai durų, 20 cm",
+      "markDent": "Įlenkimas po rankena, dažai nepažeisti",
+      "markChip": "Akmenų atskėlimai apatinėje buferio dalyje",
+      "viewTop": "Iš viršaus",
+      "viewLeft": "Kairė pusė",
+      "viewRight": "Dešinė pusė",
+      "viewFront": "Priekis",
+      "viewRear": "Galas",
+      "panelLeftRearDoor": "Kairės galinės durys",
+      "panelLeftFrontDoor": "Kairės priekinės durys",
+      "panelFrontBumper": "Priekinis buferis",
+      "kindScratch": "Įbrėžimas",
+      "kindDent": "Įlenkimas",
+      "kindChip": "Akmens atskėlimas",
+      "severityMinor": "Nedidelis",
+      "severityMajor": "Didelis",
+      "markPrevious": "užfiksuota anksčiau"
     },
     "logoUpload": "Įkelti logotipą",
     "logoReplace": "Pakeisti logotipą",

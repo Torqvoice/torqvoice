@@ -208,7 +208,13 @@
     "poweredBy": "Desarrollado por",
     "signature": "Firma",
     "signedBy": "Firmado por",
-    "signatureDate": "Fecha"
+    "signatureDate": "Fecha",
+    "conditionMapTitle": "Estado del vehículo",
+    "conditionMapNo": "N.º",
+    "conditionMapArea": "Zona",
+    "conditionMapKind": "Tipo",
+    "conditionMapSeverity": "Gravedad",
+    "conditionMapNote": "Nota"
   },
   "workOrder": {
     "title": "ORDEN DE TRABAJO",

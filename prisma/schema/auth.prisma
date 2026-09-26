@@ -17,13 +17,13 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  twoFactorEnabled Boolean   @default(false)
-  termsAcceptedAt  DateTime?
-  lastLogin        DateTime?
-  lastSeen         DateTime?
+  twoFactorEnabled    Boolean   @default(false)
+  termsAcceptedAt     DateTime?
+  lastLogin           DateTime?
+  lastSeen            DateTime?
   /// App version this user last saw/dismissed the update banner for.
   /// Null = never seeded (seeded silently on first load, no banner).
-  lastSeenVersion  String?
+  lastSeenVersion     String?
   /// The release the update banner is up for, and when it first appeared to
   /// this user on any device. The hour it stays up runs from here, so a
   /// second device does not restart them and a closed tab cannot stop them.
@@ -31,7 +31,7 @@ model User {
   updateBannerShownAt DateTime?
   /// Per-user dashboard grid layout (card positions/sizes/hidden set).
   /// Null = default layout. Shape validated in dashboardLayoutActions.
-  dashboardLayout  Json?
+  dashboardLayout     Json?
 
   sessions               Session[]
   devices                UserDevice[]
@@ -49,8 +49,10 @@ model User {
   organizationMembers    OrganizationMember[]
   dashboardWidgets       DashboardWidget[]
   auditLogs              AuditLog[]
-  openedServiceRecords   ServiceRecord[]        @relation("ServiceRecordCreatedBy")
-  confirmedConcerns      ServiceConcern[]       @relation("ConcernConfirmedBy")
+  openedServiceRecords   ServiceRecord[]         @relation("ServiceRecordCreatedBy")
+  confirmedConcerns      ServiceConcern[]        @relation("ConcernConfirmedBy")
+  recordedConditionMarks ConditionMark[]         @relation("ConditionMarkRecordedBy")
+  resolvedConditionMarks ConditionMark[]         @relation("ConditionMarkResolvedBy")
   technicians            Technician[]
   stockMovements         StockMovement[]
   tireWarehouses         TireWarehouse[]

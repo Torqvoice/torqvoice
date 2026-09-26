@@ -184,7 +184,9 @@
     "inspection_photo_added": "Photo d'inspection ajoutée",
     "inspection_file_added": "Fichier d'inspection ajouté",
     "signature_save": "Signature enregistrée",
-    "signature_remove": "Signature supprimée"
+    "signature_remove": "Signature supprimée",
+    "conditionMark_add": "Marque d'état ajoutée",
+    "conditionMark_remove": "Marque d'état supprimée"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Entrée de temps de {technician} sur « {job} » corrigée à {minutes} minutes",
     "timeEntry_stop": "Pointage de {technician} sur « {job} » arrêté à {minutes} minutes",
     "timeEntry_delete": "Entrée de temps {id} supprimée",
-    "inspection_phoneUpload": "Fichier ajouté depuis un téléphone à l'inspection {ref}"
+    "inspection_phoneUpload": "Fichier ajouté depuis un téléphone à l'inspection {ref}",
+    "condition_mark_add": "A ajouté une marque à la carte d'état",
+    "condition_mark_remove": "A supprimé une marque de la carte d'état"
   }
 }

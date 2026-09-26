@@ -49,6 +49,11 @@
       "name": "Tuščias šablonas",
       "description": "Pradėkite nuo nulio ir sukurkite kontrolinį sąrašą, kurį iš tikrųjų naudoja jūsų dirbtuvės.",
       "standardLabel": "Tuščias"
+    },
+    "vehicle-intake": {
+      "name": "Transporto priemonės priėmimas",
+      "description": "Apžiūra aplink automobilį jį paliekant, klientui stovint šalia: kaip atvyko, kas jau buvo ant kėbulo, kas liko viduje. Spausdinama darbo užsakyme, kurį klientas pasirašo.",
+      "standardLabel": "Dirbtuvės"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Važiuoklė ir prie jos pritvirtintos dalys",
     "no_s7": "Kita įranga",
     "no_s8": "Neigiamas poveikis aplinkai",
-    "no_s10": "Pateikimas į trafikkstasjon"
+    "no_s10": "Pateikimas į trafikkstasjon",
+    "arrival": "Atvykimas",
+    "exteriorWalkround": "Išorės apžiūra"
   },
   "checks": {
     "registrationPlates": "Valstybinio numerio ženklai",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Dyzelinas: dūmingumas, senesnis nei EU-4, su turbokompresoriumi",
     "no_8_2_3_1": "Išmetimas bendrai ir variklio darbas",
     "no_8_3_1": "Skysčių nuotėkis",
-    "no_10_1": "Pateikimas į trafikkstasjon"
+    "no_10_1": "Pateikimas į trafikkstasjon",
+    "fuelLevel": "Degalų lygis",
+    "keysHandedOver": "Perduoti raktai",
+    "warningLightsOnArrival": "Įspėjamosios lemputės atvykus",
+    "personalBelongings": "Automobilyje palikti asmeniniai daiktai",
+    "glassCondition": "Stiklų būklė",
+    "wheelsAndTyresVisual": "Ratai ir padangos, apžiūra",
+    "seatsAndTrim": "Sėdynės ir apdaila",
+    "floorAndMats": "Grindys ir kilimėliai",
+    "infotainmentControls": "Multimedija ir valdikliai"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "I priedo 0 punktas. Patvirtina, kad pateikta transporto priemonė atitinka jos dokumentus.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Ne daugiau kaip 3,0 m⁻¹. Gamintojo riba turi pirmenybę.",
     "no_8_2_3_1": "Varikliui veikiant: patikrinkite, ar OBD gedimų indikatorius nerodo gedimo ir ar savidiagnostika veikia tinkamai; bet koks nukrypimas yra e). Bandomojo važiavimo metu ir staigiai padidinus apsukas iš laisvosios eigos ieškokite matomų mėlynų, tamsiai pilkų ar juodų dūmų ir patikrinkite, kaip dirba variklis.",
     "no_8_3_1": "2 lygis bet kokiam dideliam skysčio (išskyrus vandenį) nuotėkiui, galinčiam pakenkti aplinkai arba kelti pavojų kitiems eismo dalyviams, jei apžiūros metu jis laša ant žemės.",
-    "no_10_1": "Rašoma, kai dėl tam tikrų aplinkybių transporto priemonė turi būti pateikta trafikkstasjon (Statens vegvesen eismo stotyje) įvertinti, iš naujo patvirtinti arba pakeisti vognkort įrašą, pvz., neteisėtai pakeistas variklis ar valdymo blokas, nuleista / pakelta, reikalavimų neatitinkanti priekinė apsauga (buferio apsauginis rėmas), daugiau sėdimų vietų nei registruota, pertvarkyta kitai degalų rūšiai arba atliktas patvirtinimo reikalaujantis pertvarkymas. Rašoma kartu su atitinkamu trūkumu dėl to paties dalyko; pakartotinės apžiūros metu jį panaikinti gali tik Statens vegvesen."
+    "no_10_1": "Rašoma, kai dėl tam tikrų aplinkybių transporto priemonė turi būti pateikta trafikkstasjon (Statens vegvesen eismo stotyje) įvertinti, iš naujo patvirtinti arba pakeisti vognkort įrašą, pvz., neteisėtai pakeistas variklis ar valdymo blokas, nuleista / pakelta, reikalavimų neatitinkanti priekinė apsauga (buferio apsauginis rėmas), daugiau sėdimų vietų nei registruota, pertvarkyta kitai degalų rūšiai arba atliktas patvirtinimo reikalaujantis pertvarkymas. Rašoma kartu su atitinkamu trūkumu dėl to paties dalyko; pakartotinės apžiūros metu jį panaikinti gali tik Statens vegvesen.",
+    "bodyConditionMap": "Palieskite brėžinį ten, kur yra kiekvienas įlenkimas, įbrėžimas ar atskėlimas, ir pridėkite pastabą bei nuotrauką. Ankstesnių vizitų žymos rodomos pilkai."
   },
   "choices": {
     "full": "Pilnas",
     "partial": "Dalinis",
-    "none": "Nėra"
+    "none": "Nėra",
+    "fuelEmpty": "Tuščias",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Pilnas"
   },
   "defects": {
     "registrationPlateMissing": "Nėra valstybinio numerio ženklo",

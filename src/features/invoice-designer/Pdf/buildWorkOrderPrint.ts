@@ -35,6 +35,8 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 
 /**
  * A job as the sheet the customer signs and the technician works from.
@@ -61,6 +63,13 @@ export interface WorkOrderJob {
   qrDataUri?: string
   /** When the sheet was printed, which the footer and the signature date say. */
   printedAt: Date
+  /**
+   * The vehicle's condition marks: what the customer acknowledges was there
+   * at drop-off. Every open mark prints, this job's own in colour.
+   */
+  conditionMarks?: ConditionMarkData[]
+  bodyType?: string | null
+  conditionMapLabels?: ConditionMapLabels
 }
 
 export interface WorkOrderPrintInput {
@@ -351,6 +360,20 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
 
+  const mapSection = layout.sections.find((s) => s.id === 'condition_map')
+  const conditionMap =
+    job.conditionMarks && job.conditionMapLabels
+      ? conditionMapForPrint({
+          bodyType: job.bodyType,
+          marks: job.conditionMarks,
+          scope: { serviceRecordId: data.id },
+          includePrevious:
+            mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,
+          labels: job.conditionMapLabels,
+          width: 515 - 2 * (doc.margin ?? 40) + 80,
+        })
+      : null
+
   const documentData: DocumentData = {
     fields,
     logoUrl: input.logoDataUri,
@@ -382,7 +405,9 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       job_details: L('jobDetails', 'Job details'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
+      condition_map: L('conditionMapTitle', 'Vehicle condition'),
     },
+    conditionMap: conditionMap ?? undefined,
     workOrder: {
       concerns: job.concerns.map((concern) => ({
         description: concern.description,

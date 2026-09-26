@@ -184,7 +184,9 @@
     "inspection_photo_added": "La til kontrollbilde",
     "inspection_file_added": "La til kontrollfil",
     "signature_save": "Lagret signatur",
-    "signature_remove": "Fjernet signatur"
+    "signature_remove": "Fjernet signatur",
+    "conditionMark_add": "La til tilstandsmerke",
+    "conditionMark_remove": "Fjernet tilstandsmerke"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Korrigerte tidsoppføringen til {technician} på «{job}» til {minutes} minutter",
     "timeEntry_stop": "Stoppet klokken til {technician} på «{job}» ved {minutes} minutter",
     "timeEntry_delete": "Slettet tidsoppføring {id}",
-    "inspection_phoneUpload": "La til en fil fra telefon på kontroll {ref}"
+    "inspection_phoneUpload": "La til en fil fra telefon på kontroll {ref}",
+    "condition_mark_add": "La til et merke på tilstandskartet",
+    "condition_mark_remove": "Fjernet et merke fra tilstandskartet"
   }
 }

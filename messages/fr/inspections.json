@@ -378,13 +378,15 @@
       "condition": "Évaluation de défaillance",
       "measurement": "Mesure",
       "text": "Texte libre",
-      "choice": "Choix"
+      "choice": "Choix",
+      "condition_map": "Carte d'état"
     },
     "inputHint": {
       "condition": "Le technicien évalue le point selon l'échelle de défaillances.",
       "measurement": "Enregistre un nombre assorti d'une unité, évalué automatiquement par rapport à une plage.",
       "text": "Enregistre une observation écrite, par exemple une marque de pneumatique ou un code défaut.",
-      "choice": "Le technicien choisit une réponse parmi une liste fixe."
+      "choice": "Le technicien choisit une réponse parmi une liste fixe.",
+      "condition_map": "Un dessin du véhicule pour y marquer bosses, rayures et éclats, chacun avec une note et une photo."
     },
     "cancel": "Annuler",
     "create": "Créer la liste de contrôle",

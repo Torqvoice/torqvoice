@@ -378,13 +378,15 @@
       "condition": "Classificação de deficiência",
       "measurement": "Medição",
       "text": "Texto livre",
-      "choice": "Escolha"
+      "choice": "Escolha",
+      "condition_map": "Mapa de estado"
     },
     "inputHint": {
       "condition": "O técnico classifica o item pela escala de deficiências.",
       "measurement": "Registra um número com unidade, classificado automaticamente contra uma faixa.",
       "text": "Registra uma observação escrita, por exemplo uma marca de pneu ou um código de falha.",
-      "choice": "O técnico escolhe uma resposta de uma lista fixa."
+      "choice": "O técnico escolhe uma resposta de uma lista fixa.",
+      "condition_map": "Um desenho do veículo para marcar amassados, arranhões e lascados, cada um com nota e foto."
     },
     "cancel": "Cancelar",
     "create": "Criar checklist",

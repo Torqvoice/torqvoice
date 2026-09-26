@@ -1,3 +1,4 @@
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import type { WorkOrderLayout } from '@/lib/work-order-layout'
@@ -83,6 +84,8 @@ export interface ServicePageClientProps {
   imageAttachmentsForManager: Attachment[]
   /** Photos of the car as it arrived, kept apart from the job's photos. */
   dropoffAttachments?: Attachment[]
+  /** The vehicle's condition map, for the drop-off card. Absent for a counter sale. */
+  conditionMap?: { vehicleId: string; bodyType: string | null; marks: ConditionMarkData[] }
   videoAttachments: Attachment[]
   documentAttachments: Attachment[]
   maxImagesPerService: number

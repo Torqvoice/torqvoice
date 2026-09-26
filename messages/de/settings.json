@@ -713,7 +713,8 @@
       "job_qr": "Auf dem Handy öffnen",
       "concerns": "Kundenanliegen",
       "job_description": "Gewünschte Arbeiten",
-      "work_checklist": "Arbeitscheckliste"
+      "work_checklist": "Arbeitscheckliste",
+      "condition_map": "Fahrzeugzustand"
     },
     "fields": {
       "customer_name": "Kundenname",
@@ -770,7 +771,9 @@
       "scheduled": "Geplant",
       "promised": "Zugesagt",
       "work_bay": "Arbeitsplatz",
-      "customer_line": "Unterschriftszeile Kunde"
+      "customer_line": "Unterschriftszeile Kunde",
+      "legend": "Legende",
+      "previous_marks": "Frühere Markierungen"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",
     "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Bremsbeläge und -scheiben vorne verschlissen; ersetzt",
       "concernWarningLight": "Warnleuchte im Armaturenbrett seit letzter Woche",
       "workRequested": "Bremsbeläge und -scheiben vorne ersetzen, Serviceanzeige zurücksetzen und Probefahrt.",
-      "checklistTestDrive": "Probefahrt"
+      "checklistTestDrive": "Probefahrt",
+      "markScratch": "Kratzer entlang der Tür, 20 cm",
+      "markDent": "Delle unter dem Griff, Lack intakt",
+      "markChip": "Steinschläge im unteren Stoßfänger",
+      "viewTop": "Von oben",
+      "viewLeft": "Linke Seite",
+      "viewRight": "Rechte Seite",
+      "viewFront": "Vorn",
+      "viewRear": "Hinten",
+      "panelLeftRearDoor": "Tür hinten links",
+      "panelLeftFrontDoor": "Tür vorn links",
+      "panelFrontBumper": "Stoßstange vorn",
+      "kindScratch": "Kratzer",
+      "kindDent": "Delle",
+      "kindChip": "Steinschlag",
+      "severityMinor": "Leicht",
+      "severityMajor": "Schwer",
+      "markPrevious": "früher erfasst"
     },
     "logoUpload": "Logo hochladen",
     "logoReplace": "Logo ersetzen",

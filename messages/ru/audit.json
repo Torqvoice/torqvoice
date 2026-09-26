@@ -184,7 +184,9 @@
     "inspection_photo_added": "Добавлено фото осмотра",
     "inspection_file_added": "Добавлен файл осмотра",
     "signature_save": "Сохранена подпись",
-    "signature_remove": "Удалена подпись"
+    "signature_remove": "Удалена подпись",
+    "conditionMark_add": "Добавлена отметка состояния",
+    "conditionMark_remove": "Удалена отметка состояния"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Запись времени {technician} по заказу «{job}» исправлена на {minutes} мин",
     "timeEntry_stop": "Таймер {technician} по заказу «{job}» остановлен на {minutes} мин",
     "timeEntry_delete": "Удалена запись времени {id}",
-    "inspection_phoneUpload": "Добавлен файл с телефона к осмотру {ref}"
+    "inspection_phoneUpload": "Добавлен файл с телефона к осмотру {ref}",
+    "condition_mark_add": "Добавил(а) отметку на карту состояния",
+    "condition_mark_remove": "Удалил(а) отметку с карты состояния"
   }
 }

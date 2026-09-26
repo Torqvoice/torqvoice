@@ -208,7 +208,13 @@
     "poweredBy": "Obsługiwane przez",
     "signature": "Podpis",
     "signedBy": "Podpisał(a)",
-    "signatureDate": "Data"
+    "signatureDate": "Data",
+    "conditionMapTitle": "Stan pojazdu",
+    "conditionMapNo": "Nr",
+    "conditionMapArea": "Miejsce",
+    "conditionMapKind": "Typ",
+    "conditionMapSeverity": "Stopień",
+    "conditionMapNote": "Notatka"
   },
   "workOrder": {
     "title": "ZLECENIE",

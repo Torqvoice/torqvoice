@@ -8,6 +8,9 @@ import { cn } from '@/lib/utils'
 import { MediaGrid } from './MediaGrid'
 import { PhotoHandoffButton } from '../PhotoHandoffButton'
 import type { ServicePageClientProps } from '../service-page-types'
+import { ConditionMapCard } from '@/features/condition-map/Components/ConditionMapCard'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import { useServiceType } from '@/components/service-type-context'
 
 type FileTab = 'images' | 'dropoff' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
 
@@ -23,6 +26,8 @@ interface FilesMediaCardProps {
   images: ServicePageClientProps['imageAttachmentsForManager']
   /** Photos of the car as it arrived. Absent on a page that does not load them. */
   dropoff?: ServicePageClientProps['imageAttachmentsForManager']
+  /** The car's condition map, drawn on the drop-off tab. Absent for a counter sale. */
+  conditionMap?: { vehicleId: string; bodyType: string | null; marks: ConditionMarkData[] }
   videos: ServicePageClientProps['videoAttachments']
   documents: ServicePageClientProps['documentAttachments']
   maxImages: number
@@ -56,6 +61,7 @@ export function FilesMediaCard({
   customerId,
   images,
   dropoff = [],
+  conditionMap,
   videos,
   documents,
   maxImages,
@@ -65,6 +71,7 @@ export function FilesMediaCard({
   statusReports,
 }: FilesMediaCardProps) {
   const t = useTranslations('service')
+  const serviceType = useServiceType()
   const [tab, setTab] = useState<FileTab>(initialTab)
 
   // The page hands over diagnostics and documents as one list, as the classic
@@ -181,6 +188,16 @@ export function FilesMediaCard({
           )}
           {tab === 'dropoff' && (
             <>
+              {conditionMap && (
+                <div className="border-b px-5 pt-4 pb-4">
+                  <ConditionMapCard
+                    vehicle={{ id: conditionMap.vehicleId, bodyType: conditionMap.bodyType }}
+                    scope={{ serviceRecordId }}
+                    initialMarks={conditionMap.marks}
+                    serviceType={serviceType}
+                  />
+                </div>
+              )}
               <p className="px-5 pt-4 text-[13px] text-muted-foreground">
                 {t('modern.media.dropoffHint')}
               </p>

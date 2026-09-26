@@ -184,7 +184,9 @@
     "inspection_photo_added": "Dodano zdjęcie przeglądu",
     "inspection_file_added": "Dodano plik przeglądu",
     "signature_save": "Zapisano podpis",
-    "signature_remove": "Usunięto podpis"
+    "signature_remove": "Usunięto podpis",
+    "conditionMark_add": "Dodano oznaczenie stanu",
+    "conditionMark_remove": "Usunięto oznaczenie stanu"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Poprawiono wpis czasu {technician} w zleceniu „{job}” na {minutes} min",
     "timeEntry_stop": "Zatrzymano zegar {technician} w zleceniu „{job}” na {minutes} min",
     "timeEntry_delete": "Usunięto wpis czasu {id}",
-    "inspection_phoneUpload": "Dodano plik z telefonu do przeglądu {ref}"
+    "inspection_phoneUpload": "Dodano plik z telefonu do przeglądu {ref}",
+    "condition_mark_add": "Dodano oznaczenie do mapy stanu",
+    "condition_mark_remove": "Usunięto oznaczenie z mapy stanu"
   }
 }

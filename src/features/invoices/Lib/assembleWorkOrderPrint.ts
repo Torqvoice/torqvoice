@@ -11,6 +11,7 @@ import { workOrderQrWanted } from '@/features/invoice-designer/Pdf/buildWorkOrde
 import type { WorkOrderJob } from '@/features/invoice-designer/Pdf/buildWorkOrderPrint'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { assembleInvoicePrint, designLook, type InvoicePrintAssembly } from './assembleInvoicePrint'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
 
 /**
  * A job as the work order sheet prints it.
@@ -36,7 +37,7 @@ export async function assembleWorkOrderPrint(
   if (!base) return null
   const { record, organizationId, settingsMap } = base
 
-  const [job, concerns] = await Promise.all([
+  const [job, concerns, conditionMarks, vehicle] = await Promise.all([
     db.serviceRecord.findUnique({
       where: { id: record.id },
       select: {
@@ -51,6 +52,13 @@ export async function assembleWorkOrderPrint(
       select: { description: true, correction: true },
       orderBy: { sortOrder: 'asc' },
     }),
+    record.vehicleId ? loadVehicleConditionMarks(organizationId, record.vehicleId) : [],
+    record.vehicleId
+      ? db.vehicle.findFirst({
+          where: { id: record.vehicleId, organizationId },
+          select: { bodyType: true },
+        })
+      : null,
   ])
 
   // The work order's own design, never the invoice's: what a customer signs
@@ -89,6 +97,8 @@ export async function assembleWorkOrderPrint(
       concerns: concerns.filter((concern) => concern.description.trim()),
       qrDataUri,
       printedAt: new Date(),
+      conditionMarks,
+      bodyType: vehicle?.bodyType ?? null,
     },
   }
 }

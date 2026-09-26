@@ -49,6 +49,11 @@
       "name": "Lege sjabloon",
       "description": "Begin met niets en bouw de checklist die uw werkplaats echt gebruikt.",
       "standardLabel": "Leeg"
+    },
+    "vehicle-intake": {
+      "name": "Inname van het voertuig",
+      "description": "Het rondje om de auto bij het afgeven, met de klant erbij: hoe hij binnenkwam, wat er al op de carrosserie zat, wat er binnenin achterbleef. Wordt afgedrukt op de werkorder die de klant tekent.",
+      "standardLabel": "Werkplaats"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Onderstel en onderstelonderdelen",
     "no_s7": "Overige uitrusting",
     "no_s8": "Hinder en schadelijke effecten",
-    "no_s10": "Aanbieding bij het trafikkstasjon"
+    "no_s10": "Aanbieding bij het trafikkstasjon",
+    "arrival": "Aankomst",
+    "exteriorWalkround": "Rondje buitenkant"
   },
   "checks": {
     "registrationPlates": "Kentekenplaten",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diesel: rookopaciteit, ouder dan EU-4, met turbo",
     "no_8_2_3_1": "Uitlaat in het algemeen en draaiende motor",
     "no_8_3_1": "Vloeistoflekkage",
-    "no_10_1": "Aanbieding bij het trafikkstasjon"
+    "no_10_1": "Aanbieding bij het trafikkstasjon",
+    "fuelLevel": "Brandstofpeil",
+    "keysHandedOver": "Overhandigde sleutels",
+    "warningLightsOnArrival": "Waarschuwingslampjes bij aankomst",
+    "personalBelongings": "Persoonlijke spullen in het voertuig",
+    "glassCondition": "Staat van de ruiten",
+    "wheelsAndTyresVisual": "Wielen en banden, visueel",
+    "seatsAndTrim": "Stoelen en bekleding",
+    "floorAndMats": "Vloer en matten",
+    "infotainmentControls": "Infotainment en bediening"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Bijlage I, punt 0. Bevestigt dat het aangeboden voertuig overeenkomt met de papieren.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Max. 3,0 m⁻¹. De grenswaarde van de fabrikant gaat voor.",
     "no_8_2_3_1": "Met draaiende motor: controleer of het OBD-storingslampje een storing aangeeft en of de zelfdiagnose correct werkt; elke afwijking geeft e). Let op zichtbare blauwe, donkergrijze of zwarte rook tijdens de proefrit en bij een gasstoot vanuit stationair, en controleer hoe de motor loopt.",
     "no_8_3_1": "Ernst 2 bij elke grote vloeistoflekkage (anders dan water) die waarschijnlijk schadelijk is voor het milieu of een veiligheidsrisico vormt voor andere weggebruikers, mits deze tijdens de keuring op de grond druppelt.",
-    "no_10_1": "Wordt gegeven wanneer iets vereist dat het voertuig naar een trafikkstasjon (keuringsstation van Statens vegvesen) moet voor beoordeling, nieuwe goedkeuring of een aantekening in het vognkort, bijv. illegaal gewijzigde motor of regeleenheid, verlaagd/verhoogd, niet-toegestane frontbescherming (bullbar), meer zitplaatsen dan geregistreerd, omgebouwd naar een andere brandstof of een goedkeuringsplichtige ombouw. Wordt gegeven naast het relevante gebrek voor hetzelfde punt; bij de herkeuring kan alleen Statens vegvesen het goedkeuren."
+    "no_10_1": "Wordt gegeven wanneer iets vereist dat het voertuig naar een trafikkstasjon (keuringsstation van Statens vegvesen) moet voor beoordeling, nieuwe goedkeuring of een aantekening in het vognkort, bijv. illegaal gewijzigde motor of regeleenheid, verlaagd/verhoogd, niet-toegestane frontbescherming (bullbar), meer zitplaatsen dan geregistreerd, omgebouwd naar een andere brandstof of een goedkeuringsplichtige ombouw. Wordt gegeven naast het relevante gebrek voor hetzelfde punt; bij de herkeuring kan alleen Statens vegvesen het goedkeuren.",
+    "bodyConditionMap": "Tik op de tekening waar elke deuk, kras of steenslag zit en voeg een notitie en een foto toe. Markeringen van eerdere bezoeken staan in grijs."
   },
   "choices": {
     "full": "Volledig",
     "partial": "Gedeeltelijk",
-    "none": "Geen"
+    "none": "Geen",
+    "fuelEmpty": "Leeg",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Vol"
   },
   "defects": {
     "registrationPlateMissing": "Kentekenplaat ontbreekt",

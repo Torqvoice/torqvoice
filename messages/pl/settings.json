@@ -713,7 +713,8 @@
       "job_qr": "Otwórz na telefonie",
       "concerns": "Uwagi klienta",
       "job_description": "Zlecone prace",
-      "work_checklist": "Lista prac"
+      "work_checklist": "Lista prac",
+      "condition_map": "Stan pojazdu"
     },
     "fields": {
       "customer_name": "Nazwa klienta",
@@ -770,7 +771,9 @@
       "scheduled": "Zaplanowano",
       "promised": "Obiecano",
       "work_bay": "Stanowisko",
-      "customer_line": "Linia podpisu klienta"
+      "customer_line": "Linia podpisu klienta",
+      "legend": "Legenda",
+      "previous_marks": "Wcześniejsze oznaczenia"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Przednie klocki i tarcze zużyte; wymienione",
       "concernWarningLight": "Kontrolka na desce rozdzielczej od zeszłego tygodnia",
       "workRequested": "Wymienić przednie klocki i tarcze hamulcowe, zresetować wskaźnik serwisu i wykonać jazdę próbną.",
-      "checklistTestDrive": "Jazda próbna"
+      "checklistTestDrive": "Jazda próbna",
+      "markScratch": "Rysa od klucza wzdłuż drzwi, 20 cm",
+      "markDent": "Wgniecenie pod klamką, lakier nienaruszony",
+      "markChip": "Odpryski w dolnej części zderzaka",
+      "viewTop": "Z góry",
+      "viewLeft": "Lewa strona",
+      "viewRight": "Prawa strona",
+      "viewFront": "Przód",
+      "viewRear": "Tył",
+      "panelLeftRearDoor": "Drzwi tylne lewe",
+      "panelLeftFrontDoor": "Drzwi przednie lewe",
+      "panelFrontBumper": "Zderzak przedni",
+      "kindScratch": "Rysa",
+      "kindDent": "Wgniecenie",
+      "kindChip": "Odprysk",
+      "severityMinor": "Drobne",
+      "severityMajor": "Poważne",
+      "markPrevious": "zarejestrowane wcześniej"
     },
     "logoUpload": "Prześlij logo",
     "logoReplace": "Zmień logo",

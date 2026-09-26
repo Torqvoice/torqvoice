@@ -99,6 +99,7 @@ export function ServicePageClient({
   currentUserName,
   imageAttachmentsForManager,
   dropoffAttachments = [],
+  conditionMap,
   videoAttachments,
   documentAttachments,
   maxImagesPerService,
@@ -698,6 +699,7 @@ export function ServicePageClient({
                 files={{
                   images: imageAttachmentsForManager,
                   dropoff: dropoffAttachments,
+                  conditionMap,
                   videos: videoAttachments,
                   documents: documentAttachments,
                   maxImages: maxImagesPerService,

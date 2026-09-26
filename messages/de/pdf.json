@@ -208,7 +208,13 @@
     "poweredBy": "Bereitgestellt von",
     "signature": "Unterschrift",
     "signedBy": "Unterzeichnet von",
-    "signatureDate": "Datum"
+    "signatureDate": "Datum",
+    "conditionMapTitle": "Fahrzeugzustand",
+    "conditionMapNo": "Nr.",
+    "conditionMapArea": "Bereich",
+    "conditionMapKind": "Art",
+    "conditionMapSeverity": "Schwere",
+    "conditionMapNote": "Notiz"
   },
   "workOrder": {
     "title": "ARBEITSAUFTRAG",

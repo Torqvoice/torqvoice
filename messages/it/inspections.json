@@ -378,13 +378,15 @@
       "condition": "Valutazione della carenza",
       "measurement": "Misura",
       "text": "Testo libero",
-      "choice": "Scelta"
+      "choice": "Scelta",
+      "condition_map": "Mappa dello stato"
     },
     "inputHint": {
       "condition": "Il tecnico valuta il punto secondo la scala delle carenze.",
       "measurement": "Registra un numero con unità, valutato automaticamente rispetto a un intervallo.",
       "text": "Registra un'osservazione scritta, per esempio una marca di pneumatico o un codice guasto.",
-      "choice": "Il tecnico sceglie una risposta da un elenco fisso."
+      "choice": "Il tecnico sceglie una risposta da un elenco fisso.",
+      "condition_map": "Un disegno del veicolo su cui segnare ammaccature, graffi e scheggiature, ciascuno con nota e foto."
     },
     "cancel": "Annulla",
     "create": "Crea checklist",

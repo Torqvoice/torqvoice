@@ -49,6 +49,11 @@
       "name": "Blank template",
       "description": "Start from nothing and build the checklist your workshop actually uses.",
       "standardLabel": "Empty"
+    },
+    "vehicle-intake": {
+      "name": "Vehicle check-in",
+      "description": "The walk-round at drop-off, done with the customer standing there: how the car arrived, what was already on the body, what was left inside. Prints on the work order the customer signs.",
+      "standardLabel": "Workshop"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Chassis and chassis attachments",
     "no_s7": "Other equipment",
     "no_s8": "Nuisance",
-    "no_s10": "Presentation at a traffic station"
+    "no_s10": "Presentation at a traffic station",
+    "arrival": "Arrival",
+    "exteriorWalkround": "Exterior walk-round"
   },
   "checks": {
     "registrationPlates": "Registration plates",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diesel: smoke opacity, older than Euro 4, turbocharged",
     "no_8_2_3_1": "Exhaust in general and engine running",
     "no_8_3_1": "Fluid leaks",
-    "no_10_1": "Presentation at a traffic station"
+    "no_10_1": "Presentation at a traffic station",
+    "fuelLevel": "Fuel level",
+    "keysHandedOver": "Keys handed over",
+    "warningLightsOnArrival": "Warning lights on arrival",
+    "personalBelongings": "Personal belongings left in the vehicle",
+    "glassCondition": "Glass condition",
+    "wheelsAndTyresVisual": "Wheels and tyres, visual",
+    "seatsAndTrim": "Seats and trim",
+    "floorAndMats": "Floor and mats",
+    "infotainmentControls": "Infotainment and controls"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Annex I, item 0. Confirms the vehicle presented matches its papers.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Max 3.0 m⁻¹. The manufacturer's limit takes precedence.",
     "no_8_2_3_1": "With the engine running: check whether the OBD malfunction indicator shows a fault and whether self-diagnosis works correctly; any deviation gives e). Look for visible blue, dark grey or black smoke on the road test and on a throttle blip from idle, and check how the engine runs.",
     "no_8_3_1": "Grade 2 for any large fluid leak (other than water) likely to harm the environment or be a safety risk for other road users, provided it drips on the ground during the inspection.",
-    "no_10_1": "Given when something requires the vehicle to go to a traffic station for assessment, new approval or an amendment to the registration certificate, e.g. illegal engine or ECU modification, lowered/raised, non-compliant front protection (bull bar), more seats than registered, converted to another fuel or a modification requiring approval. Given in addition to the relevant defect on the same matter; at re-inspection only Statens vegvesen can clear it."
+    "no_10_1": "Given when something requires the vehicle to go to a traffic station for assessment, new approval or an amendment to the registration certificate, e.g. illegal engine or ECU modification, lowered/raised, non-compliant front protection (bull bar), more seats than registered, converted to another fuel or a modification requiring approval. Given in addition to the relevant defect on the same matter; at re-inspection only Statens vegvesen can clear it.",
+    "bodyConditionMap": "Tap the drawing where each dent, scratch or chip is, and add a note and a photo. Marks from earlier visits show in grey."
   },
   "choices": {
     "full": "Full",
     "partial": "Partial",
-    "none": "None"
+    "none": "None",
+    "fuelEmpty": "Empty",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Full"
   },
   "defects": {
     "registrationPlateMissing": "Registration plate missing",

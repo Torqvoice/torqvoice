@@ -49,6 +49,11 @@
       "name": "Modelo em branco",
       "description": "Comece do zero e crie a lista de verificação que a sua oficina realmente usa.",
       "standardLabel": "Vazio"
+    },
+    "vehicle-intake": {
+      "name": "Check-in da viatura",
+      "description": "A volta à viatura na entrega, com o cliente ao lado: como chegou, o que já estava na carroçaria, o que ficou lá dentro. Imprime na ordem de trabalho que o cliente assina.",
+      "standardLabel": "Oficina"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Quadro e acessórios do quadro",
     "no_s7": "Outro equipamento",
     "no_s8": "Incómodos e danos ambientais",
-    "no_s10": "Apresentação na trafikkstasjon (estação de inspeção da Statens vegvesen)"
+    "no_s10": "Apresentação na trafikkstasjon (estação de inspeção da Statens vegvesen)",
+    "arrival": "Chegada",
+    "exteriorWalkround": "Volta exterior"
   },
   "checks": {
     "registrationPlates": "Chapas de matrícula",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Gasóleo: opacidade dos fumos, anterior à EU-4, turbo",
     "no_8_2_3_1": "Escape em geral e funcionamento do motor",
     "no_8_3_1": "Fugas de fluidos",
-    "no_10_1": "Apresentação na trafikkstasjon"
+    "no_10_1": "Apresentação na trafikkstasjon",
+    "fuelLevel": "Nível de combustível",
+    "keysHandedOver": "Chaves entregues",
+    "warningLightsOnArrival": "Luzes de aviso à chegada",
+    "personalBelongings": "Objetos pessoais deixados na viatura",
+    "glassCondition": "Estado dos vidros",
+    "wheelsAndTyresVisual": "Rodas e pneus, visual",
+    "seatsAndTrim": "Bancos e estofos",
+    "floorAndMats": "Chão e tapetes",
+    "infotainmentControls": "Infoentretenimento e comandos"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Anexo I, ponto 0. Confirma que o veículo apresentado corresponde aos seus documentos.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Máx. 3,0 m⁻¹. O limite do fabricante prevalece.",
     "no_8_2_3_1": "Com o motor a trabalhar: verificar se o avisador de avaria OBD indica uma avaria e se o autodiagnóstico funciona corretamente; qualquer desvio dá e). Procurar fumo azul, cinzento-escuro ou preto visível no ensaio em estrada e numa aceleração brusca a partir do ralenti, e verificar o funcionamento do motor.",
     "no_8_3_1": "Grau 2 para qualquer fuga importante de fluido (exceto água) suscetível de prejudicar o ambiente ou de constituir risco para a segurança, desde que pingue para o chão durante a inspeção.",
-    "no_10_1": "Atribuída quando algo obriga o veículo a ir à trafikkstasjon para avaliação, nova homologação ou averbamento no vognkort, p. ex. motor ou centralina modificados ilegalmente, rebaixado/elevado, proteção frontal não conforme (quebra-mato), mais lugares sentados do que os registados no vognkort, convertido para outro combustível ou modificação sujeita a homologação. É atribuída em conjunto com a anomalia relevante sobre a mesma questão; na reinspeção só a Statens vegvesen a pode aceitar."
+    "no_10_1": "Atribuída quando algo obriga o veículo a ir à trafikkstasjon para avaliação, nova homologação ou averbamento no vognkort, p. ex. motor ou centralina modificados ilegalmente, rebaixado/elevado, proteção frontal não conforme (quebra-mato), mais lugares sentados do que os registados no vognkort, convertido para outro combustível ou modificação sujeita a homologação. É atribuída em conjunto com a anomalia relevante sobre a mesma questão; na reinspeção só a Statens vegvesen a pode aceitar.",
+    "bodyConditionMap": "Toque no desenho onde está cada amolgadela, risco ou lascado e acrescente uma nota e uma fotografia. As marcas de visitas anteriores aparecem a cinzento."
   },
   "choices": {
     "full": "Completo",
     "partial": "Parcial",
-    "none": "Nenhum"
+    "none": "Nenhum",
+    "fuelEmpty": "Vazio",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Cheio"
   },
   "defects": {
     "registrationPlateMissing": "Chapa de matrícula em falta",

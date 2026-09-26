@@ -378,13 +378,15 @@
       "condition": "Trūkumo įvertinimas",
       "measurement": "Matavimas",
       "text": "Laisvas tekstas",
-      "choice": "Pasirinkimas"
+      "choice": "Pasirinkimas",
+      "condition_map": "Būklės žemėlapis"
     },
     "inputHint": {
       "condition": "Mechanikas vertina punktą pagal trūkumų skalę.",
       "measurement": "Fiksuoja skaičių su matavimo vienetu, automatiškai vertinamą pagal intervalą.",
       "text": "Fiksuoja įrašytą pastebėjimą, pavyzdžiui padangos markę ar gedimo kodą.",
-      "choice": "Mechanikas pasirenka vieną atsakymą iš nustatyto sąrašo."
+      "choice": "Mechanikas pasirenka vieną atsakymą iš nustatyto sąrašo.",
+      "condition_map": "Transporto priemonės brėžinys, kuriame pažymimi įlenkimai, įbrėžimai ir atskėlimai, kiekvienas su pastaba ir nuotrauka."
     },
     "cancel": "Atšaukti",
     "create": "Sukurti kontrolinį sąrašą",

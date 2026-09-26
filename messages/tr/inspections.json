@@ -378,13 +378,15 @@
       "condition": "Kusur değerlendirmesi",
       "measurement": "Ölçüm",
       "text": "Serbest metin",
-      "choice": "Seçim"
+      "choice": "Seçim",
+      "condition_map": "Durum haritası"
     },
     "inputHint": {
       "condition": "Teknisyen maddeyi kusur ölçeğine göre değerlendirir.",
       "measurement": "Birimli bir sayı kaydeder, bir aralığa göre otomatik değerlendirilir.",
       "text": "Yazılı bir gözlem kaydeder, örneğin bir lastik markası veya arıza kodu.",
-      "choice": "Teknisyen sabit bir listeden bir yanıt seçer."
+      "choice": "Teknisyen sabit bir listeden bir yanıt seçer.",
+      "condition_map": "Göçük, çizik ve taş izlerinin her biri not ve fotoğrafla işaretlendiği bir araç çizimi."
     },
     "cancel": "İptal",
     "create": "Kontrol listesi oluştur",

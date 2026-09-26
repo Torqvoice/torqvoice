@@ -49,6 +49,11 @@
       "name": "Pusty szablon",
       "description": "Zacznij od zera i zbuduj listę kontrolną, której naprawdę używa Twój warsztat.",
       "standardLabel": "Pusty"
+    },
+    "vehicle-intake": {
+      "name": "Przyjęcie pojazdu",
+      "description": "Obejście auta przy przekazaniu, z klientem obok: jak przyjechało, co już było na nadwoziu, co zostało w środku. Drukuje się na zleceniu, które podpisuje klient.",
+      "standardLabel": "Warsztat"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Podwozie i elementy przymocowane do podwozia",
     "no_s7": "Inne wyposażenie",
     "no_s8": "Uciążliwość dla otoczenia",
-    "no_s10": "Stawienie pojazdu na trafikkstasjon (stacja kontroli Statens vegvesen)"
+    "no_s10": "Stawienie pojazdu na trafikkstasjon (stacja kontroli Statens vegvesen)",
+    "arrival": "Przyjazd",
+    "exteriorWalkround": "Obejście z zewnątrz"
   },
   "checks": {
     "registrationPlates": "Tablice rejestracyjne",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diesel: zadymienie spalin, starszy niż Euro 4, turbodoładowany",
     "no_8_2_3_1": "Spaliny ogólnie i praca silnika",
     "no_8_3_1": "Wycieki płynów",
-    "no_10_1": "Stawienie pojazdu na trafikkstasjon"
+    "no_10_1": "Stawienie pojazdu na trafikkstasjon",
+    "fuelLevel": "Poziom paliwa",
+    "keysHandedOver": "Przekazane kluczyki",
+    "warningLightsOnArrival": "Kontrolki po przyjeździe",
+    "personalBelongings": "Rzeczy osobiste pozostawione w pojeździe",
+    "glassCondition": "Stan szyb",
+    "wheelsAndTyresVisual": "Koła i opony, wizualnie",
+    "seatsAndTrim": "Fotele i tapicerka",
+    "floorAndMats": "Podłoga i dywaniki",
+    "infotainmentControls": "Multimedia i sterowanie"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Załącznik I, pkt 0. Potwierdza, że przedstawiony pojazd jest zgodny z dokumentami.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Maks. 3,0 m⁻¹. Wartość graniczna producenta ma pierwszeństwo.",
     "no_8_2_3_1": "Przy pracującym silniku: sprawdź, czy wskaźnik usterki OBD sygnalizuje awarię i czy autodiagnostyka działa prawidłowo; każde odstępstwo to usterka e). Podczas jazdy próbnej i przy krótkim dodaniu gazu z biegu jałowego obserwuj, czy widoczny jest niebieski, ciemnoszary lub czarny dym, i sprawdź, jak pracuje silnik.",
     "no_8_3_1": "Stopień 2 przy każdym dużym wycieku płynu (innego niż woda), który może szkodzić środowisku lub stwarzać zagrożenie dla innych uczestników ruchu, pod warunkiem że płyn kapie na podłoże podczas kontroli.",
-    "no_10_1": "Wpisuje się, gdy coś wymaga stawienia pojazdu na trafikkstasjon w celu oceny, nowej homologacji lub zmiany w vognkort, np. niedozwolona przeróbka silnika lub sterownika, obniżenie/podwyższenie, niezgodna osłona przednia (orurowanie, bull bar), więcej miejsc siedzących niż zarejestrowano, przerobienie na inne paliwo lub zmiana wymagająca homologacji. Wpisuje się dodatkowo do właściwej usterki dotyczącej tej samej sprawy; przy kontroli ponownej może ją usunąć tylko Statens vegvesen."
+    "no_10_1": "Wpisuje się, gdy coś wymaga stawienia pojazdu na trafikkstasjon w celu oceny, nowej homologacji lub zmiany w vognkort, np. niedozwolona przeróbka silnika lub sterownika, obniżenie/podwyższenie, niezgodna osłona przednia (orurowanie, bull bar), więcej miejsc siedzących niż zarejestrowano, przerobienie na inne paliwo lub zmiana wymagająca homologacji. Wpisuje się dodatkowo do właściwej usterki dotyczącej tej samej sprawy; przy kontroli ponownej może ją usunąć tylko Statens vegvesen.",
+    "bodyConditionMap": "Dotknij rysunku tam, gdzie jest każde wgniecenie, rysa lub odprysk, i dodaj notatkę oraz zdjęcie. Oznaczenia z wcześniejszych wizyt są szare."
   },
   "choices": {
     "full": "Pełny",
     "partial": "Częściowy",
-    "none": "Brak"
+    "none": "Brak",
+    "fuelEmpty": "Pusty",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Pełny"
   },
   "defects": {
     "registrationPlateMissing": "Brak tablicy rejestracyjnej",

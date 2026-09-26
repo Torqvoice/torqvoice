@@ -208,7 +208,13 @@
     "poweredBy": "Powered by",
     "signature": "Signature",
     "signedBy": "Signed by",
-    "signatureDate": "Date"
+    "signatureDate": "Date",
+    "conditionMapTitle": "Vehicle condition",
+    "conditionMapNo": "#",
+    "conditionMapArea": "Area",
+    "conditionMapKind": "Type",
+    "conditionMapSeverity": "Severity",
+    "conditionMapNote": "Note"
   },
   "workOrder": {
     "title": "WORK ORDER",

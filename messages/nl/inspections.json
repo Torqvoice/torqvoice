@@ -378,13 +378,15 @@
       "condition": "Gebrekbeoordeling",
       "measurement": "Meting",
       "text": "Vrije tekst",
-      "choice": "Keuze"
+      "choice": "Keuze",
+      "condition_map": "Staatkaart"
     },
     "inputHint": {
       "condition": "De monteur beoordeelt het punt volgens de gebrekenschaal.",
       "measurement": "Legt een getal met eenheid vast, automatisch beoordeeld tegen een bereik.",
       "text": "Legt een geschreven waarneming vast, bijvoorbeeld een bandenmerk of foutcode.",
-      "choice": "De monteur kiest één antwoord uit een vaste lijst."
+      "choice": "De monteur kiest één antwoord uit een vaste lijst.",
+      "condition_map": "Een tekening van het voertuig om deuken, krassen en steenslag op te markeren, elk met een notitie en een foto."
     },
     "cancel": "Annuleren",
     "create": "Checklist maken",

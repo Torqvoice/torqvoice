@@ -208,7 +208,13 @@
     "poweredBy": "Destekleyen",
     "signature": "İmza",
     "signedBy": "İmzalayan",
-    "signatureDate": "Tarih"
+    "signatureDate": "Tarih",
+    "conditionMapTitle": "Araç durumu",
+    "conditionMapNo": "No",
+    "conditionMapArea": "Bölge",
+    "conditionMapKind": "Tür",
+    "conditionMapSeverity": "Önem",
+    "conditionMapNote": "Not"
   },
   "workOrder": {
     "title": "İŞ EMRİ",

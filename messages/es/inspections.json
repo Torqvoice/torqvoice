@@ -378,13 +378,15 @@
       "condition": "Calificación de deficiencia",
       "measurement": "Medición",
       "text": "Texto libre",
-      "choice": "Elección"
+      "choice": "Elección",
+      "condition_map": "Mapa de estado"
     },
     "inputHint": {
       "condition": "El técnico califica el punto según la escala de deficiencias.",
       "measurement": "Registra un número con unidad, calificado automáticamente frente a un intervalo.",
       "text": "Registra una observación escrita, por ejemplo una marca de neumático o un código de avería.",
-      "choice": "El técnico elige una respuesta de una lista fija."
+      "choice": "El técnico elige una respuesta de una lista fija.",
+      "condition_map": "Un dibujo del vehículo para marcar abolladuras, arañazos y picadas, cada una con nota y foto."
     },
     "cancel": "Cancelar",
     "create": "Crear lista de comprobación",

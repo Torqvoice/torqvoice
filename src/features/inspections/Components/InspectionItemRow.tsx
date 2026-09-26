@@ -53,6 +53,8 @@ import {
   type SeverityScale,
 } from '../Lib/conditions'
 import { useConditionLabels } from '../Lib/useConditionLabels'
+import { ConditionMapCard } from '@/features/condition-map/Components/ConditionMapCard'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 
 export interface InspectionItemData {
   id: string
@@ -211,10 +213,18 @@ export function InspectionItemRow({
   onOpenImage,
   onChanged,
   onSaveState,
+  vehicle,
+  conditionMarks = [],
+  serviceType = 'automotive',
 }: {
   item: InspectionItemData
   /** For the phone code: the code covers the inspection, and opens on this check. */
   inspectionId?: string
+  /** The car, for a condition map check: which drawing, and whose marks. */
+  vehicle?: { id: string; bodyType: string | null }
+  /** Every mark on the vehicle, for a condition map check. */
+  conditionMarks?: ConditionMarkData[]
+  serviceType?: string
   scale: SeverityScale
   country?: string | null
   /** The regime the template follows; picks whose defect wording is offered. */
@@ -642,6 +652,19 @@ export function InspectionItemRow({
               ))}
             </SelectContent>
           </Select>
+        </div>
+      )}
+
+      {inputType === 'condition_map' && vehicle && inspectionId && (
+        <div className="mt-3">
+          <ConditionMapCard
+            vehicle={vehicle}
+            scope={{ inspectionId, inspectionItemId: item.id }}
+            initialMarks={conditionMarks}
+            readOnly={isCompleted}
+            serviceType={serviceType}
+            compact
+          />
         </div>
       )}
 

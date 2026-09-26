@@ -69,15 +69,15 @@ model InspectionTemplateItem {
   maxValue  Float?
   choices   String[] @default([])
 
-  required          Boolean  @default(false)
-  photoRequired     Boolean  @default(false)
+  required           Boolean  @default(false)
+  photoRequired      Boolean  @default(false)
   /// The check may be graded "not applicable": the vehicle has no such part.
-  allowNotApplicable Boolean @default(true)
+  allowNotApplicable Boolean  @default(true)
   // Defect severity applied when a measurement falls outside min/max.
-  defaultSeverity   String?
+  defaultSeverity    String?
   // Phrases this workshop wants offered when a defect is recorded against the
   // check, on top of the built-in catalogue. See Lib/defectCatalogue.ts.
-  defectSuggestions String[] @default([])
+  defectSuggestions  String[] @default([])
 
   sectionId String
   section   InspectionTemplateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
@@ -149,6 +149,7 @@ model Inspection {
   quoteRequests  InspectionQuoteRequest[]
   quotes         Quote[]
   serviceRecords ServiceRecord[]
+  conditionMarks ConditionMark[]
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
@@ -198,26 +199,28 @@ model InspectionItem {
 
   // Copied from the template at creation so an inspection stays readable even
   // after its template is edited or deleted.
-  description       String?
-  code              String?
-  sectionCode       String?
-  inputType         String   @default("condition")
-  unit              String?
-  minValue          Float?
-  maxValue          Float?
-  choices           String[] @default([])
-  required          Boolean  @default(false)
-  photoRequired     Boolean  @default(false)
+  description        String?
+  code               String?
+  sectionCode        String?
+  inputType          String   @default("condition")
+  unit               String?
+  minValue           Float?
+  maxValue           Float?
+  choices            String[] @default([])
+  required           Boolean  @default(false)
+  photoRequired      Boolean  @default(false)
   /// The check may be graded "not applicable": the vehicle has no such part.
-  allowNotApplicable Boolean @default(true)
-  defaultSeverity   String?
-  defectSuggestions String[] @default([])
+  allowNotApplicable Boolean  @default(true)
+  defaultSeverity    String?
+  defectSuggestions  String[] @default([])
 
   measuredValue Float?
   textValue     String?
 
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  conditionMarks ConditionMark[]
 
   @@index([inspectionId])
   @@map("inspection_items")

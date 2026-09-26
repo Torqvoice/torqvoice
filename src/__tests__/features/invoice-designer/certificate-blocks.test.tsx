@@ -83,6 +83,7 @@ describe('the sections a default certificate prints', () => {
       'test_details',
       'defects',
       'results_table',
+      'condition_map',
       'inspection_photos',
       'notes',
       'attached_documents',

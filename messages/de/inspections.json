@@ -378,13 +378,15 @@
       "condition": "Mängelbewertung",
       "measurement": "Messwert",
       "text": "Freitext",
-      "choice": "Auswahl"
+      "choice": "Auswahl",
+      "condition_map": "Zustandskarte"
     },
     "inputHint": {
       "condition": "Der Mechaniker bewertet den Prüfpunkt nach der Mängelskala.",
       "measurement": "Erfasst eine Zahl mit Einheit, automatisch gegen einen Bereich bewertet.",
       "text": "Erfasst eine schriftliche Beobachtung, etwa eine Reifenmarke oder einen Fehlercode.",
-      "choice": "Der Mechaniker wählt eine Antwort aus einer festen Liste."
+      "choice": "Der Mechaniker wählt eine Antwort aus einer festen Liste.",
+      "condition_map": "Eine Zeichnung des Fahrzeugs, auf der Dellen, Kratzer und Steinschläge markiert werden, jeweils mit Notiz und Foto."
     },
     "cancel": "Abbrechen",
     "create": "Checkliste erstellen",

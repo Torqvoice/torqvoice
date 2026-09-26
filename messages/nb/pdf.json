@@ -208,7 +208,13 @@
     "poweredBy": "Drevet av",
     "signature": "Signatur",
     "signedBy": "Signert av",
-    "signatureDate": "Dato"
+    "signatureDate": "Dato",
+    "conditionMapTitle": "Kjøretøyets tilstand",
+    "conditionMapNo": "Nr.",
+    "conditionMapArea": "Område",
+    "conditionMapKind": "Type",
+    "conditionMapSeverity": "Alvorlighet",
+    "conditionMapNote": "Notat"
   },
   "workOrder": {
     "title": "ARBEIDSORDRE",

@@ -163,6 +163,7 @@ model ServiceRecord {
   timeEntries    TimeEntry[]
 
   concerns           ServiceConcern[]
+  conditionMarks     ConditionMark[]
   discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
   resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
 

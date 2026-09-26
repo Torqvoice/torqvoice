@@ -378,13 +378,15 @@
       "condition": "Ocena usterki",
       "measurement": "Pomiar",
       "text": "Tekst dowolny",
-      "choice": "Wybór"
+      "choice": "Wybór",
+      "condition_map": "Mapa stanu"
     },
     "inputHint": {
       "condition": "Diagnosta ocenia pozycję według skali usterek.",
       "measurement": "Zapisuje liczbę z jednostką, ocenianą automatycznie względem zakresu.",
       "text": "Zapisuje obserwację, na przykład markę opony albo kod usterki.",
-      "choice": "Diagnosta wybiera jedną odpowiedź ze stałej listy."
+      "choice": "Diagnosta wybiera jedną odpowiedź ze stałej listy.",
+      "condition_map": "Rysunek pojazdu, na którym zaznacza się wgniecenia, rysy i odpryski, każde z notatką i zdjęciem."
     },
     "cancel": "Anuluj",
     "create": "Utwórz listę kontrolną",

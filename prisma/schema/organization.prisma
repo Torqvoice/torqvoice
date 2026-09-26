@@ -53,6 +53,7 @@ model Organization {
   subscription                Subscription?
   invitations                 TeamInvitation[]
   inspectionTemplates         InspectionTemplate[]
+  conditionMarks              ConditionMark[]
   smsMessages                 SmsMessage[]
   telegramMessages            TelegramMessage[]
   whatsappMessages            WhatsappMessage[]

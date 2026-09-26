@@ -713,7 +713,8 @@
       "job_qr": "Openen op telefoon",
       "concerns": "Klachten van de klant",
       "job_description": "Gevraagd werk",
-      "work_checklist": "Werkchecklist"
+      "work_checklist": "Werkchecklist",
+      "condition_map": "Staat van het voertuig"
     },
     "fields": {
       "customer_name": "Klantnaam",
@@ -770,7 +771,9 @@
       "scheduled": "Gepland",
       "promised": "Toegezegd",
       "work_bay": "Werkplek",
-      "customer_line": "Handtekeningregel klant"
+      "customer_line": "Handtekeningregel klant",
+      "legend": "Legenda",
+      "previous_marks": "Eerdere markeringen"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Remblokken en -schijven voor versleten; vervangen",
       "concernWarningLight": "Waarschuwingslampje op het dashboard sinds vorige week",
       "workRequested": "Remblokken en -schijven voor vervangen, service-indicator resetten en proefrit maken.",
-      "checklistTestDrive": "Proefrit"
+      "checklistTestDrive": "Proefrit",
+      "markScratch": "Sleutelkras langs het portier, 20 cm",
+      "markDent": "Deuk onder de greep, lak intact",
+      "markChip": "Steenslag onderin de bumper",
+      "viewTop": "Bovenaanzicht",
+      "viewLeft": "Linkerkant",
+      "viewRight": "Rechterkant",
+      "viewFront": "Voorkant",
+      "viewRear": "Achterkant",
+      "panelLeftRearDoor": "Achterportier links",
+      "panelLeftFrontDoor": "Voorportier links",
+      "panelFrontBumper": "Voorbumper",
+      "kindScratch": "Kras",
+      "kindDent": "Deuk",
+      "kindChip": "Steenslag",
+      "severityMinor": "Licht",
+      "severityMajor": "Ernstig",
+      "markPrevious": "eerder vastgelegd"
     },
     "logoUpload": "Logo uploaden",
     "logoReplace": "Logo vervangen",

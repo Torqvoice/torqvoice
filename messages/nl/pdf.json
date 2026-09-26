@@ -208,7 +208,13 @@
     "poweredBy": "Mogelijk gemaakt door",
     "signature": "Handtekening",
     "signedBy": "Ondertekend door",
-    "signatureDate": "Datum"
+    "signatureDate": "Datum",
+    "conditionMapTitle": "Staat van het voertuig",
+    "conditionMapNo": "Nr.",
+    "conditionMapArea": "Plaats",
+    "conditionMapKind": "Type",
+    "conditionMapSeverity": "Ernst",
+    "conditionMapNote": "Notitie"
   },
   "workOrder": {
     "title": "WERKORDER",

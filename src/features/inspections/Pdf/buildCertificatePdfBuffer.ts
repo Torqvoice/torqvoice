@@ -15,6 +15,8 @@ import { CertificatePDF } from '../Components/CertificatePDF'
 import { appendCertificateDocuments, certificateDocuments } from '../Lib/certificateDocuments'
 import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspectionPhotos'
 import { certificateDesignSource, loadCertificateLabels } from './certificateDesign'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
 
 export { certificateDesignSource, liveCertificateDesign } from './certificateDesign'
 
@@ -69,6 +71,8 @@ export async function buildCertificatePdfBuffer({
       include: {
         vehicle: {
           select: {
+            id: true,
+            bodyType: true,
             make: true,
             model: true,
             year: true,
@@ -102,11 +106,15 @@ export async function buildCertificatePdfBuffer({
 
   const labels = await loadCertificateLabels(locale, settingsMap)
 
-  const [logoDataUri, features, signatureDataUri] = await Promise.all([
-    logoDataUriFor(settingsMap),
-    getFeatures(organizationId),
-    certificateSignatureDataUri(organizationId, inspection),
-  ])
+  const hasMap = inspection.items.some((item) => item.inputType === 'condition_map')
+  const [logoDataUri, features, signatureDataUri, conditionMarks, conditionMapLabels] =
+    await Promise.all([
+      logoDataUriFor(settingsMap),
+      getFeatures(organizationId),
+      certificateSignatureDataUri(organizationId, inspection),
+      hasMap ? loadVehicleConditionMarks(organizationId, inspection.vehicle.id) : [],
+      hasMap ? loadConditionMapLabels(locale) : undefined,
+    ])
 
   // Photos are an enhancement; the certificate is the document.
   let itemPhotos: Awaited<ReturnType<typeof loadInspectionPhotos>>['photos'] = {}
@@ -140,6 +148,9 @@ export async function buildCertificatePdfBuffer({
     itemPhotos,
     overviewPhotos,
     attachedDocuments: documents.map((document) => document.fileName),
+    conditionMarks,
+    bodyType: inspection.vehicle.bodyType,
+    conditionMapLabels,
   }) as unknown as React.ReactElement<DocumentProps>
   const rendered = await renderToBuffer(element)
   const body = await appendCertificateDocuments(Buffer.from(rendered), documents)

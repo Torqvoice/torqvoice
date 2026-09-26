@@ -81,6 +81,7 @@ export const FILE_REFERENCES: FileReference[] = [
     sql: text('inspection_attachments', 'fileUrl'),
   },
   { model: 'VehicleFinding', field: 'imageUrls', sql: array('vehicle_findings', 'imageUrls') },
+  { model: 'ConditionMark', field: 'imageUrls', sql: array('condition_marks', 'imageUrls') },
   { model: 'StatusReport', field: 'videoUrl', sql: text('status_reports', 'videoUrl') },
   { model: 'WhatsappMessage', field: 'mediaUrl', sql: text('whatsapp_messages', 'mediaUrl') },
   // Workshop logo, invoice and quote logos, the portal background. Every

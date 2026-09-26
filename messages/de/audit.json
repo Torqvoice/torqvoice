@@ -184,7 +184,9 @@
     "inspection_photo_added": "Prüfungsfoto hinzugefügt",
     "inspection_file_added": "Prüfungsdatei hinzugefügt",
     "signature_save": "Unterschrift gespeichert",
-    "signature_remove": "Unterschrift entfernt"
+    "signature_remove": "Unterschrift entfernt",
+    "conditionMark_add": "Zustandsmarkierung hinzugefügt",
+    "conditionMark_remove": "Zustandsmarkierung entfernt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Zeiteintrag für {technician} auf \"{job}\" auf {minutes} Minuten korrigiert",
     "timeEntry_stop": "Uhr für {technician} auf \"{job}\" bei {minutes} Minuten gestoppt",
     "timeEntry_delete": "Zeiteintrag {id} gelöscht",
-    "inspection_phoneUpload": "Datei vom Handy zur Prüfung {ref} hinzugefügt"
+    "inspection_phoneUpload": "Datei vom Handy zur Prüfung {ref} hinzugefügt",
+    "condition_mark_add": "Markierung zur Zustandskarte hinzugefügt",
+    "condition_mark_remove": "Markierung von der Zustandskarte entfernt"
   }
 }
