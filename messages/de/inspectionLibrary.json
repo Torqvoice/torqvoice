@@ -49,6 +49,11 @@
       "name": "Leere Vorlage",
       "description": "Beginnen Sie bei null und erstellen Sie die Checkliste, die Ihre Werkstatt tatsächlich verwendet.",
       "standardLabel": "Leer"
+    },
+    "vehicle-intake": {
+      "name": "Fahrzeugannahme",
+      "description": "Der Rundgang bei der Abgabe, mit dem Kunden daneben: wie das Fahrzeug ankam, was schon an der Karosserie war, was innen liegen blieb. Wird auf dem Arbeitsauftrag gedruckt, den der Kunde unterschreibt.",
+      "standardLabel": "Werkstatt"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Fahrgestell und daran befestigte Teile",
     "no_s7": "Sonstige Ausrüstung",
     "no_s8": "Umweltbelastung",
-    "no_s10": "Vorführung bei einer trafikkstasjon (Verkehrsstation)"
+    "no_s10": "Vorführung bei einer trafikkstasjon (Verkehrsstation)",
+    "arrival": "Ankunft",
+    "exteriorWalkround": "Rundgang außen"
   },
   "checks": {
     "registrationPlates": "Kennzeichen",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diesel: Abgastrübung, älter als Euro 4, mit Turbolader",
     "no_8_2_3_1": "Abgas allgemein und Motorlauf",
     "no_8_3_1": "Flüssigkeitsverluste",
-    "no_10_1": "Vorführung bei einer trafikkstasjon"
+    "no_10_1": "Vorführung bei einer trafikkstasjon",
+    "fuelLevel": "Tankfüllstand",
+    "keysHandedOver": "Übergebene Schlüssel",
+    "warningLightsOnArrival": "Warnleuchten bei Ankunft",
+    "personalBelongings": "Persönliche Gegenstände im Fahrzeug",
+    "glassCondition": "Zustand der Scheiben",
+    "wheelsAndTyresVisual": "Räder und Reifen, Sichtprüfung",
+    "seatsAndTrim": "Sitze und Verkleidung",
+    "floorAndMats": "Boden und Matten",
+    "infotainmentControls": "Infotainment und Bedienelemente"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Anhang I, Nummer 0. Bestätigt, dass das vorgeführte Fahrzeug mit seinen Papieren übereinstimmt.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Max. 3,0 m⁻¹. Der Grenzwert des Herstellers hat Vorrang.",
     "no_8_2_3_1": "Bei laufendem Motor: prüfen, ob die OBD-Fehlfunktionsanzeige einen Fehler anzeigt und ob die Eigendiagnose richtig funktioniert; jede Abweichung ergibt e). Bei der Probefahrt und bei einem Gasstoß aus dem Leerlauf auf sichtbaren blauen, dunkelgrauen oder schwarzen Rauch achten und den Motorlauf prüfen.",
     "no_8_3_1": "Bewertung 2 bei jedem großen Flüssigkeitsverlust (außer Wasser), der die Umwelt schädigen kann oder ein Sicherheitsrisiko für andere Verkehrsteilnehmer darstellt, sofern während der Prüfung Flüssigkeit auf den Boden tropft.",
-    "no_10_1": "Wird vergeben, wenn Umstände erfordern, dass das Fahrzeug zur Beurteilung, Neugenehmigung oder Eintragung im vognkort zu einer trafikkstasjon muss, z. B. unzulässig geänderter Motor oder unzulässig geändertes Steuergerät, tiefer-/höhergelegt, unzulässiger Frontschutz (Frontschutzbügel), mehr Sitzplätze als im vognkort, Umbau auf einen anderen Kraftstoff oder eine genehmigungspflichtige Änderung. Wird zusätzlich zum zutreffenden Mangel in derselben Sache vergeben; bei der Nachprüfung kann nur die Statens vegvesen ihn aufheben."
+    "no_10_1": "Wird vergeben, wenn Umstände erfordern, dass das Fahrzeug zur Beurteilung, Neugenehmigung oder Eintragung im vognkort zu einer trafikkstasjon muss, z. B. unzulässig geänderter Motor oder unzulässig geändertes Steuergerät, tiefer-/höhergelegt, unzulässiger Frontschutz (Frontschutzbügel), mehr Sitzplätze als im vognkort, Umbau auf einen anderen Kraftstoff oder eine genehmigungspflichtige Änderung. Wird zusätzlich zum zutreffenden Mangel in derselben Sache vergeben; bei der Nachprüfung kann nur die Statens vegvesen ihn aufheben.",
+    "bodyConditionMap": "Tippen Sie auf die Zeichnung, wo jede Delle, jeder Kratzer oder Steinschlag ist, und ergänzen Sie Notiz und Foto. Markierungen früherer Besuche erscheinen grau."
   },
   "choices": {
     "full": "Vollständig",
     "partial": "Teilweise",
-    "none": "Keine"
+    "none": "Keine",
+    "fuelEmpty": "Leer",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Voll"
   },
   "defects": {
     "registrationPlateMissing": "Kennzeichen fehlt",

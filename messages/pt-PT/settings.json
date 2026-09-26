@@ -713,7 +713,8 @@
       "job_qr": "Abrir no telemóvel",
       "concerns": "Reclamações do cliente",
       "job_description": "Trabalho pedido",
-      "work_checklist": "Lista de trabalhos"
+      "work_checklist": "Lista de trabalhos",
+      "condition_map": "Estado da viatura"
     },
     "fields": {
       "customer_name": "Nome do cliente",
@@ -770,7 +771,9 @@
       "scheduled": "Agendado",
       "promised": "Prometido",
       "work_bay": "Posto",
-      "customer_line": "Linha de assinatura do cliente"
+      "customer_line": "Linha de assinatura do cliente",
+      "legend": "Legenda",
+      "previous_marks": "Marcas anteriores"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é guardado até clicar em Guardar.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Pastilhas e discos dianteiros gastos; substituídos",
       "concernWarningLight": "Luz de aviso no painel desde a semana passada",
       "workRequested": "Substituir pastilhas e discos dianteiros, repor o indicador de manutenção e fazer teste de estrada.",
-      "checklistTestDrive": "Teste de estrada"
+      "checklistTestDrive": "Teste de estrada",
+      "markScratch": "Risco de chave ao longo da porta, 20 cm",
+      "markDent": "Amolgadela por baixo do puxador, pintura intacta",
+      "markChip": "Lascados por gravilha na parte inferior do para-choques",
+      "viewTop": "Vista de cima",
+      "viewLeft": "Lado esquerdo",
+      "viewRight": "Lado direito",
+      "viewFront": "Frente",
+      "viewRear": "Traseira",
+      "panelLeftRearDoor": "Porta traseira esquerda",
+      "panelLeftFrontDoor": "Porta dianteira esquerda",
+      "panelFrontBumper": "Para-choques dianteiro",
+      "kindScratch": "Risco",
+      "kindDent": "Amolgadela",
+      "kindChip": "Lascado por gravilha",
+      "severityMinor": "Ligeira",
+      "severityMajor": "Grave",
+      "markPrevious": "registado antes"
     },
     "logoUpload": "Carregar logótipo",
     "logoReplace": "Substituir logótipo",

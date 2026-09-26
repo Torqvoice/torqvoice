@@ -49,6 +49,11 @@
       "name": "Plantilla en blanco",
       "description": "Empieza desde cero y crea la lista de comprobación que realmente usa tu taller.",
       "standardLabel": "Vacía"
+    },
+    "vehicle-intake": {
+      "name": "Recepción del vehículo",
+      "description": "La vuelta al vehículo en la entrega, con el cliente delante: cómo llegó, qué tenía ya la carrocería, qué quedó dentro. Se imprime en la orden de trabajo que firma el cliente.",
+      "standardLabel": "Taller"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Bastidor y elementos fijados al bastidor",
     "no_s7": "Otro equipamiento",
     "no_s8": "Efectos perjudiciales",
-    "no_s10": "Presentación en la trafikkstasjon (estación de inspección de Statens vegvesen)"
+    "no_s10": "Presentación en la trafikkstasjon (estación de inspección de Statens vegvesen)",
+    "arrival": "Llegada",
+    "exteriorWalkround": "Vuelta exterior"
   },
   "checks": {
     "registrationPlates": "Placas de matrícula",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diésel: opacidad de los humos, anterior a EU-4, turboalimentado",
     "no_8_2_3_1": "Escape en general y motor en marcha",
     "no_8_3_1": "Fugas de líquidos",
-    "no_10_1": "Presentación en la trafikkstasjon"
+    "no_10_1": "Presentación en la trafikkstasjon",
+    "fuelLevel": "Nivel de combustible",
+    "keysHandedOver": "Llaves entregadas",
+    "warningLightsOnArrival": "Testigos encendidos a la llegada",
+    "personalBelongings": "Objetos personales dejados en el vehículo",
+    "glassCondition": "Estado de los cristales",
+    "wheelsAndTyresVisual": "Ruedas y neumáticos, visual",
+    "seatsAndTrim": "Asientos y tapicería",
+    "floorAndMats": "Suelo y alfombrillas",
+    "infotainmentControls": "Infoentretenimiento y mandos"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Anexo I, punto 0. Confirma que el vehículo presentado coincide con su documentación.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Máx. 3,0 m⁻¹. Prevalece el límite del fabricante.",
     "no_8_2_3_1": "Con el motor en marcha: comprueba si el testigo de avería OBD indica un fallo y si el autodiagnóstico funciona correctamente; cualquier desviación da e). Observa si hay humo azul, gris oscuro o negro visible en la prueba en carretera y en un golpe de acelerador desde ralentí, y comprueba cómo funciona el motor.",
     "no_8_3_1": "Grado 2 para cualquier fuga importante de líquido (distinto del agua) que pueda dañar el medio ambiente o suponer un riesgo para la seguridad de otros usuarios de la vía, siempre que gotee al suelo durante la inspección.",
-    "no_10_1": "Se anota cuando alguna circunstancia obliga a llevar el vehículo a la trafikkstasjon para su valoración, nueva homologación o anotación en el vognkort, p. ej. motor o centralita modificados ilegalmente, rebajado/elevado, protección frontal no conforme (defensa delantera), más plazas que las registradas, transformado a otro combustible o una modificación sujeta a homologación. Se anota además del defecto correspondiente sobre el mismo asunto; en la reinspección solo Statens vegvesen puede darlo por subsanado."
+    "no_10_1": "Se anota cuando alguna circunstancia obliga a llevar el vehículo a la trafikkstasjon para su valoración, nueva homologación o anotación en el vognkort, p. ej. motor o centralita modificados ilegalmente, rebajado/elevado, protección frontal no conforme (defensa delantera), más plazas que las registradas, transformado a otro combustible o una modificación sujeta a homologación. Se anota además del defecto correspondiente sobre el mismo asunto; en la reinspección solo Statens vegvesen puede darlo por subsanado.",
+    "bodyConditionMap": "Toque el dibujo donde está cada abolladura, arañazo o picada y añada una nota y una foto. Las marcas de visitas anteriores aparecen en gris."
   },
   "choices": {
     "full": "Completo",
     "partial": "Parcial",
-    "none": "Ninguno"
+    "none": "Ninguno",
+    "fuelEmpty": "Vacío",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Lleno"
   },
   "defects": {
     "registrationPlateMissing": "Falta la placa de matrícula",

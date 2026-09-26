@@ -3,6 +3,8 @@ import { calculateTotals } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
 import type { DocumentData, PaymentPair, TotalLine } from '../Spec/buildSpec'
 import type { DesignerWorkshop, DocumentType } from './types'
+import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 
 /**
  * What the canvas prints for each field the layout can show.
@@ -383,7 +385,86 @@ export function buildSampleData(
           },
     ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
     ...(docType === 'work_order' ? sampleWorkOrder(t, labels, values, sample) : {}),
+    // A car with a dent, a scratch and one mark from an earlier visit, so the
+    // condition map section has something to draw on both documents.
+    ...(docType === 'certificate' || docType === 'work_order'
+      ? { conditionMap: sampleConditionMap(t) ?? undefined }
+      : {}),
   }
+}
+
+/** Three marks on a sedan, one of them from last time. */
+function sampleConditionMap(t: SampleT) {
+  const at = (
+    id: string,
+    view: string,
+    panel: string,
+    x: number,
+    y: number,
+    kind: string,
+    severity: string,
+    note: string,
+    own: boolean
+  ): ConditionMarkData => ({
+    id,
+    vehicleId: 'sample',
+    inspectionId: own ? 'sample' : 'earlier',
+    inspectionItemId: own ? 'sample-item' : 'earlier-item',
+    serviceRecordId: null,
+    bodyType: 'sedan',
+    view,
+    panel,
+    x,
+    y,
+    kind,
+    severity,
+    note,
+    imageUrls: [],
+    recordedAt: own ? '2026-08-14T09:00:00Z' : '2026-02-02T09:00:00Z',
+    resolvedAt: null,
+  })
+  return conditionMapForPrint({
+    bodyType: 'sedan',
+    marks: [
+      at(
+        'm0',
+        'left',
+        'left_rear_door',
+        0.6,
+        0.55,
+        'scratch',
+        'minor',
+        t('sample.markScratch'),
+        false
+      ),
+      at('m1', 'left', 'left_front_door', 0.42, 0.58, 'dent', 'major', t('sample.markDent'), true),
+      at('m2', 'front', 'front_bumper', 0.35, 0.72, 'chip', 'minor', t('sample.markChip'), true),
+    ],
+    scope: { inspectionId: 'sample', inspectionItemId: 'sample-item' },
+    includePrevious: true,
+    labels: {
+      views: {
+        top: t('sample.viewTop'),
+        left: t('sample.viewLeft'),
+        right: t('sample.viewRight'),
+        front: t('sample.viewFront'),
+        rear: t('sample.viewRear'),
+      },
+      panels: {
+        left_rear_door: t('sample.panelLeftRearDoor'),
+        left_front_door: t('sample.panelLeftFrontDoor'),
+        front_bumper: t('sample.panelFrontBumper'),
+      },
+      kinds: {
+        scratch: t('sample.kindScratch'),
+        dent: t('sample.kindDent'),
+        chip: t('sample.kindChip'),
+      },
+      severities: { minor: t('sample.severityMinor'), major: t('sample.severityMajor') },
+      previous: t('sample.markPrevious'),
+    },
+    width: 515,
+  })
 }
 
 /**

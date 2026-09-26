@@ -208,6 +208,65 @@ function NodeBody({ node }: { node: Node }): ReactNode {
         </div>
       )
 
+    case 'drawing':
+      return (
+        <div {...id} style={{ width: '100%' }}>
+          <svg
+            width="100%"
+            height={node.height}
+            viewBox={`0 0 ${node.viewBox[0]} ${node.viewBox[1]}`}
+            preserveAspectRatio="xMidYMid meet"
+            style={{ display: 'block' }}
+            aria-hidden="true"
+          >
+            {node.shapes.map((shape, i) => {
+              if (shape.type === 'path') {
+                return (
+                  <path
+                    key={i}
+                    d={shape.d}
+                    stroke={shape.stroke}
+                    strokeWidth={shape.strokeWidth}
+                    fill={shape.fill ?? 'none'}
+                    strokeDasharray={shape.dash?.join(' ')}
+                    opacity={shape.opacity}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                )
+              }
+              if (shape.type === 'circle') {
+                return (
+                  <circle
+                    key={i}
+                    cx={shape.cx}
+                    cy={shape.cy}
+                    r={shape.r}
+                    stroke={shape.stroke}
+                    strokeWidth={shape.strokeWidth}
+                    fill={shape.fill ?? 'none'}
+                    opacity={shape.opacity}
+                  />
+                )
+              }
+              return (
+                <text
+                  key={i}
+                  x={shape.x}
+                  y={shape.y}
+                  fill={shape.fill}
+                  textAnchor={shape.anchor ?? 'start'}
+                  fontSize={shape.size}
+                  fontWeight={shape.bold ? 700 : 400}
+                >
+                  {shape.text}
+                </text>
+              )
+            })}
+          </svg>
+        </div>
+      )
+
     case 'table': {
       const cell = (width: number | 'flex'): CSSProperties =>
         width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }

@@ -136,6 +136,7 @@ export async function getInspection(id: string) {
           vehicle: {
             select: {
               id: true,
+              bodyType: true,
               make: true,
               model: true,
               year: true,

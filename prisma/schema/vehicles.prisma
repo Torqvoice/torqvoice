@@ -14,6 +14,10 @@ model Vehicle {
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?
+  /// sedan | hatchback | estate | suv | van | pickup | motorcycle | boat: which
+  /// line drawing the condition map is marked on. Null until somebody picks
+  /// one, and the map then guesses from the workshop's trade.
+  bodyType               String?
   isArchived             Boolean              @default(false)
   archiveReason          String?
   /// Set when the customer said in the portal that the vehicle is no longer theirs.
@@ -48,6 +52,7 @@ model Vehicle {
 
   inspectionStatus    VehicleInspectionStatus?
   inspectionReminders InspectionReminderSend[]
+  conditionMarks      ConditionMark[]
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)

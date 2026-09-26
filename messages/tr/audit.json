@@ -184,7 +184,9 @@
     "inspection_photo_added": "Muayene fotoğrafı eklendi",
     "inspection_file_added": "Muayene dosyası eklendi",
     "signature_save": "İmza kaydedildi",
-    "signature_remove": "İmza kaldırıldı"
+    "signature_remove": "İmza kaldırıldı",
+    "conditionMark_add": "Durum işareti eklendi",
+    "conditionMark_remove": "Durum işareti kaldırıldı"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -331,6 +333,8 @@
     "timeEntry_update": "{technician} için \"{job}\" işindeki zaman kaydı {minutes} dakika olarak düzeltildi",
     "timeEntry_stop": "{technician} için \"{job}\" işindeki sayaç {minutes} dakikada durduruldu",
     "timeEntry_delete": "{id} zaman kaydı silindi",
-    "inspection_phoneUpload": "{ref} muayenesine telefondan dosya eklendi"
+    "inspection_phoneUpload": "{ref} muayenesine telefondan dosya eklendi",
+    "condition_mark_add": "Durum haritasına işaret ekledi",
+    "condition_mark_remove": "Durum haritasından işaret kaldırdı"
   }
 }

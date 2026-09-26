@@ -49,6 +49,11 @@
       "name": "Modello vuoto",
       "description": "Parti da zero e costruisci la lista di controllo che la tua officina usa davvero.",
       "standardLabel": "Vuoto"
+    },
+    "vehicle-intake": {
+      "name": "Accettazione del veicolo",
+      "description": "Il giro intorno al veicolo alla consegna, con il cliente presente: com'è arrivato, cosa c'era già sulla carrozzeria, cosa è rimasto dentro. Si stampa sull'ordine di lavoro che il cliente firma.",
+      "standardLabel": "Officina"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Telaio e accessori fissati al telaio",
     "no_s7": "Altre attrezzature",
     "no_s8": "Effetti nocivi",
-    "no_s10": "Presentazione presso una trafikkstasjon"
+    "no_s10": "Presentazione presso una trafikkstasjon",
+    "arrival": "Arrivo",
+    "exteriorWalkround": "Giro esterno"
   },
   "checks": {
     "registrationPlates": "Targhe d'immatricolazione",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diesel: opacità dei fumi, anteriore a Euro 4, turbocompresso",
     "no_8_2_3_1": "Scarico in generale e motore in funzione",
     "no_8_3_1": "Perdite di liquidi",
-    "no_10_1": "Presentazione presso una trafikkstasjon (stazione di controllo di Statens vegvesen)"
+    "no_10_1": "Presentazione presso una trafikkstasjon (stazione di controllo di Statens vegvesen)",
+    "fuelLevel": "Livello carburante",
+    "keysHandedOver": "Chiavi consegnate",
+    "warningLightsOnArrival": "Spie accese all'arrivo",
+    "personalBelongings": "Effetti personali lasciati nel veicolo",
+    "glassCondition": "Stato dei vetri",
+    "wheelsAndTyresVisual": "Ruote e pneumatici, visivo",
+    "seatsAndTrim": "Sedili e rivestimenti",
+    "floorAndMats": "Pavimento e tappetini",
+    "infotainmentControls": "Infotainment e comandi"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Allegato I, punto 0. Conferma che il veicolo presentato corrisponde ai suoi documenti.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Max 3,0 m⁻¹. Prevale il limite del costruttore.",
     "no_8_2_3_1": "Con il motore in funzione: verificare se la spia di malfunzionamento OBD segnala un guasto e se l'autodiagnosi funziona correttamente; qualsiasi scostamento dà e). Cercare fumo blu, grigio scuro o nero visibile durante la prova su strada e con un colpo di acceleratore dal minimo, e controllare come gira il motore.",
     "no_8_3_1": "Grado 2 per qualsiasi perdita consistente di liquido (diverso dall'acqua) che possa danneggiare l'ambiente o costituire un rischio per la sicurezza degli altri utenti della strada, purché goccioli a terra durante il controllo.",
-    "no_10_1": "Si assegna quando qualcosa richiede che il veicolo vada a una trafikkstasjon per una valutazione, una nuova omologazione o una modifica del vognkort, ad es. modifica illegale del motore o della centralina, veicolo ribassato/rialzato, protezione frontale non conforme (bull bar), più posti di quelli immatricolati, conversione a un altro carburante o una modifica che richiede omologazione. Si assegna in aggiunta alla carenza pertinente sulla stessa questione; al ricontrollo solo Statens vegvesen può annullarla."
+    "no_10_1": "Si assegna quando qualcosa richiede che il veicolo vada a una trafikkstasjon per una valutazione, una nuova omologazione o una modifica del vognkort, ad es. modifica illegale del motore o della centralina, veicolo ribassato/rialzato, protezione frontale non conforme (bull bar), più posti di quelli immatricolati, conversione a un altro carburante o una modifica che richiede omologazione. Si assegna in aggiunta alla carenza pertinente sulla stessa questione; al ricontrollo solo Statens vegvesen può annullarla.",
+    "bodyConditionMap": "Tocca il disegno dove si trova ogni ammaccatura, graffio o scheggiatura e aggiungi una nota e una foto. I segni delle visite precedenti compaiono in grigio."
   },
   "choices": {
     "full": "Completo",
     "partial": "Parziale",
-    "none": "Nessuno"
+    "none": "Nessuno",
+    "fuelEmpty": "Vuoto",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Pieno"
   },
   "defects": {
     "registrationPlateMissing": "Targa d'immatricolazione mancante",

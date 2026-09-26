@@ -41,6 +41,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'purchaseDate',
     'purchasePrice',
     'imageUrl',
+    'bodyType',
     'isArchived',
     'archiveReason',
     'soldReportedAt',

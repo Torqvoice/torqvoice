@@ -49,6 +49,11 @@
       "name": "Tom mal",
       "description": "Start helt fra bunnen og bygg sjekklisten verkstedet ditt faktisk bruker.",
       "standardLabel": "Tom"
+    },
+    "vehicle-intake": {
+      "name": "Innsjekk av kjøretøy",
+      "description": "Runden rundt bilen ved innlevering, med kunden til stede: hvordan den kom, hva som allerede var på karosseriet, hva som lå igjen inni. Skrives ut på arbeidsordren kunden signerer.",
+      "standardLabel": "Verksted"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Understell og understellsutstyr",
     "no_s7": "Annet utstyr",
     "no_s8": "Skadevirkninger",
-    "no_s10": "Forevisning for trafikkstasjon"
+    "no_s10": "Forevisning for trafikkstasjon",
+    "arrival": "Ankomst",
+    "exteriorWalkround": "Runde utvendig"
   },
   "checks": {
     "registrationPlates": "Kjennemerker",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Diesel: røyktetthet, eldre enn EU-4, turbo",
     "no_8_2_3_1": "Avgass generelt og motorgange",
     "no_8_3_1": "Væskelekkasjer",
-    "no_10_1": "Forevisning for trafikkstasjon"
+    "no_10_1": "Forevisning for trafikkstasjon",
+    "fuelLevel": "Drivstoffnivå",
+    "keysHandedOver": "Nøkler levert",
+    "warningLightsOnArrival": "Varsellamper ved ankomst",
+    "personalBelongings": "Personlige eiendeler i kjøretøyet",
+    "glassCondition": "Rutenes tilstand",
+    "wheelsAndTyresVisual": "Hjul og dekk, visuelt",
+    "seatsAndTrim": "Seter og interiør",
+    "floorAndMats": "Gulv og matter",
+    "infotainmentControls": "Infotainment og betjening"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Vedlegg I, punkt 0. Bekrefter at kjøretøyet som er fremstilt stemmer med papirene.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "Maks 3,0 m⁻¹. Produsentens grenseverdi går foran.",
     "no_8_2_3_1": "Med motoren i gang: kontroller om OBD-feilindikatoren viser feil og om egendiagnosen virker korrekt; avvik gir e). Se etter synlig blå, mørkegrå eller svart røyk ved prøvekjøring og gasstøt fra tomgang, og kontroller motorgangen.",
     "no_8_3_1": "Grad 2 ved enhver stor væskelekkasje (unntatt vann) som trolig vil skade miljøet eller være en sikkerhetsrisiko, forutsatt at det drypper på bakken under kontrollen.",
-    "no_10_1": "Gis når forhold gjør at kjøretøyet må til trafikkstasjon for vurdering, ny godkjenning eller påtegning i vognkort, f.eks. ulovlig endret motor eller styreenhet, senket/hevet, ulovlig frontbeskyttelse (kufanger), flere sitteplasser enn i vognkort, ombygget til annet drivstoff eller godkjenningspliktig ombygging. Gis i tillegg til relevant merknad på samme forhold, og ved etterkontroll kan bare Statens vegvesen godkjenne den."
+    "no_10_1": "Gis når forhold gjør at kjøretøyet må til trafikkstasjon for vurdering, ny godkjenning eller påtegning i vognkort, f.eks. ulovlig endret motor eller styreenhet, senket/hevet, ulovlig frontbeskyttelse (kufanger), flere sitteplasser enn i vognkort, ombygget til annet drivstoff eller godkjenningspliktig ombygging. Gis i tillegg til relevant merknad på samme forhold, og ved etterkontroll kan bare Statens vegvesen godkjenne den.",
+    "bodyConditionMap": "Trykk på tegningen der hver bulk, ripe eller steinsprut er, og legg til notat og bilde. Merker fra tidligere besøk vises i grått."
   },
   "choices": {
     "full": "Full",
     "partial": "Delvis",
-    "none": "Ingen"
+    "none": "Ingen",
+    "fuelEmpty": "Tom",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Full"
   },
   "defects": {
     "registrationPlateMissing": "Kjennemerke mangler",

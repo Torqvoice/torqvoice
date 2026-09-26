@@ -208,7 +208,13 @@
     "poweredBy": "Работает на",
     "signature": "Подпись",
     "signedBy": "Подписал(а)",
-    "signatureDate": "Дата"
+    "signatureDate": "Дата",
+    "conditionMapTitle": "Состояние автомобиля",
+    "conditionMapNo": "№",
+    "conditionMapArea": "Место",
+    "conditionMapKind": "Тип",
+    "conditionMapSeverity": "Степень",
+    "conditionMapNote": "Заметка"
   },
   "workOrder": {
     "title": "ЗАКАЗ-НАРЯД",

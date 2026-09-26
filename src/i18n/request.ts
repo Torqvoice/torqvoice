@@ -69,6 +69,7 @@ export default getRequestConfig(async () => {
   const statusReport = (await import(`../../messages/${locale}/statusReport.json`)).default
   const support = (await import(`../../messages/${locale}/support.json`)).default
   const inspections = (await import(`../../messages/${locale}/inspections.json`)).default
+  const conditionMap = (await import(`../../messages/${locale}/conditionMap.json`)).default
   const onboarding = (await import(`../../messages/${locale}/onboarding.json`)).default
   const tireHotel = (await import(`../../messages/${locale}/tireHotel.json`)).default
   const search = (await import(`../../messages/${locale}/search.json`)).default
@@ -117,6 +118,7 @@ export default getRequestConfig(async () => {
       statusReport,
       support,
       inspections,
+      conditionMap,
       onboarding,
       tireHotel,
       search,

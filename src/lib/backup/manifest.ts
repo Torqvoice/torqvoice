@@ -279,6 +279,7 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'Note', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   { model: 'FuelLog', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   { model: 'VehicleFinding', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  { model: 'ConditionMark', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   { model: 'RecurringInvoice', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   {
     model: 'RecurringPart',

@@ -417,7 +417,7 @@ const STANDARD_MULTIPOINT: PresetSection[] = [
   {
     key: 'exterior',
     items: [
-      { key: 'bodyCondition' },
+      { key: 'bodyCondition', inputType: 'condition_map', descriptionKey: 'bodyConditionMap' },
       { key: 'paint' },
       { key: 'lights' },
       { key: 'windscreen' },
@@ -550,6 +550,7 @@ const PRE_PURCHASE: PresetSection[] = [
   {
     key: 'bodyPaint',
     items: [
+      { key: 'bodyCondition', inputType: 'condition_map', descriptionKey: 'bodyConditionMap' },
       { key: 'panelGaps' },
       {
         key: 'paintThicknessWorstPanel',
@@ -734,6 +735,50 @@ const MARINE: PresetSection[] = [
 ]
 
 /* -------------------------------------------------------------------------- */
+/* Vehicle intake: the walk-round at drop-off                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * What a workshop records when the keys change hands: how the car arrived,
+ * what was already on the body, what was left inside. Short, because it is
+ * done with the customer standing there.
+ */
+const VEHICLE_INTAKE: PresetSection[] = [
+  {
+    key: 'arrival',
+    items: [
+      {
+        key: 'fuelLevel',
+        inputType: 'choice',
+        choices: ['fuelEmpty', 'fuelQuarter', 'fuelHalf', 'fuelThreeQuarters', 'fuelFull'],
+      },
+      { key: 'keysHandedOver', inputType: 'text' },
+      { key: 'warningLightsOnArrival', inputType: 'text' },
+      { key: 'personalBelongings', inputType: 'text' },
+    ],
+  },
+  {
+    key: 'exteriorWalkround',
+    items: [
+      {
+        key: 'bodyCondition',
+        inputType: 'condition_map',
+        descriptionKey: 'bodyConditionMap',
+        required: true,
+      },
+      { key: 'glassCondition' },
+      { key: 'lights' },
+      { key: 'mirrors' },
+      { key: 'wheelsAndTyresVisual' },
+    ],
+  },
+  {
+    key: 'interior',
+    items: [{ key: 'seatsAndTrim' }, { key: 'floorAndMats' }, { key: 'infotainmentControls' }],
+  },
+]
+
+/* -------------------------------------------------------------------------- */
 /* The gallery                                                                */
 /* -------------------------------------------------------------------------- */
 
@@ -795,6 +840,14 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
     severityScale: 'basic',
     group: 'workshop',
     sections: PRE_PURCHASE,
+  },
+  {
+    id: 'vehicle-intake',
+    country: null,
+    standard: 'custom',
+    severityScale: 'basic',
+    group: 'workshop',
+    sections: VEHICLE_INTAKE,
   },
   {
     id: 'ev-hybrid',

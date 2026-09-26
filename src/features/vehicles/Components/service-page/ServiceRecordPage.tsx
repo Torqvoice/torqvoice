@@ -33,6 +33,7 @@ import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSetting
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { db } from '@/lib/db'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
@@ -350,6 +351,22 @@ export async function ServiceRecordPage({
 
   // Fetch open observations for this vehicle (not just this service).
   // Counter sales have no vehicle, so there is nothing to look up.
+  // The condition map: every mark on the car, for the drop-off card and the
+  // printed work order. Nothing to load for a counter sale.
+  const conditionMap =
+    vehicleId && organizationId
+      ? {
+          vehicleId,
+          bodyType:
+            (
+              await db.vehicle.findFirst({
+                where: { id: vehicleId, organizationId },
+                select: { bodyType: true },
+              })
+            )?.bodyType ?? null,
+          marks: await loadVehicleConditionMarks(organizationId, vehicleId),
+        }
+      : undefined
   const openObservations = vehicleId
     ? await db.vehicleFinding.findMany({
         where: { vehicleId, status: { not: 'resolved' } },
@@ -390,6 +407,7 @@ export async function ServiceRecordPage({
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}
         dropoffAttachments={dropoffAttachments}
+        conditionMap={conditionMap}
         videoAttachments={videoAttachments}
         documentAttachments={documentAttachments}
         maxImagesPerService={features?.maxImagesPerService ?? 999999}

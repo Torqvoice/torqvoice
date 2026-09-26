@@ -12,6 +12,8 @@ import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { templateConfigFromSource } from '@/features/invoice-designer/Lib/designSource'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import { buildCertificatePrintSpec } from '@/features/inspections/Pdf/buildCertificatePrint'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
 import { certificateSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import {
   certificateDesignSource,
@@ -41,6 +43,7 @@ export default async function PublicInspectionPage({
     include: {
       vehicle: {
         select: {
+          bodyType: true,
           make: true,
           model: true,
           year: true,
@@ -161,8 +164,12 @@ export default async function PublicInspectionPage({
       const photos = item.imageUrls.filter((url) => !isVideo(url)).map((url) => ({ dataUri: url }))
       if (photos.length > 0) itemPhotos[item.id] = photos
     }
+    const hasMap = inspection.items.some((item) => item.inputType === 'condition_map')
     spec = buildCertificatePrintSpec({
       data: inspection,
+      conditionMarks: hasMap ? await loadVehicleConditionMarks(orgId, inspection.vehicleId) : [],
+      bodyType: hasMap ? inspection.vehicle.bodyType : null,
+      conditionMapLabels: hasMap ? await loadConditionMapLabels(locale) : undefined,
       workshop: { ...workshop, slogan: settingsMap['workshop.slogan'] || undefined },
       labels,
       logoDataUri: toPublic(documentLogoPath(settingsMap, 'certificate')) || undefined,

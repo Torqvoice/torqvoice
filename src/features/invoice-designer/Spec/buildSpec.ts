@@ -11,6 +11,7 @@ import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import type { Block, DocumentSpec, Node, Placement, TextStyle } from './documentSpec'
 import { DEFAULT_LINE_HEIGHT } from '../Pdf/measure'
 import type { CertificateData } from './certificateData'
+import type { ConditionMapPrint } from '@/features/condition-map/Lib/print'
 import {
   defectsBlock,
   inspectionPhotosBlock,
@@ -19,6 +20,7 @@ import {
   testDetailsBlock,
 } from './certificateBlocks'
 import { signatureBlock } from './signatureBlock'
+import { conditionMapBlock } from './conditionMapBlock'
 
 /**
  * The single description of a document.
@@ -105,6 +107,11 @@ export interface DocumentData {
   certificate?: CertificateData
   /** What a work order prints beyond the shared fields; absent on any other document. */
   workOrder?: WorkOrderData
+  /**
+   * The vehicle's condition map: the drawing with its marks and the legend.
+   * Absent when the sheet has no marks to show; see condition-map/Lib/print.ts.
+   */
+  conditionMap?: ConditionMapPrint
   /**
    * Who signs the sheet and when, already worded. Absent means the document
    * has no Signature section to fill, and the section draws nothing.
@@ -2083,6 +2090,9 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
     // Every document's; see signatureBlock.ts.
     case 'signature':
       return signatureBlock(section, theme, data)
+    // A certificate's and a work order's; see conditionMapBlock.ts.
+    case 'condition_map':
+      return conditionMapBlock(section, theme, data)
     default:
       return null
   }

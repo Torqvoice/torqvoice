@@ -15,6 +15,8 @@ import {
 } from '@/features/invoice-designer/Spec/buildSpec'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import type { CertificateData } from '@/features/invoice-designer/Spec/certificateData'
+import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
@@ -46,6 +48,7 @@ export interface CertificatePrintItem {
   measuredValue?: number | null
   unit?: string | null
   textValue?: string | null
+  inputType?: string | null
 }
 
 export interface CertificatePrintData {
@@ -101,6 +104,14 @@ export interface CertificatePrintInput {
   overviewPhotos?: { dataUri: string; caption: string | null }[]
   /** Names of the documents appended after the certificate. */
   attachedDocuments?: string[]
+  /**
+   * The vehicle's condition marks and the drawing they sit on, for a
+   * checklist with a condition map check. The labels name the panels and
+   * the kinds in the reader's language.
+   */
+  conditionMarks?: ConditionMarkData[]
+  bodyType?: string | null
+  conditionMapLabels?: ConditionMapLabels
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -283,6 +294,23 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
     photos: input.overviewPhotos ?? [],
   }
 
+  // The map: this inspection's own marks in colour and, when the design
+  // asks, the ones still open from earlier visits in grey.
+  const mapSection = layout.sections.find((s) => s.id === 'condition_map')
+  const mapItem = data.items.find((item) => item.inputType === 'condition_map')
+  const conditionMap =
+    input.conditionMarks && input.conditionMapLabels && mapItem
+      ? conditionMapForPrint({
+          bodyType: input.bodyType,
+          marks: input.conditionMarks,
+          scope: { inspectionId: data.id, inspectionItemId: mapItem.id },
+          includePrevious:
+            mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,
+          labels: input.conditionMapLabels,
+          width: 515 - 2 * (doc.margin ?? 40) + 80,
+        })
+      : null
+
   const documentData: DocumentData = {
     fields,
     logoUrl: input.logoDataUri,
@@ -313,8 +341,10 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
       defects: L('deficiencies', 'Deficiencies found'),
       results_table: L('allResults', 'All results'),
       inspection_photos: L('photos', 'Photos'),
+      condition_map: L('conditionMapTitle', 'Vehicle condition'),
     },
     certificate,
+    conditionMap: conditionMap ?? undefined,
     signature: {
       heading: L('signature', 'Signature'),
       name: inspector,

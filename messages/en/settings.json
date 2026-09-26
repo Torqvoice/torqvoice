@@ -713,7 +713,8 @@
       "job_qr": "Open on Phone",
       "concerns": "Customer Concerns",
       "job_description": "Work Requested",
-      "work_checklist": "Work Checklist"
+      "work_checklist": "Work Checklist",
+      "condition_map": "Vehicle Condition"
     },
     "fields": {
       "customer_name": "Customer Name",
@@ -770,7 +771,9 @@
       "scheduled": "Scheduled",
       "promised": "Promised",
       "work_bay": "Work Bay",
-      "customer_line": "Customer signature line"
+      "customer_line": "Customer signature line",
+      "legend": "Legend",
+      "previous_marks": "Earlier marks"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Front pads and discs worn; replaced",
       "concernWarningLight": "Warning light on the dashboard since last week",
       "workRequested": "Replace front brake pads and discs, reset the service indicator and road test.",
-      "checklistTestDrive": "Road test"
+      "checklistTestDrive": "Road test",
+      "markScratch": "Key scratch along the door, 20 cm",
+      "markDent": "Dent below the handle, paint intact",
+      "markChip": "Stone chips in the lower bumper",
+      "viewTop": "Top",
+      "viewLeft": "Left side",
+      "viewRight": "Right side",
+      "viewFront": "Front",
+      "viewRear": "Rear",
+      "panelLeftRearDoor": "Left rear door",
+      "panelLeftFrontDoor": "Left front door",
+      "panelFrontBumper": "Front bumper",
+      "kindScratch": "Scratch",
+      "kindDent": "Dent",
+      "kindChip": "Stone chip",
+      "severityMinor": "Minor",
+      "severityMajor": "Major",
+      "markPrevious": "recorded earlier"
     },
     "logoUpload": "Upload logo",
     "logoReplace": "Replace logo",

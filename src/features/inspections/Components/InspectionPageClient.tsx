@@ -59,6 +59,7 @@ import {
   type InspectionStatusReportData,
 } from './InspectionFilesCard'
 import { InspectionCertificateCard, type TechnicianOption } from './InspectionCertificateCard'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { InspectionItemRow, type InspectionItemData } from './InspectionItemRow'
 import { MediaLightbox, type LightboxImage } from './MediaLightbox'
 import { useServiceType } from '@/components/service-type-context'
@@ -94,6 +95,7 @@ export interface InspectionData {
   testLocation: string | null
   vehicle: {
     id: string
+    bodyType?: string | null
     make: string
     model: string
     year: number
@@ -237,8 +239,11 @@ export function InspectionPageClient({
   defectHistory = {},
   technicians = [],
   workshopAddress = '',
+  conditionMarks = [],
 }: {
   inspection: InspectionData
+  /** Every mark on the vehicle's condition map, for a checklist that has one. */
+  conditionMarks?: ConditionMarkData[]
   /** For the share links of the inspection's status reports. */
   organizationId: string
   smsEnabled?: boolean
@@ -759,6 +764,12 @@ export function InspectionPageClient({
                       quoteRequested={requestedIds.has(item.id)}
                       onOpenImage={openImage}
                       onSaveState={handleSaveState}
+                      vehicle={{
+                        id: inspection.vehicle.id,
+                        bodyType: inspection.vehicle.bodyType ?? null,
+                      }}
+                      conditionMarks={conditionMarks}
+                      serviceType={serviceType}
                       onChanged={(itemId, change) => {
                         setGrades((prev) => ({ ...prev, [itemId]: change.condition }))
                         setPhotoCounts((prev) => ({ ...prev, [itemId]: change.photoCount }))

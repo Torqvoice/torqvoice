@@ -1386,6 +1386,68 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // 10c. The condition map's marks. They hang off the vehicle but name
+      // the inspection check or the job they were drawn on, so they come
+      // after both; a sheet the backup did not carry leaves the mark with no
+      // sheet rather than failing the import. The people who drew and cleared
+      // them have no account on this instance.
+      if (data.vehicles?.length) {
+        const marks = (data.vehicles as Record<string, unknown>[]).flatMap((vehicle) =>
+          ((vehicle.conditionMarks as Record<string, unknown>[] | undefined) ?? []).map((mark) => ({
+            mark,
+            vehicleId: vehicle.id as string,
+          }))
+        )
+        if (marks.length > 0) {
+          const ids = (key: string) =>
+            marks.map(({ mark }) => mark[key]).filter((id): id is string => typeof id === 'string')
+          const [inspectionRows, itemRows, jobRows] = await Promise.all([
+            tx.inspection.findMany({
+              where: { id: { in: ids('inspectionId') }, organizationId },
+              select: { id: true },
+            }),
+            tx.inspectionItem.findMany({
+              where: { id: { in: ids('inspectionItemId') }, inspection: { organizationId } },
+              select: { id: true },
+            }),
+            tx.serviceRecord.findMany({
+              where: { id: { in: ids('serviceRecordId') }, organizationId },
+              select: { id: true },
+            }),
+          ])
+          const restoredInspectionIds = new Set(inspectionRows.map((row) => row.id))
+          const restoredItemIds = new Set(itemRows.map((row) => row.id))
+          const restoredJobIds = new Set(jobRows.map((row) => row.id))
+          await tx.conditionMark.createMany({
+            data: marks.map(({ mark, vehicleId: markVehicleId }) => ({
+              id: mark.id as string,
+              organizationId,
+              vehicleId: markVehicleId,
+              inspectionId: keptReference(mark.inspectionId, restoredInspectionIds),
+              inspectionItemId: keptReference(mark.inspectionItemId, restoredItemIds),
+              serviceRecordId: keptReference(mark.serviceRecordId, restoredJobIds),
+              bodyType: (mark.bodyType as string) || 'sedan',
+              view: (mark.view as string) || 'left',
+              panel: (mark.panel as string) || 'hood',
+              x: typeof mark.x === 'number' ? mark.x : 0.5,
+              y: typeof mark.y === 'number' ? mark.y : 0.5,
+              kind: (mark.kind as string) || 'dent',
+              severity: (mark.severity as string) || 'minor',
+              note: (mark.note as string) || null,
+              imageUrls: ((mark.imageUrls as string[]) || []).map(
+                (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
+              ),
+              recordedAt: toSafeDate(mark.recordedAt as string),
+              recordedById: null,
+              resolvedAt: toSafeDate(mark.resolvedAt as string) ?? null,
+              resolvedById: null,
+              createdAt: toSafeDate(mark.createdAt as string),
+              updatedAt: toSafeDate(mark.updatedAt as string),
+            })),
+          })
+        }
+      }
+
       // 11. Insert audit logs
       if (data.auditLogs?.length) {
         await tx.auditLog.createMany({

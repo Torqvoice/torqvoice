@@ -184,7 +184,9 @@
     "inspection_photo_added": "Added Inspection Photo",
     "inspection_file_added": "Added Inspection File",
     "signature_save": "Saved Signature",
-    "signature_remove": "Removed Signature"
+    "signature_remove": "Removed Signature",
+    "conditionMark_add": "Added a condition mark",
+    "conditionMark_remove": "Removed a condition mark"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Corrected time entry for {technician} on \"{job}\" to {minutes} minutes",
     "timeEntry_stop": "Stopped the clock for {technician} on \"{job}\" at {minutes} minutes",
     "timeEntry_delete": "Deleted time entry {id}",
-    "inspection_phoneUpload": "Added a file from a phone to inspection {ref}"
+    "inspection_phoneUpload": "Added a file from a phone to inspection {ref}",
+    "condition_mark_add": "Added a mark to the condition map",
+    "condition_mark_remove": "Removed a mark from the condition map"
   }
 }

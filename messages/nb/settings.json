@@ -713,7 +713,8 @@
       "job_qr": "Åpne på telefonen",
       "concerns": "Kundens henvendelser",
       "job_description": "Ønsket arbeid",
-      "work_checklist": "Sjekkliste for arbeid"
+      "work_checklist": "Sjekkliste for arbeid",
+      "condition_map": "Kjøretøyets tilstand"
     },
     "fields": {
       "customer_name": "Kundenavn",
@@ -770,7 +771,9 @@
       "scheduled": "Planlagt",
       "promised": "Lovet",
       "work_bay": "Arbeidsplass",
-      "customer_line": "Signaturlinje for kunde"
+      "customer_line": "Signaturlinje for kunde",
+      "legend": "Forklaring",
+      "previous_marks": "Tidligere merker"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Klosser og skiver foran slitt; byttet",
       "concernWarningLight": "Varsellampe i dashbordet siden forrige uke",
       "workRequested": "Bytt bremseklosser og skiver foran, nullstill serviceindikatoren og prøvekjør.",
-      "checklistTestDrive": "Prøvekjøring"
+      "checklistTestDrive": "Prøvekjøring",
+      "markScratch": "Nøkkelripe langs døra, 20 cm",
+      "markDent": "Bulk under håndtaket, lakken hel",
+      "markChip": "Steinsprut nederst i støtfangeren",
+      "viewTop": "Ovenfra",
+      "viewLeft": "Venstre side",
+      "viewRight": "Høyre side",
+      "viewFront": "Front",
+      "viewRear": "Bak",
+      "panelLeftRearDoor": "Dør bak venstre",
+      "panelLeftFrontDoor": "Dør foran venstre",
+      "panelFrontBumper": "Støtfanger foran",
+      "kindScratch": "Ripe",
+      "kindDent": "Bulk",
+      "kindChip": "Steinsprut",
+      "severityMinor": "Liten",
+      "severityMajor": "Stor",
+      "markPrevious": "registrert tidligere"
     },
     "logoUpload": "Last opp logo",
     "logoReplace": "Bytt logo",

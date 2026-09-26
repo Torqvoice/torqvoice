@@ -208,7 +208,13 @@
     "poweredBy": "Sukurta su",
     "signature": "Parašas",
     "signedBy": "Pasirašė",
-    "signatureDate": "Data"
+    "signatureDate": "Data",
+    "conditionMapTitle": "Transporto priemonės būklė",
+    "conditionMapNo": "Nr.",
+    "conditionMapArea": "Vieta",
+    "conditionMapKind": "Tipas",
+    "conditionMapSeverity": "Sunkumas",
+    "conditionMapNote": "Pastaba"
   },
   "workOrder": {
     "title": "DARBO UŽSAKYMAS",

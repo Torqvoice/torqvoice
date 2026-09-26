@@ -184,7 +184,9 @@
     "inspection_photo_added": "Pridėta apžiūros nuotrauka",
     "inspection_file_added": "Pridėtas apžiūros failas",
     "signature_save": "Išsaugotas parašas",
-    "signature_remove": "Pašalintas parašas"
+    "signature_remove": "Pašalintas parašas",
+    "conditionMark_add": "Pridėta būklės žyma",
+    "conditionMark_remove": "Pašalinta būklės žyma"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Techniko {technician} laiko įrašas darbe „{job}“ pataisytas į {minutes} min.",
     "timeEntry_stop": "Techniko {technician} laikmatis darbe „{job}“ sustabdytas ties {minutes} min.",
     "timeEntry_delete": "Ištrintas laiko įrašas {id}",
-    "inspection_phoneUpload": "Pridėtas failas iš telefono prie apžiūros {ref}"
+    "inspection_phoneUpload": "Pridėtas failas iš telefono prie apžiūros {ref}",
+    "condition_mark_add": "Pridėjo žymą būklės žemėlapyje",
+    "condition_mark_remove": "Pašalino žymą iš būklės žemėlapio"
   }
 }

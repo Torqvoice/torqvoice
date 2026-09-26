@@ -181,6 +181,9 @@ export async function POST(request: NextRequest) {
             // three below: every one of them hangs off the vehicle and was
             // restored from a key the export never wrote.
             findings: true,
+            // The condition map's marks: the car's dents and scratches, with
+            // their photos. Deleted with the vehicle on a restore like the rest.
+            conditionMarks: true,
             aiMessages: true,
             recurringInvoices: { include: { templateParts: true, templateLabor: true } },
             serviceRecords: {

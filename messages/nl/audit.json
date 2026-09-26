@@ -184,7 +184,9 @@
     "inspection_photo_added": "Keuringsfoto toegevoegd",
     "inspection_file_added": "Keuringsbestand toegevoegd",
     "signature_save": "Handtekening opgeslagen",
-    "signature_remove": "Handtekening verwijderd"
+    "signature_remove": "Handtekening verwijderd",
+    "conditionMark_add": "Staatmarkering toegevoegd",
+    "conditionMark_remove": "Staatmarkering verwijderd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Tijdregistratie van {technician} op \"{job}\" gecorrigeerd naar {minutes} minuten",
     "timeEntry_stop": "Klok van {technician} op \"{job}\" gestopt op {minutes} minuten",
     "timeEntry_delete": "Tijdregistratie {id} verwijderd",
-    "inspection_phoneUpload": "Bestand vanaf een telefoon toegevoegd aan keuring {ref}"
+    "inspection_phoneUpload": "Bestand vanaf een telefoon toegevoegd aan keuring {ref}",
+    "condition_mark_add": "Markering aan de staatkaart toegevoegd",
+    "condition_mark_remove": "Markering van de staatkaart verwijderd"
   }
 }

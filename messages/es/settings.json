@@ -713,7 +713,8 @@
       "job_qr": "Abrir en el móvil",
       "concerns": "Inquietudes del cliente",
       "job_description": "Trabajo solicitado",
-      "work_checklist": "Lista de trabajos"
+      "work_checklist": "Lista de trabajos",
+      "condition_map": "Estado del vehículo"
     },
     "fields": {
       "customer_name": "Nombre del cliente",
@@ -770,7 +771,9 @@
       "scheduled": "Programado",
       "promised": "Prometido",
       "work_bay": "Puesto",
-      "customer_line": "Línea de firma del cliente"
+      "customer_line": "Línea de firma del cliente",
+      "legend": "Leyenda",
+      "previous_marks": "Marcas anteriores"
     },
     "presetsTitle": "Empezar con una disposición",
     "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Pastillas y discos delanteros desgastados; sustituidos",
       "concernWarningLight": "Testigo encendido en el cuadro desde la semana pasada",
       "workRequested": "Sustituir pastillas y discos delanteros, reiniciar el indicador de servicio y probar en carretera.",
-      "checklistTestDrive": "Prueba en carretera"
+      "checklistTestDrive": "Prueba en carretera",
+      "markScratch": "Arañazo de llave a lo largo de la puerta, 20 cm",
+      "markDent": "Abolladura bajo la manilla, pintura intacta",
+      "markChip": "Picadas de piedra en la parte baja del paragolpes",
+      "viewTop": "Superior",
+      "viewLeft": "Lado izquierdo",
+      "viewRight": "Lado derecho",
+      "viewFront": "Frontal",
+      "viewRear": "Trasera",
+      "panelLeftRearDoor": "Puerta trasera izquierda",
+      "panelLeftFrontDoor": "Puerta delantera izquierda",
+      "panelFrontBumper": "Paragolpes delantero",
+      "kindScratch": "Arañazo",
+      "kindDent": "Abolladura",
+      "kindChip": "Picada de piedra",
+      "severityMinor": "Leve",
+      "severityMajor": "Grave",
+      "markPrevious": "registrado antes"
     },
     "logoUpload": "Subir logotipo",
     "logoReplace": "Cambiar logotipo",

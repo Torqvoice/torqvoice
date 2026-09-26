@@ -1,0 +1,61 @@
+/// A mark on the vehicle's condition map: a dent, a scratch, a chip, drawn
+/// on a line drawing of the car by tapping where it is.
+///
+/// Marks belong to the vehicle, not to the sheet they were drawn on. An
+/// inspection or a work order records new ones; the next visit starts with
+/// the ones still there, greyed, and either confirms them or clears them as
+/// repaired. That is what makes "new since last time" a fact rather than an
+/// argument. The sheet a mark was drawn on is kept for the print, and lets
+/// go of the mark rather than taking it with it when the sheet is deleted.
+model ConditionMark {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  /// Where it was recorded: the inspection check or the work order's drop-off.
+  inspectionId     String?
+  inspection       Inspection?     @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+  inspectionItemId String?
+  inspectionItem   InspectionItem? @relation(fields: [inspectionItemId], references: [id], onDelete: SetNull)
+  serviceRecordId  String?
+  serviceRecord    ServiceRecord?  @relation(fields: [serviceRecordId], references: [id], onDelete: SetNull)
+
+  /// Which drawing it sits on, so a body type changed later cannot move it.
+  bodyType  String
+  /// top | left | right | front | rear
+  view      String
+  /// The named panel the tap landed on; see condition-map/Lib/drawingTypes.ts.
+  panel     String
+  /// Position as a fraction of the view's box, 0..1 from the top-left.
+  x         Float
+  y         Float
+  /// dent | scratch | chip | crack | rust | paint | previous_repair | missing
+  kind      String
+  /// minor | major
+  severity  String   @default("minor")
+  note      String?
+  imageUrls String[] @default([])
+
+  recordedAt   DateTime @default(now())
+  recordedById String?
+  recordedBy   User?    @relation("ConditionMarkRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  /// Set when a later visit found the damage gone. The mark stays as history
+  /// and stops printing as current.
+  resolvedAt   DateTime?
+  resolvedById String?
+  resolvedBy   User?     @relation("ConditionMarkResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([vehicleId])
+  @@index([inspectionId])
+  @@index([inspectionItemId])
+  @@index([serviceRecordId])
+  @@index([organizationId])
+  @@map("condition_marks")
+}

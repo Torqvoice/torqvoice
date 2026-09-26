@@ -49,6 +49,11 @@
       "name": "Boş şablon",
       "description": "Sıfırdan başlayın ve servisinizin gerçekten kullandığı kontrol listesini oluşturun.",
       "standardLabel": "Boş"
+    },
+    "vehicle-intake": {
+      "name": "Araç kabulü",
+      "description": "Teslimde müşteri yanınızdayken aracın etrafında tur: nasıl geldi, kasada zaten ne vardı, içeride ne kaldı. Müşterinin imzaladığı iş emrine yazdırılır.",
+      "standardLabel": "Atölye"
     }
   },
   "sections": {
@@ -89,7 +94,9 @@
     "no_s6": "Şasi ve şasiye bağlı parçalar",
     "no_s7": "Diğer donanımlar",
     "no_s8": "Çevresel rahatsızlık",
-    "no_s10": "Trafikkstasjon'a (trafik istasyonu) sevk"
+    "no_s10": "Trafikkstasjon'a (trafik istasyonu) sevk",
+    "arrival": "Geliş",
+    "exteriorWalkround": "Dış tur"
   },
   "checks": {
     "registrationPlates": "Tescil plakaları",
@@ -426,7 +433,16 @@
     "no_m_opacity_older_turbo": "Dizel: duman opaklığı, Euro 4'ten eski, turbo beslemeli",
     "no_8_2_3_1": "Egzoz genel ve motorun çalışması",
     "no_8_3_1": "Sıvı kaçakları",
-    "no_10_1": "Trafikkstasjon'a (trafik istasyonu) sevk"
+    "no_10_1": "Trafikkstasjon'a (trafik istasyonu) sevk",
+    "fuelLevel": "Yakıt seviyesi",
+    "keysHandedOver": "Teslim edilen anahtarlar",
+    "warningLightsOnArrival": "Gelişte yanan uyarı ışıkları",
+    "personalBelongings": "Araçta bırakılan kişisel eşyalar",
+    "glassCondition": "Camların durumu",
+    "wheelsAndTyresVisual": "Jant ve lastikler, görsel",
+    "seatsAndTrim": "Koltuklar ve döşeme",
+    "floorAndMats": "Taban ve paspaslar",
+    "infotainmentControls": "Multimedya ve kumandalar"
   },
   "descriptions": {
     "annexIItem0ConfirmsVehicle": "Ek I, madde 0. Muayeneye getirilen aracın belgeleriyle uyumlu olduğunu doğrular.",
@@ -555,12 +571,18 @@
     "no_m_opacity_older_turbo": "En fazla 3,0 m⁻¹. Üreticinin sınırı önceliklidir.",
     "no_8_2_3_1": "Motor çalışırken: OBD arıza göstergesinin arıza gösterip göstermediğini ve kendi kendine teşhisin doğru çalışıp çalışmadığını kontrol edin; herhangi bir sapma e) verir. Yol testinde ve rölantiden gaz verildiğinde görünür mavi, koyu gri veya siyah duman olup olmadığına bakın ve motorun nasıl çalıştığını kontrol edin.",
     "no_8_3_1": "Çevreye zarar verme veya diğer yol kullanıcıları için güvenlik riski oluşturma olasılığı bulunan (su dışındaki) her büyük sıvı kaçağı için, muayene sırasında yere damlaması koşuluyla, 2. derece.",
-    "no_10_1": "Aracın değerlendirme, yeni onay veya vognkort değişikliği için trafikkstasjon'a gitmesini gerektiren bir durum olduğunda verilir; örneğin kurallara aykırı motor veya ECU modifikasyonu, alçaltma/yükseltme, uygun olmayan ön koruma (bull bar), tescilli olandan fazla koltuk, başka yakıta dönüştürme veya onay gerektiren bir modifikasyon. Aynı konudaki ilgili kusura ek olarak verilir; tekrar muayenede yalnızca Statens vegvesen kaldırabilir."
+    "no_10_1": "Aracın değerlendirme, yeni onay veya vognkort değişikliği için trafikkstasjon'a gitmesini gerektiren bir durum olduğunda verilir; örneğin kurallara aykırı motor veya ECU modifikasyonu, alçaltma/yükseltme, uygun olmayan ön koruma (bull bar), tescilli olandan fazla koltuk, başka yakıta dönüştürme veya onay gerektiren bir modifikasyon. Aynı konudaki ilgili kusura ek olarak verilir; tekrar muayenede yalnızca Statens vegvesen kaldırabilir.",
+    "bodyConditionMap": "Her göçük, çizik veya taş izinin olduğu yerde çizime dokunun, not ve fotoğraf ekleyin. Önceki ziyaretlerin işaretleri gri görünür."
   },
   "choices": {
     "full": "Tam",
     "partial": "Kısmi",
-    "none": "Yok"
+    "none": "Yok",
+    "fuelEmpty": "Boş",
+    "fuelQuarter": "1/4",
+    "fuelHalf": "1/2",
+    "fuelThreeQuarters": "3/4",
+    "fuelFull": "Dolu"
   },
   "defects": {
     "registrationPlateMissing": "Tescil plakası yok",

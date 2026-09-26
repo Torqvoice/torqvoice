@@ -77,6 +77,7 @@ export async function vehicleFileUrls(organizationId: string, vehicleIds: string
       serviceRecords: { select: { id: true } },
       inspections: { select: { id: true } },
       findings: { select: { imageUrls: true } },
+      conditionMarks: { select: { imageUrls: true } },
     },
   })
   const serviceRecordIds = vehicles.flatMap((v) => v.serviceRecords.map((s) => s.id))
@@ -88,6 +89,7 @@ export async function vehicleFileUrls(organizationId: string, vehicleIds: string
   return [
     ...vehicles.map((v) => v.imageUrl),
     ...vehicles.flatMap((v) => v.findings.flatMap((f) => f.imageUrls)),
+    ...vehicles.flatMap((v) => v.conditionMarks.flatMap((m) => m.imageUrls)),
     ...serviceFiles,
     ...inspectionFiles,
   ] as Urls

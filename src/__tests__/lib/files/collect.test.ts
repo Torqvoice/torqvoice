@@ -107,6 +107,7 @@ describe('files that go with a delete', () => {
         serviceRecords: [{ id: 'sr-1' }],
         inspections: [{ id: 'in-1' }],
         findings: [{ imageUrls: ['services/f.jpg'] }],
+        conditionMarks: [{ imageUrls: ['services/dent.jpg'] }],
       },
     ] as never)
 
@@ -115,6 +116,7 @@ describe('files that go with a delete', () => {
     expect(urls).toEqual([
       'vehicles/car.jpg',
       'services/f.jpg',
+      'services/dent.jpg',
       'services/a.jpg',
       'tire-hotel/shared.jpg',
       'services/v.mp4',

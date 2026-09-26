@@ -124,7 +124,8 @@ describe('converting an installed checklist', () => {
     const plan = planRelocalization(template, NB, index)
     expect(plan.template?.name).toBeUndefined()
     expect(plan.sections.find((s) => s.id === 's0')?.data.name).toBeUndefined()
-    expect(plan.items.find((i) => i.id === 's0i0')).toBeUndefined()
+    // The name the workshop wrote stays; the guidance it never touched may still move.
+    expect(plan.items.find((i) => i.id === 's0i0')?.data.name).toBeUndefined()
     // The rest of the checklist still moves.
     expect(plan.items.find((i) => i.id === 's0i1')?.data.name).toBe(NB.checks.paint)
   })

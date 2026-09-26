@@ -208,7 +208,13 @@
     "poweredBy": "Desenvolvido por",
     "signature": "Assinatura",
     "signedBy": "Assinado por",
-    "signatureDate": "Data"
+    "signatureDate": "Data",
+    "conditionMapTitle": "Estado do veículo",
+    "conditionMapNo": "Nº",
+    "conditionMapArea": "Local",
+    "conditionMapKind": "Tipo",
+    "conditionMapSeverity": "Gravidade",
+    "conditionMapNote": "Nota"
   },
   "workOrder": {
     "title": "ORDEM DE SERVIÇO",

@@ -713,7 +713,8 @@
       "job_qr": "Ouvrir sur le téléphone",
       "concerns": "Demandes du client",
       "job_description": "Travaux demandés",
-      "work_checklist": "Liste des travaux"
+      "work_checklist": "Liste des travaux",
+      "condition_map": "État du véhicule"
     },
     "fields": {
       "customer_name": "Nom du client",
@@ -770,7 +771,9 @@
       "scheduled": "Planifié",
       "promised": "Promis",
       "work_bay": "Poste",
-      "customer_line": "Ligne de signature du client"
+      "customer_line": "Ligne de signature du client",
+      "legend": "Légende",
+      "previous_marks": "Marques antérieures"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Plaquettes et disques avant usés ; remplacés",
       "concernWarningLight": "Voyant allumé au tableau de bord depuis la semaine dernière",
       "workRequested": "Remplacer les plaquettes et disques avant, réinitialiser l'indicateur d'entretien et faire un essai routier.",
-      "checklistTestDrive": "Essai routier"
+      "checklistTestDrive": "Essai routier",
+      "markScratch": "Rayure de clé le long de la porte, 20 cm",
+      "markDent": "Bosse sous la poignée, peinture intacte",
+      "markChip": "Éclats de gravillons dans le bas du pare-chocs",
+      "viewTop": "Dessus",
+      "viewLeft": "Côté gauche",
+      "viewRight": "Côté droit",
+      "viewFront": "Avant",
+      "viewRear": "Arrière",
+      "panelLeftRearDoor": "Porte arrière gauche",
+      "panelLeftFrontDoor": "Porte avant gauche",
+      "panelFrontBumper": "Pare-chocs avant",
+      "kindScratch": "Rayure",
+      "kindDent": "Bosse",
+      "kindChip": "Éclat de gravillon",
+      "severityMinor": "Légère",
+      "severityMajor": "Importante",
+      "markPrevious": "relevé auparavant"
     },
     "logoUpload": "Importer un logo",
     "logoReplace": "Remplacer le logo",

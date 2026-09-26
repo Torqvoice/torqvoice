@@ -370,7 +370,7 @@ export function deriveTestResult(
 /* Measurements                                                               */
 /* -------------------------------------------------------------------------- */
 
-export type InputType = 'condition' | 'measurement' | 'text' | 'choice'
+export type InputType = 'condition' | 'measurement' | 'text' | 'choice' | 'condition_map'
 
 export const INPUT_TYPES: { value: InputType; label: string; hint: string }[] = [
   {
@@ -389,6 +389,11 @@ export const INPUT_TYPES: { value: InputType; label: string; hint: string }[] = 
     hint: 'Records a written observation, e.g. a tyre brand or a fault code.',
   },
   { value: 'choice', label: 'Choice', hint: 'Technician picks one of a fixed list of answers.' },
+  {
+    value: 'condition_map',
+    label: 'Condition map',
+    hint: 'A drawing of the vehicle to mark dents, scratches and chips on, with a note and a photo each.',
+  },
 ]
 
 /** Units offered in the builder. Free text is still allowed. */

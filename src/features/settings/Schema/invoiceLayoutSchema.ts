@@ -262,6 +262,7 @@ export const CERTIFICATE_SECTIONS = [
   { id: 'test_details', name: 'Test Details' },
   { id: 'defects', name: 'Defects' },
   { id: 'results_table', name: 'All Results' },
+  { id: 'condition_map', name: 'Vehicle Condition' },
   { id: 'inspection_photos', name: 'Photos' },
   { id: 'notes', name: 'Notes' },
   { id: 'attached_documents', name: 'Attached Documents' },
@@ -287,6 +288,7 @@ export const WORK_ORDER_SECTIONS = [
   { id: 'job_qr', name: 'Open on Phone' },
   { id: 'concerns', name: 'Customer Concerns' },
   { id: 'job_description', name: 'Work Requested' },
+  { id: 'condition_map', name: 'Vehicle Condition' },
   { id: 'work_checklist', name: 'Work Checklist' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
@@ -458,6 +460,13 @@ export const BUILTIN_SIGNATURE_FIELDS = [
   { id: 'customer_line', name: 'Customer signature line' },
 ] as const
 
+/** What the condition map prints beside the drawing. */
+export const BUILTIN_CONDITION_MAP_FIELDS = [
+  { id: 'legend', name: 'Legend' },
+  /** Marks still open from earlier visits, drawn in grey. */
+  { id: 'previous_marks', name: 'Earlier marks' },
+] as const
+
 /** Which rows the full results table prints beyond the defects. */
 export const BUILTIN_RESULTS_TABLE_FIELDS = [
   { id: 'passed_checks', name: 'Passed checks' },
@@ -536,6 +545,7 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'defects',
   'results_table',
   'job_details',
+  'condition_map',
 ])
 
 /** Sections that print inside a panel and can have it taken away. */
@@ -618,6 +628,7 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'concerns',
   'job_description',
   'work_checklist',
+  'condition_map',
 ])
 
 /** Default column assignment for column-eligible sections */
@@ -672,6 +683,8 @@ function getDefaultFieldsForSection(
       }))
     case 'job_details':
       return BUILTIN_JOB_DETAILS_FIELDS.map((f) => ({ id: f.id, visible: f.id !== 'work_bay' }))
+    case 'condition_map':
+      return BUILTIN_CONDITION_MAP_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'footer':
       // Only the note and the portal link, which is the footer every existing
       // invoice already has. A work order is not sent, so no portal link.
@@ -905,6 +918,8 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_RESULTS_TABLE_FIELDS
     case 'job_details':
       return BUILTIN_JOB_DETAILS_FIELDS
+    case 'condition_map':
+      return BUILTIN_CONDITION_MAP_FIELDS
     default:
       return []
   }
@@ -926,6 +941,7 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_DEFECTS_FIELDS,
     ...BUILTIN_RESULTS_TABLE_FIELDS,
     ...BUILTIN_JOB_DETAILS_FIELDS,
+    ...BUILTIN_CONDITION_MAP_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
 }

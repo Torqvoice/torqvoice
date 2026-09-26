@@ -713,7 +713,8 @@
       "job_qr": "Telefonda aç",
       "concerns": "Müşteri şikayetleri",
       "job_description": "İstenen iş",
-      "work_checklist": "İş kontrol listesi"
+      "work_checklist": "İş kontrol listesi",
+      "condition_map": "Araç durumu"
     },
     "fields": {
       "customer_name": "Müşteri adı",
@@ -770,7 +771,9 @@
       "scheduled": "Planlanan",
       "promised": "Söz verilen",
       "work_bay": "Çalışma alanı",
-      "customer_line": "Müşteri imza satırı"
+      "customer_line": "Müşteri imza satırı",
+      "legend": "Açıklama",
+      "previous_marks": "Önceki işaretler"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Ön balatalar ve diskler aşınmış; değiştirildi",
       "concernWarningLight": "Geçen haftadan beri göstergede uyarı ışığı",
       "workRequested": "Ön fren balatalarını ve disklerini değiştir, servis göstergesini sıfırla ve yol testi yap.",
-      "checklistTestDrive": "Yol testi"
+      "checklistTestDrive": "Yol testi",
+      "markScratch": "Kapı boyunca anahtar çiziği, 20 cm",
+      "markDent": "Kolun altında göçük, boya sağlam",
+      "markChip": "Tamponun altında taş izleri",
+      "viewTop": "Üstten",
+      "viewLeft": "Sol taraf",
+      "viewRight": "Sağ taraf",
+      "viewFront": "Ön",
+      "viewRear": "Arka",
+      "panelLeftRearDoor": "Sol arka kapı",
+      "panelLeftFrontDoor": "Sol ön kapı",
+      "panelFrontBumper": "Ön tampon",
+      "kindScratch": "Çizik",
+      "kindDent": "Göçük",
+      "kindChip": "Taş izi",
+      "severityMinor": "Hafif",
+      "severityMajor": "Ağır",
+      "markPrevious": "daha önce kaydedildi"
     },
     "logoUpload": "Logo yükle",
     "logoReplace": "Logoyu değiştir",

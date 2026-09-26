@@ -378,13 +378,15 @@
       "condition": "Defect grading",
       "measurement": "Measurement",
       "text": "Free text",
-      "choice": "Choice"
+      "choice": "Choice",
+      "condition_map": "Condition map"
     },
     "inputHint": {
       "condition": "Technician grades the check against the defect scale.",
       "measurement": "Records a number in a unit, graded automatically against a range.",
       "text": "Records a written observation, e.g. a tyre brand or a fault code.",
-      "choice": "Technician picks one of a fixed list of answers."
+      "choice": "Technician picks one of a fixed list of answers.",
+      "condition_map": "A drawing of the vehicle to mark dents, scratches and chips on, each with a note and a photo."
     },
     "cancel": "Cancel",
     "create": "Create checklist",

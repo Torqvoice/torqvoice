@@ -713,7 +713,8 @@
       "job_qr": "Abrir no celular",
       "concerns": "Reclamações do cliente",
       "job_description": "Serviço solicitado",
-      "work_checklist": "Lista de serviços"
+      "work_checklist": "Lista de serviços",
+      "condition_map": "Estado do veículo"
     },
     "fields": {
       "customer_name": "Nome do cliente",
@@ -770,7 +771,9 @@
       "scheduled": "Agendado",
       "promised": "Prometido",
       "work_bay": "Box",
-      "customer_line": "Linha de assinatura do cliente"
+      "customer_line": "Linha de assinatura do cliente",
+      "legend": "Legenda",
+      "previous_marks": "Marcas anteriores"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",
@@ -2191,7 +2194,24 @@
       "concernNoiseDetail": "Pastilhas e discos dianteiros gastos; substituídos",
       "concernWarningLight": "Luz de aviso no painel desde a semana passada",
       "workRequested": "Substituir pastilhas e discos dianteiros, zerar o indicador de revisão e fazer teste de rua.",
-      "checklistTestDrive": "Teste de rua"
+      "checklistTestDrive": "Teste de rua",
+      "markScratch": "Arranhão de chave ao longo da porta, 20 cm",
+      "markDent": "Amassado abaixo da maçaneta, pintura intacta",
+      "markChip": "Lascados por pedra na parte de baixo do para-choque",
+      "viewTop": "Vista de cima",
+      "viewLeft": "Lado esquerdo",
+      "viewRight": "Lado direito",
+      "viewFront": "Frente",
+      "viewRear": "Traseira",
+      "panelLeftRearDoor": "Porta traseira esquerda",
+      "panelLeftFrontDoor": "Porta dianteira esquerda",
+      "panelFrontBumper": "Para-choque dianteiro",
+      "kindScratch": "Arranhão",
+      "kindDent": "Amassado",
+      "kindChip": "Lascado por pedra",
+      "severityMinor": "Leve",
+      "severityMajor": "Grave",
+      "markPrevious": "registrado antes"
     },
     "logoUpload": "Enviar logotipo",
     "logoReplace": "Substituir logotipo",

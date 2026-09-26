@@ -184,7 +184,9 @@
     "inspection_photo_added": "Añadió foto de inspección",
     "inspection_file_added": "Añadió archivo de inspección",
     "signature_save": "Guardó la firma",
-    "signature_remove": "Eliminó la firma"
+    "signature_remove": "Eliminó la firma",
+    "conditionMark_add": "Marca de estado añadida",
+    "conditionMark_remove": "Marca de estado eliminada"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -331,6 +333,8 @@
     "timeEntry_update": "Entrada de tiempo de {technician} en \"{job}\" corregida a {minutes} minutos",
     "timeEntry_stop": "Reloj de {technician} en \"{job}\" detenido en {minutes} minutos",
     "timeEntry_delete": "Entrada de tiempo {id} eliminada",
-    "inspection_phoneUpload": "Añadió un archivo desde un teléfono a la inspección {ref}"
+    "inspection_phoneUpload": "Añadió un archivo desde un teléfono a la inspección {ref}",
+    "condition_mark_add": "Añadió una marca al mapa de estado",
+    "condition_mark_remove": "Eliminó una marca del mapa de estado"
   }
 }

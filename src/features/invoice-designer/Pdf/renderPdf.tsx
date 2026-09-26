@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Text, View } from '@react-pdf/renderer'
+import { Circle, Image, Path, Svg, Text, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import type { BoxStyle, Node, TextStyle } from '../Spec/documentSpec'
@@ -166,6 +166,68 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                 node.align === 'center' ? 'center' : node.align === 'left' ? 'left' : 'right',
             }}
           />
+        </View>
+      )
+
+    case 'drawing':
+      // Vector shapes, so the sheet prints crisp; it fills the width it is
+      // given and keeps its aspect, as the height estimate assumes.
+      return (
+        <View wrap={false} style={{ width: '100%', height: node.height }}>
+          <Svg
+            width="100%"
+            height={node.height}
+            viewBox={`0 0 ${node.viewBox[0]} ${node.viewBox[1]}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {node.shapes.map((shape, i) => {
+              if (shape.type === 'path') {
+                return (
+                  <Path
+                    key={i}
+                    d={shape.d}
+                    stroke={shape.stroke}
+                    strokeWidth={shape.strokeWidth}
+                    fill={shape.fill ?? 'none'}
+                    strokeDasharray={shape.dash?.join(' ')}
+                    opacity={shape.opacity}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                )
+              }
+              if (shape.type === 'circle') {
+                return (
+                  <Circle
+                    key={i}
+                    cx={shape.cx}
+                    cy={shape.cy}
+                    r={shape.r}
+                    stroke={shape.stroke}
+                    strokeWidth={shape.strokeWidth}
+                    fill={shape.fill ?? 'none'}
+                    opacity={shape.opacity}
+                  />
+                )
+              }
+              return (
+                <Text
+                  key={i}
+                  x={shape.x}
+                  y={shape.y}
+                  fill={shape.fill}
+                  textAnchor={shape.anchor ?? 'start'}
+                  style={{
+                    fontSize: shape.size,
+                    fontFamily: base.fontFamily,
+                    fontWeight: shape.bold ? 700 : 400,
+                  }}
+                >
+                  {shape.text}
+                </Text>
+              )
+            })}
+          </Svg>
         </View>
       )
 
