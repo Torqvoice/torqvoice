@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Invoice",
       "quotation": "Quotation",
-      "inspections": "Inspection\nChecklists",
-      "sms": "SMS",
-      "layout": "Layout",
-      "certificates": "Inspection\nCertificates",
-      "workOrders": "Work\nOrders"
+      "workOrders": "Work order",
+      "certificates": "Inspection certificate",
+      "layout": "Layout"
+    },
+    "sections": {
+      "documents": "Documents",
+      "checklists": "Checklists",
+      "messages": "Messages"
     },
     "presets": "Template Presets",
     "primaryColor": "Primary Color",

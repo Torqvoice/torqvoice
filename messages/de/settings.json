@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Rechnung",
       "quotation": "Angebot",
-      "inspections": "Inspektions-\nChecklisten",
-      "sms": "SMS",
-      "layout": "Layout",
-      "certificates": "Inspektions-\nZertifikate",
-      "workOrders": "Arbeits-\naufträge"
+      "workOrders": "Arbeitsauftrag",
+      "certificates": "Inspektionszertifikat",
+      "layout": "Layout"
+    },
+    "sections": {
+      "documents": "Dokumente",
+      "checklists": "Checklisten",
+      "messages": "Nachrichten"
     },
     "presets": "Vorlagen-Presets",
     "primaryColor": "Primärfarbe",

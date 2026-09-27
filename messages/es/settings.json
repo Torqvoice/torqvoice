@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Factura",
       "quotation": "Cotización",
-      "inspections": "Listas de\ninspección",
-      "sms": "SMS",
-      "layout": "Disposición",
-      "certificates": "Certificados de\ninspección",
-      "workOrders": "Órdenes\nde trabajo"
+      "workOrders": "Orden de trabajo",
+      "certificates": "Certificado de inspección",
+      "layout": "Disposición"
+    },
+    "sections": {
+      "documents": "Documentos",
+      "checklists": "Listas de control",
+      "messages": "Mensajes"
     },
     "presets": "Presets de plantilla",
     "primaryColor": "Color primario",

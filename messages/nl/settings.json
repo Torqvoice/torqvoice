@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Factuur",
       "quotation": "Offerte",
-      "inspections": "Inspectie-\nchecklists",
-      "sms": "SMS",
-      "layout": "Indeling",
-      "certificates": "Inspectie-\ncertificaten",
-      "workOrders": "Werk-\norders"
+      "workOrders": "Werkorder",
+      "certificates": "Inspectiecertificaat",
+      "layout": "Indeling"
+    },
+    "sections": {
+      "documents": "Documenten",
+      "checklists": "Checklists",
+      "messages": "Berichten"
     },
     "presets": "Sjabloonpresets",
     "primaryColor": "Primaire kleur",

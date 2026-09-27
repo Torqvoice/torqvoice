@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Fatura",
       "quotation": "Orçamento",
-      "inspections": "Listas de\ninspeção",
-      "sms": "SMS",
-      "layout": "Layout",
-      "certificates": "Certificados de\ninspeção",
-      "workOrders": "Ordens\nde trabalho"
+      "workOrders": "Ordem de trabalho",
+      "certificates": "Certificado de inspeção",
+      "layout": "Layout"
+    },
+    "sections": {
+      "documents": "Documentos",
+      "checklists": "Listas de verificação",
+      "messages": "Mensagens"
     },
     "presets": "Modelos predefinidos",
     "primaryColor": "Cor primária",

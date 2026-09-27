@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Fatura",
       "quotation": "Teklif",
-      "inspections": "Muayene\nkontrol listeleri",
-      "sms": "SMS",
-      "layout": "Düzen",
-      "certificates": "Muayene\nsertifikaları",
-      "workOrders": "İş\nemirleri"
+      "workOrders": "İş emri",
+      "certificates": "Muayene sertifikası",
+      "layout": "Düzen"
+    },
+    "sections": {
+      "documents": "Belgeler",
+      "checklists": "Kontrol listeleri",
+      "messages": "Mesajlar"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",

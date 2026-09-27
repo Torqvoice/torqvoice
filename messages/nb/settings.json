@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Faktura",
       "quotation": "Tilbud",
-      "inspections": "Inspeksjons-\nsjekklister",
-      "sms": "SMS",
-      "layout": "Oppsett",
-      "certificates": "Inspeksjons-\nsertifikater",
-      "workOrders": "Arbeids-\nordrer"
+      "workOrders": "Arbeidsordre",
+      "certificates": "Inspeksjonssertifikat",
+      "layout": "Oppsett"
+    },
+    "sections": {
+      "documents": "Dokumenter",
+      "checklists": "Sjekklister",
+      "messages": "Meldinger"
     },
     "presets": "Malforhåndsvisninger",
     "primaryColor": "Primærfarge",

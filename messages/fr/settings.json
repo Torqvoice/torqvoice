@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Facture",
       "quotation": "Devis",
-      "inspections": "Listes\nd'inspection",
-      "sms": "SMS",
-      "layout": "Mise en page",
-      "certificates": "Certificats\nd'inspection",
-      "workOrders": "Ordres\nde travail"
+      "workOrders": "Ordre de travail",
+      "certificates": "Certificat d'inspection",
+      "layout": "Mise en page"
+    },
+    "sections": {
+      "documents": "Documents",
+      "checklists": "Listes de contrôle",
+      "messages": "Messages"
     },
     "presets": "Presets de modèle",
     "primaryColor": "Couleur primaire",

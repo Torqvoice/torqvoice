@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Faktura",
       "quotation": "Wycena",
-      "inspections": "Listy kontrolne\nprzeglądów",
-      "sms": "SMS",
-      "layout": "Układ",
-      "certificates": "Certyfikaty\nprzeglądów",
-      "workOrders": "Zlecenia"
+      "workOrders": "Zlecenie",
+      "certificates": "Certyfikat przeglądu",
+      "layout": "Układ"
+    },
+    "sections": {
+      "documents": "Dokumenty",
+      "checklists": "Listy kontrolne",
+      "messages": "Wiadomości"
     },
     "presets": "Gotowe szablony",
     "primaryColor": "Kolor główny",

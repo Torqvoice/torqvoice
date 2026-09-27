@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Fattura",
       "quotation": "Preventivo",
-      "inspections": "Checklist\nispezione",
-      "sms": "SMS",
-      "layout": "Layout",
-      "certificates": "Certificati\nispezione",
-      "workOrders": "Ordini\ndi lavoro"
+      "workOrders": "Ordine di lavoro",
+      "certificates": "Certificato di ispezione",
+      "layout": "Layout"
+    },
+    "sections": {
+      "documents": "Documenti",
+      "checklists": "Checklist",
+      "messages": "Messaggi"
     },
     "presets": "Preset modello",
     "primaryColor": "Colore primario",

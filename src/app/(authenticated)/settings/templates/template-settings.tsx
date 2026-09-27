@@ -14,7 +14,16 @@ import { toast } from 'sonner'
 import { setSetting } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { presetsFor } from '@/features/settings/Schema/layoutPresets'
-import { Check, Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
+import {
+  Check,
+  FileText,
+  ListChecks,
+  Loader2,
+  type LucideIcon,
+  MessageSquare,
+  Palette,
+  RotateCcw,
+} from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
@@ -40,6 +49,17 @@ interface TemplateValues {
 }
 
 type TabType = 'invoice' | 'quotation' | 'workOrders' | 'certificates' | 'inspections' | 'sms'
+
+type SectionType = 'documents' | 'checklists' | 'messages'
+
+/** The printed documents, in the order their chips run. */
+const DOCUMENT_TABS = ['invoice', 'quotation', 'workOrders', 'certificates'] as const
+
+function sectionOf(tab: TabType): SectionType {
+  if (tab === 'inspections') return 'checklists'
+  if (tab === 'sms') return 'messages'
+  return 'documents'
+}
 
 interface WorkshopPreviewInfo {
   name?: string
@@ -139,23 +159,6 @@ function ColorRow({
  * with the sheet in front of you, rather than split across a colour form here
  * and an arrangement editor two clicks away.
  */
-/**
- * A tab's name, on two lines when the translation carries a line break: the
- * first line at the tab's size, the second smaller and quieter, so
- * "Inspection / Checklists" and "Inspection / Certificates" read as one
- * family without widening the row.
- */
-function TabLabel({ text }: { text: string }) {
-  const [first, ...rest] = text.split('\n')
-  if (rest.length === 0) return <>{text}</>
-  return (
-    <span className="flex flex-col items-center leading-tight">
-      <span>{first}</span>
-      <span className="text-[11px] font-normal opacity-75">{rest.join(' ')}</span>
-    </span>
-  )
-}
-
 function TemplateTab({
   documentType,
   workshop,
@@ -569,6 +572,15 @@ export function TemplateSettings({
     },
     [router, searchParams]
   )
+  const section = sectionOf(tab)
+  const sections: { id: SectionType; tab: TabType; icon: LucideIcon }[] = [
+    { id: 'documents', tab: 'invoice', icon: FileText },
+    { id: 'checklists', tab: 'inspections', icon: ListChecks },
+    // Shown when a link lands on it too, so an old ?tab=sms still opens.
+    ...(smsEnabled || tab === 'sms'
+      ? [{ id: 'messages' as const, tab: 'sms' as const, icon: MessageSquare }]
+      : []),
+  ]
   const [saving, setSaving] = useState(false)
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues)
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues)
@@ -620,112 +632,82 @@ export function TemplateSettings({
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
-      <div>
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
+      <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
+
+      {/* Two levels: what kind of template, then which document. The page
+          holds three different editors, and the four printed documents are
+          only one of them. */}
+      <div className="space-y-3">
+        <div
+          role="tablist"
+          aria-label={t('templates.title')}
+          className="flex w-full gap-1 overflow-x-auto rounded-lg border bg-muted p-1 sm:w-fit"
+        >
+          {sections.map(({ id, tab: target, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={section === id}
+              onClick={() => setTab(target)}
+              className={cn(
+                'flex flex-1 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:flex-none sm:px-4',
+                section === id
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Icon className={cn('h-4 w-4', section === id && 'text-primary')} />
+              {t(`templates.sections.${id}`)}
+            </button>
+          ))}
+        </div>
+
+        {section === 'documents' && (
+          <div role="tablist" className="flex gap-2 overflow-x-auto">
+            {DOCUMENT_TABS.map((doc) => (
+              <button
+                key={doc}
+                type="button"
+                role="tab"
+                aria-selected={tab === doc}
+                onClick={() => setTab(doc)}
+                className={cn(
+                  'shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-medium transition-colors',
+                  tab === doc
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'bg-card text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t(`templates.tabs.${doc}`)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <p className="text-sm text-muted-foreground">
+            {tab === 'inspections'
+              ? t('templates.inspectionsDescription')
+              : tab === 'certificates'
+                ? t('templates.certificatesDescription')
+                : tab === 'workOrders'
+                  ? t('templates.workOrdersDescription')
+                  : tab === 'sms'
+                    ? t('templates.smsDescription')
+                    : t('templates.invoiceDescription')}
+          </p>
           {/* Colors live here and arrangement lives there, which is easy to
               get lost in. Each page says where the other half is. */}
-          {tab !== 'inspections' &&
-            tab !== 'sms' &&
-            tab !== 'certificates' &&
-            tab !== 'workOrders' && (
-              <Link
-                href="/settings/invoice?tab=layout"
-                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t('templates.goToLayout')}
-              </Link>
-            )}
+          {(tab === 'invoice' || tab === 'quotation') && (
+            <Link
+              href="/settings/invoice?tab=layout"
+              className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+            >
+              {t('templates.goToLayout')}
+            </Link>
+          )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          {tab === 'inspections'
-            ? t('templates.inspectionsDescription')
-            : tab === 'certificates'
-              ? t('templates.certificatesDescription')
-              : tab === 'workOrders'
-                ? t('templates.workOrdersDescription')
-                : tab === 'sms'
-                  ? t('templates.smsDescription')
-                  : t('templates.invoiceDescription')}
-        </p>
-      </div>
-
-      {/* Tab Buttons */}
-      <div className="flex gap-1 rounded-lg border bg-muted p-1">
-        <button
-          type="button"
-          onClick={() => setTab('invoice')}
-          className={cn(
-            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
-            tab === 'invoice'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <TabLabel text={t('templates.tabs.invoice')} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('quotation')}
-          className={cn(
-            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
-            tab === 'quotation'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <TabLabel text={t('templates.tabs.quotation')} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('workOrders')}
-          className={cn(
-            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
-            tab === 'workOrders'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <TabLabel text={t('templates.tabs.workOrders')} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('certificates')}
-          className={cn(
-            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
-            tab === 'certificates'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <TabLabel text={t('templates.tabs.certificates')} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('inspections')}
-          className={cn(
-            'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
-            tab === 'inspections'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <TabLabel text={t('templates.tabs.inspections')} />
-        </button>
-        {smsEnabled && (
-          <button
-            type="button"
-            onClick={() => setTab('sms')}
-            className={cn(
-              'flex flex-1 items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium transition-colors',
-              tab === 'sms'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <TabLabel text={t('templates.tabs.sms')} />
-          </button>
-        )}
       </div>
 
       {tab === 'inspections' ? (

@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Счёт",
       "quotation": "Предложение",
-      "inspections": "Чек-листы\nосмотров",
-      "sms": "SMS",
-      "layout": "Макет",
-      "certificates": "Сертификаты\nосмотров",
-      "workOrders": "Заказ-\nнаряды"
+      "workOrders": "Заказ-наряд",
+      "certificates": "Сертификат осмотра",
+      "layout": "Макет"
+    },
+    "sections": {
+      "documents": "Документы",
+      "checklists": "Чек-листы",
+      "messages": "Сообщения"
     },
     "presets": "Предустановки шаблонов",
     "primaryColor": "Основной цвет",

@@ -857,11 +857,14 @@
     "tabs": {
       "invoice": "Sąskaita",
       "quotation": "Pasiūlymas",
-      "inspections": "Apžiūros\nkontroliniai sąrašai",
-      "sms": "SMS",
-      "layout": "Išdėstymas",
-      "certificates": "Apžiūros\nsertifikatai",
-      "workOrders": "Darbo\nužsakymai"
+      "workOrders": "Darbo užsakymas",
+      "certificates": "Apžiūros sertifikatas",
+      "layout": "Išdėstymas"
+    },
+    "sections": {
+      "documents": "Dokumentai",
+      "checklists": "Kontroliniai sąrašai",
+      "messages": "Žinutės"
     },
     "presets": "Šablonų presetai",
     "primaryColor": "Pagrindinė spalva",
