@@ -17,6 +17,7 @@ import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspe
 import { certificateDesignSource, loadCertificateLabels } from './certificateDesign'
 import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
 import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export { certificateDesignSource, liveCertificateDesign } from './certificateDesign'
 
@@ -77,6 +78,8 @@ export async function buildCertificatePdfBuffer({
             model: true,
             year: true,
             vin: true,
+            hsn: true,
+            tsn: true,
             licensePlate: true,
             mileage: true,
             customer: {
@@ -128,7 +131,10 @@ export async function buildCertificatePdfBuffer({
   const documents = certificateDocuments(inspection.attachments)
 
   const element = React.createElement(CertificatePDF, {
-    data: inspection,
+    data: {
+      ...inspection,
+      vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+    },
     workshop: {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',

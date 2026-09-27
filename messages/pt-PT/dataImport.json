@@ -180,6 +180,8 @@
       "transmission": "Caixa de velocidades",
       "engineSize": "Cilindrada",
       "engineCode": "Código do motor",
+      "hsn": "HSN (código do fabricante)",
+      "tsn": "TSN (código do tipo)",
       "purchaseDate": "Data de compra",
       "purchasePrice": "Preço de compra"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Falta o nome do cliente",
     "invalid_email": "O e-mail \"{value}\" não é válido e foi deixado de fora",
     "invalid_vin": "O número de quadro \"{value}\" não tem 17 caracteres; foi mantido tal como foi escrito",
+    "invalid_type_key": "{field} \"{value}\" não é um HSN ou TSN válido; foi omitido",
     "vehicle_make_model_required": "Faltam a marca e o modelo",
     "vehicle_year_required": "Falta o ano",
     "vehicle_year_invalid": "\"{value}\" não é um ano válido",

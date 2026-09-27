@@ -100,7 +100,8 @@
     "inspectionDue": "Inspection due {date}",
     "inspectionCheckedAt": "Checked against the registry {date}",
     "notRegistered": "Not registered",
-    "soldReported": "Customer reported sold {date}"
+    "soldReported": "Customer reported sold {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "New Quote",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Engine Size",
     "engineCode": "Engine Code",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "From a German registration certificate: HSN is field 2.1, TSN is the first three characters of field 2.2.",
+    "hsnInvalid": "HSN is four digits, from field 2.1 of the registration certificate.",
+    "tsnInvalid": "TSN is three letters or digits, the start of field 2.2 of the registration certificate.",
     "makeMarine": "Manufacturer *",
     "mileageMarine": "Engine Hours",
     "transmissionMarine": "Engine Type",

@@ -100,7 +100,8 @@
     "inspectionDue": "HU fällig {date}",
     "inspectionCheckedAt": "Mit dem Register abgeglichen am {date}",
     "notRegistered": "Nicht zugelassen",
-    "soldReported": "Kunde meldet Verkauf am {date}"
+    "soldReported": "Kunde meldet Verkauf am {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Neues Angebot",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Hubraum",
     "engineCode": "Motorcode",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Aus der Zulassungsbescheinigung Teil I: HSN steht in Feld 2.1, TSN sind die ersten drei Zeichen in Feld 2.2.",
+    "hsnInvalid": "Die HSN besteht aus vier Ziffern, aus Feld 2.1 der Zulassungsbescheinigung.",
+    "tsnInvalid": "Die TSN besteht aus drei Buchstaben oder Ziffern, vom Anfang von Feld 2.2 der Zulassungsbescheinigung.",
     "makeMarine": "Hersteller *",
     "mileageMarine": "Betriebsstunden",
     "transmissionMarine": "Motortyp",

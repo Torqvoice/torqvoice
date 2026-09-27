@@ -1,6 +1,7 @@
 import { getCachedSession, getCachedMembership } from './cached-session'
 import { db } from './db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 type AuthResult =
   | { status: 'unauthenticated' }
@@ -23,6 +24,8 @@ type AuthResult =
       timezone: string | undefined
       weekStartDay: number
       serviceType: string | undefined
+      /** Whether vehicles carry the German type key (HSN/TSN). */
+      typeKeyEnabled: boolean
       currencyCode: string | undefined
       currencyFormat: string | undefined
       organizations: { id: string; name: string; role: string }[]
@@ -66,6 +69,7 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.TIMEZONE,
                 SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
                 SETTING_KEYS.SERVICE_TYPE,
+                SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
                 SETTING_KEYS.CURRENCY_CODE,
                 SETTING_KEYS.CURRENCY_FORMAT,
               ],
@@ -104,6 +108,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     timezone: orgMap.get(SETTING_KEYS.TIMEZONE) || undefined,
     weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || '1', 10),
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
+    typeKeyEnabled: typeKeyEnabledIn(Object.fromEntries(orgMap)),
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,
     organizations: memberships.map((m) => ({

@@ -15,6 +15,8 @@ import { useServiceType } from '@/components/service-type-context'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 import type { ServiceDetail } from '../../service-detail/types'
 import type { InitialData } from '../../service-edit/form-types'
+import { formatTypeKey } from '../../../Lib/typeKey'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 
 interface JobFactsCardProps {
   record: ServiceDetail
@@ -447,6 +449,7 @@ function VehicleDetails({
   timeZone: string
   notRegisteredLabel: string
 }) {
+  const typeKeyEnabled = useTypeKeyEnabled()
   const inspection = vehicle.inspectionStatus
   const dueAt = inspection?.dueAt
     ? inspectionDisplayDate(inspection.dueAt, inspection.source, timeZone)
@@ -497,6 +500,12 @@ function VehicleDetails({
     },
     { key: 'color', label: tv('color'), value: vehicle.color ?? null },
     { key: 'engineCode', label: tv('engineCode'), value: vehicle.engineCode ?? null, copy: true },
+    {
+      key: 'typeKey',
+      label: tv('typeKey'),
+      value: typeKeyEnabled ? formatTypeKey(vehicle.hsn, vehicle.tsn) || null : null,
+      copy: true,
+    },
     {
       key: 'engineSize',
       label: isMarine ? tv('engineSizeMarine') : tv('engineSize'),

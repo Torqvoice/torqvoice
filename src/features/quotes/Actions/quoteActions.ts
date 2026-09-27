@@ -37,6 +37,7 @@ import { clearedToNull } from '@/lib/clearable'
 import { uploadsRoot } from '@/lib/upload-root'
 import { releaseFiles } from '@/lib/files/manager'
 import { quoteFileUrls } from '@/lib/files/collect'
+import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
@@ -188,6 +189,8 @@ export async function getQuote(quoteId: string) {
               year: true,
               vin: true,
               licensePlate: true,
+              hsn: true,
+              tsn: true,
               mileage: true,
             },
           },
@@ -199,7 +202,9 @@ export async function getQuote(quoteId: string) {
       // Missing or foreign-org quote yields null rather than an error: the page
       // renders its not-found state, and this also runs during the post-delete
       // re-render of the quote route.
-      return quote
+      if (!quote?.vehicle) return quote
+      const enabled = await isTypeKeyEnabled(organizationId)
+      return { ...quote, vehicle: gateTypeKey(quote.vehicle, enabled) }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
   )

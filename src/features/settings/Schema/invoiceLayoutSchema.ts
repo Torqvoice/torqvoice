@@ -340,6 +340,9 @@ export const BUILTIN_VEHICLE_FIELDS = [
   { id: 'vin', name: 'VIN' },
   { id: 'license_plate', name: 'License Plate' },
   { id: 'mileage', name: 'Mileage' },
+  // The German type approval key. On by default: it prints nothing until a
+  // vehicle has one, and a workshop that records it wants it on the paper.
+  { id: 'hsn_tsn', name: 'HSN/TSN' },
 ] as const
 
 export const BUILTIN_SERVICE_FIELDS = [

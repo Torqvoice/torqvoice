@@ -42,6 +42,8 @@ const sample = () =>
       slogan: 'Slogan',
       orgNumber: '123 456 789',
       paymentTerms: 'Net 14',
+      // The type key is only sampled for a workshop that records it.
+      typeKeyEnabled: true,
       logoUrl: '/logo.png',
     } as any,
     [],

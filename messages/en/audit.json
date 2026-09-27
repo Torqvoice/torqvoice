@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Locked Older Invoices",
     "settings_reapplyInvoiceDesign": "Re-applied Invoice Design",
     "invoice_reapplyDesign": "Re-applied Invoice Design",
+    "invoice_reissue": "Updated Sent Invoice to Today's Details",
     "inspection_reminders_sent": "Sent inspection reminders",
     "inspection_reminders_send": "Sent inspection reminders",
     "service_videoCall_send": "Sent video call link",

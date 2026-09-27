@@ -56,6 +56,12 @@
     "designPickConfirm": "Keisti dizainą",
     "designPickDone": "Sąskaita dabar spausdinama su {name}",
     "designPickFailed": "Nepavyko pakeisti dizaino",
+    "designRefresh": "Atnaujinti pagal dabartinius duomenis",
+    "designRefreshConfirmTitle": "Atnaujinti šią sąskaitą pagal dabartinius duomenis?",
+    "designRefreshConfirmBody": "Dirbtuvių duomenys, klientas, transporto priemonė, mokėjimo sąlygos ir dizainas nuskaitomi iš naujo tokie, kokie yra šiandien, ir sąskaita prie jų užrakinama. Jos eilutės ir sumos priklauso pačiai sąskaitai ir nesikeičia. Jau atsisiųstos arba el. paštu išsiųstos kopijos lieka tokios, kokios buvo; bendrinimo nuoroda ir portalas rodo atnaujintą sąskaitą. To atšaukti negalima.",
+    "designRefreshConfirm": "Atnaujinti sąskaitą",
+    "designRefreshDone": "Ši sąskaita dabar spausdinama su dabartiniais duomenimis",
+    "designRefreshFailed": "Nepavyko atnaujinti sąskaitos",
     "printWorkOrder": "Spausdinti darbo užsakymą"
   },
   "basicInfo": {

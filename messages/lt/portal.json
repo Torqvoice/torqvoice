@@ -143,6 +143,7 @@
     "failedToLoad": "Nepavyko įkelti transporto priemonių.",
     "plate": "Valst. Nr.: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# paslauga} other {# paslaugos}}",
     "inspectionCount": "{count, plural, one {# apžiūra} other {# apžiūros}}",
     "serviceHistory": "Paslaugų istorija ({count})",

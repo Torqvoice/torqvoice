@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Зафиксированы старые счета",
     "settings_reapplyInvoiceDesign": "Дизайн счёта применён заново",
     "invoice_reapplyDesign": "Дизайн счёта применён заново",
+    "invoice_reissue": "Отправленный счёт обновлён до текущих данных",
     "inspection_reminders_sent": "Отправлены напоминания о техосмотре",
     "inspection_reminders_send": "Отправлены напоминания о техосмотре",
     "service_videoCall_send": "Отправлена ссылка на видеозвонок",

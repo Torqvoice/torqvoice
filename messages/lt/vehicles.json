@@ -100,7 +100,8 @@
     "inspectionDue": "Apžiūra iki {date}",
     "inspectionCheckedAt": "Patikrinta registre {date}",
     "notRegistered": "Neregistruota",
-    "soldReported": "Klientas pranešė pardavęs {date}"
+    "soldReported": "Klientas pranešė pardavęs {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Naujas pasiūlymas",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Variklio tūris",
     "engineCode": "Variklio kodas",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Iš Vokietijos registracijos liudijimo: HSN yra 2.1 laukelis, TSN yra pirmieji trys 2.2 laukelio simboliai.",
+    "hsnInvalid": "HSN yra keturi skaitmenys iš registracijos liudijimo 2.1 laukelio.",
+    "tsnInvalid": "TSN yra trys raidės arba skaitmenys, registracijos liudijimo 2.2 laukelio pradžia.",
     "makeMarine": "Gamintojas *",
     "mileageMarine": "Variklio valandos",
     "transmissionMarine": "Variklio tipas",

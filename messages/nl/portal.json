@@ -143,6 +143,7 @@
     "failedToLoad": "Voertuigen laden mislukt.",
     "plate": "Kenteken: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# onderhoudsbeurt} other {# onderhoudsbeurten}}",
     "inspectionCount": "{count, plural, one {# inspectie} other {# inspecties}}",
     "serviceHistory": "Servicegeschiedenis ({count})",

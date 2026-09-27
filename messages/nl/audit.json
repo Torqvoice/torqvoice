@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Oudere facturen vergrendeld",
     "settings_reapplyInvoiceDesign": "Factuurontwerp opnieuw toegepast",
     "invoice_reapplyDesign": "Factuurontwerp opnieuw toegepast",
+    "invoice_reissue": "Verzonden factuur bijgewerkt naar de huidige gegevens",
     "inspection_reminders_sent": "Keuringsherinneringen verstuurd",
     "inspection_reminders_send": "Keuringsherinneringen verstuurd",
     "service_videoCall_send": "Link videogesprek verstuurd",

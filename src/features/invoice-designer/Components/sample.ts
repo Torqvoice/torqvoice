@@ -149,6 +149,11 @@ export function fieldValues(
     vehicle_name: '2020 Volvo V60',
     vin: fillTemplate(L('vin', 'VIN: {vin}'), { vin: 'YV1AA0000L0000000' }),
     license_plate: fillTemplate(L('plate', 'Plate: {plate}'), { plate: 'AB 12345' }),
+    // 9101 is Volvo's real manufacturer key; the type half is made up. Only
+    // for a workshop that records the key, since nobody else's sheet prints it.
+    hsn_tsn: workshop.typeKeyEnabled
+      ? fillTemplate(L('typeKey', 'HSN/TSN: {typeKey}'), { typeKey: '9101 / ABC' })
+      : '',
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
       mileage: `84,120 ${L('km', 'km')}`,
     }),

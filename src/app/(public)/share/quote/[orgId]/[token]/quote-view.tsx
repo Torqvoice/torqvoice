@@ -71,6 +71,8 @@ interface QuoteRecord {
     year: number
     vin: string | null
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
   } | null
 }
 

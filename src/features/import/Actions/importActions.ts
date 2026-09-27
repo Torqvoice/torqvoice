@@ -39,6 +39,7 @@ import {
 } from '../Lib/normalize'
 import { releaseFiles } from '@/lib/files/manager'
 import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
+import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 // ── Input shapes ──────────────────────────────────────────────────────────────
 
@@ -97,8 +98,12 @@ export interface CommitResult {
 }
 
 /** Only the field keys the entity can carry survive; anything else is ignored. */
-function sanitizeMapping(mapping: ColumnMapping, entity: ImportEntity): ColumnMapping {
-  const allowed = new Set(fieldsFor(entity).map((f) => f.key))
+function sanitizeMapping(
+  mapping: ColumnMapping,
+  entity: ImportEntity,
+  typeKey: boolean
+): ColumnMapping {
+  const allowed = new Set(fieldsFor(entity, { typeKey }).map((f) => f.key))
   const out: ColumnMapping = {}
   for (const [col, key] of Object.entries(mapping)) if (allowed.has(key)) out[col] = key
   return out
@@ -168,7 +173,11 @@ async function buildPlan(
     throw new Error('The uploaded file is a different kind of import')
   }
   const options: ImportOptions = { ...input.options, entity: staged.entity }
-  const mapping = sanitizeMapping(input.mapping, staged.entity)
+  const mapping = sanitizeMapping(
+    input.mapping,
+    staged.entity,
+    await isTypeKeyEnabled(organizationId)
+  )
   const existing = await loadExisting(organizationId, staged.entity)
   const plan = planImport(staged.sheet.rows, mapping, options, existing, input.overrides)
   return { plan, staged }
@@ -386,6 +395,8 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
             transmission: v.transmission,
             engineSize: v.engineSize,
             engineCode: v.engineCode,
+            hsn: v.hsn,
+            tsn: v.tsn,
             purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
             purchasePrice: v.purchasePrice,
             customerId,
@@ -415,6 +426,8 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           ...(v.transmission && { transmission: v.transmission }),
           engineSize: v.engineSize,
           engineCode: v.engineCode,
+          hsn: v.hsn,
+          tsn: v.tsn,
           purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
           purchasePrice: v.purchasePrice,
           customerId,
@@ -760,7 +773,9 @@ export async function suggestMappingWithAi(token: string) {
 
       const config = await getAiConfig(organizationId)
       const client = createClient(config)
-      const fields = fieldsFor(staged.entity)
+      const fields = fieldsFor(staged.entity, {
+        typeKey: await isTypeKeyEnabled(organizationId),
+      })
       const { columns, rows } = staged.sheet
 
       const columnsForPrompt = columns.map((name, i) => {

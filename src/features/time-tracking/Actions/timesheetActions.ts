@@ -14,6 +14,7 @@ import { createManualEntry, deleteEntry, listOrgEntries, updateEntry } from '../
 import { toSheetEntries } from '../Lib/serialize'
 import { canEditTimeEntries } from '../Lib/canEdit'
 import type { SheetEntry, SheetTechnician } from '../Lib/timesheet'
+import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
 
 /**
  * The manager's side of the clock: who worked when, and fixing what the
@@ -138,6 +139,7 @@ export async function searchTimesheetJobs(query: string) {
                 OR: [
                   { title: { contains: q, mode: 'insensitive' } },
                   { vehicle: { licensePlate: { contains: q, mode: 'insensitive' } } },
+                  ...(await typeKeySearch(ctx.organizationId, q)).map((vehicle) => ({ vehicle })),
                   { vehicle: { make: { contains: q, mode: 'insensitive' } } },
                   { vehicle: { model: { contains: q, mode: 'insensitive' } } },
                 ],

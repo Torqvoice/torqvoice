@@ -17,6 +17,7 @@ import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 type PortalResult<T = unknown> = {
   success: boolean
@@ -202,6 +203,8 @@ export async function getPortalVehicleDetail(vehicleId: string) {
         year: true,
         vin: true,
         licensePlate: true,
+        hsn: true,
+        tsn: true,
         color: true,
         mileage: true,
         fuelType: true,
@@ -243,7 +246,7 @@ export async function getPortalVehicleDetail(vehicleId: string) {
       throw new Error('Vehicle not found')
     }
 
-    return vehicle
+    return gateTypeKey(vehicle, await isTypeKeyEnabled(organizationId))
   })
 }
 

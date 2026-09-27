@@ -146,6 +146,8 @@ export interface Vehicle {
   transmission?: string | null
   engineSize?: string | null
   engineCode?: string | null
+  hsn?: string | null
+  tsn?: string | null
   purchaseDate?: Date | string | null
   purchasePrice?: number | null
   inspectionStatus?: {

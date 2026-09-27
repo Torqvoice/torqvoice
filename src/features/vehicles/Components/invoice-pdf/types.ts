@@ -99,6 +99,9 @@ export interface InvoiceData {
     year: number
     vin: string | null
     licensePlate: string | null
+    /** German type approval key. Absent where a caller predates it. */
+    hsn?: string | null
+    tsn?: string | null
     mileage: number
     customer: {
       name: string

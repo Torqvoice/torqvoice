@@ -37,6 +37,7 @@ import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 
 /**
  * A job as the sheet the customer signs and the technician works from.
@@ -199,6 +200,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     customer_tax_id: customer?.taxId ? `${L('customerTaxId', 'Tax ID')}: ${customer.taxId}` : '',
     vehicle_name: vehicleName,
     vin: data.vehicle?.vin ? fillTemplate(L('vin', 'VIN: {vin}'), { vin: data.vehicle.vin }) : '',
+    hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle?.licensePlate
       ? fillTemplate(L('plate', 'Plate: {plate}'), { plate: data.vehicle.licensePlate })
       : '',
@@ -360,6 +362,11 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
 
+  // The car's condition as this job recorded it at drop-off. Marks from
+  // earlier visits ride along in grey when the section allows them, but
+  // only beside this job's own: a work order whose drop-off noted nothing
+  // prints no map at all, rather than the last check-in's findings under
+  // its own heading.
   const mapSection = layout.sections.find((s) => s.id === 'condition_map')
   const conditionMap =
     job.conditionMarks && job.conditionMapLabels
@@ -367,6 +374,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
           bodyType: job.bodyType,
           marks: job.conditionMarks,
           scope: { serviceRecordId: data.id },
+          requireOwn: true,
           includePrevious:
             mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,
           labels: job.conditionMapLabels,

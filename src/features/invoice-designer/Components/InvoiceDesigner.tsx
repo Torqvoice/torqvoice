@@ -54,6 +54,7 @@ import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -119,6 +120,7 @@ export function InvoiceDesigner({
 }) {
   const router = useRouter()
   const t = useTranslations('settings.designer')
+  const typeKeyEnabled = useTypeKeyEnabled()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
   const messages = useMessages() as {
@@ -351,13 +353,23 @@ export function InvoiceDesigner({
   /** What a workshop's own sheet says, with the sample standing in for a job. */
   const data: DocumentData = useMemo(
     () => ({
-      ...buildSampleData(workshop, customFields, t, printLabels, docType),
+      ...buildSampleData({ ...workshop, typeKeyEnabled }, customFields, t, printLabels, docType),
       telegramQr:
         telegramOn && telegramQrDataUri
           ? { dataUri: telegramQrDataUri, label: L('telegramConnect', 'Chat with us on Telegram') }
           : undefined,
     }),
-    [workshop, customFields, t, printLabels, docType, telegramOn, telegramQrDataUri, L]
+    [
+      workshop,
+      typeKeyEnabled,
+      customFields,
+      t,
+      printLabels,
+      docType,
+      telegramOn,
+      telegramQrDataUri,
+      L,
+    ]
   )
 
   const spec = useMemo(

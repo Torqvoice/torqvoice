@@ -24,6 +24,8 @@ import {
   Wrench,
 } from 'lucide-react'
 import { globalSearch, getRecentCustomers } from '@/features/search/Actions/searchActions'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 
 interface SearchResult {
   vehicles: {
@@ -32,6 +34,8 @@ interface SearchResult {
     model: string
     year: number
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
   }[]
   customers: {
     id: string
@@ -213,6 +217,7 @@ export function SearchCommand() {
   const router = useRouter()
   const t = useTranslations('search')
   const tNav = useTranslations('navigation.sidebar')
+  const typeKeyEnabled = useTypeKeyEnabled()
   const tSettings = useTranslations('settings')
   const tTire = useTranslations('tireHotel')
   const [open, setOpen] = useState(false)
@@ -426,6 +431,11 @@ export function SearchCommand() {
                     {v.licensePlate && (
                       <span className="ml-2 font-mono text-xs text-muted-foreground">
                         {v.licensePlate}
+                      </span>
+                    )}
+                    {typeKeyEnabled && (v.hsn || v.tsn) && (
+                      <span className="ml-2 font-mono text-xs text-muted-foreground">
+                        {formatTypeKey(v.hsn, v.tsn)}
                       </span>
                     )}
                   </CommandItem>

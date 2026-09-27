@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Fatture precedenti bloccate",
     "settings_reapplyInvoiceDesign": "Design fattura riapplicato",
     "invoice_reapplyDesign": "Design fattura riapplicato",
+    "invoice_reissue": "Fattura inviata aggiornata ai dati attuali",
     "inspection_reminders_sent": "Promemoria revisione inviati",
     "inspection_reminders_send": "Promemoria revisione inviati",
     "service_videoCall_send": "Link videochiamata inviato",

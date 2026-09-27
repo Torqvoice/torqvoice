@@ -25,6 +25,7 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -85,6 +86,8 @@ export interface QuotePrintData {
     year: number
     vin: string | null
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
   } | null
 }
 
@@ -189,6 +192,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
         ? fillTemplate(labels.vin, { vin: data.vehicle.vin })
         : `VIN: ${data.vehicle.vin}`
       : '',
+    hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })

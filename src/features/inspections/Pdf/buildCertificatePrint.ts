@@ -28,6 +28,7 @@ import {
   isDefect,
 } from '../Lib/conditions'
 import { defectsWorstFirst } from '../Lib/conversion'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 
 /**
  * A completed inspection, expressed as the document the designer edits, the
@@ -73,6 +74,8 @@ export interface CertificatePrintData {
     year: number
     vin: string | null
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
     mileage: number | null
     customer: {
       name: string
@@ -184,6 +187,7 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
     customer_tax_id: '',
     vehicle_name: `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`,
     vin: data.vehicle.vin ? fillTemplate(L('vin', 'VIN: {vin}'), { vin: data.vehicle.vin }) : '',
+    hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle.licensePlate
       ? fillTemplate(L('plate', 'Plate: {plate}'), { plate: data.vehicle.licensePlate })
       : '',

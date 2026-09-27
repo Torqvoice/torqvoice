@@ -20,6 +20,7 @@ import {
   normalizeEmail,
   normalizePhone,
   normalizePlate,
+  normalizeTypeKey,
   normalizeVin,
   parseDate,
   parseInteger,
@@ -64,6 +65,8 @@ export interface VehicleDraft {
   transmission: string | null
   engineSize: string | null
   engineCode: string | null
+  hsn: string | null
+  tsn: string | null
   /** ISO date, so the plan survives JSON. */
   purchaseDate: string | null
   purchasePrice: number | null
@@ -84,6 +87,7 @@ export type RowIssueCode =
   | 'customer_name_required'
   | 'invalid_email'
   | 'invalid_vin'
+  | 'invalid_type_key'
   | 'vehicle_make_model_required'
   | 'vehicle_year_required'
   | 'vehicle_year_invalid'
@@ -257,6 +261,11 @@ function extractVehicle(
   const vin = normalizeVin(v['vehicle.vin'])
   if (!vin.valid)
     warnings.push({ code: 'invalid_vin', field: 'vehicle.vin', value: v['vehicle.vin'] })
+  const typeKey = normalizeTypeKey(v['vehicle.hsn'], v['vehicle.tsn'])
+  if (typeKey.invalidHsn)
+    warnings.push({ code: 'invalid_type_key', field: 'vehicle.hsn', value: v['vehicle.hsn'] })
+  if (typeKey.invalidTsn)
+    warnings.push({ code: 'invalid_type_key', field: 'vehicle.tsn', value: v['vehicle.tsn'] })
 
   let purchaseDate: string | null = null
   if (v['vehicle.purchaseDate']) {
@@ -303,6 +312,8 @@ function extractVehicle(
     transmission: mapTransmission(v['vehicle.transmission']),
     engineSize: cleanText(v['vehicle.engineSize']),
     engineCode: cleanText(v['vehicle.engineCode']),
+    hsn: typeKey.hsn,
+    tsn: typeKey.tsn,
     purchaseDate,
     purchasePrice,
   }

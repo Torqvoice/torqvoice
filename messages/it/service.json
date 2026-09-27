@@ -56,6 +56,12 @@
     "designPickConfirm": "Cambia il design",
     "designPickDone": "La fattura ora viene stampata con {name}",
     "designPickFailed": "Impossibile cambiare il design",
+    "designRefresh": "Aggiorna ai dati attuali",
+    "designRefreshConfirmTitle": "Aggiornare questa fattura ai dati attuali?",
+    "designRefreshConfirmBody": "I dati dell'officina, il cliente, il veicolo, le condizioni di pagamento e il design vengono riletti così come sono oggi, e la fattura viene bloccata su di essi. Le sue righe e i totali sono propri della fattura e non cambiano. Le copie già scaricate o inviate via e-mail restano come erano; il link di condivisione e il portale mostrano la fattura aggiornata. Questa operazione non può essere annullata.",
+    "designRefreshConfirm": "Aggiorna la fattura",
+    "designRefreshDone": "Questa fattura ora viene stampata con i dati attuali",
+    "designRefreshFailed": "Impossibile aggiornare la fattura",
     "printWorkOrder": "Stampa ordine di lavoro"
   },
   "basicInfo": {

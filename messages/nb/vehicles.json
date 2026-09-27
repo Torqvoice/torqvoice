@@ -100,7 +100,8 @@
     "inspectionDue": "EU-kontroll {date}",
     "inspectionCheckedAt": "Sjekket mot registeret {date}",
     "notRegistered": "Avregistrert",
-    "soldReported": "Kunden meldte solgt {date}"
+    "soldReported": "Kunden meldte solgt {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Nytt tilbud",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Motorstørrelse",
     "engineCode": "Motorkode",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Fra et tysk vognkort: HSN står i felt 2.1, TSN er de tre første tegnene i felt 2.2.",
+    "hsnInvalid": "HSN er fire sifre, fra felt 2.1 i vognkortet.",
+    "tsnInvalid": "TSN er tre bokstaver eller sifre, starten av felt 2.2 i vognkortet.",
     "makeMarine": "Produsent *",
     "mileageMarine": "Motortimer",
     "transmissionMarine": "Motortype",

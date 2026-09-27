@@ -180,6 +180,8 @@
       "transmission": "Skrzynia biegów",
       "engineSize": "Pojemność silnika",
       "engineCode": "Kod silnika",
+      "hsn": "HSN (kod producenta)",
+      "tsn": "TSN (kod typu)",
       "purchaseDate": "Data zakupu",
       "purchasePrice": "Cena zakupu"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Brak nazwy klienta",
     "invalid_email": "E-mail \"{value}\" jest nieprawidłowy i został pominięty",
     "invalid_vin": "VIN \"{value}\" nie ma 17 znaków; zachowano jak wpisano",
+    "invalid_type_key": "{field} „{value}” nie jest prawidłowym HSN ani TSN; pominięto",
     "vehicle_make_model_required": "Brak marki i modelu",
     "vehicle_year_required": "Brak roku",
     "vehicle_year_invalid": "Rok \"{value}\" nie jest prawidłowym rokiem",

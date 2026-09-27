@@ -6,6 +6,7 @@ import {
 } from '@/lib/format'
 import { createStyles, gray, getFontBold } from '../invoice-pdf/styles'
 import type { WorkshopInfo, InvoiceSettingsProps } from '../invoice-pdf/types'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 
 interface ServiceHistoryRecord {
   id: string
@@ -35,6 +36,9 @@ interface ServiceHistoryPDFProps {
     year: number
     vin: string | null
     licensePlate: string | null
+    /** Null unless the workshop records the German type key. */
+    hsn?: string | null
+    tsn?: string | null
     mileage: number
     customer: {
       name: string
@@ -154,6 +158,9 @@ export function ServiceHistoryPDF({
                     ? labels.plate.replace('{plate}', vehicle.licensePlate)
                     : `Plate: ${vehicle.licensePlate}`}
                 </Text>
+              )}
+              {typeKeyLine(vehicle, labels.typeKey) && (
+                <Text style={styles.infoTextSmall}>{typeKeyLine(vehicle, labels.typeKey)}</Text>
               )}
               <Text style={styles.infoTextSmall}>
                 {labels.mileage

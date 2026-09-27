@@ -20,6 +20,7 @@ import {
   loadCertificateLabels,
 } from '@/features/inspections/Pdf/certificateDesign'
 import { certificateDocuments } from '@/features/inspections/Lib/certificateDocuments'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export const revalidate = 60
 
@@ -48,6 +49,8 @@ export default async function PublicInspectionPage({
           model: true,
           year: true,
           vin: true,
+          hsn: true,
+          tsn: true,
           licensePlate: true,
           mileage: true,
           // Data minimisation (GDPR Art. 5(1)(c)): this page is reachable by
@@ -129,8 +132,11 @@ export default async function PublicInspectionPage({
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
+  // Gated here, once, so neither the certificate nor the page's own data
+  // carries the type key while the workshop has it switched off.
   const publicInspection = {
     ...inspection,
+    vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
     items: inspection.items.map((item) => ({
       ...item,
       imageUrls: item.imageUrls.map(toPublic),
@@ -166,7 +172,10 @@ export default async function PublicInspectionPage({
     }
     const hasMap = inspection.items.some((item) => item.inputType === 'condition_map')
     spec = buildCertificatePrintSpec({
-      data: inspection,
+      data: {
+        ...inspection,
+        vehicle: publicInspection.vehicle,
+      },
       conditionMarks: hasMap ? await loadVehicleConditionMarks(orgId, inspection.vehicleId) : [],
       bodyType: hasMap ? inspection.vehicle.bodyType : null,
       conditionMapLabels: hasMap ? await loadConditionMapLabels(locale) : undefined,

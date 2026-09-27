@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Faturas anteriores travadas",
     "settings_reapplyInvoiceDesign": "Design de fatura reaplicado",
     "invoice_reapplyDesign": "Design de fatura reaplicado",
+    "invoice_reissue": "Fatura enviada atualizada para os dados atuais",
     "inspection_reminders_sent": "Enviou lembretes de inspeção",
     "inspection_reminders_send": "Enviou lembretes de inspeção",
     "service_videoCall_send": "Link da videochamada enviado",

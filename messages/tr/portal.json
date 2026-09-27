@@ -143,6 +143,7 @@
     "failedToLoad": "Araçlar yüklenemedi.",
     "plate": "Plaka: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# servis} other {# servis}}",
     "inspectionCount": "{count, plural, one {# muayene} other {# muayene}}",
     "serviceHistory": "Servis Geçmişi ({count})",

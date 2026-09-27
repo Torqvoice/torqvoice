@@ -56,6 +56,12 @@
     "designPickConfirm": "Changer le design",
     "designPickDone": "La facture s'imprime maintenant avec {name}",
     "designPickFailed": "Impossible de changer le design",
+    "designRefresh": "Mettre à jour avec les informations actuelles",
+    "designRefreshConfirmTitle": "Mettre à jour cette facture avec les informations actuelles ?",
+    "designRefreshConfirmBody": "Les informations de l'atelier, le client, le véhicule, les conditions de paiement et le design sont relus tels qu'ils sont aujourd'hui, et la facture y est verrouillée. Ses lignes et ses totaux lui appartiennent et ne changent pas. Les copies déjà téléchargées ou envoyées par e-mail restent telles quelles ; le lien de partage et le portail affichent la facture mise à jour. Cette action est irréversible.",
+    "designRefreshConfirm": "Mettre à jour la facture",
+    "designRefreshDone": "Cette facture s'imprime désormais avec les informations actuelles",
+    "designRefreshFailed": "Impossible de mettre à jour la facture",
     "printWorkOrder": "Imprimer l'ordre de travail"
   },
   "basicInfo": {

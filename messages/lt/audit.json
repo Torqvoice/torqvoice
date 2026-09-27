@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Užrakintos senesnės sąskaitos",
     "settings_reapplyInvoiceDesign": "Sąskaitos dizainas pritaikytas iš naujo",
     "invoice_reapplyDesign": "Sąskaitos dizainas pritaikytas iš naujo",
+    "invoice_reissue": "Išsiųsta sąskaita atnaujinta pagal dabartinius duomenis",
     "inspection_reminders_sent": "Išsiųsti apžiūros priminimai",
     "inspection_reminders_send": "Išsiųsti apžiūros priminimai",
     "service_videoCall_send": "Išsiųsta vaizdo skambučio nuoroda",

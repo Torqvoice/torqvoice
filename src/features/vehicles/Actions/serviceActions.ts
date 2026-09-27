@@ -35,6 +35,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
+import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(
@@ -171,6 +172,7 @@ export async function getAllServiceRecordsPaginated(params: {
           { vehicle: { make: { contains: params.search, mode: 'insensitive' } } },
           { vehicle: { model: { contains: params.search, mode: 'insensitive' } } },
           { vehicle: { licensePlate: { contains: params.search, mode: 'insensitive' } } },
+          ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
         ]
       }
 
@@ -302,6 +304,8 @@ export async function getServiceRecord(recordId: string) {
               transmission: true,
               engineSize: true,
               engineCode: true,
+              hsn: true,
+              tsn: true,
               purchaseDate: true,
               purchasePrice: true,
               inspectionStatus: {
@@ -1239,6 +1243,7 @@ export async function getWorkOrders(params: {
           { invoiceNumber: { contains: params.search, mode: 'insensitive' } },
           { techName: { contains: params.search, mode: 'insensitive' } },
           { vehicle: { licensePlate: { contains: params.search, mode: 'insensitive' } } },
+          ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
           { vehicle: { customer: { name: { contains: params.search, mode: 'insensitive' } } } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
         ]

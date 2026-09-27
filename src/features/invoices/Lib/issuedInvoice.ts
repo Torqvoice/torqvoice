@@ -70,6 +70,9 @@ export const issuedInvoiceDataSchema = z
         year: z.number(),
         vin: z.string().nullable().optional(),
         licensePlate: z.string().nullable().optional(),
+        // Absent on invoices issued before the type key was recorded.
+        hsn: z.string().nullable().optional(),
+        tsn: z.string().nullable().optional(),
         mileage: z.number().optional(),
       })
       .passthrough()

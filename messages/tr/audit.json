@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Eski faturalar kilitlendi",
     "settings_reapplyInvoiceDesign": "Fatura tasarımı yeniden uygulandı",
     "invoice_reapplyDesign": "Fatura tasarımı yeniden uygulandı",
+    "invoice_reissue": "Gönderilen fatura güncel bilgilere güncellendi",
     "inspection_reminders_sent": "Muayene hatırlatmaları gönderildi",
     "inspection_reminders_send": "Muayene hatırlatmaları gönderildi",
     "service_videoCall_send": "Görüntülü görüşme bağlantısı gönderildi",

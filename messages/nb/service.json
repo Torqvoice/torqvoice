@@ -56,6 +56,12 @@
     "designPickConfirm": "Endre designet",
     "designPickDone": "Fakturaen skrives nå ut med {name}",
     "designPickFailed": "Kunne ikke endre designet",
+    "designRefresh": "Oppdater til dagens opplysninger",
+    "designRefreshConfirmTitle": "Oppdatere denne fakturaen til dagens opplysninger?",
+    "designRefreshConfirmBody": "Verkstedets opplysninger, kunden, kjøretøyet, betalingsvilkårene og designet leses inn på nytt slik de er i dag, og fakturaen låses til dem. Linjene og summene er fakturaens egne og endres ikke. Kopier som allerede er lastet ned eller sendt på e-post forblir som de var; delingslenken og portalen viser den oppdaterte fakturaen. Dette kan ikke angres.",
+    "designRefreshConfirm": "Oppdater fakturaen",
+    "designRefreshDone": "Denne fakturaen skrives nå ut med dagens opplysninger",
+    "designRefreshFailed": "Kunne ikke oppdatere fakturaen",
     "printWorkOrder": "Skriv ut arbeidsordre"
   },
   "basicInfo": {

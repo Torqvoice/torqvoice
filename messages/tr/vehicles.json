@@ -100,7 +100,8 @@
     "inspectionDue": "Muayene {date}",
     "inspectionCheckedAt": "Sicilde {date} tarihinde kontrol edildi",
     "notRegistered": "Kayıtlı değil",
-    "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi"
+    "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Yeni teklif",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Motor Hacmi",
     "engineCode": "Motor Kodu",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Alman ruhsatından: HSN 2.1 alanıdır, TSN ise 2.2 alanının ilk üç karakteridir.",
+    "hsnInvalid": "HSN, ruhsatın 2.1 alanındaki dört rakamdır.",
+    "tsnInvalid": "TSN, ruhsatın 2.2 alanının başındaki üç harf veya rakamdır.",
     "makeMarine": "Üretici *",
     "mileageMarine": "Motor Saatleri",
     "transmissionMarine": "Motor Tipi",

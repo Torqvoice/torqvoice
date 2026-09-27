@@ -12,6 +12,8 @@ import { releaseFiles } from '@/lib/files/manager'
 import { vehicleFileUrls } from '@/lib/files/collect'
 import { auditDetails } from '@/lib/audit'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
+import { searchWordsOf, typeKeySearchTerms } from '../Lib/typeKey'
+import { isTypeKeyEnabled } from '../Lib/typeKeySetting'
 
 export async function getVehicles() {
   return withAuth(
@@ -116,7 +118,8 @@ export async function getVehiclesPaginated(params: {
       const where: any = { organizationId, isArchived: params.archived ?? false }
 
       if (params.search) {
-        const words = params.search.trim().split(/\s+/).filter(Boolean)
+        const words = searchWordsOf(params.search)
+        const typeKeyOn = await isTypeKeyEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -124,6 +127,7 @@ export async function getVehiclesPaginated(params: {
             { model: { contains: word, mode: 'insensitive' } },
             { licensePlate: { contains: word, mode: 'insensitive' } },
             { vin: { contains: word, mode: 'insensitive' } },
+            ...(typeKeyOn ? typeKeySearchTerms(word) : []),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)
@@ -242,6 +246,8 @@ export async function createVehicle(input: unknown) {
       const vehicle = await db.vehicle.create({
         data: {
           ...data,
+          hsn: data.hsn || null,
+          tsn: data.tsn || null,
           purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
           customerId: data.customerId || null,
           userId,
@@ -295,6 +301,8 @@ export async function updateVehicle(input: unknown) {
           transmission: data.transmission !== undefined ? data.transmission || null : undefined,
           engineSize: data.engineSize !== undefined ? data.engineSize || null : undefined,
           engineCode: data.engineCode !== undefined ? data.engineCode || null : undefined,
+          hsn: data.hsn !== undefined ? data.hsn || null : undefined,
+          tsn: data.tsn !== undefined ? data.tsn || null : undefined,
           purchaseDate: toSafeWorkshopDate(
             data.purchaseDate,
             await workshopTimeZone(organizationId)
@@ -384,7 +392,8 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
       const where: any = { organizationId, isArchived: false }
       if (customerId) where.customerId = customerId
       if (search) {
-        const words = search.trim().split(/\s+/).filter(Boolean)
+        const words = searchWordsOf(search)
+        const typeKeyOn = await isTypeKeyEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -392,6 +401,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
             { model: { contains: word, mode: 'insensitive' } },
             { licensePlate: { contains: word, mode: 'insensitive' } },
             { vin: { contains: word, mode: 'insensitive' } },
+            ...(typeKeyOn ? typeKeySearchTerms(word) : []),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)

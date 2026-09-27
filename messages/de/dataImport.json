@@ -180,6 +180,8 @@
       "transmission": "Getriebe",
       "engineSize": "Hubraum",
       "engineCode": "Motorcode",
+      "hsn": "HSN (Herstellerschlüsselnummer)",
+      "tsn": "TSN (Typschlüsselnummer)",
       "purchaseDate": "Kaufdatum",
       "purchasePrice": "Kaufpreis"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Kundenname fehlt",
     "invalid_email": "E-Mail \"{value}\" ist ungültig und wurde weggelassen",
     "invalid_vin": "FIN \"{value}\" hat nicht 17 Zeichen; wie eingegeben übernommen",
+    "invalid_type_key": "{field} \"{value}\" ist keine gültige HSN oder TSN und wurde ausgelassen",
     "vehicle_make_model_required": "Marke und Modell fehlen",
     "vehicle_year_required": "Baujahr fehlt",
     "vehicle_year_invalid": "Baujahr \"{value}\" ist kein gültiges Jahr",

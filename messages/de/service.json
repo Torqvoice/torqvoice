@@ -56,6 +56,12 @@
     "designPickConfirm": "Design ändern",
     "designPickDone": "Die Rechnung wird jetzt mit {name} gedruckt",
     "designPickFailed": "Design konnte nicht geändert werden",
+    "designRefresh": "Auf aktuelle Angaben aktualisieren",
+    "designRefreshConfirmTitle": "Diese Rechnung auf die aktuellen Angaben aktualisieren?",
+    "designRefreshConfirmBody": "Die Werkstattangaben, der Kunde, das Fahrzeug, die Zahlungsbedingungen und das Design werden neu eingelesen, wie sie heute sind, und die Rechnung wird darauf festgeschrieben. Ihre Positionen und Summen gehören zur Rechnung selbst und ändern sich nicht. Bereits heruntergeladene oder per E-Mail gesendete Kopien bleiben, wie sie waren; der Freigabelink und das Portal zeigen die aktualisierte Rechnung. Dies kann nicht rückgängig gemacht werden.",
+    "designRefreshConfirm": "Rechnung aktualisieren",
+    "designRefreshDone": "Diese Rechnung wird jetzt mit den aktuellen Angaben gedruckt",
+    "designRefreshFailed": "Rechnung konnte nicht aktualisiert werden",
     "printWorkOrder": "Arbeitsauftrag drucken"
   },
   "basicInfo": {

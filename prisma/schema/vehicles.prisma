@@ -11,6 +11,12 @@ model Vehicle {
   transmission           String?              @default("automatic")
   engineSize             String?
   engineCode             String?
+  /// German type approval key from the registration certificate: HSN is the
+  /// four-digit manufacturer code in field 2.1, TSN the three-character type
+  /// code at the start of field 2.2. Parts catalogues and insurers look a car
+  /// up by the pair, since Germany has no public plate registry.
+  hsn                    String?
+  tsn                    String?
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?

@@ -37,7 +37,7 @@ vi.mock('@/lib/files/manager', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
-    appSetting: { findMany: vi.fn() },
+    appSetting: { findMany: vi.fn().mockResolvedValue([]) },
     // Completing freezes the inspector's signature; nobody here has one.
     memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
     quote: {

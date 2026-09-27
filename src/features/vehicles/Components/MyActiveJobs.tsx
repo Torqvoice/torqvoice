@@ -379,7 +379,11 @@ export function MyActiveJobs({
         badge={jobs.length || undefined}
         contentClassName="p-0"
       >
-        <div className="divide-y" {...tableNav.containerProps}>
+        {/* The row switches on the card's own width, not the window's: with the
+            sidebar open a tablet or small laptop leaves the card far narrower
+            than the viewport breakpoint assumed, and the inline buttons ran
+            over the job title. */}
+        <div className="@container divide-y" {...tableNav.containerProps}>
           {jobs.map((job) => {
             const StatusIcon = STATUS_ICON[job.status] || Wrench
             const statusColor = STATUS_COLOR[job.status] || 'bg-muted text-muted-foreground'
@@ -392,9 +396,11 @@ export function MyActiveJobs({
 
             return (
               <div key={job.id} className="px-4 py-2">
-                <div className="flex items-center justify-between">
+                {/* Wraps rather than overlaps: a language whose labels do not fit
+                    beside the title puts the buttons on a line of their own. */}
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                   <div
-                    className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
+                    className="flex min-w-0 flex-1 basis-40 cursor-pointer items-center gap-3 hover:opacity-80"
                     {...interactiveRow(() =>
                       router.push(
                         job.vehicleId
@@ -425,8 +431,8 @@ export function MyActiveJobs({
                       </p>
                     </div>
                   </div>
-                  {/* Desktop: inline buttons */}
-                  <div className="shrink-0 ml-3 hidden lg:flex items-center gap-2">
+                  {/* Wide card: inline buttons */}
+                  <div className="hidden max-w-full flex-wrap items-center justify-end gap-2 @6xl:flex">
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       {imgCount > 0 && (
                         <Tooltip>
@@ -526,8 +532,8 @@ export function MyActiveJobs({
                       </Button>
                     )}
                   </div>
-                  {/* Mobile: counters only */}
-                  <div className="shrink-0 ml-3 flex lg:hidden items-center gap-1.5 text-xs text-muted-foreground">
+                  {/* Narrow card: counters only */}
+                  <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground @6xl:hidden">
                     {imgCount > 0 && (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -563,8 +569,8 @@ export function MyActiveJobs({
                     )}
                   </div>
                 </div>
-                {/* Mobile: action buttons on two rows */}
-                <div className="mt-2 flex flex-col gap-1.5 lg:hidden">
+                {/* Narrow card: action buttons on two rows */}
+                <div className="mt-2 flex flex-col gap-1.5 @6xl:hidden">
                   {clockButton(job.id, 'w-full')}
                   <ButtonGroup className="w-full">
                     <Button

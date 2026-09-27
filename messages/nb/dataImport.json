@@ -180,6 +180,8 @@
       "transmission": "Girkasse",
       "engineSize": "Motorstørrelse",
       "engineCode": "Motorkode",
+      "hsn": "HSN (produsentnøkkel)",
+      "tsn": "TSN (typenøkkel)",
       "purchaseDate": "Kjøpsdato",
       "purchasePrice": "Kjøpspris"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Kundenavn mangler",
     "invalid_email": "E-posten \"{value}\" er ikke gyldig og ble utelatt",
     "invalid_vin": "VIN \"{value}\" er ikke 17 tegn; beholdt som skrevet",
+    "invalid_type_key": "{field} «{value}» er ikke en gyldig HSN eller TSN og ble utelatt",
     "vehicle_make_model_required": "Merke og modell mangler",
     "vehicle_year_required": "Årsmodell mangler",
     "vehicle_year_invalid": "Årsmodell \"{value}\" er ikke et gyldig år",

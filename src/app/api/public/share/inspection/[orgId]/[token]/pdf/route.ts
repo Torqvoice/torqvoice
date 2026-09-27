@@ -22,6 +22,7 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function GET(
   _request: Request,
@@ -87,6 +88,8 @@ export async function GET(
             model: true,
             year: true,
             vin: true,
+            hsn: true,
+            tsn: true,
             licensePlate: true,
             mileage: true,
             // Data minimisation (GDPR Art. 5(1)(c)): this certificate is
@@ -187,7 +190,10 @@ export async function GET(
     const documents = certificateDocuments(inspection.attachments)
 
     const element = React.createElement(InspectionPDF, {
-      data: inspection,
+      data: {
+        ...inspection,
+        vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+      },
       workshop: {
         name: org?.name || '',
         address: settingsMap['workshop.address'] || '',

@@ -60,6 +60,8 @@ export interface DesignerWorkshop {
   orgNumberLabel?: string
   /** Payment terms from payment settings. Empty prints nothing on the sheet. */
   paymentTerms: string
+  /** Whether the workshop records the German type key, so the sample car shows one. */
+  typeKeyEnabled?: boolean
   logoUrl: string
   /**
    * The signature of whoever has the designer open, so the Signature section

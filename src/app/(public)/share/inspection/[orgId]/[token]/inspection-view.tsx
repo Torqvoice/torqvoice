@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import {
@@ -73,6 +74,9 @@ interface InspectionRecord {
     year: number
     vin: string | null
     licensePlate: string | null
+    /** Null unless the workshop records the German type key. */
+    hsn?: string | null
+    tsn?: string | null
     mileage: number
     customer: { name: string } | null
   }
@@ -387,6 +391,14 @@ export function InspectionView({
                   <div>
                     <dt className="text-xs text-gray-500">{t('plateLabel')}</dt>
                     <dd className="font-mono text-sm">{inspection.vehicle.licensePlate}</dd>
+                  </div>
+                )}
+                {(inspection.vehicle.hsn || inspection.vehicle.tsn) && (
+                  <div>
+                    <dt className="text-xs text-gray-500">HSN/TSN</dt>
+                    <dd className="font-mono text-sm">
+                      {formatTypeKey(inspection.vehicle.hsn, inspection.vehicle.tsn)}
+                    </dd>
                   </div>
                 )}
                 {inspection.mileage !== null && (

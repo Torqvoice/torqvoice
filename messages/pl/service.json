@@ -56,6 +56,12 @@
     "designPickConfirm": "Zmień projekt",
     "designPickDone": "Faktura drukuje się teraz z projektem {name}",
     "designPickFailed": "Nie udało się zmienić projektu",
+    "designRefresh": "Zaktualizuj do bieżących danych",
+    "designRefreshConfirmTitle": "Zaktualizować tę fakturę do bieżących danych?",
+    "designRefreshConfirmBody": "Dane warsztatu, klient, pojazd, warunki płatności i projekt zostaną wczytane ponownie w obecnej postaci, a faktura zostanie na nich zablokowana. Jej pozycje i sumy należą do samej faktury i nie zmieniają się. Kopie już pobrane lub wysłane e-mailem pozostają bez zmian; link do udostępniania i portal pokazują zaktualizowaną fakturę. Tej operacji nie można cofnąć.",
+    "designRefreshConfirm": "Zaktualizuj fakturę",
+    "designRefreshDone": "Ta faktura jest teraz drukowana z bieżącymi danymi",
+    "designRefreshFailed": "Nie udało się zaktualizować faktury",
     "printWorkOrder": "Drukuj zlecenie"
   },
   "basicInfo": {

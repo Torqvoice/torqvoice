@@ -143,6 +143,7 @@
     "failedToLoad": "Kunne ikke laste inn kjøretøy.",
     "plate": "Reg.nr: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# service} other {# tjenester}}",
     "inspectionCount": "{count, plural, one {# kontroll} other {# kontroller}}",
     "serviceHistory": "Servicehistorikk ({count})",

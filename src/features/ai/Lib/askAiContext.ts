@@ -1,6 +1,8 @@
 import 'server-only'
 import { db } from '@/lib/db'
 import { zonedDayKey } from '@/lib/timezone'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
+import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 /**
  * Everything the model is allowed to know when someone asks about one
@@ -258,6 +260,8 @@ async function vehicleContext(
       transmission: true,
       engineSize: true,
       engineCode: true,
+      hsn: true,
+      tsn: true,
       purchaseDate: true,
       purchasePrice: true,
       isArchived: true,
@@ -339,6 +343,12 @@ async function vehicleContext(
       ['transmission', vehicle.transmission],
       ['engine', vehicle.engineSize],
       ['engine code', vehicle.engineCode],
+      [
+        'HSN/TSN (German type key)',
+        (await isTypeKeyEnabled(organizationId))
+          ? formatTypeKey(vehicle.hsn, vehicle.tsn) || undefined
+          : undefined,
+      ],
       ['purchased', dayOf(vehicle.purchaseDate, o.timeZone)],
       ['purchase price', o.showMoney ? money(vehicle.purchasePrice, o.currencyCode) : undefined],
       ['archived', vehicle.isArchived ? (vehicle.archiveReason ?? 'yes') : undefined],

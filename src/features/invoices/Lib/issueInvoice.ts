@@ -39,6 +39,8 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
           year: a.data.vehicle.year,
           vin: a.data.vehicle.vin,
           licensePlate: a.data.vehicle.licensePlate,
+          hsn: a.data.vehicle.hsn ?? null,
+          tsn: a.data.vehicle.tsn ?? null,
           mileage: a.data.vehicle.mileage,
         }
       : null,
@@ -56,6 +58,57 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
       fieldType: cf.fieldType,
     })),
   }
+}
+
+/**
+ * Captures the invoice as it prints right now and dates the issue. What
+ * decides whether this moment calls for a capture lives with the callers;
+ * this only does the capture, the same way for a first issue and for a
+ * deliberate refresh of one already issued.
+ */
+async function captureIssue(
+  recordId: string,
+  organizationId: string,
+  issuedAt: Date
+): Promise<boolean> {
+  const assembly = await assembleInvoicePrint(recordId, { mode: 'live' })
+  if (!assembly) return false
+
+  const [issuedDesignSnapshotId, issuedLogoSnapshotId, issuedSignatureSnapshotId] =
+    await Promise.all([
+      ensureDesignSnapshot(organizationId, assembly.designSource),
+      assembly.logoDataUri
+        ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
+        : Promise.resolve(null),
+      assembly.signer.dataUri
+        ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
+        : Promise.resolve(null),
+    ])
+
+  await db.serviceRecord.update({
+    where: { id: recordId },
+    data: {
+      issuedAt,
+      issuedDesignSnapshotId,
+      issuedLogoSnapshotId,
+      issuedSignatureSnapshotId,
+      issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
+    },
+  })
+  // Issuing is the moment an accounting connector wants the invoice, and
+  // sending or sharing logs no service event of its own. Lazy so this
+  // module stays free of the integrations platform.
+  import('@/features/integrations/Lib/events')
+    .then(({ notifyIntegrations }) =>
+      notifyIntegrations({
+        event: 'service.update',
+        organizationId,
+        entity: 'ServiceRecord',
+        entityId: recordId,
+      })
+    )
+    .catch((err) => console.error('[integrations] issue notify failed:', err))
+  return true
 }
 
 /**
@@ -81,44 +134,30 @@ export async function issueInvoice(
   if (!record) return false
   if (!shouldIssue(record, reason)) return false
 
-  const assembly = await assembleInvoicePrint(recordId, { mode: 'live' })
-  if (!assembly) return false
+  // A backfilled invoice is dated to when it was sent, which is the
+  // nearest thing to when it was issued that the record knows.
+  const issuedAt = reason === 'backfill' ? (record.sentAt ?? new Date()) : new Date()
+  return captureIssue(recordId, organizationId, issuedAt)
+}
 
-  const [issuedDesignSnapshotId, issuedLogoSnapshotId, issuedSignatureSnapshotId] =
-    await Promise.all([
-      ensureDesignSnapshot(organizationId, assembly.designSource),
-      assembly.logoDataUri
-        ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
-        : Promise.resolve(null),
-      assembly.signer.dataUri
-        ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
-        : Promise.resolve(null),
-    ])
-
-  await db.serviceRecord.update({
-    where: { id: recordId },
-    data: {
-      // A backfilled invoice is dated to when it was sent, which is the
-      // nearest thing to when it was issued that the record knows.
-      issuedAt: reason === 'backfill' ? (record.sentAt ?? new Date()) : new Date(),
-      issuedDesignSnapshotId,
-      issuedLogoSnapshotId,
-      issuedSignatureSnapshotId,
-      issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
-    },
+/**
+ * Issues an invoice again from today's rows, on purpose.
+ *
+ * Sending never re-captures an issued invoice, so a customer's address
+ * corrected after the invoice went out, or a detail the vehicle gained
+ * since, stayed off the sheet for good unless an owner unlocked the invoice
+ * and sent it once more. This is that correction as one deliberate act: the
+ * workshop, customer, vehicle, terms and design are read again as they are
+ * now and the invoice is locked to them, dated to this moment. The lines
+ * and totals are the record's own and were never frozen, so they are not
+ * touched. Refused for an invoice that was never issued: a draft prints
+ * live already. Returns whether a capture was taken.
+ */
+export async function reissueInvoice(recordId: string, organizationId: string): Promise<boolean> {
+  const record = await db.serviceRecord.findFirst({
+    where: { id: recordId, organizationId },
+    select: { id: true, issuedAt: true },
   })
-  // Issuing is the moment an accounting connector wants the invoice, and
-  // sending or sharing logs no service event of its own. Lazy so this
-  // module stays free of the integrations platform.
-  import('@/features/integrations/Lib/events')
-    .then(({ notifyIntegrations }) =>
-      notifyIntegrations({
-        event: 'service.update',
-        organizationId,
-        entity: 'ServiceRecord',
-        entityId: recordId,
-      })
-    )
-    .catch((err) => console.error('[integrations] issue notify failed:', err))
-  return true
+  if (!record?.issuedAt) return false
+  return captureIssue(recordId, organizationId, new Date())
 }

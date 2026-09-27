@@ -447,7 +447,7 @@ export const workOrderPresets: LayoutPreset[] = [
     ],
     fields: {
       customer: ['customer_name', 'customer_phone'],
-      vehicle: ['vehicle_name', 'license_plate', 'mileage'],
+      vehicle: ['vehicle_name', 'license_plate', 'mileage', 'hsn_tsn'],
       document_title: ['title', 'invoice_number', 'date', 'license_plate'],
       job_details: ['status', 'technician', 'scheduled', 'promised'],
       signature: ['inspector_line', 'inspector_name', 'date_line', 'customer_line'],

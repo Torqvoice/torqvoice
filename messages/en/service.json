@@ -56,6 +56,12 @@
     "designPickConfirm": "Change the design",
     "designPickDone": "This invoice now prints with {name}",
     "designPickFailed": "Could not change the design",
+    "designRefresh": "Update to today's details",
+    "designRefreshConfirmTitle": "Update this invoice to today's details?",
+    "designRefreshConfirmBody": "The workshop details, the customer, the vehicle, the payment terms and the design are read again as they are today, and the invoice is locked to them. Its lines and totals are its own and do not change. Copies already downloaded or emailed stay as they were; the share link and the portal show the updated invoice. This cannot be undone.",
+    "designRefreshConfirm": "Update the invoice",
+    "designRefreshDone": "This invoice now prints with today's details",
+    "designRefreshFailed": "Could not update the invoice",
     "printWorkOrder": "Print work order"
   },
   "basicInfo": {

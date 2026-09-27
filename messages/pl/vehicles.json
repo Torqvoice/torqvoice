@@ -100,7 +100,8 @@
     "inspectionDue": "Przegląd do {date}",
     "inspectionCheckedAt": "Sprawdzono w rejestrze {date}",
     "notRegistered": "Niezarejestrowany",
-    "soldReported": "Klient zgłosił sprzedaż {date}"
+    "soldReported": "Klient zgłosił sprzedaż {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Nowa wycena",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Pojemność silnika",
     "engineCode": "Kod silnika",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Z niemieckiego dowodu rejestracyjnego: HSN to pole 2.1, TSN to pierwsze trzy znaki pola 2.2.",
+    "hsnInvalid": "HSN to cztery cyfry z pola 2.1 dowodu rejestracyjnego.",
+    "tsnInvalid": "TSN to trzy litery lub cyfry z początku pola 2.2 dowodu rejestracyjnego.",
     "makeMarine": "Producent *",
     "mileageMarine": "Godziny Pracy Silnika",
     "transmissionMarine": "Typ Silnika",

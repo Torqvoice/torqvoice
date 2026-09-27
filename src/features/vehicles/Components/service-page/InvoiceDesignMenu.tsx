@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Check, Palette } from 'lucide-react'
+import { Check, Palette, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   DropdownMenuPortal,
@@ -17,6 +17,7 @@ import { useConfirm } from '@/components/confirm-dialog'
 import {
   getIssuedDesignState,
   reapplyDesignToInvoice,
+  refreshIssuedInvoice,
 } from '@/features/invoices/Actions/invoiceDesignActions'
 
 interface DesignState {
@@ -45,6 +46,11 @@ interface InvoiceDesignMenuProps {
  * hashing on the server when the submenu opens rather than on every page
  * load. Until that lands the list is not shown at all: a list with no tick on
  * it would be a worse answer than a spinner.
+ *
+ * Under the designs sits the one action that moves more than the look:
+ * updating the invoice to today's details. It is the deliberate version of
+ * unlock-and-resend, for the address corrected or the vehicle detail added
+ * after the invoice went out, and it says what it changes before it does.
  */
 export function InvoiceDesignMenu({ recordId, designFollowsName }: InvoiceDesignMenuProps) {
   const t = useTranslations('service.header')
@@ -76,6 +82,27 @@ export function InvoiceDesignMenu({ recordId, designFollowsName }: InvoiceDesign
     // The tick has moved; the next open re-reads where to.
     setState(null)
     toast.success(t('designPickDone', { name }))
+    router.refresh()
+  }
+
+  const refresh = async () => {
+    const ok = await confirm({
+      title: t('designRefreshConfirmTitle'),
+      description: t('designRefreshConfirmBody'),
+      confirmLabel: t('designRefreshConfirm'),
+      destructive: true,
+    })
+    if (!ok) return
+    setBusy(true)
+    const result = await refreshIssuedInvoice(recordId)
+    setBusy(false)
+    if (!result.success) {
+      toast.error(t('designRefreshFailed'))
+      return
+    }
+    // Issued afresh, so both the date and the design in force are new.
+    setState(null)
+    toast.success(t('designRefreshDone'))
     router.refresh()
   }
 
@@ -123,6 +150,11 @@ export function InvoiceDesignMenu({ recordId, designFollowsName }: InvoiceDesign
                   onPick={busy ? undefined : () => void pick(design.id, design.name)}
                 />
               ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled={busy} onClick={() => void refresh()}>
+                <RefreshCw className="size-4 shrink-0" aria-hidden="true" />
+                <span className="truncate">{t('designRefresh')}</span>
+              </DropdownMenuItem>
             </>
           )}
         </DropdownMenuSubContent>

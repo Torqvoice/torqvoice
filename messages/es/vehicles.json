@@ -100,7 +100,8 @@
     "inspectionDue": "ITV el {date}",
     "inspectionCheckedAt": "Comprobado en el registro el {date}",
     "notRegistered": "Sin matricular",
-    "soldReported": "El cliente indicó venta el {date}"
+    "soldReported": "El cliente indicó venta el {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Nueva cotización",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Tamaño del motor",
     "engineCode": "Código del motor",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Del permiso de circulación alemán: HSN es el campo 2.1 y TSN son los tres primeros caracteres del campo 2.2.",
+    "hsnInvalid": "El HSN tiene cuatro dígitos, del campo 2.1 del permiso de circulación.",
+    "tsnInvalid": "El TSN tiene tres letras o dígitos, el inicio del campo 2.2 del permiso de circulación.",
     "makeMarine": "Fabricante *",
     "mileageMarine": "Horas de Motor",
     "transmissionMarine": "Tipo de Motor",

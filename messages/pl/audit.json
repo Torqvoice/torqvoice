@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Zablokowano starsze faktury",
     "settings_reapplyInvoiceDesign": "Ponownie nałożono projekt faktury",
     "invoice_reapplyDesign": "Ponownie nałożono projekt faktury",
+    "invoice_reissue": "Zaktualizowano wysłaną fakturę do bieżących danych",
     "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
     "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie",
     "service_videoCall_send": "Wysłano link do rozmowy wideo",

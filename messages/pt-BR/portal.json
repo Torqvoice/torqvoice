@@ -143,6 +143,7 @@
     "failedToLoad": "Falha ao carregar os veículos.",
     "plate": "Placa: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# serviço} other {# serviços}}",
     "inspectionCount": "{count, plural, one {# inspeção} other {# inspeções}}",
     "serviceHistory": "Histórico de Serviços ({count})",

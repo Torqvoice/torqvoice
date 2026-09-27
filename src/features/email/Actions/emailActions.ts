@@ -24,6 +24,7 @@ import { randomUUID } from 'crypto'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
 import type { VehicleContext } from '@/features/email/Lib/emailContext'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
+import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 /** Whoever pressed send, for a template that signs off with a name. */
 async function senderName(userId: string): Promise<string | null> {
@@ -404,6 +405,8 @@ export async function sendInspectionEmail(input: {
                 year: true,
                 vin: true,
                 licensePlate: true,
+                hsn: true,
+                tsn: true,
                 mileage: true,
                 customer: { select: { name: true, email: true, phone: true } },
               },
@@ -455,7 +458,10 @@ export async function sendInspectionEmail(input: {
         }
 
         const element = React.createElement(InspectionPDF, {
-          data: inspection,
+          data: {
+            ...inspection,
+            vehicle: gateTypeKey(inspection.vehicle, await isTypeKeyEnabled(organizationId)),
+          },
           workshop: {
             name: org?.name || '',
             address: settings['workshop.address'] || '',

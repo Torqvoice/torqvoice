@@ -55,6 +55,13 @@ export interface ConditionMapPrintInput {
   scope?: MarkScope
   /** Draw the marks still open from earlier visits, greyed. */
   includePrevious: boolean
+  /**
+   * Draw nothing unless this sheet recorded a mark of its own. A work order
+   * has nothing to say about the car's condition until its drop-off notes
+   * one; printing only what earlier visits found made the sheet read as
+   * their report rather than this job's.
+   */
+  requireOwn?: boolean
   labels: ConditionMapLabels
   /** The width the drawing prints at, in points. */
   width: number
@@ -70,6 +77,7 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
   const { own, previous } = input.scope
     ? splitMarks(open, input.scope)
     : { own: open, previous: [] as ConditionMarkData[] }
+  if (input.requireOwn && own.length === 0) return null
   const shown = numberedMarks([...(input.includePrevious ? previous : []), ...own])
   if (shown.length === 0) return null
 

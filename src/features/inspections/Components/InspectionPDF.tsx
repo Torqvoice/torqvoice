@@ -12,6 +12,7 @@ import {
   isDefect,
   type Condition,
 } from '../Lib/conditions'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
@@ -54,6 +55,9 @@ interface InspectionData {
     year: number
     vin: string | null
     licensePlate: string | null
+    /** Null unless the workshop records the German type key. */
+    hsn?: string | null
+    tsn?: string | null
     mileage: number | null
     customer?: {
       name: string
@@ -497,6 +501,9 @@ export function InspectionPDF({
                   ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
                   : `Plate: ${data.vehicle.licensePlate}`}
               </Text>
+            )}
+            {typeKeyLine(data.vehicle, labels.typeKey) && (
+              <Text style={styles.infoTextSmall}>{typeKeyLine(data.vehicle, labels.typeKey)}</Text>
             )}
             {data.mileage !== null && (
               <Text style={styles.infoTextSmall}>

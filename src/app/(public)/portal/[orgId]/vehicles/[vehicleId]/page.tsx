@@ -11,6 +11,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { db } from '@/lib/db'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
 import { ReportSoldButton } from '@/features/portal/Components/ReportSoldButton'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
   active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -70,6 +71,9 @@ export default async function PortalVehicleDetailPage({
               )}
               {v.vin && (
                 <span>{serviceType === 'marine' ? `HIN: ${v.vin}` : t('vin', { vin: v.vin })}</span>
+              )}
+              {(v.hsn || v.tsn) && (
+                <span>{t('typeKey', { typeKey: formatTypeKey(v.hsn, v.tsn) })}</span>
               )}
               {v.mileage > 0 && (
                 <span>

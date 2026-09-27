@@ -32,6 +32,11 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
 import { releaseFiles } from '@/lib/files/manager'
 import { inspectionFileUrls } from '@/lib/files/collect'
+import {
+  gateTypeKey,
+  isTypeKeyEnabled,
+  typeKeySearch,
+} from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function getInspectionsPaginated(params: {
   page?: number
@@ -59,6 +64,7 @@ export async function getInspectionsPaginated(params: {
           { vehicle: { make: { contains: params.search, mode: 'insensitive' } } },
           { vehicle: { model: { contains: params.search, mode: 'insensitive' } } },
           { vehicle: { licensePlate: { contains: params.search, mode: 'insensitive' } } },
+          ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
           { template: { name: { contains: params.search, mode: 'insensitive' } } },
         ]
       }
@@ -141,6 +147,8 @@ export async function getInspection(id: string) {
               model: true,
               year: true,
               vin: true,
+              hsn: true,
+              tsn: true,
               licensePlate: true,
               mileage: true,
               customer: {
@@ -178,7 +186,9 @@ export async function getInspection(id: string) {
       // Missing or foreign-org inspection yields null rather than an error: the
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the inspection route.
-      return inspection
+      if (!inspection) return inspection
+      const enabled = await isTypeKeyEnabled(organizationId)
+      return { ...inspection, vehicle: gateTypeKey(inspection.vehicle, enabled) }
     },
     {
       requiredPermissions: [

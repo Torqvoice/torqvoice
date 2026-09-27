@@ -44,6 +44,7 @@ import {
   ChevronsUpDown,
   Plus,
   Tag,
+  FileBadge,
 } from 'lucide-react'
 import {
   Select,
@@ -137,6 +138,9 @@ export function WorkshopSettings({
   const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
     settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT] || '0'
   )
+  const [typeKeyEnabled, setTypeKeyEnabled] = useState(
+    settings[SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED] === 'true'
+  )
   const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
     settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
@@ -200,6 +204,7 @@ export function WorkshopSettings({
       [SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE]: titleTemplate.trim(),
       [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
       [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
+      [SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED]: typeKeyEnabled ? 'true' : 'false',
     })
     setSaving(false)
     router.refresh()
@@ -469,6 +474,33 @@ export function WorkshopSettings({
               </div>
             </div>
           </div>
+
+          {serviceType !== 'marine' && (
+            <>
+              <Separator />
+
+              <div className="space-y-4">
+                <div className="flex flex-row items-center gap-3">
+                  <FileBadge className="h-5 w-5 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold">{t('workshop.typeKeyTitle')}</h3>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="typeKeyEnabled"
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span>{t('workshop.typeKeyEnabled')}</span>
+                    <Switch
+                      id="typeKeyEnabled"
+                      checked={typeKeyEnabled}
+                      onCheckedChange={setTypeKeyEnabled}
+                    />
+                  </Label>
+                  <p className="text-sm text-muted-foreground">{t('workshop.typeKeyHint')}</p>
+                </div>
+              </div>
+            </>
+          )}
 
           <Separator />
 

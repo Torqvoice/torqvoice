@@ -240,6 +240,10 @@ export const SETTING_KEYS = {
   /// — sidebar entry, routes, cron sweeps — keys off this one flag, so a shop
   /// that does not store tires never sees it.
   TIRE_HOTEL_ENABLED: 'tireHotel.enabled',
+  /// The German type key (HSN/TSN) on vehicles and the documents that name
+  /// them. Off until a workshop turns it on: outside Germany it is two empty
+  /// boxes on every vehicle. Turning it off hides it and keeps what was typed.
+  VEHICLE_TYPE_KEY_ENABLED: 'vehicle.typeKeyEnabled',
   /// Tread depth below which a summer tire is flagged for replacement, in mm.
   /// Legal minimums differ by country, so the workshop sets its own.
   TIRE_HOTEL_SUMMER_REPLACE_MM: 'tireHotel.summerReplaceMm',

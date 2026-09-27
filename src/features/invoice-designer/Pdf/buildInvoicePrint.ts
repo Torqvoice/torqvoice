@@ -31,6 +31,7 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -193,6 +194,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
         ? fillTemplate(labels.vin, { vin: data.vehicle.vin })
         : `VIN: ${data.vehicle.vin}`
       : '',
+    hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })

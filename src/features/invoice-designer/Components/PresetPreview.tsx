@@ -5,6 +5,7 @@ import { workOrderLabels } from '../Lib/workOrderLabels'
 
 import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
 import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
@@ -31,6 +32,7 @@ interface PreviewWorkshop {
 /** The sample document on this workshop's own details, for a card's picture. */
 function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUrl?: string) {
   const t = useTranslations('settings.designer')
+  const typeKeyEnabled = useTypeKeyEnabled()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
 
   return useMemo(() => {
@@ -56,6 +58,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         slogan: workshop?.slogan ?? '',
         orgNumber: '',
         paymentTerms: '',
+        typeKeyEnabled,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
       },
@@ -64,7 +67,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
       labels,
       docType
     )
-  }, [docType, workshop, logoUrl, t, messages])
+  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled])
 }
 
 export function PresetPreview({

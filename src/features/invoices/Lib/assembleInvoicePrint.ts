@@ -47,6 +47,7 @@ import {
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import { readIssuedInvoiceData, rendersFromIssue, type IssuedInvoiceData } from './issuedInvoice'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 const PARTY_SELECT = {
   name: true,
@@ -77,6 +78,8 @@ const RECORD_INCLUDE = {
       year: true,
       vin: true,
       licensePlate: true,
+      hsn: true,
+      tsn: true,
       mileage: true,
       customer: { select: PARTY_SELECT },
     },
@@ -359,7 +362,10 @@ async function assembleLive(
     ...record,
     customer: partyOf(record.customer),
     vehicle: record.vehicle
-      ? { ...record.vehicle, customer: partyOf(record.vehicle.customer) }
+      ? {
+          ...gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
+          customer: partyOf(record.vehicle.customer),
+        }
       : null,
     customFields,
     findings,
@@ -430,6 +436,8 @@ function assembleFrozen(
           year: frozen.vehicle.year,
           vin: frozen.vehicle.vin ?? null,
           licensePlate: frozen.vehicle.licensePlate ?? null,
+          hsn: frozen.vehicle.hsn ?? null,
+          tsn: frozen.vehicle.tsn ?? null,
           mileage: frozen.vehicle.mileage ?? record.vehicle?.mileage ?? 0,
           customer: null,
         }

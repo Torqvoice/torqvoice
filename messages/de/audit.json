@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Ältere Rechnungen gesperrt",
     "settings_reapplyInvoiceDesign": "Rechnungsdesign erneut angewendet",
     "invoice_reapplyDesign": "Rechnungsdesign erneut angewendet",
+    "invoice_reissue": "Gesendete Rechnung auf aktuelle Angaben aktualisiert",
     "inspection_reminders_sent": "HU-Erinnerungen gesendet",
     "inspection_reminders_send": "HU-Erinnerungen gesendet",
     "service_videoCall_send": "Link zum Videoanruf gesendet",

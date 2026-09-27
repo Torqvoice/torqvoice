@@ -56,6 +56,12 @@
     "designPickConfirm": "Cambiar el diseño",
     "designPickDone": "La factura ya se imprime con {name}",
     "designPickFailed": "No se pudo cambiar el diseño",
+    "designRefresh": "Actualizar a los datos actuales",
+    "designRefreshConfirmTitle": "¿Actualizar esta factura a los datos actuales?",
+    "designRefreshConfirmBody": "Los datos del taller, el cliente, el vehículo, las condiciones de pago y el diseño se vuelven a leer tal como están hoy, y la factura queda bloqueada con ellos. Sus líneas y totales son propios de la factura y no cambian. Las copias ya descargadas o enviadas por correo se mantienen como estaban; el enlace compartido y el portal muestran la factura actualizada. Esto no se puede deshacer.",
+    "designRefreshConfirm": "Actualizar la factura",
+    "designRefreshDone": "Esta factura ahora se imprime con los datos actuales",
+    "designRefreshFailed": "No se pudo actualizar la factura",
     "printWorkOrder": "Imprimir orden de trabajo"
   },
   "basicInfo": {

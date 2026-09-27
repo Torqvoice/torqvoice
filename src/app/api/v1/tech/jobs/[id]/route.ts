@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
+import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 /**
  * One job, with everything the technician needs while standing at the car.
@@ -53,6 +54,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               year: true,
               licensePlate: true,
               vin: true,
+              // Read out at the parts counter in Germany, where it names the exact type.
+              hsn: true,
+              tsn: true,
               mileage: true,
               customer: { select: { id: true, name: true, phone: true, email: true } },
             },
@@ -91,8 +95,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const openEntry = await getOpenEntry(ctx.organizationId, ctx.technicianIds)
       const totalMinutes = job.timeEntries.reduce((sum, e) => sum + (e.durationMinutes ?? 0), 0)
 
+      const typeKeyOn = await isTypeKeyEnabled(ctx.organizationId)
+
       return apiOk({
         ...job,
+        vehicle: job.vehicle && gateTypeKey(job.vehicle, typeKeyOn),
         customer: job.customer ?? job.vehicle?.customer ?? null,
         isRunning: openEntry?.serviceRecordId === job.id,
         runningSince: openEntry?.serviceRecordId === job.id ? openEntry.startedAt : null,

@@ -4,7 +4,9 @@ const vehicle = { findFirst: vi.fn() }
 const customer = { findFirst: vi.fn() }
 const serviceRecord = { findMany: vi.fn() }
 
-vi.mock('@/lib/db', () => ({ db: { vehicle, customer, serviceRecord } }))
+// The type key is off, as it is for most workshops.
+const appSetting = { findMany: vi.fn().mockResolvedValue([]) }
+vi.mock('@/lib/db', () => ({ db: { vehicle, customer, serviceRecord, appSetting } }))
 
 const { buildAskAiContext, askAiSystemPrompt, MAX_CONTEXT_CHARS } = await import(
   '@/features/ai/Lib/askAiContext'

@@ -100,7 +100,8 @@
     "inspectionDue": "Техосмотр до {date}",
     "inspectionCheckedAt": "Проверено в реестре {date}",
     "notRegistered": "Не зарегистрирован",
-    "soldReported": "Клиент сообщил о продаже {date}"
+    "soldReported": "Клиент сообщил о продаже {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Новое предложение",
@@ -323,6 +324,12 @@
     "cvt": "Вариатор",
     "engineSize": "Объём двигателя",
     "engineCode": "Код двигателя",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Из немецкого свидетельства о регистрации: HSN указан в поле 2.1, TSN — первые три символа поля 2.2.",
+    "hsnInvalid": "HSN состоит из четырёх цифр, из поля 2.1 свидетельства о регистрации.",
+    "tsnInvalid": "TSN состоит из трёх букв или цифр, это начало поля 2.2 свидетельства о регистрации.",
     "makeMarine": "Производитель *",
     "mileageMarine": "Моточасы",
     "transmissionMarine": "Тип Двигателя",

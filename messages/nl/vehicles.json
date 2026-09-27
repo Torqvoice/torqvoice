@@ -100,7 +100,8 @@
     "inspectionDue": "APK vervalt {date}",
     "inspectionCheckedAt": "Gecontroleerd bij het register op {date}",
     "notRegistered": "Niet geregistreerd",
-    "soldReported": "Klant meldde verkocht op {date}"
+    "soldReported": "Klant meldde verkocht op {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Motorinhoud",
     "engineCode": "Motorcode",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Van een Duits kentekenbewijs: HSN staat in veld 2.1, TSN zijn de eerste drie tekens van veld 2.2.",
+    "hsnInvalid": "Het HSN bestaat uit vier cijfers, uit veld 2.1 van het kentekenbewijs.",
+    "tsnInvalid": "Het TSN bestaat uit drie letters of cijfers, het begin van veld 2.2 van het kentekenbewijs.",
     "makeMarine": "Fabrikant *",
     "mileageMarine": "Motoruren",
     "transmissionMarine": "Motortype",

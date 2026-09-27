@@ -172,6 +172,7 @@
     "settings_freezeInvoices": "Anciennes factures verrouillées",
     "settings_reapplyInvoiceDesign": "Design de facture réappliqué",
     "invoice_reapplyDesign": "Design de facture réappliqué",
+    "invoice_reissue": "Facture envoyée mise à jour avec les informations actuelles",
     "inspection_reminders_sent": "Rappels de contrôle envoyés",
     "inspection_reminders_send": "Rappels de contrôle envoyés",
     "service_videoCall_send": "Lien d'appel vidéo envoyé",

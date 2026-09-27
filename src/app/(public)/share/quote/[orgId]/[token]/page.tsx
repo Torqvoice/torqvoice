@@ -14,6 +14,8 @@ import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export const revalidate = 60
 
@@ -68,6 +70,8 @@ export default async function PublicQuotePage({
           year: true,
           vin: true,
           licensePlate: true,
+          hsn: true,
+          tsn: true,
         },
       },
     },
@@ -94,6 +98,7 @@ export default async function PublicQuotePage({
             'workshop.dateFormat',
             'workshop.timezone',
             'workshop.unitSystem',
+            SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
             'quote.primaryColor',
             'quote.backgroundColor',
             'quote.textColor',
@@ -137,6 +142,11 @@ export default async function PublicQuotePage({
 
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
+  const typeKeyEnabled = typeKeyEnabledIn(settingsMap)
+  const shownQuote = {
+    ...quote,
+    vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabled),
+  }
 
   const workshop = {
     name: org?.name || '',
@@ -205,7 +215,7 @@ export default async function PublicQuotePage({
   const signer = await documentSigner(orgId, quote.userId)
 
   const spec = buildQuotePrintSpec({
-    data: quote,
+    data: shownQuote,
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     workshop,
     currencyCode,
@@ -242,7 +252,7 @@ export default async function PublicQuotePage({
   return (
     <QuoteView
       spec={spec}
-      quote={quote}
+      quote={shownQuote}
       workshop={workshop}
       currencyCode={currencyCode}
       currencyFormat={currencyFormat}

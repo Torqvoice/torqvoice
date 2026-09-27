@@ -143,6 +143,7 @@
     "failedToLoad": "Не удалось загрузить транспортные средства.",
     "plate": "Госномер: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# обслуживание} few {# обслуживания} other {# обслуживаний}}",
     "inspectionCount": "{count, plural, one {# осмотр} few {# осмотра} other {# осмотров}}",
     "serviceHistory": "История обслуживания ({count})",

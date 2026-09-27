@@ -14,6 +14,7 @@ import {
   isMarineWorkshop,
   withMarineDocumentLabels,
 } from '@/features/invoice-designer/Lib/marineLabels'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -49,6 +50,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
           model: true,
           year: true,
           vin: true,
+          hsn: true,
+          tsn: true,
           licensePlate: true,
           mileage: true,
           customer: {
@@ -163,7 +166,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     const element = React.createElement(ServiceHistoryPDF, {
-      vehicle,
+      vehicle: gateTypeKey(vehicle, typeKeyEnabledIn(settingsMap)),
       records,
       workshop: {
         name: org?.name || '',

@@ -6,6 +6,7 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { ISSUED_WHERE, issuedDesignState, reapplyDesign } from '../Lib/reapplyDesign'
+import { reissueInvoice } from '../Lib/issueInvoice'
 
 /**
  * Chooses which design one invoice prints with. Null goes back to following
@@ -196,6 +197,51 @@ export async function reapplyDesignToInvoice(recordId: string, designId: string 
         entityId: result.recordId,
         message: `Changed the design of issued invoice ${result.reference}`,
         metadata: { serviceRecordId: result.recordId, designId: result.designId },
+      }),
+    }
+  )
+}
+
+/**
+ * Updates one issued invoice to today's details: the workshop, customer,
+ * vehicle, terms and design as they are now, locked again from this moment.
+ * What the re-apply above leaves alone on purpose, this moves on purpose,
+ * so it sits beside it in the same submenu and answers to the same rule as
+ * the unlock: an owner's or admin's call, written to the audit log, and not
+ * undoable. Copies already downloaded or emailed are the customer's; the
+ * share link and the portal show the updated invoice.
+ */
+export async function refreshIssuedInvoice(recordId: string) {
+  return withAuth(
+    async ({ organizationId, isAdmin }) => {
+      requireAdmin(isAdmin)
+      const record = await db.serviceRecord.findFirst({
+        where: { id: recordId, organizationId },
+        select: { id: true, vehicleId: true, invoiceNumber: true, issuedAt: true },
+      })
+      if (!record) throw new Error('Record not found')
+      if (!record.issuedAt) throw new Error('This invoice has not been sent yet')
+
+      const updated = await reissueInvoice(record.id, organizationId)
+      if (!updated) throw new Error('The invoice could not be assembled')
+
+      revalidatePath(
+        record.vehicleId
+          ? `/vehicles/${record.vehicleId}/service/${recordId}`
+          : `/sales/${recordId}`
+      )
+      return { recordId, reference: record.invoiceNumber || recordId }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'invoice.reissue',
+        entity: 'ServiceRecord',
+        entityId: result.recordId,
+        message: `Updated issued invoice ${result.reference} to today's details`,
+        metadata: { serviceRecordId: result.recordId },
       }),
     }
   )

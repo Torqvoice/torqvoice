@@ -38,6 +38,8 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'transmission',
     'engineSize',
     'engineCode',
+    'hsn',
+    'tsn',
     'purchaseDate',
     'purchasePrice',
     'imageUrl',

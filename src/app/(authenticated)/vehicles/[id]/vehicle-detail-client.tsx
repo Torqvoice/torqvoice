@@ -102,6 +102,8 @@ import {
 import { useTranslations } from 'next-intl'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { useServiceType } from '@/components/service-type-context'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 
 interface CustomerOption {
   id: string
@@ -182,6 +184,8 @@ interface VehicleDetail {
   transmission: string | null
   engineSize: string | null
   engineCode: string | null
+  hsn: string | null
+  tsn: string | null
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
@@ -342,6 +346,7 @@ export function VehicleDetailClient({
   const searchParams = useSearchParams()
   const { formatDate, formatDateTime } = useFormatDate()
   const t = useTranslations('vehicles.detail')
+  const typeKeyEnabled = useTypeKeyEnabled()
   const ti = useTranslations('vehicles.inspections')
   const tr = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
@@ -694,6 +699,17 @@ export function VehicleDetailClient({
                   <>
                     {(vehicle.licensePlate || vehicle.vin) && <span>&middot;</span>}
                     <span className="font-mono">{vehicle.engineCode}</span>
+                  </>
+                )}
+                {typeKeyEnabled && (vehicle.hsn || vehicle.tsn) && (
+                  <>
+                    {(vehicle.licensePlate || vehicle.vin || vehicle.engineCode) && (
+                      <span>&middot;</span>
+                    )}
+                    <span>
+                      {t('typeKey')}{' '}
+                      <span className="font-mono">{formatTypeKey(vehicle.hsn, vehicle.tsn)}</span>
+                    </span>
                   </>
                 )}
               </div>

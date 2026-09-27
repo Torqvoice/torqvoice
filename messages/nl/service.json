@@ -56,6 +56,12 @@
     "designPickConfirm": "Ontwerp wijzigen",
     "designPickDone": "De factuur wordt nu afgedrukt met {name}",
     "designPickFailed": "Kon het ontwerp niet wijzigen",
+    "designRefresh": "Bijwerken naar de huidige gegevens",
+    "designRefreshConfirmTitle": "Deze factuur bijwerken naar de huidige gegevens?",
+    "designRefreshConfirmBody": "De werkplaatsgegevens, de klant, het voertuig, de betalingsvoorwaarden en het ontwerp worden opnieuw ingelezen zoals ze vandaag zijn, en de factuur wordt daarop vastgezet. De regels en totalen zijn van de factuur zelf en veranderen niet. Al gedownloade of gemailde kopieën blijven zoals ze waren; de deellink en het portaal tonen de bijgewerkte factuur. Dit kan niet ongedaan worden gemaakt.",
+    "designRefreshConfirm": "Factuur bijwerken",
+    "designRefreshDone": "Deze factuur wordt nu afgedrukt met de huidige gegevens",
+    "designRefreshFailed": "Kon de factuur niet bijwerken",
     "printWorkOrder": "Werkorder afdrukken"
   },
   "basicInfo": {

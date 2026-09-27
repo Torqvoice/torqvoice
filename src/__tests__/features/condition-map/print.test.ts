@@ -151,6 +151,33 @@ describe('the printed condition map', () => {
     })!
     expect(without.rows.map((r) => r.n)).toEqual(['1'])
   })
+
+  it('can insist on a mark of its own before it draws anything', () => {
+    const earlier = mark({ id: 'old', serviceRecordId: 's0' })
+    const own = mark({ id: 'new', serviceRecordId: 's1', panel: 'rear_bumper', view: 'rear' })
+    const scope = { serviceRecordId: 's1' }
+    expect(
+      conditionMapForPrint({
+        bodyType: 'sedan',
+        marks: [earlier],
+        scope,
+        requireOwn: true,
+        includePrevious: true,
+        labels,
+        width: 500,
+      })
+    ).toBeNull()
+    const withOwn = conditionMapForPrint({
+      bodyType: 'sedan',
+      marks: [earlier, own],
+      scope,
+      requireOwn: true,
+      includePrevious: true,
+      labels,
+      width: 500,
+    })!
+    expect(withOwn.rows.map((r) => r.previous)).toEqual([true, false])
+  })
 })
 
 function ids(spec: any): string[] {
@@ -264,5 +291,46 @@ describe('the documents', () => {
       .content.children.find((c: any) => c.kind === 'table')
     // Recorded at the same moment, the earlier visit's mark is listed first, as such.
     expect(table.rows.map((r: any) => r.area)).toEqual(['Rear bumper (earlier)', 'Left front door'])
+  })
+
+  it('leaves the map off a work order whose own drop-off recorded nothing', () => {
+    // The check-in inspection's marks are the inspection's report, not this job's.
+    const spec = buildWorkOrderPrintSpec({
+      data: {
+        id: 'job1',
+        title: 'Job',
+        type: 'repair',
+        serviceDate: new Date('2026-09-24T09:00:00Z'),
+        subtotal: 0,
+        taxRate: 0,
+        taxAmount: 0,
+        totalAmount: 0,
+        cost: 0,
+        invoiceNumber: '1',
+        partItems: [],
+        laborItems: [],
+        customer: { name: 'A' },
+        vehicle: {
+          make: 'Volvo',
+          model: 'V60',
+          year: 2020,
+          vin: null,
+          licensePlate: 'AB 1',
+          mileage: 1,
+          customer: null,
+        },
+      } as unknown as InvoiceData,
+      job: {
+        orderNumber: '1',
+        statusLabel: 'Open',
+        concerns: [],
+        printedAt: new Date('2026-09-25T00:00:00Z'),
+        conditionMarks: [mark({ id: 'checkin', inspectionId: 'x', inspectionItemId: 'y' })],
+        bodyType: 'sedan',
+        conditionMapLabels: labels,
+      },
+      labels: {},
+    }) as any
+    expect(ids(spec)).not.toContain('condition_map')
   })
 })

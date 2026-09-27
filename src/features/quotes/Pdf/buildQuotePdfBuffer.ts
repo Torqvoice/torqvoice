@@ -30,6 +30,7 @@ import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 /** What the quote number is when the workshop's numbering never gave it one. */
 export function quoteNumberOf(quote: { id: string; quoteNumber?: string | null }): string {
@@ -44,7 +45,15 @@ const QUOTE_INCLUDE = {
     select: { name: true, email: true, phone: true, address: true, company: true, taxId: true },
   },
   vehicle: {
-    select: { make: true, model: true, year: true, vin: true, licensePlate: true },
+    select: {
+      make: true,
+      model: true,
+      year: true,
+      vin: true,
+      licensePlate: true,
+      hsn: true,
+      tsn: true,
+    },
   },
 } as const
 
@@ -157,7 +166,10 @@ export async function buildQuotePdfBuffer(
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
-    data: quote,
+    data: {
+      ...quote,
+      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+    },
     workshop: {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',

@@ -180,6 +180,8 @@
       "transmission": "Cambio",
       "engineSize": "Cilindrata",
       "engineCode": "Codice motore",
+      "hsn": "HSN (codice costruttore)",
+      "tsn": "TSN (codice tipo)",
       "purchaseDate": "Data di acquisto",
       "purchasePrice": "Prezzo di acquisto"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Manca il nome del cliente",
     "invalid_email": "L'email \"{value}\" non è valida ed è stata omessa",
     "invalid_vin": "Il VIN \"{value}\" non è di 17 caratteri; conservato così com'è",
+    "invalid_type_key": "{field} \"{value}\" non è un HSN o TSN valido; omesso",
     "vehicle_make_model_required": "Mancano marca e modello",
     "vehicle_year_required": "Manca l'anno",
     "vehicle_year_invalid": "L'anno \"{value}\" non è un anno valido",

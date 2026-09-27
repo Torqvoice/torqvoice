@@ -20,6 +20,7 @@ import { inspectionPrintLabels } from '@/features/inspections/Lib/inspectionLabe
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -68,6 +69,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               model: true,
               year: true,
               vin: true,
+              hsn: true,
+              tsn: true,
               licensePlate: true,
               mileage: true,
               customer: { select: { name: true, email: true, phone: true } },
@@ -156,7 +159,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const documents = certificateDocuments(inspection.attachments)
 
     const element = React.createElement(InspectionPDF, {
-      data: inspection,
+      data: {
+        ...inspection,
+        vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+      },
       workshop: {
         name: org?.name || '',
         address: settingsMap['workshop.address'] || '',

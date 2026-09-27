@@ -143,6 +143,7 @@
     "failedToLoad": "Nie udało się załadować pojazdów.",
     "plate": "Tablica: {plate}",
     "vin": "VIN: {vin}",
+    "typeKey": "HSN/TSN: {typeKey}",
     "serviceCount": "{count, plural, one {# usługa} few {# usługi} many {# usług} other {# usług}}",
     "inspectionCount": "{count, plural, one {# inspekcja} few {# inspekcje} many {# inspekcji} other {# inspekcji}}",
     "serviceHistory": "Historia serwisowa ({count})",

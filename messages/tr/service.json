@@ -56,6 +56,12 @@
     "designPickConfirm": "Tasarımı değiştir",
     "designPickDone": "Fatura artık {name} tasarımıyla yazdırılıyor",
     "designPickFailed": "Tasarım değiştirilemedi",
+    "designRefresh": "Güncel bilgilere güncelle",
+    "designRefreshConfirmTitle": "Bu fatura güncel bilgilere güncellensin mi?",
+    "designRefreshConfirmBody": "Atölye bilgileri, müşteri, araç, ödeme koşulları ve tasarım bugünkü halleriyle yeniden okunur ve fatura bunlara kilitlenir. Satırlar ve toplamlar faturanın kendisine aittir ve değişmez. Daha önce indirilen veya e-postayla gönderilen kopyalar olduğu gibi kalır; paylaşım bağlantısı ve portal güncellenmiş faturayı gösterir. Bu işlem geri alınamaz.",
+    "designRefreshConfirm": "Faturayı güncelle",
+    "designRefreshDone": "Bu fatura artık güncel bilgilerle yazdırılıyor",
+    "designRefreshFailed": "Fatura güncellenemedi",
     "printWorkOrder": "İş emrini yazdır"
   },
   "basicInfo": {

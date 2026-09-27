@@ -24,6 +24,7 @@ import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
+import { TypeKeyProvider } from '@/components/type-key-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
 import {
   LICENSE_TOKEN_MAX_AGE_DAYS,
@@ -261,112 +262,114 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <ServiceTypeProvider serviceType={data.serviceType}>
-      <LicenseExpiryProvider
-        daysUntilExpiry={daysUntilExpiry}
-        unverifiedDaysLeft={unverifiedDaysLeft}
-        dismissed={licenseExpiryDismissed}
-      >
-        <WhiteLabelCtaProvider show={showWhiteLabelCta}>
-          {/* Accent line along the very top of the viewport — the card hairline at
+      <TypeKeyProvider enabled={data.typeKeyEnabled}>
+        <LicenseExpiryProvider
+          daysUntilExpiry={daysUntilExpiry}
+          unverifiedDaysLeft={unverifiedDaysLeft}
+          dismissed={licenseExpiryDismissed}
+        >
+          <WhiteLabelCtaProvider show={showWhiteLabelCta}>
+            {/* Accent line along the very top of the viewport — the card hairline at
         page scale: primary on the left, gone by the far edge. Marks where the
         app begins against the browser chrome. */}
-          <div
-            aria-hidden
-            className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
-          />
-          {/* Watches for a notice posted while this page is already open. Here
+            <div
+              aria-hidden
+              className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
+            />
+            {/* Watches for a notice posted while this page is already open. Here
               rather than beside the banner because the socket authenticates on
               the session cookie, which the sign-in page does not have. */}
-          <BroadcastLive />
-          {/* The demo banner already occupies the header, and demo image tags
+            <BroadcastLive />
+            {/* The demo banner already occupies the header, and demo image tags
         (demo-abc1234) are not versions a visitor should be notified about. */}
-          {!isDemoMode && (
-            <UpdateBanner
-              currentVersion={process.env.APP_VERSION || 'development'}
-              lastSeenVersion={data.lastSeenVersion}
-              shownVersion={data.updateBannerVersion}
-              shownAt={data.updateBannerShownAt?.toISOString() ?? null}
-              releaseNotesUrl={
-                process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
+            {!isDemoMode && (
+              <UpdateBanner
+                currentVersion={process.env.APP_VERSION || 'development'}
+                lastSeenVersion={data.lastSeenVersion}
+                shownVersion={data.updateBannerVersion}
+                shownAt={data.updateBannerShownAt?.toISOString() ?? null}
+                releaseNotesUrl={
+                  process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
+                }
+              />
+            )}
+            <SidebarProvider
+              defaultOpen={sidebarOpen}
+              style={
+                {
+                  '--sidebar-width': '19rem',
+                } as React.CSSProperties
               }
-            />
-          )}
-          <SidebarProvider
-            defaultOpen={sidebarOpen}
-            style={
-              {
-                '--sidebar-width': '19rem',
-              } as React.CSSProperties
-            }
-          >
-            <DateSettingsProvider
-              dateFormat={data.dateFormat}
-              timeFormat={data.timeFormat}
-              timezone={data.timezone}
-              weekStartDay={data.weekStartDay}
             >
-              <CurrencySettingsProvider
-                currencyCode={data.currencyCode}
-                currencyFormat={data.currencyFormat}
+              <DateSettingsProvider
+                dateFormat={data.dateFormat}
+                timeFormat={data.timeFormat}
+                timezone={data.timezone}
+                weekStartDay={data.weekStartDay}
               >
-                <ConfirmProvider>
-                  <PlateLookupProvider
-                    value={{
-                      available: plateLookupAvailable,
-                      canCreate: canCreateVehicles,
-                      registryName: plateLookupRegistry,
-                    }}
-                  >
-                    <FeatureHintProvider
-                      initialSeen={seenHints}
-                      pending={[...pendingHints, ...announcements]}
+                <CurrencySettingsProvider
+                  currencyCode={data.currencyCode}
+                  currencyFormat={data.currencyFormat}
+                >
+                  <ConfirmProvider>
+                    <PlateLookupProvider
+                      value={{
+                        available: plateLookupAvailable,
+                        canCreate: canCreateVehicles,
+                        registryName: plateLookupRegistry,
+                      }}
                     >
-                      {/* One socket for the whole app: record changes, who
+                      <FeatureHintProvider
+                        initialSeen={seenHints}
+                        pending={[...pendingHints, ...announcements]}
+                      >
+                        {/* One socket for the whole app: record changes, who
                           else is on a record, and the older workshop-wide
                           channels the remaining pages still read. */}
-                      <RealtimeProvider>
-                        <TimeClockProvider technicianIds={technicianIds}>
-                          <AppSidebar
-                            companyLogo={data.companyLogo}
-                            organizations={data.organizations}
-                            activeOrgId={data.organizationId}
-                            isSuperAdmin={data.isSuperAdmin}
-                            features={features}
-                            tireHotelEnabled={tireHotelEnabled}
-                            aiEnabled={aiEnabled}
-                            visibleSubjects={visibleSubjects}
-                            announcement={announcements[0] ?? null}
-                            isAdminOrOwner={isOwnerOrAdmin}
-                            counts={sidebarCounts}
-                            isTechnician={technicianIds.length > 0}
-                          />
-                          <SidebarInset>
-                            {/* A flex column with a real height, so the `flex-1` every
+                        <RealtimeProvider>
+                          <TimeClockProvider technicianIds={technicianIds}>
+                            <AppSidebar
+                              companyLogo={data.companyLogo}
+                              organizations={data.organizations}
+                              activeOrgId={data.organizationId}
+                              isSuperAdmin={data.isSuperAdmin}
+                              features={features}
+                              tireHotelEnabled={tireHotelEnabled}
+                              aiEnabled={aiEnabled}
+                              visibleSubjects={visibleSubjects}
+                              announcement={announcements[0] ?? null}
+                              isAdminOrOwner={isOwnerOrAdmin}
+                              counts={sidebarCounts}
+                              isTechnician={technicianIds.length > 0}
+                            />
+                            <SidebarInset>
+                              {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                            <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
-                              {children}
-                            </div>
-                          </SidebarInset>
-                          <SearchCommand />
-                          <PlateLookupCommand />
-                          {isOwnerOrAdmin && <NotificationInitializer />}
-                          <OnlineTracker />
-                          <InstallBanner />
-                        </TimeClockProvider>
-                      </RealtimeProvider>
-                    </FeatureHintProvider>
-                  </PlateLookupProvider>
-                </ConfirmProvider>
-              </CurrencySettingsProvider>
-            </DateSettingsProvider>
-          </SidebarProvider>
-          <MobileBottomNav isSuperAdmin={data.isSuperAdmin} tireHotelEnabled={tireHotelEnabled} />
-          {supportEnabled && <SupportBubble />}
-        </WhiteLabelCtaProvider>
-      </LicenseExpiryProvider>
+                              <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
+                                {children}
+                              </div>
+                            </SidebarInset>
+                            <SearchCommand />
+                            <PlateLookupCommand />
+                            {isOwnerOrAdmin && <NotificationInitializer />}
+                            <OnlineTracker />
+                            <InstallBanner />
+                          </TimeClockProvider>
+                        </RealtimeProvider>
+                      </FeatureHintProvider>
+                    </PlateLookupProvider>
+                  </ConfirmProvider>
+                </CurrencySettingsProvider>
+              </DateSettingsProvider>
+            </SidebarProvider>
+            <MobileBottomNav isSuperAdmin={data.isSuperAdmin} tireHotelEnabled={tireHotelEnabled} />
+            {supportEnabled && <SupportBubble />}
+          </WhiteLabelCtaProvider>
+        </LicenseExpiryProvider>
+      </TypeKeyProvider>
     </ServiceTypeProvider>
   )
 }

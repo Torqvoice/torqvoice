@@ -56,6 +56,12 @@
     "designPickConfirm": "Mudar o design",
     "designPickDone": "A fatura passa a ser impressa com {name}",
     "designPickFailed": "Não foi possível alterar o design",
+    "designRefresh": "Atualizar para os dados atuais",
+    "designRefreshConfirmTitle": "Atualizar esta fatura para os dados atuais?",
+    "designRefreshConfirmBody": "Os dados da oficina, o cliente, o veículo, as condições de pagamento e o design são lidos de novo tal como estão hoje, e a fatura fica bloqueada a eles. As linhas e os totais pertencem à própria fatura e não mudam. As cópias já transferidas ou enviadas por e-mail ficam como estavam; a ligação de partilha e o portal mostram a fatura atualizada. Isto não pode ser anulado.",
+    "designRefreshConfirm": "Atualizar a fatura",
+    "designRefreshDone": "Esta fatura passa a ser impressa com os dados atuais",
+    "designRefreshFailed": "Não foi possível atualizar a fatura",
     "printWorkOrder": "Imprimir ordem de trabalho"
   },
   "basicInfo": {

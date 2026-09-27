@@ -22,6 +22,7 @@ import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { auditDetails } from '@/lib/audit'
 import { releaseFiles } from '@/lib/files/manager'
 import { tireSetFileUrls } from '@/lib/files/collect'
+import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const CREATE = [{ action: PermissionAction.CREATE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -181,6 +182,7 @@ export async function getTireSetsPaginated(params: {
           { location: { code: { contains: q, mode } } },
           { customer: { name: { contains: q, mode } } },
           { vehicle: { licensePlate: { contains: q, mode } } },
+          ...(await typeKeySearch(organizationId, q)).map((vehicle) => ({ vehicle })),
           { vehicle: { make: { contains: q, mode } } },
           { vehicle: { model: { contains: q, mode } } },
         ]
