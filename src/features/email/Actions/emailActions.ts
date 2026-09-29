@@ -2,14 +2,6 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
-import React from 'react'
-import { readFile } from 'fs/promises'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
-import { getFeatures } from '@/lib/features'
-import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import { requireFeature } from '@/lib/features'
@@ -18,13 +10,16 @@ import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { renderInvoicePdf } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
 import { buildQuotePdfBuffer } from '@/features/quotes/Pdf/buildQuotePdfBuffer'
+import {
+  buildCustomerCertificatePdf,
+  linkedCertificateAttachment,
+} from '@/features/inspections/Pdf/customerCertificatePdf'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { randomUUID } from 'crypto'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
 import type { VehicleContext } from '@/features/email/Lib/emailContext'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
-import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 /** Whoever pressed send, for a template that signs off with a name. */
 async function senderName(userId: string): Promise<string | null> {
@@ -92,26 +87,6 @@ async function getWorkshopSettings(organizationId: string) {
   return map
 }
 
-async function loadLogoDataUri(logoPath: string | undefined): Promise<string | undefined> {
-  if (!logoPath) return undefined
-  try {
-    const fullPath = resolveUploadPath(logoPath)
-    const logoBuffer = await readFile(fullPath)
-    const ext = logoPath.split('.').pop()?.toLowerCase() || 'png'
-    const mimeMap: Record<string, string> = {
-      png: 'image/png',
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      webp: 'image/webp',
-      svg: 'image/svg+xml',
-    }
-    const mime = mimeMap[ext] || 'image/png'
-    return `data:${mime};base64,${logoBuffer.toString('base64')}`
-  } catch {
-    return undefined
-  }
-}
-
 export async function sendQuoteEmail(input: {
   quoteId: string
   recipientEmail: string
@@ -164,6 +139,10 @@ export async function sendQuoteEmail(input: {
         if (!rendered) throw new Error('Quote not found')
         pdfBuffer = Buffer.from(rendered.buffer)
       }
+      // The certificate of the inspection the quote came from goes with it.
+      const certificate = attachPdf
+        ? await linkedCertificateAttachment(organizationId, quote.inspectionId, locale)
+        : null
       const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
 
       // The quote mail carried no link at all before, which left a link-only
@@ -181,7 +160,12 @@ export async function sendQuoteEmail(input: {
         kind: 'quote_sent',
         to: recipientEmail,
         attached: attachPdf,
-        attachments: pdfBuffer ? [{ filename: `${quoteNum}.pdf`, content: pdfBuffer }] : undefined,
+        attachments: pdfBuffer
+          ? [
+              { filename: `${quoteNum}.pdf`, content: pdfBuffer },
+              ...(certificate ? [certificate] : []),
+            ]
+          : undefined,
         context: {
           customerName: quote.customer?.name,
           vehicle: quote.vehicle,
@@ -316,6 +300,10 @@ export async function sendInvoiceEmail(input: {
         // link, the Telegram code and the Torqvoice mark.
         pdfBuffer = Buffer.from(await renderInvoicePdf(assembly, locale))
       }
+      // The certificate of the inspection linked to the job goes with it.
+      const certificate = attachPdf
+        ? await linkedCertificateAttachment(organizationId, record.inspectionId, locale)
+        : null
       const invoiceNum = invoiceNumberOf(record)
 
       // Without the PDF the link is the whole mail, so one is minted here for
@@ -338,7 +326,10 @@ export async function sendInvoiceEmail(input: {
         locale,
         attached: attachPdf,
         attachments: pdfBuffer
-          ? [{ filename: `${invoiceNum}.pdf`, content: pdfBuffer }]
+          ? [
+              { filename: `${invoiceNum}.pdf`, content: pdfBuffer },
+              ...(certificate ? [certificate] : []),
+            ]
           : undefined,
         context: {
           customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
@@ -394,32 +385,26 @@ export async function sendInspectionEmail(input: {
 
       const { inspectionId, recipientEmail, message } = input
 
-      const [inspection, org] = await Promise.all([
-        db.inspection.findFirst({
-          where: { id: inspectionId, organizationId },
-          include: {
-            vehicle: {
-              select: {
-                make: true,
-                model: true,
-                year: true,
-                vin: true,
-                licensePlate: true,
-                hsn: true,
-                tsn: true,
-                mileage: true,
-                customer: { select: { name: true, email: true, phone: true } },
-              },
+      // The mail's own details; the certificate reads the rest itself.
+      const inspection = await db.inspection.findFirst({
+        where: { id: inspectionId, organizationId },
+        select: {
+          publicToken: true,
+          vehicle: {
+            select: {
+              make: true,
+              model: true,
+              year: true,
+              vin: true,
+              licensePlate: true,
+              hsn: true,
+              tsn: true,
+              mileage: true,
+              customer: { select: { name: true, email: true, phone: true } },
             },
-            template: { select: { name: true } },
-            items: { orderBy: { sortOrder: 'asc' } },
           },
-        }),
-        db.organization.findUnique({
-          where: { id: organizationId },
-          select: { name: true },
-        }),
-      ])
+        },
+      })
       if (!inspection) throw new Error('Inspection not found')
 
       const settings = await getWorkshopSettings(organizationId)
@@ -428,53 +413,24 @@ export async function sendInspectionEmail(input: {
       }
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
-      const logoDataUri = await loadLogoDataUri(settings['workshop.logo'])
-
-      const template = {
-        primaryColor: settings['invoice.primaryColor'] || '#d97706',
-        backgroundColor: settings['invoice.backgroundColor'] || undefined,
-        textColor: settings['invoice.textColor'] || undefined,
-        companyTextColor: settings['invoice.companyTextColor'] || undefined,
-        frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
-        frameShadow: settings['invoice.frameShadow'],
-        frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
-          | 'left'
-          | 'right',
-        fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
-        showLogo: settings['invoice.showLogo'] !== 'false',
-        showCompanyName: settings['invoice.showCompanyName'] !== 'false',
-        headerStyle: settings['invoice.headerStyle'] || 'standard',
-      }
+      // One language for the certificate's labels and the mail around it.
+      const locale = await resolveCustomerLocale(organizationId, null)
 
       const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
       const fileName = `Inspection-${vehicleName}.pdf`
 
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {
-        const features = await getFeatures(organizationId)
-        let torqvoiceLogoDataUri: string | undefined
-        if (!features.brandingRemoved) {
-          torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
-        }
-
-        const element = React.createElement(InspectionPDF, {
-          data: {
-            ...inspection,
-            vehicle: gateTypeKey(inspection.vehicle, await isTypeKeyEnabled(organizationId)),
-          },
-          workshop: {
-            name: org?.name || '',
-            address: settings['workshop.address'] || '',
-            phone: settings['workshop.phone'] || '',
-            email: settings['workshop.email'] || '',
-          },
-          logoDataUri,
-          torqvoiceLogoDataUri,
-          dateFormat: settings['workshop.dateFormat'] || undefined,
-          timezone: settings['workshop.timezone'] || undefined,
-          template,
-        }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
-        pdfBuffer = Buffer.from(await renderToBuffer(element))
+        // The certificate the download and the share link give: the
+        // workshop's design when it has one, the built-in sheet otherwise.
+        // Rendered on its own here, the mail always sent the built-in sheet.
+        const certificate = await buildCustomerCertificatePdf({
+          inspectionId,
+          organizationId,
+          locale,
+        })
+        if (!certificate) throw new Error('Inspection not found')
+        pdfBuffer = Buffer.from(certificate.body)
       }
 
       // Without the PDF the link is the whole mail, so one is minted for an
@@ -493,6 +449,7 @@ export async function sendInspectionEmail(input: {
       await sendTemplatedMail(organizationId, {
         kind: 'inspection_sent',
         to: recipientEmail,
+        locale,
         attached: attachPdf,
         attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
         context: {

@@ -232,6 +232,7 @@
     "portalMessage": "Bekijk uw voertuigen, facturen en meer in uw",
     "customerPortal": "klantenportaal",
     "telegramConnect": "Chat met ons op Telegram",
-    "telegramScan": "Scan deze QR-code om ons een bericht te sturen op Telegram voor updates en ondersteuning."
+    "telegramScan": "Scan deze QR-code om ons een bericht te sturen op Telegram voor updates en ondersteuning.",
+    "downloadCertificate": "Keuringsrapport downloaden"
   }
 }

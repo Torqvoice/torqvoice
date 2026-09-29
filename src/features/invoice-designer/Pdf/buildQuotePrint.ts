@@ -26,6 +26,10 @@ import {
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import {
+  type VisitConditionMap,
+  visitConditionMapForPrint,
+} from '@/features/condition-map/Lib/print'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -113,6 +117,8 @@ export interface QuotePrintInput {
   layoutConfig?: InvoiceLayoutConfig
   /** Print each line with tax included, and say how much of the subtotal is tax. */
   lineItemsInclTax?: boolean
+  /** The car's condition as the inspection the quote came from found it. */
+  conditionMap?: VisitConditionMap
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -361,6 +367,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
     warranty: warrantyForPrint(data, { labels, unitSystem: input.unitSystem }),
     payment: [],
+    conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
     signature: {
@@ -378,6 +385,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
+      condition_map: L('conditionMapTitle', 'Vehicle condition'),
     },
   }
 

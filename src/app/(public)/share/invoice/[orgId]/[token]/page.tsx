@@ -5,6 +5,8 @@ import { getFeatures } from '@/lib/features'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { visitConditionMapIn } from '@/features/condition-map/Lib/labels'
+import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
 import { assembleInvoicePrint } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
@@ -110,7 +112,11 @@ export default async function PublicInvoicePage({
 
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
-  const labels = await loadPrintLabels(locale, assembly.labelSettings)
+  const [labels, conditionMap, certificateInspection] = await Promise.all([
+    loadPrintLabels(locale, assembly.labelSettings),
+    visitConditionMapIn(assembly.conditionMap, locale),
+    linkedCertificateInspectionId(orgId, record.inspectionId),
+  ])
 
   // The Telegram code sits in the sheet, where the PDF prints it, so the
   // shared copy and the download are the same document.
@@ -131,6 +137,7 @@ export default async function PublicInvoicePage({
     telegramQrDataUri: telegramQr?.dataUri,
     telegramLabel: labels?.telegramConnect,
     labels,
+    conditionMap,
   })
 
   const termsOfSaleUrl =
@@ -169,6 +176,11 @@ export default async function PublicInvoicePage({
       findings={assembly.data.findings}
       serviceType={assembly.serviceType}
       taxLabel={assembly.taxLabel}
+      certificateUrl={
+        certificateInspection
+          ? `/api/public/share/invoice/${orgParam}/${token}/certificate`
+          : undefined
+      }
     />
   )
 }

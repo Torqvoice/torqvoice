@@ -38,6 +38,7 @@
   "readOnly": "Zum Ändern der Zustandskarte wieder öffnen.",
   "count": "{count, plural, =0 {Keine Markierungen} one {# Markierung} other {# Markierungen}}",
   "previousCount": "{count, plural, one {# von einem früheren Besuch} other {# von früheren Besuchen}}",
+  "fromInspection": "Aus der verknüpften Inspektion, dort änderbar",
   "elsewhere": "{count, plural, one {# Markierung wurde auf einer anderen Karosserie gesetzt und erscheint nur im Ausdruck} other {# Markierungen wurden auf einer anderen Karosserie gesetzt und erscheinen nur im Ausdruck}}",
   "photoCount": "{count, plural, one {# Foto} other {# Fotos}}",
   "clearBody": "Markierung {n} an {area} wird als repariert vermerkt. Sie bleibt in der Historie und wird nicht mehr gedruckt.",

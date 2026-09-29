@@ -103,6 +103,7 @@
     "payment": "Betaling",
     "view": "Bekijken",
     "download": "Downloaden",
+    "downloadCertificate": "Keuringsrapport downloaden",
     "paid": "betaald",
     "partial": "gedeeltelijk",
     "unpaid": "onbetaald",

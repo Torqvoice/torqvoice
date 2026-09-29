@@ -66,9 +66,11 @@ export interface WorkOrderJob {
   printedAt: Date
   /**
    * The vehicle's condition marks: what the customer acknowledges was there
-   * at drop-off. Every open mark prints, this job's own in colour.
+   * at drop-off. This visit's print in colour, earlier open ones in grey.
    */
   conditionMarks?: ConditionMarkData[]
+  /** The inspection linked to the job, whose marks are this visit's too. */
+  linkedInspectionId?: string | null
   bodyType?: string | null
   conditionMapLabels?: ConditionMapLabels
 }
@@ -362,18 +364,18 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
 
-  // The car's condition as this job recorded it at drop-off. Marks from
-  // earlier visits ride along in grey when the section allows them, but
-  // only beside this job's own: a work order whose drop-off noted nothing
-  // prints no map at all, rather than the last check-in's findings under
-  // its own heading.
+  // The car's condition as this visit recorded it: the job's drop-off and
+  // the inspection linked to it. Marks from earlier visits ride along in grey
+  // when the section allows them, but only beside this visit's own: a job
+  // that noted nothing prints no map at all, rather than an unrelated
+  // check-in's findings under its own heading.
   const mapSection = layout.sections.find((s) => s.id === 'condition_map')
   const conditionMap =
     job.conditionMarks && job.conditionMapLabels
       ? conditionMapForPrint({
           bodyType: job.bodyType,
           marks: job.conditionMarks,
-          scope: { serviceRecordId: data.id },
+          scope: { serviceRecordId: data.id, linkedInspectionId: job.linkedInspectionId },
           requireOwn: true,
           includePrevious:
             mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,

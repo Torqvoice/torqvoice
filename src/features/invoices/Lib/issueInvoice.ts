@@ -6,6 +6,7 @@ import {
 } from '@/features/invoice-designer/Lib/designSnapshots'
 import { assembleInvoicePrint, type InvoicePrintAssembly } from './assembleInvoicePrint'
 import {
+  freezeConditionMap,
   ISSUED_INVOICE_VERSION,
   shouldIssue,
   type IssueReason,
@@ -57,6 +58,7 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
       value: cf.value,
       fieldType: cf.fieldType,
     })),
+    conditionMap: freezeConditionMap(a.conditionMap),
   }
 }
 

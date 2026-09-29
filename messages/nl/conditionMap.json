@@ -38,6 +38,7 @@
   "readOnly": "Heropen om de staatkaart te wijzigen.",
   "count": "{count, plural, =0 {Geen markeringen} one {# markering} other {# markeringen}}",
   "previousCount": "{count, plural, one {# van een eerder bezoek} other {# van eerdere bezoeken}}",
+  "fromInspection": "Uit de gekoppelde inspectie, daar te wijzigen",
   "elsewhere": "{count, plural, one {# markering is op een andere carrosserie gezet en staat alleen op de afdruk} other {# markeringen zijn op een andere carrosserie gezet en staan alleen op de afdruk}}",
   "photoCount": "{count, plural, one {# foto} other {# foto's}}",
   "clearBody": "Markering {n} op {area} wordt als hersteld vastgelegd. Hij blijft in de historie en wordt niet meer afgedrukt.",

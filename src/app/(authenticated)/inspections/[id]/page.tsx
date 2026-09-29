@@ -12,7 +12,7 @@ import {
 } from '@/features/inspections/Components/InspectionPageClient'
 import { PageHeader } from '@/components/page-header'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
 import { getFeatures } from '@/lib/features'
 import { redirect } from 'next/navigation'
 

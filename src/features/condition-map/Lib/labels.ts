@@ -1,4 +1,5 @@
-import type { ConditionMapLabels } from './print'
+import type { ConditionMarkData } from './marks'
+import type { ConditionMapLabels, VisitConditionMap } from './print'
 
 /**
  * The words of the condition map, from a locale's `conditionMap.json`: the
@@ -35,4 +36,16 @@ export function conditionMapLabelsFrom(messages: ConditionMapMessages): Conditio
 
 export async function loadConditionMapLabels(locale: string): Promise<ConditionMapLabels> {
   return conditionMapLabelsFrom(await loadConditionMapMessages(locale))
+}
+
+/**
+ * A visit's marks with the words to print them in, in the reader's language,
+ * or nothing when the visit noted none. Loaded only when there is a map.
+ */
+export async function visitConditionMapIn(
+  map: { marks: ConditionMarkData[]; bodyType: string | null } | null | undefined,
+  locale: string
+): Promise<VisitConditionMap | undefined> {
+  if (!map || map.marks.length === 0) return undefined
+  return { ...map, labels: await loadConditionMapLabels(locale) }
 }

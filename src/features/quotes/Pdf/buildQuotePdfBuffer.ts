@@ -23,6 +23,7 @@ import React from 'react'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
+import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -150,19 +151,21 @@ export async function buildQuotePdfBuffer(
     }
   }
 
-  const [labels, logoDataUri, features, customFields, layoutRow, signer] = await Promise.all([
-    // The same words the invoice and the public quote page use, marine
-    // vocabulary and the workshop's tax and registration captions included.
-    loadPrintLabels(locale, settingsMap, 'quote'),
-    logoDataUriFor(settingsMap),
-    getFeatures(organizationId),
-    getCustomFieldsForPrint(organizationId, quote.id, 'quote'),
-    db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId, key: 'quote.layoutConfig' } },
-    }),
-    // Whoever wrote the quote signs it.
-    documentSigner(organizationId, quote.userId),
-  ])
+  const [labels, logoDataUri, features, customFields, layoutRow, signer, conditionMap] =
+    await Promise.all([
+      // The same words the invoice and the public quote page use, marine
+      // vocabulary and the workshop's tax and registration captions included.
+      loadPrintLabels(locale, settingsMap, 'quote'),
+      logoDataUriFor(settingsMap),
+      getFeatures(organizationId),
+      getCustomFieldsForPrint(organizationId, quote.id, 'quote'),
+      db.appSetting.findUnique({
+        where: { organizationId_key: { organizationId, key: 'quote.layoutConfig' } },
+      }),
+      // Whoever wrote the quote signs it.
+      documentSigner(organizationId, quote.userId),
+      quoteConditionMap(organizationId, quote, locale),
+    ])
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
@@ -196,6 +199,7 @@ export async function buildQuotePdfBuffer(
     customFields,
     labels,
     layoutConfig: mergeWithDefaults(layoutRow?.value ? JSON.parse(layoutRow.value) : {}),
+    conditionMap,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
 

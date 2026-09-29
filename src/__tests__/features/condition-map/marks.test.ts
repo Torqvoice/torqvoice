@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest'
 import {
   bodyTypeFor,
   guessBodyType,
+  isDrawnOnSheet,
   markInputSchema,
   numberedMarks,
   splitMarks,
@@ -48,6 +49,29 @@ describe('condition marks', () => {
     const onJob = splitMarks(marks, { serviceRecordId: 's1' })
     expect(onJob.own.map((m) => m.id)).toEqual(['d'])
     expect(onJob.previous.map((m) => m.id)).toEqual(['a', 'b'])
+  })
+
+  it("counts the linked inspection's marks as the job's visit, but only the drop-off's as drawn on it", () => {
+    const marks = [
+      mark({ id: 'checkin', inspectionId: 'i1', inspectionItemId: 'c1' }),
+      mark({ id: 'older', inspectionId: 'i0', inspectionItemId: 'c0' }),
+      mark({ id: 'dropoff', serviceRecordId: 's1' }),
+      mark({ id: 'otherJob', serviceRecordId: 's0' }),
+    ]
+    const scope = { serviceRecordId: 's1', linkedInspectionId: 'i1' }
+    const onJob = splitMarks(marks, scope)
+    expect(onJob.own.map((m) => m.id)).toEqual(['checkin', 'dropoff'])
+    expect(onJob.previous.map((m) => m.id)).toEqual(['older', 'otherJob'])
+    expect(marks.filter((m) => isDrawnOnSheet(m, scope)).map((m) => m.id)).toEqual(['dropoff'])
+
+    // A quote has no drop-off: its visit is the inspection it came from.
+    const onQuote = splitMarks(marks, { linkedInspectionId: 'i1' })
+    expect(onQuote.own.map((m) => m.id)).toEqual(['checkin'])
+    expect(marks.filter((m) => isDrawnOnSheet(m, { linkedInspectionId: 'i1' }))).toEqual([])
+
+    // Nothing linked and no job: nothing is this visit's.
+    expect(splitMarks(marks, {}).own).toEqual([])
+    expect(splitMarks(marks, { serviceRecordId: null, linkedInspectionId: null }).own).toEqual([])
   })
 
   it('numbers marks by when they were recorded', () => {

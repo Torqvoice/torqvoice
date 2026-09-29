@@ -11,7 +11,7 @@ import { workOrderQrWanted } from '@/features/invoice-designer/Pdf/buildWorkOrde
 import type { WorkOrderJob } from '@/features/invoice-designer/Pdf/buildWorkOrderPrint'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { assembleInvoicePrint, designLook, type InvoicePrintAssembly } from './assembleInvoicePrint'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
 
 /**
  * A job as the work order sheet prints it.
@@ -45,6 +45,7 @@ export async function assembleWorkOrderPrint(
         status: true,
         customStatus: { select: { name: true } },
         workBay: { select: { name: true } },
+        inspectionId: true,
       },
     }),
     db.serviceConcern.findMany({
@@ -98,6 +99,7 @@ export async function assembleWorkOrderPrint(
       qrDataUri,
       printedAt: new Date(),
       conditionMarks,
+      linkedInspectionId: job?.inspectionId ?? null,
       bodyType: vehicle?.bodyType ?? null,
     },
   }

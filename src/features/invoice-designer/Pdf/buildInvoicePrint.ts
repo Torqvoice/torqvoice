@@ -32,6 +32,10 @@ import {
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import {
+  type VisitConditionMap,
+  visitConditionMapForPrint,
+} from '@/features/condition-map/Lib/print'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -59,6 +63,8 @@ export interface InvoicePrintInput {
   telegramQrDataUri?: string
   telegramLabel?: string
   labels?: Record<string, string>
+  /** The car's condition this visit, for a layout with Vehicle Condition on. */
+  conditionMap?: VisitConditionMap
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -445,6 +451,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
         : undefined,
     }),
     payment,
+    conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,
@@ -468,6 +475,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
+      condition_map: L('conditionMapTitle', 'Vehicle condition'),
     },
   }
 

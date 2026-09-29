@@ -228,6 +228,10 @@ export const BUILTIN_SECTIONS = [
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
+  // The car's condition this visit: the job's drop-off and the inspection
+  // linked to it. Off in every layout saved before it existed, so no sent
+  // invoice or quote gains a drawing by a deploy; on in a new one.
+  { id: 'condition_map', name: 'Vehicle Condition' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
   { id: 'labor_table', name: 'Labor Table' },
@@ -551,6 +555,9 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'condition_map',
 ])
 
+/** Sections with fields of their own that print no workshop-defined fields. */
+export const NO_CUSTOM_FIELD_SECTIONS = new Set<string>(['condition_map'])
+
 /** Sections that print inside a panel and can have it taken away. */
 export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
   'customer',
@@ -687,7 +694,7 @@ function getDefaultFieldsForSection(
     case 'job_details':
       return BUILTIN_JOB_DETAILS_FIELDS.map((f) => ({ id: f.id, visible: f.id !== 'work_bay' }))
     case 'condition_map':
-      return BUILTIN_CONDITION_MAP_FIELDS.map((f) => ({ id: f.id, visible: true }))
+      return builtinConditionMapFields(documentType).map((f) => ({ id: f.id, visible: true }))
     case 'footer':
       // Only the note and the portal link, which is the footer every existing
       // invoice already has. A work order is not sent, so no portal link.
@@ -739,6 +746,13 @@ const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
   'items_table',
   'signature',
 ])
+/**
+ * Sections an invoice or a quote gained after workshops had saved designs.
+ * A layout that does not mention one predates it, since the designer saves
+ * every section, and it arrives there switched off: a deploy does not change
+ * what a workshop's customers are sent. A new layout has it on.
+ */
+const ARRIVES_OFF_IN_SAVED_INVOICE_LAYOUTS = new Set<string>(['condition_map'])
 /** A signature line is a choice; most certificates are issued unsigned. */
 const HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS = new Set<string>(['slogan', 'signature'])
 /**
@@ -890,9 +904,23 @@ export function withLetterheadMark(
 // Field lookup helpers (for rendering)
 // ---------------------------------------------------------------------------
 
-/** Get all built-in field definitions for a section */
+/**
+ * The condition map's fields on a document. Earlier visits' marks are the
+ * work order's and the certificate's business: an invoice or a quote speaks
+ * about this visit only, so it has no switch for them.
+ */
+function builtinConditionMapFields(
+  documentType: LayoutDocumentType
+): ReadonlyArray<{ id: string; name: string }> {
+  return documentType === 'invoice' || documentType === 'quote'
+    ? BUILTIN_CONDITION_MAP_FIELDS.filter((f) => f.id !== 'previous_marks')
+    : BUILTIN_CONDITION_MAP_FIELDS
+}
+
+/** Get all built-in field definitions for a section, on a document of this type. */
 export function getBuiltinFieldsForSection(
-  sectionId: string
+  sectionId: string,
+  documentType: LayoutDocumentType = 'invoice'
 ): ReadonlyArray<{ id: string; name: string }> {
   switch (sectionId) {
     case 'customer':
@@ -922,7 +950,7 @@ export function getBuiltinFieldsForSection(
     case 'job_details':
       return BUILTIN_JOB_DETAILS_FIELDS
     case 'condition_map':
-      return BUILTIN_CONDITION_MAP_FIELDS
+      return builtinConditionMapFields(documentType)
     default:
       return []
   }
@@ -1026,7 +1054,12 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
         break
       }
     }
-    toInsert.push({ section: def, afterIdx: insertAfterIdx })
+    const arrivesOff =
+      documentType === 'invoice' && ARRIVES_OFF_IN_SAVED_INVOICE_LAYOUTS.has(def.id)
+    toInsert.push({
+      section: arrivesOff ? { ...def, visible: false } : def,
+      afterIdx: insertAfterIdx,
+    })
   }
   if (toInsert.length > 0) {
     // Insert in reverse so indices stay stable

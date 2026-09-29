@@ -88,15 +88,33 @@ export const markPatchSchema = z.object({
 })
 export type MarkPatch = z.infer<typeof markPatchSchema>
 
-/** Where a map is being drawn: an inspection check, or a work order's drop-off. */
+/**
+ * Which marks are this visit's: an inspection check's own, or a job's.
+ *
+ * A job's are the ones its drop-off recorded and the ones drawn on the
+ * inspection linked to it, since a check-in done as an inspection is the
+ * job's drop-off written on another form. A quote has no drop-off, so its
+ * visit is only the inspection it was raised from.
+ */
 export type MarkScope =
   | { inspectionId: string; inspectionItemId: string }
-  | { serviceRecordId: string }
+  | { serviceRecordId?: string | null; linkedInspectionId?: string | null }
 
-/** Whether a mark was drawn on this sheet rather than an earlier one. */
+/** Whether a mark is this visit's rather than one still open from an earlier one. */
 export function isOwnMark(mark: ConditionMarkData, scope: MarkScope): boolean {
   if ('inspectionItemId' in scope) return mark.inspectionItemId === scope.inspectionItemId
-  return mark.serviceRecordId === scope.serviceRecordId
+  if (scope.serviceRecordId && mark.serviceRecordId === scope.serviceRecordId) return true
+  return Boolean(scope.linkedInspectionId) && mark.inspectionId === scope.linkedInspectionId
+}
+
+/**
+ * Whether a mark was drawn on this very sheet, and so can be changed from it.
+ * A job's linked inspection counts as its visit but keeps its own marks: they
+ * are changed on the inspection, where the rules for a finished one apply.
+ */
+export function isDrawnOnSheet(mark: ConditionMarkData, scope: MarkScope): boolean {
+  if ('inspectionItemId' in scope) return mark.inspectionItemId === scope.inspectionItemId
+  return Boolean(scope.serviceRecordId) && mark.serviceRecordId === scope.serviceRecordId
 }
 
 /**

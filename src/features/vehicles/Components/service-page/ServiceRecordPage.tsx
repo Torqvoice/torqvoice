@@ -33,7 +33,7 @@ import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSetting
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { db } from '@/lib/db'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
@@ -365,6 +365,7 @@ export async function ServiceRecordPage({
               })
             )?.bodyType ?? null,
           marks: await loadVehicleConditionMarks(organizationId, vehicleId),
+          linkedInspectionId: record.inspection?.id ?? null,
         }
       : undefined
   const openObservations = vehicleId

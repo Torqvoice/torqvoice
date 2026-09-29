@@ -38,6 +38,7 @@
   "readOnly": "Reabra para alterar o mapa de estado.",
   "count": "{count, plural, =0 {Sem marcas} one {# marca} other {# marcas}}",
   "previousCount": "{count, plural, one {# de uma visita anterior} other {# de visitas anteriores}}",
+  "fromInspection": "Da inspeção vinculada; altere lá",
   "elsewhere": "{count, plural, one {# marca foi feita em outra carroceria e aparece só na impressão} other {# marcas foram feitas em outra carroceria e aparecem só na impressão}}",
   "photoCount": "{count, plural, one {# foto} other {# fotos}}",
   "clearBody": "A marca {n} em {area} será registrada como reparada. Ela fica no histórico e deixa de ser impressa.",

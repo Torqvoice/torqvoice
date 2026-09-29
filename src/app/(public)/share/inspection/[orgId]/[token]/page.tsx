@@ -12,7 +12,7 @@ import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { templateConfigFromSource } from '@/features/invoice-designer/Lib/designSource'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import { buildCertificatePrintSpec } from '@/features/inspections/Pdf/buildCertificatePrint'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
 import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
 import { certificateSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import {

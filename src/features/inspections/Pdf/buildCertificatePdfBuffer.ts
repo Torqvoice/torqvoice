@@ -15,7 +15,7 @@ import { CertificatePDF } from '../Components/CertificatePDF'
 import { appendCertificateDocuments, certificateDocuments } from '../Lib/certificateDocuments'
 import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspectionPhotos'
 import { certificateDesignSource, loadCertificateLabels } from './certificateDesign'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Actions/conditionMarkActions'
+import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
 import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 

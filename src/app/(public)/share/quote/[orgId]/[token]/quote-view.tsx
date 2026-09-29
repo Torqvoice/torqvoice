@@ -10,6 +10,7 @@ import {
   Loader2,
   MessageSquare,
   X,
+  FileCheck2,
 } from 'lucide-react'
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
@@ -169,6 +170,7 @@ export function QuoteView({
   currencyFormat = 'symbol',
   orgId,
   token,
+  certificateUrl,
   logoUrl,
   showTorqvoiceBranding,
   dateFormat,
@@ -192,6 +194,8 @@ export function QuoteView({
   currencyFormat?: 'symbol' | 'code'
   orgId: string
   token: string
+  /** Where the linked inspection's certificate downloads, when there is one to give. */
+  certificateUrl?: string
   logoUrl?: string
   showTorqvoiceBranding?: boolean
   dateFormat?: string
@@ -344,21 +348,34 @@ export function QuoteView({
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <button
-          onClick={handleDownloadPDF}
-          disabled={downloading}
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-          style={{ backgroundColor: primaryColor }}
-        >
-          {downloading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
+        <div className="flex flex-wrap gap-2">
+          {/* The certificate of the inspection this document came with. */}
+          {certificateUrl && (
+            <a
+              href={certificateUrl}
+              className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium"
+              style={{ borderColor: primaryColor, color: primaryColor }}
+            >
+              <FileCheck2 className="h-4 w-4" />
+              {tc('downloadCertificate')}
+            </a>
           )}
-          {t('downloadPdf')}
-        </button>
+          <button
+            onClick={handleDownloadPDF}
+            disabled={downloading}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            style={{ backgroundColor: primaryColor }}
+          >
+            {downloading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            {t('downloadPdf')}
+          </button>
+        </div>
       </div>
 
       {/* The saved design, drawn by the same engine as the designer and the

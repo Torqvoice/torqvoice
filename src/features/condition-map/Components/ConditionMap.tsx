@@ -32,6 +32,8 @@ export interface MapMark {
   severity: string
   number: number
   previous: boolean
+  /** Drawn on another sheet, so it stays where it is: a job's linked inspection. */
+  fixed?: boolean
 }
 
 export interface MapTap {
@@ -124,7 +126,7 @@ export function ConditionMap({
   }
 
   const startDrag = (event: ReactPointerEvent<SVGGElement>, mark: MapMark) => {
-    if (readOnly || mark.previous) {
+    if (readOnly || mark.previous || mark.fixed) {
       onSelect?.(mark.id)
       return
     }
@@ -251,7 +253,7 @@ export function ConditionMap({
             })}
             className={cn(
               'outline-none',
-              readOnly || mark.previous ? 'cursor-pointer' : 'cursor-grab',
+              readOnly || mark.previous || mark.fixed ? 'cursor-pointer' : 'cursor-grab',
               drag?.id === mark.id && 'pointer-events-none cursor-grabbing'
             )}
             onPointerDown={(event) => startDrag(event, mark)}

@@ -103,6 +103,7 @@
     "payment": "Ödeme",
     "view": "Görüntüle",
     "download": "İndir",
+    "downloadCertificate": "Muayene raporunu indir",
     "paid": "ödendi",
     "partial": "kısmi",
     "unpaid": "ödenmedi",

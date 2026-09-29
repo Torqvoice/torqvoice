@@ -103,6 +103,7 @@
     "payment": "Pagamento",
     "view": "Ver",
     "download": "Transferir",
+    "downloadCertificate": "Transferir certificado de inspeção",
     "paid": "paga",
     "partial": "paga parcialmente",
     "unpaid": "por pagar",

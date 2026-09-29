@@ -40,6 +40,7 @@ import {
   type MarkScope,
   type MarkSeverity,
   bodyTypeFor,
+  isDrawnOnSheet,
   numberedMarks,
   splitMarks,
 } from '../Lib/marks'
@@ -88,6 +89,12 @@ export function ConditionMapCard({
   const numbered = useMemo(() => numberedMarks([...previous, ...own]), [previous, own])
   const numberOf = useMemo(() => new Map(numbered.map((m, i) => [m.id, i + 1])), [numbered])
   const ownIds = useMemo(() => new Set(own.map((m) => m.id)), [own])
+  // This visit's marks that another sheet holds: the job's linked inspection.
+  // They are drawn in colour with the job's own and changed on the inspection.
+  const elsewhereSheet = useMemo(
+    () => new Set(own.filter((m) => !isDrawnOnSheet(m, scope)).map((m) => m.id)),
+    [own, scope]
+  )
 
   const mapMarks: MapMark[] = numbered
     .filter((m) => m.bodyType === body)
@@ -100,6 +107,7 @@ export function ConditionMapCard({
       severity: m.severity,
       number: numberOf.get(m.id) ?? 0,
       previous: !ownIds.has(m.id),
+      fixed: elsewhereSheet.has(m.id),
     }))
   // Marks drawn on another body type cannot be placed on this drawing; they
   // still count and are still listed.
@@ -123,7 +131,10 @@ export function ConditionMapCard({
     startTransition(async () => {
       const result = await addConditionMark({
         vehicleId: vehicle.id,
-        ...scope,
+        // The sheet the mark is drawn on; a linked inspection only lends its marks.
+        ...('inspectionItemId' in scope
+          ? { inspectionId: scope.inspectionId, inspectionItemId: scope.inspectionItemId }
+          : { serviceRecordId: scope.serviceRecordId }),
         bodyType: body,
         view: tap.view,
         panel: tap.panel,
@@ -347,6 +358,7 @@ export function ConditionMapCard({
                       mark={mark}
                       number={numberOf.get(mark.id) ?? 0}
                       previous={false}
+                      fromInspection={elsewhereSheet.has(mark.id)}
                       onOpen={() => setEditingId(mark.id)}
                     />
                   ))}
@@ -397,7 +409,7 @@ export function ConditionMapCard({
             : null
         }
         open={editing !== null}
-        readOnly={readOnly || (editing ? !ownIds.has(editing.id) : false)}
+        readOnly={readOnly || (editing ? !isDrawnOnSheet(editing, scope) : false)}
         busy={pending}
         onChange={handleChange}
         onRemove={handleRemove}
@@ -459,12 +471,15 @@ function LegendRow({
   mark,
   number,
   previous,
+  fromInspection = false,
   onOpen,
   onClear,
 }: {
   mark: ConditionMarkData
   number: number
   previous: boolean
+  /** Recorded on the inspection linked to this job, and changed there. */
+  fromInspection?: boolean
   onOpen: () => void
   onClear?: () => void
 }) {
@@ -500,6 +515,9 @@ function LegendRow({
           </span>
           {mark.note && (
             <span className="block truncate text-xs text-muted-foreground">{mark.note}</span>
+          )}
+          {fromInspection && (
+            <span className="block text-[11px] text-muted-foreground">{t('fromInspection')}</span>
           )}
           {mark.imageUrls.length > 0 && (
             <span className="block text-[11px] text-muted-foreground">

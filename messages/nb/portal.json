@@ -103,6 +103,7 @@
     "payment": "Betaling",
     "view": "Se",
     "download": "Last ned",
+    "downloadCertificate": "Last ned kontrollseddel",
     "paid": "betalt",
     "partial": "delbetalt",
     "unpaid": "ubetalt",

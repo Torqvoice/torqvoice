@@ -75,6 +75,7 @@ describe('the sections a default sheet prints', () => {
       'customer',
       'vehicle',
       'service',
+      'condition_map',
       'parts_table',
       'labor_table',
       'findings',

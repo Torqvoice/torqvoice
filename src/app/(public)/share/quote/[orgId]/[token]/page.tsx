@@ -7,6 +7,8 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuotePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
+import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
@@ -205,7 +207,11 @@ export default async function PublicQuotePage({
   const pick = (key: string) => settingsMap[`quote.${key}`] || settingsMap[`invoice.${key}`]
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
-  const labels = await loadPrintLabels(locale, settingsMap, 'quote')
+  const [labels, conditionMap, certificateInspection] = await Promise.all([
+    loadPrintLabels(locale, settingsMap, 'quote'),
+    quoteConditionMap(orgId, quote, locale),
+    linkedCertificateInspectionId(orgId, quote.inspectionId),
+  ])
 
   const torqvoiceLogoDataUri = features.brandingRemoved
     ? undefined
@@ -242,6 +248,7 @@ export default async function PublicQuotePage({
     customFields,
     labels,
     layoutConfig,
+    conditionMap,
   })
 
   const appUrl = getAppBaseUrl()
@@ -272,6 +279,11 @@ export default async function PublicQuotePage({
       customFields={customFields}
       serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
       taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
+      certificateUrl={
+        certificateInspection
+          ? `/api/public/share/quote/${orgParam}/${token}/certificate`
+          : undefined
+      }
     />
   )
 }

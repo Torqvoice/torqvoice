@@ -279,9 +279,13 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                   }}
                 />
               ) : null
+            // A row moves to the next page whole. Split, its second half was
+            // laid out without the columns' widths and printed its cells
+            // shifted across the table.
             const body = (
               <View
                 key={`${row[node.columns[0].key]}-${i}`}
+                wrap={false}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'flex-start',

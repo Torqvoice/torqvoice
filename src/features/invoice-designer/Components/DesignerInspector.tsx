@@ -21,6 +21,8 @@ import {
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
+  layoutDocumentType,
+  NO_CUSTOM_FIELD_SECTIONS,
   unmentionedGrandfathered,
   isCustomFieldId,
   toCustomFieldId,
@@ -422,7 +424,7 @@ export function DesignerInspector({
      * The fields this section shows, resolved the way the generator resolves
      * them: no list of its own means every built-in field, visible.
      */
-    const builtins = getBuiltinFieldsForSection(section.id)
+    const builtins = getBuiltinFieldsForSection(section.id, layoutDocumentType(layout))
     const builtinIds = new Set(builtins.map((f) => f.id))
     const stored = (section.fields ?? builtins.map((f) => ({ id: f.id, visible: true }))) // A stored id no builtin list carries any more is a leftover, not a field.
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
@@ -441,9 +443,11 @@ export function DesignerInspector({
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The
     // same field can still be added to several sections.
-    const availableCustomFields = customFields.filter(
-      (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
-    )
+    const availableCustomFields = NO_CUSTOM_FIELD_SECTIONS.has(section.id)
+      ? []
+      : customFields.filter(
+          (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
+        )
     // The footer prints its mark only when the field is switched on, and the
     // controls that dress that mark follow it.
     const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)

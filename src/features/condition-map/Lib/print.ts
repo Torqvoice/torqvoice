@@ -16,7 +16,8 @@ import {
 /**
  * The condition map as a printed document draws it: the sheet of views with
  * the marks on it, and a legend that says what each number is. Shared by the
- * certificate, the work order and the designer's sample, so the three agree.
+ * certificate, the work order, the invoice, the quote and the designer's
+ * sample, so they all agree.
  */
 
 export interface ConditionMapLabels {
@@ -56,10 +57,9 @@ export interface ConditionMapPrintInput {
   /** Draw the marks still open from earlier visits, greyed. */
   includePrevious: boolean
   /**
-   * Draw nothing unless this sheet recorded a mark of its own. A work order
-   * has nothing to say about the car's condition until its drop-off notes
-   * one; printing only what earlier visits found made the sheet read as
-   * their report rather than this job's.
+   * Draw nothing unless this visit recorded a mark: the job's drop-off or
+   * the inspection linked to it. Printing only what earlier visits found
+   * made the sheet read as their report rather than this job's.
    */
   requireOwn?: boolean
   labels: ConditionMapLabels
@@ -68,12 +68,41 @@ export interface ConditionMapPrintInput {
 }
 
 /**
+ * What an invoice or a quote is handed to print the car's condition: the
+ * marks this visit recorded, already chosen, the drawing they are on and the
+ * words in the reader's language. Nothing from earlier visits: these
+ * documents speak about this one.
+ */
+export interface VisitConditionMap {
+  marks: ConditionMarkData[]
+  bodyType: string | null
+  labels: ConditionMapLabels
+}
+
+/** An invoice's or a quote's condition map, drawn as wide as the work order's. */
+export function visitConditionMapForPrint(
+  map: VisitConditionMap | undefined,
+  margin: number | undefined
+): ConditionMapPrint | null {
+  if (!map || map.marks.length === 0) return null
+  return conditionMapForPrint({
+    bodyType: map.bodyType,
+    marks: map.marks,
+    includePrevious: false,
+    labels: map.labels,
+    width: 515 - 2 * (margin ?? 40) + 80,
+  })
+}
+
+/**
  * The sheet and its legend, or null when there is nothing to show: no
  * marks at all, or none of this sheet's and the earlier ones switched off.
  */
 export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMapPrint | null {
   const body: BodyType = isBodyType(input.bodyType) ? input.bodyType : 'sedan'
-  const open = input.marks.filter((m) => !m.resolvedAt && m.bodyType === body)
+  // A mark drawn on another body type is still on the car: it is listed,
+  // though it has no place on this drawing. The map on screen says so.
+  const open = input.marks.filter((m) => !m.resolvedAt)
   const { own, previous } = input.scope
     ? splitMarks(open, input.scope)
     : { own: open, previous: [] as ConditionMarkData[] }
@@ -89,7 +118,7 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
   shown.forEach((mark, index) => {
     const n = index + 1
     const isPrevious = !ownIds.has(mark.id)
-    const at = isView(mark.view) ? markPosition(composition, mark) : null
+    const at = mark.bodyType === body && isView(mark.view) ? markPosition(composition, mark) : null
     if (at) {
       glyphs.push({
         x: at[0],

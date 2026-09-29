@@ -232,6 +232,7 @@
     "portalMessage": "View your vehicles, invoices, and more at your",
     "customerPortal": "customer portal",
     "telegramConnect": "Chat with us on Telegram",
-    "telegramScan": "Scan this QR code to message us on Telegram for updates and support."
+    "telegramScan": "Scan this QR code to message us on Telegram for updates and support.",
+    "downloadCertificate": "Download inspection certificate"
   }
 }

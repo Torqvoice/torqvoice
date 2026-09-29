@@ -432,6 +432,16 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       })
       if (!vehicle) throw new Error('Vehicle not found')
 
+      // The inspection the quote was raised from goes with it, so the job
+      // prints its marks and its invoice carries its certificate. Only when
+      // the job is for the car that was inspected.
+      const inspection = quote.inspectionId
+        ? await db.inspection.findFirst({
+            where: { id: quote.inspectionId, organizationId, vehicleId },
+            select: { id: true },
+          })
+        : null
+
       // Get settings for invoice number
       const [settings, org] = await Promise.all([
         db.appSetting.findMany({
@@ -487,6 +497,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             // which set it is for, and which shelf it sits on. Losing it here
             // would put the technician back to asking.
             tireSetId: quote.tireSetId,
+            inspectionId: inspection?.id ?? null,
             shopName: org?.name || undefined,
             invoiceNumber,
             subtotal: quote.subtotal,

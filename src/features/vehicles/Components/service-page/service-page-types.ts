@@ -84,8 +84,16 @@ export interface ServicePageClientProps {
   imageAttachmentsForManager: Attachment[]
   /** Photos of the car as it arrived, kept apart from the job's photos. */
   dropoffAttachments?: Attachment[]
-  /** The vehicle's condition map, for the drop-off card. Absent for a counter sale. */
-  conditionMap?: { vehicleId: string; bodyType: string | null; marks: ConditionMarkData[] }
+  /**
+   * The vehicle's condition map, for the drop-off card. Absent for a counter
+   * sale. The linked inspection's marks count as this visit's.
+   */
+  conditionMap?: {
+    vehicleId: string
+    bodyType: string | null
+    marks: ConditionMarkData[]
+    linkedInspectionId: string | null
+  }
   videoAttachments: Attachment[]
   documentAttachments: Attachment[]
   maxImagesPerService: number

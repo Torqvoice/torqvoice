@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 
 /**
  * What an issued invoice carries with it, beyond its own rows.
@@ -104,8 +105,96 @@ export const issuedInvoiceDataSchema = z
           .passthrough()
       )
       .optional(),
+    /**
+     * The car's condition this visit, as it was when issued. Absent on
+     * invoices issued before the invoice printed it, which print none.
+     */
+    conditionMap: z
+      .object({
+        bodyType: z.string().nullable().optional(),
+        marks: z.array(
+          z
+            .object({
+              id: z.string(),
+              bodyType: z.string(),
+              view: z.string(),
+              panel: z.string(),
+              x: z.number(),
+              y: z.number(),
+              kind: z.string(),
+              severity: z.string(),
+              note: z.string().nullable().optional(),
+              recordedAt: z.string(),
+            })
+            .passthrough()
+        ),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
   })
   .passthrough()
+
+/** The car's condition this visit, as an invoice prints it. */
+export type InvoiceConditionMap = { marks: ConditionMarkData[]; bodyType: string | null }
+
+type FrozenConditionMap = NonNullable<z.infer<typeof issuedInvoiceDataSchema>['conditionMap']>
+
+/**
+ * This visit's marks as the snapshot keeps them: where each was and what it
+ * said, so clearing a dent as repaired later does not change a sent invoice.
+ */
+export function freezeConditionMap(
+  map: InvoiceConditionMap | null | undefined
+): FrozenConditionMap | null {
+  if (!map || map.marks.length === 0) return null
+  return {
+    bodyType: map.bodyType,
+    marks: map.marks.map((m) => ({
+      id: m.id,
+      bodyType: m.bodyType,
+      view: m.view,
+      panel: m.panel,
+      x: m.x,
+      y: m.y,
+      kind: m.kind,
+      severity: m.severity,
+      note: m.note,
+      recordedAt: new Date(m.recordedAt).toISOString(),
+    })),
+  }
+}
+
+/**
+ * The frozen marks in the shape the print reads. An invoice issued before it
+ * printed the map has none, and never borrows today's marks.
+ */
+export function thawConditionMap(
+  frozen: FrozenConditionMap | null | undefined
+): InvoiceConditionMap | null {
+  if (!frozen || frozen.marks.length === 0) return null
+  return {
+    bodyType: frozen.bodyType ?? null,
+    marks: frozen.marks.map((m) => ({
+      id: m.id,
+      vehicleId: '',
+      inspectionId: null,
+      inspectionItemId: null,
+      serviceRecordId: null,
+      bodyType: m.bodyType,
+      view: m.view,
+      panel: m.panel,
+      x: m.x,
+      y: m.y,
+      kind: m.kind,
+      severity: m.severity,
+      note: m.note ?? null,
+      imageUrls: [],
+      recordedAt: m.recordedAt,
+      resolvedAt: null,
+    })),
+  }
+}
 
 type ParsedIssuedInvoiceData = z.infer<typeof issuedInvoiceDataSchema>
 

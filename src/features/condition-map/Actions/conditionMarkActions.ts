@@ -13,6 +13,7 @@ import {
   markPatchSchema,
   numberedMarks,
 } from '../Lib/marks'
+import { MARK_SELECT } from '../Lib/loadMarks.server'
 
 /**
  * The marks on a vehicle's condition map.
@@ -23,25 +24,6 @@ import {
  * that sheet: an inspection's marks need the inspections permission, a work
  * order's the services one.
  */
-
-const MARK_SELECT = {
-  id: true,
-  vehicleId: true,
-  inspectionId: true,
-  inspectionItemId: true,
-  serviceRecordId: true,
-  bodyType: true,
-  view: true,
-  panel: true,
-  x: true,
-  y: true,
-  kind: true,
-  severity: true,
-  note: true,
-  imageUrls: true,
-  recordedAt: true,
-  resolvedAt: true,
-} as const
 
 function subjectFor(scope: { inspectionId?: string | null; serviceRecordId?: string | null }) {
   return scope.inspectionId ? PermissionSubject.INSPECTIONS : PermissionSubject.SERVICES
@@ -62,19 +44,6 @@ export async function listVehicleConditionMarks(vehicleId: string) {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
     }
   )
-}
-
-/** The same list for a server component, which already knows the organization. */
-export async function loadVehicleConditionMarks(
-  organizationId: string,
-  vehicleId: string
-): Promise<ConditionMarkData[]> {
-  const rows = await db.conditionMark.findMany({
-    where: { vehicleId, organizationId },
-    select: MARK_SELECT,
-    orderBy: { recordedAt: 'asc' },
-  })
-  return numberedMarks(rows)
 }
 
 /**

@@ -103,6 +103,7 @@
     "payment": "Pago",
     "view": "Ver",
     "download": "Descargar",
+    "downloadCertificate": "Descargar informe de inspección",
     "paid": "pagado",
     "partial": "parcial",
     "unpaid": "sin pagar",

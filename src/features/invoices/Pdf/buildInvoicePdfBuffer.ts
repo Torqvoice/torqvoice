@@ -28,6 +28,7 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { visitConditionMapIn } from '@/features/condition-map/Lib/labels'
 import {
   assembleInvoicePrint,
   type InvoicePrintAssembly,
@@ -54,7 +55,10 @@ export async function renderInvoicePdf(
 ): Promise<Uint8Array> {
   const { organizationId: orgId, org, settingsMap, layoutConfig } = assembly
 
-  const labels = await loadPrintLabels(locale, assembly.labelSettings)
+  const [labels, conditionMap] = await Promise.all([
+    loadPrintLabels(locale, assembly.labelSettings),
+    visitConditionMapIn(assembly.conditionMap, locale),
+  ])
 
   // The mark comes off for the plans that paid to remove it.
   const features = await getFeatures(orgId)
@@ -86,6 +90,7 @@ export async function renderInvoicePdf(
     telegramQrDataUri: telegramQr?.dataUri,
     telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
     labels,
+    conditionMap,
     ...attachments,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any

@@ -232,6 +232,7 @@
     "portalMessage": "Peržiūrėkite savo transporto priemones, sąskaitas ir daugiau savo",
     "customerPortal": "kliento portale",
     "telegramConnect": "Susisiekite su mumis per Telegram",
-    "telegramScan": "Nuskaitykite šį QR kodą, kad parašytumėte mums per Telegram dėl atnaujinimų ir palaikymo."
+    "telegramScan": "Nuskaitykite šį QR kodą, kad parašytumėte mums per Telegram dėl atnaujinimų ir palaikymo.",
+    "downloadCertificate": "Atsisiųsti apžiūros pažymą"
   }
 }

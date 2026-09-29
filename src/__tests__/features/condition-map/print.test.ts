@@ -334,3 +334,92 @@ describe('the documents', () => {
     expect(ids(spec)).not.toContain('condition_map')
   })
 })
+
+describe("this visit's marks", () => {
+  const jobData = {
+    id: 'job1',
+    title: 'Job',
+    type: 'repair',
+    serviceDate: new Date('2026-09-24T09:00:00Z'),
+    subtotal: 0,
+    taxRate: 0,
+    taxAmount: 0,
+    totalAmount: 0,
+    cost: 0,
+    invoiceNumber: '1',
+    partItems: [],
+    laborItems: [],
+    customer: { name: 'A' },
+    vehicle: {
+      make: 'Volvo',
+      model: 'V60',
+      year: 2020,
+      vin: null,
+      licensePlate: 'AB 1',
+      mileage: 1,
+      customer: null,
+    },
+  } as unknown as InvoiceData
+  const workOrder = (marks: ConditionMarkData[], linkedInspectionId: string | null) =>
+    buildWorkOrderPrintSpec({
+      data: jobData,
+      job: {
+        orderNumber: '1',
+        statusLabel: 'Open',
+        concerns: [],
+        printedAt: new Date('2026-09-25T00:00:00Z'),
+        conditionMarks: marks,
+        linkedInspectionId,
+        bodyType: 'sedan',
+        conditionMapLabels: labels,
+      },
+      labels: {},
+    }) as any
+  const legend = (spec: any) =>
+    spec.blocks
+      .find((b: any) => b.id === 'condition_map')
+      .content.children.find((c: any) => c.kind === 'table')
+      .rows.map((r: any) => r.area)
+
+  it("prints the linked check-in inspection's marks on the work order as the job's own", () => {
+    const checkin = mark({ id: 'checkin', inspectionId: 'insp1', inspectionItemId: 'c1' })
+    const older = mark({
+      id: 'older',
+      inspectionId: 'insp0',
+      inspectionItemId: 'c0',
+      panel: 'rear_bumper',
+      view: 'rear',
+      recordedAt: '2026-01-01T00:00:00Z',
+    })
+    expect(legend(workOrder([older, checkin], 'insp1'))).toEqual([
+      'Rear bumper (earlier)',
+      'Left front door',
+    ])
+    // Not linked, the same check-in is somebody else's report.
+    expect(ids(workOrder([older, checkin], null))).not.toContain('condition_map')
+  })
+
+  it('lists a mark drawn on another body type without placing it on this drawing', () => {
+    const onSedan = mark({ id: 'sedan', serviceRecordId: 's1' })
+    const onEstate = mark({
+      id: 'estate',
+      serviceRecordId: 's1',
+      bodyType: 'estate',
+      panel: 'rear_bumper',
+      view: 'rear',
+      recordedAt: '2026-09-02T00:00:00Z',
+    })
+    const map = conditionMapForPrint({
+      bodyType: 'sedan',
+      marks: [onSedan, onEstate],
+      scope: { serviceRecordId: 's1' },
+      includePrevious: true,
+      labels,
+      width: 500,
+    })!
+    expect(map.rows.map((r) => r.area)).toEqual(['Left front door', 'Rear bumper'])
+    const numbers = map.shapes.filter((s) => s.type === 'text').map((s: any) => s.text)
+    expect(numbers).toContain('1')
+    expect(numbers).not.toContain('2')
+  })
+})

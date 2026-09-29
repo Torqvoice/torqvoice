@@ -391,15 +391,15 @@ export function buildSampleData(
     ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
     ...(docType === 'work_order' ? sampleWorkOrder(t, labels, values, sample) : {}),
     // A car with a dent, a scratch and one mark from an earlier visit, so the
-    // condition map section has something to draw on both documents.
-    ...(docType === 'certificate' || docType === 'work_order'
-      ? { conditionMap: sampleConditionMap(t) ?? undefined }
-      : {}),
+    // condition map section has something to draw on every document. An
+    // invoice or a quote prints this visit's marks only.
+    conditionMap:
+      sampleConditionMap(t, docType === 'certificate' || docType === 'work_order') ?? undefined,
   }
 }
 
 /** Three marks on a sedan, one of them from last time. */
-function sampleConditionMap(t: SampleT) {
+function sampleConditionMap(t: SampleT, includePrevious: boolean) {
   const at = (
     id: string,
     view: string,
@@ -446,7 +446,7 @@ function sampleConditionMap(t: SampleT) {
       at('m2', 'front', 'front_bumper', 0.35, 0.72, 'chip', 'minor', t('sample.markChip'), true),
     ],
     scope: { inspectionId: 'sample', inspectionItemId: 'sample-item' },
-    includePrevious: true,
+    includePrevious,
     labels: {
       views: {
         top: t('sample.viewTop'),

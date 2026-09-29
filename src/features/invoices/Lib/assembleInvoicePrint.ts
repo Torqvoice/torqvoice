@@ -46,8 +46,15 @@ import {
   findRuleDesign,
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
-import { readIssuedInvoiceData, rendersFromIssue, type IssuedInvoiceData } from './issuedInvoice'
+import {
+  readIssuedInvoiceData,
+  rendersFromIssue,
+  thawConditionMap,
+  type InvoiceConditionMap,
+  type IssuedInvoiceData,
+} from './issuedInvoice'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { loadVisitConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
 
 const PARTY_SELECT = {
   name: true,
@@ -130,6 +137,11 @@ export interface InvoicePrintAssembly {
   designSource: DesignSource
   /** What the print labels derive from: the frozen service type and tax label. */
   labelSettings: Record<string, string>
+  /**
+   * The car's condition this visit: the job's drop-off and its linked
+   * inspection, as issued on an issued invoice. Absent when nothing was noted.
+   */
+  conditionMap?: InvoiceConditionMap | null
 }
 
 export interface PrintSigner {
@@ -334,7 +346,7 @@ async function assembleLive(
   settingsMap: Record<string, string>
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
-  const [findings, customFields, look, signatureDataUri] = await Promise.all([
+  const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
     db.vehicleFinding.findMany({
       where: { serviceRecordId: record.id, status: { not: 'resolved' } },
       select: { description: true, severity: true, notes: true },
@@ -343,6 +355,10 @@ async function assembleLive(
     getCustomFieldsForPrint(organizationId, record.id, 'service_record'),
     currentLook(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
     memberSignatureDataUri(organizationId, record.createdBy?.id),
+    loadVisitConditionMap(organizationId, record.vehicleId, {
+      serviceRecordId: record.id,
+      linkedInspectionId: record.inspectionId,
+    }),
   ])
   const { designSource, logoDataUri } = look
 
@@ -393,6 +409,7 @@ async function assembleLive(
       'workshop.taxLabel': taxLabel ?? '',
       'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
     },
+    conditionMap,
   }
 }
 
@@ -475,6 +492,9 @@ function assembleFrozen(
       'workshop.taxLabel': taxLabel ?? '',
       'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
     },
+    // As it was when issued. An invoice issued before it printed the map has
+    // none, and never borrows today's marks.
+    conditionMap: thawConditionMap(frozen.conditionMap),
   }
 }
 

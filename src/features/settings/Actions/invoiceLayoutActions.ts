@@ -11,6 +11,7 @@ import {
   mergeWithDefaults,
   getDefaultInvoiceLayout,
   getDefaultLayout,
+  NO_CUSTOM_FIELD_SECTIONS,
   SECTIONS_WITH_FIELDS,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -166,7 +167,10 @@ export async function setCustomFieldPlacement(input: {
     async ({ userId, organizationId }) => {
       const { definitionId, entityType, placement } = input
 
-      if (placement !== 'hidden' && !SECTIONS_WITH_FIELDS.has(placement)) {
+      if (
+        placement !== 'hidden' &&
+        (!SECTIONS_WITH_FIELDS.has(placement) || NO_CUSTOM_FIELD_SECTIONS.has(placement))
+      ) {
         throw new Error('Invalid placement')
       }
 

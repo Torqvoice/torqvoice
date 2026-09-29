@@ -103,6 +103,7 @@
     "payment": "Payment",
     "view": "View",
     "download": "Download",
+    "downloadCertificate": "Download inspection certificate",
     "paid": "paid",
     "partial": "partial",
     "unpaid": "unpaid",

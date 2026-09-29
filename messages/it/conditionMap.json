@@ -38,6 +38,7 @@
   "readOnly": "Riapri per modificare la mappa dello stato.",
   "count": "{count, plural, =0 {Nessun segno} one {# segno} other {# segni}}",
   "previousCount": "{count, plural, one {# da una visita precedente} other {# da visite precedenti}}",
+  "fromInspection": "Dall'ispezione collegata, si modifica lì",
   "elsewhere": "{count, plural, one {# segno è stato fatto su un'altra carrozzeria e compare solo nella stampa} other {# segni sono stati fatti su un'altra carrozzeria e compaiono solo nella stampa}}",
   "photoCount": "{count, plural, one {# foto} other {# foto}}",
   "clearBody": "Il segno {n} su {area} verrà registrato come riparato. Resta nello storico e non viene più stampato.",

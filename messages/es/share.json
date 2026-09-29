@@ -232,6 +232,7 @@
     "portalMessage": "Vea sus vehículos, facturas y más en su",
     "customerPortal": "portal de clientes",
     "telegramConnect": "Chatea con nosotros en Telegram",
-    "telegramScan": "Escanea este código QR para enviarnos un mensaje en Telegram para actualizaciones y soporte."
+    "telegramScan": "Escanea este código QR para enviarnos un mensaje en Telegram para actualizaciones y soporte.",
+    "downloadCertificate": "Descargar informe de inspección"
   }
 }
