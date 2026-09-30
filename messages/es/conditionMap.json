@@ -36,6 +36,8 @@
   "saveFailed": "No se pudo guardar la marca",
   "uploadFailed": "No se pudo subir la foto",
   "readOnly": "Reabra para cambiar el mapa de estado.",
+  "readOnlyLinked": "Marcada en la inspección vinculada. Cámbiela allí.",
+  "readOnlyEarlier": "Registrada en una visita anterior. Márquela como reparada cuando ya no esté.",
   "count": "{count, plural, =0 {Sin marcas} one {# marca} other {# marcas}}",
   "previousCount": "{count, plural, one {# de una visita anterior} other {# de visitas anteriores}}",
   "fromInspection": "De la inspección vinculada; se modifica allí",

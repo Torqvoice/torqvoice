@@ -110,5 +110,8 @@
     "failed": "Could not generate the PDF preview."
   },
   "attachPdf": "Attach PDF",
-  "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it."
+  "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it.",
+  "sentCopy": {
+    "note": "Sent {date}. Changes here go on the invoice when it is sent again."
+  }
 }

@@ -110,5 +110,8 @@
     "failed": "Kunne ikke generere PDF-forhåndsvisningen."
   },
   "attachPdf": "Legg ved PDF",
-  "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den."
+  "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den.",
+  "sentCopy": {
+    "note": "Sendt {date}. Endringer her kommer på fakturaen når den sendes på nytt."
+  }
 }

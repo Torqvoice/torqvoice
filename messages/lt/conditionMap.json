@@ -36,6 +36,8 @@
   "saveFailed": "Nepavyko išsaugoti žymos",
   "uploadFailed": "Nepavyko įkelti nuotraukos",
   "readOnly": "Norėdami keisti būklės žemėlapį, atidarykite iš naujo.",
+  "readOnlyLinked": "Pažymėta susietoje apžiūroje. Keiskite ten.",
+  "readOnlyEarlier": "Užfiksuota ankstesnio apsilankymo metu. Pažymėkite kaip sutaisytą, kai jos nebeliks.",
   "count": "{count, plural, =0 {Žymų nėra} one {# žyma} few {# žymos} other {# žymų}}",
   "previousCount": "{count, plural, one {# iš ankstesnio vizito} few {# iš ankstesnių vizitų} other {# iš ankstesnių vizitų}}",
   "fromInspection": "Iš susietos apžiūros, keičiama ten",

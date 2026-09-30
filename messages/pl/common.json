@@ -110,5 +110,8 @@
     "failed": "Nie udało się wygenerować podglądu PDF."
   },
   "attachPdf": "Dołącz PDF",
-  "attachPdfHint": "Wyłącz, aby wysłać zamiast tego link i widzieć, kiedy klient go otworzy."
+  "attachPdfHint": "Wyłącz, aby wysłać zamiast tego link i widzieć, kiedy klient go otworzy.",
+  "sentCopy": {
+    "note": "Wysłano {date}. Zmiany wprowadzone tutaj trafią na fakturę, gdy zostanie wysłana ponownie."
+  }
 }

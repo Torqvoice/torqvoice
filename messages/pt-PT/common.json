@@ -110,5 +110,8 @@
     "failed": "Não foi possível gerar a pré-visualização do PDF."
   },
   "attachPdf": "Anexar PDF",
-  "attachPdfHint": "Desative para enviar um link em vez do anexo e assim saber quando o cliente o abre."
+  "attachPdfHint": "Desative para enviar um link em vez do anexo e assim saber quando o cliente o abre.",
+  "sentCopy": {
+    "note": "Enviada a {date}. As alterações feitas aqui entram na fatura quando for enviada novamente."
+  }
 }

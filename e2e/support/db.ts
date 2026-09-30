@@ -1596,3 +1596,214 @@ export async function roleIdNamed(organizationId: string, name: string): Promise
     return result.rows[0]?.id ?? null
   })
 }
+
+// ─── Condition map ───────────────────────────────────────────────────────────
+
+/** Where a planted mark was drawn: a job's drop-off, or one inspection check. */
+export type MarkSheet =
+  | { serviceRecordId: string }
+  | { inspectionId: string; inspectionItemId: string }
+
+export interface PlantedMark {
+  view?: 'top' | 'left' | 'right' | 'front' | 'rear'
+  panel?: string
+  kind?: string
+  severity?: 'minor' | 'major'
+  note?: string
+  /** When it was recorded; an earlier visit's mark is planted in the past. */
+  recordedAt?: Date
+  bodyType?: string
+}
+
+/**
+ * A job on a vehicle of its own, drawn as a sedan. Each spec plants its own
+ * car, so marks from another spec or an earlier run are never on it.
+ */
+export async function plantConditionJob(
+  organizationId: string,
+  userId: string,
+  title: string,
+  openedAt?: Date
+): Promise<{ serviceRecordId: string; vehicleId: string }> {
+  const job = await plantJob(organizationId, userId, title)
+  await withDb(async (db) => {
+    await db.query(`update vehicles set "bodyType" = 'sedan' where id = $1`, [job.vehicleId])
+    if (openedAt) {
+      await db.query(`update service_records set "createdAt" = $2 where id = $1`, [
+        job.serviceRecordId,
+        openedAt,
+      ])
+    }
+  })
+  return job
+}
+
+/**
+ * An inspection on the vehicle with one condition map check, from a template
+ * of its own (the seed makes none). With `serviceRecordId` the job is linked to
+ * it, the way "Start inspection" links them.
+ */
+export async function plantConditionInspection(
+  organizationId: string,
+  vehicleId: string,
+  label: string,
+  options: { serviceRecordId?: string; completed?: boolean; startedAt?: Date } = {}
+): Promise<{ inspectionId: string; inspectionItemId: string }> {
+  return withDb(async (db) => {
+    const id = () => randomBytes(12).toString('hex')
+    const templateId = id()
+    const sectionId = id()
+    const inspectionId = id()
+    const inspectionItemId = id()
+    await db.query(
+      `insert into inspection_templates (id, name, "organizationId", "updatedAt")
+       values ($1, $2, $3, now())`,
+      [templateId, `${label} checklist`, organizationId]
+    )
+    await db.query(
+      `insert into inspection_template_sections (id, name, "templateId") values ($1, 'Body', $2)`,
+      [sectionId, templateId]
+    )
+    await db.query(
+      `insert into inspection_template_items (id, name, "inputType", "sectionId")
+       values ($1, 'Condition map', 'condition_map', $2)`,
+      [id(), sectionId]
+    )
+    await db.query(
+      `insert into inspections (id, "vehicleId", "organizationId", "templateId", status, "completedAt", "createdAt", "updatedAt")
+       values ($1, $2, $3, $4, $5, $6, coalesce($7, now()), now())`,
+      [
+        inspectionId,
+        vehicleId,
+        organizationId,
+        templateId,
+        options.completed ? 'completed' : 'in_progress',
+        options.completed ? new Date() : null,
+        options.startedAt ?? null,
+      ]
+    )
+    await db.query(
+      `insert into inspection_items (id, "inspectionId", name, section, "inputType", condition)
+       values ($1, $2, 'Condition map', 'Body', 'condition_map', 'ok')`,
+      [inspectionItemId, inspectionId]
+    )
+    if (options.serviceRecordId) {
+      await db.query(`update service_records set "inspectionId" = $2 where id = $1`, [
+        options.serviceRecordId,
+        inspectionId,
+      ])
+    }
+    return { inspectionId, inspectionItemId }
+  })
+}
+
+/** One mark written straight into the table, as if drawn on that sheet. */
+export async function plantConditionMark(
+  organizationId: string,
+  vehicleId: string,
+  sheet: MarkSheet,
+  mark: PlantedMark = {}
+): Promise<string> {
+  return withDb(async (db) => {
+    const markId = randomBytes(12).toString('hex')
+    const onJob = 'serviceRecordId' in sheet
+    await db.query(
+      `insert into condition_marks
+         (id, "organizationId", "vehicleId", "serviceRecordId", "inspectionId", "inspectionItemId",
+          "bodyType", view, panel, x, y, kind, severity, note, "recordedAt", "updatedAt")
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, 0.5, 0.5, $10, $11, $12, coalesce($13, now()), now())`,
+      [
+        markId,
+        organizationId,
+        vehicleId,
+        onJob ? sheet.serviceRecordId : null,
+        onJob ? null : sheet.inspectionId,
+        onJob ? null : sheet.inspectionItemId,
+        mark.bodyType ?? 'sedan',
+        mark.view ?? 'left',
+        mark.panel ?? 'left_front_door',
+        mark.kind ?? 'dent',
+        mark.severity ?? 'minor',
+        mark.note ?? null,
+        mark.recordedAt ?? null,
+      ]
+    )
+    return markId
+  })
+}
+
+export interface ConditionMarkRow {
+  id: string
+  serviceRecordId: string | null
+  inspectionId: string | null
+  view: string
+  panel: string
+  kind: string
+  severity: string
+  note: string | null
+  imageUrls: string[]
+  resolvedAt: Date | null
+}
+
+/** Every mark on the vehicle, oldest first, resolved ones included. */
+export async function conditionMarksOf(vehicleId: string): Promise<ConditionMarkRow[]> {
+  return withDb(async (db) => {
+    const result = await db.query<ConditionMarkRow>(
+      `select id, "serviceRecordId", "inspectionId", view, panel, kind, severity, note,
+              "imageUrls", "resolvedAt"
+         from condition_marks where "vehicleId" = $1 order by "recordedAt", "createdAt"`,
+      [vehicleId]
+    )
+    return result.rows
+  })
+}
+
+/** Whether the job's invoice was told to carry the map: true, false, or null to follow the design. */
+export async function conditionMapOnInvoice(serviceRecordId: string): Promise<boolean | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ on: boolean | null }>(
+      `select "conditionMapOnInvoice" as on from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    return result.rows[0]?.on ?? null
+  })
+}
+
+/** Another job on a car that already has one: the next visit. */
+export async function plantJobOnVehicle(
+  organizationId: string,
+  vehicleId: string,
+  title: string,
+  openedAt?: Date
+): Promise<{ serviceRecordId: string; vehicleId: string }> {
+  return withDb(async (db) => {
+    const job = await db.query<{ id: string }>(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, coalesce($4, now()), now())
+       returning id`,
+      [title, vehicleId, organizationId, openedAt ?? null]
+    )
+    return { serviceRecordId: job.rows[0].id, vehicleId }
+  })
+}
+
+/** A kind of mark of the workshop's own, keyed the way the settings page keys one. */
+export async function plantOwnMarkKind(
+  organizationId: string,
+  name: string
+): Promise<{ id: string; key: string; name: string }> {
+  return withDb(async (db) => {
+    const id = randomBytes(12).toString('hex')
+    const key = `own_${id}`
+    await db.query(
+      `insert into condition_mark_types (id, "organizationId", key, name, shape, color, "sortOrder", hidden, "updatedAt")
+       values ($1, $2, $3, $4, 'circle', '#7c3aed', 100, false, now())`,
+      [id, organizationId, key, name]
+    )
+    return { id, key, name }
+  })
+}
+
+export async function removeOwnMarkKind(id: string): Promise<void> {
+  await withDb((db) => db.query(`delete from condition_mark_types where id = $1`, [id]))
+}

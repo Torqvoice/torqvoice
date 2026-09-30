@@ -59,7 +59,25 @@ export interface ConditionMarkData {
   imageUrls: string[]
   recordedAt: Date | string
   resolvedAt: Date | string | null
+  /**
+   * When the visit the mark was drawn on was opened: its job's, or its
+   * inspection's. Read with the vehicle's marks; absent on a mark an action
+   * just returned, which is always the sheet in hand.
+   */
+  sheetOpenedAt?: Date | string | null
 }
+
+/**
+ * A kind of mark: one of the built-in keys, or a kind of the workshop's own,
+ * keyed `own_<row id>` (`ownMarkKey`). Which own kinds exist is the
+ * workshop's, so the action checks that against its catalogue.
+ */
+export const markKindSchema = z
+  .string()
+  .refine(
+    (key) => (MARK_KINDS as readonly string[]).includes(key) || /^own_[A-Za-z0-9]{1,40}$/.test(key),
+    'Unknown kind of mark'
+  )
 
 export const markInputSchema = z.object({
   vehicleId: z.string().min(1),
@@ -71,14 +89,14 @@ export const markInputSchema = z.object({
   panel: z.enum(PANELS),
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
-  kind: z.enum(MARK_KINDS),
+  kind: markKindSchema,
   severity: z.enum(SEVERITIES).default('minor'),
   note: z.string().max(500).optional().nullable(),
 })
 export type MarkInput = z.infer<typeof markInputSchema>
 
 export const markPatchSchema = z.object({
-  kind: z.enum(MARK_KINDS).optional(),
+  kind: markKindSchema.optional(),
   severity: z.enum(SEVERITIES).optional(),
   note: z.string().max(500).nullable().optional(),
   x: z.number().min(0).max(1).optional(),
@@ -96,9 +114,16 @@ export type MarkPatch = z.infer<typeof markPatchSchema>
  * job's drop-off written on another form. A quote has no drop-off, so its
  * visit is only the inspection it was raised from.
  */
-export type MarkScope =
+export type MarkScope = (
   | { inspectionId: string; inspectionItemId: string }
   | { serviceRecordId?: string | null; linkedInspectionId?: string | null }
+) & {
+  /**
+   * When this visit was opened. Marks from a visit opened after it are not
+   * "earlier": an old job or its print never shows damage found later.
+   */
+  openedAt?: Date | string | null
+}
 
 /** Whether a mark is this visit's rather than one still open from an earlier one. */
 export function isOwnMark(mark: ConditionMarkData, scope: MarkScope): boolean {
@@ -129,8 +154,14 @@ export function splitMarks(
   const open = marks.filter((m) => !m.resolvedAt)
   return {
     own: open.filter((m) => isOwnMark(m, scope)),
-    previous: open.filter((m) => !isOwnMark(m, scope)),
+    previous: open.filter((m) => !isOwnMark(m, scope) && !isLaterVisit(m, scope)),
   }
+}
+
+/** Whether a mark was drawn on a visit opened after this one. */
+export function isLaterVisit(mark: ConditionMarkData, scope: MarkScope): boolean {
+  if (!scope.openedAt || !mark.sheetOpenedAt) return false
+  return new Date(mark.sheetOpenedAt).getTime() > new Date(scope.openedAt).getTime()
 }
 
 export function isBodyType(value: unknown): value is BodyType {

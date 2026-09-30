@@ -299,15 +299,19 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
   }
 
   // The map: this inspection's own marks in colour and, when the design
-  // asks, the ones still open from earlier visits in grey.
+  // asks, the ones still open from earlier visits in grey. Like the work
+  // order, an inspection that marked nothing prints no map. A completed one
+  // is a finished document: it shows the marks as they stood when it was
+  // completed, so clearing a dent as repaired later does not change it.
   const mapSection = layout.sections.find((s) => s.id === 'condition_map')
   const mapItem = data.items.find((item) => item.inputType === 'condition_map')
   const conditionMap =
     input.conditionMarks && input.conditionMapLabels && mapItem
       ? conditionMapForPrint({
           bodyType: input.bodyType,
-          marks: input.conditionMarks,
-          scope: { inspectionId: data.id, inspectionItemId: mapItem.id },
+          marks: marksAsOf(input.conditionMarks, data.completedAt),
+          scope: { inspectionId: data.id, inspectionItemId: mapItem.id, openedAt: data.createdAt },
+          requireOwn: true,
           includePrevious:
             mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,
           labels: input.conditionMapLabels,
@@ -390,4 +394,23 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
   }
 
   return buildDocumentSpec(layout, theme, documentData)
+}
+
+/**
+ * The marks as they stood at a moment: none recorded after it, and any cleared
+ * as repaired after it still open. Without a moment, as they are now.
+ */
+export function marksAsOf(
+  marks: ConditionMarkData[],
+  moment: Date | string | null | undefined
+): ConditionMarkData[] {
+  if (!moment) return marks
+  const at = new Date(moment).getTime()
+  return marks
+    .filter((mark) => new Date(mark.recordedAt).getTime() <= at)
+    .map((mark) =>
+      mark.resolvedAt && new Date(mark.resolvedAt).getTime() > at
+        ? { ...mark, resolvedAt: null }
+        : mark
+    )
 }

@@ -12,6 +12,8 @@ import {
   numberedMarks,
   splitMarks,
   type ConditionMarkData,
+  isLaterVisit,
+  markKindSchema,
 } from '@/features/condition-map/Lib/marks'
 import { mirrorPanel } from '@/features/condition-map/Lib/drawingTypes'
 
@@ -114,5 +116,53 @@ describe('condition marks', () => {
     expect(markInputSchema.safeParse({ ...base, x: 1.2 }).success).toBe(false)
     expect(markInputSchema.safeParse({ ...base, kind: 'smudge' }).success).toBe(false)
     expect(markInputSchema.safeParse({ ...base, panel: 'wing_mirror' }).success).toBe(false)
+  })
+})
+
+describe('what counts as an earlier visit', () => {
+  const mark = (over: Partial<ConditionMarkData>): ConditionMarkData => ({
+    id: 'm',
+    vehicleId: 'v',
+    inspectionId: null,
+    inspectionItemId: null,
+    serviceRecordId: 'other-job',
+    bodyType: 'sedan',
+    view: 'left',
+    panel: 'left_front_door',
+    x: 0.5,
+    y: 0.5,
+    kind: 'dent',
+    severity: 'minor',
+    note: null,
+    imageUrls: [],
+    recordedAt: '2026-09-01T10:00:00Z',
+    resolvedAt: null,
+    ...over,
+  })
+  const scope = { serviceRecordId: 'this-job', openedAt: '2026-09-10T08:00:00Z' }
+
+  it('keeps a mark from a visit opened before this one, grey', () => {
+    const earlier = mark({ id: 'a', sheetOpenedAt: '2026-09-01T09:00:00Z' })
+    expect(splitMarks([earlier], scope).previous.map((m) => m.id)).toEqual(['a'])
+  })
+
+  it('leaves out a mark from a visit opened after this one', () => {
+    const later = mark({ id: 'b', sheetOpenedAt: '2026-09-20T09:00:00Z' })
+    expect(isLaterVisit(later, scope)).toBe(true)
+    expect(splitMarks([later], scope).previous).toEqual([])
+  })
+
+  it('has nothing to compare without an opening time, as before', () => {
+    const later = mark({ id: 'c', sheetOpenedAt: '2026-09-20T09:00:00Z' })
+    expect(splitMarks([later], { serviceRecordId: 'this-job' }).previous).toHaveLength(1)
+  })
+})
+
+describe('the own-kind key', () => {
+  it('takes a kind of the workshop’s own and refuses anything else', () => {
+    expect(markKindSchema.safeParse('own_cmg4abc123').success).toBe(true)
+    expect(markKindSchema.safeParse('dent').success).toBe(true)
+    expect(markKindSchema.safeParse('own_').success).toBe(false)
+    expect(markKindSchema.safeParse('own_../x').success).toBe(false)
   })
 })

@@ -40,6 +40,7 @@ import {
   type MarkSeverity,
   bodyTypeFor,
   isDrawnOnSheet,
+  isOwnMark,
   numberedMarks,
   splitMarks,
 } from '../Lib/marks'
@@ -49,6 +50,8 @@ import type { Attachment } from '@/features/vehicles/Components/service-detail/t
 import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkEditor } from './MarkEditor'
 
+/** Photos saved on a mark per call, the action's own limit. */
+const PHOTOS_PER_SAVE = 10
 /**
  * The condition map with everything around it: the body type, the view
  * switcher, the drawing, the legend of this sheet's marks, and the marks
@@ -231,14 +234,18 @@ export function ConditionMapCard({
       }
     }
     if (urls.length === 0) return
-    const result = await addConditionMarkPhotos({ id: editingId, urls })
-    if (result.success && result.data) {
-      const before = marks.find((m) => m.id === editingId)
+    // The action takes a handful at a time; a whole camera roll goes in batches.
+    const before = marks.find((m) => m.id === editingId)
+    for (let start = 0; start < urls.length; start += PHOTOS_PER_SAVE) {
+      const batch = urls.slice(start, start + PHOTOS_PER_SAVE)
+      const result = await addConditionMarkPhotos({ id: editingId, urls: batch })
+      if (!result.success || !result.data) {
+        toast.error(result.success ? t('uploadFailed') : result.error || t('uploadFailed'))
+        break
+      }
       if (before) replace({ ...before, imageUrls: result.data })
-      router.refresh()
-    } else {
-      toast.error(result.success ? t('uploadFailed') : result.error || t('uploadFailed'))
     }
+    router.refresh()
   }
 
   const handleRemovePhoto = (url: string) => {
@@ -485,6 +492,13 @@ export function ConditionMapCard({
         }
         open={editing !== null}
         readOnly={readOnly || (editing ? !isDrawnOnSheet(editing, scope) : false)}
+        readOnlyReason={
+          readOnly || !editing || isDrawnOnSheet(editing, scope)
+            ? undefined
+            : isOwnMark(editing, scope)
+              ? t('readOnlyLinked')
+              : t('readOnlyEarlier')
+        }
         busy={pending}
         onChange={handleChange}
         onRemove={handleRemove}

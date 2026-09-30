@@ -71,6 +71,8 @@ export interface WorkOrderJob {
   conditionMarks?: ConditionMarkData[]
   /** The inspection linked to the job, whose marks are this visit's too. */
   linkedInspectionId?: string | null
+  /** When the job was opened: a later visit's marks are not its history. */
+  openedAt?: Date | string | null
   bodyType?: string | null
   conditionMapLabels?: ConditionMapLabels
 }
@@ -375,7 +377,11 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       ? conditionMapForPrint({
           bodyType: job.bodyType,
           marks: job.conditionMarks,
-          scope: { serviceRecordId: data.id, linkedInspectionId: job.linkedInspectionId },
+          scope: {
+            serviceRecordId: data.id,
+            linkedInspectionId: job.linkedInspectionId,
+            openedAt: job.openedAt,
+          },
           requireOwn: true,
           includePrevious:
             mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,

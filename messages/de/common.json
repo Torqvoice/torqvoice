@@ -110,5 +110,8 @@
     "failed": "Die PDF-Vorschau konnte nicht erstellt werden."
   },
   "attachPdf": "PDF anhängen",
-  "attachPdfHint": "Ausschalten, um stattdessen einen Link zu senden, damit Sie sehen, wann der Kunde ihn öffnet."
+  "attachPdfHint": "Ausschalten, um stattdessen einen Link zu senden, damit Sie sehen, wann der Kunde ihn öffnet.",
+  "sentCopy": {
+    "note": "Gesendet am {date}. Änderungen hier kommen auf die Rechnung, wenn sie erneut gesendet wird."
+  }
 }

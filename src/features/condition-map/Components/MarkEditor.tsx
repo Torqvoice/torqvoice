@@ -40,6 +40,7 @@ export function MarkEditor({
   types,
   open,
   readOnly = false,
+  readOnlyReason,
   busy = false,
   onChange,
   onRemove,
@@ -52,6 +53,8 @@ export function MarkEditor({
   types: readonly MarkType[]
   open: boolean
   readOnly?: boolean
+  /** Why a read-only mark cannot be changed here; the sheet's own reason when absent. */
+  readOnlyReason?: string
   busy?: boolean
   onChange: (patch: { kind?: string; severity?: MarkSeverity; note?: string | null }) => void
   onRemove: () => void
@@ -115,7 +118,9 @@ export function MarkEditor({
             )}
             {mark ? t('markOn', { kind: markTypeOf(types, mark.kind).name, area }) : t('edit')}
           </DialogTitle>
-          <DialogDescription>{readOnly ? t('readOnly') : t('description')}</DialogDescription>
+          <DialogDescription>
+            {readOnly ? (readOnlyReason ?? t('readOnly')) : t('description')}
+          </DialogDescription>
         </DialogHeader>
 
         {mark && (

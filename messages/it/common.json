@@ -110,5 +110,8 @@
     "failed": "Impossibile generare l'anteprima del PDF."
   },
   "attachPdf": "Allega PDF",
-  "attachPdfHint": "Disattiva per inviare invece un link, così vedi quando il cliente lo apre."
+  "attachPdfHint": "Disattiva per inviare invece un link, così vedi quando il cliente lo apre.",
+  "sentCopy": {
+    "note": "Inviata il {date}. Le modifiche fatte qui entrano nella fattura quando viene inviata di nuovo."
+  }
 }

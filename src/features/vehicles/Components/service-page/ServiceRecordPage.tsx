@@ -371,6 +371,8 @@ export async function ServiceRecordPage({
           marks: await loadVehicleConditionMarks(organizationId, vehicleId),
           types: await markTypeCatalogue(organizationId, await getLocale()),
           linkedInspectionId: record.inspection?.id ?? null,
+          openedAt: record.createdAt,
+          sentAt: designPinnedAt,
           onInvoice: record.conditionMapOnInvoice,
           byDesign: await invoiceDesignPrintsConditionMap(
             organizationId,

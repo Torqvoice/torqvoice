@@ -38,10 +38,20 @@ export async function loadVehicleConditionMarks(
 ): Promise<ConditionMarkData[]> {
   const rows = await db.conditionMark.findMany({
     where: { vehicleId, organizationId },
-    select: MARK_SELECT,
+    select: {
+      ...MARK_SELECT,
+      serviceRecord: { select: { createdAt: true } },
+      inspection: { select: { createdAt: true } },
+    },
     orderBy: { recordedAt: 'asc' },
   })
-  return numberedMarks(rows)
+  return numberedMarks(
+    rows.map(({ serviceRecord, inspection, ...mark }) => ({
+      ...mark,
+      // A mark whose sheet was deleted keeps the moment it was recorded.
+      sheetOpenedAt: serviceRecord?.createdAt ?? inspection?.createdAt ?? mark.recordedAt,
+    }))
+  )
 }
 
 /**

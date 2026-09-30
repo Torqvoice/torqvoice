@@ -110,5 +110,8 @@
     "failed": "No se pudo generar la vista previa del PDF."
   },
   "attachPdf": "Adjuntar PDF",
-  "attachPdfHint": "Desactívalo para enviar un enlace en su lugar y ver cuándo lo abre el cliente."
+  "attachPdfHint": "Desactívalo para enviar un enlace en su lugar y ver cuándo lo abre el cliente.",
+  "sentCopy": {
+    "note": "Enviada el {date}. Los cambios hechos aquí pasan a la factura cuando se vuelva a enviar."
+  }
 }

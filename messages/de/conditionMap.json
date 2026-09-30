@@ -36,6 +36,8 @@
   "saveFailed": "Markierung konnte nicht gespeichert werden",
   "uploadFailed": "Foto konnte nicht hochgeladen werden",
   "readOnly": "Zum Ändern der Zustandskarte wieder öffnen.",
+  "readOnlyLinked": "Auf der verknüpften Inspektion eingezeichnet. Dort ändern.",
+  "readOnlyEarlier": "Bei einem früheren Besuch erfasst. Als repariert entfernen, sobald der Schaden behoben ist.",
   "count": "{count, plural, =0 {Keine Markierungen} one {# Markierung} other {# Markierungen}}",
   "previousCount": "{count, plural, one {# von einem früheren Besuch} other {# von früheren Besuchen}}",
   "fromInspection": "Aus der verknüpften Inspektion, dort änderbar",

@@ -36,6 +36,8 @@
   "saveFailed": "Kunne ikke lagre merket",
   "uploadFailed": "Kunne ikke laste opp bildet",
   "readOnly": "Åpne på nytt for å endre tilstandskartet.",
+  "readOnlyLinked": "Tegnet på den koblede inspeksjonen. Endre den der.",
+  "readOnlyEarlier": "Registrert ved et tidligere besøk. Fjern som reparert når skaden er borte.",
   "count": "{count, plural, =0 {Ingen merker} one {# merke} other {# merker}}",
   "previousCount": "{count, plural, one {# fra et tidligere besøk} other {# fra tidligere besøk}}",
   "fromInspection": "Fra den koblede inspeksjonen, endres der",

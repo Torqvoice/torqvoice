@@ -110,5 +110,8 @@
     "failed": "Nepavyko sugeneruoti PDF peržiūros."
   },
   "attachPdf": "Pridėti PDF",
-  "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė."
+  "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė.",
+  "sentCopy": {
+    "note": "Išsiųsta {date}. Čia atlikti pakeitimai pateks į sąskaitą, kai ji bus išsiųsta dar kartą."
+  }
 }

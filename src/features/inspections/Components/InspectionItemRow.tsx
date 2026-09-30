@@ -215,6 +215,7 @@ export function InspectionItemRow({
   onChanged,
   onSaveState,
   vehicle,
+  inspectionOpenedAt,
   conditionMarks = [],
   markTypes = [],
   serviceType = 'automotive',
@@ -224,6 +225,8 @@ export function InspectionItemRow({
   inspectionId?: string
   /** The car, for a condition map check: which drawing, and whose marks. */
   vehicle?: { id: string; bodyType: string | null }
+  /** When the inspection was opened: marks from a visit opened later are not its history. */
+  inspectionOpenedAt?: Date | string
   /** Every mark on the vehicle, for a condition map check. */
   conditionMarks?: ConditionMarkData[]
   /** The workshop's kinds of mark. */
@@ -663,7 +666,7 @@ export function InspectionItemRow({
         <div className="mt-3">
           <ConditionMapCard
             vehicle={vehicle}
-            scope={{ inspectionId, inspectionItemId: item.id }}
+            scope={{ inspectionId, inspectionItemId: item.id, openedAt: inspectionOpenedAt }}
             types={markTypes}
             initialMarks={conditionMarks}
             readOnly={isCompleted}

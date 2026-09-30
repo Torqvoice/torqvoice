@@ -36,6 +36,8 @@
   "saveFailed": "İşaret kaydedilemedi",
   "uploadFailed": "Fotoğraf yüklenemedi",
   "readOnly": "Durum haritasını değiştirmek için yeniden açın.",
+  "readOnlyLinked": "Bağlı muayenede işaretlendi. Orada değiştirin.",
+  "readOnlyEarlier": "Önceki bir ziyarette kaydedildi. Hasar giderildiğinde onarıldı olarak kaldırın.",
   "count": "{count, plural, =0 {İşaret yok} one {# işaret} other {# işaret}}",
   "previousCount": "{count, plural, one {# önceki ziyaretten} other {# önceki ziyaretlerden}}",
   "fromInspection": "Bağlı muayeneden, orada değiştirilir",

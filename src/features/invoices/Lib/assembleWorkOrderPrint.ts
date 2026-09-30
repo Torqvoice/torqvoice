@@ -46,6 +46,7 @@ export async function assembleWorkOrderPrint(
         customStatus: { select: { name: true } },
         workBay: { select: { name: true } },
         inspectionId: true,
+        createdAt: true,
       },
     }),
     db.serviceConcern.findMany({
@@ -100,6 +101,7 @@ export async function assembleWorkOrderPrint(
       printedAt: new Date(),
       conditionMarks,
       linkedInspectionId: job?.inspectionId ?? null,
+      openedAt: job?.createdAt ?? null,
       bodyType: vehicle?.bodyType ?? null,
     },
   }

@@ -760,6 +760,7 @@ export function InspectionPageClient({
                       key={item.id}
                       item={item}
                       inspectionId={inspection.id}
+                      inspectionOpenedAt={inspection.createdAt}
                       scale={scale}
                       country={country}
                       standard={inspection.template.standard ?? null}

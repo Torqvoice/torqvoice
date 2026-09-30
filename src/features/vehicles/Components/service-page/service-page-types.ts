@@ -96,6 +96,10 @@ export interface ServicePageClientProps {
     /** The workshop's kinds of mark, in the reader's language. */
     types: MarkType[]
     linkedInspectionId: string | null
+    /** When the job was opened: marks from a visit opened later are not its history. */
+    openedAt: Date | string
+    /** When its invoice went out as the customer's copy, or null while it has not. */
+    sentAt: string | null
     /** The job's own answer for its invoice, or null to follow the design. */
     onInvoice: boolean | null
     /** What the invoice design does for every invoice. */

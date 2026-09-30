@@ -110,5 +110,8 @@
     "failed": "PDF önizlemesi oluşturulamadı."
   },
   "attachPdf": "PDF ekle",
-  "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz."
+  "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz.",
+  "sentCopy": {
+    "note": "{date} tarihinde gönderildi. Buradaki değişiklikler fatura yeniden gönderildiğinde faturaya yansır."
+  }
 }

@@ -98,11 +98,24 @@ function pathsFor(scope: {
   return paths
 }
 
+/**
+ * A kind of the workshop's own has to be one of its own. A built-in key is
+ * always known; the schema has already refused anything else.
+ */
+async function assertKnownKind(organizationId: string, kind: string | undefined) {
+  if (!kind || !kind.startsWith('own_')) return
+  const known = await db.conditionMarkType.count({ where: { organizationId, key: kind } })
+  if (!known) throw new Error('Unknown kind of mark')
+}
+
 export async function addConditionMark(input: unknown) {
-  const parsed = markInputSchema.parse(input)
+  const result = markInputSchema.safeParse(input)
+  if (!result.success) return { success: false as const, error: 'Invalid mark' }
+  const parsed = result.data
   return withAuth(
     async ({ organizationId, userId }): Promise<ConditionMarkData> => {
       await assertSheetOpen(organizationId, parsed)
+      await assertKnownKind(organizationId, parsed.kind)
       const mark = await db.conditionMark.create({
         data: {
           organizationId,
@@ -153,11 +166,14 @@ async function ownMark(organizationId: string, id: string) {
 }
 
 export async function updateConditionMark(id: string, input: unknown) {
-  const patch = markPatchSchema.parse(input)
+  const result = markPatchSchema.safeParse(input)
+  if (!result.success) return { success: false as const, error: 'Invalid mark' }
+  const patch = result.data
   return withAuth(
     async ({ organizationId }): Promise<ConditionMarkData> => {
       const mark = await ownMark(organizationId, id)
       await assertSheetOpen(organizationId, mark)
+      await assertKnownKind(organizationId, patch.kind)
       const updated = await db.conditionMark.update({
         where: { id },
         data: {
@@ -222,7 +238,9 @@ export async function resolveConditionMark(id: string, resolved: boolean) {
           : { resolvedAt: null, resolvedById: null },
         select: MARK_SELECT,
       })
+      // The vehicle page and the sheet the mark was drawn on both show it.
       revalidatePath(`/vehicles/${mark.vehicleId}`)
+      for (const path of pathsFor(mark)) revalidatePath(path)
       return updated
     },
     {
@@ -236,7 +254,9 @@ export async function resolveConditionMark(id: string, resolved: boolean) {
 const photosSchema = z.object({ id: z.string(), urls: z.array(z.string()).min(1).max(10) })
 
 export async function addConditionMarkPhotos(input: unknown) {
-  const { id, urls } = photosSchema.parse(input)
+  const result = photosSchema.safeParse(input)
+  if (!result.success) return { success: false as const, error: 'Invalid photos' }
+  const { id, urls } = result.data
   return withAuth(
     async ({ organizationId }): Promise<string[]> => {
       assertOwnUploads(urls, organizationId)

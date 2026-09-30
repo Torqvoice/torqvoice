@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { Paperclip } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
+import { SentCopyNote } from '@/components/sent-copy-note'
 import { cn } from '@/lib/utils'
 import { MediaGrid } from './MediaGrid'
 import { PhotoHandoffButton } from '../PhotoHandoffButton'
@@ -86,6 +87,7 @@ export function FilesMediaCard({
   const mapScope: MarkScope = {
     serviceRecordId,
     linkedInspectionId: conditionMap?.linkedInspectionId ?? null,
+    openedAt: conditionMap?.openedAt ?? null,
   }
   const [markCount, setMarkCount] = useState(() =>
     conditionMap ? splitMarks(conditionMap.marks, mapScope).own.length : 0
@@ -251,6 +253,7 @@ export function FilesMediaCard({
                           ? t('modern.media.onInvoiceByDesign')
                           : t('modern.media.onInvoiceHint')}
                       </span>
+                      <SentCopyNote sentAt={conditionMap.sentAt} className="mt-1" />
                     </span>
                   </label>
                 </div>
