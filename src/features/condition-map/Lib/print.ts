@@ -63,6 +63,12 @@ export interface ConditionMapPrint {
   ownCount: number
   /** What it was drawn from, so a design can draw it again at its own size and views. */
   source: ConditionMapPrintInput
+  /**
+   * Set when the sheet is the empty form rather than a record: nothing was
+   * marked and the design asked for a sheet to fill in by hand. Carries the
+   * kinds on offer, for the key printed under the drawing.
+   */
+  blank?: { key: MarkTypeRef[] }
 }
 
 export interface ConditionMapPrintInput {
@@ -83,6 +89,11 @@ export interface ConditionMapPrintInput {
   width: number
   /** Which views the sheet shows; the full sheet unless a design says otherwise. */
   views?: MapViewSet
+  /**
+   * With nothing to show, draw the empty sheet instead of nothing: a form
+   * for a walk-round done with a pen, keyed in afterwards.
+   */
+  blank?: boolean
 }
 
 /**
@@ -130,9 +141,12 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
   const { own, previous } = input.scope
     ? splitMarks(open, input.scope)
     : { own: open, previous: [] as ConditionMarkData[] }
-  if (input.requireOwn && own.length === 0) return null
-  const shown = numberedMarks([...(input.includePrevious ? previous : []), ...own])
-  if (shown.length === 0) return null
+  const recorded = numberedMarks([...(input.includePrevious ? previous : []), ...own])
+  const nothing = (input.requireOwn && own.length === 0) || recorded.length === 0
+  if (nothing && !input.blank) return null
+  // The form is empty: marks from other visits are not this job's to print,
+  // blank sheet or not.
+  const shown = nothing ? [] : recorded
 
   const drawing = getBodyDrawing(body)
   const composition = composeViews(input.views ?? 'all')
@@ -174,7 +188,10 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
     height: Math.round((input.width * composition.height) / composition.width),
     shapes,
     rows,
-    ownCount: own.length,
+    ownCount: nothing ? 0 : own.length,
     source: input,
+    ...(nothing
+      ? { blank: { key: types.filter((type) => (type as { hidden?: boolean }).hidden !== true) } }
+      : {}),
   }
 }

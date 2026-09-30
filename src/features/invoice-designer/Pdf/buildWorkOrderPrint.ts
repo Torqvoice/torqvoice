@@ -381,6 +381,9 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
             mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,
           labels: job.conditionMapLabels,
           width: 515 - 2 * (doc.margin ?? 40) + 80,
+          // A workshop that checks cars in on paper prints the empty sheet
+          // for a job with nothing marked yet.
+          blank: mapSection?.fields?.find((f) => f.id === 'blank_sheet')?.visible === true,
         })
       : null
 

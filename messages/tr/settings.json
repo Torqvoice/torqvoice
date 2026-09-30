@@ -774,7 +774,8 @@
       "work_bay": "Çalışma alanı",
       "customer_line": "Müşteri imza satırı",
       "legend": "Açıklama",
-      "previous_marks": "Önceki işaretler"
+      "previous_marks": "Önceki işaretler",
+      "blank_sheet": "Elle doldurulacak boş sayfa"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",

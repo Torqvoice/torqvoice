@@ -473,6 +473,12 @@ export const BUILTIN_CONDITION_MAP_FIELDS = [
   { id: 'legend', name: 'Legend' },
   /** Marks still open from earlier visits, drawn in grey. */
   { id: 'previous_marks', name: 'Earlier marks' },
+  /**
+   * The empty drawing with the key of kinds and ruled rows, printed when the
+   * job has no marks yet: a form for a walk-round done with a pen. Only the
+   * work order offers it, and only when a workshop switches it on.
+   */
+  { id: 'blank_sheet', name: 'Blank sheet to fill in by hand' },
 ] as const
 
 /** Which rows the full results table prints beyond the defects. */
@@ -695,7 +701,10 @@ function getDefaultFieldsForSection(
     case 'job_details':
       return BUILTIN_JOB_DETAILS_FIELDS.map((f) => ({ id: f.id, visible: f.id !== 'work_bay' }))
     case 'condition_map':
-      return builtinConditionMapFields(documentType).map((f) => ({ id: f.id, visible: true }))
+      return builtinConditionMapFields(documentType).map((f) => ({
+        id: f.id,
+        visible: f.id !== 'blank_sheet',
+      }))
     case 'footer':
       // Only the note and the portal link, which is the footer every existing
       // invoice already has. A work order is not sent, so no portal link.
@@ -916,9 +925,13 @@ export function withLetterheadMark(
 function builtinConditionMapFields(
   documentType: LayoutDocumentType
 ): ReadonlyArray<{ id: string; name: string }> {
+  if (documentType === 'work_order') return BUILTIN_CONDITION_MAP_FIELDS
+  // A certificate is a finished record and an invoice a bill: neither is a
+  // form to write on.
+  const printed = BUILTIN_CONDITION_MAP_FIELDS.filter((f) => f.id !== 'blank_sheet')
   return documentType === 'invoice' || documentType === 'quote'
-    ? BUILTIN_CONDITION_MAP_FIELDS.filter((f) => f.id !== 'previous_marks')
-    : BUILTIN_CONDITION_MAP_FIELDS
+    ? printed.filter((f) => f.id !== 'previous_marks')
+    : printed
 }
 
 /** Get all built-in field definitions for a section, on a document of this type. */

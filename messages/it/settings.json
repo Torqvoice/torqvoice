@@ -774,7 +774,8 @@
       "work_bay": "Postazione",
       "customer_line": "Riga della firma del cliente",
       "legend": "Legenda",
-      "previous_marks": "Segni precedenti"
+      "previous_marks": "Segni precedenti",
+      "blank_sheet": "Foglio vuoto da compilare a mano"
     },
     "presetsTitle": "Partire da una disposizione",
     "presetsHint": "Sostituisce la disposizione qui sotto. Nulla viene salvato finché non salvi.",

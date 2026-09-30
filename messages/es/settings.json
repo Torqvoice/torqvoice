@@ -774,7 +774,8 @@
       "work_bay": "Puesto",
       "customer_line": "Línea de firma del cliente",
       "legend": "Leyenda",
-      "previous_marks": "Marcas anteriores"
+      "previous_marks": "Marcas anteriores",
+      "blank_sheet": "Hoja en blanco para rellenar a mano"
     },
     "presetsTitle": "Empezar con una disposición",
     "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",

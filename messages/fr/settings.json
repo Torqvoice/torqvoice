@@ -774,7 +774,8 @@
       "work_bay": "Poste",
       "customer_line": "Ligne de signature du client",
       "legend": "Légende",
-      "previous_marks": "Marques antérieures"
+      "previous_marks": "Marques antérieures",
+      "blank_sheet": "Feuille vierge à remplir à la main"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",

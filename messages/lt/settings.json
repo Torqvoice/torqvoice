@@ -774,7 +774,8 @@
       "work_bay": "Darbo vieta",
       "customer_line": "Kliento parašo eilutė",
       "legend": "Legenda",
-      "previous_marks": "Ankstesnės žymos"
+      "previous_marks": "Ankstesnės žymos",
+      "blank_sheet": "Tuščias lapas pildyti ranka"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",

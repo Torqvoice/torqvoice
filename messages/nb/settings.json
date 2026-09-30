@@ -774,7 +774,8 @@
       "work_bay": "Arbeidsplass",
       "customer_line": "Signaturlinje for kunde",
       "legend": "Forklaring",
-      "previous_marks": "Tidligere merker"
+      "previous_marks": "Tidligere merker",
+      "blank_sheet": "Tomt ark til utfylling for hånd"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",

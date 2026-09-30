@@ -774,7 +774,8 @@
       "work_bay": "Stanowisko",
       "customer_line": "Linia podpisu klienta",
       "legend": "Legenda",
-      "previous_marks": "Wcześniejsze oznaczenia"
+      "previous_marks": "Wcześniejsze oznaczenia",
+      "blank_sheet": "Pusty arkusz do wypełnienia ręcznie"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",

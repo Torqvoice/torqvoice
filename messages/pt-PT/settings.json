@@ -774,7 +774,8 @@
       "work_bay": "Posto",
       "customer_line": "Linha de assinatura do cliente",
       "legend": "Legenda",
-      "previous_marks": "Marcas anteriores"
+      "previous_marks": "Marcas anteriores",
+      "blank_sheet": "Folha em branco para preencher à mão"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é guardado até clicar em Guardar.",

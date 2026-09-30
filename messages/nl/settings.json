@@ -774,7 +774,8 @@
       "work_bay": "Werkplek",
       "customer_line": "Handtekeningregel klant",
       "legend": "Legenda",
-      "previous_marks": "Eerdere markeringen"
+      "previous_marks": "Eerdere markeringen",
+      "blank_sheet": "Leeg blad om met de hand in te vullen"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",

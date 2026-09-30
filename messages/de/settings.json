@@ -774,7 +774,8 @@
       "work_bay": "Arbeitsplatz",
       "customer_line": "Unterschriftszeile Kunde",
       "legend": "Legende",
-      "previous_marks": "Frühere Markierungen"
+      "previous_marks": "Frühere Markierungen",
+      "blank_sheet": "Leeres Blatt zum Ausfüllen von Hand"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",
     "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",

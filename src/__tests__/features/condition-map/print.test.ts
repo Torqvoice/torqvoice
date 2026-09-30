@@ -517,3 +517,111 @@ describe('the drawing sized by the design', () => {
     expect(sides.shapes.some((s: any) => s.type === 'text' && s.text === '1')).toBe(true)
   })
 })
+
+describe('the blank sheet on a work order', () => {
+  const workOrder = (blankOn: boolean, marks: ConditionMarkData[] = []) => {
+    const layout = getDefaultLayout('work_order')
+    return buildWorkOrderPrintSpec({
+      data: {
+        id: 'job1',
+        title: 'Job',
+        type: 'repair',
+        serviceDate: new Date('2026-09-24T09:00:00Z'),
+        subtotal: 0,
+        taxRate: 0,
+        taxAmount: 0,
+        totalAmount: 0,
+        cost: 0,
+        invoiceNumber: '1',
+        partItems: [],
+        laborItems: [],
+        customer: { name: 'A' },
+        vehicle: null,
+      } as unknown as InvoiceData,
+      job: {
+        orderNumber: '1',
+        statusLabel: 'Open',
+        concerns: [],
+        printedAt: new Date('2026-09-25T00:00:00Z'),
+        conditionMarks: marks,
+        bodyType: 'estate',
+        conditionMapLabels: labels,
+      },
+      template: {
+        layoutConfig: {
+          ...layout,
+          sections: layout.sections.map((s) =>
+            s.id === 'condition_map'
+              ? {
+                  ...s,
+                  fields: s.fields?.map((f) =>
+                    f.id === 'blank_sheet' ? { ...f, visible: blankOn } : f
+                  ),
+                }
+              : s
+          ),
+        },
+      } as any,
+      labels: {},
+    }) as any
+  }
+  const block = (spec: any) => spec.blocks.find((b: any) => b.id === 'condition_map')?.content
+
+  it('is off in a new work order design, and offered nowhere else', () => {
+    const field = (type: 'work_order' | 'certificate' | 'invoice') =>
+      getDefaultLayout(type)
+        .sections.find((s) => s.id === 'condition_map')
+        ?.fields?.find((f) => f.id === 'blank_sheet')
+    expect(field('work_order')).toEqual({ id: 'blank_sheet', visible: false })
+    expect(field('certificate')).toBeUndefined()
+    expect(field('invoice')).toBeUndefined()
+  })
+
+  it('prints nothing for an unmarked job while it is off', () => {
+    expect(block(workOrder(false))).toBeUndefined()
+  })
+
+  it('prints the empty drawing, the key of kinds and rows to write in when on', () => {
+    const content = block(workOrder(true))
+    const [sheet, key, table] = content.children
+    expect(sheet.kind).toBe('drawing')
+    // No mark on the sheet: no numbered disc.
+    expect(sheet.shapes.some((s: any) => s.type === 'text' && s.text === '1')).toBe(false)
+    // The key names every built-in kind the labels carry, with a glyph each.
+    expect(key.kind).toBe('drawing')
+    const names = key.shapes.filter((s: any) => s.type === 'text').map((s: any) => s.text)
+    expect(names).toEqual(expect.arrayContaining(['Dent', 'Scratch']))
+    expect(names).toHaveLength(8)
+    expect(table.kind).toBe('table')
+    expect(table.rows.map((r: any) => [r.n, r.area])).toEqual([
+      ['1', ''],
+      ['2', ''],
+      ['3', ''],
+      ['4', ''],
+      ['5', ''],
+      ['6', ''],
+    ])
+  })
+
+  it('prints the marks, not the form, once the job has any', () => {
+    const content = block(
+      workOrder(true, [mark({ id: 'own', serviceRecordId: 'job1', bodyType: 'estate' })])
+    )
+    const table = content.children.find((c: any) => c.kind === 'table')
+    expect(table.rows).toHaveLength(1)
+    expect(table.rows[0].area).toBe('Left front door')
+    expect(content.children.filter((c: any) => c.kind === 'drawing')).toHaveLength(1)
+  })
+
+  it('leaves another visit’s marks off the form', () => {
+    const earlier = mark({
+      id: 'old',
+      inspectionId: 'x',
+      inspectionItemId: 'y',
+      bodyType: 'estate',
+    })
+    const content = block(workOrder(true, [earlier]))
+    const table = content.children.find((c: any) => c.kind === 'table')
+    expect(table.rows.every((r: any) => r.area === '')).toBe(true)
+  })
+})
