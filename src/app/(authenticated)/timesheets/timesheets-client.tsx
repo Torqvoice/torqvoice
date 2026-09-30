@@ -568,7 +568,7 @@ function StatTile({
   live?: boolean
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-card-edge bg-card p-3 shadow-[0_1px_2px_rgb(0_0_0/0.05)]">
+    <div className="relative overflow-hidden rounded-lg border border-card-edge bg-card p-3 shadow-[0_1px_2px_rgb(0_0_0/0.05)]">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Icon className="size-3.5" />
         <span className="truncate">{label}</span>

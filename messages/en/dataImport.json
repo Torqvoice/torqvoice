@@ -180,6 +180,8 @@
       "transmission": "Transmission",
       "engineSize": "Engine size",
       "engineCode": "Engine code",
+      "hsn": "HSN (manufacturer key)",
+      "tsn": "TSN (type key)",
       "purchaseDate": "Purchase date",
       "purchasePrice": "Purchase price"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Customer name is missing",
     "invalid_email": "Email \"{value}\" is not valid and was left out",
     "invalid_vin": "VIN \"{value}\" is not 17 characters; kept as typed",
+    "invalid_type_key": "{field} \"{value}\" is not a valid HSN or TSN; left out",
     "vehicle_make_model_required": "Make and model are missing",
     "vehicle_year_required": "Year is missing",
     "vehicle_year_invalid": "Year \"{value}\" is not a valid year",

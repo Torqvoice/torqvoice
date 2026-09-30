@@ -9,6 +9,9 @@ model ServiceRecord {
   serviceDate     DateTime  @default(now())
   startDateTime   DateTime?
   endDateTime     DateTime?
+  /// When the customer was told the vehicle would be ready. Not the booking:
+  /// `endDateTime` is when the work is planned to finish, this is the promise.
+  promisedAt      DateTime?
   shopName        String?
   techName        String?
   parts           String?
@@ -36,10 +39,20 @@ model ServiceRecord {
   manuallyPaid    Boolean   @default(false)
 
   // Warranty tracking
+  /// What the workshop tells the customer about its own warranty on this job:
+  /// "included", "not_included", or null when it says nothing. Only an included
+  /// warranty carries months, mileage and an expiry; the terms are printed for
+  /// either statement. See src/lib/warranty.ts.
+  warrantyStatus    String?
   warrantyMonths    Int?
   warrantyMileage   Int?
   warrantyExpiresAt DateTime?
   warrantyNotes     String?
+
+  /// Print the car's condition map on this job's invoice: the job's own
+  /// answer from the drop-off tab, on or off, or null to follow the invoice
+  /// design, which answers for every invoice.
+  conditionMapOnInvoice Boolean?
 
   publicToken  String?   @unique
   sharedAt     DateTime?
@@ -47,6 +60,12 @@ model ServiceRecord {
   lastViewedAt DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  /// Who opened the job, when a person did. Null for work the system made
+  /// (a customer's online booking, a recurring invoice, an import) and for
+  /// everything older than this column.
+  createdById String?
+  createdBy   User?   @relation("ServiceRecordCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   /// First time this invoice reached the customer, by email or share link.
   /// Distinct from sharedAt, which tracks only the link and is cleared when
@@ -66,18 +85,22 @@ model ServiceRecord {
   /// title cannot rewrite paper already issued, and a preview and a re-send
   /// always show the same sheet. Only an owner's unlock followed by a send
   /// captures a fresh copy: the corrected one.
-  issuedAt               DateTime?
+  issuedAt                  DateTime?
   /// The look at issue. Restrict: a snapshot referenced by an invoice is a
   /// record and cannot be removed.
-  issuedDesignSnapshotId String?
-  issuedDesignSnapshot   DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
-  issuedLogoSnapshotId   String?
-  issuedLogoSnapshot     DocumentAssetSnapshot?  @relation(fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
+  issuedDesignSnapshotId    String?
+  issuedDesignSnapshot      DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
+  issuedLogoSnapshotId      String?
+  issuedLogoSnapshot        DocumentAssetSnapshot?  @relation("IssuedLogoSnapshot", fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
+  /// The signature of whoever opened the job, as it was at issue. Null when
+  /// they had none, or the invoice was issued before signatures existed.
+  issuedSignatureSnapshotId String?
+  issuedSignatureSnapshot   DocumentAssetSnapshot?  @relation("IssuedSignatureSnapshot", fields: [issuedSignatureSnapshotId], references: [id], onDelete: Restrict)
   /// Everything else the sheet printed that the record does not own: the
   /// workshop's details and payment settings, the customer, the vehicle, the
   /// technician's name, the findings and the custom fields. Shape in
   /// issuedInvoice.ts; read leniently so old snapshots render on new code.
-  issuedData             Json?
+  issuedData                Json?
 
   /// Set when an owner or admin deliberately reopens a locked document.
   /// Nullable rather than a boolean so the audit trail can show when, and the
@@ -93,6 +116,16 @@ model ServiceRecord {
   /// the technician has to go and ask.
   tireSetId String?
   tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
+
+  /// One of the workshop's own statuses, under the stage `status` names
+  /// ("Ready for pickup" under completed). A label with a colour and a
+  /// follow-up, never something the system decides by: whether a job is open,
+  /// shows in the portal or stops a clock is read from `status` alone. Cleared
+  /// whenever `status` moves, since it belongs to the stage it was chosen under.
+  customStatusId    String?
+  customStatus      WorkOrderStatus? @relation(fields: [customStatusId], references: [id], onDelete: SetNull)
+  /// When that status was chosen, for "Ready for pickup since 14:02".
+  customStatusSince DateTime?
 
   /// Null for parts-only / counter sales; such records use customerId
   /// (or neither, for anonymous walk-in sales)
@@ -135,6 +168,7 @@ model ServiceRecord {
   timeEntries    TimeEntry[]
 
   concerns           ServiceConcern[]
+  conditionMarks     ConditionMark[]
   discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
   resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
 
@@ -147,10 +181,12 @@ model ServiceRecord {
   @@index([designId])
   @@index([issuedDesignSnapshotId])
   @@index([issuedLogoSnapshotId])
+  @@index([issuedSignatureSnapshotId])
   @@index([organizationId])
   @@index([customerId])
   @@index([inspectionId])
   @@index([importBatchId])
+  @@index([customStatusId])
   @@map("service_records")
 }
 
@@ -175,12 +211,28 @@ model ServiceConcern {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  /// The rest of the story this concern starts: condition, cause, correction,
+  /// confirmation. `description` is the condition. The cause is the sentence
+  /// the customer is told; the structured findings hang off `findings` below.
+  cause         String?
+  /// What was done about it.
+  correction    String?
+  /// How the fix was checked: the test drive, the re-scan, the symptom gone.
+  confirmation  String?
+  /// Set when somebody ticks the concern as confirmed, cleared when unticked.
+  /// Stamped by the server from the session, never taken from the client.
+  confirmedAt   DateTime?
+  confirmedById String?
+  confirmedBy   User?     @relation("ConcernConfirmedBy", fields: [confirmedById], references: [id], onDelete: SetNull)
+
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
 
   /// What the shop found when it went looking. Empty means nobody has answered
   /// this one yet, which is worth being able to ask about before closing a job.
-  findings VehicleFinding[]
+  findings    VehicleFinding[]
+  /// Photos and video filed under this concern.
+  attachments ServiceAttachment[]
 
   @@index([serviceRecordId])
   @@map("service_concerns")
@@ -224,7 +276,15 @@ model ServiceAttachment {
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
 
+  /// The concern this photo or video is evidence for, when it was added from
+  /// that concern's row. It is still one of the job's files, listed with the
+  /// rest. SetNull, because a picture of the car outlives the sentence it
+  /// was filed under.
+  concernId String?
+  concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
+
   @@index([serviceRecordId])
+  @@index([concernId])
   @@map("service_attachments")
 }
 
@@ -322,4 +382,35 @@ model RecurringLabor {
   recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
 
   @@map("recurring_labor")
+}
+
+/// A status the workshop defined for its work orders, filed under one of the
+/// three fixed stages. The stages are what the app reads; these are what the
+/// workshop calls the steps in between, with what should happen when a job
+/// reaches one.
+model WorkOrderStatus {
+  id              String    @id @default(cuid())
+  name            String
+  /// 'pending' | 'in-progress' | 'completed': the stage it sits under.
+  stage           String
+  /// A colour name from the app's palette, not a hex value, so it follows the theme.
+  color           String    @default("slate")
+  sortOrder       Int       @default(0)
+  /// Offer to tell the customer when a job reaches this status. Asked, never
+  /// sent on its own.
+  notifyCustomer  Boolean   @default(false)
+  /// The message that offer starts from, with {tokens}. Null uses the app's own.
+  messageTemplate String?
+  /// Removed from the menus but kept, so jobs that carry it still say what it was.
+  archivedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  serviceRecords ServiceRecord[]
+
+  @@index([organizationId, stage, sortOrder])
+  @@map("work_order_statuses")
 }

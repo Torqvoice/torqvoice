@@ -17,6 +17,7 @@ import {
 import { IMPORT_PRESETS, presetById } from '@/features/import/Lib/presets'
 import { stageImport } from '@/features/import/Lib/staging'
 import { suggestMapping } from '@/features/import/Lib/suggest'
+import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 export const maxDuration = 120
 
@@ -84,7 +85,8 @@ export async function POST(request: NextRequest) {
     sheet,
   })
 
-  const suggestion = suggestMapping(sheet.columns, sheet.rows, entity, presetId)
+  const typeKey = await isTypeKeyEnabled(organizationId)
+  const suggestion = suggestMapping(sheet.columns, sheet.rows, entity, presetId, { typeKey })
 
   const [countrySetting, features, aiConfigured] = await Promise.all([
     db.appSetting.findUnique({
@@ -111,7 +113,11 @@ export async function POST(request: NextRequest) {
     sampleRows: sheet.rows.slice(0, SAMPLE_ROWS),
     totalRows: sheet.rows.length,
     suggestion,
-    fields: fieldsFor(entity).map((f) => ({ key: f.key, group: f.group, type: f.type })),
+    fields: fieldsFor(entity, { typeKey }).map((f) => ({
+      key: f.key,
+      group: f.group,
+      type: f.type,
+    })),
     presets: IMPORT_PRESETS.map((p) => ({ id: p.id, name: p.name })),
     defaults: {
       countryCode: normalizeCountryCode(countrySetting?.value ?? null),

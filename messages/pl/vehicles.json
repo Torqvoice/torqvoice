@@ -28,10 +28,10 @@
     "unarchiveError": "Nie udało się przywrócić pojazdu",
     "deleteError": "Nie udało się usunąć pojazdu",
     "error": "Nie udało się załadować pojazdów",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Widok tabeli",
+    "viewGrid": "Widok siatki",
+    "viewLargeGrid": "Widok dużej siatki",
+    "openMenu": "Otwórz menu",
     "inspectionOverdue": "Przegląd po terminie",
     "inspectionDue30": "W ciągu 30 dni",
     "inspectionDue90": "W ciągu 90 dni",
@@ -95,12 +95,13 @@
     "severityModerate": "Umiarkowane — zgłaszane przez niektórych właścicieli",
     "severityUncommon": "Rzadkie — zgłaszane przez niewielu właścicieli",
     "severityRare": "Bardzo rzadkie — pojedyncze zgłoszenia, ale krytyczne gdy wystąpi",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Otwórz menu",
+    "dismissMaintenance": "Odrzuć",
     "inspectionDue": "Przegląd do {date}",
     "inspectionCheckedAt": "Sprawdzono w rejestrze {date}",
     "notRegistered": "Niezarejestrowany",
-    "soldReported": "Klient zgłosił sprzedaż {date}"
+    "soldReported": "Klient zgłosił sprzedaż {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Nowa wycena",
@@ -114,7 +115,7 @@
   "inspections": {
     "newInspection": "Nowy przegląd",
     "empty": "Brak przeglądów",
-    "template": "Szablon",
+    "template": "Lista kontrolna",
     "progress": "Postęp",
     "status": "Status",
     "date": "Data",
@@ -184,10 +185,10 @@
     "showing": "Wyświetlanie {start}-{end} z {total}",
     "perPage": "na stronę",
     "page": "Strona {page} z {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Pierwsza strona",
+    "previousPage": "Poprzednia strona",
+    "nextPage": "Następna strona",
+    "lastPage": "Ostatnia strona"
   },
   "notes": {
     "addNote": "Dodaj notatkę",
@@ -213,11 +214,11 @@
     "noteCreated": "Notatka utworzona",
     "titleRequired": "Tytuł i treść są wymagane",
     "saveError": "Nie udało się zapisać notatki",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Otwórz menu",
+    "firstPage": "Pierwsza strona",
+    "previousPage": "Poprzednia strona",
+    "nextPage": "Następna strona",
+    "lastPage": "Ostatnia strona"
   },
   "findings": {
     "sectionTitle": "Obserwacje",
@@ -266,11 +267,11 @@
     "showing": "Wyświetlanie {start}-{end} z {total}",
     "perPage": "na stronę",
     "page": "Strona {page} z {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Pierwsza strona",
+    "previousPage": "Poprzednia strona",
+    "nextPage": "Następna strona",
+    "lastPage": "Ostatnia strona",
+    "openMenu": "Otwórz menu",
     "concernLabel": "Której sprawy dotyczy?",
     "concernNone": "Klient o to nie pytał"
   },
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Pojemność silnika",
     "engineCode": "Kod silnika",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Z niemieckiego dowodu rejestracyjnego: HSN to pole 2.1, TSN to pierwsze trzy znaki pola 2.2.",
+    "hsnInvalid": "HSN to cztery cyfry z pola 2.1 dowodu rejestracyjnego.",
+    "tsnInvalid": "TSN to trzy litery lub cyfry z początku pola 2.2 dowodu rejestracyjnego.",
     "makeMarine": "Producent *",
     "mileageMarine": "Godziny Pracy Silnika",
     "transmissionMarine": "Typ Silnika",
@@ -362,7 +369,10 @@
     "inspectionDue": "Następny przegląd okresowy",
     "inspectionDueHint": "Wpisz datę, jeśli żaden rejestr jej nie dostarcza. Używają jej przypomnienia i pulpit.",
     "inspectionDueFromRegistry": "Z rejestru pojazdów. Zmień tutaj, aby nadpisać do następnej synchronizacji.",
-    "lookupEnterPlateOrVin": "Najpierw wpisz rejestrację lub VIN"
+    "lookupVin": "Sprawdź VIN",
+    "lookupEnterVin": "Najpierw wpisz numer VIN",
+    "lookupVinNotFound": "Nie znaleziono pojazdu o tym numerze VIN",
+    "lookupVinFailed": "Nie udało się sprawdzić numeru VIN"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",
@@ -373,10 +383,10 @@
     "archiveError": "Nie udało się zarchiwizować pojazdu"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Pierwsza strona",
+    "previousPage": "Poprzednia strona",
+    "nextPage": "Następna strona",
+    "lastPage": "Ostatnia strona"
   },
   "inspectionReminders": {
     "title": "Przypomnienia o przeglądzie",

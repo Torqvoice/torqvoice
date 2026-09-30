@@ -234,6 +234,15 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 85,
   },
+  // The workshop's kinds of mark on the condition map. Marks name a kind by
+  // its key rather than pointing at the row, so the order does not matter.
+  {
+    model: 'ConditionMarkType',
+    key: 'conditionMarkTypes',
+    option: 'workshopConfig',
+    restore: 'replace',
+    clearOrder: 85,
+  },
   {
     model: 'Webhook',
     key: 'webhooks',
@@ -247,6 +256,15 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     option: 'workshopConfig',
     restore: 'replace',
     clearOrder: 87,
+  },
+  // The workshop's own work order statuses. Jobs point at them and let go when
+  // one is removed (SetNull), so they are cleared after the jobs.
+  {
+    model: 'WorkOrderStatus',
+    key: 'workOrderStatuses',
+    option: 'workshopConfig',
+    restore: 'replace',
+    clearOrder: 88,
   },
   // Members keep pointing at their role, so a restore fills gaps rather than
   // clearing the table.
@@ -270,6 +288,7 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'Note', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   { model: 'FuelLog', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   { model: 'VehicleFinding', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  { model: 'ConditionMark', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   { model: 'RecurringInvoice', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   {
     model: 'RecurringPart',
@@ -305,6 +324,12 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'StoredImage', option: 'inventory', nestedUnder: 'InventoryPart', restore: 'replace' },
   { model: 'InspectionItem', option: 'inspections', nestedUnder: 'Inspection', restore: 'replace' },
   {
+    model: 'InspectionAttachment',
+    option: 'inspections',
+    nestedUnder: 'Inspection',
+    restore: 'replace',
+  },
+  {
     model: 'InspectionTemplateSection',
     option: 'inspections',
     nestedUnder: 'InspectionTemplate',
@@ -317,6 +342,10 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
   },
   { model: 'TireMeasurement', option: 'tireHotel', nestedUnder: 'TireSet', restore: 'replace' },
+  // The same model twice on purpose: a stored image belongs either to an
+  // inventory part's gallery or to a tire reading's condition photos, and
+  // each parent has to carry its own or the rows are lost with it.
+  { model: 'StoredImage', option: 'tireHotel', nestedUnder: 'TireMeasurement', restore: 'replace' },
 ]
 
 /**
@@ -327,6 +356,8 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
  */
 export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   AiChat: 'Assistant conversation history, not a workshop record.',
+  AiChatMessage:
+    'The turns of that history; reached through the vehicle or customer the chat was about.',
   CustomerMagicLink: 'Single-use portal login link, expires within the hour.',
   CustomerSession: 'Portal session, recreated when the customer signs in.',
   CustomerSmsCode: 'One-time code, valid for minutes.',

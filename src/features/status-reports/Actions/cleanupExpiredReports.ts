@@ -1,8 +1,10 @@
-'use server'
+import 'server-only'
+
+// Not a server action: it is called by the two cleanup routes, which check
+// who is asking. As a 'use server' export anyone could call it, unsigned.
 
 import { db } from '@/lib/db'
-import { unlink } from 'fs/promises'
-import path from 'path'
+import { releaseFiles } from '@/lib/files/manager'
 
 /**
  * Deletes expired status reports and their associated video files.
@@ -25,36 +27,21 @@ export async function cleanupExpiredReports() {
 
   if (expiredReports.length === 0) return { deleted: 0 }
 
-  // Delete video files from disk
-  for (const report of expiredReports) {
-    if (report.videoUrl) {
-      try {
-        // videoUrl format: /api/protected/files/{orgId}/services/{filename}
-        const match = report.videoUrl.match(/\/services\/(.+)$/)
-        if (match) {
-          const filename = path.basename(match[1])
-          const filePath = path.join(
-            process.cwd(),
-            'data',
-            'uploads',
-            report.organizationId,
-            'services',
-            filename
-          )
-          await unlink(filePath)
-        }
-      } catch {
-        // File may already be deleted, continue
-      }
-    }
-  }
-
-  // Delete all expired reports from database
+  // Exactly the reports read above, so the videos let go below are theirs.
   const result = await db.statusReport.deleteMany({
-    where: {
-      expiresAt: { lt: now },
-    },
+    where: { id: { in: expiredReports.map((report) => report.id) } },
   })
+
+  // Their videos, per workshop, once the reports are gone.
+  const byOrganization = new Map<string, (string | null)[]>()
+  for (const report of expiredReports) {
+    const urls = byOrganization.get(report.organizationId) ?? []
+    urls.push(report.videoUrl)
+    byOrganization.set(report.organizationId, urls)
+  }
+  for (const [organizationId, urls] of byOrganization) {
+    await releaseFiles(urls, { organizationId, reason: 'status report expired' })
+  }
 
   return { deleted: result.count }
 }

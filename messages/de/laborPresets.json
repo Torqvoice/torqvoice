@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "openMenu": "Open menu"
+    "openMenu": "Menü öffnen"
   },
   "deletePreset": {
     "title": "Arbeitsvorlage löschen",
@@ -43,8 +43,8 @@
     "cancel": "Abbrechen",
     "create": "Erstellen",
     "saveChanges": "Änderungen speichern",
-    "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQty": "Menge",
+    "itemQtyOrHours": "Einheit / Stunden",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Teile",
@@ -63,7 +63,7 @@
     "noPackages": "Keine Arbeitsvorlagen gefunden.",
     "items": "{count} Positionen",
     "totalHours": "{hours} Std. gesamt",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} Einheit(en)",
     "totalParts": "{count} Teile"
   },
   "errors": {

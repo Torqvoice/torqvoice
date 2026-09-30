@@ -23,7 +23,14 @@ export async function createQuoteRequest(input: unknown) {
   // Verify the inspection exists and the token matches
   const inspection = await db.inspection.findFirst({
     where: { id: data.inspectionId, publicToken: data.publicToken },
-    include: { vehicle: { select: { customer: { select: { name: true } } } } },
+    include: {
+      vehicle: { select: { customer: { select: { name: true } } } },
+      items: {
+        where: { id: { in: data.selectedItemIds } },
+        select: { id: true, name: true },
+        orderBy: { sortOrder: 'asc' },
+      },
+    },
   })
   if (!inspection) {
     return { success: false, error: 'Inspection not found' }
@@ -47,11 +54,20 @@ export async function createQuoteRequest(input: unknown) {
   })
 
   const customerName = inspection.vehicle?.customer?.name || 'A customer'
+  // The desk reads the notification before the page: name what was asked
+  // for, the first few checks, and how many more there are.
+  const names = (inspection.items ?? []).map((item) => item.name)
+  const shown = names.slice(0, 3)
+  const rest = data.selectedItemIds.length - shown.length
+  const asked =
+    shown.length === 0
+      ? `${data.selectedItemIds.length} item(s)`
+      : `${shown.join(', ')}${rest > 0 ? ` and ${rest} more` : ''}`
   notify({
     organizationId: inspection.organizationId,
     type: 'inspection_quote_request',
     title: 'Quote Requested from Inspection',
-    message: `${customerName} requested a quote for ${data.selectedItemIds.length} item(s) from an inspection`,
+    message: `${customerName} requested a quote for ${asked} from an inspection`,
     entityType: 'inspection',
     entityId: inspection.id,
     entityUrl: `/inspections/${inspection.id}`,

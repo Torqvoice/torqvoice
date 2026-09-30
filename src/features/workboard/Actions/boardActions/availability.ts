@@ -2,7 +2,8 @@
 
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { findConflicts, nextAvailableSlot } from '../../Lib/availability'
+import { findConflicts, nextAvailableSlot, technicianMinutesInDay } from '../../Lib/availability'
+import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
 import { loadBookingContext } from '../../Lib/bookings'
 
 /**
@@ -83,6 +84,32 @@ export async function findNextSlot(input: {
       return slot
         ? { start: slot.start.toISOString(), end: slot.end.toISOString() }
         : { start: null, end: null }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.WORK_ORDERS },
+      ],
+    }
+  )
+}
+
+/**
+ * How full each technician's day is, for the day a job is booked on: minutes
+ * already booked, this job included, so the desk can see who has room before
+ * putting a name on the work. The day is the workshop's calendar day, not the
+ * server's.
+ */
+export async function getTechnicianDayLoad(input: { day: string }) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const day = new Date(input.day)
+      if (Number.isNaN(day.getTime())) return { minutes: {} as Record<string, number> }
+
+      const { bookings, hours } = await loadBookingContext(organizationId, day)
+      const timeZone = hours.timeZone ?? 'UTC'
+      const dayStart = startOfZonedDay(day, timeZone)
+      const dayEnd = addZonedDays(dayStart, 1, timeZone)
+      return { minutes: technicianMinutesInDay(bookings, dayStart, dayEnd) }
     },
     {
       requiredPermissions: [

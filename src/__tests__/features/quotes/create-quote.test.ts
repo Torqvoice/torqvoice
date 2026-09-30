@@ -28,6 +28,7 @@ vi.mock('@/lib/db', () => ({
     appSetting: { findMany: vi.fn() },
     quote: { findFirst: vi.fn() },
     customer: { findFirst: vi.fn() },
+    inspection: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
 }))
@@ -236,6 +237,35 @@ describe('createQuote — quote number generation', () => {
 // ---------------------------------------------------------------------------
 
 describe('createQuote — from inspection', () => {
+  // The inspection a quote links to has to be the workshop's own; the mocks
+  // are reset before each test, so it is set here.
+  beforeEach(() => {
+    vi.mocked(db.inspection.findFirst).mockResolvedValue({ id: 'insp-1' } as any)
+  })
+
+  it('refuses an inspection the workshop does not own', async () => {
+    setupAuth()
+    setupQuoteCreation()
+    vi.mocked(db.inspection.findFirst).mockResolvedValue(null)
+    const mockCreate = vi.fn()
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({ quote: { create: mockCreate } })
+    )
+
+    const result = await createQuote({
+      title: 'Quote',
+      inspectionId: 'someone-elses',
+      status: 'draft',
+    })
+
+    expect(result.success).toBe(false)
+    expect(mockCreate).not.toHaveBeenCalled()
+    expect(vi.mocked(db.inspection.findFirst).mock.calls[0][0]?.where).toEqual({
+      id: 'someone-elses',
+      organizationId: ORG,
+    })
+  })
+
   it('links quote to inspectionId, vehicleId, and customerId', async () => {
     setupAuth()
     setupQuoteCreation()

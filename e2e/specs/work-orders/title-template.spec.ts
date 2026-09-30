@@ -7,7 +7,7 @@ import {
   workshopSetting,
 } from '../../support/db'
 import { settle } from '../../support/hydration'
-import { saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
+import { saveWorkOrder, seededVehicleUrl, setTitle } from '../../support/work-order'
 
 /**
  * A new work order opens with a title the workshop chose.
@@ -151,7 +151,7 @@ test.describe('a template the workshop wrote', () => {
   test('can still be typed over on the job', async ({ page }) => {
     await saveTemplate(page, '{order_number} - {license_plate}')
     const job = await openNewJob(page)
-    await job.field.fill('Brake pads, front')
+    await setTitle(page, 'Brake pads, front')
     await saveWorkOrder(page)
     expect((await serviceRecordNames(job.id)).title).toBe('Brake pads, front')
   })

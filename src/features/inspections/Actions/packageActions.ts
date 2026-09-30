@@ -124,7 +124,7 @@ export async function importTemplatePackage(raw: unknown) {
 
       const templates = reviewed.filter((c) => c.type === INSPECTION_TEMPLATE_TYPE)
       if (templates.length === 0) {
-        throw new Error('This package does not contain an inspection template.')
+        throw new Error('This package does not contain a checklist.')
       }
 
       // An imported checklist is never made the default, and never silently

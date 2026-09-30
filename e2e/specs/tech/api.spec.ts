@@ -1,6 +1,14 @@
 import { expect, type APIRequestContext, type Page, test } from '@playwright/test'
-import { foreignServiceRecordId, organizationIdFor, seededTenantFixtures } from '../../support/db'
+import {
+  foreignServiceRecordId,
+  jobAssignment,
+  organizationIdFor,
+  plantJob,
+  plantWorkshop,
+  seededTenantFixtures,
+} from '../../support/db'
 import { settle } from '../../support/hydration'
+import { laborRows, saveWorkOrder, setTitle } from '../../support/work-order'
 
 /**
  * The contract the technician app is built against.
@@ -89,23 +97,16 @@ test.beforeAll(async ({ browser, playwright, baseURL }) => {
   // A job in this workshop that will not be assigned to the new technician.
   someoneElsesJob = seeded.serviceRecordId
 
-  // A second workshop, for the cross-workshop refusals. Signing up gives it a
-  // few work orders of its own, which is what makes it a useful target.
-  const outsider = await browser.newContext({ storageState: { cookies: [], origins: [] } })
-  const outsiderPage = await outsider.newPage()
-  await outsiderPage.goto('/auth/sign-up')
-  await outsiderPage.locator('#name').fill('E2E Tech Outsider')
-  await outsiderPage.locator('#email').fill(OUTSIDER)
-  await outsiderPage.locator('#password').fill(OUTSIDER_PASSWORD)
-  await outsiderPage.locator('#terms').click()
-  await outsiderPage.getByRole('button', { name: /create account/i }).click()
-  await outsiderPage.waitForURL(/\/onboarding/, { timeout: 30_000 })
-  await outsiderPage.locator('#workshopName').fill(`E2E Tech Outsider Garage ${stamp}`)
-  await outsiderPage.locator('form button[type="submit"]').click()
-  await outsiderPage.waitForURL((url) => !/^\/(auth|onboarding)/.test(url.pathname), {
-    timeout: 30_000,
+  // A second workshop, for the cross-workshop refusals, planted with a job
+  // of its own: a self-hosted install opens one workshop, so a sign-up would
+  // be told to ask for an invitation instead of opening this one.
+  const outsider = await plantWorkshop({
+    name: 'E2E Tech Outsider',
+    email: OUTSIDER,
+    password: OUTSIDER_PASSWORD,
+    workshopName: `E2E Tech Outsider Garage ${stamp}`,
   })
-  await outsider.close()
+  await plantJob(outsider.organizationId, outsider.userId, `E2E Tech Outsider Job ${stamp}`)
 
   foreignJob = await foreignServiceRecordId(await organizationIdFor(OUTSIDER))
   expect(foreignJob).not.toBe(someoneElsesJob)
@@ -250,26 +251,19 @@ test.describe('the technician app', () => {
       { timeout: 30_000 }
     )
     jobId = page.url().split('/').pop() as string
-    await page.locator('input[name="title"]').fill(`E2E tech job ${stamp}`)
+    await settle(page)
+    await setTitle(page, `E2E tech job ${stamp}`)
+    await saveWorkOrder(page)
 
+    // The technician list puts them on the job with one click.
+    const technician = page
+      .getByRole('radiogroup', { name: 'Technician' })
+      .getByRole('radio', { name: new RegExp(TECHNICIAN) })
     await expect(async () => {
-      await page
-        .getByRole('combobox')
-        .filter({ hasText: /select technician/i })
-        .first()
-        .click()
-      await expect(page.getByPlaceholder(/search or create technician/i)).toBeVisible({
-        timeout: 2_000,
-      })
+      await technician.click()
+      await expect(technician).toHaveAttribute('aria-checked', 'true', { timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await page.getByPlaceholder(/search or create technician/i).fill(TECHNICIAN)
-    await page
-      .getByRole('option', { name: new RegExp(TECHNICIAN) })
-      .first()
-      .click()
-
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Saved', { exact: true })).toBeVisible()
+    await expect.poll(async () => (await jobAssignment(jobId)).technicianId).toBeTruthy()
 
     const jobs = await phone(device).get('/api/v1/tech/jobs')
     const { data } = await jobs.json()
@@ -302,6 +296,37 @@ test.describe('the technician app', () => {
     // Nothing running, so a second stop is a conflict rather than a crash.
     const again = await phone(device).post('/api/v1/tech/time/stop')
     expect(again.status()).toBe(409)
+  })
+
+  /**
+   * The other half of clocking off: the time is billed onto the job, and the
+   * desk has that job open while it happens.
+   *
+   * A work order saves its labour by replacing every line, so a desk holding
+   * a list read before the technician's line existed deletes that line on its
+   * next save. The page therefore hears about it on the work board channel
+   * and reads the job again, and the line appears without a reload. This is
+   * the whole path: phone, endpoint, socket, browser.
+   */
+  test('bills time onto the job, and the desk sees it without reloading', async ({ page }) => {
+    const description = `E2E bay labour ${stamp}`
+    await page.goto(`/vehicles/${(await seededTenantFixtures()).vehicleId}/service/${jobId}`)
+    await settle(page)
+    // The socket is opened by the app shell after hydration; a line added
+    // before it is listening would only be found by reloading.
+    await expect(laborRows(page)).toHaveCount(0)
+
+    const added = await phone(device).post(`/api/v1/tech/jobs/${jobId}/labor`, {
+      description,
+      hours: 1.5,
+    })
+    expect(added.status()).toBe(201)
+    expect((await added.json()).data.labor.hours).toBe(1.5)
+
+    // No reload anywhere in this test: the page is told.
+    await expect(laborRows(page)).toHaveCount(1, { timeout: 30_000 })
+    await expect(laborRows(page).first()).toHaveValue(description)
+    expect(page.url(), 'the page never navigated').toContain(jobId)
   })
 
   test('asks for a day rather than everything', async () => {

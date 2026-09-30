@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Redaguoti",
     "delete": "Ištrinti",
-    "openMenu": "Open menu"
+    "openMenu": "Atidaryti meniu"
   },
   "deletePreset": {
     "title": "Ištrinti darbų šabloną",

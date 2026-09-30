@@ -24,6 +24,8 @@ import {
   Wrench,
 } from 'lucide-react'
 import { globalSearch, getRecentCustomers } from '@/features/search/Actions/searchActions'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 
 interface SearchResult {
   vehicles: {
@@ -32,6 +34,8 @@ interface SearchResult {
     model: string
     year: number
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
   }[]
   customers: {
     id: string
@@ -158,6 +162,11 @@ const SEARCHABLE_SETTINGS = [
   },
   { key: 'tax', href: '/settings/tax', keywords: ['tax', 'vat', 'rate'] },
   {
+    key: 'warranty',
+    href: '/settings/warranty',
+    keywords: ['warranty', 'guarantee', 'terms', 'default'],
+  },
+  {
     key: 'localization',
     href: '/settings/localization',
     keywords: [
@@ -181,7 +190,7 @@ const SEARCHABLE_SETTINGS = [
   {
     key: 'appearance',
     href: '/settings/appearance',
-    keywords: ['appearance', 'theme', 'dark', 'light', 'date', 'timezone'],
+    keywords: ['appearance', 'theme', 'dark', 'light', 'font', 'typeface', 'colour', 'color'],
   },
   { key: 'data', href: '/settings/data', keywords: ['data', 'export', 'import', 'backup'] },
   { key: 'about', href: '/settings/about', keywords: ['about', 'version', 'info'] },
@@ -208,6 +217,7 @@ export function SearchCommand() {
   const router = useRouter()
   const t = useTranslations('search')
   const tNav = useTranslations('navigation.sidebar')
+  const typeKeyEnabled = useTypeKeyEnabled()
   const tSettings = useTranslations('settings')
   const tTire = useTranslations('tireHotel')
   const [open, setOpen] = useState(false)
@@ -421,6 +431,11 @@ export function SearchCommand() {
                     {v.licensePlate && (
                       <span className="ml-2 font-mono text-xs text-muted-foreground">
                         {v.licensePlate}
+                      </span>
+                    )}
+                    {typeKeyEnabled && (v.hsn || v.tsn) && (
+                      <span className="ml-2 font-mono text-xs text-muted-foreground">
+                        {formatTypeKey(v.hsn, v.tsn)}
                       </span>
                     )}
                   </CommandItem>

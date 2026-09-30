@@ -28,10 +28,10 @@
     "unarchiveError": "Araç arşivden çıkarılamadı",
     "deleteError": "Araç silinemedi",
     "error": "Araçlar yüklenemedi",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Tablo görünümü",
+    "viewGrid": "Izgara görünümü",
+    "viewLargeGrid": "Büyük ızgara görünümü",
+    "openMenu": "Menüyü aç",
     "inspectionOverdue": "Muayene gecikmiş",
     "inspectionDue30": "30 gün içinde",
     "inspectionDue90": "90 gün içinde",
@@ -95,12 +95,13 @@
     "severityModerate": "Orta düzey — bazı araç sahipleri tarafından bildirilmiş",
     "severityUncommon": "Nadir — az sayıda araç sahibi tarafından bildirilmiş",
     "severityRare": "Çok nadir — tek tük bildirimler ancak gerçekleştiğinde kritik",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Menüyü aç",
+    "dismissMaintenance": "Kapat",
     "inspectionDue": "Muayene {date}",
     "inspectionCheckedAt": "Sicilde {date} tarihinde kontrol edildi",
     "notRegistered": "Kayıtlı değil",
-    "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi"
+    "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Yeni teklif",
@@ -114,7 +115,7 @@
   "inspections": {
     "newInspection": "Yeni Muayene",
     "empty": "Henüz muayene yok",
-    "template": "Şablon",
+    "template": "Kontrol listesi",
     "progress": "İlerleme",
     "status": "Durum",
     "date": "Tarih",
@@ -184,10 +185,10 @@
     "showing": "{start}-{end} / {total} gösteriliyor",
     "perPage": "sayfa başına",
     "page": "Sayfa {page} / {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa"
   },
   "notes": {
     "addNote": "Not Ekle",
@@ -213,11 +214,11 @@
     "noteCreated": "Not oluşturuldu",
     "titleRequired": "Başlık ve içerik gereklidir",
     "saveError": "Not kaydedilemedi",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Menüyü aç",
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa"
   },
   "findings": {
     "sectionTitle": "Gözlemler",
@@ -266,11 +267,11 @@
     "showing": "{start}-{end} / {total} gösteriliyor",
     "perPage": "sayfa başına",
     "page": "Sayfa {page} / {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa",
+    "openMenu": "Menüyü aç",
     "concernLabel": "Hangi maddeyi yanıtlıyor?",
     "concernNone": "Müşterinin sorduğu bir şey değil"
   },
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Motor Hacmi",
     "engineCode": "Motor Kodu",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Alman ruhsatından: HSN 2.1 alanıdır, TSN ise 2.2 alanının ilk üç karakteridir.",
+    "hsnInvalid": "HSN, ruhsatın 2.1 alanındaki dört rakamdır.",
+    "tsnInvalid": "TSN, ruhsatın 2.2 alanının başındaki üç harf veya rakamdır.",
     "makeMarine": "Üretici *",
     "mileageMarine": "Motor Saatleri",
     "transmissionMarine": "Motor Tipi",
@@ -362,7 +369,10 @@
     "inspectionDue": "Sonraki periyodik muayene",
     "inspectionDueHint": "Bir sicil sağlamıyorsa tarihi yazın. Hatırlatmalar ve pano bunu kullanır.",
     "inspectionDueFromRegistry": "Araç sicilinden alındı. Bir sonraki eşitlemeye kadar geçersiz kılmak için burada değiştirin.",
-    "lookupEnterPlateOrVin": "Önce bir plaka veya VIN yazın"
+    "lookupVin": "VIN sorgula",
+    "lookupEnterVin": "Önce bir VIN yazın",
+    "lookupVinNotFound": "Bu VIN ile araç bulunamadı",
+    "lookupVinFailed": "VIN sorgulanamadı"
   },
   "archiveDialog": {
     "title": "Aracı Arşivle",
@@ -373,10 +383,10 @@
     "archiveError": "Araç arşivlenemedi"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa"
   },
   "inspectionReminders": {
     "title": "Muayene hatırlatmaları",

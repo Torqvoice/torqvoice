@@ -78,6 +78,8 @@ export interface InvoiceData {
   }[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   findings?: Array<{ description: string; severity: string; notes: string | null }>
+  /** 'included', 'not_included' or null; see src/lib/warranty.ts. */
+  warrantyStatus?: string | null
   warrantyMonths?: number | null
   warrantyMileage?: number | null
   warrantyExpiresAt?: Date | string | null
@@ -97,6 +99,9 @@ export interface InvoiceData {
     year: number
     vin: string | null
     licensePlate: string | null
+    /** German type approval key. Absent where a caller predates it. */
+    hsn?: string | null
+    tsn?: string | null
     mileage: number
     customer: {
       name: string
@@ -133,6 +138,8 @@ export interface InvoiceSettingsProps {
   currencyFormat?: 'symbol' | 'code'
   unitSystem?: string
   dateFormat?: string
+  /** How a time of day is written where the sheet prints one: '12h' or '24h'. */
+  timeFormat?: string
   timezone?: string
 }
 

@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { toast } from 'sonner'
 import type {
   InvoiceDocumentStyle,
@@ -20,6 +21,8 @@ import {
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
+  layoutDocumentType,
+  NO_CUSTOM_FIELD_SECTIONS,
   unmentionedGrandfathered,
   isCustomFieldId,
   toCustomFieldId,
@@ -343,6 +346,7 @@ export function DesignerInspector({
   orgNumberLabelDefault,
   onOrgNumberLabel,
   telegramBotLink,
+  signatureSet,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -373,6 +377,8 @@ export function DesignerInspector({
   onOrgNumberLabel: (value: string) => void
   /** The connected Telegram bot's link; the block is a stand-in without one. */
   telegramBotLink?: string
+  /** Whether the person designing has saved a signature, or the canvas shows a stand-in. */
+  signatureSet: boolean
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -406,6 +412,7 @@ export function DesignerInspector({
       <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('orgNumberLabelHint')}</p>
     </Group>
   )
+  const typeKeyEnabled = useTypeKeyEnabled()
   /** The field row being dragged to a new spot in the list, if any. */
   const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
@@ -417,7 +424,7 @@ export function DesignerInspector({
      * The fields this section shows, resolved the way the generator resolves
      * them: no list of its own means every built-in field, visible.
      */
-    const builtins = getBuiltinFieldsForSection(section.id)
+    const builtins = getBuiltinFieldsForSection(section.id, layoutDocumentType(layout))
     const builtinIds = new Set(builtins.map((f) => f.id))
     const stored = (section.fields ?? builtins.map((f) => ({ id: f.id, visible: true }))) // A stored id no builtin list carries any more is a leftover, not a field.
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
@@ -436,9 +443,11 @@ export function DesignerInspector({
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The
     // same field can still be added to several sections.
-    const availableCustomFields = customFields.filter(
-      (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
-    )
+    const availableCustomFields = NO_CUSTOM_FIELD_SECTIONS.has(section.id)
+      ? []
+      : customFields.filter(
+          (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
+        )
     // The footer prints its mark only when the field is switched on, and the
     // controls that dress that mark follow it.
     const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)
@@ -527,6 +536,82 @@ export function DesignerInspector({
                 onChange={(variant) => onSection(section.id, { variant })}
               />
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('variant.hint')}</p>
+            </Group>
+          )}
+
+          {section.id === 'condition_map' && (
+            <Group title={t('conditionMapDrawing')}>
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('conditionMapViews')}</div>
+                <Choice
+                  value={section.variant ?? 'all'}
+                  options={[
+                    { value: 'all', label: t('conditionMapViewsAll') },
+                    { value: 'top', label: t('conditionMapViewsTop') },
+                    { value: 'sides', label: t('conditionMapViewsSides') },
+                  ]}
+                  onChange={(variant) => onSection(section.id, { variant })}
+                />
+              </div>
+              <Row label={t('totalsWidth')}>
+                <input
+                  type="number"
+                  min={140}
+                  max={515}
+                  value={style.width ?? ''}
+                  placeholder={t('auto')}
+                  onChange={(e) =>
+                    setStyle({ width: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                  className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+                />
+              </Row>
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('alignment')}</div>
+                <Choice
+                  value={style.align ?? 'left'}
+                  options={[
+                    { value: 'left', label: t('columnLeft') },
+                    { value: 'center', label: t('alignCenter') },
+                    { value: 'right', label: t('columnRight') },
+                  ]}
+                  onChange={(align) => setStyle({ align: align as 'left' | 'center' | 'right' })}
+                />
+              </div>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {t('conditionMapWidthHint')}
+              </p>
+            </Group>
+          )}
+
+          {section.id === 'result' && (
+            <Group title={t('panelStyle')}>
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('alignment')}</div>
+                <Choice
+                  value={style.align ?? 'left'}
+                  options={[
+                    { value: 'left', label: t('columnLeft') },
+                    { value: 'center', label: t('alignCenter') },
+                    { value: 'right', label: t('columnRight') },
+                  ]}
+                  onChange={(align) => setStyle({ align: align as 'left' | 'center' | 'right' })}
+                />
+              </div>
+              <Row label={t('totalsWidth')}>
+                <input
+                  type="number"
+                  min={140}
+                  max={515}
+                  value={style.width ?? ''}
+                  placeholder={t('auto')}
+                  onChange={(e) =>
+                    setStyle({ width: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                  className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+                />
+              </Row>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('resultWidthHint')}</p>
             </Group>
           )}
 
@@ -751,6 +836,25 @@ export function DesignerInspector({
             </Group>
           )}
 
+          {/* Whose hand it is depends on the document, so nothing here sets
+              it: each person saves their own, and the sheet prints the
+              signature of whoever issued it. */}
+          {section.id === 'signature' && (
+            <Group title={t('signatureWhose')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {signatureSet ? t('signatureOwnHint') : t('signaturePlaceholderHint')}{' '}
+                <a
+                  href="/settings/account"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('signatureLink')}
+                </a>
+              </p>
+            </Group>
+          )}
+
           {section.id === 'header' && (
             <Group title={t('logo')}>
               <LogoUpload value={logoUrl} own={ownLogo} onChange={onLogo} />
@@ -821,94 +925,98 @@ export function DesignerInspector({
 
           {SECTIONS_WITH_FIELDS.has(section.id) && (
             <Group title={t('fields')}>
-              {resolvedFields.map((field) => (
-                <div
-                  key={field.id}
-                  data-testid={`field-row-${field.id}`}
-                  data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
-                  // A field the sheet prints in a place of its own offers no
-                  // drag, and is no place to drop one either: the position it
-                  // would take is not a position the print reads.
-                  draggable={!fieldHasFixedSlot(section.id, field.id)}
-                  onDragStart={(e) => {
-                    if (fieldHasFixedSlot(section.id, field.id)) return
-                    e.dataTransfer.effectAllowed = 'move'
-                    setDragFieldId(field.id)
-                  }}
-                  onDragEnd={() => setDragFieldId(null)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDragEnter={() => {
-                    if (fieldHasFixedSlot(section.id, field.id)) return
-                    dragFieldOver(field.id)
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault()
-                    setDragFieldId(null)
-                  }}
-                  className={`flex items-center justify-between gap-2 ${
-                    dragFieldId === field.id ? 'opacity-50' : ''
-                  }`}
-                >
-                  {fieldHasFixedSlot(section.id, field.id) ? (
-                    <span
-                      className="select-none text-[13px] leading-none text-[#dcdee2]"
-                      title={t('fieldFixedSlot')}
-                    >
-                      ·
+              {/* The type key's row only for a workshop that records it. It stays in
+                  the saved list either way, so its switch and place survive. */}
+              {resolvedFields
+                .filter((field) => typeKeyEnabled || field.id !== 'hsn_tsn')
+                .map((field) => (
+                  <div
+                    key={field.id}
+                    data-testid={`field-row-${field.id}`}
+                    data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
+                    // A field the sheet prints in a place of its own offers no
+                    // drag, and is no place to drop one either: the position it
+                    // would take is not a position the print reads.
+                    draggable={!fieldHasFixedSlot(section.id, field.id)}
+                    onDragStart={(e) => {
+                      if (fieldHasFixedSlot(section.id, field.id)) return
+                      e.dataTransfer.effectAllowed = 'move'
+                      setDragFieldId(field.id)
+                    }}
+                    onDragEnd={() => setDragFieldId(null)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDragEnter={() => {
+                      if (fieldHasFixedSlot(section.id, field.id)) return
+                      dragFieldOver(field.id)
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      setDragFieldId(null)
+                    }}
+                    className={`flex items-center justify-between gap-2 ${
+                      dragFieldId === field.id ? 'opacity-50' : ''
+                    }`}
+                  >
+                    {fieldHasFixedSlot(section.id, field.id) ? (
+                      <span
+                        className="select-none text-[13px] leading-none text-[#dcdee2]"
+                        title={t('fieldFixedSlot')}
+                      >
+                        ·
+                      </span>
+                    ) : (
+                      <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
+                        ⠿
+                      </span>
+                    )}
+                    <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                      {fieldName(field.id)}
                     </span>
-                  ) : (
-                    <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
-                      ⠿
-                    </span>
-                  )}
-                  <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
-                    {fieldName(field.id)}
-                  </span>
-                  {boldable(field.id) &&
-                    (() => {
-                      const boldOn = field.bold ?? defaultBoldIds.has(field.id)
-                      return (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFields(
-                              resolvedFields.map((f) =>
-                                f.id === field.id ? { ...f, bold: !boldOn } : f
+                    {boldable(field.id) &&
+                      (() => {
+                        const boldOn = field.bold ?? defaultBoldIds.has(field.id)
+                        return (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFields(
+                                resolvedFields.map((f) =>
+                                  f.id === field.id ? { ...f, bold: !boldOn } : f
+                                )
                               )
-                            )
-                          }
-                          className={`h-5 w-5 shrink-0 rounded text-[12px] font-bold leading-none transition-colors ${
-                            boldOn
-                              ? 'bg-[#e8edf9] text-[#2563eb]'
-                              : 'text-[#c3c7cd] hover:text-[#5b6068]'
-                          }`}
-                          title={t('boldField')}
-                        >
-                          B
-                        </button>
-                      )
-                    })()}
-                  {isCustomFieldId(field.id) && (
-                    <button
-                      type="button"
-                      onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
-                      className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
-                      title={t('removeField')}
-                    >
-                      ×
-                    </button>
-                  )}
-                  <Toggle
-                    testId={`field-${field.id}`}
-                    on={field.visible}
-                    onChange={(visible) =>
-                      setFields(
-                        resolvedFields.map((f) => (f.id === field.id ? { ...f, visible } : f))
-                      )
-                    }
-                  />
-                </div>
-              ))}
+                            }
+                            className={`h-5 w-5 shrink-0 rounded text-[12px] font-bold leading-none transition-colors ${
+                              boldOn
+                                ? 'bg-[#e8edf9] text-[#2563eb]'
+                                : 'text-[#c3c7cd] hover:text-[#5b6068]'
+                            }`}
+                            title={t('boldField')}
+                          >
+                            B
+                          </button>
+                        )
+                      })()}
+                    {isCustomFieldId(field.id) && (
+                      <button
+                        type="button"
+                        onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
+                        className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
+                        title={t('removeField')}
+                      >
+                        ×
+                      </button>
+                    )}
+                    <Toggle
+                      testId={`field-${field.id}`}
+                      on={field.visible}
+                      onChange={(visible) =>
+                        setFields(
+                          resolvedFields.map((f) => (f.id === field.id ? { ...f, visible } : f))
+                        )
+                      }
+                    />
+                  </div>
+                ))}
               {availableCustomFields.length > 0 && (
                 <div className="pt-1">
                   <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>

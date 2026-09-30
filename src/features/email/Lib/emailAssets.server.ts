@@ -1,6 +1,7 @@
 import 'server-only'
 
-import { readdir, stat, unlink } from 'fs/promises'
+import { readdir, stat } from 'fs/promises'
+import { releaseFiles } from '@/lib/files/manager'
 import path from 'path'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { db } from '@/lib/db'
@@ -124,19 +125,22 @@ export async function sweepEmailAssets(organizationId: string): Promise<{ remove
       } catch {
         continue
       }
+      const unused: string[] = []
       for (const file of files) {
         const stored = `/api/protected/files/${organizationId}/${category}/${file}`
         if (referenced.has(stored)) continue
-        const full = path.join(dir, file)
         try {
-          const info = await stat(full)
+          const info = await stat(path.join(dir, file))
           if (!info.isFile() || now - info.mtimeMs < GRACE_MS) continue
-          await unlink(full)
-          removed += 1
+          unused.push(stored)
         } catch {
-          // Gone already, or not ours to remove; either way, leave it.
+          // Gone already; leave it.
         }
       }
+      // The file manager deletes them, after checking every other place a
+      // file can be used, not only the email templates checked above.
+      const result = await releaseFiles(unused, { organizationId, reason: 'email assets sweep' })
+      removed += result.removed.length
     }
   } catch (error) {
     console.error('[email assets] sweep failed', error)

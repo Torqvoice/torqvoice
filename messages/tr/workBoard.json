@@ -8,10 +8,10 @@
     "week": "Hafta",
     "presenter": "Sunucu",
     "addTechnician": "Teknisyen Ekle",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Önceki hafta",
+    "nextWeek": "Sonraki hafta",
+    "previousDay": "Önceki gün",
+    "nextDay": "Sonraki gün",
     "groupBy": "Sütunlar",
     "byTechnician": "Teknisyen başına bir sütun",
     "byBay": "Çalışma alanı başına bir sütun",
@@ -20,7 +20,7 @@
     "add": "Ekle",
     "addBay": "Çalışma alanı ekle",
     "weekNumber": "{number}. hafta",
-    "lanes": "Sütunlar",
+    "lanes": "Kulvarlar",
     "showAllLanes": "Tümünü göster",
     "onlyBusyLanes": "Yalnızca işi olanlar",
     "layout": "Görünüm",
@@ -78,7 +78,10 @@
     "addTechnician": "Teknisyen Ekle",
     "standaloneOnly": "Panoda giriş yapmayan biri için bir isim, örneğin çırak ya da taşeron. Uygulamayı kullanan bir tamirciyi Ekip sayfasından ekleyin.",
     "linkedTo": "{name} olarak giriş yapar",
-    "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir."
+    "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir.",
+    "skills": "Uzmanlıklar",
+    "skillsPlaceholder": "Arıza tespiti, elektrikli araç sertifikalı",
+    "skillsHint": "İşlerin dağıtıldığı yerde adın altında gösterilir. İsteğe bağlı."
   },
   "jobDetail": {
     "viewDetails": "Ayrıntıları Görüntüle",
@@ -107,8 +110,8 @@
       "waitingParts": "Parça Bekleniyor",
       "completed": "Tamamlandı"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Önceki",
+    "next": "Sonraki",
     "groupingUnused": "Durum panosu duruma göre gruplar",
     "connecting": "Bağlanıyor…"
   },
@@ -154,6 +157,9 @@
     "workBay": "Çalışma alanı",
     "status": "Durum",
     "noTime": "Henüz saat yok",
-    "none": "Henüz kimse"
+    "none": "Henüz kimse",
+    "promised": "Söz verilen",
+    "promiseLate": "Gecikti",
+    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi"
   }
 }

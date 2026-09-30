@@ -21,7 +21,9 @@ import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { PDFDocument } from 'pdf-lib'
 import React from 'react'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
+import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -29,6 +31,7 @@ import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 /** What the quote number is when the workshop's numbering never gave it one. */
 export function quoteNumberOf(quote: { id: string; quoteNumber?: string | null }): string {
@@ -43,7 +46,15 @@ const QUOTE_INCLUDE = {
     select: { name: true, email: true, phone: true, address: true, company: true, taxId: true },
   },
   vehicle: {
-    select: { make: true, model: true, year: true, vin: true, licensePlate: true },
+    select: {
+      make: true,
+      model: true,
+      year: true,
+      vin: true,
+      licensePlate: true,
+      hsn: true,
+      tsn: true,
+    },
   },
 } as const
 
@@ -140,21 +151,28 @@ export async function buildQuotePdfBuffer(
     }
   }
 
-  const [labels, logoDataUri, features, customFields, layoutRow] = await Promise.all([
-    // The same words the invoice and the public quote page use, marine
-    // vocabulary and the workshop's tax and registration captions included.
-    loadPrintLabels(locale, settingsMap, 'quote'),
-    logoDataUriFor(settingsMap),
-    getFeatures(organizationId),
-    getCustomFieldsForPrint(organizationId, quote.id, 'quote'),
-    db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId, key: 'quote.layoutConfig' } },
-    }),
-  ])
+  const [labels, logoDataUri, features, customFields, layoutRow, signer, conditionMap] =
+    await Promise.all([
+      // The same words the invoice and the public quote page use, marine
+      // vocabulary and the workshop's tax and registration captions included.
+      loadPrintLabels(locale, settingsMap, 'quote'),
+      logoDataUriFor(settingsMap),
+      getFeatures(organizationId),
+      getCustomFieldsForPrint(organizationId, quote.id, 'quote'),
+      db.appSetting.findUnique({
+        where: { organizationId_key: { organizationId, key: 'quote.layoutConfig' } },
+      }),
+      // Whoever wrote the quote signs it.
+      documentSigner(organizationId, quote.userId),
+      quoteConditionMap(organizationId, quote, locale),
+    ])
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
-    data: quote,
+    data: {
+      ...quote,
+      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+    },
     workshop: {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',
@@ -167,10 +185,13 @@ export async function buildQuotePdfBuffer(
       | 'symbol'
       | 'code',
     logoDataUri,
+    signer,
     // The mark comes off for the plans that paid to remove it.
     torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
+    // The same fallback the invoice prints its distances with.
+    unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     template: templateFor(settingsMap),
     imageAttachments,
     otherAttachments,
@@ -178,6 +199,7 @@ export async function buildQuotePdfBuffer(
     customFields,
     labels,
     layoutConfig: mergeWithDefaults(layoutRow?.value ? JSON.parse(layoutRow.value) : {}),
+    conditionMap,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
 

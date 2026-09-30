@@ -74,6 +74,9 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
     case 'image':
       return node.maxHeight
 
+    case 'drawing':
+      return width > 0 && width < node.width ? (node.height * width) / node.width : node.height
+
     case 'stack': {
       const p = pad(node.style)
       const inner = width - p.left - p.right

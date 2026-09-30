@@ -20,14 +20,14 @@
     "assignNumbers": "Priskirti numerius",
     "assignNumbersTitle": "Priskirti klientų numerius?",
     "assignNumbersDescription": "{count, plural, one {# klientas dar neturi} few {# klientai dar neturi} many {# klientų dar neturi} other {# klientų dar neturi}} numerio. Kiekvienas gauna kitą numerį iš eilės, seniausi pirmi. Klientai, kurie jau turi numerį, nekeičiami.",
-    "assignNumbersDone": "Sunumeruota klientų: {count}",
+    "assignNumbersDone": "{count, plural, one {Sunumeruotas # klientas} few {Sunumeruoti # klientai} many {Sunumeruota # kliento} other {Sunumeruota # klientų}}",
     "selectedCount": "{count} pasirinkta",
     "clearSelection": "Valyti",
     "batchDelete": "Ištrinti ({count})",
     "batchDeleteTitle": "Ištrinti klientus",
     "batchDeleteDescription": "Ištrinti {count} klientą(-ų)? Bus atsiejamos jų transporto priemonės.",
     "batchDeleteSuccess": "{count} klientas(-ų) ištrintas",
-    "openMenu": "Open menu"
+    "openMenu": "Atidaryti meniu"
   },
   "detail": {
     "backToCustomers": "Grįžti prie klientų",

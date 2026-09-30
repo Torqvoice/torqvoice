@@ -1,7 +1,7 @@
 import React from 'react'
 import { Page, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
-import type { Block, DocumentSpec, TextStyle } from '../Spec/documentSpec'
+import type { Block, DocumentSpec, Node, TextStyle } from '../Spec/documentSpec'
 import { BLOCK_GAP, layoutDocument, marginOf, type PlacedRow } from '../Render/layoutEngine'
 import { estimateBlockHeights } from './estimateHeights'
 import { pdfFamily, RenderNodePdf } from './renderPdf'
@@ -37,6 +37,14 @@ function baseFor(spec: DocumentSpec, block: Block): TextStyle {
     fontFamily: block.text?.fontFamily ?? spec.page.fontFamily,
     fontSize: block.text?.fontSize ?? spec.page.fontSize,
   }
+}
+
+/** Whether a node draws a vector sheet anywhere inside it. */
+function hasDrawing(node: Node): boolean {
+  if (node.kind === 'drawing') return true
+  if (node.kind === 'stack') return node.children.some(hasDrawing)
+  if (node.kind === 'row') return node.children.some((child) => hasDrawing(child.node))
+  return false
 }
 
 function blockMargin(block: Block): Style {
@@ -218,18 +226,28 @@ export function SpecPdfPage({
     return BLOCK_GAP + Math.max(0, row.y - flowTop(row.page))
   }
 
+  // What a sheet holds between its paddings: a block that fits in it can be
+  // asked to move whole rather than split.
+  const sheetHeight = page.height - basePadTop - paddingBottom
   const rowViews: React.ReactNode[] = []
   let prev: PlacedRow | null = null
   for (const placed of layout.rows) {
     const lead = leadFor(placed, prev)
     prev = placed
     const row = placed.row
+    // A drawing cannot be split, and react-pdf only moves an unbreakable box
+    // cleanly when it sits right under the page's own children: any deeper,
+    // the wrappers above it are cut at the page's edge and the drawing is
+    // squeezed into what is left. So a block that carries one moves whole,
+    // as long as it fits on a sheet at all.
+    const unbreakable =
+      row.type === 'single' && hasDrawing(row.block.content) && placed.height <= sheetHeight
     rowViews.push(
       // A short block moves whole to the next sheet rather than printing half
       // a panel on each; only something taller than half a page may split.
       <View
         key={placed.index}
-        wrap={placed.height > 300}
+        wrap={placed.height > 300 && !unbreakable}
         style={lead > 0 ? { marginTop: lead } : {}}
       >
         {row.type === 'single' ? (

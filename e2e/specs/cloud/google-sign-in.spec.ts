@@ -7,7 +7,7 @@ import {
   routeGoogleToStandin,
   signUpWithPassword,
 } from '../../support/cloud'
-import { personWithEmail } from '../../support/db'
+import { markEmailVerified, personWithEmail } from '../../support/db'
 import { settle } from '../../support/hydration'
 
 /**
@@ -20,10 +20,14 @@ import { settle } from '../../support/hydration'
  *
  * The rule most worth a test is account linking. A Google sign-in whose
  * address matches an existing password account is attached to that account,
- * which is what a returning customer expects. But an address Google has not
- * verified proves nothing about who is signing in: anyone can create a Google
- * account with somebody else's address on it. Attached to the account that
- * owns the address, that is a way into another person's workshop.
+ * which is what a returning customer expects. But it takes proof from both
+ * sides. An address Google has not verified proves nothing about who is
+ * signing in: anyone can create a Google account with somebody else's address
+ * on it. And a password account nobody verified proves nothing about who made
+ * it: anyone can sign up with somebody else's address and a password of their
+ * own, and joining Google to that account would sign its real owner into a
+ * stranger's account. Either way round, that is a way into another person's
+ * workshop.
  */
 
 // Signing up and onboarding a workshop in a hook takes longer than a test.
@@ -36,6 +40,7 @@ const stamp = Date.now()
 const NEWCOMER = `e2e-google-new-${stamp}@example.com`
 const RETURNING = `e2e-google-password-${stamp}@example.com`
 const OWNER = `e2e-google-owner-${stamp}@example.com`
+const SQUATTED = `e2e-google-squatted-${stamp}@example.com`
 const PASSWORD = `E2e-pass-${stamp}`
 
 test.beforeAll(async ({ browser }) => {
@@ -53,6 +58,16 @@ test.beforeAll(async ({ browser }) => {
     await completeOnboarding(page, workshop, { sampleData: false })
     await context.close()
   }
+  // The returning person clicked the link in their verification mail. The
+  // e2e database has no verification wall, so this is that click.
+  await markEmailVerified(RETURNING)
+
+  // And a password account somebody opened under an address that is not
+  // theirs, never verified, and left at onboarding.
+  const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
+  const page = await context.newPage()
+  await signUpWithPassword(page, { name: 'Not the owner', email: SQUATTED, password: PASSWORD })
+  await context.close()
 })
 
 test.beforeEach(async ({ context }) => {
@@ -124,6 +139,23 @@ test.describe('Google sign-in', () => {
     const person = await personWithEmail(RETURNING)
     expect(person.users, 'one person, not two with the same address').toBe(1)
     expect(person.providers).toEqual(['credential', 'google'])
+  })
+
+  test('does not join a password account whose address was never verified', async ({ page }) => {
+    // Google vouches for the person at the keyboard; the password account
+    // under that address was made by somebody else. Joining the two would
+    // sign the real owner of the address into the stranger's account.
+    await registerGoogleAccount({ email: SQUATTED, emailVerified: true })
+    await continueWithGoogle(page, '/auth/sign-in', SQUATTED)
+
+    await page.waitForURL(/\/auth\/sign-in\?error=account_not_linked/, { timeout: 30_000 })
+    await expect(page.getByText(/address has not been verified yet/)).toBeVisible()
+    await expect(page.locator('#email'), 'the password form is the way in').toBeVisible()
+
+    const person = await personWithEmail(SQUATTED)
+    expect(person.users, 'no second person was made either').toBe(1)
+    expect(person.providers, 'the password account stands alone').toEqual(['credential'])
+    expect(person.emailVerified).toBe(false)
   })
 
   test('does not hand an account to a Google address nobody verified', async ({ page }) => {

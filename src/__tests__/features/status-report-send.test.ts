@@ -73,6 +73,20 @@ function report(customer: Customer | null = CUSTOMER) {
       customer,
       vehicle: { year: 2020, make: 'Ford', model: 'Focus', customer },
     },
+    inspection: null,
+  })
+}
+
+/** A report sent from an inspection: no job, the customer is the car's owner. */
+function inspectionReport(customer: Customer | null = CUSTOMER) {
+  statusReport.findFirst.mockResolvedValue({
+    id: 'rep',
+    publicToken: 'tok',
+    serviceRecord: null,
+    inspection: {
+      template: { name: 'Annual test' },
+      vehicle: { year: 2020, make: 'Ford', model: 'Focus', customer },
+    },
   })
 }
 
@@ -135,6 +149,28 @@ describe('what the report records', () => {
     const res = await sendStatusReport({ statusReportId: 'rep', channels: ALL })
     expect(res.data?.channels).not.toContain('sms')
     expect(res.data?.failures.map((f) => f.channel)).toContain('sms')
+    expect(sendSmsToCustomer).not.toHaveBeenCalled()
+  })
+
+  it('reaches the owner of the car when the report was sent from an inspection', async () => {
+    inspectionReport()
+    const res = await sendStatusReport({ statusReportId: 'rep', channels: ALL })
+    expect(res.success).toBe(true)
+    expect(sendSmsToCustomer).toHaveBeenCalledWith(
+      expect.objectContaining({ customerId: 'cust', relatedEntityType: 'status_report' })
+    )
+    expect(sendNotificationEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipientEmail: 'ola@example.com',
+        vehicle: expect.objectContaining({ make: 'Ford' }),
+      })
+    )
+  })
+
+  it('refuses an inspection report whose car has no owner', async () => {
+    inspectionReport(null)
+    const res = await sendStatusReport({ statusReportId: 'rep', channels: ALL })
+    expect(res.success).toBe(false)
     expect(sendSmsToCustomer).not.toHaveBeenCalled()
   })
 

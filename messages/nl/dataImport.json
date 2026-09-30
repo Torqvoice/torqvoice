@@ -180,6 +180,8 @@
       "transmission": "Transmissie",
       "engineSize": "Motorinhoud",
       "engineCode": "Motorcode",
+      "hsn": "HSN (fabrikantcode)",
+      "tsn": "TSN (typecode)",
       "purchaseDate": "Aankoopdatum",
       "purchasePrice": "Aankoopprijs"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Klantnaam ontbreekt",
     "invalid_email": "E-mailadres \"{value}\" is ongeldig en is weggelaten",
     "invalid_vin": "VIN \"{value}\" heeft geen 17 tekens; bewaard zoals ingevoerd",
+    "invalid_type_key": "{field} \"{value}\" is geen geldig HSN of TSN; weggelaten",
     "vehicle_make_model_required": "Merk en model ontbreken",
     "vehicle_year_required": "Bouwjaar ontbreekt",
     "vehicle_year_invalid": "Bouwjaar \"{value}\" is geen geldig jaar",

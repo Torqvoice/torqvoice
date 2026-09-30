@@ -33,7 +33,13 @@ export interface QuoteRecord {
   discountAmount: number
   totalAmount: number
   notes: string | null
+  /** The warranty offered on this quote; see src/lib/warranty.ts. */
+  warrantyStatus?: string | null
+  warrantyMonths?: number | null
+  warrantyMileage?: number | null
+  warrantyNotes?: string | null
   customerMessage: string | null
+  responseDismissedAt?: Date | null
   publicToken: string | null
   sharedAt: Date | null
   viewCount: number
@@ -79,6 +85,8 @@ export interface QuoteRecord {
     year: number
     vin: string | null
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
     mileage: number
   } | null
 }

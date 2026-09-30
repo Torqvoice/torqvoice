@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
@@ -28,6 +29,7 @@ export default async function PortalDashboardPage({
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.dashboard')
+  const tQuoteStatus = await getTranslations('quotes.statusLabels')
   const tInvoices = await getTranslations('portal.invoices')
   const result = await getPortalDashboard()
 
@@ -201,7 +203,7 @@ export default async function PortalDashboardPage({
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       <Badge variant="outline" className="text-xs">
-                        {q.status}
+                        {quoteStatusLabel(q.status, tQuoteStatus)}
                       </Badge>
                       {q.publicToken && (
                         <Link

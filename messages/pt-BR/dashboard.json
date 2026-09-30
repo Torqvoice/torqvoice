@@ -44,7 +44,7 @@
   "viewAll": "Ver tudo",
   "showCards": "Mostrar cartões",
   "cards": {
-    "maintenance": "Manutenção Prevista",
+    "maintenance": "Manutenção prevista",
     "reminders": "Lembretes Próximos",
     "inspections": "Inspeções",
     "serviceRequests": "Solicitações de serviço",
@@ -74,8 +74,8 @@
     "noDismissed": "Nenhum veículo dispensado.",
     "dismissedOn": "Dispensado em {date}",
     "restore": "Restaurar",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Configurações de manutenção",
+    "dismissAriaLabel": "Dispensar"
   },
   "reminders": {
     "title": "Lembretes Próximos",
@@ -112,7 +112,7 @@
     "createQuote": "Criar Orçamento",
     "itemsRequested": "{count, plural, one {# item solicitado} other {# itens solicitados}}",
     "noData": "Nenhuma solicitação de orçamento pendente.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Dispensar solicitação de orçamento"
   },
   "quoteResponses": {
     "title": "Respostas de Orçamento dos Clientes",
@@ -120,11 +120,11 @@
     "accepted": "Aceito",
     "changesRequested": "Alterações Solicitadas",
     "convertToWorkOrder": "Converter em Ordem de Serviço",
-    "convert": "Convert",
+    "convert": "Converter",
     "viewQuote": "Ver Orçamento",
-    "view": "View",
+    "view": "Ver",
     "noData": "Nenhuma resposta de cliente.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Dispensar resposta"
   },
   "recentCompleted": {
     "title": "Concluídos Recentemente",

@@ -52,18 +52,15 @@ async function openInvoice(page: Page, url = invoiceUrl): Promise<void> {
   await settle(page)
 }
 
-/** The badge the work order's payments panel shows: Unpaid, Partial or Paid. */
+/** The badge on the work order's invoice card: Unpaid, Partial or Paid. */
 async function expectWorkOrderPaymentState(
   page: Page,
   state: 'Unpaid' | 'Partial' | 'Paid'
 ): Promise<void> {
   await page.goto(jobUrl)
   await settle(page)
-  const panel = page
-    .getByRole('heading', { name: 'Payments', exact: true })
-    .locator('xpath=ancestor::div[contains(@class,"rounded-lg")][1]')
   await expect(
-    panel.getByText(state, { exact: true }),
+    page.getByTestId('payment-status').filter({ hasText: new RegExp(`^${state}$`) }),
     `the work order reads ${state}`
   ).toBeVisible()
 }

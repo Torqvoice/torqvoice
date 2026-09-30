@@ -25,7 +25,9 @@
     "deliveryViewed": "Bekeken",
     "deliveryViewedOn": "Laatst geopend op {date}",
     "filterUnviewed": "Niet bekeken",
-    "filterUnviewedHint": "Facturen die zijn verzonden maar nooit geopend"
+    "filterUnviewedHint": "Facturen die zijn verzonden maar nooit geopend",
+    "filterCompleted": "Alleen afgerond",
+    "filterCompletedHint": "Toon alleen werkorders die als afgerond zijn gemarkeerd. Wordt onthouden voor de volgende keer."
   },
   "recurring": {
     "title": "Terugkerend",

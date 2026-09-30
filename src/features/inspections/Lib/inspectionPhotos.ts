@@ -27,6 +27,14 @@ export interface InspectionPhoto {
   dataUri: string
 }
 
+/** A photo filed on the inspection as a whole, with the caption the desk gave it. */
+export interface InspectionOverviewPhoto extends InspectionPhoto {
+  caption: string | null
+}
+
+/** Overview photos embedded per certificate, after the checks' own. */
+const OVERVIEW_LIMIT = 12
+
 /**
  * sharp is a native module, so it is the one dependency here that can fail on
  * the machine rather than on the data — a musl/glibc mismatch or a partially
@@ -135,4 +143,32 @@ export async function loadInspectionPhotos(
   }
 
   return { photos, omitted }
+}
+
+interface OverviewSource {
+  fileType: string
+  fileUrl: string
+  description: string | null
+  includeInReport: boolean
+}
+
+/**
+ * The photos filed on the inspection as a whole that the workshop chose to
+ * show, re-encoded for the page like a check's. Documents are not pictures
+ * and are appended to the certificate as pages instead (see
+ * certificateDocuments.ts); video has no place on paper.
+ */
+export async function loadInspectionOverviewPhotos(
+  attachments: OverviewSource[]
+): Promise<{ photos: InspectionOverviewPhoto[]; omitted: number }> {
+  const wanted = attachments.filter(
+    (file) => file.includeInReport && file.fileType.startsWith('image/')
+  )
+  const affordable = wanted.slice(0, OVERVIEW_LIMIT)
+  const photos: InspectionOverviewPhoto[] = []
+  for (const file of affordable) {
+    const photo = await loadPhoto(file.fileUrl)
+    if (photo) photos.push({ ...photo, caption: file.description })
+  }
+  return { photos, omitted: wanted.length - affordable.length }
 }

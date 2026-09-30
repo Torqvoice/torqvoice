@@ -1,3 +1,4 @@
+import { createPrivateKey, sign } from 'node:crypto'
 import { resolve } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 
@@ -56,6 +57,33 @@ const paymentSink = {
  */
 const cloud = process.env.E2E_MODE === 'cloud'
 
+/**
+ * Cloud mode needs a token torqvoice.com signed for the app's URL, or the app
+ * ignores TORQVOICE_MODE and runs self-hosted (see src/lib/cloud-instance.ts).
+ * The run mints its own from the real signing key, in TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY
+ * (a repository secret in CI), bound to the base URL and dead after a day, so
+ * a copy that leaks out of a run is worth nothing for long. There is no test
+ * key the app would accept instead: that would be a second way in.
+ */
+function mintCloudToken(): string {
+  const raw = process.env.TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY?.trim()
+  if (!raw) {
+    throw new Error(
+      'E2E_MODE=cloud needs TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY (the torqvoice.com licence signing key) to mint a cloud token for the run.'
+    )
+  }
+  const key = createPrivateKey({ key: Buffer.from(raw, 'base64'), format: 'der', type: 'pkcs8' })
+  const now = Date.now()
+  const payload = {
+    v: 1,
+    origin: new URL(baseURL).origin,
+    issuedAt: new Date(now).toISOString(),
+    expiresAt: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+  }
+  const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url')
+  return `tvc1.${encoded}.${sign(null, Buffer.from(encoded), key).toString('base64url')}`
+}
+
 /** Where the Google stand-in listens, for the app's server and for the specs. */
 const googlePort = process.env.E2E_GOOGLE_PORT ?? '8027'
 const googleStandinUrl = `http://127.0.0.1:${googlePort}`
@@ -73,6 +101,28 @@ const googleStandin = {
   stdout: 'pipe' as const,
   stderr: 'pipe' as const,
   env: { E2E_GOOGLE_PORT: googlePort },
+}
+
+/** Where the torqvoice.com stand-in listens, for the app's server and for the specs. */
+const torqvoiceComPort = process.env.E2E_TORQVOICE_COM_PORT ?? '8028'
+const torqvoiceComUrl = `http://127.0.0.1:${torqvoiceComPort}`
+/** Shared with the app as TORQVOICE_SERVICE_SECRET; throwaway, like the auth secret. */
+const serviceSecret = 'e2e-service-secret-0123456789abcdef'
+
+/**
+ * torqvoice.com for the cloud run: the bearer API the app calls for the
+ * billing portal, cancel, resume and upgrade, the checkout page a purchase
+ * hands the browser to, and the account link. Tokens are verified there
+ * the way the real site verifies them.
+ */
+const torqvoiceComStandin = {
+  command: 'npx tsx e2e/torqvoice-com-standin.ts',
+  url: `${torqvoiceComUrl}/health`,
+  reuseExistingServer: !process.env.CI,
+  timeout: 60_000,
+  stdout: 'pipe' as const,
+  stderr: 'pipe' as const,
+  env: { E2E_TORQVOICE_COM_PORT: torqvoiceComPort, E2E_SERVICE_SECRET: serviceSecret },
 }
 
 const mailSink = {
@@ -134,11 +184,11 @@ export default defineConfig({
    * and it is not the artifact that ships anyway.
    */
   webServer: process.env.E2E_BASE_URL
-    ? [mailSink, paymentSink, ...(cloud ? [googleStandin] : [])]
+    ? [mailSink, paymentSink, ...(cloud ? [googleStandin, torqvoiceComStandin] : [])]
     : [
         mailSink,
         paymentSink,
-        ...(cloud ? [googleStandin] : []),
+        ...(cloud ? [googleStandin, torqvoiceComStandin] : []),
         {
           // The database first, then the server, in one command: Playwright
           // starts this before global setup, and a server on an empty schema
@@ -182,6 +232,16 @@ export default defineConfig({
                   GOOGLE_AUTH_CLIENT_SECRET: 'e2e-google-secret',
                   E2E_GOOGLE_STANDIN_URL: googleStandinUrl,
                   NODE_OPTIONS: `--import=${resolve('e2e/google-standin-preload.mjs')}`,
+                  TORQVOICE_CLOUD_TOKEN: mintCloudToken(),
+                  // Plans are sold on torqvoice.com; the stand-in plays it.
+                  // The link check forgets its answer after a second instead of
+                  // an hour or two minutes, so a spec can flip the stand-in's answer.
+                  TORQVOICE_SERVICE_SECRET: serviceSecret,
+                  // The server variable, not NEXT_PUBLIC_: that one is baked
+                  // into the bundle at build time and would point at the real site.
+                  TORQVOICE_COM_URL: torqvoiceComUrl,
+                  TORQVOICE_COM_LINK_TTL_SECONDS: '1',
+                  TORQVOICE_COM_LINK_RETRY_SECONDS: '1',
                 }
               : {}),
             TZ: process.env.E2E_TZ ?? 'Europe/Oslo',

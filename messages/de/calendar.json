@@ -80,10 +80,10 @@
   },
   "selectVehicle": "Fahrzeug für Arbeitsauftrag auswählen",
   "dateChoice": {
-    "title": "Work Order Date",
-    "description": "You have {selectedDate} selected. Which date should this work order be for?",
+    "title": "Auftragsdatum",
+    "description": "Sie haben {selectedDate} ausgewählt. Für welches Datum soll dieser Arbeitsauftrag gelten?",
     "useSelected": "Use {date}",
-    "useToday": "Use today"
+    "useToday": "Heute verwenden"
   },
   "more": "+ {count} weitere",
   "monthTotal": "{count} Termine",
@@ -144,6 +144,6 @@
       "readOnly": "Belegte Zeit aus einem verbundenen Kalender. Änderungen dort erscheinen hier bei der nächsten Synchronisierung."
     }
   },
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "previousMonth": "Vorheriger Monat",
+  "nextMonth": "Nächster Monat"
 }

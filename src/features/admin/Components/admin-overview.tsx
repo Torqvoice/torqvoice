@@ -3,13 +3,12 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslations } from 'next-intl'
-import { Building2, CreditCard, DollarSign, Users } from 'lucide-react'
+import { Building2, CreditCard, Users } from 'lucide-react'
 
 type AdminStats = {
   totalUsers: number
   totalOrganizations: number
   totalActiveSubscriptions: number
-  totalRevenue: number
 }
 
 export function AdminOverview({ stats }: { stats: AdminStats }) {
@@ -34,16 +33,10 @@ export function AdminOverview({ stats }: { stats: AdminStats }) {
       icon: CreditCard,
       href: '/admin/organizations',
     },
-    {
-      title: t('overview.monthlyRevenue'),
-      value: `$${stats.totalRevenue.toFixed(2)}`,
-      icon: DollarSign,
-      href: '/admin/organizations',
-    },
   ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-3">
       {cards.map((card) => (
         <Link key={card.title} href={card.href}>
           <Card className="transition-colors hover:bg-muted/50 cursor-pointer">

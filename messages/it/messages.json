@@ -30,8 +30,8 @@
     "deleteDescription": "Tutti i messaggi con {name} verranno eliminati definitivamente. Questa azione non può essere annullata.",
     "deleted": "Conversazione eliminata",
     "deleteError": "Impossibile eliminare la conversazione",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Indietro",
+    "conversationMenu": "Menu conversazione",
     "searchPlaceholder": "Cerca conversazioni",
     "noSearchResults": "Nessuna conversazione corrisponde alla ricerca",
     "now": "ora"
@@ -47,7 +47,7 @@
     "messageDeleted": "Messaggio eliminato",
     "deleteError": "Impossibile eliminare il messaggio",
     "sendError": "Impossibile inviare l'SMS",
-    "sendMessage": "Send message"
+    "sendMessage": "Invia messaggio"
   },
   "sendDialog": {
     "send": "Invia {label}",

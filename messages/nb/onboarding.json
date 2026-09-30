@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Dette sletter eksempelkundene, kjøretøyene, arbeidsordrene, tilbudet og kontrollen som ble opprettet under oppsettet. Dine egne data berøres ikke.",
     "removed": "Eksempeldata fjernet",
     "removeFailed": "Kunne ikke fjerne eksempeldata"
+  },
+  "singleWorkshop": {
+    "title": "Denne installasjonen har allerede verkstedet sitt",
+    "description": "Torqvoice kjører ett verksted her, og det er satt opp. For å jobbe i det, be eieren invitere {email} fra Innstillinger, deretter Team.",
+    "signOut": "Logg ut"
   }
 }

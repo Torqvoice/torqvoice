@@ -17,9 +17,26 @@ vi.mock('@/lib/notification-bus', () => ({
   notificationBus: { emit: vi.fn() },
 }))
 
+// These tests are about workshop scoping, not files: the file manager and the
+// files a delete collects have tests of their own (src/__tests__/lib/files).
+vi.mock('@/lib/files/collect', () => ({
+  serviceRecordFileUrls: vi.fn(async () => []),
+  inspectionFileUrls: vi.fn(async () => []),
+  vehicleFileUrls: vi.fn(async () => []),
+  quoteFileUrls: vi.fn(async () => []),
+  tireSetFileUrls: vi.fn(async () => []),
+  inventoryPartFileUrls: vi.fn(async () => []),
+}))
+vi.mock('@/lib/files/manager', () => ({
+  releaseFiles: vi.fn(async () => ({ removed: [], kept: [], skipped: [] })),
+  parseStoredFileUrl: vi.fn(() => null),
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
+    // Completing freezes the workshop's kinds of mark; nobody here changed any.
+    conditionMarkType: { findMany: vi.fn().mockResolvedValue([]) },
     inspection: {
       findFirst: vi.fn(),
       updateMany: vi.fn(),
@@ -29,6 +46,15 @@ vi.mock('@/lib/db', () => ({
       findFirst: vi.fn(),
       update: vi.fn(),
     },
+    // Completion reads the certificate design settings to freeze them.
+    appSetting: { findMany: vi.fn() },
+    // Completing freezes the certificate design (the default when none was made).
+    documentDesignSnapshot: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
+    // Completing freezes the inspector's signature; nobody here has one.
+    memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
   },
 }))
 
@@ -61,6 +87,7 @@ function setupOrgAOwner() {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.mocked(db.documentDesignSnapshot.findUnique).mockResolvedValue({ id: 'snap-1' } as any)
 })
 
 describe('getInspection — cross-org isolation', () => {
@@ -155,6 +182,8 @@ describe('completeInspection — cross-org isolation', () => {
       items: [],
     } as any)
     vi.mocked(db.inspection.updateMany).mockResolvedValue({ count: 1 } as any)
+    // No certificate design saved: completion freezes the default one.
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
 
     await completeInspection('insp-a')
 

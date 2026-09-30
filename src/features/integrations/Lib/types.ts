@@ -36,6 +36,19 @@ export interface CredentialField {
   default?: string
   /** i18n key with guidance on where the value comes from */
   help?: string
+  /**
+   * A field almost nobody fills in. The connect page keeps it behind an
+   * "Advanced" fold, shut unless it already holds a value, so the usual case
+   * is one box and not a question about what the second one is for.
+   */
+  advanced?: boolean
+  /**
+   * Only offered on a self-hosted install, for a field that is an address the
+   * workshop types in. The registry drops it from the manifest on the cloud
+   * instance, so it is neither drawn nor accepted there: on our server such
+   * an address would be a way to reach whatever runs next to it.
+   */
+  selfHostedOnly?: boolean
 }
 
 /**
@@ -114,6 +127,11 @@ export interface ConnectorManifest {
   /** Capability ids such as 'calendar.push'. Shown as badges; used by the app to find a provider. */
   capabilities: string[]
   /**
+   * What a 'vehicle.lookup' connector answers to. Plate only when left out;
+   * the form's VIN button is offered only by connectors that list 'vin'.
+   */
+  lookupBy?: VehicleLookupKey[]
+  /**
    * The video call product a person can add to a work order from its page,
    * as a key under integrations.meeting: 'teams', 'google-meet', 'zoom'.
    * Only connectors whose service.update job honours a `create` action.
@@ -126,6 +144,14 @@ export interface ConnectorManifest {
   schedules?: { job: string; everyMinutes: number }[]
   /** Plan feature that must be on, beyond the general integrations flag. */
   plan?: keyof PlanFeatures
+  /**
+   * Only offered on a self-hosted install. The registry leaves the connector
+   * out entirely on the cloud instance, so it is neither listed nor loadable
+   * there. For connectors that send to an address the workshop types in: on
+   * their own server that address is theirs to choose, on ours it would be
+   * a way to point the server at whatever else runs next to it.
+   */
+  selfHostedOnly?: boolean
 }
 
 export type LogLevel = 'info' | 'warn' | 'error'
@@ -216,6 +242,8 @@ export type JobHandler = (
 ) => Promise<JobOutcome | void>
 
 /** What a vehicle registry is asked for: a plate, a VIN, or both. */
+export type VehicleLookupKey = 'plate' | 'vin'
+
 export interface VehicleLookupQuery {
   plate?: string
   vin?: string

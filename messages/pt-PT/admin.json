@@ -1,0 +1,146 @@
+{
+  "nav": {
+    "overview": {
+      "title": "Visão Geral",
+      "description": "Estatísticas e estado da plataforma"
+    },
+    "users": {
+      "title": "Utilizadores",
+      "description": "Gerir todos os utilizadores"
+    },
+    "organizations": {
+      "title": "Organizações",
+      "description": "Gerir todas as organizações"
+    },
+    "settings": {
+      "title": "Definições",
+      "description": "Configuração da plataforma"
+    }
+  },
+  "layout": {
+    "title": "Painel de Administração",
+    "description": "Gestão da plataforma para super administradores"
+  },
+  "overview": {
+    "totalUsers": "Total de Utilizadores",
+    "organizations": "Organizações",
+    "activeSubscriptions": "Subscrições Ativas"
+  },
+  "users": {
+    "searchPlaceholder": "Pesquisar por nome ou e-mail...",
+    "name": "Nome",
+    "email": "E-mail",
+    "role": "Função",
+    "orgs": "Orgs",
+    "created": "Criado em",
+    "lastSeen": "Visto pela última vez",
+    "noResults": "Nenhum utilizador corresponde à pesquisa.",
+    "noUsers": "Nenhum utilizador encontrado.",
+    "superAdmin": "Super Admin",
+    "user": "Utilizador",
+    "online": "Online",
+    "promoteTitle": "Promover Utilizador",
+    "demoteTitle": "Despromover Utilizador",
+    "promoteConfirm": "Tem a certeza de que pretende promover \"{name}\" a super admin?",
+    "demoteConfirm": "Tem a certeza de que pretende retirar a \"{name}\" o estatuto de super admin?",
+    "promote": "Promover",
+    "demote": "Despromover",
+    "promotedSuccess": "Utilizador promovido com sucesso",
+    "demotedSuccess": "Utilizador despromovido com sucesso",
+    "failedUpdate": "Não foi possível atualizar o utilizador",
+    "deleteTitle": "Eliminar Utilizador",
+    "deleteConfirm": "Tem a certeza de que pretende eliminar permanentemente \"{name}\" ({email})? Esta ação não pode ser anulada.",
+    "delete": "Eliminar",
+    "deletedSuccess": "Utilizador eliminado com sucesso",
+    "failedDelete": "Não foi possível eliminar o utilizador",
+    "promoteToSuperAdmin": "Promover a Super Admin",
+    "demoteFromSuperAdmin": "Retirar Super Admin",
+    "deleteUser": "Eliminar Utilizador",
+    "emailVerified": "E-mail verificado"
+  },
+  "organizations": {
+    "searchPlaceholder": "Pesquisar por nome da organização...",
+    "name": "Nome",
+    "owner": "Proprietário",
+    "members": "Membros",
+    "subscription": "Subscrição",
+    "created": "Criada em",
+    "noResults": "Nenhuma organização corresponde à pesquisa.",
+    "noOrganizations": "Nenhuma organização encontrada.",
+    "none": "Nenhuma",
+    "deleteTitle": "Eliminar Organização",
+    "deleteConfirm": "Tem a certeza de que pretende eliminar permanentemente \"{name}\" e todos os seus dados? Esta ação não pode ser anulada.",
+    "delete": "Eliminar",
+    "deletedSuccess": "Organização eliminada com sucesso",
+    "failedDelete": "Não foi possível eliminar a organização",
+    "deleteOrganization": "Eliminar Organização"
+  },
+  "adminSettings": {
+    "platformTitle": "Definições da Plataforma",
+    "platformDescription": "Opções gerais de configuração da plataforma",
+    "disableRegistration": "Desativar Registo",
+    "disableRegistrationHint": "Impedir o registo de novos utilizadores na plataforma",
+    "requireEmailVerification": "Exigir verificação do e-mail",
+    "requireEmailVerificationHint": "Os novos utilizadores têm de verificar o endereço de e-mail antes de aceder à plataforma",
+    "emailTitle": "Definições de E-mail",
+    "emailDescription": "Fornecedor de e-mail da plataforma: usado para e-mails do sistema, como redefinições de palavra-passe e convites para a equipa. É também o fornecedor de e-mail predefinido de todas as organizações. Cada organização pode, opcionalmente, configurar o seu próprio fornecedor em Definições > E-mail.",
+    "smtpHost": "Servidor SMTP",
+    "smtpPort": "Porta SMTP",
+    "username": "Nome de utilizador",
+    "password": "Palavra-passe",
+    "fromEmail": "E-mail do remetente",
+    "fromName": "Nome do remetente",
+    "tlsConnection": "Ligação TLS (porta 465)",
+    "tlsConnectionHint": "Ative para TLS implícito. Desative para STARTTLS (porta 587/25).",
+    "verifyTls": "Verificar Certificados TLS",
+    "verifyTlsHint": "Desative para permitir certificados autoassinados (não recomendado em produção)",
+    "requireTlsUpgrade": "Exigir Atualização para TLS",
+    "requireTlsUpgradeHint": "Forçar a atualização para TLS em ligações STARTTLS",
+    "apiKey": "Chave de API",
+    "serverToken": "Server Token",
+    "domain": "Domínio",
+    "region": "Região",
+    "awsRegion": "Região AWS",
+    "accessKeyId": "ID da Chave de Acesso",
+    "secretAccessKey": "Chave de Acesso Secreta",
+    "awsRegionHint": "A região AWS onde o SES está configurado (ex.: us-east-1, eu-west-1)",
+    "sendTestEmail": "Enviar E-mail de Teste",
+    "testEmailHint": "Guarde primeiro as definições e depois envie um e-mail de teste para a sua conta",
+    "saveSettings": "Guardar Definições",
+    "saved": "Definições guardadas com sucesso",
+    "failedSave": "Não foi possível guardar as definições",
+    "testSentTo": "E-mail de teste enviado para {email}",
+    "testFailed": "O e-mail de teste falhou",
+    "resendApiKeyHint": "Obtenha a sua chave de API em resend.com",
+    "postmarkApiKeyHint": "Obtenha o seu Server Token em postmarkapp.com",
+    "mailgunApiKeyHint": "Obtenha a sua chave de API em app.mailgun.com",
+    "sendgridApiKeyHint": "Obtenha a sua chave de API em app.sendgrid.com"
+  },
+  "common": {
+    "openMenu": "Abrir menu"
+  },
+  "userDetails": {
+    "back": "Voltar aos utilizadores",
+    "never": "Nunca",
+    "lastLogin": "Último início de sessão",
+    "organizations": "Organizações",
+    "noOrganizations": "Não pertence a nenhuma organização",
+    "role": "Função"
+  },
+  "orgDetails": {
+    "back": "Voltar",
+    "vehicles": "Viaturas",
+    "workOrders": "Ordens de serviço",
+    "customers": "Clientes",
+    "quotes": "Orçamentos",
+    "inspections": "Inspeções",
+    "inventoryParts": "Peças em stock",
+    "members": "Membros",
+    "owner": "Proprietário",
+    "noOwner": "Sem proprietário",
+    "subscription": "Subscrição",
+    "noSubscription": "Sem subscrição ativa",
+    "renews": "Renova",
+    "cancelsAt": "Termina em"
+  }
+}

@@ -180,6 +180,8 @@
       "transmission": "Şanzıman",
       "engineSize": "Motor hacmi",
       "engineCode": "Motor kodu",
+      "hsn": "HSN (üretici kodu)",
+      "tsn": "TSN (tip kodu)",
       "purchaseDate": "Satın alma tarihi",
       "purchasePrice": "Satın alma fiyatı"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Müşteri adı eksik",
     "invalid_email": "\"{value}\" e-postası geçerli değil ve dışarıda bırakıldı",
     "invalid_vin": "\"{value}\" VIN'i 17 karakter değil; yazıldığı gibi tutuldu",
+    "invalid_type_key": "{field} \"{value}\" geçerli bir HSN veya TSN değil; atlandı",
     "vehicle_make_model_required": "Marka ve model eksik",
     "vehicle_year_required": "Yıl eksik",
     "vehicle_year_invalid": "\"{value}\" geçerli bir yıl değil",

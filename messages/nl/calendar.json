@@ -80,10 +80,10 @@
   },
   "selectVehicle": "Selecteer voertuig voor werkorder",
   "dateChoice": {
-    "title": "Work Order Date",
-    "description": "You have {selectedDate} selected. Which date should this work order be for?",
-    "useSelected": "Use {date}",
-    "useToday": "Use today"
+    "title": "Datum werkorder",
+    "description": "U hebt {selectedDate} geselecteerd. Voor welke datum is deze werkorder?",
+    "useSelected": "{date} gebruiken",
+    "useToday": "Vandaag gebruiken"
   },
   "more": "+ {count} meer",
   "monthTotal": "{count} gebeurtenissen",
@@ -144,6 +144,6 @@
       "readOnly": "Bezette tijd uit een gekoppelde agenda. Wijzig het daar, bij de volgende synchronisatie wordt het hier bijgewerkt."
     }
   },
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "previousMonth": "Vorige maand",
+  "nextMonth": "Volgende maand"
 }

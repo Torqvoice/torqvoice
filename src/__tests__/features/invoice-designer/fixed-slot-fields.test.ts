@@ -42,6 +42,8 @@ const sample = () =>
       slogan: 'Slogan',
       orgNumber: '123 456 789',
       paymentTerms: 'Net 14',
+      // The type key is only sampled for a workshop that records it.
+      typeKeyEnabled: true,
       logoUrl: '/logo.png',
     } as any,
     [],
@@ -95,12 +97,19 @@ describe('fields that print in a place of their own', () => {
     )
   })
 
-  it('is the six the sheet actually has', () => {
+  it('is the eleven the sheet actually has', () => {
     // Named, so that gaining or losing one is a decision rather than a drift.
     expect(FIXED_SLOT_FIELDS).toEqual({
       header: ['logo', 'company_name'],
       document_title: ['title'],
       footer: ['footer_note', 'portal_link', 'logo'],
+      signature: [
+        'signature_image',
+        'inspector_line',
+        'inspector_name',
+        'date_line',
+        'customer_line',
+      ],
     })
   })
 

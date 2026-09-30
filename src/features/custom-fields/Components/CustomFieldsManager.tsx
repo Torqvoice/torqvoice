@@ -34,6 +34,7 @@ import type { FieldType, EntityType } from '@/features/custom-fields/Schema/cust
 import {
   type InvoiceLayoutConfig,
   BUILTIN_SECTIONS,
+  NO_CUSTOM_FIELD_SECTIONS,
   CUSTOM_FIELD_PREFIX,
   SECTIONS_WITH_FIELDS,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -53,8 +54,8 @@ interface FieldDef {
 }
 
 /** Section ids a custom field can be placed into, in document order. */
-const PLACEMENT_SECTIONS = BUILTIN_SECTIONS.map((s) => s.id).filter((id) =>
-  SECTIONS_WITH_FIELDS.has(id)
+const PLACEMENT_SECTIONS = BUILTIN_SECTIONS.map((s) => s.id).filter(
+  (id) => SECTIONS_WITH_FIELDS.has(id) && !NO_CUSTOM_FIELD_SECTIONS.has(id)
 )
 
 /**

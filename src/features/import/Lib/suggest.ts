@@ -152,9 +152,10 @@ export function suggestMapping(
   columns: readonly string[],
   rows: readonly string[][],
   entity: ImportEntity,
-  presetId?: string | null
+  presetId?: string | null,
+  opts: { typeKey?: boolean } = {}
 ): MappingSuggestion {
-  const fields = fieldsFor(entity)
+  const fields = fieldsFor(entity, opts)
   const byKey = new Map(fields.map((f) => [f.key, f]))
   const mapping: ColumnMapping = {}
   const source: Record<string, MappingSource> = {}

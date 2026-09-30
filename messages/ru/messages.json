@@ -30,8 +30,8 @@
     "deleteDescription": "Все сообщения с {name} будут безвозвратно удалены. Это действие необратимо.",
     "deleted": "Беседа удалена",
     "deleteError": "Не удалось удалить беседу",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Назад",
+    "conversationMenu": "Меню беседы",
     "searchPlaceholder": "Поиск по перепискам",
     "noSearchResults": "Нет переписок по запросу",
     "now": "сейчас"
@@ -47,7 +47,7 @@
     "messageDeleted": "Сообщение удалено",
     "deleteError": "Не удалось удалить сообщение",
     "sendError": "Не удалось отправить SMS",
-    "sendMessage": "Send message"
+    "sendMessage": "Отправить сообщение"
   },
   "sendDialog": {
     "send": "Отправить {label}",

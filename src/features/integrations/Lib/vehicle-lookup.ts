@@ -2,7 +2,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getManifest } from '@/integrations/registry'
 import { db } from '@/lib/db'
 import { loadConnection } from './connections'
-import type { VehicleLookupQuery, VehicleLookupResult } from './types'
+import type { VehicleLookupKey, VehicleLookupQuery, VehicleLookupResult } from './types'
 
 /**
  * Plate and VIN lookups against whichever vehicle registry the workshop has
@@ -33,12 +33,18 @@ export function withinLookupBudget(organizationId: string): boolean {
   return entry.count <= LOOKUPS_PER_MINUTE
 }
 
+/** What the connector answers to; plate only unless its manifest says otherwise. */
+export function lookupKeys(connectorId: string): VehicleLookupKey[] {
+  return getManifest(connectorId)?.lookupBy ?? ['plate']
+}
+
 /**
- * The active connection that can answer, preferring one for the workshop's
- * own country when more than one registry is connected.
+ * The active connection that can answer a plate or a VIN, preferring one for
+ * the workshop's own country when more than one registry is connected.
  */
 export async function findLookupConnection(
-  organizationId: string
+  organizationId: string,
+  by: VehicleLookupKey = 'plate'
 ): Promise<{ id: string; connectorId: string } | null> {
   const [rows, countrySetting] = await Promise.all([
     db.integrationConnection.findMany({
@@ -53,8 +59,10 @@ export async function findLookupConnection(
     }),
   ])
   const country = countrySetting?.value?.toUpperCase() ?? null
-  const candidates = rows.filter((r) =>
-    getManifest(r.connectorId)?.capabilities.includes(LOOKUP_CAPABILITY)
+  const candidates = rows.filter(
+    (r) =>
+      getManifest(r.connectorId)?.capabilities.includes(LOOKUP_CAPABILITY) &&
+      lookupKeys(r.connectorId).includes(by)
   )
   if (candidates.length === 0) return null
   const local = candidates.find((r) => {

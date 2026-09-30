@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Ši sąskaita užrakinta, nes ji jau išsiųsta",
+      "paid": "Ši sąskaita užrakinta, nes ji jau apmokėta"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Šis pasiūlymas užrakintas, nes jis jau išsiųstas",
+      "accepted": "Šis pasiūlymas užrakintas, nes jis jau priimtas"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Dalių, darbų, kainų, nuolaidos, mokesčių, numerio ir datos nebegalima keisti. Mokėjimai, būsenos keitimai, siuntimas ir priedai vis dar veikia.",
+  "lockedAdminHint": "Kaip savininkas ar administratorius galite atrakinti dokumentą, jei tikrai reikia ką nors pataisyti. Atrakinimas įrašomas į audito žurnalą.",
+  "lockedMemberHint": "Jei reikia ką nors pataisyti, paprašykite savininko ar administratoriaus atrakinti dokumentą.",
+  "unlock": "Atrakinti redagavimui",
+  "relock": "Vėl užrakinti",
+  "unlockConfirmTitle": "Atrakinti šį dokumentą?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Dokumentą vėl bus galima redaguoti, o pakeitimas bus įrašytas į audito žurnalą su jūsų vardu. Jei to reikalauja vietinės taisyklės, verčiau išrašykite kreditinę sąskaitą.",
+    "quote": "Dokumentą vėl bus galima redaguoti, o pakeitimas bus įrašytas į audito žurnalą su jūsų vardu."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Atrakinta redagavimui",
+  "relocked": "Vėl užrakinta",
+  "reopenedTitle": "Šis dokumentas atrakintas redagavimui",
+  "reopenedBody": "Jį bus galima redaguoti, kol jis vėl bus užrakintas.",
+  "failed": "Nepavyko pakeisti užrakto"
 }

@@ -2,10 +2,14 @@ import { z } from 'zod'
 
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color')
 
+/** A short line, not a CV: it has to fit under a name in a list. */
+const technicianSkills = z.string().trim().max(80)
+
 export const createTechnicianSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   color: hexColor.default('#3b82f6'),
   userId: z.string().optional(),
+  skills: technicianSkills.optional(),
 })
 
 export const updateTechnicianSchema = z.object({
@@ -16,6 +20,8 @@ export const updateTechnicianSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
   dailyCapacity: z.number().int().min(60).max(720).optional(),
   userId: z.string().nullable().optional(),
+  /** Empty clears it. */
+  skills: technicianSkills.nullable().optional(),
 })
 
 export const createWorkBaySchema = z.object({
@@ -61,6 +67,12 @@ export const updateServiceTimesSchema = z.object({
   id: z.string().min(1),
   startDateTime: z.coerce.date(),
   endDateTime: z.coerce.date(),
+})
+
+/** `null` takes the promise away again. */
+export const setPromisedTimeSchema = z.object({
+  id: z.string().min(1),
+  promisedAt: z.coerce.date().nullable(),
 })
 
 /**

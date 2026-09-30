@@ -8,10 +8,10 @@
     "week": "Settimana",
     "presenter": "Presentatore",
     "addTechnician": "Aggiungi Tecnico",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Settimana precedente",
+    "nextWeek": "Settimana successiva",
+    "previousDay": "Giorno precedente",
+    "nextDay": "Giorno successivo",
     "groupBy": "Colonne",
     "byTechnician": "Una colonna per tecnico",
     "byBay": "Una colonna per postazione",
@@ -20,7 +20,7 @@
     "add": "Aggiungi",
     "addBay": "Aggiungi postazione",
     "weekNumber": "Sett. {number}",
-    "lanes": "Colonne",
+    "lanes": "Corsie",
     "showAllLanes": "Mostra tutte",
     "onlyBusyLanes": "Solo con lavoro",
     "layout": "Vista",
@@ -78,7 +78,10 @@
     "addTechnician": "Aggiungi Tecnico",
     "standaloneOnly": "Un nome sulla lavagna per chi non accede, come un apprendista o un esterno. Per un meccanico che usa l'app, aggiungilo dalla pagina Team.",
     "linkedTo": "Accede come {name}",
-    "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app."
+    "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app.",
+    "skills": "Competenze",
+    "skillsPlaceholder": "Diagnosi, certificato veicoli elettrici",
+    "skillsHint": "Mostrato sotto il nome dove si assegnano i lavori. Facoltativo."
   },
   "jobDetail": {
     "viewDetails": "Visualizza Dettagli",
@@ -107,8 +110,8 @@
       "waitingParts": "In Attesa di Pezzi",
       "completed": "Completato"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Precedente",
+    "next": "Successivo",
     "groupingUnused": "La lavagna di stato raggruppa per stato",
     "connecting": "Connessione…"
   },
@@ -154,6 +157,9 @@
     "workBay": "Postazione",
     "status": "Stato",
     "noTime": "Nessun orario ancora",
-    "none": "Ancora nessuno"
+    "none": "Ancora nessuno",
+    "promised": "Promesso",
+    "promiseLate": "In ritardo",
+    "promiseOverdue": "Promesso al cliente per un momento già passato"
   }
 }

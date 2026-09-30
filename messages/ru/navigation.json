@@ -39,6 +39,7 @@
     "invoice": "Счёт",
     "payment": "Оплата",
     "tax": "Налог",
+    "warranty": "Гарантия",
     "workshop": "Мастерская",
     "appearance": "Внешний вид",
     "email": "Эл. почта",
@@ -90,6 +91,7 @@
   "licenseUnverifiedNow": "Не удалось проверить лицензию, и брендинг Torqvoice вернулся.",
   "licenseVerify": "Проверить",
   "sidebar": {
+    "account": "Аккаунт",
     "dashboard": "Панель управления",
     "clients": "Клиенты",
     "customers": "Клиенты",

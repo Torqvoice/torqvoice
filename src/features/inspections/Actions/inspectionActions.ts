@@ -1,10 +1,23 @@
 'use server'
 
+import { loadMarkTypeRows } from '@/features/condition-map/Lib/loadMarks.server'
+
+import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
+import { createQuoteRecord } from '@/features/quotes/Lib/createQuoteRecord'
+import { createQuoteSchema } from '@/features/quotes/Schema/quoteSchema'
+import { getTranslations } from 'next-intl/server'
 import {
-  readWorkshopTax,
-  taxFieldsForNewDocument,
-  WORKSHOP_TAX_SETTING_KEYS,
-} from '@/features/settings/Lib/workshopTax'
+  ensureAssetSnapshot,
+  ensureDesignSnapshot,
+} from '@/features/invoice-designer/Lib/designSnapshots'
+import {
+  inspectorUserId,
+  memberSignatureDataUri,
+} from '@/features/signatures/Lib/memberSignature.server'
+import { liveCertificateDesign } from '../Pdf/certificateDesign'
+import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
+import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -15,11 +28,17 @@ import {
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notificationBus } from '@/lib/notification-bus'
-import { isDefect } from '../Lib/conditions'
 import { findCompletionBlockers, summariseBlockers } from '../Lib/completion'
 import { clearedToNull } from '@/lib/clearable'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { startOfZonedDay, zonedDayKey, zonedParts } from '@/lib/timezone'
+import { zonedDayKey } from '@/lib/timezone'
+import { releaseFiles } from '@/lib/files/manager'
+import { inspectionFileUrls } from '@/lib/files/collect'
+import {
+  gateTypeKey,
+  isTypeKeyEnabled,
+  typeKeySearch,
+} from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function getInspectionsPaginated(params: {
   page?: number
@@ -47,6 +66,7 @@ export async function getInspectionsPaginated(params: {
           { vehicle: { make: { contains: params.search, mode: 'insensitive' } } },
           { vehicle: { model: { contains: params.search, mode: 'insensitive' } } },
           { vehicle: { licensePlate: { contains: params.search, mode: 'insensitive' } } },
+          ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
           { template: { name: { contains: params.search, mode: 'insensitive' } } },
         ]
       }
@@ -124,13 +144,18 @@ export async function getInspection(id: string) {
           vehicle: {
             select: {
               id: true,
+              bodyType: true,
               make: true,
               model: true,
               year: true,
               vin: true,
+              hsn: true,
+              tsn: true,
               licensePlate: true,
               mileage: true,
-              customer: { select: { id: true, name: true, email: true, phone: true } },
+              customer: {
+                select: { id: true, name: true, email: true, phone: true, telegramChatId: true },
+              },
             },
           },
           template: {
@@ -138,6 +163,7 @@ export async function getInspection(id: string) {
           },
           technician: { select: { id: true, name: true } },
           items: { orderBy: { sortOrder: 'asc' } },
+          attachments: { orderBy: { createdAt: 'asc' } },
           quotes: {
             select: {
               id: true,
@@ -162,7 +188,9 @@ export async function getInspection(id: string) {
       // Missing or foreign-org inspection yields null rather than an error: the
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the inspection route.
-      return inspection
+      if (!inspection) return inspection
+      const enabled = await isTypeKeyEnabled(organizationId)
+      return { ...inspection, vehicle: gateTypeKey(inspection.vehicle, enabled) }
     },
     {
       requiredPermissions: [
@@ -216,6 +244,17 @@ export async function createInspection(input: unknown) {
       })
       if (!template) throw new Error('Template not found')
 
+      // Started from a booked job: the job has to be this car's, and not
+      // already the work of another inspection.
+      if (data.serviceRecordId) {
+        const job = await db.serviceRecord.findFirst({
+          where: { id: data.serviceRecordId, organizationId, vehicleId: data.vehicleId },
+          select: { id: true, inspectionId: true },
+        })
+        if (!job) throw new Error('Work order not found')
+        if (job.inspectionId) throw new Error('That work order already has an inspection')
+      }
+
       // Look up technician linked to current user
       const technician = await db.technician.findFirst({
         where: { userId, organizationId, isActive: true },
@@ -256,6 +295,7 @@ export async function createInspection(input: unknown) {
             choices: item.choices,
             required: item.required,
             photoRequired: item.photoRequired,
+            allowNotApplicable: item.allowNotApplicable,
             defaultSeverity: item.defaultSeverity,
             defectSuggestions: item.defectSuggestions,
             inspectionId: created.id,
@@ -266,11 +306,21 @@ export async function createInspection(input: unknown) {
           await tx.inspectionItem.createMany({ data: items })
         }
 
+        if (data.serviceRecordId) {
+          await tx.serviceRecord.update({
+            where: { id: data.serviceRecordId },
+            data: { inspectionId: created.id },
+          })
+        }
+
         return created
       })
 
       revalidatePath('/inspections')
       revalidatePath(`/vehicles/${data.vehicleId}`)
+      if (data.serviceRecordId) {
+        revalidatePath(`/vehicles/${data.vehicleId}/service/${data.serviceRecordId}`)
+      }
       return { ...inspection, vehicleId: data.vehicleId }
     },
     {
@@ -308,6 +358,12 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
           textValue: clearedToNull(data.textValue),
         },
       })
+
+      // A photo taken off the item is not deleted here. The page sends its
+      // whole list with every save, and a list from a stale screen (another
+      // device, or a save racing an upload) would otherwise cost a file that
+      // is still wanted. One that is really unused is picked up by the file
+      // sweep a week later, into the trash (lib/files/manager.ts).
 
       return updated
     },
@@ -426,11 +482,40 @@ export async function completeInspection(id: string) {
         inspectorName = user?.name ?? null
       }
 
+      // The certificate design as it is today, frozen onto the inspection the
+      // way an issued invoice freezes its design: a design edited next year
+      // must not relabel a certificate a customer already holds. A workshop
+      // that has never designed one freezes the default (Regulatory) design.
+      const settingRows = await db.appSetting.findMany({
+        where: { organizationId, key: { startsWith: 'certificate.' } },
+        select: { key: true, value: true },
+      })
+      const certificateSettings: Record<string, string> = {}
+      for (const row of settingRows) certificateSettings[row.key] = row.value
+      const liveDesign = liveCertificateDesign(certificateSettings)
+      const designSnapshotId = await ensureDesignSnapshot(organizationId, liveDesign)
+
+      // The inspector's signature, frozen with the design for the same reason.
+      const signatureDataUri = await memberSignatureDataUri(
+        organizationId,
+        await inspectorUserId(inspection, userId)
+      )
+      const signatureSnapshotId = signatureDataUri
+        ? await ensureAssetSnapshot(organizationId, signatureDataUri)
+        : null
+
+      // The kinds of mark as the workshop has them now, for the same reason
+      // as the design: a kind renamed later never changes this certificate.
+      const markTypesSnapshot = await loadMarkTypeRows(organizationId)
+
       await db.inspection.updateMany({
         where: { id, organizationId },
         data: {
           status: 'completed',
           completedAt: new Date(),
+          designSnapshotId,
+          signatureSnapshotId,
+          markTypesSnapshot,
           ...(inspection.inspectorName ? {} : { inspectorName }),
         },
       })
@@ -522,7 +607,10 @@ export async function deleteInspection(id: string) {
       })
       if (!inspection) throw new Error('Inspection not found')
 
+      // Its items cascade with it, and their photos are let go afterwards.
+      const files = await inspectionFileUrls(organizationId, [id])
       await db.inspection.deleteMany({ where: { id, organizationId } })
+      await releaseFiles(files, { organizationId, reason: 'inspection deleted' })
       revalidatePath('/inspections')
       revalidatePath(`/vehicles/${inspection.vehicleId}`)
       return { inspectionId: id }
@@ -642,115 +730,84 @@ export async function getInspectionTechnicians() {
  *
  * Plenty of customers just say "fix it". Forcing a quote in between means
  * building an estimate nobody asked for and waiting for an approval that has
- * already been given out loud, so the defects become labour lines on a pending
- * job directly. Each line carries the check that found it and the note the
- * technician wrote, which is what the person doing the repair needs to read.
+ * already been given out loud. And a car that passed still has to be paid
+ * for, so an inspection with no defects raises a job too.
  *
- * Dangerous defects lead, then major, then minor — the order the work should
- * be done in.
+ * The job opens with a line for the inspection itself, which is what the
+ * workshop charges for whatever it found. With `includeDefects` every check
+ * that was not OK follows as a line of its own, carrying the check and the
+ * technician's note, dangerous first, then major, then minor: the order the
+ * work should be done in.
  */
-export async function createWorkOrderFromInspection(id: string) {
+export async function createWorkOrderFromInspection(
+  id: string,
+  options: { includeDefects?: boolean } = {}
+) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       const inspection = await db.inspection.findFirst({
         where: { id, organizationId },
         include: {
-          vehicle: { select: { id: true, make: true, model: true, year: true } },
+          vehicle: {
+            select: { id: true, customer: { select: { taxExempt: true } } },
+          },
+          template: { select: { name: true } },
           items: { orderBy: { sortOrder: 'asc' } },
-          technician: { select: { id: true, name: true } },
         },
       })
       if (!inspection) throw new Error('Inspection not found')
 
-      const severityOrder: Record<string, number> = { dangerous: 0, fail: 1, attention: 2 }
-      const defects = inspection.items
-        .filter((item) => isDefect(item.condition))
-        .sort(
-          (a, b) =>
-            (severityOrder[a.condition] ?? 9) - (severityOrder[b.condition] ?? 9) ||
-            a.sortOrder - b.sortOrder
-        )
-      if (defects.length === 0) {
-        throw new Error('This inspection has no defects to work on')
-      }
+      const defects = options.includeDefects === false ? [] : defectsWorstFirst(inspection.items)
 
-      const [settings, org, timeZone] = await Promise.all([
-        db.appSetting.findMany({
-          where: {
-            organizationId,
-            key: {
-              in: [
-                'workshop.invoicePrefix',
-                'workshop.defaultLaborRate',
-                ...WORKSHOP_TAX_SETTING_KEYS,
-              ],
-            },
-          },
+      const [rate, timeZone, t] = await Promise.all([
+        db.appSetting.findUnique({
+          where: { organizationId_key: { organizationId, key: 'workshop.defaultLaborRate' } },
+          select: { value: true },
         }),
-        db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
         workshopTimeZone(organizationId),
+        getTranslations('inspections.page'),
       ])
-      const settingsMap: Record<string, string> = {}
-      for (const s of settings) settingsMap[s.key] = s.value
+      const laborRate = Number(rate?.value) || 0
 
-      const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
-      const now = new Date()
-      const today = zonedParts(now, timeZone)
-      const prefix = rawPrefix
-        .replace('{year}', String(today.year))
-        .replace('{month}', String(today.month).padStart(2, '0'))
-
-      const lastRecord = await db.serviceRecord.findFirst({
-        where: { organizationId },
-        orderBy: { createdAt: 'desc' },
-        select: { invoiceNumber: true },
-      })
-      let nextNum = 1001
-      if (lastRecord?.invoiceNumber) {
-        const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-        if (match) nextNum = parseInt(match[1], 10) + 1
-      }
-
-      const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap))
-      const laborRate = Number(settingsMap['workshop.defaultLaborRate']) || 0
-      const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
-
+      // One transaction for the number, the link and the lines. The draft
+      // used to be committed first, so a failure after it left a numbered,
+      // titled job on the board that pointed at nothing.
       const record = await db.$transaction(async (tx) => {
-        const created = await tx.serviceRecord.create({
-          data: {
-            organizationId,
-            title: `${vehicleName} — inspection repairs`,
-            description: `Raised from the inspection carried out on ${zonedDayKey(inspection.createdAt, timeZone)}.`,
-            type: 'repair',
-            status: 'pending',
+        // Numbered, titled, taxed and scheduled as any other new job is.
+        const draft = await createDraftRecord(
+          { organizationId, userId },
+          {
             vehicleId: inspection.vehicle.id,
+            customerId: null,
+            customerExempt: inspection.vehicle.customer?.taxExempt ?? false,
+            title: null,
+            technicianId: inspection.technicianId ?? undefined,
+            tx,
+          }
+        )
+        await tx.serviceRecord.update({
+          where: { id: draft.id },
+          data: {
+            description: t('raisedFromInspection', {
+              date: zonedDayKey(inspection.createdAt, timeZone),
+            }),
+            type: defects.length > 0 ? 'repair' : 'inspection',
             inspectionId: inspection.id,
-            technicianId: inspection.technicianId,
-            techName: inspection.technician?.name,
-            shopName: org?.name || undefined,
-            invoiceNumber: `${prefix}${nextNum}`,
             mileage: inspection.mileage,
-            // Hours and totals stay at zero: the point is to get the job on the
-            // board immediately, and the workshop prices it as it works.
-            ...taxFields,
-            serviceDate: startOfZonedDay(now, timeZone),
-            startDateTime: now,
           },
         })
-
+        // Hours start at zero: the workshop prices the job as it works.
         await tx.serviceLabor.createMany({
-          data: defects.map((item) => ({
-            description: [item.code ? `${item.code} ${item.name}` : item.name, item.notes]
-              .filter(Boolean)
-              .join(' — '),
+          data: [inspection.template.name, ...defects.map(defectLineText)].map((description) => ({
+            description,
             hours: 0,
             rate: laborRate,
             total: 0,
-            serviceRecordId: created.id,
+            serviceRecordId: draft.id,
           })),
         })
-
-        return created
+        await retotalServiceRecord(draft.id, tx)
+        return draft
       })
 
       revalidatePath('/work-orders')
@@ -769,6 +826,220 @@ export async function createWorkOrderFromInspection(id: string) {
         entityId: result.id,
         details: { key: 'service_createFromInspection', params: { ref: result.id } },
         metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
+      }),
+    }
+  )
+}
+
+/**
+ * Raises a quote from an inspection: a line for the inspection itself, then
+ * every check that was not OK, worst first, each carrying the technician's
+ * note. Built here from what the database holds rather than from what the
+ * page was showing, so a note typed after the page loaded is on the quote.
+ *
+ * When the customer has asked for a quote from their link, the quote is
+ * their request: only the checks they ticked, in checklist order, and their
+ * message carried in the quote's notes. Pricing what they did not ask for
+ * is a conversation for the desk, not a line to surprise them with.
+ */
+export async function createQuoteFromInspection(id: string) {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      const inspection = await db.inspection.findFirst({
+        where: { id, organizationId },
+        include: {
+          vehicle: {
+            select: { id: true, make: true, model: true, year: true, customerId: true },
+          },
+          template: { select: { name: true } },
+          items: { orderBy: { sortOrder: 'asc' } },
+          quoteRequests: {
+            where: { status: 'pending' },
+            select: { id: true, message: true, selectedItemIds: true },
+            orderBy: { createdAt: 'desc' as const },
+            take: 1,
+          },
+        },
+      })
+      if (!inspection) throw new Error('Inspection not found')
+
+      const t = await getTranslations('inspections.page')
+      const vehicle = inspection.vehicle
+      const request = inspection.quoteRequests?.[0] ?? null
+      const requested = request
+        ? inspection.items.filter((item) => request.selectedItemIds.includes(item.id))
+        : []
+      // A request whose checks were all deleted since falls back to the defects.
+      const lines = requested.length > 0 ? requested : defectsWorstFirst(inspection.items)
+      const message = request?.message?.trim()
+      const quote = await createQuoteRecord(
+        { organizationId, userId },
+        createQuoteSchema.parse({
+          title: t('quoteTitle', {
+            vehicle: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+          }),
+          vehicleId: vehicle.id,
+          customerId: vehicle.customerId ?? undefined,
+          inspectionId: inspection.id,
+          status: 'draft',
+          notes: request
+            ? [t('quoteFromRequestNote'), message ? t('quoteCustomerSaid', { message }) : '']
+                .filter(Boolean)
+                .join('\n')
+            : undefined,
+          laborItems: [inspection.template.name, ...lines.map(defectLineText)].map(
+            (description) => ({ description, hours: 0, rate: 0, total: 0 })
+          ),
+        })
+      )
+
+      revalidatePath('/quotes')
+      revalidatePath(`/inspections/${id}`)
+      return { id: quote.id, quoteNumber: quote.quoteNumber }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.QUOTES }],
+      audit: ({ result }) => ({
+        action: 'quote.create',
+        entity: 'Quote',
+        entityId: result.id,
+        details: { key: 'quote_create', params: { ref: result.quoteNumber || result.id } },
+        metadata: { quoteId: result.id },
+      }),
+    }
+  )
+}
+
+/**
+ * The jobs an inspection could be linked to instead of raising a new one: this
+ * car's open jobs that are not already the work of another inspection. The
+ * desk books "inspection" as a job a week ahead, and on the day the
+ * technician's checklist should land on that booking, not beside it.
+ */
+export async function getLinkableWorkOrders(inspectionId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const inspection = await db.inspection.findFirst({
+        where: { id: inspectionId, organizationId },
+        select: { vehicleId: true },
+      })
+      if (!inspection) throw new Error('Inspection not found')
+
+      return db.serviceRecord.findMany({
+        where: {
+          organizationId,
+          vehicleId: inspection.vehicleId,
+          inspectionId: null,
+          status: { in: [...OPEN_SERVICE_STATUSES] },
+        },
+        select: {
+          id: true,
+          title: true,
+          invoiceNumber: true,
+          type: true,
+          status: true,
+          startDateTime: true,
+          createdAt: true,
+        },
+        orderBy: [{ startDateTime: 'desc' }, { createdAt: 'desc' }],
+        take: 20,
+      })
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
+    }
+  )
+}
+
+/**
+ * Puts the inspection on a job that already exists. The job gets a line for
+ * the inspection unless it already carries one, and with `includeDefects`
+ * every check that was not OK follows, as when a job is raised fresh.
+ */
+export async function linkWorkOrderToInspection(
+  id: string,
+  serviceRecordId: string,
+  options: { includeDefects?: boolean } = {}
+) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const inspection = await db.inspection.findFirst({
+        where: { id, organizationId },
+        include: {
+          template: { select: { name: true } },
+          items: { orderBy: { sortOrder: 'asc' } },
+        },
+      })
+      if (!inspection) throw new Error('Inspection not found')
+
+      const job = await db.serviceRecord.findFirst({
+        where: { id: serviceRecordId, organizationId, vehicleId: inspection.vehicleId },
+        select: {
+          id: true,
+          vehicleId: true,
+          invoiceNumber: true,
+          inspectionId: true,
+          laborItems: { select: { description: true } },
+        },
+      })
+      if (!job) throw new Error('Work order not found')
+      if (job.inspectionId && job.inspectionId !== inspection.id) {
+        throw new Error('That work order already has an inspection')
+      }
+
+      const defects = options.includeDefects === false ? [] : defectsWorstFirst(inspection.items)
+      const hasInspectionLine = job.laborItems.some(
+        (line) => line.description.trim() === inspection.template.name.trim()
+      )
+      const rate = await db.appSetting.findUnique({
+        where: { organizationId_key: { organizationId, key: 'workshop.defaultLaborRate' } },
+        select: { value: true },
+      })
+      const laborRate = Number(rate?.value) || 0
+
+      await db.$transaction(async (tx) => {
+        await tx.serviceRecord.update({
+          where: { id: job.id },
+          data: { inspectionId: inspection.id, mileage: inspection.mileage ?? undefined },
+        })
+        const lines = [
+          ...(hasInspectionLine ? [] : [inspection.template.name]),
+          ...defects.map(defectLineText),
+        ]
+        if (lines.length > 0) {
+          await tx.serviceLabor.createMany({
+            data: lines.map((description) => ({
+              description,
+              hours: 0,
+              rate: laborRate,
+              total: 0,
+              serviceRecordId: job.id,
+            })),
+          })
+          await retotalServiceRecord(job.id, tx)
+        }
+      })
+
+      revalidatePath('/work-orders')
+      revalidatePath(`/inspections/${id}`)
+      revalidatePath(`/vehicles/${inspection.vehicleId}/service/${job.id}`)
+      return {
+        id: job.id,
+        vehicleId: inspection.vehicleId,
+        invoiceNumber: job.invoiceNumber,
+        defectCount: defects.length,
+      }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'service.update',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
+        metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId, linkedInspection: id },
       }),
     }
   )

@@ -74,8 +74,8 @@
     "noDismissed": "Brak odrzuconych pojazdów.",
     "dismissedOn": "Odrzucono {date}",
     "restore": "Przywróć",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Ustawienia konserwacji",
+    "dismissAriaLabel": "Odrzuć"
   },
   "reminders": {
     "title": "Nadchodzące przypomnienia",
@@ -112,7 +112,7 @@
     "createQuote": "Utwórz wycenę",
     "itemsRequested": "{count, plural, one {# pozycja zgłoszona} few {# pozycje zgłoszone} many {# pozycji zgłoszonych} other {# pozycji zgłoszonych}}",
     "noData": "Brak oczekujących zapytań ofertowych.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Odrzuć prośbę o wycenę"
   },
   "quoteResponses": {
     "title": "Odpowiedzi klientów na wyceny",
@@ -120,11 +120,11 @@
     "accepted": "Zaakceptowane",
     "changesRequested": "Zgłoszono zmiany",
     "convertToWorkOrder": "Przekształć w zlecenie",
-    "convert": "Convert",
+    "convert": "Przekształć",
     "viewQuote": "Pokaż wycenę",
-    "view": "View",
+    "view": "Pokaż",
     "noData": "Brak odpowiedzi klientów.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Odrzuć odpowiedź"
   },
   "recentCompleted": {
     "title": "Ostatnio ukończone",

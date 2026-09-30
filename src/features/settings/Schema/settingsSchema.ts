@@ -34,6 +34,19 @@ export const SETTING_KEYS = {
   INVOICE_SHOW_ORG_NUMBER: 'invoice.showOrgNumber',
   INVOICE_LINE_ITEMS_INCL_TAX: 'invoice.lineItemsInclTax',
   INVOICE_DUE_DAYS: 'invoice.dueDays',
+  /** See src/features/settings/Lib/shopFee.ts. */
+  SHOP_FEE_ENABLED: 'invoice.shopFeeEnabled',
+  SHOP_FEE_LABEL: 'invoice.shopFeeLabel',
+  /** 'flat' | 'percent' */
+  SHOP_FEE_MODE: 'invoice.shopFeeMode',
+  SHOP_FEE_AMOUNT: 'invoice.shopFeeAmount',
+  SHOP_FEE_PERCENT: 'invoice.shopFeePercent',
+  /** 'labor' | 'laborParts': what a percentage fee is a percentage of. */
+  SHOP_FEE_BASE: 'invoice.shopFeeBase',
+  /** Largest a percentage fee may come to; empty for no cap. */
+  SHOP_FEE_CAP: 'invoice.shopFeeCap',
+  /** 'both' | 'workOrders' | 'quotes': which new documents get the fee. */
+  SHOP_FEE_APPLIES_TO: 'invoice.shopFeeAppliesTo',
   /** See src/lib/document-lock.ts for what these freeze and when. */
   INVOICE_LOCK_ENABLED: 'invoice.lockEnabled',
   INVOICE_LOCK_TRIGGER: 'invoice.lockTrigger',
@@ -121,6 +134,8 @@ export const SETTING_KEYS = {
   /// What the current design is based on: "preset:<id>" or "design:<id>".
   INVOICE_ACTIVE_DESIGN: 'invoice.activeDesign',
   QUOTE_ACTIVE_DESIGN: 'quote.activeDesign',
+  CERTIFICATE_ACTIVE_DESIGN: 'certificate.activeDesign',
+  WORK_ORDER_ACTIVE_DESIGN: 'work_order.activeDesign',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',
   QUOTE_HEADER_STYLE: 'quote.headerStyle',
   /// Inspection reminders and the booking link they carry.
@@ -194,10 +209,14 @@ export const SETTING_KEYS = {
   WORKBOARD_WORK_DAY_END: 'workboard.workDayEnd',
   INVOICE_LAYOUT_CONFIG: 'invoice.layoutConfig',
   QUOTE_LAYOUT_CONFIG: 'quote.layoutConfig',
+  CERTIFICATE_LAYOUT_CONFIG: 'certificate.layoutConfig',
+  WORK_ORDER_LAYOUT_CONFIG: 'work_order.layoutConfig',
   // A mark for the paperwork alone. Unset means the documents print the
   // company logo, which is what every sheet did before this existed.
   INVOICE_LOGO: 'invoice.logo',
   QUOTE_LOGO: 'quote.logo',
+  CERTIFICATE_LOGO: 'certificate.logo',
+  WORK_ORDER_LOGO: 'work_order.logo',
   AI_PROVIDER: 'ai.provider',
   AI_API_KEY: 'ai.apiKey',
   AI_MODEL: 'ai.model',
@@ -221,6 +240,10 @@ export const SETTING_KEYS = {
   /// — sidebar entry, routes, cron sweeps — keys off this one flag, so a shop
   /// that does not store tires never sees it.
   TIRE_HOTEL_ENABLED: 'tireHotel.enabled',
+  /// The German type key (HSN/TSN) on vehicles and the documents that name
+  /// them. Off until a workshop turns it on: outside Germany it is two empty
+  /// boxes on every vehicle. Turning it off hides it and keeps what was typed.
+  VEHICLE_TYPE_KEY_ENABLED: 'vehicle.typeKeyEnabled',
   /// Tread depth below which a summer tire is flagged for replacement, in mm.
   /// Legal minimums differ by country, so the workshop sets its own.
   TIRE_HOTEL_SUMMER_REPLACE_MM: 'tireHotel.summerReplaceMm',
@@ -236,9 +259,20 @@ export const SETTING_KEYS = {
   /// type. A type with no price here produces no line, which is how a shop
   /// that folds washing into the storage fee keeps it off the invoice.
   TIRE_HOTEL_TREATMENT_PRICES: 'tireHotel.treatmentPrices',
-  DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
-  DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
-  DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',
+  /// What a new quote or work order says about warranty before anybody
+  /// touches it: 'none', 'included' or 'not_included'. See
+  /// src/features/settings/Lib/warrantyDefaults.ts.
+  WARRANTY_DEFAULT_STATUS: 'warranty.defaultStatus',
+  WARRANTY_DEFAULT_MONTHS: 'warranty.defaultMonths',
+  WARRANTY_DEFAULT_MILEAGE: 'warranty.defaultMileage',
+  /// The terms printed under an included warranty.
+  WARRANTY_DEFAULT_TERMS: 'warranty.defaultTerms',
+  /// What is printed when the workshop offers no warranty of its own.
+  WARRANTY_NOT_INCLUDED_TEXT: 'warranty.notIncludedText',
+  /// Off when a workshop states its warranty on the invoice only, or on the
+  /// quote only. Unset means on.
+  WARRANTY_APPLY_TO_QUOTES: 'warranty.applyToQuotes',
+  WARRANTY_APPLY_TO_WORK_ORDERS: 'warranty.applyToWorkOrders',
 } as const
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]
@@ -274,6 +308,14 @@ export const invoiceSettingsSchema = z.object({
   [SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: z.string().optional(),
   [SETTING_KEYS.INVOICE_DUE_DAYS]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_ENABLED]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_LABEL]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_MODE]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_AMOUNT]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_PERCENT]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_BASE]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_CAP]: z.string().optional(),
+  [SETTING_KEYS.SHOP_FEE_APPLIES_TO]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_ENABLED]: z.string().optional(),
   [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: z.string().optional(),
   [SETTING_KEYS.QUOTE_LOCK_ENABLED]: z.string().optional(),

@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { getPreset, presetToTemplateCreate } from '@/features/inspections/Lib/templatePresets'
+import { loadInspectionLibrary } from '@/features/inspections/Lib/inspectionLibrary'
 
 /** Minimal shape of a next-intl translator; keeps this lib decoupled from
  *  next-intl's generics. */
@@ -33,14 +34,16 @@ export const DEFAULT_TEMPLATE_PRESET_ID = 'standard-multipoint'
  * Installs the default inspection template(s) for a fresh organization and
  * returns the default one including sections and items, so the sample seed
  * can build an inspection from it. Records preset provenance, so the
- * template library recognises these as already installed.
+ * template library recognises these as already installed. Written in the
+ * language the workshop signed up in.
  */
 export async function installDefaultInspectionTemplates(organizationId: string, locale: string) {
   const generic = getPreset(DEFAULT_TEMPLATE_PRESET_ID)
   if (!generic) throw new Error('Default template preset not found')
+  const lib = await loadInspectionLibrary(locale)
 
   const template = await db.inspectionTemplate.create({
-    data: presetToTemplateCreate(generic, organizationId, true),
+    data: presetToTemplateCreate(generic, organizationId, true, lib),
     include: {
       sections: {
         include: { items: { orderBy: { sortOrder: 'asc' } } },
@@ -53,7 +56,7 @@ export async function installDefaultInspectionTemplates(organizationId: string, 
   const countryPreset = countryPresetId ? getPreset(countryPresetId) : null
   if (countryPreset) {
     await db.inspectionTemplate.create({
-      data: presetToTemplateCreate(countryPreset, organizationId, false),
+      data: presetToTemplateCreate(countryPreset, organizationId, false, lib),
     })
   }
 

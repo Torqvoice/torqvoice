@@ -1,9 +1,11 @@
 import { z } from 'zod'
 import {
+  DESIGNER_LAYOUT_VERSION,
   invoiceLayoutConfigSchema,
   mergeWithDefaults,
   type InvoiceLayoutConfig,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { WORK_ORDER_TEMPLATE_DEFAULTS } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { DesignerTemplate, DocumentType, SavedDesign } from '../Components/types'
 import { isDesignAutoRule } from './designRules'
@@ -49,15 +51,55 @@ export const designTemplateSchema = z
   })
   .passthrough()
 
-export const DESIGN_DOCUMENT_TYPES: DocumentType[] = ['invoice', 'quote']
+export const DESIGN_DOCUMENT_TYPES: DocumentType[] = [
+  'invoice',
+  'quote',
+  'certificate',
+  'work_order',
+]
 
-/** Reads a stored design row's JSON columns back into a source, or null. */
-export function designSourceFromStored(layout: unknown, template: unknown): DesignSource | null {
+/** A stored layout and template read back as they were written, or null. */
+function parseStoredSource(layout: unknown, template: unknown): DesignSource | null {
   const parsedTemplate = designTemplateSchema.safeParse(template ?? {})
   if (!parsedTemplate.success) return null
   const parsedLayout = invoiceLayoutConfigSchema.partial().safeParse(layout ?? {})
   if (!parsedLayout.success) return null
   return { layout: parsedLayout.data, template: parsedTemplate.data }
+}
+
+/**
+ * Reads a stored design row's JSON columns back into a source, or null.
+ *
+ * A row with no `version` is read as a designer layout rather than as a
+ * pre-designer one. Only the designer writes these rows, so every one of them
+ * is a designer layout by definition; the stamp was simply left off the row
+ * while the copy that went to settings got it. Without this, the same design
+ * printed one way as the workshop default and another way when an invoice
+ * picked it by name, which is what the classic fallback does to the header
+ * and the title.
+ *
+ * Not for issued snapshots: see designSourceFromSnapshot.
+ */
+export function designSourceFromStored(layout: unknown, template: unknown): DesignSource | null {
+  const source = parseStoredSource(layout, template)
+  if (!source) return null
+  return source.layout.version === undefined
+    ? { ...source, layout: { ...source.layout, version: DESIGNER_LAYOUT_VERSION } }
+    : source
+}
+
+/**
+ * Reads an issued invoice's frozen design back exactly as it was frozen.
+ *
+ * No version stamp, unlike a design row. The designer is not the only writer
+ * of snapshots: issuing freezes whatever look the invoice printed with, and a
+ * workshop that never opened the designer prints a settings layout with no
+ * version, the classic sheet. Stamping that on the way out turned the classic
+ * header into the designer's the moment the invoice was shared, so the link a
+ * customer opened no longer matched the PDF they had been sent.
+ */
+export function designSourceFromSnapshot(layout: unknown, template: unknown): DesignSource | null {
+  return parseStoredSource(layout, template)
 }
 
 function parseLayoutSetting(value: string | undefined): Partial<InvoiceLayoutConfig> {
@@ -81,11 +123,19 @@ export function designSourceFromSettings(
   documentType: DocumentType
 ): DesignSource {
   const p = documentType
+  // A work order starts black on white with a compact letterhead: a sheet
+  // printed all day long, not one sent to a customer.
+  const defaults =
+    documentType === 'work_order'
+      ? WORK_ORDER_TEMPLATE_DEFAULTS
+      : { primaryColor: '#d97706', headerStyle: 'standard' }
   return {
     layout: parseLayoutSetting(settings[`${p}.layoutConfig`]),
     template: {
       primaryColor:
-        settings[`${p}.primaryColor`] || settings[`${p}.template.primaryColor`] || '#d97706',
+        settings[`${p}.primaryColor`] ||
+        settings[`${p}.template.primaryColor`] ||
+        defaults.primaryColor,
       backgroundColor: settings[`${p}.backgroundColor`] || '',
       textColor: settings[`${p}.textColor`] || '',
       companyTextColor: settings[`${p}.companyTextColor`] || '',
@@ -96,7 +146,9 @@ export function designSourceFromSettings(
       fontFamily:
         settings[`${p}.fontFamily`] || settings[`${p}.template.fontFamily`] || 'Helvetica',
       headerStyle:
-        settings[`${p}.headerStyle`] || settings[`${p}.template.headerStyle`] || 'standard',
+        settings[`${p}.headerStyle`] ||
+        settings[`${p}.template.headerStyle`] ||
+        defaults.headerStyle,
       logoSize: Number(settings[`${p}.logoSize`]) || 100,
       logoUrl: settings[`${p}.logo`] || '',
       showLogo: (settings[`${p}.showLogo`] ?? settings[`${p}.template.showLogo`]) !== 'false',
@@ -145,6 +197,7 @@ export function materializeDesignSource(source: DesignSource): DesignSource {
 export function savedDesignFromRow(row: {
   id: string
   name: string
+  documentType?: string
   updatedAt: Date
   layout: unknown
   template: unknown
@@ -155,6 +208,9 @@ export function savedDesignFromRow(row: {
   return {
     id: row.id,
     name: row.name,
+    documentType: DESIGN_DOCUMENT_TYPES.includes(row.documentType as DocumentType)
+      ? (row.documentType as DocumentType)
+      : undefined,
     savedAt: row.updatedAt.toISOString(),
     layout: mergeWithDefaults(source.layout),
     template: source.template,

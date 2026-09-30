@@ -32,11 +32,13 @@ import {
   Pencil,
   Plus,
   Trash2,
+  Upload,
   User,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { toggleReminder, deleteReminder } from '../Actions/reminderActions'
 import { ReminderFormDialog } from './ReminderFormDialog'
+import { ReminderImportDialog } from './ReminderImportDialog'
 
 interface Reminder {
   id: string
@@ -102,6 +104,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
   const [filter, setFilter] = useState<FilterType>('active')
   const [showForm, setShowForm] = useState(false)
   const [editingReminder, setEditingReminder] = useState<Reminder | undefined>()
+  const [showImport, setShowImport] = useState(false)
 
   const filtered = reminders.filter((r) => {
     if (filter === 'active') return !r.isCompleted
@@ -165,6 +168,10 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
           <span className="text-xs text-muted-foreground">
             {t('showing', { count: filtered.length, total: reminders.length })}
           </span>
+          <Button size="sm" variant="outline" onClick={() => setShowImport(true)}>
+            <Upload className="mr-1 h-3.5 w-3.5" />
+            {t('import.button')}
+          </Button>
           <Button size="sm" onClick={openAddForm}>
             <Plus className="mr-1 h-3.5 w-3.5" />
             {tv('addReminder')}
@@ -325,6 +332,12 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
         vehicles={vehicles}
         reminder={editingReminder}
         onSaved={() => router.refresh()}
+      />
+
+      <ReminderImportDialog
+        open={showImport}
+        onOpenChange={setShowImport}
+        unitSystem={unitSystem}
       />
     </>
   )

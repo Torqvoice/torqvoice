@@ -21,7 +21,7 @@ export type TreadRow = {
 }
 
 /**
- * Four tread readings in a row, graded as they are typed.
+ * Four tread readings, one per corner of the car, graded as they are typed.
  *
  * The grade is suggested rather than imposed: the number decides the colour,
  * but a technician who sees sidewall damage on an otherwise deep tire can
@@ -68,7 +68,8 @@ export function TreadEntry({
   }
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2">
+    // Two by two, the way the wheels sit on the car: front pair above rear.
+    <div className="grid grid-cols-2 gap-2">
       {rows.map((row, index) => {
         const suggested = gradeFor(row.tread)
         const active = suggested ?? row.condition
@@ -89,28 +90,11 @@ export function TreadEntry({
             : null
 
         return (
-          <div key={row.position} className="rounded-lg border p-2">
-            <div className="flex items-center gap-2">
-              <span className="w-20 shrink-0 text-xs text-muted-foreground">
+          <div key={row.position} className="space-y-1.5 rounded-lg border p-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-xs font-medium text-muted-foreground">
                 {t(`positions.${row.position}`)}
               </span>
-              <Input
-                type="number"
-                step="0.1"
-                min="0"
-                inputMode="decimal"
-                value={row.tread}
-                onChange={(e) => {
-                  const grade = gradeFor(e.target.value)
-                  update(index, {
-                    tread: e.target.value,
-                    ...(grade ? { condition: grade } : {}),
-                  })
-                }}
-                placeholder={imperial ? t('tread.placeholder32') : t('tread.placeholderMm')}
-                className="h-8 flex-1 tabular-nums"
-                aria-label={t('tread.inputLabel', { position: t(`positions.${row.position}`) })}
-              />
               <Badge
                 variant="outline"
                 className={cn('shrink-0 text-[10px]', CONDITION_TOKENS[active].badge)}
@@ -118,9 +102,26 @@ export function TreadEntry({
                 {t(`conditions.${active}`)}
               </Badge>
             </div>
+            <Input
+              type="number"
+              step="0.1"
+              min="0"
+              inputMode="decimal"
+              value={row.tread}
+              onChange={(e) => {
+                const grade = gradeFor(e.target.value)
+                update(index, {
+                  tread: e.target.value,
+                  ...(grade ? { condition: grade } : {}),
+                })
+              }}
+              placeholder={imperial ? t('tread.placeholder32') : t('tread.placeholderMm')}
+              className="h-8 tabular-nums"
+              aria-label={t('tread.inputLabel', { position: t(`positions.${row.position}`) })}
+            />
 
             {typeof before === 'number' && (
-              <p className="mt-1 pl-[5.5rem] text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 {t('tread.lastTime', { value: display(before) })}
                 {worn !== null && (
                   <span className="ml-1.5 text-amber-600">

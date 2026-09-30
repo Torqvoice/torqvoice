@@ -14,7 +14,7 @@
     "createAndSend": "Sukurti ir siųsti",
     "cancel": "Atšaukti",
     "uploadFailed": "Nepavyko įkelti vaizdo įrašo",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Nepavyko sukurti būsenos ataskaitos",
     "created": "Būsenos ataskaita sukurta",
     "noVideo": "Pirmiausia įkelkite vaizdo įrašą",
     "removeVideo": "Pašalinti vaizdo įrašą",
@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Dėkojame už jūsų atsiliepimą!",
     "feedbackError": "Nepavyko pateikti atsiliepimo",
     "submitting": "Pateikiama...",
-    "poweredBy": "Sukurta su"
+    "poweredBy": "Sukurta su",
+    "vehicleLabel": "Transporto priemonė",
+    "plate": "Valst. nr.: {plate}",
+    "inspectionTitle": "Apžiūra",
+    "messageFromTechnician": "Techniko žinutė",
+    "videoUnsupported": "Jūsų naršyklė nepalaiko vaizdo įrašo elemento."
   },
   "list": {
     "title": "Būsenos ataskaitos",

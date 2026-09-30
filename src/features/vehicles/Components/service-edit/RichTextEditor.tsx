@@ -24,13 +24,25 @@ interface RichTextEditorProps {
   content: string
   onChange: (html: string) => void
   placeholder?: string
+  /**
+   * False on a locked document. A disabled fieldset turns off inputs and
+   * buttons but not a contenteditable, so without this the text could still
+   * be typed into and was then quietly never saved.
+   */
+  editable?: boolean
 }
 
-export function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
+export function RichTextEditor({
+  content,
+  onChange,
+  placeholder,
+  editable = true,
+}: RichTextEditorProps) {
   const lastContentRef = useRef(content)
 
   const editor = useEditor({
     immediatelyRender: false,
+    editable,
     extensions: [
       // Link and underline come bundled with StarterKit from v3, so they are
       // configured through it rather than added again. Registering them
@@ -55,6 +67,10 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     content,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
+      // Only what somebody typed is a change. The work order autosaves five
+      // seconds after one, so an update reported for anything else is a save
+      // nobody asked for.
+      if (html === lastContentRef.current) return
       lastContentRef.current = html
       onChange(html)
     },
@@ -65,11 +81,21 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     },
   })
 
+  // Quietly: tiptap reports an update from `setEditable` and `setContent`
+  // unless told not to. Left to its default, mounting this editor marked the
+  // work order as edited, and every page that was merely opened saved itself
+  // five seconds later. With two people on one job each of those saves woke
+  // the other's page, which mounted, which saved: requests without end, and
+  // the job's lines rewritten each time.
+  useEffect(() => {
+    editor?.setEditable(editable, false)
+  }, [editor, editable])
+
   // Sync editor when content is updated externally (e.g. AI generation)
   useEffect(() => {
     if (editor && content !== lastContentRef.current) {
       lastContentRef.current = content
-      editor.commands.setContent(content)
+      editor.commands.setContent(content, { emitUpdate: false })
     }
   }, [content, editor])
 
@@ -90,94 +116,111 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
 
   return (
     <div
-      className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y"
+      className={cn(
+        'overflow-hidden rounded-md border border-input flex flex-col resize-y',
+        editable ? 'bg-background' : 'bg-muted/40 text-muted-foreground'
+      )}
       style={{ minHeight: 180 }}
     >
-      <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
-        <ToolbarButton
-          active={editor.isActive('bold')}
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          title="Bold"
-        >
-          <Bold className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('italic')}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          title="Italic"
-        >
-          <Italic className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('underline')}
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          title="Underline"
-        >
-          <UnderlineIcon className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton active={editor.isActive('link')} onClick={handleSetLink} title="Link">
-          <LinkIcon className="h-3.5 w-3.5" />
-        </ToolbarButton>
+      {editable && (
+        <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
+          <ToolbarButton
+            active={editor.isActive('bold')}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            title="Bold"
+          >
+            <Bold className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('italic')}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            title="Italic"
+          >
+            <Italic className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('underline')}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            title="Underline"
+          >
+            <UnderlineIcon className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton active={editor.isActive('link')} onClick={handleSetLink} title="Link">
+            <LinkIcon className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
-        <div className="mx-0.5 h-4 w-px bg-border" />
+          <div className="mx-0.5 h-4 w-px bg-border" />
 
-        <ToolbarButton
-          active={editor.isActive('heading', { level: 2 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          title="Heading"
-        >
-          <Heading2 className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('heading', { level: 3 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          title="Subheading"
-        >
-          <Heading3 className="h-3.5 w-3.5" />
-        </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('heading', { level: 2 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            title="Heading"
+          >
+            <Heading2 className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('heading', { level: 3 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            title="Subheading"
+          >
+            <Heading3 className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
-        <div className="mx-0.5 h-4 w-px bg-border" />
+          <div className="mx-0.5 h-4 w-px bg-border" />
 
-        <ToolbarButton
-          active={editor.isActive('bulletList')}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          title="Bullet List"
-        >
-          <List className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('orderedList')}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          title="Numbered List"
-        >
-          <ListOrdered className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('blockquote')}
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          title="Quote"
-        >
-          <Quote className="h-3.5 w-3.5" />
-        </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('bulletList')}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            title="Bullet List"
+          >
+            <List className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('orderedList')}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            title="Numbered List"
+          >
+            <ListOrdered className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={editor.isActive('blockquote')}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            title="Quote"
+          >
+            <Quote className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
-        <div className="mx-0.5 h-4 w-px bg-border" />
+          <div className="mx-0.5 h-4 w-px bg-border" />
 
-        <ToolbarButton
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          title="Undo"
-        >
-          <Undo className="h-3.5 w-3.5" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          title="Redo"
-        >
-          <Redo className="h-3.5 w-3.5" />
-        </ToolbarButton>
-      </div>
-      <div className="flex-1 overflow-y-auto">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+            title="Undo"
+          >
+            <Undo className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+            title="Redo"
+          >
+            <Redo className="h-3.5 w-3.5" />
+          </ToolbarButton>
+        </div>
+      )}
+      {/* The text itself is only as tall as what is written, and the box is
+          taller, so a click in the empty space below it would land nowhere.
+          Anywhere in the box puts the cursor at the end, as a textarea does. */}
+      <div
+        data-testid="rich-text-area"
+        className={cn('flex-1 overflow-y-auto', editable && 'cursor-text')}
+        onMouseDown={(e) => {
+          if (!editable) return
+          if ((e.target as HTMLElement).closest('.ProseMirror')) return
+          e.preventDefault()
+          editor.commands.focus('end')
+        }}
+      >
         <EditorContent editor={editor} className="h-full [&>.tiptap]:h-full" />
       </div>
     </div>

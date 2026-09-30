@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "All",
+    "statusAttention": "Needs attention",
     "statusDraft": "Draft",
     "statusSent": "Sent",
     "statusAccepted": "Accepted",
@@ -95,10 +96,8 @@
     "subtotal": "Labor Subtotal: {amount}",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "hourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
+    "serviceHint": "Service: priced as a flat fee per unit. Click to switch.",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total"
   },
@@ -212,5 +211,14 @@
     "failedDelete": "Failed to delete file",
     "failedUpdate": "Failed to update",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "expired": "Expired",
+    "converted": "Converted",
+    "changes_requested": "Changes Requested"
   }
 }

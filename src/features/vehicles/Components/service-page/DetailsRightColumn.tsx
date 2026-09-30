@@ -16,6 +16,7 @@ import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
+import type { WarrantyTexts } from '@/lib/warranty'
 import type { BoardTechnicianOption, OrgMemberOption, WorkBayOption } from './service-page-types'
 
 interface DetailsRightColumnProps {
@@ -25,6 +26,8 @@ interface DetailsRightColumnProps {
   vehicleId: string | null
   organizationId: string
   currencyCode: string
+  unitSystem: 'metric' | 'imperial'
+  warrantyTexts: WarrantyTexts
   taxEnabled: boolean
   initialVehicle: {
     id: string
@@ -49,7 +52,6 @@ interface DetailsRightColumnProps {
   telegramEnabled?: boolean
   designOptions?: DesignOption[]
   designFollowsName?: string | null
-  designPinnedAt?: string | null
   designFollowsRule?: DesignAutoRule | null
 }
 
@@ -60,6 +62,8 @@ export function DetailsRightColumn({
   vehicleId,
   organizationId,
   currencyCode,
+  unitSystem,
+  warrantyTexts,
   taxEnabled,
   initialVehicle,
   boardTechnicians,
@@ -72,7 +76,6 @@ export function DetailsRightColumn({
   telegramEnabled = false,
   designOptions = [],
   designFollowsName = null,
-  designPinnedAt = null,
   designFollowsRule = null,
 }: DetailsRightColumnProps) {
   const router = useRouter()
@@ -107,7 +110,6 @@ export function DetailsRightColumn({
         designOptions={designOptions}
         designId={record.designId ?? null}
         designFollowsName={designFollowsName}
-        designPinnedAt={designPinnedAt}
         designFollowsRule={designFollowsRule}
       />
       <BasicInfoSection
@@ -129,6 +131,7 @@ export function DetailsRightColumn({
         initialEndDateTime={formState.initialData.endDateTime}
         initialTechnicianId={record.technicianId}
         initialWorkBayId={record.workBayId}
+        initialPromisedAt={record.promisedAt ? new Date(record.promisedAt).toISOString() : null}
         onSaved={formState.flashSaved}
       />
       {videoCall && (
@@ -162,13 +165,11 @@ export function DetailsRightColumn({
         currencyCode={currencyCode}
       />
       <WarrantySection
-        warrantyMonths={formState.warrantyMonths}
-        warrantyMileage={formState.warrantyMileage}
-        warrantyNotes={formState.warrantyNotes}
+        value={formState.warranty}
+        onChange={formState.dirtySetWarranty}
+        texts={warrantyTexts}
+        distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
         serviceDate={formState.initialData.serviceDate}
-        onWarrantyMonthsChange={formState.dirtySetWarrantyMonths}
-        onWarrantyMileageChange={formState.dirtySetWarrantyMileage}
-        onWarrantyNotesChange={formState.dirtySetWarrantyNotes}
       />
       <ServiceAttachments
         attachments={record.attachments || []}

@@ -30,8 +30,8 @@
     "deleteDescription": "Todas as mensagens com {name} serão excluídas permanentemente. Esta ação não pode ser desfeita.",
     "deleted": "Conversa excluída",
     "deleteError": "Falha ao excluir a conversa",
-    "back": "Back",
-    "conversationMenu": "Conversation menu",
+    "back": "Voltar",
+    "conversationMenu": "Menu da conversa",
     "searchPlaceholder": "Buscar conversas",
     "noSearchResults": "Nenhuma conversa corresponde à busca",
     "now": "agora"
@@ -47,7 +47,7 @@
     "messageDeleted": "Mensagem excluída",
     "deleteError": "Falha ao excluir a mensagem",
     "sendError": "Falha ao enviar o SMS",
-    "sendMessage": "Send message"
+    "sendMessage": "Enviar mensagem"
   },
   "sendDialog": {
     "send": "Enviar {label}",

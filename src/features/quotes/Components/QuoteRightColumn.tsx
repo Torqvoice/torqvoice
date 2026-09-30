@@ -13,21 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  ArrowRight,
-  Car,
-  Check,
-  ClipboardCheck,
-  Loader2,
-  MessageSquare,
-  Users,
-  X,
-} from 'lucide-react'
+import { ArrowRight, Car, ClipboardCheck, Users, X } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { netLineTotal } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
+import { type LockReason, quoteStatusKeepsLock } from '@/lib/document-lock'
+import type { WarrantyTexts } from '@/lib/warranty'
+import { WarrantySection } from '@/features/vehicles/Components/service-page/WarrantySection'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
@@ -38,9 +32,17 @@ interface QuoteRightColumnProps {
   quote: QuoteRecord
   organizationId: string
   currencyCode: string
+  warrantyTexts: WarrantyTexts
+  distanceUnit: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
   onRevoke: () => Promise<void>
+  /**
+   * Why the quote is locked, or null when it edits. A lock disables the fields
+   * that edit the quote; its actions, and any status that keeps it locked, stay
+   * usable.
+   */
+  lockReason: LockReason | null
 }
 
 export const QuoteRightColumn = memo(function QuoteRightColumn({
@@ -48,13 +50,20 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   quote,
   organizationId,
   currencyCode,
+  warrantyTexts,
+  distanceUnit,
   t,
   onRevoke,
+  lockReason,
 }: QuoteRightColumnProps) {
   const formatCurrency = useFormatCurrency()
   const [validUntil, setValidUntil] = useState(state.defaultValidDate)
+  const locked = lockReason !== null
+  const statusAllowed = (value: string) => !lockReason || quoteStatusKeepsLock(lockReason, value)
   return (
-    <div className="space-y-3">
+    // Gaps rather than space-y: the fieldsets below are display:contents, and
+    // a margin on one of those spaces nothing.
+    <div className="flex flex-col gap-3">
       {/* Convert to Work Order */}
       {quote.status !== 'converted' && (
         <div className="rounded-lg border p-3">
@@ -83,170 +92,195 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
         />
       )}
 
-      {/* Vehicle & Customer */}
-      <div className="rounded-lg border p-3 space-y-3">
-        <div className="space-y-1">
-          <Label className="text-xs">{t('details.customer')}</Label>
-          <CustomerCombobox
-            value={state.customerId}
-            initialCustomer={state.selectedCustomer}
-            placeholder={t('details.selectCustomer')}
-            noneLabel={t('details.none')}
-            onChange={(id, customer) => {
-              state.setCustomerId(id)
-              state.setSelectedCustomer(customer)
-              // A vehicle belonging to another customer no longer fits
-              if (id && state.selectedVehicle && state.selectedVehicle.customerId !== id) {
-                state.setVehicleId('')
-                state.setSelectedVehicle(null)
-              }
-              state.markDirty()
-            }}
-          />
-        </div>
-        {state.selectedCustomer && (
-          <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
-            <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <Link
-              href={`/customers/${state.selectedCustomer.id}`}
-              target="_blank"
-              className="min-w-0 flex-1 text-sm hover:underline"
-            >
-              <span className="font-medium">{state.selectedCustomer.name}</span>
-              {state.selectedCustomer.company && (
-                <span className="ml-1.5 text-muted-foreground">
-                  {state.selectedCustomer.company}
-                </span>
-              )}
-            </Link>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                state.setCustomerId('')
-                state.setSelectedCustomer(null)
-                state.markDirty()
-              }}
-              aria-label={t('details.clearCustomer')}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        )}
-        <div className="space-y-1">
-          <Label className="text-xs">{t('details.vehicle')}</Label>
-          <VehicleCombobox
-            value={state.vehicleId}
-            customerId={state.customerId || undefined}
-            initialVehicle={state.selectedVehicle}
-            placeholder={t('details.selectVehicle')}
-            noneLabel={t('details.none')}
-            onChange={(id, vehicle) => {
-              state.setVehicleId(id)
-              state.setSelectedVehicle(vehicle)
-              if (vehicle?.customerId) {
-                state.setCustomerId(vehicle.customerId)
-                if (vehicle.customer) {
-                  state.setSelectedCustomer({
-                    id: vehicle.customer.id,
-                    name: vehicle.customer.name,
-                    company: null,
-                  })
+      {/* The fields that edit the quote sit in fieldsets a lock disables. The
+          actions do not: converting, the shared link and the status, because a
+          disabled fieldset disables the buttons inside it too. */}
+      <fieldset disabled={locked} className="contents">
+        {/* Vehicle & Customer */}
+        <div className="rounded-lg border p-3 space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs">{t('details.customer')}</Label>
+            <CustomerCombobox
+              value={state.customerId}
+              initialCustomer={state.selectedCustomer}
+              placeholder={t('details.selectCustomer')}
+              noneLabel={t('details.none')}
+              onChange={(id, customer) => {
+                state.setCustomerId(id)
+                state.setSelectedCustomer(customer)
+                // A vehicle belonging to another customer no longer fits
+                if (id && state.selectedVehicle && state.selectedVehicle.customerId !== id) {
+                  state.setVehicleId('')
+                  state.setSelectedVehicle(null)
                 }
-              }
-              state.markDirty()
-            }}
-          />
-        </div>
-        {state.selectedVehicle && (
-          <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
-            <Car className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <Link
-              href={`/vehicles/${state.selectedVehicle.id}`}
-              target="_blank"
-              className="min-w-0 flex-1 text-sm hover:underline"
-            >
-              <span className="font-medium">
-                {state.selectedVehicle.year} {state.selectedVehicle.make}{' '}
-                {state.selectedVehicle.model}
-              </span>
-              {state.selectedVehicle.licensePlate && (
-                <span className="ml-1.5 text-muted-foreground">
-                  {state.selectedVehicle.licensePlate}
-                </span>
-              )}
-            </Link>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                state.setVehicleId('')
-                state.setSelectedVehicle(null)
                 state.markDirty()
               }}
-              aria-label={t('details.clearVehicle')}
-            >
-              <X className="h-3 w-3" />
-            </Button>
+            />
           </div>
-        )}
-      </div>
+          {state.selectedCustomer && (
+            <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
+              <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <Link
+                href={`/customers/${state.selectedCustomer.id}`}
+                target="_blank"
+                className="min-w-0 flex-1 text-sm hover:underline"
+              >
+                <span className="font-medium">{state.selectedCustomer.name}</span>
+                {state.selectedCustomer.company && (
+                  <span className="ml-1.5 text-muted-foreground">
+                    {state.selectedCustomer.company}
+                  </span>
+                )}
+              </Link>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  state.setCustomerId('')
+                  state.setSelectedCustomer(null)
+                  state.markDirty()
+                }}
+                aria-label={t('details.clearCustomer')}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+          <div className="space-y-1">
+            <Label className="text-xs">{t('details.vehicle')}</Label>
+            <VehicleCombobox
+              value={state.vehicleId}
+              customerId={state.customerId || undefined}
+              initialVehicle={state.selectedVehicle}
+              placeholder={t('details.selectVehicle')}
+              noneLabel={t('details.none')}
+              onChange={(id, vehicle) => {
+                state.setVehicleId(id)
+                state.setSelectedVehicle(vehicle)
+                if (vehicle?.customerId) {
+                  state.setCustomerId(vehicle.customerId)
+                  if (vehicle.customer) {
+                    state.setSelectedCustomer({
+                      id: vehicle.customer.id,
+                      name: vehicle.customer.name,
+                      company: null,
+                    })
+                  }
+                }
+                state.markDirty()
+              }}
+            />
+          </div>
+          {state.selectedVehicle && (
+            <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
+              <Car className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <Link
+                href={`/vehicles/${state.selectedVehicle.id}`}
+                target="_blank"
+                className="min-w-0 flex-1 text-sm hover:underline"
+              >
+                <span className="font-medium">
+                  {state.selectedVehicle.year} {state.selectedVehicle.make}{' '}
+                  {state.selectedVehicle.model}
+                </span>
+                {state.selectedVehicle.licensePlate && (
+                  <span className="ml-1.5 text-muted-foreground">
+                    {state.selectedVehicle.licensePlate}
+                  </span>
+                )}
+              </Link>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  state.setVehicleId('')
+                  state.setSelectedVehicle(null)
+                  state.markDirty()
+                }}
+                aria-label={t('details.clearVehicle')}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </fieldset>
 
       {/* Quote Details */}
-      <div className="rounded-lg border p-3 space-y-3">
+      <div className="flex flex-col gap-3 rounded-lg border p-3">
         <h3 className="text-sm font-semibold">{t('details.title')}</h3>
-        <div className="space-y-1">
-          <Label htmlFor="title" className="text-xs">
-            {t('details.titleLabel')}
-          </Label>
-          <Input
-            id="title"
-            name="title"
-            placeholder={t('details.titlePlaceholder')}
-            defaultValue={quote.title}
-            required
-            onChange={state.markDirty}
-          />
-        </div>
+        <fieldset disabled={locked} className="contents">
+          <div className="space-y-1">
+            <Label htmlFor="title" className="text-xs">
+              {t('details.titleLabel')}
+            </Label>
+            <Input
+              id="title"
+              name="title"
+              placeholder={t('details.titlePlaceholder')}
+              defaultValue={quote.title}
+              required
+              onChange={state.markDirty}
+            />
+          </div>
+        </fieldset>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label className="text-xs">{t('details.status')}</Label>
             <Select
               value={state.status}
-              onValueChange={(v) => {
-                state.setStatus(v)
-                state.markDirty()
-              }}
+              onValueChange={state.changeStatus}
+              disabled={state.changingStatus}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label={t('details.status')}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">{t('details.statusDraft')}</SelectItem>
-                <SelectItem value="sent">{t('details.statusSent')}</SelectItem>
-                <SelectItem value="accepted">{t('details.statusAccepted')}</SelectItem>
-                <SelectItem value="rejected">{t('details.statusRejected')}</SelectItem>
+                <SelectItem value="draft" disabled={!statusAllowed('draft')}>
+                  {t('details.statusDraft')}
+                </SelectItem>
+                <SelectItem value="sent" disabled={!statusAllowed('sent')}>
+                  {t('details.statusSent')}
+                </SelectItem>
+                <SelectItem value="accepted" disabled={!statusAllowed('accepted')}>
+                  {t('details.statusAccepted')}
+                </SelectItem>
+                <SelectItem value="rejected" disabled={!statusAllowed('rejected')}>
+                  {t('details.statusRejected')}
+                </SelectItem>
+                {/* Statuses the customer or a conversion sets, never picked by
+                      hand. Listed so the select can show them: with no option
+                      to match, it reports an empty value and the page would
+                      save a status the server refuses. */}
+                <SelectItem value="changes_requested" disabled>
+                  {t('page.changesRequested')}
+                </SelectItem>
+                <SelectItem value="converted" disabled>
+                  {t('list.statusConverted')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="validUntil" className="text-xs">
-              {t('details.validUntil')}
-            </Label>
-            <DateInput
-              id="validUntil"
-              name="validUntil"
-              value={validUntil}
-              onChange={(v) => {
-                setValidUntil(v)
-                state.markDirty()
-              }}
-            />
-          </div>
+          <fieldset disabled={locked} className="contents">
+            <div className="space-y-1">
+              <Label htmlFor="validUntil" className="text-xs">
+                {t('details.validUntil')}
+              </Label>
+              <DateInput
+                id="validUntil"
+                name="validUntil"
+                value={validUntil}
+                onChange={(v) => {
+                  setValidUntil(v)
+                  state.markDirty()
+                }}
+              />
+            </div>
+          </fieldset>
         </div>
         {quote.inspectionId && (
           <Link
@@ -260,203 +294,151 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
       </div>
 
       {/* Custom Fields */}
-      <CustomFieldsForm
-        entityId={quote.id}
-        entityType="quote"
-        onValuesReady={state.onCustomFieldsReady}
-        onChange={state.markDirty}
-      />
-
-      {/* Customer Response */}
-      {quote.customerMessage &&
-        (state.status === 'changes_requested' || state.status === 'accepted') && (
-          <div
-            className={`rounded-lg border p-3 space-y-2 ${
-              state.status === 'changes_requested'
-                ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20'
-                : 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <h3
-                className={`flex items-center gap-1.5 text-sm font-semibold ${
-                  state.status === 'changes_requested'
-                    ? 'text-orange-700 dark:text-orange-400'
-                    : 'text-emerald-700 dark:text-emerald-400'
-                }`}
-              >
-                <MessageSquare className="h-3.5 w-3.5" />
-                {state.status === 'changes_requested'
-                  ? t('page.changesRequested')
-                  : t('page.quoteAccepted')}
-              </h3>
-              <span
-                className={`text-[10px] ${
-                  state.status === 'changes_requested'
-                    ? 'text-orange-500 dark:text-orange-500'
-                    : 'text-emerald-500 dark:text-emerald-500'
-                }`}
-              >
-                {new Date(quote.updatedAt).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}{' '}
-                {new Date(quote.updatedAt).toLocaleTimeString(undefined, {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </span>
-            </div>
-            <p
-              className={`text-sm ${
-                state.status === 'changes_requested'
-                  ? 'text-orange-600 dark:text-orange-400'
-                  : 'text-emerald-600 dark:text-emerald-400'
-              }`}
-            >
-              &ldquo;{quote.customerMessage}&rdquo;
-            </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full"
-              disabled={state.resolving}
-              onClick={state.handleResolveResponse}
-            >
-              {state.resolving ? (
-                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Check className="mr-1 h-3.5 w-3.5" />
-              )}
-              {t('page.markResolved')}
-            </Button>
-          </div>
-        )}
+      <fieldset disabled={locked} className="contents">
+        <CustomFieldsForm
+          entityId={quote.id}
+          entityType="quote"
+          onValuesReady={state.onCustomFieldsReady}
+          onChange={state.markDirty}
+        />
+      </fieldset>
 
       {/* Totals */}
-      {(() => {
-        // Universal display: net per category, net subtotal, net discount, tax, gross total.
-        // Same layout as the quote PDF/share view so the user always sees the breakdown.
-        const displayPartsSubtotal = netLineTotal(
-          state.partsSubtotal,
-          state.taxRate,
-          state.taxInclusive
-        )
-        const displayLaborSubtotal = netLineTotal(
-          state.laborSubtotal,
-          state.taxRate,
-          state.taxInclusive
-        )
-        const displaySubtotal = netLineTotal(state.subtotal, state.taxRate, state.taxInclusive)
-        const displayDiscountAmount = netLineTotal(
-          state.discountAmount,
-          state.taxRate,
-          state.taxInclusive
-        )
-        return (
-          <div className="rounded-lg border p-3 space-y-2">
-            <h3 className="text-sm font-semibold">{t('totals.title')}</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t('totals.parts')}</span>
-                <span>{formatCurrency(displayPartsSubtotal, currencyCode)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t('totals.labor')}</span>
-                <span>{formatCurrency(displayLaborSubtotal, currencyCode)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t('totals.subtotal')}</span>
-                <span className="font-medium">{formatCurrency(displaySubtotal, currencyCode)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">{t('totals.discount')}</span>
-                  <Select
-                    value={state.discountType}
-                    onValueChange={(v) => {
-                      state.setDiscountType(v)
-                      state.markDirty()
-                    }}
-                  >
-                    <SelectTrigger className="h-7 w-28 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t('totals.discountNone')}</SelectItem>
-                      <SelectItem value="percentage">{t('totals.discountPercentage')}</SelectItem>
-                      <SelectItem value="fixed">{t('totals.discountFixed')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {state.discountType !== 'none' && (
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={state.discountValue}
-                      onChange={(e) => {
-                        state.setDiscountValue(e.target.value === '' ? 0 : Number(e.target.value))
-                        state.markDirty()
-                      }}
-                      className="h-7 w-20 text-right text-xs"
-                    />
-                  )}
-                  {state.discountType === 'percentage' && (
-                    <span className="text-muted-foreground">%</span>
-                  )}
+      <fieldset disabled={locked} className="contents">
+        {(() => {
+          // Universal display: net per category, net subtotal, net discount, tax, gross total.
+          // Same layout as the quote PDF/share view so the user always sees the breakdown.
+          const displayPartsSubtotal = netLineTotal(
+            state.partsSubtotal,
+            state.taxRate,
+            state.taxInclusive
+          )
+          const displayLaborSubtotal = netLineTotal(
+            state.laborSubtotal,
+            state.taxRate,
+            state.taxInclusive
+          )
+          const displaySubtotal = netLineTotal(state.subtotal, state.taxRate, state.taxInclusive)
+          const displayDiscountAmount = netLineTotal(
+            state.discountAmount,
+            state.taxRate,
+            state.taxInclusive
+          )
+          return (
+            <div className="rounded-lg border p-3 space-y-2">
+              <h3 className="text-sm font-semibold">{t('totals.title')}</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{t('totals.parts')}</span>
+                  <span>{formatCurrency(displayPartsSubtotal, currencyCode)}</span>
                 </div>
-                {displayDiscountAmount > 0 && (
-                  <span className="text-destructive">
-                    {formatCurrency(-displayDiscountAmount, currencyCode)}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{t('totals.labor')}</span>
+                  <span>{formatCurrency(displayLaborSubtotal, currencyCode)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{t('totals.subtotal')}</span>
+                  <span className="font-medium">
+                    {formatCurrency(displaySubtotal, currencyCode)}
                   </span>
-                )}
-              </div>
-              {state.taxEnabled && state.taxComponents && state.taxComponents.length > 0 ? (
-                state.taxComponents.map((component) => (
-                  <div
-                    key={component.name}
-                    className="flex items-center justify-between text-sm"
-                    data-testid="tax-component-row"
-                  >
-                    <span className="text-muted-foreground">{taxComponentLabel(component)}</span>
-                    <span>{formatCurrency(component.amount, currencyCode)}</span>
-                  </div>
-                ))
-              ) : state.taxEnabled ? (
+                </div>
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">{t('totals.tax')}</span>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={state.taxRate}
-                      onChange={(e) => {
-                        state.setTaxRate(e.target.value === '' ? 0 : Number(e.target.value))
+                    <span className="text-muted-foreground">{t('totals.discount')}</span>
+                    <Select
+                      value={state.discountType}
+                      onValueChange={(v) => {
+                        state.setDiscountType(v)
                         state.markDirty()
                       }}
-                      className="h-7 w-20 text-right text-xs"
-                    />
-                    <span className="text-muted-foreground">%</span>
+                    >
+                      <SelectTrigger className="h-7 w-28 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t('totals.discountNone')}</SelectItem>
+                        <SelectItem value="percentage">{t('totals.discountPercentage')}</SelectItem>
+                        <SelectItem value="fixed">{t('totals.discountFixed')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {state.discountType !== 'none' && (
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={state.discountValue}
+                        onChange={(e) => {
+                          state.setDiscountValue(e.target.value === '' ? 0 : Number(e.target.value))
+                          state.markDirty()
+                        }}
+                        className="h-7 w-20 text-right text-xs"
+                      />
+                    )}
+                    {state.discountType === 'percentage' && (
+                      <span className="text-muted-foreground">%</span>
+                    )}
                   </div>
-                  <span>{formatCurrency(state.taxAmount, currencyCode)}</span>
+                  {displayDiscountAmount > 0 && (
+                    <span className="text-destructive">
+                      {formatCurrency(-displayDiscountAmount, currencyCode)}
+                    </span>
+                  )}
                 </div>
-              ) : null}
-              <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
-                <span>{t('totals.total')}</span>
-                <span>{formatCurrency(state.totalAmount, currencyCode)}</span>
+                {state.taxEnabled && state.taxComponents && state.taxComponents.length > 0 ? (
+                  state.taxComponents.map((component) => (
+                    <div
+                      key={component.name}
+                      className="flex items-center justify-between text-sm"
+                      data-testid="tax-component-row"
+                    >
+                      <span className="text-muted-foreground">{taxComponentLabel(component)}</span>
+                      <span>{formatCurrency(component.amount, currencyCode)}</span>
+                    </div>
+                  ))
+                ) : state.taxEnabled ? (
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">{t('totals.tax')}</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value={state.taxRate}
+                        onChange={(e) => {
+                          state.setTaxRate(e.target.value === '' ? 0 : Number(e.target.value))
+                          state.markDirty()
+                        }}
+                        className="h-7 w-20 text-right text-xs"
+                      />
+                      <span className="text-muted-foreground">%</span>
+                    </div>
+                    <span>{formatCurrency(state.taxAmount, currencyCode)}</span>
+                  </div>
+                ) : null}
+                <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
+                  <span>{t('totals.total')}</span>
+                  <span>{formatCurrency(state.totalAmount, currencyCode)}</span>
+                </div>
+                {state.taxInclusive && (
+                  <p className="text-xs text-muted-foreground italic">
+                    {t('totals.inclusiveModeHint')}
+                  </p>
+                )}
               </div>
-              {state.taxInclusive && (
-                <p className="text-xs text-muted-foreground italic">
-                  {t('totals.inclusiveModeHint')}
-                </p>
-              )}
             </div>
-          </div>
-        )
-      })()}
+          )
+        })()}
+      </fieldset>
+
+      {/* Warranty: what the customer is offered, stated before they accept */}
+      <fieldset disabled={locked} className="contents">
+        <WarrantySection
+          value={state.warranty}
+          onChange={state.setWarranty}
+          texts={warrantyTexts}
+          distanceUnit={distanceUnit}
+        />
+      </fieldset>
     </div>
   )
 })

@@ -18,7 +18,7 @@ import { AI_KEYS } from '@/features/ai/Schema/aiSettingsSchema'
 import { openCredentials, sealCredentials } from './vault'
 
 /** Connector ids that can answer a chat completion, most recently used first. */
-export const AI_CONNECTOR_IDS = ['openai', 'anthropic'] as const
+export const AI_CONNECTOR_IDS = ['openai', 'anthropic', 'openai-compatible'] as const
 export type AiConnectorId = (typeof AI_CONNECTOR_IDS)[number]
 
 export const AI_CHAT_CAPABILITY = 'ai.chat'
@@ -39,6 +39,8 @@ export interface AiSetup {
   provider: AiConnectorId
   apiKey: string
   model: string
+  /** The API root of an OpenAI-compatible server; absent for the vendors with a fixed one. */
+  baseUrl?: string
 }
 
 function isAiConnector(id: string): id is AiConnectorId {
@@ -224,15 +226,24 @@ export async function aiSetup(organizationId: string): Promise<AiSetup | null> {
   if (!row || !isAiConnector(row.connectorId)) return adoptLegacyAi(organizationId)
 
   let apiKey: string
+  let baseUrl: string
   try {
     const credentials = openCredentials(row.credentials)
     apiKey = typeof credentials.apiKey === 'string' ? credentials.apiKey : ''
+    baseUrl = typeof credentials.baseUrl === 'string' ? credentials.baseUrl.trim() : ''
   } catch (err) {
     return unsealedFallback(organizationId, row.id, err)
   }
 
   const model = modelOf(row.settings)
-  if (!apiKey || !model) return null
+  if (!model) return null
+  // A compatible server is addressed by its URL and may run without a key;
+  // the vendors are addressed by their key alone.
+  if (row.connectorId === 'openai-compatible') {
+    if (!baseUrl) return null
+    return { connectionId: row.id, provider: row.connectorId, apiKey, model, baseUrl }
+  }
+  if (!apiKey) return null
 
   return { connectionId: row.id, provider: row.connectorId, apiKey, model }
 }
@@ -256,4 +267,26 @@ export async function isAiConfigured(organizationId: string): Promise<boolean> {
   if (rows.some((row) => modelOf(row.settings))) return true
   const { setup } = await legacyAiSetup(organizationId)
   return setup !== null
+}
+
+/**
+ * Which vendor a completion would go to, without adopting anything and
+ * without opening any credentials. For pages that offer something only some
+ * vendors can do (speech to text is one), and for the same reason as
+ * `isAiConfigured` must not create a connection while rendering.
+ */
+export async function configuredAiProvider(organizationId: string): Promise<AiConnectorId | null> {
+  const rows = await db.integrationConnection.findMany({
+    where: {
+      organizationId,
+      connectorId: { in: [...AI_CONNECTOR_IDS] },
+      status: 'active',
+    },
+    orderBy: { updatedAt: 'desc' },
+    select: { connectorId: true, settings: true },
+  })
+  const row = rows.find((candidate) => modelOf(candidate.settings))
+  if (row && isAiConnector(row.connectorId)) return row.connectorId
+  const { setup } = await legacyAiSetup(organizationId)
+  return setup?.provider ?? null
 }

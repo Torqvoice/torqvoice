@@ -131,7 +131,7 @@
     "saveChanges": "Salva modifiche",
     "addPart": "Aggiungi ricambio"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Apri menu",
   "history": {
     "title": "Storico magazzino",
     "description": "Tutte le modifiche registrate a {name}, dalla più recente.",

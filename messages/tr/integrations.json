@@ -40,19 +40,19 @@
       "conference": "Görüntülü görüşme bağlantıları"
     },
     "sms": {
-      "send": "Text messages out",
-      "receive": "Replies back in"
+      "send": "Giden SMS mesajları",
+      "receive": "Gelen yanıtlar"
     },
     "whatsapp": {
-      "send": "WhatsApp messages out",
-      "receive": "Replies back in"
+      "send": "Giden WhatsApp mesajları",
+      "receive": "Gelen yanıtlar"
     },
     "telegram": {
-      "send": "Telegram messages out",
-      "receive": "Replies back in"
+      "send": "Giden Telegram mesajları",
+      "receive": "Gelen yanıtlar"
     },
     "email": {
-      "send": "Email out"
+      "send": "Giden e-posta"
     },
     "vehicle": {
       "lookup": "Plaka ve VIN sorgulama",
@@ -60,7 +60,8 @@
       "safety": "Geri çağırmalar ve sahip şikâyetleri"
     },
     "ai": {
-      "chat": "Metinler ve özetler"
+      "chat": "Metinler ve özetler",
+      "transcribe": "Dikte"
     },
     "payments": {
       "checkout": "Fatura bağlantısından ödeme"
@@ -131,19 +132,19 @@
     "lockedAi": "Atölyenizde yapay zeka özelliklerini kullanmak için bir yapay zeka sağlayıcısı bağlayın.",
     "ownAppTitle": "Bu kurulum, sağlayıcıda kendi uygulamanızı kullanıyor",
     "redirectUri": "Sağlayıcıya kaydedilecek yönlendirme URI'si:",
-    "sendTestEmail": "Send test email",
-    "testEmailSent": "Test email sent to {email}",
-    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
-    "inboundUrl": "Inbound webhook URL",
-    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
-    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "sendTestEmail": "Test e-postası gönder",
+    "testEmailSent": "Test e-postası {email} adresine gönderildi",
+    "testEmailHint": "Test e-postası bu sağlayıcı üzerinden kendi adresinize gider; böylece bir anahtar kontrolünün doğrulayamayacağı gönderen adresi ve gönderim kuralları da sınanmış olur.",
+    "inboundUrl": "Gelen webhook URL'si",
+    "inboundHintSecret": "Bu URL'yi sağlayıcının gelen mesaj ayarlarına yapıştırın. Atölyenizi tanımlayan bir sır içerdiği için gizli tutun.",
+    "inboundHintMeta": "Bu URL'yi, yukarıda girdiğiniz doğrulama tokeniyle birlikte Meta uygulamanızda geri çağırma URL'si olarak yapıştırın ve mesajlara abone olun.",
     "inboundHintStripe": "Bu URL'yi Stripe panelinde Developers, Webhooks altında checkout.session.completed olayına abone olarak ekleyin. Ardından Stripe'ın gösterdiği imza sırrını buradaki webhook sırrı alanına yapıştırın ki bildirimler doğrulanabilsin.",
     "inboundHintVipps": "Bu URL'yi Vipps MobilePay portalında geri çağırma URL'si olarak girin. Vipps ayrıca yayımlanmış satış koşulları ister; bunlar Ayarlar, Ödeme altında ayarlanır.",
     "inboundHintPaypal": "Bu URL'yi PayPal geliştirici panelinde Webhooks altında PAYMENT.CAPTURE.COMPLETED olayına abone olarak ekleyin.",
-    "copy": "Copy",
-    "copied": "Copied",
-    "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "updateKeys": "Anahtarları güncelle",
+    "updateKeysHint": "Son kontrol başarısız oldu. Yeniden denemek için anahtarları tekrar girin.",
     "inspectionSync": {
       "title": "Muayene eşitleme",
       "vehicles": "Bu atölyede plakalı {count} araç",
@@ -156,7 +157,8 @@
       "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
-    "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}"
+    "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
+    "advanced": "Gelişmiş"
   },
   "activity": {
     "title": "Aktivite",
@@ -256,155 +258,155 @@
       }
     },
     "twilio-sms": {
-      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "description": "Bir Twilio numarası üzerinden SMS gönderin ve alın. Hatırlatmalar, teslime hazır mesajları ve gelen yanıtlar.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token"
+        "authToken": "Kimlik doğrulama tokeni"
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Bu numaradan gönder"
       }
     },
     "vonage-sms": {
-      "description": "Send and receive text messages through a Vonage number.",
+      "description": "Bir Vonage numarası üzerinden SMS gönderin ve alın.",
       "fields": {
-        "apiKey": "API key",
-        "apiSecret": "API secret",
-        "signatureSecret": "Signature secret",
-        "signatureSecretHelp": "From the Vonage dashboard, under API settings. When set, inbound messages are only accepted when Vonage signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API anahtarı",
+        "apiSecret": "API gizli anahtarı",
+        "signatureSecret": "İmza sırrı",
+        "signatureSecretHelp": "Vonage panelinde API settings altından. Ayarlandığında gelen mesajlar yalnızca Vonage tarafından imzalanmışsa kabul edilir. Ayarlanmazsa yalnızca webhook URL'sindeki sır kontrol edilir."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Bu numaradan gönder"
       }
     },
     "telnyx-sms": {
-      "description": "Send and receive text messages through a Telnyx number.",
+      "description": "Bir Telnyx numarası üzerinden SMS gönderin ve alın.",
       "fields": {
-        "apiKey": "API key",
-        "webhookPublicKey": "Webhook public key",
-        "webhookPublicKeyHelp": "From the Telnyx portal, under Account settings, Keys and credentials, Public key. When set, inbound messages are only accepted when Telnyx signed them. Without it, only the secret in the webhook URL is checked."
+        "apiKey": "API anahtarı",
+        "webhookPublicKey": "Webhook açık anahtarı",
+        "webhookPublicKeyHelp": "Telnyx portalında Account settings, Keys and credentials, Public key altından. Ayarlandığında gelen mesajlar yalnızca Telnyx tarafından imzalanmışsa kabul edilir. Ayarlanmazsa yalnızca webhook URL'sindeki sır kontrol edilir."
       },
       "settings": {
-        "phoneNumber": "Send from this number"
+        "phoneNumber": "Bu numaradan gönder"
       }
     },
     "whatsapp-meta": {
-      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "description": "Müşterilere doğrudan Meta üzerinden WhatsApp'ta mesaj gönderin. Bulduklarınızın fotoğrafları ve ardından gelen sohbet.",
       "fields": {
-        "phoneNumberId": "Phone number ID",
-        "accessToken": "Access token",
-        "verifyToken": "Webhook verify token",
-        "appSecret": "App secret",
-        "apiVersion": "Graph API version",
-        "appSecretHelp": "Without it, webhook signatures are not checked and anyone who learns the webhook URL can post messages as your customers. Strongly recommended."
+        "phoneNumberId": "Telefon numarası kimliği",
+        "accessToken": "Erişim tokeni",
+        "verifyToken": "Webhook doğrulama tokeni",
+        "appSecret": "Uygulama sırrı",
+        "apiVersion": "Graph API sürümü",
+        "appSecretHelp": "Meta her teslimatı bununla imzalar. Girilene kadar webhook'a gönderilen mesajlar reddedilir; aksi halde URL'yi öğrenen herkes müşterileriniz adına mesaj gönderebilir."
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Bu kanaldan mesaj gönder",
+        "phoneNumber": "Bu numaradan gönder",
+        "templateName": "Sohbeti yeniden açma şablonu",
+        "templateLanguage": "Şablon dili",
+        "templateVariables": "Şablon değerleri, sırayla",
+        "mediaTemplateName": "Fotoğraflı mesaj şablonu",
+        "mediaTemplateLanguage": "Fotoğraf şablonu dili",
+        "mediaTemplateVariables": "Fotoğraf şablonu değerleri, sırayla"
       }
     },
     "whatsapp-twilio": {
-      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "description": "Numaranızı Twilio'dan aldıysanız, müşterilere o Twilio numarası üzerinden WhatsApp'ta mesaj gönderin.",
       "fields": {
         "accountSid": "Account SID",
-        "authToken": "Auth token",
+        "authToken": "Kimlik doğrulama tokeni",
         "messagingServiceSid": "Messaging service SID"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "phoneNumber": "Send from this number",
-        "templateName": "Template for reopening a conversation",
-        "templateLanguage": "Template language",
-        "templateVariables": "Template values, in order",
-        "mediaTemplateName": "Template for a message with a photo",
-        "mediaTemplateLanguage": "Photo template language",
-        "mediaTemplateVariables": "Photo template values, in order"
+        "enabled": "Bu kanaldan mesaj gönder",
+        "phoneNumber": "Bu numaradan gönder",
+        "templateName": "Sohbeti yeniden açma şablonu",
+        "templateLanguage": "Şablon dili",
+        "templateVariables": "Şablon değerleri, sırayla",
+        "mediaTemplateName": "Fotoğraflı mesaj şablonu",
+        "mediaTemplateLanguage": "Fotoğraf şablonu dili",
+        "mediaTemplateVariables": "Fotoğraf şablonu değerleri, sırayla"
       }
     },
     "telegram": {
-      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "description": "Onu kullanan müşterilere ulaşan ve yanıtlarını gelen kutusuna getiren bir Telegram botu.",
       "fields": {
-        "botToken": "Bot token"
+        "botToken": "Bot tokeni"
       },
       "settings": {
-        "enabled": "Send messages on this channel",
-        "botUsername": "Bot username"
+        "enabled": "Bu kanaldan mesaj gönder",
+        "botUsername": "Bot kullanıcı adı"
       }
     },
     "smtp": {
-      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "description": "Faturaları ve hatırlatmaları platformun e-postası yerine kendi e-posta sunucunuz üzerinden gönderin.",
       "fields": {
-        "host": "Server",
+        "host": "Sunucu",
         "port": "Port",
-        "user": "Username",
-        "pass": "Password"
+        "user": "Kullanıcı adı",
+        "pass": "Şifre"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "secure": "Connect over TLS from the start",
-        "requireTls": "Require the server to upgrade to TLS",
-        "rejectUnauthorized": "Reject a certificate that does not check out"
+        "fromEmail": "Bu adresten gönder",
+        "fromName": "Gönderen olarak gösterilen ad",
+        "secure": "Baştan itibaren TLS ile bağlan",
+        "requireTls": "Sunucunun TLS'ye yükseltmesini zorunlu kıl",
+        "rejectUnauthorized": "Doğrulanamayan sertifikayı reddet"
       }
     },
     "resend": {
-      "description": "Send invoices and reminders through Resend.",
+      "description": "Faturaları ve hatırlatmaları Resend üzerinden gönderin.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API anahtarı"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Bu adresten gönder",
+        "fromName": "Gönderen olarak gösterilen ad"
       }
     },
     "postmark": {
-      "description": "Send invoices and reminders through Postmark.",
+      "description": "Faturaları ve hatırlatmaları Postmark üzerinden gönderin.",
       "fields": {
-        "apiKey": "Server token"
+        "apiKey": "Sunucu tokeni"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Bu adresten gönder",
+        "fromName": "Gönderen olarak gösterilen ad"
       }
     },
     "mailgun": {
-      "description": "Send invoices and reminders through Mailgun.",
+      "description": "Faturaları ve hatırlatmaları Mailgun üzerinden gönderin.",
       "fields": {
-        "apiKey": "API key",
-        "domain": "Sending domain"
+        "apiKey": "API anahtarı",
+        "domain": "Gönderim alan adı"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender",
-        "region": "Region the domain is in"
+        "fromEmail": "Bu adresten gönder",
+        "fromName": "Gönderen olarak gösterilen ad",
+        "region": "Alan adının bulunduğu bölge"
       }
     },
     "sendgrid": {
-      "description": "Send invoices and reminders through SendGrid.",
+      "description": "Faturaları ve hatırlatmaları SendGrid üzerinden gönderin.",
       "fields": {
-        "apiKey": "API key"
+        "apiKey": "API anahtarı"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Bu adresten gönder",
+        "fromName": "Gönderen olarak gösterilen ad"
       }
     },
     "amazon-ses": {
-      "description": "Send invoices and reminders through Amazon SES.",
+      "description": "Faturaları ve hatırlatmaları Amazon SES üzerinden gönderin.",
       "fields": {
-        "accessKeyId": "Access key ID",
-        "secretAccessKey": "Secret access key",
-        "region": "Region"
+        "accessKeyId": "Erişim anahtarı kimliği",
+        "secretAccessKey": "Gizli erişim anahtarı",
+        "region": "Bölge"
       },
       "settings": {
-        "fromEmail": "Send from this address",
-        "fromName": "Name shown as the sender"
+        "fromEmail": "Bu adresten gönder",
+        "fromName": "Gönderen olarak gösterilen ad"
       }
     },
     "vegvesen": {
@@ -477,6 +479,19 @@
       "settings": {
         "model": "Model",
         "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
+      }
+    },
+    "openai-compatible": {
+      "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan, OpenAI sohbet API'sini konuşan herhangi bir sunucu tarafından yanıtlanır: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ve benzerleri. Verileriniz kendi donanımınızda kalır.",
+      "fields": {
+        "baseUrl": "Temel URL",
+        "baseUrlHelp": "Sunucunun OpenAI tarzı API'sinin başladığı yer, yol dahil: Ollama, vLLM, LocalAI ve LM Studio için /v1, Open WebUI için /api. Torqvoice buna /models ve /chat/completions ekler.",
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "Yalnızca sunucu isterse. Ollama ve vLLM genellikle anahtarsız çalışır; Open WebUI anahtarı Ayarlar, Hesap altında verir."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Hangi modelin yanıtlayacağı. Liste, sunucunun bildirdiği her şeydir, ada göre. Fotoğrafların okunmasını istiyorsanız görüntü destekli bir model kullanın."
       }
     },
     "stripe": {
@@ -564,6 +579,23 @@
       "settings": {
         "refreshFleet": "Bu atölyedeki her araç için geri çağırma ve şikâyet verilerini güncel tut",
         "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
+      }
+    },
+    "speech-to-text": {
+      "description": "İş emrindeki dikte, tarayıcı yerine bir konuşma modeli tarafından yazıya dökülür: çok daha doğrudur, her dilde çalışır ve atölye terimlerini bilir. Yapay zekâ sağlayıcınızdan ayrıdır, o yüzden onu olduğu gibi bırakabilirsiniz. Kendi OpenAI anahtarınızı ya da OpenAI'nin transkripsiyon API'siyle çalışan kendi sunucunuzu kullanır. Kayıt yazıya dökülmek üzere gönderilir ve saklanmaz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "platform.openai.com adresinde API keys bölümünden alınan bir OpenAI anahtarı; OpenAI kullanımı dakika başına faturalandırır. Kendi sunucunuz için yalnızca sunucu bir anahtar isterse.",
+        "baseUrl": "Sunucu adresi",
+        "baseUrlHelp": "OpenAI kullanmak için boş bırakın. Kendi sunucunuz için (yerel bir Whisper, LocalAI, Groq) OpenAI tarzı API'sinin başladığı adres, yol dahil, örneğin /v1. Torqvoice bunun sonuna /audio/transcriptions ekler."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "İstenecek konuşma modeli. gpt-4o-mini-transcribe doğru ve ucuzdur; gpt-4o-transcribe daha büyük olanıdır. Kendi sunucunuz genellikle whisper-1 adına yanıt verir.",
+        "mode": "Diktenin nasıl yazıya döküleceğini kim seçer",
+        "modeHelp": "Tarayıcı siz konuşurken yazar ama daha zayıftır, özellikle az konuşulan dillerde. Konuşma modeli siz durduğunuzda yazar.",
+        "modeAi": "Her zaman konuşma modeli",
+        "modeChoice": "Herkes kendisi seçer: konuşma modeli veya tarayıcı"
       }
     }
   },

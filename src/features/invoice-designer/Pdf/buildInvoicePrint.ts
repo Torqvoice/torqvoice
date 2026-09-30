@@ -1,4 +1,5 @@
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
+import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
@@ -29,6 +30,12 @@ import {
   type TotalLine,
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
+import { warrantyForPrint } from './warrantyPrint'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import {
+  type VisitConditionMap,
+  visitConditionMapForPrint,
+} from '@/features/condition-map/Lib/print'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -48,12 +55,16 @@ export interface InvoicePrintInput {
   pdfAttachmentNames?: string[]
   otherAttachmentNames?: string[]
   logoDataUri?: string
+  /** Who signs the sheet, for a layout with the Signature section on. */
+  signer?: { name: string; dataUri?: string }
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   portalUrl?: string
   telegramQrDataUri?: string
   telegramLabel?: string
   labels?: Record<string, string>
+  /** The car's condition this visit, for a layout with Vehicle Condition on. */
+  conditionMap?: VisitConditionMap
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -88,6 +99,16 @@ function resolveLayout(input: InvoicePrintInput): InvoiceLayoutConfig {
     )
   }
 
+  // The design answers for every invoice, the job for this one: a job that
+  // asked for its condition map prints it, one that declined leaves it off,
+  // whatever the design says.
+  const onInvoice = input.conditionMap?.onInvoice
+  if (onInvoice === true || onInvoice === false) {
+    sections = sections.map((section) =>
+      section.id === 'condition_map' ? { ...section, visible: onInvoice } : section
+    )
+  }
+
   const assigned = new Set(
     sections.flatMap((s) => (s.fields ?? []).filter((f) => isCustomFieldId(f.id)).map((f) => f.id))
   )
@@ -109,7 +130,9 @@ function resolveLayout(input: InvoicePrintInput): InvoiceLayoutConfig {
 }
 
 export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
-  const { data, workshop, invoiceSettings, paymentSummary, template } = input
+  const { workshop, invoiceSettings, paymentSummary, template } = input
+  // The fee under the work, and a fee of nothing left out.
+  const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
   const L = (key: string, fallback: string) => labels[key] || fallback
 
@@ -187,6 +210,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
         ? fillTemplate(labels.vin, { vin: data.vehicle.vin })
         : `VIN: ${data.vehicle.vin}`
       : '',
+    hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
@@ -239,7 +263,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
       qty: String(l.hours),
-      unit: l.pricingType === 'service' ? L('unit', 'unit') : L('hrs', 'hrs'),
+      unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
       price: money(shown(l.rate)),
       total: money(shown(l.total)),
@@ -264,7 +288,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   }))
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
-    const isService = l.pricingType === 'service'
+    // A shop fee prints as one unit at its price, like a service line.
+    const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
       qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
@@ -368,18 +393,6 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     ...(input.otherAttachmentNames ?? []),
   ]
 
-  const warrantyParts: string[] = []
-  if (data.warrantyMonths) {
-    warrantyParts.push(
-      `${data.warrantyMonths} ${
-        labels.warrantyMonthsUnit || (data.warrantyMonths === 1 ? 'month' : 'months')
-      }`
-    )
-  }
-  if (data.warrantyMileage) {
-    warrantyParts.push(`${data.warrantyMileage.toLocaleString()} ${L('km', 'km')}`)
-  }
-
   // The workshop's own words, from payment settings. An empty field prints
   // nothing at all: a due date is already its own line below, and terms
   // counted off it ("Net 14 Days") read as a rule nobody wrote.
@@ -440,14 +453,15 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     totals,
     notes: { html: data.invoiceNotes ?? undefined },
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    warranty: {
-      duration: warrantyParts.length ? warrantyParts.join(' / ') : undefined,
+    warranty: warrantyForPrint(data, {
+      labels,
+      unitSystem: invoiceSettings?.unitSystem,
       expires: data.warrantyExpiresAt
         ? formatDateForPdf(data.warrantyExpiresAt, df, tz)
         : undefined,
-      terms: data.warrantyNotes ?? undefined,
-    },
+    }),
     payment,
+    conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,
@@ -456,6 +470,14 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       : undefined,
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
+    signature: {
+      heading: L('signature', 'Signature'),
+      name: input.signer?.name ?? '',
+      nameCaption: L('signedBy', 'Signed by'),
+      date: serviceDate,
+      dateCaption: L('signatureDate', 'Date'),
+      image: input.signer?.dataUri,
+    },
     sectionLabels: {
       customer: L('billTo', 'Bill To'),
       vehicle: L('vehicle', 'Vehicle'),
@@ -463,6 +485,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
+      condition_map: L('conditionMapTitle', 'Vehicle condition'),
     },
   }
 

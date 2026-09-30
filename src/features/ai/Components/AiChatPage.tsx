@@ -16,7 +16,7 @@ import {
   deleteAiChat,
   type ChatMessage,
   type ChatSummary,
-} from '../Actions/aiChatActions'
+} from '../Actions/aiWorkshopChatActions'
 import { cn } from '@/lib/utils'
 
 const SUGGESTIONS_KEYS = ['suggestion1', 'suggestion2', 'suggestion3', 'suggestion4'] as const
@@ -201,8 +201,10 @@ export function AiChatPage() {
                 <div className="rounded-full bg-primary/10 p-3">
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
-                <h2 className="text-lg font-semibold">{t('title')}</h2>
-                <p className="max-w-md text-sm text-muted-foreground">{t('description')}</p>
+                <h2 className="text-lg font-semibold">{t('assistantTitle')}</h2>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  {t('assistantDescription')}
+                </p>
               </div>
               <div className="grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2">
                 {SUGGESTIONS_KEYS.map((key) => (
@@ -308,7 +310,7 @@ export function AiChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t('placeholder')}
+              placeholder={t('assistantPlaceholder')}
               rows={1}
               className="min-h-[44px] max-h-32 resize-none"
               disabled={loading}
@@ -319,7 +321,7 @@ export function AiChatPage() {
               className="shrink-0"
               onClick={() => sendMessage(input)}
               disabled={loading || !input.trim()}
-              aria-label={t('sendMessage')}
+              aria-label={t('send')}
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

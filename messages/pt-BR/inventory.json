@@ -131,7 +131,7 @@
     "saveChanges": "Salvar alterações",
     "addPart": "Adicionar peça"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Abrir menu",
   "history": {
     "title": "Histórico de estoque",
     "description": "Todas as alterações registradas em {name}, mais recentes primeiro.",

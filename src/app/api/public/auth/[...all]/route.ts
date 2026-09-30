@@ -1,25 +1,14 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { isDemoMode } from '@/lib/demo'
-import { rateLimit } from '@/lib/rate-limit'
+import { limitAuthRequest } from '@/lib/auth-rate-limit'
 import { toNextJsHandler } from 'better-auth/next-js'
 import { db } from '@/lib/db'
 import { logAudit } from '@/lib/audit'
 import { explainInvalidOrigin } from '@/lib/auth-origin-hint'
+import { attachDeviceCookie, withDeviceCookie } from '@/lib/device-cookie'
 
-const { POST: authPOST, GET } = toNextJsHandler(auth)
-
-// Path prefixes that need stricter rate limits.
-// Better-auth registers sub-paths like /sign-in/email, /sign-up/email,
-// /two-factor/verify-totp, etc., so we match by prefix.
-const strictPrefixes: { prefix: string; limit: number; windowMs: number }[] = [
-  { prefix: '/api/public/auth/sign-in', limit: 10, windowMs: 60_000 },
-  { prefix: '/api/public/auth/two-factor/verify', limit: 10, windowMs: 60_000 },
-  { prefix: '/api/public/auth/sign-up', limit: 5, windowMs: 60_000 },
-  { prefix: '/api/public/auth/request-password-reset', limit: 5, windowMs: 60_000 },
-  { prefix: '/api/public/auth/reset-password', limit: 5, windowMs: 60_000 },
-  { prefix: '/api/public/auth/passkey', limit: 10, windowMs: 60_000 },
-]
+const { POST: authPOST, GET: authGET } = toNextJsHandler(auth)
 
 const authAuditPrefixes = [
   '/api/public/auth/sign-in',
@@ -38,8 +27,6 @@ const demoBlockedPrefixes = [
   '/api/public/auth/passkey',
 ]
 
-const defaultConfig = { limit: 30, windowMs: 60_000 }
-
 function getRequestIp(request: Request): string | null {
   // Same precedence as lib/rate-limit.ts: Cloudflare's header cannot be forged
   // by clients on proxied traffic; the first x-forwarded-for entry can.
@@ -51,7 +38,16 @@ function getRequestIp(request: Request): string | null {
   )
 }
 
-async function POST(request: Request) {
+/** OAuth callbacks arrive as GET and create sessions too. */
+async function GET(incoming: Request) {
+  const { request, issued } = withDeviceCookie(incoming)
+  return attachDeviceCookie(await authGET(request), issued)
+}
+
+async function POST(incoming: Request) {
+  // The browser's device id, minted here when it has none, so the session
+  // hook can tell a returning device from a new one.
+  const { request, issued } = withDeviceCookie(incoming)
   const { pathname } = new URL(request.url)
 
   if (isDemoMode && demoBlockedPrefixes.some((p) => pathname.startsWith(p))) {
@@ -68,8 +64,7 @@ async function POST(request: Request) {
   // page more often still, each load a passkey probe on the same prefix; its
   // server runs with the limiter off. Nothing else sets this variable.
   if (process.env.AUTH_RATE_LIMIT !== 'off') {
-    const config = strictPrefixes.find((p) => pathname.startsWith(p.prefix)) ?? defaultConfig
-    const limited = rateLimit(request, config)
+    const limited = limitAuthRequest(request, pathname)
     if (limited) return limited
   }
 
@@ -78,7 +73,10 @@ async function POST(request: Request) {
   if (isAuthAttempt) {
     // Clone body before better-auth consumes it
     const cloned = request.clone()
-    const response = await explainInvalidOrigin(cloned, await authPOST(request))
+    const response = attachDeviceCookie(
+      await explainInvalidOrigin(cloned, await authPOST(request)),
+      issued
+    )
 
     // Log failed authentication attempts (fire-and-forget to avoid timing side-channels)
     if (!response.ok) {
@@ -122,7 +120,7 @@ async function POST(request: Request) {
     return response
   }
 
-  return explainInvalidOrigin(request, await authPOST(request))
+  return attachDeviceCookie(await explainInvalidOrigin(request, await authPOST(request)), issued)
 }
 
 export { GET, POST }

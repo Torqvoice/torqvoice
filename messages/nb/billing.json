@@ -25,7 +25,9 @@
     "deliveryViewed": "Åpnet",
     "deliveryViewedOn": "Sist åpnet {date}",
     "filterUnviewed": "Ikke åpnet",
-    "filterUnviewedHint": "Fakturaer som er sendt, men aldri åpnet"
+    "filterUnviewedHint": "Fakturaer som er sendt, men aldri åpnet",
+    "filterCompleted": "Kun fullførte",
+    "filterCompletedHint": "Vis bare arbeidsordrer som er merket som fullført. Huskes til neste gang."
   },
   "recurring": {
     "title": "Gjentakende",
@@ -85,7 +87,7 @@
     "failedDelete": "Kunne ikke slette",
     "processed": "{count} faktura(er) behandlet",
     "failedProcess": "Kunne ikke behandle",
-    "pause": "Pause",
+    "pause": "Sett på pause",
     "resume": "Gjenoppta",
     "delete": "Slett",
     "removeRow": "Fjern rad"

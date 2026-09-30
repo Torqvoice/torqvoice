@@ -1,7 +1,7 @@
 'use client'
 
 import { interactiveRow } from '@/lib/interactive-row'
-import { useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -37,6 +37,12 @@ function formatFileSize(bytes: number) {
 export function ServiceVideoManager({ serviceRecordId, initialVideos }: ServiceVideoManagerProps) {
   const t = useTranslations('service')
   const [videos, setVideos] = useState<Attachment[]>(initialVideos)
+  // The list follows the job: a file added elsewhere on the page (from a
+  // concern's row) arrives with the refreshed record and belongs here too.
+  const savedKey = initialVideos.map((a) => a.id).join(',')
+  useEffect(() => {
+    setVideos(initialVideos)
+  }, [savedKey]) // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the ids, not the array's identity
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 

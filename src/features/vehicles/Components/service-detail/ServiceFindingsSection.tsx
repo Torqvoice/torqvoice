@@ -1,5 +1,7 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
+import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -38,6 +40,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
 }: ServiceFindingsSectionProps) {
   const router = useRouter()
   const t = useTranslations('vehicles.findings')
+  const modern = useModernWorkOrder()
   const [loading, setLoading] = useState<string | null>(null)
 
   if (findings.length === 0) return null
@@ -54,6 +57,76 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
 
   const openCount = findings.filter((f) => f.status === 'open').length
 
+  const addButton = (
+    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onAddFinding?.()}>
+      <Plus className="mr-1 h-3 w-3" />
+      {t('addFinding')}
+    </Button>
+  )
+
+  const list = (
+    <div className="space-y-1.5">
+      {findings.map((f) => (
+        <div
+          key={f.id}
+          className="flex items-start justify-between gap-2 rounded-md border px-2.5 py-1.5"
+        >
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <Badge
+                variant="outline"
+                className={`text-[10px] px-1.5 py-0 ${severityColors[f.severity] || ''}`}
+              >
+                {t(
+                  `severity.${f.severity}` as
+                    | 'severity.urgent'
+                    | 'severity.needs_work'
+                    | 'severity.monitor'
+                )}
+              </Badge>
+            </div>
+            <p className="mt-0.5 text-sm">{f.description}</p>
+            {f.notes && <p className="mt-0.5 text-xs text-muted-foreground">{f.notes}</p>}
+          </div>
+          <div className="flex shrink-0 items-center gap-0.5">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6"
+              onClick={() => onEditFinding?.(f)}
+              aria-label={t('edit')}
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6 text-destructive"
+              disabled={loading === f.id}
+              onClick={() => handleDelete(f.id)}
+              aria-label={t('delete')}
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+
+  if (modern) {
+    return (
+      <AppCard
+        icon={AlertTriangle}
+        title={t('sectionTitle')}
+        badge={openCount || undefined}
+        action={addButton}
+      >
+        {list}
+      </AppCard>
+    )
+  }
+
   return (
     <div className="rounded-lg border bg-card p-3">
       <div className="mb-2 flex items-center justify-between">
@@ -66,64 +139,10 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
             </Badge>
           )}
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-7 text-xs"
-          onClick={() => onAddFinding?.()}
-        >
-          <Plus className="mr-1 h-3 w-3" />
-          {t('addFinding')}
-        </Button>
+        {addButton}
       </div>
 
-      <div className="space-y-1.5">
-        {findings.map((f) => (
-          <div
-            key={f.id}
-            className="flex items-start justify-between gap-2 rounded-md border px-2.5 py-1.5"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] px-1.5 py-0 ${severityColors[f.severity] || ''}`}
-                >
-                  {t(
-                    `severity.${f.severity}` as
-                      | 'severity.urgent'
-                      | 'severity.needs_work'
-                      | 'severity.monitor'
-                  )}
-                </Badge>
-              </div>
-              <p className="mt-0.5 text-sm">{f.description}</p>
-              {f.notes && <p className="mt-0.5 text-xs text-muted-foreground">{f.notes}</p>}
-            </div>
-            <div className="flex shrink-0 items-center gap-0.5">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6"
-                onClick={() => onEditFinding?.(f)}
-                aria-label={t('edit')}
-              >
-                <Pencil className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 text-destructive"
-                disabled={loading === f.id}
-                onClick={() => handleDelete(f.id)}
-                aria-label={t('delete')}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+      {list}
     </div>
   )
 })

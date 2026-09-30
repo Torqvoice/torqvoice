@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { getStripeClient, getStripeConfig } from '@/lib/stripe-config'
 import { isDemoMode } from '@/lib/demo'
+import {
+  checkoutUrl,
+  createHandoffToken,
+  isTorqvoiceComBillingConfigured,
+} from '@/lib/torqvoice-com'
 
+/**
+ * Starts a purchase. The answer is a link to the checkout page on
+ * torqvoice.com carrying a signed handoff; the browser goes there, then on
+ * to Stripe, and comes back to the subscription page afterwards.
+ */
 export async function POST(request: Request) {
   try {
     if (isDemoMode) {
@@ -19,7 +28,6 @@ export async function POST(request: Request) {
     if (!ctx.isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    const membership = { organizationId: ctx.organizationId }
 
     const body = await request.json()
     const plan = body.plan as string
@@ -31,44 +39,28 @@ export async function POST(request: Request) {
       )
     }
 
-    const config = await getStripeConfig()
-    const priceId = plan === 'pro' ? config.proPriceId : config.enterprisePriceId
-
-    if (!priceId) {
-      return NextResponse.json(
-        { error: `Stripe price ID not configured for ${plan} plan` },
-        { status: 500 }
-      )
+    if (!isTorqvoiceComBillingConfigured()) {
+      return NextResponse.json({ error: 'Billing is not configured' }, { status: 500 })
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const stripe = await getStripeClient()
-    const user = await db.user.findUnique({ where: { id: ctx.userId }, select: { email: true } })
+    const user = await db.user.findUnique({
+      where: { id: ctx.userId },
+      select: { email: true, name: true },
+    })
+    if (!user?.email) {
+      return NextResponse.json({ error: 'Your account has no email address' }, { status: 400 })
+    }
 
-    const checkoutSession = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      customer_email: user?.email ?? undefined,
-      line_items: [{ price: priceId, quantity: 1 }],
-      metadata: {
-        type: 'subscription',
-        plan,
-        organizationId: membership.organizationId,
-      },
-      subscription_data: {
-        metadata: {
-          plan,
-          organizationId: membership.organizationId,
-        },
-      },
-      success_url: `${appUrl}/settings/subscription?subscription=success`,
-      cancel_url: `${appUrl}/settings/subscription`,
+    const token = createHandoffToken({
+      organizationId: ctx.organizationId,
+      plan,
+      email: user.email,
+      name: user.name ?? '',
     })
 
-    return NextResponse.json({ url: checkoutSession.url })
+    return NextResponse.json({ url: checkoutUrl(token) })
   } catch (error) {
     console.error('[Subscription Checkout] Error:', error)
-    console.error('[subscription]', error)
-    const message = 'Checkout failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
   }
 }

@@ -28,10 +28,10 @@
     "unarchiveError": "Fehler beim Wiederherstellen des Fahrzeugs",
     "deleteError": "Fehler beim Löschen des Fahrzeugs",
     "error": "Fehler beim Laden der Fahrzeuge",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Tabellenansicht",
+    "viewGrid": "Rasteransicht",
+    "viewLargeGrid": "Große Rasteransicht",
+    "openMenu": "Menü öffnen",
     "inspectionOverdue": "HU überfällig",
     "inspectionDue30": "Fällig in 30 Tagen",
     "inspectionDue90": "Fällig in 90 Tagen",
@@ -95,12 +95,13 @@
     "severityModerate": "Mäßig — von einigen Besitzern gemeldet",
     "severityUncommon": "Ungewöhnlich — von wenigen Besitzern gemeldet",
     "severityRare": "Selten — vereinzelte Berichte, aber kritisch wenn es auftritt",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Menü öffnen",
+    "dismissMaintenance": "Ausblenden",
     "inspectionDue": "HU fällig {date}",
     "inspectionCheckedAt": "Mit dem Register abgeglichen am {date}",
     "notRegistered": "Nicht zugelassen",
-    "soldReported": "Kunde meldet Verkauf am {date}"
+    "soldReported": "Kunde meldet Verkauf am {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Neues Angebot",
@@ -114,7 +115,7 @@
   "inspections": {
     "newInspection": "Neue Inspektion",
     "empty": "Noch keine Inspektionen",
-    "template": "Vorlage",
+    "template": "Checkliste",
     "progress": "Fortschritt",
     "status": "Status",
     "date": "Datum",
@@ -184,10 +185,10 @@
     "showing": "Zeige {start}-{end} von {total}",
     "perPage": "pro Seite",
     "page": "Seite {page} von {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite"
   },
   "notes": {
     "addNote": "Notiz hinzufügen",
@@ -213,11 +214,11 @@
     "noteCreated": "Notiz erstellt",
     "titleRequired": "Titel und Inhalt sind erforderlich",
     "saveError": "Notiz konnte nicht gespeichert werden",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Menü öffnen",
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite"
   },
   "findings": {
     "sectionTitle": "Beobachtungen",
@@ -266,11 +267,11 @@
     "showing": "Zeige {start}-{end} von {total}",
     "perPage": "pro Seite",
     "page": "Seite {page} von {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite",
+    "openMenu": "Menü öffnen",
     "concernLabel": "Beantwortet welches Anliegen?",
     "concernNone": "Nichts, wonach der Kunde gefragt hat"
   },
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Hubraum",
     "engineCode": "Motorcode",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Aus der Zulassungsbescheinigung Teil I: HSN steht in Feld 2.1, TSN sind die ersten drei Zeichen in Feld 2.2.",
+    "hsnInvalid": "Die HSN besteht aus vier Ziffern, aus Feld 2.1 der Zulassungsbescheinigung.",
+    "tsnInvalid": "Die TSN besteht aus drei Buchstaben oder Ziffern, vom Anfang von Feld 2.2 der Zulassungsbescheinigung.",
     "makeMarine": "Hersteller *",
     "mileageMarine": "Betriebsstunden",
     "transmissionMarine": "Motortyp",
@@ -362,7 +369,10 @@
     "inspectionDue": "Nächste Hauptuntersuchung",
     "inspectionDueHint": "Datum eintragen, wenn kein Register es liefert. Erinnerungen und Dashboard nutzen es.",
     "inspectionDueFromRegistry": "Aus dem Fahrzeugregister. Hier ändern, um es bis zum nächsten Abgleich zu überschreiben.",
-    "lookupEnterPlateOrVin": "Gib zuerst ein Kennzeichen oder eine FIN ein"
+    "lookupVin": "FIN nachschlagen",
+    "lookupEnterVin": "Geben Sie zuerst eine FIN ein",
+    "lookupVinNotFound": "Zu dieser FIN wurde kein Fahrzeug gefunden",
+    "lookupVinFailed": "FIN konnte nicht nachgeschlagen werden"
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",
@@ -373,10 +383,10 @@
     "archiveError": "Fehler beim Archivieren des Fahrzeugs"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite"
   },
   "inspectionReminders": {
     "title": "HU-Erinnerungen",

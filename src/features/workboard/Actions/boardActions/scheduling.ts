@@ -5,7 +5,11 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { notificationBus } from '@/lib/notification-bus'
-import { scheduleJobSchema, updateServiceTimesSchema } from '../../Schema/workboardSchema'
+import {
+  scheduleJobSchema,
+  setPromisedTimeSchema,
+  updateServiceTimesSchema,
+} from '../../Schema/workboardSchema'
 import {
   INSPECTION_JOB_SELECT,
   SERVICE_JOB_SELECT,
@@ -55,6 +59,35 @@ export async function updateServiceTimes(input: unknown) {
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.WORK_BOARD },
+      ],
+    }
+  )
+}
+
+/**
+ * When the customer was told the vehicle would be ready, or `null` to take
+ * the promise away. Its own write, like the rest of the schedule card: it is
+ * said on the phone while the job is open, and must not wait for a save of
+ * the parts and labour. It is not part of the invoice, so a locked invoice
+ * does not stop it.
+ */
+export async function setPromisedTime(input: unknown) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const data = setPromisedTimeSchema.parse(input)
+
+      const updated = await db.serviceRecord.updateMany({
+        where: { id: data.id, organizationId },
+        data: { promisedAt: data.promisedAt },
+      })
+      if (updated.count === 0) throw new Error('Service record not found')
+
+      revalidatePath('/vehicles')
+      return { id: data.id, promisedAt: data.promisedAt?.toISOString() ?? null }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.WORK_ORDERS },
       ],
     }
   )

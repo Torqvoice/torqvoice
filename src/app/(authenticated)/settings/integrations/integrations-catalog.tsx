@@ -243,7 +243,7 @@ export function IntegrationsCatalog({
                 <Link
                   key={m.id}
                   href={`/settings/integrations/${m.id}`}
-                  className="group flex flex-col gap-3 rounded-xl border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
+                  className="group flex flex-col gap-3 rounded-lg border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
                 >
                   <div className="flex items-start gap-3">
                     <Image

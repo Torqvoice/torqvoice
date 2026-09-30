@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
 import { ConcernsSection } from '../service-edit/ConcernsSection'
@@ -56,6 +57,10 @@ interface DetailsLeftColumnProps {
   openObservationsCount?: number
   onShowExistingObservations?: () => void
   jobClock: JobClock
+  /** A locked invoice: the notes editors go read-only, which the fieldset cannot do for them. */
+  locked?: boolean
+  /** The pay code button, when online payment is connected. Drawn where payments are taken. */
+  payCode?: ReactNode
 }
 
 export function DetailsLeftColumn({
@@ -82,6 +87,8 @@ export function DetailsLeftColumn({
   openObservationsCount = 0,
   onShowExistingObservations,
   jobClock,
+  locked = false,
+  payCode = null,
 }: DetailsLeftColumnProps) {
   const tClock = useTranslations('timeTracking.job')
   // Which concerns somebody has actually looked at. Counted here rather than
@@ -100,13 +107,16 @@ export function DetailsLeftColumn({
     />
   )
 
-  // No set on this job yet. The tires that came off the car are standing in the
-  // corner while the desk writes it up, so the offer to store them belongs here
-  // rather than three screens away.
+  // The tires that came off the car are standing in the corner while the desk
+  // writes the job up, so the offer to store them belongs here rather than
+  // three screens away. Rendered even once the job has its set, when it shows
+  // no button: the label dialog it opens has to outlive that moment.
   const storeTires =
-    !tireSet && tireHotelEnabled && record.vehicle ? (
+    tireHotelEnabled && record.vehicle ? (
       <StoreTiresButton
         serviceRecordId={record.id}
+        hasSet={!!tireSet}
+        canBill={!locked}
         vehicle={{
           id: record.vehicle.id,
           make: record.vehicle.make,
@@ -120,12 +130,6 @@ export function DetailsLeftColumn({
       />
     ) : null
 
-  // Two short things, one line. Stacked, an empty concerns prompt and a lone
-  // Store tires button read as two abandoned rows above the parts; side by
-  // side they read as the toolbar they actually are. Once somebody types a
-  // concern the block needs the full width, so it gets its own row back.
-  const pairable = formState.concerns.length === 0
-
   return (
     <div className="space-y-3">
       {/* First thing on the job, above the work itself: why the car is here,
@@ -133,17 +137,8 @@ export function DetailsLeftColumn({
           the tires are the first thing this job needs and the last thing the
           invoice sidebar cares about, so they belong here rather than spanning
           both columns. */}
-      {pairable ? (
-        <div className="flex items-center justify-between gap-2">
-          {concerns}
-          {storeTires}
-        </div>
-      ) : (
-        <>
-          {concerns}
-          {storeTires && <div className="flex justify-end">{storeTires}</div>}
-        </>
-      )}
+      {concerns}
+      {storeTires}
 
       {tireSet && (
         <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />
@@ -196,6 +191,8 @@ export function DetailsLeftColumn({
         onNotesChange={formState.handleNotesChange}
         serviceRecordId={record.id}
         aiEnabled={aiEnabled}
+        publicLocked={locked}
+        internalLocked={locked}
       />
       {vehicleId && (
         <ServiceFindingsSection
@@ -220,6 +217,7 @@ export function DetailsLeftColumn({
           onTogglePaid={actions.handleTogglePaid}
           paymentLoading={actions.paymentLoading}
           deletingPayment={actions.deletingPayment}
+          extraAction={payCode}
         />
         <InvoiceSummary
           hasPartItems={formState.partItems.length > 0}

@@ -43,10 +43,20 @@ export interface ServiceDetail {
   description: string | null
   type: string
   status: string
+  /** One of the workshop's own statuses, under the stage `status` names. */
+  customStatus?: { id: string; name: string; color: string; stage: string } | null
+  customStatusSince?: Date | string | null
   cost: number
   mileage: number | null
   serviceDate: Date
   startDateTime: Date | null
+  /** When the job was opened, and by whom when a person opened it. */
+  createdAt?: Date
+  createdBy?: { name: string | null } | null
+  /** The inspection the job was raised from, when it was. */
+  inspection?: { id: string; createdAt: Date | string; template: { name: string } } | null
+  /** When the customer was told the vehicle would be ready. */
+  promisedAt?: Date | null
   shopName: string | null
   techName: string | null
   technicianId: string | null
@@ -109,6 +119,8 @@ export interface Attachment {
   category: string
   description: string | null
   createdAt: Date
+  /** The concern this file was filed under, if any. */
+  concernId?: string | null
 }
 
 export interface Payment {
@@ -128,6 +140,22 @@ export interface Vehicle {
   vin: string | null
   licensePlate: string | null
   mileage: number
+  /** The rest of the vehicle, for the work order's "More info". Absent where a page does not load it. */
+  color?: string | null
+  fuelType?: string | null
+  transmission?: string | null
+  engineSize?: string | null
+  engineCode?: string | null
+  hsn?: string | null
+  tsn?: string | null
+  purchaseDate?: Date | string | null
+  purchasePrice?: number | null
+  inspectionStatus?: {
+    dueAt: Date | string | null
+    lastAt: Date | string | null
+    source: string
+    registered: boolean | null
+  } | null
   customer: {
     id: string
     name: string
@@ -137,6 +165,13 @@ export interface Vehicle {
     company: string | null
     telegramChatId: string | null
     invoiceDesignId?: string | null
+    /** For the work order's "More info". Absent where a page does not load them. */
+    customerNumber?: string | null
+    taxId?: string | null
+    taxExempt?: boolean
+    reminderOptOut?: boolean
+    notes?: string | null
+    createdAt?: Date | string
   } | null
 }
 

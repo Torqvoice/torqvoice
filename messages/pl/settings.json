@@ -43,6 +43,10 @@
         "title": "Podatek",
         "description": "Stawka podatku i wartości domyślne"
       },
+      "warranty": {
+        "title": "Gwarancja",
+        "description": "Domyślna gwarancja na wycenach i fakturach"
+      },
       "currency": {
         "title": "Waluta",
         "description": "Domyślna waluta i podatki"
@@ -65,7 +69,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Bot Telegram i wiadomości"
       },
       "customerPortal": {
         "title": "Portal klienta",
@@ -96,7 +100,7 @@
         "description": "Kalendarze, rozmowy wideo i połączone usługi"
       },
       "webhooks": {
-        "title": "Webhooks",
+        "title": "Webhooki",
         "description": "Powiadomienia o zdarzeniach w czasie rzeczywistym"
       },
       "appearance": {
@@ -138,6 +142,10 @@
       "emailTemplates": {
         "title": "Szablony e-mail",
         "description": "Co mówią e-maile z fakturą, ofertą i raportem"
+      },
+      "workOrderStatuses": {
+        "title": "Statusy zleceń",
+        "description": "Własne etapy i kto dostaje wiadomość"
       }
     },
     "pro": "PRO",
@@ -192,10 +200,20 @@
     "serviceTypeDescription": "Wybierz typ usługi oferowanej przez Twój warsztat. Zmienia to etykiety pól w całej aplikacji.",
     "automotive": "Motoryzacja",
     "automotiveDescription": "Samochody, ciężarówki i inne pojazdy drogowe",
-    "marineService": "Marine",
+    "marineService": "Branża morska",
     "marineServiceDescription": "Łodzie, jachty i jednostki pływające"
   },
   "account": {
+    "devicesTitle": "Zalogowane urządzenia",
+    "devicesDescription": "Każda przeglądarka i telefon z otwartą sesją na Twoim koncie.",
+    "thisDevice": "To urządzenie",
+    "signedInAt": "Zalogowano {date}",
+    "lastActiveAt": "Ostatnia aktywność {date}",
+    "signOutDevice": "Wyloguj",
+    "signOutOthers": "Wyloguj pozostałe urządzenia",
+    "deviceSignedOut": "Urządzenie wylogowane",
+    "othersSignedOut": "Pozostałe urządzenia wylogowane",
+    "failedSignOutDevice": "Nie udało się wylogować tego urządzenia",
     "profileTitle": "Profil",
     "profileDescription": "Zaktualizuj swoją nazwę wyświetlana i adres e-mail.",
     "emailVerified": "Zweryfikowany",
@@ -284,8 +302,8 @@
     "contentInspectionsDescription": "Wszystkie inspekcje pojazdów i ich wyniki",
     "contentTechnicians": "Technicy",
     "contentTechniciansDescription": "Wszystkie profile techników. Powiązane rekordy zostaną odłączone.",
-    "contentInspectionTemplates": "Szablony inspekcji",
-    "contentInspectionTemplatesDescription": "Wszystkie szablony inspekcji i ich sekcje. Najpierw usuń inspekcje.",
+    "contentInspectionTemplates": "Listy kontrolne przeglądów",
+    "contentInspectionTemplatesDescription": "Wszystkie listy kontrolne przeglądów i ich sekcje. Najpierw usuń przeglądy.",
     "contentNotifications": "Powiadomienia",
     "contentNotificationsDescription": "Wszystkie powiadomienia systemowe",
     "contentSmsMessages": "Wiadomości SMS",
@@ -330,7 +348,29 @@
     "deleteWorkshopSuccess": "Warsztat usunięty",
     "deleteWorkshopFailed": "Nie udało się usunąć warsztatu",
     "deleteAccountMoved": "Chcesz usunąć swoje konto?",
-    "deleteAccountMovedLink": "Możesz to zrobić w ustawieniach danych."
+    "deleteAccountMovedLink": "Możesz to zrobić w ustawieniach danych.",
+    "signatureTitle": "Podpis",
+    "signatureDescription": "Drukowany na fakturach, ofertach i świadectwach wystawianych przez Ciebie dla tego warsztatu.",
+    "signatureDraw": "Narysuj",
+    "signatureUpload": "Prześlij",
+    "signatureDrawHint": "Podpisz tutaj",
+    "signatureUploadHint": "Wybierz zdjęcie lub skan swojego podpisu",
+    "signatureDrawTip": "Użyj palca, rysika lub myszy.",
+    "signatureUploadTip": "Podpisz się na białej kartce i zrób zdjęcie. Tło kartki zostanie usunięte, a zostanie tylko tusz.",
+    "signatureChooseFile": "Wybierz obraz",
+    "signatureClear": "Wyczyść",
+    "signatureSave": "Zapisz podpis",
+    "signatureCancel": "Anuluj",
+    "signatureReplace": "Zastąp",
+    "signatureRemove": "Usuń",
+    "signatureSaved": "Podpis zapisany",
+    "signatureRemoved": "Podpis usunięty. Już wystawione dokumenty zachowują swój podpis.",
+    "signatureSaveFailed": "Nie udało się zapisać podpisu",
+    "signatureEmpty": "Najpierw narysuj lub prześlij podpis",
+    "signatureNotImage": "Ten plik nie jest obrazem",
+    "signatureNoInk": "Nie znaleziono podpisu na tym obrazie. Spróbuj ciemniejszym długopisem na białej kartce.",
+    "signatureCanvasLabel": "Pole podpisu",
+    "signatureDesignerHint": "Pojawia się tam, gdzie w projekcie włączona jest sekcja Podpis. Włącz ją w <link>kreatorze dokumentów</link>."
   },
   "team": {
     "title": "Zespol",
@@ -408,9 +448,9 @@
     "failedRemoveMember": "Nie udało się usunąć członka",
     "memberRoleUpdated": "Rola członka zaktualizowana",
     "failedUpdateRole": "Nie udało się zaktualizować roli",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Usuń członka",
+    "cancelInvite": "Anuluj zaproszenie",
+    "editRole": "Edytuj rolę",
     "technician": "Technik",
     "technicianHint": "Może otrzymywać zlecenia i korzystać z aplikacji technika",
     "technicianFailed": "Nie udało się zmienić",
@@ -590,9 +630,43 @@
     "freezeProgress": "Zablokowano {done} z {total}",
     "freezeDone": "Zablokowano {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}",
     "freezeFailed": "Nie udało się zablokować faktur",
+    "reapplyTitle": "Projekt na już wysłanych fakturach",
+    "reapplyDescription": "Nałóż projekt używany dziś na faktury przypisane do starszego.",
+    "reapplyBody": "{count, plural, one {# faktura jest przypisana} few {# faktury są przypisane} many {# faktur jest przypisanych} other {# faktury jest przypisanych}} do projektu, z którym została wysłana, więc nowy projekt obejmie tylko faktury wysyłane od teraz. Ponowne nałożenie umieści dzisiejszy projekt na wszystkich. Zmienia się tylko wygląd: dane warsztatu, klient, warunki płatności i kwoty każdej faktury pozostają bez zmian.",
+    "reapplyWarning": "Tej operacji nie można cofnąć. Projekt używany wcześniej nie jest zachowywany.",
+    "reapplyButton": "Nałóż ponownie bieżący projekt",
+    "reapplyConfirmTitle": "Nałożyć projekt ponownie na {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}?",
+    "reapplyConfirmBody": "Każda faktura, która trafiła już do klienta, przechodzi na projekt używany teraz. Zmienia się tylko wygląd: dane, warunki i kwoty każdej faktury pozostają bez zmian. Operacji nie można cofnąć, a poprzedniego projektu nie da się przywrócić.",
+    "reapplyProgress": "Zaktualizowano {done} z {total}",
+    "reapplyDone": "{count, plural, one {# faktura używa} few {# faktury używają} many {# faktur używa} other {# faktury używa}} teraz bieżącego projektu",
+    "reapplyFailed": "Nie udało się ponownie nałożyć projektu",
     "sectionSending": "Wysyłka",
     "attachPdfLabel": "Dołączaj PDF do wiadomości e-mail",
-    "attachPdfHint": "Domyślne ustawienie dla każdej faktury, oferty i przeglądu wysyłanych e-mailem. Włączone: klient dostaje PDF w załączniku. Wyłączone: dostaje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył, więc możesz przypomnieć się tym, którzy jeszcze nie zajrzeli. Dla pojedynczej wysyłki zmienisz to w oknie udostępniania."
+    "attachPdfHint": "Domyślne ustawienie dla każdej faktury, oferty i przeglądu wysyłanych e-mailem. Włączone: klient dostaje PDF w załączniku. Wyłączone: dostaje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył, więc możesz przypomnieć się tym, którzy jeszcze nie zajrzeli. Dla pojedynczej wysyłki zmienisz to w oknie udostępniania.",
+    "shopFee": {
+      "title": "Opłata warsztatowa",
+      "description": "Opłata za materiały eksploatacyjne warsztatu, takie jak czyściwo, środki czyszczące, smary i utylizacja, dodawana do każdego nowego zlecenia i oferty jako osobna pozycja.",
+      "enabled": "Naliczaj opłatę warsztatową",
+      "enabledHint": "Nowe zlecenia i oferty otrzymują opłatę jako pozycję. Można ją usunąć z pojedynczego zlecenia. Istniejące zlecenia się nie zmieniają.",
+      "defaultLabel": "Materiały warsztatowe",
+      "label": "Nazwa na fakturze",
+      "appliesTo": "Dotyczy",
+      "appliesToBoth": "Zleceń i ofert",
+      "appliesToWorkOrders": "Tylko zleceń",
+      "appliesToQuotes": "Tylko ofert",
+      "mode": "Sposób naliczania",
+      "modeFlat": "Stała kwota",
+      "modePercent": "Procent",
+      "amount": "Kwota",
+      "amountHint": "Ta sama kwota przy każdym zleceniu. Można ją zmienić w pojedynczym zleceniu.",
+      "percent": "Procent (%)",
+      "base": "Procent od",
+      "baseLabor": "Robocizny",
+      "baseLaborParts": "Robocizny i części",
+      "cap": "Maksymalna opłata",
+      "capHint": "Opłata nigdy nie przekroczy tej kwoty. Zostaw puste, aby nie ustalać maksimum.",
+      "capPlaceholder": "Bez maksimum"
+    }
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",
@@ -628,7 +702,19 @@
       "bank_account": "Konto bankowe",
       "footer": "Stopka",
       "general": "Ogólne",
-      "telegram_qr": "QR Telegrama"
+      "telegram_qr": "QR Telegrama",
+      "result": "Wynik",
+      "test_details": "Dane badania",
+      "defects": "Usterki",
+      "results_table": "Wszystkie wyniki",
+      "inspection_photos": "Zdjęcia",
+      "signature": "Podpis",
+      "job_details": "Szczegóły zlecenia",
+      "job_qr": "Otwórz na telefonie",
+      "concerns": "Uwagi klienta",
+      "job_description": "Zlecone prace",
+      "work_checklist": "Lista prac",
+      "condition_map": "Stan pojazdu"
     },
     "fields": {
       "customer_name": "Nazwa klienta",
@@ -639,8 +725,9 @@
       "customer_tax_id": "NIP klienta",
       "vehicle_name": "Pojazd",
       "vin": "VIN",
-      "license_plate": "Tablica rejestracyjna",
+      "license_plate": "Numer rejestracyjny",
       "mileage": "Przebieg",
+      "hsn_tsn": "HSN/TSN",
       "service_title": "Tytuł usługi",
       "service_type": "Typ usługi",
       "tech_name": "Technik",
@@ -660,7 +747,35 @@
       "invoice_number": "Nr faktury",
       "customer_number": "Nr klienta",
       "date": "Data",
-      "portal_link": "Link do portalu"
+      "portal_link": "Link do portalu",
+      "test_date": "Data badania",
+      "test_location": "Miejsce badania",
+      "inspector": "Diagnosta",
+      "certificate_number": "Numer certyfikatu",
+      "vehicle_category": "Kategoria pojazdu",
+      "odometer": "Przebieg",
+      "next_test_due": "Następne badanie",
+      "defect_notes": "Uwagi",
+      "defect_photos": "Zdjęcia",
+      "passed_checks": "Pozycje zaliczone",
+      "not_applicable_checks": "Pozycje nie dotyczy",
+      "check_notes": "Kolumna uwag",
+      "result_detail": "Objaśnienie",
+      "result_summary": "Liczba według oceny",
+      "combined_table": "Jedna tabela dla wszystkich sekcji",
+      "inspector_line": "Linia podpisu",
+      "inspector_name": "Imię i nazwisko podpisującego",
+      "date_line": "Linia daty",
+      "signature_image": "Podpis",
+      "status": "Status",
+      "technician": "Technik",
+      "scheduled": "Zaplanowano",
+      "promised": "Obiecano",
+      "work_bay": "Stanowisko",
+      "customer_line": "Linia podpisu klienta",
+      "legend": "Legenda",
+      "previous_marks": "Wcześniejsze oznaczenia",
+      "blank_sheet": "Pusty arkusz do wypełnienia ręcznie"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -688,6 +803,34 @@
       "detailed": {
         "name": "Szczegółowy",
         "description": "Tytuł na górze, pojazd osobno, obie tabele i wszystkie bloki opcjonalne"
+      },
+      "certificate-regulator": {
+        "name": "Urzędowy",
+        "description": "Prosty, bez pasa, szeryfowy: każda pozycja z oceną i uwagą, zdjęcia, miejsce na podpis"
+      },
+      "certificate-standard": {
+        "name": "Standardowy",
+        "description": "Werdykt pod tytułem, pojazd i badanie obok siebie, każda usterka z uwagą i zdjęciem, potem niezaliczone pozycje według sekcji"
+      },
+      "certificate-customer": {
+        "name": "Raport dla klienta",
+        "description": "Arkusz z pasem, werdykt duży i wyśrodkowany, usterki ze zdjęciami, zdjęcia ogólne i krótka tabela niezaliczonych pozycji"
+      },
+      "certificate-compact": {
+        "name": "Kompaktowy",
+        "description": "Jedna strona dla flot: mała czcionka, werdykt obok tytułu, wszystkie wyniki bez uwag, zdjęcia, miejsce na podpis"
+      },
+      "work-order-standard": {
+        "name": "Standardowy",
+        "description": "Pełniejsza kopia dla lady w twoim kolorze: cały klient i pojazd, usługa, spostrzeżenia i gwarancja obok prac i cen"
+      },
+      "work-order-job-sheet": {
+        "name": "Karta pracy",
+        "description": "Na tablicę: duża rejestracja, fakty o zleceniu, prace jako pola do odhaczenia, kod otwierający je na telefonie i żadnych cen"
+      },
+      "work-order-compact": {
+        "name": "Kompaktowy",
+        "description": "Czarno na białym, jedna strona: imię i telefon klienta, samochód, zlecenie, prace z cenami i oba podpisy. To, co drukuje każde zlecenie, dopóki nie zapiszesz projektu"
       }
     },
     "style": {
@@ -710,14 +853,21 @@
   "templates": {
     "title": "Szablony",
     "invoiceDescription": "Dostosuj wygląd faktur i wycen PDF.",
-    "inspectionsDescription": "Zarządzaj listami kontrolnymi inspekcji i szablonami wielopunktowymi.",
+    "inspectionsDescription": "Listy kontrolne, które Twoi mechanicy przechodzą podczas przeglądu.",
     "smsDescription": "Dostosuj wiadomości SMS wysyłane do klientów.",
     "tabs": {
       "invoice": "Faktura",
       "quotation": "Wycena",
-      "inspections": "Inspekcje",
-      "sms": "SMS",
-      "layout": "Układ"
+      "workOrders": "Zlecenie",
+      "certificates": "Certyfikat przeglądu",
+      "layout": "Układ",
+      "conditionMap": "Mapa stanu",
+      "inspections": "Listy kontrolne"
+    },
+    "sections": {
+      "documents": "Dokumenty",
+      "checklists": "Listy kontrolne",
+      "messages": "Wiadomości"
     },
     "presets": "Gotowe szablony",
     "primaryColor": "Kolor główny",
@@ -821,7 +971,10 @@
     "goToLayout": "Układ i sekcje",
     "openDesigner": "Otwórz kreator",
     "designerIntro": "Wybierz punkt wyjścia, a potem otwórz kreator, aby zmienić wszystko.",
-    "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze."
+    "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze.",
+    "certificatesDescription": "Zaprojektuj certyfikat, który drukuje i udostępnia zakończony przegląd.",
+    "workOrdersDescription": "Zaprojektuj arkusz drukowany ze zlecenia: to, co podpisuje klient, i to, co technik zdejmuje z tablicy.",
+    "conditionMapDescription": "Rodzaje oznaczeń, które technicy rysują na mapie stanu: nazwy, kształty i kolory."
   },
   "payment": {
     "readMore": "Czytaj więcej",
@@ -1041,8 +1194,8 @@
     "fieldDeleted": "Pole niestandardowe usunięte",
     "failedSave": "Nie udało się zapisać pola",
     "failedDelete": "Nie udało się usunąć",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Edytuj",
+    "delete": "Usuń",
     "unassigned": "Nieprzypisane",
     "defaultValue": "Wartość domyślna",
     "defaultValueHint": "Wypełniana automatycznie w nowych wpisach i drukowana, dopóki nie wprowadzono wartości.",
@@ -1072,6 +1225,9 @@
     "defaultMarkupPercentHint": "Nowe ręcznie dodane części są wstępnie wypełniane tą marżą. Pozostaw 0, aby wprowadzać ceny ręcznie.",
     "markupAppliesToInventory": "Zastosuj marżę do części z magazynu",
     "markupAppliesToInventoryHint": "Gdy włączone, części wybrane z magazynu również używają kosztu + domyślnej marży (zastępuje cenę sprzedaży z magazynu).",
+    "typeKeyTitle": "Niemiecki klucz typu (HSN/TSN)",
+    "typeKeyEnabled": "Zapisuj HSN/TSN przy pojazdach",
+    "typeKeyHint": "Dodaje do pojazdów kod producenta i kod typu z niemieckiego dowodu rejestracyjnego (pola 2.1 i 2.2). Jest widoczny przy pojeździe, na zleceniu i na wszystkich drukowanych dokumentach, a wyszukiwarka znajduje po nim pojazdy. Po wyłączeniu jest ponownie ukryty, a wprowadzone wartości zostają zachowane.",
     "unitsTitle": "Jednostki",
     "unitsDescription": "Wybierz między metrycznym (km, litry) a imperialnym (mile, galony).",
     "unitSystem": "System jednostek",
@@ -1138,6 +1294,43 @@
     "saveMaintenance": "Zapisz ustawienia konserwacji",
     "saved": "Ustawienia konserwacji zapisane"
   },
+  "warranty": {
+    "title": "Gwarancja",
+    "description": "Ustal, co wyceny i faktury mówią o gwarancji. Każdy nowy dokument zaczyna od tych ustawień, a na każdym z nich nadal możesz to zmienić.",
+    "designHint": "Drukowane w sekcji Gwarancja w projekcie faktur i wycen. Jeśli ta sekcja została ukryta w Szablonach, włącz ją ponownie. Projekt Kompaktowy jej nie zawiera.",
+    "defaultStatus": "Nowe wyceny i zlecenia podają",
+    "status": {
+      "none": "Nic",
+      "included": "Gwarancja udzielona",
+      "not_included": "Brak gwarancji"
+    },
+    "statusHint": {
+      "none": "Gwarancja nie jest wspominana, dopóki ktoś nie wypełni jej w dokumencie.",
+      "included": "Nowe dokumenty zaczynają z okresem i warunkami podanymi poniżej.",
+      "not_included": "Nowe dokumenty informują klienta, że warsztat nie udziela gwarancji."
+    },
+    "includedTitle": "Gdy gwarancja jest udzielona",
+    "includedHint": "Okres i warunki, które otrzymuje dokument oferujący gwarancję.",
+    "months": "Czas trwania (miesiące)",
+    "mileage": "Limit dystansu ({unit})",
+    "mileageHint": "Pozostaw puste, jeśli nie ma limitu dystansu.",
+    "terms": "Warunki gwarancji",
+    "termsPlaceholder": "np. 12 miesięcy na części i robociznę. Części eksploatacyjne nie są objęte gwarancją.",
+    "termsHint": "Drukowane pod gwarancją na wycenach i fakturach.",
+    "notIncludedTitle": "Gdy gwarancja nie jest udzielona",
+    "notIncludedHint": "To, co czyta klient, gdy dokument informuje o braku gwarancji.",
+    "notIncludedText": "Oświadczenie",
+    "notIncludedPlaceholder": "np. Warsztat nie udziela gwarancji na części dostarczone przez klienta. Nie narusza to Twoich praw ustawowych.",
+    "legalHint": "Dotyczy to własnej gwarancji warsztatu. W wielu krajach, w tym w UE i Wielkiej Brytanii, klienci mają także ustawowe prawa z tytułu rękojmi, których nie można wyłączyć. Pozostaw puste, a dokument poinformuje, że prawa ustawowe pozostają nienaruszone.",
+    "applyTitle": "Stosuj te wartości domyślne do",
+    "applyToQuotes": "Nowych wycen",
+    "applyToQuotesHint": "Klient widzi gwarancję przed akceptacją.",
+    "applyToWorkOrders": "Nowych zleceń",
+    "applyToWorkOrdersHint": "Drukowane na fakturze. Zlecenie utworzone z wyceny zachowuje to, co podała wycena.",
+    "save": "Zapisz ustawienia gwarancji",
+    "saved": "Ustawienia gwarancji zapisane",
+    "saveFailed": "Nie udało się zapisać ustawień gwarancji"
+  },
   "appearance": {
     "title": "Wygląd",
     "description": "Dostosuj wygląd i styl Torqvoice.",
@@ -1168,7 +1361,29 @@
     "dateLabel": "Data",
     "dateTimeLabel": "Data i czas",
     "saveSettings": "Zapisz ustawienia",
-    "saved": "Ustawienia zapisane"
+    "saved": "Ustawienia zapisane",
+    "fontLabel": "Czcionka",
+    "fontHint": "Wybierz kroje pisma używane w aplikacji. Wybór jest zapisywany na tym urządzeniu.",
+    "fontSampleHeading": "Zlecenie",
+    "fontSampleText": "Wymiana cewki zapłonowej i świec zapłonowych",
+    "fonts": {
+      "default": {
+        "name": "Domyślna",
+        "description": "Geist, czysta i neutralna."
+      },
+      "workshop": {
+        "name": "Warsztatowa",
+        "description": "IBM Plex z wąskimi wersalikami w nagłówkach, jak na karcie zlecenia."
+      },
+      "precise": {
+        "name": "Precyzyjna",
+        "description": "Inter i JetBrains Mono. Stworzona dla ekranów pełnych tabel i liczb."
+      },
+      "legible": {
+        "name": "Czytelna",
+        "description": "Atkinson Hyperlegible. 0 i O, 1 i l nigdy nie wyglądają podobnie; łatwo czytać z drugiego końca warsztatu."
+      }
+    }
   },
   "data": {
     "title": "Zarządzanie danymi",
@@ -1191,7 +1406,7 @@
     "optTechnicians": "Technicy",
     "optTechniciansDesc": "Profile techników i przypisania do tablicy pracy",
     "optInspections": "Inspekcje",
-    "optInspectionsDesc": "Szablony inspekcji, inspekcje i wyniki",
+    "optInspectionsDesc": "Listy kontrolne, przeglądy i wyniki",
     "optAuditLogs": "Dzienniki audytu",
     "optAuditLogsDesc": "Historia aktywności i zmian",
     "optSmsMessages": "Wiadomości",
@@ -1350,7 +1565,7 @@
         "sand": "Piasek"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Kopiuj adres URL portalu"
   },
   "email": {
     "title": "Dostawca poczty e-mail",
@@ -1426,7 +1641,7 @@
     "failedSave": "Nie udało się zapisać ustawień",
     "testSentTo": "Testowy SMS wyslany do {phone}",
     "testFailed": "Test SMS nie powiódł się",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Kopiuj URL webhooka"
   },
   "subscription": {
     "title": "Plan subskrypcji",
@@ -1477,7 +1692,7 @@
     "resumeSuccess": "Subskrypcja wznowiona pomyślnie",
     "resumeError": "Nie udało się wznowić subskrypcji",
     "billingPortalError": "Nie udało się otworzyć portalu rozliczeniowego",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Nie udało się rozpocząć płatności",
     "upgradeTitle": "Ulepsz plan",
     "upgradeDescription": "Odblokuj więcej funkcji, ulepszając swój plan.",
     "upgradeToProDescription": "Ulepsz, aby odblokować nieograniczoną liczbę klientów, członków zespołu, raportów, SMTP, dostęp API i więcej.",
@@ -1492,7 +1707,12 @@
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
     "upgradeError": "Nie udało się ulepszyć subskrypcji",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})"
+    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})",
+    "checkoutOnTorqvoice": "Zostaniesz przekierowany do torqvoice.com, aby dokończyć zakup. Faktury i potwierdzenia znajdziesz tam na swoim koncie.",
+    "purchaseSuccess": "Dziękujemy! Twój plan jest już aktywny.",
+    "purchaseActivating": "Płatność otrzymana. Twój plan jest aktywowany, strona odświeży się za chwilę.",
+    "accountOnTorqvoice": "Faktury i potwierdzenia znajdziesz na torqvoice.com, gdzie logujesz się tym kontem.",
+    "openTorqvoiceAccount": "Otwórz swoje konto na torqvoice.com"
   },
   "ai": {
     "title": "Asystent AI",
@@ -1532,7 +1752,7 @@
     "biweekly": "Co 2 tygodnie",
     "monthly": "Co miesiąc",
     "bimonthly": "Co 2 miesiące",
-    "quarterly": "Co 4 miesiące",
+    "quarterly": "Co 3 miesiące",
     "semiannually": "Co 6 miesięcy",
     "yearly": "Rocznie",
     "dateRangeLabel": "Okres",
@@ -1571,10 +1791,10 @@
     "deleted": "Harmonogram raportów usunięty",
     "toggledOn": "Harmonogram raportów włączony",
     "toggledOff": "Harmonogram raportów wyłączony",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Nie udało się zapisać",
+    "failedSend": "Nie udało się wysłać",
+    "failedToggle": "Nie udało się przełączyć",
+    "failedDelete": "Nie udało się usunąć",
     "noMembers": "Nie znaleziono członków zespołu",
     "addRecipient": "Dodaj odbiorcę...",
     "searchMembers": "Szukaj członków...",
@@ -1601,7 +1821,7 @@
     }
   },
   "webhooks": {
-    "title": "Webhooks",
+    "title": "Webhooki",
     "subtitle": "Wysyłaj powiadomienia o zdarzeniach w czasie rzeczywistym do własnych systemów przez HTTPS. Każde zdarzenie jest podpisywane HMAC-SHA256, dzięki czemu możesz zweryfikować autentyczność.",
     "create": "Dodaj webhook",
     "createTitle": "Dodaj webhook",
@@ -1671,7 +1891,7 @@
     "helpIntro": "Każde dostarczenie zawiera podpis HMAC-SHA256, dzięki czemu możesz potwierdzić, że żądanie pochodzi z Torqvoice.",
     "helpHeadersTitle": "Nagłówki wysyłane z każdym żądaniem",
     "helpVerify": "Zbuduj podpisany ciąg jako `[timestamp].[body]` i porównaj z bezpiecznym czasowo równaniem:",
-    "tabWebhooks": "Webhooks",
+    "tabWebhooks": "Webhooki",
     "tabReference": "Dokumentacja zdarzeń",
     "autoDisabled": "Automatycznie wstrzymany",
     "autoDisabledBanner": "Ten webhook został automatycznie wstrzymany po 20 kolejnych niepowodzeniach. Włącz go ponownie, aby wznowić dostarczanie.",
@@ -1968,7 +2188,41 @@
       "slogan": "Jakość, której możesz zaufać",
       "paymentTerms": "Płatne w ciągu 14 dni",
       "footerNote": "Dziękujemy za współpracę",
-      "value": "Przykład"
+      "value": "Przykład",
+      "testLocation": "ul. Portowa 12, Springfield",
+      "certificateNotes": "Opony są blisko dopuszczalnej granicy; przed następnym badaniem prawdopodobnie do wymiany.",
+      "checkBrakeHoses": "Przewody hamulcowe",
+      "checkBrakeHosesNote": "Lekkie przetarcie lewego przedniego przewodu, warstwa zewnętrzna nienaruszona.",
+      "sectionBrakes": "Układ hamulcowy",
+      "checkBrakePedal": "Pedał hamulca roboczego",
+      "checkBrakeFluid": "Płyn hamulcowy",
+      "sectionLighting": "Oświetlenie",
+      "checkHeadlamps": "Stan reflektorów",
+      "checkFogLamp": "Tylne światło przeciwmgłowe",
+      "photoFront": "Przód",
+      "photoOdometer": "Licznik",
+      "concernNoise": "Zgrzytanie z przodu przy hamowaniu",
+      "concernNoiseDetail": "Przednie klocki i tarcze zużyte; wymienione",
+      "concernWarningLight": "Kontrolka na desce rozdzielczej od zeszłego tygodnia",
+      "workRequested": "Wymienić przednie klocki i tarcze hamulcowe, zresetować wskaźnik serwisu i wykonać jazdę próbną.",
+      "checklistTestDrive": "Jazda próbna",
+      "markScratch": "Rysa od klucza wzdłuż drzwi, 20 cm",
+      "markDent": "Wgniecenie pod klamką, lakier nienaruszony",
+      "markChip": "Odpryski w dolnej części zderzaka",
+      "viewTop": "Z góry",
+      "viewLeft": "Lewa strona",
+      "viewRight": "Prawa strona",
+      "viewFront": "Przód",
+      "viewRear": "Tył",
+      "panelLeftRearDoor": "Drzwi tylne lewe",
+      "panelLeftFrontDoor": "Drzwi przednie lewe",
+      "panelFrontBumper": "Zderzak przedni",
+      "kindScratch": "Rysa",
+      "kindDent": "Wgniecenie",
+      "kindChip": "Odprysk",
+      "severityMinor": "Drobne",
+      "severityMajor": "Poważne",
+      "markPrevious": "zarejestrowane wcześniej"
     },
     "logoUpload": "Prześlij logo",
     "logoReplace": "Zmień logo",
@@ -1990,6 +2244,10 @@
     "telegramQrConnectedHint": "Drukuje kod otwierający {link}, Twojego podłączonego bota Telegram. Pojawia się tylko na fakturach wystawionych po włączeniu bloku.",
     "telegramQrPlaceholderHint": "Żaden bot Telegram nie jest podłączony, więc arkusz pokazuje przykładowy kod, który nie zostanie wydrukowany.",
     "telegramQrLink": "Integracje",
+    "signatureWhose": "Czyj podpis",
+    "signatureOwnHint": "Każdy dokument drukuje podpis osoby, która go wystawiła: tej, która otworzyła zlecenie, przygotowała ofertę lub wykonała przegląd. Arkusz pokazuje Twój.",
+    "signaturePlaceholderHint": "Każdy dokument drukuje podpis osoby, która go wystawiła: tej, która otworzyła zlecenie, przygotowała ofertę lub wykonała przegląd. Nie masz jeszcze zapisanego podpisu, więc arkusz pokazuje przykład.",
+    "signatureLink": "Ustaw swój podpis",
     "titleText": "Tekst tytułu",
     "titleTextHint": "Jak nazywa się ten dokument. Pozostawione puste, drukuje własną nazwę w języku odbiorcy.",
     "orgNumberLabel": "Nazwa numeru organizacji",
@@ -2004,7 +2262,16 @@
     "setDefault": "Ustaw jako domyślny",
     "defaultSet": "„{name}” jest teraz w użyciu",
     "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu",
-    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść."
+    "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść.",
+    "certificate": "Certyfikat przeglądu",
+    "resultWidthHint": "Puste wypełnia wiersz. Wpisz punkty, by zwęzić pasek; ułoży się po stronie wskazanej przez wyrównanie, a w kolumnie zajmie jej szerokość.",
+    "work_order": "Zlecenie",
+    "conditionMapDrawing": "Rysunek",
+    "conditionMapViews": "Widoki",
+    "conditionMapViewsAll": "Wszystkie pięć",
+    "conditionMapViewsTop": "Tylko z góry",
+    "conditionMapViewsSides": "Tylko boki",
+    "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",
@@ -2402,5 +2669,99 @@
     "dragHandle": "Przeciągnij, aby zmienić kolejność",
     "dragHandleKeyboard": "Przeciągnij lub użyj klawiszy strzałek, aby przenieść ten blok",
     "tagDoesNotFit": "Tag nie mieści się w tym polu."
+  },
+  "workOrderStatuses": {
+    "title": "Statusy zleceń",
+    "description": "Własne nazwy kroków, przez które przechodzi zlecenie. Każdy należy do jednego z trzech etapów i pojawia się w menu tego etapu na każdym zleceniu.",
+    "cardTitle": "Etapy i statusy",
+    "suggestionsLabel": "Szybkie dodawanie",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Gotowe do odbioru",
+        "message": "Dzień dobry {customer_name}, Państwa {vehicle} jest gotowy do odbioru. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Oczekiwanie na klienta"
+      },
+      "waitingForApproval": {
+        "name": "Oczekiwanie na akceptację",
+        "message": "Dzień dobry {customer_name}, potrzebujemy Państwa akceptacji, zanim będziemy kontynuować prace przy {vehicle}. Prosimy o kontakt. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Przed rozpoczęciem pracy. Zlecenie liczy się jako otwarte.",
+      "in-progress": "Gdy trwają prace przy pojeździe. Zlecenie liczy się jako otwarte.",
+      "completed": "Praca jest wykonana. Klient może zobaczyć i opłacić fakturę, a zlecenie znika z listy mechanika."
+    },
+    "add": "Dodaj status",
+    "builtIn": "Wbudowany",
+    "asksToNotify": "Proponuje powiadomienie",
+    "notifyHint": "Gdy zlecenie osiągnie ten status, pojawi się propozycja wysłania wiadomości do klienta. Nic nie zostanie wysłane bez potwierdzenia.",
+    "moveUp": "W górę",
+    "moveDown": "W dół",
+    "edit": "Edytuj",
+    "remove": "Usuń",
+    "empty": "Nie ma tu jeszcze własnych statusów.",
+    "removeTitle": "Usunąć {name}?",
+    "removeBody": "Znika z menu. Zlecenia, które go mają, nadal go pokazują.",
+    "addTitle": "Nowy status",
+    "editTitle": "Edytuj status",
+    "dialogBody": "Status to nazwa z kolorem. Etap, do którego należy, decyduje o tym, jak traktowane jest zlecenie.",
+    "name": "Nazwa",
+    "namePlaceholder": "Gotowe do odbioru",
+    "stage": "Etap",
+    "color": "Kolor",
+    "notify": "Proponuj powiadomienie klienta",
+    "message": "Wiadomość",
+    "tokens": "Wstaw:",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saved": "Status zapisany",
+    "failed": "Nie udało się zapisać statusu",
+    "messageEmptyHint": "Jeśli pole pozostanie puste, zostanie wysłany tekst powyżej.",
+    "useSuggested": "Edytuj ten tekst"
+  },
+  "markTypes": {
+    "title": "Rodzaje oznaczeń",
+    "description": "Zmień nazwę lub kolor wbudowanych rodzajów, ukryj nieużywane i dodaj własne. Każdy rodzaj ma kształt oprócz koloru, więc jest czytelny także na czarno-białym wydruku.",
+    "cardTitle": "Rodzaje",
+    "add": "Dodaj rodzaj",
+    "addTitle": "Nowy rodzaj oznaczenia",
+    "editTitle": "Edytuj rodzaj oznaczenia",
+    "dialogBody": "Nazwa własnymi słowami, kształt i kolor. Wypełniony oznacza poważne oznaczenie.",
+    "previewHint": "Drobne i poważne",
+    "name": "Nazwa",
+    "namePlaceholder": "np. Otarcie o krawężnik",
+    "shape": "Kształt",
+    "color": "Kolor",
+    "customColor": "Kolor hex",
+    "colorInvalid": "Podaj kolor jako sześć znaków hex, np. #2563eb",
+    "hidden": "Ukryty w wyborze",
+    "hiddenHint": "Oznaczenia tego rodzaju nadal są pokazywane i drukowane.",
+    "hiddenBadge": "Ukryty",
+    "builtin": "Wbudowany",
+    "show": "Pokaż w wyborze",
+    "hide": "Ukryj z wyboru",
+    "edit": "Edytuj",
+    "moveUp": "W górę",
+    "moveDown": "W dół",
+    "restore": "Przywróć",
+    "restoreTitle": "Przywrócić „{name}”?",
+    "restoreBody": "Rodzaj wraca do nazwy, kształtu i koloru dostarczanych z aplikacją.",
+    "remove": "Usuń",
+    "removeTitle": "Usunąć „{name}”?",
+    "removeBody": "Można usunąć tylko rodzaj, którego nie używa żadne oznaczenie. Ukryj go, jeśli takie oznaczenia istnieją.",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "saved": "Zapisano",
+    "failed": "Nie udało się zapisać",
+    "shapes": {
+      "circle": "Koło",
+      "diamond": "Romb",
+      "triangle": "Trójkąt",
+      "square": "Kwadrat",
+      "cross": "Krzyżyk",
+      "hex": "Sześciokąt"
+    }
   }
 }

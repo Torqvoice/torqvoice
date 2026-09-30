@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Download, ExternalLink, FileCheck2 } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -50,7 +50,7 @@ export default async function PortalInvoicePage({
               {invoice.invoiceNumber ? `${t('invoice')} ${invoice.invoiceNumber}` : invoice.title}
             </h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             {invoice.publicToken && (
               <Link
                 href={`/share/invoice/${orgId}/${invoice.publicToken}`}
@@ -68,6 +68,16 @@ export default async function PortalInvoicePage({
               <Download className="h-4 w-4" />
               {t('download')}
             </a>
+            {invoice.hasCertificate && (
+              <a
+                href={`/portal/${orgId}/invoices/${invoice.id}/certificate`}
+                download
+                className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+              >
+                <FileCheck2 className="h-4 w-4" />
+                {t('downloadCertificate')}
+              </a>
+            )}
           </div>
         </div>
 

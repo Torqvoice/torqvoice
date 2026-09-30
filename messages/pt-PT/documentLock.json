@@ -1,0 +1,27 @@
+{
+  "lockedTitle": {
+    "invoice": {
+      "sent": "Esta fatura está bloqueada porque já foi enviada",
+      "paid": "Esta fatura está bloqueada porque já foi paga"
+    },
+    "quote": {
+      "sent": "Este orçamento está bloqueado porque já foi enviado",
+      "accepted": "Este orçamento está bloqueado porque já foi aceite"
+    }
+  },
+  "lockedBody": "As peças, a mão de obra, os preços, o desconto, o IVA, o número e a data já não podem ser alterados. Os pagamentos, as alterações de estado, o envio e os anexos continuam a funcionar.",
+  "lockedAdminHint": "Como proprietário ou administrador, pode desbloqueá-lo se algo precisar mesmo de ser corrigido. O desbloqueio fica guardado no registo de auditoria.",
+  "lockedMemberHint": "Peça a um proprietário ou administrador que o desbloqueie se algo precisar de ser corrigido.",
+  "unlock": "Desbloquear para edição",
+  "relock": "Bloquear novamente",
+  "unlockConfirmTitle": "Desbloquear este documento?",
+  "unlockConfirmDescription": {
+    "invoice": "Passará a ser editável novamente e a alteração ficará guardada no registo de auditoria com o seu nome. Opte por uma nota de crédito quando as regras do seu país a exigirem.",
+    "quote": "Passará a ser editável novamente e a alteração ficará guardada no registo de auditoria com o seu nome."
+  },
+  "unlocked": "Desbloqueado para edição",
+  "relocked": "Bloqueado novamente",
+  "reopenedTitle": "Este documento foi desbloqueado para edição",
+  "reopenedBody": "Continua editável até voltar a ser bloqueado.",
+  "failed": "Não foi possível alterar o bloqueio"
+}

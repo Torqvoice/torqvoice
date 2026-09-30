@@ -24,15 +24,14 @@
   "overview": {
     "totalUsers": "Usuarios totales",
     "organizations": "Organizaciones",
-    "activeSubscriptions": "Suscripciones activas",
-    "monthlyRevenue": "Ingresos mensuales"
+    "activeSubscriptions": "Suscripciones activas"
   },
   "users": {
     "searchPlaceholder": "Buscar por nombre o correo electrónico...",
     "name": "Nombre",
     "email": "Correo electrónico",
     "role": "Rol",
-    "orgs": "Orgs",
+    "orgs": "Organizaciones",
     "created": "Creado",
     "lastSeen": "Visto por última vez",
     "noResults": "Ningún usuario coincide con su búsqueda.",
@@ -118,7 +117,7 @@
     "sendgridApiKeyHint": "Obtenga su clave API de app.sendgrid.com"
   },
   "common": {
-    "openMenu": "Open menu"
+    "openMenu": "Abrir menú"
   },
   "userDetails": {
     "back": "Volver a usuarios",

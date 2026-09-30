@@ -14,7 +14,7 @@
     "createAndSend": "Erstellen & Senden",
     "cancel": "Abbrechen",
     "uploadFailed": "Video konnte nicht hochgeladen werden",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Statusbericht konnte nicht erstellt werden",
     "created": "Statusbericht erstellt",
     "noVideo": "Bitte laden Sie zuerst ein Video hoch",
     "removeVideo": "Video entfernen",
@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Vielen Dank für Ihr Feedback!",
     "feedbackError": "Feedback konnte nicht gesendet werden",
     "submitting": "Wird gesendet...",
-    "poweredBy": "Bereitgestellt von"
+    "poweredBy": "Bereitgestellt von",
+    "vehicleLabel": "Fahrzeug",
+    "plate": "Kennzeichen: {plate}",
+    "inspectionTitle": "Inspektion",
+    "messageFromTechnician": "Nachricht vom Techniker",
+    "videoUnsupported": "Ihr Browser unterstützt das Videoelement nicht."
   },
   "list": {
     "title": "Statusberichte",

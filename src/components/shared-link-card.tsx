@@ -1,8 +1,10 @@
 'use client'
 
+import { SectionFrame } from '@/components/section-frame'
 import { useState } from 'react'
 import { Link2, Copy, Check, Trash2, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 
 interface SharedLinkCardProps {
   publicToken: string
@@ -24,6 +26,9 @@ export function SharedLinkCard({
   onRevoke,
 }: SharedLinkCardProps) {
   const t = useTranslations(type === 'quote' ? 'quotes' : 'service')
+  // The workshop's own zone and formats, so the server's render and the
+  // browser's agree instead of each printing its own clock.
+  const { formatDate, formatDateTime } = useFormatDate()
   const [copied, setCopied] = useState(false)
   const [revoking, setRevoking] = useState(false)
 
@@ -53,27 +58,36 @@ export function SharedLinkCard({
 
   const hasViews = viewCount > 0
 
-  return (
-    <div className="rounded-lg border p-3 space-y-2">
-      <div className="flex items-center gap-2">
-        <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="flex-1 text-sm font-semibold">{t('sidebar.sharedLink.title')}</h3>
-        {onRevoke && (
-          <button
-            type="button"
-            onClick={handleRevoke}
-            disabled={revoking}
-            className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
-          >
-            {revoking ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="h-3.5 w-3.5" />
-            )}
-          </button>
-        )}
-      </div>
+  const revokeButton = onRevoke ? (
+    <button
+      type="button"
+      onClick={handleRevoke}
+      disabled={revoking}
+      className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+    >
+      {revoking ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <Trash2 className="h-3.5 w-3.5" />
+      )}
+    </button>
+  ) : null
 
+  return (
+    <SectionFrame
+      className="rounded-lg border p-3 space-y-2"
+      icon={Link2}
+      title={t('sidebar.sharedLink.title')}
+      action={revokeButton}
+      contentClassName="space-y-2"
+      header={
+        <div className="flex items-center gap-2">
+          <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+          <h3 className="flex-1 text-sm font-semibold">{t('sidebar.sharedLink.title')}</h3>
+          {revokeButton}
+        </div>
+      }
+    >
       {/* Public URL with copy */}
       <div className="flex items-center gap-1.5">
         <div className="min-w-0 flex-1 truncate rounded-md bg-muted/50 px-2.5 py-1.5 font-mono text-xs text-muted-foreground">
@@ -82,6 +96,7 @@ export function SharedLinkCard({
         <button
           type="button"
           onClick={handleCopy}
+          aria-label={t('sidebar.sharedLink.copyLink')}
           className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           {copied ? (
@@ -94,14 +109,8 @@ export function SharedLinkCard({
 
       {/* Shared date */}
       {sharedAt && (
-        <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-          {t('sidebar.sharedLink.sharedOn', {
-            date: new Date(sharedAt).toLocaleDateString(undefined, {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            }),
-          })}
+        <p className="text-xs text-muted-foreground">
+          {t('sidebar.sharedLink.sharedOn', { date: formatDate(sharedAt) })}
         </p>
       )}
 
@@ -113,19 +122,12 @@ export function SharedLinkCard({
           }`}
         />
         {hasViews ? (
-          <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+          <span className="text-xs text-muted-foreground">
             {t('sidebar.sharedLink.viewedTimes', { count: viewCount })}
             {lastViewedAt && (
               <>
                 {' · '}
-                {t('sidebar.sharedLink.lastViewed', {
-                  date: new Date(lastViewedAt).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }),
-                })}
+                {t('sidebar.sharedLink.lastViewed', { date: formatDateTime(lastViewedAt) })}
               </>
             )}
           </span>
@@ -133,6 +135,6 @@ export function SharedLinkCard({
           <span className="text-xs text-muted-foreground">{t('sidebar.sharedLink.notViewed')}</span>
         )}
       </div>
-    </div>
+    </SectionFrame>
   )
 }

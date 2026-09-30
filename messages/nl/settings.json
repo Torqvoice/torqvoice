@@ -43,6 +43,10 @@
         "title": "Belasting",
         "description": "Belastingtarief en standaardwaarden"
       },
+      "warranty": {
+        "title": "Garantie",
+        "description": "Standaardgarantie op offertes en facturen"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Standaardvaluta en belasting"
@@ -65,7 +69,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Telegram-bot en berichten"
       },
       "customerPortal": {
         "title": "Klantenportaal",
@@ -138,6 +142,10 @@
       "emailTemplates": {
         "title": "E-mailsjablonen",
         "description": "Wat je e-mails voor factuur, offerte en rapport zeggen"
+      },
+      "workOrderStatuses": {
+        "title": "Werkorderstatussen",
+        "description": "Uw eigen stappen, en wie bericht krijgt"
       }
     },
     "pro": "PRO",
@@ -192,10 +200,20 @@
     "serviceTypeDescription": "Selecteer het type service dat uw werkplaats biedt. Dit verandert de veldlabels in de hele applicatie.",
     "automotive": "Auto",
     "automotiveDescription": "Auto's, vrachtwagens en andere wegvoertuigen",
-    "marineService": "Marine",
+    "marineService": "Maritiem",
     "marineServiceDescription": "Boten, jachten en vaartuigen"
   },
   "account": {
+    "devicesTitle": "Ingelogde apparaten",
+    "devicesDescription": "Elke browser en telefoon met een open sessie op je account.",
+    "thisDevice": "Dit apparaat",
+    "signedInAt": "Ingelogd {date}",
+    "lastActiveAt": "Laatst actief {date}",
+    "signOutDevice": "Uitloggen",
+    "signOutOthers": "Andere apparaten uitloggen",
+    "deviceSignedOut": "Apparaat uitgelogd",
+    "othersSignedOut": "Andere apparaten uitgelogd",
+    "failedSignOutDevice": "Kon dat apparaat niet uitloggen",
     "profileTitle": "Profiel",
     "profileDescription": "Werk uw weergavenaam en e-mailadres bij.",
     "emailVerified": "Geverifieerd",
@@ -284,8 +302,8 @@
     "contentInspectionsDescription": "Alle voertuiginspecties en hun resultaten",
     "contentTechnicians": "Technici",
     "contentTechniciansDescription": "Alle techniciprofielen. Gekoppelde records worden ontkoppeld.",
-    "contentInspectionTemplates": "Inspectiesjablonen",
-    "contentInspectionTemplatesDescription": "Alle inspectiesjablonen en secties. Verwijder eerst de inspecties.",
+    "contentInspectionTemplates": "Inspectiechecklists",
+    "contentInspectionTemplatesDescription": "Alle inspectiechecklists en hun secties. Verwijder eerst de inspecties.",
     "contentNotifications": "Meldingen",
     "contentNotificationsDescription": "Alle systeemmeldingen",
     "contentSmsMessages": "SMS-berichten",
@@ -330,7 +348,29 @@
     "deleteWorkshopSuccess": "Werkplaats verwijderd",
     "deleteWorkshopFailed": "Kan de werkplaats niet verwijderen",
     "deleteAccountMoved": "Wilt u uw account verwijderen?",
-    "deleteAccountMovedLink": "Dat kan in de gegevensinstellingen."
+    "deleteAccountMovedLink": "Dat kan in de gegevensinstellingen.",
+    "signatureTitle": "Handtekening",
+    "signatureDescription": "Wordt afgedrukt op de facturen, offertes en certificaten die u voor deze werkplaats uitgeeft.",
+    "signatureDraw": "Tekenen",
+    "signatureUpload": "Uploaden",
+    "signatureDrawHint": "Hier tekenen",
+    "signatureUploadHint": "Kies een foto of scan van uw handtekening",
+    "signatureDrawTip": "Gebruik een vinger, een stylus of de muis.",
+    "signatureUploadTip": "Zet uw handtekening op wit papier en maak een foto. Het papier wordt verwijderd en alleen de inkt blijft over.",
+    "signatureChooseFile": "Afbeelding kiezen",
+    "signatureClear": "Wissen",
+    "signatureSave": "Handtekening opslaan",
+    "signatureCancel": "Annuleren",
+    "signatureReplace": "Vervangen",
+    "signatureRemove": "Verwijderen",
+    "signatureSaved": "Handtekening opgeslagen",
+    "signatureRemoved": "Handtekening verwijderd. Al uitgegeven documenten behouden de hunne.",
+    "signatureSaveFailed": "Kan de handtekening niet opslaan",
+    "signatureEmpty": "Teken of upload eerst een handtekening",
+    "signatureNotImage": "Dat bestand is geen afbeelding",
+    "signatureNoInk": "Geen handtekening gevonden in die afbeelding. Probeer een donkerdere pen op wit papier.",
+    "signatureCanvasLabel": "Handtekeningveld",
+    "signatureDesignerHint": "Deze verschijnt waar een ontwerp de sectie Handtekening heeft ingeschakeld. Schakel die in via de <link>documentontwerper</link>."
   },
   "team": {
     "title": "Team",
@@ -408,9 +448,9 @@
     "failedRemoveMember": "Lid verwijderen mislukt",
     "memberRoleUpdated": "Rol van lid bijgewerkt",
     "failedUpdateRole": "Rol bijwerken mislukt",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Lid verwijderen",
+    "cancelInvite": "Uitnodiging annuleren",
+    "editRole": "Rol bewerken",
     "technician": "Technicus",
     "technicianHint": "Kan opdrachten toegewezen krijgen en de technicus-app gebruiken",
     "technicianFailed": "Kon niet worden gewijzigd",
@@ -525,7 +565,7 @@
     "documentsDescription": "Wat elke factuur en offerte met zich meebrengt.",
     "tabs": {
       "general": "Algemeen",
-      "layout": "Layout",
+      "layout": "Indeling",
       "customFields": "Aangepaste velden"
     },
     "invoiceNumberFormat": "Factuurnummerformaat",
@@ -590,9 +630,43 @@
     "freezeProgress": "{done} van {total} vergrendeld",
     "freezeDone": "{count, plural, one {# factuur} other {# facturen}} vergrendeld",
     "freezeFailed": "Kon de facturen niet vergrendelen",
+    "reapplyTitle": "Ontwerp op al verstuurde facturen",
+    "reapplyDescription": "Zet het ontwerp dat je vandaag gebruikt op facturen die aan een ouder ontwerp vastzitten.",
+    "reapplyBody": "{count, plural, one {# factuur zit} other {# facturen zitten}} vast aan het ontwerp waarmee ze is verstuurd, dus een nieuw ontwerp bereikt alleen facturen die je vanaf nu verstuurt. Opnieuw toepassen zet het ontwerp van vandaag op allemaal. Alleen het uiterlijk verandert: de werkplaatsgegevens, de klant, de betalingsvoorwaarden en de bedragen van elke factuur blijven zoals ze zijn.",
+    "reapplyWarning": "Dit kan niet ongedaan worden gemaakt. Het ontwerp dat elke factuur eerder gebruikte wordt niet bewaard.",
+    "reapplyButton": "Huidig ontwerp opnieuw toepassen",
+    "reapplyConfirmTitle": "Het ontwerp opnieuw toepassen op {count, plural, one {# factuur} other {# facturen}}?",
+    "reapplyConfirmBody": "Elke factuur die al naar een klant is gegaan schakelt over naar het ontwerp dat nu in gebruik is. Alleen het uiterlijk verandert: de gegevens, voorwaarden en bedragen van elke factuur blijven zoals ze zijn. Dit kan niet ongedaan worden gemaakt en het vorige ontwerp kan niet worden hersteld.",
+    "reapplyProgress": "{done} van {total} bijgewerkt",
+    "reapplyDone": "{count, plural, one {# factuur gebruikt} other {# facturen gebruiken}} nu het huidige ontwerp",
+    "reapplyFailed": "Kon het ontwerp niet opnieuw toepassen",
     "sectionSending": "Verzenden",
     "attachPdfLabel": "De pdf aan e-mails toevoegen",
-    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster."
+    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster.",
+    "shopFee": {
+      "title": "Werkplaatstoeslag",
+      "description": "Een toeslag voor verbruiksmaterialen zoals poetsdoeken, reinigers, smeermiddelen en afvalverwerking, als eigen regel toegevoegd aan elke nieuwe werkorder en offerte.",
+      "enabled": "Werkplaatstoeslag rekenen",
+      "enabledHint": "Nieuwe werkorders en offertes krijgen de toeslag als regel. Hij kan per klus worden verwijderd. Bestaande klussen veranderen niet.",
+      "defaultLabel": "Klein materiaal",
+      "label": "Naam op de factuur",
+      "appliesTo": "Geldt voor",
+      "appliesToBoth": "Werkorders en offertes",
+      "appliesToWorkOrders": "Alleen werkorders",
+      "appliesToQuotes": "Alleen offertes",
+      "mode": "Berekening",
+      "modeFlat": "Vast bedrag",
+      "modePercent": "Percentage",
+      "amount": "Bedrag",
+      "amountHint": "Hetzelfde bedrag op elke klus. Het kan per klus worden aangepast.",
+      "percent": "Percentage (%)",
+      "base": "Percentage van",
+      "baseLabor": "Arbeid",
+      "baseLaborParts": "Arbeid en onderdelen",
+      "cap": "Maximale toeslag",
+      "capHint": "De toeslag wordt nooit hoger dan dit bedrag. Laat leeg voor geen maximum.",
+      "capPlaceholder": "Geen maximum"
+    }
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",
@@ -628,7 +702,19 @@
       "bank_account": "Bankrekening",
       "footer": "Voettekst",
       "general": "Algemeen",
-      "telegram_qr": "Telegram-QR"
+      "telegram_qr": "Telegram-QR",
+      "result": "Resultaat",
+      "test_details": "Keuringsgegevens",
+      "defects": "Gebreken",
+      "results_table": "Alle resultaten",
+      "inspection_photos": "Foto's",
+      "signature": "Handtekening",
+      "job_details": "Opdrachtgegevens",
+      "job_qr": "Openen op telefoon",
+      "concerns": "Klachten van de klant",
+      "job_description": "Gevraagd werk",
+      "work_checklist": "Werkchecklist",
+      "condition_map": "Staat van het voertuig"
     },
     "fields": {
       "customer_name": "Klantnaam",
@@ -641,6 +727,7 @@
       "vin": "VIN",
       "license_plate": "Kenteken",
       "mileage": "Kilometerstand",
+      "hsn_tsn": "HSN/TSN",
       "service_title": "Servicetitel",
       "service_type": "Servicetype",
       "tech_name": "Monteur",
@@ -660,7 +747,35 @@
       "invoice_number": "Factuurnr.",
       "customer_number": "Klantnr.",
       "date": "Datum",
-      "portal_link": "Portaallink"
+      "portal_link": "Portaallink",
+      "test_date": "Keuringsdatum",
+      "test_location": "Keuringslocatie",
+      "inspector": "Keurmeester",
+      "certificate_number": "Certificaatnummer",
+      "vehicle_category": "Voertuigcategorie",
+      "odometer": "Kilometerstand",
+      "next_test_due": "Volgende keuring",
+      "defect_notes": "Opmerkingen",
+      "defect_photos": "Foto's",
+      "passed_checks": "Geslaagde controles",
+      "not_applicable_checks": "Niet-toepasselijke controles",
+      "check_notes": "Kolom opmerkingen",
+      "result_detail": "Toelichting",
+      "result_summary": "Aantal per beoordeling",
+      "combined_table": "Eén tabel voor alle secties",
+      "inspector_line": "Handtekeningregel",
+      "inspector_name": "Naam van de ondertekenaar",
+      "date_line": "Datumregel",
+      "signature_image": "Handtekening",
+      "status": "Status",
+      "technician": "Monteur",
+      "scheduled": "Gepland",
+      "promised": "Toegezegd",
+      "work_bay": "Werkplek",
+      "customer_line": "Handtekeningregel klant",
+      "legend": "Legenda",
+      "previous_marks": "Eerdere markeringen",
+      "blank_sheet": "Leeg blad om met de hand in te vullen"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -688,6 +803,34 @@
       "detailed": {
         "name": "Uitgebreid",
         "description": "Titel bovenaan, voertuig apart, beide tabellen en alle optionele blokken"
+      },
+      "certificate-regulator": {
+        "name": "Wettelijk",
+        "description": "Sober en zonder band, in serif: elke controle met beoordeling en opmerking, de foto's, een handtekeningregel"
+      },
+      "certificate-standard": {
+        "name": "Standaard",
+        "description": "Het oordeel onder de titel, auto en keuring naast elkaar, elk gebrek met opmerking en foto, daarna de niet-geslaagde controles per sectie"
+      },
+      "certificate-customer": {
+        "name": "Klantrapport",
+        "description": "Een blad met band, het oordeel groot en gecentreerd, gebreken met foto's, de rondgangfoto's en een korte tabel van de niet-geslaagde controles"
+      },
+      "certificate-compact": {
+        "name": "Compact",
+        "description": "Eén pagina voor wagenparken: kleine letters, het oordeel naast de titel, alle resultaten zonder opmerkingen, de foto's, een handtekeningregel"
+      },
+      "work-order-standard": {
+        "name": "Standaard",
+        "description": "De vollere baliekopie in uw kleur: de hele klant en het voertuig, de service, de bevindingen en de garantie naast het werk en de prijzen"
+      },
+      "work-order-job-sheet": {
+        "name": "Werkbon",
+        "description": "Voor het bord: het kenteken groot, de feiten van de opdracht, het werk als vakjes om af te vinken, een code om hem op de telefoon te openen en geen prijzen"
+      },
+      "work-order-compact": {
+        "name": "Compact",
+        "description": "Zwart op wit, één pagina: naam en telefoon van de klant, de auto, de opdracht, het werk met prijzen en beide handtekeningen. Wat elke werkorder afdrukt tot u een ontwerp opslaat"
       }
     },
     "style": {
@@ -710,14 +853,21 @@
   "templates": {
     "title": "Sjablonen",
     "invoiceDescription": "Pas het uiterlijk van uw PDF-facturen en offertes aan.",
-    "inspectionsDescription": "Beheer inspectiechecklists en meerpuntssjablonen.",
+    "inspectionsDescription": "De checklists die je monteurs tijdens een inspectie doorlopen.",
     "smsDescription": "Pas de SMS-berichten aan die naar klanten worden gestuurd.",
     "tabs": {
       "invoice": "Factuur",
       "quotation": "Offerte",
-      "inspections": "Inspecties",
-      "sms": "SMS",
-      "layout": "Indeling"
+      "workOrders": "Werkorder",
+      "certificates": "Inspectiecertificaat",
+      "layout": "Indeling",
+      "conditionMap": "Staatkaart",
+      "inspections": "Checklists"
+    },
+    "sections": {
+      "documents": "Documenten",
+      "checklists": "Checklists",
+      "messages": "Berichten"
     },
     "presets": "Sjabloonpresets",
     "primaryColor": "Primaire kleur",
@@ -804,7 +954,7 @@
       "paymentReceived": "Betaling van {amount} ontvangen voor factuur {invoice_number}. Bedankt!"
     },
     "colorPresets": {
-      "amber": "Amber",
+      "amber": "Barnsteen",
       "blue": "Blauw",
       "emerald": "Smaragd",
       "red": "Rood",
@@ -821,7 +971,10 @@
     "goToLayout": "Indeling en secties",
     "openDesigner": "Ontwerper openen",
     "designerIntro": "Kies een startpunt en open de ontwerper om alles aan te passen.",
-    "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper."
+    "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper.",
+    "certificatesDescription": "Ontwerp het certificaat dat een afgeronde inspectie afdrukt en deelt.",
+    "workOrdersDescription": "Ontwerp het blad dat een werkorder afdrukt: wat de klant tekent en wat de monteur van het bord pakt.",
+    "conditionMapDescription": "De markeringstypen die uw monteurs op de staatkaart tekenen: namen, vormen en kleuren."
   },
   "payment": {
     "readMore": "Lees meer",
@@ -1041,8 +1194,8 @@
     "fieldDeleted": "Aangepast veld verwijderd",
     "failedSave": "Kan veld niet opslaan",
     "failedDelete": "Kan niet verwijderen",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
     "unassigned": "Niet toegewezen",
     "defaultValue": "Standaardwaarde",
     "defaultValueHint": "Wordt vooraf ingevuld bij nieuwe records en afgedrukt zolang er geen waarde is ingevoerd.",
@@ -1072,6 +1225,9 @@
     "defaultMarkupPercentHint": "Nieuwe handmatig toegevoegde onderdelen worden voorgevuld met deze marge. Laat op 0 staan om prijzen handmatig in te voeren.",
     "markupAppliesToInventory": "Marge toepassen op voorraadonderdelen",
     "markupAppliesToInventoryHint": "Indien ingeschakeld gebruiken onderdelen uit de voorraad ook inkoop + standaardmarge (overschrijft de verkoopprijs van de voorraad).",
+    "typeKeyTitle": "Duitse typesleutel (HSN/TSN)",
+    "typeKeyEnabled": "HSN/TSN bij voertuigen vastleggen",
+    "typeKeyHint": "Voegt de fabrikant- en typecode van het Duitse kentekenbewijs (velden 2.1 en 2.2) toe aan voertuigen. De code staat bij het voertuig, op de werkorder en op alle afgedrukte documenten, en voertuigen zijn erop te vinden via zoeken. Uitschakelen verbergt de code weer en bewaart wat is ingevoerd.",
     "unitsTitle": "Eenheden",
     "unitsDescription": "Kies tussen metrisch (km, liters) en imperiaal (mijlen, gallons).",
     "unitSystem": "Eenhedensysteem",
@@ -1138,6 +1294,43 @@
     "saveMaintenance": "Onderhoudsinstellingen opslaan",
     "saved": "Onderhoudsinstellingen opgeslagen"
   },
+  "warranty": {
+    "title": "Garantie",
+    "description": "Bepaal wat uw offertes en facturen over garantie zeggen. Elk nieuw document begint hiermee, en u kunt het per document nog aanpassen.",
+    "designHint": "Wordt afgedrukt in de sectie Garantie van uw factuur- en offerteontwerp. Als u die sectie onder Sjablonen hebt verborgen, zet u deze weer aan. Het ontwerp Compact laat de sectie weg.",
+    "defaultStatus": "Nieuwe offertes en werkorders vermelden",
+    "status": {
+      "none": "Niets",
+      "included": "Garantie inbegrepen",
+      "not_included": "Geen garantie"
+    },
+    "statusHint": {
+      "none": "Garantie wordt niet vermeld totdat iemand het op het document invult.",
+      "included": "Nieuwe documenten beginnen met de periode en voorwaarden hieronder.",
+      "not_included": "Nieuwe documenten vertellen de klant dat er geen werkplaatsgarantie is inbegrepen."
+    },
+    "includedTitle": "Wanneer garantie is inbegrepen",
+    "includedHint": "De periode en voorwaarden die een document krijgt wanneer het garantie biedt.",
+    "months": "Duur (maanden)",
+    "mileage": "Afstandslimiet ({unit})",
+    "mileageHint": "Laat leeg als er geen afstandslimiet is.",
+    "terms": "Garantievoorwaarden",
+    "termsPlaceholder": "bijv. 12 maanden op onderdelen en arbeid. Slijtageonderdelen vallen er niet onder.",
+    "termsHint": "Wordt onder de garantie afgedrukt op offertes en facturen.",
+    "notIncludedTitle": "Wanneer geen garantie is inbegrepen",
+    "notIncludedHint": "Wat de klant leest wanneer een document zegt dat er geen garantie is inbegrepen.",
+    "notIncludedText": "Verklaring",
+    "notIncludedPlaceholder": "bijv. De werkplaats geeft geen garantie op door de klant aangeleverde onderdelen. Uw wettelijke rechten blijven onverminderd van kracht.",
+    "legalHint": "Dit gaat over uw eigen werkplaatsgarantie. In veel landen, waaronder de EU en het Verenigd Koninkrijk, hebben klanten daarnaast wettelijke garantierechten die niet kunnen worden uitgesloten. Laat dit leeg en het document vermeldt dat de wettelijke rechten onverminderd van kracht blijven.",
+    "applyTitle": "Gebruik deze standaardwaarden voor",
+    "applyToQuotes": "Nieuwe offertes",
+    "applyToQuotesHint": "De klant ziet de garantie voordat hij akkoord gaat.",
+    "applyToWorkOrders": "Nieuwe werkorders",
+    "applyToWorkOrdersHint": "Wordt op de factuur afgedrukt. Een werkorder die uit een offerte is gemaakt, behoudt wat de offerte vermeldde.",
+    "save": "Garantie-instellingen opslaan",
+    "saved": "Garantie-instellingen opgeslagen",
+    "saveFailed": "De garantie-instellingen konden niet worden opgeslagen"
+  },
   "appearance": {
     "title": "Weergave",
     "description": "Pas aan hoe Torqvoice eruitziet.",
@@ -1168,7 +1361,29 @@
     "dateLabel": "Datum",
     "dateTimeLabel": "Datum en tijd",
     "saveSettings": "Instellingen opslaan",
-    "saved": "Instellingen opgeslagen"
+    "saved": "Instellingen opgeslagen",
+    "fontLabel": "Lettertype",
+    "fontHint": "Kies de lettertypen waarin de app wordt weergegeven. De keuze wordt op dit apparaat opgeslagen.",
+    "fontSampleHeading": "Werkorder",
+    "fontSampleText": "Bobine en bougies vervangen",
+    "fonts": {
+      "default": {
+        "name": "Standaard",
+        "description": "Geist, strak en neutraal."
+      },
+      "workshop": {
+        "name": "Werkplaats",
+        "description": "IBM Plex met smalle koppen in hoofdletters, zoals een werkbon."
+      },
+      "precise": {
+        "name": "Precies",
+        "description": "Inter en JetBrains Mono. Gemaakt voor schermen vol tabellen en cijfers."
+      },
+      "legible": {
+        "name": "Goed leesbaar",
+        "description": "Atkinson Hyperlegible. 0 en O, 1 en l lijken nooit op elkaar; ook van de andere kant van de werkplaats goed te lezen."
+      }
+    }
   },
   "data": {
     "title": "Gegevensbeheer",
@@ -1191,7 +1406,7 @@
     "optTechnicians": "Technici",
     "optTechniciansDesc": "Techniciprofielen en werkbordtoewijzingen",
     "optInspections": "Inspecties",
-    "optInspectionsDesc": "Inspectiesjablonen, inspecties en resultaten",
+    "optInspectionsDesc": "Inspectiechecklists, inspecties en resultaten",
     "optAuditLogs": "Auditlogboeken",
     "optAuditLogsDesc": "Activiteiten- en wijzigingsgeschiedenis",
     "optSmsMessages": "Berichten",
@@ -1298,7 +1513,7 @@
     "version": "Versie",
     "website": "Website",
     "documentation": "Documentatie",
-    "changelog": "Changelog"
+    "changelog": "Wijzigingslog"
   },
   "portal": {
     "title": "Klantenportaal",
@@ -1350,7 +1565,7 @@
         "sand": "Zand"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Portaal-URL kopiëren"
   },
   "email": {
     "title": "E-mailprovider",
@@ -1426,7 +1641,7 @@
     "failedSave": "Instellingen opslaan mislukt",
     "testSentTo": "Test-SMS verzonden naar {phone}",
     "testFailed": "SMS-test mislukt",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Webhook-URL kopiëren"
   },
   "subscription": {
     "title": "Abonnementsplan",
@@ -1477,7 +1692,7 @@
     "resumeSuccess": "Abonnement succesvol hervat",
     "resumeError": "Hervatten van abonnement mislukt",
     "billingPortalError": "Kan factureringsportaal niet openen",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Afrekenen kon niet worden gestart",
     "upgradeTitle": "Plan upgraden",
     "upgradeDescription": "Ontgrendel meer functies door uw plan te upgraden.",
     "upgradeToProDescription": "Upgrade om onbeperkte klanten, teamleden, rapporten, SMTP, API-toegang en meer te ontgrendelen.",
@@ -1492,7 +1707,12 @@
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
     "upgradeError": "Upgrade van abonnement mislukt",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})"
+    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})",
+    "checkoutOnTorqvoice": "Je wordt naar torqvoice.com gebracht om de aankoop af te ronden. Facturen en bonnen vind je daar onder je account.",
+    "purchaseSuccess": "Bedankt! Je abonnement is nu actief.",
+    "purchaseActivating": "Betaling ontvangen. Je abonnement wordt geactiveerd, deze pagina ververst zo.",
+    "accountOnTorqvoice": "Facturen en bonnen staan op torqvoice.com, waar je met dit account bent aangemeld.",
+    "openTorqvoiceAccount": "Je account op torqvoice.com openen"
   },
   "ai": {
     "title": "AI-assistent",
@@ -1532,7 +1752,7 @@
     "biweekly": "Om de 2 weken",
     "monthly": "Maandelijks",
     "bimonthly": "Om de 2 maanden",
-    "quarterly": "Om de 4 maanden",
+    "quarterly": "Om de 3 maanden",
     "semiannually": "Om de 6 maanden",
     "yearly": "Jaarlijks",
     "dateRangeLabel": "Periode",
@@ -1571,10 +1791,10 @@
     "deleted": "Rapportplanning verwijderd",
     "toggledOn": "Rapportplanning ingeschakeld",
     "toggledOff": "Rapportplanning uitgeschakeld",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Opslaan mislukt",
+    "failedSend": "Verzenden mislukt",
+    "failedToggle": "Omschakelen mislukt",
+    "failedDelete": "Verwijderen mislukt",
     "noMembers": "Geen teamleden gevonden",
     "addRecipient": "Ontvanger toevoegen...",
     "searchMembers": "Leden zoeken...",
@@ -1906,7 +2126,7 @@
     "off": "Uit",
     "font": "Lettertype",
     "inherit": "Overnemen",
-    "auto": "auto",
+    "auto": "automatisch",
     "sectionDragHint": "Sleep deze sectie in de lijst of op de pagina om hem te verplaatsen. Eenmaal met de hand geplaatst verschuiven de pijltoetsen hem een punt per keer, tien met Shift, en Escape breekt een sleep af.",
     "document": "Document",
     "documentSubtitle": "Geldt voor het hele blad",
@@ -1968,7 +2188,41 @@
       "slogan": "Kwaliteit waar u op kunt bouwen",
       "paymentTerms": "Betaling binnen 14 dagen",
       "footerNote": "Bedankt voor uw opdracht",
-      "value": "Voorbeeld"
+      "value": "Voorbeeld",
+      "testLocation": "Havenweg 12, Springfield",
+      "certificateNotes": "De banden zitten dicht bij de wettelijke limiet; reken op vervanging voor de volgende keuring.",
+      "checkBrakeHoses": "Remslangen",
+      "checkBrakeHosesNote": "Lichte schuurplek op de linker voorslang, buitenlaag nog intact.",
+      "sectionBrakes": "Reminrichting",
+      "checkBrakePedal": "Bedrijfsrempedaal",
+      "checkBrakeFluid": "Remvloeistof",
+      "sectionLighting": "Verlichting",
+      "checkHeadlamps": "Staat van de koplampen",
+      "checkFogLamp": "Mistachterlicht",
+      "photoFront": "Voorkant",
+      "photoOdometer": "Kilometerteller",
+      "concernNoise": "Schurend geluid voor bij het remmen",
+      "concernNoiseDetail": "Remblokken en -schijven voor versleten; vervangen",
+      "concernWarningLight": "Waarschuwingslampje op het dashboard sinds vorige week",
+      "workRequested": "Remblokken en -schijven voor vervangen, service-indicator resetten en proefrit maken.",
+      "checklistTestDrive": "Proefrit",
+      "markScratch": "Sleutelkras langs het portier, 20 cm",
+      "markDent": "Deuk onder de greep, lak intact",
+      "markChip": "Steenslag onderin de bumper",
+      "viewTop": "Bovenaanzicht",
+      "viewLeft": "Linkerkant",
+      "viewRight": "Rechterkant",
+      "viewFront": "Voorkant",
+      "viewRear": "Achterkant",
+      "panelLeftRearDoor": "Achterportier links",
+      "panelLeftFrontDoor": "Voorportier links",
+      "panelFrontBumper": "Voorbumper",
+      "kindScratch": "Kras",
+      "kindDent": "Deuk",
+      "kindChip": "Steenslag",
+      "severityMinor": "Licht",
+      "severityMajor": "Ernstig",
+      "markPrevious": "eerder vastgelegd"
     },
     "logoUpload": "Logo uploaden",
     "logoReplace": "Logo vervangen",
@@ -1990,6 +2244,10 @@
     "telegramQrConnectedHint": "Drukt een code af die {link} opent, uw gekoppelde Telegram-bot. Hij verschijnt alleen op facturen die zijn uitgegeven nadat het blok is ingeschakeld.",
     "telegramQrPlaceholderHint": "Er is geen Telegram-bot gekoppeld, dus het blad toont een voorbeeldcode die niet wordt afgedrukt.",
     "telegramQrLink": "Integraties",
+    "signatureWhose": "Wiens handtekening",
+    "signatureOwnHint": "Elk document drukt de handtekening af van wie het heeft uitgegeven: degene die de werkorder opende, de offerte opstelde of de keuring uitvoerde. Het blad toont de uwe.",
+    "signaturePlaceholderHint": "Elk document drukt de handtekening af van wie het heeft uitgegeven: degene die de werkorder opende, de offerte opstelde of de keuring uitvoerde. U hebt er nog geen opgeslagen, dus het blad toont een voorbeeld.",
+    "signatureLink": "Uw handtekening instellen",
     "titleText": "Titeltekst",
     "titleTextHint": "Hoe dit document zichzelf noemt. Laat je het leeg, dan drukt het zijn eigen naam af in de taal van de lezer.",
     "orgNumberLabel": "Naam van het organisatienummer",
@@ -2004,7 +2262,16 @@
     "setDefault": "Als standaard instellen",
     "defaultSet": "\"{name}\" is nu in gebruik",
     "couldNotSetDefault": "Kon het standaardontwerp niet instellen",
-    "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst."
+    "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst.",
+    "certificate": "Inspectiecertificaat",
+    "resultWidthHint": "Leeg vult de rij. Met een waarde wordt de band smaller en komt aan de kant die de uitlijning kiest; in een kolom neemt hij de kolombreedte.",
+    "work_order": "Werkorder",
+    "conditionMapDrawing": "Tekening",
+    "conditionMapViews": "Aanzichten",
+    "conditionMapViewsAll": "Alle vijf",
+    "conditionMapViewsTop": "Alleen bovenaanzicht",
+    "conditionMapViewsSides": "Alleen de zijkanten",
+    "conditionMapWidthHint": "Leeg vult de rij. Geef punten op om de tekening kleiner te maken; hij staat dan waar de uitlijning hem zet en de legenda houdt de volle breedte."
   },
   "preview": {
     "title": "Remservice en oliewissel",
@@ -2402,5 +2669,99 @@
     "dragHandle": "Sleep om te herschikken",
     "dragHandleKeyboard": "Sleep, of gebruik de pijltjestoetsen, om dit blok te verplaatsen",
     "tagDoesNotFit": "De tag past niet in dit veld."
+  },
+  "workOrderStatuses": {
+    "title": "Werkorderstatussen",
+    "description": "Uw eigen namen voor de stappen van een opdracht. Elke status hoort bij een van de drie fasen en staat in het menu van die fase op elke werkorder.",
+    "cardTitle": "Fasen en statussen",
+    "suggestionsLabel": "Snel toevoegen",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Klaar om op te halen",
+        "message": "Hallo {customer_name}, uw {vehicle} staat klaar om opgehaald te worden. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Wacht op klant"
+      },
+      "waitingForApproval": {
+        "name": "Wacht op akkoord",
+        "message": "Hallo {customer_name}, we hebben uw akkoord nodig voordat we verdergaan met uw {vehicle}. Neem contact met ons op. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Voordat het werk begint. De opdracht telt als open.",
+      "in-progress": "Terwijl er aan het voertuig wordt gewerkt. De opdracht telt als open.",
+      "completed": "Het werk is klaar. De klant kan de factuur zien en betalen, en de opdracht verdwijnt uit de lijst van de monteur."
+    },
+    "add": "Status toevoegen",
+    "builtIn": "Ingebouwd",
+    "asksToNotify": "Biedt melding aan",
+    "notifyHint": "Als een opdracht deze status krijgt, wordt aangeboden de klant een bericht te sturen. Er wordt niets verstuurd zonder uw bevestiging.",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "edit": "Bewerken",
+    "remove": "Verwijderen",
+    "empty": "Hier staan nog geen eigen statussen.",
+    "removeTitle": "{name} verwijderen?",
+    "removeBody": "De status verdwijnt uit de menu’s. Opdrachten die hem hebben, blijven hem tonen.",
+    "addTitle": "Nieuwe status",
+    "editTitle": "Status bewerken",
+    "dialogBody": "Een status is een naam met een kleur. De fase waaronder hij valt, bepaalt hoe de opdracht wordt behandeld.",
+    "name": "Naam",
+    "namePlaceholder": "Klaar om op te halen",
+    "stage": "Fase",
+    "color": "Kleur",
+    "notify": "Aanbieden de klant te informeren",
+    "message": "Bericht",
+    "tokens": "Invoegen:",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "saved": "Status opgeslagen",
+    "failed": "De status kon niet worden opgeslagen",
+    "messageEmptyHint": "Blijft het veld leeg, dan wordt de tekst hierboven verstuurd.",
+    "useSuggested": "Deze tekst bewerken"
+  },
+  "markTypes": {
+    "title": "Markeringstypen",
+    "description": "Hernoem of herkleur de ingebouwde typen, verberg wat u nooit gebruikt en voeg eigen typen toe. Elk type heeft naast een kleur een vorm, zodat het ook op een zwart-witafdruk leesbaar is.",
+    "cardTitle": "Typen",
+    "add": "Type toevoegen",
+    "addTitle": "Nieuw markeringstype",
+    "editTitle": "Markeringstype bewerken",
+    "dialogBody": "Een naam in uw eigen woorden, een vorm en een kleur. Gevuld betekent een ernstige markering.",
+    "previewHint": "Licht en ernstig",
+    "name": "Naam",
+    "namePlaceholder": "bijv. Stoeprandschade",
+    "shape": "Vorm",
+    "color": "Kleur",
+    "customColor": "Hex-kleur",
+    "colorInvalid": "Voer de kleur in als zes hex-tekens, zoals #2563eb",
+    "hidden": "Verborgen in de kiezer",
+    "hiddenHint": "Markeringen van dit type worden nog steeds getoond en afgedrukt.",
+    "hiddenBadge": "Verborgen",
+    "builtin": "Ingebouwd",
+    "show": "Tonen in de kiezer",
+    "hide": "Verbergen uit de kiezer",
+    "edit": "Bewerken",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "restore": "Herstellen",
+    "restoreTitle": "\"{name}\" herstellen?",
+    "restoreBody": "Het type krijgt de naam, vorm en kleur terug waarmee de app wordt geleverd.",
+    "remove": "Verwijderen",
+    "removeTitle": "\"{name}\" verwijderen?",
+    "removeBody": "Alleen een type dat geen enkele markering gebruikt kan worden verwijderd. Verberg het als er markeringen van bestaan.",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "saved": "Opgeslagen",
+    "failed": "Kon niet opslaan",
+    "shapes": {
+      "circle": "Cirkel",
+      "diamond": "Ruit",
+      "triangle": "Driehoek",
+      "square": "Vierkant",
+      "cross": "Kruis",
+      "hex": "Zeshoek"
+    }
   }
 }

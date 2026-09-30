@@ -39,6 +39,7 @@
     "invoice": "Nota Fiscal",
     "payment": "Pagamento",
     "tax": "Imposto",
+    "warranty": "Garantia",
     "workshop": "Oficina",
     "appearance": "Aparência",
     "email": "E-mail",
@@ -78,7 +79,7 @@
     "quote": "Orçamento",
     "part": "Peça",
     "inspection": "Inspeção",
-    "shopActions": "Oficina",
+    "shopActions": "Ações da oficina",
     "person": "Adicionar uma pessoa"
   },
   "purchaseWhiteLabel": "Adquirir White-Label",
@@ -90,6 +91,7 @@
   "licenseUnverifiedNow": "Não foi possível verificar sua licença e a marca Torqvoice voltou.",
   "licenseVerify": "Verificar",
   "sidebar": {
+    "account": "Conta",
     "dashboard": "Painel",
     "clients": "Clientes",
     "customers": "Clientes",

@@ -8,10 +8,10 @@
     "week": "Woche",
     "presenter": "Präsentator",
     "addTechnician": "Techniker hinzufügen",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "previousDay": "Vorheriger Tag",
+    "nextDay": "Nächster Tag",
     "groupBy": "Spalten",
     "byTechnician": "Eine Spalte je Mechaniker",
     "byBay": "Eine Spalte je Arbeitsplatz",
@@ -20,7 +20,7 @@
     "add": "Hinzufügen",
     "addBay": "Arbeitsplatz hinzufügen",
     "weekNumber": "KW {number}",
-    "lanes": "Spalten",
+    "lanes": "Bahnen",
     "showAllLanes": "Alle anzeigen",
     "onlyBusyLanes": "Nur mit Aufträgen",
     "layout": "Ansicht",
@@ -78,7 +78,10 @@
     "addTechnician": "Techniker hinzufügen",
     "standaloneOnly": "Ein Name auf dem Board für jemanden ohne Anmeldung, etwa einen Azubi oder Subunternehmer. Einen Mechaniker mit App fügen Sie auf der Team-Seite hinzu.",
     "linkedTo": "Meldet sich als {name} an",
-    "linkedManagedOnTeam": "Wird auf der Team-Seite verwaltet, zusammen mit dem App-Zugang."
+    "linkedManagedOnTeam": "Wird auf der Team-Seite verwaltet, zusammen mit dem App-Zugang.",
+    "skills": "Fähigkeiten",
+    "skillsPlaceholder": "Diagnose, HV-qualifiziert",
+    "skillsHint": "Wird unter dem Namen angezeigt, wo Arbeit verteilt wird. Optional."
   },
   "jobDetail": {
     "viewDetails": "Details anzeigen",
@@ -107,8 +110,8 @@
       "waitingParts": "Warten auf Teile",
       "completed": "Abgeschlossen"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Zurück",
+    "next": "Weiter",
     "groupingUnused": "Die Statustafel gruppiert nach Status",
     "connecting": "Verbinden …"
   },
@@ -154,6 +157,9 @@
     "workBay": "Arbeitsplatz",
     "status": "Status",
     "noTime": "Noch keine Zeit",
-    "none": "Noch niemand"
+    "none": "Noch niemand",
+    "promised": "Zugesagt",
+    "promiseLate": "Überfällig",
+    "promiseOverdue": "Dem Kunden für einen bereits vergangenen Zeitpunkt zugesagt"
   }
 }

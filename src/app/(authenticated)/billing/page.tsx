@@ -1,9 +1,11 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getBillingHistory } from '@/features/billing/Actions/billingActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { cookies } from 'next/headers'
+import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
 import BillingClient from './billing-client'
 
 export default async function BillingPage({
@@ -15,6 +17,7 @@ export default async function BillingPage({
     search?: string
     status?: string
     delivery?: string
+    completed?: string
     sortBy?: string
     sortOrder?: string
   }>
@@ -25,6 +28,11 @@ export default async function BillingPage({
   const search = params.search || ''
   const statusFilter = params.status || 'all'
   const deliveryFilter = params.delivery === 'unviewed' ? 'unviewed' : ''
+  // The URL wins, as with sorting; otherwise the switch as this browser left it.
+  const completedOnly =
+    params.completed !== undefined
+      ? params.completed === '1'
+      : parseCompletedOnlyCookie((await cookies()).get(COMPLETED_ONLY_COOKIE)?.value).has('billing')
   // No column asked for anywhere means the list keeps its own default, which
   // getBillingHistory reads as newest first.
   const sort = await resolveListSort('billing', params, { sortBy: undefined, sortOrder: 'desc' })
@@ -38,10 +46,11 @@ export default async function BillingPage({
       search,
       status: statusFilter,
       delivery: deliveryFilter,
+      completedOnly,
       sortBy,
       sortOrder,
     }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE]),
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
   ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
@@ -68,6 +77,7 @@ export default async function BillingPage({
           search={search}
           statusFilter={statusFilter}
           deliveryFilter={deliveryFilter}
+          completedOnly={completedOnly}
           sortBy={sortBy}
           sortOrder={sortOrder}
         />

@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Bu işlem kurulum sırasında oluşturulan örnek müşterileri, araçları, iş emirlerini, teklifi ve muayeneyi siler. Kendi verileriniz etkilenmez.",
     "removed": "Örnek veriler kaldırıldı",
     "removeFailed": "Örnek veriler kaldırılamadı"
+  },
+  "singleWorkshop": {
+    "title": "Bu kurulumun atölyesi zaten var",
+    "description": "Torqvoice burada tek bir atölye çalıştırıyor ve o kurulmuş durumda. İçinde çalışmak için sahibinden {email} adresini Ayarlar, ardından Ekip bölümünden davet etmesini isteyin.",
+    "signOut": "Çıkış yap"
   }
 }

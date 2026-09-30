@@ -136,7 +136,7 @@ export function CustomFieldsForm({
         const val = values[field.id] ?? field.value ?? ''
         const hasError = !!errors[field.id]
         return (
-          <div key={field.id} className="space-y-1.5">
+          <div key={field.id} data-testid={`custom-field-${field.id}`} className="space-y-1.5">
             {field.fieldType !== 'checkbox' && (
               <Label className={cn(hasError && 'text-destructive')}>
                 {field.label}

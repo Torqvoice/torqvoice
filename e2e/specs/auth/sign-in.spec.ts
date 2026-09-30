@@ -119,6 +119,18 @@ test.describe('forgotten password', () => {
   // spend it twice. better-auth deletes it on use, which is the point.
   let spent = ''
 
+  // A reset ends every session the owner has, the shared one from setup
+  // included; that is the protection. The rest of the suite still signs in
+  // with the saved state, so a fresh session is saved over it afterwards.
+  test.afterAll(async ({ browser }) => {
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
+    const page = await context.newPage()
+    await signIn(page, email, password)
+    await expectSignedIn(page)
+    await context.storageState({ path: 'e2e/.auth/owner.json' })
+    await context.close()
+  })
+
   test('a made-up token cannot set a password', async ({ page }) => {
     await resetWith(page, 'not-a-real-token', replacement)
     // better-auth's own words, or the page's fallback when it has none.

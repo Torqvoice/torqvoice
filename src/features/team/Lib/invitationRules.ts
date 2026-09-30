@@ -28,6 +28,38 @@ export function canInvite(caller: InviteCaller, requestedRole: InvitableRole): I
 }
 
 /**
+ * Whether `caller` may change what `target` is, to `requested`.
+ *
+ * The same question as inviting, asked of a person already on the team.
+ * Handing out the built-in admin role is the owner's alone, on both paths:
+ * `updateMemberRole` refuses anybody but the owner, and `assignRole` used to
+ * ask only for admin standing, so a custom role with the admin switch could
+ * make itself, or anyone, a built-in admin and from there edit roles and
+ * remove members. Taking admin away is the owner's call for the same reason:
+ * an admin must not be able to demote a peer.
+ */
+export function canAssignRole(
+  caller: InviteCaller & { userId: string },
+  target: { userId: string; role: string },
+  requested: { role?: string }
+): InviteDecision {
+  if (!caller.isAdmin) {
+    return { ok: false, reason: 'Only owners and admins can assign roles' }
+  }
+  if (target.role === 'owner') {
+    return { ok: false, reason: 'Cannot assign a role to the owner' }
+  }
+  if (target.userId === caller.userId) {
+    return { ok: false, reason: 'You cannot change your own role' }
+  }
+  const touchesAdmin = requested.role === 'admin' || target.role === 'admin'
+  if (touchesAdmin && !CAN_GRANT_ADMIN.has(caller.role)) {
+    return { ok: false, reason: 'Only the owner can change who is an admin' }
+  }
+  return { ok: true }
+}
+
+/**
  * What the team page gets to see about a pending invitation. The token is
  * deliberately absent: it is the credential that lets whoever holds it join
  * as the invitee, so it belongs in the invitee's inbox and nowhere else.

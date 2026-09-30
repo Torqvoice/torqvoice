@@ -1,0 +1,9 @@
+{
+  "title": "Pesquisar",
+  "description": "Pesquise viaturas, clientes, serviços e definições",
+  "placeholder": "Pesquisar por nome, matrícula, telefone, VIN, fatura…",
+  "noResults": "Nenhum resultado encontrado.",
+  "recentCustomers": "Clientes recentes",
+  "services": "Registos de serviço",
+  "toClose": "para fechar"
+}

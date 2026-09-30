@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Esta factura está bloqueada porque ya se ha enviado",
+      "paid": "Esta factura está bloqueada porque ya se ha pagado"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Este presupuesto está bloqueado porque ya se ha enviado",
+      "accepted": "Este presupuesto está bloqueado porque ya se ha aceptado"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Ya no se pueden cambiar sus piezas, mano de obra, precios, descuento, impuestos, número ni fecha. Los pagos, los cambios de estado, el envío y los adjuntos siguen funcionando.",
+  "lockedAdminHint": "Como propietario o administrador puede desbloquearlo si de verdad hay algo que corregir. El desbloqueo queda en el registro de auditoría.",
+  "lockedMemberHint": "Pida a un propietario o administrador que lo desbloquee si hay algo que corregir.",
+  "unlock": "Desbloquear para editar",
+  "relock": "Volver a bloquear",
+  "unlockConfirmTitle": "¿Desbloquear este documento?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Se podrá volver a editar, y el cambio quedará en el registro de auditoría con su nombre. Emita mejor una factura rectificativa si la normativa local lo exige.",
+    "quote": "Se podrá volver a editar, y el cambio quedará en el registro de auditoría con su nombre."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Desbloqueado para editar",
+  "relocked": "Bloqueado de nuevo",
+  "reopenedTitle": "Este documento se ha desbloqueado para editarlo",
+  "reopenedBody": "Se puede editar hasta que se vuelva a bloquear.",
+  "failed": "No se pudo cambiar el bloqueo"
 }

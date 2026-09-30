@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Text, View } from '@react-pdf/renderer'
+import { Circle, Image, Path, Svg, Text, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import type { BoxStyle, Node, TextStyle } from '../Spec/documentSpec'
@@ -169,6 +169,70 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
         </View>
       )
 
+    case 'drawing':
+      // Vector shapes, so the sheet prints crisp; it fills the width it is
+      // given and keeps its aspect, as the height estimate assumes. The box
+      // states its height and never breaks: without the height, react-pdf
+      // squeezed the sheet into a page's remainder rather than moving it.
+      return (
+        <View wrap={false} style={{ width: '100%', height: node.height }}>
+          <Svg
+            width="100%"
+            height={node.height}
+            viewBox={`0 ${node.viewBoxY ?? 0} ${node.viewBox[0]} ${node.viewBox[1]}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {node.shapes.map((shape, i) => {
+              if (shape.type === 'path') {
+                return (
+                  <Path
+                    key={i}
+                    d={shape.d}
+                    stroke={shape.stroke}
+                    strokeWidth={shape.strokeWidth}
+                    fill={shape.fill ?? 'none'}
+                    strokeDasharray={shape.dash?.join(' ')}
+                    opacity={shape.opacity}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                )
+              }
+              if (shape.type === 'circle') {
+                return (
+                  <Circle
+                    key={i}
+                    cx={shape.cx}
+                    cy={shape.cy}
+                    r={shape.r}
+                    stroke={shape.stroke}
+                    strokeWidth={shape.strokeWidth}
+                    fill={shape.fill ?? 'none'}
+                    opacity={shape.opacity}
+                  />
+                )
+              }
+              return (
+                <Text
+                  key={i}
+                  x={shape.x}
+                  y={shape.y}
+                  fill={shape.fill}
+                  textAnchor={shape.anchor ?? 'start'}
+                  style={{
+                    fontSize: shape.size,
+                    fontFamily: base.fontFamily,
+                    fontWeight: shape.bold ? 700 : 400,
+                  }}
+                >
+                  {shape.text}
+                </Text>
+              )
+            })}
+          </Svg>
+        </View>
+      )
+
     case 'table': {
       const cell = (width: number | 'flex'): Style => (width === 'flex' ? { flex: 1 } : { width })
       const headerText = textStylePdf(node.headerStyle, base)
@@ -217,9 +281,13 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                   }}
                 />
               ) : null
+            // A row moves to the next page whole. Split, its second half was
+            // laid out without the columns' widths and printed its cells
+            // shifted across the table.
             const body = (
               <View
                 key={`${row[node.columns[0].key]}-${i}`}
+                wrap={false}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'flex-start',

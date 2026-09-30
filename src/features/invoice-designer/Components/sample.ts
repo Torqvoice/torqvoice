@@ -3,6 +3,8 @@ import { calculateTotals } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
 import type { DocumentData, PaymentPair, TotalLine } from '../Spec/buildSpec'
 import type { DesignerWorkshop, DocumentType } from './types'
+import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 
 /**
  * What the canvas prints for each field the layout can show.
@@ -147,6 +149,11 @@ export function fieldValues(
     vehicle_name: '2020 Volvo V60',
     vin: fillTemplate(L('vin', 'VIN: {vin}'), { vin: 'YV1AA0000L0000000' }),
     license_plate: fillTemplate(L('plate', 'Plate: {plate}'), { plate: 'AB 12345' }),
+    // 9101 is Volvo's real manufacturer key; the type half is made up. Only
+    // for a workshop that records the key, since nobody else's sheet prints it.
+    hsn_tsn: workshop.typeKeyEnabled
+      ? fillTemplate(L('typeKey', 'HSN/TSN: {typeKey}'), { typeKey: '9101 / ABC' })
+      : '',
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
       mileage: `84,120 ${L('km', 'km')}`,
     }),
@@ -266,6 +273,7 @@ export function buildSampleData(
       customerNumber: sample.customerNumber,
       date: sample.date,
       due: sample.due,
+      plate: 'AB 12345',
     },
     items: sample.items.map((item) => ({
       n: String(item.n),
@@ -352,6 +360,303 @@ export function buildSampleData(
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Observations'),
+      job_details: L('jobDetails', 'Job details'),
+      test_details: L('testDetails', 'Test details'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
+      inspection_photos: L('photos', 'Photos'),
+    },
+    signature:
+      docType === 'certificate'
+        ? {
+            heading: L('signature', 'Signature'),
+            name: 'Jamie Lee',
+            nameCaption: L('inspector', 'Inspector'),
+            date: sample.date,
+            dateCaption: L('testDate', 'Date of test'),
+            image: workshop.signatureUrl || SAMPLE_SIGNATURE,
+          }
+        : {
+            heading: L('signature', 'Signature'),
+            name: 'Jamie Lee',
+            nameCaption: L('signedBy', 'Signed by'),
+            date: sample.date,
+            dateCaption: L('signatureDate', 'Date'),
+            image: workshop.signatureUrl || SAMPLE_SIGNATURE,
+            // The customer's line has a customer on every document but the
+            // certificate, so the switch for it has something to show.
+            customerName: values.customer_name,
+            customerCaption: L('customerSignature', 'Customer signature'),
+          },
+    ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
+    ...(docType === 'work_order' ? sampleWorkOrder(t, labels, values, sample) : {}),
+    // A car with a dent, a scratch and one mark from an earlier visit, so the
+    // condition map section has something to draw on every document. An
+    // invoice or a quote prints this visit's marks only.
+    conditionMap:
+      sampleConditionMap(t, docType === 'certificate' || docType === 'work_order') ?? undefined,
+  }
+}
+
+/** Three marks on a sedan, one of them from last time. */
+function sampleConditionMap(t: SampleT, includePrevious: boolean) {
+  const at = (
+    id: string,
+    view: string,
+    panel: string,
+    x: number,
+    y: number,
+    kind: string,
+    severity: string,
+    note: string,
+    own: boolean
+  ): ConditionMarkData => ({
+    id,
+    vehicleId: 'sample',
+    inspectionId: own ? 'sample' : 'earlier',
+    inspectionItemId: own ? 'sample-item' : 'earlier-item',
+    serviceRecordId: null,
+    bodyType: 'sedan',
+    view,
+    panel,
+    x,
+    y,
+    kind,
+    severity,
+    note,
+    imageUrls: [],
+    recordedAt: own ? '2026-08-14T09:00:00Z' : '2026-02-02T09:00:00Z',
+    resolvedAt: null,
+  })
+  return conditionMapForPrint({
+    bodyType: 'sedan',
+    marks: [
+      at(
+        'm0',
+        'left',
+        'left_rear_door',
+        0.6,
+        0.55,
+        'scratch',
+        'minor',
+        t('sample.markScratch'),
+        false
+      ),
+      at('m1', 'left', 'left_front_door', 0.42, 0.58, 'dent', 'major', t('sample.markDent'), true),
+      at('m2', 'front', 'front_bumper', 0.35, 0.72, 'chip', 'minor', t('sample.markChip'), true),
+    ],
+    scope: { inspectionId: 'sample', inspectionItemId: 'sample-item' },
+    includePrevious,
+    labels: {
+      views: {
+        top: t('sample.viewTop'),
+        left: t('sample.viewLeft'),
+        right: t('sample.viewRight'),
+        front: t('sample.viewFront'),
+        rear: t('sample.viewRear'),
+      },
+      panels: {
+        left_rear_door: t('sample.panelLeftRearDoor'),
+        left_front_door: t('sample.panelLeftFrontDoor'),
+        front_bumper: t('sample.panelFrontBumper'),
+      },
+      kinds: {
+        scratch: t('sample.kindScratch'),
+        dent: t('sample.kindDent'),
+        chip: t('sample.kindChip'),
+      },
+      severities: { minor: t('sample.severityMinor'), major: t('sample.severityMajor') },
+      previous: t('sample.markPrevious'),
+    },
+    width: 515,
+  })
+}
+
+/**
+ * A code that goes nowhere, drawn as a pattern, so the designer can place
+ * and size the block that the printed sheet fills with a real one.
+ */
+const SAMPLE_QR = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 21 21" shape-rendering="crispEdges"><rect width="21" height="21" fill="#fff"/><path fill="#111" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0zM2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM8 0h1v1H8zM10 0h2v1h-2zM8 2h2v1H8zM11 2h1v2h-1zM9 4h1v2H9zM11 5h2v1h-2zM0 8h1v1H0zM2 8h3v1H2zM6 8h2v1H6zM9 8h1v1H9zM12 8h2v1h-2zM15 8h1v1h-1zM18 8h3v1h-3zM1 10h2v1H1zM4 10h1v1H4zM7 10h3v1H7zM11 10h1v1h-1zM13 10h2v1h-2zM16 10h1v1h-1zM19 10h2v1h-2zM0 12h1v1H0zM3 12h2v1H3zM6 12h1v1H6zM8 12h3v1H8zM12 12h1v1h-1zM14 12h3v1h-3zM18 12h1v1h-1zM20 12h1v1h-1zM8 14h1v2H8zM10 14h2v1h-2zM13 14h1v1h-1zM15 14h1v1h-1zM17 14h2v1h-2zM20 14h1v1h-1zM9 16h2v1H9zM12 16h2v1h-2zM15 16h1v1h-1zM17 16h1v1h-1zM19 16h2v1h-2zM8 18h1v1H8zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h3v1h-3zM18 18h1v1h-1zM20 18h1v1h-1zM9 20h3v1H9zM13 20h2v1h-2zM16 20h2v1h-2zM19 20h1v1h-1z"/></svg>'
+)}`
+
+/**
+ * The work order's own part of the sample: a job that is open, booked and
+ * with a technician, two things the customer came in with, the work as a
+ * checklist, and a code to scan.
+ */
+function sampleWorkOrder(
+  t: SampleT,
+  labels: PrintLabels,
+  values: Record<string, string>,
+  sample: SampleTables
+): Pick<DocumentData, 'fields' | 'meta' | 'workOrder' | 'payment' | 'portalUrl'> {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  return {
+    fields: {
+      ...values,
+      bank_account: '',
+      status: fillTemplate(L('status', 'Status: {status}'), {
+        status: L('statusInProgress', 'In progress'),
+      }),
+      technician: fillTemplate(L('technician', 'Technician: {tech}'), { tech: 'Jamie Lee' }),
+      scheduled: fillTemplate(L('scheduled', 'Scheduled: {date}'), {
+        date: `${sample.date} 08:30`,
+      }),
+      promised: fillTemplate(L('promised', 'Promised: {date}'), { date: `${sample.date} 16:00` }),
+      work_bay: fillTemplate(L('workBay', 'Bay: {bay}'), { bay: '2' }),
+      footer_note: `${t('sample.footerNote')} · ${fillTemplate(L('printedOn', 'Printed {date}'), {
+        date: sample.date,
+      })}`,
+    },
+    meta: {
+      title: L('title', 'WORK ORDER'),
+      number: '2026-0042',
+      customerNumber: sample.customerNumber,
+      date: sample.date,
+      plate: 'AB 12345',
+    },
+    // A job that is still open has no bank details and no portal link to
+    // print; its totals already end at the total, like a quote's.
+    payment: [],
+    portalUrl: undefined,
+    workOrder: {
+      concerns: [
+        { description: t('sample.concernNoise'), detail: t('sample.concernNoiseDetail') },
+        { description: t('sample.concernWarningLight') },
+      ],
+      description: { html: `<p>${t('sample.workRequested')}</p>` },
+      checklist: sample.items
+        .filter((item) => !item.sku)
+        .map((item) => ({ label: item.desc, detail: `${item.qty} ${item.unit}` }))
+        .concat([{ label: t('sample.checklistTestDrive'), detail: '' }]),
+      qr: { dataUri: SAMPLE_QR, label: L('scanToOpen', 'Scan to open this work order') },
+    },
+  }
+}
+
+/** A stroke of a pen, for a designer whose user has not saved a signature yet. */
+const SAMPLE_SIGNATURE = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="170" height="44" viewBox="0 0 170 44"><path d="M6 32c8-14 14-24 18-22s-6 22-2 24 10-18 16-18-2 16 4 16 8-12 14-12 0 10 6 10 10-14 16-14-4 12 2 12 12-8 20-10 20 2 34-2" fill="none" stroke="#1e3a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+)}`
+
+/** A small grey square, so the photo blocks have something to place. */
+const SAMPLE_PHOTO = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="158" height="119"><rect width="158" height="119" fill="#e5e7eb"/><path d="M40 84l28-32 22 26 14-16 24 22H40z" fill="#9ca3af"/><circle cx="112" cy="40" r="9" fill="#9ca3af"/></svg>'
+)}`
+
+/**
+ * The certificate's own part of the sample: a car that passed with one
+ * minor defect, so every block has something to draw, and the fields of the
+ * test details panel worded the way the print words them.
+ */
+function sampleCertificate(
+  t: SampleT,
+  labels: PrintLabels,
+  values: Record<string, string>,
+  sample: SampleTables
+): Pick<DocumentData, 'fields' | 'meta' | 'certificate' | 'notes' | 'attachedDocuments'> {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const grade = (key: string, fallback: string) => L(key, fallback)
+  return {
+    fields: {
+      ...values,
+      // A certificate carries no bank details in its footer.
+      bank_account: '',
+      customer_tax_id: '',
+      test_date: `${L('testDate', 'Date of test')}: ${sample.date}`,
+      test_location: `${L('testLocation', 'Place of test')}: ${values.company_address || t('sample.testLocation')}`,
+      inspector: `${L('inspector', 'Inspector')}: Jamie Lee`,
+      certificate_number: `${L('certificateNumber', 'Certificate number')}: CERT-2026-0042`,
+      vehicle_category: `${L('vehicleCategory', 'Vehicle category')}: M1`,
+      odometer: values.mileage,
+      next_test_due: `${L('nextTestDue', 'Next test due')}: ${sample.due}`,
+    },
+    meta: {
+      title: L('title', 'VEHICLE INSPECTION'),
+      number: 'CERT-2026-0042',
+      date: sample.date,
+      due: sample.due,
+    },
+    notes: { html: `<p>${t('sample.certificateNotes')}</p>` },
+    attachedDocuments: [
+      fillTemplate(L('seeAppendedPages', '{name} (see appended pages)'), {
+        name: 'signed-inspection-form.pdf',
+      }),
+    ],
+    certificate: {
+      result: {
+        label: L('resultPassMinor', 'Pass with minor defects'),
+        detail: L(
+          'resultDetailPassMinor',
+          'The vehicle passes. Repair the minor deficiencies without undue delay.'
+        ),
+        color: { bg: '#fef9c3', text: '#713f12' },
+      },
+      summary: `11 × ${grade('euPass', 'No defect')} · 1 × ${grade('euAttention', 'Minor defect')} · 1 × ${grade('euNotApplicable', 'Not applicable')}`,
+      defects: [
+        {
+          code: '1.1.13',
+          name: t('sample.checkBrakeHoses'),
+          grade: `1 — ${grade('euAttention', 'Minor defect')}`,
+          color: { bg: '#fef9c3', text: '#713f12' },
+          notes: t('sample.checkBrakeHosesNote'),
+          photos: [SAMPLE_PHOTO],
+        },
+      ],
+      sections: [
+        {
+          code: '1',
+          name: t('sample.sectionBrakes'),
+          rows: [
+            {
+              code: '1.1.1',
+              name: t('sample.checkBrakePedal'),
+              grade: grade('euPass', 'No defect'),
+              notes: null,
+              kind: 'pass',
+            },
+            {
+              code: '1.1.13',
+              name: t('sample.checkBrakeHoses'),
+              grade: `1 — ${grade('euAttention', 'Minor defect')}`,
+              notes: t('sample.checkBrakeHosesNote'),
+              kind: 'defect',
+            },
+            {
+              code: '1.1.17',
+              name: t('sample.checkBrakeFluid'),
+              grade: grade('euPass', 'No defect'),
+              notes: null,
+              kind: 'pass',
+            },
+          ],
+        },
+        {
+          code: '4',
+          name: t('sample.sectionLighting'),
+          rows: [
+            {
+              code: '4.1.1',
+              name: t('sample.checkHeadlamps'),
+              grade: grade('euPass', 'No defect'),
+              notes: null,
+              kind: 'pass',
+            },
+            {
+              code: '4.5.1',
+              name: t('sample.checkFogLamp'),
+              grade: grade('euNotApplicable', 'Not applicable'),
+              notes: null,
+              kind: 'not_applicable',
+            },
+          ],
+        },
+      ],
+      photos: [
+        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
+        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
+      ],
     },
   }
 }

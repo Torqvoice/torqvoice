@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Edytuj",
     "delete": "Usuń",
-    "openMenu": "Open menu"
+    "openMenu": "Otwórz menu"
   },
   "deletePreset": {
     "title": "Usuń szablon robocizny",
@@ -44,7 +44,7 @@
     "create": "Utwórz",
     "saveChanges": "Zapisz zmiany",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQtyOrHours": "Jednostka / Godziny",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Części",
@@ -63,7 +63,7 @@
     "noPackages": "Nie znaleziono szablonów robocizny.",
     "items": "{count} pozycji",
     "totalHours": "{hours} godz. łącznie",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} szt.",
     "totalParts": "{count} części"
   },
   "errors": {

@@ -22,3 +22,23 @@ export async function markVersionSeen(version: string) {
   })
   return { success: true }
 }
+
+/**
+ * Records when the update banner for this release first appeared to the
+ * current user. Only the first sighting counts: a second device, or a reload,
+ * finds the version already stamped and leaves the clock where it is. That is
+ * what makes the hour run once per person rather than once per tab.
+ */
+export async function markUpdateBannerShown(version: string) {
+  const session = await getCachedSession()
+  if (!session?.user?.id) return { success: false }
+
+  const clean = version.slice(0, 64)
+  if (!clean) return { success: false }
+
+  await db.user.updateMany({
+    where: { id: session.user.id, NOT: { updateBannerVersion: clean } },
+    data: { updateBannerVersion: clean, updateBannerShownAt: new Date() },
+  })
+  return { success: true }
+}

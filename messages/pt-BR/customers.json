@@ -27,7 +27,7 @@
     "batchDeleteTitle": "Excluir Clientes",
     "batchDeleteDescription": "Excluir {count} cliente(s)? Os veículos vinculados serão desassociados.",
     "batchDeleteSuccess": "{count} cliente(s) excluído(s)",
-    "openMenu": "Open menu"
+    "openMenu": "Abrir menu"
   },
   "detail": {
     "backToCustomers": "Voltar para clientes",
@@ -95,7 +95,7 @@
     "customerCreated": "Cliente cadastrado",
     "saveError": "Falha ao salvar cliente",
     "customerNumber": "Nº do cliente",
-    "customerNumberAuto": "Auto",
+    "customerNumberAuto": "Automático",
     "sectionContact": "Contato",
     "sectionBilling": "Faturamento",
     "addScannedVehicle": "Adicionar o veículo {vehicle}",

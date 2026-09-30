@@ -12,7 +12,7 @@ import { IntlMessageFormat } from 'intl-messageformat'
 import { readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
-const LOCALES = ['en', 'nb', 'de', 'es', 'fr', 'it', 'lt', 'nl', 'pl', 'pt-BR', 'ru', 'tr']
+const LOCALES = ['en', 'nb', 'de', 'es', 'fr', 'it', 'lt', 'nl', 'pl', 'pt-BR', 'pt-PT', 'ru', 'tr']
 
 function summary(locale: string): Record<string, string> {
   return JSON.parse(readFileSync(`messages/${locale}/audit.json`, 'utf-8')).summary ?? {}

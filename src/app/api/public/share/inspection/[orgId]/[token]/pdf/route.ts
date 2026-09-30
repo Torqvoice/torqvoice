@@ -1,19 +1,9 @@
 import { NextResponse } from 'next/server'
-import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { headers } from 'next/headers'
 import { db } from '@/lib/db'
-import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
-import React from 'react'
-import { readFile } from 'fs/promises'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { loadInspectionPhotos } from '@/features/inspections/Lib/inspectionPhotos'
-import { inspectionPrintLabels } from '@/features/inspections/Lib/inspectionLabels'
-import { getFeatures } from '@/lib/features'
-import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
-import { getAppBaseUrl } from '@/lib/app-url'
+import { buildCustomerCertificatePdf } from '@/features/inspections/Pdf/customerCertificatePdf'
 
 export async function GET(
   _request: Request,
@@ -26,142 +16,33 @@ export async function GET(
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
 
-    // Load locale-based PDF translations
     const headerStore = await headers()
     const locale = await resolveCustomerLocale(orgId, headerStore.get('accept-language'))
-    let pdfMessages: Record<string, Record<string, string>>
-    try {
-      pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default
-    } catch {
-      pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default
-    }
 
-    const inspection = await db.inspection.findFirst({
+    // The share link names the inspection; the designed certificate, when the
+    // workshop has one, is then the same document the workshop downloads.
+    const shared = await db.inspection.findFirst({
       where: { publicToken: token, organizationId: orgId },
-      include: {
-        vehicle: {
-          select: {
-            make: true,
-            model: true,
-            year: true,
-            vin: true,
-            licensePlate: true,
-            mileage: true,
-            // Data minimisation (GDPR Art. 5(1)(c)): this certificate is
-            // generated from a public link, so it carries only the name needed
-            // to identify whose vehicle was tested.
-            customer: { select: { name: true } },
-          },
-        },
-        template: { select: { name: true, severityScale: true, country: true } },
-        items: { orderBy: { sortOrder: 'asc' } },
-      },
+      select: { id: true },
     })
-
-    if (!inspection) {
+    if (!shared) {
+      return NextResponse.json({ error: 'Inspection not found' }, { status: 404 })
+    }
+    const certificate = await buildCustomerCertificatePdf({
+      inspectionId: shared.id,
+      organizationId: orgId,
+      locale,
+    })
+    if (!certificate) {
       return NextResponse.json({ error: 'Inspection not found' }, { status: 404 })
     }
 
-    const [settings, org] = await Promise.all([
-      db.appSetting.findMany({ where: { organizationId: orgId } }),
-      db.organization.findUnique({
-        where: { id: orgId },
-        select: { name: true, portalSlug: true },
-      }),
-    ])
-
-    const settingsMap: Record<string, string> = {}
-    for (const s of settings) settingsMap[s.key] = s.value
-
-    // Marine workshops get the vessel wording.
-    const labels = inspectionPrintLabels(pdfMessages, settingsMap)
-
-    let logoDataUri: string | undefined
-    const logoPath = settingsMap['workshop.logo']
-    if (logoPath) {
-      try {
-        const fullPath = resolveUploadPath(logoPath)
-        const logoBuffer = await readFile(fullPath)
-        const ext = logoPath.split('.').pop()?.toLowerCase() || 'png'
-        const mimeMap: Record<string, string> = {
-          png: 'image/png',
-          jpg: 'image/jpeg',
-          jpeg: 'image/jpeg',
-          webp: 'image/webp',
-          svg: 'image/svg+xml',
-        }
-        const mime = mimeMap[ext] || 'image/png'
-        logoDataUri = `data:${mime};base64,${logoBuffer.toString('base64')}`
-      } catch {
-        // Skip
-      }
-    }
-
-    const features = await getFeatures(orgId)
-    let torqvoiceLogoDataUri: string | undefined
-    if (!features.brandingRemoved) {
-      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
-    }
-
-    const template = {
-      primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
-      fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
-      showLogo: settingsMap['invoice.showLogo'] !== 'false',
-      showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
-      headerStyle: settingsMap['invoice.headerStyle'] || 'standard',
-    }
-
-    const appUrl = getAppBaseUrl()
-    const portalSlug = org?.portalSlug
-    const portalEnabled = settingsMap['portal.enabled'] === 'true'
-    const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
-
-    // Photos are an enhancement; the certificate is the document. See the
-    // protected route for why this is not allowed to fail the download.
-    let photos: Awaited<ReturnType<typeof loadInspectionPhotos>>['photos'] = {}
-    let photosOmitted = 0
-    try {
-      ;({ photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items))
-    } catch (error) {
-      console.error(
-        '[Public Inspection PDF] Photo embedding failed, rendering without photos:',
-        error
-      )
-    }
-
-    const element = React.createElement(InspectionPDF, {
-      data: inspection,
-      workshop: {
-        name: org?.name || '',
-        address: settingsMap['workshop.address'] || '',
-        phone: settingsMap['workshop.phone'] || '',
-        email: settingsMap['workshop.email'] || '',
+    return new NextResponse(certificate.body, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${certificate.fileName}"`,
       },
-      logoDataUri,
-      torqvoiceLogoDataUri,
-      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
-      timezone: settingsMap['workshop.timezone'] || undefined,
-      template,
-      portalUrl,
-      labels,
-      photos,
-      photosOmitted,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any
-    const buffer = await renderToBuffer(element)
-
-    const vehicleName = `${inspection.vehicle.year}-${inspection.vehicle.make}-${inspection.vehicle.model}`
-    const fileName = `Inspection-${vehicleName}.pdf`
-
-    return new NextResponse(
-      buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer,
-      {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${fileName}"`,
-        },
-      }
-    )
+    })
   } catch (error) {
     console.error('[Public Inspection PDF] Error:', error)
     return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })

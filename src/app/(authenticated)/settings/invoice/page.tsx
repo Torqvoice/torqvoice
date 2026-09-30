@@ -11,6 +11,7 @@ import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFiel
 import { redirect } from 'next/navigation'
 import { InvoiceSettings } from './invoice-settings'
 import { countUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
+import { countIssuedInvoices } from '@/features/invoices/Actions/invoiceDesignActions'
 
 export default async function InvoiceSettingsPage() {
   const data = await getLayoutData()
@@ -30,8 +31,12 @@ export default async function InvoiceSettingsPage() {
   const settings = result.success && result.data ? result.data : {}
   const customFields =
     customFieldsResult.success && customFieldsResult.data ? customFieldsResult.data : []
-  const unfrozenResult = await countUnfrozenInvoices()
+  const [unfrozenResult, issuedResult] = await Promise.all([
+    countUnfrozenInvoices(),
+    countIssuedInvoices(),
+  ])
   const unfrozenInvoices = unfrozenResult.success ? (unfrozenResult.data ?? 0) : 0
+  const issuedInvoices = issuedResult.success ? (issuedResult.data ?? 0) : 0
 
   // Check if Telegram is enabled (plan feature + the switch on its integration)
   let telegramEnabled = false
@@ -59,6 +64,7 @@ export default async function InvoiceSettingsPage() {
       settings={settings}
       workshop={workshop}
       unfrozenInvoices={unfrozenInvoices}
+      issuedInvoices={issuedInvoices}
       initialInvoiceLayout={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       initialQuoteLayout={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
       customFields={customFields}

@@ -18,11 +18,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
+import {
+  buildLayoutFromPreset,
+  layoutPresets,
+  presetsFor,
+} from '@/features/settings/Schema/layoutPresets'
+import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
 import {
   COLUMN_ELIGIBLE_SECTIONS,
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
+  getDefaultLayout,
   materializeHiddenSection,
   mergeWithDefaults,
   type InvoiceDocumentStyle,
@@ -31,9 +37,12 @@ import {
   type InvoiceSectionStyle,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import {
+  saveCertificateLayoutConfig,
   saveInvoiceLayoutConfig,
   saveQuoteLayoutConfig,
+  saveWorkOrderLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
+import { workOrderLabels } from '../Lib/workOrderLabels'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
@@ -45,6 +54,7 @@ import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -68,8 +78,12 @@ export function InvoiceDesigner({
   initialView,
   invoiceLayout,
   quoteLayout,
+  certificateLayout,
+  workOrderLayout,
   invoiceTemplate,
   quoteTemplate,
+  certificateTemplate,
+  workOrderTemplate,
   initialSavedDesigns = [],
   initialPresetId,
   initialDesignId,
@@ -83,8 +97,14 @@ export function InvoiceDesigner({
   initialView: 'gallery' | 'designer'
   invoiceLayout?: InvoiceLayoutConfig
   quoteLayout?: InvoiceLayoutConfig
+  certificateLayout?: InvoiceLayoutConfig
+  workOrderLayout?: InvoiceLayoutConfig
   invoiceTemplate: DesignerTemplate
   quoteTemplate: DesignerTemplate
+  /** The certificate's look; it falls back to the invoice's when never set. */
+  certificateTemplate?: DesignerTemplate
+  /** The work order's look; it falls back to the invoice's when never set. */
+  workOrderTemplate?: DesignerTemplate
   initialSavedDesigns?: SavedDesign[]
   /** A preset to arrive with already applied, from settings' starting points. */
   initialPresetId?: string
@@ -100,6 +120,7 @@ export function InvoiceDesigner({
 }) {
   const router = useRouter()
   const t = useTranslations('settings.designer')
+  const typeKeyEnabled = useTypeKeyEnabled()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
   const messages = useMessages() as {
@@ -113,24 +134,33 @@ export function InvoiceDesigner({
     : undefined
   const initialPreset =
     !initialDesign && initialPresetId
-      ? layoutPresets.find((p) => p.id === initialPresetId)
+      ? presetsFor(initialDocumentType).find((p) => p.id === initialPresetId)
       : undefined
   const arrivedWith = initialDesign ?? initialPreset
   const [view, setView] = useState<'gallery' | 'designer'>(arrivedWith ? 'designer' : initialView)
   const [docType, setDocType] = useState<DocumentType>(initialDocumentType)
   // Each document places its own entity's fields: quotes carry quote fields.
-  const customFields = docType === 'quote' ? quoteCustomFields : serviceCustomFields
+  // A certificate has no workshop-defined fields of its own.
+  const customFields =
+    docType === 'quote' ? quoteCustomFields : docType === 'certificate' ? [] : serviceCustomFields
   const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>(() => {
     const base = {
       invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
       quote: quoteLayout ?? getDefaultInvoiceLayout(),
+      certificate: certificateLayout ?? getDefaultLayout('certificate'),
+      work_order: workOrderLayout ?? getDefaultLayout('work_order'),
     }
     if (initialDesign) base[initialDocumentType] = mergeWithDefaults(initialDesign.layout)
     else if (initialPreset) base[initialDocumentType] = buildLayoutFromPreset(initialPreset)
     return base
   })
   const [templates, setTemplates] = useState<Record<DocumentType, DesignerTemplate>>(() => {
-    const base = { invoice: invoiceTemplate, quote: quoteTemplate }
+    const base = {
+      invoice: invoiceTemplate,
+      quote: quoteTemplate,
+      certificate: certificateTemplate ?? invoiceTemplate,
+      work_order: workOrderTemplate ?? invoiceTemplate,
+    }
     if (initialDesign) {
       base[initialDocumentType] = { ...initialDesign.template }
     } else if (initialPreset) {
@@ -150,6 +180,8 @@ export function InvoiceDesigner({
   const [dirty, setDirty] = useState<Record<DocumentType, boolean>>({
     invoice: !!arrivedWith && initialDocumentType === 'invoice',
     quote: !!arrivedWith && initialDocumentType === 'quote',
+    certificate: !!arrivedWith && initialDocumentType === 'certificate',
+    work_order: !!arrivedWith && initialDocumentType === 'work_order',
   })
   // The preset or design in the URL is a one-shot instruction, consumed
   // above. Left in the address bar it would re-apply itself on every refresh,
@@ -169,7 +201,7 @@ export function InvoiceDesigner({
   // saved layout, which reads as the design changing by itself. The browser
   // asks first, so losing the work is a choice rather than a surprise.
   useEffect(() => {
-    if (!dirty.invoice && !dirty.quote) return
+    if (!dirty.invoice && !dirty.quote && !dirty.certificate && !dirty.work_order) return
     const warn = (event: BeforeUnloadEvent) => {
       event.preventDefault()
       // Chrome still wants the legacy channel to show the dialog.
@@ -184,12 +216,22 @@ export function InvoiceDesigner({
     const base = {
       invoice: initialActiveDesigns?.invoice ?? '',
       quote: initialActiveDesigns?.quote ?? '',
+      certificate: initialActiveDesigns?.certificate ?? '',
+      work_order: initialActiveDesigns?.work_order ?? '',
     }
     if (initialDesign) base[initialDocumentType] = `design:${initialDesign.id}`
     else if (initialPreset) base[initialDocumentType] = `preset:${initialPreset.id}`
     return base
   })
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(initialSavedDesigns)
+  // An invoice design is a starting point for a quote and the other way
+  // round; a certificate's and a work order's sections are their own, so
+  // their designs and the others' never appear on each other's canvas.
+  const galleryDesigns = savedDesigns.filter((design) =>
+    docType === 'certificate' || docType === 'work_order'
+      ? design.documentType === docType
+      : design.documentType !== 'certificate' && design.documentType !== 'work_order'
+  )
   /** Open state and draft name for the save-design dialog. */
   const [namingDesign, setNamingDesign] = useState(false)
   const [designName, setDesignName] = useState(initialDesign?.name ?? '')
@@ -208,8 +250,14 @@ export function InvoiceDesigner({
     if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
     if (!companyWorkshop.paymentTerms?.trim()) ids.push('payment_terms')
     if (!telegramBotLink) ids.push('telegram_qr')
+    if (!companyWorkshop.signatureUrl) ids.push('signature')
     return new Set(ids)
-  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms, telegramBotLink])
+  }, [
+    companyWorkshop.slogan,
+    companyWorkshop.paymentTerms,
+    companyWorkshop.signatureUrl,
+    telegramBotLink,
+  ])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
@@ -243,6 +291,10 @@ export function InvoiceDesigner({
    */
   const printLabels = useMemo<PrintLabels>(() => {
     const pdf = messages.pdf ?? {}
+    if (docType === 'certificate') return certificateLabels(pdf)
+    if (docType === 'work_order') {
+      return withOrgNumberLabel(workOrderLabels(pdf), workshop.orgNumberLabel)
+    }
     return withOrgNumberLabel(
       {
         ...(pdf.invoice ?? {}),
@@ -301,13 +353,23 @@ export function InvoiceDesigner({
   /** What a workshop's own sheet says, with the sample standing in for a job. */
   const data: DocumentData = useMemo(
     () => ({
-      ...buildSampleData(workshop, customFields, t, printLabels, docType),
+      ...buildSampleData({ ...workshop, typeKeyEnabled }, customFields, t, printLabels, docType),
       telegramQr:
         telegramOn && telegramQrDataUri
           ? { dataUri: telegramQrDataUri, label: L('telegramConnect', 'Chat with us on Telegram') }
           : undefined,
     }),
-    [workshop, customFields, t, printLabels, docType, telegramOn, telegramQrDataUri, L]
+    [
+      workshop,
+      typeKeyEnabled,
+      customFields,
+      t,
+      printLabels,
+      docType,
+      telegramOn,
+      telegramQrDataUri,
+      L,
+    ]
   )
 
   const spec = useMemo(
@@ -397,6 +459,8 @@ export function InvoiceDesigner({
       setActiveDesigns((prev) => ({
         invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
         quote: prev.quote === `design:${design.id}` ? '' : prev.quote,
+        certificate: prev.certificate === `design:${design.id}` ? '' : prev.certificate,
+        work_order: prev.work_order === `design:${design.id}` ? '' : prev.work_order,
       }))
       if (designName.trim().toLowerCase() === design.name.trim().toLowerCase()) {
         setDesignName('')
@@ -624,7 +688,14 @@ export function InvoiceDesigner({
 
     setSaving(true)
     try {
-      const prefix = docType === 'invoice' ? 'invoice' : 'quote'
+      const prefix = docType
+
+      // The stamp that graduates this organization from the classic
+      // pre-designer rendering to whatever this designer shows. The row needs
+      // it as much as the settings copy below: a row saved without it printed
+      // the classic header and title whenever an invoice picked the design by
+      // name, while the same design as the workshop default printed correctly.
+      const stamped = { ...layout, version: DESIGNER_LAYOUT_VERSION }
 
       // The row is the design: saved on the server under its name, which is
       // also what makes the same name update in place rather than fill the
@@ -633,7 +704,7 @@ export function InvoiceDesigner({
         id: existing?.id,
         documentType: docType,
         name,
-        layout: JSON.parse(JSON.stringify(layout)) as InvoiceLayoutConfig,
+        layout: JSON.parse(JSON.stringify(stamped)) as InvoiceLayoutConfig,
         template: { ...template },
       })
       if (!savedResult.success || !savedResult.data) {
@@ -647,11 +718,14 @@ export function InvoiceDesigner({
         setActiveDesigns((prev) => ({ ...prev, [docType]: active }))
       }
 
-      // The stamp that graduates this organization from the classic
-      // pre-designer rendering to whatever this designer shows.
-      const stamped = { ...layout, version: DESIGNER_LAYOUT_VERSION }
       await Promise.all([
-        docType === 'invoice' ? saveInvoiceLayoutConfig(stamped) : saveQuoteLayoutConfig(stamped),
+        docType === 'invoice'
+          ? saveInvoiceLayoutConfig(stamped)
+          : docType === 'quote'
+            ? saveQuoteLayoutConfig(stamped)
+            : docType === 'certificate'
+              ? saveCertificateLayoutConfig(stamped)
+              : saveWorkOrderLayoutConfig(stamped),
         setSettings({
           [`${prefix}.primaryColor`]: template.primaryColor,
           [`${prefix}.backgroundColor`]: template.backgroundColor,
@@ -715,11 +789,11 @@ export function InvoiceDesigner({
           <h1 className="mb-1.5 mt-2 text-[30px] tracking-tight">{t('galleryTitle')}</h1>
           <p className="mb-8 text-[15px] text-[#5b6068]">{t('galleryHint')}</p>
 
-          {savedDesigns.length > 0 && (
+          {galleryDesigns.length > 0 && (
             <>
               <h2 className="mb-3 text-[15px] font-semibold">{t('yourDesigns')}</h2>
               <div className="mb-8 grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
-                {savedDesigns.map((design) => {
+                {galleryDesigns.map((design) => {
                   const active = activeDesigns[docType] === `design:${design.id}`
                   return (
                     <div
@@ -761,7 +835,7 @@ export function InvoiceDesigner({
           )}
 
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
-            {layoutPresets.map((preset) => {
+            {presetsFor(docType).map((preset) => {
               const active = activeDesigns[docType] === `preset:${preset.id}`
               return (
                 <button
@@ -808,7 +882,7 @@ export function InvoiceDesigner({
         </button>
 
         <div className="flex gap-0.5 rounded-lg bg-[#f0f1f4] p-[3px]">
-          {(['invoice', 'quote'] as DocumentType[]).map((type) => (
+          {(['invoice', 'quote', 'work_order', 'certificate'] as DocumentType[]).map((type) => (
             <button
               key={type}
               type="button"
@@ -925,7 +999,7 @@ export function InvoiceDesigner({
             // the generic default just moved things nobody had touched.
             const active = activeDesigns[docType] ?? ''
             const basisPreset = active.startsWith('preset:')
-              ? layoutPresets.find((p) => p.id === active.slice('preset:'.length))
+              ? presetsFor(docType).find((p) => p.id === active.slice('preset:'.length))
               : undefined
             const basisDesign = active.startsWith('design:')
               ? savedDesigns.find((d) => d.id === active.slice('design:'.length))
@@ -1074,6 +1148,7 @@ export function InvoiceDesigner({
           orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
           onOrgNumberLabel={setOrgNumberLabel}
           telegramBotLink={telegramBotLink}
+          signatureSet={Boolean(companyWorkshop.signatureUrl)}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

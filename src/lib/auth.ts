@@ -6,6 +6,8 @@ import { bearer } from 'better-auth/plugins/bearer'
 import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
+import { noteDevice, sendNewDeviceMail } from '@/lib/known-devices'
+import { sendAccountMail } from '@/lib/account-mail'
 import { isDemoMode } from './demo'
 import { googleSignInConfig } from './auth-providers'
 
@@ -97,31 +99,13 @@ export const auth = betterAuth({
       })
 
       try {
-        const { sendMail, getFromAddress } = await import('@/lib/email')
-        const from = await getFromAddress()
-
-        await sendMail({
-          from,
+        await sendAccountMail({
           to: user.email,
           subject: 'Verify your Torqvoice email',
-          html: `
-            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-              <h2>Email Verification</h2>
-              <p>Hi${user.name ? ` ${user.name}` : ''},</p>
-              <p>Please verify your email address by clicking the button below:</p>
-              <div style="margin: 24px 0;">
-                <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                  Verify Email
-                </a>
-              </div>
-              <p style="color: #6b7280; font-size: 14px;">If you didn't create an account, you can safely ignore this email.</p>
-              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-              <p style="color: #6b7280; font-size: 12px;">
-                If the button doesn't work, copy and paste this URL into your browser:<br/>
-                <a href="${url}" style="color: #6b7280;">${url}</a>
-              </p>
-            </div>
-          `,
+          name: user.name,
+          paragraphs: ['Please confirm this is your email address by opening the link below.'],
+          link: { text: 'Verify your email', url },
+          notes: ["If you didn't create a Torqvoice account, you can ignore this mail."],
         })
       } catch (error) {
         console.error('[emailVerification] Failed to send verification email:', error)
@@ -151,58 +135,58 @@ export const auth = betterAuth({
       enabled: true,
       // A Google sign-in whose email matches a password account attaches to
       // that account rather than creating a second person with the same
-      // email, but only when Google says it has verified the address. Google
-      // is deliberately not a trusted provider: better-auth links a trusted
+      // email, but only when both sides have proved the address. Google is
+      // deliberately not a trusted provider: better-auth links a trusted
       // provider's account without looking at email_verified at all, and
       // anyone can create a Google account with somebody else's address on
       // it. Trusted, that signed a stranger into the workshop that owns the
-      // address. e2e/specs/cloud/google-sign-in.spec.ts holds both halves.
+      // address.
       //
-      // The local account may predate email verification and never have
-      // clicked the link. Google's verification of the same address is the
-      // stronger proof, the same proof a password reset mail would rest on,
-      // so it must not block the link. Better Auth marks the local email
-      // verified as part of linking.
-      requireLocalEmailVerified: false,
+      // The local account has to be verified too. Google's word covers the
+      // person now signing in; it says nothing about who made the password
+      // account. Left unverified, that account can be anyone's: sign up with
+      // a stranger's address and a password of your own, and when they later
+      // press "Continue with Google" they are signed into your account and
+      // build their workshop behind a password you hold. So an unverified
+      // password account is not joined; the person is sent back to sign-in
+      // with a message (see sign-in-form.tsx) and gets in with the password,
+      // where verifying the address makes the Google route open up.
+      // e2e/specs/cloud/google-sign-in.spec.ts holds all three halves.
+      requireLocalEmailVerified: true,
     },
   },
   emailAndPassword: {
     enabled: true,
+    // A reset is how a person recovers from a stolen password; leaving the
+    // thief's sessions alive would make it theatre. Change-password passes
+    // revokeOtherSessions from the form for the same reason.
+    revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) => {
-      const { sendMail, getFromAddress } = await import('@/lib/email')
-      const from = await getFromAddress()
-
-      await sendMail({
-        from,
+      await sendAccountMail({
         to: user.email,
         subject: 'Reset your Torqvoice password',
-        html: `
-          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-            <h2>Password Reset</h2>
-            <p>Hi${user.name ? ` ${user.name}` : ''},</p>
-            <p>We received a request to reset your password. Click the button below to set a new password:</p>
-            <div style="margin: 24px 0;">
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                Reset Password
-              </a>
-            </div>
-            <p style="color: #6b7280; font-size: 14px;">If you didn't request this, you can safely ignore this email.</p>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-            <p style="color: #6b7280; font-size: 12px;">
-              This link will expire shortly. If it doesn't work, copy and paste this URL into your browser:<br/>
-              <a href="${url}" style="color: #6b7280;">${url}</a>
-            </p>
-          </div>
-        `,
+        name: user.name,
+        paragraphs: [
+          'We received a request to reset the password on your Torqvoice account. Open the link below to choose a new one.',
+        ],
+        link: { text: 'Reset your password', url },
+        notes: [
+          "If you didn't ask for this, you can ignore this mail and your password stays as it is.",
+          'The link expires shortly.',
+        ],
       })
     },
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
+    // No cookie cache. It saved one session lookup per request and in return
+    // let a revoked session keep working for up to five minutes: a phone
+    // signed out from the devices list stayed signed in, and a password
+    // change did not end the other browser until the cache ran out. The
+    // session table is read on every request now; membership already was.
     cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60, // 5 minutes
+      enabled: false,
     },
   },
   advanced: {
@@ -223,11 +207,46 @@ export const auth = betterAuth({
   databaseHooks: {
     session: {
       create: {
-        after: async (session) => {
+        after: async (session, ctx) => {
           await db.user.update({
             where: { id: session.userId },
             data: { lastLogin: new Date() },
           })
+
+          // Which device this is, and a mail when the account has not seen
+          // it before. Its first device is recorded without a word: that is
+          // the sign-up, or an account from before devices were tracked. The
+          // demo's one shared account is every visitor's browser and sends no
+          // mail, so it is not tracked at all.
+          const sighting = isDemoMode
+            ? null
+            : await noteDevice(
+                {
+                  id: session.id,
+                  userId: session.userId,
+                  userAgent: ((session as Record<string, unknown>).userAgent as string) ?? null,
+                  ipAddress: ((session as Record<string, unknown>).ipAddress as string) ?? null,
+                },
+                ctx
+              ).catch((error) => {
+                console.error('[auth] could not record the device:', error)
+                return null
+              })
+          if (sighting?.isNew && !sighting.isFirst) {
+            const account = await db.user.findUnique({
+              where: { id: session.userId },
+              select: { email: true, name: true },
+            })
+            if (account?.email) {
+              sendNewDeviceMail({
+                to: account.email,
+                name: account.name,
+                label: sighting.label,
+                ip: ((session as Record<string, unknown>).ipAddress as string) ?? null,
+                at: new Date(),
+              }).catch((error) => console.error('[auth] new-device mail failed:', error))
+            }
+          }
 
           // Audit: log successful login
           const membership = await db.organizationMember.findFirst({

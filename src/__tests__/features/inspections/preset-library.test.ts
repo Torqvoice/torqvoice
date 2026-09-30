@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { TEMPLATE_PRESETS, countPresetItems } from '@/features/inspections/Lib/templatePresets'
+import {
+  TEMPLATE_PRESETS as RAW_PRESETS,
+  countPresetItems,
+  resolvePreset,
+} from '@/features/inspections/Lib/templatePresets'
+
+const TEMPLATE_PRESETS = RAW_PRESETS.map((p) => resolvePreset(p))
 
 /**
  * Mirrors syncPresetLibrary's decision, which is the part that would be

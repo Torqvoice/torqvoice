@@ -11,9 +11,19 @@ model Vehicle {
   transmission           String?              @default("automatic")
   engineSize             String?
   engineCode             String?
+  /// German type approval key from the registration certificate: HSN is the
+  /// four-digit manufacturer code in field 2.1, TSN the three-character type
+  /// code at the start of field 2.2. Parts catalogues and insurers look a car
+  /// up by the pair, since Germany has no public plate registry.
+  hsn                    String?
+  tsn                    String?
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?
+  /// sedan | hatchback | estate | suv | van | pickup | motorcycle | boat: which
+  /// line drawing the condition map is marked on. Null until somebody picks
+  /// one, and the map then guesses from the workshop's trade.
+  bodyType               String?
   isArchived             Boolean              @default(false)
   archiveReason          String?
   /// Set when the customer said in the portal that the vehicle is no longer theirs.
@@ -21,6 +31,7 @@ model Vehicle {
   maintenanceDismissed   Boolean              @default(false)
   maintenanceDismissedAt DateTime?
   aiMessages             AiGeneratedMessage[]
+  aiChats                AiChat[]
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
 
@@ -47,6 +58,7 @@ model Vehicle {
 
   inspectionStatus    VehicleInspectionStatus?
   inspectionReminders InspectionReminderSend[]
+  conditionMarks      ConditionMark[]
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)

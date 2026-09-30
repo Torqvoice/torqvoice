@@ -16,7 +16,7 @@
   "actions": {
     "edit": "Rediger",
     "delete": "Slett",
-    "openMenu": "Open menu"
+    "openMenu": "Åpne meny"
   },
   "deletePreset": {
     "title": "Slett arbeidsmal",
@@ -43,8 +43,8 @@
     "cancel": "Avbryt",
     "create": "Opprett",
     "saveChanges": "Lagre endringer",
-    "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
+    "itemQty": "Ant.",
+    "itemQtyOrHours": "Enhet / Timer",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "partsTitle": "Deler",
@@ -63,7 +63,7 @@
     "noPackages": "Ingen arbeidsmaler funnet.",
     "items": "{count} elementer",
     "totalHours": "{hours}t totalt",
-    "totalUnits": "{units} unit(s)",
+    "totalUnits": "{units} enhet(er)",
     "totalParts": "{count} deler"
   },
   "errors": {

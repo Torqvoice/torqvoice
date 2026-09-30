@@ -93,6 +93,78 @@ export async function setInvoiceNumbering(
   await expect(page.getByText('Invoice settings saved', { exact: true })).toBeVisible()
 }
 
+export interface QuoteLockSetup {
+  enabled: boolean
+  /** When a quote stops being editable: once it goes to the customer, or once they accept. */
+  trigger: 'sent' | 'accepted'
+}
+
+/**
+ * Settings → Invoice, the quote half of "Locking finished documents", saved.
+ * Off by default, so a spec that turns it on turns it off again.
+ */
+export async function setQuoteLock(
+  page: Page,
+  { enabled, trigger }: QuoteLockSetup
+): Promise<void> {
+  await page.goto('/settings/invoice')
+  await settle(page)
+
+  // The trigger select is disabled while the switch is off, so the switch goes
+  // on first and is set to what was asked for after the trigger is chosen.
+  const toggle = page.locator('#quoteLockEnabled')
+  await setSwitch(toggle, true)
+
+  const wanted = trigger === 'sent' ? 'Once the quote is sent' : 'Once the quote is accepted'
+  const select = page.locator('#quoteLockTrigger')
+  await expect(async () => {
+    await select.click()
+    await expect(page.getByRole('option', { name: wanted })).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await page.getByRole('option', { name: wanted }).click()
+  await expect(select).toContainText(wanted)
+
+  await setSwitch(toggle, enabled)
+  await page.getByRole('button', { name: 'Save Invoice Settings', exact: true }).click()
+  await expect(page.getByText('Invoice settings saved', { exact: true })).toBeVisible()
+}
+
+export interface InvoiceLockSetup {
+  enabled: boolean
+  trigger: 'sent' | 'paid'
+}
+
+/**
+ * Settings → Invoice, the invoice half of "Locking finished documents", saved.
+ * Off by default, so a spec that turns it on turns it off again. Invoices sent
+ * before it was turned on stay editable, so a spec sends its job afterwards.
+ */
+export async function setInvoiceLock(
+  page: Page,
+  { enabled, trigger }: InvoiceLockSetup
+): Promise<void> {
+  await page.goto('/settings/invoice')
+  await settle(page)
+
+  // As with the quote lock: the trigger is disabled while the switch is off.
+  const toggle = page.locator('#invoiceLockEnabled')
+  await setSwitch(toggle, true)
+
+  const wanted =
+    trigger === 'sent' ? 'Once the invoice is sent' : 'Once the invoice is paid in full'
+  const select = page.locator('#invoiceLockTrigger')
+  await expect(async () => {
+    await select.click()
+    await expect(page.getByRole('option', { name: wanted })).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await page.getByRole('option', { name: wanted }).click()
+  await expect(select).toContainText(wanted)
+
+  await setSwitch(toggle, enabled)
+  await page.getByRole('button', { name: 'Save Invoice Settings', exact: true }).click()
+  await expect(page.getByText('Invoice settings saved', { exact: true })).toBeVisible()
+}
+
 /** What the settings page currently offers as the next invoice number. */
 export async function invoiceStartNumber(page: Page): Promise<string> {
   await page.goto('/settings/invoice')
@@ -176,4 +248,43 @@ export async function bankAccount(page: Page): Promise<string> {
   const field = page.locator('#bankAccount')
   await expect(field).toBeVisible()
   return field.inputValue()
+}
+
+export interface WarrantySetup {
+  /** What a new quote or work order says before anybody touches it. */
+  newDocumentsSay: 'Nothing' | 'Warranty included' | 'No warranty'
+  months?: number
+  distance?: number
+  terms?: string
+  notIncludedText?: string
+  /** Whether the defaults reach new quotes, and new work orders. On unless said otherwise. */
+  onQuotes?: boolean
+  onWorkOrders?: boolean
+}
+
+/**
+ * Settings → Warranty, saved. Nothing is set on a seeded workshop, so a spec
+ * that writes these removes them afterwards (`forgetWorkshopSetting`): every
+ * other quote and invoice in the suite is printed without a warranty panel.
+ */
+export async function setWarrantyDefaults(page: Page, warranty: WarrantySetup): Promise<void> {
+  await page.goto('/settings/warranty')
+  await settle(page)
+
+  const choice = page.getByRole('radio', { name: warranty.newDocumentsSay, exact: true })
+  await expect(async () => {
+    await choice.click()
+    await expect(choice).toHaveAttribute('aria-checked', 'true', { timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+
+  const text = (value: number | string | undefined) => (value === undefined ? '' : String(value))
+  await fillSettled(page.locator('#warrantyDefaultMonths'), text(warranty.months))
+  await fillSettled(page.locator('#warrantyDefaultMileage'), text(warranty.distance))
+  await fillSettled(page.locator('#warrantyDefaultTerms'), text(warranty.terms))
+  await fillSettled(page.locator('#warrantyNotIncludedText'), text(warranty.notIncludedText))
+  await setSwitch(page.locator('#warrantyApplyToQuotes'), warranty.onQuotes ?? true)
+  await setSwitch(page.locator('#warrantyApplyToWorkOrders'), warranty.onWorkOrders ?? true)
+
+  await page.getByRole('button', { name: 'Save warranty settings', exact: true }).click()
+  await expect(page.getByText('Warranty settings saved', { exact: true })).toBeVisible()
 }

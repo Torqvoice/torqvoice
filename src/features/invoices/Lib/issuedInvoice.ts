@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
 
 /**
  * What an issued invoice carries with it, beyond its own rows.
@@ -70,12 +72,17 @@ export const issuedInvoiceDataSchema = z
         year: z.number(),
         vin: z.string().nullable().optional(),
         licensePlate: z.string().nullable().optional(),
+        // Absent on invoices issued before the type key was recorded.
+        hsn: z.string().nullable().optional(),
+        tsn: z.string().nullable().optional(),
         mileage: z.number().optional(),
       })
       .passthrough()
       .nullable()
       .optional(),
     technicianName: z.string().nullable().optional(),
+    /** Who signed the sheet; the signature itself is issuedSignatureSnapshot. */
+    signerName: z.string().nullable().optional(),
     findings: z
       .array(
         z
@@ -99,8 +106,136 @@ export const issuedInvoiceDataSchema = z
           .passthrough()
       )
       .optional(),
+    /**
+     * The car's condition this visit, as it was when issued. Absent on
+     * invoices issued before the invoice printed it, which print none.
+     */
+    conditionMap: z
+      .object({
+        bodyType: z.string().nullable().optional(),
+        /** The job's own answer at issue; absent before the switch existed. */
+        onInvoice: z.boolean().nullable().optional(),
+        /** The workshop's kinds of mark at issue; absent before they could be changed. */
+        types: z
+          .array(
+            z
+              .object({
+                key: z.string(),
+                name: z.string(),
+                shape: z.string(),
+                color: z.string(),
+                sortOrder: z.number().default(0),
+                hidden: z.boolean().default(false),
+              })
+              .passthrough()
+          )
+          .nullable()
+          .optional(),
+        marks: z.array(
+          z
+            .object({
+              id: z.string(),
+              bodyType: z.string(),
+              view: z.string(),
+              panel: z.string(),
+              x: z.number(),
+              y: z.number(),
+              kind: z.string(),
+              severity: z.string(),
+              note: z.string().nullable().optional(),
+              recordedAt: z.string(),
+            })
+            .passthrough()
+        ),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
   })
   .passthrough()
+
+/** The car's condition this visit, as an invoice prints it, and whether this job asked for it. */
+export type InvoiceConditionMap = {
+  marks: ConditionMarkData[]
+  bodyType: string | null
+  /** The job's own answer, or null to follow the design. */
+  onInvoice: boolean | null
+  /**
+   * The workshop's changes to the kinds of mark, as they were at issue:
+   * a kind renamed later leaves a sent invoice as it went out. Null on an
+   * invoice issued before kinds could be changed, which prints the app's own.
+   */
+  types?: MarkTypeRow[] | null
+}
+
+type FrozenConditionMap = NonNullable<z.infer<typeof issuedInvoiceDataSchema>['conditionMap']>
+
+/**
+ * This visit's marks as the snapshot keeps them: where each was and what it
+ * said, so clearing a dent as repaired later does not change a sent invoice.
+ */
+export function freezeConditionMap(
+  map: InvoiceConditionMap | null | undefined
+): FrozenConditionMap | null {
+  if (!map || map.marks.length === 0) return null
+  return {
+    bodyType: map.bodyType,
+    onInvoice: map.onInvoice,
+    types: (map.types ?? []).map(({ key, name, shape, color, sortOrder, hidden }) => ({
+      key,
+      name,
+      shape,
+      color,
+      sortOrder,
+      hidden,
+    })),
+    marks: map.marks.map((m) => ({
+      id: m.id,
+      bodyType: m.bodyType,
+      view: m.view,
+      panel: m.panel,
+      x: m.x,
+      y: m.y,
+      kind: m.kind,
+      severity: m.severity,
+      note: m.note,
+      recordedAt: new Date(m.recordedAt).toISOString(),
+    })),
+  }
+}
+
+/**
+ * The frozen marks in the shape the print reads. An invoice issued before it
+ * printed the map has none, and never borrows today's marks.
+ */
+export function thawConditionMap(
+  frozen: FrozenConditionMap | null | undefined
+): InvoiceConditionMap | null {
+  if (!frozen || frozen.marks.length === 0) return null
+  return {
+    bodyType: frozen.bodyType ?? null,
+    onInvoice: frozen.onInvoice ?? null,
+    types: frozen.types ?? null,
+    marks: frozen.marks.map((m) => ({
+      id: m.id,
+      vehicleId: '',
+      inspectionId: null,
+      inspectionItemId: null,
+      serviceRecordId: null,
+      bodyType: m.bodyType,
+      view: m.view,
+      panel: m.panel,
+      x: m.x,
+      y: m.y,
+      kind: m.kind,
+      severity: m.severity,
+      note: m.note ?? null,
+      imageUrls: [],
+      recordedAt: m.recordedAt,
+      resolvedAt: null,
+    })),
+  }
+}
 
 type ParsedIssuedInvoiceData = z.infer<typeof issuedInvoiceDataSchema>
 

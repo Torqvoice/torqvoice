@@ -21,7 +21,8 @@
       "title": "İş kaydedilmeden önce bir başlık gerekiyor.",
       "negative": "Miktarlar, saatler, fiyatlar ve maliyetler negatif olamaz.",
       "partName": "Fiyatı olan her parçanın bir adı olmalı.",
-      "laborDescription": "Saati veya ücreti olan her işçilik satırının bir açıklaması olmalı."
+      "laborDescription": "Saati veya ücreti olan her işçilik satırının bir açıklaması olmalı.",
+      "concernCondition": "Nedeni, onarımı veya doğrulaması olan bir maddenin belirtisi doldurulmalı."
     }
   },
   "header": {
@@ -41,7 +42,27 @@
     "unpaid": "Ödenmedi",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",
     "saved": "Kaydedildi",
-    "joinCall": "Görüntülü görüşmeye katıl"
+    "joinCall": "Görüntülü görüşmeye katıl",
+    "moreActions": "Diğer işlemler",
+    "designMenu": "Fatura tasarımı",
+    "designMenuLoading": "Bu faturanın hangi tasarımla yazdırıldığı kontrol ediliyor...",
+    "designMenuExplain": "{date} tarihinde müşteriye gitti, bu yüzden hâlâ gönderildiği tasarımla yazdırılıyor. Başka birini seçmek yalnızca görünümü değiştirir. Faturanın söyledikleri gönderildiği gibi kalır, eski görünüm ise saklanmaz.",
+    "designSentWith": "Gönderildiği tasarım",
+    "designFollow": "Geçerli varsayılanı izle",
+    "designFollowNamed": "Geçerli varsayılanı izle ({name})",
+    "designDefaultName": "geçerli varsayılan tasarım",
+    "designPickConfirmTitle": "Bu fatura {name} tasarımına geçsin mi?",
+    "designPickConfirmBody": "Yalnızca görünüm değişir. Servis bilgileri, müşteri, ödeme koşulları ve tutarlar gönderildiği gibi kalır. Şu anki tasarım saklanmaz, bu yüzden bu işlem geri alınamaz.",
+    "designPickConfirm": "Tasarımı değiştir",
+    "designPickDone": "Fatura artık {name} tasarımıyla yazdırılıyor",
+    "designPickFailed": "Tasarım değiştirilemedi",
+    "designRefresh": "Güncel bilgilere güncelle",
+    "designRefreshConfirmTitle": "Bu fatura güncel bilgilere güncellensin mi?",
+    "designRefreshConfirmBody": "Atölye bilgileri, müşteri, araç, ödeme koşulları ve tasarım bugünkü halleriyle yeniden okunur ve fatura bunlara kilitlenir. Satırlar ve toplamlar faturanın kendisine aittir ve değişmez. Daha önce indirilen veya e-postayla gönderilen kopyalar olduğu gibi kalır; paylaşım bağlantısı ve portal güncellenmiş faturayı gösterir. Bu işlem geri alınamaz.",
+    "designRefreshConfirm": "Faturayı güncelle",
+    "designRefreshDone": "Bu fatura artık güncel bilgilerle yazdırılıyor",
+    "designRefreshFailed": "Fatura güncellenemedi",
+    "printWorkOrder": "İş emrini yazdır"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
@@ -89,7 +110,6 @@
     "design": "Fatura tasarımı",
     "designDefault": "Atölye varsayılanı",
     "designFollowing": "Varsayılan ({name})",
-    "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim yalnızca bir sahip faturanın kilidini açıp yeniden gönderildikten sonra uygulanır.",
     "designSaved": "Fatura tasarımı güncellendi",
     "designFollowingRule": "Varsayılan ({name}, {rule})",
     "designRule": {
@@ -122,7 +142,7 @@
     "scanTitle": "Barkod tara",
     "partFound": "\"{name}\" envanterden eklendi",
     "partNotFound": "\"{barcode}\" barkodu için parça bulunamadı",
-    "deleteRow": "Delete row",
+    "deleteRow": "Satırı sil",
     "outOfStock": "Stokta yok",
     "onBackorder": "Ön siparişte ({count})",
     "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez."
@@ -137,20 +157,27 @@
     "total": "Toplam",
     "descriptionPlaceholder": "Açıklama *",
     "subtotal": "İşçilik Ara Toplamı: {amount}",
-    "addService": "Add Service",
+    "addService": "Hizmet Ekle",
     "addFinding": "Gözlem",
     "newObservation": "Yeni gözlem",
     "addExisting": "Mevcut göster ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Mik.",
+    "qtyOrHours": "Birim / Saat",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
-    "switchToServiceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
-    "deleteRow": "Delete row",
-    "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez."
+    "hourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
+    "serviceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
+    "deleteRow": "Satırı sil",
+    "descriptionMissingHint": "Açıklaması olmayan satırlar kaydedilmez.",
+    "shopFeeTag": "Ücret",
+    "shopFeeHintFlat": "Ayarlar'daki atölye ücreti, sabit tutar olarak. Bu iş için fiyatı değiştirin veya kaldırmak için satırı silin.",
+    "shopFeeHintPercentLabor": "Ayarlar'daki atölye ücreti: bu işteki işçiliğin % {percent} kadarı. Kaldırmak için satırı silin.",
+    "shopFeeHintPercentAll": "Ayarlar'daki atölye ücreti: bu işteki işçilik ve parçaların % {percent} kadarı. Kaldırmak için satırı silin."
+  },
+  "liveLabor": {
+    "title": "{count, plural, one {Bir teknisyen bu işe işçilik ekledi} other {Bir teknisyen bu işe # işçilik satırı ekledi}}",
+    "body": "Siz düzenlerken listeye eklenmez. Bir sonraki kaydetmede yine de kaydedilir.",
+    "show": "Göster"
   },
   "totals": {
     "title": "Toplamlar",
@@ -186,7 +213,9 @@
     "aiOverwriteReplace": "Değiştir",
     "aiOverwriteAppend": "Ekle",
     "aiOverwriteCancel": "İptal",
-    "aiDontShowAgain": "Bir daha gösterme"
+    "aiDontShowAgain": "Bir daha gösterme",
+    "internalTitle": "İç notlar",
+    "publicTitle": "Müşteri notları"
   },
   "invoice": {
     "title": "Fatura Özeti",
@@ -224,7 +253,7 @@
     "methodOptions": {
       "cash": "Nakit",
       "card": "Kart",
-      "transfer": "Transfer",
+      "transfer": "Havale",
       "other": "Diğer"
     },
     "recorded": "Ödeme kaydedildi",
@@ -236,7 +265,10 @@
     "failedDelete": "Ödeme silinemedi",
     "deleteTitle": "Ödemeyi Sil",
     "deleteDescription": "Bu, bu ödeme kaydını kaldıracaktır.",
-    "failedPdf": "PDF fatura oluşturulamadı"
+    "failedPdf": "PDF fatura oluşturulamadı",
+    "received": "Alınan ödemeler",
+    "noneYet": "Henüz ödeme yapılmadı.",
+    "balanceDue": "Kalan bakiye"
   },
   "attachments": {
     "deleteTitle": "Eki Sil",
@@ -247,8 +279,8 @@
     "videos": "Videolar ({count})",
     "diagnostics": "Tanı Raporları ({count})",
     "documents": "Belgeler ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "İndir",
+    "close": "Kapat"
   },
   "share": {
     "title": "Faturayı Paylaş",
@@ -265,7 +297,7 @@
     "failedEmail": "E-posta gönderilemedi",
     "smsSent": "SMS gönderildi",
     "failedSms": "SMS gönderilemedi",
-    "copyLink": "Copy link"
+    "copyLink": "Bağlantıyı kopyala"
   },
   "sidebar": {
     "vehicle": "Araç",
@@ -345,6 +377,7 @@
     "date": "Tarih",
     "startTime": "Başlangıç Saati",
     "endTime": "Bitiş Saati",
+    "durationPresets": "Süre",
     "technician": "Teknisyen",
     "selectTechnician": "Teknisyen seçin...",
     "searchOrCreate": "Teknisyen ara veya oluştur...",
@@ -357,11 +390,11 @@
     "assign": "Panoya ata",
     "assigned": "Çalışma panosuna atandı",
     "failedAssign": "Atama başarısız",
+    "assignNotAllowed": "Teknisyen atama izniniz yok. Bir sahipten veya yöneticiden rolünüze iş panosunda değişiklik yapma izni vermesini isteyin.",
     "endBeforeStart": "Bitiş saati başlangıç saatinden sonra olmalıdır",
     "failedUpdate": "Zamanlama güncellenemedi",
     "splitCreated": "İş birden fazla güne yayılıyor — sonraki gün için devam oluşturuldu",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Özel",
     "readMore": "Daha fazla",
     "setDefaults": "Varsayılanlar",
     "workBay": "Çalışma alanı",
@@ -383,7 +416,17 @@
     "pickNextAvailable": "Sıradaki boş saati seç",
     "findingSlot": "Saat aranıyor…",
     "slotPicked": "Sıradaki boş saate alındı",
-    "noSlotFound": "Önümüzdeki haftalarda boş saat bulunamadı"
+    "noSlotFound": "Önümüzdeki haftalarda boş saat bulunamadı",
+    "assignedTitle": "Atanan teknisyen",
+    "boardLink": "İş panosu",
+    "someoneElse": "Başka biri",
+    "loadOf": "{booked} / {capacity} sa",
+    "loadFree": "{hours} sa boş",
+    "loadFull": "Tamamen dolu",
+    "loadOn": "{date} tarihindeki dolu saatler",
+    "promisedAt": "Müşteriye söz verilen zaman",
+    "promisedPlaceholder": "Henüz söz verilmedi",
+    "promisedClear": "Temizle"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",
@@ -400,7 +443,6 @@
   "warranty": {
     "title": "Garanti",
     "months": "Süre (ay)",
-    "mileage": "Kilometre limiti",
     "notes": "Garanti koşulları",
     "notesPlaceholder": "ör. Tüm parça ve işçilik için 12 ay garanti...",
     "expiresAt": "Bitiş",
@@ -416,19 +458,81 @@
       "expired": "Süresi doldu",
       "none": "Yok"
     },
-    "defaults": {
-      "title": "Varsayılan garanti ayarları",
-      "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
-    }
+    "statementLabel": "Müşteriye garanti hakkında ne söylendiği",
+    "statement": {
+      "none": "Belirtilmedi",
+      "included": "Dahil",
+      "not_included": "Dahil değil"
+    },
+    "noneHint": "Bu belgede garantiyle ilgili hiçbir şey yazdırılmaz.",
+    "mileageWithUnit": "Mesafe limiti ({unit})",
+    "notIncludedNotes": "Müşteriye beyan",
+    "notIncludedPlaceholder": "örn. Müşterinin getirdiği parçalar için atölye garantisi verilmez.",
+    "printedHint": "Belgede garantinin altında yazdırılır.",
+    "notIncludedHint": "Boş bırakırsanız belge, yasal hakların saklı olduğunu belirtir.",
+    "summaryMonths": "{count} ay"
   },
   "concerns": {
     "title": "Müşteri bildirimleri",
-    "addFirst": "Müşteri bildirimi ekle",
+    "hint": "Müşterinin neden geldiği, kendi sözleriyle. Bahsedilen her şey için bir satır.",
     "add": "Bir tane daha ekle",
     "placeholder": "Fren yapınca arkadan ses geliyor",
     "remove": "Bu maddeyi kaldır",
     "notAnswered": "Bu konuda henüz bir şey bulunmadı",
-    "answered": "Bu konuda {count} tespit"
+    "answered": "Bu konuda {count} tespit",
+    "storyTitle": "İş tanımı",
+    "storyHint": "Belirti, neden, onarım, doğrulama. Açmak için bir adıma tıklayın; müşterinin bahsettiği veya sizin gözlemlediğiniz her şey için bir satır.",
+    "steps": {
+      "condition": "Belirti",
+      "cause": "Neden",
+      "correction": "Onarım",
+      "confirm": "Doğrulama"
+    },
+    "conditionPlaceholder": "Müşterinin bildirdiği veya sizin gözlemlediğiniz",
+    "causePlaceholder": "Testlerin ortaya çıkardığı asıl neden",
+    "correctionPlaceholder": "Gidermek için ne yapıldı",
+    "confirmPlaceholder": "Onarım nasıl kontrol edildi: yol testi, yeniden tarama, belirti geçti",
+    "markConfirmed": "Doğrulandı",
+    "confirmedBy": "{name} tarafından doğrulandı, {date}",
+    "confirmedAt": "{date} tarihinde doğrulandı",
+    "confirmedOnSave": "Kaydettiğinizde adınızla işaretlenir",
+    "confirmedCount": "{total} maddeden {confirmed} tanesi doğrulandı",
+    "findingsCount": "{count, plural, one {# gözlem} other {# gözlem}}",
+    "addFinding": "Gözlem ekle",
+    "unconfirmedTitle": "Doğrulanmamış maddelerle tamamlansın mı?",
+    "unconfirmedBody": "{count, plural, one {Bir maddenin giderildiği doğrulanmadı:} other {# maddenin giderildiği doğrulanmadı:}}",
+    "unconfirmedProceed": "Yine de tamamla",
+    "addMedia": "Medya ekle",
+    "mediaUploading": "Yükleniyor…",
+    "mediaAdded": "{count, plural, one {# dosya eklendi} other {# dosya eklendi}}",
+    "mediaFailed": "{name} yüklenemedi",
+    "mediaTypes": "Bir fotoğraf (JPG, PNG, WebP) veya video seçin.",
+    "dictate": {
+      "start": "Dikte et",
+      "listening": "Dinleniyor",
+      "startHint": "Konuşun, burada yazılır. Hiçbir şey kaydedilmez.",
+      "stopHint": "Dinlemeyi durdur",
+      "notAllowed": "Tarayıcının mikrofonu kullanmasına izin verilmedi. Bu site için izin verin ve tekrar deneyin.",
+      "noMicrophone": "Mikrofon bulunamadı.",
+      "failed": "Dikte durdu. Tekrar deneyin.",
+      "startHintServer": "Konuşun, siz konuştukça yazılır. Ses, yazıya dökülmek üzere konuşma modelinize gider ve saklanmaz.",
+      "transcribing": "Bitiriliyor…",
+      "language": "Konuşulan dil",
+      "auto": "Otomatik",
+      "nothingHeard": "Hiçbir şey duyulmadı.",
+      "fellBack": "Şimdilik tarayıcının kendi diktesi kullanılıyor.",
+      "autoLong": "Otomatik (dili algıla)",
+      "engine": "Yazıya döken",
+      "engineAi": "Konuşma modeli (daha doğru)",
+      "engineBrowser": "Tarayıcı (siz konuşurken yazar)",
+      "liveFellBack": "Kelime kelime yerine birkaç saniyelik parçalar halinde yazılıyor."
+    },
+    "stepEmpty": "Henüz yazılmadı",
+    "removeTitle": "Bu madde kaldırılsın mı?",
+    "removeBody": "İş emrini kaydettiğinizde belirtisi, nedeni, onarımı ve doğrulaması da onunla birlikte kaldırılır.",
+    "removeAttached": "Gözlemleri ve medyası işte kalır, ancak artık bir maddeye bağlı olmaz.",
+    "removeConfirm": "Maddeyi kaldır",
+    "saveFirst": "Önce iş emrini kaydedin"
   },
   "videoCall": {
     "title": "Görüntülü görüşme",
@@ -474,5 +578,175 @@
       "joinLine": "Görüntülü görüşmeye buradan katılın: {url}",
       "emailSubject": "{vehicle} aracınızla ilgili görüntülü görüşme"
     }
+  },
+  "modern": {
+    "statusLabel": "İş emri durumu",
+    "back": "Geri",
+    "backToClassic": "Klasik düzene dön",
+    "openCustomer": "Müşteriyi aç",
+    "serviceHistory": "Servis geçmişi",
+    "changeVehicle": "Aracı değiştir",
+    "vehicleChangesOnSave": "Kaydettiğinizde iş emri bu araca taşınır.",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "notSet": "Belirtilmedi",
+    "noCustomer": "Bu iş emrinde müşteri yok.",
+    "invoiceTitle": "Fatura ve ödeme",
+    "filesTitle": "Dosyalar ve medya",
+    "activity": {
+      "title": "Etkinlik",
+      "messageSent": "Müşteriye mesaj gönderildi",
+      "linkShared": "Fatura bağlantısı paylaşıldı",
+      "linkViewed": "{count, plural, one {Müşteri bağlantıyı açtı} other {Müşteri bağlantıyı # kez açtı}}",
+      "paymentTaken": "{amount} tutarında ödeme kaydedildi",
+      "statusSet": "Durum {status} olarak ayarlandı"
+    },
+    "invite": {
+      "title": "İş emri sayfası yenilendi.",
+      "body": "Aynı alanlarla daha net bir düzen. İstediğiniz zaman eskisine dönebilirsiniz.",
+      "try": "Şimdi dene",
+      "dismiss": "Şimdi değil",
+      "menu": "Yeni düzeni dene"
+    },
+    "promised": "{date} için söz verildi",
+    "promisedOverdue": "{date} için söz verildi, gecikti",
+    "opened": "{date} tarihinde açıldı",
+    "openedBy": "{date} tarihinde {name} tarafından açıldı",
+    "editTitle": "Başlığı düzenle",
+    "titleField": "Başlık",
+    "media": {
+      "tabs": {
+        "photos": "Fotoğraflar",
+        "diagnostics": "Tanı",
+        "dropoff": "Teslim alma"
+      },
+      "summary": "{count, plural, one {# dosya} other {# dosya}} · yalnızca işaretlenenler müşteriyle paylaşılır",
+      "customerCanSee": "Müşteri görebilir",
+      "showToCustomer": "Müşteriye göster",
+      "hideFromCustomer": "Müşteriden gizle",
+      "add": {
+        "image": "Fotoğraf ekle",
+        "document": "Belge ekle",
+        "diagnostic": "Tanı raporu ekle",
+        "video": "Video ekle",
+        "dropoff": "Teslim alma fotoğrafı ekle"
+      },
+      "dropHint": "Dosyaları bırakın veya göz atmak için tıklayın",
+      "added": "{count, plural, one {# dosya eklendi} other {# dosya eklendi}}",
+      "failed": "{name} yüklenemedi",
+      "wrongType": "Bu sekmeye uygun dosya türü değil: {names}",
+      "limit": "Sınıra ulaşıldı ({count}/{max})",
+      "dropoffHint": "Aracın geldiği hali, her fotoğrafın çekildiği saatle. Atölye için saklanır, siz seçmedikçe müşteriye gösterilmez.",
+      "onInvoice": "Araç durumunu bu faturaya ekle",
+      "onInvoiceHint": "Burada işaretlemediğiniz sürece kapalı. Her faturada yazdırmak için fatura tasarımcısında Araç Durumu seçeneğini açın.",
+      "onInvoiceByDesign": "Fatura tasarımcısında tüm faturalar için açık. Bu faturada yer almaması için işareti kaldırın.",
+      "onInvoiceFailed": "Seçim kaydedilemedi"
+    },
+    "moneyBar": {
+      "total": "Toplam",
+      "paid": "Ödenen",
+      "balance": "Kalan bakiye",
+      "settled": "Tamamı ödendi",
+      "takePayment": "Ödeme al",
+      "preview": "Faturayı önizle",
+      "previewShort": "Önizle",
+      "send": "Müşteriye gönder",
+      "sendShort": "Gönder"
+    },
+    "vehicleInfo": {
+      "more": "Daha fazla bilgi",
+      "less": "Daha az bilgi",
+      "copy": "{label} kopyala",
+      "copied": "Kopyalandı",
+      "lastInspection": "Son periyodik muayene",
+      "purchaseDate": "Satın alma tarihi",
+      "purchasePrice": "Satın alma fiyatı",
+      "overdue": "gecikmiş",
+      "customerSince": "Müşteri olma tarihi"
+    },
+    "moreStatuses": "Diğer durumlar",
+    "fromInspection": "{name} muayenesinden, {date}",
+    "startInspection": "Muayeneyi başlat"
+  },
+  "photoHandoff": {
+    "button": "Telefondan ekle",
+    "dialogTitle": "Telefondan fotoğraf ve belge ekleyin",
+    "dialogBody": "Herhangi bir telefonla fotoğraf çekin, seçin veya bir PDF paylaşın. Her şey doğrudan bu iş emrine eklenir.",
+    "expires": "Kod {time} saatine kadar geçerli.",
+    "waiting": "Fotoğraf ve belgeler bekleniyor…",
+    "received": "{count, plural, one {# dosya alındı} other {# dosya alındı}}",
+    "copyLink": "Bağlantıyı kopyala",
+    "linkCopied": "Bağlantı kopyalandı",
+    "failed": "Kod oluşturulamadı. Tekrar deneyin.",
+    "done": "Tamam",
+    "pageTitle": "Fotoğraf ve belge ekleyin",
+    "forJob": "İş emri {number}",
+    "takePhoto": "Fotoğraf çek",
+    "choosePhotos": "Fotoğraf seç",
+    "hint": "Her şey doğrudan iş emrine eklenir. İhtiyacınız kadar fotoğraf çekin.",
+    "uploading": "Yükleniyor…",
+    "added": "Eklendi",
+    "notAdded": "Eklenmedi",
+    "retry": "Tekrar dene",
+    "addedCount": "{count, plural, one {# dosya eklendi} other {# dosya eklendi}}",
+    "expiredTitle": "Bu kodun süresi doldu",
+    "invalidTitle": "Bu bağlantı çalışmıyor",
+    "errors": {
+      "expired": "Danışmadan yeni bir kod isteyin. Her kod 30 dakika geçerlidir.",
+      "invalid": "İş emrindeki kodu yeniden tarayın.",
+      "limit": "Bu iş emri alabileceği kadar fotoğrafa zaten sahip.",
+      "type": "Buraya yalnızca fotoğraf ve PDF belgeleri eklenebilir.",
+      "tooLarge": "Bu dosya çok büyük.",
+      "failed": "Fotoğraf eklenmedi. Bağlantıyı kontrol edip tekrar deneyin.",
+      "codeLimit": "Bu kodla bir kodun izin verdiği kadar fotoğraf eklendi. Danışmada yeni bir kodu tarayın."
+    },
+    "concernHeading": "Fotoğraflar bu maddeye eklenir",
+    "howTitle": "Nasıl çalışır",
+    "step1": "Telefon kamerasını koda tutun ve bağlantıyı açın.",
+    "step2": "Fotoğraf çekin veya telefonda zaten olan fotoğrafları ya da PDF belgelerini seçin.",
+    "step3": "Geldikçe bu iş emrinde görünürler.",
+    "noSignIn": "Telefonda giriş yapmak gerekmez.",
+    "customerToo": "Çalışanlar kullanabilir, müşteri de: kodu okutmasına izin verin veya bağlantıyı gönderin.",
+    "scope": "Bağlantı yalnızca bu iş emrine fotoğraf ve belge ekler ve 30 dakika sonra çalışmaz.",
+    "scanHint": "Telefon kamerasıyla okutun",
+    "chooseDocument": "Belge yükle",
+    "privacy": "Buraya eklediklerinizi yalnızca servis görür.",
+    "dropoff": {
+      "button": "Teslim alma fotoğrafları",
+      "dialogTitle": "Aracı geldiği haliyle fotoğraflayın",
+      "dialogBody": "İşe başlamadan önce aracın çevresinde bir tur: dört taraf, kilometre sayacı ve mevcut hasarlar. Bir çizik tartışma konusu olursa kanıtınız budur.",
+      "step2": "Telefondaki listeyi izleyin: her taraf için bir fotoğraf, kilometre sayacı ve hasarlar.",
+      "scope": "Bağlantı bu iş emrine yalnızca teslim alma fotoğrafı ekler ve 30 dakika sonra çalışmaz.",
+      "pageTitle": "Araç geldiği haliyle",
+      "pageBody": "Fotoğrafları sırayla çekin. Mevcut hasarların yakın çekimini ekleyin.",
+      "retake": "Yeniden çek",
+      "slots": {
+        "front": "Ön",
+        "right": "Sağ taraf",
+        "rear": "Arka",
+        "left": "Sol taraf",
+        "odometer": "Kilometre sayacı",
+        "other": "Hasar veya diğer"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Ödeme kodu",
+    "title": "Tarayarak öde",
+    "body": "Müşteri bunu telefon kamerasıyla tarar, fatura açılır ve oradan öder.",
+    "sharesInvoice": "Kodu göstermek, faturayı göndermekle aynı şekilde müşteriyle paylaşır. O andan sonra fatura şu anki bilgilerini korur.",
+    "show": "Kodu göster",
+    "failed": "Kod oluşturulamadı. Tekrar deneyin.",
+    "toPay": "Ödenecek",
+    "scanHint": "Telefon kamerasıyla tarayın",
+    "copyLink": "Bağlantıyı kopyala",
+    "linkCopied": "Bağlantı kopyalandı",
+    "waiting": "Ödeme bekleniyor. Kendiliğinden güncellenir.",
+    "paid": "Ödeme alındı",
+    "paidBody": "Ödeme iş emrine işlendi.",
+    "done": "Tamam"
+  },
+  "customStatus": {
+    "defaultMessage": "Merhaba {customer_name}, {vehicle} aracınızla ilgili bir güncelleme: {status}. {company_name}"
   }
 }

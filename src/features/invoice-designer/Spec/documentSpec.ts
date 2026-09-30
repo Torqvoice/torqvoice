@@ -71,7 +71,13 @@ export type Node =
       anchor?: Anchor
       children: { node: Node; width?: number | 'flex' }[]
     }
-  | { kind: 'text'; id?: string; text: string; style?: TextStyle; anchor?: Anchor }
+  | {
+      kind: 'text'
+      id?: string
+      text: string
+      style?: TextStyle
+      anchor?: Anchor
+    }
   /** A fragment from the rich-text editor: notes are written in it. */
   | { kind: 'richtext'; id?: string; html: string; style?: TextStyle; anchor?: Anchor }
   | {
@@ -108,6 +114,54 @@ export type Node =
     }
   /** Empty room, or a filled rule when it carries a color. */
   | { kind: 'spacer'; id?: string; height: number; color?: string }
+  /**
+   * Vector artwork: the condition map's line drawing with its marks. Drawn
+   * from shapes rather than an image so it prints crisp at any size and the
+   * designer's canvas and the PDF draw the same thing. It fills the width it
+   * is given and keeps its aspect, so `height` is what it takes at `width`.
+   */
+  | {
+      kind: 'drawing'
+      id?: string
+      width: number
+      height: number
+      viewBox: [number, number]
+      shapes: DrawingShape[]
+      anchor?: Anchor
+      /** Where the view box starts on the y axis; below zero leaves a band above the shapes. */
+      viewBoxY?: number
+    }
+
+export type DrawingShape =
+  | {
+      type: 'path'
+      d: string
+      stroke?: string
+      strokeWidth?: number
+      fill?: string
+      dash?: number[]
+      opacity?: number
+    }
+  | {
+      type: 'circle'
+      cx: number
+      cy: number
+      r: number
+      stroke?: string
+      strokeWidth?: number
+      fill?: string
+      opacity?: number
+    }
+  | {
+      type: 'text'
+      x: number
+      y: number
+      text: string
+      size: number
+      fill: string
+      bold?: boolean
+      anchor?: 'start' | 'middle' | 'end'
+    }
 
 /** How a block finds its place on the sheet. */
 export type Placement =

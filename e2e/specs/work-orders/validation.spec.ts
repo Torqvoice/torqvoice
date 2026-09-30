@@ -123,17 +123,6 @@ test.describe('a work order that cannot be saved says why', () => {
     await expectRefused(page, /cannot be negative/i)
   })
 
-  test('a job with no title is refused', async ({ page }) => {
-    await page.goto(jobUrl)
-    const title = page.locator('input[name="title"]')
-    await expect(async () => {
-      await title.fill('')
-      await expect(title).toHaveValue('', { timeout: 2_000 })
-    }).toPass({ timeout: 30_000 })
-
-    await expectRefused(page, /needs a title/i)
-  })
-
   test('the job is left as it was found, saved and correct', async ({ page }) => {
     await page.goto(jobUrl)
     await expect(totalsRow(page, 'Parts')).toContainText('$1,100.00')

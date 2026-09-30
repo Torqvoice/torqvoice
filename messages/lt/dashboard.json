@@ -74,8 +74,8 @@
     "noDismissed": "Nėra atmestų transporto priemonių.",
     "dismissedOn": "Atmesta {date}",
     "restore": "Atkurti",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Priežiūros nustatymai",
+    "dismissAriaLabel": "Atmesti"
   },
   "reminders": {
     "title": "Artėjantys priminimai",
@@ -112,7 +112,7 @@
     "createQuote": "Sukurti pasiūlymą",
     "itemsRequested": "{count, plural, one {# elementas prašomas} other {# elementai prašomi}}",
     "noData": "Laukiančių pasiūlymų užklausų nėra.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Atmesti pasiūlymo užklausą"
   },
   "quoteResponses": {
     "title": "Klientų atsakymai į pasiūlymus",
@@ -124,7 +124,7 @@
     "viewQuote": "Peržiūrėti pasiūlymą",
     "view": "Peržiūrėti",
     "noData": "Klientų atsakymų nėra.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Atmesti atsakymą"
   },
   "recentCompleted": {
     "title": "Neseniai užbaigti",

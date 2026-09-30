@@ -1,5 +1,5 @@
 import { getRecurringInvoices } from '@/features/billing/Actions/recurringInvoiceActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
@@ -17,7 +17,7 @@ export default async function RecurringInvoicesPage() {
 
   const [result, settingsResult, vehicles] = await Promise.all([
     getRecurringInvoices(),
-    getSettings([SETTING_KEYS.CURRENCY_CODE]),
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
     db.vehicle.findMany({
       where: { organizationId: membership.organizationId, isArchived: false },
       select: {

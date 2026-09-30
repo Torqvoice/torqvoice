@@ -108,6 +108,7 @@ export function InspectionShareDialog({
     setSending(true)
 
     const results: string[] = []
+    let failed = false
 
     if (notifyEmail && hasEmail) {
       const res = await sendInspectionEmail({
@@ -115,8 +116,13 @@ export function InspectionShareDialog({
         recipientEmail: customer.email!,
         attachPdf,
       })
-      if (res.success) results.push('Email sent')
-      else toast.error(res.error || 'Failed to send email')
+      if (res.success) {
+        results.push('Email sent')
+        setNotifyEmail(false)
+      } else {
+        failed = true
+        toast.error(res.error || 'Failed to send email')
+      }
     }
 
     if (notifySms && hasPhone) {
@@ -137,16 +143,20 @@ export function InspectionShareDialog({
         relatedEntityType: 'inspection',
         relatedEntityId: inspectionId,
       })
-      if (res.success) results.push('SMS sent')
-      else toast.error(res.error || 'Failed to send SMS')
+      if (res.success) {
+        results.push('SMS sent')
+        setNotifySms(false)
+      } else {
+        failed = true
+        toast.error(res.error || 'Failed to send SMS')
+      }
     }
 
-    if (results.length > 0) {
-      toast.success(results.join(' & '))
-      setNotifySms(false)
-      setNotifyEmail(false)
-    }
+    if (results.length > 0) toast.success(results.join(' & '))
     setSending(false)
+    // Done once everything ticked has gone. A channel that failed stays ticked
+    // and the dialog stays open, so it can be tried again.
+    if (results.length > 0 && !failed) onOpenChange(false)
   }
 
   const canNotify = shareUrl && customer && (notifyEmail || notifySms)

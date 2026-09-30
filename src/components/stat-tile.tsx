@@ -33,7 +33,7 @@ export function StatTile({
     <Link
       href={href}
       className={cn(
-        'group/tile flex items-center gap-3 rounded-xl border bg-card px-4 py-3',
+        'group/tile flex items-center gap-3 rounded-lg border bg-card px-4 py-3',
         'shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)]',
         'transition-[border-color,box-shadow] duration-300',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',

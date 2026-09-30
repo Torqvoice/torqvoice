@@ -427,7 +427,9 @@
   },
   "empty": "Duomenys dar neįkelti. Spustelėkite \"Atnaujinti\", kad įkeltumėte ataskaitą.",
   "pagination": {
-    "previousPage": "Previous page",
-    "nextPage": "Next page"
-  }
+    "previousPage": "Ankstesnis puslapis",
+    "nextPage": "Kitas puslapis"
+  },
+  "completedOnly": "Tik užbaigti",
+  "completedOnlyHint": "Rodyti tik užsakymus, pažymėtus kaip užbaigti. Įsimenama kitam kartui."
 }

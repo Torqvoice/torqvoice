@@ -8,7 +8,30 @@ import { netLineTotal } from '@/lib/tax'
 import { TaxByRateTable } from '../Lib/taxByRate'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
+import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+
+/** Hours a labour line stands for. A shop fee line is one unit of a charge, not an hour. */
+const laborHours = (line: { hours: number; pricingType: string }) =>
+  isShopFeeLine(line) ? 0 : line.hours
+
+/** The date range a report covers, and whether it counts finished work only. */
+interface ReportRange {
+  startDate?: string
+  endDate?: string
+  /** Only work orders marked completed; open ones are left out. */
+  completedOnly?: boolean
+}
+
+/**
+ * Which work orders a report counts: every job in the window, or with the
+ * switch on, only those marked completed. The stored status is one of the
+ * four system values, whatever the workshop calls its own stages, so
+ * `completed` is the same job for every workshop.
+ */
+function statusScope(completedOnly?: boolean) {
+  return completedOnly ? { status: 'completed' } : {}
+}
 
 /**
  * The report window on the workshop's calendar. The picker sends bare
@@ -16,10 +39,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
  * workshop, and the default start is 1 January of the workshop's current
  * year, not the server's. `end` is exclusive: query with `lt`.
  */
-async function reportWindow(
-  organizationId: string,
-  params: { startDate?: string; endDate?: string }
-) {
+async function reportWindow(organizationId: string, params: ReportRange) {
   const tz = await workshopTimeZone(organizationId)
   const now = new Date()
   const { gte, lt } = workshopDayRange(params.startDate, params.endDate, tz, {
@@ -29,7 +49,7 @@ async function reportWindow(
   return { tz, start: gte, end: lt }
 }
 
-export async function getRevenueReport(params: { startDate?: string; endDate?: string }) {
+export async function getRevenueReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { tz, start, end } = await reportWindow(organizationId, params)
@@ -38,6 +58,7 @@ export async function getRevenueReport(params: { startDate?: string; endDate?: s
         where: {
           organizationId,
           startDateTime: { gte: start, lt: end },
+          ...statusScope(params.completedOnly),
         },
         select: {
           serviceDate: true,
@@ -148,7 +169,7 @@ export async function getRevenueReport(params: { startDate?: string; endDate?: s
   )
 }
 
-export async function getServiceReport(params: { startDate?: string; endDate?: string }) {
+export async function getServiceReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { start, end } = await reportWindow(organizationId, params)
@@ -157,6 +178,7 @@ export async function getServiceReport(params: { startDate?: string; endDate?: s
         where: {
           organizationId,
           startDateTime: { gte: start, lt: end },
+          ...statusScope(params.completedOnly),
         },
         select: {
           type: true,
@@ -184,7 +206,7 @@ export async function getServiceReport(params: { startDate?: string; endDate?: s
   )
 }
 
-export async function getCustomerReport(params: { startDate?: string; endDate?: string }) {
+export async function getCustomerReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { start, end } = await reportWindow(organizationId, params)
@@ -198,7 +220,10 @@ export async function getCustomerReport(params: { startDate?: string; endDate?: 
           vehicles: {
             select: {
               serviceRecords: {
-                where: { startDateTime: { gte: start, lt: end } },
+                where: {
+                  startDateTime: { gte: start, lt: end },
+                  ...statusScope(params.completedOnly),
+                },
                 select: { totalAmount: true, cost: true },
               },
             },
@@ -231,7 +256,7 @@ export async function getCustomerReport(params: { startDate?: string; endDate?: 
   )
 }
 
-export async function getTechnicianReport(params: { startDate?: string; endDate?: string }) {
+export async function getTechnicianReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { start, end } = await reportWindow(organizationId, params)
@@ -240,6 +265,7 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
         where: {
           organizationId,
           startDateTime: { gte: start, lt: end },
+          ...statusScope(params.completedOnly),
           OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
         },
         select: {
@@ -248,7 +274,7 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
           technician: { select: { name: true } },
           totalAmount: true,
           cost: true,
-          laborItems: { select: { hours: true } },
+          laborItems: { select: { hours: true, pricingType: true } },
         },
       })
 
@@ -265,7 +291,7 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
           byTech[key] = { techName: displayName, jobCount: 0, totalRevenue: 0, totalLaborHours: 0 }
         byTech[key].jobCount += 1
         byTech[key].totalRevenue += r.totalAmount > 0 ? r.totalAmount : r.cost
-        byTech[key].totalLaborHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
+        byTech[key].totalLaborHours += r.laborItems.reduce((s, l) => s + laborHours(l), 0)
       }
 
       const technicians = Object.values(byTech)
@@ -299,7 +325,7 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
  * is the efficiency a workshop actually manages by: hours it could invoice
  * for every hour it paid.
  */
-export async function getTechnicianTimeReport(params: { startDate?: string; endDate?: string }) {
+export async function getTechnicianTimeReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { start, end } = await reportWindow(organizationId, params)
@@ -311,9 +337,13 @@ export async function getTechnicianTimeReport(params: { startDate?: string; endD
           where: {
             organizationId,
             startDateTime: { gte: start, lt: end },
+            ...statusScope(params.completedOnly),
             technicianId: { not: null },
           },
-          select: { technicianId: true, laborItems: { select: { hours: true } } },
+          select: {
+            technicianId: true,
+            laborItems: { select: { hours: true, pricingType: true } },
+          },
         }),
         db.technician.findMany({
           where: { organizationId },
@@ -346,7 +376,7 @@ export async function getTechnicianTimeReport(params: { startDate?: string; endD
       }
       for (const rec of records) {
         if (!rec.technicianId) continue
-        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + l.hours, 0)
+        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + laborHours(l), 0)
       }
 
       const names = new Map(
@@ -382,7 +412,7 @@ export async function getTechnicianTimeReport(params: { startDate?: string; endD
   )
 }
 
-export async function getPartsUsageReport(params: { startDate?: string; endDate?: string }) {
+export async function getPartsUsageReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { start, end } = await reportWindow(organizationId, params)
@@ -392,6 +422,7 @@ export async function getPartsUsageReport(params: { startDate?: string; endDate?
           serviceRecord: {
             organizationId,
             startDateTime: { gte: start, lt: end },
+            ...statusScope(params.completedOnly),
           },
         },
         select: {
@@ -473,7 +504,7 @@ export async function getPartsUsageReport(params: { startDate?: string; endDate?
   )
 }
 
-export async function getJobAnalyticsReport(params: { startDate?: string; endDate?: string }) {
+export async function getJobAnalyticsReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { tz, start, end } = await reportWindow(organizationId, params)
@@ -482,6 +513,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
         where: {
           organizationId,
           startDateTime: { gte: start, lt: end },
+          ...statusScope(params.completedOnly),
         },
         select: {
           type: true,
@@ -489,7 +521,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
           cost: true,
           serviceDate: true,
           startDateTime: true,
-          laborItems: { select: { hours: true } },
+          laborItems: { select: { hours: true, pricingType: true } },
         },
       })
 
@@ -506,7 +538,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
         if (!byType[r.type]) byType[r.type] = { count: 0, totalValue: 0, totalHours: 0 }
         byType[r.type].count += 1
         byType[r.type].totalValue += r.totalAmount > 0 ? r.totalAmount : r.cost
-        byType[r.type].totalHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
+        byType[r.type].totalHours += r.laborItems.reduce((s, l) => s + laborHours(l), 0)
       }
 
       const topServiceTypes = Object.entries(byType)
@@ -560,7 +592,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
   )
 }
 
-export async function getCustomerRetentionReport(params: { startDate?: string; endDate?: string }) {
+export async function getCustomerRetentionReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { start, end } = await reportWindow(organizationId, params)
@@ -574,7 +606,10 @@ export async function getCustomerRetentionReport(params: { startDate?: string; e
           vehicles: {
             select: {
               serviceRecords: {
-                where: { startDateTime: { gte: start, lt: end } },
+                where: {
+                  startDateTime: { gte: start, lt: end },
+                  ...statusScope(params.completedOnly),
+                },
                 select: { serviceDate: true, startDateTime: true, totalAmount: true, cost: true },
                 orderBy: [
                   { startDateTime: { sort: 'asc', nulls: 'last' } },
@@ -800,11 +835,7 @@ export async function getPastDueInvoicesReport() {
   )
 }
 
-export async function getVehicleReport(params: {
-  vehicleId: string
-  startDate?: string
-  endDate?: string
-}) {
+export async function getVehicleReport(params: ReportRange & { vehicleId: string }) {
   return withAuth(
     async ({ organizationId }) => {
       const { tz, start, end } = await reportWindow(organizationId, params)
@@ -829,6 +860,7 @@ export async function getVehicleReport(params: {
           vehicleId: params.vehicleId,
           organizationId,
           startDateTime: { gte: start, lt: end },
+          ...statusScope(params.completedOnly),
         },
         select: {
           id: true,
@@ -853,7 +885,7 @@ export async function getVehicleReport(params: {
               total: true,
             },
           },
-          laborItems: { select: { hours: true, total: true } },
+          laborItems: { select: { hours: true, total: true, pricingType: true } },
         },
         orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
       })
@@ -883,7 +915,7 @@ export async function getVehicleReport(params: {
           (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
           0
         )
-        const laborHrs = r.laborItems.reduce((s, l) => s + l.hours, 0)
+        const laborHrs = r.laborItems.reduce((s, l) => s + laborHours(l), 0)
         totalPartsUsed += r.partItems.reduce((s, p) => s + p.quantity, 0)
         totalLaborHours += laborHrs
 
@@ -955,7 +987,7 @@ export async function getVehicleReport(params: {
           date: zonedDayKey(r.startDateTime ?? r.serviceDate, tz),
           totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
           partsCount: r.partItems.reduce((s, p) => s + p.quantity, 0),
-          laborHours: r.laborItems.reduce((s, l) => s + l.hours, 0),
+          laborHours: r.laborItems.reduce((s, l) => s + laborHours(l), 0),
           techName: r.technician?.name ?? r.techName ?? null,
         })),
       }
@@ -964,7 +996,7 @@ export async function getVehicleReport(params: {
   )
 }
 
-export async function getTaxReport(params: { startDate?: string; endDate?: string }) {
+export async function getTaxReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { tz, start, end } = await reportWindow(organizationId, params)
@@ -973,6 +1005,7 @@ export async function getTaxReport(params: { startDate?: string; endDate?: strin
         where: {
           organizationId,
           startDateTime: { gte: start, lt: end },
+          ...statusScope(params.completedOnly),
         },
         select: {
           serviceDate: true,

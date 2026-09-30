@@ -19,10 +19,34 @@ vi.mock('@/lib/lib/invoice-utils', () => ({
   resolveInvoicePrefix: vi.fn((p: string) => p),
 }))
 
+// These tests are about workshop scoping, not files: the file manager and the
+// files a delete collects have tests of their own (src/__tests__/lib/files).
+vi.mock('@/lib/files/collect', () => ({
+  serviceRecordFileUrls: vi.fn(async () => []),
+  inspectionFileUrls: vi.fn(async () => []),
+  vehicleFileUrls: vi.fn(async () => []),
+  quoteFileUrls: vi.fn(async () => []),
+  tireSetFileUrls: vi.fn(async () => []),
+  inventoryPartFileUrls: vi.fn(async () => []),
+}))
+vi.mock('@/lib/files/manager', () => ({
+  releaseFiles: vi.fn(async () => ({ removed: [], kept: [], skipped: [] })),
+  parseStoredFileUrl: vi.fn(() => null),
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
-    appSetting: { findMany: vi.fn() },
+    // Completing freezes the workshop's kinds of mark; nobody here changed any.
+    conditionMarkType: { findMany: vi.fn().mockResolvedValue([]) },
+    appSetting: { findMany: vi.fn().mockResolvedValue([]) },
+    // Completing freezes the certificate design (the default when none was made).
+    documentDesignSnapshot: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
+    // Completing freezes the inspector's signature; nobody here has one.
+    memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
     quote: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
@@ -111,6 +135,7 @@ const ORG_A_INSPECTION = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.mocked(db.documentDesignSnapshot.findUnique).mockResolvedValue({ id: 'snap-1' } as any)
   // Locking is read before any edit to an invoice or quote; no settings
   // rows means locking is off, which is how these tests expect to run.
   vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)

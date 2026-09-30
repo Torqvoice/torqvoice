@@ -175,6 +175,17 @@ export async function POST(request: NextRequest) {
             reminders: true,
             serviceRequests: true,
             inspectionStatus: true,
+            // What the workshop saw and did not do yet, with the photographs
+            // that argue for it. Deleted with the vehicle on a restore, so a
+            // backup without them is a one-way loss. The same goes for the
+            // three below: every one of them hangs off the vehicle and was
+            // restored from a key the export never wrote.
+            findings: true,
+            // The condition map's marks: the car's dents and scratches, with
+            // their photos. Deleted with the vehicle on a restore like the rest.
+            conditionMarks: true,
+            aiMessages: true,
+            recurringInvoices: { include: { templateParts: true, templateLabor: true } },
             serviceRecords: {
               include: {
                 concerns: true,
@@ -279,6 +290,8 @@ export async function POST(request: NextRequest) {
           where: { organizationId: ctx.organizationId },
           include: {
             items: true,
+            attachments: true,
+            statusReports: true,
             quoteRequests: true,
           },
         })
@@ -307,7 +320,10 @@ export async function POST(request: NextRequest) {
         .findMany({
           where: { organizationId: ctx.organizationId },
           include: {
-            measurements: true,
+            // The condition photos hang off the reading, so they travel with
+            // it; a measurement restored without them loses the evidence for
+            // a worn tire the customer was charged for.
+            measurements: { include: { images: true } },
             movements: true,
             treatments: true,
             attachments: true,
@@ -322,6 +338,21 @@ export async function POST(request: NextRequest) {
   if (options.workshopConfig) {
     // Everything a workshop configures that is not a key/value setting: none
     // of it was in a backup before, so a restore rebuilt an empty shop.
+    queries.push(
+      // Archived ones too: a finished job still names the status it carried.
+      db.workOrderStatus
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.workOrderStatuses = result
+        })
+    )
+    queries.push(
+      db.conditionMarkType
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.conditionMarkTypes = result
+        })
+    )
     queries.push(
       db.laborPreset
         .findMany({

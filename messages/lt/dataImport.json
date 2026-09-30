@@ -180,6 +180,8 @@
       "transmission": "Pavarų dėžė",
       "engineSize": "Variklio tūris",
       "engineCode": "Variklio kodas",
+      "hsn": "HSN (gamintojo kodas)",
+      "tsn": "TSN (tipo kodas)",
       "purchaseDate": "Pirkimo data",
       "purchasePrice": "Pirkimo kaina"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Trūksta kliento vardo",
     "invalid_email": "El. paštas \"{value}\" netinkamas ir buvo praleistas",
     "invalid_vin": "VIN \"{value}\" nėra 17 simbolių; paliktas kaip įvestas",
+    "invalid_type_key": "{field} „{value}“ nėra tinkamas HSN ar TSN; praleista",
     "vehicle_make_model_required": "Trūksta markės ir modelio",
     "vehicle_year_required": "Trūksta metų",
     "vehicle_year_invalid": "Metai \"{value}\" nėra tinkami metai",

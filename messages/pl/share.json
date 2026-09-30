@@ -34,8 +34,8 @@
     "total": "Suma",
     "labor": "Robocizna",
     "hours": "Godziny",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "godz.",
+    "unit": "szt.",
     "qtyOrHours": "Jednostka / Godziny",
     "rate": "Stawka",
     "ratePerHour": "{rate}/godz.",
@@ -93,8 +93,8 @@
     "labor": "Robocizna",
     "laborDescription": "Opis",
     "hours": "Godziny",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "godz.",
+    "unit": "szt.",
     "qtyOrHours": "Jednostka / Godziny",
     "rate": "Stawka",
     "ratePerHour": "{rate}/godz.",
@@ -157,14 +157,16 @@
       "attention": "Usterka drobna",
       "fail": "Usterka poważna",
       "dangerous": "Usterka stwarzająca zagrożenie",
-      "not_inspected": "Nie sprawdzono"
+      "not_inspected": "Nie sprawdzono",
+      "not_applicable": "Nie dotyczy"
     },
     "basic": {
       "pass": "Pozytywny",
       "attention": "Uwaga",
       "fail": "Negatywny",
       "dangerous": "Niebezpieczne",
-      "not_inspected": "Nie sprawdzono"
+      "not_inspected": "Nie sprawdzono",
+      "not_applicable": "Nie dotyczy"
     },
     "result": {
       "pass": "Wynik pozytywny",
@@ -194,13 +196,16 @@
     "summary": "Podsumowanie",
     "progressLabel": "Oceniono {graded} pozycji",
     "limit": "Wartość graniczna",
+    "rangeMin": "min.",
+    "rangeMax": "maks.",
     "viewPhoto": "Zobacz zdjęcie",
     "deficienciesFound": "Stwierdzone usterki ({count})",
     "allResults": "Wszystkie wyniki",
-    "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane."
+    "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane.",
+    "inspectionPhotos": "Zdjęcia i dokumenty"
   },
   "terms": {
-    "title": "Warunki sprzedaży (Salgsvilkår)",
+    "title": "Warunki sprzedaży",
     "contact": "Kontakt",
     "tel": "Tel: {phone}"
   },
@@ -227,6 +232,7 @@
     "portalMessage": "Zobacz swoje pojazdy, faktury i więcej w swoim",
     "customerPortal": "portalu klienta",
     "telegramConnect": "Porozmawiaj z nami na Telegramie",
-    "telegramScan": "Zeskanuj ten kod QR, aby napisać do nas na Telegramie w sprawie aktualizacji i wsparcia."
+    "telegramScan": "Zeskanuj ten kod QR, aby napisać do nas na Telegramie w sprawie aktualizacji i wsparcia.",
+    "downloadCertificate": "Pobierz zaświadczenie z przeglądu"
   }
 }

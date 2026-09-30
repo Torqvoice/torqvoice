@@ -61,6 +61,20 @@ function deletedByRestore(): string[] {
   return [...reached]
 }
 
+/**
+ * The field a parent model holds its children in: `ServiceRecord` keeps
+ * `ServicePart` rows in `partItems`, `TireMeasurement` keeps its photos in
+ * `images`. A backup's export query names the field, never the model, which
+ * is why the export side of the manifest went unchecked for so long.
+ */
+function relationFieldsOf(parent: string, child: string): string[] {
+  const model = new RegExp(`^model ${parent} \\{([\\s\\S]*?)^\\}`, 'm').exec(SCHEMA)
+  if (!model) return []
+  return [...model[1].matchAll(/^\s*(\w+)\s+(\w+)(\[\]|\?)?\s/gm)]
+    .filter(([, , type]) => type === child)
+    .map(([, field]) => field)
+}
+
 /** Every model in the schema. */
 function allModels(): string[] {
   return [...SCHEMA.matchAll(/^model (\w+) \{/gm)].map((m) => m[1])
@@ -186,6 +200,28 @@ describe('the routes implement the manifest', () => {
     expect(
       missing,
       `Nested in the manifest, but the import never writes them: ${missing.join(', ')}`
+    ).toEqual([])
+  })
+
+  it('pulls every nested entity into its parent’s query on the way out', () => {
+    // The other half of the test above, and the one that was missing: a model
+    // classified in the manifest and restored by the import, which the export
+    // never puts in the file. Vehicle findings shipped that way — the restore
+    // read `vehicle.findings`, the export never wrote it, so every finding
+    // and every photograph behind one was lost by any backup.
+    //
+    // An export names the relation field rather than the model, so the field
+    // is read from the schema first.
+    const missing = BACKUP_ENTITIES.filter((entity) => entity.nestedUnder)
+      .filter((entity) => {
+        const fields = relationFieldsOf(entity.nestedUnder as string, entity.model)
+        return !fields.some((field) => new RegExp(`\\b${field}:\\s*(true|\\{)`).test(exportRoute))
+      })
+      .map((entity) => `${entity.nestedUnder}.${entity.model}`)
+
+    expect(
+      missing,
+      `Restored from the backup, but the export never reads them: ${missing.join(', ')}`
     ).toEqual([])
   })
 

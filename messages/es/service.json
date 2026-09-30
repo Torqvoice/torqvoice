@@ -21,14 +21,15 @@
       "title": "El trabajo necesita un título antes de poder guardarse.",
       "negative": "Las cantidades, horas, precios y costes no pueden ser negativos.",
       "partName": "Toda pieza con precio necesita un nombre.",
-      "laborDescription": "Toda línea de mano de obra con horas o tarifa necesita una descripción."
+      "laborDescription": "Toda línea de mano de obra con horas o tarifa necesita una descripción.",
+      "concernCondition": "Un motivo con causa, corrección o confirmación necesita que se rellene su condición."
     }
   },
   "header": {
     "tabs": {
       "details": "Detalles",
       "images": "Imágenes",
-      "video": "Video",
+      "video": "Vídeo",
       "documents": "Documentos",
       "statusReports": "Informes de estado"
     },
@@ -41,7 +42,27 @@
     "unpaid": "Sin Pagar",
     "unsavedChanges": "Cambios sin guardar",
     "saved": "Guardado",
-    "joinCall": "Unirse a la videollamada"
+    "joinCall": "Unirse a la videollamada",
+    "moreActions": "Más acciones",
+    "designMenu": "Diseño de la factura",
+    "designMenuLoading": "Comprobando con qué diseño se imprime esta factura...",
+    "designMenuExplain": "Se envió al cliente el {date}, así que sigue imprimiéndose con el diseño del envío. Elegir otro solo cambia el aspecto. Lo que dice la factura se mantiene tal como se envió, y el aspecto anterior no se conserva.",
+    "designSentWith": "El diseño con el que se envió",
+    "designFollow": "Seguir el diseño predeterminado",
+    "designFollowNamed": "Seguir el diseño predeterminado ({name})",
+    "designDefaultName": "el diseño predeterminado",
+    "designPickConfirmTitle": "¿Cambiar esta factura a {name}?",
+    "designPickConfirmBody": "Solo cambia el aspecto. Los datos del taller, el cliente, las condiciones de pago y los importes se mantienen tal como se enviaron. El diseño actual no se conserva, así que esto no se puede deshacer.",
+    "designPickConfirm": "Cambiar el diseño",
+    "designPickDone": "La factura ya se imprime con {name}",
+    "designPickFailed": "No se pudo cambiar el diseño",
+    "designRefresh": "Actualizar a los datos actuales",
+    "designRefreshConfirmTitle": "¿Actualizar esta factura a los datos actuales?",
+    "designRefreshConfirmBody": "Los datos del taller, el cliente, el vehículo, las condiciones de pago y el diseño se vuelven a leer tal como están hoy, y la factura queda bloqueada con ellos. Sus líneas y totales son propios de la factura y no cambian. Las copias ya descargadas o enviadas por correo se mantienen como estaban; el enlace compartido y el portal muestran la factura actualizada. Esto no se puede deshacer.",
+    "designRefreshConfirm": "Actualizar la factura",
+    "designRefreshDone": "Esta factura ahora se imprime con los datos actuales",
+    "designRefreshFailed": "No se pudo actualizar la factura",
+    "printWorkOrder": "Imprimir orden de trabajo"
   },
   "basicInfo": {
     "title": "Información Básica",
@@ -89,7 +110,6 @@
     "design": "Diseño de factura",
     "designDefault": "Predeterminado del taller",
     "designFollowing": "Predeterminado ({name})",
-    "designPinned": "La hoja se congeló al emitir la factura el {date}. Una nueva elección se aplica solo después de que un propietario desbloquee la factura y se envíe de nuevo.",
     "designSaved": "Diseño de factura actualizado",
     "designFollowingRule": "Predeterminado ({name}, {rule})",
     "designRule": {
@@ -122,7 +142,7 @@
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" añadido del inventario",
     "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Eliminar fila",
     "outOfStock": "Agotado",
     "onBackorder": "En pedido pendiente ({count})",
     "nameMissingHint": "Las filas sin nombre de pieza no se guardan."
@@ -137,20 +157,27 @@
     "total": "Total",
     "descriptionPlaceholder": "Descripción *",
     "subtotal": "Subtotal de Mano de Obra: {amount}",
-    "addService": "Add Service",
+    "addService": "Agregar Servicio",
     "addFinding": "Observación",
     "newObservation": "Nueva observación",
     "addExisting": "Ver existentes ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Cantidad",
+    "qtyOrHours": "Unidad / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
-    "switchToServiceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
-    "deleteRow": "Delete row",
-    "descriptionMissingHint": "Las filas sin descripción no se guardan."
+    "hourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
+    "serviceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
+    "deleteRow": "Eliminar fila",
+    "descriptionMissingHint": "Las filas sin descripción no se guardan.",
+    "shopFeeTag": "Cargo",
+    "shopFeeHintFlat": "El cargo de taller de Ajustes, como importe fijo. Cambia el precio para este trabajo o borra la línea para quitarlo.",
+    "shopFeeHintPercentLabor": "El cargo de taller de Ajustes: {percent} % de la mano de obra de este trabajo. Borra la línea para quitarlo.",
+    "shopFeeHintPercentAll": "El cargo de taller de Ajustes: {percent} % de la mano de obra y las piezas de este trabajo. Borra la línea para quitarlo."
+  },
+  "liveLabor": {
+    "title": "{count, plural, one {Un técnico añadió mano de obra a este trabajo} other {Un técnico añadió # líneas de mano de obra a este trabajo}}",
+    "body": "Se mantiene fuera de la lista mientras editas. Se guardará de todos modos al guardar.",
+    "show": "Mostrar"
   },
   "totals": {
     "title": "Totales",
@@ -186,7 +213,9 @@
     "aiOverwriteReplace": "Reemplazar",
     "aiOverwriteAppend": "Agregar",
     "aiOverwriteCancel": "Cancelar",
-    "aiDontShowAgain": "No mostrar de nuevo"
+    "aiDontShowAgain": "No mostrar de nuevo",
+    "internalTitle": "Notas internas",
+    "publicTitle": "Notas para el cliente"
   },
   "invoice": {
     "title": "Resumen de Factura",
@@ -236,7 +265,10 @@
     "failedDelete": "Error al eliminar pago",
     "deleteTitle": "Eliminar Pago",
     "deleteDescription": "Esto eliminará este registro de pago.",
-    "failedPdf": "Error al generar factura en PDF"
+    "failedPdf": "Error al generar factura en PDF",
+    "received": "Pagos recibidos",
+    "noneYet": "Todavía no se ha pagado nada.",
+    "balanceDue": "Saldo pendiente"
   },
   "attachments": {
     "deleteTitle": "Eliminar Archivo",
@@ -244,11 +276,11 @@
     "deleted": "Archivo eliminado",
     "failedDelete": "Error al eliminar",
     "images": "Imágenes ({count})",
-    "videos": "Videos ({count})",
+    "videos": "Vídeos ({count})",
     "diagnostics": "Reportes de Diagnóstico ({count})",
     "documents": "Documentos ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Descargar",
+    "close": "Cerrar"
   },
   "share": {
     "title": "Compartir Factura",
@@ -265,7 +297,7 @@
     "failedEmail": "Error al enviar correo electrónico",
     "smsSent": "SMS enviado",
     "failedSms": "Error al enviar SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copiar enlace"
   },
   "sidebar": {
     "vehicle": "Vehículo",
@@ -345,6 +377,7 @@
     "date": "Fecha",
     "startTime": "Hora de inicio",
     "endTime": "Hora de fin",
+    "durationPresets": "Duración",
     "technician": "Técnico",
     "selectTechnician": "Seleccionar técnico...",
     "searchOrCreate": "Buscar o crear técnico...",
@@ -357,11 +390,11 @@
     "assign": "Asignar al tablero",
     "assigned": "Asignado al tablero de trabajo",
     "failedAssign": "Error al asignar",
+    "assignNotAllowed": "No tienes permiso para asignar técnicos. Pide a un propietario o administrador que permita a tu rol modificar el tablero de trabajo.",
     "endBeforeStart": "La hora de fin debe ser posterior a la hora de inicio",
     "failedUpdate": "Error al actualizar el horario",
     "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Personalizados",
     "readMore": "Leer más",
     "setDefaults": "Configurar valores",
     "workBay": "Puesto de trabajo",
@@ -383,7 +416,17 @@
     "pickNextAvailable": "Elegir la siguiente franja libre",
     "findingSlot": "Buscando una franja…",
     "slotPicked": "Reservado en la siguiente franja libre",
-    "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas"
+    "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas",
+    "assignedTitle": "Técnico asignado",
+    "boardLink": "Tablero de trabajo",
+    "someoneElse": "Otra persona",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "{hours} h libres",
+    "loadFull": "Completo",
+    "loadOn": "Horas reservadas el {date}",
+    "promisedAt": "Prometido al cliente",
+    "promisedPlaceholder": "Sin prometer todavía",
+    "promisedClear": "Borrar"
   },
   "notifications": {
     "title": "Notificaciones al cliente",
@@ -400,7 +443,6 @@
   "warranty": {
     "title": "Garantía",
     "months": "Duración (meses)",
-    "mileage": "Límite de kilometraje",
     "notes": "Términos de garantía",
     "notesPlaceholder": "ej. Garantía de 12 meses en todas las piezas y mano de obra...",
     "expiresAt": "Vence",
@@ -416,19 +458,81 @@
       "expired": "Vencida",
       "none": "N/A"
     },
-    "defaults": {
-      "title": "Configuración de garantía predeterminada",
-      "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
-    }
+    "statementLabel": "Lo que se le dice al cliente sobre la garantía",
+    "statement": {
+      "none": "Sin indicar",
+      "included": "Incluida",
+      "not_included": "No incluida"
+    },
+    "noneHint": "En este documento no se imprime nada sobre la garantía.",
+    "mileageWithUnit": "Límite de distancia ({unit})",
+    "notIncludedNotes": "Declaración al cliente",
+    "notIncludedPlaceholder": "p. ej. El taller no ofrece garantía sobre piezas aportadas por el cliente.",
+    "printedHint": "Se imprime bajo la garantía en el documento.",
+    "notIncludedHint": "Si lo deja vacío, el documento dice que los derechos legales no se ven afectados.",
+    "summaryMonths": "{count} m."
   },
   "concerns": {
     "title": "Motivos del cliente",
-    "addFirst": "Añadir un motivo del cliente",
+    "hint": "Por qué vino el cliente, con sus propias palabras. Una fila por cada cosa que mencionó.",
     "add": "Añadir otro",
     "placeholder": "Hace un ruido detrás cuando freno",
     "remove": "Quitar este punto",
     "notAnswered": "Todavía no se ha encontrado nada",
-    "answered": "{count} hallazgo(s) sobre esto"
+    "answered": "{count} hallazgo(s) sobre esto",
+    "storyTitle": "Descripción del trabajo",
+    "storyHint": "Condición, causa, corrección, confirmación. Haz clic en un paso para abrirlo; una fila por cada cosa que mencionó el cliente o que observaste.",
+    "steps": {
+      "condition": "Condición",
+      "cause": "Causa",
+      "correction": "Corrección",
+      "confirm": "Confirmación"
+    },
+    "conditionPlaceholder": "Lo que informó el cliente o lo que observaste",
+    "causePlaceholder": "Qué causa raíz mostraron las pruebas",
+    "correctionPlaceholder": "Qué se hizo para repararlo",
+    "confirmPlaceholder": "Cómo se comprobó la reparación: prueba de conducción, nuevo escaneo, síntoma desaparecido",
+    "markConfirmed": "Confirmado",
+    "confirmedBy": "Confirmado por {name}, {date}",
+    "confirmedAt": "Confirmado el {date}",
+    "confirmedOnSave": "Se firma con tu nombre al guardar",
+    "confirmedCount": "{confirmed} de {total} confirmados",
+    "findingsCount": "{count, plural, one {# observación} other {# observaciones}}",
+    "addFinding": "Añadir observación",
+    "unconfirmedTitle": "¿Completar con motivos sin confirmar?",
+    "unconfirmedBody": "{count, plural, one {Un motivo no se ha confirmado como reparado:} other {# motivos no se han confirmado como reparados:}}",
+    "unconfirmedProceed": "Completar igualmente",
+    "addMedia": "Añadir fotos o vídeo",
+    "mediaUploading": "Subiendo…",
+    "mediaAdded": "{count, plural, one {# archivo añadido} other {# archivos añadidos}}",
+    "mediaFailed": "No se pudo subir {name}",
+    "mediaTypes": "Elige una foto (JPG, PNG, WebP) o un vídeo.",
+    "dictate": {
+      "start": "Dictar",
+      "listening": "Escuchando",
+      "startHint": "Habla y se escribe aquí. No se graba nada.",
+      "stopHint": "Dejar de escuchar",
+      "notAllowed": "El navegador no tiene permiso para usar el micrófono. Permítelo para este sitio e inténtalo de nuevo.",
+      "noMicrophone": "No se encontró ningún micrófono.",
+      "failed": "El dictado se detuvo. Inténtalo de nuevo.",
+      "startHintServer": "Habla y se escribe mientras hablas. El audio va a tu modelo de voz para transcribirlo y no se guarda.",
+      "transcribing": "Terminando…",
+      "language": "Idioma hablado",
+      "auto": "Auto",
+      "nothingHeard": "No se oyó nada.",
+      "fellBack": "Usando por ahora el dictado del propio navegador.",
+      "autoLong": "Auto (detectar el idioma)",
+      "engine": "Transcrito por",
+      "engineAi": "Modelo de voz (más preciso)",
+      "engineBrowser": "Navegador (escribe mientras hablas)",
+      "liveFellBack": "Escribiendo en tramos de unos segundos en lugar de palabra por palabra."
+    },
+    "stepEmpty": "Sin escribir todavía",
+    "removeTitle": "¿Quitar este motivo?",
+    "removeBody": "Su condición, causa, corrección y confirmación se eliminan con él al guardar la orden de trabajo.",
+    "removeAttached": "Sus observaciones y archivos siguen en el trabajo, ya no archivados bajo un motivo.",
+    "removeConfirm": "Quitar motivo",
+    "saveFirst": "Guarda primero la orden de trabajo"
   },
   "videoCall": {
     "title": "Videollamada",
@@ -474,5 +578,175 @@
       "joinLine": "Únete a la videollamada aquí: {url}",
       "emailSubject": "Videollamada sobre tu {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Estado de la orden de trabajo",
+    "back": "Atrás",
+    "backToClassic": "Volver al diseño clásico",
+    "openCustomer": "Abrir cliente",
+    "serviceHistory": "Historial de servicio",
+    "changeVehicle": "Cambiar vehículo",
+    "vehicleChangesOnSave": "La orden de trabajo pasa a este vehículo al guardar.",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "notSet": "Sin definir",
+    "noCustomer": "No hay cliente en esta orden de trabajo.",
+    "invoiceTitle": "Factura y pago",
+    "filesTitle": "Archivos y multimedia",
+    "activity": {
+      "title": "Actividad",
+      "messageSent": "Mensaje enviado al cliente",
+      "linkShared": "Enlace de la factura compartido",
+      "linkViewed": "{count, plural, one {El cliente abrió el enlace} other {El cliente abrió el enlace # veces}}",
+      "paymentTaken": "Pago de {amount} registrado",
+      "statusSet": "Estado cambiado a {status}"
+    },
+    "invite": {
+      "title": "La página de la orden de trabajo se ha renovado.",
+      "body": "Un diseño más claro con los mismos campos. Puedes volver al anterior cuando quieras.",
+      "try": "Probar ahora",
+      "dismiss": "Ahora no",
+      "menu": "Probar el nuevo diseño"
+    },
+    "promised": "Prometido el {date}",
+    "promisedOverdue": "Prometido el {date}, con retraso",
+    "opened": "Abierta el {date}",
+    "openedBy": "Abierta el {date} por {name}",
+    "editTitle": "Editar título",
+    "titleField": "Título",
+    "media": {
+      "tabs": {
+        "photos": "Fotos",
+        "diagnostics": "Diagnóstico",
+        "dropoff": "Recepción"
+      },
+      "summary": "{count, plural, one {# archivo} other {# archivos}} · se comparten con el cliente solo si se marcan",
+      "customerCanSee": "Visible para el cliente",
+      "showToCustomer": "Mostrar al cliente",
+      "hideFromCustomer": "Ocultar al cliente",
+      "add": {
+        "image": "Añadir fotos",
+        "document": "Añadir documentos",
+        "diagnostic": "Añadir informe de diagnóstico",
+        "video": "Añadir vídeo",
+        "dropoff": "Añadir fotos de recepción"
+      },
+      "dropHint": "Suelta archivos aquí o haz clic para explorar",
+      "added": "{count, plural, one {# archivo añadido} other {# archivos añadidos}}",
+      "failed": "No se pudo subir {name}",
+      "wrongType": "No es el tipo de archivo adecuado para esta pestaña: {names}",
+      "limit": "Límite alcanzado ({count}/{max})",
+      "dropoffHint": "El coche tal como llegó, con la hora de cada foto. Se guarda para el taller y no se muestra al cliente salvo que usted lo decida.",
+      "onInvoice": "Incluir el estado del vehículo en esta factura",
+      "onInvoiceHint": "Desactivado salvo que lo marque aquí. Para imprimirlo en todas las facturas, active Estado del vehículo en el diseñador de facturas.",
+      "onInvoiceByDesign": "Activado en el diseñador de facturas para todas las facturas. Desmarque para omitirlo en esta.",
+      "onInvoiceFailed": "No se pudo guardar la opción"
+    },
+    "moneyBar": {
+      "total": "Total",
+      "paid": "Pagado",
+      "balance": "Saldo pendiente",
+      "settled": "Pagado por completo",
+      "takePayment": "Cobrar",
+      "preview": "Vista previa de la factura",
+      "previewShort": "Vista previa",
+      "send": "Enviar al cliente",
+      "sendShort": "Enviar"
+    },
+    "vehicleInfo": {
+      "more": "Más información",
+      "less": "Menos información",
+      "copy": "Copiar {label}",
+      "copied": "Copiado",
+      "lastInspection": "Última inspección periódica",
+      "purchaseDate": "Fecha de compra",
+      "purchasePrice": "Precio de compra",
+      "overdue": "vencida",
+      "customerSince": "Cliente desde"
+    },
+    "moreStatuses": "Más estados",
+    "fromInspection": "De la inspección {name}, {date}",
+    "startInspection": "Iniciar inspección"
+  },
+  "photoHandoff": {
+    "button": "Añadir desde el móvil",
+    "dialogTitle": "Añadir fotos y documentos desde un móvil",
+    "dialogBody": "Haz o elige fotos, o comparte un PDF, con cualquier móvil. Todo llega directamente a esta orden de trabajo.",
+    "expires": "El código funciona hasta las {time}.",
+    "waiting": "Esperando fotos y documentos…",
+    "received": "{count, plural, one {# archivo recibido} other {# archivos recibidos}}",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado",
+    "failed": "No se pudo crear un código. Inténtalo de nuevo.",
+    "done": "Hecho",
+    "pageTitle": "Añadir fotos y documentos",
+    "forJob": "Orden de trabajo {number}",
+    "takePhoto": "Hacer foto",
+    "choosePhotos": "Elegir fotos",
+    "hint": "Todo llega directamente a la orden de trabajo. Haz todas las fotos que necesites.",
+    "uploading": "Subiendo…",
+    "added": "Añadida",
+    "notAdded": "No añadida",
+    "retry": "Inténtalo de nuevo",
+    "addedCount": "{count, plural, one {# archivo añadido} other {# archivos añadidos}}",
+    "expiredTitle": "Este código ha caducado",
+    "invalidTitle": "Este enlace no funciona",
+    "errors": {
+      "expired": "Pide un código nuevo en el mostrador. Cada uno funciona durante 30 minutos.",
+      "invalid": "Vuelve a escanear el código de la orden de trabajo.",
+      "limit": "Esta orden de trabajo ya tiene todas las fotos que admite.",
+      "type": "Aquí solo se pueden añadir fotos y documentos PDF.",
+      "tooLarge": "Ese archivo es demasiado grande.",
+      "failed": "La foto no se añadió. Comprueba la conexión e inténtalo de nuevo.",
+      "codeLimit": "Este código ya ha añadido todas las fotos que permite un código. Escanea un código nuevo en el mostrador."
+    },
+    "concernHeading": "Las fotos van a este motivo",
+    "howTitle": "Cómo funciona",
+    "step1": "Apunta la cámara del móvil al código y abre el enlace.",
+    "step2": "Haz fotos o elige fotos o documentos PDF que ya estén en el móvil.",
+    "step3": "Aparecen en esta orden de trabajo en cuanto llegan.",
+    "noSignIn": "No hace falta iniciar sesión en el móvil.",
+    "customerToo": "Lo puede usar el personal, y también el cliente: deja que escanee el código o envíale el enlace.",
+    "scope": "El enlace solo añade fotos y documentos a esta orden de trabajo y deja de funcionar a los 30 minutos.",
+    "scanHint": "Escanea con la cámara del móvil",
+    "chooseDocument": "Subir un documento",
+    "privacy": "Solo el taller ve lo que añades aquí.",
+    "dropoff": {
+      "button": "Fotos de recepción",
+      "dialogTitle": "Fotografiar el coche a su llegada",
+      "dialogBody": "Una vuelta al coche antes de empezar: los cuatro lados, el cuentakilómetros y los daños que ya tenga. Es su prueba si algún día se discute un arañazo.",
+      "step2": "Siga la lista en el móvil: una foto de cada lado, el cuentakilómetros y los daños.",
+      "scope": "El enlace solo añade fotos de recepción a esta orden de trabajo y deja de funcionar a los 30 minutos.",
+      "pageTitle": "El coche a su llegada",
+      "pageBody": "Haga cada foto por orden. Añada un primer plano de los daños que ya existan.",
+      "retake": "Repetir",
+      "slots": {
+        "front": "Frontal",
+        "right": "Lado derecho",
+        "rear": "Trasera",
+        "left": "Lado izquierdo",
+        "odometer": "Cuentakilómetros",
+        "other": "Daño u otro"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Código de pago",
+    "title": "Pagar escaneando",
+    "body": "El cliente lo escanea con la cámara del móvil, se abre la factura y paga allí.",
+    "sharesInvoice": "Mostrar el código comparte la factura con el cliente, igual que enviarla. Desde ese momento la factura conserva los datos que tiene ahora.",
+    "show": "Mostrar el código",
+    "failed": "No se pudo crear el código. Inténtalo de nuevo.",
+    "toPay": "A pagar",
+    "scanHint": "Escanear con la cámara del móvil",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado",
+    "waiting": "Esperando el pago. Se actualiza solo.",
+    "paid": "Pago recibido",
+    "paidBody": "El pago ya está en la orden de trabajo.",
+    "done": "Listo"
+  },
+  "customStatus": {
+    "defaultMessage": "Hola {customer_name}, novedades sobre su {vehicle}: {status}. {company_name}"
   }
 }

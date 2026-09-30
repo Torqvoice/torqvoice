@@ -23,7 +23,7 @@ import {
 } from '@/features/settings/Lib/featureHints'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
-const LOCALES = ['de', 'es', 'fr', 'it', 'lt', 'nb', 'nl', 'pl', 'pt-BR', 'ru', 'tr']
+const LOCALES = ['de', 'es', 'fr', 'it', 'lt', 'nb', 'nl', 'pl', 'pt-BR', 'pt-PT', 'ru', 'tr']
 
 const TIRE = SETTING_KEYS.TIRE_HOTEL_ENABLED
 const HINT = HINT_FOR_SETTING[TIRE]

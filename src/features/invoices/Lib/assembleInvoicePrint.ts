@@ -25,7 +25,10 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { formatDateForPdf } from '@/lib/format'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
-import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  type InvoiceLayoutConfig,
+  mergeWithDefaults,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   InvoiceData,
   InvoiceSettingsProps,
@@ -35,6 +38,7 @@ import type {
 } from '@/features/vehicles/Components/invoice-pdf/types'
 import {
   designSourceFromSettings,
+  designSourceFromSnapshot,
   designSourceFromStored,
   templateConfigFromSource,
   type DesignSource,
@@ -44,7 +48,19 @@ import {
   designRuleSubjectOf,
   findRuleDesign,
 } from '@/features/invoice-designer/Lib/designRules.server'
-import { readIssuedInvoiceData, rendersFromIssue, type IssuedInvoiceData } from './issuedInvoice'
+import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
+import {
+  readIssuedInvoiceData,
+  rendersFromIssue,
+  thawConditionMap,
+  type InvoiceConditionMap,
+  type IssuedInvoiceData,
+} from './issuedInvoice'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  loadMarkTypeRows,
+  loadVisitConditionMap,
+} from '@/features/condition-map/Lib/loadMarks.server'
 
 const PARTY_SELECT = {
   name: true,
@@ -75,12 +91,17 @@ const RECORD_INCLUDE = {
       year: true,
       vin: true,
       licensePlate: true,
+      hsn: true,
+      tsn: true,
       mileage: true,
       customer: { select: PARTY_SELECT },
     },
   },
   issuedDesignSnapshot: true,
   issuedLogoSnapshot: true,
+  issuedSignatureSnapshot: true,
+  // Whoever opened the job signs it.
+  createdBy: { select: { id: true, name: true } },
 }
 
 export type InvoiceRecordForPrint = NonNullable<Awaited<ReturnType<typeof loadRecord>>>
@@ -115,11 +136,23 @@ export interface InvoicePrintAssembly {
   template: TemplateConfig
   layoutConfig: InvoiceLayoutConfig
   logoDataUri?: string
+  /** Who signs the sheet: whoever opened the job, with their saved signature. */
+  signer: PrintSigner
   paymentSummary?: PaymentSummary
   /** The look in the shape a snapshot stores. */
   designSource: DesignSource
   /** What the print labels derive from: the frozen service type and tax label. */
   labelSettings: Record<string, string>
+  /**
+   * The car's condition this visit: the job's drop-off and its linked
+   * inspection, as issued on an issued invoice. Absent when nothing was noted.
+   */
+  conditionMap?: InvoiceConditionMap | null
+}
+
+export interface PrintSigner {
+  name: string
+  dataUri?: string
 }
 
 const MIME_BY_EXT: Record<string, string> = {
@@ -141,6 +174,12 @@ async function loadLogoDataUri(logoPath: string): Promise<string | undefined> {
   }
 }
 
+/** The little of an invoice that decides which design it prints with. */
+export interface DesignSubject {
+  designId: string | null
+  vehicleId: string | null
+}
+
 /**
  * The design a draft prints with: the invoice's own choice, then the
  * customer's, then whatever the settings describe. A choice that points at
@@ -150,7 +189,7 @@ async function loadLogoDataUri(logoPath: string): Promise<string | undefined> {
 async function resolveLiveDesign(
   organizationId: string,
   settingsMap: Record<string, string>,
-  record: InvoiceRecordForPrint,
+  record: DesignSubject,
   customerDesignId: string | null | undefined
 ): Promise<DesignSource> {
   // The invoice's own choice, then its customer's, then whichever design
@@ -170,20 +209,87 @@ async function resolveLiveDesign(
   return designSourceFromSettings(settingsMap, 'invoice')
 }
 
-function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettingsProps {
+/**
+ * Whether the design this job's invoice prints with has Vehicle Condition
+ * switched on, which puts the map on every invoice. The drop-off tab shows
+ * its own switch as already made when it is.
+ */
+export async function invoiceDesignPrintsConditionMap(
+  organizationId: string,
+  record: DesignSubject,
+  customerDesignId: string | null | undefined
+): Promise<boolean> {
+  const settings = await db.appSetting.findMany({
+    where: { organizationId },
+    select: { key: true, value: true },
+  })
+  const settingsMap: Record<string, string> = {}
+  for (const s of settings) settingsMap[s.key] = s.value
+  const source = await resolveLiveDesign(organizationId, settingsMap, record, customerDesignId)
+  const layout = mergeWithDefaults(source.layout)
+  return layout.sections.find((s) => s.id === 'condition_map')?.visible === true
+}
+
+/** A design together with the logo it prints. */
+export interface DesignLook {
+  designSource: DesignSource
+  logoDataUri?: string
+}
+
+/**
+ * A design plus the logo it points at, which is the design's own if it sets
+ * one and the workshop's otherwise.
+ */
+export async function designLook(
+  settingsMap: Record<string, string>,
+  designSource: DesignSource
+): Promise<DesignLook> {
+  const logoPath =
+    designSource.template.logoUrl?.trim() || settingsMap[SETTING_KEYS.COMPANY_LOGO]?.trim() || ''
+  return { designSource, logoDataUri: await loadLogoDataUri(logoPath) }
+}
+
+/**
+ * The look an invoice would print with right now. Split out of the live
+ * assembly because re-applying a design to an issued invoice needs exactly
+ * this and nothing else, and building a whole sheet per invoice to get it
+ * would make a bulk run crawl.
+ */
+export async function currentLook(
+  organizationId: string,
+  settingsMap: Record<string, string>,
+  record: DesignSubject,
+  customerDesignId: string | null | undefined
+): Promise<DesignLook> {
+  return designLook(
+    settingsMap,
+    await resolveLiveDesign(organizationId, settingsMap, record, customerDesignId)
+  )
+}
+
+/** Exported for the tests that pin down what an absent setting means. */
+export function liveInvoiceSettings(settingsMap: Record<string, string>): InvoiceSettingsProps {
   return {
     bankAccount: settingsMap['invoice.bankAccount'] || '',
     orgNumber: settingsMap['invoice.orgNumber'] || '',
     paymentTerms: settingsMap['invoice.paymentTerms'] || '',
     footerNote: settingsMap['invoice.footerNote'] || '',
-    showBankAccount: settingsMap['invoice.showBankAccount'] === 'true',
-    showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
+    // Absent means shown. These two predate the designer, when the invoice
+    // settings page carried a switch for each; the designer replaced them with
+    // the header's own field switches and the switch was deleted, so no
+    // organization onboarded since has ever had the row. Read as `=== 'true'`
+    // they were false for all of them, and the org number could not be printed
+    // in the header at all, whatever the designer showed. An organization that
+    // did turn the old switch off still has its 'false' and is still obeyed.
+    showBankAccount: settingsMap['invoice.showBankAccount'] !== 'false',
+    showOrgNumber: settingsMap['invoice.showOrgNumber'] !== 'false',
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
     currencyFormat: settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol',
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
+    timeFormat: settingsMap['workshop.timeFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
   }
 }
@@ -267,19 +373,29 @@ async function assembleLive(
   settingsMap: Record<string, string>
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
-  const [findings, customFields, designSource] = await Promise.all([
+  const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
     db.vehicleFinding.findMany({
       where: { serviceRecordId: record.id, status: { not: 'resolved' } },
       select: { description: true, severity: true, notes: true },
       orderBy: { createdAt: 'desc' },
     }),
     getCustomFieldsForPrint(organizationId, record.id, 'service_record'),
-    resolveLiveDesign(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
+    currentLook(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
+    memberSignatureDataUri(organizationId, record.createdBy?.id),
+    loadVisitConditionMap(organizationId, record.vehicleId, {
+      serviceRecordId: record.id,
+      linkedInspectionId: record.inspectionId,
+    }).then(async (map) =>
+      map
+        ? {
+            ...map,
+            onInvoice: record.conditionMapOnInvoice,
+            types: await loadMarkTypeRows(organizationId),
+          }
+        : null
+    ),
   ])
-
-  const logoPath =
-    designSource.template.logoUrl?.trim() || settingsMap[SETTING_KEYS.COMPANY_LOGO]?.trim() || ''
-  const logoDataUri = await loadLogoDataUri(logoPath)
+  const { designSource, logoDataUri } = look
 
   const invoiceSettings = liveInvoiceSettings(settingsMap)
   const workshop: WorkshopInfo = {
@@ -297,7 +413,10 @@ async function assembleLive(
     ...record,
     customer: partyOf(record.customer),
     vehicle: record.vehicle
-      ? { ...record.vehicle, customer: partyOf(record.vehicle.customer) }
+      ? {
+          ...gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
+          customer: partyOf(record.vehicle.customer),
+        }
       : null,
     customFields,
     findings,
@@ -317,6 +436,7 @@ async function assembleLive(
     template,
     layoutConfig: template.layoutConfig!,
     logoDataUri,
+    signer: { name: record.createdBy?.name ?? '', dataUri: signatureDataUri },
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
     labelSettings: {
@@ -324,6 +444,7 @@ async function assembleLive(
       'workshop.taxLabel': taxLabel ?? '',
       'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
     },
+    conditionMap,
   }
 }
 
@@ -338,7 +459,7 @@ function assembleFrozen(
   // A snapshot that cannot be read falls back to the live look rather than
   // to nothing: the words on the sheet are still the frozen ones.
   const designSource =
-    (snapshot && designSourceFromStored(snapshot.layout, snapshot.template)) ||
+    (snapshot && designSourceFromSnapshot(snapshot.layout, snapshot.template)) ||
     designSourceFromSettings(settingsMap, 'invoice')
   const template = templateConfigFromSource(designSource)
   const logoDataUri = record.issuedLogoSnapshot
@@ -367,6 +488,8 @@ function assembleFrozen(
           year: frozen.vehicle.year,
           vin: frozen.vehicle.vin ?? null,
           licensePlate: frozen.vehicle.licensePlate ?? null,
+          hsn: frozen.vehicle.hsn ?? null,
+          tsn: frozen.vehicle.tsn ?? null,
           mileage: frozen.vehicle.mileage ?? record.vehicle?.mileage ?? 0,
           customer: null,
         }
@@ -389,6 +512,14 @@ function assembleFrozen(
     template,
     layoutConfig: template.layoutConfig!,
     logoDataUri,
+    // Invoices issued before signatures existed froze no signer, and print
+    // the line unsigned rather than borrowing today's signature.
+    signer: {
+      name: frozen.signerName ?? '',
+      dataUri: record.issuedSignatureSnapshot
+        ? assetDataUri(record.issuedSignatureSnapshot)
+        : undefined,
+    },
     paymentSummary: paymentSummaryOf(record, invoiceSettings.dateFormat, invoiceSettings.timezone),
     designSource,
     labelSettings: {
@@ -396,6 +527,9 @@ function assembleFrozen(
       'workshop.taxLabel': taxLabel ?? '',
       'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
     },
+    // As it was when issued. An invoice issued before it printed the map has
+    // none, and never borrows today's marks.
+    conditionMap: thawConditionMap(frozen.conditionMap),
   }
 }
 

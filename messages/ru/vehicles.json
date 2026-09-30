@@ -28,10 +28,10 @@
     "unarchiveError": "Не удалось разархивировать транспортное средство",
     "deleteError": "Не удалось удалить транспортное средство",
     "error": "Не удалось загрузить транспортные средства",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Таблица",
+    "viewGrid": "Сетка",
+    "viewLargeGrid": "Крупная сетка",
+    "openMenu": "Открыть меню",
     "inspectionOverdue": "Техосмотр просрочен",
     "inspectionDue30": "В течение 30 дней",
     "inspectionDue90": "В течение 90 дней",
@@ -95,12 +95,13 @@
     "severityModerate": "Умеренно — отмечено некоторыми владельцами",
     "severityUncommon": "Нечасто — отмечено немногими владельцами",
     "severityRare": "Редко — единичные случаи, но критично при возникновении",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Открыть меню",
+    "dismissMaintenance": "Отклонить",
     "inspectionDue": "Техосмотр до {date}",
     "inspectionCheckedAt": "Проверено в реестре {date}",
     "notRegistered": "Не зарегистрирован",
-    "soldReported": "Клиент сообщил о продаже {date}"
+    "soldReported": "Клиент сообщил о продаже {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Новое предложение",
@@ -114,7 +115,7 @@
   "inspections": {
     "newInspection": "Новый осмотр",
     "empty": "Осмотров пока нет",
-    "template": "Шаблон",
+    "template": "Чек-лист",
     "progress": "Прогресс",
     "status": "Статус",
     "date": "Дата",
@@ -184,10 +185,10 @@
     "showing": "Показано {start}-{end} из {total}",
     "perPage": "на странице",
     "page": "Страница {page} из {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница"
   },
   "notes": {
     "addNote": "Добавить заметку",
@@ -213,11 +214,11 @@
     "noteCreated": "Заметка создана",
     "titleRequired": "Название и содержание обязательны",
     "saveError": "Не удалось сохранить заметку",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Открыть меню",
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница"
   },
   "findings": {
     "sectionTitle": "Наблюдения",
@@ -266,11 +267,11 @@
     "showing": "Показано {start}-{end} из {total}",
     "perPage": "на странице",
     "page": "Страница {page} из {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница",
+    "openMenu": "Открыть меню",
     "concernLabel": "К какому пункту относится?",
     "concernNone": "Клиент об этом не спрашивал"
   },
@@ -323,6 +324,12 @@
     "cvt": "Вариатор",
     "engineSize": "Объём двигателя",
     "engineCode": "Код двигателя",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Из немецкого свидетельства о регистрации: HSN указан в поле 2.1, TSN — первые три символа поля 2.2.",
+    "hsnInvalid": "HSN состоит из четырёх цифр, из поля 2.1 свидетельства о регистрации.",
+    "tsnInvalid": "TSN состоит из трёх букв или цифр, это начало поля 2.2 свидетельства о регистрации.",
     "makeMarine": "Производитель *",
     "mileageMarine": "Моточасы",
     "transmissionMarine": "Тип Двигателя",
@@ -362,7 +369,10 @@
     "inspectionDue": "Следующий техосмотр",
     "inspectionDueHint": "Введите дату, если её не даёт реестр. Её используют напоминания и панель.",
     "inspectionDueFromRegistry": "Из реестра транспортных средств. Измените здесь, чтобы переопределить до следующей синхронизации.",
-    "lookupEnterPlateOrVin": "Сначала введите номер или VIN"
+    "lookupVin": "Найти по VIN",
+    "lookupEnterVin": "Сначала введите VIN",
+    "lookupVinNotFound": "Автомобиль с таким VIN не найден",
+    "lookupVinFailed": "Не удалось найти VIN"
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",
@@ -373,10 +383,10 @@
     "archiveError": "Не удалось архивировать транспортное средство"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Первая страница",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "lastPage": "Последняя страница"
   },
   "inspectionReminders": {
     "title": "Напоминания о техосмотре",

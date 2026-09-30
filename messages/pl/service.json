@@ -21,7 +21,8 @@
       "title": "Zlecenie musi mieć tytuł, zanim będzie można je zapisać.",
       "negative": "Ilości, godziny, ceny i koszty nie mogą być ujemne.",
       "partName": "Każda część z ceną musi mieć nazwę.",
-      "laborDescription": "Każda pozycja robocizny z godzinami lub stawką musi mieć opis."
+      "laborDescription": "Każda pozycja robocizny z godzinami lub stawką musi mieć opis.",
+      "concernCondition": "Zgłoszenie z przyczyną, naprawą lub weryfikacją musi mieć wypełniony objaw."
     }
   },
   "header": {
@@ -41,7 +42,27 @@
     "unpaid": "Niezapłacone",
     "unsavedChanges": "Niezapisane zmiany",
     "saved": "Zapisano",
-    "joinCall": "Dołącz do rozmowy wideo"
+    "joinCall": "Dołącz do rozmowy wideo",
+    "moreActions": "Więcej działań",
+    "designMenu": "Projekt faktury",
+    "designMenuLoading": "Sprawdzanie, z jakim projektem drukuje się ta faktura...",
+    "designMenuExplain": "Trafiła do klienta {date}, więc nadal drukuje się z projektem z chwili wysyłki. Wybór innego zmienia tylko wygląd. To, co faktura mówi, pozostaje takie jak przy wysyłce, a poprzedni wygląd nie jest zachowywany.",
+    "designSentWith": "Projekt z chwili wysyłki",
+    "designFollow": "Zgodnie z bieżącym domyślnym",
+    "designFollowNamed": "Zgodnie z bieżącym domyślnym ({name})",
+    "designDefaultName": "bieżący domyślny projekt",
+    "designPickConfirmTitle": "Zmienić tę fakturę na {name}?",
+    "designPickConfirmBody": "Zmienia się tylko wygląd. Dane warsztatu, klient, warunki płatności i kwoty pozostają dokładnie takie, jakie zostały wysłane. Obecny projekt nie jest zachowywany, więc tej operacji nie można cofnąć.",
+    "designPickConfirm": "Zmień projekt",
+    "designPickDone": "Faktura drukuje się teraz z projektem {name}",
+    "designPickFailed": "Nie udało się zmienić projektu",
+    "designRefresh": "Zaktualizuj do bieżących danych",
+    "designRefreshConfirmTitle": "Zaktualizować tę fakturę do bieżących danych?",
+    "designRefreshConfirmBody": "Dane warsztatu, klient, pojazd, warunki płatności i projekt zostaną wczytane ponownie w obecnej postaci, a faktura zostanie na nich zablokowana. Jej pozycje i sumy należą do samej faktury i nie zmieniają się. Kopie już pobrane lub wysłane e-mailem pozostają bez zmian; link do udostępniania i portal pokazują zaktualizowaną fakturę. Tej operacji nie można cofnąć.",
+    "designRefreshConfirm": "Zaktualizuj fakturę",
+    "designRefreshDone": "Ta faktura jest teraz drukowana z bieżącymi danymi",
+    "designRefreshFailed": "Nie udało się zaktualizować faktury",
+    "printWorkOrder": "Drukuj zlecenie"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",
@@ -89,7 +110,6 @@
     "design": "Projekt faktury",
     "designDefault": "Domyślny warsztatu",
     "designFollowing": "Domyślny ({name})",
-    "designPinned": "Arkusz został zamrożony przy wystawieniu faktury {date}. Nowy wybór zadziała dopiero, gdy właściciel odblokuje fakturę i zostanie ona wysłana ponownie.",
     "designSaved": "Projekt faktury zaktualizowany",
     "designFollowingRule": "Domyślny ({name}, {rule})",
     "designRule": {
@@ -122,7 +142,7 @@
     "scanTitle": "Skanuj kod kreskowy",
     "partFound": "Dodano \"{name}\" z magazynu",
     "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\"",
-    "deleteRow": "Delete row",
+    "deleteRow": "Usuń wiersz",
     "outOfStock": "Brak w magazynie",
     "onBackorder": "W zamówieniu ({count})",
     "nameMissingHint": "Wiersze bez nazwy części nie są zapisywane."
@@ -137,20 +157,27 @@
     "total": "Razem",
     "descriptionPlaceholder": "Opis *",
     "subtotal": "Razem Praca: {amount}",
-    "addService": "Add Service",
+    "addService": "Dodaj Usługę",
     "addFinding": "Obserwacja",
     "newObservation": "Nowa obserwacja",
     "addExisting": "Pokaż istniejące ({count})",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "qty": "Ilość",
+    "qtyOrHours": "Jednostka / Godziny",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
-    "switchToServiceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
-    "deleteRow": "Delete row",
-    "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane."
+    "hourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
+    "serviceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
+    "deleteRow": "Usuń wiersz",
+    "descriptionMissingHint": "Wiersze bez opisu nie są zapisywane.",
+    "shopFeeTag": "Opłata",
+    "shopFeeHintFlat": "Opłata warsztatowa z Ustawień jako stała kwota. Zmień cenę dla tego zlecenia lub usuń pozycję, aby ją pominąć.",
+    "shopFeeHintPercentLabor": "Opłata warsztatowa z Ustawień: {percent} % robocizny w tym zleceniu. Usuń pozycję, aby ją pominąć.",
+    "shopFeeHintPercentAll": "Opłata warsztatowa z Ustawień: {percent} % robocizny i części w tym zleceniu. Usuń pozycję, aby ją pominąć."
+  },
+  "liveLabor": {
+    "title": "{count, plural, one {Mechanik dodał pozycję robocizny do tego zlecenia} few {Mechanik dodał # pozycje robocizny do tego zlecenia} many {Mechanik dodał # pozycji robocizny do tego zlecenia} other {Mechanik dodał # pozycji robocizny do tego zlecenia}}",
+    "body": "Pozostaje poza listą podczas edycji. Następny zapis i tak ją uwzględni.",
+    "show": "Pokaż"
   },
   "totals": {
     "title": "Razem",
@@ -186,7 +213,9 @@
     "aiOverwriteReplace": "Zastąp",
     "aiOverwriteAppend": "Dołącz",
     "aiOverwriteCancel": "Anuluj",
-    "aiDontShowAgain": "Nie pokazuj ponownie"
+    "aiDontShowAgain": "Nie pokazuj ponownie",
+    "internalTitle": "Notatki wewnętrzne",
+    "publicTitle": "Notatki dla klienta"
   },
   "invoice": {
     "title": "Podsumowanie Faktury",
@@ -236,7 +265,10 @@
     "failedDelete": "Nie udało się usunąć płatności",
     "deleteTitle": "Usuń Płatność",
     "deleteDescription": "Spowoduje to usunięcie tego rekordu płatności.",
-    "failedPdf": "Nie udało się wygenerować faktury PDF"
+    "failedPdf": "Nie udało się wygenerować faktury PDF",
+    "received": "Otrzymane płatności",
+    "noneYet": "Nic jeszcze nie zapłacono.",
+    "balanceDue": "Pozostało do zapłaty"
   },
   "attachments": {
     "deleteTitle": "Usuń Załącznik",
@@ -247,8 +279,8 @@
     "videos": "Wideo ({count})",
     "diagnostics": "Raporty Diagnostyczne ({count})",
     "documents": "Dokumenty ({count})",
-    "download": "Download",
-    "close": "Close"
+    "download": "Pobierz",
+    "close": "Zamknij"
   },
   "share": {
     "title": "Udostępnij Fakturę",
@@ -265,7 +297,7 @@
     "failedEmail": "Nie udało się wysłać email",
     "smsSent": "SMS wysłany",
     "failedSms": "Nie udało się wysłać SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Kopiuj link"
   },
   "sidebar": {
     "vehicle": "Pojazd",
@@ -345,6 +377,7 @@
     "date": "Data",
     "startTime": "Czas rozpoczęcia",
     "endTime": "Czas zakończenia",
+    "durationPresets": "Czas trwania",
     "technician": "Technik",
     "selectTechnician": "Wybierz technika...",
     "searchOrCreate": "Szukaj lub utwórz technika...",
@@ -357,11 +390,11 @@
     "assign": "Przypisz do tablicy",
     "assigned": "Przypisano do tablicy roboczej",
     "failedAssign": "Przypisanie nie powiodło się",
+    "assignNotAllowed": "Nie masz uprawnień do przypisywania techników. Poproś właściciela lub administratora o zezwolenie Twojej roli na zmiany na tablicy pracy.",
     "endBeforeStart": "Czas zakończenia musi być po czasie rozpoczęcia",
     "failedUpdate": "Nie udało się zaktualizować harmonogramu",
     "splitCreated": "Zadanie obejmuje wiele dni — kontynuacja utworzona na następny dzień",
-    "platformUsers": "Platform Users",
-    "customTechnicians": "Custom",
+    "customTechnicians": "Własne",
     "readMore": "Czytaj więcej",
     "setDefaults": "Ustaw domyślne",
     "workBay": "Stanowisko",
@@ -383,7 +416,17 @@
     "pickNextAvailable": "Wybierz najbliższy wolny termin",
     "findingSlot": "Szukanie terminu…",
     "slotPicked": "Zaplanowano na najbliższy wolny termin",
-    "noSlotFound": "Nie znaleziono wolnego terminu w najbliższych tygodniach"
+    "noSlotFound": "Nie znaleziono wolnego terminu w najbliższych tygodniach",
+    "assignedTitle": "Przypisany technik",
+    "boardLink": "Tablica zleceń",
+    "someoneElse": "Ktoś inny",
+    "loadOf": "{booked} / {capacity} h",
+    "loadFree": "Wolne: {hours} h",
+    "loadFull": "Pełne obłożenie",
+    "loadOn": "Zajęte godziny w dniu {date}",
+    "promisedAt": "Termin obiecany klientowi",
+    "promisedPlaceholder": "Jeszcze nie obiecano",
+    "promisedClear": "Wyczyść"
   },
   "notifications": {
     "title": "Powiadomienia klienta",
@@ -400,7 +443,6 @@
   "warranty": {
     "title": "Gwarancja",
     "months": "Czas trwania (miesiące)",
-    "mileage": "Limit przebiegu",
     "notes": "Warunki gwarancji",
     "notesPlaceholder": "np. 12-miesięczna gwarancja na wszystkie części i robociznę...",
     "expiresAt": "Wygasa",
@@ -416,19 +458,81 @@
       "expired": "Wygasła",
       "none": "Brak"
     },
-    "defaults": {
-      "title": "Domyślne ustawienia gwarancji",
-      "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
-    }
+    "statementLabel": "Co klient dowiaduje się o gwarancji",
+    "statement": {
+      "none": "Nie podano",
+      "included": "Udzielona",
+      "not_included": "Nieudzielona"
+    },
+    "noneHint": "Na tym dokumencie nie drukuje się nic o gwarancji.",
+    "mileageWithUnit": "Limit dystansu ({unit})",
+    "notIncludedNotes": "Oświadczenie dla klienta",
+    "notIncludedPlaceholder": "np. Warsztat nie udziela gwarancji na części dostarczone przez klienta.",
+    "printedHint": "Drukowane pod gwarancją na dokumencie.",
+    "notIncludedHint": "Pozostaw puste, a dokument poinformuje, że prawa ustawowe pozostają nienaruszone.",
+    "summaryMonths": "{count} mies."
   },
   "concerns": {
     "title": "Zgłoszenia klienta",
-    "addFirst": "Dodaj zgłoszenie klienta",
+    "hint": "Dlaczego klient przyjechał, własnymi słowami klienta. Jeden wiersz na każdą zgłoszoną rzecz.",
     "add": "Dodaj kolejne",
     "placeholder": "Przy hamowaniu słychać hałas z tyłu",
     "remove": "Usuń ten punkt",
     "notAnswered": "Nic jeszcze nie ustalono",
-    "answered": "Ustalenia: {count}"
+    "answered": "Ustalenia: {count}",
+    "storyTitle": "Opis pracy",
+    "storyHint": "Objaw, przyczyna, naprawa, weryfikacja. Kliknij krok, aby go otworzyć; jeden wiersz na każdą rzecz zgłoszoną przez klienta lub zauważoną przez ciebie.",
+    "steps": {
+      "condition": "Objaw",
+      "cause": "Przyczyna",
+      "correction": "Naprawa",
+      "confirm": "Weryfikacja"
+    },
+    "conditionPlaceholder": "Co zgłosił klient lub co zauważono",
+    "causePlaceholder": "Co według testów jest główną przyczyną",
+    "correctionPlaceholder": "Co zrobiono, aby to naprawić",
+    "confirmPlaceholder": "Jak sprawdzono naprawę: jazda próbna, ponowny odczyt błędów, objaw ustąpił",
+    "markConfirmed": "Zweryfikowane",
+    "confirmedBy": "Zweryfikowano: {name}, {date}",
+    "confirmedAt": "Zweryfikowano {date}",
+    "confirmedOnSave": "Przy zapisie zostanie oznaczone Twoim imieniem",
+    "confirmedCount": "Zweryfikowano {confirmed} z {total}",
+    "findingsCount": "{count, plural, one {# obserwacja} few {# obserwacje} many {# obserwacji} other {# obserwacji}}",
+    "addFinding": "Dodaj obserwację",
+    "unconfirmedTitle": "Zakończyć z niezweryfikowanymi zgłoszeniami?",
+    "unconfirmedBody": "{count, plural, one {Jedno zgłoszenie nie zostało zweryfikowane jako naprawione:} few {# zgłoszenia nie zostały zweryfikowane jako naprawione:} many {# zgłoszeń nie zostało zweryfikowanych jako naprawione:} other {# zgłoszenia nie zostało zweryfikowanych jako naprawione:}}",
+    "unconfirmedProceed": "Zakończ mimo to",
+    "addMedia": "Dodaj multimedia",
+    "mediaUploading": "Przesyłanie…",
+    "mediaAdded": "{count, plural, one {Dodano # plik} few {Dodano # pliki} many {Dodano # plików} other {Dodano # pliku}}",
+    "mediaFailed": "Nie udało się przesłać {name}",
+    "mediaTypes": "Wybierz zdjęcie (JPG, PNG, WebP) lub wideo.",
+    "dictate": {
+      "start": "Dyktuj",
+      "listening": "Słucham",
+      "startHint": "Mów, a tekst pojawi się tutaj. Nic nie jest nagrywane.",
+      "stopHint": "Przestań słuchać",
+      "notAllowed": "Przeglądarka nie dostała dostępu do mikrofonu. Zezwól na niego dla tej strony i spróbuj ponownie.",
+      "noMicrophone": "Nie znaleziono mikrofonu.",
+      "failed": "Dyktowanie zatrzymane. Spróbuj ponownie.",
+      "startHintServer": "Mów, a tekst zapisuje się na bieżąco. Dźwięk trafia do Twojego modelu mowy do zapisania i nie jest przechowywany.",
+      "transcribing": "Kończenie…",
+      "language": "Język mówiony",
+      "auto": "Auto",
+      "nothingHeard": "Niczego nie usłyszano.",
+      "fellBack": "Na razie używane jest dyktowanie wbudowane w przeglądarkę.",
+      "autoLong": "Auto (wykryj język)",
+      "engine": "Zapisuje",
+      "engineAi": "Model mowy (dokładniejszy)",
+      "engineBrowser": "Przeglądarka (pisze na bieżąco)",
+      "liveFellBack": "Tekst pojawia się co kilka sekund zamiast słowo po słowie."
+    },
+    "stepEmpty": "Jeszcze nie wpisano",
+    "removeTitle": "Usunąć to zgłoszenie?",
+    "removeBody": "Jego objaw, przyczyna, naprawa i weryfikacja zostaną usunięte razem z nim przy zapisie zlecenia.",
+    "removeAttached": "Jego obserwacje i multimedia zostają w zleceniu, ale nie są już przypisane do zgłoszenia.",
+    "removeConfirm": "Usuń zgłoszenie",
+    "saveFirst": "Najpierw zapisz zlecenie"
   },
   "videoCall": {
     "title": "Rozmowa wideo",
@@ -474,5 +578,175 @@
       "joinLine": "Dołącz do rozmowy wideo tutaj: {url}",
       "emailSubject": "Rozmowa wideo dotycząca Twojego {vehicle}"
     }
+  },
+  "modern": {
+    "statusLabel": "Status zlecenia",
+    "back": "Wstecz",
+    "backToClassic": "Wróć do klasycznego układu",
+    "openCustomer": "Otwórz klienta",
+    "serviceHistory": "Historia serwisowa",
+    "changeVehicle": "Zmień pojazd",
+    "vehicleChangesOnSave": "Po zapisaniu zlecenie zostanie przeniesione na ten pojazd.",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "notSet": "Nie ustawiono",
+    "noCustomer": "To zlecenie nie ma klienta.",
+    "invoiceTitle": "Faktura i płatność",
+    "filesTitle": "Pliki i multimedia",
+    "activity": {
+      "title": "Aktywność",
+      "messageSent": "Wysłano wiadomość do klienta",
+      "linkShared": "Udostępniono link do faktury",
+      "linkViewed": "{count, plural, =1 {Klient otworzył link} one {Klient otworzył link # raz} few {Klient otworzył link # razy} many {Klient otworzył link # razy} other {Klient otworzył link # razy}}",
+      "paymentTaken": "Zarejestrowano płatność {amount}",
+      "statusSet": "Status ustawiony na {status}"
+    },
+    "invite": {
+      "title": "Strona zlecenia została przebudowana.",
+      "body": "Czytelniejszy układ z tymi samymi polami. Możesz wrócić w każdej chwili.",
+      "try": "Wypróbuj teraz",
+      "dismiss": "Nie teraz",
+      "menu": "Wypróbuj nowy układ"
+    },
+    "promised": "Obiecano na {date}",
+    "promisedOverdue": "Obiecano na {date}, po terminie",
+    "opened": "Otwarto {date}",
+    "openedBy": "Otwarto {date}, przez: {name}",
+    "editTitle": "Edytuj tytuł",
+    "titleField": "Tytuł",
+    "media": {
+      "tabs": {
+        "photos": "Zdjęcia",
+        "diagnostics": "Diagnostyka",
+        "dropoff": "Przyjęcie"
+      },
+      "summary": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# pliku}} · widoczne dla klienta tylko po oznaczeniu",
+      "customerCanSee": "Widoczne dla klienta",
+      "showToCustomer": "Pokaż klientowi",
+      "hideFromCustomer": "Ukryj przed klientem",
+      "add": {
+        "image": "Dodaj zdjęcia",
+        "document": "Dodaj dokumenty",
+        "diagnostic": "Dodaj raport diagnostyczny",
+        "video": "Dodaj wideo",
+        "dropoff": "Dodaj zdjęcia przyjęcia"
+      },
+      "dropHint": "Upuść pliki lub kliknij, aby wybrać",
+      "added": "{count, plural, one {Dodano # plik} few {Dodano # pliki} many {Dodano # plików} other {Dodano # pliku}}",
+      "failed": "Nie udało się przesłać {name}",
+      "wrongType": "Nieodpowiedni rodzaj pliku dla tej karty: {names}",
+      "limit": "Osiągnięto limit ({count}/{max})",
+      "dropoffHint": "Auto w stanie, w jakim przyjechało, z godziną każdego zdjęcia. Dla warsztatu, niewidoczne dla klienta, chyba że zdecydujesz inaczej.",
+      "onInvoice": "Uwzględnij stan pojazdu na tej fakturze",
+      "onInvoiceHint": "Wyłączone, chyba że zaznaczysz tutaj. Aby drukować na każdej fakturze, włącz Stan pojazdu w projektancie faktur.",
+      "onInvoiceByDesign": "Włączone w projektancie faktur dla wszystkich faktur. Odznacz, aby pominąć na tej.",
+      "onInvoiceFailed": "Nie udało się zapisać wyboru"
+    },
+    "moneyBar": {
+      "total": "Razem",
+      "paid": "Zapłacono",
+      "balance": "Pozostało do zapłaty",
+      "settled": "Zapłacono w całości",
+      "takePayment": "Przyjmij płatność",
+      "preview": "Podgląd faktury",
+      "previewShort": "Podgląd",
+      "send": "Wyślij klientowi",
+      "sendShort": "Wyślij"
+    },
+    "vehicleInfo": {
+      "more": "Więcej informacji",
+      "less": "Mniej informacji",
+      "copy": "Kopiuj: {label}",
+      "copied": "Skopiowano",
+      "lastInspection": "Ostatni przegląd okresowy",
+      "purchaseDate": "Data zakupu",
+      "purchasePrice": "Cena zakupu",
+      "overdue": "po terminie",
+      "customerSince": "Klient od"
+    },
+    "moreStatuses": "Więcej statusów",
+    "fromInspection": "Z przeglądu {name}, {date}",
+    "startInspection": "Rozpocznij przegląd"
+  },
+  "photoHandoff": {
+    "button": "Dodaj z telefonu",
+    "dialogTitle": "Dodaj zdjęcia i dokumenty z telefonu",
+    "dialogBody": "Zrób lub wybierz zdjęcia albo udostępnij PDF na dowolnym telefonie. Wszystko trafia prosto do tego zlecenia.",
+    "expires": "Kod działa do {time}.",
+    "waiting": "Czekam na zdjęcia i dokumenty…",
+    "received": "{count, plural, one {Odebrano # plik} few {Odebrano # pliki} many {Odebrano # plików} other {Odebrano # pliku}}",
+    "copyLink": "Kopiuj link",
+    "linkCopied": "Link skopiowany",
+    "failed": "Nie udało się utworzyć kodu. Spróbuj ponownie.",
+    "done": "Gotowe",
+    "pageTitle": "Dodaj zdjęcia i dokumenty",
+    "forJob": "Zlecenie {number}",
+    "takePhoto": "Zrób zdjęcie",
+    "choosePhotos": "Wybierz zdjęcia",
+    "hint": "Wszystko trafia prosto do zlecenia. Zrób tyle zdjęć, ile potrzebujesz.",
+    "uploading": "Przesyłanie…",
+    "added": "Dodano",
+    "notAdded": "Nie dodano",
+    "retry": "Spróbuj ponownie",
+    "addedCount": "{count, plural, one {Dodano # plik} few {Dodano # pliki} many {Dodano # plików} other {Dodano # pliku}}",
+    "expiredTitle": "Ten kod wygasł",
+    "invalidTitle": "Ten link nie działa",
+    "errors": {
+      "expired": "Poproś o nowy kod w recepcji. Każdy kod działa przez 30 minut.",
+      "invalid": "Zeskanuj ponownie kod na zleceniu.",
+      "limit": "To zlecenie ma już tyle zdjęć, ile może pomieścić.",
+      "type": "Tutaj można dodawać tylko zdjęcia i dokumenty PDF.",
+      "tooLarge": "Ten plik jest za duży.",
+      "failed": "Nie dodano zdjęcia. Sprawdź połączenie i spróbuj ponownie.",
+      "codeLimit": "Tym kodem dodano już tyle zdjęć, ile pozwala jeden kod. Zeskanuj nowy kod w recepcji."
+    },
+    "concernHeading": "Zdjęcia trafią do tego zgłoszenia",
+    "howTitle": "Jak to działa",
+    "step1": "Skieruj aparat telefonu na kod i otwórz link.",
+    "step2": "Zrób zdjęcia albo wybierz zdjęcia lub dokumenty PDF, które są już w telefonie.",
+    "step3": "Pojawiają się w tym zleceniu, gdy tylko dotrą.",
+    "noSignIn": "Na telefonie nie trzeba się logować.",
+    "customerToo": "Mogą z tego korzystać pracownicy, a także klient: pozwól mu zeskanować kod albo wyślij mu link.",
+    "scope": "Link tylko dodaje zdjęcia i dokumenty do tego zlecenia i przestaje działać po 30 minutach.",
+    "scanHint": "Zeskanuj aparatem telefonu",
+    "chooseDocument": "Prześlij dokument",
+    "privacy": "To, co tu dodasz, widzi tylko warsztat.",
+    "dropoff": {
+      "button": "Zdjęcia przyjęcia",
+      "dialogTitle": "Sfotografuj auto przy przyjęciu",
+      "dialogBody": "Obejście auta przed rozpoczęciem pracy: cztery strony, licznik i istniejące uszkodzenia. To Twój dowód, gdyby rysa została kiedyś zakwestionowana.",
+      "step2": "Postępuj według listy w telefonie: po jednym zdjęciu każdej strony, licznik i uszkodzenia.",
+      "scope": "Link dodaje tylko zdjęcia przyjęcia do tego zlecenia i przestaje działać po 30 minutach.",
+      "pageTitle": "Auto przy przyjęciu",
+      "pageBody": "Rób zdjęcia po kolei. Dodaj zbliżenie istniejących uszkodzeń.",
+      "retake": "Powtórz",
+      "slots": {
+        "front": "Przód",
+        "right": "Prawa strona",
+        "rear": "Tył",
+        "left": "Lewa strona",
+        "odometer": "Licznik",
+        "other": "Uszkodzenie lub inne"
+      }
+    }
+  },
+  "payCode": {
+    "button": "Kod płatności",
+    "title": "Zapłać, skanując",
+    "body": "Klient skanuje kod aparatem telefonu, otwiera się faktura i płaci na miejscu.",
+    "sharesInvoice": "Pokazanie kodu udostępnia fakturę klientowi, tak samo jak jej wysłanie. Od tej chwili faktura zachowuje dane, które ma teraz.",
+    "show": "Pokaż kod",
+    "failed": "Nie udało się utworzyć kodu. Spróbuj ponownie.",
+    "toPay": "Do zapłaty",
+    "scanHint": "Zeskanuj aparatem telefonu",
+    "copyLink": "Kopiuj link",
+    "linkCopied": "Link skopiowany",
+    "waiting": "Oczekiwanie na płatność. Odświeża się samo.",
+    "paid": "Płatność otrzymana",
+    "paidBody": "Płatność jest na zleceniu.",
+    "done": "Gotowe"
+  },
+  "customStatus": {
+    "defaultMessage": "Dzień dobry {customer_name}, aktualizacja dotycząca {vehicle}: {status}. {company_name}"
   }
 }

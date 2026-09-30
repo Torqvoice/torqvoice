@@ -76,6 +76,19 @@ import { useDebouncedSearch } from '@/hooks/use-debounced-search'
  * own conversation component rather than sharing a compose box.
  */
 
+/**
+ * A conversation named by the page's address, so a link can open it: a
+ * notification about a message lands on that thread instead of on an inbox
+ * with nothing selected. The name comes from the server, because the thread
+ * may not be on the first page of the list.
+ */
+export interface InboxFocus {
+  channel: MessagingChannel
+  customerId: string | null
+  name: string
+  contact: string
+}
+
 /** Channels a workshop can start a conversation on. */
 const INITIABLE: MessagingChannel[] = ['sms', 'whatsapp']
 
@@ -95,6 +108,7 @@ export function UnifiedInbox({
   initialCursor = null,
   channels,
   onChanged,
+  focus = null,
 }: {
   threads: InboxThread[]
   /** Where the next page starts, or null when the first page is all of it. */
@@ -102,6 +116,8 @@ export function UnifiedInbox({
   channels: MessagingChannel[]
   /** Asks the page to reload its server data after something is sent. */
   onChanged?: () => void
+  /** The conversation the address asks for, opened on arrival. */
+  focus?: InboxFocus | null
 }) {
   const t = useTranslations('messaging.inbox')
   const router = useRouter()
@@ -243,6 +259,33 @@ export function UnifiedInbox({
     },
     [markRead]
   )
+
+  // Opened whenever the address names a different conversation, which is also
+  // what a notification clicked while this page is already open does.
+  const focusKey = focus ? `${focus.channel}:${focus.customerId ?? focus.contact}` : null
+  useEffect(() => {
+    if (!focus || !focusKey) return
+    const existing = threads.find(
+      (thread) =>
+        thread.channel === focus.channel &&
+        (focus.customerId
+          ? thread.customerId === focus.customerId
+          : !thread.customerId && thread.contact === focus.contact)
+    )
+    select(
+      existing ?? {
+        key: focusKey,
+        channel: focus.channel,
+        customerId: focus.customerId,
+        name: focus.name,
+        contact: focus.contact,
+        lastMessage: '',
+        lastDirection: 'inbound',
+        lastAt: new Date(0).toISOString(),
+        unread: 0,
+      }
+    )
+  }, [focusKey])
 
   /** Removes our copy of a conversation; the customer's phone keeps theirs. */
   const confirmDelete = async () => {

@@ -1,0 +1,169 @@
+import { expect, test } from '@playwright/test'
+import { settle } from '../../support/hydration'
+import { addPart, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
+
+/**
+ * The work order page every browser opens. It is one form, so what these
+ * tests hold it to is each field once, and a save that keeps what was on
+ * screen. The classic page is still offered in the menu but is not tested.
+ */
+
+test.describe.configure({ mode: 'serial' })
+
+const stamp = Date.now()
+const partName = `E2E wiper blade ${stamp}`
+
+let jobUrl = ''
+
+test.beforeAll(async ({ browser }) => {
+  const page = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
+  const vehicleUrl = await seededVehicleUrl(page)
+  jobUrl = await newWorkOrder(page, vehicleUrl, `E2E modern layout ${stamp}`)
+  await addPart(page, { name: partName, quantity: 2, unitPrice: 150 })
+  await saveWorkOrder(page)
+  await page.close()
+})
+
+test.describe('the work order page', () => {
+  test('opens for a browser that has not chosen a layout', async ({ page }) => {
+    await page.goto(jobUrl)
+    await settle(page)
+
+    await expect(page.getByTestId('service-layout-modern')).toBeVisible()
+    await expect(page.getByTestId('service-layout')).toHaveCount(0)
+    // The top of the page is the work order's number and its status, then
+    // what the job is called.
+    const hero = page.getByTestId('service-hero')
+    await expect(hero.getByTestId('service-number')).not.toBeEmpty()
+    await expect(hero.getByTestId('service-status')).toHaveText('Pending')
+    await expect(hero).toContainText(`E2E modern layout ${stamp}`)
+  })
+
+  test('holds one copy of each field and keeps photos on the job', async ({ page }) => {
+    await page.goto(jobUrl)
+    await settle(page)
+    await expect(page.getByTestId('service-layout-modern')).toBeVisible()
+
+    for (const selector of [
+      'input[name="title"]',
+      '#invoiceNumber',
+      '#invoiceDate',
+      '#mileage',
+      'input[name="techName"]',
+      'input[name="serviceDate"]',
+      'textarea[placeholder="Name *"]',
+    ]) {
+      await expect(page.locator(selector), `${selector} appears once`).toHaveCount(1)
+    }
+
+    const duplicates = await page.evaluate(() => {
+      const form = document.querySelector('form')
+      if (!form) return ['no form']
+      const seen = new Map<string, number>()
+      for (const el of form.querySelectorAll<HTMLInputElement>('input[name], textarea[name]')) {
+        seen.set(el.name, (seen.get(el.name) ?? 0) + 1)
+      }
+      return [...seen.entries()].filter(([, count]) => count > 1).map(([name]) => name)
+    })
+    expect(duplicates, 'field names used twice in the form').toEqual([])
+
+    // No tab bar at the top of the page: photos, documents, diagnostics,
+    // video and status reports are tabs of one card on the job itself.
+    const files = page.getByTestId('files-media')
+    await expect(files).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Images/ })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /^Status Reports/ })).toHaveCount(0)
+    for (const name of [/^Photos/, /^Documents/, /^Diagnostics/, /^Video/, /^Status Reports/]) {
+      await expect(files.getByRole('tab', { name })).toBeVisible()
+    }
+    await expect(files.getByTestId('media-add')).toContainText('Add photos')
+    await files.getByRole('tab', { name: /^Status Reports/ }).click()
+    await expect(files.getByTestId('status-reports-section')).toBeVisible()
+
+    // The money stays on screen along the bottom, with what is done about it.
+    const bar = page.getByTestId('money-bar')
+    await expect(bar).toBeInViewport()
+    await expect(bar.getByTestId('money-balance')).toContainText('300')
+    await expect(bar.getByRole('button', { name: 'Take payment' })).toBeVisible()
+    await expect(bar.getByRole('button', { name: /Preview/ })).toBeVisible()
+    await expect(bar.getByRole('button', { name: /Send/ })).toBeVisible()
+  })
+
+  test('saves what is on screen', async ({ page }) => {
+    await page.goto(jobUrl)
+    await settle(page)
+    await expect(page.getByTestId('service-layout-modern')).toBeVisible()
+
+    // The part saved when the job was made is here, with its figures.
+    await expect(page.locator('textarea[placeholder="Name *"]')).toHaveValue(partName)
+
+    // The stepper is the status control: walk the job on and save.
+    const stepper = page.getByTestId('status-stepper')
+    await stepper.getByRole('button', { name: /In Progress/i }).click()
+    await expect(stepper.getByRole('button', { name: /In Progress/i })).toHaveAttribute(
+      'aria-current',
+      'step'
+    )
+    // The title is edited in the header, behind its pencil; the form carries
+    // it as a hidden field, so Save takes it with everything else.
+    const title = `E2E modern layout ${stamp} renamed`
+    await page.getByTestId('edit-title').click()
+    await page.getByTestId('title-input').fill(title)
+    await page.getByTestId('title-input').press('Enter')
+    await expect(page.getByTestId('service-title')).toHaveText(title)
+    await expect(page.locator('input[name="title"]')).toHaveValue(title)
+    await saveWorkOrder(page)
+
+    await page.reload()
+    await settle(page)
+    await expect(page.getByTestId('service-title').first()).toHaveText(title)
+    await expect(
+      page.getByTestId('status-stepper').getByRole('button', { name: /In Progress/i })
+    ).toHaveAttribute('aria-current', 'step')
+    await expect(page.locator('textarea[placeholder="Name *"]')).toHaveValue(partName)
+  })
+
+  test('stacks into one column on a phone without overflowing sideways', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(jobUrl)
+    await settle(page)
+    const layout = page.getByTestId('service-layout-modern')
+    await expect(layout).toBeVisible()
+
+    // The money bar is a desktop thing: the page already carries its totals,
+    // payment form, preview and send, and a phone has no height to spare.
+    await expect(page.getByTestId('money-bar')).toBeHidden()
+    // What it leaves behind is the running total, in the flow under the parts,
+    // so adding a line on a small screen still shows what it did to the bill.
+    await expect(page.getByTestId('money-line')).toBeVisible()
+    // The header's second line is which job this is; when it was opened is
+    // left for a wider screen.
+    await expect(page.getByTestId('service-opened')).toBeHidden()
+
+    // Each control of the status stepper stays in its own space: a label is
+    // cut short rather than running into the next. Three stages, and the
+    // arrow beside "In Progress" that opens the statuses filed under it
+    // (always there, for "Waiting Parts"): four buttons in all on a workshop
+    // that has defined no statuses of its own.
+    const stages = await page
+      .getByTestId('status-stepper')
+      .getByRole('button')
+      .evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().toJSON()))
+    expect(stages).toHaveLength(4)
+    for (let i = 1; i < stages.length; i++) {
+      expect(
+        stages[i - 1].right,
+        `stage ${i} ends before stage ${i + 1} starts`
+      ).toBeLessThanOrEqual(stages[i].left)
+    }
+
+    const overflow = await layout.evaluate((el) => el.scrollWidth - el.clientWidth)
+    expect(overflow, 'sideways overflow in pixels').toBeLessThanOrEqual(1)
+
+    const main = await page.getByTestId('service-main').boundingBox()
+    const sidebar = await page.getByTestId('service-sidebar').boundingBox()
+    expect(sidebar?.y ?? 0, 'the sidebar sits under the job').toBeGreaterThan(
+      (main?.y ?? 0) + (main?.height ?? 0) - 1
+    )
+  })
+})

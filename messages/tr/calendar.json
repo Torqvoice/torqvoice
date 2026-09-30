@@ -80,10 +80,10 @@
   },
   "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
-    "title": "Work Order Date",
-    "description": "You have {selectedDate} selected. Which date should this work order be for?",
+    "title": "İş Emri Tarihi",
+    "description": "{selectedDate} tarihi seçili. Bu iş emri hangi tarih için olsun?",
     "useSelected": "Use {date}",
-    "useToday": "Use today"
+    "useToday": "Bugünü kullan"
   },
   "more": "+ {count} daha",
   "monthTotal": "{count} etkinlik",
@@ -144,6 +144,6 @@
       "readOnly": "Bağlı bir takvimden gelen dolu zaman. Orada değiştirin, bir sonraki eşitlemede burada güncellenir."
     }
   },
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "previousMonth": "Önceki ay",
+  "nextMonth": "Sonraki ay"
 }

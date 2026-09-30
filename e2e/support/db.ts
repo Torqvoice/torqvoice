@@ -1,3 +1,4 @@
+import { randomBytes, scryptSync } from 'node:crypto'
 import { Client } from 'pg'
 
 /**
@@ -125,16 +126,36 @@ export interface TenantFixtures {
   quoteNumber: string
 }
 
+/** A customer and a quote, each taken whole so its id and its words agree. */
+async function pairs(
+  db: Client,
+  organizationId: string
+): Promise<Pick<TenantFixtures, 'customerId' | 'customerName' | 'quoteId' | 'quoteNumber'>> {
+  const customer = await db.query<{ id: string; name: string }>(
+    `select id, name from customers where "organizationId" = $1 order by "createdAt", id limit 1`,
+    [organizationId]
+  )
+  if (!customer.rows[0]) throw new Error('the seeded workshop has no customer')
+
+  const quote = await db.query<{ id: string; quoteNumber: string }>(
+    `select id, "quoteNumber" from quotes
+      where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
+      order by "createdAt", id limit 1`,
+    [organizationId]
+  )
+  if (!quote.rows[0]) throw new Error('the seeded workshop has no numbered quote')
+
+  return {
+    customerId: customer.rows[0].id,
+    customerName: customer.rows[0].name,
+    quoteId: quote.rows[0].id,
+    quoteNumber: quote.rows[0].quoteNumber,
+  }
+}
+
 export async function seededTenantFixtures(): Promise<TenantFixtures> {
   const organizationId = await ownerOrganizationId()
   return withDb(async (db) => {
-    const one = async (sql: string): Promise<string> => {
-      const result = await db.query<{ id: string }>(sql, [organizationId])
-      const id = result.rows[0]?.id
-      if (!id) throw new Error(`the seeded workshop has nothing for: ${sql}`)
-      return id
-    }
-
     /**
      * A vehicle and one of its own jobs, from one row.
      *
@@ -169,20 +190,12 @@ export async function seededTenantFixtures(): Promise<TenantFixtures> {
       vehicleId: job.vehicleId,
       serviceRecordId: job.serviceRecordId,
       vehiclePlate: job.licensePlate,
-      customerId: await one(`select id from customers where "organizationId" = $1 limit 1`),
-      quoteId: await one(
-        `select id from quotes
-          where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
-          limit 1`
-      ),
-      customerName: await one(
-        `select name as id from customers where "organizationId" = $1 limit 1`
-      ),
-      quoteNumber: await one(
-        `select "quoteNumber" as id from quotes
-          where "organizationId" = $1 and "quoteNumber" is not null and "quoteNumber" <> ''
-          limit 1`
-      ),
+      // Id and words from one row each, for the same reason the vehicle and
+      // its job come from one row: `limit 1` without an order is not a
+      // promise, and two queries for "a customer" can answer with two
+      // different customers. That way round the id opens one record and the
+      // name that is searched for on it belongs to another.
+      ...(await pairs(db, organizationId)),
     }
   })
 }
@@ -578,7 +591,10 @@ export async function teamInvitations(organizationId: string): Promise<number> {
  * Puts a workshop on an active Pro subscription, as a paid checkout would.
  * Returns the plan's id so the spec can take it away again.
  */
-export async function giveProPlan(organizationId: string): Promise<string> {
+export async function giveProPlan(
+  organizationId: string,
+  stripe?: { subscriptionId: string; customerId: string }
+): Promise<string> {
   return withDb(async (db) => {
     const plan = await db.query<{ id: string }>(
       `insert into subscription_plans (id, name, price, "updatedAt")
@@ -586,13 +602,26 @@ export async function giveProPlan(organizationId: string): Promise<string> {
        returning id`
     )
     const planId = plan.rows[0].id
+    // With Stripe ids the row looks like a real purchase, which is what the
+    // manage-subscription card and its buttons are shown for.
     await db.query(
-      `insert into subscriptions (id, status, "organizationId", "planId", "currentPeriodEnd", "updatedAt")
-       values (md5(random()::text || clock_timestamp()::text), 'active', $1, $2, now() + interval '30 days', now())`,
-      [organizationId, planId]
+      `insert into subscriptions (id, status, "organizationId", "planId", "currentPeriodEnd", "updatedAt",
+                                  "stripeSubscriptionId", "stripeCustomerId")
+       values (md5(random()::text || clock_timestamp()::text), 'active', $1, $2, now() + interval '30 days', now(), $3, $4)`,
+      [organizationId, planId, stripe?.subscriptionId ?? null, stripe?.customerId ?? null]
     )
     return planId
   })
+}
+
+/** Flags a subscription as ending at the period end, as a cancel through torqvoice.com would. */
+export async function setCancelAtPeriodEnd(organizationId: string, value: boolean): Promise<void> {
+  await withDb((db) =>
+    db.query(`update subscriptions set "cancelAtPeriodEnd" = $2 where "organizationId" = $1`, [
+      organizationId,
+      value,
+    ])
+  )
 }
 
 /** Takes a subscription and its plan away again. */
@@ -938,4 +967,857 @@ export async function forgetWorkshopSetting(organizationId: string, key: string)
       key,
     ])
   )
+}
+
+/** Marks the address verified, as clicking the mail's link would. */
+export async function markEmailVerified(email: string): Promise<void> {
+  await withDb((db) =>
+    db.query(`update users set "emailVerified" = true where lower(email) = lower($1)`, [email])
+  )
+}
+
+export interface MembershipRecord {
+  id: string
+  role: string
+  roleId: string | null
+}
+
+/** A person's membership of a workshop, as stored. */
+export async function membershipOf(
+  email: string,
+  organizationId: string
+): Promise<MembershipRecord> {
+  return withDb(async (db) => {
+    const result = await db.query<MembershipRecord>(
+      `select m.id, m.role, m."roleId" from organization_members m
+         join users u on u.id = m."userId"
+        where lower(u.email) = lower($1) and m."organizationId" = $2`,
+      [email, organizationId]
+    )
+    if (!result.rows[0]) throw new Error(`${email} is not a member of ${organizationId}`)
+    return result.rows[0]
+  })
+}
+
+/** A role that carries the admin switch and nothing else. */
+export async function createAdminRole(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into roles (id, name, "isAdmin", "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, true, $2, now(), now()) returning id`,
+      [name, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteRoles(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query(`delete from roles where id = any($1::text[])`, [ids]))
+}
+
+/** A technician on a workshop's board, made here so the spec owns it. */
+export async function insertTechnician(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into technicians (id, name, "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, $2, now(), now()) returning id`,
+      [name, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function insertWorkBay(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into work_bays (id, name, "organizationId", "createdAt", "updatedAt")
+       values (gen_random_uuid()::text, $1, $2, now(), now()) returning id`,
+      [name, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteTechnicians(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query(`delete from technicians where id = any($1::text[])`, [ids]))
+}
+
+export async function deleteWorkBays(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query(`delete from work_bays where id = any($1::text[])`, [ids]))
+}
+
+export interface JobAssignment {
+  id: string
+  technicianId: string | null
+  workBayId: string | null
+}
+
+/** A job's technician and bay as stored, by its id. */
+export async function jobAssignment(serviceRecordId: string): Promise<JobAssignment> {
+  return withDb(async (db) => {
+    const result = await db.query<JobAssignment>(
+      `select id, "technicianId", "workBayId" from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    if (!result.rows[0]) throw new Error(`no job ${serviceRecordId}`)
+    return result.rows[0]
+  })
+}
+
+/** How many jobs a vehicle has, before and after an attempt to add one. */
+export async function jobCount(vehicleId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from service_records where "vehicleId" = $1`,
+      [vehicleId]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+/** Inbound WhatsApp messages with exactly this body, for a workshop. */
+export async function inboundWhatsappCount(organizationId: string, body: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from whatsapp_messages
+        where "organizationId" = $1 and direction = 'inbound' and body = $2`,
+      [organizationId, body]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+export async function deleteInboundWhatsapp(organizationId: string, body: string): Promise<void> {
+  await withDb((db) =>
+    db.query(
+      `delete from whatsapp_messages where "organizationId" = $1 and direction = 'inbound' and body like $2`,
+      [organizationId, `${body}%`]
+    )
+  )
+}
+
+/** Open sessions a person has, however many browsers and phones that is. */
+export async function sessionCountFor(email: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from sessions s join users u on u.id = s."userId"
+        where lower(u.email) = lower($1) and s."expiresAt" > now()`,
+      [email]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+/** Device rows a person has whose user agent mentions `needle`. */
+export async function deviceCountFor(email: string, needle: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ n: string }>(
+      `select count(*)::text as n from user_devices d join users u on u.id = d."userId"
+        where lower(u.email) = lower($1) and d."userAgent" like $2`,
+      [email, `%${needle}%`]
+    )
+    return Number(result.rows[0].n)
+  })
+}
+
+/**
+ * Matches better-auth's scrypt parameters, the same way the seed does, so a
+ * password written here is accepted by the sign-in form.
+ */
+function hashPassword(password: string): string {
+  const N = 16384
+  const r = 16
+  const p = 1
+  const salt = randomBytes(16).toString('hex')
+  const key = scryptSync(password.normalize('NFKC'), salt, 64, { N, r, p, maxmem: 128 * N * r * 2 })
+  return `${salt}:${key.toString('hex')}`
+}
+
+export interface PlantedWorkshop {
+  userId: string
+  organizationId: string
+}
+
+/**
+ * A second tenant, put straight into the database.
+ *
+ * A self-hosted install opens one workshop; every later sign-up is told to
+ * ask for an invitation. A spec that needs a second, separate workshop to
+ * prove isolation therefore cannot sign one up and has to plant it: a
+ * verified person with a password, and a workshop they own.
+ */
+export async function plantWorkshop(input: {
+  name: string
+  email: string
+  password: string
+  workshopName: string
+}): Promise<PlantedWorkshop> {
+  return withDb(async (db) => {
+    const user = await db.query<{ id: string }>(
+      `insert into users (id, name, email, "emailVerified", "termsAcceptedAt", "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, true, now(), now(), now())
+       returning id`,
+      [input.name, input.email.toLowerCase()]
+    )
+    const userId = user.rows[0].id
+    await db.query(
+      `insert into accounts (id, "accountId", "providerId", "userId", password, "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, 'credential', $1, $2, now(), now())`,
+      [userId, hashPassword(input.password)]
+    )
+    const org = await db.query<{ id: string }>(
+      `insert into organizations (id, name, "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, now(), now())
+       returning id`,
+      [input.workshopName]
+    )
+    const organizationId = org.rows[0].id
+    await db.query(
+      `insert into organization_members (id, role, "userId", "organizationId")
+       values (md5(random()::text || clock_timestamp()::text), 'owner', $1, $2)`,
+      [userId, organizationId]
+    )
+    return { userId, organizationId }
+  })
+}
+
+/** Removes a person and, through the cascade, their memberships and sessions. */
+export async function deletePersonWithEmail(email: string): Promise<void> {
+  await withDb((db) => db.query(`delete from users where lower(email) = lower($1)`, [email]))
+}
+
+/** How many workshops the install has. */
+export async function organizationCount(): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ count: string }>(
+      `select count(*)::text as count from organizations`
+    )
+    return Number(result.rows[0].count)
+  })
+}
+
+/**
+ * One customer, one vehicle and one work order in a workshop, for a spec
+ * that needs a job to point at. A planted workshop has none of the sample
+ * data onboarding would have given it.
+ */
+export async function plantJob(
+  organizationId: string,
+  userId: string,
+  title: string
+): Promise<{ serviceRecordId: string; vehicleId: string }> {
+  return withDb(async (db) => {
+    const customer = await db.query<{ id: string }>(
+      `insert into customers (id, name, "userId", "organizationId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, now())
+       returning id`,
+      [`${title} customer`, userId, organizationId]
+    )
+    const vehicle = await db.query<{ id: string }>(
+      `insert into vehicles (id, make, model, year, "userId", "organizationId", "customerId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), 'E2E', $1, 2020, $2, $3, $4, now())
+       returning id`,
+      [title, userId, organizationId, customer.rows[0].id]
+    )
+    const vehicleId = vehicle.rows[0].id
+    const job = await db.query<{ id: string }>(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, now())
+       returning id`,
+      [title, vehicleId, organizationId]
+    )
+    return { serviceRecordId: job.rows[0].id, vehicleId }
+  })
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+export interface PlantedNotification {
+  type: string
+  title: string
+  message: string
+  entityType: string
+  entityId: string
+  entityUrl: string
+}
+
+/**
+ * A notification written straight into the bell, with the address the code
+ * that raises it builds. Planting it rather than provoking it lets a spec
+ * follow links whose trigger needs a provider the harness cannot play (an
+ * inbound SMS, a Telegram webhook), and also links already stored in the old
+ * shape, which the pages still have to honour.
+ */
+export async function plantNotification(
+  organizationId: string,
+  n: PlantedNotification
+): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into notifications (id, type, title, message, "entityType", "entityId", "entityUrl", read, "organizationId", "createdAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, $4, $5, $6, false, $7, now())
+       returning id`,
+      [n.type, n.title, n.message, n.entityType, n.entityId, n.entityUrl, organizationId]
+    )
+    return result.rows[0].id
+  })
+}
+
+export async function deleteNotifications(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb((db) => db.query('delete from notifications where id = any($1)', [ids]))
+}
+
+/** An inbound message on a customer's thread, as the webhook would have stored it. */
+export async function plantInboundMessage(
+  channel: 'sms' | 'telegram',
+  organizationId: string,
+  customerId: string,
+  body: string
+): Promise<void> {
+  await withDb((db) =>
+    channel === 'sms'
+      ? db.query(
+          `insert into sms_messages (id, direction, "fromNumber", "toNumber", body, status, "organizationId", "customerId", "createdAt", "updatedAt")
+           values (md5(random()::text || clock_timestamp()::text), 'inbound', '+4790000000', '+4790000001', $1, 'received', $2, $3, now(), now())`,
+          [body, organizationId, customerId]
+        )
+      : db.query(
+          `insert into telegram_messages (id, direction, "chatId", body, status, "organizationId", "customerId", "createdAt", "updatedAt")
+           values (md5(random()::text || clock_timestamp()::text), 'inbound', '777000', $1, 'received', $2, $3, now(), now())`,
+          [body, organizationId, customerId]
+        )
+  )
+}
+
+/**
+ * Links a customer to a Telegram chat and hands back what was there before.
+ * A real inbound Telegram message only ever comes from a linked chat, and the
+ * conversation shows nothing but "not connected yet" without one.
+ */
+export async function linkTelegramChat(
+  customerId: string,
+  chatId: string | null
+): Promise<string | null> {
+  return withDb(async (db) => {
+    const before = await db.query<{ telegramChatId: string | null }>(
+      'select "telegramChatId" from customers where id = $1',
+      [customerId]
+    )
+    await db.query('update customers set "telegramChatId" = $1 where id = $2', [chatId, customerId])
+    return before.rows[0]?.telegramChatId ?? null
+  })
+}
+
+export async function deleteMessagesWithBody(body: string): Promise<void> {
+  await withDb(async (db) => {
+    await db.query('delete from sms_messages where body = $1', [body])
+    await db.query('delete from telegram_messages where body = $1', [body])
+  })
+}
+
+/** A vehicle job with the customer it belongs to, taken from one row so the ids agree. */
+export async function jobWithCustomer(organizationId: string): Promise<{
+  vehicleId: string
+  serviceRecordId: string
+  customerId: string
+  customerName: string
+}> {
+  return withDb(async (db) => {
+    const result = await db.query<{
+      vehicleId: string
+      serviceRecordId: string
+      customerId: string
+      customerName: string
+    }>(
+      `select v.id as "vehicleId", s.id as "serviceRecordId", c.id as "customerId", c.name as "customerName"
+         from service_records s
+         join vehicles v on v.id = s."vehicleId"
+         join customers c on c.id = v."customerId"
+        where s."organizationId" = $1
+        order by s."createdAt" asc
+        limit 1`,
+      [organizationId]
+    )
+    const row = result.rows[0]
+    if (!row) throw new Error('the seeded workshop has no vehicle job with a customer')
+    return row
+  })
+}
+
+export interface PlantedVehicleFiles {
+  vehicleImage: string
+  jobPhoto: string
+  /** A tire set's photo, also on the job as a tire hotel copy. */
+  tireSetPhoto: string
+  statusVideo: string
+  inspectionPhoto?: string
+  quoteDocument: string
+  /** A URL naming another workshop, as a row restored from its backup can. */
+  foreignPhoto: string
+}
+
+export interface PlantedVehicle {
+  vehicleId: string
+  serviceRecordId: string
+  tireSetId: string
+  quoteId: string
+  inspected: boolean
+}
+
+/**
+ * A vehicle with every kind of file that can go with it, written straight
+ * into the database so a spec knows exactly which rows point at which file:
+ * its image; a job with a photo, a status report video and the copy of a tire
+ * set's photo; an inspection with a photo on one item (when the workshop has
+ * a template to hang it on); and, pointing at the same vehicle but not
+ * deleted with it, a stored tire set and a quote with a document.
+ */
+export async function plantVehicleWithFiles(
+  organizationId: string,
+  userId: string,
+  files: PlantedVehicleFiles,
+  label: string
+): Promise<PlantedVehicle> {
+  return withDb(async (db) => {
+    const id = () => randomBytes(12).toString('hex')
+    const vehicleId = id()
+    const serviceRecordId = id()
+    const tireSetId = id()
+    const quoteId = id()
+    await db.query(
+      `insert into vehicles (id, make, model, year, "userId", "organizationId", "imageUrl", "updatedAt")
+       values ($1, 'E2E', $2, 2020, $3, $4, $5, now())`,
+      [vehicleId, label, userId, organizationId, files.vehicleImage]
+    )
+    await db.query(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "updatedAt")
+       values ($1, $2, $3, $4, now())`,
+      [serviceRecordId, `${label} job`, vehicleId, organizationId]
+    )
+    await db.query(
+      `insert into tire_sets (id, "organizationId", "userId", "vehicleId", "updatedAt")
+       values ($1, $2, $3, $4, now())`,
+      [tireSetId, organizationId, userId, vehicleId]
+    )
+    await db.query(
+      `insert into tire_set_attachments (id, "organizationId", "tireSetId", "fileName", "fileUrl", "fileType", "fileSize")
+       values ($1, $2, $3, 'rim.jpg', $4, 'image/jpeg', 10)`,
+      [id(), organizationId, tireSetId, files.tireSetPhoto]
+    )
+    for (const [fileUrl, category] of [
+      [files.jobPhoto, 'image'],
+      [files.tireSetPhoto, 'tire_hotel'],
+      [files.foreignPhoto, 'image'],
+    ]) {
+      await db.query(
+        `insert into service_attachments (id, "serviceRecordId", "fileName", "fileUrl", "fileType", "fileSize", category)
+         values ($1, $2, 'photo.jpg', $3, 'image/jpeg', 10, $4)`,
+        [id(), serviceRecordId, fileUrl, category]
+      )
+    }
+    await db.query(
+      `insert into status_reports (id, "publicToken", "organizationId", "serviceRecordId", "videoUrl", "updatedAt")
+       values ($1, $2, $3, $4, $5, now())`,
+      [id(), id(), organizationId, serviceRecordId, files.statusVideo]
+    )
+    await db.query(
+      `insert into quotes (id, title, "userId", "organizationId", "vehicleId", "updatedAt")
+       values ($1, $2, $3, $4, $5, now())`,
+      [quoteId, `${label} quote`, userId, organizationId, vehicleId]
+    )
+    await db.query(
+      `insert into quote_attachments (id, "quoteId", "fileName", "fileUrl", "fileType", "fileSize")
+       values ($1, $2, 'estimate.pdf', $3, 'application/pdf', 10)`,
+      [id(), quoteId, files.quoteDocument]
+    )
+
+    let inspected = false
+    const template = await db.query<{ id: string }>(
+      `select id from inspection_templates where "organizationId" = $1 limit 1`,
+      [organizationId]
+    )
+    if (files.inspectionPhoto && template.rows[0]) {
+      const inspectionId = id()
+      await db.query(
+        `insert into inspections (id, "vehicleId", "organizationId", "templateId", "updatedAt")
+         values ($1, $2, $3, $4, now())`,
+        [inspectionId, vehicleId, organizationId, template.rows[0].id]
+      )
+      await db.query(
+        `insert into inspection_items (id, "inspectionId", name, section, "imageUrls")
+         values ($1, $2, 'Brakes', 'Checks', $3)`,
+        [id(), inspectionId, [files.inspectionPhoto]]
+      )
+      inspected = true
+    }
+    return { vehicleId, serviceRecordId, tireSetId, quoteId, inspected }
+  })
+}
+
+/** Removes what `plantVehicleWithFiles` made that its spec did not delete. */
+export async function removePlantedVehicle(planted: PlantedVehicle): Promise<void> {
+  await withDb(async (db) => {
+    await db.query('delete from quotes where id = $1', [planted.quoteId])
+    await db.query('delete from tire_sets where id = $1', [planted.tireSetId])
+    await db.query('delete from inspections where "vehicleId" = $1', [planted.vehicleId])
+    await db.query('delete from vehicles where id = $1', [planted.vehicleId])
+  })
+}
+
+/**
+ * Every permission refusal logged for one person since a moment in time.
+ *
+ * `withAuth` writes an `auth.permissionDenied` row whenever a role is short of
+ * what an action asked for, which makes the audit log the one place that says
+ * what a page quietly wanted and did not get. A refusal on a page the role is
+ * meant to reach is, by definition, a bug: the page renders anyway, falls back
+ * to a built-in default, and says nothing about it.
+ *
+ * The write is fire-and-forget, so give it a moment to land before counting.
+ */
+export async function permissionDenialsFor(email: string, since: Date): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ message: string }>(
+      `select coalesce(a.message, a.action) as message
+         from audit_logs a
+         join users u on u.id = a."userId"
+        where lower(u.email) = lower($1)
+          and a.action = 'auth.permissionDenied'
+          and a.timestamp >= $2
+        order by a.timestamp`,
+      [email, since]
+    )
+    return result.rows.map((row) => row.message)
+  })
+}
+
+/**
+ * Sets one of a workshop's settings directly, returning what was there before
+ * (null when the key had never been saved), so a spec can put it back.
+ *
+ * The row needs an owner: `app_settings.userId` is not nullable, so a key the
+ * workshop has never saved is attributed to whoever owns the workshop.
+ */
+export async function setWorkshopSetting(
+  organizationId: string,
+  key: string,
+  value: string
+): Promise<string | null> {
+  return withDb(async (db) => {
+    const before = await db.query<{ value: string }>(
+      `select value from app_settings where "organizationId" = $1 and key = $2`,
+      [organizationId, key]
+    )
+    await db.query(
+      `insert into app_settings (id, key, value, "userId", "organizationId")
+       values (gen_random_uuid()::text, $2, $3,
+               (select "userId" from organization_members
+                 where "organizationId" = $1 and role = 'owner' limit 1),
+               $1)
+       on conflict ("organizationId", key) do update set value = excluded.value`,
+      [organizationId, key, value]
+    )
+    return before.rows[0]?.value ?? null
+  })
+}
+
+/**
+ * A custom field on one kind of record, made here so the spec owns it.
+ *
+ * `name` is the key the app stores values under and `label` is what a person
+ * reads, so both are stamped: the point of the field is that its label shows
+ * up on the record, and a name left over from an earlier run would collide on
+ * `(organizationId, name, entityType)`.
+ */
+export async function plantCustomField(
+  organizationId: string,
+  entityType: 'service_record' | 'quote',
+  name: string
+): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `insert into custom_field_definitions
+         (id, name, label, "fieldType", "entityType", "sortOrder", "isActive",
+          "createdAt", "updatedAt", "userId", "organizationId")
+       values (gen_random_uuid()::text, $2, $2, 'text', $3, 0, true, now(), now(),
+               (select "userId" from organization_members
+                 where "organizationId" = $1 and role = 'owner' limit 1),
+               $1)
+       returning id`,
+      [organizationId, name, entityType]
+    )
+    return result.rows[0].id
+  })
+}
+
+/** Removes planted field definitions, and the values written into them. */
+export async function deleteCustomFields(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  await withDb(async (db) => {
+    await db.query(`delete from custom_field_values where "fieldId" = any($1::text[])`, [ids])
+    await db.query(`delete from custom_field_definitions where id = any($1::text[])`, [ids])
+  })
+}
+
+/**
+ * The value stored in one custom field for one record, or null.
+ *
+ * Read back to prove a save from the browser reached the database rather than
+ * only the input it was typed into.
+ */
+export async function customFieldValue(fieldId: string, entityId: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ value: string }>(
+      `select value from custom_field_values where "fieldId" = $1 and "entityId" = $2`,
+      [fieldId, entityId]
+    )
+    return result.rows[0]?.value ?? null
+  })
+}
+
+/**
+ * A workshop's own role by name, as `createDefaultRoles` made it.
+ *
+ * The built-in Member role is what the product really hands somebody at the
+ * desk, so a spec about that role has to use that row rather than build an
+ * equivalent permission list by hand: a list assembled in the test would keep
+ * passing after the real role changed underneath it.
+ */
+export async function roleIdNamed(organizationId: string, name: string): Promise<string | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from roles where "organizationId" = $1 and name = $2 limit 1`,
+      [organizationId, name]
+    )
+    return result.rows[0]?.id ?? null
+  })
+}
+
+// ─── Condition map ───────────────────────────────────────────────────────────
+
+/** Where a planted mark was drawn: a job's drop-off, or one inspection check. */
+export type MarkSheet =
+  | { serviceRecordId: string }
+  | { inspectionId: string; inspectionItemId: string }
+
+export interface PlantedMark {
+  view?: 'top' | 'left' | 'right' | 'front' | 'rear'
+  panel?: string
+  kind?: string
+  severity?: 'minor' | 'major'
+  note?: string
+  /** When it was recorded; an earlier visit's mark is planted in the past. */
+  recordedAt?: Date
+  bodyType?: string
+}
+
+/**
+ * A job on a vehicle of its own, drawn as a sedan. Each spec plants its own
+ * car, so marks from another spec or an earlier run are never on it.
+ */
+export async function plantConditionJob(
+  organizationId: string,
+  userId: string,
+  title: string,
+  openedAt?: Date
+): Promise<{ serviceRecordId: string; vehicleId: string }> {
+  const job = await plantJob(organizationId, userId, title)
+  await withDb(async (db) => {
+    await db.query(`update vehicles set "bodyType" = 'sedan' where id = $1`, [job.vehicleId])
+    if (openedAt) {
+      await db.query(`update service_records set "createdAt" = $2 where id = $1`, [
+        job.serviceRecordId,
+        openedAt,
+      ])
+    }
+  })
+  return job
+}
+
+/**
+ * An inspection on the vehicle with one condition map check, from a template
+ * of its own (the seed makes none). With `serviceRecordId` the job is linked to
+ * it, the way "Start inspection" links them.
+ */
+export async function plantConditionInspection(
+  organizationId: string,
+  vehicleId: string,
+  label: string,
+  options: {
+    serviceRecordId?: string
+    completed?: boolean
+    startedAt?: Date
+    /** A second condition map check after the first: a hand-back beside the check-in. */
+    secondCheck?: boolean
+  } = {}
+): Promise<{ inspectionId: string; inspectionItemId: string; secondItemId: string | null }> {
+  return withDb(async (db) => {
+    const id = () => randomBytes(12).toString('hex')
+    const templateId = id()
+    const sectionId = id()
+    const inspectionId = id()
+    const inspectionItemId = id()
+    await db.query(
+      `insert into inspection_templates (id, name, "organizationId", "updatedAt")
+       values ($1, $2, $3, now())`,
+      [templateId, `${label} checklist`, organizationId]
+    )
+    await db.query(
+      `insert into inspection_template_sections (id, name, "templateId") values ($1, 'Body', $2)`,
+      [sectionId, templateId]
+    )
+    await db.query(
+      `insert into inspection_template_items (id, name, "inputType", "sectionId")
+       values ($1, 'Condition map', 'condition_map', $2)`,
+      [id(), sectionId]
+    )
+    await db.query(
+      `insert into inspections (id, "vehicleId", "organizationId", "templateId", status, "completedAt", "createdAt", "updatedAt")
+       values ($1, $2, $3, $4, $5, $6, coalesce($7, now()), now())`,
+      [
+        inspectionId,
+        vehicleId,
+        organizationId,
+        templateId,
+        options.completed ? 'completed' : 'in_progress',
+        options.completed ? new Date() : null,
+        options.startedAt ?? null,
+      ]
+    )
+    await db.query(
+      `insert into inspection_items (id, "inspectionId", name, section, "inputType", condition, "sortOrder")
+       values ($1, $2, 'Condition map', 'Body', 'condition_map', 'ok', 0)`,
+      [inspectionItemId, inspectionId]
+    )
+    const secondItemId = options.secondCheck ? id() : null
+    if (secondItemId) {
+      await db.query(
+        `insert into inspection_items (id, "inspectionId", name, section, "inputType", condition, "sortOrder")
+         values ($1, $2, 'Hand-back map', 'Body', 'condition_map', 'ok', 1)`,
+        [secondItemId, inspectionId]
+      )
+    }
+    if (options.serviceRecordId) {
+      await db.query(`update service_records set "inspectionId" = $2 where id = $1`, [
+        options.serviceRecordId,
+        inspectionId,
+      ])
+    }
+    return { inspectionId, inspectionItemId, secondItemId }
+  })
+}
+
+/** One mark written straight into the table, as if drawn on that sheet. */
+export async function plantConditionMark(
+  organizationId: string,
+  vehicleId: string,
+  sheet: MarkSheet,
+  mark: PlantedMark = {}
+): Promise<string> {
+  return withDb(async (db) => {
+    const markId = randomBytes(12).toString('hex')
+    const onJob = 'serviceRecordId' in sheet
+    await db.query(
+      `insert into condition_marks
+         (id, "organizationId", "vehicleId", "serviceRecordId", "inspectionId", "inspectionItemId",
+          "bodyType", view, panel, x, y, kind, severity, note, "recordedAt", "updatedAt")
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, 0.5, 0.5, $10, $11, $12, coalesce($13, now()), now())`,
+      [
+        markId,
+        organizationId,
+        vehicleId,
+        onJob ? sheet.serviceRecordId : null,
+        onJob ? null : sheet.inspectionId,
+        onJob ? null : sheet.inspectionItemId,
+        mark.bodyType ?? 'sedan',
+        mark.view ?? 'left',
+        mark.panel ?? 'left_front_door',
+        mark.kind ?? 'dent',
+        mark.severity ?? 'minor',
+        mark.note ?? null,
+        mark.recordedAt ?? null,
+      ]
+    )
+    return markId
+  })
+}
+
+export interface ConditionMarkRow {
+  id: string
+  serviceRecordId: string | null
+  inspectionId: string | null
+  view: string
+  panel: string
+  kind: string
+  severity: string
+  note: string | null
+  imageUrls: string[]
+  resolvedAt: Date | null
+}
+
+/** Every mark on the vehicle, oldest first, resolved ones included. */
+export async function conditionMarksOf(vehicleId: string): Promise<ConditionMarkRow[]> {
+  return withDb(async (db) => {
+    const result = await db.query<ConditionMarkRow>(
+      `select id, "serviceRecordId", "inspectionId", view, panel, kind, severity, note,
+              "imageUrls", "resolvedAt"
+         from condition_marks where "vehicleId" = $1 order by "recordedAt", "createdAt"`,
+      [vehicleId]
+    )
+    return result.rows
+  })
+}
+
+/** Whether the job's invoice was told to carry the map: true, false, or null to follow the design. */
+export async function conditionMapOnInvoice(serviceRecordId: string): Promise<boolean | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ on: boolean | null }>(
+      `select "conditionMapOnInvoice" as on from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    return result.rows[0]?.on ?? null
+  })
+}
+
+/** Another job on a car that already has one: the next visit. */
+export async function plantJobOnVehicle(
+  organizationId: string,
+  vehicleId: string,
+  title: string,
+  openedAt?: Date
+): Promise<{ serviceRecordId: string; vehicleId: string }> {
+  return withDb(async (db) => {
+    const job = await db.query<{ id: string }>(
+      `insert into service_records (id, title, "vehicleId", "organizationId", "createdAt", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, coalesce($4, now()), now())
+       returning id`,
+      [title, vehicleId, organizationId, openedAt ?? null]
+    )
+    return { serviceRecordId: job.rows[0].id, vehicleId }
+  })
+}
+
+/** A kind of mark of the workshop's own, keyed the way the settings page keys one. */
+export async function plantOwnMarkKind(
+  organizationId: string,
+  name: string
+): Promise<{ id: string; key: string; name: string }> {
+  return withDb(async (db) => {
+    const id = randomBytes(12).toString('hex')
+    const key = `own_${id}`
+    await db.query(
+      `insert into condition_mark_types (id, "organizationId", key, name, shape, color, "sortOrder", hidden, "updatedAt")
+       values ($1, $2, $3, $4, 'circle', '#7c3aed', 100, false, now())`,
+      [id, organizationId, key, name]
+    )
+    return { id, key, name }
+  })
+}
+
+export async function removeOwnMarkKind(id: string): Promise<void> {
+  await withDb((db) => db.query(`delete from condition_mark_types where id = $1`, [id]))
 }

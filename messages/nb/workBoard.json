@@ -8,10 +8,10 @@
     "week": "Uke",
     "presenter": "Presentatør",
     "addTechnician": "Legg til tekniker",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Forrige uke",
+    "nextWeek": "Neste uke",
+    "previousDay": "Forrige dag",
+    "nextDay": "Neste dag",
     "groupBy": "Kolonner",
     "byTechnician": "Én kolonne per mekaniker",
     "byBay": "Én kolonne per arbeidsplass",
@@ -20,7 +20,7 @@
     "add": "Legg til",
     "addBay": "Legg til arbeidsplass",
     "weekNumber": "Uke {number}",
-    "lanes": "Kolonner",
+    "lanes": "Baner",
     "showAllLanes": "Vis alle",
     "onlyBusyLanes": "Bare med jobber",
     "layout": "Visning",
@@ -78,7 +78,10 @@
     "addTechnician": "Legg til tekniker",
     "standaloneOnly": "Et navn på tavlen for noen som ikke logger inn, for eksempel en lærling eller innleid. En mekaniker som bruker appen legger du til på Team-siden.",
     "linkedTo": "Logger inn som {name}",
-    "linkedManagedOnTeam": "Styres fra Team-siden, sammen med apptilgangen."
+    "linkedManagedOnTeam": "Styres fra Team-siden, sammen med apptilgangen.",
+    "skills": "Kompetanse",
+    "skillsPlaceholder": "Diagnostikk, elbilsertifisert",
+    "skillsHint": "Vises under navnet der jobbene fordeles. Valgfritt."
   },
   "jobDetail": {
     "viewDetails": "Vis detaljer",
@@ -107,8 +110,8 @@
       "waitingParts": "Venter på deler",
       "completed": "Fullført"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Forrige",
+    "next": "Neste",
     "groupingUnused": "Statustavlen grupperer etter status",
     "connecting": "Kobler til …"
   },
@@ -154,6 +157,9 @@
     "workBay": "Arbeidsplass",
     "status": "Status",
     "noTime": "Ingen tid satt ennå",
-    "none": "Ingen ennå"
+    "none": "Ingen ennå",
+    "promised": "Lovet",
+    "promiseLate": "Forsinket",
+    "promiseOverdue": "Lovet kunden tidligere enn nå"
   }
 }

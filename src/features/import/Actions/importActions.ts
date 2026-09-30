@@ -37,6 +37,9 @@ import {
   detectDateFormat,
   detectDecimalSeparator,
 } from '../Lib/normalize'
+import { releaseFiles } from '@/lib/files/manager'
+import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
+import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 // ── Input shapes ──────────────────────────────────────────────────────────────
 
@@ -95,8 +98,12 @@ export interface CommitResult {
 }
 
 /** Only the field keys the entity can carry survive; anything else is ignored. */
-function sanitizeMapping(mapping: ColumnMapping, entity: ImportEntity): ColumnMapping {
-  const allowed = new Set(fieldsFor(entity).map((f) => f.key))
+function sanitizeMapping(
+  mapping: ColumnMapping,
+  entity: ImportEntity,
+  typeKey: boolean
+): ColumnMapping {
+  const allowed = new Set(fieldsFor(entity, { typeKey }).map((f) => f.key))
   const out: ColumnMapping = {}
   for (const [col, key] of Object.entries(mapping)) if (allowed.has(key)) out[col] = key
   return out
@@ -166,7 +173,11 @@ async function buildPlan(
     throw new Error('The uploaded file is a different kind of import')
   }
   const options: ImportOptions = { ...input.options, entity: staged.entity }
-  const mapping = sanitizeMapping(input.mapping, staged.entity)
+  const mapping = sanitizeMapping(
+    input.mapping,
+    staged.entity,
+    await isTypeKeyEnabled(organizationId)
+  )
   const existing = await loadExisting(organizationId, staged.entity)
   const plan = planImport(staged.sheet.rows, mapping, options, existing, input.overrides)
   return { plan, staged }
@@ -384,6 +395,8 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
             transmission: v.transmission,
             engineSize: v.engineSize,
             engineCode: v.engineCode,
+            hsn: v.hsn,
+            tsn: v.tsn,
             purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
             purchasePrice: v.purchasePrice,
             customerId,
@@ -413,6 +426,8 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           ...(v.transmission && { transmission: v.transmission }),
           engineSize: v.engineSize,
           engineCode: v.engineCode,
+          hsn: v.hsn,
+          tsn: v.tsn,
           purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
           purchasePrice: v.purchasePrice,
           customerId,
@@ -657,6 +672,29 @@ export async function undoImportBatch(batchId: string) {
       if (!batch) throw new Error('Import not found')
       if (batch.status !== 'completed') throw new Error('This import has already been undone')
 
+      // Anything added to the imported jobs and vehicles since (photos taken
+      // on an imported job) goes with them; the files are let go afterwards.
+      const [batchRecords, batchVehicles] = await Promise.all([
+        db.serviceRecord.findMany({
+          where: { importBatchId: batchId, organizationId },
+          select: { id: true },
+        }),
+        db.vehicle.findMany({
+          where: { importBatchId: batchId, organizationId },
+          select: { id: true },
+        }),
+      ])
+      const files = [
+        ...(await serviceRecordFileUrls(
+          organizationId,
+          batchRecords.map((r) => r.id)
+        )),
+        ...(await vehicleFileUrls(
+          organizationId,
+          batchVehicles.map((v) => v.id)
+        )),
+      ]
+
       const result = await db.$transaction(async (tx) => {
         const serviceRecords = await tx.serviceRecord.deleteMany({
           where: { importBatchId: batchId, organizationId },
@@ -677,6 +715,7 @@ export async function undoImportBatch(batchId: string) {
           customers: customers.count,
         }
       })
+      await releaseFiles(files, { organizationId, reason: 'import undone' })
 
       revalidatePath('/customers')
       revalidatePath('/vehicles')
@@ -734,7 +773,9 @@ export async function suggestMappingWithAi(token: string) {
 
       const config = await getAiConfig(organizationId)
       const client = createClient(config)
-      const fields = fieldsFor(staged.entity)
+      const fields = fieldsFor(staged.entity, {
+        typeKey: await isTypeKeyEnabled(organizationId),
+      })
       const { columns, rows } = staged.sheet
 
       const columnsForPrompt = columns.map((name, i) => {

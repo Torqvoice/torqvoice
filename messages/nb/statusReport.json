@@ -14,7 +14,7 @@
     "createAndSend": "Opprett og send",
     "cancel": "Avbryt",
     "uploadFailed": "Kunne ikke laste opp video",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Kunne ikke opprette statusrapport",
     "created": "Statusrapport opprettet",
     "noVideo": "Last opp en video først",
     "removeVideo": "Fjern video",
@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Takk for tilbakemeldingen!",
     "feedbackError": "Kunne ikke sende tilbakemelding",
     "submitting": "Sender...",
-    "poweredBy": "Drevet av"
+    "poweredBy": "Drevet av",
+    "vehicleLabel": "Kjøretøy",
+    "plate": "Skilt: {plate}",
+    "inspectionTitle": "Inspeksjon",
+    "messageFromTechnician": "Melding fra tekniker",
+    "videoUnsupported": "Nettleseren din støtter ikke videoelementet."
   },
   "list": {
     "title": "Statusrapporter",

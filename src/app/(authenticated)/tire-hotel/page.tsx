@@ -4,7 +4,7 @@ import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
 import { getTireSetsPaginated } from '@/features/tire-hotel/Actions/tireSetActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { totalFree as sumFree } from '@/features/tire-hotel/Lib/capacity'
 import { PageHeader } from '@/components/page-header'
@@ -42,7 +42,7 @@ export default async function TireHotelPage({
       sortOrder: single('sortOrder') === 'asc' ? 'asc' : 'desc',
     }),
     getLocationOptions(),
-    getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+    getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
     db.vehicle.findMany({
       where: { organizationId, isArchived: false },
       orderBy: { updatedAt: 'desc' },

@@ -5,8 +5,13 @@ import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
 import { recordRegistryAnswer } from '../Lib/inspection-sync'
-import type { VehicleLookupResult } from '../Lib/types'
-import { askRegistry, findLookupConnection, withinLookupBudget } from '../Lib/vehicle-lookup'
+import type { VehicleLookupKey, VehicleLookupResult } from '../Lib/types'
+import {
+  askRegistry,
+  findLookupConnection,
+  lookupKeys,
+  withinLookupBudget,
+} from '../Lib/vehicle-lookup'
 
 /**
  * The form's plate and VIN lookups. The registry logic lives in
@@ -20,43 +25,62 @@ export interface VehicleLookup extends VehicleLookupResult {
   source: string
 }
 
-/** Whether the form should offer a lookup at all: plan on, registry connected. */
+/**
+ * Which lookups the form should offer: plan on, and a connected registry that
+ * answers to a plate, a VIN, or both.
+ */
 export async function isVehicleLookupAvailable() {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId }): Promise<Record<VehicleLookupKey, boolean>> => {
       const features = await getFeatures(organizationId)
-      if (!features.integrations) return false
-      return (await findLookupConnection(organizationId)) !== null
+      if (!features.integrations) return { plate: false, vin: false }
+      const [plate, vin] = await Promise.all([
+        findLookupConnection(organizationId, 'plate'),
+        findLookupConnection(organizationId, 'vin'),
+      ])
+      return { plate: plate !== null, vin: vin !== null }
     },
     { requiredPermissions: READ_VEHICLES }
   )
 }
 
 /**
- * One lookup for the form. When the vehicle already exists and is this
- * organisation's, what the registry said is also recorded on it, so the
- * inspection date lands without waiting for the next scheduled pass.
+ * One lookup for the form, by plate or by VIN, sent to a registry that
+ * answers to it. When the vehicle already exists and is this organisation's,
+ * what the registry said is also recorded on it, so the inspection date
+ * lands without waiting for the next scheduled pass.
  */
-export async function lookupVehicle(query: { plate?: string; vin?: string; vehicleId?: string }) {
+export async function lookupVehicle(query: {
+  by: VehicleLookupKey
+  value: string
+  vehicleId?: string
+}) {
   return withAuth(
     async ({ organizationId }): Promise<VehicleLookup | null> => {
-      const plate = query.plate?.trim() ?? ''
-      const vin = query.vin?.trim() ?? ''
-      if (!plate && !vin) throw new Error('A plate or VIN is required')
-      if (plate.length > 16 || vin.length > 32)
-        throw new Error('That does not look like a plate or VIN')
+      const by: VehicleLookupKey = query.by === 'vin' ? 'vin' : 'plate'
+      const value = query.value?.trim() ?? ''
+      if (!value) throw new Error(by === 'vin' ? 'A VIN is required' : 'A plate is required')
+      if (value.length > (by === 'vin' ? 32 : 16))
+        throw new Error(
+          by === 'vin' ? 'That does not look like a VIN' : 'That does not look like a plate'
+        )
       const features = await getFeatures(organizationId)
       if (!features.integrations) throw new Error('Integrations are not included in your plan')
-      const target = await findLookupConnection(organizationId)
-      if (!target) throw new Error('No vehicle registry is connected')
+      const target = await findLookupConnection(organizationId, by)
+      if (!target)
+        throw new Error(
+          by === 'vin'
+            ? 'No connected integration decodes VINs'
+            : 'No vehicle registry is connected'
+        )
       if (!withinLookupBudget(organizationId))
         throw new Error('Too many lookups, wait a minute and try again')
 
-      const answer = await askRegistry(target.id, {
-        plate: plate || undefined,
-        vin: vin || undefined,
-      })
-      if (query.vehicleId) {
+      const answer = await askRegistry(target.id, { [by]: value })
+      // A VIN decoder such as NHTSA knows the model, not this vehicle's
+      // registration, so it has no inspection status to record, and must not
+      // replace the one a registry wrote.
+      if (query.vehicleId && lookupKeys(target.connectorId).includes('plate')) {
         const owned = await db.vehicle.findFirst({
           where: { id: query.vehicleId, organizationId },
           select: { id: true },

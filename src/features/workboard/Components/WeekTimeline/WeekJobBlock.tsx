@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import { type ClockFormat, formatClockRange } from '../../utils/clock'
 import { JobTooltip } from '../JobTooltip'
+import { PromiseOverdueMark } from '../PromiseOverdueMark'
 import { statusBlockColor } from '../../utils/job-colors'
 import type { PositionedJob, TimeWindow } from '../../utils/layout'
 import { percentForMinutes, percentForSpan } from './geometry'
@@ -151,7 +152,10 @@ export function WeekJobBlock({
               <ClipboardCheck className="mt-px h-3 w-3 shrink-0 opacity-80" />
             )}
             <div className="min-w-0 flex-1">
-              <div className="truncate font-medium">{job.title}</div>
+              <div className="flex items-center gap-1">
+                <span className="truncate font-medium">{job.title}</span>
+                <PromiseOverdueMark job={job} compact className="shrink-0 px-0.5 py-0" />
+              </div>
               {owner && <div className="truncate font-medium opacity-90">{owner.name}</div>}
               {durationMinutes >= VEHICLE_FROM_MINUTES && vehicleLabel && (
                 <div className="truncate opacity-80">{vehicleLabel}</div>

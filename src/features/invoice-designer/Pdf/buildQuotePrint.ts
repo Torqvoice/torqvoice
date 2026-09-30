@@ -1,4 +1,5 @@
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
+import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
@@ -23,6 +24,12 @@ import {
   type TotalLine,
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
+import { warrantyForPrint } from './warrantyPrint'
+import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import {
+  type VisitConditionMap,
+  visitConditionMapForPrint,
+} from '@/features/condition-map/Lib/print'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -47,6 +54,11 @@ export interface QuotePrintData {
   discountAmount: number
   totalAmount: number
   notes: string | null
+  /** The warranty the customer is offered; see src/lib/warranty.ts. */
+  warrantyStatus?: string | null
+  warrantyMonths?: number | null
+  warrantyMileage?: number | null
+  warrantyNotes?: string | null
   partItems: {
     partNumber: string | null
     name: string
@@ -78,6 +90,8 @@ export interface QuotePrintData {
     year: number
     vin: string | null
     licensePlate: string | null
+    hsn?: string | null
+    tsn?: string | null
   } | null
 }
 
@@ -87,9 +101,13 @@ export interface QuotePrintInput {
   currencyCode?: string
   currencyFormat?: 'symbol' | 'code'
   logoDataUri?: string
+  /** Who signs the sheet, for a layout with the Signature section on. */
+  signer?: { name: string; dataUri?: string }
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
+  /** The workshop's units, for the warranty's distance limit. */
+  unitSystem?: string
   template?: TemplateConfig
   portalUrl?: string
   pdfAttachmentNames?: string[]
@@ -99,6 +117,8 @@ export interface QuotePrintInput {
   layoutConfig?: InvoiceLayoutConfig
   /** Print each line with tax included, and say how much of the subtotal is tax. */
   lineItemsInclTax?: boolean
+  /** The car's condition as the inspection the quote came from found it. */
+  conditionMap?: VisitConditionMap
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -106,7 +126,9 @@ function fillTemplate(template: string, values: Record<string, string>): string 
 }
 
 export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
-  const { data, workshop, template } = input
+  const { workshop, template } = input
+  // The fee under the work, and a fee of nothing left out.
+  const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
   const L = (key: string, fallback: string) => labels[key] || fallback
 
@@ -176,6 +198,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
         ? fillTemplate(labels.vin, { vin: data.vehicle.vin })
         : `VIN: ${data.vehicle.vin}`
       : '',
+    hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
@@ -212,7 +235,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
       qty: String(l.hours),
-      unit: l.pricingType === 'service' ? L('unit', 'unit') : L('hrs', 'hrs'),
+      unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
       price: money(shown(l.rate)),
       total: money(shown(l.total)),
@@ -240,7 +263,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   }))
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
-    const isService = l.pricingType === 'service'
+    // A shop fee prints as one unit at its price, like a service line.
+    const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
       qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
@@ -341,10 +365,19 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     totals,
     notes: { html: data.description ?? undefined },
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    warranty: {},
+    warranty: warrantyForPrint(data, { labels, unitSystem: input.unitSystem }),
     payment: [],
+    conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
+    signature: {
+      heading: L('signature', 'Signature'),
+      name: input.signer?.name ?? '',
+      nameCaption: L('signedBy', 'Signed by'),
+      date: createdDate,
+      dateCaption: L('signatureDate', 'Date'),
+      image: input.signer?.dataUri,
+    },
     sectionLabels: {
       customer: L('to', 'To'),
       vehicle: L('vehicle', 'Vehicle'),
@@ -352,6 +385,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       bank_account: L('paymentInformation', 'Payment Information'),
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
+      condition_map: L('conditionMapTitle', 'Vehicle condition'),
     },
   }
 

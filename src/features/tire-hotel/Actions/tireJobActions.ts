@@ -6,6 +6,11 @@ import {
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
@@ -19,11 +24,12 @@ import { addTireLineToRecord } from '../Lib/addTireLine'
 import { copySetFilesToJob } from '../Lib/copySetFilesToJob'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
-import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { invoiceLineWords, jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
+import { TREATMENT_TYPES } from '../Lib/treatments'
+import { billablePrep, storageLine, treatmentLines } from '../Lib/jobLines'
+import { jobNoteWords, seasonNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
+import { releaseFiles } from '@/lib/files/manager'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const QUOTE = [
@@ -183,88 +189,6 @@ export async function searchTireStock(input: unknown) {
   )
 }
 
-/**
- * Prep lines for a job, priced from settings.
- *
- * The work was agreed when the set was checked in, so it should reach the
- * bill without anyone retyping it. Only treatments the shop has put a price
- * against produce a line, which keeps washing off the invoice at shops that
- * fold it into the storage fee.
- */
-/**
- * Treatment names in the reader's language.
- *
- * Loaded here rather than passed in from the browser: this text ends up on an
- * invoice, and invoice wording should not be whatever a client happened to
- * send.
- */
-/**
- * The storage fee as a flat service line, in the workshop's language.
- *
- * Priced per job rather than by the hour, so it prints as one figure with the
- * period beside it. Nothing schedules this: it is charged when the tires are
- * billed, which is the moment somebody is looking at the account anyway.
- */
-async function storageLine(
-  set: { size: string | null; quantity: number },
-  data: { storageAmount?: number; storageFrom?: Date; storageTo?: Date }
-) {
-  const amount = Math.round((data.storageAmount ?? 0) * 100) / 100
-  const words = await invoiceLineWords()
-
-  // An open-ended period is the normal case: the shop knows when the tires
-  // arrived and not when they will be collected, and inventing an end date
-  // would print a promise on the invoice.
-  const from = data.storageFrom?.toISOString().slice(0, 10)
-  const to = data.storageTo?.toISOString().slice(0, 10)
-  const period = from ? (to ? `${from} - ${to}` : words.fromDate.replace('{date}', from)) : null
-
-  return {
-    description: [words.storage, set.size, `${set.quantity} ${words.pieces}`, period]
-      .filter(Boolean)
-      .join(' · '),
-    hours: 1,
-    rate: amount,
-    total: amount,
-    pricingType: 'service' as const,
-  }
-}
-
-async function billablePrep(
-  organizationId: string,
-  treatments: { type: string; status: string }[]
-) {
-  const setting = await db.appSetting.findUnique({
-    where: {
-      organizationId_key: { organizationId, key: SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES },
-    },
-    select: { value: true },
-  })
-  return billableTreatments(treatments, parseTreatmentPrices(setting?.value))
-}
-
-async function treatmentLines(
-  organizationId: string,
-  treatments: { type: string; status: string }[],
-  only?: string[]
-) {
-  const names = await treatmentNames()
-  const billable = await billablePrep(organizationId, treatments)
-  const wanted = only ? new Set(only) : null
-
-  return billable
-    .filter((line) => !wanted || wanted.has(line.type))
-    .map((line) => ({
-      description: names[line.type] ?? line.type,
-      // A flat service line, not hours: prep is priced per job, and an hourly
-      // line would invite someone to multiply it by a duration nobody tracked.
-      hours: 1,
-      rate: line.price,
-      total: line.price,
-      pricingType: 'service' as const,
-    }))
-}
-
 /** Human label for the tires, used as the quote line and the job title. */
 /**
  * What to call a set on a quote, a work order or an invoice line.
@@ -380,7 +304,12 @@ export async function createQuoteFromTireSet(input: unknown) {
         where: {
           organizationId,
           key: {
-            in: ['workshop.quotePrefix', 'workshop.quoteValidDays', ...WORKSHOP_TAX_SETTING_KEYS],
+            in: [
+              'workshop.quotePrefix',
+              'workshop.quoteValidDays',
+              ...WORKSHOP_TAX_SETTING_KEYS,
+              ...WARRANTY_SETTING_KEYS,
+            ],
           },
         },
       })
@@ -436,6 +365,8 @@ export async function createQuoteFromTireSet(input: unknown) {
           tireSetId: set.id,
           organizationId,
           userId,
+          // Every new quote starts from the workshop's standing warranty.
+          ...warrantyFieldsForNewDocument(readWarrantyDefaults(Object.fromEntries(map)), 'quote'),
           ...(data.includeTires
             ? {
                 partItems: {
@@ -803,6 +734,10 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
       if (!record) throw new Error('Work order not found')
       if (!record.tireSet) throw new Error('This job is not linked to a tire set')
 
+      const copies = await db.serviceAttachment.findMany({
+        where: { serviceRecordId: record.id, category: 'tire_hotel' },
+        select: { fileUrl: true },
+      })
       await db.$transaction([
         db.serviceRecord.update({
           where: { id: record.id },
@@ -812,6 +747,12 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
           where: { serviceRecordId: record.id, category: 'tire_hotel' },
         }),
       ])
+      // The set still holds these files, so the file manager keeps them; only
+      // a file the set itself has since let go is removed.
+      await releaseFiles(
+        copies.map((c) => c.fileUrl),
+        { organizationId, reason: 'tire set unlinked from work order' }
+      )
 
       revalidatePath(`/tire-hotel/${record.tireSet.id}`)
       if (record.vehicleId) {

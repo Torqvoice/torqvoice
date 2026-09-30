@@ -31,7 +31,7 @@
     "messageDeleted": "Сообщение удалено",
     "deleteError": "Не удалось удалить сообщение",
     "sendError": "Не удалось отправить сообщение",
-    "sendMessage": "Send message"
+    "sendMessage": "Отправить сообщение"
   },
   "sendDialog": {
     "send": "Отправить {label}",

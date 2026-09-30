@@ -74,8 +74,8 @@
     "noDismissed": "Нет отклонённых транспортных средств.",
     "dismissedOn": "Отклонено {date}",
     "restore": "Восстановить",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Настройки техобслуживания",
+    "dismissAriaLabel": "Отклонить"
   },
   "reminders": {
     "title": "Предстоящие напоминания",
@@ -112,7 +112,7 @@
     "createQuote": "Создать предложение",
     "itemsRequested": "{count, plural, one {# пункт запрошен} few {# пункта запрошено} other {# пунктов запрошено}}",
     "noData": "Нет ожидающих запросов на предложения.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Отклонить запрос на предложение"
   },
   "quoteResponses": {
     "title": "Ответы клиентов на предложения",
@@ -120,11 +120,11 @@
     "accepted": "Принято",
     "changesRequested": "Запрошены изменения",
     "convertToWorkOrder": "Преобразовать в заказ-наряд",
-    "convert": "Convert",
+    "convert": "Преобразовать",
     "viewQuote": "Просмотреть предложение",
-    "view": "View",
+    "view": "Просмотр",
     "noData": "Нет ответов от клиентов.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Отклонить ответ"
   },
   "recentCompleted": {
     "title": "Недавно завершённые",

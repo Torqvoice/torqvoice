@@ -7,6 +7,7 @@ import { Clock, GripVertical, Wrench, ClipboardCheck } from 'lucide-react'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { getJobDateRange, getDurationMinutes } from '../utils/datetime'
 import { formatDuration } from './DurationSlider'
+import { PromiseOverdueMark } from './PromiseOverdueMark'
 
 export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -69,6 +70,7 @@ export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: ()
               {formatDuration(durationMins)}
             </span>
           )}
+          <PromiseOverdueMark job={job} />
         </div>
       </div>
     </div>

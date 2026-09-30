@@ -31,7 +31,7 @@
     "messageDeleted": "Nachricht gelöscht",
     "deleteError": "Nachricht konnte nicht gelöscht werden",
     "sendError": "Nachricht konnte nicht gesendet werden",
-    "sendMessage": "Send message"
+    "sendMessage": "Nachricht senden"
   },
   "sendDialog": {
     "send": "{label} senden",

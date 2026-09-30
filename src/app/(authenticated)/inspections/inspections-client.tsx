@@ -114,6 +114,7 @@ function InspectionProgress({
       ['attention', counts.attention],
       ['fail', counts.fail],
       ['dangerous', counts.dangerous],
+      ['not_applicable', counts.notApplicable],
       ['not_inspected', counts.notInspected],
     ] as const
   ).filter(([, value]) => value > 0)
@@ -129,8 +130,16 @@ function InspectionProgress({
           className="group flex cursor-help items-center gap-1.5 rounded-sm focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
         >
           <div className="ring-offset-background group-hover:ring-foreground/25 flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 ring-offset-1 transition-shadow group-hover:ring-2 dark:bg-gray-700">
-            {(['pass', 'attention', 'fail', 'dangerous'] as const).map((c) => {
-              const pct = (counts[c] / items.length) * 100
+            {(
+              [
+                ['pass', counts.pass],
+                ['attention', counts.attention],
+                ['fail', counts.fail],
+                ['dangerous', counts.dangerous],
+                ['not_applicable', counts.notApplicable],
+              ] as const
+            ).map(([c, value]) => {
+              const pct = (value / items.length) * 100
               if (pct === 0) return null
               return (
                 <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />

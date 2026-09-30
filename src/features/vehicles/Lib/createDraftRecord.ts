@@ -1,9 +1,23 @@
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import {
+  documentTotals,
   readWorkshopTax,
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import {
+  newShopFeeLine,
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeFor,
+} from '@/features/settings/Lib/shopFee'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyExpiryFor,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
+import { EMPTY_WARRANTY } from '@/lib/warranty'
 import { nextAvailableSlot } from '@/features/workboard/Lib/availability'
 import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -39,8 +53,14 @@ export async function createDraftRecord(
     technicianId?: string
     /** Bay the job was booked into, when it was created from the work board. */
     workBayId?: string
+    /**
+     * The transaction the record is written in, when the caller has more to
+     * write that must land with it or not at all. Reads stay on the pool.
+     */
+    tx?: TxClient
   }
 ) {
+  const writer = opts.tx ?? db
   const [settings, org, currentUser, timeZone] = await Promise.all([
     db.appSetting.findMany({
       where: {
@@ -53,6 +73,8 @@ export async function createDraftRecord(
             'workshop.defaultTechnicianId',
             SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE,
             ...WORKSHOP_TAX_SETTING_KEYS,
+            ...WARRANTY_SETTING_KEYS,
+            ...SHOP_FEE_SETTING_KEYS,
             'workboard.workDayStart',
           ],
         },
@@ -76,6 +98,25 @@ export async function createDraftRecord(
 
   // Resolve technician: explicit param > default setting by ID > legacy default by name
   let resolvedTechId = opts.technicianId
+  if (resolvedTechId) {
+    // Named by the caller, so it has to be one of this workshop's. Before
+    // this, a lookup that found nothing still wrote the id, and the row
+    // then pointed at another workshop's technician: their board showed the
+    // job, and renaming their technician rewrote its name.
+    const own = await db.technician.findFirst({
+      where: { id: resolvedTechId, organizationId },
+      select: { name: true },
+    })
+    if (!own) throw new Error('Technician not found')
+    techName = own.name
+  }
+  if (opts.workBayId) {
+    const bay = await db.workBay.findFirst({
+      where: { id: opts.workBayId, organizationId },
+      select: { id: true },
+    })
+    if (!bay) throw new Error('Work bay not found')
+  }
   if (!resolvedTechId) {
     const defaultId = settingsMap['workshop.defaultTechnicianId']
     if (defaultId) {
@@ -99,15 +140,6 @@ export async function createDraftRecord(
         techName = defaultTech.name
       }
     }
-  }
-
-  // If a technician is resolved (explicit or default), use their name
-  if (resolvedTechId) {
-    const tech = await db.technician.findFirst({
-      where: { id: resolvedTechId, organizationId },
-      select: { name: true },
-    })
-    if (tech) techName = tech.name
   }
 
   const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
@@ -134,7 +166,7 @@ export async function createDraftRecord(
   const invoiceNumber = `${prefix}${nextNum}`
 
   if (startNumber && nextNum === startNumber) {
-    await db.appSetting.updateMany({
+    await writer.appSetting.updateMany({
       where: { organizationId, key: 'workshop.invoiceStartNumber' },
       data: { value: '' },
     })
@@ -202,9 +234,35 @@ export async function createDraftRecord(
       })
     )
 
-  return db.serviceRecord.create({
+  // The workshop's standing warranty, for work on a vehicle. A sale over the
+  // counter is not a repair, and terms written for one would misdescribe it;
+  // its warranty panel is still there for whoever wants to fill it in.
+  const warranty = isShopWork
+    ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
+    : EMPTY_WARRANTY
+
+  // The workshop's shop fee, on work done to a vehicle. A counter sale is
+  // parts over the desk and uses none of the supplies the fee pays for.
+  const shopFee = isShopWork ? shopFeeFor(readShopFee(settingsMap), 'workOrder') : null
+  const feeLine = shopFee ? newShopFeeLine(shopFee) : null
+  const feeTotals =
+    feeLine && feeLine.total > 0
+      ? {
+          subtotal: feeLine.total,
+          ...documentTotals({
+            subtotal: feeLine.total,
+            discountAmount: 0,
+            taxRate: taxFields.taxRate,
+            taxInclusive: taxFields.taxInclusive,
+            taxComponents: taxFields.taxComponents,
+          }),
+        }
+      : null
+
+  return writer.serviceRecord.create({
     data: {
       organizationId,
+      createdById: userId,
       title,
       type: 'maintenance',
       status: 'pending',
@@ -216,6 +274,10 @@ export async function createDraftRecord(
       workBayId: opts.workBayId || undefined,
       invoiceNumber,
       ...taxFields,
+      ...(feeTotals ?? {}),
+      ...(feeLine ? { laborItems: { create: [feeLine] } } : {}),
+      ...warranty,
+      warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
       serviceDate,
       invoiceDate: serviceDate,
       startDateTime: defaultStart,

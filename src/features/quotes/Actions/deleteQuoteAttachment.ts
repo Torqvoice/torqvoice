@@ -4,8 +4,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { unlink } from 'fs/promises'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { releaseFiles } from '@/lib/files/manager'
 
 export async function deleteQuoteAttachment(attachmentId: string) {
   return withAuth(
@@ -21,14 +20,12 @@ export async function deleteQuoteAttachment(attachmentId: string) {
       })
       if (!attachment) throw new Error('Attachment not found')
 
-      // Delete file from disk
-      try {
-        await unlink(resolveUploadPath(attachment.fileUrl))
-      } catch (err) {
-        console.warn(`[deleteQuoteAttachment] Failed to delete file "${attachment.fileUrl}":`, err)
-      }
-
       await db.quoteAttachment.delete({ where: { id: attachmentId } })
+      // The file once its row is gone, unless something still uses it.
+      await releaseFiles([attachment.fileUrl], {
+        organizationId,
+        reason: 'quote attachment deleted',
+      })
 
       revalidatePath(`/quotes/${attachment.quote.id}`)
       return { deleted: true }

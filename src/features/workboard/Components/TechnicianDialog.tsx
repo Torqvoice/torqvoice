@@ -43,6 +43,7 @@ export function TechnicianDialog({
 }) {
   const [name, setName] = useState('')
   const [color, setColor] = useState(PRESET_COLORS[0])
+  const [skills, setSkills] = useState('')
   // Kept, but no longer editable here. An existing link survives an edit;
   // a new technician made from the board never gains one.
   const [userId, setUserId] = useState<string>('')
@@ -59,10 +60,12 @@ export function TechnicianDialog({
       if (technician) {
         setName(technician.name)
         setColor(technician.color)
+        setSkills(technician.skills || '')
         setUserId(technician.userId || '')
       } else {
         setName('')
         setColor(PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)])
+        setSkills('')
         setUserId('')
       }
       // Fetch org members
@@ -82,6 +85,7 @@ export function TechnicianDialog({
         id: technician.id,
         name: name.trim(),
         color,
+        skills: skills.trim() || null,
         userId: userId && userId !== 'none' ? userId : null,
       })
       if (res.success) {
@@ -89,7 +93,15 @@ export function TechnicianDialog({
         const store = useWorkBoardStore.getState()
         store.setTechnicians(
           store.technicians.map((t) =>
-            t.id === technician.id ? { ...t, name: name.trim(), color, userId: userId || null } : t
+            t.id === technician.id
+              ? {
+                  ...t,
+                  name: name.trim(),
+                  color,
+                  skills: skills.trim() || null,
+                  userId: userId || null,
+                }
+              : t
           )
         )
         onOpenChange(false)
@@ -98,6 +110,7 @@ export function TechnicianDialog({
       const res = await createTechnician({
         name: name.trim(),
         color,
+        skills: skills.trim() || undefined,
         userId: userId && userId !== 'none' ? userId : undefined,
       })
       if (res.success && res.data) {
@@ -132,6 +145,18 @@ export function TechnicianDialog({
               onChange={(e) => setName(e.target.value)}
               autoFocus
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tech-skills">{t('skills')}</Label>
+            <Input
+              id="tech-skills"
+              placeholder={t('skillsPlaceholder')}
+              value={skills}
+              onChange={(e) => setSkills(e.target.value)}
+              maxLength={80}
+            />
+            <p className="text-muted-foreground text-xs">{t('skillsHint')}</p>
           </div>
 
           <div className="space-y-2">

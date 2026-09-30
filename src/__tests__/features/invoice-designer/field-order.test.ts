@@ -11,7 +11,10 @@
  */
 import { describe, expect, it } from 'vitest'
 import { buildSampleData } from '@/features/invoice-designer/Components/sample'
-import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  fieldHasFixedSlot,
+  mergeWithDefaults,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import { buildDocumentSpec } from '@/features/invoice-designer/Spec/buildSpec'
 import { themeOf } from '@/features/invoice-designer/Components/designTheme'
 import type { InvoiceFieldConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -126,8 +129,12 @@ describe('document title strip order', () => {
  * depend on the sample data's wording.
  */
 describe('every section with a field list follows its order', () => {
+  // A section whose every field has a slot of its own (the signature block)
+  // has no order to follow; fixed-slot-fields.test.ts holds it to that.
   const sectionsWithFields = mergeWithDefaults({}).sections.filter(
-    (section) => (section.fields ?? []).length > 1
+    (section) =>
+      (section.fields ?? []).length > 1 &&
+      !(section.fields ?? []).every((field) => fieldHasFixedSlot(section.id, field.id))
   )
 
   /**

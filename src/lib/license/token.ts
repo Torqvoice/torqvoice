@@ -1,5 +1,5 @@
-import { createPublicKey, verify, type KeyObject } from 'node:crypto'
-import { LICENSE_PUBLIC_KEYS } from './public-keys'
+import type { KeyObject } from 'node:crypto'
+import { embeddedKeys, signedPayload } from './signature'
 
 /**
  * Verifies the signed licence token torqvoice.com hands out.
@@ -62,26 +62,7 @@ const NOT_VERIFIED: LicenseTokenVerification = {
   daysUntilExpiry: null,
 }
 
-let cachedKeys: KeyObject[] | null = null
-
-function embeddedKeys(): KeyObject[] {
-  if (!cachedKeys) {
-    cachedKeys = LICENSE_PUBLIC_KEYS.map((k) =>
-      createPublicKey({ key: Buffer.from(k, 'base64'), format: 'der', type: 'spki' })
-    )
-  }
-  return cachedKeys
-}
-
-function parsePayload(encoded: string): LicenseTokenPayload | null {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8'))
-  } catch {
-    return null
-  }
-  if (!parsed || typeof parsed !== 'object') return null
-  const p = parsed as Record<string, unknown>
+function parsePayload(p: Record<string, unknown>): LicenseTokenPayload | null {
   if (p.v !== 1) return null
   for (const field of ['lid', 'org', 'plan', 'expiresAt', 'issuedAt']) {
     if (typeof p[field] !== 'string' || !(p[field] as string)) return null
@@ -104,29 +85,8 @@ export function verifyLicenseTokenWith(
 ): LicenseTokenVerification {
   if (!token) return { ...NOT_VERIFIED, status: 'missing' }
 
-  const parts = token.trim().split('.')
-  if (parts.length !== 3 || parts[0] !== LICENSE_TOKEN_PREFIX) return NOT_VERIFIED
-  const [, encoded, sig] = parts
-
-  let signature: Buffer
-  try {
-    signature = Buffer.from(sig, 'base64url')
-  } catch {
-    return NOT_VERIFIED
-  }
-  if (signature.length !== 64) return NOT_VERIFIED
-
-  const data = Buffer.from(encoded, 'utf8')
-  const signed = keys.some((key) => {
-    try {
-      return verify(null, data, key, signature)
-    } catch {
-      return false
-    }
-  })
-  if (!signed) return NOT_VERIFIED
-
-  const payload = parsePayload(encoded)
+  const signed = signedPayload(keys, token, LICENSE_TOKEN_PREFIX)
+  const payload = signed && parsePayload(signed)
   if (!payload) return NOT_VERIFIED
   // A token is bound to the org that asked for it. One lifted from another
   // install, or minted for a different org on the same install, is rejected.

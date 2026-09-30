@@ -34,8 +34,8 @@
     "total": "Gesamt",
     "labor": "Arbeitsleistung",
     "hours": "Stunden",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "Std.",
+    "unit": "Einh.",
     "qtyOrHours": "Einheit / Stunden",
     "rate": "Stundensatz",
     "ratePerHour": "{rate}/Std.",
@@ -93,8 +93,8 @@
     "labor": "Arbeitsleistung",
     "laborDescription": "Beschreibung",
     "hours": "Stunden",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "Std.",
+    "unit": "Einh.",
     "qtyOrHours": "Einheit / Stunden",
     "rate": "Stundensatz",
     "ratePerHour": "{rate}/Std.",
@@ -157,14 +157,16 @@
       "attention": "Geringer Mangel",
       "fail": "Erheblicher Mangel",
       "dangerous": "Gefährlicher Mangel",
-      "not_inspected": "Nicht geprüft"
+      "not_inspected": "Nicht geprüft",
+      "not_applicable": "Nicht zutreffend"
     },
     "basic": {
       "pass": "Bestanden",
       "attention": "Achtung",
       "fail": "Durchgefallen",
       "dangerous": "Gefährlich",
-      "not_inspected": "Nicht geprüft"
+      "not_inspected": "Nicht geprüft",
+      "not_applicable": "Nicht zutreffend"
     },
     "result": {
       "pass": "Bestanden",
@@ -194,13 +196,16 @@
     "summary": "Zusammenfassung",
     "progressLabel": "{graded} Prüfpunkte bewertet",
     "limit": "Grenzwert",
+    "rangeMin": "mind.",
+    "rangeMax": "max.",
     "viewPhoto": "Foto ansehen",
     "deficienciesFound": "Festgestellte Mängel ({count})",
     "allResults": "Alle Ergebnisse",
-    "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen."
+    "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen.",
+    "inspectionPhotos": "Fotos und Dokumente"
   },
   "terms": {
-    "title": "Verkaufsbedingungen (Salgsvilkår)",
+    "title": "Verkaufsbedingungen",
     "contact": "Kontakt",
     "tel": "Tel: {phone}"
   },
@@ -227,6 +232,7 @@
     "portalMessage": "Sehen Sie Ihre Fahrzeuge, Rechnungen und mehr in Ihrem",
     "customerPortal": "Kundenportal",
     "telegramConnect": "Chatten Sie mit uns auf Telegram",
-    "telegramScan": "Scannen Sie diesen QR-Code, um uns auf Telegram für Updates und Support zu kontaktieren."
+    "telegramScan": "Scannen Sie diesen QR-Code, um uns auf Telegram für Updates und Support zu kontaktieren.",
+    "downloadCertificate": "Prüfbericht herunterladen"
   }
 }

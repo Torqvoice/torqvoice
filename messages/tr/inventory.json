@@ -131,7 +131,7 @@
     "saveChanges": "Değişiklikleri kaydet",
     "addPart": "Parça ekle"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Menüyü aç",
   "history": {
     "title": "Stok geçmişi",
     "description": "{name} için kaydedilen tüm değişiklikler, en yeniden.",

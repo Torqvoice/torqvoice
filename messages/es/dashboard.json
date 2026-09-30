@@ -74,8 +74,8 @@
     "noDismissed": "No hay vehículos descartados.",
     "dismissedOn": "Descartado el {date}",
     "restore": "Restaurar",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Ajustes de mantenimiento",
+    "dismissAriaLabel": "Descartar"
   },
   "reminders": {
     "title": "Recordatorios pendientes",
@@ -112,7 +112,7 @@
     "createQuote": "Crear presupuesto",
     "itemsRequested": "{count, plural, one {# elemento solicitado} other {# elementos solicitados}}",
     "noData": "No hay solicitudes de presupuesto pendientes.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Descartar solicitud de presupuesto"
   },
   "quoteResponses": {
     "title": "Respuestas de presupuesto de clientes",
@@ -120,11 +120,11 @@
     "accepted": "Aceptado",
     "changesRequested": "Cambios solicitados",
     "convertToWorkOrder": "Convertir en orden de trabajo",
-    "convert": "Convert",
+    "convert": "Convertir",
     "viewQuote": "Ver presupuesto",
-    "view": "View",
+    "view": "Ver",
     "noData": "No hay respuestas de clientes.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Descartar respuesta"
   },
   "recentCompleted": {
     "title": "Completados recientemente",

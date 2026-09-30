@@ -3,7 +3,7 @@ import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
 import { getNotesPaginated } from '@/features/vehicles/Actions/noteActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getVehiclePredictedMileage } from '@/features/vehicles/Actions/predictedMaintenanceActions'
 import { getVehicleInspections } from '@/features/inspections/Actions/inspectionActions'
@@ -12,11 +12,14 @@ import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
 import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
 import { getFeatures } from '@/lib/features'
 import { findSafetyConnection } from '@/features/integrations/Lib/vehicle-safety'
+import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { db } from '@/lib/db'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
 import { VehicleDetailClient } from './vehicle-detail-client'
 import { PageHeader } from '@/components/page-header'
+import { redirect } from 'next/navigation'
+import { PermissionSubject } from '@/lib/permissions'
+import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
 
 export default async function VehicleDetailPage({
   params,
@@ -28,6 +31,13 @@ export default async function VehicleDetailPage({
   const { id } = await params
   const sp = await searchParams
 
+  // Payment notifications used to link here with the invoice as `record`,
+  // which this page never read, so they opened the vehicle instead of the
+  // invoice. Those links are still in people's bells.
+  if (typeof sp.record === 'string' && sp.record) {
+    redirect(`/vehicles/${id}/service/${sp.record}`)
+  }
+
   const page = Number(sp.page) || 1
   const pageSize = Number(sp.pageSize) || 10
   const search = typeof sp.search === 'string' ? sp.search : ''
@@ -37,6 +47,13 @@ export default async function VehicleDetailPage({
   const notesPageSize = Number(sp.notesPageSize) || 10
   const findingsPage = Number(sp.findingsPage) || 1
   const findingsPageSize = Number(sp.findingsPageSize) || 10
+
+  // The inspections and tire hotel panels belong to permissions of their own.
+  // A role without them is not shown the panels, and is not asked for their
+  // data either: a refused call is a wasted query and a refusal in the audit
+  // log on every vehicle somebody opens (lib/viewer-access).
+  const access = await getViewerAccess()
+  const S = PermissionSubject
 
   const [
     result,
@@ -55,17 +72,17 @@ export default async function VehicleDetailPage({
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
     getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
-    getSettings([
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
+    getDisplaySettings([
       SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
       SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
       SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
     ]),
-    getVehicleInspections(id),
-    getTemplates(),
+    readIfAllowed(access, S.INSPECTIONS, () => getVehicleInspections(id)),
+    readIfAllowed(access, S.INSPECTIONS, () => getTemplates()),
     getVehicleQuotes(id),
     getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
-    getTireSetsForVehicle(id),
+    readIfAllowed(access, S.TIRE_HOTEL, () => getTireSetsForVehicle(id)),
   ])
 
   if (!result.success || !result.data) {
@@ -161,15 +178,11 @@ export default async function VehicleDetailPage({
   let aiEnabled = false
   let safetyAvailable = false
   if (orgId) {
-    const [features, aiSettings, safetyConnection] = await Promise.all([
+    const [features, aiConfigured, safetyConnection] = await Promise.all([
       getFeatures(orgId),
-      db.appSetting.findMany({
-        where: {
-          organizationId: orgId,
-          key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
-        },
-        select: { key: true, value: true },
-      }),
+      // An AI vendor connected in the catalog, or the settings a workshop
+      // saved before AI moved there. Nothing is adopted from a page render.
+      isAiConfigured(orgId).catch(() => false),
       // An integration must never take the vehicle page down with it: a
       // failed lookup means no panel, nothing more.
       findSafetyConnection(orgId).catch(() => null),
@@ -180,11 +193,7 @@ export default async function VehicleDetailPage({
       features?.integrations === true &&
       safetyConnection !== null &&
       Boolean(result.data.make && result.data.model && result.data.year)
-    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
-    aiEnabled =
-      features?.ai === true &&
-      aiMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
-      !!aiMap[SETTING_KEYS.AI_API_KEY]
+    aiEnabled = features?.ai === true && aiConfigured
   }
 
   return (

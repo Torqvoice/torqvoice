@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { getAllReminders } from '@/features/vehicles/Actions/reminderActions'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { RemindersPageClient } from '@/features/vehicles/Components/RemindersPageClient'
 import { PageHeader } from '@/components/page-header'
@@ -10,7 +10,7 @@ export default async function RemindersPage() {
   const [remindersResult, vehiclesResult, settingsResult] = await Promise.all([
     getAllReminders(),
     getVehicles(),
-    getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+    getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
   ])
 
   if (!remindersResult.success || !remindersResult.data) {

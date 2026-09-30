@@ -98,6 +98,7 @@ export function ShareDialog({
     setSending(true)
 
     const results: string[] = []
+    let failed = false
 
     if (notifyEmail && hasEmail) {
       const res = await sendInvoiceEmail({
@@ -105,8 +106,13 @@ export function ShareDialog({
         recipientEmail: customer.email!,
         attachPdf,
       })
-      if (res.success) results.push(t('emailSent'))
-      else toast.error(res.error || t('failedEmail'))
+      if (res.success) {
+        results.push(t('emailSent'))
+        setNotifyEmail(false)
+      } else {
+        failed = true
+        toast.error(res.error || t('failedEmail'))
+      }
     }
 
     if (notifySms && hasPhone) {
@@ -127,20 +133,26 @@ export function ShareDialog({
         relatedEntityType: 'invoice',
         relatedEntityId: recordId,
       })
-      if (res.success) results.push(t('smsSent'))
-      else toast.error(res.error || t('failedSms'))
+      if (res.success) {
+        results.push(t('smsSent'))
+        setNotifySms(false)
+      } else {
+        failed = true
+        toast.error(res.error || t('failedSms'))
+      }
     }
 
     if (results.length > 0) {
       toast.success(results.join(' & '))
-      setNotifyEmail(false)
-      setNotifySms(false)
       // Both channels count as sending the invoice — email stamps sentAt on
       // the server, and the SMS carries the link — so the lock may have just
       // engaged and the page needs to hear about it.
       onSent?.()
     }
     setSending(false)
+    // Done once everything ticked has gone. A channel that failed stays ticked
+    // and the dialog stays open, so it can be tried again.
+    if (results.length > 0 && !failed) onOpenChange(false)
   }
 
   const canNotify = publicUrl && customer && (notifyEmail || notifySms)

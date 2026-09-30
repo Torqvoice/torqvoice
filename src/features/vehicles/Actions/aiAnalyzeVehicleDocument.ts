@@ -6,6 +6,7 @@ import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { visionCompletion } from '@/lib/ai'
 import { getLocale } from 'next-intl/server'
 import { localeNames, type Locale } from '@/i18n/config'
+import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
 
 /**
  * What a registration document can give us. Everything is optional: papers
@@ -23,6 +24,9 @@ export interface VehicleDocumentScan {
   /** One of the form's fuel options, already normalised. */
   fuelType?: string
   engineSize?: string
+  /** German type approval key, fields 2.1 and 2.2 of a Zulassungsbescheinigung. */
+  hsn?: string
+  tsn?: string
   /** Registered keeper, for attaching the vehicle to a customer. */
   owner?: {
     name?: string
@@ -39,6 +43,16 @@ export async function isVehicleScanAvailable() {
   return withAuth(async ({ organizationId }) => isAiConfigured(organizationId), {
     requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
   })
+}
+
+function validHsn(value: string): string | undefined {
+  const hsn = normalizeHsn(value)
+  return HSN_PATTERN.test(hsn) ? hsn : undefined
+}
+
+function validTsn(value: string): string | undefined {
+  const tsn = normalizeTsn(value)
+  return TSN_PATTERN.test(tsn) ? tsn : undefined
 }
 
 const FUEL_TYPES = ['gasoline', 'diesel', 'electric', 'hybrid', 'two-stroke', 'other']
@@ -65,6 +79,10 @@ EU certificates label their fields with harmonised codes. Read them as:
 - R = colour
 - C.1.1 = surname or business name of the keeper, C.1.2 = first name, C.1.3 = address
 
+A German Zulassungsbescheinigung Teil I also carries national fields:
+- 2.1 = HSN, the four-digit manufacturer key number
+- 2.2 = TSN, the type key number: only its first three characters, not the variant and check digits after them
+
 On documents without these codes, read the equivalent labelled fields.
 
 Return ONLY valid JSON, no markdown fence, no commentary. Omit any field you cannot read with confidence, and never guess a VIN or plate from a partially legible one:
@@ -77,6 +95,8 @@ Return ONLY valid JSON, no markdown fence, no commentary. Omit any field you can
   "color": "colour${locale !== 'en' ? ` (translated into ${langName})` : ''}",
   "fuelType": "one of: ${FUEL_TYPES.join(', ')}",
   "engineSize": "displacement with its unit as printed, e.g. 1338 cc",
+  "hsn": "German documents only, field 2.1, e.g. 0603",
+  "tsn": "German documents only, the first three characters of field 2.2, e.g. BFQ",
   "owner": { "name": "given name followed by surname, or the business name", "address": "street, postal code and city on one line" }
 }
 
@@ -131,6 +151,8 @@ Leave "make", "model", "vin", "licensePlate" and the owner details in their orig
         color: parsed.color,
         fuelType,
         engineSize: parsed.engineSize,
+        hsn: typeof parsed.hsn === 'string' ? validHsn(parsed.hsn) : undefined,
+        tsn: typeof parsed.tsn === 'string' ? validTsn(parsed.tsn) : undefined,
         owner,
       }
       return result

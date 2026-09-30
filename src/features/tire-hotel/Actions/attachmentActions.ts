@@ -8,6 +8,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
+import { releaseFiles } from '@/lib/files/manager'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -160,9 +161,10 @@ export async function updateTireSetAttachment(input: unknown) {
 /**
  * Removes a file from the set.
  *
- * The row goes; the bytes stay on disk. Anything already copied onto an
- * invoice points at the same file, and deleting it there would blank an image
- * on a document a customer may already hold.
+ * The row goes, and the bytes go with it only when nothing else points at
+ * them: a copy already on a work order uses the same file, and the file
+ * manager keeps it for as long as that job shows it, so the image on its
+ * invoice never goes blank. Once nothing uses it, it is no longer left behind.
  */
 export async function deleteTireSetAttachment(id: string) {
   return withAuth(
@@ -171,13 +173,14 @@ export async function deleteTireSetAttachment(id: string) {
 
       const existing = await db.tireSetAttachment.findFirst({
         where: { id, organizationId },
-        select: { id: true, tireSetId: true, fileName: true },
+        select: { id: true, tireSetId: true, fileName: true, fileUrl: true },
       })
       if (!existing) throw new Error('File not found')
 
       await db.tireSetAttachment.delete({ where: { id: existing.id } })
+      await releaseFiles([existing.fileUrl], { organizationId, reason: 'tire set file deleted' })
       revalidateSet(existing.tireSetId)
-      return existing
+      return { id: existing.id, tireSetId: existing.tireSetId, fileName: existing.fileName }
     },
     {
       requiredPermissions: UPDATE,

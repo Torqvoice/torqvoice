@@ -7,7 +7,7 @@ import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
 import { getJobsForSet } from '@/features/tire-hotel/Actions/tireJobActions'
 import { getAttachmentsForSet } from '@/features/tire-hotel/Actions/attachmentActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { TireSetClient } from './tire-set-client'
@@ -32,7 +32,7 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
       getLocationOptions(),
       getJobsForSet(id),
       getAttachmentsForSet(id),
-      getSettings([
+      getDisplaySettings([
         SETTING_KEYS.UNIT_SYSTEM,
         SETTING_KEYS.CURRENCY_CODE,
         SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE,

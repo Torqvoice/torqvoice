@@ -25,7 +25,7 @@ export const serviceLaborSchema = z.object({
   hours: z.coerce.number().min(0).default(0),
   rate: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
-  pricingType: z.enum(['hourly', 'service']).default('hourly'),
+  pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
 })
 
 export const serviceAttachmentSchema = z.object({
@@ -33,7 +33,9 @@ export const serviceAttachmentSchema = z.object({
   fileUrl: uploadUrlSchema,
   fileType: z.string(),
   fileSize: z.number(),
-  category: z.enum(['image', 'diagnostic', 'document', 'video']).default('diagnostic'),
+  // 'dropoff' is a photo of the car as it arrived: kept apart from the job's
+  // photos and off the invoice unless somebody chooses otherwise.
+  category: z.enum(['image', 'diagnostic', 'document', 'video', 'dropoff']).default('diagnostic'),
   description: z.string().optional(),
   includeInInvoice: z.boolean().default(true),
 })
@@ -46,10 +48,23 @@ export const serviceAttachmentSchema = z.object({
  * points at them. Findings point at concerns, so a concern that survives an
  * edit has to keep its id or the link from its diagnosis is quietly cut.
  */
+/** Long enough for a paragraph, short enough that nobody pastes a manual in. */
+const concernText = z.string().max(2000).nullable().optional()
+
 export const serviceConcernSchema = z.object({
   id: z.string().optional(),
+  /** The condition: what the customer reported, or what was observed. */
   description: z.string().min(1, 'Concern is required'),
   sortOrder: z.coerce.number().int().min(0).default(0),
+  cause: concernText,
+  correction: concernText,
+  /** How the fix was checked. */
+  confirmation: concernText,
+  /**
+   * Whether somebody has ticked this concern as confirmed. Who and when are
+   * the server's to say, from the session, at the moment the tick arrives.
+   */
+  confirmed: z.boolean().optional(),
 })
 
 export const createServiceSchema = z.object({
@@ -84,6 +99,8 @@ export const createServiceSchema = z.object({
   invoiceNumber: z.string().optional(),
   invoiceDate: z.string().optional(),
   invoiceDueDate: z.string().optional(),
+  /** 'none' clears the warranty; see normalizeWarranty for how the four combine. */
+  warrantyStatus: z.enum(['none', 'included', 'not_included']).optional(),
   warrantyMonths: z.coerce.number().int().min(0).optional(),
   warrantyMileage: z.coerce.number().int().min(0).optional(),
   warrantyNotes: z.string().optional(),

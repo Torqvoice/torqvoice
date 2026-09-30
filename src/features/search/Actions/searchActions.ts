@@ -6,6 +6,8 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
+import { searchWordsOf, typeKeySearchTerms } from '@/features/vehicles/Lib/typeKey'
+import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function getRecentCustomers() {
   return withAuth(
@@ -50,13 +52,19 @@ export async function globalSearch(query: string) {
 
       const q = query.trim()
       const mode = 'insensitive' as Prisma.QueryMode
-      const words = q.split(/\s+/).filter(Boolean)
+      const words = searchWordsOf(q)
       // Digits-only version for phone matching (strips +, spaces, dashes, parens)
       const digitsOnly = q.replace(/[\s\-\+\(\)]/g, '')
       const isPhoneLike = /^\d{3,}$/.test(digitsOnly)
 
       // For multi-word queries, each word must match at least one field (AND logic).
       // For single-word queries, behavior is the same as before.
+
+      // The German type key matches like the plate does, for a workshop that
+      // records it: "0603", "BFQ", or the pair as one word.
+      const typeKeyOn = await isTypeKeyEnabled(organizationId)
+      const typeKeyMatch = (word: string): Prisma.VehicleWhereInput[] =>
+        typeKeyOn ? typeKeySearchTerms(word) : []
 
       const vehicleWhere: Prisma.VehicleWhereInput = {
         organizationId,
@@ -66,6 +74,7 @@ export async function globalSearch(query: string) {
             { model: { contains: word, mode } },
             { licensePlate: { contains: word, mode } },
             { vin: { contains: word, mode } },
+            ...typeKeyMatch(word),
             { customer: { name: { contains: word, mode } } },
           ]
           const year = searchYear(word)
@@ -91,6 +100,8 @@ export async function globalSearch(query: string) {
               model: true,
               year: true,
               licensePlate: true,
+              hsn: true,
+              tsn: true,
             },
             take: 10,
           }),
@@ -250,6 +261,7 @@ export async function globalSearch(query: string) {
                   { vehicle: { make: { contains: word, mode } } },
                   { vehicle: { model: { contains: word, mode } } },
                   { vehicle: { licensePlate: { contains: word, mode } } },
+                  ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
                   { customer: { name: { contains: word, mode } } },
                 ],
               })),
@@ -282,6 +294,7 @@ export async function globalSearch(query: string) {
                   { vehicle: { make: { contains: word, mode } } },
                   { vehicle: { model: { contains: word, mode } } },
                   { vehicle: { licensePlate: { contains: word, mode } } },
+                  ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
                 ],
               })),
             },
@@ -316,6 +329,7 @@ export async function globalSearch(query: string) {
                       { vehicle: { make: { contains: word, mode } } },
                       { vehicle: { model: { contains: word, mode } } },
                       { vehicle: { licensePlate: { contains: word, mode } } },
+                      ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
                     ],
                   })),
                 },

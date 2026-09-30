@@ -31,7 +31,7 @@
     "messageDeleted": "Bericht verwijderd",
     "deleteError": "Bericht verwijderen mislukt",
     "sendError": "Bericht versturen mislukt",
-    "sendMessage": "Send message"
+    "sendMessage": "Bericht versturen"
   },
   "sendDialog": {
     "send": "{label} versturen",

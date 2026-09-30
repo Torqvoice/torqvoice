@@ -106,7 +106,7 @@ describe('respondToQuote', () => {
     expect(result).toEqual({ success: true })
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: 'quote-1' },
-      data: { status: 'accepted', customerMessage: null },
+      data: { status: 'accepted', customerMessage: null, responseDismissedAt: null },
     })
   })
 
@@ -131,7 +131,11 @@ describe('respondToQuote', () => {
     expect(result).toEqual({ success: true })
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: 'quote-1' },
-      data: { status: 'changes_requested', customerMessage: 'Please add an extra oil filter' },
+      data: {
+        status: 'changes_requested',
+        customerMessage: 'Please add an extra oil filter',
+        responseDismissedAt: null,
+      },
     })
   })
 

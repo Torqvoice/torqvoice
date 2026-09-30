@@ -211,23 +211,36 @@ test.describe('dragging in the designer', () => {
     const [paymentBefore, partsBefore] = await printedOrder(page, ['PAYMENT INFORMATION', 'Parts'])
     expect(paymentBefore).toBeGreaterThan(partsBefore)
 
+    // Both rows have to be on screen before the drag starts. The rail
+    // scrolls, and Playwright's drag scrolls the target into view mid-drag,
+    // which takes the dragged row out of it and drops it on nothing; a
+    // person's browser would scroll the rail as the pointer nears its edge.
+    const parts = page.getByTestId('rail-parts_table')
+    const payment = page.getByTestId('rail-bank_account')
+    await parts.evaluate((el) => el.scrollIntoView({ block: 'start' }))
+    await expect(parts).toBeInViewport()
+    await expect(payment).toBeInViewport()
+
     await expect(async () => {
-      await page.getByTestId('rail-bank_account').dragTo(page.getByTestId('rail-parts_table'))
+      await payment.dragTo(parts)
       const positionOf = (id: string) =>
         page
           .getByTestId(`rail-${id}`)
           .evaluate((el) => Array.from(el.parentElement?.children ?? []).indexOf(el))
-      const [payment, parts] = await Promise.all([
+      const [paymentAt, partsAt] = await Promise.all([
         positionOf('bank_account'),
         positionOf('parts_table'),
       ])
-      expect(payment, 'the payment panel sits above the parts in the rail').toBeLessThan(parts)
+      expect(paymentAt, 'the payment panel sits above the parts in the rail').toBeLessThan(partsAt)
     }).toPass({ timeout: 30_000 })
 
     await saveDesign(page)
 
-    const [payment, parts] = await printedOrder(page, ['PAYMENT INFORMATION', 'Parts'])
-    expect(payment, 'and above them on the sheet').toBeLessThan(parts)
+    const [paymentPrinted, partsPrinted] = await printedOrder(page, [
+      'PAYMENT INFORMATION',
+      'Parts',
+    ])
+    expect(paymentPrinted, 'and above them on the sheet').toBeLessThan(partsPrinted)
   })
 
   test('a block dragged across the canvas is left where it was put', async ({ page }) => {

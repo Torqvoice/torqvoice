@@ -4,7 +4,8 @@ import { taxRateLabel } from '@/features/reports/Lib/taxRateLabel'
 
 import { interactiveRow } from '@/lib/interactive-row'
 import { formatQuantity } from '@/lib/format-quantity'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { rememberCompletedOnly } from '@/lib/completed-only-preference'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -58,6 +59,7 @@ import {
   RefreshCw,
   Timer,
   Gauge,
+  CheckCircle2,
 } from 'lucide-react'
 import {
   getRevenueReport,
@@ -141,6 +143,8 @@ interface ReportsClientProps {
   currencyCode: string
   primaryColor: string
   organizationName: string
+  /** Whether the "completed only" switch was left on in this browser. */
+  initialCompletedOnly?: boolean
 }
 
 const VALID_TABS: ReportTab[] = [
@@ -161,6 +165,7 @@ export default function ReportsClient({
   currencyCode,
   primaryColor,
   organizationName,
+  initialCompletedOnly = false,
 }: ReportsClientProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('reports')
@@ -209,6 +214,10 @@ export default function ReportsClient({
   })
   const [pendingDateRange, setPendingDateRange] = useState<DateRange>(dateRange)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [completedOnly, setCompletedOnly] = useState(initialCompletedOnly)
+  // Read by fetchReport, so a toggle refetches with the new value straight away
+  // rather than with the one its callback closed over.
+  const completedOnlyRef = useRef(initialCompletedOnly)
   const [loading, setLoading] = useState(false)
 
   // Past due invoices state
@@ -248,6 +257,7 @@ export default function ReportsClient({
         const dateParams = {
           startDate: range.from ? format(range.from, 'yyyy-MM-dd') : '',
           endDate: range.to ? format(range.to, 'yyyy-MM-dd') : '',
+          completedOnly: completedOnlyRef.current,
         }
         switch (type) {
           case 'revenue': {
@@ -332,6 +342,16 @@ export default function ReportsClient({
       fetchReport(activeTab)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleCompletedToggle = () => {
+    const next = !completedOnly
+    completedOnlyRef.current = next
+    setCompletedOnly(next)
+    rememberCompletedOnly('reports', next)
+    if (activeTab === 'financial') fetchReport(financialSubTab)
+    else if (activeTab === 'technicians') fetchReport(technicianFetchKey(technicianSubTab))
+    else fetchReport(activeTab)
+  }
 
   const handleTabChange = (value: string) => {
     const tab = value as ReportTab
@@ -807,6 +827,19 @@ export default function ReportsClient({
 
         {/* Date range and actions */}
         <div className="flex items-center gap-2 flex-wrap justify-end">
+          {showDateRange && (
+            <Button
+              variant={completedOnly ? 'default' : 'outline'}
+              size="sm"
+              className="h-9 text-xs md:h-8 md:text-sm"
+              onClick={handleCompletedToggle}
+              aria-pressed={completedOnly}
+              title={t('completedOnlyHint')}
+            >
+              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+              {t('completedOnly')}
+            </Button>
+          )}
           {showDateRange && (
             <Popover
               open={datePickerOpen}

@@ -34,8 +34,8 @@
     "total": "Total",
     "labor": "Mão de Obra",
     "hours": "Horas",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unid.",
     "qtyOrHours": "Unidade / Horas",
     "rate": "Taxa",
     "ratePerHour": "{rate}/h",
@@ -93,8 +93,8 @@
     "labor": "Mão de Obra",
     "laborDescription": "Descrição",
     "hours": "Horas",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unid.",
     "qtyOrHours": "Unidade / Horas",
     "rate": "Taxa",
     "ratePerHour": "{rate}/h",
@@ -146,7 +146,7 @@
     "quoteAvailableDescription": "Revise o orçamento para ver os preços e aprovar o trabalho recomendado.",
     "viewQuote": "Ver Orçamento",
     "quoteRequested": "Orçamento Solicitado",
-    "quoteRequestedCancel": "— Cancelar",
+    "quoteRequestedCancel": "· Cancelar",
     "requestQuote": "Solicitar Orçamento",
     "downloadPdf": "Baixar PDF",
     "notes": "Observações",
@@ -157,20 +157,22 @@
       "attention": "Deficiência leve",
       "fail": "Deficiência grave",
       "dangerous": "Deficiência perigosa",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "basic": {
       "pass": "Aprovado",
       "attention": "Atenção",
       "fail": "Reprovado",
       "dangerous": "Perigoso",
-      "not_inspected": "Não inspecionado"
+      "not_inspected": "Não inspecionado",
+      "not_applicable": "Não aplicável"
     },
     "result": {
       "pass": "Aprovado",
       "pass_minor": "Aprovado com deficiências leves",
-      "fail": "Reprovado — deficiências graves",
-      "fail_dangerous": "Reprovado — deficiências perigosas",
+      "fail": "Reprovado: deficiências graves",
+      "fail_dangerous": "Reprovado: deficiências perigosas",
       "incomplete": "Não concluído"
     },
     "resultDetail": {
@@ -194,13 +196,16 @@
     "summary": "Resumo",
     "progressLabel": "{graded} itens avaliados",
     "limit": "Limite",
+    "rangeMin": "mín.",
+    "rangeMax": "máx.",
     "viewPhoto": "Ver foto",
     "deficienciesFound": "Deficiências encontradas ({count})",
     "allResults": "Todos os resultados",
-    "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados."
+    "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados.",
+    "inspectionPhotos": "Fotos e documentos"
   },
   "terms": {
-    "title": "Termos de Venda (Salgsvilkår)",
+    "title": "Termos de Venda",
     "contact": "Contato",
     "tel": "Tel: {phone}"
   },
@@ -227,6 +232,7 @@
     "portalMessage": "Veja seus veículos, faturas e muito mais em seu",
     "customerPortal": "portal do cliente",
     "telegramConnect": "Fale conosco no Telegram",
-    "telegramScan": "Escaneie este código QR para nos enviar uma mensagem no Telegram para atualizações e suporte."
+    "telegramScan": "Escaneie este código QR para nos enviar uma mensagem no Telegram para atualizações e suporte.",
+    "downloadCertificate": "Baixar laudo de inspeção"
   }
 }

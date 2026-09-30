@@ -1,12 +1,18 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   INSPECTION_CAPABILITY,
   INSPECTION_JOB,
   INSPECTION_SETTING,
 } from '@/features/integrations/Lib/inspection-sync'
 import { getConnector, getManifest, listManifests } from '@/integrations/registry'
+
+// Cloud mode also needs a signed token (see cloud-instance.test.ts); here the
+// environment variable alone stands for a confirmed cloud instance.
+vi.mock('@/lib/cloud-instance', () => ({
+  isCloudInstance: () => process.env.TORQVOICE_MODE === 'cloud',
+}))
 
 const ROOT = process.cwd()
 const messages = JSON.parse(
@@ -101,6 +107,31 @@ describe('integration registry', () => {
     }
     expect(getManifest('nope')).toBeNull()
     await expect(getConnector('nope')).rejects.toThrow()
+  })
+
+  /**
+   * A connector that sends to an address the workshop types in exists on
+   * their own server and nowhere else. Leaving it out of the registry, not
+   * just the catalog, is what closes the settings page, the connect action
+   * and every job at once.
+   */
+  it('leaves self-hosted-only connectors out on the cloud instance', async () => {
+    const selfHostedOnly = listManifests().filter((m) => m.selfHostedOnly)
+    expect(selfHostedOnly.map((m) => m.id)).toContain('openai-compatible')
+
+    vi.stubEnv('TORQVOICE_MODE', 'cloud')
+    vi.resetModules()
+    try {
+      const cloud = await import('@/integrations/registry')
+      for (const m of selfHostedOnly) {
+        expect(cloud.getManifest(m.id), m.id).toBeNull()
+        await expect(cloud.getConnector(m.id), m.id).rejects.toThrow()
+      }
+      expect(cloud.listManifests().length).toBe(listManifests().length - selfHostedOnly.length)
+    } finally {
+      vi.unstubAllEnvs()
+      vi.resetModules()
+    }
   })
 
   it('subscribes only to events the webhook dispatcher knows', async () => {

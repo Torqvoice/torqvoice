@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -39,6 +40,8 @@ export async function respondToQuote(input: unknown) {
     data: {
       status: data.action,
       customerMessage: data.message || null,
+      // A new answer is news again, even on a quote whose last one was dismissed.
+      responseDismissedAt: null,
     },
   })
 
@@ -69,6 +72,8 @@ export async function getQuoteResponses() {
         where: {
           organizationId,
           status: { in: ['accepted', 'changes_requested'] },
+          // A dismissed acceptance keeps its status, so it is left out here.
+          responseDismissedAt: null,
         },
         select: {
           id: true,
@@ -96,7 +101,13 @@ export async function getQuoteResponses() {
 }
 
 /**
- * Authenticated — acknowledge a customer response by setting the quote back to a working status.
+ * Authenticated — the workshop has dealt with a customer's response.
+ *
+ * A change request sends the quote back to draft, because the workshop is
+ * revising it. An acceptance keeps its status: it is the customer's agreement,
+ * converting still wants it, and where accepted quotes lock, changing it here
+ * would release the lock without an owner or admin. It is only taken off the
+ * list of responses.
  */
 export async function acknowledgeQuoteResponse(quoteId: string) {
   return withAuth(
@@ -106,12 +117,20 @@ export async function acknowledgeQuoteResponse(quoteId: string) {
       })
       if (!quote) throw new Error('Quote not found')
 
+      const revising = quote.status === 'changes_requested'
       await db.quote.update({
         where: { id: quoteId },
-        data: { status: 'draft', customerMessage: null },
+        data: revising
+          ? { status: 'draft', customerMessage: null }
+          : { responseDismissedAt: new Date() },
       })
 
-      return { success: true }
+      // The dashboard lists responses from its own server render, so without
+      // this a dismissed row stays on screen until the page is reloaded.
+      revalidatePath('/')
+      revalidatePath('/quotes')
+      revalidatePath(`/quotes/${quoteId}`)
+      return { success: true, status: revising ? 'draft' : quote.status }
     },
     {
       requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],

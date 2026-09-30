@@ -69,13 +69,15 @@ model InspectionTemplateItem {
   maxValue  Float?
   choices   String[] @default([])
 
-  required          Boolean  @default(false)
-  photoRequired     Boolean  @default(false)
+  required           Boolean  @default(false)
+  photoRequired      Boolean  @default(false)
+  /// The check may be graded "not applicable": the vehicle has no such part.
+  allowNotApplicable Boolean  @default(true)
   // Defect severity applied when a measurement falls outside min/max.
-  defaultSeverity   String?
+  defaultSeverity    String?
   // Phrases this workshop wants offered when a defect is recorded against the
   // check, on top of the built-in catalogue. See Lib/defectCatalogue.ts.
-  defectSuggestions String[] @default([])
+  defectSuggestions  String[] @default([])
 
   sectionId String
   section   InspectionTemplateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
@@ -128,21 +130,66 @@ model Inspection {
   inspectorName     String?
   testLocation      String?
 
+  /// The certificate design as it was when the inspection was completed, so a
+  /// design edited later never changes a certificate a customer already has.
+  /// Null on inspections completed before designs existed, or by a workshop
+  /// that has never designed one; those print the built-in sheet.
+  designSnapshotId    String?
+  designSnapshot      DocumentDesignSnapshot? @relation(fields: [designSnapshotId], references: [id], onDelete: SetNull)
+  /// The inspector's signature as it was at completion, for the same reason:
+  /// a redrawn signature never changes a certificate already issued.
+  signatureSnapshotId String?
+  signatureSnapshot   DocumentAssetSnapshot?  @relation(fields: [signatureSnapshotId], references: [id], onDelete: SetNull)
+  /// The condition map's kinds of mark as they were named and drawn at
+  /// completion, for the same reason: a kind renamed later never changes a
+  /// certificate already issued. Null before the kinds could be changed.
+  markTypesSnapshot   Json?
+
   organizationId String
 
   items          InspectionItem[]
+  attachments    InspectionAttachment[]
+  statusReports  StatusReport[]
   quoteRequests  InspectionQuoteRequest[]
   quotes         Quote[]
   serviceRecords ServiceRecord[]
+  conditionMarks ConditionMark[]
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
   @@index([vehicleId])
+  @@index([designSnapshotId])
+  @@index([signatureSnapshotId])
   @@index([organizationId])
   @@index([technicianId])
   @@index([workBayId])
   @@map("inspections")
+}
+
+/// Files filed on the inspection as a whole rather than on one check: the
+/// overview photos, a video of the walk round, the regulator's own paper form
+/// once it is filled in and signed. A photo that is the evidence for a single
+/// check stays on that check (InspectionItem.imageUrls), next to its grade.
+model InspectionAttachment {
+  id              String   @id @default(cuid())
+  fileName        String
+  fileUrl         String
+  fileType        String
+  fileSize        Int
+  /// "image", "document" or "video".
+  category        String   @default("image")
+  description     String?
+  /// Shown to the customer on the shared inspection link. Photos start shown,
+  /// documents start hidden: paperwork is the workshop's until it says so.
+  includeInReport Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  inspectionId String
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@map("inspection_attachments")
 }
 
 model InspectionItem {
@@ -156,24 +203,28 @@ model InspectionItem {
 
   // Copied from the template at creation so an inspection stays readable even
   // after its template is edited or deleted.
-  description       String?
-  code              String?
-  sectionCode       String?
-  inputType         String   @default("condition")
-  unit              String?
-  minValue          Float?
-  maxValue          Float?
-  choices           String[] @default([])
-  required          Boolean  @default(false)
-  photoRequired     Boolean  @default(false)
-  defaultSeverity   String?
-  defectSuggestions String[] @default([])
+  description        String?
+  code               String?
+  sectionCode        String?
+  inputType          String   @default("condition")
+  unit               String?
+  minValue           Float?
+  maxValue           Float?
+  choices            String[] @default([])
+  required           Boolean  @default(false)
+  photoRequired      Boolean  @default(false)
+  /// The check may be graded "not applicable": the vehicle has no such part.
+  allowNotApplicable Boolean  @default(true)
+  defaultSeverity    String?
+  defectSuggestions  String[] @default([])
 
   measuredValue Float?
   textValue     String?
 
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  conditionMarks ConditionMark[]
 
   @@index([inspectionId])
   @@map("inspection_items")

@@ -1,18 +1,29 @@
 'use server'
 
+import { ATTENTION_STATUSES } from '@/features/quotes/Lib/quoteStatus'
 import { assertQuoteEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, quoteLockState } from '@/lib/document-lock'
 import { db } from '@/lib/db'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
+import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import {
-  documentTotals,
-  readWorkshopTax,
-  taxComponentsForCopy,
-  taxFieldsForNewDocument,
-  WORKSHOP_TAX_SETTING_KEYS,
-} from '@/features/settings/Lib/workshopTax'
+  isShopFeeLine,
+  newShopFeeLine,
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeFor,
+} from '@/features/settings/Lib/shopFee'
+import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyExpiryFor,
+  warrantyFieldsForNewDocument,
+} from '@/features/settings/Lib/warrantyDefaults'
+import { normalizeWarranty } from '@/lib/warranty'
 import { withAuth } from '@/lib/with-auth'
 import { createQuoteSchema, quoteStatusSchema, updateQuoteSchema } from '../Schema/quoteSchema'
+import { createQuoteRecord } from '../Lib/createQuoteRecord'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
@@ -24,19 +35,14 @@ import { copyFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { clearedToNull } from '@/lib/clearable'
 import { uploadsRoot } from '@/lib/upload-root'
+import { releaseFiles } from '@/lib/files/manager'
+import { quoteFileUrls } from '@/lib/files/collect'
+import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
  * (30 when unset). An explicit 0 or negative disables the prefill.
  */
-function defaultValidUntil(validDaysSetting: string | undefined): Date | undefined {
-  const days = validDaysSetting === undefined ? 30 : Number.parseInt(validDaysSetting, 10)
-  if (!Number.isFinite(days) || days <= 0) return undefined
-  const d = new Date()
-  d.setDate(d.getDate() + days)
-  return d
-}
-
 export async function getQuotesPaginated(params: {
   page?: number
   pageSize?: number
@@ -54,7 +60,9 @@ export async function getQuotesPaginated(params: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
 
-      if (params.status && params.status !== 'all') {
+      if (params.status === 'attention') {
+        where.status = { in: ATTENTION_STATUSES }
+      } else if (params.status && params.status !== 'all') {
         where.status = params.status
       }
 
@@ -117,6 +125,7 @@ export async function getQuotesPaginated(params: {
       for (const g of statusCounts) {
         counts[g.status] = g._count
       }
+      counts.attention = ATTENTION_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0)
 
       return {
         records,
@@ -180,6 +189,8 @@ export async function getQuote(quoteId: string) {
               year: true,
               vin: true,
               licensePlate: true,
+              hsn: true,
+              tsn: true,
               mileage: true,
             },
           },
@@ -191,7 +202,9 @@ export async function getQuote(quoteId: string) {
       // Missing or foreign-org quote yields null rather than an error: the page
       // renders its not-found state, and this also runs during the post-delete
       // re-render of the quote route.
-      return quote
+      if (!quote?.vehicle) return quote
+      const enabled = await isTypeKeyEnabled(organizationId)
+      return { ...quote, vehicle: gateTypeKey(quote.vehicle, enabled) }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
   )
@@ -201,108 +214,7 @@ export async function createQuote(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = createQuoteSchema.parse(input)
-
-      // Generate quote number
-      const settings = await db.appSetting.findMany({
-        where: {
-          organizationId,
-          key: {
-            in: ['workshop.quotePrefix', 'workshop.quoteValidDays', ...WORKSHOP_TAX_SETTING_KEYS],
-          },
-        },
-      })
-      const settingsMap: Record<string, string> = {}
-      for (const s of settings) settingsMap[s.key] = s.value
-      const prefix = resolveInvoicePrefix(settingsMap['workshop.quotePrefix'] ?? 'QT-')
-
-      // Apply default tax rate from settings when the caller hasn't set one.
-      // All current call sites send taxRate: 0 at creation, so 0 means "unset".
-      const workshopTax = readWorkshopTax(settingsMap)
-      let defaultTaxRate = workshopTax.rate
-      const taxInclusive = workshopTax.inclusive
-
-      // Tax-exempt customer: force the rate to 0 regardless of org default.
-      let customerExempt = false
-      if (data.customerId) {
-        const customer = await db.customer.findFirst({
-          where: { id: data.customerId, organizationId },
-          select: { taxExempt: true },
-        })
-        if (customer?.taxExempt) {
-          customerExempt = true
-          defaultTaxRate = 0
-          data.taxRate = 0
-          data.taxAmount = 0
-        }
-      }
-
-      // A quote at the workshop's own rate carries its tax components, so a
-      // split-tax workshop's quote prints GST and QST apart from the start.
-      // A rate the caller set by hand is one figure and stays one.
-      const taxRate = data.taxRate > 0 ? data.taxRate : defaultTaxRate
-      const splitTax =
-        taxRate > 0 && taxRate === workshopTax.rate && !customerExempt
-          ? documentTotals({
-              subtotal: data.subtotal,
-              discountAmount: data.discountAmount,
-              taxRate,
-              taxInclusive,
-              taxComponents: taxFieldsForNewDocument(workshopTax).taxComponents,
-            })
-          : null
-
-      const lastQuote = await db.quote.findFirst({
-        where: { organizationId },
-        orderBy: { createdAt: 'desc' },
-        select: { quoteNumber: true },
-      })
-      let nextNum = 1001
-      if (lastQuote?.quoteNumber) {
-        const match = lastQuote.quoteNumber.match(/(\d+)$/)
-        if (match) nextNum = parseInt(match[1], 10) + 1
-      }
-      const quoteNumber = `${prefix}${nextNum}`
-
-      const { partItems, laborItems, ...quoteData } = data
-
-      const quote = await db.$transaction(async (tx) => {
-        const created = await tx.quote.create({
-          data: {
-            ...quoteData,
-            quoteNumber,
-            userId,
-            organizationId,
-            taxRate,
-            taxInclusive,
-            ...(splitTax?.taxComponents
-              ? {
-                  taxComponents: splitTax.taxComponents,
-                  taxAmount: splitTax.taxAmount,
-                  totalAmount: splitTax.totalAmount,
-                }
-              : {}),
-            validUntil:
-              toSafeWorkshopDate(quoteData.validUntil, await workshopTimeZone(organizationId)) ??
-              defaultValidUntil(settingsMap['workshop.quoteValidDays']),
-            discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
-          },
-        })
-
-        if (partItems && partItems.length > 0) {
-          await tx.quotePart.createMany({
-            data: partItems.map((p) => ({ ...p, quoteId: created.id })),
-          })
-        }
-
-        if (laborItems && laborItems.length > 0) {
-          await tx.quoteLabor.createMany({
-            data: laborItems.map((l) => ({ ...l, quoteId: created.id })),
-          })
-        }
-
-        return created
-      })
-
+      const quote = await createQuoteRecord({ organizationId, userId }, data)
       revalidatePath('/quotes')
       return quote
     },
@@ -329,7 +241,32 @@ export async function updateQuote(input: unknown) {
       })
       if (!existing) throw new Error('Quote not found')
 
-      const { id, partItems, laborItems, ...quoteData } = data
+      const {
+        id,
+        partItems,
+        laborItems,
+        warrantyStatus,
+        warrantyMonths,
+        warrantyMileage,
+        warrantyNotes,
+        ...quoteData
+      } = data
+
+      // The four warranty columns move together, as on a work order: naming
+      // any of them restates the whole, with the row filling in the rest.
+      const warrantyTouched =
+        warrantyStatus !== undefined ||
+        warrantyMonths !== undefined ||
+        warrantyMileage !== undefined ||
+        warrantyNotes !== undefined
+      const warranty = warrantyTouched
+        ? normalizeWarranty({
+            warrantyStatus: warrantyStatus ?? existing.warrantyStatus,
+            warrantyMonths: warrantyMonths ?? existing.warrantyMonths,
+            warrantyMileage: warrantyMileage ?? existing.warrantyMileage,
+            warrantyNotes: warrantyNotes ?? existing.warrantyNotes,
+          })
+        : {}
 
       // Same as the work order: a quote with tax components has its split
       // recomputed from the row, since the editor sends one combined figure.
@@ -356,6 +293,7 @@ export async function updateQuote(input: unknown) {
           // cleared.
           data: {
             ...quoteData,
+            ...warranty,
             taxComponents: splitTax?.taxComponents,
             description: clearedToNull(quoteData.description),
             notes: clearedToNull(quoteData.notes),
@@ -460,7 +398,10 @@ export async function deleteQuote(quoteId: string) {
       })
       if (!quote) throw new Error('Quote not found')
 
+      // Its attachments cascade with it; their files are let go afterwards.
+      const files = await quoteFileUrls(organizationId, [quoteId])
       await db.quote.deleteMany({ where: { id: quoteId, organizationId } })
+      await releaseFiles(files, { organizationId, reason: 'quote deleted' })
       revalidatePath('/quotes')
       return { quoteId }
     },
@@ -491,10 +432,25 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       })
       if (!vehicle) throw new Error('Vehicle not found')
 
+      // The inspection the quote was raised from goes with it, so the job
+      // prints its marks and its invoice carries its certificate. Only when
+      // the job is for the car that was inspected.
+      const inspection = quote.inspectionId
+        ? await db.inspection.findFirst({
+            where: { id: quote.inspectionId, organizationId, vehicleId },
+            select: { id: true },
+          })
+        : null
+
       // Get settings for invoice number
       const [settings, org] = await Promise.all([
         db.appSetting.findMany({
-          where: { organizationId, key: { in: ['workshop.invoicePrefix'] } },
+          where: {
+            organizationId,
+            key: {
+              in: ['workshop.invoicePrefix', ...WARRANTY_SETTING_KEYS, ...SHOP_FEE_SETTING_KEYS],
+            },
+          },
         }),
         db.organization.findUnique({
           where: { id: organizationId },
@@ -517,10 +473,21 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       }
       const invoiceNumber = `${prefix}${nextNum}`
 
+      // What the customer was told on the quote is what the job carries, "not
+      // included" as much as twelve months: they accepted on those words. A
+      // quote that never mentioned warranty leaves the job to start like any
+      // other, from the workshop's standing answer.
+      const timeZone = await workshopTimeZone(organizationId)
+      const serviceDate = new Date()
+      const warranty = quote.warrantyStatus
+        ? normalizeWarranty(quote)
+        : warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
+
       const record = await db.$transaction(async (tx) => {
         const created = await tx.serviceRecord.create({
           data: {
             organizationId,
+            createdById: userId,
             title: quote.title,
             description: quote.description,
             type: 'repair',
@@ -530,6 +497,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             // which set it is for, and which shelf it sits on. Losing it here
             // would put the technician back to asking.
             tireSetId: quote.tireSetId,
+            inspectionId: inspection?.id ?? null,
             shopName: org?.name || undefined,
             invoiceNumber,
             subtotal: quote.subtotal,
@@ -542,8 +510,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             discountType: quote.discountType,
             discountValue: quote.discountValue,
             discountAmount: quote.discountAmount,
-            serviceDate: new Date(),
-            startDateTime: new Date(),
+            ...warranty,
+            warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
+            serviceDate,
+            startDateTime: serviceDate,
           },
         })
 
@@ -592,22 +562,35 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           })
         }
 
+        // A fee the workshop charges on work orders but not on quotes goes on
+        // here, priced for what the customer accepted, and the job re-totalled.
+        // A quote that carried the fee already brought it across above.
+        const jobFee = shopFeeFor(readShopFee(settingsMap), 'workOrder')
+        if (jobFee && !includedLabor.some(isShopFeeLine)) {
+          const feeLine = newShopFeeLine(jobFee, {
+            labor: includedLabor.reduce((sum, l) => sum + l.total, 0),
+            parts: includedParts.reduce((sum, p) => sum + p.total, 0),
+          })
+          await tx.serviceLabor.create({ data: { ...feeLine, serviceRecordId: created.id } })
+          await retotalServiceRecord(created.id, tx)
+        }
+
         // Copy attachments from quote to service record
         if (quote.attachments.length > 0) {
           const quotesDir = path.join(uploadsRoot(), organizationId, 'quotes')
-          const servicesDir = path.join(
-            process.cwd(),
-            'data',
-            'uploads',
-            organizationId,
-            'services'
-          )
+          // Where every other upload goes. This used to be a fixed
+          // `data/uploads`, so with DATA_ROOT set the copies landed where the
+          // file route never looks and the job showed broken images.
+          const servicesDir = path.join(uploadsRoot(), organizationId, 'services')
           await mkdir(servicesDir, { recursive: true })
 
           for (const att of quote.attachments) {
             try {
-              // Extract filename from URL and build paths
-              const filename = att.fileUrl.split('/').pop()!
+              // Extract filename from URL and build paths; only a plain name.
+              const filename = att.fileUrl.split('/').pop() ?? ''
+              if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(filename) || filename.includes('..')) {
+                throw new Error('not a stored file name')
+              }
               const srcPath = path.join(quotesDir, filename)
               const destPath = path.join(servicesDir, filename)
               await copyFile(srcPath, destPath)

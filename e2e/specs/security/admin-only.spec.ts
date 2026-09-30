@@ -40,6 +40,9 @@ let organizationId = ''
 let roleId = ''
 
 async function signIn(page: Page, email: string, password: string) {
+  // The sign-in page sends anyone with a session straight on, so a re-sign-in
+  // after a role change has to drop the old session first.
+  await page.context().clearCookies()
   await page.goto('/auth/sign-in')
   await page.locator('#email').fill(email)
   await page.locator('#password').fill(password)

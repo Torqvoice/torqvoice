@@ -557,7 +557,11 @@ export function TeamSettings({
       >
         <div className="space-y-2">
           {organization.members.map((member) => (
-            <div key={member.id} className="flex items-center gap-3 rounded-lg border p-3">
+            <div
+              key={member.id}
+              data-testid="team-member"
+              className="flex items-center gap-3 rounded-lg border p-3"
+            >
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-medium">
                 {member.user.name?.charAt(0)?.toUpperCase() || '?'}
               </div>

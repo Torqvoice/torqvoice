@@ -84,7 +84,7 @@ export E2E_DATABASE_URL="postgresql://torqvoice:torqvoice@localhost:5432/torqvoi
 export BETTER_AUTH_SECRET=$(grep -oP '^BETTER_AUTH_SECRET="?\K[^"]+' .env)
 npx tsx e2e/prepare-db.ts
 DATABASE_URL="$E2E_DATABASE_URL" NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100 \
-  DEMO_MODE=false AUTH_RATE_LIMIT=off TORQVOICE_MODE=self-hosted \
+  DEMO_MODE=false AUTH_RATE_LIMIT=off DISABLE_BACKGROUND_JOBS=1 TORQVOICE_MODE=self-hosted \
   SMTP_HOST=127.0.0.1 SMTP_PORT=1025 SMTP_FROM_EMAIL=workshop@e2e.test \
   npm run start -- --port 3100 &
 docker run --rm --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
@@ -187,6 +187,7 @@ so parity checks compare both.
 | `E2E_SMTP_PORT` | `1025` | Where the mail sink listens for the app |
 | `E2E_MAIL_API_PORT` | `8025` | Where the mail sink answers the specs |
 | `E2E_MAIL_API` | `http://127.0.0.1:8025` | The sink a spec reads from, when it is not the local one |
+| `TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY` | required for `E2E_MODE=cloud` | the torqvoice.com licence signing key (the real one, not a test key); the cloud run mints a one-day cloud token with it, since the app ignores `TORQVOICE_MODE=cloud` without one |
 
 The suite's own server also runs with `TORQVOICE_MODE=self-hosted`, `DEMO_MODE=false` and
 `AUTH_RATE_LIMIT=off`. Pointed at another server, start it the same way or the plan

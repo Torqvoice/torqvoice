@@ -1,6 +1,7 @@
 {
   "list": {
     "statusAll": "Todos",
+    "statusAttention": "Requer atenção",
     "statusDraft": "Rascunho",
     "statusSent": "Enviado",
     "statusAccepted": "Aceito",
@@ -73,8 +74,8 @@
     "unitPrice": "Preço unitário",
     "total": "Total",
     "subtotal": "Subtotal de peças: {amount}",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total",
+    "deleteRow": "Excluir linha",
+    "excludeFromTotal": "Não somar ao total",
     "addFromInventory": "Do estoque",
     "unitCost": "Custo",
     "markupPercent": "Margem %",
@@ -90,17 +91,15 @@
     "rate": "Taxa ({currency}/h)",
     "total": "Total",
     "subtotal": "Subtotal de mão de obra: {amount}",
-    "addService": "Add Service",
-    "qty": "Qty",
-    "qtyOrHours": "Unit / Hours",
+    "addService": "Adicionar serviço",
+    "qty": "Qtd.",
+    "qtyOrHours": "Unidade / Horas",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
-    "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
-    "switchToServiceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
-    "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "hourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
+    "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
+    "deleteRow": "Excluir linha",
+    "excludeFromTotal": "Não somar ao total"
   },
   "notes": {
     "title": "Notas",
@@ -138,8 +137,8 @@
     "selectVehicle": "Selecionar veículo...",
     "selectCustomer": "Selecionar cliente...",
     "none": "Nenhum",
-    "clearVehicle": "Clear vehicle",
-    "clearCustomer": "Clear customer"
+    "clearVehicle": "Remover veículo",
+    "clearCustomer": "Remover cliente"
   },
   "totals": {
     "title": "Totais",
@@ -171,13 +170,13 @@
     "failedEmail": "Falha ao enviar o e-mail",
     "smsSent": "SMS enviado",
     "failedSms": "Falha ao enviar o SMS",
-    "copyLink": "Copy link"
+    "copyLink": "Copiar link"
   },
   "images": {
     "title": "Imagens do orçamento",
     "dropzone": "Solte as imagens aqui ou clique para procurar",
     "uploading": "Enviando...",
-    "formats": "JPG, PNG, WebP — máx. 10 MB cada",
+    "formats": "JPG, PNG, WebP (máx. 10 MB cada)",
     "uploadingImages": "Enviando imagens...",
     "limitReached": "Limite de imagens atingido ({count}/{max})",
     "upgradePrompt": "Atualize seu plano para enviar mais imagens.",
@@ -186,8 +185,8 @@
     "uploadingCount": "Enviando {count} imagem(ns)...",
     "uploadedCount": "{count} imagem(ns) enviada(s)",
     "uploadFailed": "Falha no envio",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Falha ao enviar {name}",
+    "failedSaveFile": "Falha ao salvar {name}",
     "deleted": "Imagem excluída",
     "failedDelete": "Falha ao excluir a imagem",
     "failedUpdate": "Falha ao atualizar",
@@ -198,7 +197,7 @@
     "title": "Documentos",
     "dropzone": "Solte os arquivos aqui ou clique para procurar",
     "uploading": "Enviando...",
-    "formats": "PDF, CSV, TXT — máx. 10 MB cada",
+    "formats": "PDF, CSV, TXT (máx. 10 MB cada)",
     "uploadingDocuments": "Enviando documentos...",
     "limitReached": "Limite de documentos atingido ({count}/{max})",
     "upgradePrompt": "Atualize seu plano para enviar mais.",
@@ -206,11 +205,20 @@
     "uploadingCount": "Enviando {count} arquivo(s)...",
     "uploadedCount": "{count} arquivo(s) enviado(s)",
     "uploadFailed": "Falha no envio",
-    "failedUploadFile": "Failed to upload {name}",
-    "failedSaveFile": "Failed to save {name}",
+    "failedUploadFile": "Falha ao enviar {name}",
+    "failedSaveFile": "Falha ao salvar {name}",
     "deleted": "Arquivo excluído",
     "failedDelete": "Falha ao excluir o arquivo",
     "failedUpdate": "Falha ao atualizar",
     "pdf": "PDF"
+  },
+  "statusLabels": {
+    "draft": "Rascunho",
+    "sent": "Enviado",
+    "accepted": "Aceito",
+    "rejected": "Rejeitado",
+    "expired": "Expirado",
+    "converted": "Convertido",
+    "changes_requested": "Alterações solicitadas"
   }
 }

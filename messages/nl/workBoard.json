@@ -8,10 +8,10 @@
     "week": "Week",
     "presenter": "Presentator",
     "addTechnician": "Technicus toevoegen",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Vorige week",
+    "nextWeek": "Volgende week",
+    "previousDay": "Vorige dag",
+    "nextDay": "Volgende dag",
     "groupBy": "Kolommen",
     "byTechnician": "Een kolom per monteur",
     "byBay": "Een kolom per werkplek",
@@ -20,7 +20,7 @@
     "add": "Toevoegen",
     "addBay": "Werkplek toevoegen",
     "weekNumber": "Week {number}",
-    "lanes": "Kolommen",
+    "lanes": "Banen",
     "showAllLanes": "Alles tonen",
     "onlyBusyLanes": "Alleen met werk",
     "layout": "Weergave",
@@ -78,7 +78,10 @@
     "addTechnician": "Technicus toevoegen",
     "standaloneOnly": "Een naam op het bord voor iemand die niet inlogt, zoals een leerling of een externe. Een monteur die de app gebruikt voegt u toe op de Team-pagina.",
     "linkedTo": "Logt in als {name}",
-    "linkedManagedOnTeam": "Wordt beheerd op de Team-pagina, samen met de app-toegang."
+    "linkedManagedOnTeam": "Wordt beheerd op de Team-pagina, samen met de app-toegang.",
+    "skills": "Vaardigheden",
+    "skillsPlaceholder": "Diagnose, EV-gecertificeerd",
+    "skillsHint": "Wordt onder de naam getoond waar werk wordt verdeeld. Optioneel."
   },
   "jobDetail": {
     "viewDetails": "Details weergeven",
@@ -107,8 +110,8 @@
       "waitingParts": "Wacht op onderdelen",
       "completed": "Voltooid"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Vorige",
+    "next": "Volgende",
     "groupingUnused": "Het statusbord groepeert op status",
     "connecting": "Verbinden…"
   },
@@ -154,6 +157,9 @@
     "workBay": "Werkplek",
     "status": "Status",
     "noTime": "Nog geen tijd",
-    "none": "Nog niemand"
+    "none": "Nog niemand",
+    "promised": "Beloofd",
+    "promiseLate": "Te laat",
+    "promiseOverdue": "Aan de klant beloofd voor een moment dat al voorbij is"
   }
 }

@@ -8,10 +8,12 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchema'
 import { revalidatePath } from 'next/cache'
-import { unlink } from 'fs/promises'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { releaseFiles } from '@/lib/files/manager'
+import { vehicleFileUrls } from '@/lib/files/collect'
 import { auditDetails } from '@/lib/audit'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
+import { searchWordsOf, typeKeySearchTerms } from '../Lib/typeKey'
+import { isTypeKeyEnabled } from '../Lib/typeKeySetting'
 
 export async function getVehicles() {
   return withAuth(
@@ -116,7 +118,8 @@ export async function getVehiclesPaginated(params: {
       const where: any = { organizationId, isArchived: params.archived ?? false }
 
       if (params.search) {
-        const words = params.search.trim().split(/\s+/).filter(Boolean)
+        const words = searchWordsOf(params.search)
+        const typeKeyOn = await isTypeKeyEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -124,6 +127,7 @@ export async function getVehiclesPaginated(params: {
             { model: { contains: word, mode: 'insensitive' } },
             { licensePlate: { contains: word, mode: 'insensitive' } },
             { vin: { contains: word, mode: 'insensitive' } },
+            ...(typeKeyOn ? typeKeySearchTerms(word) : []),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)
@@ -242,6 +246,8 @@ export async function createVehicle(input: unknown) {
       const vehicle = await db.vehicle.create({
         data: {
           ...data,
+          hsn: data.hsn || null,
+          tsn: data.tsn || null,
           purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
           customerId: data.customerId || null,
           userId,
@@ -277,27 +283,12 @@ export async function updateVehicle(input: unknown) {
       const { id, inspectionDueAt, ...data } = updateVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
 
-      // Fetch current record for display/diff
+      // Fetch current record for display/diff, and the image it had
       const before = await db.vehicle.findFirst({
         where: { id, organizationId },
-        select: { year: true, make: true, model: true, licensePlate: true },
+        select: { year: true, make: true, model: true, licensePlate: true, imageUrl: true },
       })
       if (!before) throw new Error('Vehicle not found')
-
-      // If image is being changed, delete the old file from disk
-      if (data.imageUrl !== undefined) {
-        const existing = await db.vehicle.findFirst({
-          where: { id, organizationId },
-          select: { imageUrl: true },
-        })
-        if (existing?.imageUrl && existing.imageUrl !== data.imageUrl) {
-          try {
-            await unlink(resolveUploadPath(existing.imageUrl))
-          } catch {
-            // Old file may already be gone
-          }
-        }
-      }
 
       const updateResult = await db.vehicle.updateMany({
         where: { id, organizationId },
@@ -310,6 +301,8 @@ export async function updateVehicle(input: unknown) {
           transmission: data.transmission !== undefined ? data.transmission || null : undefined,
           engineSize: data.engineSize !== undefined ? data.engineSize || null : undefined,
           engineCode: data.engineCode !== undefined ? data.engineCode || null : undefined,
+          hsn: data.hsn !== undefined ? data.hsn || null : undefined,
+          tsn: data.tsn !== undefined ? data.tsn || null : undefined,
           purchaseDate: toSafeWorkshopDate(
             data.purchaseDate,
             await workshopTimeZone(organizationId)
@@ -318,6 +311,11 @@ export async function updateVehicle(input: unknown) {
         },
       })
       if (updateResult.count === 0) throw new Error('Vehicle not found')
+      // A replaced image is let go once the new one is saved; the file manager
+      // keeps it if anything else still shows it.
+      if (data.imageUrl !== undefined && before.imageUrl && before.imageUrl !== data.imageUrl) {
+        await releaseFiles([before.imageUrl], { organizationId, reason: 'vehicle image replaced' })
+      }
       await saveManualInspectionDate(organizationId, id, inspectionDueAt)
       const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
       const changedKeys = Object.keys(data).filter(
@@ -355,41 +353,17 @@ export async function updateVehicle(input: unknown) {
 export async function deleteVehicle(vehicleId: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      // Fetch vehicle with its attachments so we can clean up files
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
-        select: {
-          imageUrl: true,
-          year: true,
-          make: true,
-          model: true,
-          licensePlate: true,
-          serviceRecords: {
-            select: { attachments: { select: { fileUrl: true } } },
-          },
-        },
+        select: { year: true, make: true, model: true, licensePlate: true },
       })
       if (!vehicle) throw new Error('Vehicle not found')
 
+      // Everything the delete cascades to, read while it still exists, and
+      // let go once the rows are gone.
+      const files = await vehicleFileUrls(organizationId, [vehicleId])
       await db.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
-
-      // Clean up files from disk after DB deletion
-      if (vehicle) {
-        const filesToDelete: string[] = []
-        if (vehicle.imageUrl) filesToDelete.push(vehicle.imageUrl)
-        for (const sr of vehicle.serviceRecords) {
-          for (const att of sr.attachments) {
-            filesToDelete.push(att.fileUrl)
-          }
-        }
-        for (const fileUrl of filesToDelete) {
-          try {
-            await unlink(resolveUploadPath(fileUrl))
-          } catch {
-            // File may already be gone
-          }
-        }
-      }
+      await releaseFiles(files, { organizationId, reason: 'vehicle deleted' })
 
       const vehicleDisplay = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
       revalidatePath('/')
@@ -418,7 +392,8 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
       const where: any = { organizationId, isArchived: false }
       if (customerId) where.customerId = customerId
       if (search) {
-        const words = search.trim().split(/\s+/).filter(Boolean)
+        const words = searchWordsOf(search)
+        const typeKeyOn = await isTypeKeyEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -426,6 +401,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
             { model: { contains: word, mode: 'insensitive' } },
             { licensePlate: { contains: word, mode: 'insensitive' } },
             { vin: { contains: word, mode: 'insensitive' } },
+            ...(typeKeyOn ? typeKeySearchTerms(word) : []),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)

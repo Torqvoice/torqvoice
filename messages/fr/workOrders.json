@@ -31,14 +31,20 @@
       "status": "Statut",
       "tech": "Technicien",
       "date": "Date",
-      "total": "Total"
+      "total": "Total",
+      "promised": "Promis",
+      "promisedOverdue": "Promis {date}, en retard"
     },
     "emailSubject": "Mise à jour du Statut du Véhicule: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Changer le statut",
     "contextMenu": {
       "open": "Ouvrir l'ordre de travail",
       "openVehicle": "Ouvrir le véhicule",
       "openCustomer": "Ouvrir le client"
+    },
+    "dueToday": "Dû aujourd'hui",
+    "columns": {
+      "label": "Colonnes"
     }
   },
   "vehiclePicker": {

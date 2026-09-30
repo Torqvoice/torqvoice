@@ -76,7 +76,7 @@
     "editPart": "Modifier la pièce",
     "addNewPart": "Ajouter une nouvelle pièce",
     "supplierLink": "Lien fournisseur",
-    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkPlaceholder": "https://fournisseur.com/produit/...",
     "fetch": "Récupérer",
     "fetchFailed": "Échec de la récupération",
     "fetchError": "Impossible de récupérer les métadonnées de l'URL",
@@ -131,7 +131,7 @@
     "saveChanges": "Enregistrer les modifications",
     "addPart": "Ajouter une pièce"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Ouvrir le menu",
   "history": {
     "title": "Historique du stock",
     "description": "Toutes les modifications enregistrées de {name}, les plus récentes d'abord.",

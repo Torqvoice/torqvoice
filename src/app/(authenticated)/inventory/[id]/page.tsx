@@ -4,7 +4,7 @@ import {
   getStockMovementsPaginated,
 } from '@/features/inventory/Actions/getStockMovements'
 import { getInventoryCategories } from '@/features/inventory/Actions/inventoryActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { formatDateTime } from '@/lib/format'
@@ -32,7 +32,7 @@ export default async function InventoryPartDetailPage({
       reason: sp.reason,
     }),
     getInventoryCategories(),
-    getSettings([
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
       SETTING_KEYS.UNIT_SYSTEM,

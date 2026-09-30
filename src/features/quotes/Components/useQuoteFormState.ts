@@ -5,15 +5,24 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useDateSettings } from '@/components/date-settings-context'
 import {
   updateQuote,
+  updateQuoteStatus,
   deleteQuote,
   convertQuoteToServiceRecord,
 } from '@/features/quotes/Actions/quoteActions'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals } from '@/lib/tax'
+import { zonedDateInput } from '@/lib/timezone'
 import { parseTaxComponents } from '@/lib/tax-components'
+import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
+import {
+  recalculateShopFeeLines,
+  shopFeeLinesLast,
+  type ShopFeeConfig,
+} from '@/features/settings/Lib/shopFee'
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
 import { emptyPart, makeEmptyLabor, makeEmptyService } from './quote-page-types'
@@ -41,6 +50,7 @@ export function useQuoteFormState({
   taxEnabled,
   defaultLaborRate,
   locked = false,
+  shopFee = null,
   t,
 }: {
   quote: QuoteRecord
@@ -50,6 +60,8 @@ export function useQuoteFormState({
   defaultLaborRate: number
   /** A locked quote refuses saves, so it must not queue one. */
   locked?: boolean
+  /** The workshop's shop fee; a percentage one is re-priced as lines change. */
+  shopFee?: ShopFeeConfig | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }) {
@@ -64,6 +76,12 @@ export function useQuoteFormState({
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [status, setStatus] = useState(quote.status)
+  // The customer can answer while the quote is open. A refresh brings the new
+  // status in as a prop, and the page has to show it rather than the status it
+  // was opened with; a status chosen here and not yet saved is left alone.
+  useEffect(() => {
+    setStatus(quote.status)
+  }, [quote.status])
   const [customerId, setCustomerId] = useState(quote.customer?.id || '')
   const [vehicleId, setVehicleId] = useState(quote.vehicle?.id || '')
   const [partItems, setPartItems] = useState<QuotePartInput[]>(
@@ -89,12 +107,12 @@ export function useQuoteFormState({
   )
   const { schedule: scheduleCommit, cancel: cancelCommit } = useDeferredCommit()
   const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(
-    quote.laborItems.map((l) => ({
+    shopFeeLinesLast(quote.laborItems).map((l) => ({
       description: l.description,
       hours: l.hours,
       rate: l.rate,
       total: l.total,
-      pricingType: (l.pricingType as 'hourly' | 'service') || 'hourly',
+      pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
       excluded: l.excluded ?? false,
     }))
   )
@@ -108,6 +126,8 @@ export function useQuoteFormState({
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
   const [description, setDescription] = useState(quote.description || '')
   const [notes, setNotes] = useState(quote.notes || '')
+  // One value, because the four move together; see the work order's editor.
+  const [warranty, setWarrantyState] = useState<WarrantyFields>(() => normalizeWarranty(quote))
 
   // Dialog state
   const [showEmailDialog, setShowEmailDialog] = useState(false)
@@ -117,8 +137,14 @@ export function useQuoteFormState({
   const [converting, setConverting] = useState(false)
   const [resolving, setResolving] = useState(false)
 
+  // The day the quote is valid until, as the workshop's calendar has it. The
+  // server reads the saved field in the workshop's zone, so the field has to
+  // be filled in that zone too. Filled from the UTC date instead, every save
+  // east of UTC moved the date a day earlier: a quote valid until the 19th
+  // was sent out valid until the 17th after two saves.
+  const { timezone } = useDateSettings()
   const [defaultValidDate] = useState(() =>
-    quote.validUntil ? new Date(quote.validUntil).toISOString().split('T')[0] : ''
+    quote.validUntil ? zonedDateInput(new Date(quote.validUntil), timezone) : ''
   )
 
   // Track selected vehicle/customer for display (initial from quote data)
@@ -169,6 +195,40 @@ export function useQuoteFormState({
     }, 5000)
   }, [locked])
 
+  const setWarranty = useCallback(
+    (next: WarrantyFields) => {
+      setWarrantyState(next)
+      markDirty()
+    },
+    [markDirty]
+  )
+
+  // A locked quote refuses a save, so its status is written on its own the
+  // moment it is chosen. The server still refuses a status that would release
+  // the lock, which is the owner-or-admin unlock by another route.
+  const [changingStatus, setChangingStatus] = useState(false)
+  const changeStatus = async (next: string) => {
+    // The select also reports a value when the status changes under it, as
+    // an empty string when no option matches; neither is somebody choosing.
+    if (!next || next === status) return
+    if (!locked) {
+      setStatus(next)
+      markDirty()
+      return
+    }
+    const previous = status
+    setStatus(next)
+    setChangingStatus(true)
+    const result = await updateQuoteStatus(quote.id, next)
+    setChangingStatus(false)
+    if (result.success) {
+      router.refresh()
+    } else {
+      setStatus(previous)
+      toast.error(result.error || t('page.failedSave'))
+    }
+  }
+
   // When the lock engages mid-session, a save already queued can only be
   // refused, and "Unsaved changes" would offer one that can never complete.
   useEffect(() => {
@@ -204,6 +264,16 @@ export function useQuoteFormState({
     () => laborItems.reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0),
     [laborItems]
   )
+  // A percentage shop fee follows the lines the customer is being quoted for.
+  // A fee that moved is a change to save, or the PDF would print the old one.
+  useEffect(() => {
+    if (locked) return
+    const next = recalculateShopFeeLines(laborItems, partsSubtotal, shopFee)
+    if (next === laborItems) return
+    setLaborItems(next)
+    markDirty()
+  }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
+
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount =
     discountType === 'percentage'
@@ -375,7 +445,7 @@ export function useQuoteFormState({
         vehicleId,
         notes,
         partItems: partItems.filter((p) => p.name),
-        laborItems: laborItems.filter((l) => l.description),
+        laborItems: shopFeeLinesLast(laborItems.filter((l) => l.description)),
         subtotal,
         taxRate,
         taxInclusive,
@@ -384,6 +454,11 @@ export function useQuoteFormState({
         discountValue,
         discountAmount,
         totalAmount,
+        // Cleared fields go as 'none', 0 and '' for the same reason as above.
+        warrantyStatus: warranty.warrantyStatus ?? WARRANTY_NONE,
+        warrantyMonths: warranty.warrantyMonths ?? 0,
+        warrantyMileage: warranty.warrantyMileage ?? 0,
+        warrantyNotes: warranty.warrantyNotes ?? '',
       })
       if (result.success) {
         setHasUnsavedChanges(false)
@@ -474,7 +549,8 @@ export function useQuoteFormState({
     setResolving(true)
     const result = await acknowledgeQuoteResponse(quote.id)
     if (result.success) {
-      setStatus('draft')
+      // A change request goes back to draft; an acceptance keeps its status.
+      if (result.data) setStatus(result.data.status)
       toast.success(t('page.responseResolved'))
       router.refresh()
     }
@@ -511,6 +587,8 @@ export function useQuoteFormState({
     setDescription,
     notes,
     setNotes,
+    warranty,
+    setWarranty,
     // Dialogs
     showEmailDialog,
     setShowEmailDialog,
@@ -522,6 +600,8 @@ export function useQuoteFormState({
     setConvertVehicleId,
     converting,
     resolving,
+    changeStatus,
+    changingStatus,
     defaultValidDate,
     // Unsaved
     hasUnsavedChanges,

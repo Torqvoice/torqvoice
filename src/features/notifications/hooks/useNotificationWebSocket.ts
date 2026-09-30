@@ -1,14 +1,20 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
+import { useRealtime, useRealtimeState } from '@/features/realtime/RealtimeProvider'
 import { toast } from 'sonner'
-import { useNotificationStore } from '../store/notificationStore'
+import { useNotificationStore, type Notification } from '../store/notificationStore'
 import { getNotifications, markNotificationRead } from '../Actions/notificationActions'
 import { getActiveSmsCustomerId } from '@/features/sms/activeSmsView'
 
 export function useNotificationWebSocket() {
-  const wsRef = useRef<WebSocket | null>(null)
-  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const realtime = useRealtime()
+  const { status } = useRealtimeState()
+
+  useEffect(() => {
+    useNotificationStore.getState().setConnected(status === 'ready')
+    return () => useNotificationStore.getState().setConnected(false)
+  }, [status])
 
   useEffect(() => {
     // Liveness is a per-effect-run closure, not a shared ref: with a ref, a
@@ -28,79 +34,45 @@ export function useNotificationWebSocket() {
       }
     })
 
-    function connect() {
-      if (!alive) return
-
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const url = `${protocol}//${window.location.host}/api/protected/ws`
-      const ws = new WebSocket(url)
-      wsRef.current = ws
-
-      ws.onopen = () => {
-        useNotificationStore.getState().setConnected(true)
-      }
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data)
-          if (msg.type === 'notification') {
-            const data = msg.data
-
-            // If user is already viewing SMS for this customer, auto-read and skip toast
-            const activeSmsCid = getActiveSmsCustomerId()
-            if (
-              activeSmsCid &&
-              data.type === 'sms_inbound' &&
-              data.entityUrl === `/messages?customerId=${activeSmsCid}`
-            ) {
-              // Still add it to the store but immediately mark as read
-              const added = { ...data, read: true }
-              useNotificationStore.getState().addNotification(added)
-              // Decrement the unread count that addNotification just bumped
-              useNotificationStore.setState((s) => ({
-                unreadCount: Math.max(0, s.unreadCount - 1),
-              }))
-              markNotificationRead(data.id)
-              return
-            }
-
-            useNotificationStore.getState().addNotification(data)
-            const isSms = data.type === 'sms_inbound'
-            toast(data.title, {
-              description: data.message,
-              ...(isSms && { duration: 5 * 60 * 1000 }),
-              action: {
-                label: 'View',
-                onClick: () => {
-                  window.location.href = data.entityUrl
-                },
-              },
-            })
-          }
-        } catch {
-          // ignore malformed messages
-        }
-      }
-
-      ws.onclose = () => {
-        useNotificationStore.getState().setConnected(false)
-        wsRef.current = null
-        if (alive) {
-          reconnectTimer.current = setTimeout(connect, 3000)
-        }
-      }
-
-      ws.onerror = () => {
-        ws.close()
-      }
-    }
-
-    connect()
-
     return () => {
       alive = false
-      clearTimeout(reconnectTimer.current)
-      wsRef.current?.close()
     }
-  }, []) // no deps — mount once
+  }, [])
+
+  // The workshop's feed, on the app's one socket. The server only sends it to
+  // the roles that may read it (lib/notification-roles), so nothing here has
+  // to filter by role.
+  useEffect(() => {
+    if (!realtime) return
+    return realtime.onLegacy('notification', (raw) => {
+      const data = raw as Notification
+      if (!data?.id) return
+
+      // Already looking at this conversation: file it read, and stay quiet.
+      const activeSmsCid = getActiveSmsCustomerId()
+      if (
+        activeSmsCid &&
+        data.type === 'sms_inbound' &&
+        data.entityUrl === `/messages?customerId=${activeSmsCid}`
+      ) {
+        useNotificationStore.getState().addNotification({ ...data, read: true })
+        useNotificationStore.setState((s) => ({ unreadCount: Math.max(0, s.unreadCount - 1) }))
+        markNotificationRead(data.id)
+        return
+      }
+
+      useNotificationStore.getState().addNotification(data)
+      const isSms = data.type === 'sms_inbound'
+      toast(data.title, {
+        description: data.message,
+        ...(isSms && { duration: 5 * 60 * 1000 }),
+        action: {
+          label: 'View',
+          onClick: () => {
+            window.location.href = data.entityUrl
+          },
+        },
+      })
+    })
+  }, [realtime])
 }

@@ -5,8 +5,8 @@
     "label": "Token du bot",
     "placeholder": "Entrez le token de @BotFather",
     "help": "Créez un bot via @BotFather sur Telegram pour obtenir votre token.",
-    "show": "Show token",
-    "hide": "Hide token"
+    "show": "Afficher le jeton",
+    "hide": "Masquer le jeton"
   },
   "botUsername": {
     "label": "Nom d'utilisateur du bot",
@@ -20,7 +20,7 @@
     "title": "Lien de connexion client",
     "description": "Partagez ce lien avec les clients pour qu'ils se connectent à votre bot. Remplacez l'espace réservé de l'ID client par l'ID réel.",
     "copied": "Lien copié !",
-    "copy": "Copy deep link"
+    "copy": "Copier le lien de connexion"
   },
   "test": {
     "title": "Message test",

@@ -23,7 +23,8 @@ vi.mock('@/lib/db', () => {
     appSetting: { findMany: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), update: vi.fn() },
     servicePart: { create: vi.fn(), aggregate: vi.fn() },
-    serviceLabor: { aggregate: vi.fn() },
+    // findMany: a percentage shop fee is re-priced before the job is re-totalled.
+    serviceLabor: { aggregate: vi.fn(), findMany: vi.fn(async () => []) },
     inventoryPart: { update: vi.fn(), updateMany: vi.fn() },
   }
   // Run the transaction callback against the same mock db (tx === db).

@@ -74,8 +74,8 @@
     "noDismissed": "Yok sayılan araç yok.",
     "dismissedOn": "{date} tarihinde kapatıldı",
     "restore": "Geri Yükle",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Bakım ayarları",
+    "dismissAriaLabel": "Kapat"
   },
   "reminders": {
     "title": "Yaklaşan Hatırlatmalar",
@@ -112,7 +112,7 @@
     "createQuote": "Teklif Oluştur",
     "itemsRequested": "{count, plural, one {# öğe talep edildi} other {# öğe talep edildi}}",
     "noData": "Bekleyen teklif talebi yok.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Teklif talebini kapat"
   },
   "quoteResponses": {
     "title": "Müşteri Teklif Yanıtları",
@@ -120,11 +120,11 @@
     "accepted": "Kabul Edildi",
     "changesRequested": "Değişiklik Talep Edildi",
     "convertToWorkOrder": "İş Emrine Dönüştür",
-    "convert": "Convert",
+    "convert": "Dönüştür",
     "viewQuote": "Teklifi Görüntüle",
-    "view": "View",
+    "view": "Görüntüle",
     "noData": "Müşteri yanıtı yok.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Yanıtı kapat"
   },
   "recentCompleted": {
     "title": "Son Tamamlananlar",

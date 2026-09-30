@@ -1,5 +1,6 @@
 'use client'
 
+import { SectionFrame } from '@/components/section-frame'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -115,12 +116,18 @@ export function VideoCallSection({
   }
 
   return (
-    <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center gap-2">
-        <Video className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="text-sm font-semibold">{t('title')}</h3>
-      </div>
-
+    <SectionFrame
+      className="rounded-lg border p-3 space-y-3"
+      icon={Video}
+      title={t('title')}
+      contentClassName="space-y-3"
+      header={
+        <div className="flex items-center gap-2">
+          <Video className="h-3.5 w-3.5 text-muted-foreground" />
+          <h3 className="text-sm font-semibold">{t('title')}</h3>
+        </div>
+      }
+    >
       {link ? (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm">
@@ -238,6 +245,6 @@ export function VideoCallSection({
           </div>
         </div>
       )}
-    </div>
+    </SectionFrame>
   )
 }

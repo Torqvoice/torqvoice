@@ -131,7 +131,7 @@
     "saveChanges": "Änderungen speichern",
     "addPart": "Teil hinzufügen"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Menü öffnen",
   "history": {
     "title": "Bestandsverlauf",
     "description": "Alle erfassten Änderungen an {name}, neueste zuerst.",

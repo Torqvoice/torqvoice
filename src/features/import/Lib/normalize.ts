@@ -9,6 +9,12 @@
  */
 
 import { normalizePortalPhone } from '@/lib/portal-phone'
+import {
+  HSN_PATTERN,
+  normalizeHsn,
+  normalizeTsn,
+  TSN_PATTERN,
+} from '@/features/vehicles/Lib/typeKey'
 
 // ── Headers ───────────────────────────────────────────────────────────────────
 
@@ -479,6 +485,37 @@ export function normalizeVin(value: string | null | undefined): {
   // have shorter chassis numbers, which are kept as typed with a warning.
   const valid = /^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned)
   return { value: cleaned, valid }
+}
+
+/**
+ * The German type approval key, from an HSN column, a TSN column, or one
+ * column holding both ("0603/BFQ", "0603 BFQ"). A value that is not a type
+ * key is left out and reported: the vehicle form would refuse it, and a
+ * parts lookup on it would find the wrong car.
+ */
+export function normalizeTypeKey(
+  hsnValue: string | null | undefined,
+  tsnValue: string | null | undefined
+): { hsn: string | null; tsn: string | null; invalidHsn: boolean; invalidTsn: boolean } {
+  let hsnText = cleanText(hsnValue)
+  let tsnText = cleanText(tsnValue)
+  const both = hsnText?.toUpperCase().match(/^(\d{4})\s*[/\s,;-]\s*([A-Z0-9]{3,10})$/)
+  if (both) {
+    hsnText = both[1]
+    tsnText = tsnText ?? both[2]
+  }
+  // A spreadsheet stores 0603 as the number 603; the key always has four digits.
+  const hsnCompact = hsnText ? normalizeHsn(hsnText) : null
+  const hsn = hsnCompact && /^\d{1,3}$/.test(hsnCompact) ? hsnCompact.padStart(4, '0') : hsnCompact
+  const tsn = tsnText ? normalizeTsn(tsnText) : null
+  const hsnOk = hsn == null || HSN_PATTERN.test(hsn)
+  const tsnOk = tsn == null || TSN_PATTERN.test(tsn)
+  return {
+    hsn: hsnOk ? hsn : null,
+    tsn: tsnOk ? tsn : null,
+    invalidHsn: !hsnOk,
+    invalidTsn: !tsnOk,
+  }
 }
 
 /** Uppercase, single spaces. The plate is stored as people write it. */

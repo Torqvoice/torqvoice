@@ -1,3 +1,8 @@
+import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { MarkType } from '@/features/condition-map/Lib/markTypes'
+import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
+import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
+import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
 import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
@@ -5,12 +10,18 @@ import type { LockState } from '@/lib/document-lock'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
 import type { InitialData, InventoryPartOption } from '../service-edit/form-types'
+import type { WarrantyTexts } from '@/lib/warranty'
 import type { LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 
 export interface BoardTechnicianOption {
   id: string
   name: string
   userId?: string | null
+  color?: string | null
+  /** Minutes in the technician's working day. */
+  dailyCapacity?: number | null
+  /** What they are good at, in the workshop's words. */
+  skills?: string | null
 }
 
 export interface WorkBayOption {
@@ -51,9 +62,13 @@ export interface ServicePageClientProps {
   canUnlock: boolean
   currencyCode: string
   unitSystem: 'metric' | 'imperial'
+  /** The workshop's stock warranty texts, for the warranty panel to fill in. */
+  warrantyTexts: WarrantyTexts
   defaultTaxRate: number
   taxEnabled: boolean
   defaultLaborRate: number
+  /** The workshop's shop fee, for re-pricing a percentage one as lines change. */
+  shopFee?: ShopFeeConfig | null
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
   initialVehicle: {
@@ -68,6 +83,28 @@ export interface ServicePageClientProps {
   orgMembers?: OrgMemberOption[]
   currentUserName: string
   imageAttachmentsForManager: Attachment[]
+  /** Photos of the car as it arrived, kept apart from the job's photos. */
+  dropoffAttachments?: Attachment[]
+  /**
+   * The vehicle's condition map, for the drop-off card. Absent for a counter
+   * sale. The linked inspection's marks count as this visit's.
+   */
+  conditionMap?: {
+    vehicleId: string
+    bodyType: string | null
+    marks: ConditionMarkData[]
+    /** The workshop's kinds of mark, in the reader's language. */
+    types: MarkType[]
+    linkedInspectionId: string | null
+    /** When the job was opened: marks from a visit opened later are not its history. */
+    openedAt: Date | string
+    /** When its invoice went out as the customer's copy, or null while it has not. */
+    sentAt: string | null
+    /** The job's own answer for its invoice, or null to follow the design. */
+    onInvoice: boolean | null
+    /** What the invoice design does for every invoice. */
+    byDesign: boolean
+  }
   videoAttachments: Attachment[]
   documentAttachments: Attachment[]
   maxImagesPerService: number
@@ -78,8 +115,16 @@ export interface ServicePageClientProps {
   emailEnabled?: boolean
   telegramEnabled?: boolean
   aiEnabled?: boolean
+  /** The connected AI vendor can turn speech into text, so dictation goes through it. */
+  aiTranscription?: boolean
+  /** Whether dictation is always the speech model, or each person may pick the browser instead. */
+  dictationMode?: 'ai' | 'choice'
   /** Gates the "Store tires" action, by plan and by the org's own switch. */
   tireHotelEnabled?: boolean
+  /** A payment vendor is connected, so the shared invoice can be paid online. */
+  onlinePayments?: boolean
+  /** The workshop's own statuses, for the menus on the status stepper. */
+  workOrderStatuses?: WorkOrderStatusOption[]
   /** The work order's video call, and the connected services that could add one. */
   videoCall?: ServiceVideoCall
   /** The workshop's tread limits, so a set checked in here grades correctly. */
@@ -133,6 +178,11 @@ export interface ServicePageClientProps {
     createdAt: string
     toNumber: string
   }[]
+  /**
+   * The layout this browser asked for, read from its cookie on the server so
+   * the first paint is already the right page. Classic unless somebody opted in.
+   */
+  initialLayout?: WorkOrderLayout
 }
 
 export type {

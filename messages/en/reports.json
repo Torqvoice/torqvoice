@@ -429,5 +429,7 @@
   "pagination": {
     "previousPage": "Previous page",
     "nextPage": "Next page"
-  }
+  },
+  "completedOnly": "Completed only",
+  "completedOnlyHint": "Show only work orders marked completed. Remembered for next time."
 }

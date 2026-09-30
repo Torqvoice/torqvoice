@@ -11,6 +11,13 @@ import {
   hasAnySampleIds,
   parseSampleDataIds,
 } from '../Lib/onboardingKeys'
+import { releaseFiles } from '@/lib/files/manager'
+import {
+  inspectionFileUrls,
+  quoteFileUrls,
+  serviceRecordFileUrls,
+  vehicleFileUrls,
+} from '@/lib/files/collect'
 
 export interface OnboardingChecklistData {
   steps: {
@@ -141,6 +148,15 @@ export async function removeSampleData() {
         return { removed: false }
       }
 
+      // Files on the sample jobs, quotes, inspections and vehicles (someone may
+      // have tried a photo upload on one), let go once they are deleted.
+      const files = [
+        ...(await serviceRecordFileUrls(organizationId, ids.serviceRecords)),
+        ...(await quoteFileUrls(organizationId, ids.quotes)),
+        ...(await inspectionFileUrls(organizationId, ids.inspections)),
+        ...(await vehicleFileUrls(organizationId, ids.vehicles)),
+      ]
+
       await db.$transaction([
         db.serviceRecord.deleteMany({
           where: { organizationId, id: { in: ids.serviceRecords } },
@@ -159,6 +175,7 @@ export async function removeSampleData() {
         }),
         db.appSetting.delete({ where: { id: row.id } }),
       ])
+      await releaseFiles(files, { organizationId, reason: 'sample data removed' })
 
       revalidatePath('/')
       revalidatePath('/customers')

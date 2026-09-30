@@ -1,10 +1,10 @@
 import { expect, type Locator, type Page, test } from '@playwright/test'
-import { completeOnboarding, signUpWithPassword } from '../../support/cloud'
+import { signInWithPassword } from '../../support/cloud'
 import {
   connectRegistry,
   customerIdNamed,
   disconnectRegistry,
-  organizationIdFor,
+  plantWorkshop,
   userIdFor,
   workshopSetting,
 } from '../../support/db'
@@ -27,7 +27,7 @@ import { newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/wor
  * about vessels.
  */
 
-// Signing up and onboarding a workshop in a hook takes longer than a test.
+// Planting and signing into a workshop in a hook takes longer than a test.
 test.describe.configure({ mode: 'serial', timeout: 180_000 })
 
 const stamp = Date.now()
@@ -53,18 +53,21 @@ let vesselUrl = ''
 test.use({ storageState: STATE })
 
 test.beforeAll(async ({ browser }) => {
-  const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
-  const page = await context.newPage()
-  await signUpWithPassword(page, {
+  // A workshop of its own, planted: a self-hosted install opens one workshop
+  // and would send a sign-up to ask for an invitation instead.
+  const planted = await plantWorkshop({
     name: 'E2E Marine Owner',
     email: EMAIL,
     password: `E2e-pass-${stamp}`,
+    workshopName: `E2E Marina ${stamp}`,
   })
-  await completeOnboarding(page, `E2E Marina ${stamp}`, { sampleData: false })
+  organizationId = planted.organizationId
+
+  const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
+  const page = await context.newPage()
+  await signInWithPassword(page, { email: EMAIL, password: `E2e-pass-${stamp}` })
   await context.storageState({ path: STATE })
   await context.close()
-
-  organizationId = await organizationIdFor(EMAIL)
 })
 
 test.afterAll(async () => {

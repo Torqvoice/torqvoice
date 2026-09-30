@@ -34,10 +34,12 @@ import {
 import { DocsLink } from '@/components/docs-link'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
+import { useDateSettings } from '@/components/date-settings-context'
+import { inspectionDueInput } from '../Lib/inspectionDueInput'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
-import { PlateLookupButton } from './PlateLookupButton'
+import { VehicleLookupButton } from './VehicleLookupButton'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { nameSimilarity } from '@/lib/name-similarity'
 import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
@@ -48,6 +50,8 @@ import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 import { clearableInput } from '@/lib/clearable'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
 import { handleGated } from '@/components/upgrade-gate'
 
 /**
@@ -77,6 +81,8 @@ interface VehicleFormProps {
     transmission?: string | null
     engineSize?: string | null
     engineCode?: string | null
+    hsn?: string | null
+    tsn?: string | null
     imageUrl?: string | null
     customerId?: string | null
     inspectionStatus?: { dueAt: Date | string | null; source?: string } | null
@@ -101,9 +107,13 @@ export function VehicleForm({
 }: VehicleFormProps) {
   const serviceType = useServiceType()
   const isMarine = serviceType === 'marine'
+  // Only a workshop that switched the type key on sees the two boxes; a hidden
+  // pair is left out of the save, so what a vehicle already has is kept.
+  const showTypeKey = useTypeKeyEnabled() && !isMarine
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('vehicles.form')
+  const { timezone } = useDateSettings()
   const tc = useTranslations('common.buttons')
   const format = useFormatter()
   const [loading, setLoading] = useState(false)
@@ -213,6 +223,8 @@ export function VehicleForm({
     setIfEmpty('licensePlate', data.licensePlate)
     setIfEmpty('color', data.color)
     setIfEmpty('engineSize', data.engineSize)
+    setIfEmpty('hsn', data.hsn)
+    setIfEmpty('tsn', data.tsn)
 
     // A select has no empty state, so only fill it while it still holds the
     // value the form opened with.
@@ -247,11 +259,13 @@ export function VehicleForm({
 
   /**
    * A registry answer fills the same fields as a scanned document, plus the
-   * gearbox, which papers rarely state. The select only moves while it still
+   * gearbox and engine code, which papers rarely state. The select only moves while it still
    * holds the value the form opened with.
    */
   const applyLookup = (data: VehicleLookup) => {
     applyScan(data)
+    const engineCode = formRef.current?.elements.namedItem('engineCode') as HTMLInputElement | null
+    if (data.engineCode && engineCode && !engineCode.value) engineCode.value = data.engineCode
     if (data.inspectionDue) {
       const input = formRef.current?.elements.namedItem(
         'inspectionDueAt'
@@ -284,6 +298,21 @@ export function VehicleForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+
+    // Caught here rather than by the server, which could only answer in English.
+    if (showTypeKey) {
+      const hsn = normalizeHsn(String(formData.get('hsn') ?? ''))
+      const tsn = normalizeTsn(String(formData.get('tsn') ?? ''))
+      if (hsn && !HSN_PATTERN.test(hsn)) {
+        toast.error(t('hsnInvalid'))
+        return
+      }
+      if (tsn && !TSN_PATTERN.test(tsn)) {
+        toast.error(t('tsnInvalid'))
+        return
+      }
+    }
+
     setLoading(true)
 
     try {
@@ -336,6 +365,8 @@ export function VehicleForm({
         transmission: transmission || undefined,
         engineSize: optional('engineSize'),
         engineCode: optional('engineCode'),
+        hsn: showTypeKey ? optional('hsn') : undefined,
+        tsn: showTypeKey ? optional('tsn') : undefined,
         // Sent as-is: an empty string clears a hand-typed date, undefined leaves it alone.
         inspectionDueAt: isMarine ? undefined : ((formData.get('inspectionDueAt') as string) ?? ''),
         customerId,
@@ -448,7 +479,10 @@ export function VehicleForm({
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <PopoverContent
+                    className="w-(--radix-popover-trigger-width) min-w-64 p-0"
+                    align="start"
+                  >
                     <Command>
                       <CommandInput placeholder={t('searchCustomers')} />
                       <CommandList className="max-h-60 overflow-y-auto">
@@ -593,16 +627,9 @@ export function VehicleForm({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
-                  <Input
-                    id="vin"
-                    name="vin"
-                    placeholder="1HGCM82633A004352"
-                    defaultValue={vehicle?.vin ?? ''}
-                  />
-                </div>
+              {/* Plate and VIN a row each: side by side, with a lookup button in each,
+                  the VIN was too narrow to show all 17 characters. */}
+              <div className="grid gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="licensePlate">
                     {isMarine ? t('licensePlateMarine') : t('licensePlate')}
@@ -616,15 +643,35 @@ export function VehicleForm({
                       className="flex-1"
                     />
                     {!isMarine && (
-                      <PlateLookupButton
-                        getPlate={() =>
+                      <VehicleLookupButton
+                        by="plate"
+                        getValue={() =>
                           (
                             formRef.current?.elements.namedItem(
                               'licensePlate'
                             ) as HTMLInputElement | null
                           )?.value ?? ''
                         }
-                        getVin={() =>
+                        onFound={applyLookup}
+                        vehicleId={vehicle?.id}
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="vin"
+                      name="vin"
+                      placeholder="1HGCM82633A004352"
+                      defaultValue={vehicle?.vin ?? ''}
+                      className="flex-1"
+                    />
+                    {!isMarine && (
+                      <VehicleLookupButton
+                        by="vin"
+                        getValue={() =>
                           (formRef.current?.elements.namedItem('vin') as HTMLInputElement | null)
                             ?.value ?? ''
                         }
@@ -633,19 +680,20 @@ export function VehicleForm({
                       />
                     )}
                   </div>
-                  {lookupNote && (
-                    <p className="text-xs text-muted-foreground">
-                      {lookupNote.inspectionDue
-                        ? t('lookupInspectionDue', {
-                            source: lookupNote.source,
-                            date: format.dateTime(new Date(lookupNote.inspectionDue), {
-                              dateStyle: 'medium',
-                            }),
-                          })
-                        : t('lookupSource', { source: lookupNote.source })}
-                    </p>
-                  )}
                 </div>
+                {/* Under both fields, since either button may have answered */}
+                {lookupNote && (
+                  <p className="-mt-2 text-xs text-muted-foreground">
+                    {lookupNote.inspectionDue
+                      ? t('lookupInspectionDue', {
+                          source: lookupNote.source,
+                          date: format.dateTime(new Date(lookupNote.inspectionDue), {
+                            dateStyle: 'medium',
+                          }),
+                        })
+                      : t('lookupSource', { source: lookupNote.source })}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -728,6 +776,39 @@ export function VehicleForm({
                 </div>
               </div>
 
+              {showTypeKey && (
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="hsn">{t('hsn')}</Label>
+                      <Input
+                        id="hsn"
+                        name="hsn"
+                        placeholder="0603"
+                        inputMode="numeric"
+                        maxLength={6}
+                        autoComplete="off"
+                        className="font-mono"
+                        defaultValue={vehicle?.hsn ?? ''}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tsn">{t('tsn')}</Label>
+                      <Input
+                        id="tsn"
+                        name="tsn"
+                        placeholder="BFQ"
+                        maxLength={12}
+                        autoComplete="off"
+                        className="font-mono uppercase"
+                        defaultValue={vehicle?.tsn ?? ''}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{t('typeKeyHint')}</p>
+                </div>
+              )}
+
               {!isMarine && (
                 <div className="space-y-2">
                   <Label htmlFor="inspectionDueAt">{t('inspectionDue')}</Label>
@@ -737,7 +818,11 @@ export function VehicleForm({
                     type="date"
                     defaultValue={
                       vehicle?.inspectionStatus?.dueAt
-                        ? new Date(vehicle.inspectionStatus.dueAt).toISOString().slice(0, 10)
+                        ? inspectionDueInput(
+                            vehicle.inspectionStatus.dueAt,
+                            vehicle.inspectionStatus.source,
+                            timezone
+                          )
                         : ''
                     }
                   />

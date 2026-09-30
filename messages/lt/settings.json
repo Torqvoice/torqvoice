@@ -43,6 +43,10 @@
         "title": "Mokestis",
         "description": "Mokesčių tarifas ir numatytosios reikšmės"
       },
+      "warranty": {
+        "title": "Garantija",
+        "description": "Numatytoji garantija pasiūlymuose ir sąskaitose"
+      },
       "currency": {
         "title": "Valiuta",
         "description": "Valiuta ir mokesčių numatytosios reikšmės"
@@ -138,6 +142,10 @@
       "emailTemplates": {
         "title": "El. laiškų šablonai",
         "description": "Ką rašo sąskaitų, pasiūlymų ir ataskaitų laiškai"
+      },
+      "workOrderStatuses": {
+        "title": "Užsakymų būsenos",
+        "description": "Jūsų žingsniai ir kam pranešama"
       }
     },
     "pro": "PRO",
@@ -196,6 +204,16 @@
     "marineServiceDescription": "Valtys, jachtos ir jūrinės transporto priemonės"
   },
   "account": {
+    "devicesTitle": "Prisijungę įrenginiai",
+    "devicesDescription": "Visos naršyklės ir telefonai su atvira sesija jūsų paskyroje.",
+    "thisDevice": "Šis įrenginys",
+    "signedInAt": "Prisijungta {date}",
+    "lastActiveAt": "Paskutinį kartą aktyvus {date}",
+    "signOutDevice": "Atsijungti",
+    "signOutOthers": "Atjungti kitus įrenginius",
+    "deviceSignedOut": "Įrenginys atjungtas",
+    "othersSignedOut": "Kiti įrenginiai atjungti",
+    "failedSignOutDevice": "Nepavyko atjungti to įrenginio",
     "profileTitle": "Profilis",
     "profileDescription": "Atnaujinkite savo rodomą vardą ir el. pašto adresą.",
     "emailVerified": "Patvirtintas",
@@ -284,8 +302,8 @@
     "contentInspectionsDescription": "Visos transporto priemonių apžiūros ir jų rezultatai",
     "contentTechnicians": "Technikai",
     "contentTechniciansDescription": "Visi technikų profiliai. Susieti įrašai bus atsiejami.",
-    "contentInspectionTemplates": "Apžiūrų šablonai",
-    "contentInspectionTemplatesDescription": "Visi apžiūrų šablonai ir jų skyriai. Pirmiausia ištrinkite apžiūras.",
+    "contentInspectionTemplates": "Apžiūros kontroliniai sąrašai",
+    "contentInspectionTemplatesDescription": "Visi apžiūros kontroliniai sąrašai ir jų skyriai. Pirmiausia ištrinkite apžiūras.",
     "contentNotifications": "Pranešimai",
     "contentNotificationsDescription": "Visi sistemos pranešimai",
     "contentSmsMessages": "SMS žinutės",
@@ -330,7 +348,29 @@
     "deleteWorkshopSuccess": "Dirbtuvės ištrintos",
     "deleteWorkshopFailed": "Nepavyko ištrinti dirbtuvių",
     "deleteAccountMoved": "Norite ištrinti savo paskyrą?",
-    "deleteAccountMovedLink": "Tai galite padaryti duomenų nustatymuose."
+    "deleteAccountMovedLink": "Tai galite padaryti duomenų nustatymuose.",
+    "signatureTitle": "Parašas",
+    "signatureDescription": "Spausdinamas ant sąskaitų, pasiūlymų ir pažymų, kurias išrašote šioms dirbtuvėms.",
+    "signatureDraw": "Piešti",
+    "signatureUpload": "Įkelti",
+    "signatureDrawHint": "Pasirašykite čia",
+    "signatureUploadHint": "Pasirinkite savo parašo nuotrauką arba skenuotą vaizdą",
+    "signatureDrawTip": "Naudokite pirštą, rašiklį arba pelę.",
+    "signatureUploadTip": "Pasirašykite ant balto popieriaus ir nufotografuokite. Popierius pašalinamas, paliekamas tik rašalas.",
+    "signatureChooseFile": "Pasirinkti vaizdą",
+    "signatureClear": "Išvalyti",
+    "signatureSave": "Išsaugoti parašą",
+    "signatureCancel": "Atšaukti",
+    "signatureReplace": "Pakeisti",
+    "signatureRemove": "Pašalinti",
+    "signatureSaved": "Parašas išsaugotas",
+    "signatureRemoved": "Parašas pašalintas. Jau išrašyti dokumentai išlaiko savo parašą.",
+    "signatureSaveFailed": "Nepavyko išsaugoti parašo",
+    "signatureEmpty": "Pirmiausia nupieškite arba įkelkite parašą",
+    "signatureNotImage": "Šis failas nėra vaizdas",
+    "signatureNoInk": "Šiame vaizde parašo nerasta. Pabandykite tamsesniu rašikliu ant balto popieriaus.",
+    "signatureCanvasLabel": "Parašo laukas",
+    "signatureDesignerHint": "Jis rodomas ten, kur dizaine įjungta skiltis Parašas. Įjunkite ją <link>dokumentų dizaineryje</link>."
   },
   "team": {
     "title": "Komanda",
@@ -408,9 +448,9 @@
     "failedRemoveMember": "Nepavyko pašalinti nario",
     "memberRoleUpdated": "Nario rolė atnaujinta",
     "failedUpdateRole": "Nepavyko atnaujinti rolės",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Pašalinti narį",
+    "cancelInvite": "Atšaukti kvietimą",
+    "editRole": "Keisti rolę",
     "technician": "Technikas",
     "technicianHint": "Gali gauti priskirtus darbus ir naudotis techniko programa",
     "technicianFailed": "Nepavyko pakeisti",
@@ -590,9 +630,43 @@
     "freezeProgress": "Užrakinta {done} iš {total}",
     "freezeDone": "Užrakinta {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
     "freezeFailed": "Nepavyko užrakinti sąskaitų",
+    "reapplyTitle": "Jau išsiųstų sąskaitų dizainas",
+    "reapplyDescription": "Pritaikykite šiandien naudojamą dizainą sąskaitoms, pririštoms prie senesnio.",
+    "reapplyBody": "{count, plural, one {# sąskaita pririšta} few {# sąskaitos pririštos} other {# sąskaitų pririšta}} prie dizaino, su kuriuo buvo išsiųsta, todėl naujas dizainas pasiekia tik nuo šiol siunčiamas sąskaitas. Pritaikius iš naujo, šiandienos dizainas atsiduria ant visų. Keičiasi tik išvaizda: kiekvienos sąskaitos serviso duomenys, klientas, mokėjimo sąlygos ir sumos lieka tokie patys.",
+    "reapplyWarning": "To atšaukti nepavyks. Anksčiau naudotas dizainas nesaugomas.",
+    "reapplyButton": "Pritaikyti dabartinį dizainą iš naujo",
+    "reapplyConfirmTitle": "Pritaikyti dizainą iš naujo {count, plural, one {# sąskaitai} few {# sąskaitoms} other {# sąskaitų}}?",
+    "reapplyConfirmBody": "Kiekviena sąskaita, jau iškeliavusi klientui, pereina prie dabar naudojamo dizaino. Keičiasi tik išvaizda: kiekvienos sąskaitos duomenys, sąlygos ir sumos lieka tokie patys. To atšaukti nepavyks, o ankstesnio dizaino atkurti negalėsite.",
+    "reapplyProgress": "Atnaujinta {done} iš {total}",
+    "reapplyDone": "{count, plural, one {# sąskaita dabar naudoja} few {# sąskaitos dabar naudoja} other {# sąskaitų dabar naudoja}} dabartinį dizainą",
+    "reapplyFailed": "Nepavyko pritaikyti dizaino iš naujo",
     "sectionSending": "Siuntimas",
     "attachPdfLabel": "Prie el. laiškų pridėti PDF",
-    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange."
+    "attachPdfHint": "Numatytoji nuostata kiekvienai sąskaitai, pasiūlymui ir patikrai, siunčiamai el. paštu. Įjungta: klientas gauna PDF kaip priedą. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas, todėl galite priminti tiems, kurie dar nepažiūrėjo. Atskiram siuntimui tai galite pakeisti bendrinimo lange.",
+    "shopFee": {
+      "title": "Dirbtuvių mokestis",
+      "description": "Mokestis už dirbtuvių eksploatacines medžiagas, pavyzdžiui, šluostes, valiklius, tepalus ir atliekų tvarkymą, pridedamas prie kiekvieno naujo darbo užsakymo ir pasiūlymo atskira eilute.",
+      "enabled": "Taikyti dirbtuvių mokestį",
+      "enabledHint": "Nauji darbo užsakymai ir pasiūlymai gauna mokestį atskira eilute. Jį galima pašalinti iš atskiro darbo. Esami darbai nekeičiami.",
+      "defaultLabel": "Eksploatacinės medžiagos",
+      "label": "Pavadinimas sąskaitoje",
+      "appliesTo": "Taikoma",
+      "appliesToBoth": "Darbo užsakymams ir pasiūlymams",
+      "appliesToWorkOrders": "Tik darbo užsakymams",
+      "appliesToQuotes": "Tik pasiūlymams",
+      "mode": "Kaip skaičiuojamas",
+      "modeFlat": "Fiksuota suma",
+      "modePercent": "Procentas",
+      "amount": "Suma",
+      "amountHint": "Ta pati suma kiekvienam darbui. Ją galima pakeisti atskiram darbui.",
+      "percent": "Procentas (%)",
+      "base": "Procentas nuo",
+      "baseLabor": "Darbo",
+      "baseLaborParts": "Darbo ir dalių",
+      "cap": "Didžiausias mokestis",
+      "capHint": "Mokestis niekada neviršija šios sumos. Palikite tuščią, jei ribos nėra.",
+      "capPlaceholder": "Be ribos"
+    }
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -628,7 +702,19 @@
       "bank_account": "Banko sąskaita",
       "footer": "Poraštė",
       "general": "Bendra",
-      "telegram_qr": "Telegram QR"
+      "telegram_qr": "Telegram QR",
+      "result": "Rezultatas",
+      "test_details": "Patikros duomenys",
+      "defects": "Defektai",
+      "results_table": "Visi rezultatai",
+      "inspection_photos": "Nuotraukos",
+      "signature": "Parašas",
+      "job_details": "Darbo duomenys",
+      "job_qr": "Atidaryti telefone",
+      "concerns": "Kliento nusiskundimai",
+      "job_description": "Užsakyti darbai",
+      "work_checklist": "Darbų sąrašas",
+      "condition_map": "Transporto priemonės būklė"
     },
     "fields": {
       "customer_name": "Kliento vardas",
@@ -641,6 +727,7 @@
       "vin": "VIN",
       "license_plate": "Valstybinis numeris",
       "mileage": "Rida",
+      "hsn_tsn": "HSN/TSN",
       "service_title": "Paslaugos pavadinimas",
       "service_type": "Paslaugos tipas",
       "tech_name": "Technikas",
@@ -660,7 +747,35 @@
       "invoice_number": "Sąskaitos Nr.",
       "customer_number": "Kliento Nr.",
       "date": "Data",
-      "portal_link": "Portalo nuoroda"
+      "portal_link": "Portalo nuoroda",
+      "test_date": "Patikros data",
+      "test_location": "Patikros vieta",
+      "inspector": "Tikrintojas",
+      "certificate_number": "Sertifikato numeris",
+      "vehicle_category": "Transporto priemonės kategorija",
+      "odometer": "Rida",
+      "next_test_due": "Kita patikra",
+      "defect_notes": "Pastabos",
+      "defect_photos": "Nuotraukos",
+      "passed_checks": "Išlaikyti patikrinimai",
+      "not_applicable_checks": "Netaikomi patikrinimai",
+      "check_notes": "Pastabų stulpelis",
+      "result_detail": "Paaiškinimas",
+      "result_summary": "Kiekis pagal įvertinimą",
+      "combined_table": "Viena lentelė visiems skyriams",
+      "inspector_line": "Parašo eilutė",
+      "inspector_name": "Pasirašiusiojo vardas",
+      "date_line": "Datos eilutė",
+      "signature_image": "Parašas",
+      "status": "Būsena",
+      "technician": "Technikas",
+      "scheduled": "Suplanuota",
+      "promised": "Pažadėta",
+      "work_bay": "Darbo vieta",
+      "customer_line": "Kliento parašo eilutė",
+      "legend": "Legenda",
+      "previous_marks": "Ankstesnės žymos",
+      "blank_sheet": "Tuščias lapas pildyti ranka"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -688,6 +803,34 @@
       "detailed": {
         "name": "Išsamus",
         "description": "Antraštė viršuje, transporto priemonė atskirai, abi lentelės ir visi blokai"
+      },
+      "certificate-regulator": {
+        "name": "Reglamentinis",
+        "description": "Paprastas be juostos, serifiniu šriftu: kiekvienas patikrinimas su įvertinimu ir pastaba, nuotraukos, parašo eilutė"
+      },
+      "certificate-standard": {
+        "name": "Standartinis",
+        "description": "Verdiktas po pavadinimu, automobilis ir patikra greta, kiekvienas defektas su pastaba ir nuotrauka, tada neišlaikyti patikrinimai pagal skyrius"
+      },
+      "certificate-customer": {
+        "name": "Ataskaita klientui",
+        "description": "Lapas su juosta, verdiktas didelis ir centre, defektai su nuotraukomis, apžvalginės nuotraukos ir trumpa neišlaikytų patikrinimų lentelė"
+      },
+      "certificate-compact": {
+        "name": "Kompaktiškas",
+        "description": "Vienas lapas parkui: smulkus šriftas, verdiktas šalia pavadinimo, visi rezultatai be pastabų, nuotraukos, parašo eilutė"
+      },
+      "work-order-standard": {
+        "name": "Standartinis",
+        "description": "Išsamesnė prekystalio kopija jūsų spalva: visas klientas ir transporto priemonė, paslauga, pastebėjimai ir garantija šalia darbų ir kainų"
+      },
+      "work-order-job-sheet": {
+        "name": "Darbo lapas",
+        "description": "Lentai: didelis valstybinis numeris, darbo faktai, darbai kaip langeliai pažymėti, kodas atidaryti telefone ir jokių kainų"
+      },
+      "work-order-compact": {
+        "name": "Kompaktiškas",
+        "description": "Juoda ant balto, vienas puslapis: kliento vardas ir telefonas, automobilis, darbas, darbai su kainomis ir abu parašai. Tai, ką spausdina kiekvienas darbo užsakymas, kol neišsaugosite dizaino"
       }
     },
     "style": {
@@ -710,14 +853,21 @@
   "templates": {
     "title": "Šablonai",
     "invoiceDescription": "Pritaikykite savo PDF sąskaitų ir pasiūlymų išvaizdą.",
-    "inspectionsDescription": "Valdykite apžiūrų kontrolinius sąrašus ir daugiabalių šablonus.",
+    "inspectionsDescription": "Kontroliniai sąrašai, kuriuos jūsų technikai pereina apžiūros metu.",
     "smsDescription": "Pritaikykite SMS žinutes, siunčiamas klientams.",
     "tabs": {
       "invoice": "Sąskaita",
       "quotation": "Pasiūlymas",
-      "inspections": "Apžiūros",
-      "sms": "SMS",
-      "layout": "Išdėstymas"
+      "workOrders": "Darbo užsakymas",
+      "certificates": "Apžiūros sertifikatas",
+      "layout": "Išdėstymas",
+      "conditionMap": "Būklės žemėlapis",
+      "inspections": "Kontroliniai sąrašai"
+    },
+    "sections": {
+      "documents": "Dokumentai",
+      "checklists": "Kontroliniai sąrašai",
+      "messages": "Žinutės"
     },
     "presets": "Šablonų presetai",
     "primaryColor": "Pagrindinė spalva",
@@ -821,7 +971,10 @@
     "goToLayout": "Išdėstymas ir skiltys",
     "openDesigner": "Atverti dizainerį",
     "designerIntro": "Pasirinkite pradžios tašką ir atverkite dizainerį, kad pakeistumėte viską.",
-    "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje."
+    "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje.",
+    "certificatesDescription": "Sukurkite sertifikatą, kurį spausdina ir dalijasi užbaigta apžiūra.",
+    "workOrdersDescription": "Sukurkite lapą, kurį spausdina darbo užsakymas: ką pasirašo klientas ir ką technikas pasiima nuo lentos.",
+    "conditionMapDescription": "Žymų tipai, kuriuos technikai piešia būklės žemėlapyje: pavadinimai, formos ir spalvos."
   },
   "payment": {
     "readMore": "Skaityti daugiau",
@@ -1041,8 +1194,8 @@
     "fieldDeleted": "Pasirinktinis laukas ištrintas",
     "failedSave": "Nepavyko išsaugoti lauko",
     "failedDelete": "Nepavyko ištrinti",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Redaguoti",
+    "delete": "Ištrinti",
     "unassigned": "Nepriskirta",
     "defaultValue": "Numatytoji reikšmė",
     "defaultValueHint": "Automatiškai užpildoma naujuose įrašuose ir spausdinama, kol neįvesta reikšmė.",
@@ -1072,6 +1225,9 @@
     "defaultMarkupPercentHint": "Naujos rankiniu būdu pridėtos dalys užpildomos šiuo antkainiu. Palikite 0, kad įvestumėte kainas rankiniu būdu.",
     "markupAppliesToInventory": "Taikyti antkainį sandėlio dalims",
     "markupAppliesToInventoryHint": "Įjungus, dalys parinktos iš sandėlio taip pat naudoja savikainą + numatytąjį antkainį (perrašo sandėlio pardavimo kainą).",
+    "typeKeyTitle": "Vokiškas tipo kodas (HSN/TSN)",
+    "typeKeyEnabled": "Registruoti HSN/TSN transporto priemonėms",
+    "typeKeyHint": "Prideda transporto priemonėms gamintojo ir tipo kodą iš Vokietijos registracijos liudijimo (2.1 ir 2.2 laukeliai). Jis rodomas prie transporto priemonės, darbo užsakyme ir visuose spausdinamuose dokumentuose, o paieška pagal jį randa transporto priemones. Išjungus jis vėl paslepiamas, o įvestos reikšmės išsaugomos.",
     "unitsTitle": "Vienetai",
     "unitsDescription": "Pasirinkite tarp metrinės (km, litrai) ir imperinės (mylios, galonai) sistemos.",
     "unitSystem": "Vienetų sistema",
@@ -1138,6 +1294,43 @@
     "saveMaintenance": "Išsaugoti priežiūros nustatymus",
     "saved": "Priežiūros nustatymai išsaugoti"
   },
+  "warranty": {
+    "title": "Garantija",
+    "description": "Nustatykite, ką jūsų pasiūlymai ir sąskaitos sako apie garantiją. Kiekvienas naujas dokumentas pradedamas nuo šių nustatymų, o kiekviename jų vis tiek galite tai pakeisti.",
+    "designHint": "Spausdinama sąskaitų ir pasiūlymų dizaino skiltyje „Garantija“. Jei šią skiltį paslėpėte skiltyje „Šablonai“, vėl ją įjunkite. Dizaine „Kompaktiškas“ jos nėra.",
+    "defaultStatus": "Nauji pasiūlymai ir darbo užsakymai nurodo",
+    "status": {
+      "none": "Nieko",
+      "included": "Garantija suteikiama",
+      "not_included": "Garantijos nėra"
+    },
+    "statusHint": {
+      "none": "Garantija neminima, kol kas nors jos neužpildo dokumente.",
+      "included": "Nauji dokumentai pradedami su žemiau nurodytu laikotarpiu ir sąlygomis.",
+      "not_included": "Nauji dokumentai praneša klientui, kad dirbtuvių garantija nesuteikiama."
+    },
+    "includedTitle": "Kai garantija suteikiama",
+    "includedHint": "Laikotarpis ir sąlygos, kuriuos gauna dokumentas, kai siūloma garantija.",
+    "months": "Trukmė (mėnesiai)",
+    "mileage": "Atstumo limitas ({unit})",
+    "mileageHint": "Palikite tuščią, jei atstumo limito nėra.",
+    "terms": "Garantijos sąlygos",
+    "termsPlaceholder": "pvz., 12 mėnesių dalims ir darbui. Dylančioms dalims garantija netaikoma.",
+    "termsHint": "Spausdinama po garantija pasiūlymuose ir sąskaitose.",
+    "notIncludedTitle": "Kai garantija nesuteikiama",
+    "notIncludedHint": "Ką klientas perskaito, kai dokumente nurodyta, kad garantija nesuteikiama.",
+    "notIncludedText": "Pareiškimas",
+    "notIncludedPlaceholder": "pvz., Kliento pateiktoms dalims dirbtuvės garantijos nesuteikia. Jūsų įstatymų nustatytos teisės lieka galioti.",
+    "legalHint": "Tai jūsų dirbtuvių garantija. Daugelyje šalių, įskaitant ES ir Jungtinę Karalystę, klientai taip pat turi įstatymų nustatytas garantines teises, kurių negalima atsisakyti. Palikite tuščią, ir dokumente bus nurodyta, kad įstatymų nustatytos teisės lieka galioti.",
+    "applyTitle": "Taikyti šias numatytąsias reikšmes",
+    "applyToQuotes": "Naujiems pasiūlymams",
+    "applyToQuotesHint": "Klientas mato garantiją prieš priimdamas pasiūlymą.",
+    "applyToWorkOrders": "Naujiems darbo užsakymams",
+    "applyToWorkOrdersHint": "Spausdinama sąskaitoje. Iš pasiūlymo sukurtas darbo užsakymas išlaiko tai, kas buvo nurodyta pasiūlyme.",
+    "save": "Išsaugoti garantijos nustatymus",
+    "saved": "Garantijos nustatymai išsaugoti",
+    "saveFailed": "Nepavyko išsaugoti garantijos nustatymų"
+  },
   "appearance": {
     "title": "Išvaizda",
     "description": "Pritaikykite, kaip atrodo ir jaučiasi Torqvoice.",
@@ -1168,7 +1361,29 @@
     "dateLabel": "Data",
     "dateTimeLabel": "Data ir laikas",
     "saveSettings": "Išsaugoti nustatymus",
-    "saved": "Nustatymai išsaugoti"
+    "saved": "Nustatymai išsaugoti",
+    "fontLabel": "Šriftas",
+    "fontHint": "Pasirinkite šriftus, kuriais rodoma programa. Pasirinkimas išsaugomas šiame įrenginyje.",
+    "fontSampleHeading": "Darbo užsakymas",
+    "fontSampleText": "Pakeisti uždegimo ritę ir žvakes",
+    "fonts": {
+      "default": {
+        "name": "Numatytasis",
+        "description": "Geist, švarus ir neutralus."
+      },
+      "workshop": {
+        "name": "Dirbtuvės",
+        "description": "IBM Plex su siauromis didžiųjų raidžių antraštėmis, kaip darbo kortelėje."
+      },
+      "precise": {
+        "name": "Tikslus",
+        "description": "Inter ir JetBrains Mono. Sukurta ekranams, pilniems lentelių ir skaičių."
+      },
+      "legible": {
+        "name": "Įskaitomas",
+        "description": "Atkinson Hyperlegible. 0 ir O, 1 ir l niekada neatrodo panašiai; lengva skaityti iš kito dirbtuvių galo."
+      }
+    }
   },
   "data": {
     "title": "Duomenų valdymas",
@@ -1191,7 +1406,7 @@
     "optTechnicians": "Technikai",
     "optTechniciansDesc": "Technikų profiliai ir darbų lentos priskyrimai",
     "optInspections": "Apžiūros",
-    "optInspectionsDesc": "Apžiūrų šablonai, apžiūros ir rezultatai",
+    "optInspectionsDesc": "Apžiūros kontroliniai sąrašai, apžiūros ir rezultatai",
     "optAuditLogs": "Audito žurnalai",
     "optAuditLogsDesc": "Veiklos ir pakeitimų istorija",
     "optSmsMessages": "Žinutės",
@@ -1350,7 +1565,7 @@
         "sand": "Smėlis"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Kopijuoti portalo URL"
   },
   "email": {
     "title": "El. pašto tiekėjas",
@@ -1426,7 +1641,7 @@
     "failedSave": "Nepavyko išsaugoti nustatymų",
     "testSentTo": "Bandomoji SMS išsiųsta numeriu {phone}",
     "testFailed": "SMS testas nepavyko",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Kopijuoti webhook URL"
   },
   "subscription": {
     "title": "Prenumeratos planas",
@@ -1477,7 +1692,7 @@
     "resumeSuccess": "Prenumerata sėkmingai atnaujinta",
     "resumeError": "Nepavyko atnaujinti prenumeratos",
     "billingPortalError": "Nepavyko atidaryti atsiskaitymų portalo",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Nepavyko pradėti apmokėjimo",
     "upgradeTitle": "Atnaujinti planą",
     "upgradeDescription": "Atrakinkite daugiau funkcijų atnaujindami planą.",
     "upgradeToProDescription": "Atnaujinkite, kad atrakintumėte neribotą klientų, komandos narių, ataskaitų, SMTP, API prieigos skaičių ir daugiau.",
@@ -1492,7 +1707,12 @@
     "upgradeSuccess": "Sėkmingai atnaujinta į Enterprise!",
     "upgradeError": "Nepavyko atnaujinti prenumeratos",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})"
+    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})",
+    "checkoutOnTorqvoice": "Pirkimui užbaigti būsite nukreipti į torqvoice.com. Sąskaitas ir kvitus rasite ten savo paskyroje.",
+    "purchaseSuccess": "Ačiū! Jūsų planas dabar aktyvus.",
+    "purchaseActivating": "Mokėjimas gautas. Jūsų planas aktyvuojamas, puslapis netrukus atsinaujins.",
+    "accountOnTorqvoice": "Sąskaitos ir kvitai yra torqvoice.com, kur prisijungiate šia paskyra.",
+    "openTorqvoiceAccount": "Atidaryti paskyrą torqvoice.com"
   },
   "ai": {
     "title": "DI asistentas",
@@ -1532,7 +1752,7 @@
     "biweekly": "Kas 2 savaites",
     "monthly": "Kas mėnesį",
     "bimonthly": "Kas 2 mėnesius",
-    "quarterly": "Kas 4 mėnesius",
+    "quarterly": "Kas 3 mėnesius",
     "semiannually": "Kas 6 mėnesius",
     "yearly": "Kas metus",
     "dateRangeLabel": "Datų intervalas",
@@ -1571,10 +1791,10 @@
     "deleted": "Ataskaitų grafikas ištrintas",
     "toggledOn": "Ataskaitų grafikas įjungtas",
     "toggledOff": "Ataskaitų grafikas išjungtas",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Nepavyko išsaugoti",
+    "failedSend": "Nepavyko išsiųsti",
+    "failedToggle": "Nepavyko perjungti",
+    "failedDelete": "Nepavyko ištrinti",
     "noMembers": "Komandos narių nerasta",
     "addRecipient": "Pridėti gavėją...",
     "searchMembers": "Ieškoti narių...",
@@ -1968,7 +2188,41 @@
       "slogan": "Kokybiškas aptarnavimas, kuriuo galite pasitikėti",
       "paymentTerms": "Apmokėti per 14 dienų",
       "footerNote": "Ačiū, kad renkatės mus",
-      "value": "Pavyzdys"
+      "value": "Pavyzdys",
+      "testLocation": "Uosto g. 12, Springfield",
+      "certificateNotes": "Padangos artėja prie leistinos ribos; iki kitos patikros tikriausiai reikės keisti.",
+      "checkBrakeHoses": "Stabdžių žarnelės",
+      "checkBrakeHosesNote": "Nedidelis nusitrynimas ant kairės priekinės žarnelės, išorinis sluoksnis nepažeistas.",
+      "sectionBrakes": "Stabdžių įranga",
+      "checkBrakePedal": "Darbinio stabdžio pedalas",
+      "checkBrakeFluid": "Stabdžių skystis",
+      "sectionLighting": "Apšvietimo įranga",
+      "checkHeadlamps": "Priekinių žibintų būklė",
+      "checkFogLamp": "Galinis rūko žibintas",
+      "photoFront": "Priekis",
+      "photoOdometer": "Odometras",
+      "concernNoise": "Šlifavimo garsas priekyje stabdant",
+      "concernNoiseDetail": "Priekinės kaladėlės ir diskai nusidėvėję; pakeisti",
+      "concernWarningLight": "Įspėjamoji lemputė prietaisų skydelyje nuo praėjusios savaitės",
+      "workRequested": "Pakeisti priekines stabdžių kaladėles ir diskus, atstatyti aptarnavimo indikatorių ir išbandyti kelyje.",
+      "checklistTestDrive": "Bandomasis važiavimas",
+      "markScratch": "Rakto įbrėžimas išilgai durų, 20 cm",
+      "markDent": "Įlenkimas po rankena, dažai nepažeisti",
+      "markChip": "Akmenų atskėlimai apatinėje buferio dalyje",
+      "viewTop": "Iš viršaus",
+      "viewLeft": "Kairė pusė",
+      "viewRight": "Dešinė pusė",
+      "viewFront": "Priekis",
+      "viewRear": "Galas",
+      "panelLeftRearDoor": "Kairės galinės durys",
+      "panelLeftFrontDoor": "Kairės priekinės durys",
+      "panelFrontBumper": "Priekinis buferis",
+      "kindScratch": "Įbrėžimas",
+      "kindDent": "Įlenkimas",
+      "kindChip": "Akmens atskėlimas",
+      "severityMinor": "Nedidelis",
+      "severityMajor": "Didelis",
+      "markPrevious": "užfiksuota anksčiau"
     },
     "logoUpload": "Įkelti logotipą",
     "logoReplace": "Pakeisti logotipą",
@@ -1990,6 +2244,10 @@
     "telegramQrConnectedHint": "Spausdina kodą, atidarantį {link}, jūsų prijungtą Telegram botą. Jis rodomas tik sąskaitose, išrašytose įjungus bloką.",
     "telegramQrPlaceholderHint": "Telegram botas neprijungtas, todėl lape rodomas pavyzdinis kodas, kuris nebus spausdinamas.",
     "telegramQrLink": "Integracijos",
+    "signatureWhose": "Kieno parašas",
+    "signatureOwnHint": "Kiekviename dokumente spausdinamas jį išrašiusio asmens parašas: to, kuris atidarė užsakymą, parengė pasiūlymą ar atliko apžiūrą. Lape rodomas jūsų parašas.",
+    "signaturePlaceholderHint": "Kiekviename dokumente spausdinamas jį išrašiusio asmens parašas: to, kuris atidarė užsakymą, parengė pasiūlymą ar atliko apžiūrą. Dar neišsaugojote parašo, todėl lape rodomas pavyzdys.",
+    "signatureLink": "Nustatyti savo parašą",
     "titleText": "Pavadinimo tekstas",
     "titleTextHint": "Kaip vadinasi šis dokumentas. Palikus tuščią, spausdinamas jo paties pavadinimas skaitytojo kalba.",
     "orgNumberLabel": "Organizacijos numerio pavadinimas",
@@ -2004,7 +2262,16 @@
     "setDefault": "Nustatyti kaip numatytąjį",
     "defaultSet": "„{name}“ dabar naudojamas",
     "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino",
-    "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti."
+    "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti.",
+    "certificate": "Apžiūros sertifikatas",
+    "resultWidthHint": "Tuščia užima visą eilutę. Nurodžius taškus juosta susiaurėja ir atsiduria lygiavimo pusėje; stulpelyje ji užima stulpelio plotį.",
+    "work_order": "Darbo užsakymas",
+    "conditionMapDrawing": "Brėžinys",
+    "conditionMapViews": "Vaizdai",
+    "conditionMapViewsAll": "Visi penki",
+    "conditionMapViewsTop": "Tik iš viršaus",
+    "conditionMapViewsSides": "Tik šonai",
+    "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",
@@ -2402,5 +2669,99 @@
     "dragHandle": "Tempkite, kad pertvarkytumėte",
     "dragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte šį bloką",
     "tagDoesNotFit": "Žymė netelpa į šį laukelį."
+  },
+  "workOrderStatuses": {
+    "title": "Darbo užsakymų būsenos",
+    "description": "Jūsų pačių pavadinimai darbo žingsniams. Kiekviena būsena priklauso vienam iš trijų etapų ir rodoma to etapo meniu kiekviename darbo užsakyme.",
+    "cardTitle": "Etapai ir būsenos",
+    "suggestionsLabel": "Greitas pridėjimas",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Paruošta atsiimti",
+        "message": "Sveiki, {customer_name}, jūsų {vehicle} paruoštas atsiimti. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Laukiama kliento"
+      },
+      "waitingForApproval": {
+        "name": "Laukiama patvirtinimo",
+        "message": "Sveiki, {customer_name}, prieš tęsdami darbus su jūsų {vehicle} turime gauti jūsų patvirtinimą. Susisiekite su mumis. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Prieš pradedant darbą. Darbas laikomas atviru.",
+      "in-progress": "Kol dirbama su transporto priemone. Darbas laikomas atviru.",
+      "completed": "Darbas atliktas. Klientas gali matyti ir apmokėti sąskaitą, o darbas dingsta iš techniko sąrašo."
+    },
+    "add": "Pridėti būseną",
+    "builtIn": "Įtaisyta",
+    "asksToNotify": "Siūlo pranešti",
+    "notifyHint": "Kai darbas pasiekia šią būseną, siūloma išsiųsti klientui žinutę. Niekas nesiunčiama, kol nepatvirtinate.",
+    "moveUp": "Aukštyn",
+    "moveDown": "Žemyn",
+    "edit": "Redaguoti",
+    "remove": "Pašalinti",
+    "empty": "Čia dar nėra jūsų būsenų.",
+    "removeTitle": "Pašalinti {name}?",
+    "removeBody": "Ji dingsta iš meniu. Darbai, kurie ją turi, ją rodo toliau.",
+    "addTitle": "Nauja būsena",
+    "editTitle": "Redaguoti būseną",
+    "dialogBody": "Būsena yra pavadinimas su spalva. Etapas, kuriam ji priklauso, lemia, kaip traktuojamas darbas.",
+    "name": "Pavadinimas",
+    "namePlaceholder": "Paruošta atsiimti",
+    "stage": "Etapas",
+    "color": "Spalva",
+    "notify": "Siūlyti pranešti klientui",
+    "message": "Žinutė",
+    "tokens": "Įterpti:",
+    "cancel": "Atšaukti",
+    "save": "Išsaugoti",
+    "saved": "Būsena išsaugota",
+    "failed": "Nepavyko išsaugoti būsenos",
+    "messageEmptyHint": "Palikus tuščią, siunčiamas aukščiau esantis tekstas.",
+    "useSuggested": "Redaguoti šį tekstą"
+  },
+  "markTypes": {
+    "title": "Žymų tipai",
+    "description": "Pervadinkite ar perspalvinkite įtaisytus tipus, paslėpkite nenaudojamus ir pridėkite savų. Kiekvienas tipas turi formą ir spalvą, todėl skaitomas ir nespalvotame spaudinyje.",
+    "cardTitle": "Tipai",
+    "add": "Pridėti tipą",
+    "addTitle": "Naujas žymos tipas",
+    "editTitle": "Redaguoti žymos tipą",
+    "dialogBody": "Pavadinimas savais žodžiais, forma ir spalva. Užpildyta reiškia rimtą žymą.",
+    "previewHint": "Nedidelė ir rimta",
+    "name": "Pavadinimas",
+    "namePlaceholder": "pvz., Bortelio įbrėžimas",
+    "shape": "Forma",
+    "color": "Spalva",
+    "customColor": "Hex spalva",
+    "colorInvalid": "Įveskite spalvą kaip šešis hex simbolius, pvz., #2563eb",
+    "hidden": "Paslėpta parinkiklyje",
+    "hiddenHint": "Šio tipo žymos vis tiek rodomos ir spausdinamos.",
+    "hiddenBadge": "Paslėpta",
+    "builtin": "Įtaisyta",
+    "show": "Rodyti parinkiklyje",
+    "hide": "Slėpti parinkiklyje",
+    "edit": "Redaguoti",
+    "moveUp": "Aukštyn",
+    "moveDown": "Žemyn",
+    "restore": "Atkurti",
+    "restoreTitle": "Atkurti „{name}“?",
+    "restoreBody": "Tipas grįžta prie programos pateikto pavadinimo, formos ir spalvos.",
+    "remove": "Pašalinti",
+    "removeTitle": "Pašalinti „{name}“?",
+    "removeBody": "Pašalinti galima tik tipą, kurio nenaudoja jokia žyma. Jei tokių žymų yra, paslėpkite jį.",
+    "save": "Išsaugoti",
+    "cancel": "Atšaukti",
+    "saved": "Išsaugota",
+    "failed": "Nepavyko išsaugoti",
+    "shapes": {
+      "circle": "Apskritimas",
+      "diamond": "Rombas",
+      "triangle": "Trikampis",
+      "square": "Kvadratas",
+      "cross": "Kryžius",
+      "hex": "Šešiakampis"
+    }
   }
 }

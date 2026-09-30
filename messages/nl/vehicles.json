@@ -28,10 +28,10 @@
     "unarchiveError": "Dearchiveren van voertuig mislukt",
     "deleteError": "Verwijderen van voertuig mislukt",
     "error": "Laden van voertuigen mislukt",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Tabelweergave",
+    "viewGrid": "Rasterweergave",
+    "viewLargeGrid": "Grote rasterweergave",
+    "openMenu": "Menu openen",
     "inspectionOverdue": "APK verlopen",
     "inspectionDue30": "Vervalt binnen 30 dagen",
     "inspectionDue90": "Vervalt binnen 90 dagen",
@@ -95,12 +95,13 @@
     "severityModerate": "Matig — gemeld door sommige eigenaren",
     "severityUncommon": "Ongebruikelijk — gemeld door weinig eigenaren",
     "severityRare": "Zeldzaam — geïsoleerde meldingen maar kritiek wanneer het optreedt",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Menu openen",
+    "dismissMaintenance": "Negeren",
     "inspectionDue": "APK vervalt {date}",
     "inspectionCheckedAt": "Gecontroleerd bij het register op {date}",
     "notRegistered": "Niet geregistreerd",
-    "soldReported": "Klant meldde verkocht op {date}"
+    "soldReported": "Klant meldde verkocht op {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",
@@ -114,7 +115,7 @@
   "inspections": {
     "newInspection": "Nieuwe keuring",
     "empty": "Nog geen keuringen",
-    "template": "Sjabloon",
+    "template": "Checklist",
     "progress": "Voortgang",
     "status": "Status",
     "date": "Datum",
@@ -184,10 +185,10 @@
     "showing": "{start}-{end} van {total} weergegeven",
     "perPage": "per pagina",
     "page": "Pagina {page} van {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina"
   },
   "notes": {
     "addNote": "Notitie toevoegen",
@@ -213,11 +214,11 @@
     "noteCreated": "Notitie aangemaakt",
     "titleRequired": "Titel en inhoud zijn verplicht",
     "saveError": "Kan notitie niet opslaan",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Menu openen",
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina"
   },
   "findings": {
     "sectionTitle": "Observaties",
@@ -266,11 +267,11 @@
     "showing": "{start}-{end} van {total} weergegeven",
     "perPage": "per pagina",
     "page": "Pagina {page} van {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina",
+    "openMenu": "Menu openen",
     "concernLabel": "Beantwoordt welk punt?",
     "concernNone": "Niet iets waar de klant naar vroeg"
   },
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Motorinhoud",
     "engineCode": "Motorcode",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Van een Duits kentekenbewijs: HSN staat in veld 2.1, TSN zijn de eerste drie tekens van veld 2.2.",
+    "hsnInvalid": "Het HSN bestaat uit vier cijfers, uit veld 2.1 van het kentekenbewijs.",
+    "tsnInvalid": "Het TSN bestaat uit drie letters of cijfers, het begin van veld 2.2 van het kentekenbewijs.",
     "makeMarine": "Fabrikant *",
     "mileageMarine": "Motoruren",
     "transmissionMarine": "Motortype",
@@ -362,7 +369,10 @@
     "inspectionDue": "Volgende periodieke keuring",
     "inspectionDueHint": "Vul de datum in als geen register die levert. Herinneringen en het dashboard gebruiken hem.",
     "inspectionDueFromRegistry": "Uit het voertuigregister. Wijzig hier om te overschrijven tot de volgende synchronisatie.",
-    "lookupEnterPlateOrVin": "Typ eerst een kenteken of VIN"
+    "lookupVin": "VIN opzoeken",
+    "lookupEnterVin": "Voer eerst een VIN in",
+    "lookupVinNotFound": "Geen voertuig gevonden voor dit VIN",
+    "lookupVinFailed": "VIN kon niet worden opgezocht"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",
@@ -373,10 +383,10 @@
     "archiveError": "Archiveren van voertuig mislukt"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Eerste pagina",
+    "previousPage": "Vorige pagina",
+    "nextPage": "Volgende pagina",
+    "lastPage": "Laatste pagina"
   },
   "inspectionReminders": {
     "title": "Keuringsherinneringen",
@@ -511,7 +521,7 @@
     "weights": "Massa's",
     "weightsValue": "{kerb} kg ledig, {gross} kg max",
     "kerbOnly": "{kerb} kg ledig",
-    "grossOnly": "{gross} kg max",
+    "grossOnly": "max. {gross} kg",
     "tyres": "Banden",
     "axle": "As {n}",
     "tyreSize": "Band",

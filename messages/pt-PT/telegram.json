@@ -1,0 +1,65 @@
+{
+  "title": "Definições do Telegram",
+  "description": "Configure o seu bot do Telegram para trocar mensagens com os clientes.",
+  "botToken": {
+    "label": "Token do bot",
+    "placeholder": "Introduza o token do bot obtido no @BotFather",
+    "help": "Crie um bot através do @BotFather no Telegram para obter o seu token.",
+    "show": "Mostrar token",
+    "hide": "Ocultar token"
+  },
+  "botUsername": {
+    "label": "Nome de utilizador do bot",
+    "notConnected": "Não ligado"
+  },
+  "webhook": {
+    "label": "URL do webhook",
+    "description": "Este URL é configurado automaticamente quando guarda o token do bot."
+  },
+  "deepLink": {
+    "title": "Link de ligação para clientes",
+    "description": "Partilhe este link com os clientes para que se liguem ao seu bot. Substitua o marcador do ID do cliente pelo ID real do cliente.",
+    "copied": "Link copiado!",
+    "copy": "Copiar deep link"
+  },
+  "test": {
+    "title": "Mensagem de teste",
+    "chatId": "ID do chat",
+    "chatIdPlaceholder": "Introduza um ID de chat do Telegram",
+    "message": "Mensagem",
+    "messagePlaceholder": "Escreva uma mensagem de teste...",
+    "send": "Enviar teste",
+    "success": "Mensagem de teste enviada!",
+    "error": "Não foi possível enviar a mensagem de teste"
+  },
+  "save": "Guardar definições",
+  "saving": "A guardar...",
+  "saved": "Definições do Telegram guardadas",
+  "saveError": "Não foi possível guardar as definições",
+  "disconnect": {
+    "button": "Desligar bot",
+    "title": "Desligar o bot do Telegram?",
+    "description": "A configuração do bot será removida e deixará de receber mensagens. O histórico de conversas existente é mantido.",
+    "success": "Bot do Telegram desligado",
+    "error": "Não foi possível desligar"
+  },
+  "qr": {
+    "title": "Fale connosco no Telegram",
+    "description": "Leia este código QR para falar connosco no Telegram.",
+    "copyLink": "Copiar link",
+    "copied": "Link copiado!",
+    "sendEmail": "Enviar por e-mail",
+    "emailSubject": "Fale connosco no Telegram",
+    "emailBody": "Olá, {name},\n\nJá pode falar connosco pelo Telegram e receber novidades sobre a sua viatura.\n\nClique neste link para se ligar: {link}\n\nObrigado!"
+  },
+  "invoiceQr": {
+    "label": "Mostrar código QR nas faturas",
+    "description": "Apresentar um código QR do Telegram nas faturas digitais partilhadas para que os clientes se possam ligar."
+  },
+  "helpLink": "Saber mais",
+  "enable": {
+    "label": "Ativar Telegram",
+    "hint": "Mostrar o Telegram na barra lateral e nas páginas dos clientes.",
+    "disabledInfo": "O Telegram está desativado. Ative-o para começar a enviar e receber mensagens pelo Telegram."
+  }
+}

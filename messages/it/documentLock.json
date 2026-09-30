@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Questa fattura è bloccata perché è stata inviata",
+      "paid": "Questa fattura è bloccata perché è stata pagata"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Questo preventivo è bloccato perché è stato inviato",
+      "accepted": "Questo preventivo è bloccato perché è stato accettato"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Ricambi, manodopera, prezzi, sconto, imposta, numero e data non possono più essere modificati. Pagamenti, cambi di stato, invio e allegati funzionano ancora.",
+  "lockedAdminHint": "Come proprietario o amministratore puoi sbloccarlo se qualcosa deve davvero essere corretto. Lo sblocco viene registrato nel registro attività.",
+  "lockedMemberHint": "Chiedi a un proprietario o a un amministratore di sbloccarlo se qualcosa deve essere corretto.",
+  "unlock": "Sblocca per modificare",
+  "relock": "Blocca di nuovo",
+  "unlockConfirmTitle": "Sbloccare questo documento?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Tornerà modificabile e la modifica verrà registrata nel registro attività con il tuo nome. Preferisci una nota di credito dove le norme locali la richiedono.",
+    "quote": "Tornerà modificabile e la modifica verrà registrata nel registro attività con il tuo nome."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Sbloccato per la modifica",
+  "relocked": "Bloccato di nuovo",
+  "reopenedTitle": "Questo documento è stato sbloccato per la modifica",
+  "reopenedBody": "Resta modificabile finché non viene bloccato di nuovo.",
+  "failed": "Impossibile modificare il blocco"
 }

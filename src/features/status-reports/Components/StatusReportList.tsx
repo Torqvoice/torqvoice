@@ -66,7 +66,10 @@ interface StatusReportSummary {
 }
 
 interface StatusReportListProps {
-  serviceRecordId: string
+  /** The work order the reports are about, or... */
+  serviceRecordId?: string
+  /** ...the inspection. One of the two. */
+  inspectionId?: string
   organizationId: string
   vehicleName: string
   customer: {
@@ -91,6 +94,7 @@ const STATUS_VARIANT: Record<string, string> = {
 
 export function StatusReportList({
   serviceRecordId,
+  inspectionId,
   organizationId,
   vehicleName,
   customer,
@@ -163,6 +167,7 @@ export function StatusReportList({
             </a>
           </div>
           <Button
+            type="button"
             size="sm"
             onClick={() => setShowCreate(true)}
             aria-label={t('newReport')}
@@ -229,6 +234,7 @@ export function StatusReportList({
                   </button>
                   <div className="mt-2 flex items-center justify-end gap-1">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9"
@@ -239,6 +245,7 @@ export function StatusReportList({
                     </Button>
                     {customer && (
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-9 w-9"
@@ -249,6 +256,7 @@ export function StatusReportList({
                       </Button>
                     )}
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9"
@@ -258,6 +266,7 @@ export function StatusReportList({
                       <ExternalLink className="h-4 w-4" />
                     </Button>
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9 text-destructive hover:text-destructive"
@@ -340,6 +349,7 @@ export function StatusReportList({
                           >
                             <div className="flex items-center justify-end gap-1">
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2"
@@ -350,6 +360,7 @@ export function StatusReportList({
                               </Button>
                               {customer && (
                                 <Button
+                                  type="button"
                                   variant="ghost"
                                   size="sm"
                                   className="h-7 px-2"
@@ -360,6 +371,7 @@ export function StatusReportList({
                                 </Button>
                               )}
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2"
@@ -369,6 +381,7 @@ export function StatusReportList({
                                 <span className="hidden xl:inline ml-1.5">{t('view')}</span>
                               </Button>
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2 text-destructive hover:text-destructive"
@@ -421,7 +434,7 @@ export function StatusReportList({
           if (!open) setDetailReport(null)
         }}
       >
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
           {detailReport && (
             <>
               <DialogHeader>
@@ -519,6 +532,7 @@ export function StatusReportList({
         open={showCreate}
         onOpenChange={setShowCreate}
         serviceRecordId={serviceRecordId}
+        inspectionId={inspectionId}
         vehicleName={vehicleName}
         customer={customer}
         smsEnabled={smsEnabled}

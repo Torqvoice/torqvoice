@@ -3,34 +3,29 @@
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { db } from '@/lib/db'
-import { getStripeClient } from '@/lib/stripe-config'
 import { demoGuard } from '@/lib/demo'
+import { billingRequest } from '@/lib/torqvoice-com'
+
+/**
+ * Cancel and resume go through torqvoice.com, which holds the Stripe keys
+ * and updates this organization's subscription row before answering.
+ */
+
+async function requireStripeSubscription(organizationId: string) {
+  const subscription = await db.subscription.findUnique({ where: { organizationId } })
+  if (!subscription?.stripeSubscriptionId) {
+    throw new Error('No active subscription found')
+  }
+  return subscription
+}
 
 export async function cancelSubscription() {
   return withAuth(
     async ({ organizationId, isAdmin }) => {
       demoGuard()
       if (!isAdmin) throw new Error('Only an owner or admin can change the subscription')
-      const subscription = await db.subscription.findUnique({
-        where: { organizationId },
-      })
-
-      if (!subscription?.stripeSubscriptionId) {
-        throw new Error('No active subscription found')
-      }
-
-      const stripe = await getStripeClient()
-
-      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
-        cancel_at_period_end: true,
-      })
-
-      await db.subscription.update({
-        where: { organizationId },
-        data: { cancelAtPeriodEnd: true },
-      })
-
-      return { cancelAtPeriodEnd: true }
+      await requireStripeSubscription(organizationId)
+      return billingRequest<{ cancelAtPeriodEnd: boolean }>('cancel', { organizationId })
     },
     {
       requiredPermissions: [
@@ -50,26 +45,8 @@ export async function resumeSubscription() {
     async ({ organizationId, isAdmin }) => {
       demoGuard()
       if (!isAdmin) throw new Error('Only an owner or admin can change the subscription')
-      const subscription = await db.subscription.findUnique({
-        where: { organizationId },
-      })
-
-      if (!subscription?.stripeSubscriptionId) {
-        throw new Error('No active subscription found')
-      }
-
-      const stripe = await getStripeClient()
-
-      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
-        cancel_at_period_end: false,
-      })
-
-      await db.subscription.update({
-        where: { organizationId },
-        data: { cancelAtPeriodEnd: false },
-      })
-
-      return { cancelAtPeriodEnd: false }
+      await requireStripeSubscription(organizationId)
+      return billingRequest<{ cancelAtPeriodEnd: boolean }>('resume', { organizationId })
     },
     {
       requiredPermissions: [

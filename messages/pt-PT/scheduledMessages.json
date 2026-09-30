@@ -1,0 +1,79 @@
+{
+  "dialog": {
+    "title": "Agendar uma mensagem",
+    "editTitle": "Editar mensagem agendada",
+    "channelLabel": "Enviar por",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Nota na aplicação",
+      "whatsapp": "WhatsApp"
+    },
+    "repeatLabel": "Repetir",
+    "frequencies": {
+      "once": "Uma vez",
+      "daily": "Diariamente",
+      "weekly": "Semanalmente",
+      "biweekly": "De 2 em 2 semanas",
+      "monthly": "Mensalmente",
+      "yearly": "Anualmente"
+    },
+    "customerLabel": "Cliente",
+    "selectCustomer": "Selecionar cliente",
+    "none": "Nenhum",
+    "recipientEmail": "Endereço de e-mail",
+    "recipientPhone": "Número de telefone",
+    "recipientChat": "ID do chat do Telegram",
+    "recipientOverride": "Enviar antes para outro contacto",
+    "recipientHintCustomer": "Deixe vazio para usar os dados registados.",
+    "recipientHintDirect": "Escolha um cliente ou indique o destino.",
+    "subjectLabel": "Assunto",
+    "subjectPlaceholder": "ex.: O seu carro está pronto",
+    "messageLabel": "Mensagem",
+    "messagePlaceholder": "O que pretende dizer?",
+    "characters": "{count} / {max} caracteres",
+    "dateLabel": "Data",
+    "timeLabel": "Hora",
+    "endDateLabel": "Repetir até",
+    "endDateHint": "Deixe vazio para repetir sempre.",
+    "schedule": "Agendar",
+    "scheduled": "Mensagem agendada",
+    "updated": "Mensagem agendada atualizada",
+    "saveError": "Não foi possível guardar a mensagem",
+    "inPast": "Essa hora já passou. Escolha uma hora no futuro.",
+    "whatsappNeedsTemplate": "Esta mensagem será enviada muito depois de fechar a janela de 24 horas do cliente e não há nenhum modelo de texto do WhatsApp configurado, pelo que o envio falharia. Configure um em Definições > Fornecedores > WhatsApp."
+  },
+  "list": {
+    "scheduleMessage": "Agendar mensagem",
+    "scheduleForCustomer": "Agendar uma mensagem",
+    "filters": {
+      "upcoming": "Próximas",
+      "sent": "Enviadas",
+      "failed": "Falhadas",
+      "cancelled": "Canceladas",
+      "all": "Todas"
+    },
+    "status": {
+      "scheduled": "Agendada",
+      "sent": "Enviada",
+      "failed": "Falhou",
+      "cancelled": "Cancelada"
+    },
+    "empty": "Nada agendado",
+    "emptyHint": "Clique com o botão direito num dia do calendário ou use Agendar mensagem.",
+    "noRecipient": "Sem destinatário",
+    "sentCount": "enviada {count}x",
+    "rowMenu": "Menu da mensagem",
+    "sendNow": "Enviar agora",
+    "cancel": "Cancelar envio",
+    "sentNow": "Mensagem enviada",
+    "sendError": "Não foi possível enviar a mensagem",
+    "cancelled": "Envio cancelado",
+    "cancelError": "Não foi possível cancelar a mensagem",
+    "deleted": "Mensagem eliminada",
+    "deleteError": "Não foi possível eliminar a mensagem",
+    "deleteTitle": "Eliminar esta mensagem?",
+    "deleteDescription": "A mensagem agendada é removida definitivamente. O que já foi enviado permanece na conversa."
+  }
+}

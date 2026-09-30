@@ -1,0 +1,149 @@
+{
+  "weekdays": {
+    "sun": "Dom",
+    "mon": "Seg",
+    "tue": "Ter",
+    "wed": "Qua",
+    "thu": "Qui",
+    "fri": "Sex",
+    "sat": "Sáb"
+  },
+  "months": {
+    "january": "Janeiro",
+    "february": "Fevereiro",
+    "march": "Março",
+    "april": "Abril",
+    "may": "Maio",
+    "june": "Junho",
+    "july": "Julho",
+    "august": "Agosto",
+    "september": "Setembro",
+    "october": "Outubro",
+    "november": "Novembro",
+    "december": "Dezembro"
+  },
+  "stats": {
+    "services": "Serviços",
+    "overdue": "Em atraso",
+    "pendingQuotes": "Orçamentos pendentes",
+    "revenue": "Receita"
+  },
+  "today": "Hoje",
+  "workOrder": "Ordem de serviço",
+  "allDay": "Dia inteiro",
+  "openDay": "Abrir {date}",
+  "dayTotal": "{count, plural, =1 {1 evento} other {# eventos}}",
+  "views": {
+    "day": "Dia",
+    "week": "Semana",
+    "month": "Mês",
+    "year": "Ano",
+    "schedule": "Agenda",
+    "fourDays": "4 dias"
+  },
+  "options": {
+    "showWeekends": "Mostrar fins de semana",
+    "showCompleted": "Mostrar concluídos",
+    "showWeekNumbers": "Mostrar números das semanas"
+  },
+  "toolbar": {
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "create": "Criar",
+    "showSidebar": "Mostrar painel lateral",
+    "hideSidebar": "Ocultar painel lateral"
+  },
+  "sidebar": {
+    "calendars": "Calendários",
+    "legend": "Cores dos estados"
+  },
+  "schedule": {
+    "empty": "Nada agendado",
+    "emptyHint": "Nenhuma ordem de serviço, lembrete, orçamento ou mensagem neste período."
+  },
+  "peek": {
+    "close": "Fechar",
+    "open": {
+      "service": "Abrir ordem de serviço",
+      "reminder": "Abrir lembrete",
+      "quote": "Abrir orçamento",
+      "message": "Abrir mensagens",
+      "external": "Abrir"
+    }
+  },
+  "filters": {
+    "services": "Ordens de serviço",
+    "reminders": "Lembretes",
+    "quotes": "Orçamentos",
+    "messages": "Mensagens",
+    "external": "Calendários ligados"
+  },
+  "selectVehicle": "Selecionar viatura para a ordem de serviço",
+  "dateChoice": {
+    "title": "Data da ordem de serviço",
+    "description": "Tem o dia {selectedDate} selecionado. Para que data deve ser esta ordem de serviço?",
+    "useSelected": "Usar {date}",
+    "useToday": "Usar hoje"
+  },
+  "more": "+ {count} mais",
+  "monthTotal": "{count} eventos",
+  "contextMenu": {
+    "newWorkOrder": "Nova ordem de serviço",
+    "newWorkOrderAt": "Nova ordem de serviço às {time}",
+    "newReminder": "Novo lembrete",
+    "newQuote": "Novo orçamento",
+    "openEvent": "Abrir ({count})",
+    "hint": "Dica: clique com o botão direito num dia para ver as ações",
+    "scheduleMessage": "Agendar mensagem"
+  },
+  "eventMenu": {
+    "open": "Abrir",
+    "markDone": "Marcar como concluído",
+    "markNotDone": "Marcar como não concluído",
+    "deleteReminder": "Eliminar lembrete",
+    "deleteReminderConfirm": "Eliminar o lembrete \"{title}\"? Esta ação não pode ser anulada.",
+    "deleteMessage": "Eliminar mensagem agendada",
+    "deleteMessageConfirm": "Eliminar a mensagem agendada \"{title}\"? A mensagem não será enviada.",
+    "deleted": "Eliminado",
+    "updated": "Atualizado",
+    "failed": "Não foi possível concluir. Tente novamente."
+  },
+  "events": {
+    "status": {
+      "completed": "Concluído",
+      "inProgress": "Em curso",
+      "waitingParts": "A aguardar peças",
+      "pending": "Pendente",
+      "scheduled": "Agendado",
+      "sent": "Enviado",
+      "approved": "Aprovado",
+      "draft": "Rascunho",
+      "done": "Feito",
+      "overdue": "Em atraso",
+      "upcoming": "Próximo",
+      "failed": "Falhou",
+      "queued": "Em fila",
+      "busy": "Ocupado"
+    },
+    "type": {
+      "service": "Ordem de serviço",
+      "reminder": "Lembrete",
+      "quote": "Orçamento",
+      "message": "Mensagem",
+      "external": "Calendário ligado"
+    },
+    "noEvents": "Sem eventos",
+    "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço.",
+    "external": {
+      "source": "De {source}",
+      "sourceUnknown": "De um calendário ligado",
+      "allDay": "Dia inteiro",
+      "open": "Abrir no {source}",
+      "openGeneric": "Abrir no calendário",
+      "noLink": "Este calendário não disponibiliza um link para o evento.",
+      "readOnly": "Período ocupado num calendário ligado. Altere-o lá e será atualizado aqui na próxima sincronização."
+    }
+  },
+  "previousMonth": "Mês anterior",
+  "nextMonth": "Mês seguinte"
+}

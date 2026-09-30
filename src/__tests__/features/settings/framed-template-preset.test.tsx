@@ -205,13 +205,21 @@ describe('framed template preset', () => {
   it('offers to take the panel off every card that draws one', () => {
     expect([...BOXED_ELIGIBLE_SECTIONS].sort()).toEqual([
       'attached_documents',
+      'concerns',
       'customer',
       'general',
+      'job_description',
+      'job_details',
+      'job_qr',
       'notes',
+      'result',
       'service',
+      'signature',
       'telegram_qr',
+      'test_details',
       'vehicle',
       'warranty',
+      'work_checklist',
     ])
   })
 

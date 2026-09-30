@@ -25,7 +25,9 @@
     "deliveryViewed": "Otwarta",
     "deliveryViewedOn": "Ostatnio otwarta {date}",
     "filterUnviewed": "Nieotwarte",
-    "filterUnviewedHint": "Faktury wysłane, ale nigdy nieotwarte"
+    "filterUnviewedHint": "Faktury wysłane, ale nigdy nieotwarte",
+    "filterCompleted": "Tylko zakończone",
+    "filterCompletedHint": "Pokazuj tylko zlecenia oznaczone jako zakończone. Zapamiętywane na następny raz."
   },
   "recurring": {
     "title": "Cykliczne",

@@ -117,6 +117,19 @@ export const updateTireSetSchema = tireSetSchema.partial().extend({
   status: z.enum(TIRE_SET_STATUSES).optional(),
 })
 
+/**
+ * What a check-in started from a job puts on that job. Amounts for prep are
+ * never taken from the browser: the client names the work, settings price it.
+ * The storage fee is the one figure the desk may settle on the spot.
+ */
+const checkInBillingSchema = z
+  .object({
+    storageAmount: z.coerce.number().min(0).max(1_000_000).optional(),
+    treatments: z.array(z.enum(TREATMENT_TYPES)).max(TREATMENT_TYPES.length).optional(),
+  })
+  .optional()
+  .nullable()
+
 export const checkInSchema = tireSetSchema.extend({
   /// Required on check-in: a set that arrives has to land somewhere.
   locationId: z.string().min(1, 'Choose where the tires go'),
@@ -125,6 +138,7 @@ export const checkInSchema = tireSetSchema.extend({
   /// the new set to that work order so the technician sees the shelf without
   /// anyone going looking for it.
   serviceRecordId: z.string().min(1).optional().nullable(),
+  billing: checkInBillingSchema,
 })
 
 /**
@@ -145,6 +159,7 @@ export const returnSetSchema = z.object({
   measurements: z.array(measurementSchema).max(20).optional(),
   treatments: z.array(z.enum(TREATMENT_TYPES)).max(TREATMENT_TYPES.length).optional(),
   serviceRecordId: z.string().min(1).optional().nullable(),
+  billing: checkInBillingSchema,
 })
 
 /** Taking a set out of circulation for good. */

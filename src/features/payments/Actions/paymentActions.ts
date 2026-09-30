@@ -132,3 +132,30 @@ export async function deletePayment(paymentId: string) {
     }
   )
 }
+
+/**
+ * How much has been paid on one invoice, for the pay code dialog to watch
+ * while a customer pays on their own phone. The payment is booked by the
+ * vendor's webhook, not by this browser, so the page has to ask; asking for
+ * one sum every few seconds is a great deal cheaper than re-rendering the
+ * work order to find out.
+ */
+export async function getPaidTotal(serviceRecordId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const record = await db.serviceRecord.findFirst({
+        where: { id: serviceRecordId, organizationId },
+        select: { manuallyPaid: true, payments: { select: { amount: true } } },
+      })
+      if (!record) throw new Error('Service record not found')
+      return {
+        paid: Math.round(record.payments.reduce((sum, p) => sum + p.amount, 0) * 100) / 100,
+        payments: record.payments.length,
+        manuallyPaid: record.manuallyPaid,
+      }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
+    }
+  )
+}

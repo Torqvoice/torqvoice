@@ -8,6 +8,8 @@ import { notify } from '@/lib/notify'
 import { serviceRecordHref } from '@/lib/service-record'
 import { type BookableDay, availabilityFor, claimableResource } from '../Lib/booking'
 import { type InspectionReminderSettings, loadInspectionReminderSettings } from '../Lib/settings'
+import { releaseFiles } from '@/lib/files/manager'
+import { serviceRecordFileUrls } from '@/lib/files/collect'
 
 /**
  * The public side of a reminder link. No sign-in: the token was sent to the
@@ -309,13 +311,23 @@ export async function cancelBooking(rawToken: string) {
   if (send.bookedServiceRecordId) {
     // Only the placeholder the link created, and only while nobody has
     // started on it. Anything else stays for the office to decide.
-    await db.serviceRecord.deleteMany({
-      where: {
-        id: send.bookedServiceRecordId,
-        organizationId: send.organizationId,
-        bookingSource: 'online',
-        status: 'scheduled',
-      },
+    const placeholder = {
+      id: send.bookedServiceRecordId,
+      organizationId: send.organizationId,
+      bookingSource: 'online',
+      status: 'scheduled',
+    }
+    const stillPlaceholder = await db.serviceRecord.findFirst({
+      where: placeholder,
+      select: { id: true },
+    })
+    const files = stillPlaceholder
+      ? await serviceRecordFileUrls(send.organizationId, [stillPlaceholder.id])
+      : []
+    await db.serviceRecord.deleteMany({ where: placeholder })
+    await releaseFiles(files, {
+      organizationId: send.organizationId,
+      reason: 'online booking cancelled',
     })
   }
   if (send.bookedServiceRequestId) {
@@ -341,9 +353,13 @@ export async function cancelBooking(rawToken: string) {
         timeZone: (await loadInspectionReminderSettings(send.organizationId)).timeZone,
       }).format(booking.start),
     }),
-    entityType: 'vehicle',
-    entityId: send.vehicleId,
-    entityUrl: `/vehicles/${send.vehicleId}`,
+    // A cancelled request stays listed on the customer, marked cancelled; a
+    // booked slot is deleted, which leaves the vehicle as the place to look.
+    entityType: send.bookedServiceRequestId ? 'service_request' : 'vehicle',
+    entityId: send.bookedServiceRequestId ?? send.vehicleId,
+    entityUrl: send.bookedServiceRequestId
+      ? `/customers/${send.customerId}?tab=requests`
+      : `/vehicles/${send.vehicleId}`,
   })
   return { ok: true }
 }

@@ -25,7 +25,9 @@
     "deliveryViewed": "Viewed",
     "deliveryViewedOn": "Last opened {date}",
     "filterUnviewed": "Not viewed",
-    "filterUnviewedHint": "Invoices that were sent but have never been opened"
+    "filterUnviewedHint": "Invoices that were sent but have never been opened",
+    "filterCompleted": "Completed only",
+    "filterCompletedHint": "Show only work orders marked completed. Remembered for next time."
   },
   "recurring": {
     "title": "Recurring",

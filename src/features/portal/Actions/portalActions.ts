@@ -12,11 +12,14 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { headers } from 'next/headers'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { visitConditionMapIn } from '@/features/condition-map/Lib/loadMarks.server'
+import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
 import { assembleInvoicePrint } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 type PortalResult<T = unknown> = {
   success: boolean
@@ -202,6 +205,8 @@ export async function getPortalVehicleDetail(vehicleId: string) {
         year: true,
         vin: true,
         licensePlate: true,
+        hsn: true,
+        tsn: true,
         color: true,
         mileage: true,
         fuelType: true,
@@ -243,7 +248,7 @@ export async function getPortalVehicleDetail(vehicleId: string) {
       throw new Error('Vehicle not found')
     }
 
-    return vehicle
+    return gateTypeKey(vehicle, await isTypeKeyEnabled(organizationId))
   })
 }
 
@@ -304,7 +309,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
 
     const acceptLanguage = (await headers()).get('accept-language')
     const locale = await resolveCustomerLocale(organizationId, acceptLanguage)
-    const [labels, features, telegramQr] = await Promise.all([
+    const [labels, features, telegramQr, conditionMap, certificateInspection] = await Promise.all([
       loadPrintLabels(locale, assembly.labelSettings),
       getFeatures(organizationId),
       telegramQrForPrint(
@@ -312,6 +317,8 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
         assembly.layoutConfig,
         documentCustomerId(assembly.record)
       ),
+      visitConditionMapIn(organizationId, assembly.conditionMap, locale),
+      linkedCertificateInspectionId(organizationId, assembly.record.inspectionId),
     ])
     const torqvoiceLogoDataUri = features.brandingRemoved
       ? undefined
@@ -323,11 +330,13 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       invoiceSettings: assembly.invoiceSettings,
       paymentSummary: assembly.paymentSummary,
       logoDataUri: assembly.logoDataUri,
+      signer: assembly.signer,
       template: assembly.template,
       torqvoiceLogoDataUri,
       telegramQrDataUri: telegramQr?.dataUri,
       telegramLabel: labels?.telegramConnect,
       labels,
+      conditionMap,
     })
 
     return {
@@ -336,6 +345,8 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       invoiceNumber: record.invoiceNumber,
       publicToken: record.publicToken,
       spec,
+      // The finished inspection linked to the job, whose certificate goes with it.
+      hasCertificate: certificateInspection !== null,
     }
   })
 }

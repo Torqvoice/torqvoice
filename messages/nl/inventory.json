@@ -131,7 +131,7 @@
     "saveChanges": "Wijzigingen opslaan",
     "addPart": "Onderdeel toevoegen"
   },
-  "openMenu": "Open menu",
+  "openMenu": "Menu openen",
   "history": {
     "title": "Voorraadgeschiedenis",
     "description": "Alle geregistreerde wijzigingen aan {name}, nieuwste eerst.",

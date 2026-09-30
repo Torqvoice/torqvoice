@@ -25,7 +25,9 @@
     "deliveryViewed": "Aperta",
     "deliveryViewedOn": "Ultima apertura il {date}",
     "filterUnviewed": "Non aperte",
-    "filterUnviewedHint": "Fatture inviate ma mai aperte"
+    "filterUnviewedHint": "Fatture inviate ma mai aperte",
+    "filterCompleted": "Solo completati",
+    "filterCompletedHint": "Mostra solo gli ordini di lavoro segnati come completati. Viene ricordato per la prossima volta."
   },
   "recurring": {
     "title": "Ricorrente",

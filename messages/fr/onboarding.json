@@ -85,5 +85,10 @@
     "removeConfirmDescription": "Cette action supprime les clients, véhicules, ordres de réparation, le devis et l'inspection d'exemple créés lors de la configuration. Vos propres données ne sont pas concernées.",
     "removed": "Données d'exemple supprimées",
     "removeFailed": "Impossible de supprimer les données d'exemple"
+  },
+  "singleWorkshop": {
+    "title": "Cette installation a déjà son atelier",
+    "description": "Torqvoice gère ici un seul atelier, et il est déjà configuré. Pour y travailler, demandez à son propriétaire d'inviter {email} depuis Paramètres, puis Équipe.",
+    "signOut": "Se déconnecter"
   }
 }

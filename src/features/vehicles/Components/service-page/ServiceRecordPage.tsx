@@ -2,8 +2,18 @@ import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { getServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  readShopFee,
+  SHOP_FEE_SETTING_KEYS,
+  shopFeeLinesLast,
+} from '@/features/settings/Lib/shopFee'
+import {
+  readWarrantyDefaults,
+  WARRANTY_SETTING_KEYS,
+  warrantyTextsOf,
+} from '@/features/settings/Lib/warrantyDefaults'
 import { readPartsPricingSettings } from '@/features/inventory/Lib/partPricing'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
@@ -17,18 +27,28 @@ import {
   findRuleDesign,
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { getFeatures } from '@/lib/features'
+import { configuredAiProvider } from '@/features/integrations/Lib/ai'
+import { configuredDictation } from '@/features/integrations/Lib/speech'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { db } from '@/lib/db'
+import {
+  loadVehicleConditionMarks,
+  markTypeCatalogue,
+} from '@/features/condition-map/Lib/loadMarks.server'
+import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
+import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
+import { listWorkOrderStatuses } from '@/features/work-order-statuses/Actions/workOrderStatusActions'
 import { PageHeader } from '@/components/page-header'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDayKey } from '@/lib/timezone'
+import { resolveWorkOrderLayout } from '@/lib/work-order-layout.server'
 
 /**
  * Shared server component behind both service-record routes:
@@ -57,9 +77,11 @@ export async function ServiceRecordPage({
     videoCallResult,
     designOptionsResult,
     jobClockResult,
+    initialLayout,
+    workOrderStatusesResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
-    getSettings([
+    getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.DEFAULT_TAX_RATE,
@@ -69,6 +91,8 @@ export async function ServiceRecordPage({
       SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
       SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
+      ...SHOP_FEE_SETTING_KEYS,
+      ...WARRANTY_SETTING_KEYS,
     ]),
     getInventoryPartsList(),
     getTechnicians(),
@@ -82,6 +106,8 @@ export async function ServiceRecordPage({
     getServiceVideoCall(serviceId),
     listDesignOptions('invoice'),
     getJobClock(serviceId),
+    resolveWorkOrderLayout(),
+    listWorkOrderStatuses(),
   ])
 
   if (!result.success || !result.data) {
@@ -105,6 +131,7 @@ export async function ServiceRecordPage({
   const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
+  const shopFee = readShopFee(settings)
   const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0
   const { defaultMarkupPercent, markupAppliesToInventory } = readPartsPricingSettings(settings, {
     defaultMarkupPercent: SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
@@ -123,11 +150,23 @@ export async function ServiceRecordPage({
     : null
   const boardTechnicians = (
     techniciansResult.success && techniciansResult.data ? techniciansResult.data : []
-  ).map((t) => ({ id: t.id, name: t.name, userId: t.userId }))
+  ).map((t) => ({
+    id: t.id,
+    name: t.name,
+    userId: t.userId,
+    color: t.color,
+    dailyCapacity: t.dailyCapacity,
+    skills: t.skills,
+  }))
   const workBays = (workBaysResult.success && workBaysResult.data ? workBaysResult.data : []).map(
     (b) => ({ id: b.id, name: b.name })
   )
   const organizationId = authContext?.organizationId || ''
+  // Whether a customer can pay the shared invoice online, which is what the
+  // pay code at the desk is for.
+  const onlinePayments = organizationId
+    ? (await offeredPaymentProviders(organizationId)).length > 0
+    : false
   const lockState = organizationId
     ? await getInvoiceLockState(serviceId, organizationId)
     : { locked: false, reason: null, unlockedAt: null }
@@ -136,7 +175,7 @@ export async function ServiceRecordPage({
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
 
-  const [currentUser, features, aiSettings, tireHotel] = await Promise.all([
+  const [currentUser, features, aiProvider, dictation, tireHotel] = await Promise.all([
     session?.user?.id
       ? db.user.findUnique({
           where: { id: session.user.id },
@@ -144,15 +183,13 @@ export async function ServiceRecordPage({
         })
       : Promise.resolve(null),
     orgId ? getFeatures(orgId) : Promise.resolve(null),
+    // An AI vendor connected in the catalog, or the settings a workshop saved
+    // before AI moved there. Nothing is adopted from a page render.
+    orgId ? configuredAiProvider(orgId).catch(() => null) : Promise.resolve(null),
+    // Whether dictation has a speech model to go to, and who picks the engine.
     orgId
-      ? db.appSetting.findMany({
-          where: {
-            organizationId: orgId,
-            key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
-          },
-          select: { key: true, value: true },
-        })
-      : Promise.resolve([]),
+      ? configuredDictation(orgId).catch(() => ({ available: false, mode: 'choice' as const }))
+      : Promise.resolve({ available: false, mode: 'choice' as const }),
     // The whole config, not just the switch: checking a set in from here
     // grades tread, and it has to grade against this workshop's own limits.
     getTireHotelSettings(orgId ?? ''),
@@ -185,11 +222,11 @@ export async function ServiceRecordPage({
     null
   const designFollowsRule = ruleDesign?.autoRule ?? null
   const designPinnedAt = rendersFromIssue(record) ? (record.issuedAt?.toISOString() ?? null) : null
-  const aiSettingsMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
-  const aiEnabled =
-    features?.ai === true &&
-    aiSettingsMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
-    !!aiSettingsMap[SETTING_KEYS.AI_API_KEY]
+  const aiEnabled = features?.ai === true && aiProvider !== null
+  // Dictation is better through a speech model, when the workshop has one:
+  // its Speech to text connection, or a chat provider that can transcribe.
+  // The browser's own recognition otherwise.
+  const aiTranscription = features?.ai === true && dictation.available
 
   // A timestamp outside JS date range (bad legacy data) must degrade to a
   // fallback date, not crash the page on toISOString().
@@ -227,6 +264,12 @@ export async function ServiceRecordPage({
       id: c.id,
       description: c.description,
       sortOrder: c.sortOrder,
+      cause: c.cause,
+      correction: c.correction,
+      confirmation: c.confirmation,
+      confirmed: Boolean(c.confirmedAt),
+      confirmedAt: c.confirmedAt ? c.confirmedAt.toISOString() : null,
+      confirmedByName: c.confirmedBy?.name ?? null,
     })),
     partItems: record.partItems.map((p) => ({
       partNumber: p.partNumber || '',
@@ -242,12 +285,12 @@ export async function ServiceRecordPage({
       // parts and inventory reconciliation restocks the "removed" part.
       inventoryPartId: p.inventoryPartId ?? undefined,
     })),
-    laborItems: record.laborItems.map((l) => ({
+    laborItems: shopFeeLinesLast(record.laborItems).map((l) => ({
       description: l.description,
       hours: l.hours,
       rate: l.rate,
       total: l.total,
-      pricingType: (l.pricingType as 'hourly' | 'service') || 'hourly',
+      pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
     })),
     attachments: [],
     subtotal: record.subtotal,
@@ -259,6 +302,7 @@ export async function ServiceRecordPage({
     discountType: record.discountType || undefined,
     discountValue: record.discountValue,
     discountAmount: record.discountAmount,
+    warrantyStatus: record.warrantyStatus ?? null,
     warrantyMonths: record.warrantyMonths ?? null,
     warrantyMileage: record.warrantyMileage ?? null,
     warrantyNotes: record.warrantyNotes ?? null,
@@ -280,6 +324,11 @@ export async function ServiceRecordPage({
         a.category === 'image' || (a.category === 'tire_hotel' && a.fileType.startsWith('image/'))
     )
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
+  // The car as it arrived. Its own list: these are not the job's photos and
+  // do not go on the invoice unless somebody chooses to show one.
+  const dropoffAttachments = allAttachments
+    .filter((a) => a.category === 'dropoff')
+    .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? false }))
   const videoAttachments = allAttachments
     .filter((a) => a.category === 'video')
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
@@ -306,6 +355,32 @@ export async function ServiceRecordPage({
 
   // Fetch open observations for this vehicle (not just this service).
   // Counter sales have no vehicle, so there is nothing to look up.
+  // The condition map: every mark on the car, for the drop-off card and the
+  // printed work order. Nothing to load for a counter sale.
+  const conditionMap =
+    vehicleId && organizationId
+      ? {
+          vehicleId,
+          bodyType:
+            (
+              await db.vehicle.findFirst({
+                where: { id: vehicleId, organizationId },
+                select: { bodyType: true },
+              })
+            )?.bodyType ?? null,
+          marks: await loadVehicleConditionMarks(organizationId, vehicleId),
+          types: await markTypeCatalogue(organizationId, await getLocale()),
+          linkedInspectionId: record.inspection?.id ?? null,
+          openedAt: record.createdAt,
+          sentAt: designPinnedAt,
+          onInvoice: record.conditionMapOnInvoice,
+          byDesign: await invoiceDesignPrintsConditionMap(
+            organizationId,
+            { designId: record.designId ?? null, vehicleId },
+            customerDesignId
+          ),
+        }
+      : undefined
   const openObservations = vehicleId
     ? await db.vehicleFinding.findMany({
         where: { vehicleId, status: { not: 'resolved' } },
@@ -331,9 +406,11 @@ export async function ServiceRecordPage({
         initialTab={initialTab}
         currencyCode={currencyCode}
         unitSystem={unitSystem}
+        warrantyTexts={warrantyTextsOf(readWarrantyDefaults(settings))}
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
+        shopFee={shopFee}
         initialData={initialData}
         inventoryParts={inventoryParts}
         laborPresets={laborPresets}
@@ -343,6 +420,8 @@ export async function ServiceRecordPage({
         orgMembers={orgMembersResult.success && orgMembersResult.data ? orgMembersResult.data : []}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}
+        dropoffAttachments={dropoffAttachments}
+        conditionMap={conditionMap}
         videoAttachments={videoAttachments}
         documentAttachments={documentAttachments}
         maxImagesPerService={features?.maxImagesPerService ?? 999999}
@@ -352,7 +431,15 @@ export async function ServiceRecordPage({
         emailEnabled={features?.smtp ?? false}
         telegramEnabled={features?.telegram ?? false}
         aiEnabled={aiEnabled}
+        aiTranscription={aiTranscription}
+        dictationMode={dictation.mode}
         tireHotelEnabled={tireHotel.enabled}
+        onlinePayments={onlinePayments}
+        workOrderStatuses={
+          workOrderStatusesResult.success && workOrderStatusesResult.data
+            ? workOrderStatusesResult.data
+            : []
+        }
         tireThresholds={{
           summerReplace: tireHotel.summerReplaceMm,
           winterReplace: tireHotel.winterReplaceMm,
@@ -386,6 +473,7 @@ export async function ServiceRecordPage({
             : { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' }
         }
         designPinnedAt={designPinnedAt}
+        initialLayout={initialLayout}
       />
     </div>
   )

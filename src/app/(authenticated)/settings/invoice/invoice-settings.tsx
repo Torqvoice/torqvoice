@@ -19,8 +19,20 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { freezeUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
+import { reapplyDesignToIssuedInvoices } from '@/features/invoices/Actions/invoiceDesignActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { ChevronDown, ChevronUp, FileText, Hash, Loader2, Lock, Save } from 'lucide-react'
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Hash,
+  Loader2,
+  Lock,
+  Palette,
+  Receipt,
+  Save,
+} from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -51,6 +63,8 @@ interface InvoiceSettingsProps {
   workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
   /** Invoices that reached a customer before issuing existed, still unfrozen. */
   unfrozenInvoices?: number
+  /** Invoices locked to the design they were issued with. */
+  issuedInvoices?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
@@ -107,6 +121,7 @@ function SwitchRow({
 export function InvoiceSettings({
   settings,
   unfrozenInvoices = 0,
+  issuedInvoices = 0,
   initialInvoiceLayout,
   initialQuoteLayout,
   customFields,
@@ -157,6 +172,27 @@ export function InvoiceSettings({
     settings[SETTING_KEYS.QUOTE_LOCK_TRIGGER] || 'accepted'
   )
   const [attachPdf, setAttachPdf] = useState(settings[SETTING_KEYS.EMAIL_ATTACH_PDF] !== 'false')
+  const [shopFeeEnabled, setShopFeeEnabled] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_ENABLED] === 'true'
+  )
+  const [shopFeeLabel, setShopFeeLabel] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_LABEL] || t('invoice.shopFee.defaultLabel')
+  )
+  const [shopFeeMode, setShopFeeMode] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_MODE] === 'percent' ? 'percent' : 'flat'
+  )
+  const [shopFeeAmount, setShopFeeAmount] = useState(settings[SETTING_KEYS.SHOP_FEE_AMOUNT] || '')
+  const [shopFeePercent, setShopFeePercent] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_PERCENT] || ''
+  )
+  const [shopFeeBase, setShopFeeBase] = useState(
+    settings[SETTING_KEYS.SHOP_FEE_BASE] === 'laborParts' ? 'laborParts' : 'labor'
+  )
+  const [shopFeeCap, setShopFeeCap] = useState(settings[SETTING_KEYS.SHOP_FEE_CAP] || '')
+  const [shopFeeAppliesTo, setShopFeeAppliesTo] = useState(() => {
+    const v = settings[SETTING_KEYS.SHOP_FEE_APPLIES_TO]
+    return v === 'workOrders' || v === 'quotes' ? v : 'both'
+  })
   // The three paragraphs on what a lock freezes are worth reading once, not
   // every time somebody comes to change a due date. Folded away by default.
   const [lockDetailsOpen, setLockDetailsOpen] = useState(false)
@@ -175,6 +211,14 @@ export function InvoiceSettings({
       [SETTING_KEYS.QUOTE_LOCK_ENABLED]: quoteLockEnabled ? 'true' : 'false',
       [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: quoteLockTrigger,
       [SETTING_KEYS.EMAIL_ATTACH_PDF]: attachPdf ? 'true' : 'false',
+      [SETTING_KEYS.SHOP_FEE_ENABLED]: shopFeeEnabled ? 'true' : 'false',
+      [SETTING_KEYS.SHOP_FEE_LABEL]: shopFeeLabel.trim(),
+      [SETTING_KEYS.SHOP_FEE_MODE]: shopFeeMode,
+      [SETTING_KEYS.SHOP_FEE_AMOUNT]: shopFeeAmount,
+      [SETTING_KEYS.SHOP_FEE_PERCENT]: shopFeePercent,
+      [SETTING_KEYS.SHOP_FEE_BASE]: shopFeeBase,
+      [SETTING_KEYS.SHOP_FEE_CAP]: shopFeeCap,
+      [SETTING_KEYS.SHOP_FEE_APPLIES_TO]: shopFeeAppliesTo,
     })
     setSaving(false)
     router.refresh()
@@ -217,6 +261,41 @@ export function InvoiceSettings({
       toast.error(t('invoice.freezeFailed'))
     } finally {
       setFreezing(null)
+    }
+  }
+
+  // Invoices already sent print from the design they were locked to. A
+  // workshop that rebrands wants the new look on the archive too, so this
+  // walks every issued invoice by cursor and moves only its design and logo.
+  // A cursor rather than a count: a re-applied invoice is still issued, so
+  // the set being walked never shrinks.
+  const [reapplying, setReapplying] = useState<{ done: number; total: number } | null>(null)
+  const handleReapplyDesign = async () => {
+    const total = issuedInvoices
+    const ok = await confirm({
+      title: t('invoice.reapplyConfirmTitle', { count: total }),
+      description: t('invoice.reapplyConfirmBody'),
+      confirmLabel: t('invoice.reapplyButton'),
+      destructive: true,
+    })
+    if (!ok) return
+    setReapplying({ done: 0, total })
+    let done = 0
+    try {
+      let cursor: string | undefined
+      do {
+        const result = await reapplyDesignToIssuedInvoices(cursor)
+        if (!result.success || !result.data) throw new Error(result.success ? '' : result.error)
+        done += result.data.updated
+        cursor = result.data.nextCursor ?? undefined
+        setReapplying({ done, total })
+      } while (cursor)
+      toast.success(t('invoice.reapplyDone', { count: done }))
+      router.refresh()
+    } catch {
+      toast.error(t('invoice.reapplyFailed'))
+    } finally {
+      setReapplying(null)
     }
   }
 
@@ -383,6 +462,116 @@ export function InvoiceSettings({
             </AppCard>
 
             <AppCard
+              icon={Receipt}
+              title={t('invoice.shopFee.title')}
+              description={t('invoice.shopFee.description')}
+              contentClassName="space-y-5"
+            >
+              <SwitchRow
+                id="shopFeeEnabled"
+                label={t('invoice.shopFee.enabled')}
+                hint={t('invoice.shopFee.enabledHint')}
+                checked={shopFeeEnabled}
+                onCheckedChange={setShopFeeEnabled}
+              />
+              {shopFeeEnabled && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field id="shopFeeLabel" label={t('invoice.shopFee.label')}>
+                    <Input
+                      id="shopFeeLabel"
+                      value={shopFeeLabel}
+                      onChange={(e) => setShopFeeLabel(e.target.value)}
+                    />
+                  </Field>
+                  <Field id="shopFeeAppliesTo" label={t('invoice.shopFee.appliesTo')}>
+                    <Select value={shopFeeAppliesTo} onValueChange={setShopFeeAppliesTo}>
+                      <SelectTrigger id="shopFeeAppliesTo">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="both">{t('invoice.shopFee.appliesToBoth')}</SelectItem>
+                        <SelectItem value="workOrders">
+                          {t('invoice.shopFee.appliesToWorkOrders')}
+                        </SelectItem>
+                        <SelectItem value="quotes">
+                          {t('invoice.shopFee.appliesToQuotes')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field id="shopFeeMode" label={t('invoice.shopFee.mode')}>
+                    <Select value={shopFeeMode} onValueChange={setShopFeeMode}>
+                      <SelectTrigger id="shopFeeMode">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="flat">{t('invoice.shopFee.modeFlat')}</SelectItem>
+                        <SelectItem value="percent">{t('invoice.shopFee.modePercent')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  {shopFeeMode === 'flat' ? (
+                    <Field
+                      id="shopFeeAmount"
+                      label={t('invoice.shopFee.amount')}
+                      hint={t('invoice.shopFee.amountHint')}
+                    >
+                      <Input
+                        id="shopFeeAmount"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={shopFeeAmount}
+                        onChange={(e) => setShopFeeAmount(e.target.value)}
+                      />
+                    </Field>
+                  ) : (
+                    <>
+                      <Field id="shopFeePercent" label={t('invoice.shopFee.percent')}>
+                        <Input
+                          id="shopFeePercent"
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          value={shopFeePercent}
+                          onChange={(e) => setShopFeePercent(e.target.value)}
+                        />
+                      </Field>
+                      <Field id="shopFeeBase" label={t('invoice.shopFee.base')}>
+                        <Select value={shopFeeBase} onValueChange={setShopFeeBase}>
+                          <SelectTrigger id="shopFeeBase">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="labor">{t('invoice.shopFee.baseLabor')}</SelectItem>
+                            <SelectItem value="laborParts">
+                              {t('invoice.shopFee.baseLaborParts')}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                      <Field
+                        id="shopFeeCap"
+                        label={t('invoice.shopFee.cap')}
+                        hint={t('invoice.shopFee.capHint')}
+                      >
+                        <Input
+                          id="shopFeeCap"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder={t('invoice.shopFee.capPlaceholder')}
+                          value={shopFeeCap}
+                          onChange={(e) => setShopFeeCap(e.target.value)}
+                        />
+                      </Field>
+                    </>
+                  )}
+                </div>
+              )}
+            </AppCard>
+
+            <AppCard
               icon={Lock}
               title={t('invoice.lockTitle')}
               description={t('invoice.lockDescription')}
@@ -507,6 +696,41 @@ export function InvoiceSettings({
                 </div>
               )}
             </AppCard>
+
+            {issuedInvoices > 0 && (
+              <AppCard
+                icon={Palette}
+                title={t('invoice.reapplyTitle')}
+                description={t('invoice.reapplyDescription')}
+                contentClassName="space-y-3"
+              >
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {t('invoice.reapplyBody', { count: issuedInvoices })}
+                </p>
+                <div className="flex flex-col gap-3 rounded-md border border-dashed p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="flex items-start gap-2 text-xs leading-relaxed text-amber-700 dark:text-amber-400">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    {t('invoice.reapplyWarning')}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                    disabled={reapplying !== null}
+                    onClick={handleReapplyDesign}
+                  >
+                    {reapplying && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    {reapplying
+                      ? t('invoice.reapplyProgress', {
+                          done: reapplying.done,
+                          total: reapplying.total,
+                        })
+                      : t('invoice.reapplyButton')}
+                  </Button>
+                </div>
+              </AppCard>
+            )}
 
             <SaveButton>
               <div className="flex items-center gap-3">

@@ -26,16 +26,13 @@ export default async function PublicStatusReportPage({
   const resolvedOrg = await resolvePortalOrg(orgParam)
   const orgId = resolvedOrg?.id ?? orgParam
 
+  // The report and what it is about: a job, or an inspection.
+  const vehicle = { select: { make: true, model: true, year: true, licensePlate: true } }
   const report = await db.statusReport.findUnique({
     where: { publicToken: token },
     include: {
-      serviceRecord: {
-        select: {
-          title: true,
-          description: true,
-          status: true,
-        },
-      },
+      serviceRecord: { select: { title: true, vehicle } },
+      inspection: { select: { template: { select: { name: true } }, vehicle } },
       technician: {
         select: { name: true },
       },
@@ -54,22 +51,9 @@ export default async function PublicStatusReportPage({
     notFound()
   }
 
-  // Get vehicle info through service record
-  const serviceWithVehicle = await db.serviceRecord.findUnique({
-    where: { id: report.serviceRecordId },
-    select: {
-      vehicle: {
-        select: {
-          make: true,
-          model: true,
-          year: true,
-          licensePlate: true,
-        },
-      },
-    },
-  })
-
-  if (!serviceWithVehicle) notFound()
+  const subject = report.serviceRecord ?? report.inspection
+  if (!subject) notFound()
+  const serviceTitle = report.serviceRecord?.title ?? report.inspection?.template.name ?? ''
 
   // Mark as viewed on first visit
   if (!report.viewedAt) {
@@ -118,8 +102,9 @@ export default async function PublicStatusReportPage({
         customerFeedback: report.customerFeedback,
         feedbackAt: report.feedbackAt?.toISOString() || null,
       }}
-      vehicle={serviceWithVehicle.vehicle}
-      serviceTitle={report.serviceRecord.title}
+      vehicle={subject.vehicle}
+      serviceTitle={serviceTitle}
+      subject={report.serviceRecord ? 'service' : 'inspection'}
       technicianName={report.technician?.name || null}
       workshopName={report.organization.name}
       workshopPhone={settingsMap['workshop.phone'] || ''}

@@ -1,9 +1,7 @@
-import { unlink } from 'node:fs/promises'
-import path from 'node:path'
 import { db } from '@/lib/db'
+import { releaseFiles } from '@/lib/files/manager'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
-import { uploadsRoot } from '@/lib/upload-root'
 
 /**
  * Removes a photo from a job.
@@ -43,17 +41,13 @@ export async function DELETE(
 
       await db.serviceAttachment.delete({ where: { id: attachment.id } })
 
-      // Best effort. The photo is already gone as far as anyone can tell, and
-      // failing the request over a file that could not be unlinked would leave
-      // the technician retrying a deletion that already happened.
-      const filename = attachment.fileUrl.split('/').pop()
-      if (filename && !filename.includes('..') && !filename.includes('/')) {
-        await unlink(path.join(uploadsRoot(), ctx.organizationId, 'services', filename)).catch(
-          () => {
-            /* already gone, or never written */
-          }
-        )
-      }
+      // Best effort, and never an error: the photo is already gone as far as
+      // anyone can tell. The file manager keeps the file if another row still
+      // uses it (a tire set's photo copied onto the job).
+      await releaseFiles([attachment.fileUrl], {
+        organizationId: ctx.organizationId,
+        reason: 'attachment deleted from the technician app',
+      })
 
       return apiOk({ deleted: true })
     },

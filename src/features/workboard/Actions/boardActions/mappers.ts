@@ -23,6 +23,7 @@ export function serviceRecordToJob(sr: {
   status: string
   startDateTime: Date | null
   endDateTime: Date | null
+  promisedAt: Date | null
   technicianId: string | null
   workBayId: string | null
   sortOrder: number
@@ -46,6 +47,7 @@ export function serviceRecordToJob(sr: {
     status: sr.status,
     startDateTime: sr.startDateTime?.toISOString() ?? null,
     endDateTime: sr.endDateTime?.toISOString() ?? null,
+    promisedAt: sr.promisedAt?.toISOString() ?? null,
     vehicle: sr.vehicle,
     // Counter sales carry the customer directly; everything else reaches it
     // through the vehicle, so that a reassigned vehicle takes its owner along.
@@ -79,6 +81,9 @@ export function inspectionToJob(insp: {
     sortOrder: insp.sortOrder,
     title: insp.template.name,
     status: insp.status,
+    // An inspection is booked, never promised: only a service record carries
+    // a time the customer was given.
+    promisedAt: null,
     startDateTime: insp.startDateTime?.toISOString() ?? null,
     endDateTime: insp.endDateTime?.toISOString() ?? null,
     vehicle: insp.vehicle,
@@ -96,6 +101,7 @@ export const SERVICE_JOB_SELECT = {
   customer: { select: { name: true } },
   startDateTime: true,
   endDateTime: true,
+  promisedAt: true,
   technicianId: true,
   workBayId: true,
   sortOrder: true,

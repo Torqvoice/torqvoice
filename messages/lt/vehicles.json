@@ -28,10 +28,10 @@
     "unarchiveError": "Nepavyko grąžinti iš archyvo",
     "deleteError": "Nepavyko ištrinti transporto priemonės",
     "error": "Nepavyko įkelti transporto priemonių",
-    "viewTable": "Table view",
-    "viewGrid": "Grid view",
-    "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu",
+    "viewTable": "Lentelės rodinys",
+    "viewGrid": "Tinklelio rodinys",
+    "viewLargeGrid": "Didelio tinklelio rodinys",
+    "openMenu": "Atidaryti meniu",
     "inspectionOverdue": "Apžiūra pradelsta",
     "inspectionDue30": "Per 30 dienų",
     "inspectionDue90": "Per 90 dienų",
@@ -95,12 +95,13 @@
     "severityModerate": "Vidutinė — pranešta kai kurių savininkų",
     "severityUncommon": "Nedažna — pranešta nedaugelio savininkų",
     "severityRare": "Reta — pavieniai pranešimai, bet kritinė kai pasireiškia",
-    "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss",
+    "openMenu": "Atidaryti meniu",
+    "dismissMaintenance": "Atmesti",
     "inspectionDue": "Apžiūra iki {date}",
     "inspectionCheckedAt": "Patikrinta registre {date}",
     "notRegistered": "Neregistruota",
-    "soldReported": "Klientas pranešė pardavęs {date}"
+    "soldReported": "Klientas pranešė pardavęs {date}",
+    "typeKey": "HSN/TSN"
   },
   "quotes": {
     "newQuote": "Naujas pasiūlymas",
@@ -114,7 +115,7 @@
   "inspections": {
     "newInspection": "Nauja apžiūra",
     "empty": "Apžiūrų dar nėra",
-    "template": "Šablonas",
+    "template": "Kontrolinis sąrašas",
     "progress": "Pažanga",
     "status": "Būsena",
     "date": "Data",
@@ -184,10 +185,10 @@
     "showing": "Rodoma {start}–{end} iš {total}",
     "perPage": "puslapyje",
     "page": "Puslapis {page} iš {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Pirmas puslapis",
+    "previousPage": "Ankstesnis puslapis",
+    "nextPage": "Kitas puslapis",
+    "lastPage": "Paskutinis puslapis"
   },
   "notes": {
     "addNote": "Pridėti pastabą",
@@ -213,11 +214,11 @@
     "noteCreated": "Pastaba sukurta",
     "titleRequired": "Pavadinimas ir turinys yra privalomi",
     "saveError": "Nepavyko išsaugoti pastabos",
-    "openMenu": "Open menu",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "openMenu": "Atidaryti meniu",
+    "firstPage": "Pirmas puslapis",
+    "previousPage": "Ankstesnis puslapis",
+    "nextPage": "Kitas puslapis",
+    "lastPage": "Paskutinis puslapis"
   },
   "findings": {
     "sectionTitle": "Pastebėjimai",
@@ -266,11 +267,11 @@
     "showing": "Rodoma {start}–{end} iš {total}",
     "perPage": "puslapyje",
     "page": "Puslapis {page} iš {totalPages}",
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page",
-    "openMenu": "Open menu",
+    "firstPage": "Pirmas puslapis",
+    "previousPage": "Ankstesnis puslapis",
+    "nextPage": "Kitas puslapis",
+    "lastPage": "Paskutinis puslapis",
+    "openMenu": "Atidaryti meniu",
     "concernLabel": "Kurį punktą atsako?",
     "concernNone": "Klientas apie tai neklausė"
   },
@@ -323,6 +324,12 @@
     "cvt": "CVT",
     "engineSize": "Variklio tūris",
     "engineCode": "Variklio kodas",
+    "hsn": "HSN",
+    "tsn": "TSN",
+    "typeKey": "HSN/TSN",
+    "typeKeyHint": "Iš Vokietijos registracijos liudijimo: HSN yra 2.1 laukelis, TSN yra pirmieji trys 2.2 laukelio simboliai.",
+    "hsnInvalid": "HSN yra keturi skaitmenys iš registracijos liudijimo 2.1 laukelio.",
+    "tsnInvalid": "TSN yra trys raidės arba skaitmenys, registracijos liudijimo 2.2 laukelio pradžia.",
     "makeMarine": "Gamintojas *",
     "mileageMarine": "Variklio valandos",
     "transmissionMarine": "Variklio tipas",
@@ -362,7 +369,10 @@
     "inspectionDue": "Kita periodinė apžiūra",
     "inspectionDueHint": "Įveskite datą, jei jos nepateikia registras. Ją naudoja priminimai ir skydelis.",
     "inspectionDueFromRegistry": "Iš transporto priemonių registro. Pakeiskite čia, kad perrašytumėte iki kito sinchronizavimo.",
-    "lookupEnterPlateOrVin": "Pirmiausia įveskite numerį arba VIN"
+    "lookupVin": "Ieškoti pagal VIN",
+    "lookupEnterVin": "Pirmiausia įveskite VIN",
+    "lookupVinNotFound": "Pagal šį VIN transporto priemonė nerasta",
+    "lookupVinFailed": "Nepavyko rasti VIN"
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",
@@ -373,10 +383,10 @@
     "archiveError": "Nepavyko archyvuoti transporto priemonės"
   },
   "serviceRecords": {
-    "firstPage": "First page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "lastPage": "Last page"
+    "firstPage": "Pirmas puslapis",
+    "previousPage": "Ankstesnis puslapis",
+    "nextPage": "Kitas puslapis",
+    "lastPage": "Paskutinis puslapis"
   },
   "inspectionReminders": {
     "title": "Apžiūros priminimai",

@@ -7,12 +7,17 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuotePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
+import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export const revalidate = 60
 
@@ -67,6 +72,8 @@ export default async function PublicQuotePage({
           year: true,
           vin: true,
           licensePlate: true,
+          hsn: true,
+          tsn: true,
         },
       },
     },
@@ -92,6 +99,8 @@ export default async function PublicQuotePage({
             'workshop.currencyFormat',
             'workshop.dateFormat',
             'workshop.timezone',
+            'workshop.unitSystem',
+            SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
             'quote.primaryColor',
             'quote.backgroundColor',
             'quote.textColor',
@@ -135,6 +144,11 @@ export default async function PublicQuotePage({
 
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
+  const typeKeyEnabled = typeKeyEnabledIn(settingsMap)
+  const shownQuote = {
+    ...quote,
+    vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabled),
+  }
 
   const workshop = {
     name: org?.name || '',
@@ -193,22 +207,31 @@ export default async function PublicQuotePage({
   const pick = (key: string) => settingsMap[`quote.${key}`] || settingsMap[`invoice.${key}`]
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
-  const labels = await loadPrintLabels(locale, settingsMap, 'quote')
+  const [labels, conditionMap, certificateInspection] = await Promise.all([
+    loadPrintLabels(locale, settingsMap, 'quote'),
+    quoteConditionMap(orgId, quote, locale),
+    linkedCertificateInspectionId(orgId, quote.inspectionId),
+  ])
 
   const torqvoiceLogoDataUri = features.brandingRemoved
     ? undefined
     : await getTorqvoiceLogoDataUri()
 
+  // Whoever wrote the quote signs it.
+  const signer = await documentSigner(orgId, quote.userId)
+
   const spec = buildQuotePrintSpec({
-    data: quote,
+    data: shownQuote,
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     workshop,
     currencyCode,
     currencyFormat,
     logoDataUri: logoUrl || undefined,
+    signer,
     torqvoiceLogoDataUri,
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
+    unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     template: {
       primaryColor,
       backgroundColor: pick('backgroundColor') || undefined,
@@ -225,6 +248,7 @@ export default async function PublicQuotePage({
     customFields,
     labels,
     layoutConfig,
+    conditionMap,
   })
 
   const appUrl = getAppBaseUrl()
@@ -235,7 +259,7 @@ export default async function PublicQuotePage({
   return (
     <QuoteView
       spec={spec}
-      quote={quote}
+      quote={shownQuote}
       workshop={workshop}
       currencyCode={currencyCode}
       currencyFormat={currencyFormat}
@@ -255,6 +279,11 @@ export default async function PublicQuotePage({
       customFields={customFields}
       serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
       taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
+      certificateUrl={
+        certificateInspection
+          ? `/api/public/share/quote/${orgParam}/${token}/certificate`
+          : undefined
+      }
     />
   )
 }

@@ -43,6 +43,10 @@
         "title": "Vergi",
         "description": "Vergi oranı ve varsayılanlar"
       },
+      "warranty": {
+        "title": "Garanti",
+        "description": "Tekliflerde ve faturalarda varsayılan garanti"
+      },
       "currency": {
         "title": "Para Birimi",
         "description": "Para birimi & vergi varsayılanları"
@@ -65,7 +69,7 @@
       },
       "telegram": {
         "title": "Telegram",
-        "description": "Telegram bot & messaging"
+        "description": "Telegram botu & mesajlaşma"
       },
       "customerPortal": {
         "title": "Müşteri Portalı",
@@ -96,7 +100,7 @@
         "description": "Takvimler, görüntülü görüşmeler ve bağlı servisler"
       },
       "webhooks": {
-        "title": "Webhooks",
+        "title": "Webhook'lar",
         "description": "Gerçek zamanlı olay bildirimleri"
       },
       "appearance": {
@@ -138,6 +142,10 @@
       "emailTemplates": {
         "title": "E-posta şablonları",
         "description": "Fatura, teklif ve rapor e-postalarınızın metni"
+      },
+      "workOrderStatuses": {
+        "title": "İş emri durumları",
+        "description": "Kendi adımlarınız ve kime haber verileceği"
       }
     },
     "pro": "PRO",
@@ -192,10 +200,20 @@
     "serviceTypeDescription": "Atölyenizin sunduğu hizmet türünü seçin. Bu, uygulama genelinde alan etiketlerini değiştirir.",
     "automotive": "Otomotiv",
     "automotiveDescription": "Arabalar, kamyonlar ve diğer kara taşıtları",
-    "marineService": "Marine",
+    "marineService": "Denizcilik",
     "marineServiceDescription": "Tekneler, yatlar ve deniz taşıtları"
   },
   "account": {
+    "devicesTitle": "Oturum açık cihazlar",
+    "devicesDescription": "Hesabınızda açık oturumu olan tüm tarayıcılar ve telefonlar.",
+    "thisDevice": "Bu cihaz",
+    "signedInAt": "Giriş {date}",
+    "lastActiveAt": "Son etkinlik {date}",
+    "signOutDevice": "Çıkış yap",
+    "signOutOthers": "Diğer cihazlardan çıkış yap",
+    "deviceSignedOut": "Cihaz oturumu kapatıldı",
+    "othersSignedOut": "Diğer cihazların oturumu kapatıldı",
+    "failedSignOutDevice": "Bu cihazın oturumu kapatılamadı",
     "profileTitle": "Profil",
     "profileDescription": "Görünen adınızı ve e-posta adresinizi güncelleyin.",
     "emailVerified": "Doğrulandı",
@@ -284,8 +302,8 @@
     "contentInspectionsDescription": "Tüm araç denetimleri ve sonuçları",
     "contentTechnicians": "Teknisyenler",
     "contentTechniciansDescription": "Tüm teknisyen profilleri. Bağlı kayıtların bağlantısı kaldırılacak.",
-    "contentInspectionTemplates": "Denetim Şablonları",
-    "contentInspectionTemplatesDescription": "Tüm denetim şablonları ve bölümleri. Önce denetimleri silin.",
+    "contentInspectionTemplates": "Muayene kontrol listeleri",
+    "contentInspectionTemplatesDescription": "Tüm muayene kontrol listeleri ve bölümleri. Önce muayeneleri silin.",
     "contentNotifications": "Bildirimler",
     "contentNotificationsDescription": "Tüm sistem bildirimleri",
     "contentSmsMessages": "SMS Mesajları",
@@ -330,7 +348,29 @@
     "deleteWorkshopSuccess": "Atölye silindi",
     "deleteWorkshopFailed": "Atölye silinemedi",
     "deleteAccountMoved": "Hesabınızı silmek mi istiyorsunuz?",
-    "deleteAccountMovedLink": "Bunu veri ayarlarından yapabilirsiniz."
+    "deleteAccountMovedLink": "Bunu veri ayarlarından yapabilirsiniz.",
+    "signatureTitle": "İmza",
+    "signatureDescription": "Bu atölye için düzenlediğiniz faturalara, tekliflere ve sertifikalara basılır.",
+    "signatureDraw": "Çiz",
+    "signatureUpload": "Yükle",
+    "signatureDrawHint": "Buraya imzalayın",
+    "signatureUploadHint": "İmzanızın bir fotoğrafını veya taramasını seçin",
+    "signatureDrawTip": "Parmağınızı, bir kalemi veya fareyi kullanın.",
+    "signatureUploadTip": "Beyaz kağıda imza atın ve fotoğrafını çekin. Kağıt kaldırılır, yalnızca mürekkep kalır.",
+    "signatureChooseFile": "Görsel seç",
+    "signatureClear": "Temizle",
+    "signatureSave": "İmzayı kaydet",
+    "signatureCancel": "İptal",
+    "signatureReplace": "Değiştir",
+    "signatureRemove": "Kaldır",
+    "signatureSaved": "İmza kaydedildi",
+    "signatureRemoved": "İmza kaldırıldı. Daha önce düzenlenmiş belgeler kendi imzalarını korur.",
+    "signatureSaveFailed": "İmza kaydedilemedi",
+    "signatureEmpty": "Önce bir imza çizin veya yükleyin",
+    "signatureNotImage": "Bu dosya bir görsel değil",
+    "signatureNoInk": "Bu görselde imza bulunamadı. Beyaz kağıt üzerinde daha koyu bir kalem deneyin.",
+    "signatureCanvasLabel": "İmza alanı",
+    "signatureDesignerHint": "Bir tasarımda İmza bölümü açık olan yerlerde görünür. Bunu <link>belge tasarımcısında</link> açın."
   },
   "team": {
     "title": "Ekip",
@@ -408,9 +448,9 @@
     "failedRemoveMember": "Üye kaldırılamadı",
     "memberRoleUpdated": "Üye rolü güncellendi",
     "failedUpdateRole": "Rol güncellenemedi",
-    "removeMember": "Remove member",
-    "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role",
+    "removeMember": "Üyeyi çıkar",
+    "cancelInvite": "Daveti iptal et",
+    "editRole": "Rolü düzenle",
     "technician": "Teknisyen",
     "technicianHint": "İş atanabilir ve teknisyen uygulamasını kullanabilir",
     "technicianFailed": "Değiştirilemedi",
@@ -590,9 +630,43 @@
     "freezeProgress": "{total} faturadan {done} tanesi kilitlendi",
     "freezeDone": "{count, plural, one {# fatura} other {# fatura}} kilitlendi",
     "freezeFailed": "Faturalar kilitlenemedi",
+    "reapplyTitle": "Gönderilmiş faturalardaki tasarım",
+    "reapplyDescription": "Bugün kullandığınız tasarımı, daha eski bir tasarıma sabitlenmiş faturalara uygulayın.",
+    "reapplyBody": "{count, plural, one {# fatura} other {# fatura}} gönderildiği tasarıma sabitlenmiş durumda, bu yüzden yeni bir tasarım yalnızca bundan sonra gönderilen faturalara ulaşır. Yeniden uygulamak bugünkü tasarımı hepsine koyar. Yalnızca görünüm değişir: her faturanın servis bilgileri, müşterisi, ödeme koşulları ve tutarları olduğu gibi kalır.",
+    "reapplyWarning": "Bu geri alınamaz. Faturaların daha önce kullandığı tasarım saklanmaz.",
+    "reapplyButton": "Geçerli tasarımı yeniden uygula",
+    "reapplyConfirmTitle": "Tasarım {count, plural, one {# faturaya} other {# faturaya}} yeniden uygulansın mı?",
+    "reapplyConfirmBody": "Müşteriye gitmiş her fatura şu anda kullanılan tasarıma geçer. Yalnızca görünüm değişir: her faturanın bilgileri, koşulları ve tutarları olduğu gibi kalır. Bu geri alınamaz ve önceki tasarım geri getirilemez.",
+    "reapplyProgress": "{total} faturanın {done} tanesi güncellendi",
+    "reapplyDone": "{count, plural, one {# fatura} other {# fatura}} artık geçerli tasarımı kullanıyor",
+    "reapplyFailed": "Tasarım yeniden uygulanamadı",
     "sectionSending": "Gönderim",
     "attachPdfLabel": "E-postalara PDF ekle",
-    "attachPdfHint": "E-postayla gönderdiğiniz her fatura, teklif ve kontrol için varsayılan. Açık: müşteri PDF'i ek olarak alır. Kapalı: bunun yerine belgeye bir bağlantı alır ve görüntülenme sayacı ne zaman açtığını gösterir, böylece kimsenin bakmadıklarını takip edebilirsiniz. Tek bir gönderim için bunu paylaşım penceresinde değiştirebilirsiniz."
+    "attachPdfHint": "E-postayla gönderdiğiniz her fatura, teklif ve kontrol için varsayılan. Açık: müşteri PDF'i ek olarak alır. Kapalı: bunun yerine belgeye bir bağlantı alır ve görüntülenme sayacı ne zaman açtığını gösterir, böylece kimsenin bakmadıklarını takip edebilirsiniz. Tek bir gönderim için bunu paylaşım penceresinde değiştirebilirsiniz.",
+    "shopFee": {
+      "title": "Atölye ücreti",
+      "description": "Bez, temizleyici, yağlayıcı ve atık bertarafı gibi atölye sarf malzemeleri için her yeni iş emrine ve teklife ayrı bir satır olarak eklenen ücret.",
+      "enabled": "Atölye ücreti al",
+      "enabledHint": "Yeni iş emirleri ve teklifler ücreti bir satır olarak alır. Tek bir işten kaldırılabilir. Mevcut işler değişmez.",
+      "defaultLabel": "Sarf malzemeleri",
+      "label": "Faturadaki adı",
+      "appliesTo": "Uygulanacağı yer",
+      "appliesToBoth": "İş emirleri ve teklifler",
+      "appliesToWorkOrders": "Yalnızca iş emirleri",
+      "appliesToQuotes": "Yalnızca teklifler",
+      "mode": "Hesaplama şekli",
+      "modeFlat": "Sabit tutar",
+      "modePercent": "Yüzde",
+      "amount": "Tutar",
+      "amountHint": "Her işte aynı tutar. Tek bir işte değiştirilebilir.",
+      "percent": "Yüzde (%)",
+      "base": "Yüzdesi alınacak",
+      "baseLabor": "İşçilik",
+      "baseLaborParts": "İşçilik ve parçalar",
+      "cap": "En yüksek ücret",
+      "capHint": "Ücret hiçbir zaman bu tutarı geçmez. Üst sınır olmaması için boş bırakın.",
+      "capPlaceholder": "Üst sınır yok"
+    }
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",
@@ -628,7 +702,19 @@
       "bank_account": "Banka hesabı",
       "footer": "Alt bilgi",
       "general": "Genel",
-      "telegram_qr": "Telegram QR"
+      "telegram_qr": "Telegram QR kodu",
+      "result": "Sonuç",
+      "test_details": "Test bilgileri",
+      "defects": "Kusurlar",
+      "results_table": "Tüm sonuçlar",
+      "inspection_photos": "Fotoğraflar",
+      "signature": "İmza",
+      "job_details": "İş ayrıntıları",
+      "job_qr": "Telefonda aç",
+      "concerns": "Müşteri şikayetleri",
+      "job_description": "İstenen iş",
+      "work_checklist": "İş kontrol listesi",
+      "condition_map": "Araç durumu"
     },
     "fields": {
       "customer_name": "Müşteri adı",
@@ -641,6 +727,7 @@
       "vin": "VIN",
       "license_plate": "Plaka",
       "mileage": "Kilometre",
+      "hsn_tsn": "HSN/TSN",
       "service_title": "Servis başlığı",
       "service_type": "Servis türü",
       "tech_name": "Teknisyen",
@@ -660,7 +747,35 @@
       "invoice_number": "Fatura No",
       "customer_number": "Müşteri No",
       "date": "Tarih",
-      "portal_link": "Portal bağlantısı"
+      "portal_link": "Portal bağlantısı",
+      "test_date": "Test tarihi",
+      "test_location": "Test yeri",
+      "inspector": "Muayene görevlisi",
+      "certificate_number": "Sertifika numarası",
+      "vehicle_category": "Araç kategorisi",
+      "odometer": "Kilometre",
+      "next_test_due": "Sonraki test",
+      "defect_notes": "Notlar",
+      "defect_photos": "Fotoğraflar",
+      "passed_checks": "Geçen kontroller",
+      "not_applicable_checks": "Uygulanamayan kontroller",
+      "check_notes": "Notlar sütunu",
+      "result_detail": "Açıklama",
+      "result_summary": "Nota göre sayılar",
+      "combined_table": "Tüm bölümler için tek tablo",
+      "inspector_line": "İmza satırı",
+      "inspector_name": "İmzalayanın adı",
+      "date_line": "Tarih satırı",
+      "signature_image": "İmza",
+      "status": "Durum",
+      "technician": "Teknisyen",
+      "scheduled": "Planlanan",
+      "promised": "Söz verilen",
+      "work_bay": "Çalışma alanı",
+      "customer_line": "Müşteri imza satırı",
+      "legend": "Açıklama",
+      "previous_marks": "Önceki işaretler",
+      "blank_sheet": "Elle doldurulacak boş sayfa"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
@@ -688,6 +803,34 @@
       "detailed": {
         "name": "Ayrıntılı",
         "description": "Başlık üstte, araç tek başına, iki tablo ve tüm isteğe bağlı bloklar"
+      },
+      "certificate-regulator": {
+        "name": "Mevzuata uygun",
+        "description": "Sade ve bantsız, serifli: her kontrol notu ve açıklamasıyla, fotoğraflar, imza satırı"
+      },
+      "certificate-standard": {
+        "name": "Standart",
+        "description": "Başlığın altında sonuç, araç ve test yan yana, her kusur notu ve fotoğrafıyla, ardından bölüm bölüm geçmeyen kontroller"
+      },
+      "certificate-customer": {
+        "name": "Müşteri raporu",
+        "description": "Bantlı sayfa, büyük ve ortalanmış sonuç, fotoğraflı kusurlar, genel fotoğraflar ve geçmeyen kontrollerin kısa bir tablosu"
+      },
+      "certificate-compact": {
+        "name": "Kompakt",
+        "description": "Filolar için tek sayfa: küçük yazı, başlığın yanında sonuç, notsuz tüm sonuçlar, fotoğraflar, imza satırı"
+      },
+      "work-order-standard": {
+        "name": "Standart",
+        "description": "Kendi renginizde daha dolu tezgâh kopyası: müşteri ve aracın tamamı, servis, bulgular ve garanti, işler ve fiyatların yanında"
+      },
+      "work-order-job-sheet": {
+        "name": "İş kağıdı",
+        "description": "Pano için: büyük plaka, işin bilgileri, işaretlenecek kutular halinde işler, telefonda açmak için bir kod ve fiyat yok"
+      },
+      "work-order-compact": {
+        "name": "Kompakt",
+        "description": "Beyaz üzerine siyah, tek sayfa: müşterinin adı ve telefonu, araç, iş, fiyatlarıyla işçilik ve iki imza. Bir tasarım kaydedene kadar her iş emrinin yazdırdığı sayfa"
       }
     },
     "style": {
@@ -710,14 +853,21 @@
   "templates": {
     "title": "Şablonlar",
     "invoiceDescription": "PDF fatura ve tekliflerinizin görünümünü özelleştirin.",
-    "inspectionsDescription": "Muayene kontrol listelerini ve çoklu nokta şablonlarını yönetin.",
+    "inspectionsDescription": "Teknisyenlerinizin muayene sırasında izlediği kontrol listeleri.",
     "smsDescription": "Müşterilere gönderilen SMS mesajlarını özelleştirin.",
     "tabs": {
       "invoice": "Fatura",
       "quotation": "Teklif",
-      "inspections": "Muayeneler",
-      "sms": "SMS",
-      "layout": "Düzen"
+      "workOrders": "İş emri",
+      "certificates": "Muayene sertifikası",
+      "layout": "Düzen",
+      "conditionMap": "Durum haritası",
+      "inspections": "Kontrol listeleri"
+    },
+    "sections": {
+      "documents": "Belgeler",
+      "checklists": "Kontrol listeleri",
+      "messages": "Mesajlar"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",
@@ -821,7 +971,10 @@
     "goToLayout": "Düzen ve bölümler",
     "openDesigner": "Tasarımcıyı aç",
     "designerIntro": "Bir başlangıç noktası seçin, sonra her şeyi değiştirmek için tasarımcıyı açın.",
-    "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda."
+    "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda.",
+    "certificatesDescription": "Tamamlanan bir muayenenin yazdırıp paylaştığı sertifikayı tasarlayın.",
+    "workOrdersDescription": "Bir iş emrinin yazdırdığı sayfayı tasarlayın: müşterinin imzaladığı ve teknisyenin panodan aldığı sayfa.",
+    "conditionMapDescription": "Teknisyenlerinizin durum haritasına çizdiği işaret türleri: adları, şekilleri ve renkleri."
   },
   "payment": {
     "readMore": "Devamını oku",
@@ -1041,8 +1194,8 @@
     "fieldDeleted": "Özel alan silindi",
     "failedSave": "Alan kaydedilemedi",
     "failedDelete": "Silinemedi",
-    "edit": "Edit",
-    "delete": "Delete",
+    "edit": "Düzenle",
+    "delete": "Sil",
     "unassigned": "Atanmadı",
     "defaultValue": "Varsayılan değer",
     "defaultValueHint": "Yeni kayıtlarda otomatik doldurulur ve bir değer girilene kadar yazdırılır.",
@@ -1072,6 +1225,9 @@
     "defaultMarkupPercentHint": "Yeni elle eklenen parçalar bu marjla önceden doldurulur. Fiyatları elle girmek için 0 bırakın.",
     "markupAppliesToInventory": "Stok parçalarına kâr marjı uygula",
     "markupAppliesToInventoryHint": "Etkinleştirildiğinde, stoktan seçilen parçalar da maliyet + varsayılan marj kullanır (stoğun satış fiyatını geçersiz kılar).",
+    "typeKeyTitle": "Alman tip anahtarı (HSN/TSN)",
+    "typeKeyEnabled": "Araçlarda HSN/TSN kaydet",
+    "typeKeyHint": "Araçlara Alman ruhsatındaki üretici ve tip kodunu (2.1 ve 2.2 alanları) ekler. Araçta, iş emrinde ve tüm basılı belgelerde görünür, arama da araçları bu kodla bulur. Kapatıldığında yeniden gizlenir, girilen değerler korunur.",
     "unitsTitle": "Birimler",
     "unitsDescription": "Metrik (km, litre) ve emperyal (mil, galon) birimler arasında seçim yapın.",
     "unitSystem": "Birim Sistemi",
@@ -1138,6 +1294,43 @@
     "saveMaintenance": "Bakım Ayarlarını Kaydet",
     "saved": "Bakım ayarları kaydedildi"
   },
+  "warranty": {
+    "title": "Garanti",
+    "description": "Tekliflerinizin ve faturalarınızın garanti hakkında ne söylediğini belirleyin. Her yeni belge buradan başlar ve her birinde yine de değiştirebilirsiniz.",
+    "designHint": "Fatura ve teklif tasarımınızın Garanti bölümünde yazdırılır. Bu bölümü Şablonlar altında gizlediyseniz yeniden açın. Kompakt tasarımda bu bölüm yoktur.",
+    "defaultStatus": "Yeni teklifler ve iş emirleri şunu belirtir",
+    "status": {
+      "none": "Hiçbir şey",
+      "included": "Garanti dahil",
+      "not_included": "Garanti yok"
+    },
+    "statusHint": {
+      "none": "Biri belgede doldurana kadar garantiden söz edilmez.",
+      "included": "Yeni belgeler aşağıdaki süre ve koşullarla başlar.",
+      "not_included": "Yeni belgeler müşteriye atölye garantisinin dahil olmadığını bildirir."
+    },
+    "includedTitle": "Garanti dahil olduğunda",
+    "includedHint": "Bir belge garanti sunduğunda alacağı süre ve koşullar.",
+    "months": "Süre (ay)",
+    "mileage": "Mesafe limiti ({unit})",
+    "mileageHint": "Mesafe limiti yoksa boş bırakın.",
+    "terms": "Garanti koşulları",
+    "termsPlaceholder": "örn. Parça ve işçilikte 12 ay. Aşınan parçalar kapsam dışıdır.",
+    "termsHint": "Tekliflerde ve faturalarda garantinin altında yazdırılır.",
+    "notIncludedTitle": "Garanti dahil olmadığında",
+    "notIncludedHint": "Bir belge garantinin dahil olmadığını söylediğinde müşterinin okuduğu metin.",
+    "notIncludedText": "Beyan",
+    "notIncludedPlaceholder": "örn. Müşterinin getirdiği parçalar için atölye garantisi verilmez. Yasal haklarınız saklıdır.",
+    "legalHint": "Bu, atölyenizin kendi garantisiyle ilgilidir. AB ve Birleşik Krallık dahil birçok ülkede müşterilerin ayrıca hariç tutulamayan yasal garanti hakları vardır. Boş bırakırsanız belge, yasal hakların saklı olduğunu belirtir.",
+    "applyTitle": "Bu varsayılanları şunlarda kullan",
+    "applyToQuotes": "Yeni teklifler",
+    "applyToQuotesHint": "Müşteri kabul etmeden önce garantiyi görür.",
+    "applyToWorkOrders": "Yeni iş emirleri",
+    "applyToWorkOrdersHint": "Faturada yazdırılır. Tekliften oluşturulan iş emri, teklifte yazanı korur.",
+    "save": "Garanti ayarlarını kaydet",
+    "saved": "Garanti ayarları kaydedildi",
+    "saveFailed": "Garanti ayarları kaydedilemedi"
+  },
   "appearance": {
     "title": "Görünüm",
     "description": "Torqvoice'un görünümünü ve hissini özelleştirin.",
@@ -1168,7 +1361,29 @@
     "dateLabel": "Tarih",
     "dateTimeLabel": "Tarih & Saat",
     "saveSettings": "Ayarları Kaydet",
-    "saved": "Ayarlar kaydedildi"
+    "saved": "Ayarlar kaydedildi",
+    "fontLabel": "Yazı tipi",
+    "fontHint": "Uygulamada kullanılacak yazı tiplerini seçin. Seçim bu cihazda kaydedilir.",
+    "fontSampleHeading": "İş emri",
+    "fontSampleText": "Ateşleme bobinini ve bujileri değiştir",
+    "fonts": {
+      "default": {
+        "name": "Varsayılan",
+        "description": "Geist, sade ve nötr."
+      },
+      "workshop": {
+        "name": "Atölye",
+        "description": "Dar büyük harfli başlıklarla IBM Plex, bir iş kartı gibi."
+      },
+      "precise": {
+        "name": "Hassas",
+        "description": "Inter ve JetBrains Mono. Tablo ve rakamlarla dolu ekranlar için yapıldı."
+      },
+      "legible": {
+        "name": "Okunaklı",
+        "description": "Atkinson Hyperlegible. 0 ile O, 1 ile l asla birbirine benzemez; atölyenin öbür ucundan bile kolayca okunur."
+      }
+    }
   },
   "data": {
     "title": "Veri Yönetimi",
@@ -1191,7 +1406,7 @@
     "optTechnicians": "Teknisyenler",
     "optTechniciansDesc": "Teknisyen profilleri ve çalışma panosu atamaları",
     "optInspections": "Denetimler",
-    "optInspectionsDesc": "Denetim şablonları, denetimler ve sonuçlar",
+    "optInspectionsDesc": "Muayene kontrol listeleri, muayeneler ve sonuçlar",
     "optAuditLogs": "Denetim Günlükleri",
     "optAuditLogsDesc": "Etkinlik ve değişiklik geçmişi",
     "optSmsMessages": "Mesajlar",
@@ -1350,7 +1565,7 @@
         "sand": "Kum"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "copyUrl": "Portal URL'sini kopyala"
   },
   "email": {
     "title": "E-posta Sağlayıcısı",
@@ -1412,7 +1627,7 @@
     "authToken": "Kimlik Doğrulama Jetonu",
     "apiKey": "API Anahtarı",
     "apiSecret": "API Gizli Anahtarı",
-    "webhookUrl": "Webhook URL",
+    "webhookUrl": "Webhook URL'si",
     "webhookUrlHint": "Gelen SMS mesajlarını almak için bu URL'yi {provider} panonuzda yapılandırın.",
     "webhookCopied": "Webhook URL kopyalandı",
     "testPhoneNumber": "Test Telefon Numarası",
@@ -1426,7 +1641,7 @@
     "failedSave": "Ayarlar kaydedilemedi",
     "testSentTo": "Test SMS {phone} numarasına gönderildi",
     "testFailed": "SMS testi başarısız",
-    "copyWebhookUrl": "Copy webhook URL"
+    "copyWebhookUrl": "Webhook URL'sini kopyala"
   },
   "subscription": {
     "title": "Abonelik Planı",
@@ -1477,7 +1692,7 @@
     "resumeSuccess": "Abonelik başarıyla sürdürüldü",
     "resumeError": "Abonelik sürdürülemedi",
     "billingPortalError": "Fatura portalı açılamadı",
-    "checkoutError": "Failed to start checkout",
+    "checkoutError": "Ödeme başlatılamadı",
     "upgradeTitle": "Planı Yükselt",
     "upgradeDescription": "Planınızı yükselterek daha fazla özelliğin kilidini açın.",
     "upgradeToProDescription": "Sınırsız müşteri, ekip üyesi, rapor, SMTP, API erişimi ve daha fazlasının kilidini açmak için yükseltin.",
@@ -1492,7 +1707,12 @@
     "upgradeSuccess": "Enterprise'a başarıyla yükseltildi!",
     "upgradeError": "Abonelik yükseltilemedi",
     "demoBadge": "Demo",
-    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})"
+    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})",
+    "checkoutOnTorqvoice": "Satın almayı tamamlamak için torqvoice.com'a yönlendirileceksiniz. Faturalar ve makbuzlar orada hesabınızın altında bulunur.",
+    "purchaseSuccess": "Teşekkürler! Planınız artık etkin.",
+    "purchaseActivating": "Ödeme alındı. Planınız etkinleştiriliyor, bu sayfa birazdan yenilenecek.",
+    "accountOnTorqvoice": "Faturalar ve makbuzlar torqvoice.com'da; oraya bu hesapla giriş yaparsınız.",
+    "openTorqvoiceAccount": "torqvoice.com'daki hesabınızı açın"
   },
   "ai": {
     "title": "Yapay Zeka Asistani",
@@ -1532,7 +1752,7 @@
     "biweekly": "2 haftada bir",
     "monthly": "Aylık",
     "bimonthly": "2 ayda bir",
-    "quarterly": "4 ayda bir",
+    "quarterly": "3 ayda bir",
     "semiannually": "6 ayda bir",
     "yearly": "Yıllık",
     "dateRangeLabel": "Dönem",
@@ -1571,10 +1791,10 @@
     "deleted": "Rapor zamanlaması silindi",
     "toggledOn": "Rapor zamanlaması etkinleştirildi",
     "toggledOff": "Rapor zamanlaması devre dışı bırakıldı",
-    "failedSave": "Failed to save",
-    "failedSend": "Failed to send",
-    "failedToggle": "Failed to toggle",
-    "failedDelete": "Failed to delete",
+    "failedSave": "Kaydedilemedi",
+    "failedSend": "Gönderilemedi",
+    "failedToggle": "Değiştirilemedi",
+    "failedDelete": "Silinemedi",
     "noMembers": "Ekip üyesi bulunamadı",
     "addRecipient": "Alıcı ekle...",
     "searchMembers": "Üye ara...",
@@ -1601,7 +1821,7 @@
     }
   },
   "webhooks": {
-    "title": "Webhooks",
+    "title": "Webhook'lar",
     "subtitle": "HTTPS üzerinden kendi sistemlerinize gerçek zamanlı olay bildirimleri gönderin. Her olay HMAC-SHA256 ile imzalanır, böylece gerçekliği doğrulayabilirsiniz.",
     "create": "Webhook ekle",
     "createTitle": "Webhook ekle",
@@ -1671,7 +1891,7 @@
     "helpIntro": "Her teslimat HMAC-SHA256 imzası içerir, böylece isteğin Torqvoice'tan geldiğini onaylayabilirsiniz.",
     "helpHeadersTitle": "Her istekle gönderilen başlıklar",
     "helpVerify": "İmzalanmış dizeyi `[timestamp].[body]` olarak yeniden oluşturun ve zamana karşı güvenli eşitlikle karşılaştırın:",
-    "tabWebhooks": "Webhooks",
+    "tabWebhooks": "Webhook'lar",
     "tabReference": "Olay referansı",
     "autoDisabled": "Otomatik duraklatıldı",
     "autoDisabledBanner": "Bu webhook 20 ardışık başarısızlıktan sonra otomatik olarak duraklatıldı. Teslimatları sürdürmek için yeniden etkinleştirin.",
@@ -1968,7 +2188,41 @@
       "slogan": "Güvenebileceğiniz kaliteli hizmet",
       "paymentTerms": "14 gün içinde ödenir",
       "footerNote": "İş birliğiniz için teşekkürler",
-      "value": "Örnek"
+      "value": "Örnek",
+      "testLocation": "Liman Caddesi 12, Springfield",
+      "certificateNotes": "Lastikler yasal sınıra yakın; bir sonraki testten önce değiştirilmesi beklenir.",
+      "checkBrakeHoses": "Fren hortumları",
+      "checkBrakeHosesNote": "Sol ön hortumda hafif sürtünme izi, dış katman henüz aşınmamış.",
+      "sectionBrakes": "Fren donanımı",
+      "checkBrakePedal": "Servis freni pedalı",
+      "checkBrakeFluid": "Fren hidroliği",
+      "sectionLighting": "Aydınlatma donanımı",
+      "checkHeadlamps": "Far durumu",
+      "checkFogLamp": "Arka sis lambası",
+      "photoFront": "Ön",
+      "photoOdometer": "Kilometre sayacı",
+      "concernNoise": "Frenlerken önden sürtünme sesi",
+      "concernNoiseDetail": "Ön balatalar ve diskler aşınmış; değiştirildi",
+      "concernWarningLight": "Geçen haftadan beri göstergede uyarı ışığı",
+      "workRequested": "Ön fren balatalarını ve disklerini değiştir, servis göstergesini sıfırla ve yol testi yap.",
+      "checklistTestDrive": "Yol testi",
+      "markScratch": "Kapı boyunca anahtar çiziği, 20 cm",
+      "markDent": "Kolun altında göçük, boya sağlam",
+      "markChip": "Tamponun altında taş izleri",
+      "viewTop": "Üstten",
+      "viewLeft": "Sol taraf",
+      "viewRight": "Sağ taraf",
+      "viewFront": "Ön",
+      "viewRear": "Arka",
+      "panelLeftRearDoor": "Sol arka kapı",
+      "panelLeftFrontDoor": "Sol ön kapı",
+      "panelFrontBumper": "Ön tampon",
+      "kindScratch": "Çizik",
+      "kindDent": "Göçük",
+      "kindChip": "Taş izi",
+      "severityMinor": "Hafif",
+      "severityMajor": "Ağır",
+      "markPrevious": "daha önce kaydedildi"
     },
     "logoUpload": "Logo yükle",
     "logoReplace": "Logoyu değiştir",
@@ -1990,6 +2244,10 @@
     "telegramQrConnectedHint": "{link} adresini açan bir kod basar; bu bağlı Telegram botunuzdur. Yalnızca blok açıldıktan sonra kesilen faturalarda görünür.",
     "telegramQrPlaceholderHint": "Bağlı bir Telegram botu yok, bu yüzden sayfa basılmayacak bir örnek kod gösterir.",
     "telegramQrLink": "Entegrasyonlar",
+    "signatureWhose": "Kimin imzası",
+    "signatureOwnHint": "Her belge, onu düzenleyen kişinin imzasını basar: iş emrini açan, teklifi hazırlayan veya muayeneyi yapan kişi. Sayfada sizinki görünür.",
+    "signaturePlaceholderHint": "Her belge, onu düzenleyen kişinin imzasını basar: iş emrini açan, teklifi hazırlayan veya muayeneyi yapan kişi. Henüz bir imza kaydetmediniz, bu yüzden sayfada örnek bir imza görünür.",
+    "signatureLink": "İmzanızı ayarlayın",
     "titleText": "Başlık metni",
     "titleTextHint": "Bu belgenin kendine verdiği ad. Boş bırakılırsa kendi adını okuyucunun dilinde yazdırır.",
     "orgNumberLabel": "Organizasyon numarası etiketi",
@@ -2004,7 +2262,16 @@
     "setDefault": "Varsayılan yap",
     "defaultSet": "\"{name}\" artık kullanımda",
     "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı",
-    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz."
+    "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz.",
+    "certificate": "Muayene sertifikası",
+    "resultWidthHint": "Boş bırakılırsa satırı kaplar. Punto girerseniz bant daralır ve hizalamanın seçtiği tarafa yerleşir; sütunda sütun genişliğini alır.",
+    "work_order": "İş emri",
+    "conditionMapDrawing": "Çizim",
+    "conditionMapViews": "Görünümler",
+    "conditionMapViewsAll": "Beşi de",
+    "conditionMapViewsTop": "Yalnızca üstten",
+    "conditionMapViewsSides": "Yalnızca yanlar",
+    "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",
@@ -2402,5 +2669,99 @@
     "dragHandle": "Yeniden sıralamak için sürükleyin",
     "dragHandleKeyboard": "Bu bloğu taşımak için sürükleyin ya da ok tuşlarını kullanın",
     "tagDoesNotFit": "Etiket bu alana sığmıyor."
+  },
+  "workOrderStatuses": {
+    "title": "İş emri durumları",
+    "description": "Bir işin geçtiği adımlar için kendi adlarınız. Her durum üç aşamadan birine bağlıdır ve her iş emrinde o aşamanın menüsünde görünür.",
+    "cardTitle": "Aşamalar ve durumlar",
+    "suggestionsLabel": "Hızlı ekle",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Teslime hazır",
+        "message": "Merhaba {customer_name}, {vehicle} aracınız teslime hazır. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Müşteri bekleniyor"
+      },
+      "waitingForApproval": {
+        "name": "Onay bekleniyor",
+        "message": "Merhaba {customer_name}, {vehicle} aracınızda devam etmeden önce onayınıza ihtiyacımız var. Lütfen bize ulaşın. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "İş başlamadan önce. İş açık sayılır.",
+      "in-progress": "Araç üzerinde çalışılırken. İş açık sayılır.",
+      "completed": "İş tamamlandı. Müşteri faturayı görüp ödeyebilir ve iş teknisyenin listesinden çıkar."
+    },
+    "add": "Durum ekle",
+    "builtIn": "Yerleşik",
+    "asksToNotify": "Bildirim önerir",
+    "notifyHint": "Bir iş bu duruma geldiğinde müşteriye mesaj göndermek önerilir. Siz onaylamadan hiçbir şey gönderilmez.",
+    "moveUp": "Yukarı taşı",
+    "moveDown": "Aşağı taşı",
+    "edit": "Düzenle",
+    "remove": "Kaldır",
+    "empty": "Burada henüz kendi durumunuz yok.",
+    "removeTitle": "{name} kaldırılsın mı?",
+    "removeBody": "Menülerden çıkar. Onu taşıyan işler göstermeye devam eder.",
+    "addTitle": "Yeni durum",
+    "editTitle": "Durumu düzenle",
+    "dialogBody": "Durum, rengi olan bir addır. Bağlı olduğu aşama, işin nasıl ele alınacağını belirler.",
+    "name": "Ad",
+    "namePlaceholder": "Teslime hazır",
+    "stage": "Aşama",
+    "color": "Renk",
+    "notify": "Müşteriye haber vermeyi öner",
+    "message": "Mesaj",
+    "tokens": "Ekle:",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saved": "Durum kaydedildi",
+    "failed": "Durum kaydedilemedi",
+    "messageEmptyHint": "Boş bırakılırsa yukarıdaki metin gönderilir.",
+    "useSuggested": "Bu metni düzenle"
+  },
+  "markTypes": {
+    "title": "İşaret türleri",
+    "description": "Yerleşik türleri yeniden adlandırın veya renklendirin, hiç kullanmadıklarınızı gizleyin ve kendi türlerinizi ekleyin. Her türün rengin yanında bir şekli vardır; böylece siyah-beyaz baskıda da okunur.",
+    "cardTitle": "Türler",
+    "add": "Tür ekle",
+    "addTitle": "Yeni işaret türü",
+    "editTitle": "İşaret türünü düzenle",
+    "dialogBody": "Kendi sözcüklerinizle bir ad, bir şekil ve bir renk. Dolu olan ciddi işareti gösterir.",
+    "previewHint": "Hafif ve ciddi",
+    "name": "Ad",
+    "namePlaceholder": "örn. Kaldırım sürtmesi",
+    "shape": "Şekil",
+    "color": "Renk",
+    "customColor": "Hex renk",
+    "colorInvalid": "Rengi #2563eb gibi altı hex karakterle girin",
+    "hidden": "Seçicide gizli",
+    "hiddenHint": "Bu türdeki işaretler yine gösterilir ve yazdırılır.",
+    "hiddenBadge": "Gizli",
+    "builtin": "Yerleşik",
+    "show": "Seçicide göster",
+    "hide": "Seçiciden gizle",
+    "edit": "Düzenle",
+    "moveUp": "Yukarı taşı",
+    "moveDown": "Aşağı taşı",
+    "restore": "Geri al",
+    "restoreTitle": "\"{name}\" geri alınsın mı?",
+    "restoreBody": "Tür, uygulamayla gelen adına, şekline ve rengine döner.",
+    "remove": "Kaldır",
+    "removeTitle": "\"{name}\" kaldırılsın mı?",
+    "removeBody": "Yalnızca hiçbir işaretin kullanmadığı bir tür kaldırılabilir. Bu türde işaretler varsa gizleyin.",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "saved": "Kaydedildi",
+    "failed": "Kaydedilemedi",
+    "shapes": {
+      "circle": "Daire",
+      "diamond": "Eşkenar dörtgen",
+      "triangle": "Üçgen",
+      "square": "Kare",
+      "cross": "Çarpı",
+      "hex": "Altıgen"
+    }
   }
 }

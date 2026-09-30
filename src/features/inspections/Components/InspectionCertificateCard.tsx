@@ -1,20 +1,13 @@
 'use client'
 
 import { useId, useMemo, useState, useTransition } from 'react'
+import { useDateSettings } from '@/components/date-settings-context'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DateInput } from '@/components/ui/date-input'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -26,13 +19,14 @@ import {
 import { FileCheck2, Loader2, RotateCcw, UserPlus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { updateInspectionDetails } from '../Actions/inspectionActions'
-import { createTechnician } from '@/features/workboard/Actions/technicianActions'
+import { getInspectionTechnicians, updateInspectionDetails } from '../Actions/inspectionActions'
+import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 import { VEHICLE_CATEGORIES } from '../Lib/conditions'
 import {
   DEFAULT_INTERVAL_MONTHS,
   TEST_INTERVALS,
   addInterval,
+  dueDateInstant,
   matchInterval,
   toISODate,
 } from '../Lib/testIntervals'
@@ -46,72 +40,6 @@ export interface TechnicianOption {
 /** Sentinel for the "add a technician" row, which is not a selectable value. */
 const ADD_TECHNICIAN = '__add__'
 const NO_TECHNICIAN = 'none'
-
-function AddTechnicianDialog({
-  open,
-  onOpenChange,
-  onCreated,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onCreated: (technician: TechnicianOption) => void
-}) {
-  const t = useTranslations('inspections.certificate')
-  const [name, setName] = useState('')
-  const [isPending, startTransition] = useTransition()
-  const fieldId = useId()
-
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault()
-    const trimmed = name.trim()
-    if (!trimmed) return
-    startTransition(async () => {
-      const result = await createTechnician({ name: trimmed, color: '#3b82f6' })
-      if (result.success && result.data) {
-        onCreated({ id: result.data.id, name: result.data.name, color: result.data.color })
-        toast.success(t('technicianAdded', { name: result.data.name }))
-        setName('')
-        onOpenChange(false)
-      } else {
-        toast.error(result.error || t('technicianFailed'))
-      }
-    })
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>{t('addTechnicianTitle')}</DialogTitle>
-          <DialogDescription>{t('addTechnicianBody')}</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor={`${fieldId}-name`}>{t('technicianName')}</Label>
-            {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-            <Input
-              id={`${fieldId}-name`}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('technicianPlaceholder')}
-              autoFocus
-              required
-            />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t('cancel')}
-            </Button>
-            <Button type="submit" disabled={isPending || !name.trim()}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              {t('addAndSelect')}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
 
 /**
  * The certificate fields Directive 2014/45/EU Annex IV requires but that cannot
@@ -153,6 +81,8 @@ export function InspectionCertificateCard({
   const [isPending, startTransition] = useTransition()
   const [showAddTechnician, setShowAddTechnician] = useState(false)
   const [roster, setRoster] = useState(technicians)
+  // The workshop's calendar, so the server and the browser draw the same day.
+  const { timezone } = useDateSettings()
 
   const testDate = useMemo(
     () => new Date(inspection.completedAt ?? inspection.createdAt),
@@ -167,9 +97,9 @@ export function InspectionCertificateCard({
       certificateNumber: inspection.certificateNumber ?? '',
       technicianId: inspection.technicianId ?? NO_TECHNICIAN,
       testLocation: inspection.testLocation ?? '',
-      nextTestDue: toISODate(inspection.nextTestDue),
+      nextTestDue: toISODate(inspection.nextTestDue, timezone),
     }),
-    [inspection]
+    [inspection, timezone]
   )
 
   const [mileage, setMileage] = useState(persisted.mileage)
@@ -180,7 +110,8 @@ export function InspectionCertificateCard({
   // without a place of test; the field stays editable for off-site work.
   const [testLocation, setTestLocation] = useState(inspection.testLocation ?? workshopAddress ?? '')
   const [nextTestDue, setNextTestDue] = useState(
-    toISODate(inspection.nextTestDue) || addInterval(testDate, DEFAULT_INTERVAL_MONTHS)
+    toISODate(inspection.nextTestDue, timezone) ||
+      addInterval(testDate, DEFAULT_INTERVAL_MONTHS, timezone)
   )
 
   const isDirty =
@@ -191,7 +122,7 @@ export function InspectionCertificateCard({
     testLocation !== persisted.testLocation ||
     nextTestDue !== persisted.nextTestDue
 
-  const activeInterval = matchInterval(testDate, nextTestDue)
+  const activeInterval = matchInterval(testDate, nextTestDue, timezone)
   const locationOverridden = !!workshopAddress && testLocation !== workshopAddress
 
   const handleTechnicianChange = (value: string) => {
@@ -203,6 +134,44 @@ export function InspectionCertificateCard({
       return
     }
     setTechnicianId(value)
+    commit({ technicianId: value === NO_TECHNICIAN ? null : value })
+  }
+
+  /**
+   * Each field saves itself as it is left: the odometer on blur, a select or
+   * a date as soon as it is picked. Before this the fields waited for the
+   * Save button, and a reload in between threw them away. Only what changed
+   * is sent, so two fields edited in quick succession never overwrite each
+   * other with a stale value. The page is refreshed after, which also moves
+   * the "unsaved" marker off.
+   */
+  const [autosaving, setAutosaving] = useState(0)
+  const [autosavedAt, setAutosavedAt] = useState<Date | null>(null)
+  const commit = (
+    patch: Partial<{
+      mileage: number | null
+      vehicleCategory: string | null
+      certificateNumber: string | null
+      technicianId: string | null
+      testLocation: string | null
+      nextTestDue: Date | null
+    }>
+  ) => {
+    if (isCompleted) return
+    setAutosaving((n) => n + 1)
+    updateInspectionDetails(inspection.id, patch)
+      .then((result) => {
+        if (result.success) {
+          setAutosavedAt(new Date())
+          router.refresh()
+        } else {
+          toast.error(result.error || t('saveFailed'))
+        }
+      })
+      .finally(() => setAutosaving((n) => n - 1))
+  }
+  const blurOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') e.currentTarget.blur()
   }
 
   const handleSave = () => {
@@ -213,7 +182,7 @@ export function InspectionCertificateCard({
         certificateNumber: certificateNumber || null,
         technicianId: technicianId === NO_TECHNICIAN ? null : technicianId,
         testLocation: testLocation || null,
-        nextTestDue: nextTestDue ? new Date(`${nextTestDue}T00:00:00`) : null,
+        nextTestDue: nextTestDue ? dueDateInstant(nextTestDue, timezone) : null,
       })
       if (result.success) {
         toast.success(t('saved'))
@@ -285,15 +254,25 @@ export function InspectionCertificateCard({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${fieldId}-category`}>{t('vehicleCategory')}</Label>
-          <Select value={vehicleCategory} onValueChange={setVehicleCategory} disabled={isCompleted}>
+          <Select
+            value={vehicleCategory}
+            onValueChange={(value) => {
+              setVehicleCategory(value)
+              commit({ vehicleCategory: value === NO_TECHNICIAN ? null : value })
+            }}
+            disabled={isCompleted}
+          >
             <SelectTrigger id={`${fieldId}-category`}>
               <SelectValue placeholder={t('notRecorded')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={NO_TECHNICIAN}>{t('notRecorded')}</SelectItem>
-              {VEHICLE_CATEGORIES.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {c.label}
+              {VEHICLE_CATEGORIES.map((code) => (
+                <SelectItem key={code} value={code}>
+                  <span className="flex gap-2">
+                    <span className="font-medium">{code}</span>
+                    <span className="text-muted-foreground">{t(`categories.${code}`)}</span>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -309,6 +288,11 @@ export function InspectionCertificateCard({
             inputMode="numeric"
             value={mileage}
             onChange={(e) => /^\d*$/.test(e.target.value) && setMileage(e.target.value)}
+            onBlur={() => {
+              if (mileage !== persisted.mileage)
+                commit({ mileage: mileage === '' ? null : Number(mileage) })
+            }}
+            onKeyDown={blurOnEnter}
             disabled={isCompleted}
           />
         </div>
@@ -319,6 +303,12 @@ export function InspectionCertificateCard({
             id={`${fieldId}-certificate`}
             value={certificateNumber}
             onChange={(e) => setCertificateNumber(e.target.value)}
+            onBlur={() => {
+              if (certificateNumber !== persisted.certificateNumber) {
+                commit({ certificateNumber: certificateNumber || null })
+              }
+            }}
+            onKeyDown={blurOnEnter}
             placeholder={t('optional')}
             disabled={isCompleted}
           />
@@ -333,6 +323,11 @@ export function InspectionCertificateCard({
             id={`${fieldId}-location`}
             value={testLocation}
             onChange={(e) => setTestLocation(e.target.value)}
+            onBlur={() => {
+              if (testLocation !== persisted.testLocation)
+                commit({ testLocation: testLocation || null })
+            }}
+            onKeyDown={blurOnEnter}
             placeholder={workshopAddress || t('placeholderAddress')}
             disabled={isCompleted}
           />
@@ -343,7 +338,10 @@ export function InspectionCertificateCard({
                   <span>{t('differsFromWorkshop')}</span>
                   <button
                     type="button"
-                    onClick={() => setTestLocation(workshopAddress)}
+                    onClick={() => {
+                      setTestLocation(workshopAddress)
+                      commit({ testLocation: workshopAddress || null })
+                    }}
                     className="text-primary inline-flex items-center gap-1 hover:underline"
                   >
                     <RotateCcw className="h-3 w-3" aria-hidden="true" />
@@ -376,7 +374,10 @@ export function InspectionCertificateCard({
               <DateInput
                 id={`${fieldId}-next`}
                 value={nextTestDue}
-                onChange={setNextTestDue}
+                onChange={(value) => {
+                  setNextTestDue(value)
+                  commit({ nextTestDue: value ? dueDateInstant(value, timezone) : null })
+                }}
                 placeholder={t('notSet')}
               />
             </div>
@@ -389,7 +390,11 @@ export function InspectionCertificateCard({
                       key={interval.months}
                       type="button"
                       aria-pressed={selected}
-                      onClick={() => setNextTestDue(addInterval(testDate, interval.months))}
+                      onClick={() => {
+                        const value = addInterval(testDate, interval.months, timezone)
+                        setNextTestDue(value)
+                        commit({ nextTestDue: dueDateInstant(value, timezone) })
+                      }}
                       className={`focus-visible:ring-ring rounded-full border px-2.5 py-1.5 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                         selected
                           ? 'bg-primary text-primary-foreground border-primary'
@@ -408,25 +413,45 @@ export function InspectionCertificateCard({
       </div>
 
       {!isCompleted && (
-        <div className="flex items-center justify-end gap-3 border-t px-4 py-3">
-          {isDirty && (
-            <p className="text-muted-foreground text-xs" role="status">
-              {t('unsaved')}
-            </p>
+        <div className="flex min-h-11 items-center justify-end gap-3 border-t px-4 py-2">
+          <p className="text-muted-foreground text-xs" role="status">
+            {autosaving > 0
+              ? t('saving')
+              : isDirty
+                ? t('unsaved')
+                : autosavedAt
+                  ? t('savedAt', {
+                      time: autosavedAt.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }),
+                    })
+                  : t('savesAsYouGo')}
+          </p>
+          {/* Only for an edit a field's own save refused: everything else has gone already. */}
+          {isDirty && autosaving === 0 && (
+            <Button type="button" size="sm" onClick={handleSave} disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              {t('saveDetails')}
+            </Button>
           )}
-          <Button type="button" size="sm" onClick={handleSave} disabled={isPending || !isDirty}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-            {t('saveDetails')}
-          </Button>
         </div>
       )}
 
-      <AddTechnicianDialog
+      {/* The same dialog as Settings → Team: a roster name, a technician with
+          an app login, or an office member with a role. Whoever is added is
+          picked as the inspector, since that is why the dialog was opened. */}
+      <AddPersonDialog
         open={showAddTechnician}
         onOpenChange={setShowAddTechnician}
-        onCreated={(technician) => {
-          setRoster((prev) => [...prev, technician])
-          setTechnicianId(technician.id)
+        onChanged={() => {
+          const known = new Set(roster.map((technician) => technician.id))
+          getInspectionTechnicians().then((result) => {
+            if (!result.success || !result.data) return
+            setRoster(result.data)
+            const added = result.data.find((technician) => !known.has(technician.id))
+            if (added) setTechnicianId(added.id)
+          })
         }}
       />
     </section>

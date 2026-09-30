@@ -20,8 +20,11 @@ import {
   PRESET_GROUPS,
   TEMPLATE_PRESETS,
   countPresetItems,
-  type TemplatePreset,
+  presetPackageId,
+  resolvePreset,
+  type ResolvedPreset,
 } from '../Lib/templatePresets'
+import { useInspectionLibrary } from '../Lib/useInspectionLibrary'
 
 const GROUP_ICONS = {
   regulatory: ShieldCheck,
@@ -35,7 +38,7 @@ function PresetCard({
   alreadyAdded,
   onSelect,
 }: {
-  preset: TemplatePreset
+  preset: ResolvedPreset
   selected: boolean
   alreadyAdded: boolean
   onSelect: () => void
@@ -92,11 +95,14 @@ export function TemplatePresetPicker({
   open,
   onOpenChange,
   installedNames = [],
+  installedPackageIds = [],
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** Names already in the workshop's list, so the same checklist is not offered twice. */
   installedNames?: string[]
+  /** Package ids already in the list, which still match after a rename or a language change. */
+  installedPackageIds?: string[]
 }) {
   const t = useTranslations('inspections.presets')
   const router = useRouter()
@@ -104,18 +110,23 @@ export function TemplatePresetPicker({
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  const installed = useMemo(
-    () => new Set(installedNames.map((name) => name.trim().toLowerCase())),
-    [installedNames]
-  )
+  const lib = useInspectionLibrary()
+  const presets = useMemo(() => TEMPLATE_PRESETS.map((p) => resolvePreset(p, lib)), [lib])
+
+  const isInstalled = useMemo(() => {
+    const names = new Set(installedNames.map((name) => name.trim().toLowerCase()))
+    const ids = new Set(installedPackageIds)
+    return (preset: ResolvedPreset) =>
+      ids.has(presetPackageId(preset.id)) || names.has(preset.name.trim().toLowerCase())
+  }, [installedNames, installedPackageIds])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return TEMPLATE_PRESETS
-    return TEMPLATE_PRESETS.filter((p) =>
+    if (!q) return presets
+    return presets.filter((p) =>
       [p.name, p.description, p.standardLabel, p.country ?? ''].join(' ').toLowerCase().includes(q)
     )
-  }, [query])
+  }, [query, presets])
 
   const handleUse = () => {
     if (!selectedId) return
@@ -159,27 +170,27 @@ export function TemplatePresetPicker({
 
         <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
           {PRESET_GROUPS.map((group) => {
-            const presets = filtered.filter((p) => p.group === group.key)
-            if (presets.length === 0) return null
-            const Icon = GROUP_ICONS[group.key]
+            const groupPresets = filtered.filter((p) => p.group === group)
+            if (groupPresets.length === 0) return null
+            const Icon = GROUP_ICONS[group]
             return (
-              <section key={group.key} aria-labelledby={`preset-group-${group.key}`}>
+              <section key={group} aria-labelledby={`preset-group-${group}`}>
                 <div className="flex items-center gap-2">
                   <Icon className="text-muted-foreground h-4 w-4" aria-hidden="true" />
-                  <h3 id={`preset-group-${group.key}`} className="text-sm font-semibold">
-                    {t(`group.${group.key}`)}
+                  <h3 id={`preset-group-${group}`} className="text-sm font-semibold">
+                    {t(`group.${group}`)}
                   </h3>
                 </div>
                 <p className="text-muted-foreground mt-0.5 text-xs">
-                  {t(`groupDescription.${group.key}`)}
+                  {t(`groupDescription.${group}`)}
                 </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  {presets.map((preset) => (
+                  {groupPresets.map((preset) => (
                     <PresetCard
                       key={preset.id}
                       preset={preset}
                       selected={selectedId === preset.id}
-                      alreadyAdded={installed.has(preset.name.trim().toLowerCase())}
+                      alreadyAdded={isInstalled(preset)}
                       onSelect={() => setSelectedId(preset.id)}
                     />
                   ))}

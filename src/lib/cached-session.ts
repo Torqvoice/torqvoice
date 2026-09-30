@@ -25,22 +25,39 @@ export const getCachedMembership = cache(async (userId: string) => {
   const activeOrgHeader = (await headers()).get('x-org-id') ?? undefined
   const activeOrgCookie = activeOrgHeader ?? cookieStore.get('active-org-id')?.value
 
-  const select = {
-    organizationId: true,
-    role: true,
-    roleId: true,
-    customRole: {
-      select: { isAdmin: true, permissions: { select: { action: true, subject: true } } },
-    },
-  } as const
-
-  if (activeOrgCookie) {
-    const m = await db.organizationMember.findFirst({
-      where: { userId, organizationId: activeOrgCookie },
-      select,
-    })
-    if (m) return m
-  }
-
-  return db.organizationMember.findFirst({ where: { userId }, select })
+  return resolveMembership(userId, activeOrgCookie)
 })
+
+const MEMBERSHIP_SELECT = {
+  organizationId: true,
+  role: true,
+  roleId: true,
+  customRole: {
+    select: { isAdmin: true, permissions: { select: { action: true, subject: true } } },
+  },
+} as const
+
+/**
+ * The workshop a person is acting in: the one they named when they belong to
+ * it, otherwise one they do belong to.
+ *
+ * The one place this is decided. The live-update socket used to decide it for
+ * itself and treated the cookie as a requirement instead of a preference, so
+ * a browser holding a stale `active-org-id` (left over from somebody else's
+ * sign-in on the same machine) used the whole app normally and was refused
+ * its socket: no live updates and nobody's chips, with nothing to say why.
+ *
+ * The name is only ever a preference. What is returned is always a membership
+ * this person really has, so nothing here can place anybody in a workshop
+ * they are not a member of.
+ */
+export async function resolveMembership(userId: string, preferredOrganizationId?: string) {
+  if (preferredOrganizationId) {
+    const preferred = await db.organizationMember.findFirst({
+      where: { userId, organizationId: preferredOrganizationId },
+      select: MEMBERSHIP_SELECT,
+    })
+    if (preferred) return preferred
+  }
+  return db.organizationMember.findFirst({ where: { userId }, select: MEMBERSHIP_SELECT })
+}

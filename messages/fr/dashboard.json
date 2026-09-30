@@ -65,7 +65,7 @@
     "description": "Basé sur l’historique d’entretien et le kilométrage quotidien estimé",
     "overdue": "En retard",
     "approaching": "Imminent",
-    "estimated": "Est. {mileage} {unit}",
+    "estimated": "Env. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} depuis le dernier entretien",
     "certainty": "{percent} % de certitude",
     "active": "Actifs",
@@ -74,8 +74,8 @@
     "noDismissed": "Aucun véhicule ignoré.",
     "dismissedOn": "Ignoré le {date}",
     "restore": "Restaurer",
-    "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "settingsAriaLabel": "Paramètres de maintenance",
+    "dismissAriaLabel": "Ignorer"
   },
   "reminders": {
     "title": "Rappels à venir",
@@ -112,7 +112,7 @@
     "createQuote": "Créer un devis",
     "itemsRequested": "{count, plural, one {# élément demandé} other {# éléments demandés}}",
     "noData": "Aucune demande de devis en attente.",
-    "dismissAriaLabel": "Dismiss quote request"
+    "dismissAriaLabel": "Ignorer la demande de devis"
   },
   "quoteResponses": {
     "title": "Réponses des clients aux devis",
@@ -120,11 +120,11 @@
     "accepted": "Accepté",
     "changesRequested": "Modifications demandées",
     "convertToWorkOrder": "Convertir en ordre de travail",
-    "convert": "Convert",
+    "convert": "Convertir",
     "viewQuote": "Voir le devis",
-    "view": "View",
+    "view": "Voir",
     "noData": "Aucune réponse client.",
-    "dismissAriaLabel": "Dismiss response"
+    "dismissAriaLabel": "Ignorer la réponse"
   },
   "recentCompleted": {
     "title": "Terminés récemment",

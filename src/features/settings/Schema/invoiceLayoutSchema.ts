@@ -149,6 +149,12 @@ export const invoiceLayoutConfigSchema = z.object({
    * classic look those organizations have always mailed out.
    */
   version: z.number().int().optional(),
+  /**
+   * Which document this arranges. Absent means an invoice or a quote, which
+   * share one section list; a certificate has sections of its own, so its
+   * layout has to say so to be merged with the right defaults.
+   */
+  documentType: z.enum(['invoice', 'quote', 'certificate', 'work_order']).optional(),
 })
 
 /** Stamped on every layout the designer saves. */
@@ -233,10 +239,97 @@ export const BUILTIN_SECTIONS = [
   { id: 'attached_documents', name: 'Attached Documents' },
   { id: 'warranty', name: 'Warranty' },
   { id: 'bank_account', name: 'Bank Account' },
+  // The car's condition this visit: the job's drop-off and the inspection
+  // linked to it. Last, as an appendix: the bill first, then the record of
+  // the dents that were already there. Off until a workshop wants it on
+  // every invoice; a single job asks for it from its drop-off tab.
+  { id: 'condition_map', name: 'Vehicle Condition' },
+  // Above the footer, where a signature goes on paper. Off until a workshop
+  // switches it on, so no sheet gains a signature line by a deploy.
+  { id: 'signature', name: 'Signature' },
   { id: 'footer', name: 'Footer' },
   { id: 'telegram_qr', name: 'Telegram QR' },
   { id: 'general', name: 'General' },
 ] as const
+
+/**
+ * What a completed inspection prints. The letterhead, title strip, customer
+ * and vehicle panels, notes, attachments and footer are the shared ones; the
+ * rest is the test: what it found, in the order a reader wants it.
+ */
+export const CERTIFICATE_SECTIONS = [
+  { id: 'header', name: 'Header' },
+  { id: 'document_title', name: 'Document Title' },
+  { id: 'slogan', name: 'Slogan' },
+  { id: 'result', name: 'Result' },
+  { id: 'customer', name: 'Customer' },
+  { id: 'vehicle', name: 'Vehicle' },
+  { id: 'test_details', name: 'Test Details' },
+  { id: 'defects', name: 'Defects' },
+  { id: 'results_table', name: 'All Results' },
+  { id: 'condition_map', name: 'Vehicle Condition' },
+  { id: 'inspection_photos', name: 'Photos' },
+  { id: 'notes', name: 'Notes' },
+  { id: 'attached_documents', name: 'Attached Documents' },
+  { id: 'signature', name: 'Signature' },
+  { id: 'footer', name: 'Footer' },
+] as const
+
+/**
+ * What a work order prints: the sheet a customer signs at the counter and the
+ * technician takes off the board. The invoice's sections, less what belongs
+ * to a bill (bank details, payments), plus the facts of the job, the
+ * customer's concerns, a checklist of the work and a code that opens the
+ * job on a phone.
+ */
+export const WORK_ORDER_SECTIONS = [
+  { id: 'header', name: 'Header' },
+  { id: 'document_title', name: 'Document Title' },
+  { id: 'slogan', name: 'Slogan' },
+  { id: 'customer', name: 'Customer' },
+  { id: 'vehicle', name: 'Vehicle' },
+  { id: 'service', name: 'Service' },
+  { id: 'job_details', name: 'Job Details' },
+  { id: 'job_qr', name: 'Open on Phone' },
+  { id: 'concerns', name: 'Customer Concerns' },
+  { id: 'job_description', name: 'Work Requested' },
+  { id: 'condition_map', name: 'Vehicle Condition' },
+  { id: 'work_checklist', name: 'Work Checklist' },
+  { id: 'items_table', name: 'Items Table' },
+  { id: 'parts_table', name: 'Parts Table' },
+  { id: 'labor_table', name: 'Labor Table' },
+  { id: 'findings', name: 'Findings' },
+  { id: 'totals', name: 'Totals' },
+  { id: 'notes', name: 'Notes' },
+  { id: 'attached_documents', name: 'Attached Documents' },
+  { id: 'warranty', name: 'Warranty' },
+  { id: 'general', name: 'General' },
+  { id: 'signature', name: 'Signature' },
+  { id: 'footer', name: 'Footer' },
+] as const
+
+export type LayoutDocumentType = 'invoice' | 'quote' | 'certificate' | 'work_order'
+
+/** The sections a document is built from. */
+export function sectionsFor(
+  documentType: LayoutDocumentType | undefined
+): ReadonlyArray<{ id: string; name: string }> {
+  if (documentType === 'certificate') return CERTIFICATE_SECTIONS
+  if (documentType === 'work_order') return WORK_ORDER_SECTIONS
+  return BUILTIN_SECTIONS
+}
+
+/**
+ * The document a layout arranges. Absent means an invoice or a quote, which
+ * share one section list; the others have to say so.
+ */
+export function layoutDocumentType(
+  saved: Pick<Partial<InvoiceLayoutConfig>, 'documentType'> | null | undefined
+): LayoutDocumentType {
+  if (saved?.documentType === 'certificate') return 'certificate'
+  if (saved?.documentType === 'work_order') return 'work_order'
+  return 'invoice'
+}
 
 export const BUILTIN_CUSTOMER_FIELDS = [
   { id: 'customer_name', name: 'Customer Name' },
@@ -252,6 +345,9 @@ export const BUILTIN_VEHICLE_FIELDS = [
   { id: 'vin', name: 'VIN' },
   { id: 'license_plate', name: 'License Plate' },
   { id: 'mileage', name: 'Mileage' },
+  // The German type approval key. On by default: it prints nothing until a
+  // vehicle has one, and a workshop that records it wants it on the paper.
+  { id: 'hsn_tsn', name: 'HSN/TSN' },
 ] as const
 
 export const BUILTIN_SERVICE_FIELDS = [
@@ -309,6 +405,21 @@ export const BUILTIN_DOCUMENT_TITLE_FIELDS = [
   { id: 'customer_number', name: 'Customer Number' },
   { id: 'date', name: 'Date' },
   { id: 'due_date', name: 'Due Date' },
+  // The plate as a cell of its own, large enough to read a work order off a
+  // board. Off everywhere but the work order until a design asks for it.
+  { id: 'license_plate', name: 'License Plate' },
+] as const
+
+/**
+ * The facts of a job that an invoice never prints: where it stands, who has
+ * it, when it is booked and when the customer was promised it.
+ */
+export const BUILTIN_JOB_DETAILS_FIELDS = [
+  { id: 'status', name: 'Status' },
+  { id: 'technician', name: 'Technician' },
+  { id: 'scheduled', name: 'Scheduled' },
+  { id: 'promised', name: 'Promised' },
+  { id: 'work_bay', name: 'Work Bay' },
 ] as const
 
 export const BUILTIN_BANK_ACCOUNT_FIELDS = [
@@ -316,6 +427,67 @@ export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'org_number', name: 'Organization Number' },
   { id: 'payment_terms', name: 'Payment Terms' },
   { id: 'due_date', name: 'Due Date' },
+] as const
+
+/** The facts Annex IV wants on a certificate, each one a switch. */
+export const BUILTIN_TEST_DETAILS_FIELDS = [
+  { id: 'test_date', name: 'Date of test' },
+  { id: 'test_location', name: 'Place of test' },
+  { id: 'inspector', name: 'Inspector' },
+  { id: 'certificate_number', name: 'Certificate number' },
+  { id: 'vehicle_category', name: 'Vehicle category' },
+  { id: 'odometer', name: 'Odometer' },
+  { id: 'next_test_due', name: 'Next test due' },
+] as const
+
+/** What the result band says under the verdict. */
+export const BUILTIN_RESULT_FIELDS = [
+  { id: 'result_detail', name: 'Explanation' },
+  { id: 'result_summary', name: 'Counts' },
+] as const
+
+/** What each defect carries beside its grade. */
+export const BUILTIN_DEFECTS_FIELDS = [
+  { id: 'defect_notes', name: 'Notes' },
+  { id: 'defect_photos', name: 'Photos' },
+] as const
+
+/**
+ * What the signature block draws: the signer's saved signature, the line,
+ * whether the name is printed under it, and the date. The line and name ids
+ * are from when only certificates were signed, by an inspector; they are kept
+ * so saved layouts still mean what they did.
+ */
+export const BUILTIN_SIGNATURE_FIELDS = [
+  { id: 'signature_image', name: 'Signature' },
+  { id: 'inspector_line', name: 'Signature line' },
+  { id: 'inspector_name', name: "Signer's name" },
+  { id: 'date_line', name: 'Date line' },
+  // A second, empty line for the customer's pen, beside the issuer's. On by
+  // default only on the work order, which is the sheet a customer signs.
+  { id: 'customer_line', name: 'Customer signature line' },
+] as const
+
+/** What the condition map prints beside the drawing. */
+export const BUILTIN_CONDITION_MAP_FIELDS = [
+  { id: 'legend', name: 'Legend' },
+  /** Marks still open from earlier visits, drawn in grey. */
+  { id: 'previous_marks', name: 'Earlier marks' },
+  /**
+   * The empty drawing with the key of kinds and ruled rows, printed when the
+   * job has no marks yet: a form for a walk-round done with a pen. Only the
+   * work order offers it, and only when a workshop switches it on.
+   */
+  { id: 'blank_sheet', name: 'Blank sheet to fill in by hand' },
+] as const
+
+/** Which rows the full results table prints beyond the defects. */
+export const BUILTIN_RESULTS_TABLE_FIELDS = [
+  { id: 'passed_checks', name: 'Passed checks' },
+  { id: 'not_applicable_checks', name: 'Not applicable checks' },
+  { id: 'check_notes', name: 'Notes column' },
+  /** Every check in one table with a section column, instead of a table per section. */
+  { id: 'combined_table', name: 'One table' },
 ] as const
 
 /**
@@ -381,7 +553,17 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'service',
   'bank_account',
   'general',
+  'test_details',
+  'result',
+  'signature',
+  'defects',
+  'results_table',
+  'job_details',
+  'condition_map',
 ])
+
+/** Sections with fields of their own that print no workshop-defined fields. */
+export const NO_CUSTOM_FIELD_SECTIONS = new Set<string>(['condition_map'])
 
 /** Sections that print inside a panel and can have it taken away. */
 export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
@@ -393,6 +575,14 @@ export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
   'attached_documents',
   'warranty',
   'telegram_qr',
+  'test_details',
+  'signature',
+  'result',
+  'job_details',
+  'job_qr',
+  'concerns',
+  'job_description',
+  'work_checklist',
 ])
 
 /** Sections that can be placed in left/right columns */
@@ -413,6 +603,9 @@ export const FIXED_SLOT_FIELDS: Record<string, readonly string[]> = {
   header: ['logo', 'company_name'],
   document_title: ['title'],
   footer: ['footer_note', 'portal_link', 'logo'],
+  // The signature sits on its line, the name under it and the date beside:
+  // where each goes is the shape of a signature block, not an order.
+  signature: ['signature_image', 'inspector_line', 'inspector_name', 'date_line', 'customer_line'],
 }
 
 /** Whether this field prints where the list puts it, or in a slot of its own. */
@@ -430,6 +623,11 @@ export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
   'notes',
   'attached_documents',
   'bank_account',
+  'test_details',
+  'signature',
+  'result',
+  'job_details',
+  'job_qr',
 ])
 
 /** Sections that MUST be full-width (cannot be in columns) */
@@ -441,6 +639,13 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'labor_table',
   'footer',
   'telegram_qr',
+  'defects',
+  'results_table',
+  'inspection_photos',
+  'concerns',
+  'job_description',
+  'work_checklist',
+  'condition_map',
 ])
 
 /** Default column assignment for column-eligible sections */
@@ -448,35 +653,90 @@ const DEFAULT_COLUMN: Record<string, 'left' | 'right'> = {
   customer: 'left',
   vehicle: 'left',
   service: 'right',
+  test_details: 'right',
+  job_details: 'right',
+  job_qr: 'right',
 }
 
 // ---------------------------------------------------------------------------
 // Defaults
 // ---------------------------------------------------------------------------
 
-function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | undefined {
+function getDefaultFieldsForSection(
+  sectionId: string,
+  documentType: LayoutDocumentType = 'invoice'
+): InvoiceFieldConfig[] | undefined {
+  const workOrder = documentType === 'work_order'
   switch (sectionId) {
+    // A work order says only what the technician and the customer need: who
+    // the car belongs to and how to reach them, which car, and the job.
     case 'customer':
-      return BUILTIN_CUSTOMER_FIELDS.map((f) => ({ id: f.id, visible: true }))
+      return BUILTIN_CUSTOMER_FIELDS.map((f) => ({
+        id: f.id,
+        visible: workOrder ? f.id === 'customer_name' || f.id === 'customer_phone' : true,
+      }))
     case 'vehicle':
-      return BUILTIN_VEHICLE_FIELDS.map((f) => ({ id: f.id, visible: true }))
+      return BUILTIN_VEHICLE_FIELDS.map((f) => ({
+        id: f.id,
+        visible: workOrder ? f.id !== 'vin' : true,
+      }))
     case 'service':
       return BUILTIN_SERVICE_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'header':
-      return BUILTIN_HEADER_FIELDS.map((f) => ({ id: f.id, visible: true }))
+      return BUILTIN_HEADER_FIELDS.map((f) => ({
+        id: f.id,
+        visible: workOrder ? f.id !== 'company_email' && f.id !== 'company_org_number' : true,
+      }))
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'document_title':
-      return BUILTIN_DOCUMENT_TITLE_FIELDS.map((f) => ({ id: f.id, visible: true }))
+      // The plate cell is the work order's; every other strip keeps the
+      // cells it has always had.
+      return BUILTIN_DOCUMENT_TITLE_FIELDS.map((f) => ({
+        id: f.id,
+        visible: workOrder
+          ? f.id !== 'customer_number' && f.id !== 'due_date'
+          : f.id !== 'license_plate',
+      }))
+    case 'job_details':
+      return BUILTIN_JOB_DETAILS_FIELDS.map((f) => ({ id: f.id, visible: f.id !== 'work_bay' }))
+    case 'condition_map':
+      return builtinConditionMapFields(documentType).map((f) => ({
+        id: f.id,
+        visible: f.id !== 'blank_sheet',
+      }))
     case 'footer':
       // Only the note and the portal link, which is the footer every existing
-      // invoice already has.
+      // invoice already has. A work order is not sent, so no portal link.
       return BUILTIN_FOOTER_FIELDS.map((f) => ({
         id: f.id,
-        visible: f.id === 'footer_note' || f.id === 'portal_link',
+        visible: f.id === 'footer_note' || (f.id === 'portal_link' && !workOrder),
       }))
     case 'general':
       return [] // no built-in fields, only custom fields
+    case 'test_details':
+      return BUILTIN_TEST_DETAILS_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'result':
+      return BUILTIN_RESULT_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'signature':
+      // A work order is signed with a pen at the counter: the customer's
+      // line is on and the issuer's saved image is off. Everywhere else the
+      // customer line waits to be switched on.
+      return BUILTIN_SIGNATURE_FIELDS.map((f) => ({
+        id: f.id,
+        visible:
+          f.id === 'customer_line' ? workOrder : f.id === 'signature_image' ? !workOrder : true,
+      }))
+    case 'defects':
+      return BUILTIN_DEFECTS_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'results_table':
+      // Only the checks that were not OK, with their notes, a table per
+      // section: what a reader wants to know. Passed and not-applicable rows
+      // and the one-table form are switches a design turns on.
+      return BUILTIN_RESULTS_TABLE_FIELDS.map((f) => ({
+        id: f.id,
+        visible: f.id === 'check_notes',
+      }))
     default:
       return undefined
   }
@@ -487,23 +747,115 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
  *
  * `items_table` is one because it replaces the separate parts and labor tables
  * rather than joining them, and `document_title` because the standard headers
- * already print the title themselves.
+ * already print the title themselves. `signature` because most invoices and
+ * quotes go out unsigned.
  */
-const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>(['general', 'telegram_qr', 'items_table'])
+const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
+  'general',
+  'telegram_qr',
+  'items_table',
+  'signature',
+  'condition_map',
+])
+/**
+ * Sections that join a saved invoice or quote design in front of the ones
+ * that close the sheet, rather than after their neighbour in the default
+ * order. The condition map is an appendix: after everything, before the
+ * signing line and the footer.
+ */
+const INSERTS_BEFORE: Record<string, readonly string[]> = {
+  condition_map: ['signature', 'footer'],
+}
+/** A signature line is a choice; most certificates are issued unsigned. */
+const HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS = new Set<string>(['slogan', 'signature'])
+/**
+ * The work order prints as short as it can be: the customer, the car, the
+ * job, the work and parts with their prices, and the lines to sign. Workshops
+ * print these all day, so everything else waits to be switched on.
+ */
+const HIDDEN_BY_DEFAULT_WORK_ORDER_SECTIONS = new Set<string>([
+  'general',
+  'items_table',
+  'work_checklist',
+  'slogan',
+  'service',
+  'findings',
+  'attached_documents',
+  'warranty',
+  // The customer's notes are the invoice's, and the code to scan is the
+  // board copy's; each costs the room that keeps the counter copy on one page.
+  'notes',
+  'job_qr',
+  // Status, technician and times are the board's business, not the counter's.
+  'job_details',
+  // The letterhead: the customer signs at the counter of the shop whose
+  // name is over the door, and the strip already says which sheet this is.
+  'header',
+])
+
+/** The work order's panels print as bare lines: no fills, no boxes, no colour. */
+const PLAIN_WORK_ORDER_SECTIONS = new Set<string>([
+  'customer',
+  'vehicle',
+  'job_details',
+  'job_qr',
+  'concerns',
+  'job_description',
+  'work_checklist',
+  'notes',
+  'signature',
+])
+
+/**
+ * Black on white for a sheet printed all day long: no coloured accent, no
+ * banding, no dark bar over the tables, small type on a narrow margin.
+ */
+export const WORK_ORDER_DOCUMENT_STYLE: InvoiceDocumentStyle = {
+  accentColor: '#111827',
+  fontSize: 9,
+  rowPadding: 3,
+  margin: 32,
+  stripes: false,
+}
+
+/** The colour and header the work order prints with until a design says otherwise. */
+export const WORK_ORDER_TEMPLATE_DEFAULTS = { primaryColor: '#111827', headerStyle: 'compact' }
+
+/** A table's column heads set in plain ink on white, with a hairline under each row. */
+const PLAIN_TABLE_STYLE: InvoiceSectionStyle = { backgroundColor: '#ffffff', borderWidth: 0.5 }
 
 export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
+  return getDefaultLayout('invoice')
+}
+
+/** The default arrangement for a document: every section, in its built-in order. */
+export function getDefaultLayout(documentType: LayoutDocumentType): InvoiceLayoutConfig {
+  const hidden =
+    documentType === 'certificate'
+      ? HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS
+      : documentType === 'work_order'
+        ? HIDDEN_BY_DEFAULT_WORK_ORDER_SECTIONS
+        : HIDDEN_BY_DEFAULT_SECTIONS
   return {
-    sections: BUILTIN_SECTIONS.map((s, index) => {
-      const fields = getDefaultFieldsForSection(s.id)
-      const column = DEFAULT_COLUMN[s.id]
+    sections: sectionsFor(documentType).map((s, index) => {
+      const fields = getDefaultFieldsForSection(s.id, documentType)
+      const workOrder = documentType === 'work_order'
+      // The car beside the customer, not under it: two short panels on one row.
+      const column = workOrder && s.id === 'vehicle' ? 'right' : DEFAULT_COLUMN[s.id]
+      const plain = workOrder && PLAIN_WORK_ORDER_SECTIONS.has(s.id)
+      const table = workOrder && (s.id === 'labor_table' || s.id === 'parts_table')
       return {
         id: s.id,
-        visible: !HIDDEN_BY_DEFAULT_SECTIONS.has(s.id),
+        visible: !hidden.has(s.id),
         order: index,
         ...(column ? { column } : {}),
+        ...(plain ? { boxed: false } : {}),
+        ...(table ? { style: { ...PLAIN_TABLE_STYLE } } : {}),
         ...(fields ? { fields } : {}),
       }
     }),
+    ...(documentType === 'work_order' ? { document: { ...WORK_ORDER_DOCUMENT_STYLE } } : {}),
+    ...(documentType === 'certificate' || documentType === 'work_order' ? { documentType } : {}),
   }
 }
 
@@ -565,9 +917,27 @@ export function withLetterheadMark(
 // Field lookup helpers (for rendering)
 // ---------------------------------------------------------------------------
 
-/** Get all built-in field definitions for a section */
+/**
+ * The condition map's fields on a document. Earlier visits' marks are the
+ * work order's and the certificate's business: an invoice or a quote speaks
+ * about this visit only, so it has no switch for them.
+ */
+function builtinConditionMapFields(
+  documentType: LayoutDocumentType
+): ReadonlyArray<{ id: string; name: string }> {
+  if (documentType === 'work_order') return BUILTIN_CONDITION_MAP_FIELDS
+  // A certificate is a finished record and an invoice a bill: neither is a
+  // form to write on.
+  const printed = BUILTIN_CONDITION_MAP_FIELDS.filter((f) => f.id !== 'blank_sheet')
+  return documentType === 'invoice' || documentType === 'quote'
+    ? printed.filter((f) => f.id !== 'previous_marks')
+    : printed
+}
+
+/** Get all built-in field definitions for a section, on a document of this type. */
 export function getBuiltinFieldsForSection(
-  sectionId: string
+  sectionId: string,
+  documentType: LayoutDocumentType = 'invoice'
 ): ReadonlyArray<{ id: string; name: string }> {
   switch (sectionId) {
     case 'customer':
@@ -584,6 +954,20 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_DOCUMENT_TITLE_FIELDS
     case 'footer':
       return BUILTIN_FOOTER_FIELDS
+    case 'test_details':
+      return BUILTIN_TEST_DETAILS_FIELDS
+    case 'result':
+      return BUILTIN_RESULT_FIELDS
+    case 'signature':
+      return BUILTIN_SIGNATURE_FIELDS
+    case 'defects':
+      return BUILTIN_DEFECTS_FIELDS
+    case 'results_table':
+      return BUILTIN_RESULTS_TABLE_FIELDS
+    case 'job_details':
+      return BUILTIN_JOB_DETAILS_FIELDS
+    case 'condition_map':
+      return builtinConditionMapFields(documentType)
     default:
       return []
   }
@@ -599,6 +983,13 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_BANK_ACCOUNT_FIELDS,
     ...BUILTIN_DOCUMENT_TITLE_FIELDS,
     ...BUILTIN_FOOTER_FIELDS,
+    ...BUILTIN_TEST_DETAILS_FIELDS,
+    ...BUILTIN_RESULT_FIELDS,
+    ...BUILTIN_SIGNATURE_FIELDS,
+    ...BUILTIN_DEFECTS_FIELDS,
+    ...BUILTIN_RESULTS_TABLE_FIELDS,
+    ...BUILTIN_JOB_DETAILS_FIELDS,
+    ...BUILTIN_CONDITION_MAP_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
 }
@@ -633,7 +1024,10 @@ export function materializeHiddenSection(
 // ---------------------------------------------------------------------------
 
 export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceLayoutConfig {
-  const defaults = getDefaultInvoiceLayout()
+  // A certificate or a work order layout says so and is filled in from its
+  // own sections; anything else is an invoice or a quote, which share theirs.
+  const documentType = layoutDocumentType(saved)
+  const defaults = getDefaultLayout(documentType)
 
   if (!saved.sections || saved.sections.length === 0) {
     return saved.version !== undefined ? { ...defaults, version: saved.version } : defaults
@@ -650,7 +1044,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     if (seen.has(section.id)) continue
     seen.add(section.id)
 
-    const defaultFields = getDefaultFieldsForSection(section.id)
+    const defaultFields = getDefaultFieldsForSection(section.id, documentType)
     if (defaultFields) {
       merged.push({
         ...section,
@@ -664,24 +1058,36 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
   // Append any new built-in sections that are missing from saved.
   // Insert each after its natural predecessor from the default order,
   // so e.g. "findings" lands after "labor_table" instead of at the end.
+  // An appendix instead goes in front of the sections that close the sheet,
+  // wherever a workshop has put those: the condition map printed after the
+  // signature in a design whose bank details sat below the signing line.
   const defaultOrder = defaults.sections.map((s) => s.id)
-  const toInsert: { section: InvoiceSection; afterIdx: number }[] = []
+  const toInsert: { section: InvoiceSection; afterIdx: number; defaultIdx: number }[] = []
   for (const def of defaults.sections) {
     if (seen.has(def.id)) continue
     const defaultIdx = defaultOrder.indexOf(def.id)
     let insertAfterIdx = -1
-    for (let i = defaultIdx - 1; i >= 0; i--) {
-      const idx = merged.findIndex((s) => s.id === defaultOrder[i])
-      if (idx !== -1) {
-        insertAfterIdx = idx
-        break
+    // 'invoice' covers quotes too: they share one section list.
+    const closing = documentType === 'invoice' ? INSERTS_BEFORE[def.id] : undefined
+    const closingIdx = closing ? merged.findIndex((s) => closing.includes(s.id)) : -1
+    if (closingIdx !== -1) {
+      insertAfterIdx = closingIdx - 1
+    } else {
+      for (let i = defaultIdx - 1; i >= 0; i--) {
+        const idx = merged.findIndex((s) => s.id === defaultOrder[i])
+        if (idx !== -1) {
+          insertAfterIdx = idx
+          break
+        }
       }
     }
-    toInsert.push({ section: def, afterIdx: insertAfterIdx })
+    toInsert.push({ section: def, afterIdx: insertAfterIdx, defaultIdx })
   }
   if (toInsert.length > 0) {
-    // Insert in reverse so indices stay stable
-    toInsert.sort((a, b) => b.afterIdx - a.afterIdx)
+    // Insert in reverse so indices stay stable. Sections bound for the same
+    // spot go in latest-first too, so they come out in their default order
+    // rather than back to front.
+    toInsert.sort((a, b) => b.afterIdx - a.afterIdx || b.defaultIdx - a.defaultIdx)
     for (const { section, afterIdx } of toInsert) {
       merged.splice(afterIdx + 1, 0, { ...section, order: 0 })
     }
@@ -726,6 +1132,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     ...(saved.document ? { document: saved.document } : {}),
     ...(saved.anchors ? { anchors: saved.anchors } : {}),
     ...(saved.version !== undefined ? { version: saved.version } : {}),
+    ...(documentType !== 'invoice' ? { documentType } : {}),
   }
 }
 

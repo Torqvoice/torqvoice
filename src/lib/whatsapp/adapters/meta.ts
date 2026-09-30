@@ -148,7 +148,10 @@ export const metaAdapter: WhatsappAdapter = {
       key: 'appSecret',
       label: 'App secret',
       secret: true,
-      help: 'Without it, webhook signatures are not checked and anyone who learns the webhook URL can post messages as your customers. Strongly recommended.',
+      // Not `required`: sending needs only the token, and a connection made
+      // before the secret was asked for keeps sending. Receiving is another
+      // matter, see receive().
+      help: 'Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers.',
     },
     {
       key: 'apiVersion',
@@ -200,13 +203,18 @@ export const metaAdapter: WhatsappAdapter = {
     const raw = await request.text()
 
     // Meta signs every delivery. Checking it is the only thing standing
-    // between the webhook and anyone who learns the URL.
+    // between the webhook and anyone who learns the URL, and the URL names
+    // nothing but the workshop's id, which every share link carries. So a
+    // delivery that cannot be checked is not read: it used to be, whenever
+    // the workshop had left the app secret blank, and a made-up message
+    // then landed in the inbox as if a customer had written it.
     const appSecret = ctx.credentials.appSecret
-    if (appSecret) {
-      const signature = request.headers.get('x-hub-signature-256')
-      if (!isSignatureValid(raw, signature, appSecret)) {
-        throw new Error('Invalid webhook signature')
-      }
+    if (!appSecret) {
+      throw new Error('App secret is not set, so the delivery could not be verified')
+    }
+    const signature = request.headers.get('x-hub-signature-256')
+    if (!isSignatureValid(raw, signature, appSecret)) {
+      throw new Error('Invalid webhook signature')
     }
 
     const payload = JSON.parse(raw) as {

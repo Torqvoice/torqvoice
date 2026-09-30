@@ -25,7 +25,9 @@
     "deliveryViewed": "Vista",
     "deliveryViewedOn": "Abierta por última vez el {date}",
     "filterUnviewed": "Sin ver",
-    "filterUnviewedHint": "Facturas enviadas que nunca se han abierto"
+    "filterUnviewedHint": "Facturas enviadas que nunca se han abierto",
+    "filterCompleted": "Solo completadas",
+    "filterCompletedHint": "Muestra solo las órdenes de trabajo marcadas como completadas. Se recuerda para la próxima vez."
   },
   "recurring": {
     "title": "Recurrente",

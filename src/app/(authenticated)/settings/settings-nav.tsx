@@ -27,6 +27,7 @@ import {
   Key,
   Layout,
   Mail,
+  Palette,
   Percent,
   UserCog,
   UsersRound,
@@ -36,6 +37,8 @@ import {
   LifeBuoy,
   Plug,
   ClipboardCheck,
+  ShieldCheck,
+  ListChecks,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -66,6 +69,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'account', href: '/settings/account', icon: UserCog },
       { key: 'team', href: '/settings/team', icon: UsersRound },
       { key: 'localization', href: '/settings/localization', icon: Globe },
+      { key: 'appearance', href: '/settings/appearance', icon: Palette },
       { key: 'support', href: '/settings/support', icon: LifeBuoy, supportOnly: true },
     ],
   },
@@ -76,6 +80,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'templates', href: '/settings/templates', icon: Layout, gate: 'customTemplates' },
       { key: 'payment', href: '/settings/payment', icon: Banknote, gate: 'payments' },
       { key: 'tax', href: '/settings/tax', icon: Percent },
+      { key: 'warranty', href: '/settings/warranty', icon: ShieldCheck },
     ],
   },
   {
@@ -99,6 +104,7 @@ const settingsCategories: SettingsCategory[] = [
     key: 'workshop',
     items: [
       { key: 'workshop', href: '/settings/workshop', icon: Wrench },
+      { key: 'workOrderStatuses', href: '/settings/work-order-statuses', icon: ListChecks },
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
       { key: 'inspectionReminders', href: '/settings/inspection-reminders', icon: ClipboardCheck },
       { key: 'alerts', href: '/settings/alerts', icon: BellRing },

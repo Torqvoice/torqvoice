@@ -21,6 +21,7 @@ export async function getTechnicians() {
           isActive: true,
           sortOrder: true,
           dailyCapacity: true,
+          skills: true,
           userId: true,
           organizationId: true,
           createdAt: true,
@@ -76,6 +77,7 @@ export async function createTechnician(input: unknown) {
         data: {
           name: data.name,
           color: data.color,
+          skills: data.skills || null,
           userId: data.userId || null,
           sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
           organizationId,
@@ -110,7 +112,9 @@ export async function updateTechnician(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
       const data = updateTechnicianSchema.parse(input)
-      const { id, ...updates } = data
+      const { id, skills, ...rest } = data
+      // An emptied field means "no skills line", not a line of nothing.
+      const updates = { ...rest, ...(skills !== undefined ? { skills: skills || null } : {}) }
 
       // Prevent linking a user that's already linked to another technician
       if (updates.userId) {

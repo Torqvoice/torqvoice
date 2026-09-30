@@ -40,7 +40,24 @@ async function changePassword(page: Page, from: string, to: string) {
 }
 
 test.describe('password', () => {
-  test('is changed from account settings and works at the door', async ({ page, browser }) => {
+  // One context for both steps, and its session saved afterwards: changing
+  // the password ends every session on the account, the caller's included,
+  // and hands this context a new one. A fresh context from the saved state
+  // would come back with the token the change deleted.
+  let owner: BrowserContext
+  let page: Page
+
+  test.beforeAll(async ({ browser }) => {
+    owner = await browser.newContext({ storageState: 'e2e/.auth/owner.json' })
+    page = await owner.newPage()
+  })
+
+  test.afterAll(async () => {
+    await owner.storageState({ path: 'e2e/.auth/owner.json' })
+    await owner.close()
+  })
+
+  test('is changed from account settings and works at the door', async ({ browser }) => {
     await changePassword(page, password, changed)
 
     const fresh = await signedOut(browser)
@@ -49,7 +66,7 @@ test.describe('password', () => {
     await fresh.context().close()
   })
 
-  test('is put back for the rest of the suite', async ({ page }) => {
+  test('is put back for the rest of the suite', async () => {
     await changePassword(page, changed, password)
   })
 })

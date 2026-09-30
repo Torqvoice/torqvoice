@@ -19,7 +19,7 @@ import {
 } from '@/features/scheduled-messages/Actions/scheduledMessageActions'
 import type { MessageChannel } from '@/features/scheduled-messages/Schema/scheduledMessageSchema'
 import type { InboxThread, MessagingChannel } from '../Actions/inboxActions'
-import { UnifiedInbox } from './UnifiedInbox'
+import { type InboxFocus, UnifiedInbox } from './UnifiedInbox'
 
 /**
  * The Messages page: one inbox across every channel, and the scheduled queue.
@@ -38,6 +38,7 @@ export function MessagesPageClient({
   initialScheduled = [],
   campaigns = [],
   availableChannels = [],
+  focus = null,
 }: {
   threads: InboxThread[]
   /** Where the inbox's next page starts. */
@@ -47,6 +48,8 @@ export function MessagesPageClient({
   initialScheduled?: ScheduledMessageListItem[]
   campaigns?: CampaignListItem[]
   availableChannels?: MessageChannel[]
+  /** The conversation the address names, if any. */
+  focus?: InboxFocus | null
 }) {
   const t = useTranslations('messaging.inbox')
   const tp = useTranslations('messages.page')
@@ -148,6 +151,7 @@ export function MessagesPageClient({
           </div>
         ) : (
           <UnifiedInbox
+            focus={focus}
             threads={threads}
             initialCursor={initialCursor}
             channels={channels}

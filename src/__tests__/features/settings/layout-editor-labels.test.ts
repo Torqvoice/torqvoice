@@ -17,6 +17,10 @@ import {
   BUILTIN_HEADER_FIELDS,
   BUILTIN_BANK_ACCOUNT_FIELDS,
   BUILTIN_FOOTER_FIELDS,
+  BUILTIN_DOCUMENT_TITLE_FIELDS,
+  BUILTIN_JOB_DETAILS_FIELDS,
+  BUILTIN_SIGNATURE_FIELDS,
+  WORK_ORDER_SECTIONS,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const LOCALES = readdirSync('messages')
@@ -28,7 +32,12 @@ const FIELD_IDS = [
   ...BUILTIN_HEADER_FIELDS,
   ...BUILTIN_BANK_ACCOUNT_FIELDS,
   ...BUILTIN_FOOTER_FIELDS,
+  ...BUILTIN_DOCUMENT_TITLE_FIELDS,
+  ...BUILTIN_JOB_DETAILS_FIELDS,
+  ...BUILTIN_SIGNATURE_FIELDS,
 ].map((f) => f.id)
+
+const SECTION_IDS = [...new Set([...BUILTIN_SECTIONS, ...WORK_ORDER_SECTIONS].map((s) => s.id))]
 
 function layoutEditorMessages(locale: string) {
   const json = JSON.parse(readFileSync(`messages/${locale}/settings.json`, 'utf8'))
@@ -42,7 +51,7 @@ describe('layout editor labels', () => {
 
   it.each(LOCALES)('names every section in %s', (locale) => {
     const named = Object.keys(layoutEditorMessages(locale).sections ?? {})
-    const missing = BUILTIN_SECTIONS.map((s) => s.id).filter((id) => !named.includes(id))
+    const missing = SECTION_IDS.filter((id) => !named.includes(id))
     expect(missing).toEqual([])
   })
 

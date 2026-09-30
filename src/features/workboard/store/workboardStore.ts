@@ -35,6 +35,7 @@ export type Technician = {
   isActive: boolean
   sortOrder: number
   dailyCapacity: number
+  skills?: string | null
   userId: string | null
   organizationId: string
 }

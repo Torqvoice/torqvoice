@@ -1,6 +1,6 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
-import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { QuotesClient } from './quotes-client'
 import { PageHeader } from '@/components/page-header'
@@ -32,7 +32,7 @@ export default async function QuotesPage({
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
     }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE]),
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
   ])
 
   if (!result.success || !result.data) {

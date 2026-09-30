@@ -8,10 +8,10 @@
     "week": "Tydzień",
     "presenter": "Prezenter",
     "addTechnician": "Dodaj Technika",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Poprzedni tydzień",
+    "nextWeek": "Następny tydzień",
+    "previousDay": "Poprzedni dzień",
+    "nextDay": "Następny dzień",
     "groupBy": "Kolumny",
     "byTechnician": "Kolumna na mechanika",
     "byBay": "Kolumna na stanowisko",
@@ -20,7 +20,7 @@
     "add": "Dodaj",
     "addBay": "Dodaj stanowisko",
     "weekNumber": "Tydz. {number}",
-    "lanes": "Kolumny",
+    "lanes": "Tory",
     "showAllLanes": "Pokaż wszystkie",
     "onlyBusyLanes": "Tylko ze zleceniami",
     "layout": "Widok",
@@ -78,7 +78,10 @@
     "addTechnician": "Dodaj Technika",
     "standaloneOnly": "Nazwisko na tablicy dla kogoś, kto się nie loguje, na przykład ucznia lub podwykonawcy. Mechanika korzystającego z aplikacji dodasz na stronie Zespół.",
     "linkedTo": "Loguje się jako {name}",
-    "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji."
+    "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji.",
+    "skills": "Umiejętności",
+    "skillsPlaceholder": "Diagnostyka, certyfikat EV",
+    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne."
   },
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",
@@ -107,8 +110,8 @@
       "waitingParts": "Oczekiwanie na Części",
       "completed": "Ukończone"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Poprzedni",
+    "next": "Następny",
     "groupingUnused": "Tablica statusów grupuje według statusu",
     "connecting": "Łączenie…"
   },
@@ -154,6 +157,9 @@
     "workBay": "Stanowisko",
     "status": "Status",
     "noTime": "Brak godziny",
-    "none": "Jeszcze nikt"
+    "none": "Jeszcze nikt",
+    "promised": "Obiecane",
+    "promiseLate": "Po terminie",
+    "promiseOverdue": "Obiecane klientowi na termin, który już minął"
   }
 }

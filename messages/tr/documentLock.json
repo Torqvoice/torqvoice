@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Bu fatura gönderildiği için kilitli",
+      "paid": "Bu fatura ödendiği için kilitli"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Bu teklif gönderildiği için kilitli",
+      "accepted": "Bu teklif kabul edildiği için kilitli"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Parçaları, işçiliği, fiyatları, indirimi, vergisi, numarası ve tarihi artık değiştirilemez. Ödemeler, durum değişiklikleri, gönderim ve ekler çalışmaya devam eder.",
+  "lockedAdminHint": "Sahip veya yönetici olarak, gerçekten düzeltilmesi gereken bir şey varsa kilidi açabilirsiniz. Kilidin açılması denetim günlüğüne yazılır.",
+  "lockedMemberHint": "Düzeltilmesi gereken bir şey varsa kilidi açması için bir sahip ya da yöneticiye başvurun.",
+  "unlock": "Düzenleme için kilidi aç",
+  "relock": "Yeniden kilitle",
+  "unlockConfirmTitle": "Bu belgenin kilidi açılsın mı?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Belge yeniden düzenlenebilir hale gelir ve değişiklik adınızla birlikte denetim günlüğüne yazılır. Yerel kurallarınız gerektiriyorsa bunun yerine iade faturası kullanın.",
+    "quote": "Belge yeniden düzenlenebilir hale gelir ve değişiklik adınızla birlikte denetim günlüğüne yazılır."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Düzenleme için kilit açıldı",
+  "relocked": "Yeniden kilitlendi",
+  "reopenedTitle": "Bu belgenin kilidi düzenleme için açıldı",
+  "reopenedBody": "Yeniden kilitlenene kadar düzenlenebilir kalır.",
+  "failed": "Kilit değiştirilemedi"
 }

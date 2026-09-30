@@ -180,6 +180,8 @@
       "transmission": "Трансмиссия",
       "engineSize": "Объём двигателя",
       "engineCode": "Код двигателя",
+      "hsn": "HSN (код производителя)",
+      "tsn": "TSN (код типа)",
       "purchaseDate": "Дата покупки",
       "purchasePrice": "Цена покупки"
     },
@@ -198,6 +200,7 @@
     "customer_name_required": "Не указано имя клиента",
     "invalid_email": "Эл. почта \"{value}\" недействительна и была пропущена",
     "invalid_vin": "VIN \"{value}\" не содержит 17 символов; сохранён как есть",
+    "invalid_type_key": "{field} «{value}» не является допустимым HSN или TSN; пропущено",
     "vehicle_make_model_required": "Не указаны марка и модель",
     "vehicle_year_required": "Не указан год",
     "vehicle_year_invalid": "Год \"{value}\" недействителен",

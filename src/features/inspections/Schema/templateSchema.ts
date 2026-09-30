@@ -11,13 +11,16 @@ export const templateItemSchema = z.object({
   description: z.string().optional(),
   code: z.string().optional(),
   sortOrder: z.number().int().min(0).default(0),
-  inputType: z.enum(['condition', 'measurement', 'text', 'choice']).default('condition'),
+  inputType: z
+    .enum(['condition', 'measurement', 'text', 'choice', 'condition_map'])
+    .default('condition'),
   unit: z.string().optional(),
   minValue: z.number().nullable().optional(),
   maxValue: z.number().nullable().optional(),
   choices: z.array(z.string()).default([]),
   required: z.boolean().default(false),
   photoRequired: z.boolean().default(false),
+  allowNotApplicable: z.boolean().default(true),
   defaultSeverity: z.enum(['attention', 'fail', 'dangerous']).nullable().optional(),
   defectSuggestions: z.array(z.string()).default([]),
 })

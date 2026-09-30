@@ -1,13 +1,21 @@
 import { z } from 'zod'
 
-export const createStatusReportSchema = z.object({
-  serviceRecordId: z.string(),
-  title: z.string().optional(),
-  message: z.string().optional(),
-  videoUrl: z.string().optional(),
-  videoFileName: z.string().optional(),
-  expiresAt: z.string().optional(),
-})
+export const createStatusReportSchema = z
+  .object({
+    /** The work order the report is about, or... */
+    serviceRecordId: z.string().min(1).optional(),
+    /** ...the inspection. One of the two, never both. */
+    inspectionId: z.string().min(1).optional(),
+    title: z.string().optional(),
+    message: z.string().optional(),
+    videoUrl: z.string().optional(),
+    videoFileName: z.string().optional(),
+    expiresAt: z.string().optional(),
+  })
+  .refine((data) => !!data.serviceRecordId !== !!data.inspectionId, {
+    message: 'A status report is about a work order or an inspection',
+    path: ['serviceRecordId'],
+  })
 
 export const sendStatusReportSchema = z.object({
   statusReportId: z.string(),

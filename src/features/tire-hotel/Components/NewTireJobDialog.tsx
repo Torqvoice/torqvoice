@@ -366,7 +366,10 @@ export function NewTireJobDialog({
                         <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
+                    <PopoverContent
+                      align="start"
+                      className="w-(--radix-popover-trigger-width) min-w-64 p-0"
+                    >
                       <Command shouldFilter={false}>
                         <CommandInput
                           value={query}

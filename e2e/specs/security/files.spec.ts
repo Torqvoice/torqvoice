@@ -112,18 +112,27 @@ test.describe('a file URL on a record', () => {
 
     for (const [i, { url }] of forged.entries()) {
       const name = `e2e-forged-${i}-${stamp}.txt`
+      // The refusal is a toast, and the last file's is still up when the next
+      // one starts. Left there it answers this file's check at once, the route
+      // below is taken away while its upload is still in flight, and the
+      // handler then fails with "Route is already handled" on a slow runner.
+      await expect(page.getByText(/not an upload of this workshop/i)).toHaveCount(0, {
+        timeout: 30_000,
+      })
       await page.route('**/api/protected/upload/service-files', async (route) => {
         const response = await route.fetch()
         const json = (await response.json()) as Record<string, unknown>
         await route.fulfill({ response, json: { ...json, url } })
       })
 
+      const files = page.getByTestId('files-media')
+      const documents = files.getByRole('tab', { name: /^Documents/ })
       await expect(async () => {
-        await page.getByRole('button', { name: /^Documents/ }).click()
-        await expect(page.locator('input[type="file"]').first()).toBeAttached({ timeout: 2_000 })
+        await documents.click()
+        await expect(documents).toHaveAttribute('aria-selected', 'true', { timeout: 2_000 })
       }).toPass({ timeout: 30_000 })
-      await page
-        .locator('input[type="file"][accept=".pdf,.csv,.txt"]')
+      await files
+        .locator('input[type="file"]')
         .setInputFiles({ name, mimeType: 'text/plain', buffer: Buffer.from('forged') })
 
       await expect(

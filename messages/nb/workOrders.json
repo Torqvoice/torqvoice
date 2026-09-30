@@ -31,14 +31,20 @@
       "status": "Status",
       "tech": "Tekniker",
       "date": "Dato",
-      "total": "Total"
+      "total": "Total",
+      "promised": "Lovet",
+      "promisedOverdue": "Lovet {date}, forsinket"
     },
     "emailSubject": "Kjøretøystatus oppdatert: {status}",
-    "changeStatus": "Change status",
+    "changeStatus": "Endre status",
     "contextMenu": {
       "open": "Åpne arbeidsordre",
       "openVehicle": "Åpne kjøretøy",
       "openCustomer": "Åpne kunde"
+    },
+    "dueToday": "Frist i dag",
+    "columns": {
+      "label": "Kolonner"
     }
   },
   "vehiclePicker": {

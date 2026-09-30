@@ -6,6 +6,7 @@ import {
 import { pdfFamily } from '@/features/invoice-designer/Pdf/renderPdf'
 import { SpecPdfPage } from '@/features/invoice-designer/Pdf/SpecPdf'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { VisitConditionMap } from '@/features/condition-map/Lib/print'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 
 interface ImageAttachmentPDF {
@@ -30,9 +31,11 @@ export function QuotePDF({
   currencyCode = 'USD',
   currencyFormat = 'symbol',
   logoDataUri,
+  signer,
   torqvoiceLogoDataUri,
   dateFormat,
   timezone,
+  unitSystem,
   template,
   portalUrl,
   imageAttachments = [],
@@ -42,15 +45,18 @@ export function QuotePDF({
   labels = {},
   layoutConfig,
   lineItemsInclTax,
+  conditionMap,
 }: {
   data: QuotePrintData
   workshop?: { name: string; address: string; phone: string; email: string; slogan?: string }
   currencyCode?: string
   currencyFormat?: 'symbol' | 'code'
   logoDataUri?: string
+  signer?: { name: string; dataUri?: string }
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
+  unitSystem?: string
   template?: TemplateConfig
   portalUrl?: string
   imageAttachments?: ImageAttachmentPDF[]
@@ -60,6 +66,7 @@ export function QuotePDF({
   labels?: Record<string, string>
   lineItemsInclTax?: boolean
   layoutConfig?: InvoiceLayoutConfig
+  conditionMap?: VisitConditionMap
 }) {
   const spec = buildQuotePrintSpec({
     data,
@@ -68,9 +75,11 @@ export function QuotePDF({
     currencyCode,
     currencyFormat,
     logoDataUri,
+    signer,
     torqvoiceLogoDataUri,
     dateFormat,
     timezone,
+    unitSystem,
     template,
     portalUrl,
     pdfAttachmentNames,
@@ -78,6 +87,7 @@ export function QuotePDF({
     customFields,
     labels,
     layoutConfig,
+    conditionMap,
   })
 
   const quoteNum = data.quoteNumber || 'QUOTE'

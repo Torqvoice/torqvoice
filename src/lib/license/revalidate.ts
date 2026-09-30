@@ -3,6 +3,7 @@ import { isDemoMode } from '@/lib/demo'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { verifyLicenseToken, type LicenseTokenVerification } from './token'
+import { torqvoiceComUrl } from '@/lib/torqvoice-com'
 
 /**
  * Talks to torqvoice.com and stores what comes back.
@@ -12,8 +13,6 @@ import { verifyLicenseToken, type LicenseTokenVerification } from './token'
  * rows (`license.valid`, `license.plan`, `license.expiresAt`) are kept as a
  * display cache for the licence page and mean nothing to the feature gate.
  */
-
-const TORQVOICE_COM_URL = process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'
 
 export type RemoteLicenseResult = {
   reachable: boolean
@@ -34,7 +33,7 @@ export async function fetchRemoteLicense(
     return { reachable: false, valid: false, plan: 'free', expiresAt: '', token: null }
   }
   try {
-    const response = await fetch(`${TORQVOICE_COM_URL}/api/license/validate`, {
+    const response = await fetch(`${torqvoiceComUrl()}/api/license/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key: licenseKey, organizationId }),

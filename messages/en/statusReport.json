@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Thank you for your feedback!",
     "feedbackError": "Failed to submit feedback",
     "submitting": "Submitting...",
-    "poweredBy": "Powered by"
+    "poweredBy": "Powered by",
+    "vehicleLabel": "Vehicle",
+    "plate": "Plate: {plate}",
+    "inspectionTitle": "Inspection",
+    "messageFromTechnician": "Message from technician",
+    "videoUnsupported": "Your browser does not support the video element."
   },
   "list": {
     "title": "Status Reports",

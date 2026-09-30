@@ -27,7 +27,7 @@
     "batchDeleteTitle": "Elimina clienti",
     "batchDeleteDescription": "Eliminare {count} cliente/i? I veicoli verranno scollegati.",
     "batchDeleteSuccess": "{count} cliente/i eliminato/i",
-    "openMenu": "Open menu"
+    "openMenu": "Apri menu"
   },
   "detail": {
     "backToCustomers": "Torna ai clienti",
@@ -95,7 +95,7 @@
     "customerCreated": "Cliente creato",
     "saveError": "Salvataggio del cliente non riuscito",
     "customerNumber": "N. cliente",
-    "customerNumberAuto": "Auto",
+    "customerNumberAuto": "Automatico",
     "sectionContact": "Contatto",
     "sectionBilling": "Fatturazione",
     "addScannedVehicle": "Aggiungi il veicolo {vehicle}",

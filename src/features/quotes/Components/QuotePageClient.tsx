@@ -1,5 +1,7 @@
 'use client'
 
+import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
+import { ShopFeeProvider } from '@/features/settings/Components/ShopFeeContext'
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setQuoteEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import type { LockState } from '@/lib/document-lock'
@@ -7,6 +9,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -46,8 +49,10 @@ import type { InventoryPartOption } from '@/features/vehicles/Components/service
 import { QuoteLaborEditor } from './QuoteLaborEditor'
 import { QuoteNotesEditor } from './QuoteNotesEditor'
 import { QuoteRightColumn } from './QuoteRightColumn'
+import { QuoteCustomerResponse } from './QuoteCustomerResponse'
 import { VehicleCombobox } from './VehicleCombobox'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import type { WarrantyTexts } from '@/lib/warranty'
 
 const LG_BREAKPOINT = 1024
 
@@ -72,6 +77,9 @@ export function QuotePageClient({
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
+  shopFee = null,
+  warrantyTexts,
+  distanceUnit,
   laborPresets = [],
   inventoryParts = [],
   smsEnabled = false,
@@ -93,6 +101,12 @@ export function QuotePageClient({
   defaultTaxRate?: number
   taxEnabled?: boolean
   defaultLaborRate?: number
+  /** The workshop's shop fee, for re-pricing a percentage one as lines change. */
+  shopFee?: ShopFeeConfig | null
+  /** The workshop's stock warranty texts, for the warranty panel to fill in. */
+  warrantyTexts: WarrantyTexts
+  /** 'km' or 'mi', as the workshop measures distance. */
+  distanceUnit: string
   laborPresets?: LaborPresetOption[]
   inventoryParts?: InventoryPartOption[]
   smsEnabled?: boolean
@@ -106,6 +120,7 @@ export function QuotePageClient({
   const router = useRouter()
   const isLarge = useIsLargeScreen()
   const t = useTranslations('quotes')
+  const tStatus = useTranslations('quotes.statusLabels')
   const tPreview = useTranslations('common.pdfPreview')
 
   const state = useQuoteFormState({
@@ -115,6 +130,7 @@ export function QuotePageClient({
     taxEnabled,
     defaultLaborRate,
     locked: lockState.locked,
+    shopFee,
     t,
   })
 
@@ -188,8 +204,12 @@ export function QuotePageClient({
     router.refresh()
   }, [quote.id, router])
 
+  // A locked quote offers no editing, rather than letting someone retype a
+  // line and meet the refusal on save. The lock is a fieldset per column, not
+  // one around the whole tab: a disabled fieldset disables every button inside
+  // it as well, and converting the quote or copying its link is not an edit.
   const leftColumn = (
-    <div className="space-y-3">
+    <fieldset disabled={lockState.locked} className="min-w-0 space-y-3">
       <QuotePartsEditor
         partItems={state.partItems}
         currencyCode={currencyCode}
@@ -223,7 +243,7 @@ export function QuotePageClient({
         onNotesChange={handleNotesChange}
         t={t}
       />
-    </div>
+    </fieldset>
   )
 
   const rightColumn = (
@@ -232,186 +252,202 @@ export function QuotePageClient({
       quote={quote}
       organizationId={organizationId}
       currencyCode={currencyCode}
+      warrantyTexts={warrantyTexts}
+      distanceUnit={distanceUnit}
       t={t}
       onRevoke={handleRevoke}
+      lockReason={lockState.locked ? lockState.reason : null}
     />
   )
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      {/* Header */}
-      <div className="shrink-0 border-b bg-background px-4 py-2">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/quotes"
-            className="flex min-w-0 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
-          >
-            <ArrowLeft className="h-4 w-4 shrink-0" />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={`shrink-0 text-xs capitalize ${statusColors[state.status] || ''}`}
-                >
-                  {state.status}
-                </Badge>
-                <h1 className="truncate text-lg font-semibold leading-tight">{quote.title}</h1>
-              </div>
-              <p className="truncate text-xs text-muted-foreground">
-                {quote.quoteNumber || t('page.quote')}
-                {quote.customer ? ` · ${quote.customer.name}` : ''}
-              </p>
-            </div>
-          </Link>
-          <div className="flex shrink-0 items-center gap-2">
-            {state.hasUnsavedChanges && (
-              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                {t('page.unsavedChanges')}
-              </span>
-            )}
-            {state.showSaved && !state.hasUnsavedChanges && (
-              <span className="text-xs font-medium text-green-600 dark:text-green-400">
-                {t('page.saved')}
-              </span>
-            )}
-            <Button
-              type="submit"
-              form="quote-form"
-              size="sm"
-              disabled={state.saving}
-              variant={state.hasUnsavedChanges ? 'default' : 'outline'}
-              className={state.hasUnsavedChanges ? 'animate-pulse' : ''}
+    <ShopFeeProvider value={shopFee}>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        {/* Header */}
+        <div className="shrink-0 border-b bg-background px-4 py-2">
+          <div className="flex items-center justify-between">
+            <Link
+              href="/quotes"
+              className="flex min-w-0 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
             >
-              {state.saving ? (
-                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Save className="mr-1 h-3.5 w-3.5" />
+              <ArrowLeft className="h-4 w-4 shrink-0" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={`shrink-0 text-xs ${statusColors[state.status] || ''}`}
+                  >
+                    {quoteStatusLabel(state.status, tStatus)}
+                  </Badge>
+                  <h1 className="truncate text-lg font-semibold leading-tight">{quote.title}</h1>
+                </div>
+                <p className="truncate text-xs text-muted-foreground">
+                  {quote.quoteNumber || t('page.quote')}
+                  {quote.customer ? ` · ${quote.customer.name}` : ''}
+                </p>
+              </div>
+            </Link>
+            <div className="flex shrink-0 items-center gap-2">
+              {state.hasUnsavedChanges && (
+                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                  {t('page.unsavedChanges')}
+                </span>
               )}
-              {t('page.save')}
-            </Button>
-            <ButtonGroup>
+              {state.showSaved && !state.hasUnsavedChanges && (
+                <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                  {t('page.saved')}
+                </span>
+              )}
               <Button
-                variant="outline"
+                type="submit"
+                form="quote-form"
                 size="sm"
                 disabled={state.saving}
-                onClick={async () => {
-                  if (state.saving) return
-                  if (state.hasUnsavedChanges) await state.saveNow()
-                  setShowPdfPreview(true)
-                }}
-              >
-                <Eye className="mr-1 h-3.5 w-3.5" />
-                {tPreview('preview')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={state.handleDownloadPDF}
-                disabled={state.downloading}
-              >
-                {state.downloading ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Download className="mr-1 h-3.5 w-3.5" />
-                )}
-                {t('page.pdf')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={state.saving}
-                onClick={async () => {
-                  if (state.saving) return
-                  if (state.hasUnsavedChanges) await state.saveNow()
-                  state.setShowEmailDialog(true)
-                }}
+                variant={state.hasUnsavedChanges ? 'default' : 'outline'}
+                className={state.hasUnsavedChanges ? 'animate-pulse' : ''}
               >
                 {state.saving ? (
                   <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <Mail className="mr-1 h-3.5 w-3.5" />
+                  <Save className="mr-1 h-3.5 w-3.5" />
                 )}
-                {t('page.email')}
+                {t('page.save')}
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={state.saving}
-                onClick={async () => {
-                  if (state.saving) return
-                  if (state.hasUnsavedChanges) await state.saveNow()
-                  state.setShowShareDialog(true)
-                }}
-              >
-                {state.saving ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Globe className="mr-1 h-3.5 w-3.5" />
-                )}
-                {t('page.share')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10"
-                onClick={state.handleDelete}
-              >
-                <Trash2 className="mr-1 h-3.5 w-3.5" />
-                {t('page.delete')}
-              </Button>
-            </ButtonGroup>
+              <ButtonGroup>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={state.saving}
+                  onClick={async () => {
+                    if (state.saving) return
+                    if (state.hasUnsavedChanges) await state.saveNow()
+                    setShowPdfPreview(true)
+                  }}
+                >
+                  <Eye className="mr-1 h-3.5 w-3.5" />
+                  {tPreview('preview')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={state.handleDownloadPDF}
+                  disabled={state.downloading}
+                >
+                  {state.downloading ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="mr-1 h-3.5 w-3.5" />
+                  )}
+                  {t('page.pdf')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={state.saving}
+                  onClick={async () => {
+                    if (state.saving) return
+                    if (state.hasUnsavedChanges) await state.saveNow()
+                    state.setShowEmailDialog(true)
+                  }}
+                >
+                  {state.saving ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Mail className="mr-1 h-3.5 w-3.5" />
+                  )}
+                  {t('page.email')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={state.saving}
+                  onClick={async () => {
+                    if (state.saving) return
+                    if (state.hasUnsavedChanges) await state.saveNow()
+                    state.setShowShareDialog(true)
+                  }}
+                >
+                  {state.saving ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Globe className="mr-1 h-3.5 w-3.5" />
+                  )}
+                  {t('page.share')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive hover:bg-destructive/10"
+                  onClick={state.handleDelete}
+                >
+                  <Trash2 className="mr-1 h-3.5 w-3.5" />
+                  {t('page.delete')}
+                </Button>
+              </ButtonGroup>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="shrink-0 border-b bg-background px-4">
-        <div className="flex gap-1">
-          {[
-            { key: 'details' as TabType, label: t('page.tabs.details'), icon: FileText },
-            { key: 'images' as TabType, label: t('page.tabs.images'), icon: Camera },
-            { key: 'documents' as TabType, label: t('page.tabs.documents'), icon: Paperclip },
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => state.setActiveTab(key)}
-              className={`flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
-                state.activeTab === key
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {label}
-            </button>
-          ))}
+        {/* Tabs */}
+        <div className="shrink-0 border-b bg-background px-4">
+          <div className="flex gap-1">
+            {[
+              { key: 'details' as TabType, label: t('page.tabs.details'), icon: FileText },
+              { key: 'images' as TabType, label: t('page.tabs.images'), icon: Camera },
+              { key: 'documents' as TabType, label: t('page.tabs.documents'), icon: Paperclip },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => state.setActiveTab(key)}
+                className={`flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                  state.activeTab === key
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {(lockState.locked || lockState.unlockedAt) && (
-        <div className="shrink-0 px-4 pt-3">
-          <DocumentLockBanner
-            state={lockState}
-            kind="quote"
-            canUnlock={canUnlock}
-            onSetUnlocked={(unlocked) => setQuoteEditUnlocked(quote.id, unlocked)}
-          />
-        </div>
-      )}
+        {/* Above everything else: it is usually why the quote was opened. */}
+        {quote.customerMessage &&
+          !quote.responseDismissedAt &&
+          (state.status === 'changes_requested' || state.status === 'accepted') && (
+            <div className="shrink-0 px-4 pt-3">
+              <QuoteCustomerResponse
+                status={state.status}
+                message={quote.customerMessage}
+                respondedAt={quote.updatedAt}
+                resolving={state.resolving}
+                onResolve={state.handleResolveResponse}
+                t={t}
+              />
+            </div>
+          )}
 
-      {/* Tab Content */}
-      {state.activeTab === 'details' && (
-        <form
-          id="quote-form"
-          ref={state.formRef}
-          onSubmit={state.handleSubmit}
-          className="flex min-h-0 flex-1 flex-col overflow-hidden"
-        >
-          {/* A locked quote offers no editing, rather than letting someone
-              retype a line and meet the refusal on save. display:contents
-              keeps the layout exactly as it was. */}
-          <fieldset disabled={lockState.locked} className="contents">
+        {(lockState.locked || lockState.unlockedAt) && (
+          <div className="shrink-0 px-4 pt-3">
+            <DocumentLockBanner
+              state={lockState}
+              kind="quote"
+              canUnlock={canUnlock}
+              onSetUnlocked={(unlocked) => setQuoteEditUnlocked(quote.id, unlocked)}
+            />
+          </div>
+        )}
+
+        {/* Tab Content */}
+        {state.activeTab === 'details' && (
+          <form
+            id="quote-form"
+            ref={state.formRef}
+            onSubmit={state.handleSubmit}
+            className="flex min-h-0 flex-1 flex-col overflow-hidden"
+          >
             {isLarge ? (
               <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
                 <ResizablePanel defaultSize={75} minSize={40}>
@@ -434,111 +470,111 @@ export function QuotePageClient({
                 </div>
               </div>
             )}
-          </fieldset>
-        </form>
-      )}
+          </form>
+        )}
 
-      {state.activeTab === 'images' && (
-        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-          <div className="mx-auto max-w-4xl pb-40">
-            <QuoteImagesManager
-              quoteId={quote.id}
-              initialImages={imageAttachments}
-              maxImages={maxImages}
-            />
-          </div>
-        </div>
-      )}
-
-      {state.activeTab === 'documents' && (
-        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-          <div className="mx-auto max-w-4xl pb-40">
-            <QuoteDocumentsManager
-              quoteId={quote.id}
-              initialDocuments={documentAttachments}
-              maxDocuments={maxDocuments}
-            />
-          </div>
-        </div>
-      )}
-
-      <LaborPresetPickerDialog
-        open={showPresetPicker}
-        onOpenChange={setShowPresetPicker}
-        laborPresets={laborPresets}
-        onSelectPreset={handleSelectPreset}
-      />
-
-      {/* Dialogs */}
-      <PdfPreviewDialog
-        open={showPdfPreview}
-        onOpenChange={setShowPdfPreview}
-        url={`/api/protected/quotes/${quote.id}/pdf`}
-      />
-
-      <SendEmailDialog
-        open={state.showEmailDialog}
-        onOpenChange={state.setShowEmailDialog}
-        defaultEmail={quote.customer?.email || ''}
-        entityLabel={t('page.entityLabel')}
-        onSend={async (email, message, attachPdf) => {
-          const result = await sendQuoteEmail({
-            quoteId: quote.id,
-            recipientEmail: email,
-            message,
-            attachPdf,
-          })
-          if (result.success) handleQuoteSent()
-          return result
-        }}
-      />
-
-      <QuoteShareDialog
-        open={state.showShareDialog}
-        onOpenChange={state.setShowShareDialog}
-        quoteId={quote.id}
-        organizationId={organizationId}
-        initialToken={quote.publicToken}
-        onSent={handleQuoteSent}
-        customer={quote.customer}
-        smsEnabled={smsEnabled}
-        emailEnabled={emailEnabled}
-      />
-
-      <Dialog open={state.showConvertDialog} onOpenChange={state.setShowConvertDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('page.convertTitle')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{t('page.convertDescription')}</p>
-            <VehicleCombobox
-              value={state.convertVehicleId}
-              initialVehicle={state.selectedVehicle}
-              placeholder={t('details.selectVehicle')}
-              noneLabel={t('details.none')}
-              onChange={(id) => state.setConvertVehicleId(id)}
-            />
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                onClick={state.handleConvert}
-                disabled={state.converting || !state.convertVehicleId}
-              >
-                {state.converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('page.convert')}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => state.setShowConvertDialog(false)}
-              >
-                {t('page.cancel')}
-              </Button>
+        {state.activeTab === 'images' && (
+          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+            <div className="mx-auto max-w-4xl pb-40">
+              <QuoteImagesManager
+                quoteId={quote.id}
+                initialImages={imageAttachments}
+                maxImages={maxImages}
+              />
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+        )}
+
+        {state.activeTab === 'documents' && (
+          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+            <div className="mx-auto max-w-4xl pb-40">
+              <QuoteDocumentsManager
+                quoteId={quote.id}
+                initialDocuments={documentAttachments}
+                maxDocuments={maxDocuments}
+              />
+            </div>
+          </div>
+        )}
+
+        <LaborPresetPickerDialog
+          open={showPresetPicker}
+          onOpenChange={setShowPresetPicker}
+          laborPresets={laborPresets}
+          onSelectPreset={handleSelectPreset}
+        />
+
+        {/* Dialogs */}
+        <PdfPreviewDialog
+          open={showPdfPreview}
+          onOpenChange={setShowPdfPreview}
+          url={`/api/protected/quotes/${quote.id}/pdf`}
+        />
+
+        <SendEmailDialog
+          open={state.showEmailDialog}
+          onOpenChange={state.setShowEmailDialog}
+          defaultEmail={quote.customer?.email || ''}
+          entityLabel={t('page.entityLabel')}
+          onSend={async (email, message, attachPdf) => {
+            const result = await sendQuoteEmail({
+              quoteId: quote.id,
+              recipientEmail: email,
+              message,
+              attachPdf,
+            })
+            if (result.success) handleQuoteSent()
+            return result
+          }}
+        />
+
+        <QuoteShareDialog
+          open={state.showShareDialog}
+          onOpenChange={state.setShowShareDialog}
+          quoteId={quote.id}
+          organizationId={organizationId}
+          initialToken={quote.publicToken}
+          onSent={handleQuoteSent}
+          customer={quote.customer}
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+        />
+
+        <Dialog open={state.showConvertDialog} onOpenChange={state.setShowConvertDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('page.convertTitle')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">{t('page.convertDescription')}</p>
+              <VehicleCombobox
+                value={state.convertVehicleId}
+                initialVehicle={state.selectedVehicle}
+                placeholder={t('details.selectVehicle')}
+                noneLabel={t('details.none')}
+                onChange={(id) => state.setConvertVehicleId(id)}
+              />
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={state.handleConvert}
+                  disabled={state.converting || !state.convertVehicleId}
+                >
+                  {state.converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('page.convert')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => state.setShowConvertDialog(false)}
+                >
+                  {t('page.cancel')}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </ShopFeeProvider>
   )
 }

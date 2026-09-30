@@ -1,27 +1,27 @@
 {
   "lockedTitle": {
     "invoice": {
-      "sent": "This invoice is locked because it has been sent",
-      "paid": "This invoice is locked because it has been paid"
+      "sent": "Cette facture est verrouillée car elle a été envoyée",
+      "paid": "Cette facture est verrouillée car elle a été payée"
     },
     "quote": {
-      "sent": "This quote is locked because it has been sent",
-      "accepted": "This quote is locked because it has been accepted"
+      "sent": "Ce devis est verrouillé car il a été envoyé",
+      "accepted": "Ce devis est verrouillé car il a été accepté"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
-  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
-  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
-  "unlock": "Unlock for editing",
-  "relock": "Lock again",
-  "unlockConfirmTitle": "Unlock this document?",
+  "lockedBody": "Ses pièces, sa main-d'œuvre, ses prix, sa remise, sa taxe, son numéro et sa date ne peuvent plus être modifiés. Les paiements, les changements de statut, l'envoi et les pièces jointes restent possibles.",
+  "lockedAdminHint": "En tant que propriétaire ou administrateur, vous pouvez le déverrouiller si une correction est vraiment nécessaire. Le déverrouillage est consigné dans le journal d'audit.",
+  "lockedMemberHint": "Demandez à un propriétaire ou à un administrateur de le déverrouiller si une correction est nécessaire.",
+  "unlock": "Déverrouiller pour modifier",
+  "relock": "Verrouiller à nouveau",
+  "unlockConfirmTitle": "Déverrouiller ce document ?",
   "unlockConfirmDescription": {
-    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
-    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+    "invoice": "Il redeviendra modifiable, et le changement sera consigné dans le journal d'audit avec votre nom. Préférez un avoir lorsque la réglementation locale l'exige.",
+    "quote": "Il redeviendra modifiable, et le changement sera consigné dans le journal d'audit avec votre nom."
   },
-  "unlocked": "Unlocked for editing",
-  "relocked": "Locked again",
-  "reopenedTitle": "This document has been unlocked for editing",
-  "reopenedBody": "It stays editable until it is locked again.",
-  "failed": "Could not change the lock"
+  "unlocked": "Déverrouillé pour modification",
+  "relocked": "Verrouillé à nouveau",
+  "reopenedTitle": "Ce document a été déverrouillé pour modification",
+  "reopenedBody": "Il reste modifiable jusqu'à ce qu'il soit à nouveau verrouillé.",
+  "failed": "Impossible de modifier le verrouillage"
 }

@@ -94,6 +94,7 @@ export function QuoteShareDialog({
     setSending(true)
 
     const results: string[] = []
+    let failed = false
 
     if (notifyEmail && hasEmail) {
       const res = await sendQuoteEmail({
@@ -101,8 +102,13 @@ export function QuoteShareDialog({
         recipientEmail: customer.email!,
         attachPdf,
       })
-      if (res.success) results.push(t('shareDialog.emailSent'))
-      else toast.error(res.error || t('shareDialog.failedEmail'))
+      if (res.success) {
+        results.push(t('shareDialog.emailSent'))
+        setNotifyEmail(false)
+      } else {
+        failed = true
+        toast.error(res.error || t('shareDialog.failedEmail'))
+      }
     }
 
     if (notifySms && hasPhone) {
@@ -123,18 +129,24 @@ export function QuoteShareDialog({
         relatedEntityType: 'quote',
         relatedEntityId: quoteId,
       })
-      if (res.success) results.push(t('shareDialog.smsSent'))
-      else toast.error(res.error || t('shareDialog.failedSms'))
+      if (res.success) {
+        results.push(t('shareDialog.smsSent'))
+        setNotifySms(false)
+      } else {
+        failed = true
+        toast.error(res.error || t('shareDialog.failedSms'))
+      }
     }
 
     if (results.length > 0) {
       toast.success(results.join(' & '))
-      setNotifyEmail(false)
-      setNotifySms(false)
       // Either channel re-issues the quote, and the lock may have engaged.
       onSent?.()
     }
     setSending(false)
+    // Done once everything ticked has gone. A channel that failed stays ticked
+    // and the dialog stays open, so it can be tried again.
+    if (results.length > 0 && !failed) onOpenChange(false)
   }
 
   const canNotify = publicUrl && customer && (notifyEmail || notifySms)

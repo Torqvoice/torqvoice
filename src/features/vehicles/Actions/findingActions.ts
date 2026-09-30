@@ -9,6 +9,8 @@ import {
   resolveFindingSchema,
 } from '../Schema/findingSchema'
 import { revalidatePath } from 'next/cache'
+import { releaseFiles } from '@/lib/files/manager'
+import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function getObservationsPaginated(params: {
   page?: number
@@ -36,6 +38,7 @@ export async function getObservationsPaginated(params: {
                 { description: { contains: search, mode: 'insensitive' as const } },
                 { notes: { contains: search, mode: 'insensitive' as const } },
                 { vehicle: { licensePlate: { contains: search, mode: 'insensitive' as const } } },
+                ...(await typeKeySearch(organizationId, search)).map((vehicle) => ({ vehicle })),
                 { vehicle: { make: { contains: search, mode: 'insensitive' as const } } },
                 { vehicle: { model: { contains: search, mode: 'insensitive' as const } } },
               ],
@@ -313,6 +316,7 @@ export async function deleteFinding(findingId: string) {
       if (!finding) throw new Error('Finding not found')
 
       await db.vehicleFinding.delete({ where: { id: findingId } })
+      await releaseFiles(finding.imageUrls, { organizationId, reason: 'finding deleted' })
       revalidatePath(`/vehicles/${finding.vehicleId}`)
       revalidatePath('/')
       return { findingId }

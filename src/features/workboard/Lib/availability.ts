@@ -156,3 +156,28 @@ export function nextAvailableSlot({
 
   return null
 }
+
+/**
+ * How many minutes each technician is booked for inside one day.
+ *
+ * A booking counts for the part of it that falls inside the day, so a job
+ * that runs over midnight is split between the two days rather than counted
+ * whole on both. The day's edges are instants, worked out by the caller in
+ * the workshop's zone: this function never looks at a clock.
+ */
+export function technicianMinutesInDay(
+  bookings: Booking[],
+  dayStart: Date,
+  dayEnd: Date
+): Record<string, number> {
+  const minutes: Record<string, number> = {}
+  for (const booking of bookings) {
+    if (!booking.technicianId) continue
+    const from = Math.max(booking.start.getTime(), dayStart.getTime())
+    const to = Math.min(booking.end.getTime(), dayEnd.getTime())
+    if (to <= from) continue
+    minutes[booking.technicianId] =
+      (minutes[booking.technicianId] ?? 0) + Math.round((to - from) / 60000)
+  }
+  return minutes
+}

@@ -43,6 +43,10 @@
         "title": "Tax",
         "description": "Tax rate & defaults"
       },
+      "warranty": {
+        "title": "Warranty",
+        "description": "Default warranty on quotes & invoices"
+      },
       "currency": {
         "title": "Currency",
         "description": "Currency & tax defaults"
@@ -138,6 +142,10 @@
       "emailTemplates": {
         "title": "Email templates",
         "description": "What your invoice, quote and report emails say"
+      },
+      "workOrderStatuses": {
+        "title": "Work order statuses",
+        "description": "Your own steps, and who gets told"
       }
     },
     "pro": "PRO",
@@ -196,6 +204,16 @@
     "marineServiceDescription": "Boats, yachts, and marine vessels"
   },
   "account": {
+    "devicesTitle": "Signed-in devices",
+    "devicesDescription": "Every browser and phone with an open session on your account.",
+    "thisDevice": "This device",
+    "signedInAt": "Signed in {date}",
+    "lastActiveAt": "Last active {date}",
+    "signOutDevice": "Sign out",
+    "signOutOthers": "Sign out other devices",
+    "deviceSignedOut": "Device signed out",
+    "othersSignedOut": "Other devices signed out",
+    "failedSignOutDevice": "Could not sign out that device",
     "profileTitle": "Profile",
     "profileDescription": "Update your display name and email address.",
     "emailVerified": "Verified",
@@ -284,8 +302,8 @@
     "contentInspectionsDescription": "All vehicle inspections and their results",
     "contentTechnicians": "Technicians",
     "contentTechniciansDescription": "All technician profiles. Linked records will be unlinked.",
-    "contentInspectionTemplates": "Inspection Templates",
-    "contentInspectionTemplatesDescription": "All inspection templates and their sections. Delete inspections first.",
+    "contentInspectionTemplates": "Inspection checklists",
+    "contentInspectionTemplatesDescription": "All inspection checklists and their sections. Delete inspections first.",
     "contentNotifications": "Notifications",
     "contentNotificationsDescription": "All system notifications",
     "contentSmsMessages": "SMS Messages",
@@ -330,7 +348,29 @@
     "deleteWorkshopSuccess": "Workshop deleted",
     "deleteWorkshopFailed": "Failed to delete the workshop",
     "deleteAccountMoved": "Want to delete your account?",
-    "deleteAccountMovedLink": "You can do that in Data settings."
+    "deleteAccountMovedLink": "You can do that in Data settings.",
+    "signatureTitle": "Signature",
+    "signatureDescription": "Printed on the invoices, quotes and certificates you issue for this workshop.",
+    "signatureDraw": "Draw",
+    "signatureUpload": "Upload",
+    "signatureDrawHint": "Sign here",
+    "signatureUploadHint": "Choose a photo or scan of your signature",
+    "signatureDrawTip": "Use a finger, a stylus or the mouse.",
+    "signatureUploadTip": "Sign on white paper and take a photo. The paper is removed and only the ink is kept.",
+    "signatureChooseFile": "Choose image",
+    "signatureClear": "Clear",
+    "signatureSave": "Save signature",
+    "signatureCancel": "Cancel",
+    "signatureReplace": "Replace",
+    "signatureRemove": "Remove",
+    "signatureSaved": "Signature saved",
+    "signatureRemoved": "Signature removed. Documents already issued keep theirs.",
+    "signatureSaveFailed": "Could not save the signature",
+    "signatureEmpty": "Draw or upload a signature first",
+    "signatureNotImage": "That file is not an image",
+    "signatureNoInk": "No signature found in that image. Try a darker pen on white paper.",
+    "signatureCanvasLabel": "Signature pad",
+    "signatureDesignerHint": "It appears where a design has the Signature section switched on. Turn it on in the <link>document designer</link>."
   },
   "team": {
     "title": "Team",
@@ -590,9 +630,43 @@
     "freezeProgress": "Locked {done} of {total}",
     "freezeDone": "{count, plural, one {# invoice} other {# invoices}} locked",
     "freezeFailed": "Could not lock the invoices",
+    "reapplyTitle": "Design on invoices already sent",
+    "reapplyDescription": "Put the design you use today on invoices that were locked to an older one.",
+    "reapplyBody": "{count, plural, one {# invoice is} other {# invoices are}} locked to the design each was sent with, so a new design reaches only invoices sent from now on. Re-applying puts the design in use today on all of them. Only the look changes: the workshop details, customer, payment terms and totals each invoice was sent with stay as they are.",
+    "reapplyWarning": "This cannot be undone. The design each invoice used before is not kept.",
+    "reapplyButton": "Re-apply the current design",
+    "reapplyConfirmTitle": "Re-apply the design to {count, plural, one {# invoice} other {# invoices}}?",
+    "reapplyConfirmBody": "Every invoice that has already gone to a customer switches to the design in use now. Only the look changes: the details, terms and totals each invoice was sent with stay as they are. This cannot be undone, and the design each invoice used before cannot be restored.",
+    "reapplyProgress": "Re-applied {done} of {total}",
+    "reapplyDone": "{count, plural, one {# invoice} other {# invoices}} now use the current design",
+    "reapplyFailed": "Could not re-apply the design",
     "sectionSending": "Sending",
     "attachPdfLabel": "Attach the PDF to emails",
-    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog."
+    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog.",
+    "shopFee": {
+      "title": "Shop fee",
+      "description": "A charge for shop supplies, such as rags, cleaners, lubricants and disposal, added to every new work order and quote as its own line.",
+      "enabled": "Charge a shop fee",
+      "enabledHint": "New work orders and quotes get the fee as a line. It can be removed from a single job. Existing jobs are not changed.",
+      "defaultLabel": "Shop supplies",
+      "label": "Name on the invoice",
+      "appliesTo": "Applies to",
+      "appliesToBoth": "Work orders and quotes",
+      "appliesToWorkOrders": "Work orders only",
+      "appliesToQuotes": "Quotes only",
+      "mode": "How it is charged",
+      "modeFlat": "Flat amount",
+      "modePercent": "Percentage",
+      "amount": "Amount",
+      "amountHint": "The same amount on every job. It can be changed on a single job.",
+      "percent": "Percentage (%)",
+      "base": "Percentage of",
+      "baseLabor": "Labor",
+      "baseLaborParts": "Labor and parts",
+      "cap": "Maximum fee",
+      "capHint": "The fee never comes to more than this. Leave empty for no maximum.",
+      "capPlaceholder": "No maximum"
+    }
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",
@@ -628,7 +702,19 @@
       "bank_account": "Bank Account",
       "footer": "Footer",
       "general": "General",
-      "telegram_qr": "Telegram QR"
+      "telegram_qr": "Telegram QR",
+      "result": "Result",
+      "test_details": "Test details",
+      "defects": "Defects",
+      "results_table": "All results",
+      "inspection_photos": "Photos",
+      "signature": "Signature",
+      "job_details": "Job Details",
+      "job_qr": "Open on Phone",
+      "concerns": "Customer Concerns",
+      "job_description": "Work Requested",
+      "work_checklist": "Work Checklist",
+      "condition_map": "Vehicle Condition"
     },
     "fields": {
       "customer_name": "Customer Name",
@@ -641,6 +727,7 @@
       "vin": "VIN",
       "license_plate": "License Plate",
       "mileage": "Mileage",
+      "hsn_tsn": "HSN/TSN",
       "service_title": "Service Title",
       "service_type": "Service Type",
       "tech_name": "Technician",
@@ -660,7 +747,35 @@
       "invoice_number": "Invoice No.",
       "customer_number": "Customer No.",
       "date": "Date",
-      "portal_link": "Portal Link"
+      "portal_link": "Portal Link",
+      "test_date": "Date of test",
+      "test_location": "Place of test",
+      "inspector": "Inspector",
+      "certificate_number": "Certificate number",
+      "vehicle_category": "Vehicle category",
+      "odometer": "Odometer",
+      "next_test_due": "Next test due",
+      "defect_notes": "Notes",
+      "defect_photos": "Photos",
+      "passed_checks": "Passed checks",
+      "not_applicable_checks": "Not applicable checks",
+      "check_notes": "Notes column",
+      "result_detail": "Explanation",
+      "result_summary": "Counts per grade",
+      "combined_table": "One table for all sections",
+      "inspector_line": "Signature line",
+      "inspector_name": "Signer's name",
+      "date_line": "Date line",
+      "signature_image": "Signature",
+      "status": "Status",
+      "technician": "Technician",
+      "scheduled": "Scheduled",
+      "promised": "Promised",
+      "work_bay": "Work Bay",
+      "customer_line": "Customer signature line",
+      "legend": "Legend",
+      "previous_marks": "Earlier marks",
+      "blank_sheet": "Blank sheet to fill in by hand"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
@@ -688,6 +803,34 @@
       "detailed": {
         "name": "Detailed",
         "description": "Title up top, vehicle on its own, both tables and every optional block"
+      },
+      "certificate-regulator": {
+        "name": "Regulatory",
+        "description": "Plain and unbanded, in a serif: every check with its grade and note, the photos, a line to sign"
+      },
+      "certificate-standard": {
+        "name": "Standard",
+        "description": "The verdict under the title, the car and the test side by side, each defect with its note and photo, then the failed checks by section"
+      },
+      "certificate-customer": {
+        "name": "Customer report",
+        "description": "A banded sheet with the verdict centred and large, defects with photos, the walk-round photos, and a short table of the failed checks"
+      },
+      "certificate-compact": {
+        "name": "Compact",
+        "description": "One page for a fleet: small type, the verdict beside the title, the full results without notes, the photos, a line to sign"
+      },
+      "work-order-standard": {
+        "name": "Standard",
+        "description": "The fuller counter copy in your colour: the whole customer and vehicle, the service, the findings and the warranty beside the work and the prices"
+      },
+      "work-order-job-sheet": {
+        "name": "Job sheet",
+        "description": "For the board: the plate large, the facts of the job, the work as boxes to tick, a code to open it on a phone, and no prices"
+      },
+      "work-order-compact": {
+        "name": "Compact",
+        "description": "Black on white, one page: the customer's name and phone, the car, the job, the work with prices and both signatures. What every work order prints until you save a design"
       }
     },
     "style": {
@@ -710,14 +853,21 @@
   "templates": {
     "title": "Templates",
     "invoiceDescription": "Customize the appearance of your PDF invoices and quotes.",
-    "inspectionsDescription": "Manage inspection checklists and multi-point templates.",
+    "inspectionsDescription": "The checklists your technicians work through during an inspection.",
     "smsDescription": "Customize the SMS messages sent to customers.",
     "tabs": {
       "invoice": "Invoice",
       "quotation": "Quotation",
-      "inspections": "Inspections",
-      "sms": "SMS",
-      "layout": "Layout"
+      "workOrders": "Work order",
+      "certificates": "Inspection certificate",
+      "layout": "Layout",
+      "conditionMap": "Condition map",
+      "inspections": "Checklists"
+    },
+    "sections": {
+      "documents": "Documents",
+      "checklists": "Checklists",
+      "messages": "Messages"
     },
     "presets": "Template Presets",
     "primaryColor": "Primary Color",
@@ -821,7 +971,10 @@
     "goToLayout": "Layout and sections",
     "openDesigner": "Open Template Designer",
     "designerIntro": "Pick a starting point, then open the designer to change anything.",
-    "designerHint": "Colors, fonts, spacing and every section live in the designer."
+    "designerHint": "Colors, fonts, spacing and every section live in the designer.",
+    "certificatesDescription": "Design the certificate a completed inspection prints and shares.",
+    "workOrdersDescription": "Design the sheet a work order prints: what the customer signs and what the technician takes off the board.",
+    "conditionMapDescription": "The kinds of mark your technicians draw on the condition map: their names, shapes and colours."
   },
   "payment": {
     "readMore": "Read More",
@@ -1072,6 +1225,9 @@
     "defaultMarkupPercentHint": "New manually-added parts pre-fill with this markup. Leave at 0 to enter prices manually.",
     "markupAppliesToInventory": "Apply markup to inventory parts",
     "markupAppliesToInventoryHint": "When enabled, parts picked from inventory also use cost + default markup (overrides the inventory sell price).",
+    "typeKeyTitle": "German type key (HSN/TSN)",
+    "typeKeyEnabled": "Record HSN/TSN on vehicles",
+    "typeKeyHint": "Adds the manufacturer and type key from the German registration certificate (fields 2.1 and 2.2) to vehicles. It shows on the vehicle, the work order and every printed document, and vehicles can be found by it in search. Turning it off hides it again and keeps what was entered.",
     "unitsTitle": "Units",
     "unitsDescription": "Choose between metric (km, liters) and imperial (miles, gallons) units.",
     "unitSystem": "Unit System",
@@ -1138,6 +1294,43 @@
     "saveMaintenance": "Save Maintenance Settings",
     "saved": "Maintenance settings saved"
   },
+  "warranty": {
+    "title": "Warranty",
+    "description": "Set what your quotes and invoices say about warranty. Every new document starts from this, and you can still change it on each one.",
+    "designHint": "Printed in the Warranty section of your invoice and quote design. If you have hidden that section under Templates, switch it back on. The Compact design leaves it out.",
+    "defaultStatus": "New quotes and work orders say",
+    "status": {
+      "none": "Nothing",
+      "included": "Warranty included",
+      "not_included": "No warranty"
+    },
+    "statusHint": {
+      "none": "Warranty is not mentioned until somebody fills it in on the document.",
+      "included": "New documents start with the period and terms below.",
+      "not_included": "New documents tell the customer that no workshop warranty is included."
+    },
+    "includedTitle": "When a warranty is included",
+    "includedHint": "The period and terms a document gets when it offers a warranty.",
+    "months": "Duration (months)",
+    "mileage": "Distance limit ({unit})",
+    "mileageHint": "Leave empty for no distance limit.",
+    "terms": "Warranty terms",
+    "termsPlaceholder": "e.g. 12 months on parts and labour. Wear parts are not covered.",
+    "termsHint": "Printed under the warranty on quotes and invoices.",
+    "notIncludedTitle": "When no warranty is included",
+    "notIncludedHint": "What the customer reads when a document says no warranty is included.",
+    "notIncludedText": "Statement",
+    "notIncludedPlaceholder": "e.g. No workshop warranty is offered on customer-supplied parts. Your statutory rights are not affected.",
+    "legalHint": "This is about your own workshop warranty. In many countries, including the EU and the UK, customers also have legal guarantee rights that cannot be excluded. Leave this empty and the document says that statutory rights are not affected.",
+    "applyTitle": "Use these defaults on",
+    "applyToQuotes": "New quotes",
+    "applyToQuotesHint": "The customer sees the warranty before accepting.",
+    "applyToWorkOrders": "New work orders",
+    "applyToWorkOrdersHint": "Printed on the invoice. A work order made from a quote keeps what the quote said.",
+    "save": "Save warranty settings",
+    "saved": "Warranty settings saved",
+    "saveFailed": "Could not save the warranty settings"
+  },
   "appearance": {
     "title": "Appearance",
     "description": "Customize how Torqvoice looks and feels.",
@@ -1168,7 +1361,29 @@
     "dateLabel": "Date",
     "dateTimeLabel": "Date & Time",
     "saveSettings": "Save Settings",
-    "saved": "Settings saved"
+    "saved": "Settings saved",
+    "fontLabel": "Font",
+    "fontHint": "Choose the typefaces the app is set in. The choice is saved on this device.",
+    "fontSampleHeading": "Work order",
+    "fontSampleText": "Replace ignition coil and spark plugs",
+    "fonts": {
+      "default": {
+        "name": "Default",
+        "description": "Geist, clean and neutral."
+      },
+      "workshop": {
+        "name": "Workshop",
+        "description": "IBM Plex with condensed capital headings, like a job card."
+      },
+      "precise": {
+        "name": "Precise",
+        "description": "Inter and JetBrains Mono. Built for screens full of tables and figures."
+      },
+      "legible": {
+        "name": "Legible",
+        "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
+      }
+    }
   },
   "data": {
     "title": "Data Management",
@@ -1191,7 +1406,7 @@
     "optTechnicians": "Technicians",
     "optTechniciansDesc": "Technician profiles and workboard assignments",
     "optInspections": "Inspections",
-    "optInspectionsDesc": "Inspection templates, inspections, and results",
+    "optInspectionsDesc": "Inspection checklists, inspections, and results",
     "optAuditLogs": "Audit Logs",
     "optAuditLogsDesc": "Activity and change history",
     "optSmsMessages": "Messages",
@@ -1492,7 +1707,12 @@
     "upgradeSuccess": "Successfully upgraded to Enterprise!",
     "upgradeError": "Failed to upgrade subscription",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})"
+    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})",
+    "checkoutOnTorqvoice": "You will be taken to torqvoice.com to complete the purchase. Invoices and receipts are available there under your account.",
+    "purchaseSuccess": "Thank you! Your plan is now active.",
+    "purchaseActivating": "Payment received. Your plan is being activated, this page refreshes in a moment.",
+    "accountOnTorqvoice": "Invoices and receipts are on torqvoice.com, where you are signed in with this account.",
+    "openTorqvoiceAccount": "Open your account on torqvoice.com"
   },
   "ai": {
     "title": "AI Assistant",
@@ -1532,7 +1752,7 @@
     "biweekly": "Every 2 Weeks",
     "monthly": "Monthly",
     "bimonthly": "Every 2 Months",
-    "quarterly": "Every 4 Months",
+    "quarterly": "Every 3 Months",
     "semiannually": "Every 6 Months",
     "yearly": "Yearly",
     "dateRangeLabel": "Date Range",
@@ -1968,7 +2188,41 @@
       "slogan": "Quality service you can trust",
       "paymentTerms": "Due within 14 days",
       "footerNote": "Thank you for your business",
-      "value": "Sample"
+      "value": "Sample",
+      "testLocation": "12 Harbour Road, Springfield",
+      "certificateNotes": "Tyres are close to the legal limit; expect to replace them before the next test.",
+      "checkBrakeHoses": "Brake hoses",
+      "checkBrakeHosesNote": "Slight chafing on the left front hose, not yet through the outer layer.",
+      "sectionBrakes": "Braking equipment",
+      "checkBrakePedal": "Service brake pedal",
+      "checkBrakeFluid": "Brake fluid",
+      "sectionLighting": "Lighting equipment",
+      "checkHeadlamps": "Headlamp condition",
+      "checkFogLamp": "Rear fog lamp",
+      "photoFront": "Front",
+      "photoOdometer": "Odometer",
+      "concernNoise": "Grinding noise from the front when braking",
+      "concernNoiseDetail": "Front pads and discs worn; replaced",
+      "concernWarningLight": "Warning light on the dashboard since last week",
+      "workRequested": "Replace front brake pads and discs, reset the service indicator and road test.",
+      "checklistTestDrive": "Road test",
+      "markScratch": "Key scratch along the door, 20 cm",
+      "markDent": "Dent below the handle, paint intact",
+      "markChip": "Stone chips in the lower bumper",
+      "viewTop": "Top",
+      "viewLeft": "Left side",
+      "viewRight": "Right side",
+      "viewFront": "Front",
+      "viewRear": "Rear",
+      "panelLeftRearDoor": "Left rear door",
+      "panelLeftFrontDoor": "Left front door",
+      "panelFrontBumper": "Front bumper",
+      "kindScratch": "Scratch",
+      "kindDent": "Dent",
+      "kindChip": "Stone chip",
+      "severityMinor": "Minor",
+      "severityMajor": "Major",
+      "markPrevious": "recorded earlier"
     },
     "logoUpload": "Upload logo",
     "logoReplace": "Replace logo",
@@ -1990,6 +2244,10 @@
     "telegramQrConnectedHint": "Prints a code that opens {link}, your connected Telegram bot. It only prints on invoices issued after the block was switched on.",
     "telegramQrPlaceholderHint": "No Telegram bot is connected, so the sheet shows a sample code that will not print.",
     "telegramQrLink": "Integrations",
+    "signatureWhose": "Whose signature",
+    "signatureOwnHint": "Each document prints the signature of whoever issued it: the person who opened the work order, wrote the quote or did the inspection. The canvas shows yours.",
+    "signaturePlaceholderHint": "Each document prints the signature of whoever issued it: the person who opened the work order, wrote the quote or did the inspection. You have not saved one, so the canvas shows a sample.",
+    "signatureLink": "Set your signature",
     "titleText": "Title text",
     "titleTextHint": "What this document calls itself. Left empty, it prints its own name in the reader's language.",
     "orgNumberLabel": "Organization number label",
@@ -2004,7 +2262,16 @@
     "setDefault": "Set as default",
     "defaultSet": "\"{name}\" is now in use",
     "couldNotSetDefault": "Could not set the default design",
-    "fieldFixedSlot": "Always prints in the same place, so it cannot be moved."
+    "fieldFixedSlot": "Always prints in the same place, so it cannot be moved.",
+    "certificate": "Inspection certificate",
+    "resultWidthHint": "Empty spans the row. Set points to make the band narrower; it then sits at the side the alignment picks, and in a column it takes the column's width.",
+    "work_order": "Work order",
+    "conditionMapDrawing": "Drawing",
+    "conditionMapViews": "Views",
+    "conditionMapViewsAll": "All five",
+    "conditionMapViewsTop": "Top only",
+    "conditionMapViewsSides": "Sides only",
+    "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width."
   },
   "preview": {
     "title": "Brake Service & Oil Change",
@@ -2402,5 +2669,99 @@
     "dragHandle": "Drag to reorder",
     "dragHandleKeyboard": "Drag, or use the arrow keys, to move this block",
     "tagDoesNotFit": "The tag does not fit in this field."
+  },
+  "workOrderStatuses": {
+    "title": "Work order statuses",
+    "description": "Your own names for the steps a job goes through. Each sits under one of the three stages and shows up in that stage's menu on every work order.",
+    "cardTitle": "Stages and statuses",
+    "suggestionsLabel": "Quick add",
+    "suggestions": {
+      "readyForPickup": {
+        "name": "Ready for pickup",
+        "message": "Hi {customer_name}, your {vehicle} is ready for pickup. {company_name}"
+      },
+      "waitingForCustomer": {
+        "name": "Waiting for customer"
+      },
+      "waitingForApproval": {
+        "name": "Waiting for approval",
+        "message": "Hi {customer_name}, we need your approval before we continue on your {vehicle}. Please get in touch. {company_name}"
+      }
+    },
+    "stageHints": {
+      "pending": "Before work starts. The job counts as open.",
+      "in-progress": "While the vehicle is being worked on. The job counts as open.",
+      "completed": "The work is done. The customer can see and pay the invoice, and the job leaves the technician's list."
+    },
+    "add": "Add status",
+    "builtIn": "Built in",
+    "asksToNotify": "Offers to notify",
+    "notifyHint": "When a job reaches this status, offer to send the customer a message. Nothing is sent until you confirm it.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "edit": "Edit",
+    "remove": "Remove",
+    "empty": "No statuses of your own here yet.",
+    "removeTitle": "Remove {name}?",
+    "removeBody": "It leaves the menus. Jobs that carry it keep showing it.",
+    "addTitle": "New status",
+    "editTitle": "Edit status",
+    "dialogBody": "A status is a name with a colour. The stage it sits under decides how the job is treated.",
+    "name": "Name",
+    "namePlaceholder": "Ready for pickup",
+    "stage": "Stage",
+    "color": "Colour",
+    "notify": "Offer to notify the customer",
+    "message": "Message",
+    "tokens": "Insert:",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Status saved",
+    "failed": "Could not save the status",
+    "messageEmptyHint": "Left empty, the text above is sent.",
+    "useSuggested": "Edit this text"
+  },
+  "markTypes": {
+    "title": "Kinds of mark",
+    "description": "Rename or recolour the built-in kinds, hide the ones you never use, and add your own. Each kind has a shape as well as a colour, so it reads on a black-and-white print too.",
+    "cardTitle": "Kinds",
+    "add": "Add kind",
+    "addTitle": "New kind of mark",
+    "editTitle": "Edit kind of mark",
+    "dialogBody": "A name in your own words, a shape and a colour. Filled means a major mark.",
+    "previewHint": "Minor and major",
+    "name": "Name",
+    "namePlaceholder": "e.g. Curb rash",
+    "shape": "Shape",
+    "color": "Colour",
+    "customColor": "Hex colour",
+    "colorInvalid": "Enter a colour as six hex digits, like #2563eb",
+    "hidden": "Hidden from the picker",
+    "hiddenHint": "Marks of this kind still show and print.",
+    "hiddenBadge": "Hidden",
+    "builtin": "Built in",
+    "show": "Show in the picker",
+    "hide": "Hide from the picker",
+    "edit": "Edit",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "restore": "Restore",
+    "restoreTitle": "Restore \"{name}\"?",
+    "restoreBody": "The kind goes back to the name, shape and colour the app ships with.",
+    "remove": "Remove",
+    "removeTitle": "Remove \"{name}\"?",
+    "removeBody": "Only a kind no mark uses can be removed. Hide it if marks of it exist.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Saved",
+    "failed": "Could not save",
+    "shapes": {
+      "circle": "Circle",
+      "diamond": "Diamond",
+      "triangle": "Triangle",
+      "square": "Square",
+      "cross": "Cross",
+      "hex": "Hexagon"
+    }
   }
 }

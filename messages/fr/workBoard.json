@@ -8,10 +8,10 @@
     "week": "Semaine",
     "presenter": "Présentateur",
     "addTechnician": "Ajouter un Technicien",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "previousDay": "Jour précédent",
+    "nextDay": "Jour suivant",
     "groupBy": "Colonnes",
     "byTechnician": "Une colonne par technicien",
     "byBay": "Une colonne par poste",
@@ -20,7 +20,7 @@
     "add": "Ajouter",
     "addBay": "Ajouter un poste",
     "weekNumber": "Sem. {number}",
-    "lanes": "Colonnes",
+    "lanes": "Couloirs",
     "showAllLanes": "Tout afficher",
     "onlyBusyLanes": "Seulement avec du travail",
     "layout": "Affichage",
@@ -78,7 +78,10 @@
     "addTechnician": "Ajouter un Technicien",
     "standaloneOnly": "Un nom sur le tableau pour quelqu'un qui ne se connecte pas, un apprenti ou un sous-traitant. Pour un mécanicien qui utilise l'application, passez par la page Équipe.",
     "linkedTo": "Se connecte en tant que {name}",
-    "linkedManagedOnTeam": "Géré depuis la page Équipe, avec son accès à l'application."
+    "linkedManagedOnTeam": "Géré depuis la page Équipe, avec son accès à l'application.",
+    "skills": "Compétences",
+    "skillsPlaceholder": "Diagnostic, habilité VE",
+    "skillsHint": "Affiché sous le nom là où le travail est attribué. Facultatif."
   },
   "jobDetail": {
     "viewDetails": "Voir les Détails",
@@ -107,8 +110,8 @@
       "waitingParts": "En Attente de Pièces",
       "completed": "Complété"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Précédent",
+    "next": "Suivant",
     "groupingUnused": "Le tableau de statut regroupe par statut",
     "connecting": "Connexion…"
   },
@@ -154,6 +157,9 @@
     "workBay": "Poste de travail",
     "status": "Statut",
     "noTime": "Pas encore d'horaire",
-    "none": "Personne pour l'instant"
+    "none": "Personne pour l'instant",
+    "promised": "Promis",
+    "promiseLate": "En retard",
+    "promiseOverdue": "Promis au client pour un moment déjà passé"
   }
 }

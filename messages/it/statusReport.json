@@ -14,7 +14,7 @@
     "createAndSend": "Crea e invia",
     "cancel": "Annulla",
     "uploadFailed": "Caricamento video non riuscito",
-    "createReportFailed": "Failed to create status report",
+    "createReportFailed": "Impossibile creare il rapporto di stato",
     "created": "Rapporto di stato creato",
     "noVideo": "Carica prima un video",
     "removeVideo": "Rimuovi video",
@@ -52,7 +52,12 @@
     "feedbackSubmitted": "Grazie per il tuo feedback!",
     "feedbackError": "Invio del feedback non riuscito",
     "submitting": "Invio in corso...",
-    "poweredBy": "Offerto da"
+    "poweredBy": "Offerto da",
+    "vehicleLabel": "Veicolo",
+    "plate": "Targa: {plate}",
+    "inspectionTitle": "Ispezione",
+    "messageFromTechnician": "Messaggio del tecnico",
+    "videoUnsupported": "Il browser non supporta l'elemento video."
   },
   "list": {
     "title": "Rapporti di stato",

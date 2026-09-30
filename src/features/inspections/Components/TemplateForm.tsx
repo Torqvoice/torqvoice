@@ -50,11 +50,11 @@ import {
   Settings2,
   Trash2,
 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { createTemplate, updateTemplate } from '../Actions/templateActions'
 import { COMMON_UNITS, INPUT_TYPES, type InputType, type SeverityScale } from '../Lib/conditions'
-import { TEMPLATE_COUNTRIES } from '../Lib/templatePresets'
+import { templateCountries } from '../Lib/templatePresets'
 import { clearableInput } from '@/lib/clearable'
 
 /**
@@ -81,6 +81,7 @@ export interface EditorItem {
   choices: string
   required: boolean
   photoRequired: boolean
+  allowNotApplicable: boolean
   defaultSeverity: '' | 'attention' | 'fail' | 'dangerous'
   /** One phrase per line, which is how it is edited and stored. */
   defectSuggestions: string
@@ -121,6 +122,7 @@ export interface TemplateFormData {
       choices?: string[]
       required?: boolean
       photoRequired?: boolean
+      allowNotApplicable?: boolean
       defaultSeverity?: string | null
       defectSuggestions?: string[]
     }[]
@@ -182,6 +184,7 @@ function blankItem(name = ''): EditorItem {
     choices: '',
     required: false,
     photoRequired: false,
+    allowNotApplicable: true,
     defaultSeverity: '',
     defectSuggestions: '',
   }
@@ -218,6 +221,7 @@ function toEditorState(template?: TemplateFormData): EditorSection[] {
       choices: (i.choices ?? []).join(', '),
       required: i.required ?? false,
       photoRequired: i.photoRequired ?? false,
+      allowNotApplicable: i.allowNotApplicable ?? true,
       defaultSeverity: (i.defaultSeverity as EditorItem['defaultSeverity']) || '',
       defectSuggestions: (i.defectSuggestions ?? []).join('\n'),
     })),
@@ -507,6 +511,16 @@ function CheckRow({
                 {t('photoRequired')}
               </Label>
             </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id={`${fieldId}-na`}
+                checked={item.allowNotApplicable}
+                onCheckedChange={(v) => onChange({ allowNotApplicable: v })}
+              />
+              <Label htmlFor={`${fieldId}-na`} className="font-normal">
+                {t('allowNotApplicable')}
+              </Label>
+            </div>
           </div>
         </div>
       )}
@@ -659,6 +673,7 @@ export function TemplateForm({
   template?: TemplateFormData
 }) {
   const t = useTranslations('inspections.builder')
+  const locale = useLocale()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const isEdit = !!template
@@ -741,6 +756,7 @@ export function TemplateForm({
               : [],
           required: i.required,
           photoRequired: i.photoRequired,
+          allowNotApplicable: i.allowNotApplicable,
           defaultSeverity: i.inputType === 'measurement' ? i.defaultSeverity || 'fail' : null,
           defectSuggestions: i.defectSuggestions
             .split('\n')
@@ -808,7 +824,7 @@ export function TemplateForm({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">{t('notCountrySpecific')}</SelectItem>
-                    {TEMPLATE_COUNTRIES.map((c) => (
+                    {templateCountries(locale).map((c) => (
                       <SelectItem key={c.code} value={c.code}>
                         {c.name}
                       </SelectItem>

@@ -21,6 +21,28 @@ export async function seededVehicleUrl(page: Page, search = 'Camry'): Promise<st
   return page.url()
 }
 
+/** The work order's id, from an editor address. */
+export function jobIdOf(jobUrl: string): string {
+  const id = new URL(jobUrl).pathname.split('/').pop()
+  if (!id) throw new Error(`no job id in ${jobUrl}`)
+  return id
+}
+
+/**
+ * Retitles the job open in the editor: the title reads as text until its
+ * pencil is pressed. Kept, not saved; it goes with the rest on Save.
+ */
+export async function setTitle(page: Page, title: string): Promise<void> {
+  const field = page.getByTestId('title-input')
+  await expect(async () => {
+    await page.getByTestId('edit-title').click()
+    await expect(field).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await field.fill(title)
+  await field.press('Enter')
+  await expect(page.getByTestId('service-title').first()).toContainText(title)
+}
+
 /** A fresh draft work order on the vehicle, titled, open in the editor. */
 export async function newWorkOrder(page: Page, vehicleUrl: string, title: string): Promise<string> {
   await page.goto(`${vehicleUrl}/service/new`)
@@ -29,9 +51,7 @@ export async function newWorkOrder(page: Page, vehicleUrl: string, title: string
   // page being left and the page arriving are both in the document: two title
   // fields, and a strict-mode error instead of a retry. Settled, there is one.
   await settle(page)
-  const titleField = page.locator('input[name="title"]')
-  await expect(titleField).toBeVisible()
-  await titleField.fill(title)
+  await setTitle(page, title)
   return page.url()
 }
 
@@ -145,10 +165,8 @@ export async function saveWorkOrder(page: Page): Promise<void> {
  * parent and the figure is read from it.
  */
 export function totalsRow(page: Page, label: string): Locator {
-  // Scoped to the Totals panel: "Parts" and "Labor" are also section headings.
-  const panel = page
-    .getByRole('heading', { name: 'Totals', exact: true })
-    .locator('xpath=ancestor::div[1]')
+  // Scoped to the totals rows: "Parts" and "Labor" are also section headings.
+  const panel = page.getByTestId('totals')
   // The row is the nearest box that spreads label and figure apart; the tax
   // label sits one level deeper, beside its percentage input.
   return panel

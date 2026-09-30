@@ -1,19 +1,23 @@
+import { isStage } from '@/features/work-order-statuses/Lib/stages'
 import { NextRequest, NextResponse } from 'next/server'
 import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
+import { rewriteFileUrl, rewriteFileUrlsWithin, withFileUrls } from '@/lib/backup/file-urls'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
 import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import { warrantyFromUntyped } from '@/lib/warranty'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
-import { mkdir, rm, writeFile } from 'fs/promises'
+import { mkdir, writeFile } from 'fs/promises'
+import { releaseFilesNotRestored } from '@/lib/files/manager'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
 
@@ -77,7 +81,7 @@ function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): 
  * and counter sales (top-level records without a vehicle).
  */
 async function importServiceRecordTree(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   sr: Record<string, unknown>,
   opts: {
     organizationId: string
@@ -88,6 +92,8 @@ async function importServiceRecordTree(
     timeZone: string
     /** Technicians restored by this import. See the time entries below. */
     technicianIds: ReadonlySet<string>
+    /** The workshop's own statuses restored by this import. */
+    workOrderStatusIds: ReadonlySet<string>
     /**
      * Designs and snapshots restored by this import. A reference to one the
      * backup did not carry is dropped rather than left dangling: the record
@@ -130,6 +136,7 @@ async function importServiceRecordTree(
       serviceDate: toSafeDate(sr.serviceDate as string),
       startDateTime: startDT ?? undefined,
       endDateTime: endDT ?? undefined,
+      promisedAt: sr.promisedAt ? (toSafeDate(sr.promisedAt as string) ?? null) : null,
       shopName: (sr.shopName as string) || null,
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
@@ -146,9 +153,23 @@ async function importServiceRecordTree(
       discountType: (sr.discountType as string) || null,
       discountValue: (sr.discountValue as number) || 0,
       discountAmount: (sr.discountAmount as number) || 0,
+      // A backup from before the statement existed has months and no status,
+      // which is read as the included warranty it was.
+      ...warrantyFromUntyped(sr),
+      warrantyExpiresAt: sr.warrantyExpiresAt ? toSafeDate(sr.warrantyExpiresAt as string) : null,
       publicToken: (sr.publicToken as string) || null,
-      technicianId: (sr.technicianId as string) || null,
+      // Only a technician this import restored: a job pointing at one the
+      // backup does not carry would be refused, and take the import with it.
+      technicianId: keptReference(sr.technicianId, opts.technicianIds),
       workBayId: (sr.workBayId as string) || null,
+      // Only a status this import restored. A backup made without the workshop
+      // configuration carries jobs that name statuses it does not hold; those
+      // jobs keep their stage and lose the label, rather than failing the import.
+      customStatusId: keptReference(sr.customStatusId, opts.workOrderStatusIds),
+      customStatusSince:
+        sr.customStatusSince && opts.workOrderStatusIds.has(sr.customStatusId as string)
+          ? toSafeDate(sr.customStatusSince as string)
+          : null,
       sortOrder: (sr.sortOrder as number) || 0,
       createdAt: toSafeDate(sr.createdAt as string),
       updatedAt: toSafeDate(sr.updatedAt as string),
@@ -158,6 +179,7 @@ async function importServiceRecordTree(
       issuedAt: sr.issuedAt ? toSafeDate(sr.issuedAt as string) : null,
       issuedDesignSnapshotId: keptReference(sr.issuedDesignSnapshotId, opts.designSnapshotIds),
       issuedLogoSnapshotId: keptReference(sr.issuedLogoSnapshotId, opts.assetSnapshotIds),
+      issuedSignatureSnapshotId: keptReference(sr.issuedSignatureSnapshotId, opts.assetSnapshotIds),
       issuedData:
         sr.issuedData && typeof sr.issuedData === 'object'
           ? (sr.issuedData as Prisma.InputJsonValue)
@@ -196,6 +218,13 @@ async function importServiceRecordTree(
         id: c.id as string,
         description: c.description as string,
         sortOrder: (c.sortOrder as number) ?? index,
+        cause: (c.cause as string) || null,
+        correction: (c.correction as string) || null,
+        confirmation: (c.confirmation as string) || null,
+        // When it was confirmed comes back; who does not. The id belongs to
+        // an account in the installation the backup was taken from, and the
+        // same person here has another one, if they are here at all.
+        confirmedAt: c.confirmedAt ? (toSafeDate(c.confirmedAt as string) ?? null) : null,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -217,6 +246,7 @@ async function importServiceRecordTree(
   }
 
   // Service attachments
+  const restoredConcernIds = new Set((concerns ?? []).map((c) => c.id as string))
   const attachments = sr.attachments as Record<string, unknown>[] | undefined
   if (attachments?.length) {
     await tx.serviceAttachment.createMany({
@@ -231,6 +261,8 @@ async function importServiceRecordTree(
         includeInInvoice: a.includeInInvoice !== false,
         createdAt: toSafeDate(a.createdAt as string),
         serviceRecordId: sr.id as string,
+        // The concern it was filed under, when this record restored it above.
+        concernId: keptReference(a.concernId, restoredConcernIds),
       })),
     })
   }
@@ -243,7 +275,8 @@ async function importServiceRecordTree(
     sr.statusReports,
     {
       organizationId: opts.organizationId,
-    }
+    },
+    { fields: ['videoUrl'], organizationId: opts.organizationId }
   )
 
   // Clocked time. This is what a technician's hours were billed from, and in
@@ -296,13 +329,19 @@ async function restoreRows(
   what: string,
   create: (rows: Record<string, unknown>[]) => Promise<unknown>,
   rows: unknown,
-  override: Record<string, unknown> = {}
+  override: Record<string, unknown> = {},
+  files?: { fields: readonly string[]; organizationId: string }
 ) {
   const list = rows as Record<string, unknown>[] | undefined
   if (!list?.length) return
 
   try {
-    await create(list.map((row) => columnsOf(row, override)))
+    await create(
+      list.map((row) => {
+        const columns = columnsOf(row, override)
+        return files ? withFileUrls(row, columns, files.fields, files.organizationId) : columns
+      })
+    )
   } catch (error) {
     // A restore rolls back as a whole, so the only thing left to salvage is
     // knowing which part of the file could not be read back.
@@ -318,21 +357,8 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))
   )
 
-  // Clear only the folders this backup can refill. Wiping the lot took the
-  // portal background and the tire photos with it, and no backup carried
-  // either of them back.
-  const carried = new Set(
-    fileEntries.map((name) => name.split('/')[1]).filter((category) => Boolean(category))
-  )
-  for (const category of carried) {
-    if (!UPLOAD_CATEGORIES.includes(category)) continue
-    try {
-      await rm(path.join(uploadsDir, category), { recursive: true, force: true })
-    } catch {
-      // Folder may not exist yet.
-    }
-  }
-
+  // The backup's files are written first, over whatever has the same name.
+  const restored = new Map<string, Set<string>>()
   for (const filePath of fileEntries) {
     // Supports both formats:
     //   files/{category}/{filename}  (v2 backup)
@@ -353,26 +379,21 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
 
     const fileData = await zip.files[filePath].async('nodebuffer')
     await writeFile(path.join(targetDir, filename), fileData)
-  }
-}
 
-/** Rewrite file URLs to use the importing org's ID */
-function rewriteFileUrl(url: string | null | undefined, newOrgId: string): string | null {
-  if (!url) return null
-  // New format: /api/protected/files/OLD_ORG_ID/category/filename
-  if (url.startsWith('/api/protected/files/')) {
-    return url.replace(/^\/api\/protected\/files\/[^/]+\//, `/api/protected/files/${newOrgId}/`)
+    const names = restored.get(category) ?? new Set<string>()
+    names.add(filename)
+    restored.set(category, names)
   }
-  // Old format (pre-restructure): /api/files/OLD_ORG_ID/category/filename
-  if (url.startsWith('/api/files/')) {
-    return url.replace(/^\/api\/files\/[^/]+\//, `/api/protected/files/${newOrgId}/`)
+
+  // Then the files in those folders that the backup did not bring back go
+  // through the file manager, which keeps any a row still uses. The folders
+  // used to be emptied first, which also took files uploaded after the backup
+  // was made, still used by rows this restore did not replace. Only the
+  // folders the backup carries are looked at: it has nothing to say about
+  // the others (the portal background, the tire photos, when absent).
+  for (const [category, names] of restored) {
+    await releaseFilesNotRestored(organizationId, category, names)
   }
-  // Legacy format: /uploads/category/filename → convert to new format
-  if (url.startsWith('/uploads/')) {
-    const relative = url.replace(/^\/uploads\//, '')
-    return `/api/protected/files/${newOrgId}/${relative}`
-  }
-  return url
 }
 
 export async function POST(request: NextRequest) {
@@ -452,8 +473,10 @@ export async function POST(request: NextRequest) {
         WorkBay: () => tx.workBay.deleteMany({ where: { organizationId } }),
         Customer: () => tx.customer.deleteMany({ where: { organizationId } }),
         LaborPreset: () => tx.laborPreset.deleteMany({ where: { organizationId } }),
+        ConditionMarkType: () => tx.conditionMarkType.deleteMany({ where: { organizationId } }),
         Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
         ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
+        WorkOrderStatus: () => tx.workOrderStatus.deleteMany({ where: { organizationId } }),
         AppSetting: () => tx.appSetting.deleteMany({ where: { organizationId } }),
         DocumentDesign: () => tx.documentDesign.deleteMany({ where: { organizationId } }),
         EmailTemplate: () => tx.emailTemplate.deleteMany({ where: { organizationId } }),
@@ -472,11 +495,10 @@ export async function POST(request: NextRequest) {
       if (data.settings?.length) {
         await tx.appSetting.createMany({
           data: (data.settings as Record<string, unknown>[]).map((s: Record<string, unknown>) => {
-            let value = s.value as string
-            // Rewrite file URLs in settings (e.g. logo paths)
-            if (value?.startsWith('/api/protected/files/') || value?.startsWith('/api/files/')) {
-              value = rewriteFileUrl(value, ctx.organizationId) || value
-            }
+            // A setting's value can be a stored file (the workshop logo, the
+            // portal background), in any of the shapes uploads have had.
+            const value = (rewriteFileUrl(s.value as string, ctx.organizationId) ??
+              s.value) as string
             return {
               id: s.id as string,
               key: s.key as string,
@@ -503,7 +525,11 @@ export async function POST(request: NextRequest) {
             documentType: (d.documentType as string) || 'invoice',
             name: d.name as string,
             layout: (d.layout ?? {}) as Prisma.InputJsonValue,
-            template: (d.template ?? {}) as Prisma.InputJsonValue,
+            // The design's own logo is a stored upload inside the template.
+            template: rewriteFileUrlsWithin(
+              d.template ?? {},
+              ctx.organizationId
+            ) as Prisma.InputJsonValue,
             createdAt: toSafeDate(d.createdAt as string),
             updatedAt: toSafeDate(d.updatedAt as string),
           })),
@@ -519,21 +545,7 @@ export async function POST(request: NextRequest) {
         )
         // Uploads travel under this organisation's id, so every stored
         // upload URL is rewritten the way logo settings are.
-        const rewriteAssets = (value: unknown): unknown => {
-          if (typeof value === 'string' && value.startsWith('/api/protected/files/')) {
-            return rewriteFileUrl(value, ctx.organizationId) ?? value
-          }
-          if (Array.isArray(value)) return value.map(rewriteAssets)
-          if (value && typeof value === 'object') {
-            return Object.fromEntries(
-              Object.entries(value as Record<string, unknown>).map(([k, v]) => [
-                k,
-                rewriteAssets(v),
-              ])
-            )
-          }
-          return value
-        }
+        const rewriteAssets = (value: unknown) => rewriteFileUrlsWithin(value, ctx.organizationId)
         await tx.emailTemplate.createMany({
           data: rows.map((t) => ({
             id: t.id as string,
@@ -553,6 +565,11 @@ export async function POST(request: NextRequest) {
         const rows = (data.documentDesignSnapshots as Record<string, unknown>[]).filter(
           (d) => typeof d.id === 'string' && typeof d.hash === 'string'
         )
+        // The look an invoice was issued with, kept exactly as it was: the
+        // row's hash is taken over its own content, and the logo an issued
+        // document prints comes from the frozen bytes beside it
+        // (issuedLogoSnapshot), not from the URL in here. So the URLs in a
+        // snapshot are left naming the workshop the backup came from.
         await tx.documentDesignSnapshot.createMany({
           data: rows.map((d) => ({
             id: d.id as string,
@@ -608,6 +625,28 @@ export async function POST(request: NextRequest) {
 
       // 4. Insert technicians
       if (data.technicians?.length) {
+        // A technician can be linked to a person's account, and a backup only
+        // carries that account's id. Restored into another installation, or
+        // into this one after the person was removed, the id points at nobody
+        // and the foreign key refuses the whole import. The link is kept only
+        // for people who are members of this workshop today; anybody else
+        // comes back as a board-only technician, name and all, and can be
+        // linked again from the team page.
+        const linkedUserIds = [
+          ...new Set(
+            (data.technicians as Record<string, unknown>[])
+              .map((t) => t.userId)
+              .filter((id): id is string => typeof id === 'string' && id.length > 0)
+          ),
+        ]
+        const members = linkedUserIds.length
+          ? await tx.organizationMember.findMany({
+              where: { organizationId: ctx.organizationId, userId: { in: linkedUserIds } },
+              select: { userId: true },
+            })
+          : []
+        const memberUserIds = new Set(members.map((m) => m.userId))
+
         await tx.technician.createMany({
           data: (data.technicians as Record<string, unknown>[]).map(
             (t: Record<string, unknown>) => ({
@@ -617,7 +656,9 @@ export async function POST(request: NextRequest) {
               isActive: t.isActive !== false,
               sortOrder: (t.sortOrder as number) || 0,
               dailyCapacity: (t.dailyCapacity as number) || 480,
-              userId: (t.userId as string) || null, // memberId from old backups ignored — no FK to users
+              skills: (t.skills as string) || null,
+              // memberId from old backups is ignored: it has no FK to users.
+              userId: typeof t.userId === 'string' && memberUserIds.has(t.userId) ? t.userId : null,
               createdAt: toSafeDate(t.createdAt as string),
               updatedAt: toSafeDate(t.updatedAt as string),
               organizationId: ctx.organizationId,
@@ -655,6 +696,31 @@ export async function POST(request: NextRequest) {
             organizationId: ctx.organizationId,
           })),
         })
+      }
+
+      // 4c. Insert the workshop's own work order statuses. Service records
+      // point at them, so they have to exist before any job is restored.
+      const workOrderStatusIds = new Set<string>()
+      if (data.workOrderStatuses?.length) {
+        const rows = (data.workOrderStatuses as Record<string, unknown>[]).filter(
+          (s) => typeof s.id === 'string' && typeof s.name === 'string' && isStage(s.stage)
+        )
+        await tx.workOrderStatus.createMany({
+          data: rows.map((s) => ({
+            id: s.id as string,
+            name: s.name as string,
+            stage: s.stage as string,
+            color: (s.color as string) || 'slate',
+            sortOrder: (s.sortOrder as number) || 0,
+            notifyCustomer: s.notifyCustomer === true,
+            messageTemplate: (s.messageTemplate as string) || null,
+            archivedAt: s.archivedAt ? toSafeDate(s.archivedAt as string) : null,
+            createdAt: toSafeDate(s.createdAt as string),
+            updatedAt: toSafeDate(s.updatedAt as string),
+            organizationId: ctx.organizationId,
+          })),
+        })
+        for (const s of rows) workOrderStatusIds.add(s.id as string)
       }
 
       // 5. Insert custom field definitions
@@ -728,7 +794,9 @@ export async function POST(request: NextRequest) {
           await restoreRows(
             'inventory images',
             (rows) => tx.storedImage.createMany({ data: rows as never }),
-            part.gallery
+            part.gallery,
+            {},
+            { fields: ['url'], organizationId: ctx.organizationId }
           )
         }
       }
@@ -762,6 +830,10 @@ export async function POST(request: NextRequest) {
               fuelType: (v.fuelType as string) || null,
               transmission: (v.transmission as string) || null,
               engineSize: (v.engineSize as string) || null,
+              engineCode: (v.engineCode as string) || null,
+              hsn: (v.hsn as string) || null,
+              tsn: (v.tsn as string) || null,
+              bodyType: (v.bodyType as string) || null,
               purchaseDate: toSafeDate(v.purchaseDate as string) ?? null,
               purchasePrice: (v.purchasePrice as number) || null,
               imageUrl: rewriteFileUrl(v.imageUrl as string, ctx.organizationId),
@@ -844,6 +916,7 @@ export async function POST(request: NextRequest) {
                 workDayStartTime,
                 timeZone,
                 technicianIds,
+                workOrderStatusIds,
                 designIds,
                 designSnapshotIds,
                 assetSnapshotIds,
@@ -874,11 +947,12 @@ export async function POST(request: NextRequest) {
 
           const recurring = v.recurringInvoices as Record<string, unknown>[] | undefined
           if (recurring?.length) {
+            // No organizationId on the row: a recurring invoice is the
+            // vehicle's, and the vehicle is this workshop's.
             await restoreRows(
               'recurring invoices',
               (rows) => tx.recurringInvoice.createMany({ data: rows as never }),
-              recurring,
-              { organizationId }
+              recurring
             )
             for (const invoice of recurring) {
               await restoreRows(
@@ -929,6 +1003,7 @@ export async function POST(request: NextRequest) {
             workDayStartTime,
             timeZone,
             technicianIds,
+            workOrderStatusIds,
             designIds,
             designSnapshotIds,
             assetSnapshotIds,
@@ -953,13 +1028,60 @@ export async function POST(request: NextRequest) {
         }
       }
       if (data.vehicles?.length) {
-        for (const vehicle of data.vehicles as Record<string, unknown>[]) {
-          await restoreRows(
-            'vehicle findings',
-            (rows) => tx.vehicleFinding.createMany({ data: rows as never }),
-            vehicle.findings,
-            { organizationId }
+        const findings = (data.vehicles as Record<string, unknown>[]).flatMap((vehicle) =>
+          ((vehicle.findings as Record<string, unknown>[] | undefined) ?? []).map((finding) => ({
+            finding,
+            vehicleId: vehicle.id as string,
+          }))
+        )
+        if (findings.length > 0) {
+          // A finding names the job it was found in, the job that resolved it
+          // and the concern it answers. Any of the three can be absent from
+          // this restore — a counter sale the backup did not carry, a job
+          // whose vehicle was left out — and one dangling id fails the whole
+          // import, so each is kept only when the row it names is really here.
+          const referencedJobs = findings.flatMap(({ finding }) =>
+            [finding.serviceRecordId, finding.resolvedServiceRecordId].filter(
+              (id): id is string => typeof id === 'string'
+            )
           )
+          const referencedConcerns = findings
+            .map(({ finding }) => finding.concernId)
+            .filter((id): id is string => typeof id === 'string')
+          const [jobRows, concernRows] = await Promise.all([
+            tx.serviceRecord.findMany({
+              where: { id: { in: referencedJobs }, organizationId },
+              select: { id: true },
+            }),
+            tx.serviceConcern.findMany({
+              where: { id: { in: referencedConcerns }, serviceRecord: { organizationId } },
+              select: { id: true },
+            }),
+          ])
+          const restoredJobIds = new Set(jobRows.map((row) => row.id))
+          const restoredConcernIds = new Set(concernRows.map((row) => row.id))
+
+          await tx.vehicleFinding.createMany({
+            data: findings.map(({ finding, vehicleId: findingVehicleId }) => ({
+              id: finding.id as string,
+              description: (finding.description as string) || '',
+              severity: (finding.severity as string) || 'needs_work',
+              status: (finding.status as string) || 'open',
+              notes: (finding.notes as string) || null,
+              imageUrls: ((finding.imageUrls as string[]) || []).map(
+                (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
+              ),
+              createdAt: toSafeDate(finding.createdAt as string),
+              updatedAt: toSafeDate(finding.updatedAt as string),
+              vehicleId: findingVehicleId,
+              serviceRecordId: keptReference(finding.serviceRecordId, restoredJobIds),
+              resolvedServiceRecordId: keptReference(
+                finding.resolvedServiceRecordId,
+                restoredJobIds
+              ),
+              concernId: keptReference(finding.concernId, restoredConcernIds),
+            })),
+          })
         }
       }
 
@@ -984,6 +1106,7 @@ export async function POST(request: NextRequest) {
               discountAmount: (q.discountAmount as number) || 0,
               totalAmount: (q.totalAmount as number) || 0,
               notes: (q.notes as string) || null,
+              ...warrantyFromUntyped(q),
               convertedToId: (q.convertedToId as string) || null,
               createdAt: toSafeDate(q.createdAt as string),
               updatedAt: toSafeDate(q.updatedAt as string),
@@ -1037,7 +1160,9 @@ export async function POST(request: NextRequest) {
           await restoreRows(
             'quote attachments',
             (rows) => tx.quoteAttachment.createMany({ data: rows as never }),
-            q.attachments
+            q.attachments,
+            {},
+            { fields: ['fileUrl'], organizationId: ctx.organizationId }
           )
         }
       }
@@ -1045,12 +1170,21 @@ export async function POST(request: NextRequest) {
       // 9. Insert inspection templates with nested sections and items
       if (data.inspectionTemplates?.length) {
         for (const tmpl of data.inspectionTemplates as Record<string, unknown>[]) {
+          // Every column, including the regulatory profile and the package
+          // provenance: a template restored as a bare name would regrade every
+          // later inspection on the wrong scale and lose its library link.
           await tx.inspectionTemplate.create({
             data: {
               id: tmpl.id as string,
               name: tmpl.name as string,
               description: (tmpl.description as string) || null,
               isDefault: (tmpl.isDefault as boolean) || false,
+              country: (tmpl.country as string) || null,
+              standard: (tmpl.standard as string) ?? 'custom',
+              severityScale: (tmpl.severityScale as string) || 'eu',
+              packageId: (tmpl.packageId as string) || null,
+              packageVersion: (tmpl.packageVersion as string) || null,
+              packageSource: (tmpl.packageSource as string) || null,
               createdAt: toSafeDate(tmpl.createdAt as string),
               updatedAt: toSafeDate(tmpl.updatedAt as string),
               organizationId: ctx.organizationId,
@@ -1064,18 +1198,37 @@ export async function POST(request: NextRequest) {
                 data: {
                   id: sec.id as string,
                   name: sec.name as string,
+                  description: (sec.description as string) || null,
+                  code: (sec.code as string) || null,
                   sortOrder: (sec.sortOrder as number) || 0,
                   templateId: tmpl.id as string,
                 },
               })
 
+              // The whole check definition: what it measures, its limits, its
+              // rules and its wording. A check restored as a name alone would
+              // stop grading readings and forget that a photo was required.
               const items = sec.items as Record<string, unknown>[] | undefined
               if (items?.length) {
                 await tx.inspectionTemplateItem.createMany({
                   data: items.map((item) => ({
                     id: item.id as string,
                     name: item.name as string,
+                    description: (item.description as string) || null,
+                    code: (item.code as string) || null,
                     sortOrder: (item.sortOrder as number) || 0,
+                    inputType: (item.inputType as string) || 'condition',
+                    unit: (item.unit as string) || null,
+                    minValue: typeof item.minValue === 'number' ? item.minValue : null,
+                    maxValue: typeof item.maxValue === 'number' ? item.maxValue : null,
+                    choices: Array.isArray(item.choices) ? (item.choices as string[]) : [],
+                    required: item.required === true,
+                    photoRequired: item.photoRequired === true,
+                    allowNotApplicable: item.allowNotApplicable !== false,
+                    defaultSeverity: (item.defaultSeverity as string) || null,
+                    defectSuggestions: Array.isArray(item.defectSuggestions)
+                      ? (item.defectSuggestions as string[])
+                      : [],
                     sectionId: sec.id as string,
                   })),
                 })
@@ -1088,6 +1241,9 @@ export async function POST(request: NextRequest) {
       // 10. Insert inspections with items and quote requests
       if (data.inspections?.length) {
         for (const insp of data.inspections as Record<string, unknown>[]) {
+          // The certificate fields too: an issued certificate restored without
+          // its number, inspector and next test date is not the document that
+          // was handed to the customer.
           await tx.inspection.create({
             data: {
               id: insp.id as string,
@@ -1099,6 +1255,22 @@ export async function POST(request: NextRequest) {
               publicToken: (insp.publicToken as string) || null,
               completedAt: toSafeDate(insp.completedAt as string) ?? null,
               sortOrder: (insp.sortOrder as number) || 0,
+              severityScale: (insp.severityScale as string) || null,
+              country: (insp.country as string) || null,
+              vehicleCategory: (insp.vehicleCategory as string) || null,
+              nextTestDue: toSafeDate(insp.nextTestDue as string) ?? null,
+              certificateNumber: (insp.certificateNumber as string) || null,
+              inspectorName: (insp.inspectorName as string) || null,
+              testLocation: (insp.testLocation as string) || null,
+              // Import batches are not in a backup, so the row cannot point at
+              // one; the same as the relation's own answer when a batch is deleted.
+              importBatchId: null,
+              // The frozen certificate design, when the snapshot came back too.
+              designSnapshotId: keptReference(insp.designSnapshotId, designSnapshotIds),
+              signatureSnapshotId: keptReference(insp.signatureSnapshotId, assetSnapshotIds),
+              markTypesSnapshot: Array.isArray(insp.markTypesSnapshot)
+                ? (insp.markTypesSnapshot as never)
+                : undefined,
               createdAt: toSafeDate(insp.createdAt as string),
               updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,
@@ -1109,6 +1281,9 @@ export async function POST(request: NextRequest) {
             },
           })
 
+          // Each check as it was copied from the template and then graded:
+          // the reading, the limits it was graded against, the rules and the
+          // free text, not only the grade and the note.
           const inspItems = insp.items as Record<string, unknown>[] | undefined
           if (inspItems?.length) {
             await tx.inspectionItem.createMany({
@@ -1119,11 +1294,60 @@ export async function POST(request: NextRequest) {
                 sortOrder: (item.sortOrder as number) || 0,
                 condition: (item.condition as string) || 'not_inspected',
                 notes: (item.notes as string) || null,
-                imageUrls: (item.imageUrls as string[]) || [],
+                imageUrls: ((item.imageUrls as string[]) || []).map(
+                  (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
+                ),
+                description: (item.description as string) || null,
+                code: (item.code as string) || null,
+                sectionCode: (item.sectionCode as string) || null,
+                inputType: (item.inputType as string) || 'condition',
+                unit: (item.unit as string) || null,
+                minValue: typeof item.minValue === 'number' ? item.minValue : null,
+                maxValue: typeof item.maxValue === 'number' ? item.maxValue : null,
+                choices: Array.isArray(item.choices) ? (item.choices as string[]) : [],
+                required: item.required === true,
+                photoRequired: item.photoRequired === true,
+                allowNotApplicable: item.allowNotApplicable !== false,
+                defaultSeverity: (item.defaultSeverity as string) || null,
+                defectSuggestions: Array.isArray(item.defectSuggestions)
+                  ? (item.defectSuggestions as string[])
+                  : [],
+                measuredValue: typeof item.measuredValue === 'number' ? item.measuredValue : null,
+                textValue: (item.textValue as string) || null,
                 inspectionId: insp.id as string,
               })),
             })
           }
+
+          const inspFiles = insp.attachments as Record<string, unknown>[] | undefined
+          if (inspFiles?.length) {
+            await tx.inspectionAttachment.createMany({
+              data: inspFiles.map((file) => ({
+                id: file.id as string,
+                fileName: file.fileName as string,
+                fileUrl:
+                  rewriteFileUrl(file.fileUrl as string, ctx.organizationId) ??
+                  (file.fileUrl as string),
+                fileType: file.fileType as string,
+                fileSize: (file.fileSize as number) || 0,
+                category: (file.category as string) || 'image',
+                description: (file.description as string) || null,
+                includeInReport: file.includeInReport !== false,
+                createdAt: toSafeDate(file.createdAt as string),
+                inspectionId: insp.id as string,
+              })),
+            })
+          }
+
+          // Status reports sent from the inspection, as a job's are restored
+          // with the job.
+          await restoreRows(
+            'inspection status reports',
+            (rows) => tx.statusReport.createMany({ data: rows as never }),
+            insp.statusReports,
+            { organizationId: ctx.organizationId, inspectionId: insp.id as string },
+            { fields: ['videoUrl'], organizationId: ctx.organizationId }
+          )
 
           const quoteReqs = insp.quoteRequests as Record<string, unknown>[] | undefined
           if (quoteReqs?.length) {
@@ -1139,6 +1363,96 @@ export async function POST(request: NextRequest) {
               })),
             })
           }
+        }
+      }
+
+      // 10b. The jobs and quotes raised from an inspection point back at it.
+      // Both were restored before the inspections existed, so the link is
+      // written now, and only where the inspection came back with the backup.
+      if (data.inspections?.length) {
+        const restoredInspections = new Set(
+          (data.inspections as Record<string, unknown>[]).map((insp) => insp.id as string)
+        )
+        const linked = (rows: unknown) =>
+          ((rows as Record<string, unknown>[] | undefined) ?? []).filter(
+            (row) =>
+              typeof row.inspectionId === 'string' && restoredInspections.has(row.inspectionId)
+          )
+        for (const vehicle of (data.vehicles as Record<string, unknown>[] | undefined) ?? []) {
+          for (const sr of linked(vehicle.serviceRecords)) {
+            await tx.serviceRecord.updateMany({
+              where: { id: sr.id as string, organizationId: ctx.organizationId },
+              data: { inspectionId: sr.inspectionId as string },
+            })
+          }
+        }
+        for (const q of linked(data.quotes)) {
+          await tx.quote.updateMany({
+            where: { id: q.id as string, organizationId: ctx.organizationId },
+            data: { inspectionId: q.inspectionId as string },
+          })
+        }
+      }
+
+      // 10c. The condition map's marks. They hang off the vehicle but name
+      // the inspection check or the job they were drawn on, so they come
+      // after both; a sheet the backup did not carry leaves the mark with no
+      // sheet rather than failing the import. The people who drew and cleared
+      // them have no account on this instance.
+      if (data.vehicles?.length) {
+        const marks = (data.vehicles as Record<string, unknown>[]).flatMap((vehicle) =>
+          ((vehicle.conditionMarks as Record<string, unknown>[] | undefined) ?? []).map((mark) => ({
+            mark,
+            vehicleId: vehicle.id as string,
+          }))
+        )
+        if (marks.length > 0) {
+          const ids = (key: string) =>
+            marks.map(({ mark }) => mark[key]).filter((id): id is string => typeof id === 'string')
+          const [inspectionRows, itemRows, jobRows] = await Promise.all([
+            tx.inspection.findMany({
+              where: { id: { in: ids('inspectionId') }, organizationId },
+              select: { id: true },
+            }),
+            tx.inspectionItem.findMany({
+              where: { id: { in: ids('inspectionItemId') }, inspection: { organizationId } },
+              select: { id: true },
+            }),
+            tx.serviceRecord.findMany({
+              where: { id: { in: ids('serviceRecordId') }, organizationId },
+              select: { id: true },
+            }),
+          ])
+          const restoredInspectionIds = new Set(inspectionRows.map((row) => row.id))
+          const restoredItemIds = new Set(itemRows.map((row) => row.id))
+          const restoredJobIds = new Set(jobRows.map((row) => row.id))
+          await tx.conditionMark.createMany({
+            data: marks.map(({ mark, vehicleId: markVehicleId }) => ({
+              id: mark.id as string,
+              organizationId,
+              vehicleId: markVehicleId,
+              inspectionId: keptReference(mark.inspectionId, restoredInspectionIds),
+              inspectionItemId: keptReference(mark.inspectionItemId, restoredItemIds),
+              serviceRecordId: keptReference(mark.serviceRecordId, restoredJobIds),
+              bodyType: (mark.bodyType as string) || 'sedan',
+              view: (mark.view as string) || 'left',
+              panel: (mark.panel as string) || 'hood',
+              x: typeof mark.x === 'number' ? mark.x : 0.5,
+              y: typeof mark.y === 'number' ? mark.y : 0.5,
+              kind: (mark.kind as string) || 'dent',
+              severity: (mark.severity as string) || 'minor',
+              note: (mark.note as string) || null,
+              imageUrls: ((mark.imageUrls as string[]) || []).map(
+                (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
+              ),
+              recordedAt: toSafeDate(mark.recordedAt as string),
+              recordedById: null,
+              resolvedAt: toSafeDate(mark.resolvedAt as string) ?? null,
+              resolvedById: null,
+              createdAt: toSafeDate(mark.createdAt as string),
+              updatedAt: toSafeDate(mark.updatedAt as string),
+            })),
+          })
         }
       }
 
@@ -1194,7 +1508,8 @@ export async function POST(request: NextRequest) {
         'WhatsApp messages',
         (rows) => tx.whatsappMessage.createMany({ data: rows as never }),
         data.whatsappMessages,
-        { organizationId }
+        { organizationId },
+        { fields: ['mediaUrl'], organizationId }
       )
       await restoreRows(
         'Telegram messages',
@@ -1203,7 +1518,17 @@ export async function POST(request: NextRequest) {
         { organizationId }
       )
 
-      // Workshop configuration: labour presets, webhooks, report schedules.
+      // Workshop configuration: the kinds of mark, labour presets, webhooks,
+      // report schedules.
+      const markTypes = data.conditionMarkTypes as Record<string, unknown>[] | undefined
+      if (markTypes?.length) {
+        await restoreRows(
+          'kinds of mark',
+          (rows) => tx.conditionMarkType.createMany({ data: rows as never }),
+          markTypes,
+          { organizationId }
+        )
+      }
       const laborPresets = data.laborPresets as Record<string, unknown>[] | undefined
       if (laborPresets?.length) {
         await restoreRows(
@@ -1472,6 +1797,19 @@ export async function POST(request: NextRequest) {
                 movementId: null,
               })),
             })
+
+            // The condition photos of each reading. They hang off the
+            // measurement and are deleted with it, so a restore without them
+            // leaves the reading with no evidence behind it.
+            for (const m of measurements) {
+              await restoreRows(
+                'tire condition photos',
+                (rows) => tx.storedImage.createMany({ data: rows as never }),
+                m.images,
+                { tireMeasurementId: m.id as string, inventoryPartId: null },
+                { fields: ['url'], organizationId: ctx.organizationId }
+              )
+            }
           }
 
           const movements = set.movements as Record<string, unknown>[] | undefined
@@ -1502,7 +1840,7 @@ export async function POST(request: NextRequest) {
               data: attachments.map((att) => ({
                 id: att.id as string,
                 fileName: (att.fileName as string) || 'file',
-                fileUrl: (att.fileUrl as string) || '',
+                fileUrl: rewriteFileUrl(att.fileUrl as string, ctx.organizationId) ?? '',
                 fileType: (att.fileType as string) || 'application/octet-stream',
                 fileSize: (att.fileSize as number) || 0,
                 description: (att.description as string) || null,

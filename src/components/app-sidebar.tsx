@@ -68,6 +68,8 @@ import {
   ShieldCheck,
   Timer,
   Users,
+  UserRound,
+  Sparkles,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
@@ -128,6 +130,7 @@ export function AppSidebar({
   isSuperAdmin,
   features,
   tireHotelEnabled = false,
+  aiEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
   announcement = null,
@@ -141,6 +144,8 @@ export function AppSidebar({
   isSuperAdmin?: boolean
   features?: PlanFeatures
   tireHotelEnabled?: boolean
+  /** An AI vendor is connected and the plan includes AI, so the assistant page can answer. */
+  aiEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
   /** The one product announcement to show, worked out on the server. */
@@ -274,6 +279,18 @@ export function AppSidebar({
       icon: Timer,
       subject: 'time_tracking',
     },
+    // Only once a provider is connected: a link to a page that can only say
+    // "not connected" is noise.
+    ...(aiEnabled
+      ? [
+          {
+            titleKey: 'sidebar.aiAssistant' as const,
+            url: '/ai',
+            icon: Sparkles,
+            subject: 'ai_assistant',
+          },
+        ]
+      : []),
     {
       titleKey: 'sidebar.auditLog' as const,
       url: '/audit-log',
@@ -473,7 +490,7 @@ export function AppSidebar({
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
                 side="bottom"
                 align="start"
                 sideOffset={4}
@@ -630,16 +647,20 @@ export function AppSidebar({
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
                 side="top"
                 align="start"
                 sideOffset={4}
               >
+                {/* The person's own page: name, password, devices. Settings for
+                    the workshop has its own row in the navigation above. The
+                    settings layout turns away a custom role without settings
+                    access, so the same rule gates this link. */}
                 {canAccess('settings') && (
                   <DropdownMenuItem asChild>
-                    <Link href="/settings">
-                      <Settings className="mr-2 size-4" />
-                      {t('sidebar.settings')}
+                    <Link href="/settings/account">
+                      <UserRound className="mr-2 size-4" />
+                      {t('sidebar.account')}
                     </Link>
                   </DropdownMenuItem>
                 )}

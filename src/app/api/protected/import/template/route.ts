@@ -1,7 +1,7 @@
-import ExcelJS from 'exceljs'
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { type ImportEntity, templateFieldsFor } from '@/features/import/Lib/fields'
+import { spreadsheetTemplateResponse } from '@/features/import/Lib/template'
 
 const ENTITIES: ImportEntity[] = ['customers', 'vehicles', 'services']
 
@@ -21,34 +21,11 @@ export async function GET(request: NextRequest) {
   }
 
   const fields = templateFieldsFor(entity)
-  const headers = fields.map((f) => f.templateHeader)
-  const example = fields.map((f) => f.example)
-  const fileBase = `torqvoice-${entity}-template`
-
-  if (format === 'csv') {
-    const quote = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)
-    const csv = `﻿${[headers, example].map((r) => r.map(quote).join(',')).join('\r\n')}\r\n`
-    return new NextResponse(csv, {
-      headers: {
-        'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="${fileBase}.csv"`,
-      },
-    })
-  }
-
-  const workbook = new ExcelJS.Workbook()
-  const sheet = workbook.addWorksheet(entity)
-  sheet.addRow(headers)
-  sheet.addRow(example)
-  sheet.getRow(1).font = { bold: true }
-  sheet.columns.forEach((col, i) => {
-    col.width = Math.max(14, headers[i].length + 4)
-  })
-  const buffer = await workbook.xlsx.writeBuffer()
-  return new NextResponse(buffer as unknown as ArrayBuffer, {
-    headers: {
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': `attachment; filename="${fileBase}.xlsx"`,
-    },
+  return spreadsheetTemplateResponse({
+    fileBase: `torqvoice-${entity}-template`,
+    sheetName: entity,
+    headers: fields.map((f) => f.templateHeader),
+    rows: [fields.map((f) => f.example)],
+    format,
   })
 }

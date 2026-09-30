@@ -13,11 +13,22 @@ import { AppCard } from '@/components/app-card'
 import { toast } from 'sonner'
 import { setSetting } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { layoutPresets } from '@/features/settings/Schema/layoutPresets'
-import { Check, Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
+import { presetsFor } from '@/features/settings/Schema/layoutPresets'
+import {
+  Check,
+  FileText,
+  ListChecks,
+  Loader2,
+  type LucideIcon,
+  MessageSquare,
+  Palette,
+  RotateCcw,
+} from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
+import { MarkTypeSettings } from '@/features/condition-map/Components/MarkTypeSettings'
+import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import { DesignPreview, PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 import {
@@ -39,7 +50,28 @@ interface TemplateValues {
   logoSize: number
 }
 
-type TabType = 'invoice' | 'quotation' | 'inspections' | 'sms'
+type TabType =
+  | 'invoice'
+  | 'quotation'
+  | 'workOrders'
+  | 'certificates'
+  | 'inspections'
+  | 'conditionMap'
+  | 'sms'
+
+type SectionType = 'documents' | 'checklists' | 'messages'
+
+/** The printed documents, in the order their chips run. */
+const DOCUMENT_TABS = ['invoice', 'quotation', 'workOrders', 'certificates'] as const
+
+/** The checklists and what they draw on, in the order their chips run. */
+const CHECKLIST_TABS = ['inspections', 'conditionMap'] as const
+
+function sectionOf(tab: TabType): SectionType {
+  if (tab === 'inspections' || tab === 'conditionMap') return 'checklists'
+  if (tab === 'sms') return 'messages'
+  return 'documents'
+}
 
 interface WorkshopPreviewInfo {
   name?: string
@@ -146,7 +178,7 @@ function TemplateTab({
   savedDesigns = [],
   activeDesign = '',
 }: {
-  documentType: 'invoice' | 'quote'
+  documentType: 'invoice' | 'quote' | 'certificate' | 'work_order'
   workshop?: WorkshopPreviewInfo
   logoUrl?: string
   savedDesigns?: SavedDesign[]
@@ -229,8 +261,6 @@ function TemplateTab({
                   )}
                   <Link
                     href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
-                    target="_blank"
-                    rel="noopener"
                     className="block"
                   >
                     <div className="flex justify-center">
@@ -284,14 +314,12 @@ function TemplateTab({
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {layoutPresets.map((preset) => {
+        {presetsFor(documentType).map((preset) => {
           const active = activeDesign === `preset:${preset.id}`
           return (
             <Link
               key={preset.id}
               href={`/invoice-designer?doc=${documentType}&preset=${preset.id}`}
-              target="_blank"
-              rel="noopener"
               className={cn(
                 'relative rounded-lg border p-3 text-left transition-colors hover:bg-muted',
                 active && 'border-primary'
@@ -326,7 +354,7 @@ function TemplateTab({
       <div className="flex items-center justify-between gap-4 border-t pt-4">
         <p className="text-xs text-muted-foreground">{t('templates.designerHint')}</p>
         <Button asChild variant="outline">
-          <Link href={`/invoice-designer?doc=${documentType}`} target="_blank" rel="noopener">
+          <Link href={`/invoice-designer?doc=${documentType}`}>
             {t('templates.openDesigner')} →
           </Link>
         </Button>
@@ -514,6 +542,7 @@ export function TemplateSettings({
   initialInvoiceValues,
   initialQuoteValues,
   inspectionTemplates = [],
+  checklistLanguage = null,
   smsEnabled = false,
   initialSmsTemplates = {},
   logoUrl,
@@ -521,11 +550,14 @@ export function TemplateSettings({
   invoiceLayoutConfig,
   quoteLayoutConfig,
   savedDesigns = [],
-  activeDesigns = { invoice: '', quote: '' },
+  activeDesigns = { invoice: '', quote: '', certificate: '', work_order: '' },
+  markTypes = [],
 }: {
   initialInvoiceValues: TemplateValues
   initialQuoteValues: TemplateValues
   inspectionTemplates?: InspectionTemplate[]
+  /** The language the built-in checklists are written in, when any are installed. */
+  checklistLanguage?: string | null
   smsEnabled?: boolean
   initialSmsTemplates?: Record<string, string>
   logoUrl?: string
@@ -533,7 +565,9 @@ export function TemplateSettings({
   invoiceLayoutConfig?: InvoiceLayoutConfig
   quoteLayoutConfig?: InvoiceLayoutConfig
   savedDesigns?: SavedDesign[]
-  activeDesigns?: { invoice: string; quote: string }
+  activeDesigns?: { invoice: string; quote: string; certificate: string; work_order: string }
+  /** The workshop's kinds of mark on the condition map. */
+  markTypes?: MarkType[]
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -553,6 +587,15 @@ export function TemplateSettings({
     },
     [router, searchParams]
   )
+  const section = sectionOf(tab)
+  const sections: { id: SectionType; tab: TabType; icon: LucideIcon }[] = [
+    { id: 'documents', tab: 'invoice', icon: FileText },
+    { id: 'checklists', tab: 'inspections', icon: ListChecks },
+    // Shown when a link lands on it too, so an old ?tab=sms still opens.
+    ...(smsEnabled || tab === 'sms'
+      ? [{ id: 'messages' as const, tab: 'sms' as const, icon: MessageSquare }]
+      : []),
+  ]
   const [saving, setSaving] = useState(false)
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues)
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues)
@@ -604,12 +647,98 @@ export function TemplateSettings({
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
-      <div>
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
+      <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
+
+      {/* Two levels: what kind of template, then which document. The page
+          holds three different editors, and the four printed documents are
+          only one of them. */}
+      <div className="space-y-3">
+        <div
+          role="tablist"
+          aria-label={t('templates.title')}
+          className="flex w-full gap-1 overflow-x-auto rounded-lg border bg-muted p-1 sm:w-fit"
+        >
+          {sections.map(({ id, tab: target, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={section === id}
+              onClick={() => setTab(target)}
+              className={cn(
+                'flex flex-1 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:flex-none sm:px-4',
+                section === id
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Icon className={cn('h-4 w-4', section === id && 'text-primary')} />
+              {t(`templates.sections.${id}`)}
+            </button>
+          ))}
+        </div>
+
+        {section === 'checklists' && (
+          <div role="tablist" className="flex gap-2 overflow-x-auto">
+            {CHECKLIST_TABS.map((item) => (
+              <button
+                key={item}
+                type="button"
+                role="tab"
+                aria-selected={tab === item}
+                onClick={() => setTab(item)}
+                className={cn(
+                  'shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-medium transition-colors',
+                  tab === item
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'bg-card text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t(`templates.tabs.${item}`)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {section === 'documents' && (
+          <div role="tablist" className="flex gap-2 overflow-x-auto">
+            {DOCUMENT_TABS.map((doc) => (
+              <button
+                key={doc}
+                type="button"
+                role="tab"
+                aria-selected={tab === doc}
+                onClick={() => setTab(doc)}
+                className={cn(
+                  'shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-medium transition-colors',
+                  tab === doc
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'bg-card text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t(`templates.tabs.${doc}`)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <p className="text-sm text-muted-foreground">
+            {tab === 'inspections'
+              ? t('templates.inspectionsDescription')
+              : tab === 'conditionMap'
+                ? t('templates.conditionMapDescription')
+                : tab === 'certificates'
+                  ? t('templates.certificatesDescription')
+                  : tab === 'workOrders'
+                    ? t('templates.workOrdersDescription')
+                    : tab === 'sms'
+                      ? t('templates.smsDescription')
+                      : t('templates.invoiceDescription')}
+          </p>
           {/* Colors live here and arrangement lives there, which is easy to
               get lost in. Each page says where the other half is. */}
-          {tab !== 'inspections' && tab !== 'sms' && (
+          {(tab === 'invoice' || tab === 'quotation') && (
             <Link
               href="/settings/invoice?tab=layout"
               className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
@@ -618,71 +747,32 @@ export function TemplateSettings({
             </Link>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          {tab === 'inspections'
-            ? t('templates.inspectionsDescription')
-            : tab === 'sms'
-              ? t('templates.smsDescription')
-              : t('templates.invoiceDescription')}
-        </p>
-      </div>
-
-      {/* Tab Buttons */}
-      <div className="flex gap-1 rounded-lg border bg-muted p-1">
-        <button
-          type="button"
-          onClick={() => setTab('invoice')}
-          className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            tab === 'invoice'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          {t('templates.tabs.invoice')}
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('quotation')}
-          className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            tab === 'quotation'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          {t('templates.tabs.quotation')}
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('inspections')}
-          className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            tab === 'inspections'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          {t('templates.tabs.inspections')}
-        </button>
-        {smsEnabled && (
-          <button
-            type="button"
-            onClick={() => setTab('sms')}
-            className={cn(
-              'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-              tab === 'sms'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            {t('templates.tabs.sms')}
-          </button>
-        )}
       </div>
 
       {tab === 'inspections' ? (
-        <TemplateListClient templates={inspectionTemplates} />
+        <TemplateListClient templates={inspectionTemplates} checklistLanguage={checklistLanguage} />
+      ) : tab === 'conditionMap' ? (
+        <MarkTypeSettings types={markTypes} />
+      ) : tab === 'workOrders' ? (
+        <ReadOnlyWrapper>
+          <TemplateTab
+            documentType="work_order"
+            workshop={workshop}
+            logoUrl={logoUrl}
+            savedDesigns={savedDesigns.filter((design) => design.documentType === 'work_order')}
+            activeDesign={activeDesigns.work_order}
+          />
+        </ReadOnlyWrapper>
+      ) : tab === 'certificates' ? (
+        <ReadOnlyWrapper>
+          <TemplateTab
+            documentType="certificate"
+            workshop={workshop}
+            logoUrl={logoUrl}
+            savedDesigns={savedDesigns.filter((design) => design.documentType === 'certificate')}
+            activeDesign={activeDesigns.certificate}
+          />
+        </ReadOnlyWrapper>
       ) : tab === 'sms' ? (
         <>
           <ReadOnlyWrapper>
@@ -705,7 +795,10 @@ export function TemplateSettings({
                 documentType="invoice"
                 workshop={workshop}
                 logoUrl={logoUrl}
-                savedDesigns={savedDesigns}
+                savedDesigns={savedDesigns.filter(
+                  (design) =>
+                    design.documentType !== 'certificate' && design.documentType !== 'work_order'
+                )}
                 activeDesign={activeDesigns.invoice}
               />
             ) : (
@@ -713,7 +806,10 @@ export function TemplateSettings({
                 documentType="quote"
                 workshop={workshop}
                 logoUrl={logoUrl}
-                savedDesigns={savedDesigns}
+                savedDesigns={savedDesigns.filter(
+                  (design) =>
+                    design.documentType !== 'certificate' && design.documentType !== 'work_order'
+                )}
                 activeDesign={activeDesigns.quote}
               />
             )}

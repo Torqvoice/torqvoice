@@ -31,6 +31,7 @@ import {
   MoreVertical,
   Pencil,
   Download,
+  Languages,
   LibraryBig,
   Plus,
   Ruler,
@@ -38,17 +39,19 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
   deleteTemplate,
   duplicateTemplate,
   restoreMissingPresets,
+  translateChecklists,
 } from '../Actions/templateActions'
 import { TemplateForm, type TemplateFormData } from './TemplateForm'
 import { TemplatePresetPicker } from './TemplatePresetPicker'
 import { TemplateExportDialog, TemplateImportDialog } from './TemplatePackageDialogs'
-import { TEMPLATE_COUNTRIES, TEMPLATE_PRESETS } from '../Lib/templatePresets'
+import { TEMPLATE_PRESETS, presetPackageId, resolvePreset } from '../Lib/templatePresets'
+import { useInspectionLibrary } from '../Lib/useInspectionLibrary'
 
 interface TemplateSection {
   id: string
@@ -69,6 +72,7 @@ interface TemplateSection {
     choices?: string[]
     required?: boolean
     photoRequired?: boolean
+    allowNotApplicable?: boolean
     defaultSeverity?: string | null
     defectSuggestions?: string[]
   }[]
@@ -82,12 +86,17 @@ interface Template {
   country?: string | null
   standard?: string | null
   severityScale?: string | null
+  packageId?: string | null
   sections: TemplateSection[]
 }
 
-function countryName(code?: string | null) {
+function countryName(code: string | null | undefined, locale: string) {
   if (!code) return null
-  return TEMPLATE_COUNTRIES.find((c) => c.code === code)?.name ?? code
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code
+  } catch {
+    return code
+  }
 }
 
 function TemplateCard({
@@ -106,13 +115,14 @@ function TemplateCard({
   isDuplicating: boolean
 }) {
   const t = useTranslations('inspections.templates')
+  const locale = useLocale()
   const checkCount = template.sections.reduce((sum, s) => sum + s.items.length, 0)
   const measurementCount = template.sections.reduce(
     (sum, s) => sum + s.items.filter((i) => i.inputType === 'measurement').length,
     0
   )
   const isEu = template.severityScale === 'eu'
-  const country = countryName(template.country)
+  const country = countryName(template.country, locale)
 
   return (
     <article className="bg-card flex flex-col rounded-lg border p-4">
@@ -205,8 +215,24 @@ function TemplateCard({
   )
 }
 
-export function TemplateListClient({ templates }: { templates: Template[] }) {
+function languageName(code: string, inLocale: string) {
+  try {
+    return new Intl.DisplayNames([inLocale], { type: 'language' }).of(code) ?? code
+  } catch {
+    return code
+  }
+}
+
+export function TemplateListClient({
+  templates,
+  checklistLanguage = null,
+}: {
+  templates: Template[]
+  /** The language the built-in checklists are written in, when any are installed. */
+  checklistLanguage?: string | null
+}) {
   const t = useTranslations('inspections.templates')
+  const locale = useLocale()
   const router = useRouter()
   const [showForm, setShowForm] = useState(false)
   const [showPresets, setShowPresets] = useState(false)
@@ -216,13 +242,35 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null)
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null)
   const [isInstalling, startInstalling] = useTransition()
+  const [isTranslating, startTranslating] = useTransition()
 
   // Presets a workshop would actually run; "blank" is a way to start building
   // one, not a checklist, so it is not part of the library.
+  const lib = useInspectionLibrary()
+  const installedIds = new Set(templates.map((t) => t.packageId).filter(Boolean))
   const installed = new Set(templates.map((t) => t.name.trim().toLowerCase()))
   const missing = TEMPLATE_PRESETS.filter(
-    (p) => p.id !== 'blank' && !installed.has(p.name.trim().toLowerCase())
+    (p) =>
+      p.id !== 'blank' &&
+      !installedIds.has(presetPackageId(p)) &&
+      !installed.has(resolvePreset(p, lib).name.trim().toLowerCase())
   )
+
+  // A workshop language saved long ago keeps the checklists in it, and nothing
+  // on screen says so; offering the switch here is where the mismatch is seen.
+  const offerTranslation = !!checklistLanguage && checklistLanguage !== locale
+
+  const handleTranslate = () => {
+    startTranslating(async () => {
+      const result = await translateChecklists(locale)
+      if (result.success) {
+        toast.success(t('translated', { language: languageName(locale, locale) }))
+        router.refresh()
+      } else {
+        toast.error(result.error || t('translateFailed'))
+      }
+    })
+  }
 
   const handleRestore = () => {
     startInstalling(async () => {
@@ -296,6 +344,30 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
           </Button>
         </div>
       </div>
+
+      {offerTranslation && checklistLanguage && (
+        <div className="bg-muted/40 flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-3">
+          <Languages className="text-muted-foreground h-4 w-4 shrink-0" aria-hidden="true" />
+          <p className="min-w-0 flex-1 text-sm">
+            {t('translateBanner', {
+              from: languageName(checklistLanguage, locale),
+              to: languageName(locale, locale),
+            })}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0"
+            onClick={handleTranslate}
+            disabled={isTranslating}
+          >
+            {isTranslating && (
+              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            )}
+            {t('translate')}
+          </Button>
+        </div>
+      )}
 
       {templates.length > 0 && missing.length > 0 && (
         <div className="bg-muted/40 flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-3">
@@ -377,6 +449,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         open={showPresets}
         onOpenChange={setShowPresets}
         installedNames={templates.map((t) => t.name)}
+        installedPackageIds={templates.flatMap((t) => (t.packageId ? [t.packageId] : []))}
       />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>

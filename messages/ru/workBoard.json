@@ -8,10 +8,10 @@
     "week": "Неделя",
     "presenter": "Презентация",
     "addTechnician": "Добавить механика",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "previousDay": "Previous day",
-    "nextDay": "Next day",
+    "previousWeek": "Предыдущая неделя",
+    "nextWeek": "Следующая неделя",
+    "previousDay": "Предыдущий день",
+    "nextDay": "Следующий день",
     "groupBy": "Колонки",
     "byTechnician": "Колонка на механика",
     "byBay": "Колонка на пост",
@@ -20,7 +20,7 @@
     "add": "Добавить",
     "addBay": "Добавить пост",
     "weekNumber": "Нед. {number}",
-    "lanes": "Колонки",
+    "lanes": "Дорожки",
     "showAllLanes": "Показать все",
     "onlyBusyLanes": "Только с работой",
     "layout": "Вид",
@@ -78,7 +78,10 @@
     "addTechnician": "Добавить механика",
     "standaloneOnly": "Имя на доске для того, кто не входит в систему: ученика или подрядчика. Механика с приложением добавьте на странице «Команда».",
     "linkedTo": "Входит как {name}",
-    "linkedManagedOnTeam": "Управляется на странице «Команда» вместе с доступом к приложению."
+    "linkedManagedOnTeam": "Управляется на странице «Команда» вместе с доступом к приложению.",
+    "skills": "Навыки",
+    "skillsPlaceholder": "Диагностика, допуск к электромобилям",
+    "skillsHint": "Показывается под именем там, где распределяется работа. Необязательно."
   },
   "jobDetail": {
     "viewDetails": "Просмотреть детали",
@@ -107,8 +110,8 @@
       "waitingParts": "Ожидание запчастей",
       "completed": "Завершено"
     },
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Назад",
+    "next": "Далее",
     "groupingUnused": "Доска статусов группирует по статусу",
     "connecting": "Подключение…"
   },
@@ -154,6 +157,9 @@
     "workBay": "Пост",
     "status": "Статус",
     "noTime": "Время не назначено",
-    "none": "Пока никто"
+    "none": "Пока никто",
+    "promised": "Обещано",
+    "promiseLate": "Просрочено",
+    "promiseOverdue": "Обещано клиенту на уже прошедшее время"
   }
 }

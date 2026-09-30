@@ -10,6 +10,8 @@ import {
   invoiceLayoutConfigSchema,
   mergeWithDefaults,
   getDefaultInvoiceLayout,
+  getDefaultLayout,
+  NO_CUSTOM_FIELD_SECTIONS,
   SECTIONS_WITH_FIELDS,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -18,6 +20,8 @@ import type { EntityType } from '@/features/custom-fields/Schema/customFieldSche
 type LayoutSettingKey =
   | typeof SETTING_KEYS.INVOICE_LAYOUT_CONFIG
   | typeof SETTING_KEYS.QUOTE_LAYOUT_CONFIG
+  | typeof SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG
+  | typeof SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG
 
 async function loadLayoutConfig(
   organizationId: string,
@@ -33,11 +37,21 @@ async function loadLayoutConfig(
   })
 
   if (!setting?.value) {
-    return getDefaultInvoiceLayout()
+    return key === SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG
+      ? getDefaultLayout('certificate')
+      : key === SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG
+        ? getDefaultLayout('work_order')
+        : getDefaultInvoiceLayout()
   }
 
   const parsed = JSON.parse(setting.value)
-  return mergeWithDefaults(parsed)
+  // A work order layout is read as one whatever the row says, so a row saved
+  // before the stamp existed is still filled in from its own sections.
+  return mergeWithDefaults(
+    key === SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG
+      ? { ...parsed, documentType: 'work_order' }
+      : parsed
+  )
 }
 
 async function persistLayoutConfig(
@@ -153,7 +167,10 @@ export async function setCustomFieldPlacement(input: {
     async ({ userId, organizationId }) => {
       const { definitionId, entityType, placement } = input
 
-      if (placement !== 'hidden' && !SECTIONS_WITH_FIELDS.has(placement)) {
+      if (
+        placement !== 'hidden' &&
+        (!SECTIONS_WITH_FIELDS.has(placement) || NO_CUSTOM_FIELD_SECTIONS.has(placement))
+      ) {
         throw new Error('Invalid placement')
       }
 
@@ -200,6 +217,80 @@ export async function setCustomFieldPlacement(input: {
         entity: 'AppSetting',
         details: { key: 'settings_setCustomFieldPlacement' },
         metadata: { fieldId: result.definitionId, placement: result.placement },
+      }),
+    }
+  )
+}
+
+/** The certificate's saved arrangement, or the certificate defaults. */
+export async function getCertificateLayoutConfig() {
+  return withAuth(
+    async ({ organizationId }) =>
+      loadLayoutConfig(organizationId, SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG),
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
+}
+
+export async function saveCertificateLayoutConfig(config: InvoiceLayoutConfig) {
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const validated = await persistLayoutConfig(
+        userId,
+        organizationId,
+        SETTING_KEYS.CERTIFICATE_LAYOUT_CONFIG,
+        config
+      )
+
+      revalidatePath('/settings/templates')
+      return validated
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+      audit: () => ({
+        action: 'settings.updateInvoiceLayout',
+        entity: 'AppSetting',
+        details: { key: 'settings_updateInvoiceLayout' },
+      }),
+    }
+  )
+}
+
+/** The work order's saved arrangement, or the work order defaults. */
+export async function getWorkOrderLayoutConfig() {
+  return withAuth(
+    async ({ organizationId }) =>
+      loadLayoutConfig(organizationId, SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG),
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
+}
+
+export async function saveWorkOrderLayoutConfig(config: InvoiceLayoutConfig) {
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const validated = await persistLayoutConfig(
+        userId,
+        organizationId,
+        SETTING_KEYS.WORK_ORDER_LAYOUT_CONFIG,
+        { ...config, documentType: 'work_order' }
+      )
+
+      revalidatePath('/settings/templates')
+      return validated
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+      audit: () => ({
+        action: 'settings.updateInvoiceLayout',
+        entity: 'AppSetting',
+        details: { key: 'settings_updateInvoiceLayout' },
       }),
     }
   )

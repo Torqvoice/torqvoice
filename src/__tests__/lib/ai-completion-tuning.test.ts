@@ -24,6 +24,15 @@ describe('completionTuning', () => {
     })
   })
 
+  it('keeps the classic parameters for an OpenAI-compatible server', () => {
+    // Ollama and LocalAI read max_tokens only; the model name says nothing
+    // about which vendor's rules apply.
+    expect(completionTuning(config('openai-compatible', 'o3-local'), 2000, 0.7)).toEqual({
+      max_tokens: 2000,
+      temperature: 0.7,
+    })
+  })
+
   it('sends max_completion_tokens for classic OpenAI models, keeping temperature', () => {
     expect(completionTuning(config('openai', 'gpt-4o'), 2000, 0.7)).toEqual({
       max_completion_tokens: 2000,

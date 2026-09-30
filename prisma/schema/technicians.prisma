@@ -5,6 +5,9 @@ model Technician {
   isActive      Boolean @default(true)
   sortOrder     Int     @default(0)
   dailyCapacity Int     @default(480)
+  /// What this person is good at, in the workshop's own words ("Diagnostics,
+  /// EV certified"). Shown beside their name where work is handed out.
+  skills        String?
 
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)

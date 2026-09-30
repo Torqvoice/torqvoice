@@ -16,6 +16,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { formatCurrency } from '@/lib/format'
 import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
+import { WARRANTY_NONE } from '@/lib/warranty'
 import type { ServiceDetail } from '../service-detail/types'
 import type { useServiceFormState } from './useServiceFormState'
 
@@ -55,6 +56,8 @@ export function useServiceActions({
     concerns,
     partItems,
     laborItems,
+    laborItemsForSave,
+    clearLaborAddedElsewhere,
     subtotal,
     taxRate,
     taxInclusive,
@@ -63,9 +66,7 @@ export function useServiceActions({
     discountType,
     discountValue,
     discountAmount,
-    warrantyMonths,
-    warrantyMileage,
-    warrantyNotes,
+    warranty,
     isSavingRef,
     autosaveTimer,
     setLoading,
@@ -118,6 +119,7 @@ export function useServiceActions({
       title: getVisible('title') ?? '',
       partItems,
       laborItems,
+      concerns,
     })
     if (problem) {
       toast.error(t(`page.problems.${problem}`))
@@ -164,11 +166,23 @@ export function useServiceActions({
       invoiceDate: optionalText('invoiceDate'),
       invoiceDueDate: optionalText('invoiceDueDate'),
       // Blank rows are somebody halfway through typing, not a concern.
+      // Only the saved fields: the stamp of who confirmed is the server's.
       concerns: concerns
         .filter((c) => c.description.trim())
-        .map((c, index) => ({ ...c, description: c.description.trim(), sortOrder: index })),
+        .map((c, index) => ({
+          id: c.id,
+          description: c.description.trim(),
+          sortOrder: index,
+          cause: c.cause ?? null,
+          correction: c.correction ?? null,
+          confirmation: c.confirmation ?? null,
+          confirmed: c.confirmed ?? false,
+        })),
       partItems: partItems.filter((p) => p.name),
-      laborItems: laborItems.filter((l) => l.description),
+      // A line a technician added while this page was open goes with the save
+      // even if the offer to show it was never taken: this action replaces
+      // every labour line, so one left out of the payload is deleted.
+      laborItems: laborItemsForSave.filter((l) => l.description),
       subtotal,
       taxRate,
       taxInclusive,
@@ -177,14 +191,18 @@ export function useServiceActions({
       discountType: discountType === 'none' ? 'none' : discountType,
       discountValue: discountType === 'none' ? 0 : discountValue,
       discountAmount: discountType === 'none' ? 0 : discountAmount,
-      warrantyMonths: warrantyMonths ?? 0,
-      warrantyMileage: warrantyMileage ?? 0,
-      warrantyNotes: warrantyNotes ?? '',
+      // Cleared fields go as 'none', 0 and '' so the action clears them;
+      // undefined would leave the old value in place.
+      warrantyStatus: warranty.warrantyStatus ?? WARRANTY_NONE,
+      warrantyMonths: warranty.warrantyMonths ?? 0,
+      warrantyMileage: warranty.warrantyMileage ?? 0,
+      warrantyNotes: warranty.warrantyNotes ?? '',
     }
 
     const result = await updateServiceRecord(payload)
 
     if (result.success) {
+      clearLaborAddedElsewhere()
       setHasUnsavedChanges(false)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {

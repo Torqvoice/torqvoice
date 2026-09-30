@@ -2,11 +2,11 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { readsNotifications } from '@/lib/notification-roles'
 
 export async function getNotifications() {
   return withAuth(async ({ organizationId, role }) => {
-    const isAdminOrOwner = role === 'owner' || role === 'admin' || role === 'super_admin'
-    if (!isAdminOrOwner) return { notifications: [], unreadCount: 0 }
+    if (!readsNotifications(role)) return { notifications: [], unreadCount: 0 }
 
     const [notifications, unreadCount] = await Promise.all([
       db.notification.findMany({

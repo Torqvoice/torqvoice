@@ -127,7 +127,12 @@ function cellText(value: ExcelJS.CellValue): string {
   if (value == null) return ''
   if (value instanceof Date) {
     if (Number.isNaN(value.getTime())) return ''
-    return value.toISOString().slice(0, 10)
+    // Excel keeps wall-clock values as UTC. A time on its own sits on the
+    // 1899-12-30 epoch, and a date typed with a time keeps it.
+    const iso = value.toISOString()
+    const time = iso.slice(11, 16)
+    if (iso.startsWith('1899-12-30') || iso.startsWith('1899-12-31')) return time
+    return time === '00:00' ? iso.slice(0, 10) : `${iso.slice(0, 10)} ${time}`
   }
   if (typeof value === 'object') {
     if ('richText' in value) return value.richText.map((r) => r.text).join('')

@@ -6,7 +6,8 @@ import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
-import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { getChecklistLanguage, getTemplates } from '@/features/inspections/Actions/templateActions'
+import { listMarkTypes } from '@/features/condition-map/Actions/markTypeActions'
 import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
 import {
@@ -28,11 +29,14 @@ export default async function TemplatePage() {
   const [
     result,
     inspectionTemplatesResult,
+    markTypesResult,
     invoiceLayoutResult,
     quoteLayoutResult,
     organization,
     invoiceDesigns,
     quoteDesigns,
+    certificateDesigns,
+    workOrderDesigns,
   ] = await Promise.all([
     getSettings([
       SETTING_KEYS.INVOICE_PRIMARY_COLOR,
@@ -57,6 +61,8 @@ export default async function TemplatePage() {
       SETTING_KEYS.COMPANY_LOGO,
       SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
       SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
+      SETTING_KEYS.CERTIFICATE_ACTIVE_DESIGN,
+      SETTING_KEYS.WORK_ORDER_ACTIVE_DESIGN,
       SETTING_KEYS.WORKSHOP_ADDRESS,
       SETTING_KEYS.WORKSHOP_SLOGAN,
       SETTING_KEYS.WORKSHOP_PHONE,
@@ -71,6 +77,7 @@ export default async function TemplatePage() {
       SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
     ]),
     getTemplates(),
+    listMarkTypes(),
     getInvoiceLayoutConfig(),
     getQuoteLayoutConfig(),
     // Read straight off the organization, the way the real PDF does. Going
@@ -82,9 +89,13 @@ export default async function TemplatePage() {
     }),
     listDocumentDesigns('invoice'),
     listDocumentDesigns('quote'),
+    listDocumentDesigns('certificate'),
+    listDocumentDesigns('work_order'),
   ])
 
   const settings = result.success && result.data ? result.data : {}
+  // After getTemplates, whose sync may just have written the checklists.
+  const checklistLanguage = await getChecklistLanguage()
   const inspectionTemplates =
     inspectionTemplatesResult.success && inspectionTemplatesResult.data
       ? inspectionTemplatesResult.data
@@ -98,6 +109,8 @@ export default async function TemplatePage() {
   const savedDesigns: SavedDesign[] = [
     ...(invoiceDesigns.success && invoiceDesigns.data ? invoiceDesigns.data : []),
     ...(quoteDesigns.success && quoteDesigns.data ? quoteDesigns.data : []),
+    ...(certificateDesigns.success && certificateDesigns.data ? certificateDesigns.data : []),
+    ...(workOrderDesigns.success && workOrderDesigns.data ? workOrderDesigns.data : []),
   ]
 
   // The preview is meant to look like this workshop's own paper, so it gets the
@@ -155,6 +168,8 @@ export default async function TemplatePage() {
         logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,
       }}
       inspectionTemplates={inspectionTemplates}
+      markTypes={markTypesResult.success && markTypesResult.data ? markTypesResult.data : []}
+      checklistLanguage={checklistLanguage.success ? (checklistLanguage.data ?? null) : null}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
@@ -163,6 +178,8 @@ export default async function TemplatePage() {
       activeDesigns={{
         invoice: settings[SETTING_KEYS.INVOICE_ACTIVE_DESIGN] || '',
         quote: settings[SETTING_KEYS.QUOTE_ACTIVE_DESIGN] || '',
+        certificate: settings[SETTING_KEYS.CERTIFICATE_ACTIVE_DESIGN] || '',
+        work_order: settings[SETTING_KEYS.WORK_ORDER_ACTIVE_DESIGN] || '',
       }}
       invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}

@@ -24,7 +24,8 @@ interface Finding {
 }
 
 export interface ObservationsControls {
-  onAddFinding: () => void
+  /** With a concern id, the new finding starts out answering that concern. */
+  onAddFinding: (concernId?: string) => void
   onEditFinding: (finding: Finding) => void
   openObservationsCount: number
   onShowExistingObservations: () => void
@@ -53,6 +54,7 @@ export function ObservationsManager({
   const tf = useTranslations('vehicles.findings')
   const [openFindingForm, setOpenFindingForm] = useState(false)
   const [editingFinding, setEditingFinding] = useState<Finding | undefined>()
+  const [defaultConcernId, setDefaultConcernId] = useState<string | null>(null)
   const [showExistingDialog, setShowExistingDialog] = useState(false)
 
   const otherObservations = openObservations.filter((o) => o.serviceRecordId !== serviceRecordId)
@@ -72,8 +74,9 @@ export function ObservationsManager({
   // Expose controls to parent via callback
   useEffect(() => {
     onControlsReady({
-      onAddFinding: () => {
+      onAddFinding: (concernId?: string) => {
         setEditingFinding(undefined)
+        setDefaultConcernId(concernId ?? null)
         setOpenFindingForm(true)
       },
       onEditFinding: (f: Finding) => {
@@ -94,6 +97,7 @@ export function ObservationsManager({
         onOpenChange={setOpenFindingForm}
         finding={editingFinding}
         concerns={concerns}
+        defaultConcernId={defaultConcernId}
       />
 
       <Dialog open={showExistingDialog} onOpenChange={setShowExistingDialog}>

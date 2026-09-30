@@ -31,6 +31,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  CheckCircle2,
   EyeOff,
   Receipt,
   Plus,
@@ -39,6 +40,7 @@ import { cn } from '@/lib/utils'
 import { deliveryState } from '@/features/billing/Lib/deliveryState'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { rememberCompletedOnly } from '@/lib/completed-only-preference'
 import { ListEmpty } from '@/components/list-empty'
 
 interface BillingRecord {
@@ -89,6 +91,8 @@ interface BillingClientProps {
   search: string
   statusFilter: string
   deliveryFilter: string
+  /** Only work orders marked completed. */
+  completedOnly?: boolean
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }
@@ -106,6 +110,7 @@ export default function BillingClient({
   search,
   statusFilter,
   deliveryFilter,
+  completedOnly = false,
   sortBy = '',
   sortOrder = 'desc',
 }: BillingClientProps) {
@@ -214,6 +219,16 @@ export default function BillingClient({
           page: '1',
         })}`
       )
+    })
+  }
+
+  // Remembered in a cookie as well as put in the URL, so the list opens the
+  // same way next time without anybody asking for it.
+  const handleCompletedToggle = () => {
+    const next = !completedOnly
+    rememberCompletedOnly('billing', next)
+    startTransition(() => {
+      router.push(`${pathname}?${createQueryString({ completed: next ? '1' : '0', page: '1' })}`)
     })
   }
 
@@ -393,6 +408,18 @@ export default function BillingClient({
           >
             <EyeOff className="mr-1 h-3.5 w-3.5" />
             {t('history.filterUnviewed')}
+          </Button>
+          <Button
+            variant={completedOnly ? 'default' : 'outline'}
+            size="sm"
+            className="h-9 shrink-0 sm:h-8"
+            onClick={handleCompletedToggle}
+            disabled={isPending}
+            aria-pressed={completedOnly}
+            title={t('history.filterCompletedHint')}
+          >
+            <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+            {t('history.filterCompleted')}
           </Button>
         </div>
 

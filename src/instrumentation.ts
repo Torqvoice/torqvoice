@@ -18,9 +18,10 @@ export async function register() {
     }
     const {
       checkLicenses,
-      checkSubscriptions,
+      syncSubscriptions,
       processRecurringInvoices,
       cleanupPortalSessions,
+      sweepOrphanFilesDaily,
       cleanupAuditLogs,
       processReportSchedules,
       processWebhookDeliveries,
@@ -35,9 +36,10 @@ export async function register() {
     const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
     warnAboutAppUrl()
     checkLicenses()
-    checkSubscriptions()
+    syncSubscriptions()
     processRecurringInvoices()
     cleanupPortalSessions()
+    sweepOrphanFilesDaily()
     cleanupAuditLogs()
     processReportSchedules()
     startDemoResetCron()
