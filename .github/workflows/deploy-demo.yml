@@ -118,6 +118,11 @@ jobs:
                 NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
                 NEXT_PUBLIC_APP_URL: ${APP_URL}
                 DEMO_MODE: "true"
+                # The demo sits behind Cloudflare on the same origin as production,
+                # which only accepts its edges; see deploy-prod.yml. Without this
+                # every visitor shares the edge's rate-limit bucket, and the upload
+                # and sign-in limits refuse strangers for each other.
+                TRUST_CF_CONNECTING_IP: "true"
                 DEMO_USER_EMAIL: ${DEMO_USER_EMAIL}
                 DEMO_USER_PASSWORD: ${DEMO_USER_PASSWORD}
                 POSTHOG_HOST: ${POSTHOG_HOST}
