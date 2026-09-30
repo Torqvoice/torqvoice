@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test'
+import { settle } from '../../support/hydration'
 import {
   addLabor,
   addPart,
@@ -36,22 +37,17 @@ const MULTILINE_LABOR = 'Replace timing belt\nand water pump\nrefill coolant'
 let vehicleUrl = ''
 let jobUrl = ''
 
-/** The status control in the invoice details panel. */
-function statusSelect(page: Page): Locator {
-  return page
-    .getByText('Status', { exact: true })
-    .locator('xpath=ancestor::div[1]')
-    .getByRole('combobox')
+/** The status stepper in the page header: one button per stage. */
+function stage(page: Page, name: string): Locator {
+  return page.getByTestId('status-stepper').getByRole('button', { name: new RegExp(name) })
 }
 
-async function setStatus(page: Page, option: string): Promise<void> {
+/** Moves the job to a stage. A click before hydration does nothing, so it is repeated. */
+async function setStatus(page: Page, name: string): Promise<void> {
   await expect(async () => {
-    await statusSelect(page).click()
-    await expect(page.getByRole('option', { name: option, exact: true })).toBeVisible({
-      timeout: 2_000,
-    })
+    await stage(page, name).click()
+    await expect(stage(page, name)).toHaveAttribute('aria-current', 'step', { timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
-  await page.getByRole('option', { name: option, exact: true }).click()
 }
 
 test.beforeAll(async ({ browser }) => {
@@ -154,7 +150,8 @@ test.describe('a work order from intake to completion', () => {
     await setStatus(page, 'In Progress')
     await saveWorkOrder(page)
     await page.reload()
-    await expect(statusSelect(page)).toContainText('In Progress')
+    await settle(page)
+    await expect(stage(page, 'In Progress')).toHaveAttribute('aria-current', 'step')
     // The badge in the header used to print the stored value beside a select
     // that said it properly, so the same job read "in-progress" and
     // "In Progress" an inch apart.
@@ -163,7 +160,8 @@ test.describe('a work order from intake to completion', () => {
     await setStatus(page, 'Completed')
     await saveWorkOrder(page)
     await page.reload()
-    await expect(statusSelect(page)).toContainText('Completed')
+    await settle(page)
+    await expect(stage(page, 'Completed')).toHaveAttribute('aria-current', 'step')
   })
 
   test('the finished job is on the work orders list with its number', async ({ page }) => {
