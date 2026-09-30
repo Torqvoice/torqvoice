@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils'
 import {
   addConditionMark,
   addConditionMarkPhotos,
+  discardConditionMarkUploads,
   removeConditionMark,
   removeConditionMarkPhoto,
   resolveConditionMark,
@@ -241,6 +242,8 @@ export function ConditionMapCard({
       const result = await addConditionMarkPhotos({ id: editingId, urls: batch })
       if (!result.success || !result.data) {
         toast.error(result.success ? t('uploadFailed') : result.error || t('uploadFailed'))
+        // What was uploaded but not saved is on disk with nothing using it.
+        await discardConditionMarkUploads({ urls: urls.slice(start) })
         break
       }
       if (before) replace({ ...before, imageUrls: result.data })

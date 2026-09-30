@@ -112,6 +112,24 @@
   "attachPdf": "PDF ekle",
   "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz.",
   "sentCopy": {
-    "note": "{date} tarihinde gönderildi. Buradaki değişiklikler fatura yeniden gönderildiğinde faturaya yansır."
+    "note": "{date} tarihinde gönderildi. Buradaki değişiklikler fatura yeniden gönderildiğinde faturaya yansır.",
+    "confirmTitle": "Bu fatura zaten gönderildi",
+    "confirmBody": "Müşterinin kopyası gönderildiği gibi kalır. Değişikliğiniz işte kaydedilir ve fatura yeniden açılıp tekrar gönderildiğinde faturaya yansır.",
+    "confirm": "Sonraki gönderim için kaydet",
+    "cancel": "İptal"
+  },
+  "videoRecorder": {
+    "title": "Video kaydet",
+    "starting": "Kamera başlatılıyor...",
+    "denied": "Tarayıcının kamerayı veya mikrofonu kullanmasına izin verilmedi. Tarayıcının adres çubuğundan bu site için izin verin ve yeniden deneyin.",
+    "noCamera": "Bu bilgisayarda kamera bulunamadı.",
+    "unsupported": "Bu tarayıcı video kaydedemiyor. Bunun yerine bir dosya yükleyin.",
+    "camera": "Kamera",
+    "start": "Kaydı başlat",
+    "stop": "Durdur",
+    "recording": "Kaydediliyor",
+    "retake": "Yeniden kaydet",
+    "use": "Bu videoyu kullan",
+    "limit": "Kayıt {minutes} dakika sonra kendiliğinden durur."
   }
 }

@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation'
+import { defaultCertificateDesign } from '@/features/inspections/Lib/defaultCertificateDesign'
+
 import { db } from '@/lib/db'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures } from '@/lib/features'
@@ -17,7 +19,11 @@ import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceD
 import { DismissOnArrival } from '@/components/feature-hint'
 import { INVOICE_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
-import { WORK_ORDER_TEMPLATE_DEFAULTS } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  DESIGNER_LAYOUT_VERSION,
+  isDesignerLayout,
+  WORK_ORDER_TEMPLATE_DEFAULTS,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import { telegramBotLink as botLinkOf } from '@/features/invoices/Lib/telegramQr'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
@@ -147,11 +153,35 @@ export default async function InvoiceDesignerPage({
         }}
         invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
         quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
-        certificateLayout={certificateLayout.success ? certificateLayout.data : undefined}
+        certificateLayout={
+          // Never designed: the canvas starts from the design that prints, Regulatory.
+          certificateLayout.success && isDesignerLayout(certificateLayout.data)
+            ? certificateLayout.data
+            : { ...defaultCertificateDesign().layout, version: DESIGNER_LAYOUT_VERSION }
+        }
         workOrderLayout={workOrderLayout.success ? workOrderLayout.data : undefined}
         invoiceTemplate={templateFor('invoice')}
         quoteTemplate={templateFor('quote')}
-        certificateTemplate={templateFor('certificate')}
+        certificateTemplate={
+          certificateLayout.success && isDesignerLayout(certificateLayout.data)
+            ? templateFor('certificate')
+            : {
+                ...templateFor('certificate'),
+                primaryColor:
+                  settings['certificate.primaryColor'] ||
+                  defaultCertificateDesign().template.primaryColor,
+                fontFamily:
+                  settings['certificate.fontFamily'] ||
+                  defaultCertificateDesign().template.fontFamily,
+                headerStyle:
+                  settings['certificate.headerStyle'] ||
+                  defaultCertificateDesign().template.headerStyle,
+                textColor:
+                  settings['certificate.textColor'] ||
+                  defaultCertificateDesign().template.textColor ||
+                  '',
+              }
+        }
         workOrderTemplate={templateFor('work_order')}
         initialSavedDesigns={savedDesigns}
         telegramBotLink={telegramBotUsername ? botLinkOf(telegramBotUsername) : undefined}

@@ -484,9 +484,8 @@ export async function completeInspection(id: string) {
 
       // The certificate design as it is today, frozen onto the inspection the
       // way an issued invoice freezes its design: a design edited next year
-      // must not relabel a certificate a customer already holds. Nothing to
-      // freeze for a workshop that has never designed one; those print the
-      // built-in sheet, which does not change.
+      // must not relabel a certificate a customer already holds. A workshop
+      // that has never designed one freezes the default (Regulatory) design.
       const settingRows = await db.appSetting.findMany({
         where: { organizationId, key: { startsWith: 'certificate.' } },
         select: { key: true, value: true },
@@ -494,9 +493,7 @@ export async function completeInspection(id: string) {
       const certificateSettings: Record<string, string> = {}
       for (const row of settingRows) certificateSettings[row.key] = row.value
       const liveDesign = liveCertificateDesign(certificateSettings)
-      const designSnapshotId = liveDesign
-        ? await ensureDesignSnapshot(organizationId, liveDesign)
-        : null
+      const designSnapshotId = await ensureDesignSnapshot(organizationId, liveDesign)
 
       // The inspector's signature, frozen with the design for the same reason.
       const signatureDataUri = await memberSignatureDataUri(

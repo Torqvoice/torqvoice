@@ -112,6 +112,24 @@
   "attachPdf": "Anexar PDF",
   "attachPdfHint": "Desative para enviar um link em vez do anexo e assim saber quando o cliente o abre.",
   "sentCopy": {
-    "note": "Enviada a {date}. As alterações feitas aqui entram na fatura quando for enviada novamente."
+    "note": "Enviada a {date}. As alterações feitas aqui entram na fatura quando for enviada novamente.",
+    "confirmTitle": "Esta fatura já foi enviada",
+    "confirmBody": "A cópia do cliente fica como foi enviada. A alteração é guardada no trabalho e entra na fatura quando for reaberta e enviada novamente.",
+    "confirm": "Guardar para o próximo envio",
+    "cancel": "Cancelar"
+  },
+  "videoRecorder": {
+    "title": "Gravar um vídeo",
+    "starting": "A iniciar a câmara...",
+    "denied": "O navegador não tem permissão para usar a câmara ou o microfone. Permita-os para este site na barra de endereço do navegador e tente novamente.",
+    "noCamera": "Não foi encontrada nenhuma câmara neste computador.",
+    "unsupported": "Este navegador não consegue gravar vídeo. Carregue um ficheiro.",
+    "camera": "Câmara",
+    "start": "Iniciar gravação",
+    "stop": "Parar",
+    "recording": "A gravar",
+    "retake": "Gravar novamente",
+    "use": "Usar este vídeo",
+    "limit": "A gravação para sozinha ao fim de {minutes} minutos."
   }
 }

@@ -112,6 +112,24 @@
   "attachPdf": "PDF anhängen",
   "attachPdfHint": "Ausschalten, um stattdessen einen Link zu senden, damit Sie sehen, wann der Kunde ihn öffnet.",
   "sentCopy": {
-    "note": "Gesendet am {date}. Änderungen hier kommen auf die Rechnung, wenn sie erneut gesendet wird."
+    "note": "Gesendet am {date}. Änderungen hier kommen auf die Rechnung, wenn sie erneut gesendet wird.",
+    "confirmTitle": "Diese Rechnung wurde bereits gesendet",
+    "confirmBody": "Die Kopie des Kunden bleibt so, wie sie gesendet wurde. Ihre Änderung wird am Auftrag gespeichert und kommt auf die Rechnung, wenn sie wieder geöffnet und erneut gesendet wird.",
+    "confirm": "Für den nächsten Versand speichern",
+    "cancel": "Abbrechen"
+  },
+  "videoRecorder": {
+    "title": "Video aufnehmen",
+    "starting": "Kamera wird gestartet...",
+    "denied": "Der Browser durfte Kamera oder Mikrofon nicht verwenden. Erlauben Sie beides für diese Seite über die Adressleiste des Browsers und versuchen Sie es erneut.",
+    "noCamera": "Auf diesem Computer wurde keine Kamera gefunden.",
+    "unsupported": "Dieser Browser kann kein Video aufnehmen. Laden Sie stattdessen eine Datei hoch.",
+    "camera": "Kamera",
+    "start": "Aufnahme starten",
+    "stop": "Stopp",
+    "recording": "Aufnahme läuft",
+    "retake": "Neu aufnehmen",
+    "use": "Dieses Video verwenden",
+    "limit": "Die Aufnahme endet automatisch nach {minutes} Minuten."
   }
 }

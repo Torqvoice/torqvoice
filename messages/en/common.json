@@ -112,6 +112,24 @@
   "attachPdf": "Attach PDF",
   "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it.",
   "sentCopy": {
-    "note": "Sent {date}. Changes here go on the invoice when it is sent again."
+    "note": "Sent {date}. Changes here go on the invoice when it is sent again.",
+    "confirmTitle": "This invoice has already been sent",
+    "confirmBody": "The customer's copy keeps what it was sent with. Your change is saved on the job and goes on the invoice when it is reopened and sent again.",
+    "confirm": "Save for the next send",
+    "cancel": "Cancel"
+  },
+  "videoRecorder": {
+    "title": "Record a video",
+    "starting": "Starting the camera...",
+    "denied": "The browser was not allowed to use the camera or microphone. Allow them for this site from the browser's address bar, then try again.",
+    "noCamera": "No camera was found on this computer.",
+    "unsupported": "This browser cannot record video. Upload a file instead.",
+    "camera": "Camera",
+    "start": "Start recording",
+    "stop": "Stop",
+    "recording": "Recording",
+    "retake": "Record again",
+    "use": "Use this video",
+    "limit": "Recording stops by itself after {minutes} minutes."
   }
 }

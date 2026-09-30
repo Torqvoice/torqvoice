@@ -1,6 +1,16 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useDayFormatter } from '@/features/calendar/Components/useDayFormatter'
 import { cn } from '@/lib/utils'
 
@@ -29,5 +39,37 @@ export function SentCopyNote({
     <p data-testid="sent-copy-note" className={cn('text-xs text-muted-foreground', className)}>
       {t('note', { date })}
     </p>
+  )
+}
+
+/**
+ * Asked before a change on a sent job that the sent invoice will not show:
+ * the change is kept on the job and goes on the invoice when it is reopened
+ * and sent again. The same question for every tool, so the rule reads the
+ * same wherever it applies.
+ */
+export function SentCopyConfirm({
+  open,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  const t = useTranslations('common.sentCopy')
+  return (
+    <AlertDialog open={open} onOpenChange={(next) => !next && onCancel()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('confirmBody')}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>{t('cancel')}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{t('confirm')}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

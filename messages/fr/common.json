@@ -112,6 +112,24 @@
   "attachPdf": "Joindre le PDF",
   "attachPdfHint": "Désactivez pour envoyer un lien à la place, afin de voir quand le client l'ouvre.",
   "sentCopy": {
-    "note": "Envoyée le {date}. Les modifications faites ici passent sur la facture lorsqu'elle est renvoyée."
+    "note": "Envoyée le {date}. Les modifications faites ici passent sur la facture lorsqu'elle est renvoyée.",
+    "confirmTitle": "Cette facture a déjà été envoyée",
+    "confirmBody": "La copie du client reste telle qu'elle a été envoyée. Votre modification est enregistrée sur le travail et passe sur la facture lorsqu'elle est rouverte et renvoyée.",
+    "confirm": "Enregistrer pour le prochain envoi",
+    "cancel": "Annuler"
+  },
+  "videoRecorder": {
+    "title": "Enregistrer une vidéo",
+    "starting": "Démarrage de la caméra...",
+    "denied": "Le navigateur n'a pas été autorisé à utiliser la caméra ou le micro. Autorisez-les pour ce site depuis la barre d'adresse du navigateur, puis réessayez.",
+    "noCamera": "Aucune caméra n'a été trouvée sur cet ordinateur.",
+    "unsupported": "Ce navigateur ne peut pas enregistrer de vidéo. Importez plutôt un fichier.",
+    "camera": "Caméra",
+    "start": "Commencer l'enregistrement",
+    "stop": "Arrêter",
+    "recording": "Enregistrement",
+    "retake": "Recommencer",
+    "use": "Utiliser cette vidéo",
+    "limit": "L'enregistrement s'arrête tout seul après {minutes} minutes."
   }
 }

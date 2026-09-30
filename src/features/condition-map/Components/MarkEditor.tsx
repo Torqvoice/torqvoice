@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import { type MarkSeverity, SEVERITIES } from '../Lib/marks'
 import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkIcon } from './ConditionMap'
+import { useNativeCamera } from '@/hooks/use-native-camera'
 
 export interface EditableMark {
   id: string
@@ -63,6 +64,7 @@ export function MarkEditor({
   onClose: () => void
 }) {
   const t = useTranslations('conditionMap')
+  const nativeCamera = useNativeCamera()
   // The kinds on offer: the ones not hidden, plus the mark's own kind even
   // when it is, so a mark of a retired kind still says what it is.
   const offered = types.filter((type) => !type.hidden || type.key === mark?.kind)
@@ -234,20 +236,23 @@ export function MarkEditor({
                 ))}
                 {!readOnly && (
                   <>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="h-20 w-20 flex-col gap-1 text-xs"
-                      disabled={uploading}
-                      onClick={() => cameraRef.current?.click()}
-                    >
-                      {uploading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                      ) : (
-                        <Camera className="h-4 w-4" aria-hidden="true" />
-                      )}
-                      {t('takePhoto')}
-                    </Button>
+                    {/* Only where it opens a camera: on a desk it is the same file picker as Add photo. */}
+                    {nativeCamera && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-20 w-20 flex-col gap-1 text-xs"
+                        disabled={uploading}
+                        onClick={() => cameraRef.current?.click()}
+                      >
+                        {uploading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <Camera className="h-4 w-4" aria-hidden="true" />
+                        )}
+                        {t('takePhoto')}
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="outline"

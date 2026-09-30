@@ -20,6 +20,7 @@ import {
   plantJobOnVehicle,
   setWorkshopSetting,
   userIdFor,
+  workshopSetting,
 } from '../../support/db'
 import { settle } from '../../support/hydration'
 
@@ -99,7 +100,12 @@ test('a mark drawn on the inspection is on the linked job, where it cannot be ch
   })
 
   const map = await openInspection(page, inspection.inspectionId)
-  await addMark(page, map, 'right', 'right_front_door')
+  const editor = await addMark(page, map, 'right', 'right_front_door')
+  // The inspection offers the workshop's kinds, and names the mark by them.
+  await expect(editor.getByRole('heading')).toContainText('Dent on the Right front door')
+  const kinds = editor.getByRole('group', { name: 'Type' }).getByRole('button')
+  await expect(kinds).toHaveCount(8)
+  await expect(kinds.filter({ hasText: 'Scratch' })).toHaveCount(1)
   await closeEditor(page)
   await expect(ownMarks(map)).toHaveCount(1)
 
@@ -115,12 +121,12 @@ test('a mark drawn on the inspection is on the linked job, where it cannot be ch
   await expect(ownMarks(onJob)).toHaveCount(1)
   await expect(onJob).toContainText('From the linked inspection, changed there')
   await ownMarks(onJob).first().click()
-  const editor = markEditor(page)
-  await expect(editor.getByRole('button', { name: 'Scratch' })).toBeDisabled()
-  await expect(editor.getByRole('button', { name: 'Remove mark' })).toHaveCount(0)
+  const onJobEditor = markEditor(page)
+  await expect(onJobEditor.getByRole('button', { name: 'Scratch' })).toBeDisabled()
+  await expect(onJobEditor.getByRole('button', { name: 'Remove mark' })).toHaveCount(0)
   // And says where it can be changed, rather than asking to reopen the job.
-  await expect(editor).toContainText('Drawn on the linked inspection. Change it there.')
-  await expect(editor).not.toContainText('Reopen to change the condition map')
+  await expect(onJobEditor).toContainText('Drawn on the linked inspection. Change it there.')
+  await expect(onJobEditor).not.toContainText('Reopen to change the condition map')
 })
 
 test('a job’s drop-off mark is grey on the inspection', async ({ page }) => {
@@ -205,6 +211,28 @@ test.describe('the certificate', () => {
     expect(printsMap(pdf)).toBe(true)
     expect(pdf.flat).toContain('Left front door')
     expect(pdf.flat).toContain('Dent by the handle')
+  })
+
+  test('prints from the default Regulatory design when the workshop designed none', async ({
+    page,
+  }) => {
+    const job = await plantConditionJob(organizationId, userId, `E2E cert default ${stamp}`)
+    const inspection = await plantConditionInspection(organizationId, job.vehicleId, `E2E ${stamp}`)
+    await plantConditionMark(organizationId, job.vehicleId, inspection, {
+      view: 'left',
+      panel: 'left_front_door',
+    })
+    // No certificate design at all: before, this printed the built-in sheet,
+    // which has no condition map.
+    const planted = await workshopSetting(organizationId, DESIGN_KEY)
+    await forgetWorkshopSetting(organizationId, DESIGN_KEY)
+    try {
+      const pdf = await certificatePdf(page, inspection.inspectionId)
+      expect(printsMap(pdf), 'the designed certificate prints the map').toBe(true)
+      expect(pdf.flat).toContain('Left front door')
+    } finally {
+      if (planted) await setWorkshopSetting(organizationId, DESIGN_KEY, planted)
+    }
   })
 
   test('prints no map when the inspection recorded no mark of its own', async ({ page }) => {

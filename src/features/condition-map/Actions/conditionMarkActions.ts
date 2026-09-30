@@ -7,6 +7,7 @@ import { withAuth } from '@/lib/with-auth'
 import { auditDetails } from '@/lib/audit'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { assertOwnUploads } from '@/lib/upload-url'
+import { releaseFiles } from '@/lib/files/manager'
 import { BODY_TYPES } from '../Lib/drawingTypes'
 import {
   type ConditionMarkData,
@@ -204,6 +205,9 @@ export async function removeConditionMark(id: string) {
       const mark = await ownMark(organizationId, id)
       await assertSheetOpen(organizationId, mark)
       await db.conditionMark.delete({ where: { id } })
+      // Its photos go with it, through the file manager like every delete:
+      // to the trash, unless some other row still uses the same file.
+      await releaseFiles(mark.imageUrls, { organizationId, reason: 'condition mark removed' })
       for (const path of pathsFor(mark)) revalidatePath(path)
       return { id, vehicleId: mark.vehicleId }
     },
@@ -276,13 +280,19 @@ export async function addConditionMarkPhotos(input: unknown) {
 }
 
 export async function removeConditionMarkPhoto(input: unknown) {
-  const { id, url } = z.object({ id: z.string(), url: z.string() }).parse(input)
+  const parsed = z.object({ id: z.string(), url: z.string() }).safeParse(input)
+  if (!parsed.success) return { success: false as const, error: 'Invalid photo' }
+  const { id, url } = parsed.data
   return withAuth(
     async ({ organizationId }): Promise<string[]> => {
       const mark = await ownMark(organizationId, id)
       await assertSheetOpen(organizationId, mark)
       const next = mark.imageUrls.filter((u) => u !== url)
       await db.conditionMark.update({ where: { id }, data: { imageUrls: next } })
+      // Only a photo this mark had: a URL it never held is not ours to release.
+      if (next.length !== mark.imageUrls.length) {
+        await releaseFiles([url], { organizationId, reason: 'condition mark photo removed' })
+      }
       for (const path of pathsFor(mark)) revalidatePath(path)
       return next
     },
@@ -345,6 +355,36 @@ export async function setConditionMapOnInvoice(serviceRecordId: string, on: bool
           result.onInvoice ? 'condition_map_on_invoice_on' : 'condition_map_on_invoice_off'
         ),
       }),
+    }
+  )
+}
+
+const unsavedSchema = z.object({ urls: z.array(z.string()).min(1).max(50) })
+
+/**
+ * Photos uploaded for a mark whose save then failed (the sheet was closed in
+ * the meantime, or the mark was removed). They are on disk with no row, so
+ * they go to the trash now rather than waiting a week for the sweep. The file
+ * manager checks every one against the database first, so a URL some row does
+ * use is kept.
+ */
+export async function discardConditionMarkUploads(input: unknown) {
+  const parsed = unsavedSchema.safeParse(input)
+  if (!parsed.success) return { success: false as const, error: 'Invalid photos' }
+  const { urls } = parsed.data
+  return withAuth(
+    async ({ organizationId }) => {
+      assertOwnUploads(urls, organizationId)
+      const result = await releaseFiles(urls, {
+        organizationId,
+        reason: 'condition mark photos not saved',
+      })
+      return { removed: result.removed.length }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
+      ],
     }
   )
 }

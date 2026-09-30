@@ -1,7 +1,11 @@
 import 'server-only'
 
 import { db } from '@/lib/db'
-import { isDesignerLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  DESIGNER_LAYOUT_VERSION,
+  isDesignerLayout,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
+import { defaultCertificateDesign } from '../Lib/defaultCertificateDesign'
 import {
   type DesignSource,
   designSourceFromSettings,
@@ -19,10 +23,16 @@ import { inspectionPrintLabels } from '../Lib/inspectionLabels'
  * pulling the PDF renderer into its bundle.
  */
 
-/** The design this inspection prints from, or null when it has none. */
+/**
+ * The design this inspection prints from, or null for the built-in sheet.
+ *
+ * A completed inspection prints what it was issued with: its frozen design,
+ * or, completed before it had one, the built-in sheet it went out on. An
+ * open one prints the workshop's certificate design, or the default one.
+ */
 export async function certificateDesignSource(
   organizationId: string,
-  inspection: { designSnapshotId: string | null },
+  inspection: { designSnapshotId: string | null; completedAt?: Date | null },
   settingsMap: Record<string, string>
 ): Promise<DesignSource | null> {
   if (inspection.designSnapshotId) {
@@ -33,13 +43,35 @@ export async function certificateDesignSource(
     const frozen = snapshot ? designSourceFromSnapshot(snapshot.layout, snapshot.template) : null
     if (frozen) return frozen
   }
+  if (inspection.completedAt) {
+    const live = designSourceFromSettings(settingsMap, 'certificate')
+    return isDesignerLayout(live.layout) ? live : null
+  }
   return liveCertificateDesign(settingsMap)
 }
 
-/** The live certificate design, for freezing when an inspection is completed. */
-export function liveCertificateDesign(settingsMap: Record<string, string>): DesignSource | null {
+/**
+ * The live certificate design, for printing an open inspection and freezing
+ * when one is completed: the workshop's own, or the default (Regulatory) for a
+ * workshop that has not designed one.
+ */
+export function liveCertificateDesign(settingsMap: Record<string, string>): DesignSource {
   const live = designSourceFromSettings(settingsMap, 'certificate')
-  return isDesignerLayout(live.layout) ? live : null
+  if (isDesignerLayout(live.layout)) return live
+  const fallback = defaultCertificateDesign()
+  const set = (key: string) => settingsMap[`certificate.${key}`]
+  return {
+    layout: { ...fallback.layout, version: DESIGNER_LAYOUT_VERSION },
+    // The look is the preset's, except what the workshop set for certificates
+    // itself (its logo always stays).
+    template: {
+      ...live.template,
+      primaryColor: set('primaryColor') || fallback.template.primaryColor,
+      headerStyle: set('headerStyle') || fallback.template.headerStyle,
+      fontFamily: set('fontFamily') || fallback.template.fontFamily,
+      textColor: set('textColor') || fallback.template.textColor || '',
+    },
+  }
 }
 
 export async function loadPdfMessages(locale: string) {

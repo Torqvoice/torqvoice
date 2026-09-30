@@ -112,6 +112,24 @@
   "attachPdf": "Pdf toevoegen",
   "attachPdfHint": "Zet dit uit om in plaats daarvan een link te sturen, zodat je ziet wanneer de klant hem opent.",
   "sentCopy": {
-    "note": "Verzonden op {date}. Wijzigingen hier komen op de factuur wanneer die opnieuw wordt verzonden."
+    "note": "Verzonden op {date}. Wijzigingen hier komen op de factuur wanneer die opnieuw wordt verzonden.",
+    "confirmTitle": "Deze factuur is al verzonden",
+    "confirmBody": "De kopie van de klant blijft zoals die is verzonden. Uw wijziging wordt op de opdracht bewaard en komt op de factuur wanneer die wordt heropend en opnieuw verzonden.",
+    "confirm": "Bewaren voor de volgende verzending",
+    "cancel": "Annuleren"
+  },
+  "videoRecorder": {
+    "title": "Een video opnemen",
+    "starting": "Camera wordt gestart...",
+    "denied": "De browser mocht de camera of microfoon niet gebruiken. Sta ze voor deze site toe via de adresbalk van de browser en probeer het opnieuw.",
+    "noCamera": "Er is geen camera gevonden op deze computer.",
+    "unsupported": "Deze browser kan geen video opnemen. Upload in plaats daarvan een bestand.",
+    "camera": "Camera",
+    "start": "Opname starten",
+    "stop": "Stoppen",
+    "recording": "Bezig met opnemen",
+    "retake": "Opnieuw opnemen",
+    "use": "Deze video gebruiken",
+    "limit": "De opname stopt vanzelf na {minutes} minuten."
   }
 }

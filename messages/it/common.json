@@ -112,6 +112,24 @@
   "attachPdf": "Allega PDF",
   "attachPdfHint": "Disattiva per inviare invece un link, così vedi quando il cliente lo apre.",
   "sentCopy": {
-    "note": "Inviata il {date}. Le modifiche fatte qui entrano nella fattura quando viene inviata di nuovo."
+    "note": "Inviata il {date}. Le modifiche fatte qui entrano nella fattura quando viene inviata di nuovo.",
+    "confirmTitle": "Questa fattura è già stata inviata",
+    "confirmBody": "La copia del cliente resta come è stata inviata. La modifica viene salvata sul lavoro ed entra nella fattura quando viene riaperta e inviata di nuovo.",
+    "confirm": "Salva per il prossimo invio",
+    "cancel": "Annulla"
+  },
+  "videoRecorder": {
+    "title": "Registra un video",
+    "starting": "Avvio della fotocamera...",
+    "denied": "Il browser non ha il permesso di usare fotocamera o microfono. Consentili per questo sito dalla barra degli indirizzi del browser, poi riprova.",
+    "noCamera": "Nessuna fotocamera trovata su questo computer.",
+    "unsupported": "Questo browser non può registrare video. Carica invece un file.",
+    "camera": "Fotocamera",
+    "start": "Avvia registrazione",
+    "stop": "Ferma",
+    "recording": "Registrazione in corso",
+    "retake": "Registra di nuovo",
+    "use": "Usa questo video",
+    "limit": "La registrazione si ferma da sola dopo {minutes} minuti."
   }
 }

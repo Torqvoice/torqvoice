@@ -22,6 +22,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
+import { VideoRecorderDialog } from '@/components/video-recorder-dialog'
+import { useNativeCamera } from '@/hooks/use-native-camera'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Camera, Loader2, Upload, Video, Send, X } from 'lucide-react'
@@ -62,6 +64,9 @@ export function CreateStatusReportDialog({
   const isMobile = useIsMobile()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const captureInputRef = useRef<HTMLInputElement>(null)
+  // A phone records with its camera app; a desk computer with the page's own recorder.
+  const nativeCamera = useNativeCamera()
+  const [recorderOpen, setRecorderOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
@@ -200,7 +205,9 @@ export function CreateStatusReportDialog({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => captureInputRef.current?.click()}
+              onClick={() =>
+                nativeCamera ? captureInputRef.current?.click() : setRecorderOpen(true)
+              }
             >
               <Camera className="mr-1.5 h-4 w-4" />
               {t('record')}
@@ -270,6 +277,11 @@ export function CreateStatusReportDialog({
         <Label htmlFor="sr-expires">{t('expiresLabel')}</Label>
         <DateInput id="sr-expires" value={expiresAt} onChange={setExpiresAt} />
       </div>
+      <VideoRecorderDialog
+        open={recorderOpen}
+        onOpenChange={setRecorderOpen}
+        onRecorded={(file) => void handleFileUpload(file)}
+      />
     </div>
   )
 

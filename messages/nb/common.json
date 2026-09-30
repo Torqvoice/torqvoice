@@ -112,6 +112,24 @@
   "attachPdf": "Legg ved PDF",
   "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den.",
   "sentCopy": {
-    "note": "Sendt {date}. Endringer her kommer på fakturaen når den sendes på nytt."
+    "note": "Sendt {date}. Endringer her kommer på fakturaen når den sendes på nytt.",
+    "confirmTitle": "Denne fakturaen er allerede sendt",
+    "confirmBody": "Kundens kopi forblir slik den ble sendt. Endringen lagres på jobben og kommer på fakturaen når den åpnes igjen og sendes på nytt.",
+    "confirm": "Lagre til neste sending",
+    "cancel": "Avbryt"
+  },
+  "videoRecorder": {
+    "title": "Ta opp en video",
+    "starting": "Starter kameraet...",
+    "denied": "Nettleseren fikk ikke lov til å bruke kameraet eller mikrofonen. Tillat dem for dette nettstedet fra adressefeltet i nettleseren, og prøv igjen.",
+    "noCamera": "Fant ikke noe kamera på denne datamaskinen.",
+    "unsupported": "Denne nettleseren kan ikke ta opp video. Last opp en fil i stedet.",
+    "camera": "Kamera",
+    "start": "Start opptak",
+    "stop": "Stopp",
+    "recording": "Tar opp",
+    "retake": "Ta opp på nytt",
+    "use": "Bruk denne videoen",
+    "limit": "Opptaket stopper av seg selv etter {minutes} minutter."
   }
 }

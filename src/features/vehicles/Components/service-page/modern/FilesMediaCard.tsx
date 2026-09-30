@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { Paperclip } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
-import { SentCopyNote } from '@/components/sent-copy-note'
+import { SentCopyConfirm, SentCopyNote } from '@/components/sent-copy-note'
 import { cn } from '@/lib/utils'
 import { MediaGrid } from './MediaGrid'
 import { PhotoHandoffButton } from '../PhotoHandoffButton'
@@ -98,6 +98,14 @@ export function FilesMediaCard({
     conditionMap?.onInvoice ?? conditionMap?.byDesign ?? false
   )
   const [savingOnInvoice, setSavingOnInvoice] = useState(false)
+  // On a sent invoice the switch still works, but the sent copy keeps its
+  // map until it is sent again, so it asks first rather than seem to fail.
+  const [pendingOnInvoice, setPendingOnInvoice] = useState<boolean | null>(null)
+  const requestOnInvoice = (next: boolean) => {
+    if (conditionMap?.sentAt) setPendingOnInvoice(next)
+    else void toggleOnInvoice(next)
+  }
+
   const toggleOnInvoice = async (next: boolean) => {
     const before = onInvoice
     setOnInvoice(next)
@@ -243,7 +251,7 @@ export function FilesMediaCard({
                       className="mt-0.5"
                       checked={onInvoice}
                       disabled={savingOnInvoice}
-                      onCheckedChange={(checked) => void toggleOnInvoice(checked === true)}
+                      onCheckedChange={(checked) => requestOnInvoice(checked === true)}
                       data-testid="condition-map-on-invoice"
                     />
                     <span className="min-w-0">
@@ -256,6 +264,15 @@ export function FilesMediaCard({
                       <SentCopyNote sentAt={conditionMap.sentAt} className="mt-1" />
                     </span>
                   </label>
+                  <SentCopyConfirm
+                    open={pendingOnInvoice !== null}
+                    onConfirm={() => {
+                      const next = pendingOnInvoice
+                      setPendingOnInvoice(null)
+                      if (next !== null) void toggleOnInvoice(next)
+                    }}
+                    onCancel={() => setPendingOnInvoice(null)}
+                  />
                 </div>
               )}
               <p className="px-5 pt-4 text-[13px] text-muted-foreground">

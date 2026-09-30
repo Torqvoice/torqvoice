@@ -44,7 +44,6 @@ export default async function InspectionDetailPage({
       hasConditionMap && authContext?.organizationId
         ? loadVehicleConditionMarks(authContext.organizationId, result.data.vehicleId)
         : [],
-      ,
       hasConditionMap && authContext?.organizationId
         ? markTypeCatalogue(authContext.organizationId, await getLocale())
         : [],

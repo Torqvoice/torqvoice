@@ -48,6 +48,11 @@ vi.mock('@/lib/db', () => ({
     },
     // Completion reads the certificate design settings to freeze them.
     appSetting: { findMany: vi.fn() },
+    // Completing freezes the certificate design (the default when none was made).
+    documentDesignSnapshot: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
     // Completing freezes the inspector's signature; nobody here has one.
     memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
   },
@@ -82,6 +87,7 @@ function setupOrgAOwner() {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.mocked(db.documentDesignSnapshot.findUnique).mockResolvedValue({ id: 'snap-1' } as any)
 })
 
 describe('getInspection — cross-org isolation', () => {
@@ -176,7 +182,7 @@ describe('completeInspection — cross-org isolation', () => {
       items: [],
     } as any)
     vi.mocked(db.inspection.updateMany).mockResolvedValue({ count: 1 } as any)
-    // No certificate design saved, so completion has nothing to freeze.
+    // No certificate design saved: completion freezes the default one.
     vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
 
     await completeInspection('insp-a')

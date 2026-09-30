@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 import { expect, test } from '@playwright/test'
 import {
   addMark,
@@ -17,6 +19,7 @@ import {
   removeOwnMarkKind,
   userIdFor,
 } from '../../support/db'
+import { sharesDiskWithServer } from '../../support/files'
 import { TINY_PNG } from '../../support/pdf'
 
 /**
@@ -237,4 +240,60 @@ test('a dozen photos at once all reach the mark', async ({ page }) => {
   await closeEditor(page)
   const [row] = await conditionMarksOf(job.vehicleId)
   expect(row.imageUrls).toHaveLength(12)
+})
+
+test.describe('the photos on a mark, on disk', () => {
+  /** Where the server keeps an uploaded file, from the URL a row stores. */
+  const diskPath = (url: string) =>
+    path.join('data', 'uploads', url.replace('/api/protected/files/', ''))
+
+  async function markWithPhotos(
+    page: import('@playwright/test').Page,
+    label: string,
+    count: number
+  ) {
+    const job = await plantConditionJob(organizationId, userId, `${label} ${stamp}`)
+    const map = await openDropoff(page, jobUrl(job))
+    const editor = await addMark(page, map, 'left', 'left_front_door')
+    await editor.locator('input[type="file"][multiple]').setInputFiles(
+      Array.from({ length: count }, (_, i) => ({
+        name: `e2e-disk-${stamp}-${i}.png`,
+        mimeType: 'image/png',
+        buffer: TINY_PNG,
+      }))
+    )
+    await expect(editor.getByRole('img', { name: /^Photos of mark 1/ })).toHaveCount(count, {
+      timeout: 30_000,
+    })
+    const [row] = await conditionMarksOf(job.vehicleId)
+    for (const url of row.imageUrls)
+      expect(existsSync(diskPath(url)), `${url} was written`).toBe(true)
+    return { job, map, editor, urls: row.imageUrls }
+  }
+
+  test('a photo taken off a mark leaves the disk', async ({ page }) => {
+    test.skip(!sharesDiskWithServer(), 'the server’s uploads are not on this disk')
+    const { job, editor, urls } = await markWithPhotos(page, 'E2E photo off', 2)
+
+    await editor.getByRole('button', { name: 'Remove photo 1' }).click()
+    await expect(editor.getByRole('img', { name: /^Photos of mark 1/ })).toHaveCount(1)
+    const [row] = await conditionMarksOf(job.vehicleId)
+    const removed = urls.filter((url) => !row.imageUrls.includes(url))
+    expect(removed).toHaveLength(1)
+    await expect.poll(() => existsSync(diskPath(removed[0]))).toBe(false)
+    // The one still on the mark is untouched.
+    expect(existsSync(diskPath(row.imageUrls[0]))).toBe(true)
+  })
+
+  test('a mark removed takes its photos off the disk', async ({ page }) => {
+    test.skip(!sharesDiskWithServer(), 'the server’s uploads are not on this disk')
+    const { job, editor, urls } = await markWithPhotos(page, 'E2E mark off', 2)
+
+    await editor.getByRole('button', { name: 'Remove mark' }).click()
+    await expect(editor).toBeHidden()
+    expect(await conditionMarksOf(job.vehicleId)).toHaveLength(0)
+    for (const url of urls) {
+      await expect.poll(() => existsSync(diskPath(url)), `${url} left the disk`).toBe(false)
+    }
+  })
 })

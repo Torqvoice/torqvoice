@@ -112,6 +112,24 @@
   "attachPdf": "Pridėti PDF",
   "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė.",
   "sentCopy": {
-    "note": "Išsiųsta {date}. Čia atlikti pakeitimai pateks į sąskaitą, kai ji bus išsiųsta dar kartą."
+    "note": "Išsiųsta {date}. Čia atlikti pakeitimai pateks į sąskaitą, kai ji bus išsiųsta dar kartą.",
+    "confirmTitle": "Ši sąskaita jau išsiųsta",
+    "confirmBody": "Kliento kopija lieka tokia, kokia buvo išsiųsta. Jūsų pakeitimas išsaugomas darbe ir pateks į sąskaitą, kai ji bus vėl atidaryta ir išsiųsta iš naujo.",
+    "confirm": "Išsaugoti kitam siuntimui",
+    "cancel": "Atšaukti"
+  },
+  "videoRecorder": {
+    "title": "Įrašyti vaizdo įrašą",
+    "starting": "Paleidžiama kamera...",
+    "denied": "Naršyklei neleista naudoti kameros ar mikrofono. Leiskite juos šiai svetainei naršyklės adreso juostoje ir bandykite dar kartą.",
+    "noCamera": "Šiame kompiuteryje kameros nerasta.",
+    "unsupported": "Ši naršyklė negali įrašyti vaizdo. Vietoj to įkelkite failą.",
+    "camera": "Kamera",
+    "start": "Pradėti įrašymą",
+    "stop": "Stabdyti",
+    "recording": "Įrašoma",
+    "retake": "Įrašyti iš naujo",
+    "use": "Naudoti šį įrašą",
+    "limit": "Įrašymas sustoja savaime po {minutes} min."
   }
 }

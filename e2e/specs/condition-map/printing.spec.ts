@@ -196,5 +196,21 @@ test.describe('the invoice', () => {
     await expect(page.getByTestId('sent-copy-note')).toContainText(
       'Changes here go on the invoice when it is sent again'
     )
+
+    // Unticked on the sent invoice, it asks first: the sent copy keeps its map.
+    const asked = page.getByRole('alertdialog', { name: 'This invoice has already been sent' })
+    await onInvoice.click()
+    await expect(asked).toBeVisible()
+    await asked.getByRole('button', { name: 'Cancel' }).click()
+    await expect(asked).toBeHidden()
+    await expect(onInvoice).toBeChecked()
+    expect(await conditionMapOnInvoice(job.serviceRecordId)).toBe(true)
+
+    await onInvoice.click()
+    await asked.getByRole('button', { name: 'Save for the next send' }).click()
+    await expect(onInvoice).not.toBeChecked()
+    await expect.poll(() => conditionMapOnInvoice(job.serviceRecordId)).toBe(false)
+    // Saved for the job; the invoice the customer holds still has its map.
+    expect(printsMap(await invoicePdf(page, job.serviceRecordId))).toBe(true)
   })
 })

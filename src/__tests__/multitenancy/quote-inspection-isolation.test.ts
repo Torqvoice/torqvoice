@@ -40,6 +40,11 @@ vi.mock('@/lib/db', () => ({
     // Completing freezes the workshop's kinds of mark; nobody here changed any.
     conditionMarkType: { findMany: vi.fn().mockResolvedValue([]) },
     appSetting: { findMany: vi.fn().mockResolvedValue([]) },
+    // Completing freezes the certificate design (the default when none was made).
+    documentDesignSnapshot: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
     // Completing freezes the inspector's signature; nobody here has one.
     memberSignature: { findFirst: vi.fn().mockResolvedValue(null) },
     quote: {
@@ -130,6 +135,7 @@ const ORG_A_INSPECTION = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.mocked(db.documentDesignSnapshot.findUnique).mockResolvedValue({ id: 'snap-1' } as any)
   // Locking is read before any edit to an invoice or quote; no settings
   // rows means locking is off, which is how these tests expect to run.
   vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
