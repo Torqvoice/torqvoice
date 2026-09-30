@@ -75,7 +75,6 @@ describe('the sections a default sheet prints', () => {
       'customer',
       'vehicle',
       'service',
-      'condition_map',
       'parts_table',
       'labor_table',
       'findings',
@@ -97,9 +96,9 @@ describe('the sections a default sheet prints', () => {
   it('accounts for every section the designer offers', () => {
     // The guard on the two lists above: a section added to the schema
     // tomorrow is either on the default sheet, and so covered by the
-    // hides-it test, or one of the four known to start off. Neither, and
+    // hides-it test, or one of the five known to start off. Neither, and
     // this fails rather than quietly leaving a block untested.
-    const offByDefault = ['items_table', 'telegram_qr', 'general', 'signature']
+    const offByDefault = ['items_table', 'telegram_qr', 'general', 'signature', 'condition_map']
     expect([...DEFAULT_SHEET, ...offByDefault].sort()).toEqual(
       BUILTIN_SECTIONS.map((section) => section.id).sort()
     )

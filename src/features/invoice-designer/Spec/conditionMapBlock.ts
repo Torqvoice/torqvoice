@@ -29,20 +29,37 @@ export function conditionMapBlock(
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const children: Node[] = []
-  if (section.heading !== false) {
-    children.push({
-      kind: 'text',
-      text:
-        data.sectionLabels.condition_map ?? label(data, 'conditionMapTitle', 'Vehicle condition'),
-      style: headingStyle(look, size),
-    })
-  }
+  // The drawing is most of a page and moves to the next one whole. The
+  // heading is drawn on the sheet itself, in a band above the views, so it
+  // goes along rather than staying behind above a footer; drawn as a text
+  // of its own it did, whatever the page-break hints said.
+  const heading = section.heading !== false ? headingStyle(look, size) : null
+  const unitsPerPoint = map.viewBox[0] / map.width
+  const fontSize = heading?.fontSize ?? size
+  const bandPoints = heading ? fontSize * 1.5 + 6 : 0
+  const band = bandPoints * unitsPerPoint
+  const title =
+    data.sectionLabels.condition_map ?? label(data, 'conditionMapTitle', 'Vehicle condition')
   children.push({
     kind: 'drawing',
     width: map.width,
-    height: map.height,
-    viewBox: map.viewBox,
-    shapes: map.shapes,
+    height: map.height + Math.ceil(bandPoints),
+    viewBox: [map.viewBox[0], map.viewBox[1] + band],
+    viewBoxY: -band,
+    shapes: heading
+      ? [
+          {
+            type: 'text',
+            x: 0,
+            y: -band + fontSize * unitsPerPoint,
+            text: heading.uppercase ? title.toUpperCase() : title,
+            size: fontSize * unitsPerPoint,
+            fill: heading.color ?? '#111827',
+            bold: heading.bold,
+          },
+          ...map.shapes,
+        ]
+      : map.shapes,
   })
   if (fields.has('legend') && map.rows.length > 0) {
     children.push({

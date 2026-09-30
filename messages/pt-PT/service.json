@@ -636,7 +636,11 @@
       "failed": "Não foi possível carregar {name}",
       "wrongType": "Tipo de ficheiro errado para este separador: {names}",
       "limit": "Limite atingido ({count}/{max})",
-      "dropoffHint": "A viatura como chegou, com a hora de cada foto. Fica para a oficina e não é mostrada ao cliente, salvo se o escolher."
+      "dropoffHint": "A viatura como chegou, com a hora de cada foto. Fica para a oficina e não é mostrada ao cliente, salvo se o escolher.",
+      "onInvoice": "Incluir o estado da viatura nesta fatura",
+      "onInvoiceHint": "Desligado a menos que o assinale aqui. Para imprimir em todas as faturas, ative Estado da viatura no designer de faturas.",
+      "onInvoiceByDesign": "Ativado no designer de faturas para todas as faturas. Desmarque para omitir nesta.",
+      "onInvoiceFailed": "Não foi possível guardar a escolha"
     },
     "moneyBar": {
       "total": "Total",

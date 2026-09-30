@@ -71,7 +71,13 @@ export type Node =
       anchor?: Anchor
       children: { node: Node; width?: number | 'flex' }[]
     }
-  | { kind: 'text'; id?: string; text: string; style?: TextStyle; anchor?: Anchor }
+  | {
+      kind: 'text'
+      id?: string
+      text: string
+      style?: TextStyle
+      anchor?: Anchor
+    }
   /** A fragment from the rich-text editor: notes are written in it. */
   | { kind: 'richtext'; id?: string; html: string; style?: TextStyle; anchor?: Anchor }
   | {
@@ -122,6 +128,8 @@ export type Node =
       viewBox: [number, number]
       shapes: DrawingShape[]
       anchor?: Anchor
+      /** Where the view box starts on the y axis; below zero leaves a band above the shapes. */
+      viewBoxY?: number
     }
 
 export type DrawingShape =

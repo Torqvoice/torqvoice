@@ -636,7 +636,11 @@
       "failed": "Não foi possível enviar {name}",
       "wrongType": "Tipo de arquivo errado para esta aba: {names}",
       "limit": "Limite atingido ({count}/{max})",
-      "dropoffHint": "O carro como chegou, com a hora de cada foto. Fica com a oficina e não é mostrado ao cliente, a menos que você escolha."
+      "dropoffHint": "O carro como chegou, com a hora de cada foto. Fica com a oficina e não é mostrado ao cliente, a menos que você escolha.",
+      "onInvoice": "Incluir o estado do veículo nesta fatura",
+      "onInvoiceHint": "Desligado a menos que você marque aqui. Para imprimir em todas as faturas, ative Estado do veículo no designer de faturas.",
+      "onInvoiceByDesign": "Ativado no designer de faturas para todas as faturas. Desmarque para omitir nesta.",
+      "onInvoiceFailed": "Não foi possível salvar a escolha"
     },
     "moneyBar": {
       "total": "Total",

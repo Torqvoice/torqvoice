@@ -187,7 +187,8 @@
     "signature_save": "İmza kaydedildi",
     "signature_remove": "İmza kaldırıldı",
     "conditionMark_add": "Durum işareti eklendi",
-    "conditionMark_remove": "Durum işareti kaldırıldı"
+    "conditionMark_remove": "Durum işareti kaldırıldı",
+    "conditionMark_onInvoice": "Faturada durum haritası"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "{id} zaman kaydı silindi",
     "inspection_phoneUpload": "{ref} muayenesine telefondan dosya eklendi",
     "condition_mark_add": "Durum haritasına işaret ekledi",
-    "condition_mark_remove": "Durum haritasından işaret kaldırdı"
+    "condition_mark_remove": "Durum haritasından işaret kaldırdı",
+    "condition_map_on_invoice_on": "Durum haritasını faturaya ekledi",
+    "condition_map_on_invoice_off": "Durum haritasını faturadan kaldırdı"
   }
 }

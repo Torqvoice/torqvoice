@@ -10,6 +10,9 @@ import { PhotoHandoffButton } from '../PhotoHandoffButton'
 import type { ServicePageClientProps } from '../service-page-types'
 import { ConditionMapCard } from '@/features/condition-map/Components/ConditionMapCard'
 import { type MarkScope, splitMarks } from '@/features/condition-map/Lib/marks'
+import { setConditionMapOnInvoice } from '@/features/condition-map/Actions/conditionMarkActions'
+import { Checkbox } from '@/components/ui/checkbox'
+import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
 
 type FileTab = 'images' | 'dropoff' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
@@ -82,6 +85,23 @@ export function FilesMediaCard({
   const [markCount, setMarkCount] = useState(() =>
     conditionMap ? splitMarks(conditionMap.marks, mapScope).own.length : 0
   )
+  // Whether this job's invoice prints the map: the job's own answer when it
+  // has given one, else what the design does for every invoice.
+  const [onInvoice, setOnInvoice] = useState<boolean>(
+    conditionMap?.onInvoice ?? conditionMap?.byDesign ?? false
+  )
+  const [savingOnInvoice, setSavingOnInvoice] = useState(false)
+  const toggleOnInvoice = async (next: boolean) => {
+    const before = onInvoice
+    setOnInvoice(next)
+    setSavingOnInvoice(true)
+    const result = await setConditionMapOnInvoice(serviceRecordId, next)
+    setSavingOnInvoice(false)
+    if (!result.success) {
+      setOnInvoice(before)
+      toast.error(result.error || t('modern.media.onInvoiceFailed'))
+    }
+  }
 
   // The page hands over diagnostics and documents as one list, as the classic
   // tab shows them; here each has a tab of its own.
@@ -210,6 +230,23 @@ export function FilesMediaCard({
                     serviceType={serviceType}
                     onCountChange={(own) => setMarkCount(own)}
                   />
+                  <label className="mt-4 flex items-start gap-2.5 text-sm">
+                    <Checkbox
+                      className="mt-0.5"
+                      checked={onInvoice}
+                      disabled={savingOnInvoice}
+                      onCheckedChange={(checked) => void toggleOnInvoice(checked === true)}
+                      data-testid="condition-map-on-invoice"
+                    />
+                    <span className="min-w-0">
+                      <span className="block font-medium">{t('modern.media.onInvoice')}</span>
+                      <span className="block text-xs text-muted-foreground">
+                        {conditionMap.byDesign
+                          ? t('modern.media.onInvoiceByDesign')
+                          : t('modern.media.onInvoiceHint')}
+                      </span>
+                    </span>
+                  </label>
                 </div>
               )}
               <p className="px-5 pt-4 text-[13px] text-muted-foreground">

@@ -99,6 +99,16 @@ function resolveLayout(input: InvoicePrintInput): InvoiceLayoutConfig {
     )
   }
 
+  // The design answers for every invoice, the job for this one: a job that
+  // asked for its condition map prints it, one that declined leaves it off,
+  // whatever the design says.
+  const onInvoice = input.conditionMap?.onInvoice
+  if (onInvoice === true || onInvoice === false) {
+    sections = sections.map((section) =>
+      section.id === 'condition_map' ? { ...section, visible: onInvoice } : section
+    )
+  }
+
   const assigned = new Set(
     sections.flatMap((s) => (s.fields ?? []).filter((f) => isCustomFieldId(f.id)).map((f) => f.id))
   )

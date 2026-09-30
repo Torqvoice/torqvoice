@@ -636,7 +636,11 @@
       "failed": "{name} konnte nicht hochgeladen werden",
       "wrongType": "Nicht die richtige Dateiart für diesen Tab: {names}",
       "limit": "Limit erreicht ({count}/{max})",
-      "dropoffHint": "Das Fahrzeug, wie es ankam, mit der Aufnahmezeit jedes Fotos. Für die Werkstatt, für den Kunden nur sichtbar, wenn Sie es wählen."
+      "dropoffHint": "Das Fahrzeug, wie es ankam, mit der Aufnahmezeit jedes Fotos. Für die Werkstatt, für den Kunden nur sichtbar, wenn Sie es wählen.",
+      "onInvoice": "Fahrzeugzustand auf dieser Rechnung ausgeben",
+      "onInvoiceHint": "Aus, solange Sie es hier nicht ankreuzen. Für alle Rechnungen schalten Sie Fahrzeugzustand im Rechnungsdesigner ein.",
+      "onInvoiceByDesign": "Im Rechnungsdesigner für alle Rechnungen eingeschaltet. Abwählen, um sie auf dieser wegzulassen.",
+      "onInvoiceFailed": "Auswahl konnte nicht gespeichert werden"
     },
     "moneyBar": {
       "total": "Gesamt",

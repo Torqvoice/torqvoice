@@ -1,7 +1,7 @@
 /**
  * The car's condition on the invoice and the quote: this visit's marks only,
- * a section that arrives off in every design saved before it existed and on
- * in a new one, and an issued invoice that keeps the marks it was sent with.
+ * printed last as an appendix, off until the design or the job asks for it,
+ * and an issued invoice that keeps the marks it was sent with.
  */
 import { describe, expect, it } from 'vitest'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
@@ -125,28 +125,59 @@ const legendOf = (spec: any) =>
     .rows.map((r: any) => [r.area, r.kind, r.severity, r.note])
 
 describe('the Vehicle Condition section on an invoice and a quote', () => {
-  it('is on in a new design, placed after the service panel', () => {
+  it('is off in a new design, last before the signature', () => {
     const layout = getDefaultLayout('invoice')
     const ids = layout.sections.map((s) => s.id)
-    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('service') + 1)
-    expect(layout.sections.find((s) => s.id === 'condition_map')?.visible).toBe(true)
+    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('signature') - 1)
+    expect(layout.sections.find((s) => s.id === 'condition_map')?.visible).toBe(false)
   })
 
-  it('arrives switched off in a design saved before it existed', () => {
+  it('arrives off in a design saved before it existed, in the same place', () => {
     const merged = mergeWithDefaults(savedBeforeTheSection())
     const section = merged.sections.find((s) => s.id === 'condition_map')
     expect(section?.visible).toBe(false)
-    // Placed where a new design has it, so switching it on puts it there.
     const ids = merged.sections.map((s) => s.id)
-    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('service') + 1)
+    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('bank_account') + 1)
+  })
+
+  it('goes in front of the signing line wherever a design put it', () => {
+    // Bank details under the signature, as some workshops arrange it: the
+    // appendix still ends up before the signature, not after it.
+    const layout = savedBeforeTheSection()
+    const order = [
+      'header',
+      'document_title',
+      'customer',
+      'vehicle',
+      'items_table',
+      'totals',
+      'signature',
+      'bank_account',
+      'footer',
+    ]
+    const rearranged = {
+      ...layout,
+      sections: order.map((id, i) => ({
+        ...layout.sections.find((s) => s.id === id)!,
+        order: i,
+        visible: true,
+      })),
+    }
+    const ids = mergeWithDefaults(rearranged).sections.map((s) => s.id)
+    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('signature') - 1)
+    expect(ids.indexOf('condition_map')).toBeGreaterThan(ids.indexOf('totals'))
   })
 
   it('keeps the choice a workshop saved', () => {
     const layout = getDefaultLayout('invoice')
-    expect(
-      mergeWithDefaults({ ...layout, version: 3 }).sections.find((s) => s.id === 'condition_map')
-        ?.visible
-    ).toBe(true)
+    const on = {
+      ...layout,
+      version: 3,
+      sections: layout.sections.map((s) =>
+        s.id === 'condition_map' ? { ...s, visible: true } : s
+      ),
+    }
+    expect(mergeWithDefaults(on).sections.find((s) => s.id === 'condition_map')?.visible).toBe(true)
   })
 
   it('leaves the work order and the certificate as they were', () => {
@@ -179,8 +210,19 @@ describe('the printed invoice', () => {
       conditionMap,
     }) as any
 
+  const withSection = () => {
+    const layout = getDefaultLayout('invoice')
+    return {
+      ...layout,
+      version: 3,
+      sections: layout.sections.map((s) =>
+        s.id === 'condition_map' ? { ...s, visible: true } : s
+      ),
+    }
+  }
+
   it("draws this visit's marks with their legend, none of them greyed", () => {
-    const spec = print({ ...getDefaultLayout('invoice'), version: 3 }, map)
+    const spec = print(withSection(), map)
     const block = blockOf(spec)
     expect(block.content.children.some((c: any) => c.kind === 'drawing')).toBe(true)
     expect(legendOf(spec)).toEqual([
@@ -190,37 +232,64 @@ describe('the printed invoice', () => {
   })
 
   it('prints nothing for a visit with no marks, or with the section off', () => {
-    expect(blockOf(print({ ...getDefaultLayout('invoice'), version: 3 }))).toBeUndefined()
-    expect(blockOf(print(savedBeforeTheSection(), map))).toBeUndefined()
+    expect(blockOf(print(withSection()))).toBeUndefined()
+    expect(blockOf(print({ ...getDefaultLayout('invoice'), version: 3 }, map))).toBeUndefined()
+  })
+
+  it('prints the map when the job asked for it, whatever the design says', () => {
+    // The switch on the drop-off tab: this invoice, without touching the design.
+    const spec = print({ ...getDefaultLayout('invoice'), version: 3 }, { ...map, onInvoice: true })
+    expect(legendOf(spec)).toHaveLength(2)
+    // Asked for on a job with nothing to show is still nothing.
+    expect(
+      blockOf(
+        print(
+          { ...getDefaultLayout('invoice'), version: 3 },
+          { ...map, marks: [], onInvoice: true }
+        )
+      )
+    ).toBeUndefined()
+    // Declined on the job, the map stays off even where the design has it on.
+    expect(blockOf(print(withSection(), { ...map, onInvoice: false }))).toBeUndefined()
+    // Neither asked nor declined: the design decides.
+    expect(legendOf(print(withSection(), { ...map, onInvoice: null }))).toHaveLength(2)
   })
 })
 
 describe('the printed quote', () => {
   it('draws the marks of the inspection it came from', () => {
-    const spec = buildQuotePrintSpec({
-      data: quote,
-      layoutConfig: getDefaultLayout('invoice'),
-      conditionMap: map,
-    }) as any
+    const layout = getDefaultLayout('quote')
+    const on = {
+      ...layout,
+      sections: layout.sections.map((s) =>
+        s.id === 'condition_map' ? { ...s, visible: true } : s
+      ),
+    }
+    const spec = buildQuotePrintSpec({ data: quote, layoutConfig: on, conditionMap: map }) as any
     expect(legendOf(spec).map((row: string[]) => row[0])).toEqual([
       'Front bumper',
       'Right front door',
     ])
+    expect(blockOf(buildQuotePrintSpec({ data: quote, layoutConfig: on }))).toBeUndefined()
+    // Off by default: the inspection's marks wait for the design to ask.
     expect(
-      blockOf(buildQuotePrintSpec({ data: quote, layoutConfig: getDefaultLayout('invoice') }))
+      blockOf(buildQuotePrintSpec({ data: quote, layoutConfig: layout, conditionMap: map }))
     ).toBeUndefined()
   })
 })
 
 describe('an issued invoice', () => {
   it('keeps the marks it was issued with, through the stored JSON', () => {
-    const frozen = freezeConditionMap(map)
+    const frozen = freezeConditionMap({ ...map, onInvoice: true })
     const stored = JSON.parse(
       JSON.stringify({ version: 1, workshop: {}, invoiceSettings: {}, conditionMap: frozen })
     )
     const read = readIssuedInvoiceData(stored)
     const thawed = thawConditionMap(read?.conditionMap)
     expect(thawed?.bodyType).toBe('estate')
+    // The job's own ask travels with the snapshot, so the design cannot
+    // take the map off an invoice that went out with it.
+    expect(thawed?.onInvoice).toBe(true)
     expect(thawed?.marks.map((m) => [m.id, m.panel, m.kind, m.severity, m.note])).toEqual([
       ['a', 'front_bumper', 'dent', 'minor', 'Behind the plate'],
       ['b', 'right_front_door', 'previous_repair', 'major', null],
@@ -239,6 +308,9 @@ describe('an issued invoice', () => {
     expect(read).not.toBeNull()
     expect(thawConditionMap(read?.conditionMap)).toBeNull()
     expect(freezeConditionMap(null)).toBeNull()
-    expect(freezeConditionMap({ bodyType: 'sedan', marks: [] })).toBeNull()
+    expect(freezeConditionMap({ bodyType: 'sedan', marks: [], onInvoice: true })).toBeNull()
+    // A job that never answered stays that way through the snapshot.
+    const undecided = freezeConditionMap({ ...map, onInvoice: null })
+    expect(thawConditionMap(undecided)?.onInvoice).toBeNull()
   })
 })

@@ -636,7 +636,11 @@
       "failed": "Nie udało się przesłać {name}",
       "wrongType": "Nieodpowiedni rodzaj pliku dla tej karty: {names}",
       "limit": "Osiągnięto limit ({count}/{max})",
-      "dropoffHint": "Auto w stanie, w jakim przyjechało, z godziną każdego zdjęcia. Dla warsztatu, niewidoczne dla klienta, chyba że zdecydujesz inaczej."
+      "dropoffHint": "Auto w stanie, w jakim przyjechało, z godziną każdego zdjęcia. Dla warsztatu, niewidoczne dla klienta, chyba że zdecydujesz inaczej.",
+      "onInvoice": "Uwzględnij stan pojazdu na tej fakturze",
+      "onInvoiceHint": "Wyłączone, chyba że zaznaczysz tutaj. Aby drukować na każdej fakturze, włącz Stan pojazdu w projektancie faktur.",
+      "onInvoiceByDesign": "Włączone w projektancie faktur dla wszystkich faktur. Odznacz, aby pominąć na tej.",
+      "onInvoiceFailed": "Nie udało się zapisać wyboru"
     },
     "moneyBar": {
       "total": "Razem",

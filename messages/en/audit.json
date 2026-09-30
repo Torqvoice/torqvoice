@@ -187,7 +187,8 @@
     "signature_save": "Saved Signature",
     "signature_remove": "Removed Signature",
     "conditionMark_add": "Added a condition mark",
-    "conditionMark_remove": "Removed a condition mark"
+    "conditionMark_remove": "Removed a condition mark",
+    "conditionMark_onInvoice": "Condition map on invoice"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Deleted time entry {id}",
     "inspection_phoneUpload": "Added a file from a phone to inspection {ref}",
     "condition_mark_add": "Added a mark to the condition map",
-    "condition_mark_remove": "Removed a mark from the condition map"
+    "condition_mark_remove": "Removed a mark from the condition map",
+    "condition_map_on_invoice_on": "Printed the condition map on the invoice",
+    "condition_map_on_invoice_off": "Left the condition map off the invoice"
   }
 }

@@ -228,10 +228,6 @@ export const BUILTIN_SECTIONS = [
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
-  // The car's condition this visit: the job's drop-off and the inspection
-  // linked to it. Off in every layout saved before it existed, so no sent
-  // invoice or quote gains a drawing by a deploy; on in a new one.
-  { id: 'condition_map', name: 'Vehicle Condition' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
   { id: 'labor_table', name: 'Labor Table' },
@@ -243,6 +239,11 @@ export const BUILTIN_SECTIONS = [
   { id: 'attached_documents', name: 'Attached Documents' },
   { id: 'warranty', name: 'Warranty' },
   { id: 'bank_account', name: 'Bank Account' },
+  // The car's condition this visit: the job's drop-off and the inspection
+  // linked to it. Last, as an appendix: the bill first, then the record of
+  // the dents that were already there. Off until a workshop wants it on
+  // every invoice; a single job asks for it from its drop-off tab.
+  { id: 'condition_map', name: 'Vehicle Condition' },
   // Above the footer, where a signature goes on paper. Off until a workshop
   // switches it on, so no sheet gains a signature line by a deploy.
   { id: 'signature', name: 'Signature' },
@@ -745,14 +746,17 @@ const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
   'telegram_qr',
   'items_table',
   'signature',
+  'condition_map',
 ])
 /**
- * Sections an invoice or a quote gained after workshops had saved designs.
- * A layout that does not mention one predates it, since the designer saves
- * every section, and it arrives there switched off: a deploy does not change
- * what a workshop's customers are sent. A new layout has it on.
+ * Sections that join a saved invoice or quote design in front of the ones
+ * that close the sheet, rather than after their neighbour in the default
+ * order. The condition map is an appendix: after everything, before the
+ * signing line and the footer.
  */
-const ARRIVES_OFF_IN_SAVED_INVOICE_LAYOUTS = new Set<string>(['condition_map'])
+const INSERTS_BEFORE: Record<string, readonly string[]> = {
+  condition_map: ['signature', 'footer'],
+}
 /** A signature line is a choice; most certificates are issued unsigned. */
 const HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS = new Set<string>(['slogan', 'signature'])
 /**
@@ -1041,29 +1045,35 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
   // Append any new built-in sections that are missing from saved.
   // Insert each after its natural predecessor from the default order,
   // so e.g. "findings" lands after "labor_table" instead of at the end.
+  // An appendix instead goes in front of the sections that close the sheet,
+  // wherever a workshop has put those: the condition map printed after the
+  // signature in a design whose bank details sat below the signing line.
   const defaultOrder = defaults.sections.map((s) => s.id)
-  const toInsert: { section: InvoiceSection; afterIdx: number }[] = []
+  const toInsert: { section: InvoiceSection; afterIdx: number; defaultIdx: number }[] = []
   for (const def of defaults.sections) {
     if (seen.has(def.id)) continue
     const defaultIdx = defaultOrder.indexOf(def.id)
     let insertAfterIdx = -1
-    for (let i = defaultIdx - 1; i >= 0; i--) {
-      const idx = merged.findIndex((s) => s.id === defaultOrder[i])
-      if (idx !== -1) {
-        insertAfterIdx = idx
-        break
+    const closing = documentType === 'invoice' ? INSERTS_BEFORE[def.id] : undefined
+    const closingIdx = closing ? merged.findIndex((s) => closing.includes(s.id)) : -1
+    if (closingIdx !== -1) {
+      insertAfterIdx = closingIdx - 1
+    } else {
+      for (let i = defaultIdx - 1; i >= 0; i--) {
+        const idx = merged.findIndex((s) => s.id === defaultOrder[i])
+        if (idx !== -1) {
+          insertAfterIdx = idx
+          break
+        }
       }
     }
-    const arrivesOff =
-      documentType === 'invoice' && ARRIVES_OFF_IN_SAVED_INVOICE_LAYOUTS.has(def.id)
-    toInsert.push({
-      section: arrivesOff ? { ...def, visible: false } : def,
-      afterIdx: insertAfterIdx,
-    })
+    toInsert.push({ section: def, afterIdx: insertAfterIdx, defaultIdx })
   }
   if (toInsert.length > 0) {
-    // Insert in reverse so indices stay stable
-    toInsert.sort((a, b) => b.afterIdx - a.afterIdx)
+    // Insert in reverse so indices stay stable. Sections bound for the same
+    // spot go in latest-first too, so they come out in their default order
+    // rather than back to front.
+    toInsert.sort((a, b) => b.afterIdx - a.afterIdx || b.defaultIdx - a.defaultIdx)
     for (const { section, afterIdx } of toInsert) {
       merged.splice(afterIdx + 1, 0, { ...section, order: 0 })
     }

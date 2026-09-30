@@ -636,7 +636,11 @@
       "failed": "Could not upload {name}",
       "wrongType": "Not the right kind of file for this tab: {names}",
       "limit": "Limit reached ({count}/{max})",
-      "dropoffHint": "The car as it arrived, with the time each photo was taken. Kept for the workshop, not shown to the customer unless you choose to."
+      "dropoffHint": "The car as it arrived, with the time each photo was taken. Kept for the workshop, not shown to the customer unless you choose to.",
+      "onInvoice": "Include the vehicle condition on this invoice",
+      "onInvoiceHint": "Off unless you tick it here. To print it on every invoice, switch on Vehicle Condition in the invoice designer.",
+      "onInvoiceByDesign": "On in the invoice designer for every invoice. Untick to leave it off this one.",
+      "onInvoiceFailed": "Could not save the choice"
     },
     "moneyBar": {
       "total": "Total",

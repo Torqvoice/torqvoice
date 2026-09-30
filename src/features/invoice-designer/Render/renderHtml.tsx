@@ -214,7 +214,7 @@ function NodeBody({ node }: { node: Node }): ReactNode {
           <svg
             width="100%"
             height={node.height}
-            viewBox={`0 0 ${node.viewBox[0]} ${node.viewBox[1]}`}
+            viewBox={`0 ${node.viewBoxY ?? 0} ${node.viewBox[0]} ${node.viewBox[1]}`}
             preserveAspectRatio="xMidYMid meet"
             style={{ display: 'block' }}
             aria-hidden="true"

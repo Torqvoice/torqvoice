@@ -234,7 +234,11 @@ describe('the documents', () => {
     const spec = certificate()
     expect(ids(spec)).toContain('condition_map')
     const block = spec.blocks.find((b: any) => b.id === 'condition_map').content
-    expect(block.children.some((c: any) => c.kind === 'drawing')).toBe(true)
+    // The heading is drawn on the sheet, so a page break never leaves it behind.
+    const drawing = block.children.find((c: any) => c.kind === 'drawing')
+    expect(drawing.viewBoxY).toBeLessThan(0)
+    expect(drawing.shapes[0]).toMatchObject({ type: 'text', text: 'VEHICLE CONDITION' })
+    expect(block.children.some((c: any) => c.kind === 'text')).toBe(false)
     expect(block.children.some((c: any) => c.kind === 'table')).toBe(true)
     expect(ids(certificate({ conditionMarks: [] }))).not.toContain('condition_map')
   })

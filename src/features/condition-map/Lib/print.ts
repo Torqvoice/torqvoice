@@ -77,6 +77,12 @@ export interface VisitConditionMap {
   marks: ConditionMarkData[]
   bodyType: string | null
   labels: ConditionMapLabels
+  /**
+   * The job's own answer from the drop-off tab: true prints the map whether
+   * or not the design has the section on, false leaves it off even when the
+   * design has, and null or absent follows the design.
+   */
+  onInvoice?: boolean | null
 }
 
 /** An invoice's or a quote's condition map, drawn as wide as the work order's. */

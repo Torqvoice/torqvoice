@@ -187,7 +187,8 @@
     "signature_save": "Signature enregistrée",
     "signature_remove": "Signature supprimée",
     "conditionMark_add": "Marque d'état ajoutée",
-    "conditionMark_remove": "Marque d'état supprimée"
+    "conditionMark_remove": "Marque d'état supprimée",
+    "conditionMark_onInvoice": "Carte d'état sur la facture"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Entrée de temps {id} supprimée",
     "inspection_phoneUpload": "Fichier ajouté depuis un téléphone à l'inspection {ref}",
     "condition_mark_add": "A ajouté une marque à la carte d'état",
-    "condition_mark_remove": "A supprimé une marque de la carte d'état"
+    "condition_mark_remove": "A supprimé une marque de la carte d'état",
+    "condition_map_on_invoice_on": "A mis la carte d'état sur la facture",
+    "condition_map_on_invoice_off": "A retiré la carte d'état de la facture"
   }
 }

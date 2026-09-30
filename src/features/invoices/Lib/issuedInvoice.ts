@@ -112,6 +112,8 @@ export const issuedInvoiceDataSchema = z
     conditionMap: z
       .object({
         bodyType: z.string().nullable().optional(),
+        /** The job's own answer at issue; absent before the switch existed. */
+        onInvoice: z.boolean().nullable().optional(),
         marks: z.array(
           z
             .object({
@@ -135,8 +137,13 @@ export const issuedInvoiceDataSchema = z
   })
   .passthrough()
 
-/** The car's condition this visit, as an invoice prints it. */
-export type InvoiceConditionMap = { marks: ConditionMarkData[]; bodyType: string | null }
+/** The car's condition this visit, as an invoice prints it, and whether this job asked for it. */
+export type InvoiceConditionMap = {
+  marks: ConditionMarkData[]
+  bodyType: string | null
+  /** The job's own answer, or null to follow the design. */
+  onInvoice: boolean | null
+}
 
 type FrozenConditionMap = NonNullable<z.infer<typeof issuedInvoiceDataSchema>['conditionMap']>
 
@@ -150,6 +157,7 @@ export function freezeConditionMap(
   if (!map || map.marks.length === 0) return null
   return {
     bodyType: map.bodyType,
+    onInvoice: map.onInvoice,
     marks: map.marks.map((m) => ({
       id: m.id,
       bodyType: m.bodyType,
@@ -175,6 +183,7 @@ export function thawConditionMap(
   if (!frozen || frozen.marks.length === 0) return null
   return {
     bodyType: frozen.bodyType ?? null,
+    onInvoice: frozen.onInvoice ?? null,
     marks: frozen.marks.map((m) => ({
       id: m.id,
       vehicleId: '',

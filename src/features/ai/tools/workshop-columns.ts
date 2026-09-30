@@ -109,6 +109,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'bookingSource',
     'editUnlockedAt',
     'tireSetId',
+    'conditionMapOnInvoice',
     'vehicleId',
     'customerId',
     'inspectionId',

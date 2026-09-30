@@ -93,6 +93,10 @@ export interface ServicePageClientProps {
     bodyType: string | null
     marks: ConditionMarkData[]
     linkedInspectionId: string | null
+    /** The job's own answer for its invoice, or null to follow the design. */
+    onInvoice: boolean | null
+    /** What the invoice design does for every invoice. */
+    byDesign: boolean
   }
   videoAttachments: Attachment[]
   documentAttachments: Attachment[]

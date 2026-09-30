@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { auditDetails } from '@/lib/audit'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { BODY_TYPES } from '../Lib/drawingTypes'
@@ -290,6 +291,40 @@ export async function setVehicleBodyType(vehicleId: string, bodyType: string) {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
       ],
+    }
+  )
+}
+
+/**
+ * Whether this job's invoice prints the condition map: the switch on the
+ * drop-off tab, which overrides the design's answer for this one invoice.
+ */
+export async function setConditionMapOnInvoice(serviceRecordId: string, on: boolean) {
+  const id = z.string().min(1).parse(serviceRecordId)
+  const wanted = z.boolean().parse(on)
+  return withAuth(
+    async ({ organizationId }) => {
+      const job = await db.serviceRecord.findFirst({
+        where: { id, organizationId },
+        select: { id: true, vehicleId: true },
+      })
+      if (!job) throw new Error('Work order not found')
+      await db.serviceRecord.update({ where: { id }, data: { conditionMapOnInvoice: wanted } })
+      if (job.vehicleId) revalidatePath(`/vehicles/${job.vehicleId}/service/${id}`)
+      return { serviceRecordId: id, onInvoice: wanted }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'conditionMark.onInvoice',
+        entity: 'ServiceRecord',
+        entityId: result.serviceRecordId,
+        details: auditDetails(
+          result.onInvoice ? 'condition_map_on_invoice_on' : 'condition_map_on_invoice_off'
+        ),
+      }),
     }
   )
 }

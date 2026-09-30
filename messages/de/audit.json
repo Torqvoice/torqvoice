@@ -187,7 +187,8 @@
     "signature_save": "Unterschrift gespeichert",
     "signature_remove": "Unterschrift entfernt",
     "conditionMark_add": "Zustandsmarkierung hinzugefügt",
-    "conditionMark_remove": "Zustandsmarkierung entfernt"
+    "conditionMark_remove": "Zustandsmarkierung entfernt",
+    "conditionMark_onInvoice": "Zustandskarte auf Rechnung"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Zeiteintrag {id} gelöscht",
     "inspection_phoneUpload": "Datei vom Handy zur Prüfung {ref} hinzugefügt",
     "condition_mark_add": "Markierung zur Zustandskarte hinzugefügt",
-    "condition_mark_remove": "Markierung von der Zustandskarte entfernt"
+    "condition_mark_remove": "Markierung von der Zustandskarte entfernt",
+    "condition_map_on_invoice_on": "Zustandskarte auf die Rechnung gesetzt",
+    "condition_map_on_invoice_off": "Zustandskarte von der Rechnung genommen"
   }
 }

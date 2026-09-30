@@ -187,7 +187,8 @@
     "signature_save": "Guardó la firma",
     "signature_remove": "Eliminó la firma",
     "conditionMark_add": "Marca de estado añadida",
-    "conditionMark_remove": "Marca de estado eliminada"
+    "conditionMark_remove": "Marca de estado eliminada",
+    "conditionMark_onInvoice": "Mapa de estado en la factura"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Entrada de tiempo {id} eliminada",
     "inspection_phoneUpload": "Añadió un archivo desde un teléfono a la inspección {ref}",
     "condition_mark_add": "Añadió una marca al mapa de estado",
-    "condition_mark_remove": "Eliminó una marca del mapa de estado"
+    "condition_mark_remove": "Eliminó una marca del mapa de estado",
+    "condition_map_on_invoice_on": "Puso el mapa de estado en la factura",
+    "condition_map_on_invoice_off": "Quitó el mapa de estado de la factura"
   }
 }

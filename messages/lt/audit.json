@@ -187,7 +187,8 @@
     "signature_save": "Išsaugotas parašas",
     "signature_remove": "Pašalintas parašas",
     "conditionMark_add": "Pridėta būklės žyma",
-    "conditionMark_remove": "Pašalinta būklės žyma"
+    "conditionMark_remove": "Pašalinta būklės žyma",
+    "conditionMark_onInvoice": "Būklės žemėlapis sąskaitoje"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Ištrintas laiko įrašas {id}",
     "inspection_phoneUpload": "Pridėtas failas iš telefono prie apžiūros {ref}",
     "condition_mark_add": "Pridėjo žymą būklės žemėlapyje",
-    "condition_mark_remove": "Pašalino žymą iš būklės žemėlapio"
+    "condition_mark_remove": "Pašalino žymą iš būklės žemėlapio",
+    "condition_map_on_invoice_on": "Įtraukė būklės žemėlapį į sąskaitą",
+    "condition_map_on_invoice_off": "Pašalino būklės žemėlapį iš sąskaitos"
   }
 }

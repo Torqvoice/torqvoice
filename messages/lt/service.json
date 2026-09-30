@@ -636,7 +636,11 @@
       "failed": "Nepavyko įkelti {name}",
       "wrongType": "Netinkamas failo tipas šiam skirtukui: {names}",
       "limit": "Pasiekta riba ({count}/{max})",
-      "dropoffHint": "Automobilis toks, koks atvyko, su kiekvienos nuotraukos laiku. Saugoma dirbtuvėms, klientui nerodoma, nebent pasirinksite."
+      "dropoffHint": "Automobilis toks, koks atvyko, su kiekvienos nuotraukos laiku. Saugoma dirbtuvėms, klientui nerodoma, nebent pasirinksite.",
+      "onInvoice": "Įtraukti transporto priemonės būklę į šią sąskaitą",
+      "onInvoiceHint": "Išjungta, nebent pažymėsite čia. Kad būtų spausdinama visose sąskaitose, įjunkite Transporto priemonės būklę sąskaitų dizaineryje.",
+      "onInvoiceByDesign": "Įjungta sąskaitų dizaineryje visoms sąskaitoms. Nuimkite žymę, kad praleistumėte šioje.",
+      "onInvoiceFailed": "Nepavyko išsaugoti pasirinkimo"
     },
     "moneyBar": {
       "total": "Iš viso",

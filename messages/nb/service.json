@@ -636,7 +636,11 @@
       "failed": "Kunne ikke laste opp {name}",
       "wrongType": "Feil filtype for denne fanen: {names}",
       "limit": "Grensen er nådd ({count}/{max})",
-      "dropoffHint": "Bilen slik den kom inn, med tidspunktet for hvert bilde. Beholdes av verkstedet og vises ikke til kunden med mindre du velger det."
+      "dropoffHint": "Bilen slik den kom inn, med tidspunktet for hvert bilde. Beholdes av verkstedet og vises ikke til kunden med mindre du velger det.",
+      "onInvoice": "Ta med kjøretøyets tilstand på denne fakturaen",
+      "onInvoiceHint": "Av med mindre du huker av her. For å skrive den ut på alle fakturaer, slå på Kjøretøytilstand i fakturadesigneren.",
+      "onInvoiceByDesign": "På i fakturadesigneren for alle fakturaer. Fjern haken for å utelate den på denne.",
+      "onInvoiceFailed": "Kunne ikke lagre valget"
     },
     "moneyBar": {
       "total": "Totalt",

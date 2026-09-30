@@ -49,6 +49,11 @@ model ServiceRecord {
   warrantyExpiresAt DateTime?
   warrantyNotes     String?
 
+  /// Print the car's condition map on this job's invoice: the job's own
+  /// answer from the drop-off tab, on or off, or null to follow the invoice
+  /// design, which answers for every invoice.
+  conditionMapOnInvoice Boolean?
+
   publicToken  String?   @unique
   sharedAt     DateTime?
   viewCount    Int       @default(0)

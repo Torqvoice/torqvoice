@@ -34,6 +34,7 @@ import { getStatusReportsForService } from '@/features/status-reports/Actions/ge
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { db } from '@/lib/db'
 import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
+import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
@@ -366,6 +367,12 @@ export async function ServiceRecordPage({
             )?.bodyType ?? null,
           marks: await loadVehicleConditionMarks(organizationId, vehicleId),
           linkedInspectionId: record.inspection?.id ?? null,
+          onInvoice: record.conditionMapOnInvoice,
+          byDesign: await invoiceDesignPrintsConditionMap(
+            organizationId,
+            { designId: record.designId ?? null, vehicleId },
+            customerDesignId
+          ),
         }
       : undefined
   const openObservations = vehicleId

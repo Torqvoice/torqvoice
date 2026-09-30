@@ -25,7 +25,10 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { formatDateForPdf } from '@/lib/format'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
-import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  type InvoiceLayoutConfig,
+  mergeWithDefaults,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   InvoiceData,
   InvoiceSettingsProps,
@@ -203,6 +206,27 @@ async function resolveLiveDesign(
   return designSourceFromSettings(settingsMap, 'invoice')
 }
 
+/**
+ * Whether the design this job's invoice prints with has Vehicle Condition
+ * switched on, which puts the map on every invoice. The drop-off tab shows
+ * its own switch as already made when it is.
+ */
+export async function invoiceDesignPrintsConditionMap(
+  organizationId: string,
+  record: DesignSubject,
+  customerDesignId: string | null | undefined
+): Promise<boolean> {
+  const settings = await db.appSetting.findMany({
+    where: { organizationId },
+    select: { key: true, value: true },
+  })
+  const settingsMap: Record<string, string> = {}
+  for (const s of settings) settingsMap[s.key] = s.value
+  const source = await resolveLiveDesign(organizationId, settingsMap, record, customerDesignId)
+  const layout = mergeWithDefaults(source.layout)
+  return layout.sections.find((s) => s.id === 'condition_map')?.visible === true
+}
+
 /** A design together with the logo it prints. */
 export interface DesignLook {
   designSource: DesignSource
@@ -358,7 +382,7 @@ async function assembleLive(
     loadVisitConditionMap(organizationId, record.vehicleId, {
       serviceRecordId: record.id,
       linkedInspectionId: record.inspectionId,
-    }),
+    }).then((map) => (map ? { ...map, onInvoice: record.conditionMapOnInvoice } : null)),
   ])
   const { designSource, logoDataUri } = look
 

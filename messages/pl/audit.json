@@ -187,7 +187,8 @@
     "signature_save": "Zapisano podpis",
     "signature_remove": "Usunięto podpis",
     "conditionMark_add": "Dodano oznaczenie stanu",
-    "conditionMark_remove": "Usunięto oznaczenie stanu"
+    "conditionMark_remove": "Usunięto oznaczenie stanu",
+    "conditionMark_onInvoice": "Mapa stanu na fakturze"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Usunięto wpis czasu {id}",
     "inspection_phoneUpload": "Dodano plik z telefonu do przeglądu {ref}",
     "condition_mark_add": "Dodano oznaczenie do mapy stanu",
-    "condition_mark_remove": "Usunięto oznaczenie z mapy stanu"
+    "condition_mark_remove": "Usunięto oznaczenie z mapy stanu",
+    "condition_map_on_invoice_on": "Umieszczono mapę stanu na fakturze",
+    "condition_map_on_invoice_off": "Usunięto mapę stanu z faktury"
   }
 }

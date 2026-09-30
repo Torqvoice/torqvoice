@@ -636,7 +636,11 @@
       "failed": "Impossible d'envoyer {name}",
       "wrongType": "Type de fichier non adapté à cet onglet : {names}",
       "limit": "Limite atteinte ({count}/{max})",
-      "dropoffHint": "Le véhicule tel qu’il est arrivé, avec l’heure de chaque photo. Conservé pour l’atelier, non montré au client sauf si vous le choisissez."
+      "dropoffHint": "Le véhicule tel qu’il est arrivé, avec l’heure de chaque photo. Conservé pour l’atelier, non montré au client sauf si vous le choisissez.",
+      "onInvoice": "Inclure l'état du véhicule sur cette facture",
+      "onInvoiceHint": "Désactivé sauf si vous cochez ici. Pour l'imprimer sur toutes les factures, activez État du véhicule dans le concepteur de factures.",
+      "onInvoiceByDesign": "Activé dans le concepteur de factures pour toutes les factures. Décochez pour l'omettre sur celle-ci.",
+      "onInvoiceFailed": "Impossible d'enregistrer le choix"
     },
     "moneyBar": {
       "total": "Total",

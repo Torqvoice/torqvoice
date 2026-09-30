@@ -636,7 +636,11 @@
       "failed": "No se pudo subir {name}",
       "wrongType": "No es el tipo de archivo adecuado para esta pestaña: {names}",
       "limit": "Límite alcanzado ({count}/{max})",
-      "dropoffHint": "El coche tal como llegó, con la hora de cada foto. Se guarda para el taller y no se muestra al cliente salvo que usted lo decida."
+      "dropoffHint": "El coche tal como llegó, con la hora de cada foto. Se guarda para el taller y no se muestra al cliente salvo que usted lo decida.",
+      "onInvoice": "Incluir el estado del vehículo en esta factura",
+      "onInvoiceHint": "Desactivado salvo que lo marque aquí. Para imprimirlo en todas las facturas, active Estado del vehículo en el diseñador de facturas.",
+      "onInvoiceByDesign": "Activado en el diseñador de facturas para todas las facturas. Desmarque para omitirlo en esta.",
+      "onInvoiceFailed": "No se pudo guardar la opción"
     },
     "moneyBar": {
       "total": "Total",

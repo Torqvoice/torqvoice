@@ -636,7 +636,11 @@
       "failed": "Impossibile caricare {name}",
       "wrongType": "Tipo di file non adatto a questa scheda: {names}",
       "limit": "Limite raggiunto ({count}/{max})",
-      "dropoffHint": "L’auto com’era all’arrivo, con l’ora di ogni foto. Resta all’officina e non è mostrata al cliente, salvo tua scelta."
+      "dropoffHint": "L’auto com’era all’arrivo, con l’ora di ogni foto. Resta all’officina e non è mostrata al cliente, salvo tua scelta.",
+      "onInvoice": "Includi lo stato del veicolo in questa fattura",
+      "onInvoiceHint": "Disattivato a meno che non lo spunti qui. Per stamparlo su tutte le fatture, attiva Stato del veicolo nel designer delle fatture.",
+      "onInvoiceByDesign": "Attivo nel designer delle fatture per tutte le fatture. Deseleziona per ometterlo su questa.",
+      "onInvoiceFailed": "Impossibile salvare la scelta"
     },
     "moneyBar": {
       "total": "Totale",

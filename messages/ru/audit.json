@@ -187,7 +187,8 @@
     "signature_save": "Сохранена подпись",
     "signature_remove": "Удалена подпись",
     "conditionMark_add": "Добавлена отметка состояния",
-    "conditionMark_remove": "Удалена отметка состояния"
+    "conditionMark_remove": "Удалена отметка состояния",
+    "conditionMark_onInvoice": "Карта состояния в счёте"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Удалена запись времени {id}",
     "inspection_phoneUpload": "Добавлен файл с телефона к осмотру {ref}",
     "condition_mark_add": "Добавил(а) отметку на карту состояния",
-    "condition_mark_remove": "Удалил(а) отметку с карты состояния"
+    "condition_mark_remove": "Удалил(а) отметку с карты состояния",
+    "condition_map_on_invoice_on": "Добавил(а) карту состояния в счёт",
+    "condition_map_on_invoice_off": "Убрал(а) карту состояния из счёта"
   }
 }

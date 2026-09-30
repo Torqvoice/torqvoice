@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Eraser, Loader2 } from 'lucide-react'
@@ -113,17 +113,17 @@ export function ConditionMapCard({
   // still count and are still listed.
   const elsewhere = numbered.filter((m) => m.bodyType !== body).length
 
-  const report = (next: ConditionMarkData[]) => {
-    const split = splitMarks(next, scope)
-    onCountChange?.(split.own.length, split.previous.length)
-  }
+  // The host hears the count after a change has been applied, never from
+  // inside a state updater: React runs those during render, and setting the
+  // host's state there is a setState-in-render error.
+  useEffect(() => {
+    onCountChange?.(own.length, previous.length)
+    // The host's callback is the same function each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [own.length, previous.length])
 
   const replace = (updated: ConditionMarkData) => {
-    setMarks((prev) => {
-      const next = prev.map((m) => (m.id === updated.id ? updated : m))
-      report(next)
-      return next
-    })
+    setMarks((prev) => prev.map((m) => (m.id === updated.id ? updated : m)))
   }
 
   const handleTap = (tap: MapTap) => {
@@ -148,11 +148,7 @@ export function ConditionMapCard({
         return
       }
       const created = result.data
-      setMarks((prev) => {
-        const next = [...prev, created]
-        report(next)
-        return next
-      })
+      setMarks((prev) => [...prev, created])
       setEditingId(created.id)
     })
   }
@@ -198,11 +194,7 @@ export function ConditionMapCard({
     if (!id) return
     setEditingId(null)
     const before = marks
-    setMarks((prev) => {
-      const next = prev.filter((m) => m.id !== id)
-      report(next)
-      return next
-    })
+    setMarks((prev) => prev.filter((m) => m.id !== id))
     startTransition(async () => {
       const result = await removeConditionMark(id)
       if (!result.success) {

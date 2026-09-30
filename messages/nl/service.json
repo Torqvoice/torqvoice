@@ -636,7 +636,11 @@
       "failed": "Kon {name} niet uploaden",
       "wrongType": "Niet het juiste soort bestand voor dit tabblad: {names}",
       "limit": "Limiet bereikt ({count}/{max})",
-      "dropoffHint": "De auto zoals die binnenkwam, met het tijdstip van elke foto. Bewaard voor de werkplaats, niet zichtbaar voor de klant tenzij u dat kiest."
+      "dropoffHint": "De auto zoals die binnenkwam, met het tijdstip van elke foto. Bewaard voor de werkplaats, niet zichtbaar voor de klant tenzij u dat kiest.",
+      "onInvoice": "Voertuigstaat op deze factuur opnemen",
+      "onInvoiceHint": "Uit tenzij u het hier aanvinkt. Om het op elke factuur af te drukken, zet u Voertuigstaat aan in de factuurontwerper.",
+      "onInvoiceByDesign": "Aan in de factuurontwerper voor elke factuur. Vink uit om het op deze factuur weg te laten.",
+      "onInvoiceFailed": "Keuze kon niet worden opgeslagen"
     },
     "moneyBar": {
       "total": "Totaal",

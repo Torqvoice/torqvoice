@@ -187,7 +187,8 @@
     "signature_save": "Firma salvata",
     "signature_remove": "Firma rimossa",
     "conditionMark_add": "Segno di stato aggiunto",
-    "conditionMark_remove": "Segno di stato rimosso"
+    "conditionMark_remove": "Segno di stato rimosso",
+    "conditionMark_onInvoice": "Mappa dello stato in fattura"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -336,6 +337,8 @@
     "timeEntry_delete": "Voce oraria {id} eliminata",
     "inspection_phoneUpload": "Aggiunto un file da telefono all'ispezione {ref}",
     "condition_mark_add": "Ha aggiunto un segno alla mappa dello stato",
-    "condition_mark_remove": "Ha rimosso un segno dalla mappa dello stato"
+    "condition_mark_remove": "Ha rimosso un segno dalla mappa dello stato",
+    "condition_map_on_invoice_on": "Ha messo la mappa dello stato sulla fattura",
+    "condition_map_on_invoice_off": "Ha tolto la mappa dello stato dalla fattura"
   }
 }

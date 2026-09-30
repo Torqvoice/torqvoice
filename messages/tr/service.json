@@ -636,7 +636,11 @@
       "failed": "{name} yüklenemedi",
       "wrongType": "Bu sekmeye uygun dosya türü değil: {names}",
       "limit": "Sınıra ulaşıldı ({count}/{max})",
-      "dropoffHint": "Aracın geldiği hali, her fotoğrafın çekildiği saatle. Atölye için saklanır, siz seçmedikçe müşteriye gösterilmez."
+      "dropoffHint": "Aracın geldiği hali, her fotoğrafın çekildiği saatle. Atölye için saklanır, siz seçmedikçe müşteriye gösterilmez.",
+      "onInvoice": "Araç durumunu bu faturaya ekle",
+      "onInvoiceHint": "Burada işaretlemediğiniz sürece kapalı. Her faturada yazdırmak için fatura tasarımcısında Araç Durumu seçeneğini açın.",
+      "onInvoiceByDesign": "Fatura tasarımcısında tüm faturalar için açık. Bu faturada yer almaması için işareti kaldırın.",
+      "onInvoiceFailed": "Seçim kaydedilemedi"
     },
     "moneyBar": {
       "total": "Toplam",
