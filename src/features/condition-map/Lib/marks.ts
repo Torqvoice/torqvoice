@@ -127,7 +127,9 @@ export type MarkScope = (
 
 /** Whether a mark is this visit's rather than one still open from an earlier one. */
 export function isOwnMark(mark: ConditionMarkData, scope: MarkScope): boolean {
-  if ('inspectionItemId' in scope) return mark.inspectionItemId === scope.inspectionItemId
+  // Every map check on one inspection records the same visit: a hand-back
+  // map's marks are the check-in map's visit too, drawn on the other check.
+  if ('inspectionItemId' in scope) return mark.inspectionId === scope.inspectionId
   if (scope.serviceRecordId && mark.serviceRecordId === scope.serviceRecordId) return true
   return Boolean(scope.linkedInspectionId) && mark.inspectionId === scope.linkedInspectionId
 }

@@ -168,6 +168,20 @@ describe('the Vehicle Condition section on an invoice and a quote', () => {
     expect(ids.indexOf('condition_map')).toBeGreaterThan(ids.indexOf('totals'))
   })
 
+  it('goes in front of the signing line in a saved quote design too', () => {
+    // A quote design is merged from the same sections as an invoice, so the
+    // appendix rule reaches it without asking for it by name.
+    const layout = getDefaultLayout('quote')
+    const saved = {
+      ...layout,
+      version: 3,
+      sections: layout.sections.filter((s) => s.id !== 'condition_map'),
+    }
+    const ids = mergeWithDefaults(saved).sections.map((s) => s.id)
+    expect(ids).toContain('condition_map')
+    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('signature') - 1)
+  })
+
   it('keeps the choice a workshop saved', () => {
     const layout = getDefaultLayout('invoice')
     const on = {

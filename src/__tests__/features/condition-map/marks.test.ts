@@ -53,6 +53,19 @@ describe('condition marks', () => {
     expect(onJob.previous.map((m) => m.id)).toEqual(['a', 'b'])
   })
 
+  it('counts another map check on the same inspection as this visit, drawn on that check', () => {
+    const checkin = mark({ id: 'checkin', inspectionId: 'i1', inspectionItemId: 'c1' })
+    const handback = mark({ id: 'handback', inspectionId: 'i1', inspectionItemId: 'c2' })
+    const scope = { inspectionId: 'i1', inspectionItemId: 'c2' }
+    expect(splitMarks([checkin, handback], scope).own.map((m) => m.id)).toEqual([
+      'checkin',
+      'handback',
+    ])
+    expect(splitMarks([checkin, handback], scope).previous).toEqual([])
+    expect(isDrawnOnSheet(checkin, scope)).toBe(false)
+    expect(isDrawnOnSheet(handback, scope)).toBe(true)
+  })
+
   it("counts the linked inspection's marks as the job's visit, but only the drop-off's as drawn on it", () => {
     const marks = [
       mark({ id: 'checkin', inspectionId: 'i1', inspectionItemId: 'c1' }),

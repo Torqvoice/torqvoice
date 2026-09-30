@@ -394,6 +394,7 @@ export function ConditionMapCard({
                       number={numberOf.get(mark.id) ?? 0}
                       previous={false}
                       fromInspection={elsewhereSheet.has(mark.id)}
+                      onInspection={'inspectionItemId' in scope}
                       onOpen={() => setEditingId(mark.id)}
                     />
                   ))}
@@ -496,7 +497,7 @@ export function ConditionMapCard({
           readOnly || !editing || isDrawnOnSheet(editing, scope)
             ? undefined
             : isOwnMark(editing, scope)
-              ? t('readOnlyLinked')
+              ? t('inspectionItemId' in scope ? 'readOnlyOtherCheck' : 'readOnlyLinked')
               : t('readOnlyEarlier')
         }
         busy={pending}
@@ -562,6 +563,7 @@ function LegendRow({
   number,
   previous,
   fromInspection = false,
+  onInspection = false,
   onOpen,
   onClear,
 }: {
@@ -569,8 +571,10 @@ function LegendRow({
   types: readonly MarkType[]
   number: number
   previous: boolean
-  /** Recorded on the inspection linked to this job, and changed there. */
+  /** Drawn on another sheet of this visit (the job's linked inspection, or another check), and changed there. */
   fromInspection?: boolean
+  /** The card is an inspection check, so the other sheet is another check. */
+  onInspection?: boolean
   onOpen: () => void
   onClear?: () => void
 }) {
@@ -611,7 +615,9 @@ function LegendRow({
             <span className="block truncate text-xs text-muted-foreground">{mark.note}</span>
           )}
           {fromInspection && (
-            <span className="block text-[11px] text-muted-foreground">{t('fromInspection')}</span>
+            <span className="block text-[11px] text-muted-foreground">
+              {t(onInspection ? 'fromOtherCheck' : 'fromInspection')}
+            </span>
           )}
           {mark.imageUrls.length > 0 && (
             <span className="block text-[11px] text-muted-foreground">

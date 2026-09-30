@@ -310,7 +310,10 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
       ? conditionMapForPrint({
           bodyType: input.bodyType,
           marks: marksAsOf(input.conditionMarks, data.completedAt),
-          scope: { inspectionId: data.id, inspectionItemId: mapItem.id, openedAt: data.createdAt },
+          // Every condition map check on the inspection is its own record of
+          // the car, not only the first: an inspection with a check-in map
+          // and a second one at hand-back prints both sets of marks.
+          scope: { linkedInspectionId: data.id, openedAt: data.createdAt },
           requireOwn: true,
           includePrevious:
             mapSection?.fields?.find((f) => f.id === 'previous_marks')?.visible !== false,

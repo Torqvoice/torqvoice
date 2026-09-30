@@ -1067,6 +1067,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     if (seen.has(def.id)) continue
     const defaultIdx = defaultOrder.indexOf(def.id)
     let insertAfterIdx = -1
+    // 'invoice' covers quotes too: they share one section list.
     const closing = documentType === 'invoice' ? INSERTS_BEFORE[def.id] : undefined
     const closingIdx = closing ? merged.findIndex((s) => closing.includes(s.id)) : -1
     if (closingIdx !== -1) {

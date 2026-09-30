@@ -140,6 +140,39 @@ test('a job’s drop-off mark is grey on the inspection', async ({ page }) => {
   await expect(earlierSection(map)).toContainText('Bonnet')
 })
 
+test('a second map check on the inspection is the same visit, changed on its own check', async ({
+  page,
+}) => {
+  const job = await plantConditionJob(organizationId, userId, `E2E two checks ${stamp}`)
+  const inspection = await plantConditionInspection(organizationId, job.vehicleId, `E2E ${stamp}`, {
+    secondCheck: true,
+  })
+  await plantConditionMark(
+    organizationId,
+    job.vehicleId,
+    { inspectionId: inspection.inspectionId, inspectionItemId: inspection.secondItemId! },
+    { view: 'rear', panel: 'rear_bumper' }
+  )
+
+  await openInspection(page, inspection.inspectionId)
+  const maps = page.getByTestId('condition-map')
+  await expect(maps).toHaveCount(2)
+  const first = maps.first()
+  // On the first check it is this visit, in colour, said to come from the other check.
+  await expect(ownMarks(first)).toHaveCount(1)
+  await expect(earlierSection(first)).toHaveCount(0)
+  await expect(first).toContainText('From another check on this inspection')
+  await ownMarks(first).first().click()
+  const editor = markEditor(page)
+  await expect(editor).toContainText('Drawn on another check of this inspection. Change it there.')
+  await expect(editor.getByRole('button', { name: 'Remove mark' })).toHaveCount(0)
+  await page.keyboard.press('Escape')
+
+  // On its own check it can be changed.
+  await ownMarks(maps.last()).first().click()
+  await expect(editor.getByRole('button', { name: 'Remove mark' })).toBeVisible()
+})
+
 test('a completed inspection’s map cannot be changed until it is reopened', async ({ page }) => {
   const job = await plantConditionJob(organizationId, userId, `E2E completed ${stamp}`)
   const inspection = await plantConditionInspection(organizationId, job.vehicleId, `E2E ${stamp}`)

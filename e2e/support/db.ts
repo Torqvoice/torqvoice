@@ -1647,8 +1647,14 @@ export async function plantConditionInspection(
   organizationId: string,
   vehicleId: string,
   label: string,
-  options: { serviceRecordId?: string; completed?: boolean; startedAt?: Date } = {}
-): Promise<{ inspectionId: string; inspectionItemId: string }> {
+  options: {
+    serviceRecordId?: string
+    completed?: boolean
+    startedAt?: Date
+    /** A second condition map check after the first: a hand-back beside the check-in. */
+    secondCheck?: boolean
+  } = {}
+): Promise<{ inspectionId: string; inspectionItemId: string; secondItemId: string | null }> {
   return withDb(async (db) => {
     const id = () => randomBytes(12).toString('hex')
     const templateId = id()
@@ -1683,17 +1689,25 @@ export async function plantConditionInspection(
       ]
     )
     await db.query(
-      `insert into inspection_items (id, "inspectionId", name, section, "inputType", condition)
-       values ($1, $2, 'Condition map', 'Body', 'condition_map', 'ok')`,
+      `insert into inspection_items (id, "inspectionId", name, section, "inputType", condition, "sortOrder")
+       values ($1, $2, 'Condition map', 'Body', 'condition_map', 'ok', 0)`,
       [inspectionItemId, inspectionId]
     )
+    const secondItemId = options.secondCheck ? id() : null
+    if (secondItemId) {
+      await db.query(
+        `insert into inspection_items (id, "inspectionId", name, section, "inputType", condition, "sortOrder")
+         values ($1, $2, 'Hand-back map', 'Body', 'condition_map', 'ok', 1)`,
+        [secondItemId, inspectionId]
+      )
+    }
     if (options.serviceRecordId) {
       await db.query(`update service_records set "inspectionId" = $2 where id = $1`, [
         options.serviceRecordId,
         inspectionId,
       ])
     }
-    return { inspectionId, inspectionItemId }
+    return { inspectionId, inspectionItemId, secondItemId }
   })
 }
 

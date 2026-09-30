@@ -117,7 +117,12 @@ describe('the printed condition map', () => {
 
   it('numbers earlier marks first, greys them, and can leave them out', () => {
     const marks = [
-      mark({ id: 'new', inspectionItemId: 'c1', recordedAt: '2026-09-05T00:00:00Z' }),
+      mark({
+        id: 'new',
+        inspectionId: 'i',
+        inspectionItemId: 'c1',
+        recordedAt: '2026-09-05T00:00:00Z',
+      }),
       mark({
         id: 'old',
         serviceRecordId: 's0',
@@ -242,6 +247,17 @@ describe('the documents', () => {
     expect(block.children.some((c: any) => c.kind === 'text')).toBe(false)
     expect(block.children.some((c: any) => c.kind === 'table')).toBe(true)
     expect(ids(certificate({ conditionMarks: [] }))).not.toContain('condition_map')
+  })
+
+  it('counts every condition map check on the inspection as its own', () => {
+    // A mark on a second map check (a hand-back after the check-in) is this
+    // inspection's too: printed in colour, not grey and "recorded earlier".
+    const spec = certificate({
+      conditionMarks: [mark({ id: 'handback', inspectionId: 'insp1', inspectionItemId: 'map2' })],
+    })
+    expect(ids(spec)).toContain('condition_map')
+    const block = spec.blocks.find((b: any) => b.id === 'condition_map').content
+    expect(JSON.stringify(block)).not.toContain(labels.previous)
   })
 
   it("puts every open mark on the work order, this job's in colour", () => {

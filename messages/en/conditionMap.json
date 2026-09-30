@@ -38,9 +38,11 @@
   "readOnly": "Reopen to change the condition map.",
   "readOnlyLinked": "Drawn on the linked inspection. Change it there.",
   "readOnlyEarlier": "Recorded on an earlier visit. Clear it as repaired once it is gone.",
+  "readOnlyOtherCheck": "Drawn on another check of this inspection. Change it there.",
   "count": "{count, plural, =0 {No marks} one {# mark} other {# marks}}",
   "previousCount": "{count, plural, one {# from an earlier visit} other {# from earlier visits}}",
   "fromInspection": "From the linked inspection, changed there",
+  "fromOtherCheck": "From another check on this inspection",
   "views": {
     "top": "Top",
     "left": "Left side",
