@@ -14,7 +14,6 @@ import {
   removePlanted,
   sharesDiskWithServer,
 } from '../../support/files'
-import { useModernLayout } from '../../support/work-order'
 
 /**
  * What deleting something does to the files on disk. Every delete goes
@@ -145,10 +144,7 @@ test("deleting a work order keeps the tire set's photo that was on it", async ({
 
 test("deleting a photo on the work order removes its file, and a tire set's copy leaves it", async ({
   page,
-  context,
-  baseURL,
 }) => {
-  await useModernLayout(context, baseURL ?? 'http://127.0.0.1:3100')
   const { f, vehicle } = await plantAll('E2E files photo', false)
 
   await page.goto(`/vehicles/${vehicle.vehicleId}/service/${vehicle.serviceRecordId}`)

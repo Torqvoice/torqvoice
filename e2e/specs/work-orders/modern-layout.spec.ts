@@ -3,17 +3,9 @@ import { settle } from '../../support/hydration'
 import { addPart, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
 
 /**
- * The overhauled work order page, the default for every browser that has not
- * asked for the classic one.
- *
- * The new page carries the way back to the classic one (a cookie, so the
- * server renders the right page from then on), and the classic page carries
- * the invitation to return. Both pages are the same form, so what these tests
- * hold the new one to is what `layout.spec.ts` holds the old one to: each
- * field once, and a save that keeps what was on screen.
- *
- * The owner's storage state holds the classic choice, so the tests here start
- * on the classic page unless they clear it.
+ * The work order page every browser opens. It is one form, so what these
+ * tests hold it to is each field once, and a save that keeps what was on
+ * screen. The classic page is still offered in the menu but is not tested.
  */
 
 test.describe.configure({ mode: 'serial' })
@@ -32,60 +24,24 @@ test.beforeAll(async ({ browser }) => {
   await page.close()
 })
 
-test.describe('the overhauled work order page', () => {
-  test('opens for a browser that has not chosen a layout', async ({ page, context }) => {
-    await context.clearCookies({ name: 'workOrderLayout' })
+test.describe('the work order page', () => {
+  test('opens for a browser that has not chosen a layout', async ({ page }) => {
     await page.goto(jobUrl)
     await settle(page)
 
     await expect(page.getByTestId('service-layout-modern')).toBeVisible()
     await expect(page.getByTestId('service-layout')).toHaveCount(0)
-    await expect(page.getByTestId('try-new-layout')).toHaveCount(0)
-  })
-
-  test('is offered on the classic page to whoever went back to it', async ({ page }) => {
-    await page.goto(jobUrl)
-    await settle(page)
-
-    await expect(page.getByTestId('service-layout')).toBeVisible()
-    await expect(page.getByTestId('service-layout-modern')).toHaveCount(0)
-    await expect(page.getByTestId('try-new-layout')).toContainText(
-      'The work order page has been overhauled.'
-    )
-  })
-
-  test('opens on "Try it now", survives a reload, and leads back', async ({ page }) => {
-    await page.goto(jobUrl)
-    await settle(page)
-
-    await page.getByRole('button', { name: 'Try it now' }).click()
-    await expect(page.getByTestId('service-layout-modern')).toBeVisible()
-    await expect(page.getByTestId('service-layout')).toHaveCount(0)
-    await expect(page.getByTestId('try-new-layout')).toHaveCount(0)
-
-    // The choice is the server's to read: a reload lands on the new page
-    // without the classic one flashing past first.
-    await page.reload()
-    await settle(page)
-    await expect(page.getByTestId('service-layout-modern')).toBeVisible()
     // The top of the page is the work order's number and its status, then
     // what the job is called.
     const hero = page.getByTestId('service-hero')
     await expect(hero.getByTestId('service-number')).not.toBeEmpty()
     await expect(hero.getByTestId('service-status')).toHaveText('Pending')
     await expect(hero).toContainText(`E2E modern layout ${stamp}`)
-
-    await page.getByRole('button', { name: 'Back to the classic layout' }).click()
-    await expect(page.getByTestId('service-layout')).toBeVisible()
-    await page.reload()
-    await settle(page)
-    await expect(page.getByTestId('service-layout')).toBeVisible()
   })
 
   test('holds one copy of each field and keeps photos on the job', async ({ page }) => {
     await page.goto(jobUrl)
     await settle(page)
-    await page.getByRole('button', { name: 'Try it now' }).click()
     await expect(page.getByTestId('service-layout-modern')).toBeVisible()
 
     for (const selector of [
@@ -133,13 +89,12 @@ test.describe('the overhauled work order page', () => {
     await expect(bar.getByRole('button', { name: /Send/ })).toBeVisible()
   })
 
-  test('saves the same job the classic page does', async ({ page }) => {
+  test('saves what is on screen', async ({ page }) => {
     await page.goto(jobUrl)
     await settle(page)
-    await page.getByRole('button', { name: 'Try it now' }).click()
     await expect(page.getByTestId('service-layout-modern')).toBeVisible()
 
-    // The part saved from the classic page is here, with its figures.
+    // The part saved when the job was made is here, with its figures.
     await expect(page.locator('textarea[placeholder="Name *"]')).toHaveValue(partName)
 
     // The stepper is the status control: walk the job on and save.
@@ -159,13 +114,12 @@ test.describe('the overhauled work order page', () => {
     await expect(page.locator('input[name="title"]')).toHaveValue(title)
     await saveWorkOrder(page)
 
-    // Read back on the classic page, which is what everybody else still uses.
-    await page.getByRole('button', { name: 'Back to the classic layout' }).click()
-    await expect(page.getByTestId('service-layout')).toBeVisible()
     await page.reload()
     await settle(page)
-    await expect(page.locator('input[name="title"]')).toHaveValue(title)
-    await expect(page.getByRole('combobox').filter({ hasText: 'In Progress' })).toBeVisible()
+    await expect(page.getByTestId('service-title').first()).toHaveText(title)
+    await expect(
+      page.getByTestId('status-stepper').getByRole('button', { name: /In Progress/i })
+    ).toHaveAttribute('aria-current', 'step')
     await expect(page.locator('textarea[placeholder="Name *"]')).toHaveValue(partName)
   })
 
@@ -173,7 +127,6 @@ test.describe('the overhauled work order page', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto(jobUrl)
     await settle(page)
-    await page.getByRole('button', { name: 'Try it now' }).click()
     const layout = page.getByTestId('service-layout-modern')
     await expect(layout).toBeVisible()
 

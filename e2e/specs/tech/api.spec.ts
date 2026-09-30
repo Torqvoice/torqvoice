@@ -1,13 +1,14 @@
 import { expect, type APIRequestContext, type Page, test } from '@playwright/test'
 import {
   foreignServiceRecordId,
+  jobAssignment,
   organizationIdFor,
   plantJob,
   plantWorkshop,
   seededTenantFixtures,
 } from '../../support/db'
 import { settle } from '../../support/hydration'
-import { laborRows } from '../../support/work-order'
+import { laborRows, saveWorkOrder, setTitle } from '../../support/work-order'
 
 /**
  * The contract the technician app is built against.
@@ -250,26 +251,19 @@ test.describe('the technician app', () => {
       { timeout: 30_000 }
     )
     jobId = page.url().split('/').pop() as string
-    await page.locator('input[name="title"]').fill(`E2E tech job ${stamp}`)
+    await settle(page)
+    await setTitle(page, `E2E tech job ${stamp}`)
+    await saveWorkOrder(page)
 
+    // The technician list puts them on the job with one click.
+    const technician = page
+      .getByRole('radiogroup', { name: 'Technician' })
+      .getByRole('radio', { name: new RegExp(TECHNICIAN) })
     await expect(async () => {
-      await page
-        .getByRole('combobox')
-        .filter({ hasText: /select technician/i })
-        .first()
-        .click()
-      await expect(page.getByPlaceholder(/search or create technician/i)).toBeVisible({
-        timeout: 2_000,
-      })
+      await technician.click()
+      await expect(technician).toHaveAttribute('aria-checked', 'true', { timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await page.getByPlaceholder(/search or create technician/i).fill(TECHNICIAN)
-    await page
-      .getByRole('option', { name: new RegExp(TECHNICIAN) })
-      .first()
-      .click()
-
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Saved', { exact: true })).toBeVisible()
+    await expect.poll(async () => (await jobAssignment(jobId)).technicianId).toBeTruthy()
 
     const jobs = await phone(device).get('/api/v1/tech/jobs')
     const { data } = await jobs.json()

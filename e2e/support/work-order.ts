@@ -1,4 +1,4 @@
-import { expect, type BrowserContext, type Locator, type Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { settle } from './hydration'
 
 /**
@@ -21,20 +21,26 @@ export async function seededVehicleUrl(page: Page, search = 'Camry'): Promise<st
   return page.url()
 }
 
-/**
- * Puts this browser on the overhauled work order page, the way "Try it now"
- * does: a cookie the server reads. Only this context carries it; the rest of
- * the suite shares the owner's storage state, which holds the classic choice.
- */
-export async function useModernLayout(context: BrowserContext, baseURL: string): Promise<void> {
-  await context.addCookies([{ name: 'workOrderLayout', value: 'modern', url: baseURL }])
-}
-
 /** The work order's id, from an editor address. */
 export function jobIdOf(jobUrl: string): string {
   const id = new URL(jobUrl).pathname.split('/').pop()
   if (!id) throw new Error(`no job id in ${jobUrl}`)
   return id
+}
+
+/**
+ * Retitles the job open in the editor: the title reads as text until its
+ * pencil is pressed. Kept, not saved; it goes with the rest on Save.
+ */
+export async function setTitle(page: Page, title: string): Promise<void> {
+  const field = page.getByTestId('title-input')
+  await expect(async () => {
+    await page.getByTestId('edit-title').click()
+    await expect(field).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await field.fill(title)
+  await field.press('Enter')
+  await expect(page.getByTestId('service-title').first()).toContainText(title)
 }
 
 /** A fresh draft work order on the vehicle, titled, open in the editor. */
@@ -45,9 +51,7 @@ export async function newWorkOrder(page: Page, vehicleUrl: string, title: string
   // page being left and the page arriving are both in the document: two title
   // fields, and a strict-mode error instead of a retry. Settled, there is one.
   await settle(page)
-  const titleField = page.locator('input[name="title"]')
-  await expect(titleField).toBeVisible()
-  await titleField.fill(title)
+  await setTitle(page, title)
   return page.url()
 }
 

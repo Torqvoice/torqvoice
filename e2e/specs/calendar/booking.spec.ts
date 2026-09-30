@@ -1,6 +1,7 @@
 import { expect, type Page, test } from '@playwright/test'
 import { settle } from '../../support/hydration'
 import { setWorkshopClock } from '../../support/settings'
+import { saveWorkOrder, setTitle } from '../../support/work-order'
 
 /**
  * A booking keeps the time it was made at.
@@ -132,9 +133,8 @@ test.describe('booking a job from the calendar', () => {
       timeout: 30_000,
     })
 
-    await page.locator('input[name="title"]').fill(`E2E booking ${stamp}`)
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Saved', { exact: true })).toBeVisible()
+    await setTitle(page, `E2E booking ${stamp}`)
+    await saveWorkOrder(page)
   })
 
   test('and still starts at that time after a reload', async ({ page }) => {

@@ -77,7 +77,7 @@ test.describe('a job with files attached to it', () => {
 
   test('a photograph gets a page of its own', async ({ page }) => {
     await page.goto(jobUrl)
-    await attach(page, 'Images', { name: PHOTO, mimeType: 'image/png', buffer: TINY_PNG })
+    await attach(page, 'Photos', { name: PHOTO, mimeType: 'image/png', buffer: TINY_PNG })
 
     const pdf = await workshopCopy(page)
     expect(pdf.pages).toBe(barePages + REPORT_PAGES.length + 1)
@@ -101,25 +101,27 @@ test.describe('a job with files attached to it', () => {
   test('a file kept off the invoice stays off it', async ({ page }) => {
     await page.goto(jobUrl)
 
-    /** The documents list, and the row of the report inside it. */
-    const openReportRow = async () => {
+    /** The report's tile on the files card's documents tab. */
+    const openReportTile = async () => {
+      const files = page.getByTestId('files-media')
       await expect(async () => {
-        await page.getByRole('button', { name: /^Documents/ }).click()
-        await expect(page.getByText(REPORT).first()).toBeVisible({ timeout: 2_000 })
+        await files.getByRole('tab', { name: /^Documents/ }).click()
+        await expect(files.getByLabel(REPORT).first()).toBeVisible({ timeout: 2_000 })
       }).toPass({ timeout: 30_000 })
-      return page
-        .getByText(REPORT)
-        .first()
-        .locator('xpath=ancestor::div[.//button[@role="switch"]][1]')
+      return files.getByTestId('media-tile').filter({ has: page.getByLabel(REPORT) })
     }
 
-    // Each attachment carries a switch for whether it prints. Clicked until
-    // it turns: before the page is interactive the click does nothing at all,
-    // and the switch looks exactly the same either way.
-    const toggle = (await openReportRow()).getByRole('switch')
+    // Each attachment carries an eye for whether the customer sees it, which
+    // is whether it prints. Clicked until it turns: before the page is
+    // interactive the click does nothing at all, and looks the same.
+    const toggle = (await openReportTile()).getByRole('button', {
+      name: 'Hide from the customer',
+    })
     await expect(async () => {
       await toggle.click()
-      await expect(toggle).toHaveAttribute('aria-checked', 'false', { timeout: 2_000 })
+      await expect(
+        (await openReportTile()).getByRole('button', { name: 'Show to the customer' })
+      ).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
 
     // It turns before the write lands, so the answer is read back from the
@@ -129,10 +131,9 @@ test.describe('a job with files attached to it', () => {
     // machine the switch then comes back on.
     await page.waitForLoadState('networkidle')
     await page.reload()
-    await expect((await openReportRow()).getByRole('switch')).toHaveAttribute(
-      'aria-checked',
-      'false'
-    )
+    await expect(
+      (await openReportTile()).getByRole('button', { name: 'Show to the customer' })
+    ).toBeVisible()
 
     const pdf = await workshopCopy(page)
     expect(pdf.pages, 'the appended pages are gone').toBe(barePages + 1)
@@ -145,7 +146,7 @@ test.describe('a job with files attached to it', () => {
     const url = await newWorkOrder(page, vehicleUrl, `E2E broken image ${stamp}`)
     await addPart(page, { name: `E2E hose ${stamp}`, quantity: 1, unitPrice: 120 })
     await saveWorkOrder(page)
-    await attach(page, 'Images', {
+    await attach(page, 'Photos', {
       name: 'e2e-broken.png',
       mimeType: 'image/png',
       buffer: BROKEN_PNG,

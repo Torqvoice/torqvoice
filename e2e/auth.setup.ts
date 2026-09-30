@@ -42,11 +42,8 @@ setup('sign in as the workshop owner', async ({ page, context }) => {
 
   // The app reads its language from this cookie before Accept-Language. Set
   // here rather than per test so the saved state carries it everywhere.
-  const { hostname, origin } = new URL(page.url())
+  const { hostname } = new URL(page.url())
   await context.addCookies([{ name: 'locale', value: 'en', domain: hostname, path: '/' }])
-  // The overhauled work order page is the default, and the specs written for
-  // the classic one stay on it; `useModernLayout` moves a context across.
-  await context.addCookies([{ name: 'workOrderLayout', value: 'classic', url: origin }])
 
   await context.storageState({ path: AUTH_STATE })
 })

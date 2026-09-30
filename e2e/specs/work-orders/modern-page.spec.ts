@@ -17,22 +17,19 @@ import {
   saveWorkOrder,
   seededVehicleUrl,
   shareLink,
-  useModernLayout,
 } from '../../support/work-order'
 
 /**
- * What the overhauled work order page does, beyond laying the classic one's
- * fields out differently. `modern-layout.spec.ts` covers switching to it and
- * the one-copy-of-each-field rule; this file drives the things that exist
+ * What the work order page does, beyond laying the fields out.
+ * `modern-layout.spec.ts` covers the one-copy-of-each-field rule; this file
+ * drives the things that exist
  * only here or behave differently here: the job facts and the header's type,
  * the concern story (condition, cause, correction, confirm) and the question
  * before completing a job with a concern nobody confirmed, the files card,
  * the technician list, the notes, and a locked invoice that still takes a
  * status, a payment and an internal note.
  *
- * Every test opens the page from a context carrying the layout cookie, so the
- * rest of the suite stays on the classic page. The jobs are made on the
- * classic page first, each with a part: `/service/new` hands back an
+ * The jobs are made first, each with a part: `/service/new` hands back an
  * untouched draft younger than five seconds instead of making a new one.
  */
 
@@ -52,10 +49,6 @@ test.beforeAll(async ({ browser }) => {
   filesJob = await jobWithPart(page, `E2E modern files ${stamp}`)
   scheduleJob = await jobWithPart(page, `E2E modern schedule ${stamp}`)
   await page.close()
-})
-
-test.beforeEach(async ({ context, baseURL }) => {
-  await useModernLayout(context, baseURL ?? 'http://127.0.0.1:3100')
 })
 
 async function jobWithPart(page: Page, title: string): Promise<string> {
@@ -512,20 +505,6 @@ test.describe('the overhauled work order page', () => {
         .locator('xpath=ancestor::*[.//ol][1]')
       await expect(activity).toContainText('Invoice link shared')
       await expect(activity).toContainText('Payment of')
-    })
-
-    test('keeps both notes read-only on the classic page, rather than losing what is typed', async ({
-      page,
-      context,
-      baseURL,
-    }) => {
-      await context.addCookies([
-        { name: 'workOrderLayout', value: 'classic', url: baseURL ?? 'http://127.0.0.1:3100' },
-      ])
-      await page.goto(lockedJob)
-      await settle(page)
-      await expect(page.getByTestId('service-layout')).toBeVisible()
-      await expect(page.locator('.ProseMirror').first()).toHaveAttribute('contenteditable', 'false')
     })
   })
 })
