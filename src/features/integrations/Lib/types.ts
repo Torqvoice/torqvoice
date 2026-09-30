@@ -127,6 +127,11 @@ export interface ConnectorManifest {
   /** Capability ids such as 'calendar.push'. Shown as badges; used by the app to find a provider. */
   capabilities: string[]
   /**
+   * What a 'vehicle.lookup' connector answers to. Plate only when left out;
+   * the form's VIN button is offered only by connectors that list 'vin'.
+   */
+  lookupBy?: VehicleLookupKey[]
+  /**
    * The video call product a person can add to a work order from its page,
    * as a key under integrations.meeting: 'teams', 'google-meet', 'zoom'.
    * Only connectors whose service.update job honours a `create` action.
@@ -237,6 +242,8 @@ export type JobHandler = (
 ) => Promise<JobOutcome | void>
 
 /** What a vehicle registry is asked for: a plate, a VIN, or both. */
+export type VehicleLookupKey = 'plate' | 'vin'
+
 export interface VehicleLookupQuery {
   plate?: string
   vin?: string

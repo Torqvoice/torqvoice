@@ -369,7 +369,10 @@
     "inspectionDue": "Nächste Hauptuntersuchung",
     "inspectionDueHint": "Datum eintragen, wenn kein Register es liefert. Erinnerungen und Dashboard nutzen es.",
     "inspectionDueFromRegistry": "Aus dem Fahrzeugregister. Hier ändern, um es bis zum nächsten Abgleich zu überschreiben.",
-    "lookupEnterPlateOrVin": "Gib zuerst ein Kennzeichen oder eine FIN ein"
+    "lookupVin": "FIN nachschlagen",
+    "lookupEnterVin": "Geben Sie zuerst eine FIN ein",
+    "lookupVinNotFound": "Zu dieser FIN wurde kein Fahrzeug gefunden",
+    "lookupVinFailed": "FIN konnte nicht nachgeschlagen werden"
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",

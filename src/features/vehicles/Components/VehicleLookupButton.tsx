@@ -12,11 +12,11 @@ import {
   type VehicleLookup,
 } from '@/features/integrations/Actions/vehicleLookupActions'
 
-interface PlateLookupButtonProps {
-  /** The plate as typed right now; read when the button is pressed. */
-  getPlate: () => string
-  /** The VIN as typed right now, for registries that answer to a VIN rather than a plate. */
-  getVin?: () => string
+interface VehicleLookupButtonProps {
+  /** Whether this button asks by the plate or by the VIN. */
+  by: 'plate' | 'vin'
+  /** The plate or VIN as typed right now; read when the button is pressed. */
+  getValue: () => string
   /** Called with what the registry knows, for the form to apply. */
   onFound: (data: VehicleLookup) => void
   /** Set when editing, so the answer is also recorded on the vehicle. */
@@ -24,18 +24,16 @@ interface PlateLookupButtonProps {
 }
 
 /**
- * Asks the workshop's connected vehicle registry about the plate beside it.
+ * Asks the workshop's connected vehicle registry about the plate or VIN
+ * beside it.
  *
  * Availability is checked here rather than passed in, like the document
  * scanner: three dialogs render this form and none should have to know which
- * registries exist.
+ * registries exist. The plate button stays visible but disabled without a
+ * registry, so a workshop learns one can be connected; the VIN button only
+ * appears once something that decodes VINs is.
  */
-export function PlateLookupButton({
-  getPlate,
-  getVin,
-  onFound,
-  vehicleId,
-}: PlateLookupButtonProps) {
+export function VehicleLookupButton({ by, getValue, onFound, vehicleId }: VehicleLookupButtonProps) {
   const t = useTranslations('vehicles.form')
   const [busy, setBusy] = useState(false)
   /** null while the availability check is still in flight. */
@@ -44,45 +42,45 @@ export function PlateLookupButton({
   useEffect(() => {
     let active = true
     isVehicleLookupAvailable().then((result) => {
-      if (active) setAvailable(result.success && result.data === true)
+      if (active) setAvailable(result.success && result.data?.[by] === true)
     })
     return () => {
       active = false
     }
-  }, [])
+  }, [by])
 
   const handleClick = useCallback(async () => {
-    const plate = getPlate().trim()
-    const vin = getVin?.().trim() ?? ''
-    if (!plate && !vin) {
-      toast.error(getVin ? t('lookupEnterPlateOrVin') : t('lookupEnterPlate'))
+    const value = getValue().trim()
+    if (!value) {
+      toast.error(by === 'vin' ? t('lookupEnterVin') : t('lookupEnterPlate'))
       return
     }
     setBusy(true)
     const toastId = toast.loading(t('lookingUp'))
     try {
-      const result = await lookupVehicle({
-        plate: plate || undefined,
-        vin: vin || undefined,
-        vehicleId,
-      })
+      const result = await lookupVehicle({ by, value, vehicleId })
       if (!result.success) {
-        toast.error(result.error || t('lookupFailed'), { id: toastId })
+        toast.error(result.error || t(by === 'vin' ? 'lookupVinFailed' : 'lookupFailed'), {
+          id: toastId,
+        })
         return
       }
       if (!result.data) {
-        toast.error(t('lookupNotFound'), { id: toastId })
+        toast.error(t(by === 'vin' ? 'lookupVinNotFound' : 'lookupNotFound'), { id: toastId })
         return
       }
       onFound(result.data)
       toast.success(t('lookupSuccess', { source: result.data.source }), { id: toastId })
     } catch {
-      toast.error(t('lookupFailed'), { id: toastId })
+      toast.error(t(by === 'vin' ? 'lookupVinFailed' : 'lookupFailed'), { id: toastId })
     } finally {
       setBusy(false)
     }
-  }, [getPlate, getVin, onFound, vehicleId, t])
+  }, [by, getValue, onFound, vehicleId, t])
 
+  if (by === 'vin' && !available) return null
+
+  const label = by === 'vin' ? t('lookupVin') : t('lookupPlate')
   return (
     <Tooltip>
       {/* A disabled button swallows pointer events, so the trigger has to be
@@ -93,7 +91,7 @@ export function PlateLookupButton({
             type="button"
             variant="outline"
             size="icon"
-            aria-label={t('lookupPlate')}
+            aria-label={label}
             onClick={handleClick}
             disabled={busy || !available}
           >
@@ -101,9 +99,7 @@ export function PlateLookupButton({
           </Button>
         </span>
       </TooltipTrigger>
-      <TooltipContent>
-        {available === false ? t('lookupUnavailable') : t('lookupPlate')}
-      </TooltipContent>
+      <TooltipContent>{available === false ? t('lookupUnavailable') : label}</TooltipContent>
     </Tooltip>
   )
 }

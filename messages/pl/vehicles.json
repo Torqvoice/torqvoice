@@ -369,7 +369,10 @@
     "inspectionDue": "Następny przegląd okresowy",
     "inspectionDueHint": "Wpisz datę, jeśli żaden rejestr jej nie dostarcza. Używają jej przypomnienia i pulpit.",
     "inspectionDueFromRegistry": "Z rejestru pojazdów. Zmień tutaj, aby nadpisać do następnej synchronizacji.",
-    "lookupEnterPlateOrVin": "Najpierw wpisz rejestrację lub VIN"
+    "lookupVin": "Sprawdź VIN",
+    "lookupEnterVin": "Najpierw wpisz numer VIN",
+    "lookupVinNotFound": "Nie znaleziono pojazdu o tym numerze VIN",
+    "lookupVinFailed": "Nie udało się sprawdzić numeru VIN"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",

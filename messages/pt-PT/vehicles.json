@@ -369,7 +369,10 @@
     "inspectionDue": "Próxima inspeção periódica",
     "inspectionDueHint": "Introduza a data se nenhum registo a fornecer. Os lembretes e o painel utilizam-na.",
     "inspectionDueFromRegistry": "Obtida do registo automóvel. Altere-a aqui para a substituir até à próxima sincronização.",
-    "lookupEnterPlateOrVin": "Introduza primeiro uma matrícula ou um VIN"
+    "lookupVin": "Consultar VIN",
+    "lookupEnterVin": "Introduza primeiro um VIN",
+    "lookupVinNotFound": "Nenhuma viatura encontrada para esse VIN",
+    "lookupVinFailed": "Não foi possível consultar o VIN"
   },
   "archiveDialog": {
     "title": "Arquivar Viatura",

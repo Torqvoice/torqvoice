@@ -39,7 +39,7 @@ import { inspectionDueInput } from '../Lib/inspectionDueInput'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
-import { PlateLookupButton } from './PlateLookupButton'
+import { VehicleLookupButton } from './VehicleLookupButton'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { nameSimilarity } from '@/lib/name-similarity'
 import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
@@ -259,11 +259,13 @@ export function VehicleForm({
 
   /**
    * A registry answer fills the same fields as a scanned document, plus the
-   * gearbox, which papers rarely state. The select only moves while it still
+   * gearbox and engine code, which papers rarely state. The select only moves while it still
    * holds the value the form opened with.
    */
   const applyLookup = (data: VehicleLookup) => {
     applyScan(data)
+    const engineCode = formRef.current?.elements.namedItem('engineCode') as HTMLInputElement | null
+    if (data.engineCode && engineCode && !engineCode.value) engineCode.value = data.engineCode
     if (data.inspectionDue) {
       const input = formRef.current?.elements.namedItem(
         'inspectionDueAt'
@@ -625,16 +627,9 @@ export function VehicleForm({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
-                  <Input
-                    id="vin"
-                    name="vin"
-                    placeholder="1HGCM82633A004352"
-                    defaultValue={vehicle?.vin ?? ''}
-                  />
-                </div>
+              {/* Plate and VIN a row each: side by side, with a lookup button in each,
+                  the VIN was too narrow to show all 17 characters. */}
+              <div className="grid gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="licensePlate">
                     {isMarine ? t('licensePlateMarine') : t('licensePlate')}
@@ -648,15 +643,35 @@ export function VehicleForm({
                       className="flex-1"
                     />
                     {!isMarine && (
-                      <PlateLookupButton
-                        getPlate={() =>
+                      <VehicleLookupButton
+                        by="plate"
+                        getValue={() =>
                           (
                             formRef.current?.elements.namedItem(
                               'licensePlate'
                             ) as HTMLInputElement | null
                           )?.value ?? ''
                         }
-                        getVin={() =>
+                        onFound={applyLookup}
+                        vehicleId={vehicle?.id}
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="vin"
+                      name="vin"
+                      placeholder="1HGCM82633A004352"
+                      defaultValue={vehicle?.vin ?? ''}
+                      className="flex-1"
+                    />
+                    {!isMarine && (
+                      <VehicleLookupButton
+                        by="vin"
+                        getValue={() =>
                           (formRef.current?.elements.namedItem('vin') as HTMLInputElement | null)
                             ?.value ?? ''
                         }
@@ -665,19 +680,20 @@ export function VehicleForm({
                       />
                     )}
                   </div>
-                  {lookupNote && (
-                    <p className="text-xs text-muted-foreground">
-                      {lookupNote.inspectionDue
-                        ? t('lookupInspectionDue', {
-                            source: lookupNote.source,
-                            date: format.dateTime(new Date(lookupNote.inspectionDue), {
-                              dateStyle: 'medium',
-                            }),
-                          })
-                        : t('lookupSource', { source: lookupNote.source })}
-                    </p>
-                  )}
                 </div>
+                {/* Under both fields, since either button may have answered */}
+                {lookupNote && (
+                  <p className="-mt-2 text-xs text-muted-foreground">
+                    {lookupNote.inspectionDue
+                      ? t('lookupInspectionDue', {
+                          source: lookupNote.source,
+                          date: format.dateTime(new Date(lookupNote.inspectionDue), {
+                            dateStyle: 'medium',
+                          }),
+                        })
+                      : t('lookupSource', { source: lookupNote.source })}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">

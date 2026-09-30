@@ -369,7 +369,10 @@
     "inspectionDue": "Kita periodinė apžiūra",
     "inspectionDueHint": "Įveskite datą, jei jos nepateikia registras. Ją naudoja priminimai ir skydelis.",
     "inspectionDueFromRegistry": "Iš transporto priemonių registro. Pakeiskite čia, kad perrašytumėte iki kito sinchronizavimo.",
-    "lookupEnterPlateOrVin": "Pirmiausia įveskite numerį arba VIN"
+    "lookupVin": "Ieškoti pagal VIN",
+    "lookupEnterVin": "Pirmiausia įveskite VIN",
+    "lookupVinNotFound": "Pagal šį VIN transporto priemonė nerasta",
+    "lookupVinFailed": "Nepavyko rasti VIN"
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",

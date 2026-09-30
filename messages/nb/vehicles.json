@@ -369,7 +369,10 @@
     "inspectionDue": "Neste EU-kontroll",
     "inspectionDueHint": "Skriv inn datoen hvis ingen register leverer den. Påminnelser og dashbordet bruker den.",
     "inspectionDueFromRegistry": "Hentet fra kjøretøyregisteret. Endre her for å overstyre til neste synkronisering.",
-    "lookupEnterPlateOrVin": "Skriv inn et skilt eller VIN først"
+    "lookupVin": "Slå opp VIN",
+    "lookupEnterVin": "Skriv inn et VIN først",
+    "lookupVinNotFound": "Fant ingen kjøretøy med det VIN-nummeret",
+    "lookupVinFailed": "Kunne ikke slå opp VIN-nummeret"
   },
   "archiveDialog": {
     "title": "Arkiver kjøretøy",

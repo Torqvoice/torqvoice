@@ -369,7 +369,10 @@
     "inspectionDue": "Próxima inspección periódica",
     "inspectionDueHint": "Escribe la fecha si ningún registro la aporta. Los recordatorios y el panel la usan.",
     "inspectionDueFromRegistry": "Tomada del registro de vehículos. Cámbiala aquí para anularla hasta la próxima sincronización.",
-    "lookupEnterPlateOrVin": "Escribe primero una matrícula o un VIN"
+    "lookupVin": "Buscar VIN",
+    "lookupEnterVin": "Escribe primero un VIN",
+    "lookupVinNotFound": "No se encontró ningún vehículo con ese VIN",
+    "lookupVinFailed": "No se pudo buscar el VIN"
   },
   "archiveDialog": {
     "title": "Archivar vehículo",

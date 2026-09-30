@@ -369,7 +369,10 @@
     "inspectionDue": "Volgende periodieke keuring",
     "inspectionDueHint": "Vul de datum in als geen register die levert. Herinneringen en het dashboard gebruiken hem.",
     "inspectionDueFromRegistry": "Uit het voertuigregister. Wijzig hier om te overschrijven tot de volgende synchronisatie.",
-    "lookupEnterPlateOrVin": "Typ eerst een kenteken of VIN"
+    "lookupVin": "VIN opzoeken",
+    "lookupEnterVin": "Voer eerst een VIN in",
+    "lookupVinNotFound": "Geen voertuig gevonden voor dit VIN",
+    "lookupVinFailed": "VIN kon niet worden opgezocht"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",

@@ -369,7 +369,10 @@
     "inspectionDue": "Próxima inspeção periódica",
     "inspectionDueHint": "Digite a data se nenhum registro a fornecer. Lembretes e o painel a usam.",
     "inspectionDueFromRegistry": "Obtida do registro de veículos. Altere aqui para substituir até a próxima sincronização.",
-    "lookupEnterPlateOrVin": "Digite uma placa ou um VIN primeiro"
+    "lookupVin": "Consultar chassi",
+    "lookupEnterVin": "Digite um chassi primeiro",
+    "lookupVinNotFound": "Nenhum veículo encontrado para esse chassi",
+    "lookupVinFailed": "Não foi possível consultar o chassi"
   },
   "archiveDialog": {
     "title": "Arquivar Veículo",

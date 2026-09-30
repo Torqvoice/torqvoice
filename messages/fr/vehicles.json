@@ -369,7 +369,10 @@
     "inspectionDue": "Prochain contrôle périodique",
     "inspectionDueHint": "Saisissez la date si aucun registre ne la fournit. Les rappels et le tableau de bord l'utilisent.",
     "inspectionDueFromRegistry": "Issue du registre des véhicules. Modifiez-la ici pour la remplacer jusqu'à la prochaine synchronisation.",
-    "lookupEnterPlateOrVin": "Saisissez d'abord une plaque ou un VIN"
+    "lookupVin": "Rechercher le NIV",
+    "lookupEnterVin": "Saisissez d'abord un NIV",
+    "lookupVinNotFound": "Aucun véhicule trouvé pour ce NIV",
+    "lookupVinFailed": "Impossible de rechercher le NIV"
   },
   "archiveDialog": {
     "title": "Archiver le véhicule",

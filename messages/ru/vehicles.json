@@ -369,7 +369,10 @@
     "inspectionDue": "Следующий техосмотр",
     "inspectionDueHint": "Введите дату, если её не даёт реестр. Её используют напоминания и панель.",
     "inspectionDueFromRegistry": "Из реестра транспортных средств. Измените здесь, чтобы переопределить до следующей синхронизации.",
-    "lookupEnterPlateOrVin": "Сначала введите номер или VIN"
+    "lookupVin": "Найти по VIN",
+    "lookupEnterVin": "Сначала введите VIN",
+    "lookupVinNotFound": "Автомобиль с таким VIN не найден",
+    "lookupVinFailed": "Не удалось найти VIN"
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",

@@ -21,6 +21,7 @@ export const manifest: ConnectorManifest = {
   docs: '/docs/integrations/nhtsa',
   auth: { type: 'api-key', fields: [] },
   capabilities: ['vehicle.lookup', SAFETY_MANIFEST.capability],
+  lookupBy: ['vin'],
   settings: [SAFETY_MANIFEST.setting],
   subscriptions: SAFETY_MANIFEST.subscriptions,
   schedules: [SAFETY_MANIFEST.schedule],

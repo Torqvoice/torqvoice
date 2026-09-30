@@ -369,7 +369,10 @@
     "inspectionDue": "Prossima revisione periodica",
     "inspectionDueHint": "Inserisci la data se nessun registro la fornisce. Promemoria e dashboard la usano.",
     "inspectionDueFromRegistry": "Presa dal registro veicoli. Modificala qui per sovrascriverla fino alla prossima sincronizzazione.",
-    "lookupEnterPlateOrVin": "Scrivi prima una targa o un VIN"
+    "lookupVin": "Cerca VIN",
+    "lookupEnterVin": "Inserisci prima un VIN",
+    "lookupVinNotFound": "Nessun veicolo trovato per questo VIN",
+    "lookupVinFailed": "Impossibile cercare il VIN"
   },
   "archiveDialog": {
     "title": "Archivia Veicolo",

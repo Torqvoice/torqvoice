@@ -369,7 +369,10 @@
     "inspectionDue": "Next periodic inspection",
     "inspectionDueHint": "Type the date if no registry supplies it. Reminders and the dashboard use it.",
     "inspectionDueFromRegistry": "Filled from the vehicle registry. Change it here to override until the next sync.",
-    "lookupEnterPlateOrVin": "Type a plate or VIN first"
+    "lookupVin": "Look up VIN",
+    "lookupEnterVin": "Type a VIN first",
+    "lookupVinNotFound": "No vehicle found for that VIN",
+    "lookupVinFailed": "Could not look up the VIN"
   },
   "archiveDialog": {
     "title": "Archive Vehicle",

@@ -369,7 +369,10 @@
     "inspectionDue": "Sonraki periyodik muayene",
     "inspectionDueHint": "Bir sicil sağlamıyorsa tarihi yazın. Hatırlatmalar ve pano bunu kullanır.",
     "inspectionDueFromRegistry": "Araç sicilinden alındı. Bir sonraki eşitlemeye kadar geçersiz kılmak için burada değiştirin.",
-    "lookupEnterPlateOrVin": "Önce bir plaka veya VIN yazın"
+    "lookupVin": "VIN sorgula",
+    "lookupEnterVin": "Önce bir VIN yazın",
+    "lookupVinNotFound": "Bu VIN ile araç bulunamadı",
+    "lookupVinFailed": "VIN sorgulanamadı"
   },
   "archiveDialog": {
     "title": "Aracı Arşivle",
