@@ -13,6 +13,7 @@ import { getFeatures } from '@/lib/features'
 import { db } from '@/lib/db'
 import { completionTuning, createClient, getAiConfig } from '@/lib/ai'
 import { describeAiError } from '@/lib/ai-error'
+import { DEMO_AI_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 import { localeNames, type Locale } from '@/i18n/config'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -48,6 +49,10 @@ function json(status: number, error: string) {
  * the answer has finished: a failed call leaves no half chat behind.
  */
 export async function POST(request: NextRequest) {
+  // Refused before anything is read. The client refuses on the demo too, but
+  // this answer names the reason instead of failing somewhere in the stream.
+  if (isDemoMode) return json(403, DEMO_AI_DISABLED_MESSAGE)
+
   const ctx = await getAuthContext()
   if (!ctx) return json(401, 'Unauthorized')
   const { organizationId, userId } = ctx

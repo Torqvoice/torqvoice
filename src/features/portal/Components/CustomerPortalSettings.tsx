@@ -364,9 +364,15 @@ export function CustomerPortalSettings({
                 <div className="flex items-center gap-4">
                   <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-lg border bg-muted">
                     {backgroundImage ? (
+                      // The uploaded file itself when it is one, read with the
+                      // staff session: the public route refuses on the demo.
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={`/api/public/portal-bg/${portalParam}?v=${encodeURIComponent(backgroundImage)}`}
+                        src={
+                          backgroundImage.startsWith('/api/protected/files/')
+                            ? backgroundImage
+                            : `/api/public/portal-bg/${portalParam}?v=${encodeURIComponent(backgroundImage)}`
+                        }
                         alt=""
                         className="h-full w-full object-cover"
                       />

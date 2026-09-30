@@ -1,5 +1,6 @@
 import { createHmac, randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { isDemoMode } from './demo'
 import { isCloudMode } from './features'
 
 /**
@@ -184,6 +185,14 @@ export async function billingRequest<T>(
   body: Record<string, unknown>,
   timeoutMs = 20_000
 ): Promise<T> {
+  // The routes and actions that bill refuse on the demo, but the daily sync,
+  // the account-link ping and account deletion reach this on their own. The
+  // demo's workshop has no subscription on torqvoice.com, and no secret of
+  // this deployment's should be spent asking about one.
+  // No upstream status: the site was never asked, so nothing reads this as the
+  // site refusing the app's secret.
+  if (isDemoMode) throw new TorqvoiceComError('Billing is disabled on the demo.', 403, 0)
+
   const secret = serviceSecret()
   if (!secret) throw new TorqvoiceComError('Billing is not configured', 500)
 

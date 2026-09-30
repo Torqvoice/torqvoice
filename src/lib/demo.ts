@@ -67,6 +67,11 @@ export function assertConnectorAllowed(): void {
  * shouldn't be able to paste real API keys into a shared demo DB.
  */
 const DEMO_BLOCKED_SETTING_KEY_PATTERNS: RegExp[] = [
+  // The licence page refuses on the demo, but setSettings takes any key: a key
+  // pasted here would be sent to torqvoice.com by the daily check, and the
+  // cached plan and validity rows are what a self-hosted install's plan is
+  // read from. None of them is anything a visitor has a reason to write.
+  /^license\./,
   /^payment\.(stripe|vipps|paypal)\./,
   /^payment\.providersEnabled$/,
   // Each provider's own settings action already refuses in demo mode, but
@@ -102,4 +107,20 @@ export function demoGuardSettingKey(key: string): void {
   if (isDemoMode && isDemoBlockedSettingKey(key)) {
     throw new Error("This setting can't be changed on the demo.")
   }
+}
+
+/** What a refused AI or dictation request is told on the demo. */
+export const DEMO_AI_DISABLED_MESSAGE =
+  'AI is disabled on the demo. Install Torqvoice on your own server to connect a provider.'
+
+/**
+ * Hard stop for the AI and speech vendors. Connecting one is refused on the
+ * demo already, so no key should exist there; this is for the one that does,
+ * because every prompt carries somebody's workshop data and every call is
+ * billed to whoever owns the key. The setup lookups report "not configured"
+ * so the pages hide their AI buttons, and the client itself refuses to be
+ * built, so nothing reaches a vendor whichever path asks.
+ */
+export function assertAiAllowed(): void {
+  if (isDemoMode) throw new Error(DEMO_AI_DISABLED_MESSAGE)
 }

@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Signed-in devices",
     "devicesDescription": "Every browser and phone with an open session on your account.",
+    "devicesDemoHidden": "Everyone on the demo shares this account, so only this browser is shown. Other visitors’ sessions are hidden.",
     "thisDevice": "This device",
     "signedInAt": "Signed in {date}",
     "lastActiveAt": "Last active {date}",

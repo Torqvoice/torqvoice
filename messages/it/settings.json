@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Dispositivi connessi",
     "devicesDescription": "Tutti i browser e i telefoni con una sessione aperta sul tuo account.",
+    "devicesDemoHidden": "Nella demo tutti condividono questo account, quindi viene mostrato solo questo browser. Le sessioni degli altri visitatori sono nascoste.",
     "thisDevice": "Questo dispositivo",
     "signedInAt": "Accesso effettuato {date}",
     "lastActiveAt": "Ultima attività {date}",

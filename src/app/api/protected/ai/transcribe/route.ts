@@ -6,6 +6,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/ai'
 import { speechSetup } from '@/features/integrations/Lib/speech'
 import { describeAiError } from '@/lib/ai-error'
+import { DEMO_AI_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 import {
   MAX_TRANSCRIPTION_BYTES,
   transcriptionLanguage,
@@ -28,6 +29,9 @@ function json(status: number, error: string) {
  * once the person at the desk saves the job it was dictated into.
  */
 export async function POST(request: NextRequest) {
+  // A recording goes to a vendor on somebody's key; the demo sends none.
+  if (isDemoMode) return json(403, DEMO_AI_DISABLED_MESSAGE)
+
   // Live dictation asks every few seconds while somebody is talking, so the
   // budget is a talking person's, not a button's.
   const limited = rateLimit(request, { limit: 60, windowMs: 60_000 })

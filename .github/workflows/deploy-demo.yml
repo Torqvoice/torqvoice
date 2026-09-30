@@ -180,7 +180,9 @@ jobs:
           exit 1
 
       - name: Seed demo data
-        if: ${{ github.event_name == 'push' || inputs.reseed }}
+        # workflow_dispatch is the only trigger, so the old `push` clause was
+        # dead. A boolean input is a real boolean in the `inputs` context.
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.reseed }}
         run: |
           docker exec \
             -e DEMO_USER_EMAIL="demo@torqvoice.com" \

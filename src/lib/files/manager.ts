@@ -3,6 +3,7 @@ import 'server-only'
 import type { Dirent } from 'node:fs'
 import { constants, copyFile, lstat, mkdir, readdir, rename, rm, unlink } from 'node:fs/promises'
 import path from 'node:path'
+import { isDemoMode } from '@/lib/demo'
 import { UPLOAD_CATEGORIES } from '@/lib/upload-url'
 import { uploadsRoot, uploadsRoots } from '@/lib/upload-root'
 import {
@@ -37,7 +38,8 @@ import {
  *    `TRASH_DAYS` later (purgeTrash), so a mistake, a race or a stale save is
  *    still recoverable. The trash is outside every workshop's folder, so it is
  *    never served and never part of a workshop's own export; the server's
- *    backup of the data folder does include it until it is purged.
+ *    backup of the data folder does include it until it is purged. On the
+ *    public demo a released file is deleted outright instead (see trashFile).
  *
  * Both upload roots are cleaned (see lib/upload-root.ts), because files have
  * been written under each and a file under either would still be served.
@@ -117,6 +119,10 @@ async function taken(target: string): Promise<boolean> {
  * reached by copy and delete, since a rename cannot cross disks.
  */
 async function trashFile(root: string, target: string, file: StoredFile, now: number) {
+  // The demo's reset restores the database but never empties the trash, so
+  // there a trash is only a place for one visitor to fill the disk that every
+  // other visitor shares. Nothing on the demo is anybody's to recover.
+  if (isDemoMode) return deleteFile(target)
   if (!(await isPlainFile(target))) return false
   const day = new Date(now).toISOString().slice(0, 10)
   const dir = path.join(path.resolve(root), TRASH, day, file.organizationId, file.folder)

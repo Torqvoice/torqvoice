@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
 import { redirect } from 'next/navigation'
 import { AccountSettings } from './account-settings'
 import { listMyDevices } from '@/features/settings/Actions/sessionActions'
@@ -29,6 +30,7 @@ export default async function AccountSettingsPage() {
       emailVerified={user?.emailVerified ?? false}
       emailVerificationRequired={verificationSetting?.value === 'true'}
       devices={devices}
+      demoMode={isDemoMode}
       signature={signature.success ? (signature.data ?? null) : null}
     />
   )

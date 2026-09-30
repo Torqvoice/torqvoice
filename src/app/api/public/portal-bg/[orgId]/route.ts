@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { svgDownloadHeaders } from '@/lib/upload-url'
 import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 import { resolvePortalOrg } from '@/lib/portal-slug'
@@ -16,6 +17,10 @@ const MIME_TYPES: Record<string, string> = {
 }
 
 export async function GET(_request: Request, { params }: { params: Promise<{ orgId: string }> }) {
+  // The same rule as the public logo: on the demo a background is whatever
+  // the last visitor uploaded, shown to strangers and cached past the reset.
+  if (isDemoMode) return NextResponse.json({ error: 'No background' }, { status: 404 })
+
   const { orgId: orgParam } = await params
 
   // Accept either slug or UUID

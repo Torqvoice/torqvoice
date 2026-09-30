@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { svgDownloadHeaders } from '@/lib/upload-url'
 import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
+import { defaultLogoResponse } from '@/lib/default-logo'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 
@@ -13,6 +15,9 @@ const MIME_TYPES: Record<string, string> = {
 }
 
 export async function GET() {
+  // Never a visitor's upload on the demo: see defaultLogoResponse.
+  if (isDemoMode) return defaultLogoResponse()
+
   const logoSetting = await db.appSetting.findFirst({
     where: { key: 'workshop.logo' },
     select: { value: true, organizationId: true },

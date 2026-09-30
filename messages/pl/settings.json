@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Zalogowane urządzenia",
     "devicesDescription": "Każda przeglądarka i telefon z otwartą sesją na Twoim koncie.",
+    "devicesDemoHidden": "Wszyscy w wersji demo korzystają z tego konta, więc widoczna jest tylko ta przeglądarka. Sesje innych odwiedzających są ukryte.",
     "thisDevice": "To urządzenie",
     "signedInAt": "Zalogowano {date}",
     "lastActiveAt": "Ostatnia aktywność {date}",

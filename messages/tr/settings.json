@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Oturum açık cihazlar",
     "devicesDescription": "Hesabınızda açık oturumu olan tüm tarayıcılar ve telefonlar.",
+    "devicesDemoHidden": "Demoda herkes bu hesabı paylaşıyor, bu yüzden yalnızca bu tarayıcı gösteriliyor. Diğer ziyaretçilerin oturumları gizlidir.",
     "thisDevice": "Bu cihaz",
     "signedInAt": "Giriş {date}",
     "lastActiveAt": "Son etkinlik {date}",

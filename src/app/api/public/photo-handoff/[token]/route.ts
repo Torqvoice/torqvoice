@@ -10,6 +10,7 @@ import { compressPhoto } from '@/lib/image-upload.server'
 import { type DropoffSlot, isDropoffSlot } from '@/lib/dropoff-slots'
 import { PHOTO_HANDOFF_TTL_SECONDS, verifyPhotoHandoffToken } from '@/lib/photo-handoff'
 import { rateLimit } from '@/lib/rate-limit'
+import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
 
 /**
@@ -78,6 +79,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const { organizationId, serviceRecordId, concernId, purpose, userId, expiresAt } = check.handoff
   const dropoff = purpose === 'dropoff'
 
+  // The declared size before the body is buffered: the check on the file
+  // below only runs once the memory is already spent.
+  if (refuseDeclaredOversize(request, MAX_BYTES)) return refuse(400, 'tooLarge')
+
   const job = await db.serviceRecord.findFirst({
     where: { id: serviceRecordId, organizationId },
     select: { id: true, invoiceNumber: true },
@@ -101,7 +106,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   if (dropoff && isPdf) return refuse(400, 'type')
   if (!isPdf && !PHOTO_TYPES.has(file.type)) return refuse(400, 'type')
   if (file.size === 0) return refuse(400, 'empty')
-  if (file.size > (isPdf ? MAX_PDF_BYTES : MAX_BYTES)) return refuse(400, 'tooLarge')
+  if (file.size > uploadLimit(isPdf ? MAX_PDF_BYTES : MAX_BYTES)) return refuse(400, 'tooLarge')
   const category = dropoff ? 'dropoff' : isPdf ? 'document' : 'image'
   // Which shot this is, from the fixed list and nothing else: the value is
   // stored and shown on the work order.

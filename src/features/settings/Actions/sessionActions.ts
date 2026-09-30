@@ -5,7 +5,7 @@ import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { classifyUserAgent, describeUserAgent, type DeviceKind } from '@/lib/known-devices'
 import { logAudit } from '@/lib/audit'
-import { demoGuard } from '@/lib/demo'
+import { demoGuard, isDemoMode } from '@/lib/demo'
 import { z } from 'zod'
 
 export interface SignedInDevice {
@@ -22,12 +22,20 @@ export interface SignedInDevice {
  * The account's open sessions, newest first, as devices a person can
  * recognise. Self-scoped by construction: the session decides the user, and
  * every query below carries that user id.
+ *
+ * On the demo that is not enough: every visitor signs in as the same user,
+ * so "the account's sessions" is every visitor's address and browser. There
+ * the list is the caller's own session and nothing else.
  */
 export async function listMyDevices(): Promise<SignedInDevice[]> {
   const session = await getCachedSession()
   if (!session?.user?.id) return []
   const rows = await db.session.findMany({
-    where: { userId: session.user.id, expiresAt: { gt: new Date() } },
+    where: {
+      userId: session.user.id,
+      expiresAt: { gt: new Date() },
+      ...(isDemoMode ? { id: session.session.id } : {}),
+    },
     orderBy: { updatedAt: 'desc' },
     select: { id: true, userAgent: true, ipAddress: true, createdAt: true, updatedAt: true },
   })

@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Angemeldete Geräte",
     "devicesDescription": "Jeder Browser und jedes Telefon mit einer offenen Sitzung auf deinem Konto.",
+    "devicesDemoHidden": "Alle in der Demo teilen sich dieses Konto, daher wird nur dieser Browser angezeigt. Die Sitzungen anderer Besucher sind ausgeblendet.",
     "thisDevice": "Dieses Gerät",
     "signedInAt": "Angemeldet {date}",
     "lastActiveAt": "Zuletzt aktiv {date}",

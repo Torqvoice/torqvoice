@@ -36,7 +36,18 @@ const ICONS: Record<DeviceKind, LucideIcon> = {
  * a way to end any of them. The browser looking at the page is marked and
  * cannot be ended from here; sign out does that.
  */
-export function SignedInDevices({ devices }: { devices: SignedInDevice[] }) {
+export function SignedInDevices({
+  devices,
+  demoMode = false,
+}: {
+  devices: SignedInDevice[]
+  /**
+   * The demo's one account is shared by every visitor, so the server sends
+   * only this browser's session there, and the card says why the rest are
+   * missing.
+   */
+  demoMode?: boolean
+}) {
   const t = useTranslations('settings')
   const format = useFormatter()
   const router = useRouter()
@@ -164,6 +175,14 @@ export function SignedInDevices({ devices }: { devices: SignedInDevice[] }) {
           )
         })}
       </ul>
+      {demoMode && (
+        <p
+          className="border-t border-border/60 px-6 py-3 text-xs text-muted-foreground"
+          data-testid="signed-in-devices-demo-note"
+        >
+          {t('account.devicesDemoHidden')}
+        </p>
+      )}
     </AppCard>
   )
 }

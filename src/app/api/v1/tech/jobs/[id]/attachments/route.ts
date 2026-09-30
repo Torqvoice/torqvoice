@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { getFeatures, type PlanFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
 
 /**
@@ -61,6 +62,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
 
+      // Lowered on the demo, where anyone can sign the app in, and checked on
+      // the declared length before the body is buffered.
+      const maxBytes = uploadLimit(MAX_BYTES)
+      const tooLarge = `That file is too large. Keep it under ${Math.round(maxBytes / (1024 * 1024))} MB.`
+      if (refuseDeclaredOversize(request, MAX_BYTES)) {
+        return apiError(400, 'invalid_request', tooLarge)
+      }
+
       const form = await request.formData()
       const file = form.get('file')
       if (!(file instanceof File)) {
@@ -74,8 +83,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (file.size === 0) {
         return apiError(400, 'invalid_request', 'That file is empty.')
       }
-      if (file.size > MAX_BYTES) {
-        return apiError(400, 'invalid_request', 'That file is too large. Keep it under 60 MB.')
+      if (file.size > maxBytes) {
+        return apiError(400, 'invalid_request', tooLarge)
       }
 
       const category = file.type.startsWith('video/') ? 'video' : 'image'

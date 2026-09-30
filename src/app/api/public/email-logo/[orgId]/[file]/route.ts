@@ -2,6 +2,7 @@ import { readFile, stat } from 'fs/promises'
 import { NextResponse } from 'next/server'
 import path from 'path'
 import { EMAIL_LOGO_CATEGORY } from '@/features/email/Lib/emailTemplate'
+import { isDemoMode } from '@/lib/demo'
 import { uploadsRoot } from '@/lib/upload-root'
 
 const MIME_TYPES: Record<string, string> = {
@@ -24,6 +25,10 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orgId: string; file: string }> }
 ) {
+  // No mail leaves the demo, so nothing needs this there, and a public,
+  // immutable URL for whatever a visitor uploads is free image hosting.
+  if (isDemoMode) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
   const { orgId, file } = await params
   if (!/^[A-Za-z0-9_-]+$/.test(orgId) || !FILE_NAME.test(file)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })

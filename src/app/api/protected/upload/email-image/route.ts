@@ -5,6 +5,7 @@ import path from 'path'
 import sharp from 'sharp'
 import { EMAIL_IMAGE_CATEGORY, EMAIL_IMAGE_MAX_WIDTH } from '@/features/email/Lib/emailTemplate'
 import { guardEmailUpload } from '@/features/email/Lib/emailUploadAccess.server'
+import { guardUpload, uploadLimit, uploadTooLargeMessage } from '@/lib/upload-guard'
 
 /**
  * A picture for an image block.
@@ -31,6 +32,9 @@ export async function POST(request: Request) {
   if ('response' in guard) return guard.response
   const { ctx } = guard
 
+  const refused = guardUpload(request, MAX_UPLOAD_BYTES)
+  if (refused) return refused
+
   const formData = await request.formData()
   const file = formData.get('file')
   if (!(file instanceof File)) {
@@ -39,8 +43,9 @@ export async function POST(request: Request) {
   if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
     return NextResponse.json({ error: 'Upload a PNG, JPEG or WebP image' }, { status: 400 })
   }
-  if (file.size > MAX_UPLOAD_BYTES) {
-    return NextResponse.json({ error: 'File size must be under 10MB' }, { status: 400 })
+  const maxBytes = uploadLimit(MAX_UPLOAD_BYTES)
+  if (file.size > maxBytes) {
+    return NextResponse.json({ error: uploadTooLargeMessage(maxBytes) }, { status: 400 })
   }
 
   try {

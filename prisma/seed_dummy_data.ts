@@ -1,6 +1,7 @@
-import { PrismaClient } from "../src/generated/prisma/client";
+import { Prisma, PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { createCipheriv, createHash, hkdfSync, randomBytes, scryptSync } from "node:crypto";
+import { deflateSync } from "node:zlib";
 import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
@@ -94,6 +95,43 @@ const DEMO_ORG_NAME = process.env.DEMO_ORG_NAME || "Demo Auto Workshop";
 /// seeded readings, so the two can never disagree.
 const DEMO_TREAD_LIMITS = { summerReplace: 1.6, winterReplace: 4, warnMargin: 1 };
 
+/// The four values a work order's `status` column stores (SYSTEM_STATUSES in
+/// src/features/work-order-statuses/Lib/stages.ts, and the enum in
+/// serviceSchema.ts). Anything else, "scheduled" or "in_progress" say, is read
+/// by the app as not started and matches no filter, so every job the seed
+/// writes is typed with this rather than a plain string.
+type JobStatus = "pending" | "in-progress" | "waiting-parts" | "completed";
+
+/// The workshop's warranty, written once and used for the Settings -> Warranty
+/// defaults, every seeded invoice and every seeded quote, so they all say the
+/// same thing.
+const WARRANTY = {
+  months: 12,
+  mileage: 12000,
+  terms:
+    "Parts and labor on this repair are guaranteed for 12 months or 12,000 miles, whichever comes first. Wear items, and damage from misuse, accidents or later modification, are not covered.",
+} as const;
+
+/// The warranty columns a finished job or a quote carries. `warrantyStatus`
+/// is what the printed sheets and the warranty panel read first.
+function warrantyColumns(from: Date | null) {
+  const expires = from ? new Date(from) : null;
+  expires?.setMonth(expires.getMonth() + WARRANTY.months);
+  return {
+    warrantyStatus: "included",
+    warrantyMonths: WARRANTY.months,
+    warrantyMileage: WARRANTY.mileage,
+    warrantyNotes: WARRANTY.terms,
+    ...(expires ? { warrantyExpiresAt: expires } : {}),
+  };
+}
+
+/// The "certificate-regulator" layout from src/features/settings/Schema/
+/// layoutPresets.ts, as buildLayoutFromPreset() builds it, with version set to
+/// DESIGNER_LAYOUT_VERSION (3). Generated from that code, not written by hand:
+/// regenerate it there if the preset or the layout version changes.
+const CERTIFICATE_REGULATOR_LAYOUT = JSON.stringify({"sections":[{"id":"header","visible":true,"order":0,"fields":[{"id":"logo","visible":true},{"id":"company_name","visible":true},{"id":"company_address","visible":true},{"id":"company_phone","visible":true},{"id":"company_email","visible":true},{"id":"company_org_number","visible":true}]},{"id":"document_title","visible":true,"order":1,"fields":[{"id":"title","visible":true},{"id":"invoice_number","visible":true},{"id":"customer_number","visible":true},{"id":"date","visible":true},{"id":"due_date","visible":true},{"id":"license_plate","visible":false}]},{"id":"slogan","visible":false,"order":16},{"id":"result","visible":true,"order":5,"fields":[{"id":"result_detail","visible":true},{"id":"result_summary","visible":false}],"boxed":false,"style":{"borderWidth":0,"padding":0}},{"id":"customer","visible":true,"order":2,"column":"left","fields":[{"id":"customer_name","visible":true},{"id":"customer_company","visible":true},{"id":"customer_address","visible":true},{"id":"customer_email","visible":true},{"id":"customer_phone","visible":true},{"id":"customer_tax_id","visible":true}],"boxed":false},{"id":"vehicle","visible":true,"order":3,"column":"left","fields":[{"id":"vehicle_name","visible":true},{"id":"vin","visible":true},{"id":"license_plate","visible":true},{"id":"mileage","visible":true},{"id":"hsn_tsn","visible":true}],"boxed":false},{"id":"test_details","visible":true,"order":4,"column":"right","fields":[{"id":"test_date","visible":true},{"id":"test_location","visible":true},{"id":"inspector","visible":true},{"id":"certificate_number","visible":true},{"id":"vehicle_category","visible":true},{"id":"odometer","visible":true},{"id":"next_test_due","visible":true}],"boxed":false},{"id":"defects","visible":true,"order":7,"fields":[{"id":"defect_notes","visible":true},{"id":"defect_photos","visible":false}]},{"id":"results_table","visible":true,"order":6,"fields":[{"id":"passed_checks","visible":true},{"id":"not_applicable_checks","visible":true},{"id":"check_notes","visible":true},{"id":"combined_table","visible":true}],"style":{"borderWidth":0.5,"outerBorder":true}},{"id":"condition_map","visible":true,"order":8,"fields":[{"id":"legend","visible":true},{"id":"previous_marks","visible":true}]},{"id":"inspection_photos","visible":true,"order":9},{"id":"notes","visible":true,"order":10,"boxed":false},{"id":"attached_documents","visible":true,"order":12,"boxed":false},{"id":"signature","visible":true,"order":11,"fields":[{"id":"signature_image","visible":true},{"id":"inspector_line","visible":true},{"id":"inspector_name","visible":true},{"id":"date_line","visible":true},{"id":"customer_line","visible":false}]},{"id":"footer","visible":true,"order":13,"fields":[{"id":"footer_note","visible":true},{"id":"portal_link","visible":true},{"id":"logo","visible":true},{"id":"company_name","visible":true},{"id":"company_address","visible":true},{"id":"company_phone","visible":true},{"id":"company_email","visible":true},{"id":"bank_account","visible":true},{"id":"company_org_number","visible":true}]}],"document":{"accentColor":"#111827","stripes":false,"rowPadding":3,"fontSize":9},"documentType":"certificate","version":3});
+
 // Copied from src/features/tire-hotel/Lib/tireConstants rather than imported,
 // for the same reason as the inspection templates further down: the production
 // image ships only prisma/ and src/generated (see Dockerfile), so an import
@@ -186,10 +224,20 @@ const vehicleImages: Record<string, string> = {
 // prisma/ and src/generated (see Dockerfile), so anything the seed imports from
 // src/features breaks the deploy job with MODULE_NOT_FOUND.
 //
-// The periodic-inspection checklist below is a subset of that preset, codes and
-// limit values included — they are the common Union figures from Annex I of
-// Directive 2014/45/EU. Do not invent codes or thresholds here; copy them from
-// the preset, which is where they are maintained.
+// Three of these are the built-in library's own checklists, copied from what
+// presetToTemplateCreate() writes in English: same sections, checks, limits
+// and the condition-map check, plus the provenance (packageId, packageVersion,
+// packageSource). syncPresetLibrary() identifies an installed preset by that
+// packageId, so the templates page recognises these as installed and adds only
+// the presets the seed does not carry, instead of a second "Standard
+// multi-point inspection" next to this one. Keep them in step with the
+// preset: change templatePresets.ts and inspectionLibrary.json first.
+//
+// The periodic-inspection checklist is the workshop's own (no packageId). It
+// is a subset of the EU preset, codes and limit values included - the common
+// Union figures from Annex I of Directive 2014/45/EU. Do not invent codes or
+// thresholds here; copy them from the preset, which is where they are
+// maintained.
 type SeedItem = {
   name: string;
   code?: string;
@@ -201,6 +249,7 @@ type SeedItem = {
   choices?: string[];
   required?: boolean;
   photoRequired?: boolean;
+  allowNotApplicable?: boolean;
   defaultSeverity?: string;
 };
 type SeedSection = { name: string; code?: string; description?: string; items: SeedItem[] };
@@ -210,83 +259,92 @@ type SeedTemplate = {
   standard: string;
   country: string | null;
   severityScale: string;
+  /** Set on the library's own checklists, exactly as presetToTemplateCreate() records them. */
+  packageId?: string;
+  packageVersion?: string;
+  packageSource?: string;
   sections: SeedSection[];
 };
+
+/** The package ids the library gives its presets (templatePresets presetPackageId). */
+const PRESET_MULTIPOINT = "torqvoice/standard-multipoint";
+const PRESET_PRE_PURCHASE = "torqvoice/pre-purchase";
+const PRESET_VEHICLE_INTAKE = "torqvoice/vehicle-intake";
 
 const SEED_TEMPLATES: SeedTemplate[] = [
   {
     name: "Standard multi-point inspection",
-    description: "The general service check every vehicle gets on the ramp, graded pass / attention / fail.",
+    description: "A general workshop health check covering the major systems. Graded pass / attention / fail rather than on the EU defect scale.",
     standard: "custom",
     country: null,
     severityScale: "basic",
+    packageId: "torqvoice/standard-multipoint",
+    packageVersion: "1.0.0",
+    packageSource: "builtin",
     sections: [
       {
-        name: "Under the hood",
+        name: "Exterior",
         items: [
-          { name: "Engine oil level and condition", required: true },
-          { name: "Coolant level and strength" },
-          { name: "Brake fluid level and moisture content" },
-          { name: "Power steering and transmission fluid" },
-          { name: "Drive belts and hoses" },
+          { name: "Body condition", description: "Tap the drawing where each dent, scratch or chip is, and add a note and a photo. Marks from earlier visits show in grey.", inputType: "condition_map" },
+          { name: "Paint" },
+          { name: "Lights" },
+          { name: "Windscreen" },
+          { name: "Wipers" },
+          { name: "Mirrors" },
+        ],
+      },
+      {
+        name: "Under hood",
+        items: [
+          { name: "Engine oil level and condition" },
+          { name: "Coolant", inputType: "measurement", unit: "°C", maxValue: -20, defaultSeverity: "attention" },
+          { name: "Brake fluid" },
+          { name: "Power steering fluid" },
+          { name: "Battery voltage", inputType: "measurement", unit: "V", minValue: 12.4, defaultSeverity: "attention" },
+          { name: "Drive belts" },
+          { name: "Hoses" },
           { name: "Air filter" },
-          { name: "Battery condition", description: "Terminals, mounting and load test result." },
-          { name: "Battery load test", inputType: "measurement", unit: "%", minValue: 70, defaultSeverity: "attention" },
+          { name: "Cabin filter" },
+        ],
+      },
+      {
+        name: "Under vehicle",
+        items: [
+          { name: "Exhaust system" },
+          { name: "Suspension" },
+          { name: "CV joints and boots" },
+          { name: "Brake lines" },
+          { name: "Fluid leaks" },
         ],
       },
       {
         name: "Brakes",
         items: [
-          { name: "Front pad thickness", inputType: "measurement", unit: "mm", minValue: 3, required: true, defaultSeverity: "fail" },
-          { name: "Rear pad thickness", inputType: "measurement", unit: "mm", minValue: 3, required: true, defaultSeverity: "fail" },
-          { name: "Discs and drums" },
-          { name: "Calipers, slides and hardware" },
-          { name: "Brake lines and hoses" },
-          { name: "Parking brake operation" },
+          { name: "Front pads", inputType: "measurement", unit: "mm", minValue: 3, defaultSeverity: "fail" },
+          { name: "Rear pads", inputType: "measurement", unit: "mm", minValue: 3, defaultSeverity: "fail" },
+          { name: "Discs" },
+          { name: "Parking brake" },
         ],
       },
       {
-        name: "Tires and wheels",
+        name: "Tyres",
         items: [
-          { name: "Tread depth - front left", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
-          { name: "Tread depth - front right", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
-          { name: "Tread depth - rear left", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
-          { name: "Tread depth - rear right", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
-          { name: "Tire condition and age", description: "Sidewall damage, uneven wear, load and speed rating." },
-          { name: "Wheel and hub condition" },
-          { name: "Tire pressures set to placard" },
+          { name: "Tread depth — front left", inputType: "measurement", unit: "mm", minValue: 1.6, defaultSeverity: "fail" },
+          { name: "Tread depth — front right", inputType: "measurement", unit: "mm", minValue: 1.6, defaultSeverity: "fail" },
+          { name: "Tread depth — rear left", inputType: "measurement", unit: "mm", minValue: 1.6, defaultSeverity: "fail" },
+          { name: "Tread depth — rear right", inputType: "measurement", unit: "mm", minValue: 1.6, defaultSeverity: "fail" },
+          { name: "Tyre pressure", inputType: "measurement", unit: "bar", minValue: 1.8, maxValue: 3.5, defaultSeverity: "attention" },
+          { name: "Spare tyre or repair kit" },
         ],
       },
       {
-        name: "Steering and suspension",
+        name: "Interior",
         items: [
-          { name: "Shock absorbers and struts" },
-          { name: "Springs and mounts" },
-          { name: "Ball joints and track rod ends" },
-          { name: "Wheel bearings" },
-          { name: "CV boots and driveshafts" },
-          { name: "Steering rack and linkage" },
-        ],
-      },
-      {
-        name: "Lights and electrical",
-        items: [
-          { name: "Headlights, main and dipped" },
-          { name: "Brake lights and indicators" },
-          { name: "Reverse and fog lights" },
-          { name: "Interior lights and dash warnings" },
-          { name: "Wipers and washers" },
+          { name: "Warning lights" },
           { name: "Horn" },
-        ],
-      },
-      {
-        name: "Under the vehicle",
-        items: [
-          { name: "Oil and fluid leaks", photoRequired: true },
-          { name: "Exhaust system and mountings" },
-          { name: "Fuel lines and tank" },
-          { name: "Subframe and underbody corrosion" },
-          { name: "Transmission and differential" },
+          { name: "Air conditioning" },
+          { name: "Heater" },
+          { name: "Seat belts" },
         ],
       },
     ],
@@ -416,46 +474,91 @@ const SEED_TEMPLATES: SeedTemplate[] = [
   },
   {
     name: "Pre-purchase inspection",
-    description: "What a buyer wants to know before the money moves: condition, history and anything about to need spending on.",
+    description: "Buyer-facing report covering documentation, body, mechanicals and wear items, with room for measurements and photos.",
     standard: "custom",
     country: null,
     severityScale: "basic",
+    packageId: "torqvoice/pre-purchase",
+    packageVersion: "1.0.0",
+    packageSource: "builtin",
     sections: [
       {
-        name: "Paperwork and identity",
+        name: "Documentation and history",
         items: [
-          { name: "VIN matches the documents", required: true },
-          { name: "Service history present and consistent" },
-          { name: "Odometer reading plausible against wear", inputType: "measurement", unit: "mi", required: true },
+          { name: "Registration document matches the vehicle", required: true },
+          { name: "VIN", inputType: "text", required: true },
+          { name: "Service history", inputType: "choice", choices: ["Full", "Partial", "None"] },
           { name: "Outstanding recalls" },
+          { name: "Previous accident damage" },
         ],
       },
       {
         name: "Body and paint",
         items: [
-          { name: "Panel gaps and alignment", photoRequired: true },
-          { name: "Paint depth and repair evidence" },
-          { name: "Corrosion, sills and arches" },
-          { name: "Glass, lamps and trim" },
+          { name: "Body condition", description: "Tap the drawing where each dent, scratch or chip is, and add a note and a photo. Marks from earlier visits show in grey.", inputType: "condition_map" },
+          { name: "Panel gaps" },
+          { name: "Paint thickness — worst panel", inputType: "measurement", unit: "µm", minValue: 80, maxValue: 200, defaultSeverity: "attention" },
+          { name: "Corrosion", photoRequired: true },
+          { name: "Glass and lights" },
         ],
       },
       {
         name: "Mechanical",
         items: [
-          { name: "Cold start and idle quality" },
-          { name: "Oil condition and leaks" },
-          { name: "Cooling system and head gasket check" },
-          { name: "Transmission and clutch under load" },
-          { name: "Diagnostic scan - stored and pending codes" },
+          { name: "Cold start" },
+          { name: "Engine noise" },
+          { name: "Compression — lowest cylinder", inputType: "measurement", unit: "bar", minValue: 10, defaultSeverity: "fail" },
+          { name: "Gearbox and clutch" },
+          { name: "Fault codes on the diagnostic port", inputType: "text" },
+          { name: "Road test" },
         ],
       },
       {
-        name: "Road test",
+        name: "Wear items",
         items: [
-          { name: "Braking under load" },
-          { name: "Steering and tracking" },
-          { name: "Suspension noise over bumps" },
-          { name: "Driver assistance systems" },
+          { name: "Brake pads and discs" },
+          { name: "Tyres including date codes" },
+          { name: "Suspension bushes" },
+          { name: "Exhaust" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Vehicle check-in",
+    description: "The walk-round at drop-off, done with the customer standing there: how the car arrived, what was already on the body, what was left inside. Prints on the work order the customer signs.",
+    standard: "custom",
+    country: null,
+    severityScale: "basic",
+    packageId: "torqvoice/vehicle-intake",
+    packageVersion: "1.0.0",
+    packageSource: "builtin",
+    sections: [
+      {
+        name: "Arrival",
+        items: [
+          { name: "Fuel level", inputType: "choice", choices: ["Empty", "1/4", "1/2", "3/4", "Full"] },
+          { name: "Keys handed over", inputType: "text" },
+          { name: "Warning lights on arrival", inputType: "text" },
+          { name: "Personal belongings left in the vehicle", inputType: "text" },
+        ],
+      },
+      {
+        name: "Exterior walk-round",
+        items: [
+          { name: "Body condition", description: "Tap the drawing where each dent, scratch or chip is, and add a note and a photo. Marks from earlier visits show in grey.", inputType: "condition_map", required: true },
+          { name: "Glass condition" },
+          { name: "Lights" },
+          { name: "Mirrors" },
+          { name: "Wheels and tyres, visual" },
+        ],
+      },
+      {
+        name: "Interior",
+        items: [
+          { name: "Seats and trim" },
+          { name: "Floor and mats" },
+          { name: "Infotainment and controls" },
         ],
       },
     ],
@@ -483,6 +586,114 @@ function downloadFile(url: string, dest: string): Promise<void> {
 }
 
 function img(cat: string, file: string) { return `/api/files/${ORG_ID}/${cat}/${file}`; }
+
+/**
+ * A drop-off or inspection photo, made from the cached stock photo of the
+ * vehicle (the same file its vehicle page shows). The seed ships no photos
+ * of its own, so this is the only picture it has of each car. Copied under a
+ * fixed name into the folder the app files such uploads in, which
+ * cleanupUploads() empties and this refills on every reset. Null when the
+ * stock photo never downloaded; the caller then seeds no attachment.
+ */
+function seedPhoto(vehicleFile: string, folder: "services" | "inspections", name: string) {
+  const source = path.join(UPLOAD_DIR, vehicleFile);
+  if (!fs.existsSync(source)) return null;
+  const dir = path.join(DATA_ROOT, "uploads", ORG_ID, folder);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.copyFileSync(source, path.join(dir, name));
+  return {
+    fileName: name,
+    fileUrl: `/api/protected/files/${ORG_ID}/${folder}/${name}`,
+    fileType: "image/jpeg",
+    fileSize: fs.statSync(source).size,
+  };
+}
+
+/**
+ * A handwritten-looking signature as a PNG, for the demo owner's saved
+ * signature. Drawn here from a formula rather than shipped as a file, with
+ * node's zlib only, because the image may import nothing but the generated
+ * client and node built-ins. Transparent background, dark blue ink.
+ */
+function signaturePng(): Buffer {
+  const width = 420;
+  const height = 130;
+  const pixels = Buffer.alloc(width * height * 4);
+  const ink = [23, 37, 84];
+  const dab = (cx: number, cy: number, r: number) => {
+    for (let y = Math.floor(cy - r - 1); y <= Math.ceil(cy + r + 1); y++) {
+      for (let x = Math.floor(cx - r - 1); x <= Math.ceil(cx + r + 1); x++) {
+        if (x < 0 || y < 0 || x >= width || y >= height) continue;
+        // Anti-aliased edge: full ink inside the radius, fading over a pixel.
+        const coverage = Math.max(0, Math.min(1, r + 0.5 - Math.hypot(x - cx, y - cy)));
+        if (coverage === 0) continue;
+        const i = (y * width + x) * 4;
+        const alpha = Math.max(pixels[i + 3], Math.round(coverage * 255));
+        pixels[i] = ink[0];
+        pixels[i + 1] = ink[1];
+        pixels[i + 2] = ink[2];
+        pixels[i + 3] = alpha;
+      }
+    }
+  };
+  // A slanted, looping stroke: a capital, a run of joined loops that shrink
+  // like lowercase letters, then a long underline flourish.
+  const stroke = (points: (t: number) => [number, number], steps: number, width0: number) => {
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps;
+      const [x, y] = points(t);
+      dab(x, y, width0 * (0.75 + 0.35 * Math.sin(t * Math.PI)));
+    }
+  };
+  // Capital D: a slanted stem, then the bowl drawn round from its top.
+  stroke((t) => [52 - 10 * t, 30 + 66 * t], 400, 2.2);
+  stroke((t) => {
+    const a = -Math.PI / 2 + t * Math.PI * 1.15;
+    return [42 + 6 * (1 - t) + 48 * Math.cos(a), 63 + 33 * Math.sin(a)];
+  }, 900, 2.1);
+  // The rest of the name: joined loops of uneven height, tailing off.
+  stroke((t) => {
+    const a = t * Math.PI * 11;
+    const height = 16 * (0.8 + 0.45 * Math.sin(t * 9.4)) * (1 - 0.4 * t);
+    return [98 + 240 * t + 10 * Math.cos(a), 72 - height * Math.sin(a) - 6 * t];
+  }, 3000, 1.8);
+  stroke((t) => [70 + 300 * t, 104 - 10 * Math.sin(t * Math.PI) + 4 * t], 1200, 1.6);
+
+  const crcTable = Array.from({ length: 256 }, (_, n) => {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    return c >>> 0;
+  });
+  const crc32 = (buf: Buffer) => {
+    let c = 0xffffffff;
+    for (const b of buf) c = crcTable[(c ^ b) & 0xff] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+  };
+  const chunk = (type: string, data: Buffer) => {
+    const len = Buffer.alloc(4);
+    len.writeUInt32BE(data.length);
+    const body = Buffer.concat([Buffer.from(type, "latin1"), data]);
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(crc32(body));
+    return Buffer.concat([len, body, crc]);
+  };
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8; // bit depth
+  header[9] = 6; // RGBA
+  const rows = Buffer.alloc((width * 4 + 1) * height);
+  for (let y = 0; y < height; y++) {
+    rows[y * (width * 4 + 1)] = 0; // no filter
+    pixels.copy(rows, y * (width * 4 + 1) + 1, y * width * 4, (y + 1) * width * 4);
+  }
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk("IHDR", header),
+    chunk("IDAT", deflateSync(rows)),
+    chunk("IEND", Buffer.alloc(0)),
+  ]);
+}
 
 async function provisionDemoAccount() {
   console.log("Provisioning demo user + organization...");
@@ -518,11 +729,21 @@ async function provisionDemoAccount() {
   // foreign organizations so the reset always converges on a single org.
   // Org-scoped rows go with them via ON DELETE CASCADE, and stale
   // active-org cookies fall back to the demo org membership.
-  // inspections.templateId is ON DELETE RESTRICT, so the cascade cannot
-  // resolve templates and inspections in one statement; clear inspections
-  // first. (The only other RESTRICT in the schema, subscriptions.planId,
-  // guards global plans the purge never deletes.)
+  //
+  // RESTRICT foreign keys are checked row by row inside the cascade, so a
+  // parent and the row pointing at it cannot go in the same statement. The
+  // schema has five:
+  //   inspections.templateId -> inspection_templates
+  //   service_records.issuedDesignSnapshotId -> document_design_snapshots
+  //   service_records.issuedLogoSnapshotId / issuedSignatureSnapshotId
+  //     -> document_asset_snapshots (an issued invoice freezes these)
+  //   import_batches.userId -> users (cleanup() handles it before users go)
+  //   subscriptions.planId -> subscription_plans (global plans, never purged)
+  // so the inspections and work orders of those organizations go first.
   await prisma.inspection.deleteMany({
+    where: { organizationId: { not: ORG_ID } },
+  });
+  await prisma.serviceRecord.deleteMany({
     where: { organizationId: { not: ORG_ID } },
   });
   const foreignOrgs = await prisma.organization.deleteMany({
@@ -577,10 +798,76 @@ function cleanupUploads() {
   } catch (err) {
     console.warn("  Upload cleanup failed:", err);
   }
+  cleanupTrash(keep);
+}
+
+/**
+ * Empty this workshop's share of the uploads trash.
+ *
+ * The app's file manager (src/lib/files/manager.ts, not importable here) never
+ * deletes a released upload at once: it moves it to
+ * `<uploads>/.trash/<YYYY-MM-DD>/<org>/<folder>/<name>` and purges it 30 days
+ * later. Everything a visitor removed between resets therefore sits there,
+ * visitor photos included, and would outlive the reset by a month. Only the
+ * demo org's folder under each day is touched; the layout is the manager's.
+ *
+ * A seed vehicle photo a visitor released (by deleting the vehicle) is moved
+ * back to uploads/<org>/vehicles/ first, which saves downloading it again.
+ */
+function cleanupTrash(keep: Set<string>) {
+  // The same roots the app reads: DATA_ROOT's uploads, then the old default.
+  const roots = [...new Set([path.join(DATA_ROOT, "uploads"), path.join(process.cwd(), "data", "uploads")])];
+  let removed = 0;
+  for (const root of roots) {
+    const trash = path.join(root, ".trash");
+    if (!fs.existsSync(trash)) continue;
+    try {
+      for (const day of fs.readdirSync(trash, { withFileTypes: true })) {
+        if (!day.isDirectory() || !/^\d{4}-\d{2}-\d{2}$/.test(day.name)) continue;
+        const orgTrash = path.join(trash, day.name, ORG_ID);
+        if (!fs.existsSync(orgTrash)) continue;
+        const trashedVehicles = path.join(orgTrash, "vehicles");
+        if (fs.existsSync(trashedVehicles)) {
+          for (const name of fs.readdirSync(trashedVehicles)) {
+            const dest = path.join(UPLOAD_DIR, name);
+            if (keep.has(name) && !fs.existsSync(dest)) {
+              fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+              fs.copyFileSync(path.join(trashedVehicles, name), dest);
+            }
+          }
+        }
+        removed += fs.readdirSync(orgTrash, { recursive: true }).length;
+        fs.rmSync(orgTrash, { recursive: true, force: true });
+        // The day folder goes too once nothing of another workshop is in it.
+        if (fs.readdirSync(path.join(trash, day.name)).length === 0) fs.rmdirSync(path.join(trash, day.name));
+      }
+    } catch (err) {
+      console.warn("  Trash cleanup failed:", err);
+    }
+  }
+  if (removed > 0) console.log(`  Emptied ${removed} trashed item(s) of the demo workshop.`);
 }
 
 async function cleanup() {
   console.log("Cleaning existing data...");
+
+  // Accounts a visitor created inside the demo: a technician given the app
+  // (createTechnicianAccount), a member added some other way. Collected before
+  // the memberships and technicians that point at them are deleted below.
+  const visitorUsers = await prisma.user.findMany({
+    where: {
+      id: { not: USER_ID },
+      isSuperAdmin: false,
+      OR: [
+        { organizationMembers: { some: { organizationId: ORG_ID } } },
+        { technicians: { some: { organizationId: ORG_ID } } },
+        { appSetupCodes: { some: { organizationId: ORG_ID } } },
+        { pushDevices: { some: { organizationId: ORG_ID } } },
+      ],
+    },
+    select: { id: true },
+  });
+  const visitorUserIds = visitorUsers.map((u) => u.id);
 
   // Config/state a visitor can change that would otherwise survive every reset:
   // branding, invoice templates, webhooks pointing at external URLs, schedules,
@@ -598,8 +885,11 @@ async function cleanup() {
   // Inspection.template is a required relation with no onDelete, so Postgres
   // restricts the template delete while any inspection still points at it.
   // Vehicle deletion further down would cascade these away, but that runs too
-  // late — drop them here first. InspectionItem and InspectionQuoteRequest
-  // cascade from Inspection, and Quote.inspectionId is SetNull.
+  // late - drop them here first. InspectionItem, InspectionAttachment,
+  // InspectionQuoteRequest and their status reports cascade from Inspection;
+  // Quote.inspectionId, ServiceRecord.inspectionId and a condition mark's
+  // inspection link are SetNull.
+  await prisma.inspectionQuoteRequest.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.inspection.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.inspectionTemplate.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customFieldDefinition.deleteMany({ where: { organizationId: ORG_ID } });
@@ -607,9 +897,26 @@ async function cleanup() {
   // Wipes branding, logo, invoice layout, localization, tax config. The
   // maintenance.* keys are re-upserted later in the seed.
   await prisma.appSetting.deleteMany({ where: { organizationId: ORG_ID } });
-  // Links, jobs and logs cascade. Recreated below from the placeholder
-  // provider config, so the catalog shows the same three vendors connected.
+  // Links, jobs, logs and external calendar events cascade. Recreated below
+  // from the placeholder provider config, so the catalog shows the same three
+  // vendors connected.
   await prisma.integrationConnection.deleteMany({ where: { organizationId: ORG_ID } });
+  // The workshop's own mail templates, work order statuses and condition-map
+  // marks and kinds. Only the organization cascades to these, which the
+  // reset never deletes.
+  await prisma.emailTemplate.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.workOrderStatus.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.conditionMark.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.conditionMarkType.deleteMany({ where: { organizationId: ORG_ID } });
+  // Spreadsheet imports. Rows they created point back with SetNull; a batch
+  // also holds a RESTRICT key on its user, so it goes before any visitor
+  // account below.
+  await prisma.importBatch.deleteMany({
+    where: { OR: [{ organizationId: ORG_ID }, { userId: { in: visitorUserIds } }] },
+  });
+  // Inspection reminder campaigns; their sends cascade from the campaign.
+  await prisma.inspectionReminderCampaign.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.vehicleInspectionStatus.deleteMany({ where: { organizationId: ORG_ID } });
 
   // Transient/accumulating records.
   await prisma.aiChat.deleteMany({ where: { organizationId: ORG_ID } });
@@ -622,7 +929,10 @@ async function cleanup() {
   await prisma.customerSmsCode.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.auditLog.deleteMany({ where: { organizationId: ORG_ID } });
 
-  // Any team member a visitor added — but never the demo owner, which
+  // The demo owner's saved signature hangs off the membership, which the
+  // reset keeps, so it would otherwise outlive every reset. Reseeded below.
+  await prisma.memberSignature.deleteMany({ where: { member: { organizationId: ORG_ID } } });
+  // Any team member a visitor added - but never the demo owner, which
   // provisionDemoAccount() upserts just before this runs.
   await prisma.organizationMember.deleteMany({
     where: { organizationId: ORG_ID, userId: { not: USER_ID } },
@@ -630,12 +940,36 @@ async function cleanup() {
   // Custom roles; OrganizationMember.roleId is onDelete: SetNull, so safe.
   await prisma.role.deleteMany({ where: { organizationId: ORG_ID } });
 
-  // Core CRUD data. ServiceRequest, CustomerSession and StatusReport cascade
-  // from Vehicle/Customer/ServiceRecord. Inspections are already gone above.
+  // Technician app: sign-in codes, setup codes and phones registered for
+  // push, plus the job clock. All org-scoped, so they go by organization
+  // rather than through whoever they belong to.
+  await prisma.technicianLoginCode.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.technicianSetupCode.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.pushDevice.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.timeEntry.deleteMany({ where: { organizationId: ORG_ID } });
+
+  // Core CRUD data. CustomerSession cascades from Customer; ServiceConcern,
+  // ServiceAttachment, Payment, parts and labor from ServiceRecord.
+  // Inspections are already gone above.
   await prisma.technician.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.workBay.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.smsMessage.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.quote.deleteMany({ where: { organizationId: ORG_ID } });
-  await prisma.serviceRecord.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
+  await prisma.statusReport.deleteMany({ where: { organizationId: ORG_ID } });
+  // By organization, not only through the vehicle: a parts-only counter sale
+  // has no vehicle, and scoped by vehicle it survived every reset, picking up
+  // a fresh invoice number and payment each time. The vehicle clause stays for
+  // any older row written without organizationId.
+  await prisma.serviceRecord.deleteMany({
+    where: { OR: [{ organizationId: ORG_ID }, { vehicle: { organizationId: ORG_ID } }] },
+  });
+  // Issued invoices froze a design, logo and signature here, held by a
+  // RESTRICT key on service_records, which is why the work orders went first.
+  // Customer.invoiceDesignId, ServiceRecord.designId and the inspection
+  // snapshot links are SetNull.
+  await prisma.documentDesign.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.documentDesignSnapshot.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.documentAssetSnapshot.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.fuelLog.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
   // A reminder can hang off a vehicle, a customer or nothing at all, so the
   // vehicle cascade alone would leave workshop-level ones behind to pile up
@@ -647,6 +981,7 @@ async function cleanup() {
   await prisma.note.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
   await prisma.vehicle.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customer.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.stockMovement.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.inventoryPart.deleteMany({ where: { organizationId: ORG_ID } });
   // Tire sets survive the vehicle and customer wipe above, because both of
   // those relations are SetNull rather than Cascade. Warehouses and shelves
@@ -656,6 +991,26 @@ async function cleanup() {
   await prisma.tireSet.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.tireLocation.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.tireWarehouse.deleteMany({ where: { organizationId: ORG_ID } });
+
+  // Visitor-created accounts, now that nothing restricts them. Their
+  // sessions, credentials, devices and passkeys cascade.
+  if (visitorUserIds.length > 0) {
+    const removedUsers = await prisma.user.deleteMany({ where: { id: { in: visitorUserIds } } });
+    console.log(`  Removed ${removedUsers.count} visitor-created account(s).`);
+  }
+  // The shared demo login. Every visitor signs in as this user, so its
+  // sessions and remembered devices (IP addresses included) were shown to the
+  // next visitor on the account page; a reset now signs everyone out. Two
+  // factor and passkeys go too, so nobody can lock the account until the next
+  // reset, and the dashboard returns to its default layout.
+  await prisma.session.deleteMany({ where: { userId: USER_ID } });
+  await prisma.userDevice.deleteMany({ where: { userId: USER_ID } });
+  await prisma.twoFactor.deleteMany({ where: { userId: USER_ID } });
+  await prisma.passkey.deleteMany({ where: { userId: USER_ID } });
+  await prisma.user.update({
+    where: { id: USER_ID },
+    data: { dashboardLayout: Prisma.DbNull, twoFactorEnabled: false, image: null, phone: null },
+  });
 
   cleanupUploads();
   console.log("  Done.\n");
@@ -722,8 +1077,34 @@ async function seed() {
     "invoice.showOrgNumber": "true",
     "invoice.showBankAccount": "true",
     "email.fromName": "Egeland Auto",
-    "defaultWarrantyMonths": "12",
-    "defaultWarrantyMileage": "12000",
+    // Settings -> Warranty (SETTING_KEYS.WARRANTY_* in settingsSchema.ts):
+    // every new quote and work order starts with this statement. The seeded
+    // invoices below carry the same terms, so old and new documents agree.
+    "warranty.defaultStatus": "included",
+    "warranty.defaultMonths": String(WARRANTY.months),
+    "warranty.defaultMileage": String(WARRANTY.mileage),
+    "warranty.defaultTerms": WARRANTY.terms,
+    "warranty.notIncludedText": "No workshop warranty is given on customer-supplied parts. Your statutory rights are not affected.",
+    // New jobs are named from the vehicle rather than a number, which is how
+    // the seeded ones read ("Honda Civic - AC Compressor").
+    "workshop.workOrderTitleTemplate": "{make} {model} - {license_plate}",
+    // The Regulatory certificate, as the designer saves it when the preset is
+    // applied. Without a designer layout a completed inspection that froze no
+    // design prints the old built-in sheet (certificateDesignSource()), which
+    // is every seeded one. The JSON is buildLayoutFromPreset() of the
+    // "certificate-regulator" preset in src/features/settings/Schema/
+    // layoutPresets.ts, stamped with DESIGNER_LAYOUT_VERSION; regenerate it
+    // from there if the preset changes. The look is that preset's template.
+    "certificate.layoutConfig": CERTIFICATE_REGULATOR_LAYOUT,
+    "certificate.activeDesign": "preset:certificate-regulator",
+    "certificate.primaryColor": "#111827",
+    "certificate.headerStyle": "compact",
+    "certificate.fontFamily": "Times-Roman",
+    "certificate.textColor": "#111827",
+    // The built-in checklists are seeded in English. Without this marker the
+    // first visitor's browser language would decide which language the whole
+    // demo's checklists get rewritten into (relocalizeBuiltinTemplates).
+    "inspections.presetsLocale": "en",
     "workboard.weekStartDay": "1",
     "workboard.workDayStart": "07:00",
     "workboard.workDayEnd": "17:00",
@@ -974,6 +1355,43 @@ async function seed() {
   ]);
   console.log(`  Created ${vehicles.length} vehicles`);
 
+  // Which drawing the condition map marks each vehicle on (BODY_TYPES in
+  // src/features/condition-map/Lib/drawingTypes.ts). Unset falls back to a
+  // sedan, which is wrong for every pickup, van and SUV here. There are no
+  // drawings for trucks, tractors or plant, so those stay unset: no body type
+  // fits a combine, and the sedan fallback is at least an honest default.
+  // The coupes (911, Corvette) have no drawing of their own either and use
+  // the sedan.
+  const VEHICLE_BODY_TYPES: Record<number, "sedan" | "hatchback" | "estate" | "suv" | "van" | "pickup"> = {
+    0: "sedan", // Toyota Camry
+    1: "pickup", // Ford F-150 Lariat
+    2: "pickup", // Ford F-150 XLT
+    3: "pickup", // Ford F-150 Platinum
+    4: "sedan", // BMW 330i
+    5: "hatchback", // Honda Civic Sport (FK7 hatch)
+    6: "sedan", // Tesla Model 3
+    7: "suv", // Tesla Model Y
+    8: "pickup", // Chevrolet Silverado 2500HD
+    9: "van", // Mercedes-Benz Sprinter
+    10: "sedan", // Audi A4
+    11: "suv", // Jeep Wrangler Rubicon
+    12: "suv", // Jeep Wrangler Sport S
+    13: "sedan", // Porsche 911
+    14: "hatchback", // VW Golf GTI
+    15: "pickup", // Ram 1500
+    16: "pickup", // Toyota Tacoma
+    38: "sedan", // Chevrolet Corvette
+    39: "suv", // Land Rover Defender 110
+    40: "sedan", // Dodge Charger
+    41: "sedan", // Subaru WRX
+  };
+  await Promise.all(
+    Object.entries(VEHICLE_BODY_TYPES).map(([idx, bodyType]) =>
+      prisma.vehicle.update({ where: { id: vehicles[Number(idx)].id }, data: { bodyType } }),
+    ),
+  );
+  const bodyTypeOf = (idx: number) => VEHICLE_BODY_TYPES[idx] ?? "sedan";
+
   // -- Service Records (20) --
   console.log("\nCreating service records...");
   const svcData = [
@@ -997,7 +1415,7 @@ async function seed() {
       partItems: [{ name: "PACCAR MX-13 Fuel Filter Kit", partNumber: "PAC-FF-MX13", quantity: 1, unitPrice: 125, total: 125 }, { name: "Air Filter Element", partNumber: "PAC-AF-MX13", quantity: 1, unitPrice: 85, total: 85 }, { name: "Coolant (5gal)", partNumber: "PAC-COOL-5G", quantity: 2, unitPrice: 65, total: 130 }, { name: "Engine Oil 15W-40 (10gal)", partNumber: "PAC-15W40-10G", quantity: 1, unitPrice: 280, total: 280 }],
       laborItems: [{ description: "Engine oil and filter change", hours: 2.0, rate: 125, total: 250 }, { description: "Fuel filter replacement", hours: 1.0, rate: 125, total: 125 }, { description: "Coolant flush and refill", hours: 1.5, rate: 125, total: 187.50 }, { description: "DPF regeneration and diagnostic", hours: 1.5, rate: 125, total: 187.50 }],
       subtotal: 1370, taxRate: 8, taxAmount: 109.60, totalAmount: 1479.60 },
-    { vehicleId: vehicles[18].id, title: "Volvo FH 640 - DOT Inspection", description: "Full annual inspection per DOT regulations. Brake test, emissions, lights, safety.", type: "inspection", status: "in_progress", serviceDate: days(-19), mileage: 92000, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[18].id, title: "Volvo FH 640 - DOT Inspection", description: "Full annual inspection per DOT regulations. Brake test, emissions, lights, safety.", type: "inspection", status: "in-progress", serviceDate: days(-19), mileage: 92000, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "Marker Light Bulbs (pack of 10)", partNumber: "VOL-MLB-10", quantity: 1, unitPrice: 35, total: 35 }, { name: "Wiper Blades (pair)", partNumber: "VOL-WB-FH", quantity: 1, unitPrice: 52, total: 52 }],
       laborItems: [{ description: "Full DOT inspection and documentation", hours: 4.0, rate: 125, total: 500 }, { description: "Minor repairs and adjustments", hours: 2.0, rate: 125, total: 250 }],
       subtotal: 837, taxRate: 8, taxAmount: 66.96, totalAmount: 903.96 },
@@ -1017,7 +1435,7 @@ async function seed() {
       partItems: [{ name: "Track Chain Assembly (left)", partNumber: "KOM-TC-PC210L", quantity: 1, unitPrice: 2800, total: 2800 }, { name: "Track Chain Assembly (right)", partNumber: "KOM-TC-PC210R", quantity: 1, unitPrice: 2800, total: 2800 }, { name: "Track Sprocket (pair)", partNumber: "KOM-TS-PC210", quantity: 1, unitPrice: 1200, total: 1200 }],
       laborItems: [{ description: "Track chain removal and installation (both sides)", hours: 8.0, rate: 140, total: 1120 }, { description: "Sprocket replacement", hours: 3.0, rate: 140, total: 420 }, { description: "Undercarriage inspection", hours: 2.0, rate: 140, total: 280 }],
       subtotal: 8620, taxRate: 8, taxAmount: 689.60, totalAmount: 9309.60 },
-    { vehicleId: vehicles[33].id, title: "Volvo EC220E - 1000hr Full Service", description: "All fluids, filters, track tension, swing bearing inspection.", type: "maintenance", status: "in_progress", serviceDate: days(-12), mileage: 1500, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[33].id, title: "Volvo EC220E - 1000hr Full Service", description: "All fluids, filters, track tension, swing bearing inspection.", type: "maintenance", status: "in-progress", serviceDate: days(-12), mileage: 1500, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Engine Oil 15W-40 (5gal)", partNumber: "VOL-15W40-5G", quantity: 1, unitPrice: 185, total: 185 }, { name: "Hydraulic Filter Set", partNumber: "VOL-HFS-EC220", quantity: 1, unitPrice: 120, total: 120 }, { name: "Fuel Filter Kit", partNumber: "VOL-FFK-EC220", quantity: 1, unitPrice: 58, total: 58 }],
       laborItems: [{ description: "Engine oil and all filter replacement", hours: 2.5, rate: 140, total: 350 }, { description: "Track tension adjustment", hours: 1.0, rate: 140, total: 140 }, { description: "Full grease service (48 points)", hours: 2.0, rate: 140, total: 280 }],
       subtotal: 1133, taxRate: 8, taxAmount: 90.64, totalAmount: 1223.64 },
@@ -1025,7 +1443,7 @@ async function seed() {
       partItems: [{ name: "Mopar 2.5\" Lift Kit", partNumber: "JEEP-LK-25", quantity: 1, unitPrice: 1200, total: 1200 }, { name: "Bilstein 5100 Shocks (set of 4)", partNumber: "BIL-5100-JL4", quantity: 1, unitPrice: 680, total: 680 }, { name: "Extended Brake Lines", partNumber: "JEEP-EBL-JL", quantity: 1, unitPrice: 120, total: 120 }],
       laborItems: [{ description: "Suspension lift installation", hours: 6.0, rate: 110, total: 660 }, { description: "Brake line routing and bleed", hours: 1.0, rate: 110, total: 110 }, { description: "4-wheel alignment", hours: 1.5, rate: 110, total: 165 }],
       subtotal: 2935, taxRate: 8, taxAmount: 234.80, totalAmount: 3169.80 },
-    { vehicleId: vehicles[9].id, title: "Sprinter - Turbocharger Replacement", description: "Turbo shaft play detected. Black smoke under boost. Replaced turbo assembly.", type: "repair", status: "in_progress", serviceDate: days(-18), mileage: 35400, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[9].id, title: "Sprinter - Turbocharger Replacement", description: "Turbo shaft play detected. Black smoke under boost. Replaced turbo assembly.", type: "repair", status: "in-progress", serviceDate: days(-18), mileage: 35400, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Turbocharger Assembly - OM651", partNumber: "MB-TURBO-OM651", quantity: 1, unitPrice: 1280, total: 1280 }, { name: "Turbo Oil Feed Line", partNumber: "MB-TOFL-OM651", quantity: 1, unitPrice: 68, total: 68 }, { name: "Turbo Gasket Kit", partNumber: "MB-TGK-OM651", quantity: 1, unitPrice: 42, total: 42 }],
       laborItems: [{ description: "Turbocharger removal", hours: 3.0, rate: 125, total: 375 }, { description: "New turbo installation and oil line", hours: 2.5, rate: 125, total: 312.50 }],
       subtotal: 2077.50, taxRate: 8, taxAmount: 166.20, totalAmount: 2243.70 },
@@ -1069,7 +1487,7 @@ async function seed() {
       partItems: [{ name: "Intercooler Pipe + Couplers", partNumber: "SUB-ICP-WRX", quantity: 1, unitPrice: 165, total: 165 }, { name: "T-Bolt Clamps (set of 4)", partNumber: "SUB-TBC-4", quantity: 1, unitPrice: 28, total: 28 }],
       laborItems: [{ description: "Boost leak diagnosis and smoke test", hours: 1.0, rate: 120, total: 120 }, { description: "Intercooler pipe replacement", hours: 1.5, rate: 120, total: 180 }],
       subtotal: 493, taxRate: 8, taxAmount: 39.44, totalAmount: 532.44 },
-  ];
+  ] satisfies Array<{ status: JobStatus } & Record<string, unknown>>;
 
   const serviceRecords = [];
   for (const sr of svcData) {
@@ -1143,7 +1561,7 @@ async function seed() {
   const quotes = [];
   for (const q of qData) {
     const { partItems, laborItems, customerId, vehicleId, ...fields } = q;
-    const quote = await prisma.quote.create({ data: { ...fields, userId: USER_ID, organizationId: ORG_ID, ...(customerId ? { customerId } : {}), ...(vehicleId ? { vehicleId } : {}), partItems: { create: partItems }, laborItems: { create: laborItems } } });
+    const quote = await prisma.quote.create({ data: { ...fields, userId: USER_ID, organizationId: ORG_ID, ...warrantyColumns(null), ...(customerId ? { customerId } : {}), ...(vehicleId ? { vehicleId } : {}), partItems: { create: partItems }, laborItems: { create: laborItems } } });
     quotes.push(quote);
   }
   console.log(`  Created ${quotes.length} quotes`);
@@ -1538,10 +1956,16 @@ async function seed() {
   };
 
   // Helper to create service record with parts + labor
-  const sr = (base: Record<string, unknown>, parts: { name: string; partNumber: string; quantity: number; unit?: string; unitPrice: number; total: number }[], labor: { description: string; hours: number; rate: number; total: number }[], notes?: string) => {
+  // Typed against the Prisma input, not `Record<string, unknown>` cast to
+  // never: that cast is what let 29 jobs go in as "scheduled" unnoticed.
+  type JobBase = Omit<
+    Prisma.ServiceRecordUncheckedCreateInput,
+    "organizationId" | "status" | "subtotal" | "taxRate" | "taxAmount" | "totalAmount" | "cost" | "diagnosticNotes" | "partItems" | "laborItems"
+  > & { status: JobStatus };
+  const sr = (base: JobBase, parts: { name: string; partNumber: string; quantity: number; unit?: string; unitPrice: number; total: number }[], labor: { description: string; hours: number; rate: number; total: number }[], notes?: string) => {
     const subtotal = parts.reduce((s, p) => s + p.total, 0) + labor.reduce((s, l) => s + l.total, 0);
     const taxAmount = Math.round(subtotal * 0.08 * 100) / 100;
-    return prisma.serviceRecord.create({ data: { ...base, organizationId: ORG_ID, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } as never });
+    return prisma.serviceRecord.create({ data: { ...base, organizationId: ORG_ID, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } });
   };
 
   // Create service records for the board (assigned ones)
@@ -1552,7 +1976,7 @@ async function seed() {
       [{ description: "AC compressor removal and replacement", hours: 2.5, rate: 110, total: 275 }, { description: "System evacuate, recharge and leak test", hours: 1.0, rate: 110, total: 110 }],
       "Compressor clutch not engaging. Checked voltage at clutch connector - 12V present. Clutch coil resistance out of spec. Replace compressor assembly."),
     // 1: Audi A4 timing belt
-    sr({ vehicleId: vehicles[10].id, title: "Audi A4 - Timing Belt Service", description: "Scheduled timing belt and water pump replacement at 60K miles.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 60000, techName: "Chris Taylor", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[10].id, title: "Audi A4 - Timing Belt Service", description: "Scheduled timing belt and water pump replacement at 60K miles.", type: "maintenance", status: "in-progress", serviceDate: day(0), mileage: 60000, techName: "Chris Taylor", shopName: "Egeland Auto" },
       [{ name: "Timing Belt Kit w/ Water Pump", partNumber: "AUD-TBK-A4", quantity: 1, unitPrice: 385, total: 385 }, { name: "Thermostat Assembly", partNumber: "AUD-TH-A4", quantity: 1, unitPrice: 65, total: 65 }, { name: "Coolant G13 (5L)", partNumber: "AUD-COOL-G13", quantity: 1, unitPrice: 42, total: 42 }],
       [{ description: "Timing belt and water pump replacement", hours: 4.5, rate: 120, total: 540 }, { description: "Coolant flush and bleed", hours: 1.0, rate: 120, total: 120 }]),
     // 2: Tesla Model Y suspension
@@ -1561,7 +1985,7 @@ async function seed() {
       [{ description: "Diagnose suspension noise", hours: 0.5, rate: 110, total: 55 }, { description: "Control arm replacement and alignment", hours: 2.0, rate: 110, total: 220 }],
       "Play found in front left lower control arm ball joint. No other issues found. Recommend alignment after replacement."),
     // 3: Silverado 60K
-    sr({ vehicleId: vehicles[8].id, title: "Silverado - 60K Service", description: "60,000 mile major service. Transmission fluid, spark plugs, coolant flush.", type: "maintenance", status: "scheduled", serviceDate: day(1), mileage: 60000, techName: "Jake Wilson", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[8].id, title: "Silverado - 60K Service", description: "60,000 mile major service. Transmission fluid, spark plugs, coolant flush.", type: "maintenance", status: "pending", serviceDate: day(1), mileage: 60000, techName: "Jake Wilson", shopName: "Egeland Auto" },
       [{ name: "ATF Dexron VI (12qt)", partNumber: "GM-ATF-DEX6", quantity: 1, unitPrice: 120, total: 120 }, { name: "Spark Plugs ACDelco (8)", partNumber: "ACD-SP-53", quantity: 8, unitPrice: 12, total: 96 }, { name: "Coolant Dex-Cool (2gal)", partNumber: "GM-COOL-DC", quantity: 1, unitPrice: 38, total: 38 }],
       [{ description: "Transmission fluid exchange", hours: 1.5, rate: 110, total: 165 }, { description: "Spark plug replacement (V8)", hours: 1.5, rate: 110, total: 165 }, { description: "Coolant flush and refill", hours: 1.0, rate: 110, total: 110 }]),
     // 4: Tacoma leaf springs
@@ -1569,11 +1993,11 @@ async function seed() {
       [{ name: "Rear Leaf Spring Pack (pair)", partNumber: "TOY-LS-TAC", quantity: 1, unitPrice: 520, total: 520 }, { name: "U-Bolt Kit", partNumber: "TOY-UB-TAC", quantity: 1, unitPrice: 85, total: 85 }],
       [{ description: "Leaf spring removal and installation (both sides)", hours: 3.5, rate: 110, total: 385 }]),
     // 5: Bobcat S650 annual
-    sr({ vehicleId: vehicles[32].id, title: "Bobcat S650 - Annual Service", description: "Full annual service. Engine oil, hydraulic filters, drive belt.", type: "maintenance", status: "scheduled", serviceDate: day(2), mileage: 2200, techName: "Marcus Reed", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[32].id, title: "Bobcat S650 - Annual Service", description: "Full annual service. Engine oil, hydraulic filters, drive belt.", type: "maintenance", status: "pending", serviceDate: day(2), mileage: 2200, techName: "Marcus Reed", shopName: "Egeland Auto" },
       [{ name: "Engine Oil 15W-40 (2gal)", partNumber: "BOB-15W40-2G", quantity: 1, unitPrice: 68, total: 68 }, { name: "Oil Filter", partNumber: "BOB-OF-S650", quantity: 1, unitPrice: 22, total: 22 }, { name: "Hydraulic Filter Set", partNumber: "BOB-HFS-S650", quantity: 1, unitPrice: 95, total: 95 }, { name: "Drive Belt", partNumber: "BOB-DB-S650", quantity: 1, unitPrice: 48, total: 48 }],
       [{ description: "Engine oil and filter change", hours: 1.0, rate: 130, total: 130 }, { description: "Hydraulic filter replacement", hours: 1.0, rate: 130, total: 130 }, { description: "Drive belt inspection and replacement", hours: 0.5, rate: 130, total: 65 }]),
     // 6: CAT 745 transmission rebuild
-    sr({ vehicleId: vehicles[34].id, title: "CAT 745 - Transmission Rebuild", description: "Slipping in 3rd gear under load. Full transmission rebuild.", type: "repair", status: "in_progress", serviceDate: day(0), mileage: 8500, techName: "Marcus Reed", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[34].id, title: "CAT 745 - Transmission Rebuild", description: "Slipping in 3rd gear under load. Full transmission rebuild.", type: "repair", status: "in-progress", serviceDate: day(0), mileage: 8500, techName: "Marcus Reed", shopName: "Egeland Auto" },
       [{ name: "Transmission Rebuild Kit", partNumber: "CAT-TRK-745", quantity: 1, unitPrice: 4200, total: 4200 }, { name: "Torque Converter", partNumber: "CAT-TC-745", quantity: 1, unitPrice: 2800, total: 2800 }, { name: "Transmission Oil (20gal)", partNumber: "CAT-TO-20G", quantity: 1, unitPrice: 480, total: 480 }],
       [{ description: "Transmission removal", hours: 8.0, rate: 150, total: 1200 }, { description: "Rebuild and reassembly", hours: 16.0, rate: 150, total: 2400 }, { description: "Installation and calibration", hours: 6.0, rate: 150, total: 900 }],
       "3rd gear clutch pack worn beyond spec. Torque converter showing excessive slip. Full rebuild recommended over clutch pack only due to hours on unit."),
@@ -1587,7 +2011,7 @@ async function seed() {
       [{ description: "Transfer case fluid drain and refill", hours: 1.0, rate: 110, total: 110 }, { description: "4WD engagement test and inspection", hours: 0.5, rate: 110, total: 55 }],
       "Fluid was dark and slightly burnt. Delay was from low fluid level. Refilled and tested - engages promptly now. Monitor."),
     // 9: Combine pre-season
-    sr({ vehicleId: vehicles[27].id, title: "Combine Harvester - Pre-Season Prep", description: "Full pre-season inspection. Header, feeder chain, sieve adjustments, all fluids.", type: "maintenance", status: "scheduled", serviceDate: day(4), mileage: 2800, techName: "Marcus Reed", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[27].id, title: "Combine Harvester - Pre-Season Prep", description: "Full pre-season inspection. Header, feeder chain, sieve adjustments, all fluids.", type: "maintenance", status: "pending", serviceDate: day(4), mileage: 2800, techName: "Marcus Reed", shopName: "Egeland Auto" },
       [{ name: "Engine Oil 15W-40 (5gal)", partNumber: "CMB-15W40-5G", quantity: 1, unitPrice: 185, total: 185 }, { name: "Hydraulic Filter Set", partNumber: "CMB-HFS", quantity: 1, unitPrice: 110, total: 110 }, { name: "Feeder Chain", partNumber: "CMB-FC-1", quantity: 1, unitPrice: 380, total: 380 }, { name: "Sieve Section (2)", partNumber: "CMB-SS-2", quantity: 2, unitPrice: 145, total: 290 }],
       [{ description: "Engine oil and filter change", hours: 1.5, rate: 140, total: 210 }, { description: "Feeder chain replacement", hours: 2.5, rate: 140, total: 350 }, { description: "Sieve adjustment and replacement", hours: 2.0, rate: 140, total: 280 }, { description: "Full system inspection and grease", hours: 2.0, rate: 140, total: 280 }]),
     // 10: Jeep axle seal
@@ -1595,16 +2019,16 @@ async function seed() {
       [{ name: "Rear Axle Seal Kit", partNumber: "JEEP-ASK-JL", quantity: 1, unitPrice: 65, total: 65 }, { name: "Differential Fluid 75W-140 (2.5qt)", partNumber: "JEEP-DF-75W", quantity: 1, unitPrice: 52, total: 52 }],
       [{ description: "Axle seal replacement (both sides)", hours: 2.5, rate: 110, total: 275 }, { description: "Differential fluid top-off and inspection", hours: 0.5, rate: 110, total: 55 }]),
     // 11: Ram oil change (Lars)
-    sr({ vehicleId: vehicles[15].id, title: "Ram 1500 - Oil Change & Inspection", description: "Regular 10K mile service. Check brakes and tires.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 30000, techName: "Lars Johansen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[15].id, title: "Ram 1500 - Oil Change & Inspection", description: "Regular 10K mile service. Check brakes and tires.", type: "maintenance", status: "pending", serviceDate: day(0), mileage: 30000, techName: "Lars Johansen", shopName: "Egeland Auto" },
       [{ name: "Engine Oil 5W-20 (7qt)", partNumber: "RAM-5W20-7Q", quantity: 1, unitPrice: 52, total: 52 }, { name: "Oil Filter", partNumber: "RAM-OF-HEMI", quantity: 1, unitPrice: 14, total: 14 }],
       [{ description: "Oil and filter change", hours: 0.5, rate: 110, total: 55 }, { description: "Brake and tire inspection", hours: 0.5, rate: 110, total: 55 }]),
     // 12: F-150 wheel bearing (Nina)
-    sr({ vehicleId: vehicles[2].id, title: "Ford F-150 - Wheel Bearing", description: "Front left wheel bearing noise. Replace bearing assembly.", type: "repair", status: "pending", serviceDate: day(1), mileage: 68000, techName: "Nina Berglund", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[2].id, title: "Ford F-150 - Wheel Bearing", description: "Front left wheel bearing noise. Replace bearing assembly.", type: "repair", status: "waiting-parts", serviceDate: day(1), mileage: 68000, techName: "Nina Berglund", shopName: "Egeland Auto" },
       [{ name: "Front Wheel Bearing Hub Assembly", partNumber: "FORD-WBH-F150", quantity: 1, unitPrice: 285, total: 285 }],
       [{ description: "Wheel bearing hub replacement", hours: 2.0, rate: 110, total: 220 }, { description: "Road test and verify", hours: 0.5, rate: 110, total: 55 }],
       "Confirmed bearing noise from front left. Bearing has play when checked on lift. Right side OK for now."),
     // 13: Concrete mixer (Tom)
-    sr({ vehicleId: vehicles[20].id, title: "Concrete Mixer - Drum Motor Service", description: "Hydraulic motor service for drum rotation. Sluggish under load.", type: "repair", status: "in_progress", serviceDate: day(0), mileage: 75000, techName: "Tom Bradley", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[20].id, title: "Concrete Mixer - Drum Motor Service", description: "Hydraulic motor service for drum rotation. Sluggish under load.", type: "repair", status: "in-progress", serviceDate: day(0), mileage: 75000, techName: "Tom Bradley", shopName: "Egeland Auto" },
       [{ name: "Hydraulic Motor Seal Kit", partNumber: "MIX-HMSK", quantity: 1, unitPrice: 280, total: 280 }, { name: "Hydraulic Oil ISO 46 (10gal)", partNumber: "HYD-ISO46-10G", quantity: 1, unitPrice: 180, total: 180 }, { name: "Hydraulic Hose Assembly", partNumber: "MIX-HHA-12", quantity: 2, unitPrice: 95, total: 190 }],
       [{ description: "Hydraulic motor removal and reseal", hours: 4.0, rate: 140, total: 560 }, { description: "Hose replacement and system flush", hours: 2.0, rate: 140, total: 280 }, { description: "Load test drum rotation", hours: 1.0, rate: 140, total: 140 }]),
     // 14: Tractor PTO (Kari)
@@ -1613,7 +2037,7 @@ async function seed() {
       [{ description: "PTO clutch pack inspection and adjustment", hours: 2.0, rate: 130, total: 260 }],
       "Clutch pack within adjustment range. Adjusted gap to spec. If slipping persists, full clutch pack replacement needed."),
     // 15: Dump truck tailgate (Daniel)
-    sr({ vehicleId: vehicles[21].id, title: "Dump Truck - Tailgate Cylinder", description: "Tailgate cylinder leaking. Reseal and test.", type: "repair", status: "scheduled", serviceDate: day(1), mileage: 120000, techName: "Daniel Eriksen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[21].id, title: "Dump Truck - Tailgate Cylinder", description: "Tailgate cylinder leaking. Reseal and test.", type: "repair", status: "pending", serviceDate: day(1), mileage: 120000, techName: "Daniel Eriksen", shopName: "Egeland Auto" },
       [{ name: "Tailgate Cylinder Seal Kit", partNumber: "DMP-TCSK", quantity: 1, unitPrice: 145, total: 145 }, { name: "Hydraulic Oil ISO 46 (5gal)", partNumber: "HYD-ISO46-5G", quantity: 1, unitPrice: 95, total: 95 }],
       [{ description: "Cylinder removal and reseal", hours: 3.0, rate: 130, total: 390 }, { description: "Reinstall and cycle test", hours: 1.0, rate: 130, total: 130 }]),
     // 16: Forklift mast chain (Lars)
@@ -1621,7 +2045,7 @@ async function seed() {
       [{ name: "Mast Chain (pair)", partNumber: "FRK-MC-PAIR", quantity: 1, unitPrice: 420, total: 420 }, { name: "Chain Anchor Pins", partNumber: "FRK-CAP-4", quantity: 1, unitPrice: 35, total: 35 }],
       [{ description: "Mast chain removal and replacement", hours: 2.5, rate: 120, total: 300 }, { description: "Chain tension adjustment and mast alignment", hours: 1.0, rate: 120, total: 120 }]),
     // 17: VW Golf clutch (Nina)
-    sr({ vehicleId: vehicles[14].id, title: "VW Golf GTI - Clutch Replace", description: "Clutch slipping at high RPM. Replace disc, pressure plate, throwout bearing.", type: "repair", status: "scheduled", serviceDate: day(2), mileage: 72000, techName: "Nina Berglund", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[14].id, title: "VW Golf GTI - Clutch Replace", description: "Clutch slipping at high RPM. Replace disc, pressure plate, throwout bearing.", type: "repair", status: "pending", serviceDate: day(2), mileage: 72000, techName: "Nina Berglund", shopName: "Egeland Auto" },
       [{ name: "Clutch Kit (disc, plate, bearing)", partNumber: "VW-CK-GTI", quantity: 1, unitPrice: 480, total: 480 }, { name: "Flywheel Bolts (set)", partNumber: "VW-FWB-GTI", quantity: 1, unitPrice: 32, total: 32 }],
       [{ description: "Transmission removal", hours: 3.5, rate: 120, total: 420 }, { description: "Clutch replacement and installation", hours: 2.5, rate: 120, total: 300 }, { description: "Bleed hydraulic clutch and road test", hours: 1.0, rate: 120, total: 120 }]),
     // 18: Combine header knives (Tom)
@@ -1633,12 +2057,12 @@ async function seed() {
       [{ name: "Clutch Adjustment Hardware", partNumber: "KW-CAH-T680", quantity: 1, unitPrice: 45, total: 45 }],
       [{ description: "Clutch linkage inspection and adjustment", hours: 1.5, rate: 140, total: 210 }, { description: "Road test under load", hours: 0.5, rate: 140, total: 70 }]),
     // 20: Jeep steering stabilizer (Daniel)
-    sr({ vehicleId: vehicles[11].id, title: "Jeep Wrangler - Steering Stabilizer", description: "Death wobble at highway speed. Replace stabilizer and check tie rods.", type: "repair", status: "scheduled", serviceDate: day(4), mileage: 31000, techName: "Daniel Eriksen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[11].id, title: "Jeep Wrangler - Steering Stabilizer", description: "Death wobble at highway speed. Replace stabilizer and check tie rods.", type: "repair", status: "pending", serviceDate: day(4), mileage: 31000, techName: "Daniel Eriksen", shopName: "Egeland Auto" },
       [{ name: "Steering Stabilizer", partNumber: "JEEP-SS-JL", quantity: 1, unitPrice: 125, total: 125 }, { name: "Tie Rod End (pair)", partNumber: "JEEP-TRE-JL", quantity: 1, unitPrice: 140, total: 140 }],
       [{ description: "Steering stabilizer replacement", hours: 0.5, rate: 110, total: 55 }, { description: "Tie rod end inspection and replacement", hours: 1.5, rate: 110, total: 165 }]),
     // Friday extras (20–29)
     // 21: Camry cabin filter (Jake)
-    sr({ vehicleId: vehicles[0].id, title: "Toyota Camry - Cabin Filter + Wipers", description: "Replace cabin air filter and wiper blades. Quick service.", type: "maintenance", status: "scheduled", serviceDate: day(4), mileage: 16500, techName: "Jake Wilson", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[0].id, title: "Toyota Camry - Cabin Filter + Wipers", description: "Replace cabin air filter and wiper blades. Quick service.", type: "maintenance", status: "pending", serviceDate: day(4), mileage: 16500, techName: "Jake Wilson", shopName: "Egeland Auto" },
       [{ name: "Cabin Air Filter", partNumber: "TOY-CAF-CAM", quantity: 1, unitPrice: 22, total: 22 }, { name: "Wiper Blade Set (front)", partNumber: "TOY-WB-CAM", quantity: 1, unitPrice: 38, total: 38 }],
       [{ description: "Cabin filter and wiper replacement", hours: 0.3, rate: 95, total: 28.50 }]),
     // 22: Honda brakes (Jake)
@@ -1650,11 +2074,11 @@ async function seed() {
       [{ name: "Taillight Assembly (right)", partNumber: "GM-TLA-SIL-R", quantity: 1, unitPrice: 125, total: 125 }],
       [{ description: "Taillight assembly replacement", hours: 0.5, rate: 95, total: 47.50 }]),
     // 24: Sprinter oil (Chris)
-    sr({ vehicleId: vehicles[9].id, title: "Sprinter - Oil Service + Inspection", description: "Regular oil change with full inspection. Check brake wear sensors.", type: "maintenance", status: "scheduled", serviceDate: day(4), mileage: 37000, techName: "Chris Taylor", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[9].id, title: "Sprinter - Oil Service + Inspection", description: "Regular oil change with full inspection. Check brake wear sensors.", type: "maintenance", status: "pending", serviceDate: day(4), mileage: 37000, techName: "Chris Taylor", shopName: "Egeland Auto" },
       [{ name: "Engine Oil 5W-30 (8qt)", partNumber: "MB-5W30-8Q", quantity: 1, unitPrice: 78, total: 78 }, { name: "Oil Filter", partNumber: "MB-OF-SPR", quantity: 1, unitPrice: 18, total: 18 }],
       [{ description: "Oil and filter change", hours: 0.5, rate: 110, total: 55 }, { description: "Multi-point inspection", hours: 1.0, rate: 110, total: 110 }]),
     // 25: BMW coolant (Chris)
-    sr({ vehicleId: vehicles[4].id, title: "BMW 330i - Coolant Flush", description: "Coolant due. Flush and refill with BMW-approved coolant.", type: "maintenance", status: "scheduled", serviceDate: day(4), mileage: 52000, techName: "Chris Taylor", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[4].id, title: "BMW 330i - Coolant Flush", description: "Coolant due. Flush and refill with BMW-approved coolant.", type: "maintenance", status: "pending", serviceDate: day(4), mileage: 52000, techName: "Chris Taylor", shopName: "Egeland Auto" },
       [{ name: "BMW Coolant Concentrate (2L)", partNumber: "BMW-COOL-2L", quantity: 2, unitPrice: 32, total: 64 }, { name: "Thermostat Gasket", partNumber: "BMW-TG-N20", quantity: 1, unitPrice: 12, total: 12 }],
       [{ description: "Coolant flush and refill", hours: 1.0, rate: 120, total: 120 }, { description: "Bleed cooling system", hours: 0.5, rate: 120, total: 60 }]),
     // 26: Ram alignment (Sofia)
@@ -1667,7 +2091,7 @@ async function seed() {
       [{ description: "Spark plug replacement (4 cyl)", hours: 1.0, rate: 120, total: 120 }, { description: "Diagnose misfire and replace coil", hours: 0.5, rate: 120, total: 60 }],
       "P0302 - misfire cyl 2. Coil swap test confirmed faulty coil on cyl 2. Replace coil and all 4 plugs."),
     // 28: Tesla tire rotation (Sofia)
-    sr({ vehicleId: vehicles[7].id, title: "Tesla Model Y - Tire Rotation", description: "Rotate tires front to rear. Check tread depth and tire pressure.", type: "maintenance", status: "scheduled", serviceDate: day(4), mileage: 33000, techName: "Sofia Andersen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[7].id, title: "Tesla Model Y - Tire Rotation", description: "Rotate tires front to rear. Check tread depth and tire pressure.", type: "maintenance", status: "pending", serviceDate: day(4), mileage: 33000, techName: "Sofia Andersen", shopName: "Egeland Auto" },
       [],
       [{ description: "Tire rotation front to rear", hours: 0.5, rate: 95, total: 47.50 }, { description: "Tread depth measurement and pressure set", hours: 0.2, rate: 95, total: 19 }]),
     // 29: Massey Ferguson radiator (Erik)
@@ -1684,7 +2108,7 @@ async function seed() {
       [{ description: "Battery replacement and terminal cleaning", hours: 0.5, rate: 95, total: 47.50 }, { description: "Charging system test", hours: 0.2, rate: 95, total: 19 }]),
     // === Monday extras to fill the timeline ===
     // 32: Erik - Porsche oil change (Monday)
-    sr({ vehicleId: vehicles[13].id, title: "Porsche 911 - Oil Change", description: "Synthetic oil change with OEM filter. Check brake wear sensors.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 13200, techName: "Erik Haugen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[13].id, title: "Porsche 911 - Oil Change", description: "Synthetic oil change with OEM filter. Check brake wear sensors.", type: "maintenance", status: "pending", serviceDate: day(0), mileage: 13200, techName: "Erik Haugen", shopName: "Egeland Auto" },
       [{ name: "Porsche Approved Oil 0W-40 (9qt)", partNumber: "POR-0W40-9Q", quantity: 1, unitPrice: 165, total: 165 }, { name: "Oil Filter", partNumber: "POR-OF-992", quantity: 1, unitPrice: 28, total: 28 }],
       [{ description: "Oil and filter change", hours: 1.0, rate: 145, total: 145 }, { description: "Multi-point inspection", hours: 0.5, rate: 145, total: 72.50 }]),
     // 33: Nina - BMW coolant hose (Monday)
@@ -1692,19 +2116,19 @@ async function seed() {
       [{ name: "Upper Radiator Hose", partNumber: "BMW-URH-N20", quantity: 1, unitPrice: 85, total: 85 }, { name: "Coolant G13 (1L)", partNumber: "BMW-COOL-1L", quantity: 2, unitPrice: 18, total: 36 }],
       [{ description: "Radiator hose replacement", hours: 1.5, rate: 120, total: 180 }, { description: "Coolant bleed and pressure test", hours: 0.5, rate: 120, total: 60 }]),
     // 34: Nina - Jeep brake inspection (Monday)
-    sr({ vehicleId: vehicles[11].id, title: "Jeep Wrangler - Brake Inspection", description: "Customer reports squealing. Inspect pads, rotors, and calipers.", type: "inspection", status: "scheduled", serviceDate: day(0), mileage: 29000, techName: "Nina Berglund", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[11].id, title: "Jeep Wrangler - Brake Inspection", description: "Customer reports squealing. Inspect pads, rotors, and calipers.", type: "inspection", status: "pending", serviceDate: day(0), mileage: 29000, techName: "Nina Berglund", shopName: "Egeland Auto" },
       [],
       [{ description: "Full brake system inspection", hours: 1.0, rate: 110, total: 110 }, { description: "Document findings and recommend", hours: 0.5, rate: 110, total: 55 }]),
     // 35: Kari - Fendt hydraulic filter (Monday)
-    sr({ vehicleId: vehicles[23].id, title: "Fendt 942 - Hydraulic Filter Service", description: "Scheduled hydraulic filter change. Check system pressure.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 1250, techName: "Kari Moen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[23].id, title: "Fendt 942 - Hydraulic Filter Service", description: "Scheduled hydraulic filter change. Check system pressure.", type: "maintenance", status: "pending", serviceDate: day(0), mileage: 1250, techName: "Kari Moen", shopName: "Egeland Auto" },
       [{ name: "Hydraulic Filter Set", partNumber: "FENDT-HFS-942", quantity: 1, unitPrice: 165, total: 165 }, { name: "Hydraulic Oil Sample Kit", partNumber: "OIL-SAMPLE", quantity: 1, unitPrice: 15, total: 15 }],
       [{ description: "Hydraulic filter replacement", hours: 1.5, rate: 150, total: 225 }, { description: "Pressure test and oil sample", hours: 1.0, rate: 150, total: 150 }]),
     // 36: Kari - Excavator grease service (Monday)
-    sr({ vehicleId: vehicles[31].id, title: "Komatsu PC210 - Full Grease Service", description: "Complete grease service all 24 fittings. Check pin play.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 3150, techName: "Kari Moen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[31].id, title: "Komatsu PC210 - Full Grease Service", description: "Complete grease service all 24 fittings. Check pin play.", type: "maintenance", status: "pending", serviceDate: day(0), mileage: 3150, techName: "Kari Moen", shopName: "Egeland Auto" },
       [{ name: "Grease Cartridges (box of 10)", partNumber: "GRZ-EP2-10", quantity: 1, unitPrice: 42, total: 42 }],
       [{ description: "Grease all fittings (24 points)", hours: 2.0, rate: 130, total: 260 }, { description: "Pin and bushing play inspection", hours: 0.5, rate: 130, total: 65 }]),
     // 37: Daniel - Volvo FH brake adjustment (Monday)
-    sr({ vehicleId: vehicles[18].id, title: "Volvo FH 640 - Brake Adjustment", description: "Annual brake adjustment. Check linings and drums.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 93000, techName: "Daniel Eriksen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[18].id, title: "Volvo FH 640 - Brake Adjustment", description: "Annual brake adjustment. Check linings and drums.", type: "maintenance", status: "pending", serviceDate: day(0), mileage: 93000, techName: "Daniel Eriksen", shopName: "Egeland Auto" },
       [{ name: "Brake Lining Wear Indicators (set)", partNumber: "VOL-BLWI-FH", quantity: 1, unitPrice: 45, total: 45 }],
       [{ description: "Brake adjustment all axles", hours: 2.5, rate: 140, total: 350 }, { description: "Lining measurement and documentation", hours: 1.0, rate: 140, total: 140 }]),
     // 38: Daniel - Dump truck hydraulic hose (Monday)
@@ -1712,7 +2136,7 @@ async function seed() {
       [{ name: "Hydraulic Hose Assembly 3/4\"", partNumber: "HYD-HA-34", quantity: 2, unitPrice: 120, total: 240 }, { name: "Hose Fittings (4-pack)", partNumber: "HYD-FIT-4", quantity: 1, unitPrice: 65, total: 65 }],
       [{ description: "Hose removal and replacement", hours: 2.0, rate: 130, total: 260 }, { description: "System bleed and pressure test", hours: 0.5, rate: 130, total: 65 }]),
     // 39: Lars - Kenworth air filter (Monday)
-    sr({ vehicleId: vehicles[17].id, title: "Kenworth T680 - Air Filter Service", description: "Replace primary and secondary air filters. Clean intake ducting.", type: "maintenance", status: "scheduled", serviceDate: day(0), mileage: 186500, techName: "Lars Johansen", shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[17].id, title: "Kenworth T680 - Air Filter Service", description: "Replace primary and secondary air filters. Clean intake ducting.", type: "maintenance", status: "pending", serviceDate: day(0), mileage: 186500, techName: "Lars Johansen", shopName: "Egeland Auto" },
       [{ name: "Primary Air Filter", partNumber: "KW-PAF-T680", quantity: 1, unitPrice: 85, total: 85 }, { name: "Secondary Air Filter", partNumber: "KW-SAF-T680", quantity: 1, unitPrice: 55, total: 55 }],
       [{ description: "Air filter replacement (both)", hours: 0.5, rate: 130, total: 65 }, { description: "Intake system inspection and clean", hours: 0.5, rate: 130, total: 65 }]),
     // 40: Sofia - Honda Civic tire rotation (Monday)
@@ -1749,7 +2173,7 @@ async function seed() {
     sr({ vehicleId: vehicles[6].id, title: "Tesla Model 3 - 12V Battery Replace", description: "Low voltage warning. Replace 12V auxiliary battery.", type: "repair", status: "pending", mileage: 8200, shopName: "Egeland Auto" },
       [{ name: "12V Lithium Battery (Tesla OEM)", partNumber: "TES-12V-M3", quantity: 1, unitPrice: 110, total: 110 }],
       [{ description: "12V battery replacement", hours: 0.5, rate: 110, total: 55 }]),
-    sr({ vehicleId: vehicles[23].id, title: "Fendt 942 - GPS Autosteer Calibration", description: "Autosteer drifting right by 6 inches. Recalibrate GPS receiver and steering controller.", type: "maintenance", status: "scheduled", mileage: 1200, shopName: "Egeland Auto" },
+    sr({ vehicleId: vehicles[23].id, title: "Fendt 942 - GPS Autosteer Calibration", description: "Autosteer drifting right by 6 inches. Recalibrate GPS receiver and steering controller.", type: "maintenance", status: "pending", mileage: 1200, shopName: "Egeland Auto" },
       [],
       [{ description: "GPS receiver calibration", hours: 1.5, rate: 150, total: 225 }, { description: "Steering controller calibration and field test", hours: 2.0, rate: 150, total: 300 }],
       "RTK base station signal verified. GPS receiver antenna checked - mounting bracket slightly loose causing drift. Tighten and recalibrate."),
@@ -1941,7 +2365,7 @@ async function seed() {
         title: job.title,
         description: job.desc,
         type: job.type,
-        status: past ? "completed" : "scheduled",
+        status: past ? "completed" : "pending",
         serviceDate: days(offset),
         startDateTime: at(offset, job.hour),
         endDateTime: at(offset, Math.floor(endMinutes / 60), endMinutes % 60),
@@ -1975,17 +2399,15 @@ async function seed() {
     const invoiceDate = rec.serviceDate;
     const dueDate = new Date(invoiceDate);
     dueDate.setDate(dueDate.getDate() + 14);
-    const warrantyExpires = new Date(invoiceDate);
-    warrantyExpires.setMonth(warrantyExpires.getMonth() + 12);
     await prisma.serviceRecord.update({
       where: { id: rec.id },
       data: {
         invoiceNumber: `${YEAR}-${invoiceSeq++}`,
         invoiceDate,
         invoiceDueDate: dueDate,
-        warrantyMonths: 12,
-        warrantyMileage: 12000,
-        warrantyExpiresAt: warrantyExpires,
+        // The statement as well as the numbers: the designer's warranty panel
+        // and the work order page read warrantyStatus first.
+        ...warrantyColumns(invoiceDate),
       },
     });
 
@@ -2055,9 +2477,10 @@ async function seed() {
   // creates inspections, so the feature reads as unused. These build the same
   // templates the library would install, then run vehicles through them.
   console.log("\nCreating inspection templates...");
-  // Written as the workshop's own checklists (no packageId), so the built-in
-  // preset library still installs its copies when the templates page first
-  // loads rather than treating these as an already-installed package.
+  // The library's own checklists carry its packageId, which is how
+  // syncPresetLibrary() knows they are installed and does not add a second
+  // copy; it installs only the presets not seeded here when the templates page
+  // first loads. The periodic checklist is the workshop's own (no packageId).
   const toTemplateCreate = (preset: SeedTemplate, isDefault: boolean) => ({
     name: preset.name,
     description: preset.description,
@@ -2065,6 +2488,9 @@ async function seed() {
     country: preset.country,
     standard: preset.standard,
     severityScale: preset.severityScale,
+    packageId: preset.packageId ?? null,
+    packageVersion: preset.packageVersion ?? null,
+    packageSource: preset.packageSource ?? null,
     organizationId: ORG_ID,
     sections: {
       create: preset.sections.map((section, sIdx) => ({
@@ -2085,6 +2511,7 @@ async function seed() {
             choices: item.choices ?? [],
             required: item.required ?? false,
             photoRequired: item.photoRequired ?? false,
+            allowNotApplicable: item.allowNotApplicable ?? true,
             defaultSeverity: item.defaultSeverity ?? null,
             defectSuggestions: [],
           })),
@@ -2093,24 +2520,26 @@ async function seed() {
     },
   });
 
-  const templates = [];
-  for (const [i, preset] of SEED_TEMPLATES.entries()) {
-    const template = await prisma.inspectionTemplate.create({
-      data: toTemplateCreate(preset, i === 0),
+  const createTemplate = (preset: SeedTemplate) =>
+    prisma.inspectionTemplate.create({
+      // The general checklist is the default, as a first library install makes it.
+      data: toTemplateCreate(preset, preset.packageId === PRESET_MULTIPOINT),
       include: { sections: { include: { items: { orderBy: { sortOrder: "asc" } } }, orderBy: { sortOrder: "asc" } } },
     });
-    templates.push(template);
-  }
+  const templates: Awaited<ReturnType<typeof createTemplate>>[] = [];
+  for (const preset of SEED_TEMPLATES) templates.push(await createTemplate(preset));
   console.log(`  Created ${templates.length} templates`);
 
   console.log("\nCreating inspections...");
   type TemplateWithSections = (typeof templates)[number];
-  type Defect = { at: number; condition: string; notes: string };
+  /** A graded finding, on the check with this name; `value` is its reading. */
+  type Defect = { item: string; condition: string; notes: string; value?: number };
   /**
    * Copies a template's checks onto an inspection. Everything grades `pass`
    * unless it is listed in `defects`, and an in-progress inspection leaves the
    * checks past `graded` untouched - which is what the completion blockers and
-   * the progress bar in the UI read.
+   * the progress bar in the UI read. `answers` fills text and choice checks
+   * by name (a choice is stored in textValue, as the app's select saves it).
    */
   const buildInspection = async (opts: {
     template: TemplateWithSections;
@@ -2121,16 +2550,33 @@ async function seed() {
     mileage: number;
     status: "in_progress" | "completed";
     defects?: Defect[];
+    answers?: Record<string, string>;
     graded?: number;
     category?: string;
     certificate?: string;
     notes?: string;
     nextTestMonths?: number;
+    /** Minutes from start to completion; two hours unless said. */
+    durationMinutes?: number;
+    /** An exact start, instead of dayOffset and hour. */
+    startAt?: Date;
   }) => {
     const flat = opts.template.sections.flatMap((s) => s.items.map((item) => ({ item, section: s })));
-    const defects = new Map((opts.defects ?? []).map((d) => [d.at % flat.length, d]));
+    const indexOf = (name: string) => {
+      const idx = flat.findIndex(({ item }) => item.name === name);
+      // A renamed check in the library must fail the seed loudly rather than
+      // move a defect onto some other line.
+      if (idx < 0) throw new Error(`No check named "${name}" on ${opts.template.name}`);
+      return idx;
+    };
+    const defects = new Map((opts.defects ?? []).map((d) => [indexOf(d.item), d]));
+    const answers = new Map(Object.entries(opts.answers ?? {}).map(([name, value]) => [indexOf(name), value]));
     const graded = opts.graded ?? flat.length;
-    const completedAt = opts.status === "completed" ? at(opts.dayOffset, opts.hour + 2) : null;
+    const startAt = opts.startAt ?? at(opts.dayOffset, opts.hour);
+    const completedAt =
+      opts.status === "completed"
+        ? new Date(startAt.getTime() + (opts.durationMinutes ?? 120) * 60_000)
+        : null;
     const nextTest = opts.nextTestMonths ? months(opts.nextTestMonths) : null;
 
     return prisma.inspection.create({
@@ -2138,10 +2584,10 @@ async function seed() {
         status: opts.status,
         mileage: opts.mileage,
         notes: opts.notes ?? null,
-        startDateTime: at(opts.dayOffset, opts.hour),
+        startDateTime: startAt,
         endDateTime: completedAt,
         completedAt,
-        createdAt: at(opts.dayOffset, opts.hour),
+        createdAt: startAt,
         publicToken: randomBytes(16).toString("hex"),
         vehicleId: vehicles[opts.vehicleIdx].id,
         templateId: opts.template.id,
@@ -2162,11 +2608,18 @@ async function seed() {
             const measured =
               item.inputType === "measurement" && inspected
                 ? defect
-                  ? (item.minValue ?? 0) * 0.6
+                  ? (defect.value ?? (item.minValue ?? 0) * 0.6)
                   : item.minValue != null && item.maxValue != null
                     ? Math.round(((item.minValue + item.maxValue) / 2) * 10) / 10
                     : (item.minValue ?? item.maxValue ?? 0)
                 : null;
+            const answer = answers.get(idx);
+            const textValue =
+              !inspected ? null
+              : answer !== undefined ? answer
+              : item.inputType === "text" ? "No remarks"
+              : item.inputType === "choice" ? (item.choices[0] ?? null)
+              : null;
             return {
               name: item.name,
               section: section.name,
@@ -2183,37 +2636,51 @@ async function seed() {
               choices: item.choices,
               required: item.required,
               photoRequired: item.photoRequired,
+              allowNotApplicable: item.allowNotApplicable,
               defaultSeverity: item.defaultSeverity,
               measuredValue: measured,
-              textValue: item.inputType === "text" && inspected ? "No remarks" : null,
+              textValue,
             };
           }),
         },
       },
+      include: { items: { orderBy: { sortOrder: "asc" } } },
     });
   };
 
-  const multipoint = templates[0];
+  const templateByPackage = (packageId: string) => {
+    const found = templates.find((t) => t.packageId === packageId);
+    if (!found) throw new Error(`Seed template ${packageId} missing`);
+    return found;
+  };
+  const multipoint = templateByPackage(PRESET_MULTIPOINT);
+  const prePurchase = templateByPackage(PRESET_PRE_PURCHASE);
+  const vehicleIntake = templateByPackage(PRESET_VEHICLE_INTAKE);
   const roadworthiness = templates.find((t) => t.standard === "eu-2014-45") ?? multipoint;
-  const prePurchase = templates[2] ?? multipoint;
 
   const inspections = [
     // Completed, clean
     await buildInspection({ template: multipoint, vehicleIdx: 0, techIdx: 0, dayOffset: wd(-2, 1), hour: 9, mileage: 17900, status: "completed", category: "M1", notes: "Everything within spec. Customer wants a call before the next service." }),
     await buildInspection({ template: multipoint, vehicleIdx: 6, techIdx: 3, dayOffset: wd(-1, 2), hour: 11, mileage: 8100, status: "completed", category: "M1" }),
     // Completed with defects
-    await buildInspection({ template: multipoint, vehicleIdx: 5, techIdx: 0, dayOffset: wd(-1, 0), hour: 8, mileage: 67500, status: "completed", category: "M1", notes: "Two items need booking in. Quote requested by the customer.", defects: [{ at: 3, condition: "fail", notes: "CV boot torn, grease thrown onto the suspension arm." }, { at: 7, condition: "attention", notes: "Front pads at 3mm - plan replacement within 5,000 miles." }] }),
-    await buildInspection({ template: multipoint, vehicleIdx: 8, techIdx: 2, dayOffset: wd(-1, 3), hour: 13, mileage: 98200, status: "completed", category: "N2", defects: [{ at: 5, condition: "attention", notes: "Battery load tests at 78% of rated CCA." }] }),
+    await buildInspection({ template: multipoint, vehicleIdx: 5, techIdx: 0, dayOffset: wd(-1, 0), hour: 8, mileage: 67500, status: "completed", category: "M1", notes: "Two items need booking in. Quote requested by the customer.", defects: [{ item: "CV joints and boots", condition: "fail", notes: "CV boot torn, grease thrown onto the suspension arm." }, { item: "Front pads", condition: "attention", value: 3, notes: "Front pads at 3mm - plan replacement within 5,000 miles." }] }),
+    await buildInspection({ template: multipoint, vehicleIdx: 8, techIdx: 2, dayOffset: wd(-1, 3), hour: 13, mileage: 98200, status: "completed", category: "N2", defects: [{ item: "Battery voltage", condition: "attention", value: 12.1, notes: "Rests at 12.1 V and load tests at 78% of rated CCA." }] }),
     // Roadworthiness tests with certificates
-    await buildInspection({ template: roadworthiness, vehicleIdx: 18, techIdx: 2, dayOffset: wd(-2, 3), hour: 7, mileage: 92400, status: "completed", category: "N3", certificate: `PTI-${YEAR}-0418`, nextTestMonths: 12, notes: "Passed after the marker lights and wipers were replaced during the test.", defects: [{ at: 11, condition: "attention", notes: "Nearside marker lens cracked - replaced during the test." }] }),
+    await buildInspection({ template: roadworthiness, vehicleIdx: 18, techIdx: 2, dayOffset: wd(-2, 3), hour: 7, mileage: 92400, status: "completed", category: "N3", certificate: `PTI-${YEAR}-0418`, nextTestMonths: 12, notes: "Passed after the marker lights and wipers were replaced during the test.", defects: [{ item: "Position, side marker and daytime running lamps", condition: "attention", notes: "Nearside marker lens cracked - replaced during the test." }] }),
     await buildInspection({ template: roadworthiness, vehicleIdx: 4, techIdx: 1, dayOffset: wd(-1, 4), hour: 9, mileage: 56100, status: "completed", category: "M1", certificate: `PTI-${YEAR}-0431`, nextTestMonths: 24 }),
-    await buildInspection({ template: roadworthiness, vehicleIdx: 9, techIdx: 1, dayOffset: wd(0, 1), hour: 8, mileage: 35700, status: "completed", category: "N1", certificate: `PTI-${YEAR}-0447`, nextTestMonths: 12, notes: "Retest after the turbo replacement. Passed.", defects: [{ at: 2, condition: "attention", notes: "Slight play in the offside track rod end - monitor." }] }),
+    await buildInspection({ template: roadworthiness, vehicleIdx: 9, techIdx: 1, dayOffset: wd(0, 1), hour: 8, mileage: 35700, status: "completed", category: "N1", certificate: `PTI-${YEAR}-0447`, nextTestMonths: 12, notes: "Retest after the turbo replacement. Passed.", defects: [{ item: "Mechanical condition of the steering", condition: "attention", notes: "Slight play in the offside track rod end - monitor." }] }),
     // Failed test - dangerous defect, vehicle held
-    await buildInspection({ template: roadworthiness, vehicleIdx: 19, techIdx: 2, dayOffset: wd(0, 0), hour: 10, mileage: 156200, status: "completed", category: "N3", certificate: `PTI-${YEAR}-0452`, notes: "Fails on the dump body cracking. Vehicle not to be loaded until welded.", defects: [{ at: 4, condition: "dangerous", notes: "Structural cracks in the dump body floor near the rear hinge." }, { at: 9, condition: "fail", notes: "Offside rear brake lining below the minimum thickness." }] }),
+    await buildInspection({ template: roadworthiness, vehicleIdx: 19, techIdx: 2, dayOffset: wd(0, 0), hour: 10, mileage: 156200, status: "completed", category: "N3", certificate: `PTI-${YEAR}-0452`, notes: "Fails on the dump body cracking. Vehicle not to be loaded until welded.", defects: [{ item: "Cab and bodywork condition", condition: "dangerous", notes: "Structural cracks in the dump body floor near the rear hinge." }, { item: "Brake linings and pads", condition: "fail", value: 2.1, notes: "Offside rear brake lining below the minimum thickness." }] }),
     // In progress on the board right now
     await buildInspection({ template: multipoint, vehicleIdx: 13, techIdx: 10, dayOffset: 0, hour: 9, mileage: 13000, status: "in_progress", graded: 6, category: "M1", notes: "Pre-track inspection for the customer's HPDE weekend." }),
     await buildInspection({ template: roadworthiness, vehicleIdx: 2, techIdx: 6, dayOffset: 0, hour: 13, mileage: 55300, status: "in_progress", graded: 14, category: "N1" }),
     await buildInspection({ template: prePurchase, vehicleIdx: 40, techIdx: 0, dayOffset: wd(0, 2), hour: 10, mileage: 34900, status: "in_progress", graded: 4, category: "M1", notes: "Buyer is paying for the inspection. Report goes to them, not the seller." }),
+    // Vehicle check-in (the library's walk-round at drop-off), with the body
+    // marked on the condition map further down. [11] was done when the
+    // Sprinter came in for its turbo and is linked to that job; [12] is at the
+    // desk right now.
+    await buildInspection({ template: vehicleIntake, vehicleIdx: 9, techIdx: 1, dayOffset: -18, hour: 7, startAt: at(-18, 7, 40), durationMinutes: 15, mileage: 35400, status: "completed", category: "N1", notes: "Walked round with Kevin at drop-off. He signed the sheet.", answers: { "Fuel level": "1/4", "Keys handed over": "One key with fob", "Warning lights on arrival": "Check engine (P0299) and glow plug lamp", "Personal belongings left in the vehicle": "Catering trays in the load area, customer aware" }, defects: [{ item: "Body condition", condition: "attention", notes: "Three existing marks recorded with the customer, see the drawing." }, { item: "Glass condition", condition: "attention", notes: "Crack in the windshield from the lower edge, outside the wiper sweep." }] }),
+    await buildInspection({ template: vehicleIntake, vehicleIdx: 11, techIdx: 6, dayOffset: 0, hour: 0, startAt: minutesAgo(35), mileage: 28900, status: "in_progress", graded: 5, category: "M1", answers: { "Fuel level": "3/4", "Keys handed over": "Two keys", "Warning lights on arrival": "None", "Personal belongings left in the vehicle": "Child seat, rear left" }, defects: [{ item: "Body condition", condition: "attention", notes: "Two new marks, one known from the last visit." }] }),
   ];
   console.log(`  Created ${inspections.length} inspections`);
 
@@ -2238,6 +2705,309 @@ async function seed() {
       createdAt: hoursAgo(52),
     },
   });
+
+  // The quote that request was answered with, raised from the failed test so
+  // the inspection and the quote link to each other.
+  const weldParts = [
+    { name: "Steel plate 3/8\" AR400, 4x8 ft", partNumber: "STL-AR400-38", quantity: 1, unitPrice: 690, total: 690 },
+    { name: "Welding wire and gas", partNumber: "WLD-CONS", quantity: 1, unitPrice: 85, total: 85 },
+    { name: "Rear brake lining kit (axle set)", partNumber: "MACK-BL-R", quantity: 1, unitPrice: 245, total: 245 },
+  ];
+  const weldLabor = [
+    { description: "Cut out cracked floor section, weld in new plate and reinforce hinge area", hours: 9, rate: 140, total: 1260 },
+    { description: "Rear brake reline, adjust and test", hours: 2.5, rate: 140, total: 350 },
+  ];
+  const weldSubtotal = [...weldParts, ...weldLabor].reduce((sum, line) => sum + line.total, 0);
+  const inspectionQuote = await prisma.quote.create({
+    data: {
+      quoteNumber: `Q-${YEAR}-016`,
+      title: "Mack Granite - Dump Body Floor Weld Repair",
+      status: "sent",
+      validUntil: days(21),
+      notes: "Raised from the failed periodic inspection. The truck must not be loaded until the floor is welded.",
+      subtotal: weldSubtotal,
+      taxRate: 8,
+      taxAmount: Math.round(weldSubtotal * 0.08 * 100) / 100,
+      totalAmount: Math.round(weldSubtotal * 1.08 * 100) / 100,
+      userId: USER_ID,
+      organizationId: ORG_ID,
+      customerId: vehicles[19].customerId,
+      vehicleId: vehicles[19].id,
+      inspectionId: inspections[7].id,
+      createdAt: hoursAgo(49),
+      ...warrantyColumns(null),
+      partItems: { create: weldParts },
+      laborItems: { create: weldLabor },
+    },
+  });
+  quotes.push(inspectionQuote);
+
+  // The Sprinter's check-in is its turbo job's drop-off, done on the
+  // inspection form. The job links to it, and prints its condition map.
+  const sprinterCheckIn = inspections[11];
+  const rubiconCheckIn = inspections[12];
+  await prisma.serviceRecord.update({
+    where: { id: serviceRecords[12].id },
+    data: { inspectionId: sprinterCheckIn.id, conditionMapOnInvoice: true },
+  });
+
+  // -- Condition map --
+  // Marks on the five-view drawing (src/features/condition-map). A mark is
+  // drawn on a job's drop-off (serviceRecordId), on an inspection's map check
+  // (inspectionId + inspectionItemId), or it is an older one still open from
+  // an earlier visit, which the map shows in grey for the technician to
+  // confirm or clear. Positions are fractions of the view's box and each one
+  // sits inside the named panel of that vehicle's drawing.
+  console.log("\nCreating condition map marks...");
+  const mapItemOf = (inspection: (typeof inspections)[number]) => {
+    const item = inspection.items.find((i) => i.inputType === "condition_map");
+    if (!item) throw new Error("Inspection has no condition map check");
+    return item;
+  };
+  type SeedMark = {
+    vehicleIdx: number;
+    view: "top" | "left" | "right" | "front" | "rear";
+    panel: string;
+    x: number;
+    y: number;
+    kind: "dent" | "scratch" | "chip" | "crack" | "rust" | "paint" | "previous_repair" | "missing";
+    severity?: "minor" | "major";
+    note: string;
+    recordedAt: Date;
+    serviceRecordId?: string;
+    inspection?: (typeof inspections)[number];
+    resolvedAt?: Date;
+  };
+  const marks: SeedMark[] = [
+    // Drop-off, Audi A4 timing belt job
+    { vehicleIdx: 10, view: "right", panel: "right_rear_door", x: 0.61, y: 0.55, kind: "scratch", note: "Light scratch across the rear door, below the handle.", recordedAt: at(MONDAY_OFFSET, 7, 20), serviceRecordId: boardServiceRecords[1].id },
+    { vehicleIdx: 10, view: "front", panel: "front_bumper", x: 0.45, y: 0.62, kind: "chip", note: "Stone chips on the front bumper.", recordedAt: at(MONDAY_OFFSET, 7, 20), serviceRecordId: boardServiceRecords[1].id },
+    // Drop-off, Honda Civic A/C job
+    { vehicleIdx: 5, view: "left", panel: "left_front_fender", x: 0.25, y: 0.56, kind: "dent", severity: "major", note: "Fist-sized dent above the wheel arch. Customer says it was there when she bought it.", recordedAt: at(MONDAY_OFFSET, 7, 50), serviceRecordId: boardServiceRecords[0].id },
+    // Drop-off, F-150 XLT wheel bearing job
+    { vehicleIdx: 2, view: "left", panel: "bed_side_left", x: 0.8, y: 0.54, kind: "scratch", severity: "major", note: "Deep scratches along the bed side from a load of lumber.", recordedAt: at(MONDAY_OFFSET + 1, 8, 40), serviceRecordId: boardServiceRecords[12].id },
+    { vehicleIdx: 2, view: "rear", panel: "tailgate", x: 0.5, y: 0.48, kind: "dent", note: "Small dent in the tailgate, center.", recordedAt: at(MONDAY_OFFSET + 1, 8, 40), serviceRecordId: boardServiceRecords[12].id },
+    // Sprinter check-in, drawn on the inspection's map check
+    { vehicleIdx: 9, view: "left", panel: "left_sliding_door", x: 0.57, y: 0.56, kind: "scratch", note: "Scrape along the lower edge of the sliding door.", recordedAt: at(-18, 7, 45), inspection: sprinterCheckIn },
+    { vehicleIdx: 9, view: "rear", panel: "rear_bumper", x: 0.5, y: 0.67, kind: "dent", severity: "major", note: "Step bumper pushed in. Reverse sensors still work.", recordedAt: at(-18, 7, 46), inspection: sprinterCheckIn },
+    { vehicleIdx: 9, view: "front", panel: "windshield", x: 0.56, y: 0.31, kind: "crack", severity: "major", note: "Crack running up from the lower edge, about 8 inches.", recordedAt: at(-18, 7, 48), inspection: sprinterCheckIn },
+    // Jeep Rubicon check-in in progress at the desk
+    { vehicleIdx: 11, view: "front", panel: "windshield", x: 0.56, y: 0.29, kind: "chip", note: "Stone chip, passenger side, outside the wiper sweep.", recordedAt: minutesAgo(30), inspection: rubiconCheckIn },
+    { vehicleIdx: 11, view: "left", panel: "left_front_door", x: 0.44, y: 0.52, kind: "scratch", severity: "major", note: "Key scratch along the belt line of the driver's door.", recordedAt: minutesAgo(28), inspection: rubiconCheckIn },
+    // Still open from earlier visits: grey on the next job's map
+    { vehicleIdx: 11, view: "rear", panel: "rear_bumper", x: 0.5, y: 0.63, kind: "rust", note: "Surface rust on the rear bumper step. Customer will treat it himself.", recordedAt: serviceRecords[11].serviceDate, serviceRecordId: serviceRecords[11].id },
+    { vehicleIdx: 0, view: "right", panel: "right_rear_door", x: 0.6, y: 0.55, kind: "dent", note: "Door ding, customer aware.", recordedAt: serviceRecords[0].serviceDate, serviceRecordId: serviceRecords[0].id },
+    { vehicleIdx: 1, view: "rear", panel: "tailgate", x: 0.47, y: 0.47, kind: "scratch", note: "Scratches around the tailgate handle.", recordedAt: serviceRecords[18].serviceDate, serviceRecordId: serviceRecords[18].id },
+    // Resolved: the body shop refinished it after the visit it was found on
+    { vehicleIdx: 4, view: "front", panel: "front_bumper", x: 0.52, y: 0.62, kind: "paint", note: "Scuffed paint on the lower valance.", recordedAt: serviceRecords[1].serviceDate, serviceRecordId: serviceRecords[1].id, resolvedAt: new Date(Math.min(serviceRecords[1].serviceDate.getTime() + 21 * 86_400_000, NOW.getTime())) },
+  ];
+  await Promise.all(
+    marks.map((m) =>
+      prisma.conditionMark.create({
+        data: {
+          organizationId: ORG_ID,
+          vehicleId: vehicles[m.vehicleIdx].id,
+          serviceRecordId: m.serviceRecordId ?? null,
+          inspectionId: m.inspection?.id ?? null,
+          inspectionItemId: m.inspection ? mapItemOf(m.inspection).id : null,
+          bodyType: bodyTypeOf(m.vehicleIdx),
+          view: m.view,
+          panel: m.panel,
+          x: m.x,
+          y: m.y,
+          kind: m.kind,
+          severity: m.severity ?? "minor",
+          note: m.note,
+          recordedAt: m.recordedAt,
+          recordedById: USER_ID,
+          createdAt: m.recordedAt,
+          resolvedAt: m.resolvedAt ?? null,
+          resolvedById: m.resolvedAt ? USER_ID : null,
+        },
+      }),
+    ),
+  );
+  console.log(`  Created ${marks.length} condition marks (${marks.filter((m) => m.resolvedAt).length} resolved)`);
+
+  // Drop-off photos and a check-in photo, from the vehicle's own cached
+  // stock photo. Skipped for any vehicle whose photo never downloaded.
+  const dropoffPhotos: { recordId: string; vehicleFile: string; name: string; slot: string; at: Date }[] = [
+    { recordId: boardServiceRecords[1].id, vehicleFile: "audi-a4.jpg", name: "seed-dropoff-audi-a4-front.jpg", slot: "front", at: at(MONDAY_OFFSET, 7, 18) },
+    { recordId: boardServiceRecords[0].id, vehicleFile: "honda-civic.jpg", name: "seed-dropoff-honda-civic-front.jpg", slot: "front", at: at(MONDAY_OFFSET, 7, 48) },
+    { recordId: boardServiceRecords[12].id, vehicleFile: "ford-f150-grey.jpg", name: "seed-dropoff-f150-xlt-front.jpg", slot: "front", at: at(MONDAY_OFFSET + 1, 8, 38) },
+  ];
+  let photoCount = 0;
+  for (const photo of dropoffPhotos) {
+    const file = seedPhoto(photo.vehicleFile, "services", photo.name);
+    if (!file) continue;
+    await prisma.serviceAttachment.create({
+      data: { ...file, category: "dropoff", description: photo.slot, includeInInvoice: false, serviceRecordId: photo.recordId, createdAt: photo.at },
+    });
+    photoCount++;
+  }
+  const checkInPhoto = seedPhoto("mercedes-sprinter.jpg", "inspections", "seed-checkin-sprinter-front.jpg");
+  if (checkInPhoto) {
+    await prisma.inspectionAttachment.create({
+      data: { ...checkInPhoto, category: "image", description: "Front on arrival", includeInReport: true, inspectionId: sprinterCheckIn.id, createdAt: at(-18, 7, 42) },
+    });
+    photoCount++;
+  }
+  console.log(`  Attached ${photoCount} drop-off and check-in photo(s)`);
+
+  // -- Work bays --
+  // The bays the board can plan by, replacing the old "Workshop bay" custom
+  // field, which is no longer seeded. A few of this week's jobs are in one.
+  console.log("\nCreating work bays...");
+  const bays = await Promise.all(
+    [
+      { name: "Bay 1", color: "#3b82f6" },
+      { name: "Bay 2", color: "#22c55e" },
+      { name: "Bay 3", color: "#f59e0b" },
+      { name: "Heavy bay 1", color: "#ef4444" },
+      { name: "Heavy bay 2", color: "#8b5cf6" },
+      { name: "Alignment rack", color: "#06b6d4" },
+    ].map((bay, sortOrder) => prisma.workBay.create({ data: { ...bay, sortOrder, organizationId: ORG_ID } })),
+  );
+  const bayAssignments: [string, number][] = [
+    [boardServiceRecords[1].id, 0], // Audi timing belt, Monday
+    [boardServiceRecords[0].id, 1], // Honda A/C, Monday
+    [boardServiceRecords[6].id, 3], // CAT 745 rebuild, Monday to Wednesday
+    [boardServiceRecords[13].id, 4], // Concrete mixer, Monday
+    [boardServiceRecords[3].id, 0], // Silverado 60K, Tuesday
+    [boardServiceRecords[2].id, 1], // Tesla Model Y, Tuesday
+    [serviceRecords[12].id, 2], // Sprinter turbo, Tuesday
+    [boardServiceRecords[26].id, 5], // Ram alignment, Friday
+  ];
+  await Promise.all(bayAssignments.map(([id, bay]) => prisma.serviceRecord.update({ where: { id }, data: { workBayId: bays[bay].id } })));
+  console.log(`  Created ${bays.length} bays, ${bayAssignments.length} jobs placed`);
+
+  // -- Work order statuses --
+  // The workshop's own labels under the three fixed stages
+  // (src/features/work-order-statuses). A label must sit under the stage of
+  // the job's own status, so each is set on a job already at that stage.
+  console.log("\nCreating work order statuses...");
+  const statusDefs = [
+    { name: "Awaiting approval", stage: "pending", color: "amber" },
+    { name: "Booked in", stage: "pending", color: "blue" },
+    { name: "Road test", stage: "in-progress", color: "sky" },
+    { name: "Quality check", stage: "in-progress", color: "violet" },
+    { name: "Ready for pickup", stage: "completed", color: "emerald", notifyCustomer: true, messageTemplate: "Hi {customer_name}, your {vehicle} is ready for pickup. {company_name}" },
+  ];
+  const statusRows = await Promise.all(
+    statusDefs.map((s, i) =>
+      prisma.workOrderStatus.create({ data: { ...s, sortOrder: i, organizationId: ORG_ID } }),
+    ),
+  );
+  const statusByName = (name: string) => statusRows.find((s) => s.name === name)!.id;
+  const customStatuses: [string, string, Date][] = [
+    // Metro City will not sign off the exhaust job without a purchase order.
+    [boardServiceRecords[7].id, "Awaiting approval", hoursAgo(26)],
+    [boardServiceRecords[3].id, "Booked in", hoursAgo(50)],
+    [serviceRecords[12].id, "Road test", hoursAgo(3)],
+    [serviceRecords[10].id, "Quality check", hoursAgo(5)],
+    [spreadRecords[14].id, "Ready for pickup", spreadRecords[14].endDateTime ?? hoursAgo(20)],
+  ];
+  await Promise.all(
+    customStatuses.map(([id, name, since]) =>
+      prisma.serviceRecord.update({ where: { id }, data: { customStatusId: statusByName(name), customStatusSince: since } }),
+    ),
+  );
+  console.log(`  Created ${statusRows.length} statuses, ${customStatuses.length} in use`);
+
+  // -- Concerns --
+  // What the customer reported, what was found and what was done about it,
+  // on the jobs being worked this week.
+  console.log("\nCreating customer concerns...");
+  const concerns: { recordId: string; description: string; cause?: string; correction?: string; confirmation?: string; confirmedAt?: Date }[] = [
+    { recordId: boardServiceRecords[0].id, description: "A/C blows warm air, at idle and on the highway.", cause: "Compressor clutch coil open circuit, so the clutch never engages.", correction: "Replace the compressor, evacuate and recharge with 1.4 lb of R-1234yf." },
+    { recordId: boardServiceRecords[1].id, description: "Timing belt and water pump due at 60,000 miles.", cause: "Scheduled maintenance interval.", correction: "Timing belt kit with water pump and thermostat, coolant flushed and bled." },
+    { recordId: boardServiceRecords[2].id, description: "Clunk from the front left over bumps and driveway ramps." },
+    { recordId: boardServiceRecords[12].id, description: "Humming from the front that rises with speed.", cause: "Front left hub bearing has play on the lift.", correction: "Replace the front left hub bearing assembly (on order)." },
+    { recordId: serviceRecords[12].id, description: "Black smoke under boost and loss of power on the highway.", cause: "Turbo shaft play well past spec; the compressor wheel had contacted the housing.", correction: "Replaced the turbocharger and oil feed line, changed oil and filter.", confirmation: "Road tested 15 miles under load. No smoke, boost within spec.", confirmedAt: hoursAgo(3) },
+    { recordId: serviceRecords[12].id, description: "Check engine light on.", cause: "P0299 underboost, set by the failed turbo.", correction: "Codes cleared after the repair; none returned on the road test.", confirmation: "Scan tool shows no stored or pending codes.", confirmedAt: hoursAgo(3) },
+    { recordId: unassignedRecords[11].id, description: "Sleeper A/C blows warm.", cause: "Compressor seized and sent debris through the condenser.", correction: "Replace compressor, condenser and receiver-drier, flush the lines." },
+  ];
+  const concernOrder = new Map<string, number>();
+  await Promise.all(
+    concerns.map((c) => {
+      const sortOrder = concernOrder.get(c.recordId) ?? 0;
+      concernOrder.set(c.recordId, sortOrder + 1);
+      return prisma.serviceConcern.create({
+        data: {
+          serviceRecordId: c.recordId,
+          description: c.description,
+          cause: c.cause ?? null,
+          correction: c.correction ?? null,
+          confirmation: c.confirmation ?? null,
+          confirmedAt: c.confirmedAt ?? null,
+          confirmedById: c.confirmedAt ? USER_ID : null,
+          sortOrder,
+        },
+      });
+    }),
+  );
+  console.log(`  Created ${concerns.length} concerns`);
+
+  // -- Job clock --
+  // Time the technicians clocked on jobs over the last few days, which the
+  // work order's clock panel and the manager's timesheets read. The demo
+  // owner has a clock running now (the pill in the header), on the Porsche
+  // inspection, which is therefore under way.
+  console.log("\nCreating time entries...");
+  await prisma.serviceRecord.update({ where: { id: unassignedRecords[2].id }, data: { status: "in-progress" satisfies JobStatus } });
+  type Clock = { recordId: string; tech: number; start: Date; end: Date | null; note?: string; source?: "app" | "web" | "manual" };
+  const clocks: Clock[] = [
+    { recordId: serviceRecords[12].id, tech: 1, start: at(-3, 8, 0), end: at(-3, 11, 40), note: "Turbo and manifold heat shield off" },
+    { recordId: serviceRecords[12].id, tech: 1, start: at(-2, 7, 35), end: at(-2, 12, 10), note: "New turbo and oil feed line fitted" },
+    { recordId: serviceRecords[12].id, tech: 1, start: at(-1, 13, 0), end: at(-1, 14, 5), note: "Road test and boost check", source: "manual" },
+    { recordId: boardServiceRecords[6].id, tech: 2, start: at(-2, 7, 0), end: at(-2, 15, 30), note: "Transmission out, teardown" },
+    { recordId: boardServiceRecords[6].id, tech: 2, start: at(-1, 7, 5), end: at(-1, 15, 45), note: "Clutch packs and seals" },
+    { recordId: serviceRecords[10].id, tech: 8, start: at(-1, 8, 0), end: at(-1, 10, 15) },
+    { recordId: unassignedRecords[11].id, tech: 10, start: at(-3, 9, 0), end: at(-3, 10, 30), note: "Diagnosis, pressures and compressor check", source: "web" },
+    { recordId: boardServiceRecords[1].id, tech: 1, start: minutesAgo(50), end: null },
+    { recordId: unassignedRecords[2].id, tech: 10, start: minutesAgo(25), end: null, source: "web" },
+    // Last week's finished jobs, clocked as they were planned
+    ...spreadRecords.slice(10, 15).flatMap((rec, i): Clock[] =>
+      rec.startDateTime && rec.endDateTime && rec.technicianId
+        ? [{ recordId: rec.id, tech: technicians.findIndex((t) => t.id === rec.technicianId), start: rec.startDateTime, end: new Date(rec.endDateTime.getTime() + ((i % 3) - 1) * 10 * 60_000) }]
+        : [],
+    ),
+  ];
+  await Promise.all(
+    clocks.map((c) =>
+      prisma.timeEntry.create({
+        data: {
+          organizationId: ORG_ID,
+          serviceRecordId: c.recordId,
+          technicianId: technicians[c.tech].id,
+          startedAt: c.start,
+          endedAt: c.end,
+          durationMinutes: c.end ? Math.round((c.end.getTime() - c.start.getTime()) / 60_000) : null,
+          note: c.note ?? null,
+          source: c.source ?? "app",
+          editedAt: c.source === "manual" ? c.end : null,
+          editedByUserId: c.source === "manual" ? USER_ID : null,
+          createdAt: c.start,
+        },
+      }),
+    ),
+  );
+  console.log(`  Created ${clocks.length} time entries (${clocks.filter((c) => !c.end).length} running)`);
+
+  // -- Signature --
+  // The demo owner's saved signature (Settings -> Profile), which invoices,
+  // quotes and work orders print on the signature line for whoever opened
+  // the job, and open inspections preview for their technician.
+  const ownerMember = await prisma.organizationMember.findUniqueOrThrow({
+    where: { userId_organizationId: { userId: USER_ID, organizationId: ORG_ID } },
+    select: { id: true },
+  });
+  await prisma.memberSignature.create({
+    data: { memberId: ownerMember.id, mimeType: "image/png", data: new Uint8Array(signaturePng()) },
+  });
+  // Every seeded job was opened by the demo owner, so every sheet has a signer.
+  const opened = await prisma.serviceRecord.updateMany({ where: { organizationId: ORG_ID }, data: { createdById: USER_ID } });
+  console.log(`\nSaved the demo owner's signature, signer on ${opened.count} work orders`);
 
   // -- Scheduled messages --
   // The messages page and the calendar's message events both read these. The
@@ -2520,16 +3290,16 @@ async function seed() {
   console.log("\nCreating custom fields...");
   const customFields = await Promise.all([
     prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "purchase_order", label: "Purchase order number", fieldType: "text", entityType: "service_record", sortOrder: 0, required: false } }),
-    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "bay", label: "Workshop bay", fieldType: "select", options: JSON.stringify(["Bay 1", "Bay 2", "Bay 3", "Heavy bay", "Outside"]), entityType: "service_record", sortOrder: 1, required: false } }),
-    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "courtesy_vehicle", label: "Courtesy vehicle issued", fieldType: "checkbox", entityType: "service_record", sortOrder: 2, required: false } }),
+    // No "Workshop bay" field: bays are a feature of their own now (Work
+    // bays, seeded above), and a select field beside it would say the same
+    // thing in a second place.
+    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "courtesy_vehicle", label: "Courtesy vehicle issued", fieldType: "checkbox", entityType: "service_record", sortOrder: 1, required: false } }),
     prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "site_contact", label: "Site contact", fieldType: "text", entityType: "quote", sortOrder: 0, required: false } }),
   ]);
   await Promise.all([
     prisma.customFieldValue.create({ data: { fieldId: customFields[0].id, entityId: serviceRecords[5].id, entityType: "service_record", value: "PO-44821" } }),
-    prisma.customFieldValue.create({ data: { fieldId: customFields[1].id, entityId: serviceRecords[5].id, entityType: "service_record", value: "Heavy bay" } }),
-    prisma.customFieldValue.create({ data: { fieldId: customFields[1].id, entityId: serviceRecords[0].id, entityType: "service_record", value: "Bay 2" } }),
-    prisma.customFieldValue.create({ data: { fieldId: customFields[2].id, entityId: serviceRecords[12].id, entityType: "service_record", value: "true" } }),
-    prisma.customFieldValue.create({ data: { fieldId: customFields[3].id, entityId: quotes[2].id, entityType: "quote", value: "Dave Ruiz, site foreman - (555) 100-2044" } }),
+    prisma.customFieldValue.create({ data: { fieldId: customFields[1].id, entityId: serviceRecords[12].id, entityType: "service_record", value: "true" } }),
+    prisma.customFieldValue.create({ data: { fieldId: customFields[2].id, entityId: quotes[2].id, entityType: "quote", value: "Dave Ruiz, site foreman - (555) 100-2044" } }),
   ]);
   console.log(`  Created ${customFields.length} custom fields`);
 
@@ -3005,6 +3775,11 @@ async function seed() {
   console.log(`  Reminders:          ${coreReminders.length + additionalReminders.length}`);
   console.log(`  Findings:           ${findings.length}`);
   console.log(`  Inspections:        ${inspections.length} (${templates.length} templates)`);
+  console.log(`  Condition Marks:    ${marks.length} (${photoCount} photos)`);
+  console.log(`  Work Bays:          ${bays.length}`);
+  console.log(`  Custom Statuses:    ${statusRows.length}`);
+  console.log(`  Concerns:           ${concerns.length}`);
+  console.log(`  Time Entries:       ${clocks.length}`);
   console.log(`  SMS Messages:       22`);
   console.log(`  WhatsApp Messages:  ${whatsapp.length}`);
   console.log(`  Telegram Messages:  ${telegram.length}`);

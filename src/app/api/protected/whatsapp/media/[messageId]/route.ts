@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
 import { getWhatsappConfig } from '@/lib/whatsapp'
 
 /**
@@ -17,6 +18,12 @@ export async function GET(
   const ctx = await getAuthContext()
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // The fetch goes to the vendor on the workshop's credentials, and the demo
+  // sends nothing to a vendor. Its seeded conversations carry no real media.
+  if (isDemoMode) {
+    return NextResponse.json({ error: 'Media is not available on the demo' }, { status: 403 })
   }
 
   const { messageId } = await params

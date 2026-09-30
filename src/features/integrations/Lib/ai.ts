@@ -13,6 +13,7 @@
  */
 
 import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
 import { isUniqueViolation, writeAdoptionMarker } from './adoption-marker'
 import { AI_KEYS } from '@/features/ai/Schema/aiSettingsSchema'
 import { openCredentials, sealCredentials } from './vault'
@@ -212,6 +213,9 @@ async function unsealedFallback(
  * cue to raise its own "not configured" message.
  */
 export async function aiSetup(organizationId: string): Promise<AiSetup | null> {
+  // Never configured on the demo, whatever a reset or a visitor left in the
+  // table: see assertAiAllowed.
+  if (isDemoMode) return null
   const rows = await db.integrationConnection.findMany({
     where: {
       organizationId,
@@ -256,6 +260,8 @@ export async function aiSetup(organizationId: string): Promise<AiSetup | null> {
  * use, or when the catalog is opened.
  */
 export async function isAiConfigured(organizationId: string): Promise<boolean> {
+  // So the pages offer no AI button that could only fail.
+  if (isDemoMode) return false
   const rows = await db.integrationConnection.findMany({
     where: {
       organizationId,
@@ -276,6 +282,7 @@ export async function isAiConfigured(organizationId: string): Promise<boolean> {
  * `isAiConfigured` must not create a connection while rendering.
  */
 export async function configuredAiProvider(organizationId: string): Promise<AiConnectorId | null> {
+  if (isDemoMode) return null
   const rows = await db.integrationConnection.findMany({
     where: {
       organizationId,

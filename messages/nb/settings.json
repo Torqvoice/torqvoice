@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Innloggede enheter",
     "devicesDescription": "Alle nettlesere og telefoner med en åpen økt på kontoen din.",
+    "devicesDemoHidden": "Alle på demoen deler denne kontoen, så bare denne nettleseren vises. Andre besøkendes økter er skjult.",
     "thisDevice": "Denne enheten",
     "signedInAt": "Logget inn {date}",
     "lastActiveAt": "Sist aktiv {date}",

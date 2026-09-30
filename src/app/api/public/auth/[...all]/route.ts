@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { isDemoMode } from '@/lib/demo'
+import { isDemoBlockedAuthPath } from '@/lib/demo-auth-paths'
 import { limitAuthRequest } from '@/lib/auth-rate-limit'
 import { toNextJsHandler } from 'better-auth/next-js'
 import { db } from '@/lib/db'
@@ -16,16 +17,19 @@ const authAuditPrefixes = [
   '/api/public/auth/passkey',
 ]
 
-// better-auth's own endpoints bypass server actions, so demoGuard() never sees
-// them. Without this, a demo visitor can change the shared demo user's
-// password or enroll 2FA/passkeys on it, locking the demo for everyone until
-// the next reset.
-const demoBlockedPrefixes = [
-  '/api/public/auth/change-password',
-  '/api/public/auth/set-password',
-  '/api/public/auth/two-factor',
-  '/api/public/auth/passkey',
-]
+/**
+ * better-auth's own endpoints bypass server actions, so demoGuard() never sees
+ * them. Without this, a demo visitor could change the shared demo user's
+ * password, name or address, enroll 2FA or a passkey on it, or list and sign
+ * out every other visitor. The list is in lib/demo-auth-paths.ts.
+ */
+function refuseOnDemo(pathname: string): NextResponse | null {
+  if (!isDemoMode || !isDemoBlockedAuthPath(pathname)) return null
+  const error =
+    'This action is disabled on the demo. Install Torqvoice on your own server to use it.'
+  // `message` as well, which is what the better-auth client shows.
+  return NextResponse.json({ error, message: error }, { status: 403 })
+}
 
 function getRequestIp(request: Request): string | null {
   // Same precedence as lib/rate-limit.ts: Cloudflare's header cannot be forged
@@ -40,6 +44,10 @@ function getRequestIp(request: Request): string | null {
 
 /** OAuth callbacks arrive as GET and create sessions too. */
 async function GET(incoming: Request) {
+  // list-sessions is a GET, and on the demo it is every visitor's address.
+  const refused = refuseOnDemo(new URL(incoming.url).pathname)
+  if (refused) return refused
+
   const { request, issued } = withDeviceCookie(incoming)
   return attachDeviceCookie(await authGET(request), issued)
 }
@@ -50,15 +58,8 @@ async function POST(incoming: Request) {
   const { request, issued } = withDeviceCookie(incoming)
   const { pathname } = new URL(request.url)
 
-  if (isDemoMode && demoBlockedPrefixes.some((p) => pathname.startsWith(p))) {
-    return NextResponse.json(
-      {
-        error:
-          'This action is disabled on the demo. Install Torqvoice on your own server to use it.',
-      },
-      { status: 403 }
-    )
-  }
+  const refused = refuseOnDemo(pathname)
+  if (refused) return refused
 
   // The end-to-end suite signs in on nearly every test and loads the sign-in
   // page more often still, each load a passkey probe on the same prefix; its

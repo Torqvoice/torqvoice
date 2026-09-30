@@ -6,6 +6,8 @@ import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { sendStatusReport } from '@/features/status-reports/Actions/sendStatusReport'
+import { isDemoMode } from '@/lib/demo'
+import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
 
 /**
@@ -58,6 +60,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
 
+      // Lowered on the demo, where anyone can sign the app in, and checked on
+      // the declared length before the body is buffered.
+      const maxBytes = uploadLimit(MAX_BYTES)
+      const tooLarge = isDemoMode
+        ? `That video is too large for the demo. Keep it under ${Math.round(maxBytes / (1024 * 1024))} MB.`
+        : 'That video is too long. Keep it under two minutes.'
+      if (refuseDeclaredOversize(request, MAX_BYTES)) {
+        return apiError(400, 'invalid_request', tooLarge)
+      }
+
       const form = await request.formData()
       const title = (form.get('title') as string | null)?.slice(0, 200) || undefined
       const message = (form.get('message') as string | null)?.slice(0, 4000) || undefined
@@ -72,12 +84,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         if (!ext) {
           return apiError(400, 'invalid_request', 'That video format cannot be uploaded.')
         }
-        if (video.size > MAX_BYTES) {
-          return apiError(
-            400,
-            'invalid_request',
-            'That video is too long. Keep it under two minutes.'
-          )
+        if (video.size > maxBytes) {
+          return apiError(400, 'invalid_request', tooLarge)
         }
 
         // Generated name, never the client's. See the attachments route.

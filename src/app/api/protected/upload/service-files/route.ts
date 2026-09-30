@@ -8,6 +8,7 @@ import crypto from 'crypto'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
 import { uploadsRoot } from '@/lib/upload-root'
+import { guardUpload, uploadLimit, uploadTooLargeMessage } from '@/lib/upload-guard'
 
 const execFileAsync = promisify(execFile)
 
@@ -65,6 +66,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Before the body is read: at 500MB, buffering first and checking after is
+  // the whole cost already paid, and a video is transcoded inline afterwards.
+  const refused = guardUpload(request, MAX_SIZE)
+  if (refused) return refused
+
   const formData = await request.formData()
   const file = formData.get('file') as File | null
 
@@ -79,8 +85,9 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: 'File size must be under 500MB' }, { status: 400 })
+  const maxBytes = uploadLimit(MAX_SIZE)
+  if (file.size > maxBytes) {
+    return NextResponse.json({ error: uploadTooLargeMessage(maxBytes) }, { status: 400 })
   }
 
   const isVideo = VIDEO_TYPES.includes(file.type)

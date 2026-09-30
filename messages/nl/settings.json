@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Ingelogde apparaten",
     "devicesDescription": "Elke browser en telefoon met een open sessie op je account.",
+    "devicesDemoHidden": "Iedereen op de demo deelt dit account, dus alleen deze browser wordt getoond. Sessies van andere bezoekers zijn verborgen.",
     "thisDevice": "Dit apparaat",
     "signedInAt": "Ingelogd {date}",
     "lastActiveAt": "Laatst actief {date}",

@@ -5,6 +5,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
 import { uploadsRoot } from '@/lib/upload-root'
+import { guardUpload, uploadLimit, uploadTooLargeMessage } from '@/lib/upload-guard'
 
 const ALLOWED_TYPES = [
   'image/jpeg',
@@ -28,6 +29,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const refused = guardUpload(request, MAX_SIZE)
+    if (refused) return refused
+
     const formData = await request.formData()
     const file = formData.get('file') as File | null
 
@@ -44,8 +48,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: 'File size must be under 10MB' }, { status: 400 })
+    const maxBytes = uploadLimit(MAX_SIZE)
+    if (file.size > maxBytes) {
+      return NextResponse.json({ error: uploadTooLargeMessage(maxBytes) }, { status: 400 })
     }
 
     const ext = extensionForType(file.type)

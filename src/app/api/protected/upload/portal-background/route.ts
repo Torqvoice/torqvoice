@@ -5,6 +5,10 @@ import path from 'path'
 import { randomUUID } from 'crypto'
 import { cleanImage } from '@/lib/image-upload.server'
 import { uploadsRoot } from '@/lib/upload-root'
+import { guardUpload, uploadLimit, uploadTooLargeMessage } from '@/lib/upload-guard'
+
+/** Backgrounds are allowed to be larger than logos. */
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +17,9 @@ export async function POST(request: Request) {
     if (!ctx) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const refused = guardUpload(request, MAX_UPLOAD_BYTES)
+    if (refused) return refused
 
     const formData = await request.formData()
     const file = formData.get('file') as File | null
@@ -25,9 +32,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Upload a PNG, JPEG or WebP image' }, { status: 400 })
     }
 
-    // Backgrounds are allowed to be larger than logos.
-    if (file.size > 8 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size must be under 8MB' }, { status: 400 })
+    const maxBytes = uploadLimit(MAX_UPLOAD_BYTES)
+    if (file.size > maxBytes) {
+      return NextResponse.json({ error: uploadTooLargeMessage(maxBytes) }, { status: 400 })
     }
 
     // Decoded and re-encoded: the stored file holds pixels and nothing else,

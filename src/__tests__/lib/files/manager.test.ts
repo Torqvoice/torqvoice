@@ -36,6 +36,15 @@ vi.mock('@/lib/upload-root', () => ({
   uploadsRoots: () => [roots.current, roots.legacy],
 }))
 
+// Read on every call rather than once at import, so one test can switch the
+// manager into demo mode without reloading it.
+const demo = vi.hoisted(() => ({ on: false }))
+vi.mock('@/lib/demo', () => ({
+  get isDemoMode() {
+    return demo.on
+  },
+}))
+
 const inUse = vi.hoisted(() => ({
   suffixes: new Set<string>(),
   fail: false,
@@ -113,6 +122,7 @@ beforeEach(async () => {
   inUse.fail = false
   inUse.organizations = new Set([ORG, OTHER])
   inUse.later = new Set()
+  demo.on = false
   referencedSuffixes.mockClear()
   vi.spyOn(console, 'warn').mockImplementation(() => undefined)
   vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -293,6 +303,60 @@ describe('releaseFiles', () => {
     vi.mocked(rename).mockReset()
     expect(result.removed).toEqual([])
     expect(existsSync(file)).toBe(true)
+  })
+})
+
+describe('on the public demo', () => {
+  // The reset restores the database and never empties the trash, so a trash
+  // there is a disk one visitor can fill for everybody.
+  it('deletes a released file outright instead of trashing it', async () => {
+    demo.on = true
+    const current = await put(roots.current, ORG, 'services', PHOTO)
+    const legacy = await put(roots.legacy, ORG, 'services', PHOTO)
+
+    const result = await releaseFiles([url(ORG, 'services', PHOTO)], {
+      organizationId: ORG,
+      reason: 'test',
+      now: NOW,
+    })
+
+    expect(result.removed).toEqual([url(ORG, 'services', PHOTO)])
+    expect(existsSync(current)).toBe(false)
+    expect(existsSync(legacy)).toBe(false)
+    expect(existsSync(path.join(roots.current, '.trash'))).toBe(false)
+    expect(existsSync(path.join(roots.legacy, '.trash'))).toBe(false)
+  })
+
+  it('still keeps a file some row uses', async () => {
+    demo.on = true
+    const file = await put(roots.current, ORG, 'services', PHOTO)
+    inUse.suffixes.add(`/services/${PHOTO}`)
+
+    const result = await releaseFiles([url(ORG, 'services', PHOTO)], {
+      organizationId: ORG,
+      reason: 'test',
+      now: NOW,
+    })
+
+    expect(result.kept).toEqual([url(ORG, 'services', PHOTO)])
+    expect(existsSync(file)).toBe(true)
+  })
+
+  it('never deletes a symlink or a directory in its place', async () => {
+    demo.on = true
+    const outside = path.join(base, 'outside.jpg')
+    await writeFile(outside, 'not an upload')
+    await mkdir(path.join(roots.current, ORG, 'services'), { recursive: true })
+    await symlink(outside, path.join(roots.current, ORG, 'services', PHOTO))
+
+    const result = await releaseFiles([url(ORG, 'services', PHOTO)], {
+      organizationId: ORG,
+      reason: 'test',
+      now: NOW,
+    })
+
+    expect(result.removed).toEqual([])
+    expect(existsSync(outside)).toBe(true)
   })
 })
 

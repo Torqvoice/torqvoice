@@ -45,12 +45,15 @@ export function AccountSettings({
   emailVerified: initialEmailVerified,
   emailVerificationRequired,
   devices,
+  demoMode = false,
   signature,
 }: {
   twoFactorEnabled: boolean
   emailVerified: boolean
   emailVerificationRequired: boolean
   devices: SignedInDevice[]
+  /** The shared demo account: other visitors' sessions are hidden. */
+  demoMode?: boolean
   /** The caller's saved signature for this workshop, as a data URI. */
   signature: string | null
 }) {
@@ -454,7 +457,7 @@ export function AccountSettings({
         )}
       </AppCard>
 
-      <SignedInDevices devices={devices} />
+      <SignedInDevices devices={devices} demoMode={demoMode} />
 
       {/* 2FA Setup Dialog */}
       <Dialog

@@ -206,6 +206,7 @@
   "account": {
     "devicesTitle": "Dispositivos com sessão iniciada",
     "devicesDescription": "Todos os navegadores e telemóveis com uma sessão aberta na sua conta.",
+    "devicesDemoHidden": "Todos na demonstração partilham esta conta, por isso só este navegador é mostrado. As sessões de outros visitantes estão ocultas.",
     "thisDevice": "Este dispositivo",
     "signedInAt": "Sessão iniciada em {date}",
     "lastActiveAt": "Última atividade {date}",

@@ -3,6 +3,7 @@ import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
 import { describeAiError } from '@/lib/ai-error'
+import { assertAiAllowed } from '@/lib/demo'
 import {
   ANTHROPIC_BASE,
   ANTHROPIC_VERSION,
@@ -24,6 +25,9 @@ interface AiConfig {
  * there, adopted into one on this first call.
  */
 export async function getAiConfig(organizationId: string): Promise<AiConfig> {
+  // Said plainly rather than as "not connected", which would send a demo
+  // visitor off to a settings page that refuses them.
+  assertAiAllowed()
   const setup = await aiSetup(organizationId)
 
   if (!setup) {
@@ -44,6 +48,9 @@ export async function getAiConfig(organizationId: string): Promise<AiConfig> {
  * would quietly go somewhere the connector's key check never looked.
  */
 export function createClient(config: AiConfig): OpenAI {
+  // The one client every completion and transcription is built from, so the
+  // last place a demo request could still reach a vendor.
+  assertAiAllowed()
   if (config.provider === 'anthropic') {
     return new OpenAI({
       apiKey: config.apiKey,

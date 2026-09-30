@@ -9,6 +9,7 @@
 
 import { db } from '@/lib/db'
 import { isCloudInstance } from '@/lib/cloud-instance'
+import { isDemoMode } from '@/lib/demo'
 import { canTranscribe, transcriptionModel } from '@/features/ai/Lib/transcription'
 import { aiSetup, configuredAiProvider } from './ai'
 import { openCredentials } from './vault'
@@ -54,6 +55,8 @@ async function speechConnection(organizationId: string) {
 export async function configuredDictation(
   organizationId: string
 ): Promise<{ available: boolean; mode: DictationMode }> {
+  // The mic falls back to the browser's own recognition, which never leaves it.
+  if (isDemoMode) return { available: false, mode: 'choice' }
   const connection = await speechConnection(organizationId)
   if (connection) return { available: true, mode: dictationModeOf(connection.settings) }
   const provider = await configuredAiProvider(organizationId)
@@ -62,6 +65,9 @@ export async function configuredDictation(
 
 /** The keys and the model, for the one request that sends a recording. */
 export async function speechSetup(organizationId: string): Promise<SpeechSetup | null> {
+  // A recording is somebody's voice, sent to a vendor on somebody's key; the
+  // demo has neither to offer. See assertAiAllowed.
+  if (isDemoMode) return null
   const connection = await speechConnection(organizationId)
   if (connection) {
     const credentials = openCredentials(connection.credentials)

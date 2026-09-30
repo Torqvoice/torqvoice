@@ -65,6 +65,34 @@ const EGRESS_PATHS: Array<{ file: string; stoppedBy: RegExp }> = [
     file: 'src/features/integrations/Lib/connections.ts',
     stoppedBy: /assertConnectorAllowed\(\)/,
   },
+  // AI and speech. Every completion and transcription is built from one
+  // client, which refuses; the setup lookups answer "not configured" so the
+  // pages offer no button; and each route refuses before reading anything.
+  { file: 'src/lib/ai.ts', stoppedBy: /assertAiAllowed\(\)/ },
+  { file: 'src/features/integrations/Lib/ai.ts', stoppedBy: /if \(isDemoMode\) return null/ },
+  {
+    file: 'src/features/integrations/Lib/speech.ts',
+    stoppedBy: /if \(isDemoMode\) return null/,
+  },
+  { file: 'src/app/api/protected/ai/chat/route.ts', stoppedBy: /if \(isDemoMode\)/ },
+  { file: 'src/app/api/protected/ai/transcribe/route.ts', stoppedBy: /if \(isDemoMode\)/ },
+  // Live dictation talks to OpenAI with a fetch of its own, not the client.
+  { file: 'src/app/api/protected/ai/transcribe/live/route.ts', stoppedBy: /if \(isDemoMode\)/ },
+  // Inbound WhatsApp media is fetched from the vendor on the workshop's
+  // credentials through the adapter, which the send transport's stop never
+  // sees.
+  {
+    file: 'src/app/api/protected/whatsapp/media/[messageId]/route.ts',
+    stoppedBy: /if \(isDemoMode\)/,
+  },
+  // Billing on torqvoice.com with this deployment's service secret. The
+  // billing routes and actions refuse too, but the daily sync, the account
+  // link ping and account deletion reach the client on their own.
+  { file: 'src/lib/torqvoice-com.ts', stoppedBy: /if \(isDemoMode\) throw/ },
+  {
+    file: 'src/app/api/protected/subscription/upgrade-preview/route.ts',
+    stoppedBy: /if \(isDemoMode\)/,
+  },
 ]
 
 describe('demo mode', () => {

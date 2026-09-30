@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { type NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { DEMO_AI_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 import { rateLimit } from '@/lib/rate-limit'
 import { OPENAI_BASE } from '@/integrations/ai/models'
 import { dictationAccess } from '@/features/ai/Lib/dictationAccess'
@@ -33,6 +34,12 @@ const MAX_SDP_BYTES = 64 * 1024
  * through the ordinary route instead.
  */
 export async function POST(request: NextRequest) {
+  // This route talks to OpenAI with its own fetch rather than the shared
+  // client, so it refuses itself: speechSetup answering null on the demo would
+  // stop it too, but only by the accident of what comes next. The code tells
+  // the page to fall back to the ordinary route, which refuses as well.
+  if (isDemoMode) return json(403, DEMO_AI_DISABLED_MESSAGE, 'live-unavailable')
+
   const limited = rateLimit(request, { limit: 10, windowMs: 60_000 })
   if (limited) return limited
 

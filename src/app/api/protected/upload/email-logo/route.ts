@@ -6,6 +6,7 @@ import sharp from 'sharp'
 import { EMAIL_LOGO_CATEGORY, EMAIL_LOGO_MAX_WIDTH } from '@/features/email/Lib/emailTemplate'
 import { guardEmailUpload } from '@/features/email/Lib/emailUploadAccess.server'
 import { uploadsRoot } from '@/lib/upload-root'
+import { guardUpload, uploadLimit, uploadTooLargeMessage } from '@/lib/upload-guard'
 
 /**
  * A logo for the email templates, uploaded on its own rather than borrowed
@@ -21,10 +22,15 @@ import { uploadsRoot } from '@/lib/upload-root'
 /** More pixels than this and the decode alone would eat a gigabyte; no email needs it. */
 const MAX_INPUT_PIXELS = 40_000_000
 
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024
+
 export async function POST(request: Request) {
   const guard = await guardEmailUpload(request)
   if ('response' in guard) return guard.response
   const { ctx } = guard
+
+  const refused = guardUpload(request, MAX_UPLOAD_BYTES)
+  if (refused) return refused
 
   const formData = await request.formData()
   const file = formData.get('file')
@@ -34,8 +40,9 @@ export async function POST(request: Request) {
   if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
     return NextResponse.json({ error: 'Upload a PNG, JPEG or WebP image' }, { status: 400 })
   }
-  if (file.size > 4 * 1024 * 1024) {
-    return NextResponse.json({ error: 'File size must be under 4MB' }, { status: 400 })
+  const maxBytes = uploadLimit(MAX_UPLOAD_BYTES)
+  if (file.size > maxBytes) {
+    return NextResponse.json({ error: uploadTooLargeMessage(maxBytes) }, { status: 400 })
   }
 
   try {

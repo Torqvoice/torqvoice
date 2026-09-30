@@ -8,6 +8,7 @@ import { discardUnsavedUpload } from '@/lib/files/manager'
 import { compressPhoto } from '@/lib/image-upload.server'
 import { PHOTO_HANDOFF_TTL_SECONDS, verifyInspectionHandoffToken } from '@/lib/photo-handoff'
 import { rateLimit } from '@/lib/rate-limit'
+import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
 import {
   INSPECTION_ATTACHMENT_LIMITS,
@@ -58,6 +59,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   if (!check.ok) return refuse(check.reason === 'expired' ? 410 : 404, check.reason)
   const { organizationId, inspectionId, userId, expiresAt } = check.handoff
 
+  // The declared size before the body is buffered, as on the work order's twin.
+  if (refuseDeclaredOversize(request, MAX_BYTES)) return refuse(400, 'tooLarge')
+
   const inspection = await db.inspection.findFirst({
     where: { id: inspectionId, organizationId },
     select: { id: true, status: true, vehicle: { select: { licensePlate: true } } },
@@ -70,7 +74,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const isPdf = file.type === PDF_TYPE
   if (!isPdf && !PHOTO_TYPES.has(file.type)) return refuse(400, 'type')
   if (file.size === 0) return refuse(400, 'empty')
-  if (file.size > (isPdf ? MAX_PDF_BYTES : MAX_BYTES)) return refuse(400, 'tooLarge')
+  if (file.size > uploadLimit(isPdf ? MAX_PDF_BYTES : MAX_BYTES)) return refuse(400, 'tooLarge')
 
   const itemField = form?.get('itemId')
   const itemId = typeof itemField === 'string' && itemField ? itemField : null

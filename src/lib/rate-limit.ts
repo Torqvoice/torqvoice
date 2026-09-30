@@ -88,9 +88,15 @@ export function rateLimit(
     limit = 30,
     windowMs = 60_000,
     anonymous = false,
+    bucket,
   }: {
     limit?: number
     windowMs?: number
+    /**
+     * A separate count for a second limit on the same route. Two calls on one
+     * request otherwise share an entry and each request is counted twice.
+     */
+    bucket?: string
     /**
      * Key on the address alone, for endpoints that do not require a session.
      *
@@ -120,7 +126,7 @@ export function rateLimit(
     : `ip:${ip}`
 
   const url = new URL(request.url)
-  const key = `${identity}:${url.pathname}`
+  const key = bucket ? `${identity}:${url.pathname}:${bucket}` : `${identity}:${url.pathname}`
 
   const now = Date.now()
   const entry = store.get(key)

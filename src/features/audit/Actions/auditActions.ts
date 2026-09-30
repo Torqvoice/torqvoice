@@ -1,7 +1,19 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
 import { withAuth } from '@/lib/with-auth'
+
+/**
+ * Every demo visitor signs in as the same user in the same workshop, so the
+ * audit log there is a list of strangers' addresses and browsers. The rows
+ * stay; who was where does not.
+ */
+function withoutVisitorDetails<T extends { ip: string | null; userAgent: string | null }>(
+  logs: T[]
+): T[] {
+  return isDemoMode ? logs.map((log) => ({ ...log, ip: null, userAgent: null })) : logs
+}
 
 export async function getRecentAuditLogs(limit = 10) {
   return withAuth(async ({ organizationId }) => {
@@ -11,7 +23,7 @@ export async function getRecentAuditLogs(limit = 10) {
       orderBy: { timestamp: 'desc' },
       take: limit,
     })
-    return logs
+    return withoutVisitorDetails(logs)
   })
 }
 
@@ -87,7 +99,7 @@ export async function getAuditLogsPaginated(params: {
     ])
 
     return {
-      logs,
+      logs: withoutVisitorDetails(logs),
       total,
       page,
       pageSize,
