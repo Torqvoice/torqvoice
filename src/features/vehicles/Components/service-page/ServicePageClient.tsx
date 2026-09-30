@@ -125,7 +125,7 @@ export function ServicePageClient({
   designPinnedAt = null,
   designFollowsRule = null,
   jobClock = { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' },
-  initialLayout = 'classic',
+  initialLayout = 'modern',
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()

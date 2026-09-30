@@ -3,17 +3,17 @@ import { settle } from '../../support/hydration'
 import { addPart, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
 
 /**
- * The overhauled work order page, and the rule that nobody is moved to it
- * without asking.
+ * The overhauled work order page, the default for every browser that has not
+ * asked for the classic one.
  *
- * The classic page carries an invitation; accepting it switches this browser
- * (a cookie, so the server renders the right page from then on), and the new
- * page carries the way back. Both pages are the same form, so what these
- * tests hold the new one to is what `layout.spec.ts` holds the old one to:
- * each field once, and a save that keeps what was on screen.
+ * The new page carries the way back to the classic one (a cookie, so the
+ * server renders the right page from then on), and the classic page carries
+ * the invitation to return. Both pages are the same form, so what these tests
+ * hold the new one to is what `layout.spec.ts` holds the old one to: each
+ * field once, and a save that keeps what was on screen.
  *
- * Every test here starts from a context with no layout cookie, so the rest of
- * the suite, which shares the owner's storage state, stays on the classic page.
+ * The owner's storage state holds the classic choice, so the tests here start
+ * on the classic page unless they clear it.
  */
 
 test.describe.configure({ mode: 'serial' })
@@ -33,7 +33,17 @@ test.beforeAll(async ({ browser }) => {
 })
 
 test.describe('the overhauled work order page', () => {
-  test('is offered on the classic page and not forced on anybody', async ({ page }) => {
+  test('opens for a browser that has not chosen a layout', async ({ page, context }) => {
+    await context.clearCookies({ name: 'workOrderLayout' })
+    await page.goto(jobUrl)
+    await settle(page)
+
+    await expect(page.getByTestId('service-layout-modern')).toBeVisible()
+    await expect(page.getByTestId('service-layout')).toHaveCount(0)
+    await expect(page.getByTestId('try-new-layout')).toHaveCount(0)
+  })
+
+  test('is offered on the classic page to whoever went back to it', async ({ page }) => {
     await page.goto(jobUrl)
     await settle(page)
 

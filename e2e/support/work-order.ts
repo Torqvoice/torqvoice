@@ -24,7 +24,7 @@ export async function seededVehicleUrl(page: Page, search = 'Camry'): Promise<st
 /**
  * Puts this browser on the overhauled work order page, the way "Try it now"
  * does: a cookie the server reads. Only this context carries it; the rest of
- * the suite shares the owner's storage state and stays on the classic page.
+ * the suite shares the owner's storage state, which holds the classic choice.
  */
 export async function useModernLayout(context: BrowserContext, baseURL: string): Promise<void> {
   await context.addCookies([{ name: 'workOrderLayout', value: 'modern', url: baseURL }])

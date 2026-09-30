@@ -9,10 +9,10 @@ import { track } from '@/lib/analytics'
 const DISMISSED_KEY = 'torqvoice:workOrderLayoutHintDismissed'
 
 /**
- * The invitation on the classic work order page. Nobody is moved to the
- * overhauled page without asking for it, so this is how they find out it
- * exists. Closing it is remembered in this browser; the way in stays in the
- * page's "more" menu for whoever changes their mind.
+ * The invitation on the classic work order page, which a browser only shows
+ * once it has asked to go back to it. Closing it is remembered in this
+ * browser; the way in stays in the page's "more" menu for whoever changes
+ * their mind.
  *
  * Drawn only after mount: whether it was dismissed is in localStorage, which
  * the server cannot see, and a banner that renders and then vanishes on

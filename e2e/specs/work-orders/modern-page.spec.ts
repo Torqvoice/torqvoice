@@ -517,8 +517,11 @@ test.describe('the overhauled work order page', () => {
     test('keeps both notes read-only on the classic page, rather than losing what is typed', async ({
       page,
       context,
+      baseURL,
     }) => {
-      await context.clearCookies({ name: 'workOrderLayout' })
+      await context.addCookies([
+        { name: 'workOrderLayout', value: 'classic', url: baseURL ?? 'http://127.0.0.1:3100' },
+      ])
       await page.goto(lockedJob)
       await settle(page)
       await expect(page.getByTestId('service-layout')).toBeVisible()
