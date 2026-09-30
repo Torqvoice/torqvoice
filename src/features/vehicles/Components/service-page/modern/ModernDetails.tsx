@@ -451,6 +451,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                     <Badge
                       variant="outline"
                       className={`text-xs ${paymentStatusColors[formState.paymentStatus] || ''}`}
+                      data-testid="payment-status"
                     >
                       {paymentStatusLabels[formState.paymentStatus] || t('header.unpaid')}
                     </Badge>

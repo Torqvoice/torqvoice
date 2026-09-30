@@ -165,10 +165,8 @@ export async function saveWorkOrder(page: Page): Promise<void> {
  * parent and the figure is read from it.
  */
 export function totalsRow(page: Page, label: string): Locator {
-  // Scoped to the Totals panel: "Parts" and "Labor" are also section headings.
-  const panel = page
-    .getByRole('heading', { name: 'Totals', exact: true })
-    .locator('xpath=ancestor::div[1]')
+  // Scoped to the totals rows: "Parts" and "Labor" are also section headings.
+  const panel = page.getByTestId('totals')
   // The row is the nearest box that spreads label and figure apart; the tax
   // label sits one level deeper, beside its percentage input.
   return panel

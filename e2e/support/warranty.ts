@@ -12,9 +12,13 @@ export type WarrantyStatement = 'Not stated' | 'Included' | 'Not included'
 export async function warrantyPanel(page: Page): Promise<Locator> {
   const panel = page.getByTestId('warranty-section')
   await expect(panel).toBeVisible()
+  // Folded on the quote editor; always open on the work order page, which
+  // has no header button at all.
   const header = panel.getByRole('button', { name: /^Warranty/ })
   await expect(async () => {
-    if ((await header.getAttribute('aria-expanded')) !== 'true') await header.click()
+    if ((await header.count()) > 0 && (await header.getAttribute('aria-expanded')) !== 'true') {
+      await header.click()
+    }
     await expect(panel.getByRole('radiogroup')).toBeVisible({ timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
   return panel

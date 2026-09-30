@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { Paperclip } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
@@ -76,6 +76,11 @@ export function FilesMediaCard({
   const t = useTranslations('service')
   const serviceType = useServiceType()
   const [tab, setTab] = useState<FileTab>(initialTab)
+  // A link to this job with another tab (feedback on a status report, say)
+  // changes only the query, so the card is not remounted and has to follow it.
+  useEffect(() => {
+    setTab(initialTab)
+  }, [initialTab])
   // The drop-off is the photos and this visit's marks on the map, the
   // linked inspection's included; the tab counts both.
   const mapScope: MarkScope = {

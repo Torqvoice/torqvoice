@@ -25,32 +25,24 @@ test.describe.configure({ mode: 'serial' })
 
 const stamp = Date.now()
 
-/** The payments box on the work order, and not the badge in the page header. */
+/** The invoice card's payments: what came in, the balance, and the form. */
 function paymentsPanel(page: Page): Locator {
-  return page
-    .getByRole('heading', { name: 'Payments', exact: true })
-    .locator('xpath=ancestor::div[contains(@class,"rounded-lg")][1]')
+  return page.getByTestId('payments-section')
 }
 
-/** The figure beside a label, in whichever panel the label belongs to. */
-function labelledRow(panel: Locator, label: string): Locator {
-  return panel
-    .getByText(label, { exact: true })
-    .first()
-    .locator('xpath=ancestor::div[contains(@class,"justify-between")][1]')
-}
-
-/** One line of the Invoice Summary panel: what the customer's copy will say. */
-function summaryRow(page: Page, label: string): Locator {
-  const panel = page
-    .getByRole('heading', { name: 'Invoice Summary', exact: true })
-    .locator('xpath=ancestor::div[1]')
-  return labelledRow(panel, label)
-}
-
-/** What the panel calls the payment state: Unpaid, Partial or Paid. */
+/** What the invoice card calls the payment state: Unpaid, Partial or Paid. */
 function paymentBadge(page: Page, state: 'Unpaid' | 'Partial' | 'Paid'): Locator {
-  return paymentsPanel(page).getByText(state, { exact: true })
+  return page.getByTestId('payment-status').filter({ hasText: new RegExp(`^${state}$`) })
+}
+
+/** The money bar along the bottom: the total, what is paid, and the balance. */
+function moneyBar(page: Page, figure: 'total' | 'paid' | 'balance'): Locator {
+  return page.getByTestId('money-bar').getByTestId(`money-${figure}`)
+}
+
+/** One payment in the list, found by its amount. */
+function paymentRow(page: Page, amount: string): Locator {
+  return paymentsPanel(page).getByRole('listitem').filter({ hasText: amount })
 }
 
 /**
@@ -111,10 +103,10 @@ test.describe('paying an invoice', () => {
     await page.goto(jobUrl)
 
     await expect(paymentBadge(page, 'Unpaid')).toBeVisible()
-    await expect(labelledRow(paymentsPanel(page), 'Total Paid')).toContainText('$0.00 / $900.00')
-    // Nothing is owed until something is paid, so the summary shows no balance.
-    await expect(summaryRow(page, 'Total')).toContainText('$900.00')
-    await expect(summaryRow(page, 'Balance Due')).toHaveCount(0)
+    await expect(moneyBar(page, 'total')).toHaveText('$900.00')
+    await expect(moneyBar(page, 'paid')).toHaveText('$0.00')
+    await expect(moneyBar(page, 'balance')).toHaveText('$900.00')
+    await expect(paymentsPanel(page)).toContainText('Nothing paid yet.')
   })
 
   test('part of the money leaves a balance', async ({ page }) => {
@@ -122,15 +114,15 @@ test.describe('paying an invoice', () => {
     await recordPayment(page, 400, 'Cash')
 
     await expect(paymentBadge(page, 'Partial')).toBeVisible()
-    await expect(labelledRow(paymentsPanel(page), 'Total Paid')).toContainText('$400.00 / $900.00')
+    await expect(moneyBar(page, 'paid')).toHaveText('$400.00')
 
     // The payment itself is listed, with the method it came in by.
-    const row = paymentsPanel(page).getByRole('row').filter({ hasText: '$400.00' })
+    const row = paymentRow(page, '$400.00')
     await expect(row).toHaveCount(1)
     await expect(row).toContainText('cash')
 
-    await expect(summaryRow(page, 'Paid')).toContainText('-$400.00')
-    await expect(summaryRow(page, 'Balance Due')).toContainText('$500.00')
+    await expect(moneyBar(page, 'balance')).toHaveText('$500.00')
+    await expect(paymentsPanel(page).getByTestId('balance-due')).toHaveText('$500.00')
   })
 
   test('the rest of it settles the invoice', async ({ page }) => {
@@ -138,9 +130,8 @@ test.describe('paying an invoice', () => {
     await recordPayment(page, 500, 'Card')
 
     await expect(paymentBadge(page, 'Paid')).toBeVisible()
-    await expect(labelledRow(paymentsPanel(page), 'Total Paid')).toContainText('$900.00 / $900.00')
-    // Settled, the balance line stops being a figure and says so.
-    await expect(summaryRow(page, 'Balance Due')).toContainText('PAID')
+    await expect(moneyBar(page, 'paid')).toHaveText('$900.00')
+    await expect(paymentsPanel(page).getByTestId('balance-due')).toHaveText('$0.00')
 
     // Money against a job makes the invoice the customer's document, whether
     // or not it was ever sent, so it carries a number from here on.
@@ -150,7 +141,7 @@ test.describe('paying an invoice', () => {
   test('taking a payment back reopens the balance', async ({ page }) => {
     await page.goto(jobUrl)
 
-    const row = paymentsPanel(page).getByRole('row').filter({ hasText: '$500.00' })
+    const row = paymentRow(page, '$500.00')
     const confirm = page.getByRole('alertdialog', { name: 'Delete Payment' })
     // A click before the page is interactive opens nothing and says nothing.
     await expect(async () => {
@@ -161,7 +152,7 @@ test.describe('paying an invoice', () => {
     await expect(page.getByText('Payment deleted', { exact: true })).toBeVisible()
 
     await expect(paymentBadge(page, 'Partial')).toBeVisible()
-    await expect(summaryRow(page, 'Balance Due')).toContainText('$500.00')
+    await expect(paymentsPanel(page).getByTestId('balance-due')).toHaveText('$500.00')
   })
 
   test('the workshop can declare it paid without a payment', async ({ page }) => {
@@ -179,15 +170,15 @@ test.describe('paying an invoice', () => {
     // Declared paid covers the balance; the payment that was actually taken is
     // still the only row in the table.
     await expect(paymentBadge(page, 'Paid')).toBeVisible()
-    await expect(labelledRow(panel, 'Total Paid')).toContainText('$900.00 / $900.00')
-    await expect(panel.getByRole('row').filter({ hasText: '$400.00' })).toHaveCount(1)
+    await expect(paymentsPanel(page).getByTestId('balance-due')).toHaveText('$0.00')
+    await expect(paymentRow(page, '$400.00')).toHaveCount(1)
 
     await panel.getByRole('button', { name: 'Mark as Unpaid', exact: true }).click()
     await expect(page.getByText('Marked as unpaid', { exact: true })).toBeVisible()
 
     // Back to what was really paid, rather than to nothing.
     await expect(paymentBadge(page, 'Partial')).toBeVisible()
-    await expect(labelledRow(panel, 'Total Paid')).toContainText('$400.00 / $900.00')
+    await expect(paymentsPanel(page).getByTestId('balance-due')).toHaveText('$500.00')
   })
 
   test('the tax settings are put back', async ({ page }) => {
