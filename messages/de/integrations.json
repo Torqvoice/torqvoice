@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Etwas ist schiefgelaufen",
-    "demo": "In der Demo können keine Integrationen verbunden werden.",
+    "demo": "In der Demo können keine Integrationen verbunden werden. Legen Sie ein kostenloses Konto auf app.torqvoice.com an, um es mit Ihrer eigenen Werkstatt zu nutzen.",
     "forbidden": "Nur ein Administrator kann Integrationen verbinden.",
     "unknown": "Unbekannte Integration.",
     "plan": "Diese Integration ist in Ihrem Tarif nicht enthalten.",

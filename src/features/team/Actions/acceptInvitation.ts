@@ -4,11 +4,11 @@ import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { getCachedSession } from '@/lib/cached-session'
 import { acceptInvitationSchema } from '../Schema/teamSchema'
-import { isDemoMode } from '@/lib/demo'
+import { DEMO_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 
 export async function acceptInvitation(input: unknown) {
   if (isDemoMode) {
-    return { success: false, error: 'This action is disabled on the demo.' }
+    return { success: false, error: DEMO_DISABLED_MESSAGE }
   }
   try {
     const data = acceptInvitationSchema.parse(input)

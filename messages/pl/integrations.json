@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Coś poszło nie tak",
-    "demo": "W wersji demo nie można łączyć integracji.",
+    "demo": "W wersji demo nie można łączyć integracji. Załóż darmowe konto na app.torqvoice.com, aby korzystać z tego we własnym warsztacie.",
     "forbidden": "Tylko administrator może łączyć integracje.",
     "unknown": "Nieznana integracja.",
     "plan": "Ta integracja nie jest objęta Twoim planem.",

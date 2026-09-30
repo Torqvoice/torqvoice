@@ -74,7 +74,7 @@ export async function deliverOnce(deliveryId: string): Promise<void> {
   if (isDemoMode) {
     await db.webhookDelivery.update({
       where: { id: deliveryId },
-      data: { status: 'failed', errorMessage: 'webhook delivery is disabled on the demo' },
+      data: { status: 'failed', errorMessage: 'webhook delivery is turned off on the demo' },
     })
     return
   }

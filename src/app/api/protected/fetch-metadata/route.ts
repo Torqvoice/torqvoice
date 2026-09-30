@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import { isDemoMode } from '@/lib/demo'
+import { isDemoMode, demoOffMessage } from '@/lib/demo'
 import { checkWebhookUrl } from '@/features/webhooks/Lib/ssrf'
 
 // Cap the redirect chain we will follow (mirrors browser/undici defaults) so a
@@ -34,8 +34,7 @@ export async function POST(request: NextRequest) {
   if (isDemoMode) {
     return NextResponse.json(
       {
-        error:
-          'Looking up a part from a URL is disabled on the demo. Install Torqvoice on your own server to use it.',
+        error: demoOffMessage('Looking up a part from a link'),
       },
       { status: 403 }
     )

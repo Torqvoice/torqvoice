@@ -68,7 +68,7 @@
       "duplicateInFile": "Ignorée : répète une ligne précédente du fichier."
     },
     "fileErrors": {
-      "demo": "L'import est désactivé sur la démo.",
+      "demo": "L'import est désactivé sur la démo. Créez un compte gratuit sur app.torqvoice.com pour l'utiliser avec votre propre atelier.",
       "noFile": "Choisissez un fichier à téléverser.",
       "tooLarge": "Le fichier dépasse 900 KB. Divisez-le et importez-le en plusieurs fois.",
       "unsupported": "Téléversez un fichier .csv ou .xlsx.",

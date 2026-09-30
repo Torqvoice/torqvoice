@@ -68,7 +68,7 @@
       "duplicateInFile": "Ignorada: repete uma linha anterior do ficheiro."
     },
     "fileErrors": {
-      "demo": "A importação está desativada na demonstração.",
+      "demo": "A importação está desativada na demonstração. Crie uma conta gratuita em app.torqvoice.com para usar com a sua própria oficina.",
       "noFile": "Escolha um ficheiro para carregar.",
       "tooLarge": "O ficheiro tem mais de 900 KB. Divida-o e importe-o por partes.",
       "unsupported": "Carregue um ficheiro .csv ou .xlsx.",

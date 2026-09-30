@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Qualcosa è andato storto",
-    "demo": "Le integrazioni non possono essere collegate nella demo.",
+    "demo": "Le integrazioni non possono essere collegate nella demo. Crea un account gratuito su app.torqvoice.com per usarlo con la tua officina.",
     "forbidden": "Solo un amministratore può collegare le integrazioni.",
     "unknown": "Integrazione sconosciuta.",
     "plan": "Questa integrazione non è inclusa nel tuo piano.",

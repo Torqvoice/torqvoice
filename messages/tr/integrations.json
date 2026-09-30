@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Bir şeyler ters gitti",
-    "demo": "Demoda entegrasyon bağlanamaz.",
+    "demo": "Demoda entegrasyon bağlanamaz. Kendi atölyenizle kullanmak için app.torqvoice.com adresinde ücretsiz bir hesap oluşturun.",
     "forbidden": "Entegrasyonları yalnızca bir yönetici bağlayabilir.",
     "unknown": "Bilinmeyen entegrasyon.",
     "plan": "Bu entegrasyon planınıza dahil değil.",

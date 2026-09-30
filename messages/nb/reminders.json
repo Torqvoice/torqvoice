@@ -68,7 +68,7 @@
       "duplicateInFile": "Hoppet over: gjentar en tidligere rad i filen."
     },
     "fileErrors": {
-      "demo": "Import er slått av i demoen.",
+      "demo": "Import er slått av i demoen. Opprett en gratis konto på app.torqvoice.com for å bruke det med ditt eget verksted.",
       "noFile": "Velg en fil å laste opp.",
       "tooLarge": "Filen er større enn 900 KB. Del den opp og importer den i flere omganger.",
       "unsupported": "Last opp en .csv- eller .xlsx-fil.",

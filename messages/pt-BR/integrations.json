@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Algo deu errado",
-    "demo": "Não é possível conectar integrações na demonstração.",
+    "demo": "Não é possível conectar integrações na demonstração. Crie uma conta gratuita em app.torqvoice.com para usar com a sua própria oficina.",
     "forbidden": "Somente um administrador pode conectar integrações.",
     "unknown": "Integração desconhecida.",
     "plan": "Esta integração não está incluída no seu plano.",

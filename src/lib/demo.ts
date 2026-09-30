@@ -17,15 +17,29 @@ export const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL || 'demo@torqvoice.co
 export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || 'demo'
 
 /**
+ * Where a demo visitor is sent when something is off here: the hosted app,
+ * free to start, is where the thing they just tried works with their own
+ * workshop. Every refusal on the demo ends with it, so it reads the same.
+ */
+export const DEMO_SIGN_UP =
+  'Create a free account at app.torqvoice.com to use it with your own workshop.'
+
+/** The refusal for anything the demo turns off without a more specific word for it. */
+export const DEMO_DISABLED_MESSAGE = `This is turned off on the demo. ${DEMO_SIGN_UP}`
+
+/** A refusal naming what is off, ending with the same way on. */
+export function demoOffMessage(what: string): string {
+  return `${what} is turned off on the demo. ${DEMO_SIGN_UP}`
+}
+
+/**
  * Throws inside a server action when demo mode is active. `withAuth`
  * catches the error and surfaces it as `{ success: false, error }` to
  * the client, which shows it as a toast.
  */
 export function demoGuard(): void {
   if (isDemoMode) {
-    throw new Error(
-      'This action is disabled on the demo. Install Torqvoice on your own server to use it.'
-    )
+    throw new Error(DEMO_DISABLED_MESSAGE)
   }
 }
 
@@ -39,10 +53,17 @@ export function demoGuard(): void {
  * to go through. Seed data carries customer-looking addresses, so a demo reset
  * is enough to queue mail at real inboxes without it.
  */
+const CHANNEL_NAMES = {
+  email: 'email',
+  sms: 'SMS',
+  whatsapp: 'WhatsApp messages',
+  telegram: 'Telegram messages',
+} as const
+
 export function assertOutboundAllowed(channel: 'email' | 'sms' | 'whatsapp' | 'telegram'): void {
   if (isDemoMode) {
     throw new Error(
-      `Outbound ${channel} is disabled on the demo. Install Torqvoice on your own server to send for real.`
+      `Sending ${CHANNEL_NAMES[channel]} is turned off on the demo, so no real customer is contacted. ${DEMO_SIGN_UP}`
     )
   }
 }
@@ -56,9 +77,7 @@ export function assertOutboundAllowed(channel: 'email' | 'sms' | 'whatsapp' | 't
  */
 export function assertConnectorAllowed(): void {
   if (isDemoMode) {
-    throw new Error(
-      'Integrations are disabled on the demo. Install Torqvoice on your own server to connect one.'
-    )
+    throw new Error(demoOffMessage('Connecting integrations'))
   }
 }
 
@@ -105,13 +124,12 @@ export function isDemoBlockedSettingKey(key: string): boolean {
  */
 export function demoGuardSettingKey(key: string): void {
   if (isDemoMode && isDemoBlockedSettingKey(key)) {
-    throw new Error("This setting can't be changed on the demo.")
+    throw new Error(`Saving credentials is turned off on the demo. ${DEMO_SIGN_UP}`)
   }
 }
 
 /** What a refused AI or dictation request is told on the demo. */
-export const DEMO_AI_DISABLED_MESSAGE =
-  'AI is disabled on the demo. Install Torqvoice on your own server to connect a provider.'
+export const DEMO_AI_DISABLED_MESSAGE = demoOffMessage('AI')
 
 /**
  * Hard stop for the AI and speech vendors. Connecting one is refused on the

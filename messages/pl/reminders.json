@@ -68,7 +68,7 @@
       "duplicateInFile": "Pominięto: powtarza wcześniejszy wiersz w pliku."
     },
     "fileErrors": {
-      "demo": "Import jest wyłączony w wersji demo.",
+      "demo": "Import jest wyłączony w wersji demo. Załóż darmowe konto na app.torqvoice.com, aby korzystać z tego we własnym warsztacie.",
       "noFile": "Wybierz plik do przesłania.",
       "tooLarge": "Plik jest większy niż 900 KB. Podziel go i zaimportuj w częściach.",
       "unsupported": "Prześlij plik .csv lub .xlsx.",

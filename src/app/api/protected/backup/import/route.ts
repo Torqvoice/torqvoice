@@ -4,7 +4,7 @@ import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-gua
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db, type TxClient } from '@/lib/db'
-import { isDemoMode } from '@/lib/demo'
+import { isDemoMode, demoOffMessage } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { rewriteFileUrl, rewriteFileUrlsWithin, withFileUrls } from '@/lib/backup/file-urls'
 import { columnsOf } from '@/lib/backup/rows'
@@ -400,7 +400,7 @@ export async function POST(request: NextRequest) {
   const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
   if (limited) return limited
   if (isDemoMode) {
-    return NextResponse.json({ error: 'Backup import is disabled on the demo.' }, { status: 403 })
+    return NextResponse.json({ error: demoOffMessage('Restoring a backup') }, { status: 403 })
   }
 
   const ctx = await getAuthContext()

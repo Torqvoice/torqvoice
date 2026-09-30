@@ -68,7 +68,7 @@
       "duplicateInFile": "Atlandı: dosyadaki önceki bir satırı tekrarlıyor."
     },
     "fileErrors": {
-      "demo": "Demoda içe aktarma kapalı.",
+      "demo": "Demoda içe aktarma kapalı. Kendi atölyenizle kullanmak için app.torqvoice.com adresinde ücretsiz bir hesap oluşturun.",
       "noFile": "Yüklenecek bir dosya seçin.",
       "tooLarge": "Dosya 900 KB'tan büyük. Dosyayı bölün ve parçalar halinde içe aktarın.",
       "unsupported": "Bir .csv veya .xlsx dosyası yükleyin.",

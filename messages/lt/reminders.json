@@ -68,7 +68,7 @@
       "duplicateInFile": "Praleista: kartoja ankstesnę failo eilutę."
     },
     "fileErrors": {
-      "demo": "Demonstracinėje versijoje importavimas išjungtas.",
+      "demo": "Demonstracinėje versijoje importavimas išjungtas. Susikurkite nemokamą paskyrą app.torqvoice.com ir naudokite tai su savo dirbtuvėmis.",
       "noFile": "Pasirinkite failą įkėlimui.",
       "tooLarge": "Failas didesnis nei 900 KB. Padalykite jį ir importuokite dalimis.",
       "unsupported": "Įkelkite .csv arba .xlsx failą.",

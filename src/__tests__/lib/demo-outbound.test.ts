@@ -28,7 +28,7 @@ describe('demo mode blocks every outbound transport', () => {
   it('refuses email, SMS, WhatsApp and Telegram', async () => {
     const { assertOutboundAllowed } = await import('@/lib/demo')
     for (const channel of ['email', 'sms', 'whatsapp', 'telegram'] as const) {
-      expect(() => assertOutboundAllowed(channel)).toThrow(/disabled on the demo/)
+      expect(() => assertOutboundAllowed(channel)).toThrow(/turned off on the demo/)
     }
   })
 

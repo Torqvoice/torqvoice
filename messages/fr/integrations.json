@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Une erreur s'est produite",
-    "demo": "Les intégrations ne peuvent pas être connectées sur la démo.",
+    "demo": "Les intégrations ne peuvent pas être connectées sur la démo. Créez un compte gratuit sur app.torqvoice.com pour l'utiliser avec votre propre atelier.",
     "forbidden": "Seul un administrateur peut connecter des intégrations.",
     "unknown": "Intégration inconnue.",
     "plan": "Cette intégration n'est pas incluse dans votre forfait.",

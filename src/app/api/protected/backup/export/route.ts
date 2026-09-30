@@ -3,7 +3,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import JSZip from 'jszip'
-import { isDemoMode } from '@/lib/demo'
+import { isDemoMode, DEMO_DISABLED_MESSAGE } from '@/lib/demo'
 import { UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { readdir, readFile, stat } from 'fs/promises'
 import path from 'path'
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
   if (limited) return limited
   if (isDemoMode) {
-    return NextResponse.json({ error: 'This action is disabled on the demo.' }, { status: 403 })
+    return NextResponse.json({ error: DEMO_DISABLED_MESSAGE }, { status: 403 })
   }
 
   const ctx = await getAuthContext()

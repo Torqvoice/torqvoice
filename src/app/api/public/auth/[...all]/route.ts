@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { isDemoMode } from '@/lib/demo'
+import { DEMO_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 import { isDemoBlockedAuthPath } from '@/lib/demo-auth-paths'
 import { limitAuthRequest } from '@/lib/auth-rate-limit'
 import { toNextJsHandler } from 'better-auth/next-js'
@@ -25,8 +25,7 @@ const authAuditPrefixes = [
  */
 function refuseOnDemo(pathname: string): NextResponse | null {
   if (!isDemoMode || !isDemoBlockedAuthPath(pathname)) return null
-  const error =
-    'This action is disabled on the demo. Install Torqvoice on your own server to use it.'
+  const error = DEMO_DISABLED_MESSAGE
   // `message` as well, which is what the better-auth client shows.
   return NextResponse.json({ error, message: error }, { status: 403 })
 }

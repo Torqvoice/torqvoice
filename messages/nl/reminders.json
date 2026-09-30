@@ -68,7 +68,7 @@
       "duplicateInFile": "Overgeslagen: herhaalt een eerdere rij in het bestand."
     },
     "fileErrors": {
-      "demo": "Importeren is uitgeschakeld in de demo.",
+      "demo": "Importeren is uitgeschakeld in de demo. Maak een gratis account aan op app.torqvoice.com om het met uw eigen werkplaats te gebruiken.",
       "noFile": "Kies een bestand om te uploaden.",
       "tooLarge": "Het bestand is groter dan 900 KB. Splits het en importeer het in delen.",
       "unsupported": "Upload een .csv- of .xlsx-bestand.",

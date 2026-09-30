@@ -36,7 +36,7 @@ export async function createOnboardingOrg(
       return {
         success: false,
         error:
-          'Creating a workshop is disabled on the demo. Sign in with the demo account, or install Torqvoice on your own server.',
+          'Creating a workshop is turned off on the demo. Sign in with the demo account, or create a free account at app.torqvoice.com.',
       }
     }
 

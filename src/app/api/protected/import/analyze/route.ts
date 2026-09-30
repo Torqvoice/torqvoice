@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { canImportAnything } from '@/features/import/Lib/importAccess.server'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { isDemoMode } from '@/lib/demo'
+import { isDemoMode, demoOffMessage } from '@/lib/demo'
 import { db } from '@/lib/db'
 import { getAiConfig } from '@/lib/ai'
 import { getFeatures } from '@/lib/features'
@@ -31,7 +31,7 @@ const SAMPLE_ROWS = 5
  */
 export async function POST(request: NextRequest) {
   if (isDemoMode) {
-    return NextResponse.json({ error: 'Data import is disabled on the demo.' }, { status: 403 })
+    return NextResponse.json({ error: demoOffMessage('Importing data') }, { status: 403 })
   }
   const ctx = await getAuthContext()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

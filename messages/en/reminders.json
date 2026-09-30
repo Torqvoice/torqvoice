@@ -68,7 +68,7 @@
       "duplicateInFile": "Skipped: repeats an earlier row in the file."
     },
     "fileErrors": {
-      "demo": "Importing is turned off on the demo.",
+      "demo": "Importing is turned off on the demo. Create a free account at app.torqvoice.com to use it with your own workshop.",
       "noFile": "Choose a file to upload.",
       "tooLarge": "The file is larger than 900 KB. Split it and import it in parts.",
       "unsupported": "Upload a .csv or .xlsx file.",

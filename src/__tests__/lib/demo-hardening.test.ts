@@ -198,9 +198,9 @@ describe('AI on the demo', () => {
   it('refuses to build a vendor client at all', async () => {
     const { createClient, getAiConfig } = await load<typeof import('@/lib/ai')>('@/lib/ai', true)
     expect(() => createClient({ provider: 'openai', apiKey: 'sk-real', model: 'gpt-4o' })).toThrow(
-      /disabled on the demo/
+      /turned off on the demo/
     )
-    await expect(getAiConfig('org')).rejects.toThrow(/disabled on the demo/)
+    await expect(getAiConfig('org')).rejects.toThrow(/turned off on the demo/)
   })
 
   it('builds one as before off the demo', async () => {
@@ -230,11 +230,27 @@ describe('billing on torqvoice.com from the demo', () => {
         '@/lib/torqvoice-com',
         true
       )
-      await expect(billingRequest('sync', {})).rejects.toThrow(/disabled on the demo/)
+      await expect(billingRequest('sync', {})).rejects.toThrow(/turned off on the demo/)
       expect(fetchSpy).not.toHaveBeenCalled()
     } finally {
       delete process.env.TORQVOICE_SERVICE_SECRET
       fetchSpy.mockRestore()
+    }
+  })
+})
+
+describe('what a demo visitor is told', () => {
+  it('points to a free cloud account, never to installing it themselves', async () => {
+    const { DEMO_DISABLED_MESSAGE, demoOffMessage, DEMO_AI_DISABLED_MESSAGE } = await import(
+      '@/lib/demo'
+    )
+    for (const message of [
+      DEMO_DISABLED_MESSAGE,
+      demoOffMessage('Importing data'),
+      DEMO_AI_DISABLED_MESSAGE,
+    ]) {
+      expect(message).toContain('app.torqvoice.com')
+      expect(message).not.toMatch(/own server|install/i)
     }
   })
 })

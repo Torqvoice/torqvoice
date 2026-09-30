@@ -68,7 +68,7 @@
       "duplicateInFile": "Omitida: repite una fila anterior del archivo."
     },
     "fileErrors": {
-      "demo": "La importación está desactivada en la demo.",
+      "demo": "La importación está desactivada en la demo. Cree una cuenta gratuita en app.torqvoice.com para usarlo con su propio taller.",
       "noFile": "Elija un archivo para subir.",
       "tooLarge": "El archivo supera los 900 KB. Divídalo e impórtelo por partes.",
       "unsupported": "Suba un archivo .csv o .xlsx.",

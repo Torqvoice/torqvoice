@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Kažkas nepavyko",
-    "demo": "Demonstracinėje versijoje integracijų prijungti negalima.",
+    "demo": "Demonstracinėje versijoje integracijų prijungti negalima. Susikurkite nemokamą paskyrą app.torqvoice.com ir naudokite tai su savo dirbtuvėmis.",
     "forbidden": "Integracijas prijungti gali tik administratorius.",
     "unknown": "Nežinoma integracija.",
     "plan": "Ši integracija neįtraukta į jūsų planą.",

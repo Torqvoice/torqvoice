@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Algo correu mal",
-    "demo": "Não é possível ligar integrações na demonstração.",
+    "demo": "Não é possível ligar integrações na demonstração. Crie uma conta gratuita em app.torqvoice.com para usar com a sua própria oficina.",
     "forbidden": "Só um administrador pode ligar integrações.",
     "unknown": "Integração desconhecida.",
     "plan": "Esta integração não está incluída no seu plano.",

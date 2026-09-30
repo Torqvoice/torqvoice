@@ -68,7 +68,7 @@
       "duplicateInFile": "Saltata: ripete una riga precedente del file."
     },
     "fileErrors": {
-      "demo": "L'importazione è disattivata nella demo.",
+      "demo": "L'importazione è disattivata nella demo. Crea un account gratuito su app.torqvoice.com per usarlo con la tua officina.",
       "noFile": "Scegli un file da caricare.",
       "tooLarge": "Il file supera 900 KB. Dividilo e importalo in più parti.",
       "unsupported": "Carica un file .csv o .xlsx.",

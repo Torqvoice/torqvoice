@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Noe gikk galt",
-    "demo": "Integrasjoner kan ikke kobles til i demoen.",
+    "demo": "Integrasjoner kan ikke kobles til i demoen. Opprett en gratis konto på app.torqvoice.com for å bruke det med ditt eget verksted.",
     "forbidden": "Bare en administrator kan koble til integrasjoner.",
     "unknown": "Ukjent integrasjon.",
     "plan": "Denne integrasjonen er ikke inkludert i abonnementet ditt.",

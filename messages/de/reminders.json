@@ -68,7 +68,7 @@
       "duplicateInFile": "Übersprungen: wiederholt eine frühere Zeile der Datei."
     },
     "fileErrors": {
-      "demo": "Der Import ist in der Demo deaktiviert.",
+      "demo": "Der Import ist in der Demo deaktiviert. Legen Sie ein kostenloses Konto auf app.torqvoice.com an, um es mit Ihrer eigenen Werkstatt zu nutzen.",
       "noFile": "Wählen Sie eine Datei zum Hochladen.",
       "tooLarge": "Die Datei ist größer als 900 KB. Teilen Sie sie auf und importieren Sie sie in Teilen.",
       "unsupported": "Laden Sie eine .csv- oder .xlsx-Datei hoch.",

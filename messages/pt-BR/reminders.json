@@ -68,7 +68,7 @@
       "duplicateInFile": "Pulada: repete uma linha anterior do arquivo."
     },
     "fileErrors": {
-      "demo": "A importação está desativada na demonstração.",
+      "demo": "A importação está desativada na demonstração. Crie uma conta gratuita em app.torqvoice.com para usar com a sua própria oficina.",
       "noFile": "Escolha um arquivo para enviar.",
       "tooLarge": "O arquivo é maior que 900 KB. Divida-o e importe em partes.",
       "unsupported": "Envie um arquivo .csv ou .xlsx.",

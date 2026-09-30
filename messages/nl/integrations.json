@@ -185,7 +185,7 @@
   },
   "errors": {
     "generic": "Er is iets misgegaan",
-    "demo": "Integraties kunnen niet worden gekoppeld in de demo.",
+    "demo": "Integraties kunnen niet worden gekoppeld in de demo. Maak een gratis account aan op app.torqvoice.com om het met uw eigen werkplaats te gebruiken.",
     "forbidden": "Alleen een beheerder kan integraties koppelen.",
     "unknown": "Onbekende integratie.",
     "plan": "Deze integratie is niet inbegrepen in uw abonnement.",
