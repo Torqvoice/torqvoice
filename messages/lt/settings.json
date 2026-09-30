@@ -860,7 +860,8 @@
       "workOrders": "Darbo užsakymas",
       "certificates": "Apžiūros sertifikatas",
       "layout": "Išdėstymas",
-      "conditionMap": "Būklės žemėlapis"
+      "conditionMap": "Būklės žemėlapis",
+      "inspections": "Kontroliniai sąrašai"
     },
     "sections": {
       "documents": "Dokumentai",

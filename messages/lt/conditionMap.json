@@ -144,5 +144,7 @@
   "print": {
     "previous": "užfiksuota anksčiau"
   },
-  "manageKinds": "Tvarkyti tipus"
+  "manageKinds": "Tvarkyti tipus",
+  "photosHeading": "Nuotraukos",
+  "previousShort": "ankstesnė"
 }

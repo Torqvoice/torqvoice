@@ -165,3 +165,20 @@ describe('a print with the workshop’s kinds', () => {
     )
   })
 })
+
+describe('the icon of a kind', () => {
+  it('draws the kind’s own shape, not a circle for everything', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server')
+    const React = await import('react')
+    const { MarkIcon } = await import('@/features/condition-map/Components/ConditionMap')
+    const html = renderToStaticMarkup(
+      React.createElement(MarkIcon, {
+        type: { shape: 'triangle', color: '#7c3aed' },
+        severity: 'minor',
+      })
+    )
+    expect(html).toContain('<path')
+    expect(html).not.toContain('<circle')
+    expect(html).toContain('#7c3aed')
+  })
+})

@@ -144,5 +144,7 @@
   "print": {
     "previous": "registado antes"
   },
-  "manageKinds": "Gerir tipos"
+  "manageKinds": "Gerir tipos",
+  "photosHeading": "Fotografias",
+  "previousShort": "anterior"
 }

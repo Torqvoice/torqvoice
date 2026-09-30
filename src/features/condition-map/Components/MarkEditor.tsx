@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Camera, Loader2, Trash2, X } from 'lucide-react'
+import { Camera, ImagePlus, Loader2, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -245,11 +245,12 @@ export function MarkEditor({
                     </Button>
                     <Button
                       type="button"
-                      variant="ghost"
-                      size="sm"
+                      variant="outline"
+                      className="h-20 w-20 flex-col gap-1 text-xs"
                       disabled={uploading}
                       onClick={() => fileRef.current?.click()}
                     >
+                      <ImagePlus className="h-4 w-4" aria-hidden="true" />
                       {t('addPhoto')}
                     </Button>
                     <input

@@ -21,7 +21,7 @@ import {
 } from '../Lib/compose'
 import type { BodyType, Panel, View } from '../Lib/drawingTypes'
 import { isPanel, isView, type MarkSeverity } from '../Lib/marks'
-import { type MarkTypeRef, markStyleOf, markTypeOf } from '../Lib/markTypes'
+import { isMarkShape, type MarkTypeRef, markStyleOf, markTypeOf } from '../Lib/markTypes'
 
 /** A mark as the drawing shows it: where, what, and its number. */
 export interface MapMark {
@@ -382,7 +382,8 @@ export function MarkIcon({
   const shapes = markGlyph({
     x: 40,
     y: 44,
-    ...markStyleOf([{ key: '', name: '', ...type }], ''),
+    shape: isMarkShape(type.shape) ? type.shape : 'circle',
+    color: type.color,
     severity,
     number: number ?? 0,
     previous,

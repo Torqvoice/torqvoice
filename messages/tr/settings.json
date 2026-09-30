@@ -860,7 +860,8 @@
       "workOrders": "İş emri",
       "certificates": "Muayene sertifikası",
       "layout": "Düzen",
-      "conditionMap": "Durum haritası"
+      "conditionMap": "Durum haritası",
+      "inspections": "Kontrol listeleri"
     },
     "sections": {
       "documents": "Belgeler",

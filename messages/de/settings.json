@@ -860,7 +860,8 @@
       "workOrders": "Arbeitsauftrag",
       "certificates": "Inspektionszertifikat",
       "layout": "Layout",
-      "conditionMap": "Zustandskarte"
+      "conditionMap": "Zustandskarte",
+      "inspections": "Checklisten"
     },
     "sections": {
       "documents": "Dokumente",

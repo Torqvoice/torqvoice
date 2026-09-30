@@ -860,7 +860,8 @@
       "workOrders": "Заказ-наряд",
       "certificates": "Сертификат осмотра",
       "layout": "Макет",
-      "conditionMap": "Карта состояния"
+      "conditionMap": "Карта состояния",
+      "inspections": "Чек-листы"
     },
     "sections": {
       "documents": "Документы",

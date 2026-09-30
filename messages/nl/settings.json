@@ -860,7 +860,8 @@
       "workOrders": "Werkorder",
       "certificates": "Inspectiecertificaat",
       "layout": "Indeling",
-      "conditionMap": "Staatkaart"
+      "conditionMap": "Staatkaart",
+      "inspections": "Checklists"
     },
     "sections": {
       "documents": "Documenten",

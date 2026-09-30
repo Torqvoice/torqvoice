@@ -860,7 +860,8 @@
       "workOrders": "Arbeidsordre",
       "certificates": "Inspeksjonssertifikat",
       "layout": "Oppsett",
-      "conditionMap": "Tilstandskart"
+      "conditionMap": "Tilstandskart",
+      "inspections": "Sjekklister"
     },
     "sections": {
       "documents": "Dokumenter",

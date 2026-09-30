@@ -860,7 +860,8 @@
       "workOrders": "Zlecenie",
       "certificates": "Certyfikat przeglądu",
       "layout": "Układ",
-      "conditionMap": "Mapa stanu"
+      "conditionMap": "Mapa stanu",
+      "inspections": "Listy kontrolne"
     },
     "sections": {
       "documents": "Dokumenty",

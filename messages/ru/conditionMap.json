@@ -144,5 +144,7 @@
   "print": {
     "previous": "зафиксировано ранее"
   },
-  "manageKinds": "Управлять типами"
+  "manageKinds": "Управлять типами",
+  "photosHeading": "Фото",
+  "previousShort": "ранее"
 }

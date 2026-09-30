@@ -144,5 +144,7 @@
   "print": {
     "previous": "eerder vastgelegd"
   },
-  "manageKinds": "Typen beheren"
+  "manageKinds": "Typen beheren",
+  "photosHeading": "Foto's",
+  "previousShort": "eerder"
 }

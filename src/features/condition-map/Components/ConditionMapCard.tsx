@@ -44,6 +44,8 @@ import {
   splitMarks,
 } from '../Lib/marks'
 import { ConditionMap, type MapMark, type MapTap, MarkIcon } from './ConditionMap'
+import { ImageCarousel } from '@/features/vehicles/Components/service-detail/ImageCarousel'
+import type { Attachment } from '@/features/vehicles/Components/service-detail/types'
 import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkEditor } from './MarkEditor'
 
@@ -86,6 +88,8 @@ export function ConditionMapCard({
   const [focusView, setFocusView] = useState<View | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [clearingId, setClearingId] = useState<string | null>(null)
+  /** Which of the strip's photos is open full size, if any. */
+  const [viewing, setViewing] = useState<number | null>(null)
   const [pending, startTransition] = useTransition()
 
   const { own, previous } = useMemo(() => splitMarks(marks, scope), [marks, scope])
@@ -277,6 +281,32 @@ export function ConditionMapCard({
     })
   }
 
+  // The photos of every mark shown, in legend order, each with its mark's
+  // words, so a walk-round's pictures are read in one place: the desk sees
+  // what the technician saw without opening ten dents.
+  const photos = numbered.flatMap((mark) =>
+    mark.imageUrls.map((url) => {
+      const number = numberOf.get(mark.id) ?? 0
+      const caption = `${number}. ${t('markOn', {
+        kind: markTypeOf(types, mark.kind).name,
+        area: t(`panels.${mark.panel}`),
+      })}${ownIds.has(mark.id) ? '' : ` (${t('previousShort')})`}`
+      return { mark, url, number, caption }
+    })
+  )
+  // The same strip as the viewer shows it: full size, one after another,
+  // each captioned with its mark.
+  const viewerImages: Attachment[] = photos.map(({ mark, url, caption }, index) => ({
+    id: `${mark.id}-${index}`,
+    fileName: caption,
+    fileUrl: url,
+    fileType: 'image/*',
+    fileSize: 0,
+    category: 'image',
+    description: caption,
+    createdAt: new Date(mark.recordedAt),
+  }))
+
   const editing = editingId ? (marks.find((m) => m.id === editingId) ?? null) : null
   const clearing = clearingId ? (marks.find((m) => m.id === clearingId) ?? null) : null
 
@@ -392,6 +422,51 @@ export function ConditionMapCard({
           )}
         </div>
       </div>
+
+      {/* Every mark's photos in one strip, each saying which mark it belongs
+          to, so nobody opens ten dents to find the one picture they want.
+          A photo opens its mark. */}
+      {photos.length > 0 && (
+        <section aria-label={t('photosHeading')} className="space-y-1.5">
+          <p className="text-xs font-medium text-muted-foreground">
+            {t('photosHeading')} · {t('photoCount', { count: photos.length })}
+          </p>
+          <div className="flex flex-wrap gap-2" data-testid="condition-map-photos">
+            {photos.map(({ mark, url, number, caption }, index) => (
+              <div key={url} className="w-24">
+                <button
+                  type="button"
+                  onClick={() => setViewing(index)}
+                  className="block rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={`${t('photosOf', { n: number })}: ${caption}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="h-24 w-24 rounded-md border object-cover" />
+                </button>
+                {/* The caption opens the mark itself, for the note or a change. */}
+                <button
+                  type="button"
+                  onClick={() => setEditingId(mark.id)}
+                  className={cn(
+                    'mt-1 block w-full truncate text-left text-[11px] leading-tight hover:underline',
+                    !ownIds.has(mark.id) && 'text-muted-foreground'
+                  )}
+                  title={caption}
+                >
+                  {caption}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <ImageCarousel
+        images={viewerImages}
+        currentIndex={viewing}
+        onClose={() => setViewing(null)}
+        onChangeIndex={setViewing}
+      />
 
       <MarkEditor
         types={types}

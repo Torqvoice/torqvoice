@@ -860,7 +860,8 @@
       "workOrders": "Ordem de serviço",
       "certificates": "Certificado de inspeção",
       "layout": "Layout",
-      "conditionMap": "Mapa de estado"
+      "conditionMap": "Mapa de estado",
+      "inspections": "Checklists"
     },
     "sections": {
       "documents": "Documentos",
