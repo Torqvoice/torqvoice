@@ -12,7 +12,11 @@ import {
 } from '@/features/inspections/Components/InspectionPageClient'
 import { PageHeader } from '@/components/page-header'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
+import {
+  loadVehicleConditionMarks,
+  markTypeCatalogue,
+} from '@/features/condition-map/Lib/loadMarks.server'
+import { getLocale } from 'next-intl/server'
 import { getFeatures } from '@/lib/features'
 import { redirect } from 'next/navigation'
 
@@ -30,7 +34,7 @@ export default async function InspectionDetailPage({
   }
 
   const hasConditionMap = result.data.items.some((item) => item.inputType === 'condition_map')
-  const [features, defectHistory, technicians, settings, statusReports, conditionMarks] =
+  const [features, defectHistory, technicians, settings, statusReports, conditionMarks, markTypes] =
     await Promise.all([
       authContext?.organizationId ? getFeatures(authContext.organizationId) : null,
       getCommonDefectNotes(id),
@@ -39,6 +43,10 @@ export default async function InspectionDetailPage({
       getStatusReportsForInspection(id),
       hasConditionMap && authContext?.organizationId
         ? loadVehicleConditionMarks(authContext.organizationId, result.data.vehicleId)
+        : [],
+      ,
+      hasConditionMap && authContext?.organizationId
+        ? markTypeCatalogue(authContext.organizationId, await getLocale())
         : [],
     ])
 
@@ -66,6 +74,7 @@ export default async function InspectionDetailPage({
           defectHistory={defectHistory.success ? defectHistory.data : {}}
           technicians={technicians.success ? technicians.data : []}
           conditionMarks={conditionMarks}
+          markTypes={markTypes}
           workshopAddress={
             (settings.success && settings.data?.[SETTING_KEYS.WORKSHOP_ADDRESS]) || ''
           }

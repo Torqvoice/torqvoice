@@ -28,7 +28,7 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
-import { visitConditionMapIn } from '@/features/condition-map/Lib/labels'
+import { visitConditionMapIn } from '@/features/condition-map/Lib/loadMarks.server'
 import {
   assembleInvoicePrint,
   type InvoicePrintAssembly,
@@ -57,7 +57,7 @@ export async function renderInvoicePdf(
 
   const [labels, conditionMap] = await Promise.all([
     loadPrintLabels(locale, assembly.labelSettings),
-    visitConditionMapIn(assembly.conditionMap, locale),
+    visitConditionMapIn(assembly.organizationId, assembly.conditionMap, locale),
   ])
 
   // The mark comes off for the plans that paid to remove it.

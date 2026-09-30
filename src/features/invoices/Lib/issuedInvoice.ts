@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
 
 /**
  * What an issued invoice carries with it, beyond its own rows.
@@ -114,6 +115,22 @@ export const issuedInvoiceDataSchema = z
         bodyType: z.string().nullable().optional(),
         /** The job's own answer at issue; absent before the switch existed. */
         onInvoice: z.boolean().nullable().optional(),
+        /** The workshop's kinds of mark at issue; absent before they could be changed. */
+        types: z
+          .array(
+            z
+              .object({
+                key: z.string(),
+                name: z.string(),
+                shape: z.string(),
+                color: z.string(),
+                sortOrder: z.number().default(0),
+                hidden: z.boolean().default(false),
+              })
+              .passthrough()
+          )
+          .nullable()
+          .optional(),
         marks: z.array(
           z
             .object({
@@ -143,6 +160,12 @@ export type InvoiceConditionMap = {
   bodyType: string | null
   /** The job's own answer, or null to follow the design. */
   onInvoice: boolean | null
+  /**
+   * The workshop's changes to the kinds of mark, as they were at issue:
+   * a kind renamed later leaves a sent invoice as it went out. Null on an
+   * invoice issued before kinds could be changed, which prints the app's own.
+   */
+  types?: MarkTypeRow[] | null
 }
 
 type FrozenConditionMap = NonNullable<z.infer<typeof issuedInvoiceDataSchema>['conditionMap']>
@@ -158,6 +181,14 @@ export function freezeConditionMap(
   return {
     bodyType: map.bodyType,
     onInvoice: map.onInvoice,
+    types: (map.types ?? []).map(({ key, name, shape, color, sortOrder, hidden }) => ({
+      key,
+      name,
+      shape,
+      color,
+      sortOrder,
+      hidden,
+    })),
     marks: map.marks.map((m) => ({
       id: m.id,
       bodyType: m.bodyType,
@@ -184,6 +215,7 @@ export function thawConditionMap(
   return {
     bodyType: frozen.bodyType ?? null,
     onInvoice: frozen.onInvoice ?? null,
+    types: frozen.types ?? null,
     marks: frozen.marks.map((m) => ({
       id: m.id,
       vehicleId: '',

@@ -5,7 +5,7 @@ import { getFeatures } from '@/lib/features'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
-import { visitConditionMapIn } from '@/features/condition-map/Lib/labels'
+import { visitConditionMapIn } from '@/features/condition-map/Lib/loadMarks.server'
 import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
 import { assembleInvoicePrint } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
@@ -114,7 +114,7 @@ export default async function PublicInvoicePage({
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
   const [labels, conditionMap, certificateInspection] = await Promise.all([
     loadPrintLabels(locale, assembly.labelSettings),
-    visitConditionMapIn(assembly.conditionMap, locale),
+    visitConditionMapIn(orgId, assembly.conditionMap, locale),
     linkedCertificateInspectionId(orgId, record.inspectionId),
   ])
 

@@ -188,7 +188,11 @@
     "signature_remove": "Usunięto podpis",
     "conditionMark_add": "Dodano oznaczenie stanu",
     "conditionMark_remove": "Usunięto oznaczenie stanu",
-    "conditionMark_onInvoice": "Mapa stanu na fakturze"
+    "conditionMark_onInvoice": "Mapa stanu na fakturze",
+    "settings_markType_create": "Dodano rodzaj oznaczenia",
+    "settings_markType_update": "Zmieniono rodzaj oznaczenia",
+    "settings_markType_remove": "Usunięto rodzaj oznaczenia",
+    "settings_markType_reorder": "Zmieniono kolejność rodzajów oznaczeń"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",

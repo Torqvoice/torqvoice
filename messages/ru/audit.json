@@ -188,7 +188,11 @@
     "signature_remove": "Удалена подпись",
     "conditionMark_add": "Добавлена отметка состояния",
     "conditionMark_remove": "Удалена отметка состояния",
-    "conditionMark_onInvoice": "Карта состояния в счёте"
+    "conditionMark_onInvoice": "Карта состояния в счёте",
+    "settings_markType_create": "Добавлен тип отметки",
+    "settings_markType_update": "Изменён тип отметки",
+    "settings_markType_remove": "Удалён тип отметки",
+    "settings_markType_reorder": "Изменён порядок типов отметок"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",

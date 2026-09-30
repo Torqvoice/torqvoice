@@ -188,7 +188,11 @@
     "signature_remove": "Pašalintas parašas",
     "conditionMark_add": "Pridėta būklės žyma",
     "conditionMark_remove": "Pašalinta būklės žyma",
-    "conditionMark_onInvoice": "Būklės žemėlapis sąskaitoje"
+    "conditionMark_onInvoice": "Būklės žemėlapis sąskaitoje",
+    "settings_markType_create": "Pridėtas žymos tipas",
+    "settings_markType_update": "Pakeistas žymos tipas",
+    "settings_markType_remove": "Pašalintas žymos tipas",
+    "settings_markType_reorder": "Pakeista žymų tipų tvarka"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",

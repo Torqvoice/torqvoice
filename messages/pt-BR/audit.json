@@ -188,7 +188,11 @@
     "signature_remove": "Removeu a assinatura",
     "conditionMark_add": "Marca de estado adicionada",
     "conditionMark_remove": "Marca de estado removida",
-    "conditionMark_onInvoice": "Mapa de estado na fatura"
+    "conditionMark_onInvoice": "Mapa de estado na fatura",
+    "settings_markType_create": "Tipo de marca adicionado",
+    "settings_markType_update": "Tipo de marca alterado",
+    "settings_markType_remove": "Tipo de marca removido",
+    "settings_markType_reorder": "Tipos de marca reordenados"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",

@@ -473,6 +473,7 @@ export async function POST(request: NextRequest) {
         WorkBay: () => tx.workBay.deleteMany({ where: { organizationId } }),
         Customer: () => tx.customer.deleteMany({ where: { organizationId } }),
         LaborPreset: () => tx.laborPreset.deleteMany({ where: { organizationId } }),
+        ConditionMarkType: () => tx.conditionMarkType.deleteMany({ where: { organizationId } }),
         Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
         ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
         WorkOrderStatus: () => tx.workOrderStatus.deleteMany({ where: { organizationId } }),
@@ -1267,6 +1268,9 @@ export async function POST(request: NextRequest) {
               // The frozen certificate design, when the snapshot came back too.
               designSnapshotId: keptReference(insp.designSnapshotId, designSnapshotIds),
               signatureSnapshotId: keptReference(insp.signatureSnapshotId, assetSnapshotIds),
+              markTypesSnapshot: Array.isArray(insp.markTypesSnapshot)
+                ? (insp.markTypesSnapshot as never)
+                : undefined,
               createdAt: toSafeDate(insp.createdAt as string),
               updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,
@@ -1514,7 +1518,17 @@ export async function POST(request: NextRequest) {
         { organizationId }
       )
 
-      // Workshop configuration: labour presets, webhooks, report schedules.
+      // Workshop configuration: the kinds of mark, labour presets, webhooks,
+      // report schedules.
+      const markTypes = data.conditionMarkTypes as Record<string, unknown>[] | undefined
+      if (markTypes?.length) {
+        await restoreRows(
+          'kinds of mark',
+          (rows) => tx.conditionMarkType.createMany({ data: rows as never }),
+          markTypes,
+          { organizationId }
+        )
+      }
       const laborPresets = data.laborPresets as Record<string, unknown>[] | undefined
       if (laborPresets?.length) {
         await restoreRows(

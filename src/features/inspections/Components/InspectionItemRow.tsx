@@ -55,6 +55,7 @@ import {
 import { useConditionLabels } from '../Lib/useConditionLabels'
 import { ConditionMapCard } from '@/features/condition-map/Components/ConditionMapCard'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 
 export interface InspectionItemData {
   id: string
@@ -215,6 +216,7 @@ export function InspectionItemRow({
   onSaveState,
   vehicle,
   conditionMarks = [],
+  markTypes = [],
   serviceType = 'automotive',
 }: {
   item: InspectionItemData
@@ -224,6 +226,8 @@ export function InspectionItemRow({
   vehicle?: { id: string; bodyType: string | null }
   /** Every mark on the vehicle, for a condition map check. */
   conditionMarks?: ConditionMarkData[]
+  /** The workshop's kinds of mark. */
+  markTypes?: MarkType[]
   serviceType?: string
   scale: SeverityScale
   country?: string | null
@@ -660,6 +664,7 @@ export function InspectionItemRow({
           <ConditionMapCard
             vehicle={vehicle}
             scope={{ inspectionId, inspectionItemId: item.id }}
+            types={markTypes}
             initialMarks={conditionMarks}
             readOnly={isCompleted}
             serviceType={serviceType}

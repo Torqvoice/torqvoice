@@ -59,3 +59,34 @@ model ConditionMark {
   @@index([organizationId])
   @@map("condition_marks")
 }
+
+/// A workshop's own kind of mark on the condition map: one of the eight
+/// built-in kinds renamed or recoloured (the row carries the built-in key),
+/// or a kind of the workshop's own. A mark refers to a kind by its key, so a
+/// renamed kind changes on every open document at once; an issued invoice and
+/// a completed inspection keep the kinds as they were in their own snapshots.
+model ConditionMarkType {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// dent, scratch, chip, crack, rust, paint, previous_repair, missing for a
+  /// built-in kind; a key made from the id for a workshop's own.
+  key       String
+  name      String
+  /// circle | diamond | triangle | square | cross | hex
+  shape     String
+  /// A hex colour, printed as it is.
+  color     String
+  sortOrder Int     @default(0)
+  /// Kept out of the picker; marks that carry it still show and print.
+  hidden    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@map("condition_mark_types")
+}
+

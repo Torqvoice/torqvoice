@@ -188,7 +188,11 @@
     "signature_remove": "Fjernet signatur",
     "conditionMark_add": "La til tilstandsmerke",
     "conditionMark_remove": "Fjernet tilstandsmerke",
-    "conditionMark_onInvoice": "Tilstandskart på faktura"
+    "conditionMark_onInvoice": "Tilstandskart på faktura",
+    "settings_markType_create": "La til en merketype",
+    "settings_markType_update": "Endret en merketype",
+    "settings_markType_remove": "Fjernet en merketype",
+    "settings_markType_reorder": "Endret rekkefølgen på merketypene"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

@@ -859,7 +859,8 @@
       "quotation": "Tilbud",
       "workOrders": "Arbeidsordre",
       "certificates": "Inspeksjonssertifikat",
-      "layout": "Oppsett"
+      "layout": "Oppsett",
+      "conditionMap": "Tilstandskart"
     },
     "sections": {
       "documents": "Dokumenter",
@@ -970,7 +971,8 @@
     "designerIntro": "Velg et utgangspunkt, og åpne designeren for å endre alt.",
     "designerHint": "Farger, skrifter, avstander og alle seksjoner ligger i designeren.",
     "certificatesDescription": "Utform sertifikatet en fullført inspeksjon skriver ut og deler.",
-    "workOrdersDescription": "Utform arket en arbeidsordre skriver ut: det kunden signerer og det teknikeren tar med seg fra tavla."
+    "workOrdersDescription": "Utform arket en arbeidsordre skriver ut: det kunden signerer og det teknikeren tar med seg fra tavla.",
+    "conditionMapDescription": "Merketypene teknikerne tegner på tilstandskartet: navn, form og farge."
   },
   "payment": {
     "readMore": "Les mer",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Skrives alltid ut på samme sted, så den kan ikke flyttes.",
     "certificate": "Inspeksjonssertifikat",
     "resultWidthHint": "Tomt fyller raden. Angi punkter for et smalere bånd; det legger seg på siden justeringen velger, og i en kolonne tar det kolonnens bredde.",
-    "work_order": "Arbeidsordre"
+    "work_order": "Arbeidsordre",
+    "conditionMapDrawing": "Tegning",
+    "conditionMapViews": "Visninger",
+    "conditionMapViewsAll": "Alle fem",
+    "conditionMapViewsTop": "Bare ovenfra",
+    "conditionMapViewsSides": "Bare sidene",
+    "conditionMapWidthHint": "Tomt fyller raden. Angi punkter for å gjøre tegningen mindre; den plasseres da etter justeringen, og listen beholder full bredde."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",
@@ -2710,5 +2718,48 @@
     "failed": "Kunne ikke lagre statusen",
     "messageEmptyHint": "Står feltet tomt, sendes teksten over.",
     "useSuggested": "Rediger denne teksten"
+  },
+  "markTypes": {
+    "title": "Merketyper",
+    "description": "Gi de innebygde typene nytt navn eller ny farge, skjul dem du aldri bruker, og legg til egne. Hver type har en form i tillegg til en farge, så den er lesbar også på en svart-hvitt utskrift.",
+    "cardTitle": "Typer",
+    "add": "Legg til type",
+    "addTitle": "Ny merketype",
+    "editTitle": "Rediger merketype",
+    "dialogBody": "Et navn med dine egne ord, en form og en farge. Fylt betyr et alvorlig merke.",
+    "previewHint": "Mindre og alvorlig",
+    "name": "Navn",
+    "namePlaceholder": "f.eks. Fortauskant",
+    "shape": "Form",
+    "color": "Farge",
+    "customColor": "Hex-farge",
+    "colorInvalid": "Skriv fargen som seks hex-tegn, som #2563eb",
+    "hidden": "Skjult i velgeren",
+    "hiddenHint": "Merker av denne typen vises og skrives ut likevel.",
+    "hiddenBadge": "Skjult",
+    "builtin": "Innebygd",
+    "show": "Vis i velgeren",
+    "hide": "Skjul i velgeren",
+    "edit": "Rediger",
+    "moveUp": "Flytt opp",
+    "moveDown": "Flytt ned",
+    "restore": "Tilbakestill",
+    "restoreTitle": "Tilbakestille «{name}»?",
+    "restoreBody": "Typen får tilbake navnet, formen og fargen appen leveres med.",
+    "remove": "Fjern",
+    "removeTitle": "Fjerne «{name}»?",
+    "removeBody": "Bare en type ingen merker bruker kan fjernes. Skjul den hvis det finnes merker av den.",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "saved": "Lagret",
+    "failed": "Kunne ikke lagre",
+    "shapes": {
+      "circle": "Sirkel",
+      "diamond": "Rombe",
+      "triangle": "Trekant",
+      "square": "Firkant",
+      "cross": "Kryss",
+      "hex": "Sekskant"
+    }
   }
 }

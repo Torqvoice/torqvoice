@@ -188,7 +188,11 @@
     "signature_remove": "Handtekening verwijderd",
     "conditionMark_add": "Staatmarkering toegevoegd",
     "conditionMark_remove": "Staatmarkering verwijderd",
-    "conditionMark_onInvoice": "Staatkaart op factuur"
+    "conditionMark_onInvoice": "Staatkaart op factuur",
+    "settings_markType_create": "Markeringstype toegevoegd",
+    "settings_markType_update": "Markeringstype gewijzigd",
+    "settings_markType_remove": "Markeringstype verwijderd",
+    "settings_markType_reorder": "Markeringstypen herschikt"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

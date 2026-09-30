@@ -15,8 +15,11 @@ import { CertificatePDF } from '../Components/CertificatePDF'
 import { appendCertificateDocuments, certificateDocuments } from '../Lib/certificateDocuments'
 import { loadInspectionOverviewPhotos, loadInspectionPhotos } from '../Lib/inspectionPhotos'
 import { certificateDesignSource, loadCertificateLabels } from './certificateDesign'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
-import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
+import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
+import {
+  conditionMapLabelsFor,
+  loadVehicleConditionMarks,
+} from '@/features/condition-map/Lib/loadMarks.server'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export { certificateDesignSource, liveCertificateDesign } from './certificateDesign'
@@ -50,6 +53,11 @@ async function logoDataUriFor(settingsMap: Record<string, string>): Promise<stri
   } catch {
     return undefined
   }
+}
+
+/** The catalogue rows an inspection froze at completion, or nothing for one completed before that. */
+function frozenMarkTypes(value: unknown): MarkTypeRow[] | null {
+  return Array.isArray(value) ? (value as MarkTypeRow[]) : null
 }
 
 export async function buildCertificatePdfBuffer({
@@ -116,7 +124,15 @@ export async function buildCertificatePdfBuffer({
       getFeatures(organizationId),
       certificateSignatureDataUri(organizationId, inspection),
       hasMap ? loadVehicleConditionMarks(organizationId, inspection.vehicle.id) : [],
-      hasMap ? loadConditionMapLabels(locale) : undefined,
+      // The kinds as they were at completion; a rename later leaves the
+      // certificate as it was issued.
+      hasMap
+        ? conditionMapLabelsFor(
+            organizationId,
+            locale,
+            frozenMarkTypes(inspection.markTypesSnapshot)
+          )
+        : undefined,
     ])
 
   // Photos are an enhancement; the certificate is the document.

@@ -859,7 +859,8 @@
       "quotation": "Wycena",
       "workOrders": "Zlecenie",
       "certificates": "Certyfikat przeglądu",
-      "layout": "Układ"
+      "layout": "Układ",
+      "conditionMap": "Mapa stanu"
     },
     "sections": {
       "documents": "Dokumenty",
@@ -970,7 +971,8 @@
     "designerIntro": "Wybierz punkt wyjścia, a potem otwórz kreator, aby zmienić wszystko.",
     "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze.",
     "certificatesDescription": "Zaprojektuj certyfikat, który drukuje i udostępnia zakończony przegląd.",
-    "workOrdersDescription": "Zaprojektuj arkusz drukowany ze zlecenia: to, co podpisuje klient, i to, co technik zdejmuje z tablicy."
+    "workOrdersDescription": "Zaprojektuj arkusz drukowany ze zlecenia: to, co podpisuje klient, i to, co technik zdejmuje z tablicy.",
+    "conditionMapDescription": "Rodzaje oznaczeń, które technicy rysują na mapie stanu: nazwy, kształty i kolory."
   },
   "payment": {
     "readMore": "Czytaj więcej",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Zawsze drukuje się w tym samym miejscu, więc nie można go przenieść.",
     "certificate": "Certyfikat przeglądu",
     "resultWidthHint": "Puste wypełnia wiersz. Wpisz punkty, by zwęzić pasek; ułoży się po stronie wskazanej przez wyrównanie, a w kolumnie zajmie jej szerokość.",
-    "work_order": "Zlecenie"
+    "work_order": "Zlecenie",
+    "conditionMapDrawing": "Rysunek",
+    "conditionMapViews": "Widoki",
+    "conditionMapViewsAll": "Wszystkie pięć",
+    "conditionMapViewsTop": "Tylko z góry",
+    "conditionMapViewsSides": "Tylko boki",
+    "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",
@@ -2710,5 +2718,48 @@
     "failed": "Nie udało się zapisać statusu",
     "messageEmptyHint": "Jeśli pole pozostanie puste, zostanie wysłany tekst powyżej.",
     "useSuggested": "Edytuj ten tekst"
+  },
+  "markTypes": {
+    "title": "Rodzaje oznaczeń",
+    "description": "Zmień nazwę lub kolor wbudowanych rodzajów, ukryj nieużywane i dodaj własne. Każdy rodzaj ma kształt oprócz koloru, więc jest czytelny także na czarno-białym wydruku.",
+    "cardTitle": "Rodzaje",
+    "add": "Dodaj rodzaj",
+    "addTitle": "Nowy rodzaj oznaczenia",
+    "editTitle": "Edytuj rodzaj oznaczenia",
+    "dialogBody": "Nazwa własnymi słowami, kształt i kolor. Wypełniony oznacza poważne oznaczenie.",
+    "previewHint": "Drobne i poważne",
+    "name": "Nazwa",
+    "namePlaceholder": "np. Otarcie o krawężnik",
+    "shape": "Kształt",
+    "color": "Kolor",
+    "customColor": "Kolor hex",
+    "colorInvalid": "Podaj kolor jako sześć znaków hex, np. #2563eb",
+    "hidden": "Ukryty w wyborze",
+    "hiddenHint": "Oznaczenia tego rodzaju nadal są pokazywane i drukowane.",
+    "hiddenBadge": "Ukryty",
+    "builtin": "Wbudowany",
+    "show": "Pokaż w wyborze",
+    "hide": "Ukryj z wyboru",
+    "edit": "Edytuj",
+    "moveUp": "W górę",
+    "moveDown": "W dół",
+    "restore": "Przywróć",
+    "restoreTitle": "Przywrócić „{name}”?",
+    "restoreBody": "Rodzaj wraca do nazwy, kształtu i koloru dostarczanych z aplikacją.",
+    "remove": "Usuń",
+    "removeTitle": "Usunąć „{name}”?",
+    "removeBody": "Można usunąć tylko rodzaj, którego nie używa żadne oznaczenie. Ukryj go, jeśli takie oznaczenia istnieją.",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "saved": "Zapisano",
+    "failed": "Nie udało się zapisać",
+    "shapes": {
+      "circle": "Koło",
+      "diamond": "Romb",
+      "triangle": "Trójkąt",
+      "square": "Kwadrat",
+      "cross": "Krzyżyk",
+      "hex": "Sześciokąt"
+    }
   }
 }

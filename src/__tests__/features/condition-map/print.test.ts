@@ -17,6 +17,7 @@ import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { buildCertificatePrintSpec } from '@/features/inspections/Pdf/buildCertificatePrint'
 import { buildWorkOrderPrintSpec } from '@/features/invoice-designer/Pdf/buildWorkOrderPrint'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { getDefaultLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { InvoiceData } from '@/features/vehicles/Components/invoice-pdf/types'
 
@@ -425,5 +426,94 @@ describe("this visit's marks", () => {
     const numbers = map.shapes.filter((s) => s.type === 'text').map((s: any) => s.text)
     expect(numbers).toContain('1')
     expect(numbers).not.toContain('2')
+  })
+})
+
+describe('the drawing sized by the design', () => {
+  const marks = [mark({ id: 'a', serviceRecordId: 's1' })]
+  const invoiceWith = (section: Record<string, unknown>) => {
+    const layout = getDefaultLayout('invoice')
+    return {
+      ...layout,
+      version: 3,
+      sections: layout.sections.map((s) =>
+        s.id === 'condition_map' ? { ...s, visible: true, ...section } : s
+      ),
+    }
+  }
+  const full = conditionMapForPrint({
+    bodyType: 'sedan',
+    marks,
+    includePrevious: false,
+    labels,
+    width: 515,
+  })!
+  const drawingOf = (spec: any) => {
+    const block = spec.blocks.find((b: any) => b.id === 'condition_map').content
+    const first = block.children[0]
+    return first.kind === 'row'
+      ? { row: first, drawing: first.children[0].node }
+      : { drawing: first }
+  }
+  const print = (section: Record<string, unknown>) =>
+    buildInvoicePrintSpec({
+      data: {
+        id: 's1',
+        title: 'Job',
+        type: 'repair',
+        serviceDate: new Date('2026-08-14'),
+        invoiceDate: new Date('2026-08-14'),
+        subtotal: 0,
+        taxRate: 0,
+        taxAmount: 0,
+        totalAmount: 0,
+        cost: 0,
+        invoiceNumber: 'INV-1',
+        discountValue: 0,
+        partItems: [],
+        laborItems: [],
+        customFields: [],
+        findings: [],
+        customer: { name: 'A' },
+        vehicle: null,
+      } as any,
+      template: { layoutConfig: invoiceWith(section) } as any,
+      conditionMap: { marks, bodyType: 'sedan', labels },
+    }) as any
+
+  it('spans the row with every view unless the design says otherwise', () => {
+    const { row, drawing } = drawingOf(print({}))
+    expect(row).toBeUndefined()
+    expect(drawing.width).toBe(full.width)
+    expect(drawing.shapes.filter((s: any) => s.type === 'text').map((s: any) => s.text)).toEqual(
+      expect.arrayContaining(['Top', 'Left', 'Right', 'Front', 'Rear'])
+    )
+  })
+
+  it('draws narrower where the design sets a width, placed by its alignment', () => {
+    const { row, drawing } = drawingOf(print({ style: { width: 200, align: 'center' } }))
+    expect(row.justify).toBe('center')
+    expect(row.children[0].width).toBe(200)
+    expect(drawing.width).toBe(200)
+    // The same sheet, only smaller: its aspect follows the width.
+    expect(drawing.height / drawing.width).toBeCloseTo((full.height + 18) / full.width, 0)
+  })
+
+  it('shows only the views the design asked for, and still lists a mark off them', () => {
+    const top = drawingOf(print({ variant: 'top' })).drawing
+    const captions = (d: any) =>
+      d.shapes.filter((s: any) => s.type === 'text' && s.size === 36).map((s: any) => s.text)
+    expect(captions(top)).toEqual(['Top'])
+    const sides = drawingOf(print({ variant: 'sides' })).drawing
+    expect(captions(sides)).toEqual(['Left', 'Right'])
+    // The mark is on the left door: on the top-only sheet it has no spot,
+    // and the legend lists it all the same.
+    const legend = (spec: any) =>
+      spec.blocks
+        .find((b: any) => b.id === 'condition_map')
+        .content.children.find((c: any) => c.kind === 'table').rows
+    expect(legend(print({ variant: 'top' }))).toHaveLength(1)
+    expect(top.shapes.some((s: any) => s.type === 'text' && s.text === '1')).toBe(false)
+    expect(sides.shapes.some((s: any) => s.type === 'text' && s.text === '1')).toBe(true)
   })
 })

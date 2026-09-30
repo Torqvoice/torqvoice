@@ -1,5 +1,7 @@
 'use server'
 
+import { loadMarkTypeRows } from '@/features/condition-map/Lib/loadMarks.server'
+
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { createQuoteRecord } from '@/features/quotes/Lib/createQuoteRecord'
 import { createQuoteSchema } from '@/features/quotes/Schema/quoteSchema'
@@ -505,6 +507,10 @@ export async function completeInspection(id: string) {
         ? await ensureAssetSnapshot(organizationId, signatureDataUri)
         : null
 
+      // The kinds of mark as the workshop has them now, for the same reason
+      // as the design: a kind renamed later never changes this certificate.
+      const markTypesSnapshot = await loadMarkTypeRows(organizationId)
+
       await db.inspection.updateMany({
         where: { id, organizationId },
         data: {
@@ -512,6 +518,7 @@ export async function completeInspection(id: string) {
           completedAt: new Date(),
           designSnapshotId,
           signatureSnapshotId,
+          markTypesSnapshot,
           ...(inspection.inspectorName ? {} : { inspectorName }),
         },
       })

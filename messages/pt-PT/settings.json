@@ -859,7 +859,8 @@
       "quotation": "Orçamento",
       "workOrders": "Ordem de trabalho",
       "certificates": "Certificado de inspeção",
-      "layout": "Layout"
+      "layout": "Layout",
+      "conditionMap": "Mapa de estado"
     },
     "sections": {
       "documents": "Documentos",
@@ -970,7 +971,8 @@
     "designerIntro": "Escolha um ponto de partida e depois abra o editor para alterar o que quiser.",
     "designerHint": "Cores, tipos de letra, espaçamento e todas as secções estão no editor.",
     "certificatesDescription": "Desenhe o certificado que uma inspeção concluída imprime e partilha.",
-    "workOrdersDescription": "Desenhe a folha que uma ordem de trabalho imprime: o que o cliente assina e o que o técnico leva do quadro."
+    "workOrdersDescription": "Desenhe a folha que uma ordem de trabalho imprime: o que o cliente assina e o que o técnico leva do quadro.",
+    "conditionMapDescription": "Os tipos de marca que os seus técnicos desenham no mapa de estado: nomes, formas e cores."
   },
   "payment": {
     "readMore": "Saiba mais",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "É sempre impresso no mesmo sítio, por isso não pode ser movido.",
     "certificate": "Certificado de inspeção",
     "resultWidthHint": "Vazio ocupa a linha inteira. Com um valor a faixa fica mais estreita e coloca-se no lado do alinhamento; numa coluna ocupa a largura da coluna.",
-    "work_order": "Ordem de trabalho"
+    "work_order": "Ordem de trabalho",
+    "conditionMapDrawing": "Desenho",
+    "conditionMapViews": "Vistas",
+    "conditionMapViewsAll": "Todas as cinco",
+    "conditionMapViewsTop": "Só de cima",
+    "conditionMapViewsSides": "Só as laterais",
+    "conditionMapWidthHint": "Vazio ocupa a linha toda. Indique pontos para reduzir o desenho; fica onde o alinhamento o colocar e a legenda mantém a largura total."
   },
   "preview": {
     "title": "Revisão dos travões e mudança de óleo",
@@ -2710,5 +2718,48 @@
     "failed": "Não foi possível guardar o estado",
     "messageEmptyHint": "Se ficar vazio, é enviado o texto acima.",
     "useSuggested": "Editar este texto"
+  },
+  "markTypes": {
+    "title": "Tipos de marca",
+    "description": "Mude o nome ou a cor dos tipos incorporados, oculte os que nunca usa e adicione os seus. Cada tipo tem uma forma além de uma cor, para se distinguir também numa impressão a preto e branco.",
+    "cardTitle": "Tipos",
+    "add": "Adicionar tipo",
+    "addTitle": "Novo tipo de marca",
+    "editTitle": "Editar tipo de marca",
+    "dialogBody": "Um nome nas suas palavras, uma forma e uma cor. Preenchido significa uma marca grave.",
+    "previewHint": "Ligeira e grave",
+    "name": "Nome",
+    "namePlaceholder": "ex.: Raspão no lancil",
+    "shape": "Forma",
+    "color": "Cor",
+    "customColor": "Cor hex",
+    "colorInvalid": "Indique a cor como seis dígitos hex, como #2563eb",
+    "hidden": "Oculto no seletor",
+    "hiddenHint": "As marcas deste tipo continuam a ser mostradas e impressas.",
+    "hiddenBadge": "Oculto",
+    "builtin": "Incorporado",
+    "show": "Mostrar no seletor",
+    "hide": "Ocultar do seletor",
+    "edit": "Editar",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "restore": "Repor",
+    "restoreTitle": "Repor \"{name}\"?",
+    "restoreBody": "O tipo volta ao nome, à forma e à cor com que a aplicação é fornecida.",
+    "remove": "Remover",
+    "removeTitle": "Remover \"{name}\"?",
+    "removeBody": "Só um tipo que nenhuma marca usa pode ser removido. Oculte-o se existirem marcas dele.",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "saved": "Guardado",
+    "failed": "Não foi possível guardar",
+    "shapes": {
+      "circle": "Círculo",
+      "diamond": "Losango",
+      "triangle": "Triângulo",
+      "square": "Quadrado",
+      "cross": "Cruz",
+      "hex": "Hexágono"
+    }
   }
 }

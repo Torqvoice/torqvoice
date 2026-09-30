@@ -54,6 +54,7 @@ model Organization {
   invitations                 TeamInvitation[]
   inspectionTemplates         InspectionTemplate[]
   conditionMarks              ConditionMark[]
+  conditionMarkTypes          ConditionMarkType[]
   smsMessages                 SmsMessage[]
   telegramMessages            TelegramMessage[]
   whatsappMessages            WhatsappMessage[]

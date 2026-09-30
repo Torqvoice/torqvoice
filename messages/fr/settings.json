@@ -859,7 +859,8 @@
       "quotation": "Devis",
       "workOrders": "Ordre de travail",
       "certificates": "Certificat d'inspection",
-      "layout": "Mise en page"
+      "layout": "Mise en page",
+      "conditionMap": "Carte d'état"
     },
     "sections": {
       "documents": "Documents",
@@ -970,7 +971,8 @@
     "designerIntro": "Choisissez un point de départ, puis ouvrez le concepteur pour tout modifier.",
     "designerHint": "Les couleurs, les polices, les espacements et toutes les sections sont dans le concepteur.",
     "certificatesDescription": "Concevez le certificat qu'une inspection terminée imprime et partage.",
-    "workOrdersDescription": "Concevez la feuille qu'imprime un ordre de travail : ce que le client signe et ce que le technicien prend au tableau."
+    "workOrdersDescription": "Concevez la feuille qu'imprime un ordre de travail : ce que le client signe et ce que le technicien prend au tableau.",
+    "conditionMapDescription": "Les types de marque que vos techniciens dessinent sur la carte d'état : noms, formes et couleurs."
   },
   "payment": {
     "readMore": "En savoir plus",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "S'imprime toujours au même endroit et ne peut pas être déplacé.",
     "certificate": "Certificat d'inspection",
     "resultWidthHint": "Vide occupe toute la ligne. Une valeur rétrécit le bandeau, placé du côté choisi par l'alignement ; dans une colonne il prend la largeur de la colonne.",
-    "work_order": "Ordre de travail"
+    "work_order": "Ordre de travail",
+    "conditionMapDrawing": "Dessin",
+    "conditionMapViews": "Vues",
+    "conditionMapViewsAll": "Les cinq",
+    "conditionMapViewsTop": "Dessus seulement",
+    "conditionMapViewsSides": "Côtés seulement",
+    "conditionMapWidthHint": "Vide occupe toute la ligne. Indiquez des points pour réduire le dessin ; il se place selon l'alignement et la légende garde toute la largeur."
   },
   "preview": {
     "title": "Révision des freins et vidange",
@@ -2710,5 +2718,48 @@
     "failed": "Impossible d’enregistrer le statut",
     "messageEmptyHint": "Si le champ reste vide, le texte ci-dessus est envoyé.",
     "useSuggested": "Modifier ce texte"
+  },
+  "markTypes": {
+    "title": "Types de marque",
+    "description": "Renommez ou recolorez les types intégrés, masquez ceux que vous n'utilisez jamais et ajoutez les vôtres. Chaque type a une forme en plus d'une couleur, pour rester lisible sur une impression en noir et blanc.",
+    "cardTitle": "Types",
+    "add": "Ajouter un type",
+    "addTitle": "Nouveau type de marque",
+    "editTitle": "Modifier le type de marque",
+    "dialogBody": "Un nom dans vos mots, une forme et une couleur. Plein signifie une marque grave.",
+    "previewHint": "Mineure et grave",
+    "name": "Nom",
+    "namePlaceholder": "p. ex. Frottement de trottoir",
+    "shape": "Forme",
+    "color": "Couleur",
+    "customColor": "Couleur hex",
+    "colorInvalid": "Saisissez la couleur en six chiffres hex, comme #2563eb",
+    "hidden": "Masqué dans le sélecteur",
+    "hiddenHint": "Les marques de ce type s'affichent et s'impriment toujours.",
+    "hiddenBadge": "Masqué",
+    "builtin": "Intégré",
+    "show": "Afficher dans le sélecteur",
+    "hide": "Masquer du sélecteur",
+    "edit": "Modifier",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "restore": "Restaurer",
+    "restoreTitle": "Restaurer « {name} » ?",
+    "restoreBody": "Le type retrouve le nom, la forme et la couleur fournis avec l'application.",
+    "remove": "Supprimer",
+    "removeTitle": "Supprimer « {name} » ?",
+    "removeBody": "Seul un type qu'aucune marque n'utilise peut être supprimé. Masquez-le s'il existe des marques de ce type.",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "saved": "Enregistré",
+    "failed": "Impossible d'enregistrer",
+    "shapes": {
+      "circle": "Cercle",
+      "diamond": "Losange",
+      "triangle": "Triangle",
+      "square": "Carré",
+      "cross": "Croix",
+      "hex": "Hexagone"
+    }
   }
 }

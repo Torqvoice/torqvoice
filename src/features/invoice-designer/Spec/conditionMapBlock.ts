@@ -9,6 +9,8 @@ import {
   tableHead,
 } from './buildSpec'
 import { headingStyle } from './certificateBlocks'
+import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
+import { isMapViewSet } from '@/features/condition-map/Lib/compose'
 
 /**
  * The vehicle's condition: the line drawing with the numbered marks on it,
@@ -23,8 +25,18 @@ export function conditionMapBlock(
   theme: DocumentTheme,
   data: DocumentData
 ): Node | null {
-  const map = data.conditionMap
-  if (!map) return null
+  const full = data.conditionMap
+  if (!full) return null
+  // The design's own size and views: a narrower drawing, or fewer views of
+  // it, drawn again from what the full sheet was drawn from. The legend
+  // keeps the row's width either way.
+  const views = isMapViewSet(section.variant) ? section.variant : 'all'
+  const wanted = section.style?.width
+  const width = wanted ? Math.min(wanted, full.width) : full.width
+  const map =
+    views !== 'all' || width !== full.width
+      ? (conditionMapForPrint({ ...full.source, width, views }) ?? full)
+      : full
   const fields = new Set(sectionFields(section))
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
@@ -40,7 +52,7 @@ export function conditionMapBlock(
   const band = bandPoints * unitsPerPoint
   const title =
     data.sectionLabels.condition_map ?? label(data, 'conditionMapTitle', 'Vehicle condition')
-  children.push({
+  const drawing: Node = {
     kind: 'drawing',
     width: map.width,
     height: map.height + Math.ceil(bandPoints),
@@ -60,7 +72,18 @@ export function conditionMapBlock(
           ...map.shapes,
         ]
       : map.shapes,
-  })
+  }
+  // Narrower than the row, the drawing sits where the alignment puts it.
+  const align = section.style?.align ?? 'left'
+  children.push(
+    map.width < full.width
+      ? {
+          kind: 'row',
+          justify: align === 'center' ? 'center' : align === 'right' ? 'end' : 'start',
+          children: [{ width: map.width, node: drawing }],
+        }
+      : drawing
+  )
   if (fields.has('legend') && map.rows.length > 0) {
     children.push({
       kind: 'table',

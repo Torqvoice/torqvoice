@@ -60,6 +60,7 @@ import {
 } from './InspectionFilesCard'
 import { InspectionCertificateCard, type TechnicianOption } from './InspectionCertificateCard'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import { InspectionItemRow, type InspectionItemData } from './InspectionItemRow'
 import { MediaLightbox, type LightboxImage } from './MediaLightbox'
 import { useServiceType } from '@/components/service-type-context'
@@ -240,10 +241,13 @@ export function InspectionPageClient({
   technicians = [],
   workshopAddress = '',
   conditionMarks = [],
+  markTypes = [],
 }: {
   inspection: InspectionData
   /** Every mark on the vehicle's condition map, for a checklist that has one. */
   conditionMarks?: ConditionMarkData[]
+  /** The workshop's kinds of mark, for the same checklist. */
+  markTypes?: MarkType[]
   /** For the share links of the inspection's status reports. */
   organizationId: string
   smsEnabled?: boolean
@@ -769,6 +773,7 @@ export function InspectionPageClient({
                         bodyType: inspection.vehicle.bodyType ?? null,
                       }}
                       conditionMarks={conditionMarks}
+                      markTypes={markTypes}
                       serviceType={serviceType}
                       onChanged={(itemId, change) => {
                         setGrades((prev) => ({ ...prev, [itemId]: change.condition }))

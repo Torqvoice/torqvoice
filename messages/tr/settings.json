@@ -859,7 +859,8 @@
       "quotation": "Teklif",
       "workOrders": "İş emri",
       "certificates": "Muayene sertifikası",
-      "layout": "Düzen"
+      "layout": "Düzen",
+      "conditionMap": "Durum haritası"
     },
     "sections": {
       "documents": "Belgeler",
@@ -970,7 +971,8 @@
     "designerIntro": "Bir başlangıç noktası seçin, sonra her şeyi değiştirmek için tasarımcıyı açın.",
     "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda.",
     "certificatesDescription": "Tamamlanan bir muayenenin yazdırıp paylaştığı sertifikayı tasarlayın.",
-    "workOrdersDescription": "Bir iş emrinin yazdırdığı sayfayı tasarlayın: müşterinin imzaladığı ve teknisyenin panodan aldığı sayfa."
+    "workOrdersDescription": "Bir iş emrinin yazdırdığı sayfayı tasarlayın: müşterinin imzaladığı ve teknisyenin panodan aldığı sayfa.",
+    "conditionMapDescription": "Teknisyenlerinizin durum haritasına çizdiği işaret türleri: adları, şekilleri ve renkleri."
   },
   "payment": {
     "readMore": "Devamını oku",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Her zaman aynı yerde yazdırılır, bu yüzden taşınamaz.",
     "certificate": "Muayene sertifikası",
     "resultWidthHint": "Boş bırakılırsa satırı kaplar. Punto girerseniz bant daralır ve hizalamanın seçtiği tarafa yerleşir; sütunda sütun genişliğini alır.",
-    "work_order": "İş emri"
+    "work_order": "İş emri",
+    "conditionMapDrawing": "Çizim",
+    "conditionMapViews": "Görünümler",
+    "conditionMapViewsAll": "Beşi de",
+    "conditionMapViewsTop": "Yalnızca üstten",
+    "conditionMapViewsSides": "Yalnızca yanlar",
+    "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",
@@ -2710,5 +2718,48 @@
     "failed": "Durum kaydedilemedi",
     "messageEmptyHint": "Boş bırakılırsa yukarıdaki metin gönderilir.",
     "useSuggested": "Bu metni düzenle"
+  },
+  "markTypes": {
+    "title": "İşaret türleri",
+    "description": "Yerleşik türleri yeniden adlandırın veya renklendirin, hiç kullanmadıklarınızı gizleyin ve kendi türlerinizi ekleyin. Her türün rengin yanında bir şekli vardır; böylece siyah-beyaz baskıda da okunur.",
+    "cardTitle": "Türler",
+    "add": "Tür ekle",
+    "addTitle": "Yeni işaret türü",
+    "editTitle": "İşaret türünü düzenle",
+    "dialogBody": "Kendi sözcüklerinizle bir ad, bir şekil ve bir renk. Dolu olan ciddi işareti gösterir.",
+    "previewHint": "Hafif ve ciddi",
+    "name": "Ad",
+    "namePlaceholder": "örn. Kaldırım sürtmesi",
+    "shape": "Şekil",
+    "color": "Renk",
+    "customColor": "Hex renk",
+    "colorInvalid": "Rengi #2563eb gibi altı hex karakterle girin",
+    "hidden": "Seçicide gizli",
+    "hiddenHint": "Bu türdeki işaretler yine gösterilir ve yazdırılır.",
+    "hiddenBadge": "Gizli",
+    "builtin": "Yerleşik",
+    "show": "Seçicide göster",
+    "hide": "Seçiciden gizle",
+    "edit": "Düzenle",
+    "moveUp": "Yukarı taşı",
+    "moveDown": "Aşağı taşı",
+    "restore": "Geri al",
+    "restoreTitle": "\"{name}\" geri alınsın mı?",
+    "restoreBody": "Tür, uygulamayla gelen adına, şekline ve rengine döner.",
+    "remove": "Kaldır",
+    "removeTitle": "\"{name}\" kaldırılsın mı?",
+    "removeBody": "Yalnızca hiçbir işaretin kullanmadığı bir tür kaldırılabilir. Bu türde işaretler varsa gizleyin.",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "saved": "Kaydedildi",
+    "failed": "Kaydedilemedi",
+    "shapes": {
+      "circle": "Daire",
+      "diamond": "Eşkenar dörtgen",
+      "triangle": "Üçgen",
+      "square": "Kare",
+      "cross": "Çarpı",
+      "hex": "Altıgen"
+    }
   }
 }

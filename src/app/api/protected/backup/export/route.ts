@@ -347,6 +347,13 @@ export async function POST(request: NextRequest) {
         })
     )
     queries.push(
+      db.conditionMarkType
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.conditionMarkTypes = result
+        })
+    )
+    queries.push(
       db.laborPreset
         .findMany({
           where: { organizationId: ctx.organizationId },

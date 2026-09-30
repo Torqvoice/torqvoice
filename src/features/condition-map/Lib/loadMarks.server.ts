@@ -1,8 +1,9 @@
 import 'server-only'
 import { db } from '@/lib/db'
-import { visitConditionMapIn } from './labels'
+import { builtinMarkNames, conditionMapLabelsFrom, loadConditionMapMessages } from './labels'
 import { type ConditionMarkData, type MarkScope, numberedMarks, splitMarks } from './marks'
-import type { VisitConditionMap } from './print'
+import { type MarkType, type MarkTypeRow, resolveMarkTypes } from './markTypes'
+import type { ConditionMapLabels, VisitConditionMap } from './print'
 
 /**
  * Reading a vehicle's marks for a page or a print that has already decided
@@ -77,5 +78,70 @@ export async function quoteConditionMap(
   const map = await loadVisitConditionMap(organizationId, quote.vehicleId, {
     linkedInspectionId: quote.inspectionId,
   })
-  return visitConditionMapIn(map, locale)
+  return visitConditionMapIn(organizationId, map, locale)
+}
+
+/**
+ * A visit's marks with the words to print them in, in the reader's language,
+ * or nothing when the visit noted none. The kinds come from the workshop's
+ * catalogue, or from the snapshot an issued invoice carries.
+ */
+export async function visitConditionMapIn(
+  organizationId: string,
+  map:
+    | { marks: ConditionMarkData[]; bodyType: string | null; types?: MarkTypeRow[] | null }
+    | null
+    | undefined,
+  locale: string
+): Promise<VisitConditionMap | undefined> {
+  if (!map || map.marks.length === 0) return undefined
+  return { ...map, labels: await conditionMapLabelsFor(organizationId, locale, map.types) }
+}
+
+/** The workshop's stored changes to the catalogue. */
+export async function loadMarkTypeRows(organizationId: string) {
+  return db.conditionMarkType.findMany({
+    where: { organizationId },
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+    select: {
+      id: true,
+      key: true,
+      name: true,
+      shape: true,
+      color: true,
+      sortOrder: true,
+      hidden: true,
+    },
+  })
+}
+
+/** The workshop's kinds of mark, named in the reader's language. */
+export async function markTypeCatalogue(
+  organizationId: string,
+  locale: string
+): Promise<MarkType[]> {
+  const [rows, names] = await Promise.all([
+    loadMarkTypeRows(organizationId),
+    builtinMarkNames(locale),
+  ])
+  return resolveMarkTypes(rows, names)
+}
+
+/**
+ * The words a print needs, with the kinds as this workshop has them, or as
+ * a snapshot kept them: an issued invoice and a completed inspection print
+ * the kinds they went out with.
+ */
+export async function conditionMapLabelsFor(
+  organizationId: string,
+  locale: string,
+  frozenRows?: readonly MarkTypeRow[] | null
+): Promise<ConditionMapLabels> {
+  const messages = await loadConditionMapMessages(locale)
+  // A snapshot keeps the workshop's changes only, so a built-in kind it
+  // never touched is still named in the reader's language.
+  const types = frozenRows
+    ? resolveMarkTypes(frozenRows, messages.kinds)
+    : await markTypeCatalogue(organizationId, locale)
+  return conditionMapLabelsFrom(messages, types)
 }

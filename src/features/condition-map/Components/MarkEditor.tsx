@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Camera, Loader2, Trash2, X } from 'lucide-react'
@@ -14,7 +16,8 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { MARK_KINDS, type MarkKind, type MarkSeverity, SEVERITIES } from '../Lib/marks'
+import { type MarkSeverity, SEVERITIES } from '../Lib/marks'
+import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkIcon } from './ConditionMap'
 
 export interface EditableMark {
@@ -34,6 +37,7 @@ export interface EditableMark {
  */
 export function MarkEditor({
   mark,
+  types,
   open,
   readOnly = false,
   busy = false,
@@ -44,16 +48,21 @@ export function MarkEditor({
   onClose,
 }: {
   mark: EditableMark | null
+  /** The workshop's kinds of mark, hidden ones included. */
+  types: readonly MarkType[]
   open: boolean
   readOnly?: boolean
   busy?: boolean
-  onChange: (patch: { kind?: MarkKind; severity?: MarkSeverity; note?: string | null }) => void
+  onChange: (patch: { kind?: string; severity?: MarkSeverity; note?: string | null }) => void
   onRemove: () => void
   onAddPhotos: (files: File[]) => Promise<void>
   onRemovePhoto: (url: string) => void
   onClose: () => void
 }) {
   const t = useTranslations('conditionMap')
+  // The kinds on offer: the ones not hidden, plus the mark's own kind even
+  // when it is, so a mark of a retired kind still says what it is.
+  const offered = types.filter((type) => !type.hidden || type.key === mark?.kind)
   const [note, setNote] = useState(mark?.note ?? '')
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -98,13 +107,13 @@ export function MarkEditor({
           <DialogTitle className="flex items-center gap-2">
             {mark && (
               <MarkIcon
-                kind={mark.kind as MarkKind}
+                type={markTypeOf(types, mark.kind)}
                 severity={mark.severity as MarkSeverity}
                 number={mark.number}
                 size={22}
               />
             )}
-            {mark ? t('markOn', { kind: t(`kinds.${mark.kind}`), area }) : t('edit')}
+            {mark ? t('markOn', { kind: markTypeOf(types, mark.kind).name, area }) : t('edit')}
           </DialogTitle>
           <DialogDescription>{readOnly ? t('readOnly') : t('description')}</DialogDescription>
         </DialogHeader>
@@ -116,7 +125,8 @@ export function MarkEditor({
                 {t('kind')}
               </legend>
               <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-                {MARK_KINDS.map((kind) => {
+                {offered.map((type) => {
+                  const kind = type.key
                   const active = mark.kind === kind
                   return (
                     <button
@@ -131,12 +141,18 @@ export function MarkEditor({
                           : 'border-input bg-background text-muted-foreground hover:bg-muted'
                       )}
                     >
-                      <MarkIcon kind={kind} severity={mark.severity as MarkSeverity} size={18} />
-                      <span className="truncate">{t(`kinds.${kind}`)}</span>
+                      <MarkIcon type={type} severity={mark.severity as MarkSeverity} size={18} />
+                      <span className="truncate">{type.name}</span>
                     </button>
                   )
                 })}
               </div>
+              <Link
+                href="/settings/templates?tab=conditionMap"
+                className="mt-1.5 inline-block text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+              >
+                {t('manageKinds')}
+              </Link>
             </fieldset>
 
             <fieldset disabled={readOnly || busy}>

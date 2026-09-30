@@ -18,7 +18,8 @@ import {
   VIEW_SIZE,
   type View,
 } from './drawingTypes'
-import { MARK_STYLE, type MarkKind, PREVIOUS_MARK_COLOR, type MarkSeverity } from './marks'
+import { PREVIOUS_MARK_COLOR, type MarkSeverity } from './marks'
+import type { MarkShape } from './markTypes'
 
 /**
  * Five views on one sheet.
@@ -56,8 +57,49 @@ export interface Composition {
   views: PlacedView[]
 }
 
+/**
+ * Which views a printed sheet shows. The full sheet is the check-in form;
+ * the plan view alone is the compact form a drop-off slip uses, and the two
+ * sides alone suit a car whose damage is all along its flanks.
+ */
+export const MAP_VIEW_SETS = ['all', 'top', 'sides'] as const
+export type MapViewSet = (typeof MAP_VIEW_SETS)[number]
+
+export function isMapViewSet(value: unknown): value is MapViewSet {
+  return typeof value === 'string' && (MAP_VIEW_SETS as readonly string[]).includes(value)
+}
+
 /** The arrangement for a body type; the same for every body. */
-export function composeViews(): Composition {
+export function composeViews(views: MapViewSet = 'all'): Composition {
+  if (views === 'top') return composeTopAlone()
+  if (views === 'sides') return composeSidesAlone()
+  return composeAllViews()
+}
+
+/** The plan view on its own, upright: the nose to the right, as it is drawn. */
+function composeTopAlone(): Composition {
+  const m = translate(0, -SIDE_CROP.y)
+  return {
+    width: VIEW_SIZE,
+    height: SIDE_CROP.h + LABEL_HEIGHT,
+    views: [
+      { view: 'top', transform: m, box: { x: 0, y: 0, width: VIEW_SIZE, height: SIDE_CROP.h } },
+    ],
+  }
+}
+
+/** The two sides stacked, the left over the right, as the full sheet has them. */
+function composeSidesAlone(): Composition {
+  const full = composeAllViews()
+  const views = full.views.filter((placed) => placed.view === 'left' || placed.view === 'right')
+  return {
+    width: VIEW_SIZE,
+    height: Math.max(...views.map((placed) => placed.box.y + placed.box.height)) + LABEL_HEIGHT,
+    views,
+  }
+}
+
+function composeAllViews(): Composition {
   const sideW = VIEW_SIZE
   const sideH = SIDE_CROP.h
   const endS = END_CROP.s * (sideH / END_CROP.s) // ends scaled to the side band's height
@@ -171,7 +213,9 @@ export function locateOnSheet(
 export interface MarkGlyphInput {
   x: number
   y: number
-  kind: MarkKind
+  /** How the mark's kind is drawn; see markStyleOf in markTypes.ts. */
+  shape: MarkShape
+  color: string
   severity: MarkSeverity
   number: number
   /** From an earlier visit: drawn in grey, still numbered. */
@@ -187,13 +231,12 @@ export interface MarkGlyphInput {
 export function markGlyph(input: MarkGlyphInput): DrawingShape[] {
   const r = input.size ?? 26
   const { x, y } = input
-  const style = MARK_STYLE[input.kind]
-  const color = input.previous ? PREVIOUS_MARK_COLOR : style.color
+  const color = input.previous ? PREVIOUS_MARK_COLOR : input.color
   const filled = input.severity === 'major' && !input.previous
   const fill = filled ? color : '#ffffff'
   const strokeWidth = r * 0.22
   const shapes: DrawingShape[] = []
-  switch (style.shape) {
+  switch (input.shape) {
     case 'circle':
       shapes.push({ type: 'circle', cx: x, cy: y, r, stroke: color, strokeWidth, fill })
       break

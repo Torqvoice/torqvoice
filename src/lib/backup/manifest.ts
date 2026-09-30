@@ -234,6 +234,15 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 85,
   },
+  // The workshop's kinds of mark on the condition map. Marks name a kind by
+  // its key rather than pointing at the row, so the order does not matter.
+  {
+    model: 'ConditionMarkType',
+    key: 'conditionMarkTypes',
+    option: 'workshopConfig',
+    restore: 'replace',
+    clearOrder: 85,
+  },
   {
     model: 'Webhook',
     key: 'webhooks',

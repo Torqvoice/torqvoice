@@ -859,7 +859,8 @@
       "quotation": "Quotation",
       "workOrders": "Work order",
       "certificates": "Inspection certificate",
-      "layout": "Layout"
+      "layout": "Layout",
+      "conditionMap": "Condition map"
     },
     "sections": {
       "documents": "Documents",
@@ -970,7 +971,8 @@
     "designerIntro": "Pick a starting point, then open the designer to change anything.",
     "designerHint": "Colors, fonts, spacing and every section live in the designer.",
     "certificatesDescription": "Design the certificate a completed inspection prints and shares.",
-    "workOrdersDescription": "Design the sheet a work order prints: what the customer signs and what the technician takes off the board."
+    "workOrdersDescription": "Design the sheet a work order prints: what the customer signs and what the technician takes off the board.",
+    "conditionMapDescription": "The kinds of mark your technicians draw on the condition map: their names, shapes and colours."
   },
   "payment": {
     "readMore": "Read More",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Always prints in the same place, so it cannot be moved.",
     "certificate": "Inspection certificate",
     "resultWidthHint": "Empty spans the row. Set points to make the band narrower; it then sits at the side the alignment picks, and in a column it takes the column's width.",
-    "work_order": "Work order"
+    "work_order": "Work order",
+    "conditionMapDrawing": "Drawing",
+    "conditionMapViews": "Views",
+    "conditionMapViewsAll": "All five",
+    "conditionMapViewsTop": "Top only",
+    "conditionMapViewsSides": "Sides only",
+    "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width."
   },
   "preview": {
     "title": "Brake Service & Oil Change",
@@ -2710,5 +2718,48 @@
     "failed": "Could not save the status",
     "messageEmptyHint": "Left empty, the text above is sent.",
     "useSuggested": "Edit this text"
+  },
+  "markTypes": {
+    "title": "Kinds of mark",
+    "description": "Rename or recolour the built-in kinds, hide the ones you never use, and add your own. Each kind has a shape as well as a colour, so it reads on a black-and-white print too.",
+    "cardTitle": "Kinds",
+    "add": "Add kind",
+    "addTitle": "New kind of mark",
+    "editTitle": "Edit kind of mark",
+    "dialogBody": "A name in your own words, a shape and a colour. Filled means a major mark.",
+    "previewHint": "Minor and major",
+    "name": "Name",
+    "namePlaceholder": "e.g. Curb rash",
+    "shape": "Shape",
+    "color": "Colour",
+    "customColor": "Hex colour",
+    "colorInvalid": "Enter a colour as six hex digits, like #2563eb",
+    "hidden": "Hidden from the picker",
+    "hiddenHint": "Marks of this kind still show and print.",
+    "hiddenBadge": "Hidden",
+    "builtin": "Built in",
+    "show": "Show in the picker",
+    "hide": "Hide from the picker",
+    "edit": "Edit",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "restore": "Restore",
+    "restoreTitle": "Restore \"{name}\"?",
+    "restoreBody": "The kind goes back to the name, shape and colour the app ships with.",
+    "remove": "Remove",
+    "removeTitle": "Remove \"{name}\"?",
+    "removeBody": "Only a kind no mark uses can be removed. Hide it if marks of it exist.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Saved",
+    "failed": "Could not save",
+    "shapes": {
+      "circle": "Circle",
+      "diamond": "Diamond",
+      "triangle": "Triangle",
+      "square": "Square",
+      "cross": "Cross",
+      "hex": "Hexagon"
+    }
   }
 }

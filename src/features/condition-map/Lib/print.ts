@@ -1,7 +1,13 @@
 import type { DrawingShape } from '@/features/invoice-designer/Spec/documentSpec'
 import { getBodyDrawing } from '../Drawings'
 import { type BodyType, type Panel, type View, VIEWS } from './drawingTypes'
-import { composeViews, type MarkGlyphInput, markPosition, sheetShapes } from './compose'
+import {
+  composeViews,
+  type MapViewSet,
+  type MarkGlyphInput,
+  markPosition,
+  sheetShapes,
+} from './compose'
 import {
   type ConditionMarkData,
   isBodyType,
@@ -12,6 +18,7 @@ import {
   numberedMarks,
   splitMarks,
 } from './marks'
+import { builtinMarkTypes, type MarkTypeRef, markStyleOf, markTypeOf } from './markTypes'
 
 /**
  * The condition map as a printed document draws it: the sheet of views with
@@ -23,10 +30,17 @@ import {
 export interface ConditionMapLabels {
   views: Partial<Record<View, string>>
   panels: Partial<Record<Panel, string>>
+  /** The built-in kinds' names in the reader's language. */
   kinds: Partial<Record<MarkKind, string>>
   severities: Partial<Record<MarkSeverity, string>>
   /** Appended to a legend row for a mark from an earlier visit. */
   previous: string
+  /**
+   * The workshop's catalogue of kinds, or a snapshot of it: what names and
+   * draws each mark. Absent, the built-in kinds in their own shapes, named
+   * from `kinds`.
+   */
+  types?: readonly MarkTypeRef[]
 }
 
 export interface ConditionMapRow {
@@ -47,6 +61,8 @@ export interface ConditionMapPrint {
   rows: ConditionMapRow[]
   /** How many of the rows are this sheet's own marks. */
   ownCount: number
+  /** What it was drawn from, so a design can draw it again at its own size and views. */
+  source: ConditionMapPrintInput
 }
 
 export interface ConditionMapPrintInput {
@@ -65,6 +81,8 @@ export interface ConditionMapPrintInput {
   labels: ConditionMapLabels
   /** The width the drawing prints at, in points. */
   width: number
+  /** Which views the sheet shows; the full sheet unless a design says otherwise. */
+  views?: MapViewSet
 }
 
 /**
@@ -117,7 +135,8 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
   if (shown.length === 0) return null
 
   const drawing = getBodyDrawing(body)
-  const composition = composeViews()
+  const composition = composeViews(input.views ?? 'all')
+  const types = input.labels.types ?? builtinMarkTypes(input.labels.kinds as Record<string, string>)
   const ownIds = new Set(own.map((m) => m.id))
   const glyphs: MarkGlyphInput[] = []
   const rows: ConditionMapRow[] = []
@@ -129,7 +148,7 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
       glyphs.push({
         x: at[0],
         y: at[1],
-        kind: mark.kind as MarkKind,
+        ...markStyleOf(types, mark.kind),
         severity: mark.severity as MarkSeverity,
         number: n,
         previous: isPrevious,
@@ -139,7 +158,7 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
     rows.push({
       n: String(n),
       area: isPrevious ? `${area} (${input.labels.previous})` : area,
-      kind: input.labels.kinds[mark.kind as MarkKind] ?? mark.kind,
+      kind: markTypeOf(types, mark.kind).name,
       severity: input.labels.severities[mark.severity as MarkSeverity] ?? mark.severity,
       note: mark.note ?? '',
       previous: isPrevious,
@@ -156,5 +175,6 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
     shapes,
     rows,
     ownCount: own.length,
+    source: input,
   }
 }

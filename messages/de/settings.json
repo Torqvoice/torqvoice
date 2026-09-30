@@ -859,7 +859,8 @@
       "quotation": "Angebot",
       "workOrders": "Arbeitsauftrag",
       "certificates": "Inspektionszertifikat",
-      "layout": "Layout"
+      "layout": "Layout",
+      "conditionMap": "Zustandskarte"
     },
     "sections": {
       "documents": "Dokumente",
@@ -970,7 +971,8 @@
     "designerIntro": "Wählen Sie einen Ausgangspunkt und öffnen Sie den Designer, um alles zu ändern.",
     "designerHint": "Farben, Schriften, Abstände und alle Abschnitte liegen im Designer.",
     "certificatesDescription": "Gestalten Sie das Zertifikat, das eine abgeschlossene Inspektion druckt und teilt.",
-    "workOrdersDescription": "Gestalten Sie das Blatt, das ein Arbeitsauftrag druckt: was der Kunde unterschreibt und was der Techniker von der Tafel nimmt."
+    "workOrdersDescription": "Gestalten Sie das Blatt, das ein Arbeitsauftrag druckt: was der Kunde unterschreibt und was der Techniker von der Tafel nimmt.",
+    "conditionMapDescription": "Die Markierungsarten, die Ihre Techniker auf der Zustandskarte setzen: Namen, Formen und Farben."
   },
   "payment": {
     "readMore": "Mehr erfahren",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Wird immer an derselben Stelle gedruckt und kann nicht verschoben werden.",
     "certificate": "Inspektionszertifikat",
     "resultWidthHint": "Leer füllt die Zeile. Mit einem Wert wird das Band schmaler und sitzt an der Seite, die die Ausrichtung wählt; in einer Spalte nimmt es die Spaltenbreite.",
-    "work_order": "Arbeitsauftrag"
+    "work_order": "Arbeitsauftrag",
+    "conditionMapDrawing": "Zeichnung",
+    "conditionMapViews": "Ansichten",
+    "conditionMapViewsAll": "Alle fünf",
+    "conditionMapViewsTop": "Nur von oben",
+    "conditionMapViewsSides": "Nur die Seiten",
+    "conditionMapWidthHint": "Leer füllt die Zeile. Punkte angeben, um die Zeichnung zu verkleinern; sie sitzt dann nach der Ausrichtung, und die Legende behält die volle Breite."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",
@@ -2710,5 +2718,48 @@
     "failed": "Der Status konnte nicht gespeichert werden",
     "messageEmptyHint": "Bleibt das Feld leer, wird der Text oben gesendet.",
     "useSuggested": "Diesen Text bearbeiten"
+  },
+  "markTypes": {
+    "title": "Markierungsarten",
+    "description": "Benennen oder färben Sie die eingebauten Arten um, blenden Sie ungenutzte aus und fügen Sie eigene hinzu. Jede Art hat neben der Farbe eine Form, damit sie auch im Schwarz-Weiß-Druck lesbar ist.",
+    "cardTitle": "Arten",
+    "add": "Art hinzufügen",
+    "addTitle": "Neue Markierungsart",
+    "editTitle": "Markierungsart bearbeiten",
+    "dialogBody": "Ein Name in Ihren Worten, eine Form und eine Farbe. Gefüllt bedeutet eine schwere Markierung.",
+    "previewHint": "Leicht und schwer",
+    "name": "Name",
+    "namePlaceholder": "z. B. Bordsteinschaden",
+    "shape": "Form",
+    "color": "Farbe",
+    "customColor": "Hex-Farbe",
+    "colorInvalid": "Farbe als sechs Hex-Zeichen angeben, z. B. #2563eb",
+    "hidden": "In der Auswahl ausgeblendet",
+    "hiddenHint": "Markierungen dieser Art werden weiterhin angezeigt und gedruckt.",
+    "hiddenBadge": "Ausgeblendet",
+    "builtin": "Eingebaut",
+    "show": "In der Auswahl zeigen",
+    "hide": "Aus der Auswahl ausblenden",
+    "edit": "Bearbeiten",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "restore": "Zurücksetzen",
+    "restoreTitle": "„{name}“ zurücksetzen?",
+    "restoreBody": "Die Art erhält wieder Name, Form und Farbe, wie die App sie mitbringt.",
+    "remove": "Entfernen",
+    "removeTitle": "„{name}“ entfernen?",
+    "removeBody": "Nur eine Art, die keine Markierung verwendet, kann entfernt werden. Blenden Sie sie aus, wenn es Markierungen davon gibt.",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "saved": "Gespeichert",
+    "failed": "Konnte nicht speichern",
+    "shapes": {
+      "circle": "Kreis",
+      "diamond": "Raute",
+      "triangle": "Dreieck",
+      "square": "Quadrat",
+      "cross": "Kreuz",
+      "hex": "Sechseck"
+    }
   }
 }

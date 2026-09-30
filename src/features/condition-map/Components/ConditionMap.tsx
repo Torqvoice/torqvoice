@@ -20,7 +20,8 @@ import {
   placedPanels,
 } from '../Lib/compose'
 import type { BodyType, Panel, View } from '../Lib/drawingTypes'
-import { isPanel, isView, type MarkKind, type MarkSeverity } from '../Lib/marks'
+import { isPanel, isView, type MarkSeverity } from '../Lib/marks'
+import { type MarkTypeRef, markStyleOf, markTypeOf } from '../Lib/markTypes'
 
 /** A mark as the drawing shows it: where, what, and its number. */
 export interface MapMark {
@@ -57,6 +58,7 @@ const GLYPH = 34
 export function ConditionMap({
   body,
   marks,
+  types,
   selectedId,
   focusView,
   readOnly = false,
@@ -67,6 +69,8 @@ export function ConditionMap({
 }: {
   body: BodyType
   marks: MapMark[]
+  /** The workshop's kinds of mark: what draws and names each one. */
+  types: readonly MarkTypeRef[]
   selectedId?: string | null
   /** Show one view large instead of the whole sheet. */
   focusView?: View | null
@@ -169,7 +173,7 @@ export function ConditionMap({
     return markGlyph({
       x: at[0],
       y: at[1],
-      kind: mark.kind as MarkKind,
+      ...markStyleOf(types, mark.kind),
       severity: mark.severity as MarkSeverity,
       number: mark.number,
       previous: mark.previous,
@@ -248,7 +252,7 @@ export function ConditionMap({
             tabIndex={0}
             aria-label={t('markLabel', {
               n: mark.number,
-              kind: t(`kinds.${mark.kind}`),
+              kind: markTypeOf(types, mark.kind).name,
               area: '',
             })}
             className={cn(
@@ -359,14 +363,15 @@ export function Shape({ shape }: { shape: DrawingShape }) {
 
 /** A kind's glyph on its own, for a chip or a legend row. */
 export function MarkIcon({
-  kind,
+  type,
   severity,
   previous = false,
   number,
   size = 18,
   className,
 }: {
-  kind: MarkKind
+  /** The kind, or anything with its shape and colour. */
+  type: Pick<MarkTypeRef, 'shape' | 'color'>
   severity: MarkSeverity
   previous?: boolean
   number?: number
@@ -374,7 +379,15 @@ export function MarkIcon({
   className?: string
 }) {
   const r = 26
-  const shapes = markGlyph({ x: 40, y: 44, kind, severity, number: number ?? 0, previous, size: r })
+  const shapes = markGlyph({
+    x: 40,
+    y: 44,
+    ...markStyleOf([{ key: '', name: '', ...type }], ''),
+    severity,
+    number: number ?? 0,
+    previous,
+    size: r,
+  })
   const withNumber = number !== undefined
   // Without a number, only the glyph itself: the last two shapes are the disc and its digit.
   const drawn = withNumber ? shapes : shapes.slice(0, -2)

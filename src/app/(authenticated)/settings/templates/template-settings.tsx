@@ -27,6 +27,8 @@ import {
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
+import { MarkTypeSettings } from '@/features/condition-map/Components/MarkTypeSettings'
+import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import { DesignPreview, PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 import {
@@ -48,15 +50,25 @@ interface TemplateValues {
   logoSize: number
 }
 
-type TabType = 'invoice' | 'quotation' | 'workOrders' | 'certificates' | 'inspections' | 'sms'
+type TabType =
+  | 'invoice'
+  | 'quotation'
+  | 'workOrders'
+  | 'certificates'
+  | 'inspections'
+  | 'conditionMap'
+  | 'sms'
 
 type SectionType = 'documents' | 'checklists' | 'messages'
 
 /** The printed documents, in the order their chips run. */
 const DOCUMENT_TABS = ['invoice', 'quotation', 'workOrders', 'certificates'] as const
 
+/** The checklists and what they draw on, in the order their chips run. */
+const CHECKLIST_TABS = ['inspections', 'conditionMap'] as const
+
 function sectionOf(tab: TabType): SectionType {
-  if (tab === 'inspections') return 'checklists'
+  if (tab === 'inspections' || tab === 'conditionMap') return 'checklists'
   if (tab === 'sms') return 'messages'
   return 'documents'
 }
@@ -539,6 +551,7 @@ export function TemplateSettings({
   quoteLayoutConfig,
   savedDesigns = [],
   activeDesigns = { invoice: '', quote: '', certificate: '', work_order: '' },
+  markTypes = [],
 }: {
   initialInvoiceValues: TemplateValues
   initialQuoteValues: TemplateValues
@@ -553,6 +566,8 @@ export function TemplateSettings({
   quoteLayoutConfig?: InvoiceLayoutConfig
   savedDesigns?: SavedDesign[]
   activeDesigns?: { invoice: string; quote: string; certificate: string; work_order: string }
+  /** The workshop's kinds of mark on the condition map. */
+  markTypes?: MarkType[]
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -663,6 +678,28 @@ export function TemplateSettings({
           ))}
         </div>
 
+        {section === 'checklists' && (
+          <div role="tablist" className="flex gap-2 overflow-x-auto">
+            {CHECKLIST_TABS.map((item) => (
+              <button
+                key={item}
+                type="button"
+                role="tab"
+                aria-selected={tab === item}
+                onClick={() => setTab(item)}
+                className={cn(
+                  'shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-medium transition-colors',
+                  tab === item
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'bg-card text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t(`templates.tabs.${item}`)}
+              </button>
+            ))}
+          </div>
+        )}
+
         {section === 'documents' && (
           <div role="tablist" className="flex gap-2 overflow-x-auto">
             {DOCUMENT_TABS.map((doc) => (
@@ -689,13 +726,15 @@ export function TemplateSettings({
           <p className="text-sm text-muted-foreground">
             {tab === 'inspections'
               ? t('templates.inspectionsDescription')
-              : tab === 'certificates'
-                ? t('templates.certificatesDescription')
-                : tab === 'workOrders'
-                  ? t('templates.workOrdersDescription')
-                  : tab === 'sms'
-                    ? t('templates.smsDescription')
-                    : t('templates.invoiceDescription')}
+              : tab === 'conditionMap'
+                ? t('templates.conditionMapDescription')
+                : tab === 'certificates'
+                  ? t('templates.certificatesDescription')
+                  : tab === 'workOrders'
+                    ? t('templates.workOrdersDescription')
+                    : tab === 'sms'
+                      ? t('templates.smsDescription')
+                      : t('templates.invoiceDescription')}
           </p>
           {/* Colors live here and arrangement lives there, which is easy to
               get lost in. Each page says where the other half is. */}
@@ -712,6 +751,8 @@ export function TemplateSettings({
 
       {tab === 'inspections' ? (
         <TemplateListClient templates={inspectionTemplates} checklistLanguage={checklistLanguage} />
+      ) : tab === 'conditionMap' ? (
+        <MarkTypeSettings types={markTypes} />
       ) : tab === 'workOrders' ? (
         <ReadOnlyWrapper>
           <TemplateTab

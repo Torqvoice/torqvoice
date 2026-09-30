@@ -188,7 +188,11 @@
     "signature_remove": "İmza kaldırıldı",
     "conditionMark_add": "Durum işareti eklendi",
     "conditionMark_remove": "Durum işareti kaldırıldı",
-    "conditionMark_onInvoice": "Faturada durum haritası"
+    "conditionMark_onInvoice": "Faturada durum haritası",
+    "settings_markType_create": "İşaret türü eklendi",
+    "settings_markType_update": "İşaret türü değiştirildi",
+    "settings_markType_remove": "İşaret türü kaldırıldı",
+    "settings_markType_reorder": "İşaret türleri yeniden sıralandı"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",

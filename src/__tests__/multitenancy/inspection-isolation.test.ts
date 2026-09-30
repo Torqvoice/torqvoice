@@ -35,6 +35,8 @@ vi.mock('@/lib/files/manager', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
+    // Completing freezes the workshop's kinds of mark; nobody here changed any.
+    conditionMarkType: { findMany: vi.fn().mockResolvedValue([]) },
     inspection: {
       findFirst: vi.fn(),
       updateMany: vi.fn(),

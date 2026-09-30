@@ -188,7 +188,11 @@
     "signature_remove": "Firma rimossa",
     "conditionMark_add": "Segno di stato aggiunto",
     "conditionMark_remove": "Segno di stato rimosso",
-    "conditionMark_onInvoice": "Mappa dello stato in fattura"
+    "conditionMark_onInvoice": "Mappa dello stato in fattura",
+    "settings_markType_create": "Tipo di segno aggiunto",
+    "settings_markType_update": "Tipo di segno modificato",
+    "settings_markType_remove": "Tipo di segno rimosso",
+    "settings_markType_reorder": "Tipi di segno riordinati"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",

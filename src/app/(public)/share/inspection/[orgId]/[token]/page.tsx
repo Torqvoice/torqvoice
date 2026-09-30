@@ -12,8 +12,11 @@ import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { templateConfigFromSource } from '@/features/invoice-designer/Lib/designSource'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import { buildCertificatePrintSpec } from '@/features/inspections/Pdf/buildCertificatePrint'
-import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
-import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
+import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
+import {
+  conditionMapLabelsFor,
+  loadVehicleConditionMarks,
+} from '@/features/condition-map/Lib/loadMarks.server'
 import { certificateSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import {
   certificateDesignSource,
@@ -178,7 +181,15 @@ export default async function PublicInspectionPage({
       },
       conditionMarks: hasMap ? await loadVehicleConditionMarks(orgId, inspection.vehicleId) : [],
       bodyType: hasMap ? inspection.vehicle.bodyType : null,
-      conditionMapLabels: hasMap ? await loadConditionMapLabels(locale) : undefined,
+      conditionMapLabels: hasMap
+        ? await conditionMapLabelsFor(
+            orgId,
+            locale,
+            Array.isArray(inspection.markTypesSnapshot)
+              ? (inspection.markTypesSnapshot as unknown as MarkTypeRow[])
+              : null
+          )
+        : undefined,
       workshop: { ...workshop, slogan: settingsMap['workshop.slogan'] || undefined },
       labels,
       logoDataUri: toPublic(documentLogoPath(settingsMap, 'certificate')) || undefined,

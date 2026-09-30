@@ -188,7 +188,11 @@
     "signature_remove": "Removed Signature",
     "conditionMark_add": "Added a condition mark",
     "conditionMark_remove": "Removed a condition mark",
-    "conditionMark_onInvoice": "Condition map on invoice"
+    "conditionMark_onInvoice": "Condition map on invoice",
+    "settings_markType_create": "Added a kind of mark",
+    "settings_markType_update": "Changed a kind of mark",
+    "settings_markType_remove": "Removed a kind of mark",
+    "settings_markType_reorder": "Reordered the kinds of mark"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",

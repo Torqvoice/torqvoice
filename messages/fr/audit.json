@@ -188,7 +188,11 @@
     "signature_remove": "Signature supprimée",
     "conditionMark_add": "Marque d'état ajoutée",
     "conditionMark_remove": "Marque d'état supprimée",
-    "conditionMark_onInvoice": "Carte d'état sur la facture"
+    "conditionMark_onInvoice": "Carte d'état sur la facture",
+    "settings_markType_create": "Type de marque ajouté",
+    "settings_markType_update": "Type de marque modifié",
+    "settings_markType_remove": "Type de marque supprimé",
+    "settings_markType_reorder": "Types de marque réordonnés"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",

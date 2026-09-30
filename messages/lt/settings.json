@@ -859,7 +859,8 @@
       "quotation": "Pasiūlymas",
       "workOrders": "Darbo užsakymas",
       "certificates": "Apžiūros sertifikatas",
-      "layout": "Išdėstymas"
+      "layout": "Išdėstymas",
+      "conditionMap": "Būklės žemėlapis"
     },
     "sections": {
       "documents": "Dokumentai",
@@ -970,7 +971,8 @@
     "designerIntro": "Pasirinkite pradžios tašką ir atverkite dizainerį, kad pakeistumėte viską.",
     "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje.",
     "certificatesDescription": "Sukurkite sertifikatą, kurį spausdina ir dalijasi užbaigta apžiūra.",
-    "workOrdersDescription": "Sukurkite lapą, kurį spausdina darbo užsakymas: ką pasirašo klientas ir ką technikas pasiima nuo lentos."
+    "workOrdersDescription": "Sukurkite lapą, kurį spausdina darbo užsakymas: ką pasirašo klientas ir ką technikas pasiima nuo lentos.",
+    "conditionMapDescription": "Žymų tipai, kuriuos technikai piešia būklės žemėlapyje: pavadinimai, formos ir spalvos."
   },
   "payment": {
     "readMore": "Skaityti daugiau",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Visada spausdinama toje pačioje vietoje, todėl negalima perkelti.",
     "certificate": "Apžiūros sertifikatas",
     "resultWidthHint": "Tuščia užima visą eilutę. Nurodžius taškus juosta susiaurėja ir atsiduria lygiavimo pusėje; stulpelyje ji užima stulpelio plotį.",
-    "work_order": "Darbo užsakymas"
+    "work_order": "Darbo užsakymas",
+    "conditionMapDrawing": "Brėžinys",
+    "conditionMapViews": "Vaizdai",
+    "conditionMapViewsAll": "Visi penki",
+    "conditionMapViewsTop": "Tik iš viršaus",
+    "conditionMapViewsSides": "Tik šonai",
+    "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",
@@ -2710,5 +2718,48 @@
     "failed": "Nepavyko išsaugoti būsenos",
     "messageEmptyHint": "Palikus tuščią, siunčiamas aukščiau esantis tekstas.",
     "useSuggested": "Redaguoti šį tekstą"
+  },
+  "markTypes": {
+    "title": "Žymų tipai",
+    "description": "Pervadinkite ar perspalvinkite įtaisytus tipus, paslėpkite nenaudojamus ir pridėkite savų. Kiekvienas tipas turi formą ir spalvą, todėl skaitomas ir nespalvotame spaudinyje.",
+    "cardTitle": "Tipai",
+    "add": "Pridėti tipą",
+    "addTitle": "Naujas žymos tipas",
+    "editTitle": "Redaguoti žymos tipą",
+    "dialogBody": "Pavadinimas savais žodžiais, forma ir spalva. Užpildyta reiškia rimtą žymą.",
+    "previewHint": "Nedidelė ir rimta",
+    "name": "Pavadinimas",
+    "namePlaceholder": "pvz., Bortelio įbrėžimas",
+    "shape": "Forma",
+    "color": "Spalva",
+    "customColor": "Hex spalva",
+    "colorInvalid": "Įveskite spalvą kaip šešis hex simbolius, pvz., #2563eb",
+    "hidden": "Paslėpta parinkiklyje",
+    "hiddenHint": "Šio tipo žymos vis tiek rodomos ir spausdinamos.",
+    "hiddenBadge": "Paslėpta",
+    "builtin": "Įtaisyta",
+    "show": "Rodyti parinkiklyje",
+    "hide": "Slėpti parinkiklyje",
+    "edit": "Redaguoti",
+    "moveUp": "Aukštyn",
+    "moveDown": "Žemyn",
+    "restore": "Atkurti",
+    "restoreTitle": "Atkurti „{name}“?",
+    "restoreBody": "Tipas grįžta prie programos pateikto pavadinimo, formos ir spalvos.",
+    "remove": "Pašalinti",
+    "removeTitle": "Pašalinti „{name}“?",
+    "removeBody": "Pašalinti galima tik tipą, kurio nenaudoja jokia žyma. Jei tokių žymų yra, paslėpkite jį.",
+    "save": "Išsaugoti",
+    "cancel": "Atšaukti",
+    "saved": "Išsaugota",
+    "failed": "Nepavyko išsaugoti",
+    "shapes": {
+      "circle": "Apskritimas",
+      "diamond": "Rombas",
+      "triangle": "Trikampis",
+      "square": "Kvadratas",
+      "cross": "Kryžius",
+      "hex": "Šešiakampis"
+    }
   }
 }

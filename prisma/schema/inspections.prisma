@@ -140,6 +140,10 @@ model Inspection {
   /// a redrawn signature never changes a certificate already issued.
   signatureSnapshotId String?
   signatureSnapshot   DocumentAssetSnapshot?  @relation(fields: [signatureSnapshotId], references: [id], onDelete: SetNull)
+  /// The condition map's kinds of mark as they were named and drawn at
+  /// completion, for the same reason: a kind renamed later never changes a
+  /// certificate already issued. Null before the kinds could be changed.
+  markTypesSnapshot   Json?
 
   organizationId String
 

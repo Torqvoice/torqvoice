@@ -188,7 +188,11 @@
     "signature_remove": "Unterschrift entfernt",
     "conditionMark_add": "Zustandsmarkierung hinzugefügt",
     "conditionMark_remove": "Zustandsmarkierung entfernt",
-    "conditionMark_onInvoice": "Zustandskarte auf Rechnung"
+    "conditionMark_onInvoice": "Zustandskarte auf Rechnung",
+    "settings_markType_create": "Markierungsart hinzugefügt",
+    "settings_markType_update": "Markierungsart geändert",
+    "settings_markType_remove": "Markierungsart entfernt",
+    "settings_markType_reorder": "Markierungsarten neu geordnet"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",

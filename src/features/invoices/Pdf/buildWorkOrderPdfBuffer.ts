@@ -8,7 +8,7 @@ import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { WorkOrderPDF } from '@/features/vehicles/Components/invoice-pdf/WorkOrderPDF'
 import { assembleWorkOrderPrint, workOrderNumberOf } from '../Lib/assembleWorkOrderPrint'
-import { loadConditionMapLabels } from '@/features/condition-map/Lib/labels'
+import { conditionMapLabelsFor } from '@/features/condition-map/Lib/loadMarks.server'
 
 /** The stage names the sheet prints when the workshop has no name of its own for the status. */
 const STAGE_LABEL_KEYS: Record<string, string> = {
@@ -32,7 +32,7 @@ export async function buildWorkOrderPdfBuffer(
 
   const [labels, conditionMapLabels] = await Promise.all([
     loadPrintLabels(locale, assembly.labelSettings, 'work_order'),
-    loadConditionMapLabels(locale),
+    conditionMapLabelsFor(assembly.organizationId, locale),
   ])
   const features = await getFeatures(assembly.organizationId)
   const torqvoiceLogoDataUri = features.brandingRemoved

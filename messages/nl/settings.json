@@ -859,7 +859,8 @@
       "quotation": "Offerte",
       "workOrders": "Werkorder",
       "certificates": "Inspectiecertificaat",
-      "layout": "Indeling"
+      "layout": "Indeling",
+      "conditionMap": "Staatkaart"
     },
     "sections": {
       "documents": "Documenten",
@@ -970,7 +971,8 @@
     "designerIntro": "Kies een startpunt en open de ontwerper om alles aan te passen.",
     "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper.",
     "certificatesDescription": "Ontwerp het certificaat dat een afgeronde inspectie afdrukt en deelt.",
-    "workOrdersDescription": "Ontwerp het blad dat een werkorder afdrukt: wat de klant tekent en wat de monteur van het bord pakt."
+    "workOrdersDescription": "Ontwerp het blad dat een werkorder afdrukt: wat de klant tekent en wat de monteur van het bord pakt.",
+    "conditionMapDescription": "De markeringstypen die uw monteurs op de staatkaart tekenen: namen, vormen en kleuren."
   },
   "payment": {
     "readMore": "Lees meer",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Wordt altijd op dezelfde plek afgedrukt en kan niet worden verplaatst.",
     "certificate": "Inspectiecertificaat",
     "resultWidthHint": "Leeg vult de rij. Met een waarde wordt de band smaller en komt aan de kant die de uitlijning kiest; in een kolom neemt hij de kolombreedte.",
-    "work_order": "Werkorder"
+    "work_order": "Werkorder",
+    "conditionMapDrawing": "Tekening",
+    "conditionMapViews": "Aanzichten",
+    "conditionMapViewsAll": "Alle vijf",
+    "conditionMapViewsTop": "Alleen bovenaanzicht",
+    "conditionMapViewsSides": "Alleen de zijkanten",
+    "conditionMapWidthHint": "Leeg vult de rij. Geef punten op om de tekening kleiner te maken; hij staat dan waar de uitlijning hem zet en de legenda houdt de volle breedte."
   },
   "preview": {
     "title": "Remservice en oliewissel",
@@ -2710,5 +2718,48 @@
     "failed": "De status kon niet worden opgeslagen",
     "messageEmptyHint": "Blijft het veld leeg, dan wordt de tekst hierboven verstuurd.",
     "useSuggested": "Deze tekst bewerken"
+  },
+  "markTypes": {
+    "title": "Markeringstypen",
+    "description": "Hernoem of herkleur de ingebouwde typen, verberg wat u nooit gebruikt en voeg eigen typen toe. Elk type heeft naast een kleur een vorm, zodat het ook op een zwart-witafdruk leesbaar is.",
+    "cardTitle": "Typen",
+    "add": "Type toevoegen",
+    "addTitle": "Nieuw markeringstype",
+    "editTitle": "Markeringstype bewerken",
+    "dialogBody": "Een naam in uw eigen woorden, een vorm en een kleur. Gevuld betekent een ernstige markering.",
+    "previewHint": "Licht en ernstig",
+    "name": "Naam",
+    "namePlaceholder": "bijv. Stoeprandschade",
+    "shape": "Vorm",
+    "color": "Kleur",
+    "customColor": "Hex-kleur",
+    "colorInvalid": "Voer de kleur in als zes hex-tekens, zoals #2563eb",
+    "hidden": "Verborgen in de kiezer",
+    "hiddenHint": "Markeringen van dit type worden nog steeds getoond en afgedrukt.",
+    "hiddenBadge": "Verborgen",
+    "builtin": "Ingebouwd",
+    "show": "Tonen in de kiezer",
+    "hide": "Verbergen uit de kiezer",
+    "edit": "Bewerken",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "restore": "Herstellen",
+    "restoreTitle": "\"{name}\" herstellen?",
+    "restoreBody": "Het type krijgt de naam, vorm en kleur terug waarmee de app wordt geleverd.",
+    "remove": "Verwijderen",
+    "removeTitle": "\"{name}\" verwijderen?",
+    "removeBody": "Alleen een type dat geen enkele markering gebruikt kan worden verwijderd. Verberg het als er markeringen van bestaan.",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "saved": "Opgeslagen",
+    "failed": "Kon niet opslaan",
+    "shapes": {
+      "circle": "Cirkel",
+      "diamond": "Ruit",
+      "triangle": "Driehoek",
+      "square": "Vierkant",
+      "cross": "Kruis",
+      "hex": "Zeshoek"
+    }
   }
 }

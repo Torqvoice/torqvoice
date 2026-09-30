@@ -859,7 +859,8 @@
       "quotation": "Preventivo",
       "workOrders": "Ordine di lavoro",
       "certificates": "Certificato di ispezione",
-      "layout": "Layout"
+      "layout": "Layout",
+      "conditionMap": "Mappa dello stato"
     },
     "sections": {
       "documents": "Documenti",
@@ -970,7 +971,8 @@
     "designerIntro": "Scegli un punto di partenza, poi apri il designer per cambiare tutto.",
     "designerHint": "Colori, caratteri, spaziature e tutte le sezioni sono nel designer.",
     "certificatesDescription": "Progetta il certificato che un'ispezione completata stampa e condivide.",
-    "workOrdersDescription": "Progetta il foglio che stampa un ordine di lavoro: ciò che firma il cliente e ciò che il tecnico prende dalla bacheca."
+    "workOrdersDescription": "Progetta il foglio che stampa un ordine di lavoro: ciò che firma il cliente e ciò che il tecnico prende dalla bacheca.",
+    "conditionMapDescription": "I tipi di segno che i tecnici disegnano sulla mappa dello stato: nomi, forme e colori."
   },
   "payment": {
     "readMore": "Scopri di più",
@@ -2261,7 +2263,13 @@
     "fieldFixedSlot": "Viene sempre stampato nello stesso punto, quindi non può essere spostato.",
     "certificate": "Certificato di ispezione",
     "resultWidthHint": "Vuoto occupa tutta la riga. Un valore restringe la fascia, che si posiziona sul lato scelto dall'allineamento; in una colonna prende la larghezza della colonna.",
-    "work_order": "Ordine di lavoro"
+    "work_order": "Ordine di lavoro",
+    "conditionMapDrawing": "Disegno",
+    "conditionMapViews": "Viste",
+    "conditionMapViewsAll": "Tutte e cinque",
+    "conditionMapViewsTop": "Solo dall’alto",
+    "conditionMapViewsSides": "Solo i lati",
+    "conditionMapWidthHint": "Vuoto occupa tutta la riga. Indica i punti per rimpicciolire il disegno; si posiziona secondo l’allineamento e la legenda mantiene tutta la larghezza."
   },
   "preview": {
     "title": "Servizio freni e cambio olio",
@@ -2710,5 +2718,48 @@
     "failed": "Impossibile salvare lo stato",
     "messageEmptyHint": "Se lasciato vuoto, viene inviato il testo qui sopra.",
     "useSuggested": "Modifica questo testo"
+  },
+  "markTypes": {
+    "title": "Tipi di segno",
+    "description": "Rinomina o ricolora i tipi integrati, nascondi quelli che non usi mai e aggiungi i tuoi. Ogni tipo ha una forma oltre a un colore, così si distingue anche su una stampa in bianco e nero.",
+    "cardTitle": "Tipi",
+    "add": "Aggiungi tipo",
+    "addTitle": "Nuovo tipo di segno",
+    "editTitle": "Modifica tipo di segno",
+    "dialogBody": "Un nome con parole tue, una forma e un colore. Pieno significa un segno grave.",
+    "previewHint": "Lieve e grave",
+    "name": "Nome",
+    "namePlaceholder": "es. Strisciata sul cordolo",
+    "shape": "Forma",
+    "color": "Colore",
+    "customColor": "Colore hex",
+    "colorInvalid": "Inserisci il colore come sei cifre hex, ad esempio #2563eb",
+    "hidden": "Nascosto nel selettore",
+    "hiddenHint": "I segni di questo tipo vengono comunque mostrati e stampati.",
+    "hiddenBadge": "Nascosto",
+    "builtin": "Integrato",
+    "show": "Mostra nel selettore",
+    "hide": "Nascondi dal selettore",
+    "edit": "Modifica",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù",
+    "restore": "Ripristina",
+    "restoreTitle": "Ripristinare «{name}»?",
+    "restoreBody": "Il tipo torna al nome, alla forma e al colore forniti con l'app.",
+    "remove": "Rimuovi",
+    "removeTitle": "Rimuovere «{name}»?",
+    "removeBody": "Si può rimuovere solo un tipo che nessun segno usa. Nascondilo se esistono segni di questo tipo.",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "saved": "Salvato",
+    "failed": "Impossibile salvare",
+    "shapes": {
+      "circle": "Cerchio",
+      "diamond": "Rombo",
+      "triangle": "Triangolo",
+      "square": "Quadrato",
+      "cross": "Croce",
+      "hex": "Esagono"
+    }
   }
 }

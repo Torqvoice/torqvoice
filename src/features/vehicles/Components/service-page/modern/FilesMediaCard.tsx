@@ -226,6 +226,7 @@ export function FilesMediaCard({
                   <ConditionMapCard
                     vehicle={{ id: conditionMap.vehicleId, bodyType: conditionMap.bodyType }}
                     scope={mapScope}
+                    types={conditionMap.types}
                     initialMarks={conditionMap.marks}
                     serviceType={serviceType}
                     onCountChange={(own) => setMarkCount(own)}

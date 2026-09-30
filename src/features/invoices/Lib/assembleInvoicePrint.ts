@@ -57,7 +57,10 @@ import {
   type IssuedInvoiceData,
 } from './issuedInvoice'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
-import { loadVisitConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
+import {
+  loadMarkTypeRows,
+  loadVisitConditionMap,
+} from '@/features/condition-map/Lib/loadMarks.server'
 
 const PARTY_SELECT = {
   name: true,
@@ -382,7 +385,15 @@ async function assembleLive(
     loadVisitConditionMap(organizationId, record.vehicleId, {
       serviceRecordId: record.id,
       linkedInspectionId: record.inspectionId,
-    }).then((map) => (map ? { ...map, onInvoice: record.conditionMapOnInvoice } : null)),
+    }).then(async (map) =>
+      map
+        ? {
+            ...map,
+            onInvoice: record.conditionMapOnInvoice,
+            types: await loadMarkTypeRows(organizationId),
+          }
+        : null
+    ),
   ])
   const { designSource, logoDataUri } = look
 

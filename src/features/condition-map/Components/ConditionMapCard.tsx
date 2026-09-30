@@ -36,7 +36,6 @@ import {
 import { BODY_TYPES, type BodyType, type View, VIEWS } from '../Lib/drawingTypes'
 import {
   type ConditionMarkData,
-  type MarkKind,
   type MarkScope,
   type MarkSeverity,
   bodyTypeFor,
@@ -45,6 +44,7 @@ import {
   splitMarks,
 } from '../Lib/marks'
 import { ConditionMap, type MapMark, type MapTap, MarkIcon } from './ConditionMap'
+import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkEditor } from './MarkEditor'
 
 /**
@@ -60,6 +60,7 @@ import { MarkEditor } from './MarkEditor'
 export function ConditionMapCard({
   vehicle,
   scope,
+  types,
   initialMarks,
   readOnly = false,
   serviceType = 'automotive',
@@ -68,6 +69,8 @@ export function ConditionMapCard({
 }: {
   vehicle: { id: string; bodyType: string | null }
   scope: MarkScope
+  /** The workshop's kinds of mark, in the reader's language. */
+  types: readonly MarkType[]
   initialMarks: ConditionMarkData[]
   readOnly?: boolean
   serviceType?: 'automotive' | 'marine' | string
@@ -140,7 +143,8 @@ export function ConditionMapCard({
         panel: tap.panel,
         x: tap.x,
         y: tap.y,
-        kind: 'dent',
+        // The first kind the workshop offers; the editor opens to change it.
+        kind: types.find((type) => !type.hidden)?.key ?? 'dent',
         severity: 'minor',
       })
       if (!result.success || !result.data) {
@@ -172,7 +176,7 @@ export function ConditionMapCard({
   }
 
   const handleChange = (patch: {
-    kind?: MarkKind
+    kind?: string
     severity?: MarkSeverity
     note?: string | null
   }) => {
@@ -321,6 +325,7 @@ export function ConditionMapCard({
           <ConditionMap
             body={body}
             marks={mapMarks}
+            types={types}
             selectedId={editingId}
             focusView={focusView}
             readOnly={readOnly}
@@ -348,6 +353,7 @@ export function ConditionMapCard({
                     <LegendRow
                       key={mark.id}
                       mark={mark}
+                      types={types}
                       number={numberOf.get(mark.id) ?? 0}
                       previous={false}
                       fromInspection={elsewhereSheet.has(mark.id)}
@@ -371,6 +377,7 @@ export function ConditionMapCard({
                     <LegendRow
                       key={mark.id}
                       mark={mark}
+                      types={types}
                       number={numberOf.get(mark.id) ?? 0}
                       previous
                       onOpen={() => setEditingId(mark.id)}
@@ -387,6 +394,7 @@ export function ConditionMapCard({
       </div>
 
       <MarkEditor
+        types={types}
         mark={
           editing
             ? {
@@ -461,6 +469,7 @@ function ViewTab({
 
 function LegendRow({
   mark,
+  types,
   number,
   previous,
   fromInspection = false,
@@ -468,6 +477,7 @@ function LegendRow({
   onClear,
 }: {
   mark: ConditionMarkData
+  types: readonly MarkType[]
   number: number
   previous: boolean
   /** Recorded on the inspection linked to this job, and changed there. */
@@ -484,12 +494,12 @@ function LegendRow({
         className="flex min-w-0 flex-1 items-start gap-2 rounded text-left hover:bg-muted/60"
         aria-label={t('markLabel', {
           n: number,
-          kind: t(`kinds.${mark.kind}`),
+          kind: markTypeOf(types, mark.kind).name,
           area: t(`panels.${mark.panel}`),
         })}
       >
         <MarkIcon
-          kind={mark.kind as MarkKind}
+          type={markTypeOf(types, mark.kind)}
           severity={mark.severity as MarkSeverity}
           number={number}
           previous={previous}
@@ -498,7 +508,10 @@ function LegendRow({
         />
         <span className="min-w-0 flex-1">
           <span className={cn('block truncate font-medium', previous && 'text-muted-foreground')}>
-            {t('markOn', { kind: t(`kinds.${mark.kind}`), area: t(`panels.${mark.panel}`) })}
+            {t('markOn', {
+              kind: markTypeOf(types, mark.kind).name,
+              area: t(`panels.${mark.panel}`),
+            })}
             {mark.severity === 'major' && (
               <span className="ml-1.5 rounded-full bg-red-600/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-red-700 dark:text-red-300">
                 {t('severities.major')}

@@ -7,6 +7,7 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { getChecklistLanguage, getTemplates } from '@/features/inspections/Actions/templateActions'
+import { listMarkTypes } from '@/features/condition-map/Actions/markTypeActions'
 import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
 import {
@@ -28,6 +29,7 @@ export default async function TemplatePage() {
   const [
     result,
     inspectionTemplatesResult,
+    markTypesResult,
     invoiceLayoutResult,
     quoteLayoutResult,
     organization,
@@ -75,6 +77,7 @@ export default async function TemplatePage() {
       SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
     ]),
     getTemplates(),
+    listMarkTypes(),
     getInvoiceLayoutConfig(),
     getQuoteLayoutConfig(),
     // Read straight off the organization, the way the real PDF does. Going
@@ -165,6 +168,7 @@ export default async function TemplatePage() {
         logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,
       }}
       inspectionTemplates={inspectionTemplates}
+      markTypes={markTypesResult.success && markTypesResult.data ? markTypesResult.data : []}
       checklistLanguage={checklistLanguage.success ? (checklistLanguage.data ?? null) : null}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
