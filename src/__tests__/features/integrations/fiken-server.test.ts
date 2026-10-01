@@ -267,7 +267,12 @@ function emptyCompany(overrides: Answer = () => ({ status: 599 })): Answer {
     if (call.method === 'POST' && call.path === `${BASE}/contacts`) return { created: 501 }
     if (call.method === 'POST' && call.path === `${BASE}/sales`) {
       const id = nextSale++
-      sales.set(String(id), { saleId: id, ...call.body, salePayments: [] })
+      sales.set(String(id), {
+        saleId: id,
+        ...call.body,
+        customer: { contactId: call.body?.customerId },
+        salePayments: [],
+      })
       return { created: id }
     }
     if (call.method === 'POST' && call.path.endsWith('/attachments')) {
@@ -425,8 +430,99 @@ describe('Fiken: pushing an invoice', () => {
     await push(t)
     const warnings = t.logs.filter((l) => l.level === 'warn')
     expect(warnings).toHaveLength(1)
-    expect(warnings[0].message).toContain('changed here after it was paid in Fiken')
+    expect(warnings[0].message).toContain('no longer matches its sale in Fiken')
     expect(t.links.get('ServiceRecord:svc1')?.remoteId).toBe('9001')
+  })
+
+  it('leaves sales already booked alone when the workshop changes an account in the settings', async () => {
+    const t = makeCtx({ answer: emptyCompany() })
+    await push(t)
+    t.reset()
+    // Labour moves to 3020. The invoice itself has not changed.
+    t.ctx.connection.settings.laborAccount = '3020'
+    const out = await push(t)
+    expect(out?.summary).toBe('invoice INV-1001 unchanged')
+    expect(t.calls.map((c) => `${c.method} ${c.path}`)).toEqual([`GET ${BASE}/sales/9001`])
+    expect(t.logs).toHaveLength(0)
+    expect(t.links.get('ServiceRecord:svc1')?.remoteId).toBe('9001')
+
+    // Having looked once, it does not ask Fiken again.
+    t.reset()
+    await push(t)
+    expect(t.calls).toHaveLength(0)
+  })
+
+  it('does not warn about a paid sale when only the settings changed, and still records a new payment', async () => {
+    const t = makeCtx({
+      answer: emptyCompany((call) =>
+        call.method === 'GET' && call.path === `${BASE}/sales/9001`
+          ? {
+              json: {
+                saleId: 9001,
+                date: '2026-09-04',
+                dueDate: '2026-09-18',
+                customer: { contactId: 501 },
+                lines: [
+                  { netPrice: 20000, vat: 5000, account: '3000' },
+                  { netPrice: 10000, vat: 2500, account: '3000' },
+                ],
+                salePayments: [{ paymentId: 7100, date: '2026-09-05', amount: 10000 }],
+                totalPaid: 10000,
+              },
+            }
+          : pass
+      ),
+    })
+    await push(t)
+    t.reset()
+    t.ctx.connection.settings.laborAccount = '3020'
+    loadInvoice.mockResolvedValue({ ...invoice, payments: [payment] })
+    const out = await connector.jobs['accounting.payment'](t.ctx, { entityId: 'pay1' })
+    expect(out?.summary).toBe('payment recorded')
+    expect(t.logs).toHaveLength(0)
+    expect(t.calls.map((c) => `${c.method} ${c.path}`)).toEqual([
+      `GET ${BASE}/sales/9001`,
+      `POST ${BASE}/sales/9001/payments`,
+    ])
+  })
+
+  it('says what differs when a paid sale really no longer matches the invoice', async () => {
+    const t = makeCtx({
+      answer: emptyCompany((call) =>
+        call.method === 'GET' && call.path === `${BASE}/sales/9001`
+          ? {
+              json: {
+                saleId: 9001,
+                date: '2026-09-04',
+                customer: { contactId: 501 },
+                lines: [
+                  { netPrice: 20000, vat: 5000 },
+                  { netPrice: 10000, vat: 2500 },
+                ],
+                totalPaid: 37500,
+              },
+            }
+          : pass
+      ),
+    })
+    await push(t)
+    t.reset()
+    loadInvoice.mockResolvedValue({
+      ...invoice,
+      subtotal: 400,
+      taxAmount: 100,
+      totalAmount: 500,
+      lines: [invoice.lines[0], { ...invoice.lines[1], unitPrice: 200, total: 200 }],
+    })
+    const out = await push(t)
+    expect(out?.summary).toBe('invoice INV-1001 left as it is in Fiken, has payments')
+    expect(t.logs).toEqual([
+      {
+        level: 'warn',
+        message:
+          'Invoice INV-1001 no longer matches its sale in Fiken (net 300.00 there, 400.00 here, VAT 75.00 there, 100.00 here). The sale has payments there, so it is left as it is; correct it in Fiken.',
+      },
+    ])
   })
 
   it('takes over a sale Fiken already has under the number instead of entering it twice', async () => {

@@ -51,6 +51,7 @@ import {
   mergeContact,
   money,
   organizationNumber,
+  saleDifferences,
   toCents,
   vatTypeForRate,
 } from './mapping'
@@ -650,16 +651,24 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   if (link && link.checksum !== checksum) {
     try {
       const sale = await read<FikenSale>(ctx, companyPath(slug, `/sales/${link.remoteId}`))
+      // The body can differ from the one that was sent without the invoice
+      // having changed: the workshop chose another account, or the mapping
+      // moved. What counts is whether Fiken still holds what the invoice says.
+      const differences = sale.deleted ? null : saleDifferences(sale, body)
       if (sale.deleted) {
         await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
         link = null
+      } else if (differences && differences.length === 0) {
+        await ctx.links.set(INVOICE_ENTITY, serviceRecordId, { ...link, checksum })
+        link = { ...link, checksum }
       } else if (hasPayments(sale)) {
         // Reversing a sale that has been paid would leave the money without
         // a sale. The bookkeeper hears about it once per change.
         if (link.metadata?.stale !== checksum) {
+          const what = differences?.length ? ` (${differences.join(', ')})` : ''
           await ctx.log(
             'warn',
-            `Invoice ${inv.invoiceNumber} changed here after it was paid in Fiken. The sale there is left as it is; correct it in Fiken.`
+            `Invoice ${inv.invoiceNumber} no longer matches its sale in Fiken${what}. The sale has payments there, so it is left as it is; correct it in Fiken.`
           )
           await patchLink(ctx, INVOICE_ENTITY, serviceRecordId, link, { stale: checksum })
         }

@@ -126,6 +126,8 @@ export interface FikenSale {
   outstandingBalance?: number
   salePayments?: FikenPayment[]
   lines?: Partial<FikenOrderLine>[]
+  dueDate?: string
+  customer?: { contactId?: number }
   deleted?: boolean
 }
 
@@ -372,6 +374,40 @@ export function bookedTotals(sale: FikenSale): { net: number; vat: number } | nu
   }
   if (typeof sale.netAmount === 'number') return { net: sale.netAmount, vat: sale.vatAmount ?? 0 }
   return null
+}
+
+/**
+ * How a sale in Fiken differs from the one the invoice would make now, in
+ * the things the books are about: the date, the due date, the customer, the
+ * net and the VAT. Empty when Fiken already holds what the invoice says.
+ *
+ * Accounts and VAT types are left out on purpose. They come from the
+ * settings, and a workshop that moves labour to another account means its
+ * next sales, not a reversal of every sale already booked. Null when Fiken's
+ * answer carries no amounts to compare.
+ */
+export function saleDifferences(sale: FikenSale, body: Record<string, unknown>): string[] | null {
+  const there = bookedTotals(sale)
+  const here = bookedTotals({ saleId: sale.saleId, lines: body.lines as FikenSale['lines'] })
+  if (!there || !here) return null
+  const differences: string[] = []
+  if (sale.date !== undefined && sale.date !== body.date) {
+    differences.push(`date ${sale.date} there, ${String(body.date)} here`)
+  }
+  if (sale.dueDate !== undefined && body.dueDate !== undefined && sale.dueDate !== body.dueDate) {
+    differences.push(`due date ${sale.dueDate} there, ${String(body.dueDate)} here`)
+  }
+  const contactId = sale.customer?.contactId
+  if (contactId !== undefined && contactId !== body.customerId) {
+    differences.push('another customer')
+  }
+  if (there.net !== here.net) {
+    differences.push(`net ${money(there.net)} there, ${money(here.net)} here`)
+  }
+  if (there.vat !== here.vat) {
+    differences.push(`VAT ${money(there.vat)} there, ${money(here.vat)} here`)
+  }
+  return differences
 }
 
 /** Øre as an amount with two decimals, for a log line. */
