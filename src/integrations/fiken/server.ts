@@ -300,10 +300,11 @@ async function companyFacts(ctx: ConnectorContext, slug: string): Promise<Compan
     return known
   }
   const company = await read<FikenCompany>(ctx, companyPath(slug, ''))
-  if (company.hasApiAccess === false) {
+  // Fiken lets a test company use the API without the module.
+  if (company.hasApiAccess === false && company.testCompany !== true) {
     await ctx.log(
       'warn',
-      'The API module is not switched on for this company in Fiken, so Fiken may refuse what is sent. Order it in Fiken under the company settings, module access.'
+      'The API module is not activated for this company in Fiken, so Fiken refuses what is sent. Activate it in Fiken under Foretak, Tilleggstjenester.'
     )
   }
   const facts: CompanyFacts = {
@@ -934,10 +935,10 @@ export const connector: ConnectorServer = {
       const slug = settingsOf(ctx).companySlug
       if (!slug) return { ok: true }
       const company = await read<FikenCompany>(ctx, companyPath(slug, ''))
-      if (company.hasApiAccess === false) {
+      if (company.hasApiAccess === false && company.testCompany !== true) {
         return {
           ok: false,
-          message: `The API module is not switched on for ${company.name ?? slug} in Fiken`,
+          message: `The API module is not activated for ${company.name ?? slug} in Fiken. Activate it under Foretak, Tilleggstjenester.`,
         }
       }
       return { ok: true }

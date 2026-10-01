@@ -1079,8 +1079,16 @@ describe('Fiken: the connection', () => {
     })
     expect(await connector.test(t.ctx)).toEqual({
       ok: false,
-      message: 'The API module is not switched on for Verksted AS in Fiken',
+      message:
+        'The API module is not activated for Verksted AS in Fiken. Activate it under Foretak, Tilleggstjenester.',
     })
+    const testCompany = makeCtx({
+      answer: (call) =>
+        call.path === BASE
+          ? { json: { slug: SLUG, name: 'Torqvoice Test', hasApiAccess: false, testCompany: true } }
+          : { json: { name: 'Kari' } },
+    })
+    expect(await connector.test(testCompany.ctx)).toEqual({ ok: true })
     const refused = makeCtx({ answer: () => ({ status: 403, json: { message: 'Ingen tilgang' } }) })
     const result = await connector.test(refused.ctx)
     expect(result.ok).toBe(false)
