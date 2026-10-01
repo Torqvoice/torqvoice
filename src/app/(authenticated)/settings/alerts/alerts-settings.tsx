@@ -84,7 +84,7 @@ function TechnicianStatusAlerts({ settings }: { settings: Record<string, string>
       {/* Hides the button entirely for a member who may not edit settings,
           the same as every other card here. */}
       <SaveButton>
-        <Button onClick={handleSave} disabled={saving}>
+        <Button data-save-shortcut onClick={handleSave} disabled={saving}>
           {saving ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -173,7 +173,7 @@ function ServiceRequestAlertCard({ settings }: { settings: Record<string, string
       )}
 
       <SaveButton>
-        <Button onClick={handleSave} disabled={saving}>
+        <Button data-save-shortcut onClick={handleSave} disabled={saving}>
           {saving ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -337,7 +337,7 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
 
       <SaveButton>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={handleSave} disabled={saving}>
+          <Button data-save-shortcut onClick={handleSave} disabled={saving}>
             {saving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (

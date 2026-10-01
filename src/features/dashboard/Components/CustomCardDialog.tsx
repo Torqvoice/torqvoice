@@ -307,7 +307,11 @@ export function CustomCardDialog({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               {t('cancel')}
             </Button>
-            <Button onClick={handleSave} disabled={saving || !name.trim() || columns.length === 0}>
+            <Button
+              data-save-shortcut
+              onClick={handleSave}
+              disabled={saving || !name.trim() || columns.length === 0}
+            >
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('save')}
             </Button>

@@ -376,6 +376,7 @@ export function MarkTypeSettings({ types }: { types: MarkType[] }) {
               {t('cancel')}
             </Button>
             <Button
+              data-save-shortcut
               type="button"
               onClick={() => void save()}
               disabled={saving || !draft?.name.trim()}

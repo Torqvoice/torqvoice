@@ -519,7 +519,7 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
             <Button variant="outline" onClick={() => setDraft(null)} disabled={saving}>
               {t('cancel')}
             </Button>
-            <Button onClick={save} disabled={saving || !draft?.name.trim()}>
+            <Button data-save-shortcut onClick={save} disabled={saving || !draft?.name.trim()}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('save')}
             </Button>

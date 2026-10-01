@@ -777,7 +777,11 @@ function ConnectForm({
       <div className="flex flex-wrap gap-2">
         {manifest.auth.type === 'oauth2' ? (
           needsTenantApp ? (
-            <Button onClick={saveAndConnect} disabled={busy !== null || !tenantComplete}>
+            <Button
+              data-save-shortcut
+              onClick={saveAndConnect}
+              disabled={busy !== null || !tenantComplete}
+            >
               {busy === 'credentials' ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

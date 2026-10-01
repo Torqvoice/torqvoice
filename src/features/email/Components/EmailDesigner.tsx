@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl'
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { useGlassModal } from '@/components/glass-modal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -442,6 +443,9 @@ export function EmailDesigner({
     : null
   const nameTaken = names.some((n) => n.name.trim().toLowerCase() === name.trim().toLowerCase())
   const canSave = dirty && problems.length === 0 && !saving
+  useSaveShortcut(() => {
+    if (canSave) return save(saved ? 'update' : 'first')
+  }, naming === null)
   const inUse = saved ? activeId === saved.id : activeId === null
 
   return (
@@ -646,7 +650,11 @@ export function EmailDesigner({
               >
                 {t('cancel')}
               </Button>
-              <Button type="submit" disabled={!name.trim() || nameTaken || saving}>
+              <Button
+                data-save-shortcut
+                type="submit"
+                disabled={!name.trim() || nameTaken || saving}
+              >
                 {saving ? t('saving') : t('nameDialog.save')}
               </Button>
             </DialogFooter>

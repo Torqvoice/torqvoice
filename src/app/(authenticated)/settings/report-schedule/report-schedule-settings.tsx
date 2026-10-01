@@ -352,6 +352,7 @@ function ScheduleForm({
           {t('cancel')}
         </Button>
         <Button
+          data-save-shortcut
           onClick={handleSave}
           disabled={isPending || sections.length === 0 || recipients.length === 0}
         >

@@ -296,7 +296,7 @@ export function SignatureCard({ initial }: { initial: string | null }) {
             {mode === 'draw' ? t('signatureDrawTip') : t('signatureUploadTip')}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={onSave} disabled={busy || !hasInk}>
+            <Button data-save-shortcut onClick={onSave} disabled={busy || !hasInk}>
               {busy ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

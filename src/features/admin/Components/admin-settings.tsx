@@ -677,7 +677,7 @@ export function AdminSettings({
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={isPending}>
+        <Button data-save-shortcut onClick={handleSave} disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {t('adminSettings.saveSettings')}
         </Button>

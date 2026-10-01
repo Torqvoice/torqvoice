@@ -953,7 +953,12 @@ export function TeamSettings({
                 </div>
               )}
               <div className="flex gap-2">
-                <Button onClick={handleSaveRole} disabled={loading || !roleName.trim()} size="sm">
+                <Button
+                  data-save-shortcut
+                  onClick={handleSaveRole}
+                  disabled={loading || !roleName.trim()}
+                  size="sm"
+                >
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {editingRole ? t('team.updateRole') : t('team.createRole')}
                 </Button>

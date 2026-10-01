@@ -225,7 +225,7 @@ export function TechnicianDialog({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {tc('cancel')}
               </Button>
-              <Button type="submit" disabled={loading || !name.trim()}>
+              <Button data-save-shortcut type="submit" disabled={loading || !name.trim()}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {technician ? tc('save') : t('addTechnician')}
               </Button>

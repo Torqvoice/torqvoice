@@ -360,6 +360,7 @@ export function StorageClient({
               {t('common.cancel')}
             </Button>
             <Button
+              data-save-shortcut
               onClick={handleCreateWarehouse}
               disabled={savingWarehouse || !warehouseName.trim()}
             >

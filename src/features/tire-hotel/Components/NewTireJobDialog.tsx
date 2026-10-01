@@ -640,7 +640,11 @@ export function NewTireJobDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={saving || loading || nothingPicked}>
+          <Button
+            data-save-shortcut
+            onClick={handleSubmit}
+            disabled={saving || loading || nothingPicked}
+          >
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {mode === 'quote'
               ? t('job.createQuote')

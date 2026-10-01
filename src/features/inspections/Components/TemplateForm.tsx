@@ -963,7 +963,7 @@ export function TemplateForm({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('cancel')}
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button data-save-shortcut type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
               {isEdit ? t('saveChanges') : t('create')}
             </Button>

@@ -197,7 +197,7 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {tc('cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button data-save-shortcut type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEdit ? tc('saveChanges') : t('addTitle')}
             </Button>

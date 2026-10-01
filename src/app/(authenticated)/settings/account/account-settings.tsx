@@ -350,7 +350,7 @@ export function AccountSettings({
         </div>
         <Separator />
         <div className="flex items-center gap-3">
-          <Button onClick={handleUpdateProfile} disabled={savingProfile}>
+          <Button data-save-shortcut onClick={handleUpdateProfile} disabled={savingProfile}>
             {savingProfile ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (

@@ -260,7 +260,7 @@ export function CompanySettings({
         </AppCard>
         <SaveButton>
           <div className="flex items-center justify-between">
-            <Button size="sm" onClick={handleSave} disabled={saving}>
+            <Button data-save-shortcut size="sm" onClick={handleSave} disabled={saving}>
               {saving ? (
                 <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
               ) : (

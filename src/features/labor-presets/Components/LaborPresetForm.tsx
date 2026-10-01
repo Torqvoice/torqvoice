@@ -589,7 +589,7 @@ export function LaborPresetForm({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('form.cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button data-save-shortcut type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {preset ? t('form.saveChanges') : t('form.create')}
             </Button>

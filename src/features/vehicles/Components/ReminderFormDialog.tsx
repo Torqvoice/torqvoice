@@ -404,7 +404,7 @@ export function ReminderFormDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {tc('cancel')}
             </Button>
-            <Button type="submit" disabled={formLoading}>
+            <Button data-save-shortcut type="submit" disabled={formLoading}>
               {formLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEdit ? tc('saveChanges') : tv('addTitle')}
             </Button>

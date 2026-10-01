@@ -276,7 +276,11 @@ export function LocationFormDialog({
                 <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
                   {t('common.cancel')}
                 </Button>
-                <Button onClick={handleSaveBulk} disabled={saving || !bulkPreview}>
+                <Button
+                  data-save-shortcut
+                  onClick={handleSaveBulk}
+                  disabled={saving || !bulkPreview}
+                >
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('storage.createShelves')}
                 </Button>
@@ -308,7 +312,11 @@ export function LocationFormDialog({
                 <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
                   {t('common.cancel')}
                 </Button>
-                <Button onClick={handleSaveSingle} disabled={saving || !effectiveCode}>
+                <Button
+                  data-save-shortcut
+                  onClick={handleSaveSingle}
+                  disabled={saving || !effectiveCode}
+                >
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('storage.createLocation')}
                 </Button>
@@ -322,7 +330,11 @@ export function LocationFormDialog({
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
               {t('common.cancel')}
             </Button>
-            <Button onClick={handleSaveSingle} disabled={saving || !effectiveCode}>
+            <Button
+              data-save-shortcut
+              onClick={handleSaveSingle}
+              disabled={saving || !effectiveCode}
+            >
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('common.save')}
             </Button>
