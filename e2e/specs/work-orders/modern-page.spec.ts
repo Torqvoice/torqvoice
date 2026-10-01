@@ -471,11 +471,16 @@ test.describe('the overhauled work order page', () => {
       }).toPass({ timeout: 30_000 })
       await page.getByRole('menuitem', { name: 'Waiting Parts' }).click()
       await expectStatus(page, /Waiting Parts/)
+      // The status says "Saved" for two seconds. Let that one go, or it answers
+      // for the notes below before they have been written.
+      const saved = page.getByText('Saved', { exact: true })
+      await expect(saved).toBeVisible()
+      await expect(saved).toBeHidden()
 
       // Still written: the internal notes, saved on their own.
       const note = `Customer will collect on Friday ${stamp}`
       await typeInNotes(page, page.getByTestId('notes-internal'), note)
-      await expect(page.getByText('Saved', { exact: true })).toBeVisible()
+      await expect(saved).toBeVisible()
 
       // Still paid: the bar's button opens a form that works, and Enter in
       // the amount records the payment rather than saving the job.
