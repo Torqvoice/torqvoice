@@ -7,7 +7,7 @@ import {
 } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
 import {
@@ -164,12 +164,11 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotal = partsSubtotal + laborSubtotal
-  const computedDiscount =
-    data.discountType === 'percentage'
-      ? computedSubtotal * ((data.discountValue || 0) / 100)
-      : data.discountType === 'fixed'
-        ? Math.min(data.discountValue || 0, computedSubtotal)
-        : 0
+  const computedDiscount = discountAmountFor(
+    computedSubtotal,
+    data.discountType,
+    data.discountValue
+  )
   const { totalAmount: computedTotal } = calculateTotals({
     subtotal: computedSubtotal,
     discountAmount: computedDiscount,

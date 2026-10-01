@@ -27,6 +27,7 @@ import {
 } from '../Lib/connections'
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
+import { describeSettingChanges } from '../Lib/setting-changes'
 import type {
   ActivityBatch,
   ActivityItem,
@@ -520,7 +521,11 @@ export async function updateIntegrationSettings(connectorId: string, raw: unknow
         where: { id: row.id },
         data: { settings: settings as object },
       })
-      await writeLog(row.id, 'info', 'Settings updated', { keys: Object.keys(clean) })
+      // One line per setting that really changed; a save that changed nothing logs nothing.
+      const before = effectiveSettings(connectorId, (row.settings as Record<string, unknown>) ?? {})
+      for (const change of describeSettingChanges(manifest, before, clean)) {
+        await writeLog(row.id, 'info', `Setting changed: ${change}`)
+      }
       revalidatePath(`/settings/integrations/${connectorId}`)
       return { settings }
     },

@@ -976,7 +976,8 @@ describe('createDraftServiceRecord — shop fee', () => {
       { description: 'Shop supplies', hours: 1, rate: 12.5, total: 12.5, pricingType: 'shopFee' },
     ])
     expect(data.subtotal).toBe(12.5)
-    expect(data.totalAmount).toBeCloseTo(15.625, 3)
+    // 25% of 12.50 is 3.125, which is 3.13 on the sheet, so the total is 15.63.
+    expect(data.totalAmount).toBe(15.63)
   })
 
   it('adds nothing when the fee is for quotes only', async () => {

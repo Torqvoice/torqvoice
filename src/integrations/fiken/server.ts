@@ -36,6 +36,7 @@ import {
   REVOKE_URL,
   WALK_IN_NAME,
   type ZeroVatType,
+  bookedTotals,
   buildContact,
   buildPayment,
   buildSale,
@@ -48,6 +49,7 @@ import {
   isZeroVatType,
   localPaymentMethod,
   mergeContact,
+  money,
   organizationNumber,
   toCents,
   vatTypeForRate,
@@ -508,8 +510,56 @@ async function createSale(
       `Fiken already has a sale numbered ${inv.invoiceNumber} with other amounts; invoice ${inv.invoiceNumber} was added beside it`
     )
   }
-  const saleId = await create(ctx, companyPath(slug, '/sales'), { body })
+  let saleId: number
+  try {
+    saleId = await create(ctx, companyPath(slug, '/sales'), { body })
+  } catch (err) {
+    // Fiken's reason alone rarely says which figure it objects to; the lines
+    // that were sent, amounts and accounts only, go in the log beside it.
+    if (err instanceof FikenError) {
+      await ctx.log('warn', `Fiken refused the sale for invoice ${inv.invoiceNumber}`, {
+        date: body.date,
+        lines: body.lines,
+      })
+    }
+    throw err
+  }
   return { saleId, adopted: false }
+}
+
+/**
+ * Read a new sale back and hold what Fiken booked against what was billed.
+ * Fiken answers a create with no body, so this is the only way to know that
+ * the net and the VAT in the books are the ones on the invoice. The outcome
+ * goes on the job's line in the log; a difference is a warning of its own.
+ */
+async function confirmSale(
+  ctx: ConnectorContext,
+  slug: string,
+  saleId: number,
+  body: Record<string, unknown>,
+  inv: AccountingInvoice
+): Promise<string | null> {
+  const sent = bookedTotals({ saleId, lines: body.lines as FikenSale['lines'] })
+  let booked: ReturnType<typeof bookedTotals> = null
+  try {
+    booked = bookedTotals(await read<FikenSale>(ctx, companyPath(slug, `/sales/${saleId}`)))
+  } catch (err) {
+    await ctx.log(
+      'warn',
+      `Invoice ${inv.invoiceNumber} is in Fiken but could not be read back to check its amounts: ${err instanceof Error ? err.message : String(err)}`
+    )
+  }
+  if (!sent || !booked) return null
+  if (booked.net === sent.net && booked.vat === sent.vat) {
+    return `${money(sent.net)} net and ${money(sent.vat)} VAT confirmed in Fiken`
+  }
+  await ctx.log(
+    'warn',
+    `Invoice ${inv.invoiceNumber}: Fiken booked ${money(booked.net)} net and ${money(booked.vat)} VAT, the invoice here has ${money(sent.net)} net and ${money(sent.vat)} VAT`,
+    { fiken: booked, torqvoice: sent }
+  )
+  return 'amounts differ in Fiken'
 }
 
 /** The invoice the customer received, filed behind the sale as its voucher. */
@@ -596,6 +646,7 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   let link = await linkFor(ctx, slug, INVOICE_ENTITY, serviceRecordId)
 
   let action = 'unchanged'
+  let confirmed: string | null = null
   if (link && link.checksum !== checksum) {
     try {
       const sale = await read<FikenSale>(ctx, companyPath(slug, `/sales/${link.remoteId}`))
@@ -641,6 +692,7 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
       },
     })
     link = await linkFor(ctx, slug, INVOICE_ENTITY, serviceRecordId)
+    if (!made.adopted) confirmed = await confirmSale(ctx, slug, made.saleId, body, inv)
   }
   if (!link) throw new Error('The sale was saved in Fiken but its link could not be read back')
 
@@ -660,8 +712,14 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
       if (await settleByHand(ctx, slug, inv, link.remoteId)) paymentsPushed++
     }
   }
-  const summary = `invoice ${inv.invoiceNumber} ${action}`
-  return { summary: paymentsPushed ? `${summary}, ${paymentsPushed} payments recorded` : summary }
+  const summary = [
+    `invoice ${inv.invoiceNumber} ${action}`,
+    confirmed,
+    paymentsPushed ? `${paymentsPushed} payments recorded` : null,
+  ]
+    .filter(Boolean)
+    .join(', ')
+  return { summary }
 }
 
 /* ---------- payments ---------- */

@@ -1,3 +1,4 @@
+import { discountAmountFor } from '@/lib/tax'
 import 'server-only'
 
 import { db } from '@/lib/db'
@@ -90,7 +91,7 @@ export async function createQuoteRecord(
     if (feeLine.total > 0) {
       data.subtotal += feeLine.total
       if (data.discountType === 'percentage') {
-        data.discountAmount = data.subtotal * (data.discountValue / 100)
+        data.discountAmount = discountAmountFor(data.subtotal, 'percentage', data.discountValue)
       }
       feeAdded = true
     }

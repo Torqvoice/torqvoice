@@ -256,12 +256,20 @@ const PAGE = { page: '0', pageSize: '100' }
 function emptyCompany(overrides: Answer = () => ({ status: 599 })): Answer {
   let nextSale = 9001
   let nextPayment = 7001
+  const sales = new Map<string, Record<string, unknown>>()
   return (call) => {
     const special = overrides(call)
     if (special.status !== 599) return special
+    // A sale reads back the way it was entered, as Fiken answers it.
+    const saleId = call.method === 'GET' ? call.path.match(/\/sales\/(\d+)$/)?.[1] : undefined
+    if (saleId && sales.has(saleId)) return { json: sales.get(saleId) }
     if (call.method === 'GET') return { json: [] }
     if (call.method === 'POST' && call.path === `${BASE}/contacts`) return { created: 501 }
-    if (call.method === 'POST' && call.path === `${BASE}/sales`) return { created: nextSale++ }
+    if (call.method === 'POST' && call.path === `${BASE}/sales`) {
+      const id = nextSale++
+      sales.set(String(id), { saleId: id, ...call.body, salePayments: [] })
+      return { created: id }
+    }
     if (call.method === 'POST' && call.path.endsWith('/attachments')) {
       // An attachment is known by a uuid, so its Location does not end in a number.
       return {
@@ -301,10 +309,12 @@ describe('Fiken: pushing an invoice', () => {
   it('creates the contact, then the sale under its own number, then files the PDF on it', async () => {
     const t = makeCtx({ answer: emptyCompany() })
     const out = await push(t)
-    expect(out?.summary).toBe('invoice INV-1001 created')
+    expect(out?.summary).toBe(
+      'invoice INV-1001 created, 300.00 net and 75.00 VAT confirmed in Fiken'
+    )
 
-    const [findContact, createContact, findSale, createSale, attach] = t.calls
-    expect(t.calls).toHaveLength(5)
+    const [findContact, createContact, findSale, createSale, readBack, attach] = t.calls
+    expect(t.calls).toHaveLength(6)
     expect(findContact.host).toBe('api.fiken.no')
     expect(findContact.path).toBe(`${BASE}/contacts`)
     expect(findContact.query).toEqual({ name: 'Anna Berg', customer: 'true', ...PAGE })
@@ -328,6 +338,10 @@ describe('Fiken: pushing an invoice', () => {
     expect(createSale.path).toBe(`${BASE}/sales`)
     expect(createSale.query).toEqual({})
     expect(createSale.body).toEqual(saleBody)
+
+    // Fiken answers a create with no body, so the sale is read back to check its amounts.
+    expect(readBack.method).toBe('GET')
+    expect(readBack.path).toBe(`${BASE}/sales/9001`)
 
     expect(attach.method).toBe('POST')
     expect(attach.path).toBe(`${BASE}/sales/9001/attachments`)
@@ -376,10 +390,13 @@ describe('Fiken: pushing an invoice', () => {
     t.reset()
     loadInvoice.mockResolvedValue({ ...invoice, dueDate: new Date('2026-09-30T10:00:00Z') })
     const out = await push(t)
-    expect(out?.summary).toBe('invoice INV-1001 reversed and entered again')
+    expect(out?.summary).toBe(
+      'invoice INV-1001 reversed and entered again, 300.00 net and 75.00 VAT confirmed in Fiken'
+    )
 
-    const [readSale, reverse, findSale, createSale, attach] = t.calls
-    expect(t.calls).toHaveLength(5)
+    const [readSale, reverse, findSale, createSale, readBack, attach] = t.calls
+    expect(t.calls).toHaveLength(6)
+    expect(readBack.path).toBe(`${BASE}/sales/9002`)
     expect(readSale.path).toBe(`${BASE}/sales/9001`)
     expect(reverse.method).toBe('PATCH')
     expect(reverse.path).toBe(`${BASE}/sales/9001/delete`)
@@ -447,7 +464,9 @@ describe('Fiken: pushing an invoice', () => {
       ),
     })
     const out = await push(t)
-    expect(out?.summary).toBe('invoice INV-1001 created')
+    expect(out?.summary).toBe(
+      'invoice INV-1001 created, 300.00 net and 75.00 VAT confirmed in Fiken'
+    )
     expect(t.logs.some((l) => l.level === 'warn' && l.message.includes('added beside it'))).toBe(
       true
     )
@@ -464,7 +483,9 @@ describe('Fiken: pushing an invoice', () => {
       ),
     })
     const out = await push(t)
-    expect(out?.summary).toBe('invoice INV-1001 created')
+    expect(out?.summary).toBe(
+      'invoice INV-1001 created, 300.00 net and 75.00 VAT confirmed in Fiken'
+    )
     expect(t.links.get('ServiceRecord:svc1')?.metadata?.attached).toBe(false)
     expect(t.logs.find((l) => l.level === 'warn')?.message).toContain('Ugyldig fil')
 
@@ -473,6 +494,77 @@ describe('Fiken: pushing an invoice', () => {
     await push(t)
     expect(t.calls.map((c) => c.path)).toEqual([`${BASE}/sales/9001/attachments`])
     expect(t.links.get('ServiceRecord:svc1')?.metadata?.attached).toBe(true)
+  })
+
+  it('reads the new sale back and says so when Fiken booked other amounts than were billed', async () => {
+    const t = makeCtx({
+      answer: emptyCompany((call) =>
+        call.method === 'GET' && call.path === `${BASE}/sales/9001`
+          ? {
+              json: {
+                saleId: 9001,
+                lines: [
+                  { netPrice: 20000, vat: 5000 },
+                  // One øre short on the VAT of the second line.
+                  { netPrice: 10000, vat: 2499 },
+                ],
+              },
+            }
+          : pass
+      ),
+    })
+    const out = await push(t)
+    expect(out?.summary).toBe('invoice INV-1001 created, amounts differ in Fiken')
+    expect(t.logs).toEqual([
+      {
+        level: 'warn',
+        message:
+          'Invoice INV-1001: Fiken booked 300.00 net and 74.99 VAT, the invoice here has 300.00 net and 75.00 VAT',
+      },
+    ])
+  })
+
+  it('confirms against the totals of the sale when Fiken lists no lines', async () => {
+    const t = makeCtx({
+      answer: emptyCompany((call) =>
+        call.method === 'GET' && call.path === `${BASE}/sales/9001`
+          ? { json: { saleId: 9001, netAmount: 30000, vatAmount: 7500 } }
+          : pass
+      ),
+    })
+    expect((await push(t))?.summary).toBe(
+      'invoice INV-1001 created, 300.00 net and 75.00 VAT confirmed in Fiken'
+    )
+    expect(t.logs).toHaveLength(0)
+  })
+
+  it('keeps the sale when it cannot be read back, with a warning', async () => {
+    const t = makeCtx({
+      answer: emptyCompany((call) =>
+        call.method === 'GET' && call.path === `${BASE}/sales/9001`
+          ? { status: 500, json: { message: 'Midlertidig feil' } }
+          : pass
+      ),
+    })
+    const out = await push(t)
+    expect(out?.summary).toBe('invoice INV-1001 created')
+    expect(t.logs[0].message).toContain('could not be read back to check its amounts')
+    expect(t.links.get('ServiceRecord:svc1')?.remoteId).toBe('9001')
+  })
+
+  it('puts the lines it sent in the log when Fiken refuses the sale', async () => {
+    const t = makeCtx({
+      answer: emptyCompany((call) =>
+        call.method === 'POST' && call.path === `${BASE}/sales`
+          ? { status: 400, json: { error_description: 'Lines with 0 amount is not allowed' } }
+          : pass
+      ),
+    })
+    await expect(push(t)).rejects.toThrow('Fiken: Lines with 0 amount is not allowed')
+    expect(t.logs).toEqual([
+      { level: 'warn', message: 'Fiken refused the sale for invoice INV-1001' },
+    ])
+    expect(t.links.has('ServiceRecord:svc1')).toBe(false)
   })
 
   it('does not render or send a PDF when the workshop switched that off', async () => {
@@ -542,7 +634,9 @@ describe('Fiken: what stays out', () => {
   it('sends a completed job before it is issued when asked to', async () => {
     const t = makeCtx({ settings: { pushOnComplete: true }, answer: emptyCompany() })
     loadInvoice.mockResolvedValue({ ...invoice, issuedAt: null })
-    expect((await push(t))?.summary).toBe('invoice INV-1001 created')
+    expect((await push(t))?.summary).toBe(
+      'invoice INV-1001 created, 300.00 net and 75.00 VAT confirmed in Fiken'
+    )
   })
 
   it('does not put another currency into books kept in kroner', async () => {
@@ -579,11 +673,10 @@ describe('Fiken: what stays out', () => {
     await push(t)
     const sale = t.calls.find((c) => c.method === 'POST' && c.path === `${BASE}/sales`)
     expect(sale?.body?.lines).toEqual([
-      { description: 'Brake service', netPrice: 20000, vat: 0, account: '3100', vatType: 'EXEMPT' },
+      { description: 'Brake service', netPrice: 20000, account: '3100', vatType: 'EXEMPT' },
       {
         description: 'BP-100 Brake pads',
         netPrice: 10000,
-        vat: 0,
         account: '3100',
         vatType: 'EXEMPT',
       },
@@ -769,6 +862,7 @@ describe('Fiken: moving to another company', () => {
       `POST ${other}/contacts`,
       `GET ${other}/sales`,
       `POST ${other}/sales`,
+      `GET ${other}/sales/9500`,
       `POST ${other}/sales/9500/attachments`,
     ])
     expect(t.calls[3].body?.customerId).toBe(601)

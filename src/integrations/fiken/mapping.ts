@@ -13,6 +13,7 @@ import type {
   AccountingInvoice,
   AccountingPayment,
 } from '@/features/integrations/Lib/accounting-sync'
+import { roundAsPrinted } from '@/lib/money'
 import { zonedDayKey } from '@/lib/timezone'
 
 export { checksumOf } from '@/features/integrations/Lib/checksum'
@@ -107,8 +108,8 @@ export interface FikenOrderLine {
   description: string
   /** Øre, without VAT. */
   netPrice: number
-  /** Øre. */
-  vat: number
+  /** Øre. Left out when there is none: Fiken refuses a line that names an amount of 0. */
+  vat?: number
   account: string
   vatType: string
 }
@@ -124,12 +125,17 @@ export interface FikenSale {
   totalPaid?: number
   outstandingBalance?: number
   salePayments?: FikenPayment[]
+  lines?: Partial<FikenOrderLine>[]
   deleted?: boolean
 }
 
-/** An amount as Fiken counts it: whole øre. */
+/**
+ * An amount as Fiken counts it: whole øre, rounded exactly the way the
+ * invoice prints it, so a sale is never one øre away from the invoice the
+ * customer holds and pays.
+ */
 export function toCents(amount: number): number {
-  return Math.round((amount + Number.EPSILON) * 100)
+  return Math.round(roundAsPrinted(amount) * 100)
 }
 
 export function fromCents(cents: number): number {
@@ -315,7 +321,7 @@ export function buildSale(inv: AccountingInvoice, o: SaleOptions): Record<string
     lines = charged.map((line, i) => ({
       description: lineDescription(line),
       netPrice: nets[i],
-      vat: vats[i],
+      ...(vats[i] !== 0 && { vat: vats[i] }),
       account: accountFor(line.kind),
       vatType,
     }))
@@ -325,7 +331,7 @@ export function buildSale(inv: AccountingInvoice, o: SaleOptions): Record<string
       {
         description: `Faktura ${inv.invoiceNumber ?? ''}`.trim().slice(0, TEXT_MAX),
         netPrice: net,
-        vat,
+        ...(vat !== 0 && { vat }),
         account: accountFor('labor'),
         vatType,
       },
@@ -351,6 +357,26 @@ export function buildPayment(
     account: o.account,
     amount: toCents(p.amount),
   }
+}
+
+/**
+ * What Fiken booked for a sale, in øre: the sum of its lines, or its own
+ * totals when it lists none. Null when the answer carries neither.
+ */
+export function bookedTotals(sale: FikenSale): { net: number; vat: number } | null {
+  if (Array.isArray(sale.lines) && sale.lines.length > 0) {
+    return {
+      net: sale.lines.reduce((a, l) => a + (l.netPrice ?? 0), 0),
+      vat: sale.lines.reduce((a, l) => a + (l.vat ?? 0), 0),
+    }
+  }
+  if (typeof sale.netAmount === 'number') return { net: sale.netAmount, vat: sale.vatAmount ?? 0 }
+  return null
+}
+
+/** Øre as an amount with two decimals, for a log line. */
+export function money(cents: number): string {
+  return fromCents(cents).toFixed(2)
 }
 
 /**

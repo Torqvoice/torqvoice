@@ -1,7 +1,7 @@
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
 import {
@@ -282,12 +282,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const laborTotal = data.laborItems.reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0)
   const partsTotal = data.partItems.reduce((sum, p) => (p.excluded ? sum : sum + p.total), 0)
   const subtotal = laborTotal + partsTotal
-  const discount =
-    data.discountType === 'percentage'
-      ? subtotal * (data.discountValue / 100)
-      : data.discountType === 'fixed'
-        ? Math.min(data.discountValue, subtotal)
-        : 0
+  const discount = discountAmountFor(subtotal, data.discountType, data.discountValue)
   const { taxAmount, totalAmount } = calculateTotals({
     subtotal,
     discountAmount: discount,

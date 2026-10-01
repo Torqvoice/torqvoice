@@ -13,7 +13,7 @@ import {
   convertQuoteToServiceRecord,
 } from '@/features/quotes/Actions/quoteActions'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
-import { calculateTotals } from '@/lib/tax'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { zonedDateInput } from '@/lib/timezone'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
@@ -275,12 +275,7 @@ export function useQuoteFormState({
   }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
 
   const subtotal = partsSubtotal + laborSubtotal
-  const discountAmount =
-    discountType === 'percentage'
-      ? subtotal * (discountValue / 100)
-      : discountType === 'fixed'
-        ? Math.min(discountValue, subtotal)
-        : 0
+  const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
   const {
     taxAmount,
     totalAmount,

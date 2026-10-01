@@ -1,3 +1,5 @@
+import { roundMoney } from '@/lib/money'
+
 /**
  * The single source of truth for every money figure derived from a stocked
  * part: what the customer is charged, the markup that price implies, and the
@@ -37,30 +39,7 @@ export interface ResolvedPrice {
   markupPercent: number
 }
 
-/**
- * Money is held to the cent, so every derived amount rounds the same way.
- *
- * Binary floats cannot represent most decimal amounts exactly, so a bare
- * `cost * 1.5` yields values like 44.980000000000004. Left unrounded those
- * reach the database and are summed into subtotals, where the error compounds
- * into a visible penny discrepancy on the document.
- */
-export function roundMoney(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 0
-  // Round on the decimal value, not the binary approximation of it. A plain
-  // Math.round(v * 100) / 100 bills 2.5 x 19.99 as 49.97, because that product
-  // is held as 49.974999999999994 and so falls just short of the halfway point
-  // it should sit exactly on. The same flaw rounds 1.005 down to 1.00.
-  //
-  // Twelve significant digits is well past where the noise lives and well
-  // short of the ~15 a double carries, so this restores the decimal figure
-  // without inventing precision. Rounding is symmetric about zero, so a credit
-  // line rounds by the same magnitude as the charge it reverses.
-  const normalized = Number(parsed.toPrecision(12))
-  const scaled = Number((normalized * 100).toPrecision(12))
-  return (scaled < 0 ? -Math.round(-scaled) : Math.round(scaled)) / 100
-}
+export { roundMoney }
 
 /**
  * Read a value that may still be raw input from a number field.

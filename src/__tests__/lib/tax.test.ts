@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { formatCurrency } from '@/lib/format'
+import { roundAsPrinted, roundMoney } from '@/lib/money'
+import { calculateTotals, discountAmountFor, netLineTotal } from '@/lib/tax'
 
 describe('calculateTotals', () => {
   describe('exclusive mode', () => {
@@ -109,7 +111,7 @@ describe('calculateTotals', () => {
       })
       // base (gross after discount) = 90, net = 81.82, tax = 8.18, total = 90
       expect(r.totalAmount).toBeCloseTo(90)
-      expect(r.taxAmount).toBeCloseTo(8.1818, 3)
+      expect(r.taxAmount).toBe(8.18)
     })
 
     it('net base equals totalAmount - taxAmount in both modes', () => {
@@ -457,5 +459,99 @@ describe('universal invoice display formulas', () => {
     expect(exclusive.displayDiscount).toBeCloseTo(inclusive.displayDiscount)
     expect(exclusive.displayTax).toBeCloseTo(inclusive.displayTax)
     expect(exclusive.displayTotal).toBeCloseTo(inclusive.displayTotal)
+  })
+})
+
+/**
+ * A sheet has to add up. Each figure used to be stored unrounded and rounded
+ * on its own when printed, and 0.94 plus 25% came out as 0.94 + 0.24 = 1.17.
+ * The tax is rounded once and the total built from the rounded figures.
+ */
+describe('totals that add up to the cent', () => {
+  /** The amount in cents as the documents print it. */
+  const onPaper = (amount: number) => Math.round(roundAsPrinted(amount) * 100)
+
+  it('reads a printed amount the way the PDF formatter writes it', () => {
+    for (const value of [0.22499999999999998, 0.475, 37.475, 187.375, 1124.875, 83.3325, 1500]) {
+      const digits = Number(formatCurrency(value, 'NOK').replace(/\D/g, ''))
+      expect(onPaper(value)).toBe(digits)
+    }
+  })
+
+  it('rounds the tax once and builds the total from it', () => {
+    expect(
+      calculateTotals({ subtotal: 0.94, discountAmount: 0, taxRate: 25, taxInclusive: false })
+    ).toEqual({
+      taxAmount: 0.24,
+      totalAmount: 1.18,
+      components: null,
+    })
+    // A part at 149.90: 37.475 of VAT is 37.48, and the total follows.
+    expect(
+      calculateTotals({ subtotal: 149.9, discountAmount: 0, taxRate: 25, taxInclusive: false })
+    ).toEqual({
+      taxAmount: 37.48,
+      totalAmount: 187.38,
+      components: null,
+    })
+  })
+
+  it('keeps the typed total when prices include tax, and rounds the tax inside it', () => {
+    expect(
+      calculateTotals({ subtotal: 149.9, discountAmount: 0, taxRate: 25, taxInclusive: true })
+    ).toEqual({
+      taxAmount: 29.98,
+      totalAmount: 149.9,
+      components: null,
+    })
+  })
+
+  it('rounds a percentage discount to the cent and caps a fixed one at the subtotal', () => {
+    expect(discountAmountFor(12.25, 'percentage', 10)).toBe(1.23)
+    expect(discountAmountFor(1500, 'percentage', 10)).toBe(150)
+    expect(discountAmountFor(100, 'fixed', 250)).toBe(100)
+    expect(discountAmountFor(100, 'fixed', 25.5)).toBe(25.5)
+    expect(discountAmountFor(100, null, 10)).toBe(0)
+    expect(discountAmountFor(100, 'percentage', null)).toBe(0)
+  })
+
+  it('prints as it is stored: a rounded figure is the figure on the sheet', () => {
+    for (const value of [0.225, 1.175, 37.475, 187.375, 8.1818, 83.3325]) {
+      const stored = roundMoney(value)
+      expect(roundAsPrinted(stored)).toBe(stored)
+    }
+    // An old unrounded total prints a cent under what arithmetic gives.
+    expect(roundAsPrinted(0.22499999999999998)).toBe(0.22)
+    expect(roundMoney(0.22499999999999998)).toBe(0.23)
+  })
+
+  it('adds up for every amount, rate, mode and discount', () => {
+    const wrong: string[] = []
+    let checked = 0
+    for (const taxRate of [25, 15, 12, 8.875]) {
+      for (const taxInclusive of [false, true]) {
+        for (const percent of [0, 10, 7.5]) {
+          for (let cents = 1; cents <= 300000; cents += 97) {
+            const subtotal = cents / 100
+            const discountAmount = discountAmountFor(subtotal, 'percentage', percent)
+            const t = calculateTotals({ subtotal, discountAmount, taxRate, taxInclusive })
+            const base = onPaper(subtotal) - onPaper(discountAmount)
+            const tax = onPaper(t.taxAmount)
+            const total = onPaper(t.totalAmount)
+            checked++
+            // Tax on top: base + tax is the total. Tax inside: the base is the total.
+            const adds = taxInclusive ? total === base && tax <= total : base + tax === total
+            // What is stored is what is printed, to the cent.
+            const exact =
+              Math.round(t.taxAmount * 100) === tax && Math.round(t.totalAmount * 100) === total
+            if (!adds || !exact) {
+              wrong.push(`${subtotal} at ${taxRate}%, inclusive ${taxInclusive}, -${percent}%`)
+            }
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(70_000)
+    expect(wrong).toEqual([])
   })
 })

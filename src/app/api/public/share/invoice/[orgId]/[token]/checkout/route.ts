@@ -9,7 +9,7 @@ import {
 import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-import { calculateTotals } from '@/lib/tax'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { getFeatures } from '@/lib/features'
 
 const checkoutSchema = z.object({
@@ -68,12 +68,11 @@ export async function POST(
     const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
     const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
     const computedSubtotal = partsSubtotal + laborSubtotal
-    const computedDiscount =
-      record.discountType === 'percentage'
-        ? computedSubtotal * (record.discountValue / 100)
-        : record.discountType === 'fixed'
-          ? Math.min(record.discountValue, computedSubtotal)
-          : 0
+    const computedDiscount = discountAmountFor(
+      computedSubtotal,
+      record.discountType,
+      record.discountValue
+    )
     const { totalAmount: computedTotal } = calculateTotals({
       subtotal: computedSubtotal,
       discountAmount: computedDiscount,

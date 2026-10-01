@@ -4,8 +4,12 @@ import type {
   AccountingInvoice,
 } from '@/features/integrations/Lib/accounting-sync'
 import { manifest } from '@/integrations/fiken/manifest'
+import { formatCurrency } from '@/lib/format'
+import { calculateTotals } from '@/lib/tax'
 import {
+  type SaleOptions,
   allocate,
+  bookedTotals,
   buildContact,
   buildPayment,
   buildSale,
@@ -16,6 +20,7 @@ import {
   idFromLocation,
   localPaymentMethod,
   mergeContact,
+  money,
   organizationNumber,
   toCents,
   vatTypeForRate,
@@ -77,7 +82,7 @@ const invoice: AccountingInvoice = {
   payments: [],
 }
 
-const options = {
+const options: SaleOptions = {
   customerId: 501,
   laborAccount: '3000',
   partsAccount: '3010',
@@ -87,15 +92,25 @@ const options = {
   timezone: 'Europe/Oslo',
 }
 
-type Line = { description: string; netPrice: number; vat: number; account: string; vatType: string }
+type Line = {
+  description: string
+  netPrice: number
+  vat?: number
+  account: string
+  vatType: string
+}
 const linesOf = (body: Record<string, unknown>) => body.lines as Line[]
-const sum = (rows: Line[], key: 'netPrice' | 'vat') => rows.reduce((a, r) => a + r[key], 0)
+const sum = (rows: Line[], key: 'netPrice' | 'vat') => rows.reduce((a, r) => a + (r[key] ?? 0), 0)
 
 describe('Fiken mapping: money', () => {
-  it('counts in whole øre', () => {
+  it('counts in whole øre, rounded the way the invoice prints the amount', () => {
     expect(toCents(1875)).toBe(187500)
     expect(toCents(0.29)).toBe(29)
-    expect(toCents(1.005)).toBe(101)
+    expect(toCents(187.375)).toBe(18738)
+    // 0.18 plus 25% is stored as 0.22499999999999998 and printed as 0.22.
+    expect(toCents(0.22499999999999998)).toBe(22)
+    // 25% of 1.90 is stored as 0.475, a hair under it in binary, and printed as 0.48.
+    expect(toCents(0.475)).toBe(48)
     expect(fromCents(187550)).toBe(1875.5)
   })
 
@@ -212,14 +227,12 @@ describe('Fiken mapping: a sale', () => {
       {
         description: 'Brake service',
         netPrice: 100000,
-        vat: 0,
         account: '3100',
         vatType: 'EXEMPT',
       },
       {
         description: 'BP-100 Brake pads',
         netPrice: 50000,
-        vat: 0,
         account: '3100',
         vatType: 'EXEMPT',
       },
@@ -265,6 +278,199 @@ describe('Fiken mapping: a sale', () => {
       },
     ])
     expect(body).not.toHaveProperty('dueDate')
+  })
+})
+
+/**
+ * The invoices of the acceptance run, with their totals worked out by the
+ * app's own calculation and not typed in, so the sale is checked against
+ * what Torqvoice really stores for each of them.
+ */
+describe('Fiken mapping: invoices as Torqvoice totals them', () => {
+  /** The amount in øre as the PDF's own formatter shows it: "kr 187,38" is 18738. */
+  const onPaper = (amount: number) => Number(formatCurrency(amount, 'NOK').replace(/\D/g, ''))
+
+  function totalled(input: {
+    lines: [number, number][]
+    discountPercent?: number
+    taxRate?: number
+    taxInclusive?: boolean
+  }): AccountingInvoice {
+    const [labor, ...parts] = input.lines
+    const lines = [
+      { ...invoice.lines[0], quantity: labor[0], unitPrice: labor[1], total: labor[0] * labor[1] },
+      ...parts.map(([quantity, unitPrice]) => ({
+        ...invoice.lines[1],
+        quantity,
+        unitPrice,
+        total: quantity * unitPrice,
+      })),
+    ]
+    const subtotal = lines.reduce((a, l) => a + l.total, 0)
+    const discountAmount = subtotal * ((input.discountPercent ?? 0) / 100)
+    const taxRate = input.taxRate ?? 25
+    const taxInclusive = input.taxInclusive ?? false
+    const totals = calculateTotals({ subtotal, discountAmount, taxRate, taxInclusive })
+    return {
+      ...invoice,
+      lines,
+      subtotal,
+      discountType: input.discountPercent ? 'percentage' : null,
+      discountValue: input.discountPercent ?? 0,
+      discountAmount,
+      taxRate,
+      taxInclusive,
+      taxAmount: totals.taxAmount,
+      totalAmount: totals.totalAmount,
+    }
+  }
+
+  const booked = (inv: AccountingInvoice, o = options) =>
+    linesOf(buildSale(inv, o)).map((l) => [l.netPrice, l.vat, l.account, l.vatType])
+
+  it('A: labour and a part with 25% on top', () => {
+    expect(
+      booked(
+        totalled({
+          lines: [
+            [2, 500],
+            [1, 500],
+          ],
+        })
+      )
+    ).toEqual([
+      [100000, 25000, '3000', 'HIGH'],
+      [50000, 12500, '3010', 'HIGH'],
+    ])
+  })
+
+  it('B: the same with a 10% discount', () => {
+    expect(
+      booked(
+        totalled({
+          lines: [
+            [2, 500],
+            [1, 500],
+          ],
+          discountPercent: 10,
+        })
+      )
+    ).toEqual([
+      [90000, 22500, '3000', 'HIGH'],
+      [45000, 11250, '3010', 'HIGH'],
+    ])
+  })
+
+  it('C: three lines of 111.11, where the VAT does not divide evenly', () => {
+    const inv = totalled({
+      lines: [
+        [1, 111.11],
+        [1, 111.11],
+        [1, 111.11],
+      ],
+    })
+    expect(booked(inv)).toEqual([
+      [11111, 2778, '3000', 'HIGH'],
+      [11111, 2778, '3010', 'HIGH'],
+      [11111, 2777, '3010', 'HIGH'],
+    ])
+    // 333.33 net, 83.33 VAT and 416.66 to pay, as the invoice prints them.
+    expect(onPaper(inv.taxAmount)).toBe(8333)
+    expect(onPaper(inv.totalAmount)).toBe(41666)
+  })
+
+  it('D: a tax-exempt customer, booked without VAT under the chosen type and account', () => {
+    const inv = totalled({
+      lines: [
+        [2, 500],
+        [1, 500],
+      ],
+      taxRate: 0,
+    })
+    // No vat key at all: Fiken answered "Lines with 0 amount is not allowed" to vat: 0.
+    expect(
+      linesOf(buildSale(inv, { ...options, zeroVatType: 'EXEMPT', zeroAccount: '3100' }))
+    ).toEqual([
+      { description: 'Brake service', netPrice: 100000, account: '3100', vatType: 'EXEMPT' },
+      { description: 'BP-100 Brake pads', netPrice: 50000, account: '3100', vatType: 'EXEMPT' },
+    ])
+  })
+
+  it('E: prices typed in with the VAT included', () => {
+    expect(
+      booked(
+        totalled({
+          lines: [
+            [2, 625],
+            [1, 625],
+          ],
+          taxInclusive: true,
+        })
+      )
+    ).toEqual([
+      [100000, 25000, '3000', 'HIGH'],
+      [50000, 12500, '3010', 'HIGH'],
+    ])
+  })
+
+  it('a part priced in øre: the sale carries the total and the VAT the invoice prints', () => {
+    // 149.90 plus 25% is 187.375 with 37.475 VAT, which no sheet can print.
+    const inv = totalled({ lines: [[1, 149.9]] })
+    const [line] = linesOf(buildSale(inv, options))
+    expect(line.netPrice + (line.vat ?? 0)).toBe(onPaper(inv.totalAmount))
+    expect(line.vat).toBe(onPaper(inv.taxAmount))
+    expect(line.netPrice + (line.vat ?? 0)).toBe(18738)
+  })
+
+  it('books the printed total and the printed VAT for every amount, rate, mode and discount', () => {
+    const wrong: string[] = []
+    let checked = 0
+    for (const taxRate of [25, 15, 12]) {
+      for (const taxInclusive of [false, true]) {
+        for (const discountPercent of [0, 10, 7.5]) {
+          for (let cents = 1; cents <= 300000; cents += 401) {
+            const subtotal = cents / 100
+            const discountAmount = subtotal * (discountPercent / 100)
+            const totals = calculateTotals({ subtotal, discountAmount, taxRate, taxInclusive })
+            if (onPaper(totals.totalAmount) <= 0 || onPaper(totals.taxAmount) <= 0) continue
+            const inv: AccountingInvoice = {
+              ...invoice,
+              subtotal,
+              discountAmount,
+              taxRate,
+              taxInclusive,
+              taxAmount: totals.taxAmount,
+              totalAmount: totals.totalAmount,
+              lines: [
+                {
+                  ...invoice.lines[0],
+                  quantity: 1,
+                  unitPrice: subtotal * 0.6,
+                  total: subtotal * 0.6,
+                },
+                {
+                  ...invoice.lines[1],
+                  quantity: 1,
+                  unitPrice: subtotal * 0.4,
+                  total: subtotal * 0.4,
+                },
+              ],
+            }
+            const lines = linesOf(buildSale(inv, options))
+            const vat = sum(lines, 'vat')
+            const gross = sum(lines, 'netPrice') + vat
+            checked++
+            if (vat !== onPaper(inv.taxAmount) || gross !== onPaper(inv.totalAmount)) {
+              wrong.push(
+                `${subtotal} at ${taxRate}%, inclusive ${taxInclusive}, -${discountPercent}%`
+              )
+            }
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(12_000)
+    expect(wrong).toEqual([])
   })
 })
 
@@ -326,6 +532,26 @@ describe('Fiken mapping: contacts and payments', () => {
         { account: '1920:10001', timezone: 'Europe/Oslo' }
       )
     ).toEqual({ date: '2026-09-06', account: '1920:10001', amount: 187500 })
+  })
+
+  it('adds up what Fiken booked, from the lines or from the totals of the sale', () => {
+    expect(
+      bookedTotals({
+        saleId: 1,
+        netAmount: 1,
+        lines: [
+          { netPrice: 100000, vat: 25000 },
+          { netPrice: 50000, vat: 12500 },
+        ],
+      })
+    ).toEqual({ net: 150000, vat: 37500 })
+    expect(bookedTotals({ saleId: 1, netAmount: 150000, vatAmount: 37500 })).toEqual({
+      net: 150000,
+      vat: 37500,
+    })
+    expect(bookedTotals({ saleId: 1, lines: [] })).toBeNull()
+    expect(money(37500)).toBe('375.00')
+    expect(money(5)).toBe('0.05')
   })
 
   it('reads cash from the account a Fiken payment landed on', () => {

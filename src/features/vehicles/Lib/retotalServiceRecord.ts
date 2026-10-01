@@ -1,3 +1,4 @@
+import { discountAmountFor } from '@/lib/tax'
 import { db, type TxClient } from '@/lib/db'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { refreshShopFeeLines } from './shopFeeLines'
@@ -39,12 +40,7 @@ export async function retotalServiceRecord(
   ])
 
   const subtotal = (parts._sum.total || 0) + (labor._sum.total || 0)
-  const discountAmount =
-    record.discountType === 'percentage'
-      ? subtotal * ((record.discountValue ?? 0) / 100)
-      : record.discountType === 'fixed'
-        ? Math.min(record.discountValue ?? 0, subtotal)
-        : 0
+  const discountAmount = discountAmountFor(subtotal, record.discountType, record.discountValue)
 
   const { taxAmount, totalAmount, taxComponents } = documentTotals({
     subtotal,
