@@ -577,6 +577,13 @@ export function ConnectionSettings({
 
       {connected && manifest.settings.length > 0 && (
         <SettingsForm
+          // A list can hang on a choice above it, the way a company's
+          // accounts hang on the company. Once that choice is saved the form
+          // starts over and reads the lists again.
+          key={manifest.settings
+            .filter((f) => f.type === 'remote-select' && f.required)
+            .map((f) => String(connection.settings[f.key] ?? ''))
+            .join('|')}
           connectorId={manifest.id}
           fields={manifest.settings}
           initial={connection.settings}

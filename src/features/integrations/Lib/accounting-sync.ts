@@ -231,6 +231,24 @@ export function invoiceUrl(appUrl: string, invoice: Pick<AccountingInvoice, 'id'
   return serviceUrl(appUrl, invoice)
 }
 
+/**
+ * The invoice as the customer received it, for a ledger that files the
+ * document behind each sale. The same copy the share link serves, in the
+ * language the workshop sends its customers.
+ */
+export async function loadInvoicePdfForAccounting(
+  organizationId: string,
+  serviceRecordId: string
+): Promise<{ buffer: Uint8Array; filename: string } | null> {
+  const record = await db.serviceRecord.findFirst({
+    where: { id: serviceRecordId, organizationId },
+    select: { id: true },
+  })
+  if (!record) return null
+  const { buildInvoicePdfBuffer } = await import('@/features/invoices/Pdf/buildInvoicePdfBuffer')
+  return buildInvoicePdfBuffer(serviceRecordId, null)
+}
+
 export async function loadPaymentForAccounting(
   organizationId: string,
   paymentId: string

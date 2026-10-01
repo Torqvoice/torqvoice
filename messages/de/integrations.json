@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Alle 30 Minuten. Eine in QuickBooks gegen eine Rechnung aus Torqvoice erhaltene Zahlung wird hier auf der Rechnung erfasst."
       }
     },
+    "fiken": {
+      "description": "Sende ausgestellte Rechnungen, ihre Kunden und ihre Zahlungen an Fiken und hole dort erfasste Zahlungen zurück.",
+      "tenantHelp": "Erstelle in Fiken unter Rediger konto, API eine App für deine eigenen Firmen. Trage die Redirect-URI unten in der App ein und kopiere Client-ID und Client-Secret hierher. Die Firma braucht das API-Modul von Fiken.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "companySlug": "Firma in Fiken",
+        "companySlugHelp": "Die Firma, in deren Buchhaltung die Rechnungen gehen. Dein Fiken-Benutzer kann Zugriff auf mehrere haben.",
+        "pushInvoices": "Ausgestellte Rechnungen an Fiken senden",
+        "pushOnComplete": "Rechnungen auch senden, wenn der Auftrag als abgeschlossen markiert wird",
+        "pushOnCompleteHelp": "Ohne diese Option geht eine Rechnung erst über, wenn sie gesendet, geteilt oder bezahlt wurde. Mit ihr geht ein abgeschlossener Auftrag sofort über und wird bei Änderungen aktualisiert.",
+        "startDate": "Nur Rechnungen mit Datum ab",
+        "startDateHelp": "Leer lassen, um jede ausgestellte Rechnung zu senden. Nutze das Datum, an dem deine Bücher zu Fiken gewechselt sind, damit ältere Rechnungen nicht doppelt erfasst werden.",
+        "attachPdf": "Rechnungs-PDF anhängen",
+        "attachPdfHelp": "Eine Rechnung geht als Verkauf (Annet salg) mit ihrer Torqvoice-Nummer nach Fiken. Ist dies an, wird das PDF, das der Kunde erhalten hat, als Beleg am Verkauf abgelegt.",
+        "laborAccount": "Erlöskonto für Arbeit",
+        "laborAccountHelp": "Leer lassen, um 3000 zu verwenden.",
+        "partsAccount": "Erlöskonto für Teile",
+        "partsAccountHelp": "Leer lassen, um 3000 zu verwenden.",
+        "zeroVatType": "MwSt-Typ für Rechnungen ohne MwSt",
+        "zeroVatTypeHelp": "Wie Fiken einen Verkauf ohne MwSt bucht. Eine Firma, die nicht für die MwSt registriert ist, muss hier nichts wählen. Eine registrierte muss wählen, bevor eine solche Rechnung gesendet wird; frage deinen Buchhalter, was gilt.",
+        "vatNone": "Keine (keine MwSt-Behandlung)",
+        "vatExempt": "Befreit (fritatt)",
+        "vatOutside": "Außerhalb des MwSt-Bereichs (utenfor)",
+        "vatExport": "Befreit, Export",
+        "vatReverse": "Befreit, Reverse Charge",
+        "zeroAccount": "Erlöskonto für Rechnungen ohne MwSt",
+        "zeroAccountHelp": "Leer lassen, um die Konten für Arbeit und Teile oben zu verwenden. Lehnt Fiken das Konto mit dem MwSt-Typ ab, steht der Grund im Aktivitätsprotokoll.",
+        "pushPayments": "Zahlungen in Fiken erfassen",
+        "paymentAccount": "Zahlungen einzahlen auf",
+        "paymentAccountHelp": "Leer lassen, um das erste Bankkonto der Firma zu verwenden.",
+        "manualPaidAsPayment": "Zahlung erfassen, wenn eine Rechnung von Hand als bezahlt markiert wird",
+        "manualPaidAsPaymentHelp": "Eine in Torqvoice ohne Zahlungseintrag als bezahlt markierte Rechnung erhält in Fiken eine Zahlung über den dort noch offenen Betrag. Ausgeschaltet bleibt sie dort offen, bis eine Zahlung erfasst wird.",
+        "pullPayments": "In Fiken erfasste Zahlungen zurückholen",
+        "pullPaymentsHelp": "Alle 30 Minuten. Eine in Fiken gegen eine Rechnung aus Torqvoice erhaltene Zahlung wird hier auf der Rechnung erfasst."
+      }
+    },
     "nhtsa": {
       "description": "Fülle ein Fahrzeug aus seiner FIN aus und sieh Rückrufe, Halterbeschwerden und Crashtest-Bewertungen für jedes Modelljahr, von der US-Sicherheitsbehörde. Kostenlos, ohne Schlüssel.",
       "fields": {},

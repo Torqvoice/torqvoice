@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "A cada 30 minutos. Um pagamento recebido no QuickBooks para uma fatura do Torqvoice é registrado aqui na fatura."
       }
     },
+    "fiken": {
+      "description": "Envie faturas emitidas, seus clientes e seus pagamentos para o Fiken e traga de volta os pagamentos registrados lá.",
+      "tenantHelp": "Crie um app no Fiken em Rediger konto, API, para as suas próprias empresas. Informe no app a URI de redirecionamento abaixo e copie para cá o ID do cliente e o segredo do cliente. A empresa precisa do módulo de API do Fiken.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "companySlug": "Empresa no Fiken",
+        "companySlugHelp": "A empresa em cuja contabilidade as faturas entram. Seu usuário do Fiken pode ter acesso a várias.",
+        "pushInvoices": "Enviar faturas emitidas para o Fiken",
+        "pushOnComplete": "Enviar faturas também quando o serviço for marcado como concluído",
+        "pushOnCompleteHelp": "Sem isso, uma fatura vai quando é enviada, compartilhada ou paga. Com isso, um serviço concluído vai na hora e é atualizado se mudar.",
+        "startDate": "Somente faturas com data a partir de",
+        "startDateHelp": "Deixe vazio para enviar toda fatura emitida. Use a data em que sua contabilidade passou para o Fiken para não lançar faturas antigas duas vezes.",
+        "attachPdf": "Anexar o PDF da fatura",
+        "attachPdfHelp": "Uma fatura entra no Fiken como uma venda (Annet salg) com o seu número do Torqvoice. Com isto ativado, o PDF que o cliente recebeu é arquivado na venda como comprovante.",
+        "laborAccount": "Conta de receita para mão de obra",
+        "laborAccountHelp": "Deixe vazio para usar a 3000.",
+        "partsAccount": "Conta de receita para peças",
+        "partsAccountHelp": "Deixe vazio para usar a 3000.",
+        "zeroVatType": "Tipo de IVA para faturas sem IVA",
+        "zeroVatTypeHelp": "Como o Fiken contabiliza uma venda sem IVA. Uma empresa não registrada para IVA não precisa escolher nada aqui. Uma registrada precisa escolher antes que uma fatura assim seja enviada; pergunte ao seu contador qual se aplica.",
+        "vatNone": "Nenhum (sem tratamento de IVA)",
+        "vatExempt": "Isento (fritatt)",
+        "vatOutside": "Fora do âmbito do IVA (utenfor)",
+        "vatExport": "Isento, exportação",
+        "vatReverse": "Isento, inversão do sujeito passivo",
+        "zeroAccount": "Conta de receita para faturas sem IVA",
+        "zeroAccountHelp": "Deixe vazio para usar as contas de mão de obra e peças acima. Se o Fiken recusar a conta com o tipo de IVA, o motivo aparece no registro de atividade.",
+        "pushPayments": "Registrar pagamentos no Fiken",
+        "paymentAccount": "Depositar pagamentos em",
+        "paymentAccountHelp": "Deixe vazio para usar a primeira conta bancária da empresa.",
+        "manualPaidAsPayment": "Registrar um pagamento quando uma fatura for marcada como paga manualmente",
+        "manualPaidAsPaymentHelp": "Uma fatura marcada como paga no Torqvoice sem lançamento de pagamento recebe no Fiken um pagamento pelo valor que ainda consta em aberto lá. Desligado, ela fica aberta lá até que um pagamento seja registrado.",
+        "pullPayments": "Trazer de volta pagamentos registrados no Fiken",
+        "pullPaymentsHelp": "A cada 30 minutos. Um pagamento recebido no Fiken para uma fatura do Torqvoice é registrado aqui na fatura."
+      }
+    },
     "nhtsa": {
       "description": "Preencha um veículo a partir do VIN e veja recalls, reclamações de proprietários e notas de testes de colisão de cada ano-modelo, da autoridade de segurança dos EUA. Grátis, sem chave.",
       "fields": {},

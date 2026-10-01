@@ -53,7 +53,8 @@ describe('integration registry', () => {
         if (s.type === 'remote-select') expect(s.source).toBeTruthy()
       }
       if (m.auth.type === 'oauth2') {
-        expect(m.auth.scopes.length).toBeGreaterThan(0)
+        // Fiken's consent has no scopes; every other vendor names what it asks for.
+        if (m.id !== 'fiken') expect(m.auth.scopes.length).toBeGreaterThan(0)
         expect(m.auth.authorizeUrl).toMatch(/^https:\/\//)
         expect(m.auth.tokenUrl).toMatch(/^https:\/\//)
       }

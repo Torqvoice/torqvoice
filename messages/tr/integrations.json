@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Her 30 dakikada bir. QuickBooks'ta bir Torqvoice faturası için alınan ödeme burada faturaya kaydedilir."
       }
     },
+    "fiken": {
+      "description": "Kesilen faturaları, müşterilerini ve ödemelerini Fiken'e gönderin ve orada kaydedilen ödemeleri geri alın.",
+      "tenantHelp": "Fiken'de Rediger konto, API altında kendi şirketleriniz için bir uygulama oluşturun. Aşağıdaki yönlendirme URI'sini uygulamaya girin, ardından istemci kimliğini ve istemci gizli anahtarını buraya kopyalayın. Şirketin Fiken API modülüne ihtiyacı vardır.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "companySlug": "Fiken şirketi",
+        "companySlugHelp": "Faturaların defterlerine işlendiği şirket. Fiken kullanıcınızın birden fazla şirkete erişimi olabilir.",
+        "pushInvoices": "Kesilen faturaları Fiken'e gönder",
+        "pushOnComplete": "İş tamamlandı olarak işaretlendiğinde faturaları da gönder",
+        "pushOnCompleteHelp": "Bu olmadan fatura gönderildiğinde, paylaşıldığında veya ödendiğinde aktarılır. Bununla tamamlanan iş hemen aktarılır ve değişirse güncellenir.",
+        "startDate": "Yalnızca şu tarih ve sonrasındaki faturalar",
+        "startDateHelp": "Kesilen her faturayı göndermek için boş bırakın. Eski faturaların iki kez girilmemesi için defterlerinizin Fiken'e taşındığı tarihi kullanın.",
+        "attachPdf": "Fatura PDF'ini ekle",
+        "attachPdfHelp": "Bir fatura Fiken'e Torqvoice numarasıyla bir satış (Annet salg) olarak girer. Bu açıkken, müşterinin aldığı PDF satışa belge olarak eklenir.",
+        "laborAccount": "İşçilik için gelir hesabı",
+        "laborAccountHelp": "3000 kullanmak için boş bırakın.",
+        "partsAccount": "Parçalar için gelir hesabı",
+        "partsAccountHelp": "3000 kullanmak için boş bırakın.",
+        "zeroVatType": "KDV'siz faturalar için KDV türü",
+        "zeroVatTypeHelp": "Fiken'in KDV içermeyen bir satışı nasıl kaydettiği. KDV mükellefi olmayan bir şirketin burada bir şey seçmesi gerekmez. Mükellef olan bir şirket, böyle bir fatura gönderilmeden önce seçim yapmalıdır; hangisinin geçerli olduğunu muhasebecinize sorun.",
+        "vatNone": "Yok (KDV işlemi yok)",
+        "vatExempt": "Muaf (fritatt)",
+        "vatOutside": "KDV kapsamı dışında (utenfor)",
+        "vatExport": "Muaf, ihracat",
+        "vatReverse": "Muaf, ters yükümlülük",
+        "zeroAccount": "KDV'siz faturalar için gelir hesabı",
+        "zeroAccountHelp": "Yukarıdaki işçilik ve parça hesaplarını kullanmak için boş bırakın. Fiken hesabı bu KDV türüyle reddederse nedeni etkinlik günlüğünde görünür.",
+        "pushPayments": "Ödemeleri Fiken'e kaydet",
+        "paymentAccount": "Ödemeleri şuraya yatır",
+        "paymentAccountHelp": "Şirketin ilk banka hesabını kullanmak için boş bırakın.",
+        "manualPaidAsPayment": "Fatura elle ödendi olarak işaretlendiğinde ödeme kaydet",
+        "manualPaidAsPaymentHelp": "Torqvoice'ta ödeme kaydı olmadan ödendi olarak işaretlenen bir fatura, Fiken'de hâlâ alacak görünen tutar kadar tek bir ödeme alır. Kapalıysa bir ödeme kaydedilene kadar orada açık kalır.",
+        "pullPayments": "Fiken'de kaydedilen ödemeleri geri al",
+        "pullPaymentsHelp": "Her 30 dakikada bir. Fiken'de bir Torqvoice faturası için alınan ödeme burada faturaya kaydedilir."
+      }
+    },
     "nhtsa": {
       "description": "Bir aracı VIN'inden doldurun ve her model yılı için geri çağırmaları, sahip şikâyetlerini ve çarpışma testi puanlarını ABD güvenlik kurumundan görün. Ücretsiz, anahtarsız.",
       "fields": {},

@@ -115,7 +115,8 @@ export function createConnectorHttp(input: {
       const headers = new Headers(init?.headers)
       for (const [k, v] of Object.entries(await authHeaders(forceRefresh))) headers.set(k, v)
       forceRefresh = false
-      if (init?.body && !headers.has('Content-Type'))
+      // A form carries its own type, with the boundary only fetch can write.
+      if (init?.body && !(init.body instanceof FormData) && !headers.has('Content-Type'))
         headers.set('Content-Type', 'application/json')
       let res: Response
       try {

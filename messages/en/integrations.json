@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Every 30 minutes. A payment received in QuickBooks against an invoice from Torqvoice is recorded on the invoice here."
       }
     },
+    "fiken": {
+      "description": "Send issued invoices, their customers and their payments to Fiken, and bring back payments recorded there.",
+      "tenantHelp": "Create an app in Fiken under Rediger konto, API, for your own companies. Enter the redirect URI below on the app, then copy its client ID and client secret here. The company needs Fiken's API module.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "companySlug": "Fiken company",
+        "companySlugHelp": "The company whose books the invoices go into. Your Fiken user may have access to several.",
+        "pushInvoices": "Send issued invoices to Fiken",
+        "pushOnComplete": "Also send invoices when the job is marked completed",
+        "pushOnCompleteHelp": "Without this an invoice goes over once it is sent, shared or paid. With it, a completed job goes over straight away and is updated if it changes.",
+        "startDate": "Only invoices dated on or after",
+        "startDateHelp": "Leave empty to send every issued invoice. Use the date your books moved to Fiken so older invoices are not entered twice.",
+        "attachPdf": "Attach the invoice PDF",
+        "attachPdfHelp": "An invoice goes into Fiken as a sale (Annet salg) under its Torqvoice number. With this on, the PDF the customer received is filed on the sale as its voucher.",
+        "laborAccount": "Income account for labour",
+        "laborAccountHelp": "Leave empty to use 3000.",
+        "partsAccount": "Income account for parts",
+        "partsAccountHelp": "Leave empty to use 3000.",
+        "zeroVatType": "VAT type for invoices without VAT",
+        "zeroVatTypeHelp": "How Fiken books a sale that carries no VAT. A company that is not VAT registered needs no choice here. A registered one must choose before such an invoice is sent; ask your accountant which applies.",
+        "vatNone": "None (no VAT handling)",
+        "vatExempt": "Exempt (fritatt)",
+        "vatOutside": "Outside the VAT area (utenfor)",
+        "vatExport": "Exempt, export",
+        "vatReverse": "Exempt, reverse charge",
+        "zeroAccount": "Income account for invoices without VAT",
+        "zeroAccountHelp": "Leave empty to use the labour and parts accounts above. If Fiken refuses the account with the VAT type, the reason is shown in the activity log.",
+        "pushPayments": "Record payments in Fiken",
+        "paymentAccount": "Deposit payments to",
+        "paymentAccountHelp": "Leave empty to use the company's first bank account.",
+        "manualPaidAsPayment": "Record a payment when an invoice is marked paid by hand",
+        "manualPaidAsPaymentHelp": "An invoice marked as paid in Torqvoice without a payment entry gets one payment in Fiken for whatever it still shows as owed. Off, it stays open there until a payment is recorded.",
+        "pullPayments": "Bring back payments recorded in Fiken",
+        "pullPaymentsHelp": "Every 30 minutes. A payment received in Fiken against an invoice from Torqvoice is recorded on the invoice here."
+      }
+    },
     "nhtsa": {
       "description": "Fill in a vehicle from its VIN, and see recalls, owner complaints and crash ratings for every model year, from the US safety authority. Free, no key.",
       "fields": {},

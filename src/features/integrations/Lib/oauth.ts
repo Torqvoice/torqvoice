@@ -76,7 +76,8 @@ export function buildAuthorizeUrl(input: {
   url.searchParams.set('response_type', 'code')
   url.searchParams.set('client_id', input.client.clientId)
   url.searchParams.set('redirect_uri', input.redirectUri)
-  url.searchParams.set('scope', input.spec.scopes.join(' '))
+  // A vendor without scopes, such as Fiken, gets no empty scope parameter.
+  if (input.spec.scopes.length > 0) url.searchParams.set('scope', input.spec.scopes.join(' '))
   url.searchParams.set('state', input.state)
   for (const [k, v] of Object.entries(input.spec.authorizeParams ?? {})) url.searchParams.set(k, v)
   if (input.codeVerifier) {
@@ -152,6 +153,8 @@ export async function exchangeCode(input: {
   code: string
   redirectUri: string
   codeVerifier?: string
+  /** The state the callback carried, for vendors that want it again here. */
+  state?: string
   previous?: OAuthCredentials
 }): Promise<OAuthCredentials> {
   const body = await tokenRequest(input.spec, input.client, {
@@ -159,6 +162,7 @@ export async function exchangeCode(input: {
     code: input.code,
     redirect_uri: input.redirectUri,
     ...(input.codeVerifier && { code_verifier: input.codeVerifier }),
+    ...(input.spec.stateOnExchange && input.state && { state: input.state }),
   })
   return toCredentials(body, input.previous ?? { accessToken: '' })
 }

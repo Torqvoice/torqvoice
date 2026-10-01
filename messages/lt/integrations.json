@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Kas 30 minučių. QuickBooks gautas mokėjimas už Torqvoice sąskaitą užregistruojamas čia prie sąskaitos."
       }
     },
+    "fiken": {
+      "description": "Siųskite išrašytas sąskaitas, jų klientus ir mokėjimus į Fiken ir parsisiųskite ten užregistruotus mokėjimus.",
+      "tenantHelp": "Sukurkite programėlę Fiken skiltyje Rediger konto, API, savo įmonėms. Programėlėje įveskite žemiau pateiktą peradresavimo URI, tada čia nukopijuokite jos kliento ID ir kliento slaptažodį. Įmonei reikalingas Fiken API modulis.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "companySlug": "Įmonė Fiken sistemoje",
+        "companySlugHelp": "Įmonė, į kurios apskaitą patenka sąskaitos. Jūsų Fiken naudotojas gali turėti prieigą prie kelių.",
+        "pushInvoices": "Siųsti išrašytas sąskaitas į Fiken",
+        "pushOnComplete": "Siųsti sąskaitas ir tada, kai darbas pažymimas kaip užbaigtas",
+        "pushOnCompleteHelp": "Be šio nustatymo sąskaita perduodama, kai ji išsiunčiama, pasidalinama ar apmokama. Su juo užbaigtas darbas perduodamas iš karto ir atnaujinamas, jei pasikeičia.",
+        "startDate": "Tik sąskaitos, datuotos nuo",
+        "startDateHelp": "Palikite tuščią, kad būtų siunčiamos visos išrašytos sąskaitos. Naudokite datą, kada apskaita perkelta į Fiken, kad senesnės sąskaitos nebūtų įvestos dukart.",
+        "attachPdf": "Pridėti sąskaitos PDF",
+        "attachPdfHelp": "Sąskaita į Fiken patenka kaip pardavimas (Annet salg) su savo Torqvoice numeriu. Įjungus, kliento gautas PDF pridedamas prie pardavimo kaip pagrindžiantis dokumentas.",
+        "laborAccount": "Pajamų sąskaita darbui",
+        "laborAccountHelp": "Palikite tuščią, kad būtų naudojama 3000.",
+        "partsAccount": "Pajamų sąskaita dalims",
+        "partsAccountHelp": "Palikite tuščią, kad būtų naudojama 3000.",
+        "zeroVatType": "PVM tipas sąskaitoms be PVM",
+        "zeroVatTypeHelp": "Kaip Fiken apskaito pardavimą be PVM. Įmonei, kuri nėra PVM mokėtoja, čia nieko rinktis nereikia. PVM mokėtoja turi pasirinkti prieš siunčiant tokią sąskaitą; paklauskite savo buhalterio, kuris tipas taikomas.",
+        "vatNone": "Nėra (PVM netaikomas)",
+        "vatExempt": "Atleista (fritatt)",
+        "vatOutside": "Už PVM taikymo srities (utenfor)",
+        "vatExport": "Atleista, eksportas",
+        "vatReverse": "Atleista, atvirkštinis apmokestinimas",
+        "zeroAccount": "Pajamų sąskaita sąskaitoms be PVM",
+        "zeroAccountHelp": "Palikite tuščią, kad būtų naudojamos aukščiau nurodytos darbo ir dalių sąskaitos. Jei Fiken atmeta sąskaitą su šiuo PVM tipu, priežastis rodoma veiklos žurnale.",
+        "pushPayments": "Registruoti mokėjimus Fiken",
+        "paymentAccount": "Mokėjimus įnešti į",
+        "paymentAccountHelp": "Palikite tuščią, kad būtų naudojama pirmoji įmonės banko sąskaita.",
+        "manualPaidAsPayment": "Registruoti mokėjimą, kai sąskaita ranka pažymima kaip apmokėta",
+        "manualPaidAsPaymentHelp": "Torqvoice be mokėjimo įrašo kaip apmokėta pažymėta sąskaita Fiken gauna vieną mokėjimą likusiai ten rodomai sumai. Išjungus ji ten lieka atvira, kol užregistruojamas mokėjimas.",
+        "pullPayments": "Parsisiųsti Fiken užregistruotus mokėjimus",
+        "pullPaymentsHelp": "Kas 30 minučių. Fiken gautas mokėjimas už Torqvoice sąskaitą užregistruojamas čia prie sąskaitos."
+      }
+    },
     "nhtsa": {
       "description": "Užpildykite transporto priemonę pagal VIN ir matykite kiekvienų modelio metų atšaukimus, savininkų skundus ir smūgio bandymų įvertinimus iš JAV saugos institucijos. Nemokamai, be rakto.",
       "fields": {},

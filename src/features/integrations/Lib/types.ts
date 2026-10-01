@@ -79,6 +79,11 @@ export type AuthSpec =
        * else.
        */
       callbackParams?: string[]
+      /**
+       * Repeat the state on the code exchange. The standard only puts it on
+       * the authorize request; Fiken lists it as required on both.
+       */
+      stateOnExchange?: boolean
       /** Environment variable names holding the platform-owned app's client id and secret. */
       platformEnv?: { clientId: string; clientSecret: string }
       /** Fields a workshop fills in to use its own app. */

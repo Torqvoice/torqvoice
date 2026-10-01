@@ -11,6 +11,7 @@ import type { ConnectorManifest, ConnectorServer } from '@/features/integrations
 import { isCloudInstance } from '@/lib/cloud-instance'
 import { manifest as amazonSes } from './amazon-ses/manifest'
 import { manifest as anthropic } from './anthropic/manifest'
+import { manifest as fiken } from './fiken/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
 import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
@@ -72,6 +73,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: vipps, load: () => import('./vipps/server') },
   { manifest: paypal, load: () => import('./paypal/server') },
   { manifest: quickbooks, load: () => import('./quickbooks/server') },
+  { manifest: fiken, load: () => import('./fiken/server') },
 ]
 
 /**
