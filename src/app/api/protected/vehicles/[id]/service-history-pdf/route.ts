@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -134,10 +135,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     const invoiceSettings = {
-      currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-      currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
-        | 'symbol'
-        | 'code',
+      currencyCode: resolveCurrencyCode(settingsMap['workshop.currencyCode']),
+      currencyFormat: resolveCurrencyFormat(settingsMap['workshop.currencyFormat']),
       unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
       dateFormat: settingsMap['workshop.dateFormat'] || undefined,
       timezone: settingsMap['workshop.timezone'] || undefined,

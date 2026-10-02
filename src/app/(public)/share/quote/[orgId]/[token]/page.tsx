@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -158,9 +159,10 @@ export default async function PublicQuotePage({
     slogan: settingsMap['workshop.slogan'] || undefined,
   }
 
-  const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
-  const currencyFormat: 'symbol' | 'code' =
-    settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
+  const currencyCode = resolveCurrencyCode(settingsMap['workshop.currencyCode'])
+  const currencyFormat: 'symbol' | 'code' = resolveCurrencyFormat(
+    settingsMap['workshop.currencyFormat']
+  )
 
   // Rewrite logo URL for public access
   const rawLogoUrl = documentLogoPath(settingsMap, 'quote')

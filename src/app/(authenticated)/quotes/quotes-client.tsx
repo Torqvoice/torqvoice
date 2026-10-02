@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
@@ -101,7 +102,7 @@ const statusColors: Record<string, string> = {
 
 export function QuotesClient({
   data,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
   sortBy = '',

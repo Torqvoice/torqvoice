@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
@@ -51,7 +52,7 @@ export default async function ReportsPage() {
     SETTING_KEYS.INVOICE_PRIMARY_COLOR,
   ])
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   const primaryColor = settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706'
   const organizationName = data.organizations.find((o) => o.id === data.organizationId)?.name ?? ''
 

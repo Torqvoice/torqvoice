@@ -8,6 +8,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { notify } from '@/lib/notify'
 import { serviceRecordHref } from '@/lib/service-record'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopMoneyFormatter } from '@/lib/workshop-currency'
 
 const verifySchema = z.object({
   provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
@@ -88,11 +89,12 @@ export async function POST(
     })
 
     if (created) {
+      const money = await workshopMoneyFormatter(orgId)
       notify({
         organizationId: orgId,
         type: 'invoice_payment',
         title: 'Invoice Payment Received',
-        message: `${(record.customer ?? record.vehicle?.customer)?.name || 'A customer'} paid ${result.amount.toFixed(2)} for invoice ${record.invoiceNumber || record.title}`,
+        message: `${(record.customer ?? record.vehicle?.customer)?.name || 'A customer'} paid ${money(result.amount)} for invoice ${record.invoiceNumber || record.title}`,
         entityType: 'invoice',
         entityId: record.id,
         entityUrl: serviceRecordHref(record),

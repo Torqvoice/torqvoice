@@ -19,6 +19,7 @@
  * the reader's translations.
  */
 
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'fs/promises'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -285,8 +286,8 @@ export function liveInvoiceSettings(settingsMap: Record<string, string>): Invoic
     showOrgNumber: settingsMap['invoice.showOrgNumber'] !== 'false',
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
-    currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-    currencyFormat: settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol',
+    currencyCode: resolveCurrencyCode(settingsMap['workshop.currencyCode']),
+    currencyFormat: resolveCurrencyFormat(settingsMap['workshop.currencyFormat']),
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timeFormat: settingsMap['workshop.timeFormat'] || undefined,
@@ -468,8 +469,8 @@ function assembleFrozen(
 
   const invoiceSettings: InvoiceSettingsProps = {
     ...frozen.invoiceSettings,
-    currencyCode: frozen.invoiceSettings.currencyCode || 'USD',
-    currencyFormat: frozen.invoiceSettings.currencyFormat || 'symbol',
+    currencyCode: resolveCurrencyCode(frozen.invoiceSettings.currencyCode),
+    currencyFormat: resolveCurrencyFormat(frozen.invoiceSettings.currencyFormat),
   }
   const serviceType = frozen.serviceType === 'marine' ? 'marine' : 'automotive'
   const taxLabel = frozen.taxLabel?.trim() || undefined

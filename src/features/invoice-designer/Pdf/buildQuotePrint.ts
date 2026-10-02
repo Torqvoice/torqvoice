@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
@@ -162,8 +163,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   }
 
   const doc = layout.document ?? {}
-  const cc = input.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = input.currencyFormat === 'code' ? 'code' : 'symbol'
+  const cc = resolveCurrencyCode(input.currencyCode)
+  const cf: 'symbol' | 'code' = resolveCurrencyFormat(input.currencyFormat)
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false

@@ -1,5 +1,6 @@
 'use client'
 
+import { formatCurrency } from '@/lib/format'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useLocale, useTranslations } from 'next-intl'
@@ -588,7 +589,11 @@ export function SubscriptionSettings({
                   <p>
                     {t('subscription.upgradeAmountDue')}:{' '}
                     <span className="font-semibold">
-                      ${upgradePreview.amountDue.toFixed(2)} {upgradePreview.currency.toUpperCase()}
+                      {formatCurrency(
+                        upgradePreview.amountDue,
+                        upgradePreview.currency.toUpperCase(),
+                        'code'
+                      )}
                     </span>
                   </p>
                 </div>

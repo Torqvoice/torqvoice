@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -106,7 +107,7 @@ const STATUS_TABS = [
 
 export default function BillingClient({
   data,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
   deliveryFilter,

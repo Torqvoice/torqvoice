@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 import { db } from '@/lib/db'
 import { paymentProviderFor } from '@/features/integrations/Lib/payments'
 import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
+import { fromStripeAmount } from '@/lib/payment-providers/vendor-amounts'
 import { stripeClient } from '@/lib/payment-providers/vendor-hosts'
 import { recordVendorPayment } from '@/lib/payment-providers/record-payment'
 
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
       // Once, however many reports arrive together: Stripe retries, and the
       // customer coming back to the invoice reports the same session.
       await recordVendorPayment({
-        amount: (session.amount_total ?? 0) / 100,
+        amount: fromStripeAmount(session.amount_total ?? 0, session.currency),
         method: 'stripe',
         provider: 'stripe',
         externalId: session.id,

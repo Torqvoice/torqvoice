@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -34,7 +35,7 @@ export function PresetPartsEditor({
   parts,
   onPartsChange,
   inventoryParts,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
 }: PresetPartsEditorProps) {
   const t = useTranslations('laborPresets')
   const [pickerOpen, setPickerOpen] = useState(false)

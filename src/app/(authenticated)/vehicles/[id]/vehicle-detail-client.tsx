@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition, useCallback } from 'react'
@@ -292,7 +293,7 @@ export function VehicleDetailClient({
   paginatedNotes,
   serviceSearch,
   serviceRecordType,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   unitSystem = 'imperial',
   predictionData,
   inspections,

@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { renderToBuffer } from '@react-pdf/renderer'
@@ -687,9 +688,10 @@ export async function processOneSchedule(
   })
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
-  const currencyCode = settingsMap[SETTING_KEYS.CURRENCY_CODE] || 'USD'
-  const currencyFormat: 'symbol' | 'code' =
-    settingsMap[SETTING_KEYS.CURRENCY_FORMAT] === 'code' ? 'code' : 'symbol'
+  const currencyCode = resolveCurrencyCode(settingsMap[SETTING_KEYS.CURRENCY_CODE])
+  const currencyFormat: 'symbol' | 'code' = resolveCurrencyFormat(
+    settingsMap[SETTING_KEYS.CURRENCY_FORMAT]
+  )
   const primaryColor = settingsMap[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706'
 
   // Fetch report data for selected sections

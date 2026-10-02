@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { workshopMoneyFormatter } from '@/lib/workshop-currency'
 import { db } from '@/lib/db'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
 import { ReportSoldButton } from '@/features/portal/Components/ReportSoldButton'
@@ -29,6 +30,7 @@ export default async function PortalVehicleDetailPage({
   // Dates on the portal are the workshop's calendar days, not the server's.
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
+  const money = await workshopMoneyFormatter(org?.id)
   const t = await getTranslations('portal.vehicles')
   const tInvoices = await getTranslations('portal.invoices')
   const tWarranty = await getTranslations('vehicles.services.warranty.status')
@@ -151,7 +153,7 @@ export default async function PortalVehicleDetailPage({
                             </Badge>
                           ) : null
                         })()}
-                        <span className="text-sm font-medium">${sr.totalAmount.toFixed(2)}</span>
+                        <span className="text-sm font-medium">{money(sr.totalAmount)}</span>
                         {sr.publicToken && (
                           <Link
                             href={`/share/invoice/${orgId}/${sr.publicToken}`}

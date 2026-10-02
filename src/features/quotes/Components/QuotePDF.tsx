@@ -1,3 +1,4 @@
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import {
   buildQuotePrintSpec,
@@ -28,7 +29,7 @@ interface OtherAttachmentPDF {
 export function QuotePDF({
   data,
   workshop,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   currencyFormat = 'symbol',
   logoDataUri,
   signer,

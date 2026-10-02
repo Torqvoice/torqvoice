@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE, DEFAULT_CURRENCY_FORMAT } from '@/lib/currencies'
 import { useMemo, useState, useEffect } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
 import { PDFViewer } from '@react-pdf/renderer'
@@ -210,8 +211,8 @@ const DUMMY_INVOICE_SETTINGS = {
   showBankAccount: true,
   showOrgNumber: true,
   dueDays: 14,
-  currencyCode: 'USD',
-  currencyFormat: 'symbol' as const,
+  currencyCode: DEFAULT_CURRENCY_CODE,
+  currencyFormat: DEFAULT_CURRENCY_FORMAT,
   unitSystem: 'imperial',
 }
 

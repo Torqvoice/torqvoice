@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { workshopCurrencySettings } from '@/lib/workshop-currency'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import {
@@ -107,11 +108,7 @@ export async function POST(
       )
     }
 
-    const currencySetting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: orgId, key: 'workshop.currencyCode' } },
-      select: { value: true },
-    })
-    const currencyCode = currencySetting?.value || 'USD'
+    const { currencyCode } = await workshopCurrencySettings(orgId)
     const invoiceNumber = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''

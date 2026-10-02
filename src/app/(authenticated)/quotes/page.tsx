@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -47,7 +48,7 @@ export default async function QuotesPage({
   }
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
 
   return (
     <>

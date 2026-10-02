@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition } from 'react'
@@ -279,7 +280,7 @@ const observationSeverityColors: Record<string, string> = {
 
 export function DashboardClient({
   stats,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   upcomingReminders = [],
   vehiclesDueForService = [],
   dismissedMaintenanceVehicles = [],

@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { formatCurrency, type CurrencyFormat } from '@/lib/format'
 import type { EmailKind } from './emailKinds'
 import { kindSpec } from './emailKinds'
@@ -104,7 +105,7 @@ function asDate(value: Date | string | null | undefined): Date | null {
 }
 
 function money(doc: DocumentContext): (amount: number) => string {
-  const currency = doc.currencyCode || 'USD'
+  const currency = resolveCurrencyCode(doc.currencyCode)
   return (amount) => formatCurrency(amount, currency, doc.currencyFormat)
 }
 
