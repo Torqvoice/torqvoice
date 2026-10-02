@@ -256,3 +256,29 @@ export function currencyName(code: string, locale: string): string {
   }
   return code
 }
+
+/** Lower case with the accents off, so "cordoba" finds "Córdoba". */
+function fold(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+}
+
+/**
+ * How well a currency's "CODE Name" label answers what was typed into the
+ * currency search, 0 for not at all.
+ *
+ * A code is matched from its first letter and a name on any run of letters in
+ * it. The picker's stock fuzzy match read "NIO" as any label with an n, an i
+ * and an o somewhere in it, and listed thirty currencies for it.
+ */
+export function currencySearchScore(label: string, search: string): number {
+  const query = fold(search.trim())
+  if (!query) return 1
+  const text = fold(label)
+  if (text.startsWith(query)) return 1
+  const at = text.indexOf(query)
+  if (at < 0) return 0
+  return text[at - 1] === ' ' ? 0.8 : 0.5
+}

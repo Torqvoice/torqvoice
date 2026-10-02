@@ -35,6 +35,7 @@ import { formatCurrency, formatDate, formatDateTime, DEFAULT_DATE_FORMAT } from 
 import {
   SELECTABLE_CURRENCIES,
   currencyName,
+  currencySearchScore,
   resolveCurrencyFormat,
   resolveCurrencySettings,
 } from '@/lib/currencies'
@@ -297,7 +298,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64 p-0" align="start">
-                  <Command>
+                  <Command filter={currencySearchScore}>
                     <CommandInput placeholder={t('currency.searchCurrency')} />
                     <CommandList>
                       <CommandEmpty>{t('currency.noCurrencyFound')}</CommandEmpty>

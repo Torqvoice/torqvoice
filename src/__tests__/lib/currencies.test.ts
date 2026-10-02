@@ -3,6 +3,7 @@ import { locales } from '@/i18n/config'
 import {
   CURRENCIES,
   currencyName,
+  currencySearchScore,
   resolveCurrencySettings,
   SELECTABLE_CURRENCIES,
 } from '@/lib/currencies'
@@ -62,5 +63,20 @@ describe('currency registry', () => {
       currencyCode: 'NOK',
       currencyFormat: 'symbol',
     })
+  })
+
+  it('finds a currency by its code alone', () => {
+    const found = (search: string) =>
+      SELECTABLE_CURRENCIES.map((c) => `${c.code} ${currencyName(c.code, 'en')}`)
+        .filter((label) => currencySearchScore(label, search) > 0)
+        .map((label) => label.slice(0, 3))
+    expect(found('NIO')).toEqual(['NIO'])
+    expect(found('nio')).toEqual(['NIO'])
+    expect(found('GTQ')).toEqual(['GTQ'])
+    expect(found('Nicara')).toEqual(['NIO'])
+    expect(found('cordoba')).toEqual(['NIO'])
+    expect(found('krone')).toEqual(expect.arrayContaining(['NOK', 'DKK']))
+    expect(found('zzz')).toEqual([])
+    expect(found('').length).toBe(SELECTABLE_CURRENCIES.length)
   })
 })
