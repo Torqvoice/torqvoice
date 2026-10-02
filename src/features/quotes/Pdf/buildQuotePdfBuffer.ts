@@ -15,6 +15,7 @@
  * appended whole where they are PDFs.
  */
 
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -180,10 +181,8 @@ export async function buildQuotePdfBuffer(
       email: settingsMap['workshop.email'] || '',
       slogan: settingsMap['workshop.slogan'] || undefined,
     },
-    currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
-      | 'symbol'
-      | 'code',
+    currencyCode: resolveCurrencyCode(settingsMap['workshop.currencyCode']),
+    currencyFormat: resolveCurrencyFormat(settingsMap['workshop.currencyFormat']),
     logoDataUri,
     signer,
     // The mark comes off for the plans that paid to remove it.

@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -52,7 +53,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   }
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0

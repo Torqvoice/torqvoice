@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { getTranslations } from 'next-intl/server'
 import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
@@ -114,7 +115,7 @@ export default async function VehicleDetailPage({
       : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
 
   const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = currencySettings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(currencySettings[SETTING_KEYS.CURRENCY_CODE])
   const unitSystem = (currencySettings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial') as
     | 'metric'
     | 'imperial'

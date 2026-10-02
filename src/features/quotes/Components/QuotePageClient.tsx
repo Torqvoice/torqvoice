@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import { ShopFeeProvider } from '@/features/settings/Components/ShopFeeContext'
 import { DocumentLockBanner } from '@/components/document-lock-banner'
@@ -73,7 +74,7 @@ export function QuotePageClient({
   organizationId,
   lockState,
   canUnlock,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,

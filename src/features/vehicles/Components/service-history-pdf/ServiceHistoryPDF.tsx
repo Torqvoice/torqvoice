@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import {
   formatDateForPdf,
@@ -78,8 +79,8 @@ export function ServiceHistoryPDF({
   const showCompanyName = template?.showCompanyName !== false
   const styles = createStyles(primaryColor, fontFamily)
   const fontBold = getFontBold(fontFamily)
-  const cc = invoiceSettings?.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
+  const cc = resolveCurrencyCode(invoiceSettings?.currencyCode)
+  const cf: 'symbol' | 'code' = resolveCurrencyFormat(invoiceSettings?.currencyFormat)
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
   const tz = invoiceSettings?.timezone || undefined
   const unitLabel = invoiceSettings?.unitSystem === 'metric' ? labels.km || 'km' : labels.mi || 'mi'

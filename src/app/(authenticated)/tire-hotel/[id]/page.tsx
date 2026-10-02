@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
@@ -65,7 +66,7 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
   const imperial = settings[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'
   const billing = {
     seasonalPrice: Number(settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE]) || 0,
-    currency: settings[SETTING_KEYS.CURRENCY_CODE] || 'USD',
+    currency: resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE]),
   }
 
   return (

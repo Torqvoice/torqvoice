@@ -32,68 +32,16 @@ import {
 import { Calendar, Check, ChevronDown, Clock, Coins, Globe, Loader2, Save } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatCurrency, formatDate, formatDateTime, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import {
+  SELECTABLE_CURRENCIES,
+  currencyName,
+  currencySearchScore,
+  resolveCurrencyFormat,
+  resolveCurrencySettings,
+} from '@/lib/currencies'
 import { setLocale } from '@/i18n/actions'
 import { locales, localeNames } from '@/i18n/config'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
-
-const CURRENCIES = [
-  { code: 'USD', key: 'USD' },
-  { code: 'EUR', key: 'EUR' },
-  { code: 'GBP', key: 'GBP' },
-  { code: 'NOK', key: 'NOK' },
-  { code: 'SEK', key: 'SEK' },
-  { code: 'DKK', key: 'DKK' },
-  { code: 'CHF', key: 'CHF' },
-  { code: 'CAD', key: 'CAD' },
-  { code: 'AUD', key: 'AUD' },
-  { code: 'NZD', key: 'NZD' },
-  { code: 'JPY', key: 'JPY' },
-  { code: 'CNY', key: 'CNY' },
-  { code: 'INR', key: 'INR' },
-  { code: 'BRL', key: 'BRL' },
-  { code: 'MXN', key: 'MXN' },
-  { code: 'PLN', key: 'PLN' },
-  { code: 'CZK', key: 'CZK' },
-  { code: 'HUF', key: 'HUF' },
-  { code: 'TRY', key: 'TRY' },
-  { code: 'ZAR', key: 'ZAR' },
-  { code: 'KRW', key: 'KRW' },
-  { code: 'SGD', key: 'SGD' },
-  { code: 'HKD', key: 'HKD' },
-  { code: 'THB', key: 'THB' },
-  { code: 'ISK', key: 'ISK' },
-  { code: 'RON', key: 'RON' },
-  { code: 'ILS', key: 'ILS' },
-  { code: 'PHP', key: 'PHP' },
-  { code: 'IDR', key: 'IDR' },
-  { code: 'MYR', key: 'MYR' },
-  { code: 'LKR', key: 'LKR' },
-  { code: 'TWD', key: 'TWD' },
-  { code: 'VND', key: 'VND' },
-  { code: 'PKR', key: 'PKR' },
-  { code: 'BDT', key: 'BDT' },
-  { code: 'NPR', key: 'NPR' },
-  { code: 'BGN', key: 'BGN' },
-  { code: 'UAH', key: 'UAH' },
-  { code: 'CLP', key: 'CLP' },
-  { code: 'COP', key: 'COP' },
-  { code: 'ARS', key: 'ARS' },
-  { code: 'PEN', key: 'PEN' },
-  { code: 'EGP', key: 'EGP' },
-  { code: 'NGN', key: 'NGN' },
-  { code: 'KES', key: 'KES' },
-  { code: 'MAD', key: 'MAD' },
-  { code: 'DZD', key: 'DZD' },
-  { code: 'GHS', key: 'GHS' },
-  { code: 'AED', key: 'AED' },
-  { code: 'SAR', key: 'SAR' },
-  { code: 'QAR', key: 'QAR' },
-  { code: 'KWD', key: 'KWD' },
-  { code: 'BHD', key: 'BHD' },
-  { code: 'OMR', key: 'OMR' },
-  { code: 'JOD', key: 'JOD' },
-  { code: 'RUB', key: 'RUB' },
-]
 
 const DATE_FORMAT_OPTIONS = [
   { value: 'MMM d, yyyy', label: 'MMM D, YYYY', example: 'Feb 15, 2026' },
@@ -171,10 +119,9 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
   const [timezoneOpen, setTimezoneOpen] = useState(false)
 
   // Currency
-  const [currencyCode, setCurrencyCode] = useState(settings[SETTING_KEYS.CURRENCY_CODE] || 'USD')
-  const [currencyFormat, setCurrencyFormat] = useState<'symbol' | 'code'>(
-    settings[SETTING_KEYS.CURRENCY_FORMAT] === 'code' ? 'code' : 'symbol'
-  )
+  const stored = resolveCurrencySettings(settings)
+  const [currencyCode, setCurrencyCode] = useState(stored.currencyCode)
+  const [currencyFormat, setCurrencyFormat] = useState(stored.currencyFormat)
 
   // Date & Time
   const [dateFormat, setDateFormat] = useState(
@@ -344,20 +291,22 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                     aria-expanded={currencyOpen}
                     className="w-64 justify-between font-normal"
                   >
-                    {currencyCode} &mdash; {t('currency.currencies.' + currencyCode)}
+                    <span className="truncate">
+                      {currencyCode} &mdash; {currencyName(currencyCode, currentLocale)}
+                    </span>
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64 p-0" align="start">
-                  <Command>
+                  <Command filter={currencySearchScore}>
                     <CommandInput placeholder={t('currency.searchCurrency')} />
                     <CommandList>
                       <CommandEmpty>{t('currency.noCurrencyFound')}</CommandEmpty>
                       <CommandGroup>
-                        {CURRENCIES.map((c) => (
+                        {SELECTABLE_CURRENCIES.map((c) => (
                           <CommandItem
                             key={c.code}
-                            value={`${c.code} ${t('currency.currencies.' + c.code)}`}
+                            value={`${c.code} ${currencyName(c.code, currentLocale)}`}
                             onSelect={() => {
                               setCurrencyCode(c.code)
                               setCurrencyOpen(false)
@@ -369,7 +318,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                                 currencyCode === c.code ? 'opacity-100' : 'opacity-0'
                               )}
                             />
-                            {c.code} &mdash; {t('currency.currencies.' + c.code)}
+                            {c.code} &mdash; {currencyName(c.code, currentLocale)}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -383,7 +332,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               <Label>{t('currency.formatTitle')}</Label>
               <Select
                 value={currencyFormat}
-                onValueChange={(v) => setCurrencyFormat(v === 'code' ? 'code' : 'symbol')}
+                onValueChange={(v) => setCurrencyFormat(resolveCurrencyFormat(v))}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />

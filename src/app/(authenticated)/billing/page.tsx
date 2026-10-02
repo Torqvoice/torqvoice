@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getBillingHistory } from '@/features/billing/Actions/billingActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -54,7 +55,7 @@ export default async function BillingPage({
   ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
 
   if (!result.success || !result.data) {
     return (

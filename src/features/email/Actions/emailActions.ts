@@ -1,5 +1,6 @@
 'use server'
 
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -126,9 +127,10 @@ export async function sendQuoteEmail(input: {
       const locale = await resolveCustomerLocale(organizationId, null)
       // The mail's own summary of the document quotes a figure, so it needs
       // the same currency the sheet prints in.
-      const currencyCode = settings['workshop.currencyCode'] || 'USD'
-      const currencyFormat: 'symbol' | 'code' =
-        settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
+      const currencyCode = resolveCurrencyCode(settings['workshop.currencyCode'])
+      const currencyFormat: 'symbol' | 'code' = resolveCurrencyFormat(
+        settings['workshop.currencyFormat']
+      )
 
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {

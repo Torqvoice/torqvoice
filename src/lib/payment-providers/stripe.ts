@@ -1,4 +1,5 @@
 import type Stripe from 'stripe'
+import { fromStripeAmount, toStripeAmount } from './vendor-amounts'
 import { stripeClient } from './vendor-hosts'
 import type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
 
@@ -17,7 +18,7 @@ export class StripeProvider implements PaymentProvider {
         {
           price_data: {
             currency: req.currency.toLowerCase(),
-            unit_amount: Math.round(req.amount * 100),
+            unit_amount: toStripeAmount(req.amount, req.currency),
             product_data: {
               name: `Invoice ${req.invoiceNumber}`,
               description: req.description,
@@ -50,7 +51,7 @@ export class StripeProvider implements PaymentProvider {
       const session = await this.stripe.checkout.sessions.retrieve(externalId)
       return {
         paid: session.payment_status === 'paid',
-        amount: (session.amount_total ?? 0) / 100,
+        amount: fromStripeAmount(session.amount_total ?? 0, session.currency),
         serviceRecordId: session.metadata?.serviceRecordId ?? null,
         organizationId: session.metadata?.orgId ?? null,
       }

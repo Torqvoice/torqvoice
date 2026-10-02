@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
@@ -39,7 +40,7 @@ export default async function CalendarPage({
     SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
   ])
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   // The same week start the layout hands the client, so the grid the server
   // fetched for is the grid the client draws.
   const weekStartRaw = parseInt(settings[SETTING_KEYS.WORKBOARD_WEEK_START_DAY] || '1', 10)

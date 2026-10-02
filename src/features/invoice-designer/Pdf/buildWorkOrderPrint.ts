@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -151,8 +152,8 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const layout = resolveLayout(input)
   const doc = layout.document ?? {}
 
-  const cc = invoiceSettings?.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
+  const cc = resolveCurrencyCode(invoiceSettings?.currencyCode)
+  const cf: 'symbol' | 'code' = resolveCurrencyFormat(invoiceSettings?.currencyFormat)
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false

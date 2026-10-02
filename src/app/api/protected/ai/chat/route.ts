@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { type NextRequest, NextResponse } from 'next/server'
 import { getLocale } from 'next-intl/server'
 import type OpenAI from 'openai'
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
   const setting = (key: string) => settings.find((s) => s.key === key)?.value
   const options = {
     showMoney,
-    currencyCode: setting(SETTING_KEYS.CURRENCY_CODE) || 'USD',
+    currencyCode: resolveCurrencyCode(setting(SETTING_KEYS.CURRENCY_CODE)),
     unitSystem: (setting(SETTING_KEYS.UNIT_SYSTEM) === 'metric' ? 'metric' : 'imperial') as
       | 'metric'
       | 'imperial',
