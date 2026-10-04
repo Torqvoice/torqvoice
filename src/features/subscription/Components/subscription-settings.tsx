@@ -255,16 +255,24 @@ export function SubscriptionSettings({
   // What a plan costs at the selected interval, quoted per month either way,
   // with the yearly total beside it for annual billing. Nothing is shown when
   // the site could not be asked; the checkout page states the price anyway.
+  // Plan prices are shown the way the pricing page shows them ("$29",
+  // "$24.17"), with the symbol, not as an accounting figure.
+  const formatPrice = (amount: number, currency: string) =>
+    new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount)
   const priceLine = (selectedPlan: BillingPlan): string | null => {
     const price = prices?.[selectedPlan]?.[interval]
     if (!price) return null
-    const currency = price.currency.toUpperCase()
     if (interval === 'month') {
-      return `${formatCurrency(price.amount, currency)}/${t('subscription.perMonth')}`
+      return `${formatPrice(price.amount, price.currency)}/${t('subscription.perMonth')}`
     }
-    const perMonth = formatCurrency(price.amount / 12, currency)
+    const perMonth = formatPrice(price.amount / 12, price.currency)
     return `${perMonth}/${t('subscription.perMonth')} · ${t('subscription.billedAnnually', {
-      amount: formatCurrency(price.amount, currency),
+      amount: formatPrice(price.amount, price.currency),
     })}`
   }
 
