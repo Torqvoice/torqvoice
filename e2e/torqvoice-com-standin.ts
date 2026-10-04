@@ -116,6 +116,7 @@ const server = createServer(async (req, res) => {
     return html(res, 200, 'Stand-in checkout', {
       org: String(result.org),
       plan: String(result.plan),
+      interval: String(result.interval),
       email: String(result.email),
       appUrl: String(result.appUrl),
     })
@@ -169,6 +170,16 @@ const server = createServer(async (req, res) => {
         return json(res, 200, { success: true })
       case 'sync':
         return json(res, 200, { checked: 1, synced: 0, errors: 0 })
+      case 'prices':
+        return json(res, 200, {
+          prices: {
+            pro: { month: { amount: 29, currency: 'usd' }, year: { amount: 290, currency: 'usd' } },
+            enterprise: {
+              month: { amount: 79, currency: 'usd' },
+              year: { amount: 790, currency: 'usd' },
+            },
+          },
+        })
       default:
         return json(res, 404, { error: 'Not found' })
     }

@@ -12,8 +12,10 @@ import { isCloudMode } from './features'
  * is the same value on both sides:
  *
  * - The purchase goes through the customer's browser, so the app mints a
- *   signed, short-lived handoff naming the organization, the plan and the
- *   buyer, and sends the browser to torqvoice.com with it.
+ *   signed, short-lived handoff naming the organization, the plan, the
+ *   billing interval and the buyer, and sends the browser to torqvoice.com
+ *   with it. The amounts live in Stripe and are read on the site; this app
+ *   never stores a price.
  * - Everything else (billing portal, cancel, resume, upgrade, the daily
  *   sync) is a server-to-server call with the secret as a bearer token.
  *
@@ -39,12 +41,21 @@ export const HANDOFF_PREFIX = 'tvh1'
 /** How long a checkout link stays valid; torqvoice.com refuses older ones. */
 export const HANDOFF_TTL_SECONDS = 15 * 60
 
+export type BillingPlan = 'pro' | 'enterprise'
+export type BillingInterval = 'month' | 'year'
+
+export function isBillingInterval(value: unknown): value is BillingInterval {
+  return value === 'month' || value === 'year'
+}
+
 export type HandoffPayload = {
   v: 1
   /** one-time id: the site starts one checkout per handoff */
   jti: string
   org: string
-  plan: 'pro' | 'enterprise'
+  plan: BillingPlan
+  /** monthly or annual billing; the site reads the amount from Stripe */
+  interval: BillingInterval
   email: string
   name: string
   appUrl: string
@@ -73,7 +84,13 @@ export function appOrigin(): string {
 }
 
 export function createHandoffToken(
-  input: { organizationId: string; plan: 'pro' | 'enterprise'; email: string; name: string },
+  input: {
+    organizationId: string
+    plan: BillingPlan
+    interval: BillingInterval
+    email: string
+    name: string
+  },
   now = Date.now()
 ): string {
   const secret = serviceSecret()
@@ -85,6 +102,7 @@ export function createHandoffToken(
     jti: randomBytes(16).toString('base64url'),
     org: input.organizationId,
     plan: input.plan,
+    interval: input.interval,
     email: input.email,
     name: input.name.slice(0, 200),
     appUrl: appOrigin(),
@@ -180,7 +198,16 @@ export class TorqvoiceComError extends Error {
  * account, the organization belongs to.
  */
 export async function billingRequest<T>(
-  path: 'portal' | 'cancel' | 'resume' | 'end' | 'upgrade-preview' | 'upgrade' | 'sync' | 'ping',
+  path:
+    | 'portal'
+    | 'cancel'
+    | 'resume'
+    | 'end'
+    | 'upgrade-preview'
+    | 'upgrade'
+    | 'sync'
+    | 'ping'
+    | 'prices',
   body: Record<string, unknown>,
   timeoutMs = 20_000
 ): Promise<T> {
@@ -228,4 +255,31 @@ export function billingErrorResponse(error: unknown, fallback: string) {
   }
   console.error('[subscription]', error)
   return NextResponse.json({ error: fallback }, { status: 500 })
+}
+
+/** What torqvoice.com sells today, per plan and billing interval. */
+export type BillingPriceList = Record<
+  BillingPlan,
+  Partial<Record<BillingInterval, { amount: number; currency: string }>>
+>
+
+/**
+ * The amounts the subscription page shows beside its buttons. They come
+ * from torqvoice.com, which reads them from Stripe, so a price change there
+ * is a price change here. When the site cannot be reached the page still
+ * works; it just offers the plans without amounts.
+ */
+export async function fetchBillingPrices(organizationId: string): Promise<BillingPriceList | null> {
+  if (!isTorqvoiceComBillingConfigured()) return null
+  try {
+    const data = await billingRequest<{ prices?: BillingPriceList }>(
+      'prices',
+      { organizationId },
+      5_000
+    )
+    return data.prices ?? null
+  } catch (error) {
+    console.error('[torqvoice.com] prices unavailable:', error)
+    return null
+  }
 }

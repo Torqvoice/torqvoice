@@ -37,6 +37,7 @@ import {
   resumeSubscription,
 } from '@/features/subscription/Actions/subscriptionActions'
 import type { PlanFeatures } from '@/lib/features'
+import type { BillingInterval, BillingPlan, BillingPriceList } from '@/lib/torqvoice-com'
 
 type Props = {
   plan: string
@@ -54,6 +55,8 @@ type Props = {
   accountLinkAvailable: boolean
   usage: { customers: number; members: number }
   features: PlanFeatures
+  /** Today's prices from torqvoice.com, or null when it could not be asked. */
+  prices: BillingPriceList | null
 }
 
 export function SubscriptionSettings({
@@ -70,11 +73,13 @@ export function SubscriptionSettings({
   accountLinkAvailable,
   usage,
   features,
+  prices,
 }: Props) {
   const t = useTranslations('settings')
   const locale = useLocale()
   const router = useRouter()
-  const [checkoutLoading, setCheckoutLoading] = useState<'pro' | 'enterprise' | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState<BillingPlan | null>(null)
+  const [interval, setInterval] = useState<BillingInterval>('year')
   const [cancelLoading, setCancelLoading] = useState(false)
   const [resumeLoading, setResumeLoading] = useState(false)
   const [billingLoading, setBillingLoading] = useState(false)
@@ -108,13 +113,13 @@ export function SubscriptionSettings({
       ? Math.max(0, Math.ceil((new Date(currentPeriodEnd).getTime() - Date.now()) / 86_400_000))
       : null
 
-  const handleCheckout = async (selectedPlan: 'pro' | 'enterprise') => {
+  const handleCheckout = async (selectedPlan: BillingPlan) => {
     setCheckoutLoading(selectedPlan)
     try {
       const res = await fetch('/api/protected/subscription/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: selectedPlan }),
+        body: JSON.stringify({ plan: selectedPlan, interval }),
       })
       const data = await res.json()
       if (data.url) {
@@ -246,6 +251,34 @@ export function SubscriptionSettings({
 
   const intervalLabel =
     planInterval === 'month' ? t('subscription.perMonth') : t('subscription.perYear')
+
+  // What a plan costs at the selected interval, quoted per month either way,
+  // with the yearly total beside it for annual billing. Nothing is shown when
+  // the site could not be asked; the checkout page states the price anyway.
+  const priceLine = (selectedPlan: BillingPlan): string | null => {
+    const price = prices?.[selectedPlan]?.[interval]
+    if (!price) return null
+    const currency = price.currency.toUpperCase()
+    if (interval === 'month') {
+      return `${formatCurrency(price.amount, currency)}/${t('subscription.perMonth')}`
+    }
+    const perMonth = formatCurrency(price.amount / 12, currency)
+    return `${perMonth}/${t('subscription.perMonth')} · ${t('subscription.billedAnnually', {
+      amount: formatCurrency(price.amount, currency),
+    })}`
+  }
+
+  // The annual saving against twelve monthly payments, from the Pro prices.
+  const annualSaving = (() => {
+    const monthly = prices?.pro?.month?.amount
+    const yearly = prices?.pro?.year?.amount
+    if (!monthly || !yearly) return 0
+    return Math.round((1 - yearly / (monthly * 12)) * 100)
+  })()
+  const offers = (selectedInterval: BillingInterval) =>
+    Boolean(prices?.pro?.[selectedInterval] || prices?.enterprise?.[selectedInterval])
+  // Both intervals are offered unless the site said one is not for sale.
+  const showIntervalSwitch = prices === null || (offers('month') && offers('year'))
 
   const planIcon =
     plan === 'enterprise' ? (
@@ -521,33 +554,80 @@ export function SubscriptionSettings({
           title={t('subscription.upgradeTitle')}
           description={t('subscription.upgradeToProDescription')}
         >
-          <div className="flex gap-2">
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => handleCheckout('pro')}
-              disabled={checkoutLoading !== null}
+          {showIntervalSwitch && (
+            <div
+              role="radiogroup"
+              aria-label={t('subscription.billingInterval')}
+              className="mb-4 inline-flex items-center rounded-full border bg-muted/40 p-1 text-sm"
             >
-              {checkoutLoading === 'pro' ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Zap className="mr-2 h-4 w-4" />
-              )}
-              {t('subscription.upgradeToPro')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleCheckout('enterprise')}
-              disabled={checkoutLoading !== null}
-            >
-              {checkoutLoading === 'enterprise' ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Crown className="mr-2 h-4 w-4" />
-              )}
-              {t('subscription.upgradeToEnterprise')}
-            </Button>
+              {(['month', 'year'] as const).map((value) => {
+                const active = interval === value
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => setInterval(value)}
+                    className={`flex items-center gap-2 rounded-full px-3 py-1 font-medium transition-colors ${
+                      active
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {value === 'month'
+                      ? t('subscription.billingMonthly')
+                      : t('subscription.billingAnnual')}
+                    {value === 'year' && annualSaving > 0 && (
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
+                        {t('subscription.billingSave', { percent: annualSaving })}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(['pro', 'enterprise'] as const).map((offer) => {
+              const line = priceLine(offer)
+              const available = prices === null || Boolean(prices[offer]?.[interval])
+              return (
+                <div key={offer} className="flex flex-col gap-2 rounded-md border p-3">
+                  <div className="flex items-center gap-2">
+                    {offer === 'pro' ? (
+                      <Zap className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <Crown className="h-4 w-4 text-purple-600" />
+                    )}
+                    <span className="text-sm font-medium">
+                      {offer === 'pro'
+                        ? t('subscription.planPro')
+                        : t('subscription.planEnterprise')}
+                    </span>
+                  </div>
+                  {line && <p className="text-sm text-muted-foreground">{line}</p>}
+                  <Button
+                    variant={offer === 'pro' ? 'default' : 'outline'}
+                    size="sm"
+                    className="mt-auto"
+                    onClick={() => handleCheckout(offer)}
+                    disabled={checkoutLoading !== null || !available}
+                  >
+                    {checkoutLoading === offer ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : offer === 'pro' ? (
+                      <Zap className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Crown className="mr-2 h-4 w-4" />
+                    )}
+                    {offer === 'pro'
+                      ? t('subscription.upgradeToPro')
+                      : t('subscription.upgradeToEnterprise')}
+                  </Button>
+                </div>
+              )
+            })}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             {t('subscription.checkoutOnTorqvoice')}

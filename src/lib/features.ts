@@ -60,9 +60,12 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     tireHotel: false,
   },
   pro: {
-    maxOrganizations: 3,
+    // One shop, the whole team. Several locations is what Enterprise sells.
+    // Raised from 5 seats and lowered from 3 workshops on 4 Oct 2026; every
+    // paid owner had exactly one workshop at the time, so nobody lost one.
+    maxOrganizations: 1,
     maxCustomers: 999999,
-    maxUsers: 5,
+    maxUsers: 10,
     templates: 999999,
     customTemplates: true,
     reports: true,

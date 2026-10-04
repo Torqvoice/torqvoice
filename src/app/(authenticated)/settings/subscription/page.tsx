@@ -5,7 +5,7 @@ import { PLAN_FEATURES, type Plan } from '@/lib/features'
 import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { SubscriptionSettings } from '@/features/subscription/Components/subscription-settings'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
-import { isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
+import { fetchBillingPrices, isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
 
 export default async function SubscriptionPage({
   searchParams,
@@ -30,9 +30,11 @@ export default async function SubscriptionPage({
     include: { plan: true },
   })
 
+  // Plan rows are named per price ("Torq Pro (monthly)", "Enterprise
+  // (annual)"), so the plan is the word in the name, as getFeatures reads it.
   const plan: Plan =
     subscription?.status === 'active' || subscription?.status === 'trialing'
-      ? subscription.plan.name.toLowerCase() === 'enterprise'
+      ? subscription.plan.name.toLowerCase().includes('enterprise')
         ? 'enterprise'
         : 'pro'
       : 'free'
@@ -43,11 +45,14 @@ export default async function SubscriptionPage({
 
   const features = PLAN_FEATURES[plan]
 
-  const [customerCount, memberCount] = await Promise.all([
+  const canBuy = plan === 'free' || isDemo
+  const [customerCount, memberCount, prices] = await Promise.all([
     countCustomersTowardLimit(authContext.organizationId),
     db.organizationMember.count({
       where: { organizationId: authContext.organizationId },
     }),
+    // Only a page with buy buttons needs the amounts.
+    canBuy ? fetchBillingPrices(authContext.organizationId) : Promise.resolve(null),
   ])
 
   return (
@@ -65,6 +70,7 @@ export default async function SubscriptionPage({
       accountLinkAvailable={isTorqvoiceComBillingConfigured()}
       usage={{ customers: customerCount, members: memberCount }}
       features={features}
+      prices={prices}
     />
   )
 }
