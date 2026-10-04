@@ -1,5 +1,5 @@
 import { realmRef } from '@/integrations/quickbooks/mapping'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
   AccountingCustomer,
   AccountingInvoice,
@@ -895,6 +895,12 @@ describe('QuickBooks: payments', () => {
 })
 
 describe('QuickBooks: pulling changes', () => {
+  // The change feed reaches back 30 days from now, and these fixtures are
+  // dated September 2026, so the clock is pinned beside them. Without this
+  // the test went stale on 4 October 2026, when the floor passed the fixture.
+  beforeEach(() => vi.useFakeTimers({ now: new Date('2026-09-04T12:00:00Z'), toFake: ['Date'] }))
+  afterEach(() => vi.useRealTimers())
+
   it('records a payment taken in QuickBooks against an invoice from here', async () => {
     const t = makeCtx({
       state: { lastPullAt: '2026-09-04T09:00:00.000Z' },

@@ -102,19 +102,28 @@ test.describe('buying a plan', () => {
     await expect(page.getByRole('heading', { name: 'Stand-in checkout' })).toBeVisible()
     await expect(page.getByTestId('org')).toHaveText(organizationId)
     await expect(page.getByTestId('plan')).toHaveText('pro')
+    await expect(page.getByTestId('interval')).toHaveText('year')
     await expect(page.getByTestId('email')).toHaveText(EMAIL)
     await expect(page.getByTestId('appUrl')).toHaveText(/^http/)
   })
 
-  test('names this app as the origin of the purchase', async ({ page, baseURL }) => {
+  test('names this app as the origin of the purchase, and the interval chosen', async ({
+    page,
+    baseURL,
+  }) => {
     await page.goto('/settings/subscription')
     await settle(page)
+    // The prices come from the stand-in, quoted per month either way.
+    await expect(page.getByText('$290 billed annually')).toBeVisible()
+    await page.getByRole('radio', { name: 'Monthly' }).click()
+    await expect(page.getByText('$79')).toBeVisible()
     await page
       .getByRole('button', { name: /Enterprise/ })
       .first()
       .click()
     await page.waitForURL(`${torqvoiceComUrl()}/checkout?**`, { timeout: 30_000 })
     await expect(page.getByTestId('plan')).toHaveText('enterprise')
+    await expect(page.getByTestId('interval')).toHaveText('month')
     await expect(page.getByTestId('appUrl')).toHaveText(new URL(baseURL ?? '').origin)
   })
 })
