@@ -4,6 +4,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
+import { assertOwnedCustomer } from '@/lib/owned-records'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchema'
@@ -242,6 +243,8 @@ export async function createVehicle(input: unknown) {
     async ({ userId, organizationId }) => {
       const { inspectionDueAt, ...data } = createVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
+      // The owner the vehicle is filed under must be one of our customers.
+      await assertOwnedCustomer(data.customerId, organizationId)
       const timeZone = await workshopTimeZone(organizationId)
       const vehicle = await db.vehicle.create({
         data: {
@@ -289,6 +292,7 @@ export async function updateVehicle(input: unknown) {
         select: { year: true, make: true, model: true, licensePlate: true, imageUrl: true },
       })
       if (!before) throw new Error('Vehicle not found')
+      await assertOwnedCustomer(data.customerId, organizationId)
 
       const updateResult = await db.vehicle.updateMany({
         where: { id, organizationId },

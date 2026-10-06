@@ -4,6 +4,7 @@ import { ATTENTION_STATUSES } from '@/features/quotes/Lib/quoteStatus'
 import { assertQuoteEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, quoteLockState } from '@/lib/document-lock'
 import { db } from '@/lib/db'
+import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import {
@@ -240,6 +241,9 @@ export async function updateQuote(input: unknown) {
         where: { id: data.id, organizationId },
       })
       if (!existing) throw new Error('Quote not found')
+      // The customer and vehicle the quote is being pointed at must be ours.
+      await assertOwnedCustomer(data.customerId, organizationId)
+      await assertOwnedVehicle(data.vehicleId, organizationId)
 
       const {
         id,

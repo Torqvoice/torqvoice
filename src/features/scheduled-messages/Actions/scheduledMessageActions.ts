@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
+import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuard } from '@/lib/demo'
@@ -192,6 +193,9 @@ export async function updateScheduledMessage(input: unknown) {
         select: { id: true },
       })
       if (!existing) throw new Error('Scheduled message not found')
+      // Same check as on create: the ids written must be ours.
+      await assertOwnedCustomer(data.customerId, organizationId)
+      await assertOwnedVehicle(data.vehicleId, organizationId)
       const timeZone = await workshopTimeZone(organizationId)
       if (data.sendAt) assertNotPast(parseWorkshopDateTime(data.sendAt, timeZone))
 

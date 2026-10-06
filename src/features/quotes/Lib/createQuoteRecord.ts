@@ -2,6 +2,7 @@ import { discountAmountFor } from '@/lib/tax'
 import 'server-only'
 
 import { db } from '@/lib/db'
+import { assertOwnedVehicle } from '@/lib/owned-records'
 import {
   isShopFeeLine,
   newShopFeeLine,
@@ -103,6 +104,8 @@ export async function createQuoteRecord(
   let defaultTaxRate = workshopTax.rate
   const taxInclusive = workshopTax.inclusive
 
+  // The customer and vehicle the quote points at must be the workshop's own.
+  await assertOwnedVehicle(data.vehicleId, organizationId)
   // Tax-exempt customer: force the rate to 0 regardless of org default.
   let customerExempt = false
   if (data.customerId) {
@@ -110,7 +113,8 @@ export async function createQuoteRecord(
       where: { id: data.customerId, organizationId },
       select: { taxExempt: true },
     })
-    if (customer?.taxExempt) {
+    if (!customer) throw new Error('Customer not found')
+    if (customer.taxExempt) {
       customerExempt = true
       defaultTaxRate = 0
       data.taxRate = 0
