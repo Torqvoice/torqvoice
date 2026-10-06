@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { db, type TxClient } from '@/lib/db'
+import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
 import { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -374,6 +375,8 @@ export async function checkInTireSet(input: unknown) {
           // from the customer side, even when staff skipped that field.
           if (!data.customerId && vehicle.customerId) data.customerId = vehicle.customerId
         }
+        // A customer named directly must be ours too.
+        await assertOwnedCustomer(data.customerId, organizationId, tx)
 
         const reference = await nextReference(tx, organizationId)
         const now = new Date()
@@ -907,6 +910,9 @@ export async function updateTireSet(input: unknown) {
       const updated = await db.$transaction(async (tx) => {
         const set = await tx.tireSet.findFirst({ where: { id, organizationId } })
         if (!set) throw new Error('Tire set not found')
+        // A set moved to another vehicle or customer stays within the workshop.
+        await assertOwnedVehicle(data.vehicleId, organizationId, tx)
+        await assertOwnedCustomer(data.customerId, organizationId, tx)
 
         // Growing the set has to fit where it already sits.
         // New readings are recorded as a fresh round, under a movement of

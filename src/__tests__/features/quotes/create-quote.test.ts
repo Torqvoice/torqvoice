@@ -28,6 +28,7 @@ vi.mock('@/lib/db', () => ({
     appSetting: { findMany: vi.fn() },
     quote: { findFirst: vi.fn() },
     customer: { findFirst: vi.fn() },
+    vehicle: { findFirst: vi.fn() },
     inspection: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
@@ -269,6 +270,9 @@ describe('createQuote — from inspection', () => {
   it('links quote to inspectionId, vehicleId, and customerId', async () => {
     setupAuth()
     setupQuoteCreation()
+    // Both ids are checked against the workshop before they are written.
+    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: false } as any)
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: 'veh-1' } as any)
 
     const mockCreate = vi.fn().mockResolvedValue({ id: 'q-insp' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
