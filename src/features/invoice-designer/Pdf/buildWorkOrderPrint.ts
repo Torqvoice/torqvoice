@@ -39,6 +39,10 @@ import { warrantyForPrint } from './warrantyPrint'
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import {
+  type InspectionResults,
+  inspectionResultsForPrint,
+} from '@/features/inspections/Lib/inspectionResults'
 
 /**
  * A job as the sheet the customer signs and the technician works from.
@@ -76,6 +80,11 @@ export interface WorkOrderJob {
   openedAt?: Date | string | null
   bodyType?: string | null
   conditionMapLabels?: ConditionMapLabels
+  /**
+   * The checks of the inspection linked to the job, for the result sections
+   * a design can switch on. As they stand at this print, graded or not.
+   */
+  linkedInspection?: InspectionResults | null
 }
 
 export interface WorkOrderPrintInput {
@@ -425,8 +434,15 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
       condition_map: L('conditionMapTitle', 'Vehicle condition'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
     },
     conditionMap: conditionMap ?? undefined,
+    // What the linked inspection has found so far, for the certificate's two
+    // result blocks. Built only for a design that prints one of them; each
+    // block then decides for itself what an inspection with nothing wrong,
+    // or with nothing graded yet, prints.
+    certificate: inspectionResultsForPrint(layout, job.linkedInspection, labels),
     workOrder: {
       concerns: job.concerns.map((concern) => ({
         description: concern.description,

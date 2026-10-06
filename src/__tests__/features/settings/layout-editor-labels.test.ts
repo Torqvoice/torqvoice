@@ -20,6 +20,8 @@ import {
   BUILTIN_DOCUMENT_TITLE_FIELDS,
   BUILTIN_JOB_DETAILS_FIELDS,
   BUILTIN_SIGNATURE_FIELDS,
+  BUILTIN_DEFECTS_FIELDS,
+  BUILTIN_RESULTS_TABLE_FIELDS,
   WORK_ORDER_SECTIONS,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -35,6 +37,10 @@ const FIELD_IDS = [
   ...BUILTIN_DOCUMENT_TITLE_FIELDS,
   ...BUILTIN_JOB_DETAILS_FIELDS,
   ...BUILTIN_SIGNATURE_FIELDS,
+  // The inspection's two sections, which an invoice, a quote and a work
+  // order can print as well as the certificate.
+  ...BUILTIN_DEFECTS_FIELDS,
+  ...BUILTIN_RESULTS_TABLE_FIELDS,
 ].map((f) => f.id)
 
 const SECTION_IDS = [...new Set([...BUILTIN_SECTIONS, ...WORK_ORDER_SECTIONS].map((s) => s.id))]

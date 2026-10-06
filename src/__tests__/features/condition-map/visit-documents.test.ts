@@ -136,8 +136,11 @@ describe('the Vehicle Condition section on an invoice and a quote', () => {
     const merged = mergeWithDefaults(savedBeforeTheSection())
     const section = merged.sections.find((s) => s.id === 'condition_map')
     expect(section?.visible).toBe(false)
+    // Where a new design has it: last of the appendix, in front of the
+    // signing line.
     const ids = merged.sections.map((s) => s.id)
-    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('bank_account') + 1)
+    expect(ids).toEqual(getDefaultLayout('invoice').sections.map((s) => s.id))
+    expect(ids.indexOf('condition_map')).toBe(ids.indexOf('signature') - 1)
   })
 
   it('goes in front of the signing line wherever a design put it', () => {

@@ -40,7 +40,7 @@ const NOT_FILES: Record<string, string> = {
   'RecurringInvoice.taxComponents': 'tax lines',
   'ServiceRecord.taxComponents': 'tax lines',
   'ServiceRecord.issuedData':
-    'frozen issuer and customer details; the issued logo is bytes in DocumentAssetSnapshot',
+    'frozen issuer and customer details; the issued logo is bytes in DocumentAssetSnapshot. The linked inspection results in it remember where a defect photo was, as a note and not a use: the photo belongs to the inspection, and a print leaves out one that has gone',
   'ServiceRecord.issuedLogoSnapshotId': 'the id of a row holding the logo bytes',
   'ServiceAttachment.fileName': 'a label',
   'ServiceAttachment.fileType': 'a MIME type',

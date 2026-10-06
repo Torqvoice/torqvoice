@@ -11,10 +11,22 @@
 
 type Labels = Record<string, string>
 
-/** The work order's wording over the invoice's, and the strip's captions renamed. */
-export function withWorkOrderLabels(base: Labels, workOrder: Labels | undefined): Labels {
+/**
+ * The work order's wording over the invoice's, and the strip's captions renamed.
+ *
+ * The inspection's vocabulary lies underneath both: the results of the
+ * inspection linked to a job print through the certificate's blocks, which
+ * ask for the certificate's words (the grades, the column heads, "All
+ * results"). Underneath, so no word a work order already prints changes.
+ */
+export function withWorkOrderLabels(
+  base: Labels,
+  workOrder: Labels | undefined,
+  inspection?: Labels
+): Labels {
   const wo = workOrder ?? {}
   return {
+    ...(inspection ?? {}),
     ...base,
     ...wo,
     title: wo.title || 'WORK ORDER',
@@ -29,6 +41,7 @@ export function workOrderLabels(
 ): Labels {
   return withWorkOrderLabels(
     { ...(pdfMessages.invoice ?? {}), ...(pdfMessages.common ?? {}) },
-    pdfMessages.workOrder
+    pdfMessages.workOrder,
+    pdfMessages.inspection
   )
 }

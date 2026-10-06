@@ -1,6 +1,7 @@
 'use client'
 
 import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
+import { invoiceLabels } from '../Lib/invoiceLabels'
 import { workOrderLabels } from '../Lib/workOrderLabels'
 
 import { useMemo } from 'react'
@@ -44,11 +45,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         ? certificateLabels(pdf)
         : docType === 'work_order'
           ? workOrderLabels(pdf)
-          : {
-              ...(pdf.invoice ?? {}),
-              ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-              ...(pdf.common ?? {}),
-            }
+          : invoiceLabels(pdf, docType)
     return buildSampleData(
       {
         name: workshop?.name ?? '',

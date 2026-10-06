@@ -141,6 +141,7 @@ export default async function PublicInvoicePage({
     telegramLabel: labels?.telegramConnect,
     labels,
     conditionMap,
+    inspectionResults: assembly.inspectionResults,
   })
 
   const termsOfSaleUrl =

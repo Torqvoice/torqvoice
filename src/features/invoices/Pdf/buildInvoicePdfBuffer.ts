@@ -91,6 +91,7 @@ export async function renderInvoicePdf(
     telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
     labels,
     conditionMap,
+    inspectionResults: assembly.inspectionResults,
     ...attachments,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any

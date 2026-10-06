@@ -39,8 +39,8 @@ export function conditionMapBlock(
       ? (conditionMapForPrint({ ...full.source, width, views }) ?? full)
       : full
   const fields = new Set(sectionFields(section))
-  const dense = section.style?.dense === true
   const look = lookOf(section, theme)
+  const dense = look.dense
   const size = look.fontSize ?? theme.fontSize
   const children: Node[] = []
   // The drawing is most of a page and moves to the next one whole. The

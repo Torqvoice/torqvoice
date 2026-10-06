@@ -16,6 +16,9 @@ import {
  * the sheet's theme and the document's data, like every other builder, and
  * draws nothing when the inspection has nothing for it: a clean car has no
  * defects block, an inspection with no photographs no photo block.
+ *
+ * A work order, an invoice and a quote borrow the defects and the results
+ * table for the inspection linked to them, filling `certificate` the same way.
  */
 
 const PHOTO_WIDTH = 158
@@ -167,7 +170,14 @@ export function testDetailsBlock(
   return panel(section, theme, data, sectionFields(section))
 }
 
-/** Every check that was not OK, worst first, with the note and the photographs. */
+/**
+ * Every check that was not OK, worst first, with the note and the photographs.
+ *
+ * A car with nothing wrong prints the heading over a line saying so, unless
+ * the design switches that line off, and then the section prints nothing. An
+ * inspection with nothing graded yet never prints the line, whatever the
+ * switch says: "no deficiencies" about a car nobody has looked at is false.
+ */
 export function defectsBlock(
   section: InvoiceSection,
   theme: DocumentTheme,
@@ -180,6 +190,8 @@ export function defectsBlock(
   const fields = new Set(sectionFields(section))
   const withNotes = fields.has('defect_notes')
   const withPhotos = fields.has('defect_photos')
+  const clean = certificate.defects.length === 0
+  if (clean && (certificate.sections.length === 0 || !fields.has('no_defects_note'))) return null
 
   const children: Node[] = []
   if (section.heading !== false) {
@@ -189,7 +201,7 @@ export function defectsBlock(
       style: headingStyle(look, size),
     })
   }
-  if (certificate.defects.length === 0) {
+  if (clean) {
     children.push({
       kind: 'text',
       id: 'defects.none',
@@ -270,6 +282,11 @@ export function defectsBlock(
  * Every check with its grade: a table per section, or, when the design asks
  * for one table, all of them together with a column saying which section
  * each belongs to.
+ *
+ * Each kind of row has a switch of its own, and the defects always print. A
+ * design that asks for the checks nobody has graded yet gets them in their
+ * places in the checklist with the grade left empty, so an inspection that
+ * has not started prints as the sheet to fill in.
  */
 export function resultsTableBlock(
   section: InvoiceSection,
@@ -281,10 +298,13 @@ export function resultsTableBlock(
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const fields = new Set(sectionFields(section))
+  const withUngraded = fields.has('ungraded_checks')
   const keep = (row: { kind: string }) =>
     row.kind === 'defect' ||
     (row.kind === 'pass' && fields.has('passed_checks')) ||
-    (row.kind === 'not_applicable' && fields.has('not_applicable_checks'))
+    (row.kind === 'not_applicable' && fields.has('not_applicable_checks')) ||
+    (row.kind === 'not_inspected' && withUngraded)
+  const groups = (withUngraded && certificate.checklist) || certificate.sections
   const withNotes = fields.has('check_notes')
   const combined = fields.has('combined_table')
 
@@ -332,13 +352,11 @@ export function resultsTableBlock(
     })
   }
   if (combined) {
-    const rows = certificate.sections.flatMap((group) =>
-      group.rows.filter(keep).map((row) => rowOf(group, row))
-    )
+    const rows = groups.flatMap((group) => group.rows.filter(keep).map((row) => rowOf(group, row)))
     if (rows.length === 0) return null
     children.push(table(rows, true))
   } else {
-    for (const group of certificate.sections) {
+    for (const group of groups) {
       const rows = group.rows.filter(keep)
       if (rows.length === 0) continue
       children.push({

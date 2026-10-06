@@ -12,6 +12,7 @@ import type { WorkOrderJob } from '@/features/invoice-designer/Pdf/buildWorkOrde
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { assembleInvoicePrint, designLook, type InvoicePrintAssembly } from './assembleInvoicePrint'
 import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
+import { inspectionResultsFor } from '@/features/inspections/Lib/linkedInspectionResults.server'
 
 /**
  * A job as the work order sheet prints it.
@@ -20,7 +21,8 @@ import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMark
  * this asks it for the live rows (a work order is never printed from a
  * snapshot: it is the job as it stands) and adds what only the work order
  * says: the status in words, the bay, the promise, the customer's concerns,
- * the code that opens the job on a phone, and the work order's own design.
+ * the code that opens the job on a phone, the results of the inspection
+ * linked to it, and the work order's own design.
  */
 export interface WorkOrderPrintAssembly extends InvoicePrintAssembly {
   job: Omit<WorkOrderJob, 'statusLabel'> & {
@@ -33,7 +35,9 @@ export interface WorkOrderPrintAssembly extends InvoicePrintAssembly {
 export async function assembleWorkOrderPrint(
   recordId: string
 ): Promise<WorkOrderPrintAssembly | null> {
-  const base = await assembleInvoicePrint(recordId, { mode: 'live' })
+  // The invoice's design may print the inspection too; the work order reads
+  // it for its own design below, so the invoice's reading is skipped.
+  const base = await assembleInvoicePrint(recordId, { mode: 'live', inspectionResults: 'none' })
   if (!base) return null
   const { record, organizationId, settingsMap } = base
 
@@ -84,6 +88,15 @@ export async function assembleWorkOrderPrint(
       )
     : undefined
 
+  // The linked inspection's checks, read only for a design that prints them:
+  // every other work order costs no query more than it did. The photos only
+  // when the defects section shows them.
+  const linkedInspection = await inspectionResultsFor(
+    organizationId,
+    { vehicleId: record.vehicleId, inspectionId: job?.inspectionId },
+    layoutConfig
+  )
+
   return {
     ...base,
     template,
@@ -103,6 +116,7 @@ export async function assembleWorkOrderPrint(
       linkedInspectionId: job?.inspectionId ?? null,
       openedAt: job?.createdAt ?? null,
       bodyType: vehicle?.bodyType ?? null,
+      linkedInspection,
     },
   }
 }

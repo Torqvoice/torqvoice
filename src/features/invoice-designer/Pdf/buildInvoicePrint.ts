@@ -37,6 +37,10 @@ import {
   type VisitConditionMap,
   visitConditionMapForPrint,
 } from '@/features/condition-map/Lib/print'
+import {
+  type InspectionResults,
+  inspectionResultsForPrint,
+} from '@/features/inspections/Lib/inspectionResults'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -66,6 +70,11 @@ export interface InvoicePrintInput {
   labels?: Record<string, string>
   /** The car's condition this visit, for a layout with Vehicle Condition on. */
   conditionMap?: VisitConditionMap
+  /**
+   * The inspection linked to the job, for a layout with Defects or All
+   * Results on: as it stands for a draft, as issued for an issued invoice.
+   */
+  inspectionResults?: InspectionResults | null
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -462,6 +471,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     }),
     payment,
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
+    // The linked inspection's findings, through the certificate's own blocks.
+    certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,
@@ -486,6 +497,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
       condition_map: L('conditionMapTitle', 'Vehicle condition'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
     },
   }
 
