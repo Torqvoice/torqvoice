@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Todas as cinco",
     "conditionMapViewsTop": "Só de cima",
     "conditionMapViewsSides": "Só as laterais",
-    "conditionMapWidthHint": "Vazio ocupa a linha toda. Indique pontos para reduzir o desenho; fica onde o alinhamento o colocar e a legenda mantém a largura total."
+    "conditionMapWidthHint": "Vazio ocupa a linha toda. Indique pontos para reduzir o desenho; fica onde o alinhamento o colocar e a legenda mantém a largura total.",
+    "conditionMapDense": "Tabela compacta",
+    "conditionMapDenseHint": "Aproxima as linhas da tabela por baixo do desenho, para que ocupe menos espaço na página."
   },
   "preview": {
     "title": "Revisão dos travões e mudança de óleo",

@@ -109,6 +109,8 @@ export type Node =
       style?: BoxStyle
       headerStyle?: TextStyle & BoxStyle
       rowPadding?: number
+      /** Vertical padding of the column headings, in points. Unset is 6. */
+      headerPadding?: number
       stripe?: string
       anchor?: Anchor
     }

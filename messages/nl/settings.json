@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Alle vijf",
     "conditionMapViewsTop": "Alleen bovenaanzicht",
     "conditionMapViewsSides": "Alleen de zijkanten",
-    "conditionMapWidthHint": "Leeg vult de rij. Geef punten op om de tekening kleiner te maken; hij staat dan waar de uitlijning hem zet en de legenda houdt de volle breedte."
+    "conditionMapWidthHint": "Leeg vult de rij. Geef punten op om de tekening kleiner te maken; hij staat dan waar de uitlijning hem zet en de legenda houdt de volle breedte.",
+    "conditionMapDense": "Compacte tabel",
+    "conditionMapDenseHint": "Zet de rijen van de tabel onder de tekening dichter op elkaar, zodat die minder ruimte op de pagina inneemt."
   },
   "preview": {
     "title": "Remservice en oliewissel",

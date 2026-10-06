@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Alle fem",
     "conditionMapViewsTop": "Bare ovenfra",
     "conditionMapViewsSides": "Bare sidene",
-    "conditionMapWidthHint": "Tomt fyller raden. Angi punkter for å gjøre tegningen mindre; den plasseres da etter justeringen, og listen beholder full bredde."
+    "conditionMapWidthHint": "Tomt fyller raden. Angi punkter for å gjøre tegningen mindre; den plasseres da etter justeringen, og listen beholder full bredde.",
+    "conditionMapDense": "Tett tabell",
+    "conditionMapDenseHint": "Setter radene i tabellen under tegningen tettere, så den tar mindre plass på siden."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

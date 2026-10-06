@@ -581,6 +581,16 @@ export function DesignerInspector({
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">
                 {t('conditionMapWidthHint')}
               </p>
+              <Row label={t('conditionMapDense')}>
+                <Toggle
+                  on={style.dense === true}
+                  onChange={(on) => setStyle({ dense: on ? true : undefined })}
+                  testId="condition-map-dense"
+                />
+              </Row>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {t('conditionMapDenseHint')}
+              </p>
             </Group>
           )}
 

@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Las cinco",
     "conditionMapViewsTop": "Solo desde arriba",
     "conditionMapViewsSides": "Solo los laterales",
-    "conditionMapWidthHint": "Vacío ocupa toda la fila. Indique puntos para reducir el dibujo; se colocará según la alineación y la leyenda conserva todo el ancho."
+    "conditionMapWidthHint": "Vacío ocupa toda la fila. Indique puntos para reducir el dibujo; se colocará según la alineación y la leyenda conserva todo el ancho.",
+    "conditionMapDense": "Tabla compacta",
+    "conditionMapDenseHint": "Junta las filas de la tabla bajo el dibujo para que ocupe menos espacio en la página."
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

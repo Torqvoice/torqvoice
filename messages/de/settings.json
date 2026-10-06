@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Alle fünf",
     "conditionMapViewsTop": "Nur von oben",
     "conditionMapViewsSides": "Nur die Seiten",
-    "conditionMapWidthHint": "Leer füllt die Zeile. Punkte angeben, um die Zeichnung zu verkleinern; sie sitzt dann nach der Ausrichtung, und die Legende behält die volle Breite."
+    "conditionMapWidthHint": "Leer füllt die Zeile. Punkte angeben, um die Zeichnung zu verkleinern; sie sitzt dann nach der Ausrichtung, und die Legende behält die volle Breite.",
+    "conditionMapDense": "Kompakte Tabelle",
+    "conditionMapDenseHint": "Setzt die Zeilen der Tabelle unter der Zeichnung enger, sodass sie weniger Platz auf der Seite braucht."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

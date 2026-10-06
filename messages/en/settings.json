@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "All five",
     "conditionMapViewsTop": "Top only",
     "conditionMapViewsSides": "Sides only",
-    "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width."
+    "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width.",
+    "conditionMapDense": "Dense table",
+    "conditionMapDenseHint": "Sets the rows of the table under the drawing closer together, so it takes less of the page."
   },
   "preview": {
     "title": "Brake Service & Oil Change",

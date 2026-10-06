@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Beşi de",
     "conditionMapViewsTop": "Yalnızca üstten",
     "conditionMapViewsSides": "Yalnızca yanlar",
-    "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır."
+    "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır.",
+    "conditionMapDense": "Sıkışık tablo",
+    "conditionMapDenseHint": "Çizimin altındaki tablonun satırlarını birbirine yaklaştırır, böylece sayfada daha az yer kaplar."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

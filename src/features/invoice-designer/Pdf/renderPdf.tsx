@@ -242,7 +242,7 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
           <View
             style={{
               flexDirection: 'row',
-              paddingVertical: 6,
+              paddingVertical: node.headerPadding ?? 6,
               paddingHorizontal: 8,
               ...(node.headerStyle?.background
                 ? { backgroundColor: node.headerStyle.background }

@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Wszystkie pięć",
     "conditionMapViewsTop": "Tylko z góry",
     "conditionMapViewsSides": "Tylko boki",
-    "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość."
+    "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość.",
+    "conditionMapDense": "Zwarta tabela",
+    "conditionMapDenseHint": "Zmniejsza odstępy między wierszami tabeli pod rysunkiem, dzięki czemu zajmuje ona mniej miejsca na stronie."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

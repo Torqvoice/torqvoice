@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Les cinq",
     "conditionMapViewsTop": "Dessus seulement",
     "conditionMapViewsSides": "Côtés seulement",
-    "conditionMapWidthHint": "Vide occupe toute la ligne. Indiquez des points pour réduire le dessin ; il se place selon l'alignement et la légende garde toute la largeur."
+    "conditionMapWidthHint": "Vide occupe toute la ligne. Indiquez des points pour réduire le dessin ; il se place selon l'alignement et la légende garde toute la largeur.",
+    "conditionMapDense": "Tableau compact",
+    "conditionMapDenseHint": "Resserre les lignes du tableau sous le dessin pour qu'il prenne moins de place sur la page."
   },
   "preview": {
     "title": "Révision des freins et vidange",

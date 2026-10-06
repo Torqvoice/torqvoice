@@ -39,6 +39,8 @@ export const invoiceSectionStyleSchema = z.object({
   outerBorder: z.boolean().optional(),
   /** Banding behind alternate rows for this table. Unset follows the sheet. */
   stripes: z.boolean().optional(),
+  /** Rows set close together, for a table that should take less of the page. */
+  dense: z.boolean().optional(),
   /** Body text size in points. Headings scale with it. */
   fontSize: z.number().min(5).max(24).optional(),
   /** Typeface for this section, from the families the app embeds. */

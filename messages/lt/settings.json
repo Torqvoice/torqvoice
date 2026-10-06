@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Visi penki",
     "conditionMapViewsTop": "Tik iš viršaus",
     "conditionMapViewsSides": "Tik šonai",
-    "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį."
+    "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį.",
+    "conditionMapDense": "Glausta lentelė",
+    "conditionMapDenseHint": "Suglaudina lentelės po brėžiniu eilutes, kad ji užimtų mažiau vietos puslapyje."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

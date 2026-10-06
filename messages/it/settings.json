@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Tutte e cinque",
     "conditionMapViewsTop": "Solo dall’alto",
     "conditionMapViewsSides": "Solo i lati",
-    "conditionMapWidthHint": "Vuoto occupa tutta la riga. Indica i punti per rimpicciolire il disegno; si posiziona secondo l’allineamento e la legenda mantiene tutta la larghezza."
+    "conditionMapWidthHint": "Vuoto occupa tutta la riga. Indica i punti per rimpicciolire il disegno; si posiziona secondo l’allineamento e la legenda mantiene tutta la larghezza.",
+    "conditionMapDense": "Tabella compatta",
+    "conditionMapDenseHint": "Avvicina le righe della tabella sotto il disegno, così occupa meno spazio sulla pagina."
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

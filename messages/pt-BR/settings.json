@@ -2218,7 +2218,9 @@
     "conditionMapViewsAll": "Todas as cinco",
     "conditionMapViewsTop": "Só de cima",
     "conditionMapViewsSides": "Só as laterais",
-    "conditionMapWidthHint": "Vazio ocupa a linha toda. Informe pontos para reduzir o desenho; ele fica onde o alinhamento colocar e a legenda mantém a largura total."
+    "conditionMapWidthHint": "Vazio ocupa a linha toda. Informe pontos para reduzir o desenho; ele fica onde o alinhamento colocar e a legenda mantém a largura total.",
+    "conditionMapDense": "Tabela compacta",
+    "conditionMapDenseHint": "Aproxima as linhas da tabela abaixo do desenho, para que ela ocupe menos espaço na página."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",
