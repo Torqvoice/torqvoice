@@ -188,6 +188,7 @@
     "signature_remove": "Handtekening verwijderd",
     "conditionMark_add": "Staatmarkering toegevoegd",
     "conditionMark_remove": "Staatmarkering verwijderd",
+    "conditionMark_carry": "Eerdere staatmarkeringen bevestigd",
     "conditionMark_onInvoice": "Staatkaart op factuur",
     "settings_markType_create": "Markeringstype toegevoegd",
     "settings_markType_update": "Markeringstype gewijzigd",
@@ -234,6 +235,7 @@
     "payment_delete": "Betaling {id} verwijderd",
     "quoteRequest_update": "Status van offerteaanvraag gewijzigd naar {status, select, pending {in behandeling} approved {goedgekeurd} rejected {afgewezen} completed {afgerond} other {{status}}}",
     "quote_convert": "Offerte {ref} omgezet naar opdracht {serviceRecordId}",
+    "quote_convert_existing": "Offerte {ref} toegevoegd aan bestaande werkorder {jobRef}",
     "quote_create": "Offerte {ref} aangemaakt",
     "quote_delete": "Offerte {ref} verwijderd",
     "quote_status": "Offertestatus gewijzigd naar {status, select, draft {concept} sent {verzonden} accepted {geaccepteerd} rejected {afgewezen} expired {verlopen} converted {omgezet} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Bestand vanaf een telefoon toegevoegd aan keuring {ref}",
     "condition_mark_add": "Markering aan de staatkaart toegevoegd",
     "condition_mark_remove": "Markering van de staatkaart verwijderd",
+    "condition_mark_carry": "{count, plural, one {# eerdere markering} other {# eerdere markeringen}} op de staatkaart bevestigd als nog aanwezig",
     "condition_map_on_invoice_on": "Staatkaart op de factuur gezet",
     "condition_map_on_invoice_off": "Staatkaart van de factuur gehaald"
   }

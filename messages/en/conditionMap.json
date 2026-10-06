@@ -9,6 +9,8 @@
   "previousHint": "Still there from last time, drawn in grey. Clear the ones that are gone.",
   "newSinceLastVisit": "New since the last visit",
   "confirmed": "Still there",
+  "confirmAll": "Confirm all as still there",
+  "confirmAllHint": "Records them on this sheet as this visit's marks, in colour.",
   "clearRepaired": "Clear as repaired",
   "restore": "Restore",
   "edit": "Edit mark",

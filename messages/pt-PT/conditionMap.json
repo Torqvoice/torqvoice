@@ -9,6 +9,8 @@
   "previousHint": "Ainda presente desde a última vez, a cinzento. Apague as que já não existem.",
   "newSinceLastVisit": "Novo desde a última visita",
   "confirmed": "Ainda presente",
+  "confirmAll": "Confirmar todas como ainda presentes",
+  "confirmAllHint": "Regista todas nesta ficha como marcas desta visita, a cores.",
   "clearRepaired": "Apagar como reparado",
   "restore": "Repor",
   "edit": "Editar marca",

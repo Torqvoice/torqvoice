@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Más estados",
     "fromInspection": "De la inspección {name}, {date}",
+    "fromQuote": "Del presupuesto {ref}",
     "startInspection": "Iniciar inspección"
   },
   "photoHandoff": {

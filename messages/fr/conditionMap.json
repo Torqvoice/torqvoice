@@ -9,6 +9,8 @@
   "previousHint": "Toujours là depuis la dernière fois, en gris. Effacez celles qui ont disparu.",
   "newSinceLastVisit": "Nouveau depuis la dernière visite",
   "confirmed": "Toujours là",
+  "confirmAll": "Confirmer que toutes sont toujours là",
+  "confirmAllHint": "Les enregistre sur cette fiche comme marques de cette visite, en couleur.",
   "clearRepaired": "Effacer comme réparé",
   "restore": "Restaurer",
   "edit": "Modifier la marque",

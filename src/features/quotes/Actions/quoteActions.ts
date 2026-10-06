@@ -1,8 +1,14 @@
 'use server'
 
 import { ATTENTION_STATUSES } from '@/features/quotes/Lib/quoteStatus'
-import { assertQuoteEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
-import { DocumentLockedError, quoteLockState } from '@/lib/document-lock'
+import {
+  assertInvoiceEditable,
+  assertQuoteEditable,
+  getDocumentLockSettings,
+} from '@/lib/document-lock.server'
+import { DocumentLockedError, invoiceLockState, quoteLockState } from '@/lib/document-lock'
+import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
+import { discountAmountFor } from '@/lib/tax'
 import { db } from '@/lib/db'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
@@ -24,17 +30,18 @@ import { normalizeWarranty } from '@/lib/warranty'
 import { withAuth } from '@/lib/with-auth'
 import { createQuoteSchema, quoteStatusSchema, updateQuoteSchema } from '../Schema/quoteSchema'
 import { createQuoteRecord } from '../Lib/createQuoteRecord'
+import {
+  copyQuoteAttachmentsToJob,
+  copyQuoteLaborToJob,
+  copyQuotePartsToJob,
+} from '../Lib/copyQuoteToJob'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
-import { copyFile, mkdir } from 'fs/promises'
-import path from 'path'
 import { clearedToNull } from '@/lib/clearable'
-import { uploadsRoot } from '@/lib/upload-root'
 import { releaseFiles } from '@/lib/files/manager'
 import { quoteFileUrls } from '@/lib/files/collect'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
@@ -517,50 +524,16 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           },
         })
 
-        const includedParts = quote.partItems.filter((p) => !p.excluded)
-        if (includedParts.length > 0) {
-          await tx.servicePart.createMany({
-            data: includedParts.map((p) => ({
-              partNumber: p.partNumber,
-              name: p.name,
-              quantity: p.quantity,
-              unit: p.unit,
-              unitCost: p.unitCost,
-              markupPercent: p.markupPercent,
-              unitPrice: p.unitPrice,
-              total: p.total,
-              // Preserve the stock link so the job — and any later edit or
-              // deletion of it — reconciles against the right inventory item.
-              inventoryPartId: p.inventoryPartId,
-              serviceRecordId: created.id,
-            })),
-          })
-
-          // The quote itself never moved stock (it is only an estimate). The
-          // conversion is the point of consumption, so deduct here — exactly
-          // once, inside the same transaction that creates the job.
-          await reconcileInventoryForParts(tx, organizationId, [], includedParts, {
-            reason: 'quote_conversion',
-            userId,
-            serviceRecordId: created.id,
-            serviceRecordLabel: created.invoiceNumber || created.title,
-            note: `Converted from quote ${quote.quoteNumber ?? quote.id}`,
-          })
-        }
+        const includedParts = await copyQuotePartsToJob(tx, {
+          organizationId,
+          userId,
+          quote,
+          partItems: quote.partItems,
+          target: created,
+        })
 
         const includedLabor = quote.laborItems.filter((l) => !l.excluded)
-        if (includedLabor.length > 0) {
-          await tx.serviceLabor.createMany({
-            data: includedLabor.map((l) => ({
-              description: l.description,
-              hours: l.hours,
-              rate: l.rate,
-              total: l.total,
-              pricingType: l.pricingType || 'hourly',
-              serviceRecordId: created.id,
-            })),
-          })
-        }
+        await copyQuoteLaborToJob(tx, created.id, includedLabor)
 
         // A fee the workshop charges on work orders but not on quotes goes on
         // here, priced for what the customer accepted, and the job re-totalled.
@@ -576,43 +549,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         }
 
         // Copy attachments from quote to service record
-        if (quote.attachments.length > 0) {
-          const quotesDir = path.join(uploadsRoot(), organizationId, 'quotes')
-          // Where every other upload goes. This used to be a fixed
-          // `data/uploads`, so with DATA_ROOT set the copies landed where the
-          // file route never looks and the job showed broken images.
-          const servicesDir = path.join(uploadsRoot(), organizationId, 'services')
-          await mkdir(servicesDir, { recursive: true })
-
-          for (const att of quote.attachments) {
-            try {
-              // Extract filename from URL and build paths; only a plain name.
-              const filename = att.fileUrl.split('/').pop() ?? ''
-              if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(filename) || filename.includes('..')) {
-                throw new Error('not a stored file name')
-              }
-              const srcPath = path.join(quotesDir, filename)
-              const destPath = path.join(servicesDir, filename)
-              await copyFile(srcPath, destPath)
-
-              const newUrl = att.fileUrl.replace('/quotes/', '/services/')
-              await tx.serviceAttachment.create({
-                data: {
-                  fileName: att.fileName,
-                  fileUrl: newUrl,
-                  fileType: att.fileType,
-                  fileSize: att.fileSize,
-                  category: att.category === 'document' ? 'document' : 'image',
-                  description: att.description,
-                  includeInInvoice: att.includeInInvoice,
-                  serviceRecordId: created.id,
-                },
-              })
-            } catch (err) {
-              console.warn(`[convertQuote] Failed to copy attachment "${att.fileName}":`, err)
-            }
-          }
-        }
+        await copyQuoteAttachmentsToJob(tx, organizationId, created.id, quote.attachments)
 
         // Mark quote as converted
         await tx.quote.updateMany({
@@ -643,6 +580,233 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           params: { ref: result.convertedFromQuoteId, serviceRecordId: result.id },
         },
         metadata: { quoteId: result.convertedFromQuoteId, serviceRecordId: result.id },
+      }),
+    }
+  )
+}
+
+/**
+ * The jobs a quote could be added to instead of raising a new one: the chosen
+ * vehicle's open work orders that still take edits. Diagnostics usually come
+ * first, so by the time the quote is accepted the car already has a job, and
+ * a second one would split one visit across two invoices.
+ */
+export async function getWorkOrdersForQuoteConversion(vehicleId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      if (!vehicleId) return []
+      const [records, lockSettings] = await Promise.all([
+        db.serviceRecord.findMany({
+          where: {
+            organizationId,
+            vehicleId,
+            status: { in: [...OPEN_SERVICE_STATUSES] },
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+          select: {
+            id: true,
+            title: true,
+            invoiceNumber: true,
+            status: true,
+            serviceDate: true,
+            sentAt: true,
+            manuallyPaid: true,
+            totalAmount: true,
+            cost: true,
+            editUnlockedAt: true,
+            payments: { select: { amount: true } },
+          },
+        }),
+        getDocumentLockSettings(organizationId),
+      ])
+
+      // A locked job would refuse the lines, so it is not offered.
+      return records
+        .filter((record) => !invoiceLockState(record, lockSettings).locked)
+        .map((record) => ({
+          id: record.id,
+          title: record.title,
+          invoiceNumber: record.invoiceNumber,
+          status: record.status,
+          serviceDate: record.serviceDate,
+        }))
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
+    }
+  )
+}
+
+/**
+ * Puts an accepted quote onto a job that already exists, in place of raising
+ * a new one. The quote's lines and files are added after the job's own, which
+ * are left as they are, and the job is re-totalled.
+ *
+ * The job keeps what it was set up with: its title, tax, warranty and shop
+ * fee were decided when it was created and are not the quote's to change.
+ */
+export async function addQuoteToServiceRecord(
+  quoteId: string,
+  vehicleId: string,
+  serviceRecordId: string
+) {
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const quote = await db.quote.findFirst({
+        where: { id: quoteId, organizationId },
+        include: { partItems: true, laborItems: true, attachments: true },
+      })
+      if (!quote) throw new Error('Quote not found')
+      // A second pass would put the same lines on the job twice.
+      if (quote.status === 'converted') throw new Error('Quote is already converted')
+
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, organizationId },
+      })
+      if (!vehicle) throw new Error('Vehicle not found')
+
+      // Adds part and labor lines and retotals the job, so it is an edit to
+      // what the invoice says it is owed and a locked one refuses it.
+      await assertInvoiceEditable(serviceRecordId, organizationId)
+
+      const record = await db.serviceRecord.findFirst({
+        where: { id: serviceRecordId, organizationId },
+        select: {
+          id: true,
+          title: true,
+          invoiceNumber: true,
+          vehicleId: true,
+          status: true,
+          inspectionId: true,
+          tireSetId: true,
+          discountType: true,
+          discountValue: true,
+        },
+      })
+      if (!record) throw new Error('Work order not found')
+      if (record.vehicleId !== vehicleId) {
+        throw new Error('That work order is for a different vehicle')
+      }
+      if (!(OPEN_SERVICE_STATUSES as readonly string[]).includes(record.status)) {
+        throw new Error('That work order is no longer open')
+      }
+
+      // Only a job with no inspection of its own takes the quote's, and only
+      // when it is for the car that was inspected.
+      const inspection =
+        !record.inspectionId && quote.inspectionId
+          ? await db.inspection.findFirst({
+              where: { id: quote.inspectionId, organizationId, vehicleId },
+              select: { id: true },
+            })
+          : null
+
+      // The quote's discount was part of what the customer accepted, so it
+      // comes across as the amount it came to: a percentage would start
+      // applying to the lines the job already had. A job with a percentage
+      // discount of its own keeps it, since the two cannot both be stored.
+      const jobDiscount =
+        record.discountType === 'fixed' || record.discountType === 'percentage'
+          ? record.discountType
+          : 'none'
+      const carriedDiscount =
+        quote.discountAmount > 0 && jobDiscount !== 'percentage'
+          ? (jobDiscount === 'fixed' ? record.discountValue : 0) + quote.discountAmount
+          : null
+
+      await db.$transaction(async (tx) => {
+        // Marking it converted is what claims it: two clicks at once cannot
+        // both put the lines on the job.
+        const claimed = await tx.quote.updateMany({
+          where: { id: quoteId, organizationId, status: { not: 'converted' } },
+          data: { status: 'converted', convertedToId: record.id },
+        })
+        if (claimed.count === 0) throw new Error('Quote is already converted')
+
+        await copyQuotePartsToJob(tx, {
+          organizationId,
+          userId,
+          quote,
+          partItems: quote.partItems,
+          target: record,
+        })
+
+        // A job that already carries the shop fee does not get the quote's as
+        // a second one; the re-total below prices the one it has. A job with
+        // none takes the fee the customer accepted, and is not given the
+        // workshop's default otherwise: that is applied when a job is created.
+        const existingLabor = await tx.serviceLabor.findMany({
+          where: { serviceRecordId: record.id },
+          select: { pricingType: true },
+        })
+        const hasFee = existingLabor.some(isShopFeeLine)
+        await copyQuoteLaborToJob(
+          tx,
+          record.id,
+          quote.laborItems.filter((l) => !l.excluded && !(hasFee && isShopFeeLine(l)))
+        )
+
+        await copyQuoteAttachmentsToJob(tx, organizationId, record.id, quote.attachments)
+
+        // Links the job did not have. One it has is never rewritten.
+        const links = {
+          ...(inspection ? { inspectionId: inspection.id } : {}),
+          ...(!record.tireSetId && quote.tireSetId ? { tireSetId: quote.tireSetId } : {}),
+          ...(carriedDiscount !== null
+            ? { discountType: 'fixed', discountValue: carriedDiscount }
+            : {}),
+        }
+        if (Object.keys(links).length > 0) {
+          await tx.serviceRecord.update({ where: { id: record.id }, data: links })
+        }
+
+        await retotalServiceRecord(record.id, tx)
+
+        if (carriedDiscount !== null) {
+          const totals = await tx.serviceRecord.findUnique({
+            where: { id: record.id },
+            select: { subtotal: true },
+          })
+          await tx.serviceRecord.update({
+            where: { id: record.id },
+            data: {
+              discountAmount: discountAmountFor(totals?.subtotal ?? 0, 'fixed', carriedDiscount),
+            },
+          })
+        }
+      })
+
+      revalidatePath('/quotes')
+      revalidatePath('/work-orders')
+      revalidatePath(`/vehicles/${vehicleId}`)
+      // Conversion consumed stock for any inventory-linked quote lines.
+      await onInventoryChanged(organizationId)
+      return {
+        id: record.id,
+        vehicleId,
+        invoiceNumber: record.invoiceNumber,
+        convertedFromQuoteId: quoteId,
+        quoteRef: quote.quoteNumber ?? quoteId,
+      }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'quote.convert',
+        entity: 'Quote',
+        entityId: result.convertedFromQuoteId,
+        details: {
+          key: 'quote_convert_existing',
+          params: { ref: result.quoteRef, jobRef: result.invoiceNumber ?? result.id },
+        },
+        metadata: {
+          quoteId: result.convertedFromQuoteId,
+          serviceRecordId: result.id,
+          mergedIntoExisting: true,
+        },
       }),
     }
   )

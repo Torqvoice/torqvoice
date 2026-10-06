@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Flere statuser",
     "fromInspection": "Fra inspeksjon {name}, {date}",
+    "fromQuote": "Fra tilbud {ref}",
     "startInspection": "Start inspeksjon"
   },
   "photoHandoff": {

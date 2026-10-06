@@ -188,6 +188,7 @@
     "signature_remove": "Удалена подпись",
     "conditionMark_add": "Добавлена отметка состояния",
     "conditionMark_remove": "Удалена отметка состояния",
+    "conditionMark_carry": "Подтвердил(а) прежние отметки состояния",
     "conditionMark_onInvoice": "Карта состояния в счёте",
     "settings_markType_create": "Добавлен тип отметки",
     "settings_markType_update": "Изменён тип отметки",
@@ -234,6 +235,7 @@
     "payment_delete": "Удалён платёж {id}",
     "quoteRequest_update": "Статус запроса на предложение изменён на «{status, select, pending {в ожидании} approved {одобрен} rejected {отклонён} completed {завершён} other {{status}}}»",
     "quote_convert": "Предложение {ref} преобразовано в заказ {serviceRecordId}",
+    "quote_convert_existing": "Предложение {ref} добавлено в существующий заказ-наряд {jobRef}",
     "quote_create": "Создано предложение {ref}",
     "quote_delete": "Удалено предложение {ref}",
     "quote_status": "Статус предложения изменён на «{status, select, draft {черновик} sent {отправлено} accepted {принято} rejected {отклонено} expired {просрочено} converted {преобразовано} other {{status}}}»",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Добавлен файл с телефона к осмотру {ref}",
     "condition_mark_add": "Добавил(а) отметку на карту состояния",
     "condition_mark_remove": "Удалил(а) отметку с карты состояния",
+    "condition_mark_carry": "Подтвердил(а), что {count, plural, one {# прежняя отметка} few {# прежние отметки} many {# прежних отметок} other {# прежней отметки}} на карте состояния всё ещё на месте",
     "condition_map_on_invoice_on": "Добавил(а) карту состояния в счёт",
     "condition_map_on_invoice_off": "Убрал(а) карту состояния из счёта"
   }

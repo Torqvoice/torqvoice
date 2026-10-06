@@ -9,6 +9,8 @@
   "previousHint": "Ancora presente dall'ultima volta, in grigio. Cancella quelli che non ci sono più.",
   "newSinceLastVisit": "Nuovo dall'ultima visita",
   "confirmed": "Ancora presente",
+  "confirmAll": "Conferma tutti come ancora presenti",
+  "confirmAllHint": "Li registra su questa scheda come segni di questa visita, a colori.",
   "clearRepaired": "Cancella come riparato",
   "restore": "Ripristina",
   "edit": "Modifica segno",

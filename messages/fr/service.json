@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Autres statuts",
     "fromInspection": "Issu de l'inspection {name}, {date}",
+    "fromQuote": "Issu du devis {ref}",
     "startInspection": "Commencer l'inspection"
   },
   "photoHandoff": {

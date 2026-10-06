@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Другие статусы",
     "fromInspection": "Из осмотра {name}, {date}",
+    "fromQuote": "Из предложения {ref}",
     "startInspection": "Начать осмотр"
   },
   "photoHandoff": {

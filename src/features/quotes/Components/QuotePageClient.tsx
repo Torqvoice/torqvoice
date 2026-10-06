@@ -15,6 +15,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
@@ -39,7 +46,7 @@ import {
 import { getCurrencySymbol } from '@/lib/format'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
-import { useQuoteFormState } from './useQuoteFormState'
+import { useQuoteFormState, type ConvertTarget } from './useQuoteFormState'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import {
   LaborPresetPickerDialog,
@@ -56,6 +63,12 @@ import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import type { WarrantyTexts } from '@/lib/warranty'
 
 const LG_BREAKPOINT = 1024
+
+/** A job's number and title, without the number twice when the title carries it. */
+function convertTargetLabel(target: ConvertTarget) {
+  if (!target.invoiceNumber || target.title.includes(target.invoiceNumber)) return target.title
+  return `${target.invoiceNumber} · ${target.title}`
+}
 
 function useIsLargeScreen() {
   const [isLarge, setIsLarge] = useState(false)
@@ -134,6 +147,8 @@ export function QuotePageClient({
     shopFee,
     t,
   })
+
+  const hasConvertTargets = state.convertTargets.length > 0
 
   // Sending is what can lock the quote — by email or by link — so the page is
   // re-rendered to pick up the lock rather than leaving the fieldset open and
@@ -547,7 +562,7 @@ export function QuotePageClient({
               <DialogTitle>{t('page.convertTitle')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">{t('page.convertDescription')}</p>
+              <p className="text-sm text-muted-foreground">{t('page.convertChoiceDescription')}</p>
               <VehicleCombobox
                 value={state.convertVehicleId}
                 initialVehicle={state.selectedVehicle}
@@ -555,14 +570,78 @@ export function QuotePageClient({
                 noneLabel={t('details.none')}
                 onChange={(id) => state.setConvertVehicleId(id)}
               />
+              <div className="space-y-2">
+                <label className="flex cursor-pointer items-start gap-2 rounded-lg border p-3 text-sm">
+                  <input
+                    type="radio"
+                    name="convert-mode"
+                    className="mt-0.5"
+                    checked={state.convertMode === 'new'}
+                    onChange={() => state.setConvertMode('new')}
+                  />
+                  <span className="font-medium">{t('page.convertNew')}</span>
+                </label>
+                <div
+                  className={`space-y-2 rounded-lg border p-3 text-sm ${
+                    hasConvertTargets ? '' : 'opacity-60'
+                  }`}
+                >
+                  <label
+                    className={`flex items-start gap-2 ${
+                      hasConvertTargets ? 'cursor-pointer' : 'cursor-not-allowed'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="convert-mode"
+                      className="mt-0.5"
+                      checked={state.convertMode === 'existing'}
+                      disabled={!hasConvertTargets}
+                      onChange={() => state.setConvertMode('existing')}
+                    />
+                    <span className="font-medium">{t('page.convertExisting')}</span>
+                  </label>
+                  {!hasConvertTargets && state.convertVehicleId && !state.loadingConvertTargets && (
+                    <p className="text-xs text-muted-foreground">
+                      {t('page.convertNoOpenWorkOrders')}
+                    </p>
+                  )}
+                  {state.convertMode === 'existing' && hasConvertTargets && (
+                    <>
+                      <Select
+                        value={state.convertTargetId}
+                        onValueChange={state.setConvertTargetId}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder={t('page.convertSelectWorkOrder')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {state.convertTargets.map((target) => (
+                            <SelectItem key={target.id} value={target.id}>
+                              {convertTargetLabel(target)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        {t('page.convertExistingHint')}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
               <div className="flex gap-2">
                 <Button
                   type="button"
                   onClick={state.handleConvert}
-                  disabled={state.converting || !state.convertVehicleId}
+                  disabled={
+                    state.converting ||
+                    !state.convertVehicleId ||
+                    (state.convertMode === 'existing' && !state.convertTargetId)
+                  }
                 >
                   {state.converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('page.convert')}
+                  {state.convertMode === 'existing' ? t('page.convertAdd') : t('page.convert')}
                 </Button>
                 <Button
                   type="button"

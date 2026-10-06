@@ -46,6 +46,7 @@ vi.mock('@/lib/db', () => ({
       updateMany: vi.fn(),
       deleteMany: vi.fn(),
     },
+    quote: { findMany: vi.fn().mockResolvedValue([]) },
     serviceRecord: {
       findFirst: vi.fn(),
       delete: vi.fn(),

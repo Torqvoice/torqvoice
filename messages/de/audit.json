@@ -188,6 +188,7 @@
     "signature_remove": "Unterschrift entfernt",
     "conditionMark_add": "Zustandsmarkierung hinzugefügt",
     "conditionMark_remove": "Zustandsmarkierung entfernt",
+    "conditionMark_carry": "Frühere Zustandsmarkierungen bestätigt",
     "conditionMark_onInvoice": "Zustandskarte auf Rechnung",
     "settings_markType_create": "Markierungsart hinzugefügt",
     "settings_markType_update": "Markierungsart geändert",
@@ -234,6 +235,7 @@
     "payment_delete": "Zahlung {id} gelöscht",
     "quoteRequest_update": "Status der Angebotsanfrage geändert auf {status, select, pending {offen} approved {genehmigt} rejected {abgelehnt} completed {abgeschlossen} other {{status}}}",
     "quote_convert": "Angebot {ref} in Auftrag {serviceRecordId} umgewandelt",
+    "quote_convert_existing": "Angebot {ref} zum bestehenden Arbeitsauftrag {jobRef} hinzugefügt",
     "quote_create": "Angebot {ref} erstellt",
     "quote_delete": "Angebot {ref} gelöscht",
     "quote_status": "Angebotsstatus geändert auf {status, select, draft {Entwurf} sent {gesendet} accepted {angenommen} rejected {abgelehnt} expired {abgelaufen} converted {umgewandelt} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Datei vom Handy zur Prüfung {ref} hinzugefügt",
     "condition_mark_add": "Markierung zur Zustandskarte hinzugefügt",
     "condition_mark_remove": "Markierung von der Zustandskarte entfernt",
+    "condition_mark_carry": "{count, plural, one {# frühere Markierung} other {# frühere Markierungen}} auf der Zustandskarte als noch vorhanden bestätigt",
     "condition_map_on_invoice_on": "Zustandskarte auf die Rechnung gesetzt",
     "condition_map_on_invoice_off": "Zustandskarte von der Rechnung genommen"
   }

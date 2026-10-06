@@ -9,6 +9,8 @@
   "previousHint": "Sigue ahí desde la última vez, en gris. Borre las que ya no estén.",
   "newSinceLastVisit": "Nuevo desde la última visita",
   "confirmed": "Sigue ahí",
+  "confirmAll": "Confirmar que todas siguen ahí",
+  "confirmAllHint": "Las registra en esta hoja como marcas de esta visita, en color.",
   "clearRepaired": "Borrar como reparado",
   "restore": "Restaurar",
   "edit": "Editar marca",
