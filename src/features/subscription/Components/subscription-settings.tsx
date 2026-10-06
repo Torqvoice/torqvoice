@@ -320,50 +320,27 @@ export function SubscriptionSettings({
     </Badge>
   ) : null
 
-  const featureRows: { label: string; type: 'usage' | 'boolean'; value: boolean | string }[] = [
+  // What the plan allows, in two shapes: the two counted limits as meters,
+  // and the switches as one plain checklist, included first.
+  const UNLIMITED = 999999
+  const meters: { label: string; used: number; limit: number }[] = [
     {
       label: t('subscription.featureCustomers'),
-      type: 'usage',
-      value:
-        features.maxCustomers >= 999999
-          ? t('subscription.usageUnlimited', { used: String(usage.customers) })
-          : t('subscription.usageOf', {
-              used: String(usage.customers),
-              limit: String(features.maxCustomers),
-            }),
+      used: usage.customers,
+      limit: features.maxCustomers,
     },
-    {
-      label: t('subscription.featureTeamMembers'),
-      type: 'usage',
-      value:
-        features.maxUsers >= 999999
-          ? t('subscription.usageUnlimited', { used: String(usage.members) })
-          : t('subscription.usageOf', {
-              used: String(usage.members),
-              limit: String(features.maxUsers),
-            }),
-    },
-    { label: t('subscription.featureSmtp'), type: 'boolean', value: features.smtp },
-    { label: t('subscription.featureApi'), type: 'boolean', value: features.api },
-    { label: t('subscription.featurePayments'), type: 'boolean', value: features.payments },
-    { label: t('subscription.featureCustomFields'), type: 'boolean', value: features.customFields },
-    { label: t('subscription.featureSms'), type: 'boolean', value: features.sms },
-    {
-      label: t('subscription.featureCustomerPortal'),
-      type: 'boolean',
-      value: features.customerPortal,
-    },
-    {
-      label: t('subscription.featureCustomTemplates'),
-      type: 'boolean',
-      value: features.customTemplates,
-    },
-    {
-      label: t('subscription.featureBrandingRemoved'),
-      type: 'boolean',
-      value: features.brandingRemoved,
-    },
+    { label: t('subscription.featureTeamMembers'), used: usage.members, limit: features.maxUsers },
   ]
+  const switches: { label: string; on: boolean }[] = [
+    { label: t('subscription.featureSmtp'), on: features.smtp },
+    { label: t('subscription.featureApi'), on: features.api },
+    { label: t('subscription.featurePayments'), on: features.payments },
+    { label: t('subscription.featureCustomFields'), on: features.customFields },
+    { label: t('subscription.featureSms'), on: features.sms },
+    { label: t('subscription.featureCustomerPortal'), on: features.customerPortal },
+    { label: t('subscription.featureCustomTemplates'), on: features.customTemplates },
+    { label: t('subscription.featureBrandingRemoved'), on: features.brandingRemoved },
+  ].sort((a, b) => Number(b.on) - Number(a.on))
 
   return (
     <div className="space-y-6">
@@ -459,104 +436,7 @@ export function SubscriptionSettings({
         )}
       </AppCard>
 
-      {/* Card 2: Plan Features */}
-      <AppCard
-        title={t('subscription.featuresTitle')}
-        description={t('subscription.featuresDescription')}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {featureRows.map((row) => (
-            <div
-              key={row.label}
-              className="flex items-center justify-between rounded-md border px-3 py-2"
-            >
-              <span className="text-sm">{row.label}</span>
-              {row.type === 'usage' ? (
-                <span className="text-sm text-muted-foreground">{row.value as string}</span>
-              ) : row.value ? (
-                <div className="flex items-center gap-1 text-green-600">
-                  <Check className="h-4 w-4" />
-                  <span className="text-xs">{t('subscription.included')}</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <X className="h-4 w-4" />
-                  <span className="text-xs">{t('subscription.notIncluded')}</span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </AppCard>
-
-      {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
-      {isPaid && !isDemo && (
-        <AppCard
-          title={t('subscription.manageTitle')}
-          description={accountLinkAvailable ? t('subscription.accountOnTorqvoice') : undefined}
-          contentClassName="flex flex-wrap gap-3"
-        >
-          {hasStripeCustomer && (
-            <Button variant="outline" onClick={handleBillingPortal} disabled={billingLoading}>
-              {billingLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <CreditCard className="mr-2 h-4 w-4" />
-              )}
-              {t('subscription.manageBilling')}
-            </Button>
-          )}
-          {accountLinkAvailable && (
-            <Button variant="outline" onClick={handleOpenAccount} disabled={accountLoading}>
-              {accountLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <ExternalLink className="mr-2 h-4 w-4" />
-              )}
-              {t('subscription.openTorqvoiceAccount')}
-            </Button>
-          )}
-
-          {isCanceling ? (
-            <Button variant="default" onClick={handleResume} disabled={resumeLoading}>
-              {resumeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('subscription.resumeSubscription')}
-            </Button>
-          ) : (
-            status === 'active' &&
-            !cancelAtPeriodEnd && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">{t('subscription.cancelSubscription')}</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{t('subscription.cancelDialogTitle')}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t('subscription.cancelDialogDescription', {
-                        date: formatDate(currentPeriodEnd),
-                      })}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t('subscription.cancelDialogCancel')}</AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      onClick={handleCancel}
-                      disabled={cancelLoading}
-                    >
-                      {cancelLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {t('subscription.cancelDialogConfirm')}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )
-          )}
-        </AppCard>
-      )}
-
-      {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout */}
+      {/* Upgrade, right under the current plan: it is what a free workshop opens this page for. */}
       {(plan === 'free' || isDemo) && !activating && (
         <AppCard
           title={t('subscription.upgradeTitle')}
@@ -640,6 +520,125 @@ export function SubscriptionSettings({
           <p className="mt-3 text-xs text-muted-foreground">
             {t('subscription.checkoutOnTorqvoice')}
           </p>
+        </AppCard>
+      )}
+
+      {/* Card 2: Plan Features */}
+      <AppCard
+        title={t('subscription.featuresTitle')}
+        description={t('subscription.featuresDescription')}
+        contentClassName="space-y-5"
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          {meters.map((meter) => {
+            const unlimited = meter.limit >= UNLIMITED
+            const over = !unlimited && meter.used > meter.limit
+            const share = unlimited ? 0 : Math.min(100, (meter.used / meter.limit) * 100)
+            return (
+              <div key={meter.label}>
+                <div className="flex items-baseline justify-between text-sm">
+                  <span>{meter.label}</span>
+                  <span className={over ? 'font-medium text-destructive' : 'text-muted-foreground'}>
+                    {unlimited
+                      ? t('subscription.usageUnlimited', { used: String(meter.used) })
+                      : t('subscription.usageOf', {
+                          used: String(meter.used),
+                          limit: String(meter.limit),
+                        })}
+                  </span>
+                </div>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className={`h-full rounded-full ${over ? 'bg-destructive' : 'bg-primary'}`}
+                    style={{ width: `${unlimited ? 100 : share}%` }}
+                  />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        <ul className="grid gap-x-6 gap-y-2 border-t pt-4 sm:grid-cols-2">
+          {switches.map((item) => (
+            <li key={item.label} className="flex items-center gap-2 text-sm">
+              {item.on ? (
+                <Check aria-hidden="true" className="h-4 w-4 shrink-0 text-green-600" />
+              ) : (
+                <X aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+              )}
+              <span className={item.on ? '' : 'text-muted-foreground'}>{item.label}</span>
+              <span className="sr-only">
+                {item.on ? t('subscription.included') : t('subscription.notIncluded')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </AppCard>
+
+      {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
+      {isPaid && !isDemo && (
+        <AppCard
+          title={t('subscription.manageTitle')}
+          description={accountLinkAvailable ? t('subscription.accountOnTorqvoice') : undefined}
+          contentClassName="flex flex-wrap gap-3"
+        >
+          {hasStripeCustomer && (
+            <Button variant="outline" onClick={handleBillingPortal} disabled={billingLoading}>
+              {billingLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CreditCard className="mr-2 h-4 w-4" />
+              )}
+              {t('subscription.manageBilling')}
+            </Button>
+          )}
+          {accountLinkAvailable && (
+            <Button variant="outline" onClick={handleOpenAccount} disabled={accountLoading}>
+              {accountLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <ExternalLink className="mr-2 h-4 w-4" />
+              )}
+              {t('subscription.openTorqvoiceAccount')}
+            </Button>
+          )}
+
+          {isCanceling ? (
+            <Button variant="default" onClick={handleResume} disabled={resumeLoading}>
+              {resumeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('subscription.resumeSubscription')}
+            </Button>
+          ) : (
+            status === 'active' &&
+            !cancelAtPeriodEnd && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">{t('subscription.cancelSubscription')}</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t('subscription.cancelDialogTitle')}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t('subscription.cancelDialogDescription', {
+                        date: formatDate(currentPeriodEnd),
+                      })}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t('subscription.cancelDialogCancel')}</AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={handleCancel}
+                      disabled={cancelLoading}
+                    >
+                      {cancelLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {t('subscription.cancelDialogConfirm')}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )
+          )}
         </AppCard>
       )}
 
