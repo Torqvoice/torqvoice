@@ -38,6 +38,7 @@ vi.mock('@/lib/db', () => ({
     appSetting: { findMany: vi.fn() },
     vehicle: { findFirst: vi.fn(), update: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn(), delete: vi.fn() },
+    quote: { findMany: vi.fn().mockResolvedValue([]) },
     $transaction: vi.fn(),
   },
 }))

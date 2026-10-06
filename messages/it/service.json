@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Altri stati",
     "fromInspection": "Dall'ispezione {name}, {date}",
+    "fromQuote": "Dal preventivo {ref}",
     "startInspection": "Avvia ispezione"
   },
   "photoHandoff": {

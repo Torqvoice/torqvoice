@@ -188,6 +188,7 @@
     "signature_remove": "Pašalintas parašas",
     "conditionMark_add": "Pridėta būklės žyma",
     "conditionMark_remove": "Pašalinta būklės žyma",
+    "conditionMark_carry": "Patvirtino ankstesnes būklės žymas",
     "conditionMark_onInvoice": "Būklės žemėlapis sąskaitoje",
     "settings_markType_create": "Pridėtas žymos tipas",
     "settings_markType_update": "Pakeistas žymos tipas",
@@ -234,6 +235,7 @@
     "payment_delete": "Ištrintas mokėjimas {id}",
     "quoteRequest_update": "Pasiūlymo užklausos būsena pakeista į „{status, select, pending {laukiama} approved {patvirtinta} rejected {atmesta} completed {užbaigta} other {{status}}}“",
     "quote_convert": "Pasiūlymas {ref} paverstas darbu {serviceRecordId}",
+    "quote_convert_existing": "Pasiūlymas {ref} pridėtas prie esamo darbo užsakymo {jobRef}",
     "quote_create": "Sukurtas pasiūlymas {ref}",
     "quote_delete": "Ištrintas pasiūlymas {ref}",
     "quote_status": "Pasiūlymo būsena pakeista į „{status, select, draft {juodraštis} sent {išsiųstas} accepted {priimtas} rejected {atmestas} expired {nebegalioja} converted {paverstas} other {{status}}}“",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Pridėtas failas iš telefono prie apžiūros {ref}",
     "condition_mark_add": "Pridėjo žymą būklės žemėlapyje",
     "condition_mark_remove": "Pašalino žymą iš būklės žemėlapio",
+    "condition_mark_carry": "Patvirtino, kad {count, plural, one {# ankstesnė žyma} few {# ankstesnės žymos} other {# ankstesnių žymų}} vis dar yra būklės žemėlapyje",
     "condition_map_on_invoice_on": "Įtraukė būklės žemėlapį į sąskaitą",
     "condition_map_on_invoice_off": "Pašalino būklės žemėlapį iš sąskaitos"
   }

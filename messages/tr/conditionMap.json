@@ -9,6 +9,8 @@
   "previousHint": "Geçen seferden beri duruyor, gri çizildi. Artık olmayanları silin.",
   "newSinceLastVisit": "Son ziyaretten beri yeni",
   "confirmed": "Hâlâ var",
+  "confirmAll": "Hepsinin hâlâ durduğunu onayla",
+  "confirmAllHint": "Bunları bu sayfaya bu ziyaretin işaretleri olarak renkli kaydeder.",
   "clearRepaired": "Onarıldı olarak sil",
   "restore": "Geri al",
   "edit": "İşareti düzenle",

@@ -188,6 +188,7 @@
     "signature_remove": "İmza kaldırıldı",
     "conditionMark_add": "Durum işareti eklendi",
     "conditionMark_remove": "Durum işareti kaldırıldı",
+    "conditionMark_carry": "Önceki durum işaretlerini onayladı",
     "conditionMark_onInvoice": "Faturada durum haritası",
     "settings_markType_create": "İşaret türü eklendi",
     "settings_markType_update": "İşaret türü değiştirildi",
@@ -234,6 +235,7 @@
     "payment_delete": "{id} ödemesi silindi",
     "quoteRequest_update": "Teklif talebinin durumu {status, select, pending {beklemede} approved {onaylandı} rejected {reddedildi} completed {tamamlandı} other {{status}}} olarak değiştirildi",
     "quote_convert": "{ref} teklifi {serviceRecordId} iş kaydına dönüştürüldü",
+    "quote_convert_existing": "{ref} teklifi mevcut {jobRef} iş emrine eklendi",
     "quote_create": "{ref} teklifi oluşturuldu",
     "quote_delete": "{ref} teklifi silindi",
     "quote_status": "Teklif durumu {status, select, draft {taslak} sent {gönderildi} accepted {kabul edildi} rejected {reddedildi} expired {süresi doldu} converted {dönüştürüldü} other {{status}}} olarak değiştirildi",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "{ref} muayenesine telefondan dosya eklendi",
     "condition_mark_add": "Durum haritasına işaret ekledi",
     "condition_mark_remove": "Durum haritasından işaret kaldırdı",
+    "condition_mark_carry": "Durum haritasındaki {count, plural, one {# önceki işaretin} other {# önceki işaretin}} hâlâ durduğunu onayladı",
     "condition_map_on_invoice_on": "Durum haritasını faturaya ekledi",
     "condition_map_on_invoice_off": "Durum haritasını faturadan kaldırdı"
   }

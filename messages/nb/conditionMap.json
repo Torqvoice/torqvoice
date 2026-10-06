@@ -9,6 +9,8 @@
   "previousHint": "Fortsatt der siden sist, tegnet i grått. Fjern dem som er borte.",
   "newSinceLastVisit": "Nytt siden forrige besøk",
   "confirmed": "Fortsatt der",
+  "confirmAll": "Bekreft at alle fortsatt er der",
+  "confirmAllHint": "Registrerer dem på dette arket som dette besøkets merker, i farger.",
   "clearRepaired": "Fjern som reparert",
   "restore": "Gjenopprett",
   "edit": "Rediger merke",

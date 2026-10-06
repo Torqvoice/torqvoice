@@ -55,6 +55,8 @@ export interface ServiceDetail {
   createdBy?: { name: string | null } | null
   /** The inspection the job was raised from, when it was. */
   inspection?: { id: string; createdAt: Date | string; template: { name: string } } | null
+  /** The quotes that became the job: the one it was raised from and any added to it. */
+  quotes?: { id: string; quoteNumber: string | null; title: string }[]
   /** When the customer was told the vehicle would be ready. */
   promisedAt?: Date | null
   shopName: string | null

@@ -188,6 +188,7 @@
     "signature_remove": "Fjernet signatur",
     "conditionMark_add": "La til tilstandsmerke",
     "conditionMark_remove": "Fjernet tilstandsmerke",
+    "conditionMark_carry": "Bekreftet tidligere tilstandsmerker",
     "conditionMark_onInvoice": "Tilstandskart på faktura",
     "settings_markType_create": "La til en merketype",
     "settings_markType_update": "Endret en merketype",
@@ -234,6 +235,7 @@
     "payment_delete": "Slettet betaling {id}",
     "quoteRequest_update": "Endret status på tilbudsforespørsel til {status, select, pending {venter} approved {godkjent} rejected {avslått} completed {fullført} other {{status}}}",
     "quote_convert": "Gjorde tilbud {ref} om til jobb {serviceRecordId}",
+    "quote_convert_existing": "La tilbud {ref} til eksisterende arbeidsordre {jobRef}",
     "quote_create": "Opprettet tilbud {ref}",
     "quote_delete": "Slettet tilbud {ref}",
     "quote_status": "Endret tilbudsstatus til {status, select, draft {utkast} sent {sendt} accepted {godtatt} rejected {avslått} expired {utløpt} converted {konvertert} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "La til en fil fra telefon på kontroll {ref}",
     "condition_mark_add": "La til et merke på tilstandskartet",
     "condition_mark_remove": "Fjernet et merke fra tilstandskartet",
+    "condition_mark_carry": "Bekreftet at {count, plural, one {# tidligere merke} other {# tidligere merker}} fortsatt er der på tilstandskartet",
     "condition_map_on_invoice_on": "Satte tilstandskartet på fakturaen",
     "condition_map_on_invoice_off": "Tok tilstandskartet av fakturaen"
   }

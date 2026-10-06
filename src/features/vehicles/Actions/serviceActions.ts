@@ -333,8 +333,18 @@ export async function getServiceRecord(recordId: string) {
           },
         },
       })
+      if (!record) return record
 
-      return record
+      // The quotes that became this job, for the links beside its number: the
+      // one it was raised from and any added to it since. Oldest first, the
+      // order they reached the job in.
+      const quotes = await db.quote.findMany({
+        where: { organizationId, convertedToId: record.id },
+        orderBy: { createdAt: 'asc' },
+        select: { id: true, quoteNumber: true, title: true },
+      })
+
+      return { ...record, quotes }
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],

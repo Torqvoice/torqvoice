@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Daugiau būsenų",
     "fromInspection": "Iš apžiūros {name}, {date}",
+    "fromQuote": "Iš pasiūlymo {ref}",
     "startInspection": "Pradėti apžiūrą"
   },
   "photoHandoff": {

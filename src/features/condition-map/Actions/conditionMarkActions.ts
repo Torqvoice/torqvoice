@@ -11,11 +11,13 @@ import { releaseFiles } from '@/lib/files/manager'
 import { BODY_TYPES } from '../Lib/drawingTypes'
 import {
   type ConditionMarkData,
+  type MarkScope,
   markInputSchema,
   markPatchSchema,
   numberedMarks,
+  splitMarks,
 } from '../Lib/marks'
-import { MARK_SELECT } from '../Lib/loadMarks.server'
+import { loadVehicleConditionMarks, MARK_SELECT } from '../Lib/loadMarks.server'
 
 /**
  * The marks on a vehicle's condition map.
@@ -51,7 +53,8 @@ export async function listVehicleConditionMarks(vehicleId: string) {
 /**
  * Checks that the sheet a mark is drawn on is this workshop's, is this
  * vehicle's, and is still open: a completed inspection and an issued
- * invoice keep their marks as they were.
+ * invoice keep their marks as they were. Answers with the visit the sheet
+ * records, for the one action that has to tell its marks from earlier ones.
  */
 async function assertSheetOpen(
   organizationId: string,
@@ -61,12 +64,13 @@ async function assertSheetOpen(
     inspectionItemId?: string | null
     serviceRecordId?: string | null
   }
-) {
+): Promise<MarkScope> {
   if (scope.inspectionId) {
     const inspection = await db.inspection.findFirst({
       where: { id: scope.inspectionId, organizationId, vehicleId: scope.vehicleId },
       select: {
         status: true,
+        createdAt: true,
         items: { where: { id: scope.inspectionItemId ?? '' }, select: { id: true } },
       },
     })
@@ -74,15 +78,23 @@ async function assertSheetOpen(
     if (inspection.status === 'completed')
       throw new Error('Reopen the inspection to change its condition map')
     if (scope.inspectionItemId && inspection.items.length === 0) throw new Error('Check not found')
-    return
+    return {
+      inspectionId: scope.inspectionId,
+      inspectionItemId: scope.inspectionItemId ?? '',
+      openedAt: inspection.createdAt,
+    }
   }
   if (scope.serviceRecordId) {
     const job = await db.serviceRecord.findFirst({
       where: { id: scope.serviceRecordId, organizationId, vehicleId: scope.vehicleId },
-      select: { id: true },
+      select: { id: true, inspectionId: true, createdAt: true },
     })
     if (!job) throw new Error('Work order not found')
-    return
+    return {
+      serviceRecordId: job.id,
+      linkedInspectionId: job.inspectionId,
+      openedAt: job.createdAt,
+    }
   }
   throw new Error('A mark needs a sheet to be drawn on')
 }
@@ -251,6 +263,118 @@ export async function resolveConditionMark(id: string, resolved: boolean) {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
       ],
+    }
+  )
+}
+
+const carrySchema = z
+  .object({
+    vehicleId: z.string().min(1),
+    inspectionId: z.string().min(1).optional().nullable(),
+    inspectionItemId: z.string().min(1).optional().nullable(),
+    serviceRecordId: z.string().min(1).optional().nullable(),
+  })
+  // One sheet, named whole: an inspection's check, or a work order.
+  .refine((sheet) =>
+    sheet.serviceRecordId
+      ? !sheet.inspectionId && !sheet.inspectionItemId
+      : Boolean(sheet.inspectionId && sheet.inspectionItemId)
+  )
+
+/**
+ * Every mark still open from an earlier visit, confirmed as still there in
+ * one go: each is recorded again on this sheet as this visit's own, and the
+ * earlier one is closed in the same transaction, so the vehicle never carries
+ * the same dent twice and the next visit meets it once.
+ *
+ * The earlier mark is kept rather than moved, because it is the earlier
+ * visit's record: a completed inspection prints its marks as they stood when
+ * it was completed, and an issued invoice from its own copy. The new mark
+ * keeps the old one's photos by pointing at the same files; the file manager
+ * counts both rows, so removing a photo from one leaves the other's in place.
+ *
+ * Safe to ask twice, or by two people at once: an earlier mark is taken only
+ * while it is still open, and whoever comes second finds none left to take.
+ */
+export async function carryConditionMarks(input: unknown) {
+  const result = carrySchema.safeParse(input)
+  if (!result.success) return { success: false as const, error: 'Invalid sheet' }
+  const sheet = result.data
+  return withAuth(
+    async ({
+      organizationId,
+      userId,
+    }): Promise<{ vehicleId: string; marks: ConditionMarkData[]; carried: string[] }> => {
+      const scope = await assertSheetOpen(organizationId, sheet)
+      const all = await loadVehicleConditionMarks(organizationId, sheet.vehicleId)
+      const earlier = splitMarks(all, scope).previous
+      if (earlier.length === 0) return { vehicleId: sheet.vehicleId, marks: [], carried: [] }
+
+      const now = new Date()
+      const carried: ConditionMarkData[] = []
+      const marks = await db.$transaction(async (tx) => {
+        const created: ConditionMarkData[] = []
+        for (const [index, mark] of earlier.entries()) {
+          // Closing it is what claims it. Somebody else who carried or
+          // cleared it a moment ago has closed it already, and it is left.
+          const claimed = await tx.conditionMark.updateMany({
+            where: { id: mark.id, organizationId, resolvedAt: null },
+            data: { resolvedAt: now, resolvedById: userId },
+          })
+          if (claimed.count === 0) continue
+          carried.push(mark)
+          created.push(
+            await tx.conditionMark.create({
+              data: {
+                organizationId,
+                vehicleId: mark.vehicleId,
+                inspectionId: sheet.inspectionId ?? null,
+                inspectionItemId: sheet.inspectionItemId ?? null,
+                serviceRecordId: sheet.serviceRecordId ?? null,
+                bodyType: mark.bodyType,
+                view: mark.view,
+                panel: mark.panel,
+                x: mark.x,
+                y: mark.y,
+                kind: mark.kind,
+                severity: mark.severity,
+                note: mark.note,
+                imageUrls: mark.imageUrls,
+                // Marks are numbered by when they were recorded, so each gets
+                // a moment of its own and they keep the order they had.
+                recordedAt: new Date(now.getTime() + index),
+                recordedById: userId,
+              },
+              select: MARK_SELECT,
+            })
+          )
+        }
+        return created
+      })
+
+      // This sheet, and every sheet a mark was carried from.
+      const paths = new Set(pathsFor(sheet))
+      for (const mark of carried) for (const path of pathsFor(mark)) paths.add(path)
+      for (const path of paths) revalidatePath(path)
+      return { vehicleId: sheet.vehicleId, marks, carried: carried.map((mark) => mark.id) }
+    },
+    {
+      // Recording on the sheet, and closing a mark on the vehicle: the right
+      // each of the two already asks for on its own.
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: subjectFor(sheet) },
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
+      ],
+      audit: ({ result }) =>
+        result.marks.length === 0
+          ? null
+          : {
+              action: 'conditionMark.carry',
+              entity: 'Vehicle',
+              entityId: result.vehicleId,
+              details: { key: 'condition_mark_carry', params: { count: result.marks.length } },
+              metadata: { vehicleId: result.vehicleId },
+            },
     }
   )
 }

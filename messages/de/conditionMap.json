@@ -9,6 +9,8 @@
   "previousHint": "Noch da seit dem letzten Mal, grau gezeichnet. Löschen Sie, was nicht mehr da ist.",
   "newSinceLastVisit": "Neu seit dem letzten Besuch",
   "confirmed": "Noch da",
+  "confirmAll": "Alle als noch vorhanden bestätigen",
+  "confirmAllHint": "Erfasst sie auf diesem Blatt als Markierungen dieses Besuchs, in Farbe.",
   "clearRepaired": "Als repariert löschen",
   "restore": "Wiederherstellen",
   "edit": "Markierung bearbeiten",

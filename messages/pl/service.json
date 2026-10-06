@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Więcej statusów",
     "fromInspection": "Z przeglądu {name}, {date}",
+    "fromQuote": "Z wyceny {ref}",
     "startInspection": "Rozpocznij przegląd"
   },
   "photoHandoff": {

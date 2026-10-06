@@ -9,6 +9,8 @@
   "previousHint": "Nog aanwezig sinds de vorige keer, in grijs. Wis wat er niet meer is.",
   "newSinceLastVisit": "Nieuw sinds het vorige bezoek",
   "confirmed": "Nog aanwezig",
+  "confirmAll": "Alles bevestigen als nog aanwezig",
+  "confirmAllHint": "Legt ze op dit blad vast als markeringen van dit bezoek, in kleur.",
   "clearRepaired": "Wissen als hersteld",
   "restore": "Herstellen",
   "edit": "Markering bewerken",

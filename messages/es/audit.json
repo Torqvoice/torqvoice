@@ -188,6 +188,7 @@
     "signature_remove": "Eliminó la firma",
     "conditionMark_add": "Marca de estado añadida",
     "conditionMark_remove": "Marca de estado eliminada",
+    "conditionMark_carry": "Confirmó marcas de estado anteriores",
     "conditionMark_onInvoice": "Mapa de estado en la factura",
     "settings_markType_create": "Tipo de marca añadido",
     "settings_markType_update": "Tipo de marca modificado",
@@ -234,6 +235,7 @@
     "payment_delete": "Pago {id} eliminado",
     "quoteRequest_update": "Estado de la solicitud de presupuesto cambiado a {status, select, pending {pendiente} approved {aprobada} rejected {rechazada} completed {completada} other {{status}}}",
     "quote_convert": "Presupuesto {ref} convertido en servicio {serviceRecordId}",
+    "quote_convert_existing": "Presupuesto {ref} añadido a la orden de trabajo existente {jobRef}",
     "quote_create": "Presupuesto {ref} creado",
     "quote_delete": "Presupuesto {ref} eliminado",
     "quote_status": "Estado del presupuesto cambiado a {status, select, draft {borrador} sent {enviado} accepted {aceptado} rejected {rechazado} expired {caducado} converted {convertido} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Añadió un archivo desde un teléfono a la inspección {ref}",
     "condition_mark_add": "Añadió una marca al mapa de estado",
     "condition_mark_remove": "Eliminó una marca del mapa de estado",
+    "condition_mark_carry": "Confirmó que {count, plural, one {# marca anterior sigue} other {# marcas anteriores siguen}} ahí en el mapa de estado",
     "condition_map_on_invoice_on": "Puso el mapa de estado en la factura",
     "condition_map_on_invoice_off": "Quitó el mapa de estado de la factura"
   }

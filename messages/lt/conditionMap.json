@@ -9,6 +9,8 @@
   "previousHint": "Vis dar yra nuo praėjusio karto, pilka spalva. Pašalinkite tas, kurių nebėra.",
   "newSinceLastVisit": "Nauja nuo praėjusio vizito",
   "confirmed": "Vis dar yra",
+  "confirmAll": "Patvirtinti, kad visos vis dar yra",
+  "confirmAllHint": "Užfiksuoja jas šiame lape kaip šio vizito žymas, spalvotai.",
   "clearRepaired": "Pašalinti kaip sutaisytą",
   "restore": "Atkurti",
   "edit": "Redaguoti žymą",

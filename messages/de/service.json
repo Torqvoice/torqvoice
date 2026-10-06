@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Weitere Status",
     "fromInspection": "Aus Inspektion {name}, {date}",
+    "fromQuote": "Aus Angebot {ref}",
     "startInspection": "Inspektion starten"
   },
   "photoHandoff": {

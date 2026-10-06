@@ -9,6 +9,8 @@
   "previousHint": "Nadal obecne od ostatniego razu, na szaro. Usuń te, których już nie ma.",
   "newSinceLastVisit": "Nowe od ostatniej wizyty",
   "confirmed": "Nadal jest",
+  "confirmAll": "Potwierdź, że wszystkie nadal są",
+  "confirmAllHint": "Zapisuje je na tym arkuszu jako oznaczenia z tej wizyty, w kolorze.",
   "clearRepaired": "Usuń jako naprawione",
   "restore": "Przywróć",
   "edit": "Edytuj oznaczenie",

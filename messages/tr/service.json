@@ -666,6 +666,7 @@
     },
     "moreStatuses": "Diğer durumlar",
     "fromInspection": "{name} muayenesinden, {date}",
+    "fromQuote": "{ref} teklifinden",
     "startInspection": "Muayeneyi başlat"
   },
   "photoHandoff": {

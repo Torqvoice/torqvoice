@@ -188,6 +188,7 @@
     "signature_remove": "Firma rimossa",
     "conditionMark_add": "Segno di stato aggiunto",
     "conditionMark_remove": "Segno di stato rimosso",
+    "conditionMark_carry": "Ha confermato segni di stato precedenti",
     "conditionMark_onInvoice": "Mappa dello stato in fattura",
     "settings_markType_create": "Tipo di segno aggiunto",
     "settings_markType_update": "Tipo di segno modificato",
@@ -234,6 +235,7 @@
     "payment_delete": "Pagamento {id} eliminato",
     "quoteRequest_update": "Stato della richiesta di preventivo cambiato in {status, select, pending {in attesa} approved {approvata} rejected {rifiutata} completed {completata} other {{status}}}",
     "quote_convert": "Preventivo {ref} convertito nell'intervento {serviceRecordId}",
+    "quote_convert_existing": "Preventivo {ref} aggiunto all'ordine di lavoro esistente {jobRef}",
     "quote_create": "Preventivo {ref} creato",
     "quote_delete": "Preventivo {ref} eliminato",
     "quote_status": "Stato del preventivo cambiato in {status, select, draft {bozza} sent {inviato} accepted {accettato} rejected {rifiutato} expired {scaduto} converted {convertito} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Aggiunto un file da telefono all'ispezione {ref}",
     "condition_mark_add": "Ha aggiunto un segno alla mappa dello stato",
     "condition_mark_remove": "Ha rimosso un segno dalla mappa dello stato",
+    "condition_mark_carry": "Ha confermato {count, plural, one {# segno precedente come ancora presente} other {# segni precedenti come ancora presenti}} sulla mappa dello stato",
     "condition_map_on_invoice_on": "Ha messo la mappa dello stato sulla fattura",
     "condition_map_on_invoice_off": "Ha tolto la mappa dello stato dalla fattura"
   }

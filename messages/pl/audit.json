@@ -188,6 +188,7 @@
     "signature_remove": "Usunięto podpis",
     "conditionMark_add": "Dodano oznaczenie stanu",
     "conditionMark_remove": "Usunięto oznaczenie stanu",
+    "conditionMark_carry": "Potwierdzono wcześniejsze oznaczenia stanu",
     "conditionMark_onInvoice": "Mapa stanu na fakturze",
     "settings_markType_create": "Dodano rodzaj oznaczenia",
     "settings_markType_update": "Zmieniono rodzaj oznaczenia",
@@ -234,6 +235,7 @@
     "payment_delete": "Usunięto płatność {id}",
     "quoteRequest_update": "Zmieniono status zapytania o wycenę na {status, select, pending {oczekujące} approved {zatwierdzone} rejected {odrzucone} completed {zakończone} other {{status}}}",
     "quote_convert": "Przekształcono wycenę {ref} w zlecenie {serviceRecordId}",
+    "quote_convert_existing": "Dodano wycenę {ref} do istniejącego zlecenia {jobRef}",
     "quote_create": "Utworzono wycenę {ref}",
     "quote_delete": "Usunięto wycenę {ref}",
     "quote_status": "Zmieniono status wyceny na {status, select, draft {szkic} sent {wysłana} accepted {zaakceptowana} rejected {odrzucona} expired {wygasła} converted {przekształcona} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Dodano plik z telefonu do przeglądu {ref}",
     "condition_mark_add": "Dodano oznaczenie do mapy stanu",
     "condition_mark_remove": "Usunięto oznaczenie z mapy stanu",
+    "condition_mark_carry": "Potwierdzono, że {count, plural, one {# wcześniejsze oznaczenie nadal jest} few {# wcześniejsze oznaczenia nadal są} many {# wcześniejszych oznaczeń nadal jest} other {# wcześniejszego oznaczenia nadal jest}} na mapie stanu",
     "condition_map_on_invoice_on": "Umieszczono mapę stanu na fakturze",
     "condition_map_on_invoice_off": "Usunięto mapę stanu z faktury"
   }
