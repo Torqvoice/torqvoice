@@ -288,8 +288,8 @@ const carrySchema = z
  * the same dent twice and the next visit meets it once.
  *
  * The earlier mark is kept rather than moved, because it is the earlier
- * visit's record: a completed inspection prints its marks as they stood when
- * it was completed, and an issued invoice from its own copy. The new mark
+ * visit's record: it points at the newer mark, so its own sheet goes on
+ * showing it while every other sheet meets the newer one. The new mark
  * keeps the old one's photos by pointing at the same files; the file manager
  * counts both rows, so removing a photo from one leaves the other's in place.
  *
@@ -323,31 +323,36 @@ export async function carryConditionMarks(input: unknown) {
           })
           if (claimed.count === 0) continue
           carried.push(mark)
-          created.push(
-            await tx.conditionMark.create({
-              data: {
-                organizationId,
-                vehicleId: mark.vehicleId,
-                inspectionId: sheet.inspectionId ?? null,
-                inspectionItemId: sheet.inspectionItemId ?? null,
-                serviceRecordId: sheet.serviceRecordId ?? null,
-                bodyType: mark.bodyType,
-                view: mark.view,
-                panel: mark.panel,
-                x: mark.x,
-                y: mark.y,
-                kind: mark.kind,
-                severity: mark.severity,
-                note: mark.note,
-                imageUrls: mark.imageUrls,
-                // Marks are numbered by when they were recorded, so each gets
-                // a moment of its own and they keep the order they had.
-                recordedAt: new Date(now.getTime() + index),
-                recordedById: userId,
-              },
-              select: MARK_SELECT,
-            })
-          )
+          const next = await tx.conditionMark.create({
+            data: {
+              organizationId,
+              vehicleId: mark.vehicleId,
+              inspectionId: sheet.inspectionId ?? null,
+              inspectionItemId: sheet.inspectionItemId ?? null,
+              serviceRecordId: sheet.serviceRecordId ?? null,
+              bodyType: mark.bodyType,
+              view: mark.view,
+              panel: mark.panel,
+              x: mark.x,
+              y: mark.y,
+              kind: mark.kind,
+              severity: mark.severity,
+              note: mark.note,
+              imageUrls: mark.imageUrls,
+              // Marks are numbered by when they were recorded, so each gets
+              // a moment of its own and they keep the order they had.
+              recordedAt: new Date(now.getTime() + index),
+              recordedById: userId,
+            },
+            select: MARK_SELECT,
+          })
+          // Closed because it was superseded, not repaired: the earlier
+          // sheet still prints it as its own record.
+          await tx.conditionMark.update({
+            where: { id: mark.id },
+            data: { carriedToId: next.id },
+          })
+          created.push(next)
         }
         return created
       })

@@ -12,8 +12,13 @@ import {
   deleteQuote,
   convertQuoteToServiceRecord,
   addQuoteToServiceRecord,
+  getQuoteConversionConflicts,
   getWorkOrdersForQuoteConversion,
 } from '@/features/quotes/Actions/quoteActions'
+import type {
+  ConversionConflict,
+  ConversionResolutions,
+} from '@/features/quotes/Lib/conversionConflicts'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { zonedDateInput } from '@/lib/timezone'
@@ -150,6 +155,11 @@ export function useQuoteFormState({
   const [convertTargets, setConvertTargets] = useState<ConvertTarget[]>([])
   const [convertTargetId, setConvertTargetId] = useState('')
   const [loadingConvertTargets, setLoadingConvertTargets] = useState(false)
+  // Where the quote and the chosen job disagree, and what the user said the
+  // job keeps. Adding waits until every conflict has an answer.
+  const [convertConflicts, setConvertConflicts] = useState<ConversionConflict[]>([])
+  const [convertResolutions, setConvertResolutions] = useState<ConversionResolutions>({})
+  const [loadingConvertConflicts, setLoadingConvertConflicts] = useState(false)
   const [resolving, setResolving] = useState(false)
 
   // The day the quote is valid until, as the workshop's calendar has it. The
@@ -562,6 +572,32 @@ export function useQuoteFormState({
     }
   }, [showConvertDialog, convertVehicleId])
 
+  // The conflicts follow the job picked, read afresh each time so a job
+  // edited in the meantime is asked about as it now stands. Earlier answers
+  // are dropped with them: they were about another job.
+  useEffect(() => {
+    setConvertConflicts([])
+    setConvertResolutions({})
+    if (!showConvertDialog || convertMode !== 'existing' || !convertTargetId) return
+    let cancelled = false
+    setLoadingConvertConflicts(true)
+    getQuoteConversionConflicts(quote.id, convertTargetId).then((result) => {
+      if (cancelled) return
+      setConvertConflicts(result.success && result.data ? result.data : [])
+      setLoadingConvertConflicts(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [showConvertDialog, convertMode, convertTargetId, quote.id])
+
+  const setConvertResolution = <K extends keyof ConversionResolutions>(
+    kind: K,
+    choice: NonNullable<ConversionResolutions[K]>
+  ) => setConvertResolutions((prev) => ({ ...prev, [kind]: choice }))
+
+  const convertConflictsUnresolved = convertConflicts.some((c) => !convertResolutions[c.kind])
+
   const handleConvert = async () => {
     if (hasUnsavedChanges) await saveNow()
     if (!convertVehicleId) {
@@ -573,9 +609,18 @@ export function useQuoteFormState({
       modal.open('error', 'Error', t('page.convertSelectWorkOrder'))
       return
     }
+    if (addToExisting && (loadingConvertConflicts || convertConflictsUnresolved)) {
+      modal.open('error', 'Error', t('page.convertConflicts.unanswered'))
+      return
+    }
     setConverting(true)
     const result = addToExisting
-      ? await addQuoteToServiceRecord(quote.id, convertVehicleId, convertTargetId)
+      ? await addQuoteToServiceRecord(
+          quote.id,
+          convertVehicleId,
+          convertTargetId,
+          convertResolutions
+        )
       : await convertQuoteToServiceRecord(quote.id, convertVehicleId)
     if (result.success && result.data) {
       router.push(`/vehicles/${convertVehicleId}/service/${result.data.id}`)
@@ -646,6 +691,11 @@ export function useQuoteFormState({
     convertTargetId,
     setConvertTargetId,
     loadingConvertTargets,
+    convertConflicts,
+    convertResolutions,
+    setConvertResolution,
+    convertConflictsUnresolved,
+    loadingConvertConflicts,
     resolving,
     changeStatus,
     changingStatus,

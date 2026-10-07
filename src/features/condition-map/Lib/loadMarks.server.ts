@@ -29,6 +29,7 @@ export const MARK_SELECT = {
   imageUrls: true,
   recordedAt: true,
   resolvedAt: true,
+  carriedToId: true,
 } as const
 
 /** Every mark ever drawn on the vehicle, oldest first; resolved ones included as history. */

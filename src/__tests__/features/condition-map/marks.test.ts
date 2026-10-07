@@ -53,6 +53,26 @@ describe('condition marks', () => {
     expect(onJob.previous.map((m) => m.id)).toEqual(['a', 'b'])
   })
 
+  it('keeps a mark a later visit carried forward on the sheet that drew it, and nowhere else', () => {
+    // Confirmed still there on job s2 and recorded again as 'b'; 'a' was
+    // closed for it. It is still s1's record of the car, and s2 meets 'b'.
+    const carried = mark({
+      id: 'a',
+      serviceRecordId: 's1',
+      resolvedAt: '2026-09-02T00:00:00Z',
+      carriedToId: 'b',
+    })
+    const successor = mark({ id: 'b', serviceRecordId: 's2' })
+    const marks = [carried, successor]
+    expect(splitMarks(marks, { serviceRecordId: 's1' }).own.map((m) => m.id)).toEqual(['a'])
+    expect(splitMarks(marks, { serviceRecordId: 's1' }).previous.map((m) => m.id)).toEqual(['b'])
+    expect(splitMarks(marks, { serviceRecordId: 's2' }).own.map((m) => m.id)).toEqual(['b'])
+    expect(splitMarks(marks, { serviceRecordId: 's2' }).previous).toEqual([])
+    // Cleared as repaired, with no successor, it is gone from its own sheet too.
+    const repaired = mark({ id: 'a', serviceRecordId: 's1', resolvedAt: '2026-09-02T00:00:00Z' })
+    expect(splitMarks([repaired], { serviceRecordId: 's1' }).own).toEqual([])
+  })
+
   it('counts another map check on the same inspection as this visit, drawn on that check', () => {
     const checkin = mark({ id: 'checkin', inspectionId: 'i1', inspectionItemId: 'c1' })
     const handback = mark({ id: 'handback', inspectionId: 'i1', inspectionItemId: 'c2' })

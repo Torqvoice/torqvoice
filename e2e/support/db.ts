@@ -1821,3 +1821,249 @@ export async function plantOwnMarkKind(
 export async function removeOwnMarkKind(id: string): Promise<void> {
   await withDb((db) => db.query(`delete from condition_mark_types where id = $1`, [id]))
 }
+
+// ─── A quote added to an open work order ─────────────────────────────────────
+
+/**
+ * The columns a spec may write on a quote or a work order to make the two
+ * disagree, without touching the workshop's own settings (which other specs
+ * read at the same time). The stored totals are columns too: a discount or a
+ * tax written here leaves them stale until the document is saved or
+ * re-totalled, so a spec writes them alongside when it reads them back.
+ */
+export interface DocumentFields {
+  subtotal?: number
+  discountType?: 'percentage' | 'fixed' | null
+  discountValue?: number
+  discountAmount?: number
+  taxRate?: number
+  taxInclusive?: boolean
+  taxComponents?: { name: string; rate: number }[] | null
+  taxAmount?: number
+  totalAmount?: number
+  warrantyStatus?: 'included' | 'not_included' | null
+  warrantyMonths?: number | null
+  warrantyMileage?: number | null
+  warrantyNotes?: string | null
+}
+
+export interface ServiceRecordFields extends DocumentFields {
+  status?: string
+}
+
+const DOCUMENT_COLUMNS = new Set([
+  'subtotal',
+  'discountType',
+  'discountValue',
+  'discountAmount',
+  'taxRate',
+  'taxInclusive',
+  'taxComponents',
+  'taxAmount',
+  'totalAmount',
+  'warrantyStatus',
+  'warrantyMonths',
+  'warrantyMileage',
+  'warrantyNotes',
+  'status',
+])
+
+/** `"col" = $n, ...` for the given fields, refusing anything not listed above. */
+function assignments(fields: object, offset: number): { sql: string; values: unknown[] } {
+  const entries = Object.entries(fields).filter(([, value]) => value !== undefined)
+  if (entries.length === 0) throw new Error('nothing to write')
+  for (const [column] of entries) {
+    if (!DOCUMENT_COLUMNS.has(column)) throw new Error(`not a writable column: ${column}`)
+  }
+  return {
+    sql: entries.map(([column], i) => `"${column}" = $${i + offset}`).join(', '),
+    values: entries.map(([column, value]) =>
+      column === 'taxComponents' && value !== null ? JSON.stringify(value) : value
+    ),
+  }
+}
+
+/** Writes columns on a quote, found by its id or its number. */
+export async function setQuoteFields(
+  quoteNumberOrId: string,
+  fields: DocumentFields
+): Promise<void> {
+  await withDb(async (db) => {
+    const { sql, values } = assignments(fields, 2)
+    const result = await db.query(
+      `update quotes set ${sql}, "updatedAt" = now() where id = $1 or "quoteNumber" = $1`,
+      [quoteNumberOrId, ...values]
+    )
+    if (result.rowCount !== 1) {
+      throw new Error(`expected one quote for ${quoteNumberOrId}, found ${result.rowCount}`)
+    }
+  })
+}
+
+/** Writes columns on a work order. */
+export async function setServiceRecordFields(
+  serviceRecordId: string,
+  fields: ServiceRecordFields
+): Promise<void> {
+  await withDb(async (db) => {
+    const { sql, values } = assignments(fields, 2)
+    const result = await db.query(
+      `update service_records set ${sql}, "updatedAt" = now() where id = $1`,
+      [serviceRecordId, ...values]
+    )
+    if (result.rowCount !== 1) throw new Error(`no work order ${serviceRecordId}`)
+  })
+}
+
+export interface PlantedPartLine {
+  name: string
+  quantity: number
+  unitPrice: number
+}
+
+export interface PlantedLaborLine {
+  description: string
+  hours: number
+  rate: number
+}
+
+/**
+ * Part and labour lines written onto a work order, priced the way the editor
+ * prices them (quantity × unit price, hours × rate). Nothing is re-totalled:
+ * the spec writes the stored totals it wants with `setServiceRecordFields`.
+ */
+export async function addServiceRecordLines(
+  serviceRecordId: string,
+  lines: { parts?: PlantedPartLine[]; labor?: PlantedLaborLine[] }
+): Promise<void> {
+  await withDb(async (db) => {
+    for (const part of lines.parts ?? []) {
+      await db.query(
+        `insert into service_parts (id, name, quantity, "unitPrice", total, "serviceRecordId")
+         values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, $4, $5)`,
+        [part.name, part.quantity, part.unitPrice, part.quantity * part.unitPrice, serviceRecordId]
+      )
+    }
+    for (const labor of lines.labor ?? []) {
+      await db.query(
+        `insert into service_labor (id, description, hours, rate, total, "serviceRecordId")
+         values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, $4, $5)`,
+        [labor.description, labor.hours, labor.rate, labor.hours * labor.rate, serviceRecordId]
+      )
+    }
+  })
+}
+
+/**
+ * A draft quote for a vehicle and its owner, with its lines, as if typed into
+ * the editor and saved. Its tax, discount and warranty are whatever the spec
+ * writes next with `setQuoteFields`; the stored subtotal and total follow the
+ * lines here so the quote is consistent before that.
+ */
+export async function plantQuote(
+  organizationId: string,
+  userId: string,
+  input: {
+    vehicleId: string
+    title: string
+    parts?: PlantedPartLine[]
+    labor?: PlantedLaborLine[]
+  }
+): Promise<string> {
+  return withDb(async (db) => {
+    const parts = input.parts ?? []
+    const labor = input.labor ?? []
+    const subtotal =
+      parts.reduce((sum, p) => sum + p.quantity * p.unitPrice, 0) +
+      labor.reduce((sum, l) => sum + l.hours * l.rate, 0)
+    const quote = await db.query<{ id: string }>(
+      `insert into quotes (id, title, status, subtotal, "totalAmount", "userId", "organizationId",
+                           "customerId", "vehicleId", "updatedAt")
+       values (md5(random()::text || clock_timestamp()::text), $1, 'draft', $2, $2, $3, $4,
+               (select "customerId" from vehicles where id = $5), $5, now())
+       returning id`,
+      [input.title, subtotal, userId, organizationId, input.vehicleId]
+    )
+    const quoteId = quote.rows[0].id
+    for (const part of parts) {
+      await db.query(
+        `insert into quote_parts (id, name, quantity, "unitPrice", total, "quoteId")
+         values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, $4, $5)`,
+        [part.name, part.quantity, part.unitPrice, part.quantity * part.unitPrice, quoteId]
+      )
+    }
+    for (const line of labor) {
+      await db.query(
+        `insert into quote_labor (id, description, hours, rate, total, "quoteId")
+         values (md5(random()::text || clock_timestamp()::text), $1, $2, $3, $4, $5)`,
+        [line.description, line.hours, line.rate, line.hours * line.rate, quoteId]
+      )
+    }
+    return quoteId
+  })
+}
+
+export interface StoredServiceRecord {
+  status: string
+  subtotal: number
+  discountType: string | null
+  discountValue: number
+  discountAmount: number
+  taxRate: number
+  taxInclusive: boolean
+  taxAmount: number
+  totalAmount: number
+  warrantyStatus: string | null
+  warrantyMonths: number | null
+  warrantyExpiresAt: Date | null
+}
+
+/** What a work order stores about its money and its warranty. */
+export async function storedServiceRecord(serviceRecordId: string): Promise<StoredServiceRecord> {
+  return withDb(async (db) => {
+    const result = await db.query<StoredServiceRecord>(
+      `select status, subtotal, "discountType", "discountValue", "discountAmount", "taxRate",
+              "taxInclusive", "taxAmount", "totalAmount", "warrantyStatus", "warrantyMonths",
+              "warrantyExpiresAt"
+         from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    const row = result.rows[0]
+    if (!row) throw new Error(`no work order ${serviceRecordId}`)
+    return row
+  })
+}
+
+/** The work order's part lines, by name. */
+export async function servicePartLines(
+  serviceRecordId: string
+): Promise<{ name: string; quantity: number; unitPrice: number; total: number }[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{
+      name: string
+      quantity: number
+      unitPrice: number
+      total: number
+    }>(
+      `select name, quantity, "unitPrice", total from service_parts
+        where "serviceRecordId" = $1 order by name`,
+      [serviceRecordId]
+    )
+    return result.rows
+  })
+}
+
+/** A quote's status and the job it went to, if any. */
+export async function quoteConversion(
+  quoteId: string
+): Promise<{ status: string; convertedToId: string | null }> {
+  return withDb(async (db) => {
+    const result = await db.query<{ status: string; convertedToId: string | null }>(
+      `select status, "convertedToId" from quotes where id = $1`,
+      [quoteId]
+    )
+    const row = result.rows[0]
+    if (!row) throw new Error(`no quote ${quoteId}`)
+    return row
+  })
+}

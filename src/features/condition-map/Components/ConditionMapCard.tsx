@@ -91,6 +91,12 @@ export function ConditionMapCard({
   const t = useTranslations('conditionMap')
   const router = useRouter()
   const [marks, setMarks] = useState<ConditionMarkData[]>(initialMarks)
+  // What the server says replaces what a tab remembers whenever the page is
+  // re-read: another tab or another person may have changed the vehicle's
+  // marks since this one was opened.
+  useEffect(() => {
+    setMarks(initialMarks)
+  }, [initialMarks])
   const [body, setBody] = useState<BodyType>(bodyTypeFor(vehicle, { serviceType }))
   const [focusView, setFocusView] = useState<View | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -323,19 +329,13 @@ export function ConditionMapCard({
         toast.error(result.success ? t('saveFailed') : result.error || t('saveFailed'))
         return
       }
-      // What was saved is the answer: a mark somebody else confirmed or
-      // cleared in the meantime was not carried, and stays as it was here.
+      // What was saved is the answer. A mark not carried was taken by
+      // somebody else a moment ago, confirmed on another sheet or cleared, so
+      // this tab's picture of the vehicle is stale: it stays closed here and
+      // the page is re-read rather than guessed at.
       const { marks: saved, carried } = result.data
-      const closed = new Set(carried)
-      setMarks((prev) => [
-        ...prev
-          .filter((m) => !m.id.startsWith(STAND_IN))
-          .map((m) => {
-            if (!earlier.has(m.id)) return m
-            return closed.has(m.id) ? m : (before.find((b) => b.id === m.id) ?? m)
-          }),
-        ...saved,
-      ])
+      setMarks((prev) => [...prev.filter((m) => !m.id.startsWith(STAND_IN)), ...saved])
+      if (carried.length !== earlier.size) router.refresh()
     })
   }
 
@@ -570,14 +570,22 @@ export function ConditionMapCard({
         open={editing !== null}
         readOnly={
           readOnly ||
-          (editing ? !isDrawnOnSheet(editing, scope) || editing.id.startsWith(STAND_IN) : false)
+          (editing
+            ? !isDrawnOnSheet(editing, scope) ||
+              editing.id.startsWith(STAND_IN) ||
+              Boolean(editing.carriedToId)
+            : false)
         }
         readOnlyReason={
-          readOnly || !editing || isDrawnOnSheet(editing, scope)
+          readOnly || !editing
             ? undefined
-            : isOwnMark(editing, scope)
-              ? t('inspectionItemId' in scope ? 'readOnlyOtherCheck' : 'readOnlyLinked')
-              : t('readOnlyEarlier')
+            : editing.carriedToId
+              ? t('readOnlyCarried')
+              : isDrawnOnSheet(editing, scope)
+                ? undefined
+                : isOwnMark(editing, scope)
+                  ? t('inspectionItemId' in scope ? 'readOnlyOtherCheck' : 'readOnlyLinked')
+                  : t('readOnlyEarlier')
         }
         busy={pending}
         onChange={handleChange}

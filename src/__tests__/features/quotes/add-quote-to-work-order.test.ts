@@ -33,6 +33,7 @@ import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import {
   addQuoteToServiceRecord,
+  getQuoteConversionConflicts,
   getWorkOrdersForQuoteConversion,
 } from '@/features/quotes/Actions/quoteActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -64,6 +65,13 @@ const baseQuote = {
   inspectionId: null,
   tireSetId: null,
   discountAmount: 0,
+  taxRate: 25,
+  taxInclusive: false,
+  taxComponents: null,
+  warrantyStatus: null,
+  warrantyMonths: null,
+  warrantyMileage: null,
+  warrantyNotes: null,
   partItems: [
     {
       name: 'Brake pad',
@@ -98,9 +106,15 @@ const baseJob = {
   tireSetId: null,
   discountType: null,
   discountValue: 0,
+  subtotal: 250,
   taxRate: 25,
   taxInclusive: false,
   taxComponents: null,
+  warrantyStatus: null,
+  warrantyMonths: null,
+  warrantyMileage: null,
+  warrantyNotes: null,
+  serviceDate: new Date('2026-10-01T10:00:00Z'),
   sentAt: null,
   manuallyPaid: false,
   totalAmount: 312.5,
@@ -368,6 +382,192 @@ describe('addQuoteToServiceRecord', () => {
       where: { id: JOB_ID },
       data: { discountType: 'fixed', discountValue: 18 },
     })
+  })
+
+  it("adds the quote's discount on top of a fixed one the job has", async () => {
+    const { recordUpdate } = setup({
+      quote: { discountAmount: 18 },
+      job: { discountType: 'fixed', discountValue: 10 },
+    })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    expect(recordUpdate).toHaveBeenCalledWith({
+      where: { id: JOB_ID },
+      data: { discountType: 'fixed', discountValue: 28 },
+    })
+  })
+
+  it('writes the discount amount with the totals, so the stored amount follows the lines', async () => {
+    const { recordUpdate } = setup({ job: { discountType: 'fixed', discountValue: 1000 } })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    // 1000 off a 430 subtotal is 430 off, not 1000.
+    expect(recordUpdate).toHaveBeenLastCalledWith({
+      where: { id: JOB_ID },
+      data: expect.objectContaining({ subtotal: 430, discountAmount: 430, totalAmount: 0 }),
+    })
+  })
+
+  it('asks for the right to change jobs and quotes, not the right to raise a job', async () => {
+    setup()
+    vi.mocked(getCachedMembership).mockResolvedValue({
+      organizationId: ORG,
+      role: 'member',
+      roleId: 'role-creator',
+      customRole: {
+        isAdmin: false,
+        permissions: [
+          { action: 'create', subject: 'services' },
+          { action: 'read', subject: 'services' },
+          { action: 'read', subject: 'quotes' },
+        ],
+      },
+    } as any)
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/permission/i)
+    expect(db.$transaction).not.toHaveBeenCalled()
+  })
+})
+
+/**
+ * Where the quote and the job disagree on a standing answer, the dialog asks
+ * and the action does nothing until every question has one.
+ */
+describe('addQuoteToServiceRecord with conflicts', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setupAuth()
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
+  })
+
+  const percentJob = { discountType: 'percentage', discountValue: 10 }
+
+  it('names them for the dialog without changing anything', async () => {
+    setup({
+      quote: { discountAmount: 18, taxRate: 0, warrantyStatus: 'included', warrantyMonths: 12 },
+      job: percentJob,
+    })
+
+    const result = await getQuoteConversionConflicts(QUOTE_ID, JOB_ID)
+
+    expect(result.success).toBe(true)
+    expect(result.data?.map((c) => c.kind)).toEqual(['discount', 'tax', 'warranty'])
+    expect(result.data?.[0]).toEqual({
+      kind: 'discount',
+      job: { percent: 10, amount: 25 },
+      quote: { amount: 18 },
+    })
+    expect(db.$transaction).not.toHaveBeenCalled()
+  })
+
+  it('refuses to add the quote while a conflict is unanswered', async () => {
+    const { quoteUpdateMany } = setup({ quote: { discountAmount: 18 }, job: percentJob })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/choose what the work order keeps/)
+    expect(quoteUpdateMany).not.toHaveBeenCalled()
+  })
+
+  it('refuses an answer it does not know', async () => {
+    setup({ quote: { discountAmount: 18 }, job: percentJob })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, {
+      discount: 'halve',
+    })
+
+    expect(result.success).toBe(false)
+    expect(db.quote.findFirst).not.toHaveBeenCalled()
+  })
+
+  it("keeps the job's percentage and drops the quote's discount when told to", async () => {
+    const { recordUpdate } = setup({ quote: { discountAmount: 18 }, job: percentJob })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, {
+      discount: 'keepJob',
+    })
+
+    expect(result.success).toBe(true)
+    const discountWrites = recordUpdate.mock.calls.filter(
+      ([args]: any[]) => 'discountType' in args.data
+    )
+    expect(discountWrites).toEqual([])
+  })
+
+  it("turns the job's percentage into its amount and adds the quote's when told to", async () => {
+    const { recordUpdate } = setup({ quote: { discountAmount: 18 }, job: percentJob })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, { discount: 'combine' })
+
+    // 10% of the 250 the job stood at, plus the quote's 18.
+    expect(recordUpdate).toHaveBeenCalledWith({
+      where: { id: JOB_ID },
+      data: { discountType: 'fixed', discountValue: 43 },
+    })
+  })
+
+  it("keeps the job's tax when told to, and the lines come across as quoted", async () => {
+    const { recordUpdate, parts } = setup({ quote: { taxRate: 0, taxInclusive: true } })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, { tax: 'keepJob' })
+
+    expect(result.success).toBe(true)
+    expect(parts.map((p) => p.total)).toEqual([200, 100])
+    expect(recordUpdate.mock.calls.some(([args]: any[]) => 'taxRate' in args.data)).toBe(false)
+  })
+
+  it("switches the job to the quote's tax when told to, before re-totalling", async () => {
+    const { recordUpdate } = setup({ quote: { taxRate: 0, taxInclusive: true } })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, { tax: 'useQuote' })
+
+    const taxWrite = recordUpdate.mock.calls.findIndex(([args]: any[]) => 'taxRate' in args.data)
+    const totalsWrite = recordUpdate.mock.calls.findIndex(
+      ([args]: any[]) => 'totalAmount' in args.data
+    )
+    expect(taxWrite).toBeGreaterThanOrEqual(0)
+    expect(recordUpdate.mock.calls[taxWrite][0].data).toMatchObject({
+      taxRate: 0,
+      taxInclusive: true,
+    })
+    expect(totalsWrite).toBeGreaterThan(taxWrite)
+  })
+
+  it("takes the quote's warranty when told to, with its expiry from the job's date", async () => {
+    const { recordUpdate } = setup({
+      quote: { warrantyStatus: 'included', warrantyMonths: 12, warrantyNotes: 'Parts and labor' },
+    })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, { warranty: 'useQuote' })
+
+    const write = recordUpdate.mock.calls.find(([args]: any[]) => 'warrantyStatus' in args.data)
+    expect(write?.[0].data).toMatchObject({
+      warrantyStatus: 'included',
+      warrantyMonths: 12,
+      warrantyMileage: null,
+      warrantyNotes: 'Parts and labor',
+    })
+    expect(write?.[0].data.warrantyExpiresAt).toBeInstanceOf(Date)
+    expect(write?.[0].data.warrantyExpiresAt.getUTCFullYear()).toBe(2027)
+  })
+
+  it("keeps the job's warranty when told to", async () => {
+    const { recordUpdate } = setup({ quote: { warrantyStatus: 'not_included' } })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID, {
+      warranty: 'keepJob',
+    })
+
+    expect(result.success).toBe(true)
+    expect(recordUpdate.mock.calls.some(([args]: any[]) => 'warrantyStatus' in args.data)).toBe(
+      false
+    )
   })
 })
 

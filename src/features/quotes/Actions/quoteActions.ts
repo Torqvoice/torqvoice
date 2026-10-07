@@ -11,6 +11,7 @@ import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { discountAmountFor } from '@/lib/tax'
 import { db } from '@/lib/db'
 import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
+import { Prisma } from '@/generated/prisma/client'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import {
@@ -36,6 +37,12 @@ import {
   copyQuoteLaborToJob,
   copyQuotePartsToJob,
 } from '../Lib/copyQuoteToJob'
+import {
+  type ConversionConflict,
+  conversionConflicts,
+  resolutionsSchema,
+  unresolvedConflicts,
+} from '../Lib/conversionConflicts'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
@@ -437,6 +444,9 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         include: { partItems: true, laborItems: true, attachments: true },
       })
       if (!quote) throw new Error('Quote not found')
+      // A second pass would raise a second job and take the parts out of
+      // stock twice.
+      if (quote.status === 'converted') throw new Error('Quote is already converted')
 
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
@@ -555,11 +565,14 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         // Copy attachments from quote to service record
         await copyQuoteAttachmentsToJob(tx, organizationId, created.id, quote.attachments)
 
-        // Mark quote as converted
-        await tx.quote.updateMany({
-          where: { id: quoteId, organizationId },
+        // Marking it converted is what claims it: two clicks at once cannot
+        // both raise a job, since the second finds nothing left to claim and
+        // its job is rolled back with it.
+        const claimed = await tx.quote.updateMany({
+          where: { id: quoteId, organizationId, status: { not: 'converted' } },
           data: { status: 'converted', convertedToId: created.id },
         })
+        if (claimed.count === 0) throw new Error('Quote is already converted')
 
         return created
       })
@@ -642,19 +655,83 @@ export async function getWorkOrdersForQuoteConversion(vehicleId: string) {
   )
 }
 
+const CONFLICT_QUOTE_SELECT = {
+  discountAmount: true,
+  taxRate: true,
+  taxInclusive: true,
+  taxComponents: true,
+  warrantyStatus: true,
+  warrantyMonths: true,
+  warrantyMileage: true,
+  warrantyNotes: true,
+} as const
+
+const CONFLICT_JOB_SELECT = {
+  subtotal: true,
+  discountType: true,
+  discountValue: true,
+  taxRate: true,
+  taxInclusive: true,
+  taxComponents: true,
+  warrantyStatus: true,
+  warrantyMonths: true,
+  warrantyMileage: true,
+  warrantyNotes: true,
+} as const
+
+/**
+ * Where the quote and the chosen job disagree, for the dialog to ask about
+ * before the quote is added: a discount that cannot be kept twice, a
+ * different tax basis, a warranty the customer accepted that the job does
+ * not state. Nothing is changed here.
+ */
+export async function getQuoteConversionConflicts(quoteId: string, serviceRecordId: string) {
+  return withAuth(
+    async ({ organizationId }): Promise<ConversionConflict[]> => {
+      const [quote, job] = await Promise.all([
+        db.quote.findFirst({
+          where: { id: quoteId, organizationId },
+          select: CONFLICT_QUOTE_SELECT,
+        }),
+        db.serviceRecord.findFirst({
+          where: { id: serviceRecordId, organizationId },
+          select: CONFLICT_JOB_SELECT,
+        }),
+      ])
+      if (!quote) throw new Error('Quote not found')
+      if (!job) throw new Error('Work order not found')
+      return conversionConflicts(quote, job)
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.QUOTES },
+        { action: PermissionAction.READ, subject: PermissionSubject.SERVICES },
+      ],
+    }
+  )
+}
+
 /**
  * Puts an accepted quote onto a job that already exists, in place of raising
  * a new one. The quote's lines and files are added after the job's own, which
  * are left as they are, and the job is re-totalled.
  *
- * The job keeps what it was set up with: its title, tax, warranty and shop
- * fee were decided when it was created and are not the quote's to change.
+ * Where the two disagree on a standing answer (a percentage discount, the
+ * tax basis, the warranty) the caller has to say which the job keeps; the
+ * dialog asked, and an answer missing here means the job changed since it
+ * did, so nothing is done. The job's title and shop fee were decided when it
+ * was created and are not the quote's to change.
  */
 export async function addQuoteToServiceRecord(
   quoteId: string,
   vehicleId: string,
-  serviceRecordId: string
+  serviceRecordId: string,
+  resolutions?: unknown
 ) {
+  const parsedResolutions = resolutionsSchema.safeParse(resolutions ?? {})
+  if (!parsedResolutions.success) return { success: false as const, error: 'Invalid choices' }
+  const answers = parsedResolutions.data
+
   return withAuth(
     async ({ userId, organizationId }) => {
       const quote = await db.quote.findFirst({
@@ -684,8 +761,8 @@ export async function addQuoteToServiceRecord(
           status: true,
           inspectionId: true,
           tireSetId: true,
-          discountType: true,
-          discountValue: true,
+          serviceDate: true,
+          ...CONFLICT_JOB_SELECT,
         },
       })
       if (!record) throw new Error('Work order not found')
@@ -694,6 +771,15 @@ export async function addQuoteToServiceRecord(
       }
       if (!(OPEN_SERVICE_STATUSES as readonly string[]).includes(record.status)) {
         throw new Error('That work order is no longer open')
+      }
+
+      // Every disagreement needs an answer. One the dialog never showed
+      // means the job or the quote changed in the meantime; the dialog
+      // reads them again rather than this guessing.
+      const conflicts = conversionConflicts(quote, record)
+      const unanswered = unresolvedConflicts(conflicts, answers)
+      if (unanswered.length > 0) {
+        throw new Error('The quote and the work order differ; choose what the work order keeps')
       }
 
       // Only a job with no inspection of its own takes the quote's, and only
@@ -708,16 +794,46 @@ export async function addQuoteToServiceRecord(
 
       // The quote's discount was part of what the customer accepted, so it
       // comes across as the amount it came to: a percentage would start
-      // applying to the lines the job already had. A job with a percentage
-      // discount of its own keeps it, since the two cannot both be stored.
+      // applying to the lines the job already had. A job with a fixed
+      // discount takes it on top; one with a percentage either keeps its
+      // own and drops the quote's, or turns its percentage into the amount
+      // it comes to as the job stands and adds the quote's, as answered.
       const jobDiscount =
         record.discountType === 'fixed' || record.discountType === 'percentage'
           ? record.discountType
           : 'none'
-      const carriedDiscount =
-        quote.discountAmount > 0 && jobDiscount !== 'percentage'
-          ? (jobDiscount === 'fixed' ? record.discountValue : 0) + quote.discountAmount
+      let carriedDiscount: number | null = null
+      if (quote.discountAmount > 0) {
+        if (jobDiscount === 'percentage') {
+          if (answers.discount === 'combine') {
+            carriedDiscount =
+              discountAmountFor(record.subtotal, 'percentage', record.discountValue) +
+              quote.discountAmount
+          }
+        } else {
+          carriedDiscount =
+            (jobDiscount === 'fixed' ? record.discountValue : 0) + quote.discountAmount
+        }
+      }
+
+      // The quote's tax basis and warranty, when the job is to take them.
+      const taxFromQuote =
+        answers.tax === 'useQuote'
+          ? {
+              taxRate: quote.taxRate,
+              taxInclusive: quote.taxInclusive,
+              taxComponents: taxComponentsForCopy(quote.taxComponents) ?? Prisma.DbNull,
+            }
           : null
+      let warrantyFromQuote: Record<string, unknown> | null = null
+      if (answers.warranty === 'useQuote') {
+        const warranty = normalizeWarranty(quote)
+        const timeZone = await workshopTimeZone(organizationId)
+        warrantyFromQuote = {
+          ...warranty,
+          warrantyExpiresAt: warrantyExpiryFor(warranty, record.serviceDate, timeZone),
+        }
+      }
 
       await db.$transaction(async (tx) => {
         // Marking it converted is what claims it: two clicks at once cannot
@@ -753,32 +869,24 @@ export async function addQuoteToServiceRecord(
 
         await copyQuoteAttachmentsToJob(tx, organizationId, record.id, quote.attachments)
 
-        // Links the job did not have. One it has is never rewritten.
-        const links = {
+        // Links the job did not have, and the answers to the conflicts. A
+        // link it has is never rewritten.
+        const changes = {
           ...(inspection ? { inspectionId: inspection.id } : {}),
           ...(!record.tireSetId && quote.tireSetId ? { tireSetId: quote.tireSetId } : {}),
           ...(carriedDiscount !== null
             ? { discountType: 'fixed', discountValue: carriedDiscount }
             : {}),
+          ...(taxFromQuote ?? {}),
+          ...(warrantyFromQuote ?? {}),
         }
-        if (Object.keys(links).length > 0) {
-          await tx.serviceRecord.update({ where: { id: record.id }, data: links })
+        if (Object.keys(changes).length > 0) {
+          await tx.serviceRecord.update({ where: { id: record.id }, data: changes })
         }
 
+        // Re-totalled from every line under whatever the job now carries:
+        // the discount, the tax basis and the amounts are written together.
         await retotalServiceRecord(record.id, tx)
-
-        if (carriedDiscount !== null) {
-          const totals = await tx.serviceRecord.findUnique({
-            where: { id: record.id },
-            select: { subtotal: true },
-          })
-          await tx.serviceRecord.update({
-            where: { id: record.id },
-            data: {
-              discountAmount: discountAmountFor(totals?.subtotal ?? 0, 'fixed', carriedDiscount),
-            },
-          })
-        }
       })
 
       revalidatePath('/quotes')
@@ -795,8 +903,11 @@ export async function addQuoteToServiceRecord(
       }
     },
     {
+      // It changes an open job and closes the quote: the rights each edit
+      // asks for on its own, not the right to raise a job.
       requiredPermissions: [
-        { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES },
       ],
       audit: ({ result }) => ({
         action: 'quote.convert',
