@@ -102,6 +102,7 @@ export default async function PublicInvoicePage({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit,
+      category: p.category,
       unitPrice: p.unitPrice,
       total: p.total,
     })),

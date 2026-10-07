@@ -109,6 +109,7 @@ export function InventoryPickerDialog({
                   name: ip.name,
                   quantity: 1,
                   unit: ip.unit ?? null,
+                  category: ip.category ?? null,
                   unitPrice: price,
                   total: price,
                   unitCost: ip.unitCost,

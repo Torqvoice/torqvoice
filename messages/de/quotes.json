@@ -107,6 +107,7 @@
     "title": "Teile",
     "addPart": "Teil hinzufügen",
     "partNumber": "Teilenr.",
+    "category": "Kategorie",
     "name": "Name",
     "namePlaceholder": "Name *",
     "qty": "Menge",

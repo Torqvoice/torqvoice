@@ -20,6 +20,8 @@
     "type": "Tipo: {type}",
     "tech": "Técnico: {tech}",
     "parts": "Peças",
+    "otherParts": "Outras peças",
+    "groupSubtotal": "Subtotal {group}",
     "partNumber": "Ref. Peça",
     "description": "Descrição",
     "qty": "Qtd.",

@@ -107,6 +107,7 @@
     "title": "Pièces",
     "addPart": "Ajouter une pièce",
     "partNumber": "N° de pièce",
+    "category": "Catégorie",
     "name": "Nom",
     "namePlaceholder": "Nom *",
     "qty": "Qté",

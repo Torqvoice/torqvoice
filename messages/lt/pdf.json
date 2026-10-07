@@ -20,6 +20,8 @@
     "type": "Tipas: {type}",
     "tech": "Technikas: {tech}",
     "parts": "Dalys",
+    "otherParts": "Kitos dalys",
+    "groupSubtotal": "{group} – tarpinė suma",
     "partNumber": "Dalies Nr.",
     "description": "Aprašymas",
     "qty": "Kiekis",

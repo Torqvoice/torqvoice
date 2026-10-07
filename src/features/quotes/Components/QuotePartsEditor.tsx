@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useId, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -28,12 +28,17 @@ const QuotePartRow = memo(function QuotePartRow({
   onUpdate,
   onDelete,
   tPartNumber,
+  tCategory,
   tNamePlaceholder,
   tDeleteRow,
   tExcludeFromTotal,
   inventoryParts,
   onSelectSuggestion,
+  categoryListId,
 }: {
+  /** The datalist of categories the workshop's stock already uses. */
+  categoryListId: string
+  tCategory: string
   part: QuotePartInput
   index: number
   currencyCode: string
@@ -66,11 +71,24 @@ const QuotePartRow = memo(function QuotePartRow({
     <div
       className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] ${part.excluded ? 'line-through opacity-50' : ''}`}
     >
-      <Input
-        placeholder={tPartNumber}
-        value={part.partNumber ?? ''}
-        onChange={(e) => onUpdate(index, 'partNumber', e.target.value)}
-      />
+      <div className="flex flex-col gap-1">
+        <Input
+          placeholder={tPartNumber}
+          value={part.partNumber ?? ''}
+          onChange={(e) => onUpdate(index, 'partNumber', e.target.value)}
+        />
+        {/* The category decides which group the line prints under on a sheet
+            that groups its parts. A stocked part brings its own; a typed line
+            can be given one here. */}
+        <Input
+          list={categoryListId}
+          placeholder={tCategory}
+          aria-label={tCategory}
+          value={part.category ?? ''}
+          onChange={(e) => onUpdate(index, 'category', e.target.value)}
+          className="h-7 text-xs"
+        />
+      </div>
       <div className="relative">
         {/* A textarea, as on the invoice: a part often needs a second line,
             and it grows with what is typed rather than starting tall. */}
@@ -192,6 +210,16 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   const formatCurrency = useFormatCurrency()
   const [pickerOpen, setPickerOpen] = useState(false)
   const canPickFromStock = inventoryParts.length > 0 && !!onAddBulk
+  const categoryListId = useId()
+  // The categories the stock already uses, offered as the line is typed, so a
+  // free-text part lands in the same group as the stocked ones.
+  const categories = useMemo(
+    () =>
+      [
+        ...new Set(inventoryParts.map((p) => p.category?.trim()).filter(Boolean)),
+      ].sort() as string[],
+    [inventoryParts]
+  )
 
   // Applying a suggestion touches five fields. onUpdate handles one at a time,
   // so call it per field rather than leaving the row half-populated; the
@@ -208,6 +236,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
       onUpdate(index, 'name', picked.name)
       onUpdate(index, 'partNumber', picked.partNumber ?? '')
       onUpdate(index, 'unit', picked.unit ?? null)
+      onUpdate(index, 'category', picked.category ?? null)
       onUpdate(index, 'unitCost', unitCost)
       onUpdate(index, 'markupPercent', markupFromCostAndPrice(unitCost, unitPrice))
       onUpdate(index, 'unitPrice', unitPrice)
@@ -234,6 +263,11 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
       </div>
       {partItems.length > 0 && (
         <>
+          <datalist id={categoryListId}>
+            {categories.map((category) => (
+              <option key={category} value={category} />
+            ))}
+          </datalist>
           <div className="hidden grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
             <span>{t('parts.partNumber')}</span>
             <span>{t('parts.name')}</span>
@@ -255,6 +289,8 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
               inventoryParts={inventoryParts}
               onSelectSuggestion={handleSelectSuggestion}
               tPartNumber={t('parts.partNumber')}
+              tCategory={t('parts.category')}
+              categoryListId={categoryListId}
               tNamePlaceholder={t('parts.namePlaceholder')}
               tDeleteRow={t('parts.deleteRow')}
               tExcludeFromTotal={t('parts.excludeFromTotal')}
@@ -295,6 +331,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
                 name: picked.name,
                 quantity: picked.quantity,
                 unit: picked.unit ?? null,
+                category: picked.category ?? null,
                 unitCost: Number(picked.unitCost) || 0,
                 markupPercent: Number(picked.markupPercent) || 0,
                 unitPrice: picked.unitPrice,

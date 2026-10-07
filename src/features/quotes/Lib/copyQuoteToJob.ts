@@ -42,6 +42,7 @@ export async function copyQuotePartsToJob(
       name: p.name,
       quantity: p.quantity,
       unit: p.unit,
+      category: p.category,
       unitCost: p.unitCost,
       markupPercent: p.markupPercent,
       unitPrice: p.unitPrice,

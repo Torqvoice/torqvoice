@@ -122,6 +122,7 @@
     "fromInventory": "Da Inventario",
     "addPart": "Aggiungi Pezzo",
     "partNumber": "Numero Pezzo",
+    "category": "Categoria",
     "name": "Nome",
     "qty": "Qtà",
     "unitCost": "Costo",

@@ -122,6 +122,7 @@
     "fromInventory": "Iš inventoriaus",
     "addPart": "Pridėti dalį",
     "partNumber": "Dalies Nr.",
+    "category": "Kategorija",
     "name": "Pavadinimas",
     "qty": "Kiekis",
     "unitCost": "Savikaina",

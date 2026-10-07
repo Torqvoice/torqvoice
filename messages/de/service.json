@@ -122,6 +122,7 @@
     "fromInventory": "Aus Bestand",
     "addPart": "Teil hinzufügen",
     "partNumber": "Teil #",
+    "category": "Kategorie",
     "name": "Name",
     "qty": "Menge",
     "unitCost": "Kosten",

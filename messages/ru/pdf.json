@@ -20,6 +20,8 @@
     "type": "Тип: {type}",
     "tech": "Механик: {tech}",
     "parts": "Запчасти",
+    "otherParts": "Прочие запчасти",
+    "groupSubtotal": "Итого: {group}",
     "partNumber": "Арт. №",
     "description": "Описание",
     "qty": "Кол-во",

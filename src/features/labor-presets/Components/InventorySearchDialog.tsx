@@ -11,6 +11,7 @@ export interface InventoryPartOption {
   name: string
   partNumber: string | null
   unit?: string | null
+  category?: string | null
   sellPrice: number
   unitCost: number
   /** On-hand stock, shown by the inline name suggestions. */

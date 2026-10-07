@@ -22,6 +22,7 @@ export interface LaborPresetOption {
     partNumber: string | null
     quantity: number
     unit: string | null
+    category?: string | null
     unitPrice: number
     inventoryPartId: string | null
     sortOrder: number

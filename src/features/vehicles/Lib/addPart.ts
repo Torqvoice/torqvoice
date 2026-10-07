@@ -22,6 +22,7 @@ export interface AddPartInput {
   name: string
   quantity: number
   unit?: string | null
+  category?: string | null
   unitPrice: number
   total: number
   unitCost: number
@@ -74,6 +75,7 @@ export async function addPart(args: {
         name: input.name,
         quantity: input.quantity,
         unit: input.unit || null,
+        category: input.category || null,
         unitPrice: input.unitPrice,
         total: input.total,
         unitCost: input.unitCost,

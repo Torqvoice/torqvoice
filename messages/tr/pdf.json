@@ -20,6 +20,8 @@
     "type": "Tür: {type}",
     "tech": "Teknisyen: {tech}",
     "parts": "Parçalar",
+    "otherParts": "Diğer parçalar",
+    "groupSubtotal": "{group} ara toplamı",
     "partNumber": "Parça #",
     "description": "Açıklama",
     "qty": "Adet",

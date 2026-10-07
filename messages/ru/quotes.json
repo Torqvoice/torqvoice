@@ -107,6 +107,7 @@
     "title": "Запчасти",
     "addPart": "Добавить запчасть",
     "partNumber": "Арт. №",
+    "category": "Категория",
     "name": "Название",
     "namePlaceholder": "Название *",
     "qty": "Кол-во",

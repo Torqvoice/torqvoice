@@ -674,7 +674,7 @@ vehicles (id, make, model, year, vin, "licensePlate", color, mileage, "fuelType"
 
 service_records (id, title, description, type, status, cost, mileage, "serviceDate", "startDateTime", "endDateTime", "shopName", "techName", parts, "laborHours", "diagnosticNotes", "invoiceNotes", subtotal, "taxRate", "taxAmount", "totalAmount", "invoiceNumber", "discountType", "discountValue", "discountAmount", "manuallyPaid", "createdAt", "updatedAt", "vehicleId", "customerId", "technicianId", "sortOrder") -- "vehicleId" is NULL for parts-only counter sales; those link "customerId" directly
 
-service_parts (id, "partNumber", name, quantity, unit, "unitPrice", total, "serviceRecordId")
+service_parts (id, "partNumber", name, quantity, unit, category, "unitPrice", total, "serviceRecordId")
 
 service_labor (id, description, hours, rate, total, "serviceRecordId")
 
@@ -686,7 +686,7 @@ reminders (id, title, description, "dueDate", "dueMileage", "isCompleted", "crea
 
 quotes (id, "quoteNumber", title, description, status, "validUntil", subtotal, "taxRate", "taxAmount", "discountType", "discountValue", "discountAmount", "totalAmount", notes, "customerMessage", "convertedToId", "createdAt", "updatedAt", "customerId", "vehicleId", "inspectionId")
 
-quote_parts (id, "partNumber", name, quantity, unit, "unitPrice", total, excluded, "quoteId")
+quote_parts (id, "partNumber", name, quantity, unit, category, "unitPrice", total, excluded, "quoteId")
 
 quote_labor (id, description, hours, rate, total, excluded, "quoteId")
 

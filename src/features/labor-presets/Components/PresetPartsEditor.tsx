@@ -20,6 +20,7 @@ export interface PresetPartItem {
   quantity: number
   /** Unit of measure snapshotted from the picked inventory part. */
   unit: string | null
+  category?: string | null
   unitPrice: number
   inventoryPartId: string
 }
@@ -70,6 +71,7 @@ export function PresetPartsEditor({
               name: picked.name,
               partNumber: picked.partNumber ?? '',
               unit: picked.unit ?? null,
+              category: picked.category ?? null,
               unitPrice,
               inventoryPartId: picked.id,
             }
@@ -87,6 +89,7 @@ export function PresetPartsEditor({
         partNumber: ip.partNumber || '',
         quantity: 1,
         unit: ip.unit ?? null,
+        category: ip.category ?? null,
         unitPrice: price,
         inventoryPartId: ip.id,
       },

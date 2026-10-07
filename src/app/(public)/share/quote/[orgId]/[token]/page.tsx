@@ -50,6 +50,7 @@ export default async function PublicQuotePage({
           name: true,
           quantity: true,
           unit: true,
+          category: true,
           unitPrice: true,
           total: true,
           excluded: true,

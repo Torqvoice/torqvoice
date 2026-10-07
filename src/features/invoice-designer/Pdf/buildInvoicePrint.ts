@@ -5,6 +5,7 @@ import { formatQuantity } from '@/lib/format-quantity'
 import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
+import { LABOR_GROUP, lineGroupsFor, partGroupKey } from './lineGroups'
 import {
   getDefaultInvoiceLayout,
   isCustomFieldId,
@@ -276,6 +277,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       desc: l.description,
       price: money(shown(l.rate)),
       total: money(shown(l.total)),
+      group: LABOR_GROUP,
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
@@ -285,6 +287,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       sub: p.partNumber || undefined,
       price: money(shown(p.unitPrice)),
       total: money(shown(p.total)),
+      group: partGroupKey(p.category),
     })),
   ]
 
@@ -294,7 +297,16 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     qty: formatQuantity(p.quantity, p.unit),
     price: money(shown(p.unitPrice)),
     total: money(shown(p.total)),
+    group: partGroupKey(p.category),
   }))
+
+  const lineGroups = lineGroupsFor({
+    parts: data.partItems,
+    labor: data.laborItems,
+    labels,
+    shown,
+    money,
+  })
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
     // A shop fee prints as one unit at its price, like a service line.
@@ -458,6 +470,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     items,
     parts,
     labor,
+    lineGroups,
     findings,
     totals,
     notes: { html: data.invoiceNotes ?? undefined },

@@ -49,6 +49,7 @@ interface LaborPresetData {
     partNumber: string | null
     quantity: number
     unit: string | null
+    category?: string | null
     unitPrice: number
     inventoryPartId: string | null
     sortOrder: number
@@ -67,6 +68,7 @@ interface LaborPresetFormProps {
     name: string
     partNumber: string | null
     unit: string | null
+    category?: string | null
     sellPrice: number
     unitCost: number
     quantity: number
@@ -154,6 +156,7 @@ export function LaborPresetForm({
       partNumber: p.partNumber || '',
       quantity: p.quantity,
       unit: p.unit ?? null,
+      category: p.category ?? null,
       unitPrice: p.unitPrice,
       inventoryPartId: p.inventoryPartId || '',
     })) ?? []
@@ -194,6 +197,7 @@ export function LaborPresetForm({
           partNumber: p.partNumber || '',
           quantity: p.quantity,
           unit: p.unit ?? null,
+          category: p.category ?? null,
           unitPrice: p.unitPrice,
           inventoryPartId: p.inventoryPartId || '',
         })) ?? []
@@ -254,6 +258,7 @@ export function LaborPresetForm({
         partNumber: part.partNumber || undefined,
         quantity: Number(part.quantity) || 1,
         unit: part.unit ?? undefined,
+        category: part.category ?? undefined,
         unitPrice: Number(part.unitPrice) || 0,
         inventoryPartId: part.inventoryPartId || undefined,
         sortOrder: index,

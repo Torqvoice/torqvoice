@@ -95,6 +95,14 @@ export const invoiceSectionSchema = z.object({
    * Blank or unset prints the document's own name in the reader's language.
    */
   text: z.string().max(60).optional(),
+  /**
+   * How a table of lines is divided. `category` prints the part lines under
+   * a heading per category with a subtotal for each, the way a long bill is
+   * easier to read when brakes, service and tyres are added up on their own.
+   * Only the items and parts tables offer it; labor lines have no category
+   * and print after the parts in their own group. Unset prints one flat list.
+   */
+  groupBy: z.enum(['category']).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */

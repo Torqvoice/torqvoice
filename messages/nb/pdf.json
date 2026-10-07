@@ -20,6 +20,8 @@
     "type": "Type: {type}",
     "tech": "Tekniker: {tech}",
     "parts": "Deler",
+    "otherParts": "Andre deler",
+    "groupSubtotal": "Delsum {group}",
     "partNumber": "Del #",
     "description": "Beskrivelse",
     "qty": "Ant.",

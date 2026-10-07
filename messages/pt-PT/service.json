@@ -122,6 +122,7 @@
     "fromInventory": "Do stock",
     "addPart": "Adicionar peça",
     "partNumber": "Ref. peça",
+    "category": "Categoria",
     "name": "Nome",
     "qty": "Qtd.",
     "unitCost": "Custo",
