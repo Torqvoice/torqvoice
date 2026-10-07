@@ -327,7 +327,7 @@ export const certificatePresets: LayoutPreset[] = [
     columns: { customer: 'left', vehicle: 'left', test_details: 'right' },
     plain: ['customer', 'vehicle', 'test_details', 'result', 'notes', 'attached_documents'],
     fields: {
-      defects: ['defect_notes'],
+      defects: ['defect_notes', 'no_defects_note'],
       results_table: ['passed_checks', 'not_applicable_checks', 'check_notes', 'combined_table'],
       result: ['result_detail'],
     },
