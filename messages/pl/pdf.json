@@ -20,6 +20,8 @@
     "type": "Typ: {type}",
     "tech": "Technik: {tech}",
     "parts": "Części",
+    "otherParts": "Inne części",
+    "groupSubtotal": "Suma częściowa: {group}",
     "partNumber": "Nr części",
     "description": "Opis",
     "qty": "Ilość",

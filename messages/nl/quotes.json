@@ -107,6 +107,7 @@
     "title": "Onderdelen",
     "addPart": "Onderdeel toevoegen",
     "partNumber": "Onderdeelnr.",
+    "category": "Categorie",
     "name": "Naam",
     "namePlaceholder": "Naam *",
     "qty": "Aantal",

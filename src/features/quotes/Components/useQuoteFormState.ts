@@ -104,6 +104,7 @@ export function useQuoteFormState({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit ?? null,
+      category: p.category ?? null,
       unitCost: p.unitCost ?? 0,
       markupPercent: p.markupPercent ?? 0,
       unitPrice: p.unitPrice,

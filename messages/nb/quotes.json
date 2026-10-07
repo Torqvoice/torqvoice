@@ -107,6 +107,7 @@
     "title": "Deler",
     "addPart": "Legg til del",
     "partNumber": "Delnr.",
+    "category": "Kategori",
     "name": "Navn",
     "namePlaceholder": "Navn *",
     "qty": "Ant.",

@@ -122,6 +122,7 @@
     "fromInventory": "Stoktan",
     "addPart": "Parça Ekle",
     "partNumber": "Parça #",
+    "category": "Kategori",
     "name": "Ad",
     "qty": "Mik.",
     "unitCost": "Maliyet",

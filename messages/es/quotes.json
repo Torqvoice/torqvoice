@@ -107,6 +107,7 @@
     "title": "Repuestos",
     "addPart": "Agregar repuesto",
     "partNumber": "N.º de repuesto",
+    "category": "Categoría",
     "name": "Nombre",
     "namePlaceholder": "Nombre *",
     "qty": "Cant.",

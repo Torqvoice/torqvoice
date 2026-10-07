@@ -100,6 +100,7 @@ export interface PartItem {
   name: string
   quantity: number
   unit: string | null
+  category?: string | null
   unitPrice: number
   total: number
 }

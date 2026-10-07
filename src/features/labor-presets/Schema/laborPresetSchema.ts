@@ -14,6 +14,7 @@ export const laborPresetPartSchema = z.object({
   quantity: z.coerce.number().min(0, 'Quantity must be 0 or more').default(1),
   /** Unit of measure snapshotted from the picked inventory part. */
   unit: z.string().nullish(),
+  category: z.string().nullish(),
   unitPrice: z.coerce.number().min(0, 'Price must be 0 or more').default(0),
   inventoryPartId: z.string().optional(),
   sortOrder: z.coerce.number().int().min(0).default(0),

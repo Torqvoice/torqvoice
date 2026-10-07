@@ -7,6 +7,7 @@ export const servicePartSchema = z.object({
   quantity: z.coerce.number().min(0).default(1),
   /** Unit of measure snapshotted from the picked inventory part. */
   unit: z.string().nullish(),
+  category: z.string().nullish(),
   unitPrice: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
   unitCost: z.coerce.number().min(0).default(0),

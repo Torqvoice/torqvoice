@@ -277,6 +277,7 @@ export async function ServiceRecordPage({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit ?? null,
+      category: p.category ?? null,
       unitPrice: p.unitPrice,
       total: p.total,
       unitCost: p.unitCost ?? 0,

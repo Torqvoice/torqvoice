@@ -20,6 +20,8 @@
     "type": "Type: {type}",
     "tech": "Tech: {tech}",
     "parts": "Parts",
+    "otherParts": "Other parts",
+    "groupSubtotal": "{group} subtotal",
     "partNumber": "Part #",
     "description": "Description",
     "qty": "Qty",

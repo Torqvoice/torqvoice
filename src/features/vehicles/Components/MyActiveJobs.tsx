@@ -203,6 +203,7 @@ export function MyActiveJobs({
       name: scannedPart.name,
       quantity: qty,
       unit: scannedPart.unit ?? null,
+      category: scannedPart.category ?? null,
       unitPrice: price,
       total: price * qty,
       unitCost: scannedPart.unitCost,

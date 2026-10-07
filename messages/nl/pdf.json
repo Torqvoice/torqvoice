@@ -20,6 +20,8 @@
     "type": "Type: {type}",
     "tech": "Monteur: {tech}",
     "parts": "Onderdelen",
+    "otherParts": "Overige onderdelen",
+    "groupSubtotal": "Subtotaal {group}",
     "partNumber": "Onderdeelnr.",
     "description": "Omschrijving",
     "qty": "Aantal",

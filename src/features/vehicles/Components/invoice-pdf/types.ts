@@ -66,6 +66,8 @@ export interface InvoiceData {
     name: string
     quantity: number
     unit?: string | null
+    /** For a layout that groups the lines by category. */
+    category?: string | null
     unitPrice: number
     total: number
   }[]

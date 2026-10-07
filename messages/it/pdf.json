@@ -20,6 +20,8 @@
     "type": "Tipo: {type}",
     "tech": "Tecnico: {tech}",
     "parts": "Ricambi",
+    "otherParts": "Altri ricambi",
+    "groupSubtotal": "Subtotale {group}",
     "partNumber": "N. pezzo",
     "description": "Descrizione",
     "qty": "Qtà",

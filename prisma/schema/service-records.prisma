@@ -296,6 +296,10 @@ model ServicePart {
   /// Unit of measure snapshotted from InventoryPart at pick time; null for
   /// free-text lines and legacy rows.
   unit            String?
+  /// Category snapshotted from InventoryPart at pick time, or typed on a
+  /// free-text line, so an invoice designed to group its parts by category
+  /// keeps printing the same groups after the stock item is renamed or gone.
+  category        String?
   unitPrice       Float   @default(0)
   total           Float   @default(0)
   unitCost        Float   @default(0)

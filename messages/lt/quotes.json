@@ -107,6 +107,7 @@
     "title": "Dalys",
     "addPart": "Pridėti dalį",
     "partNumber": "Dalies Nr.",
+    "category": "Kategorija",
     "name": "Pavadinimas",
     "namePlaceholder": "Pavadinimas *",
     "qty": "Kiekis",

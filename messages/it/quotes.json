@@ -107,6 +107,7 @@
     "title": "Ricambi",
     "addPart": "Aggiungi ricambio",
     "partNumber": "N. ricambio",
+    "category": "Categoria",
     "name": "Nome",
     "namePlaceholder": "Nome *",
     "qty": "Qtà",

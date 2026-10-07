@@ -107,6 +107,7 @@
     "title": "Parts",
     "addPart": "Add Part",
     "partNumber": "Part #",
+    "category": "Category",
     "name": "Name",
     "namePlaceholder": "Name *",
     "qty": "Qty",

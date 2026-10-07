@@ -36,6 +36,9 @@ model LaborPresetPart {
   quantity        Float   @default(1)
   /// Unit of measure snapshotted from InventoryPart at pick time.
   unit            String?
+  /// Category snapshotted from InventoryPart at pick time; copied onto the
+  /// part line when the preset is applied.
+  category        String?
   unitPrice       Float   @default(0)
   inventoryPartId String?
   sortOrder       Int     @default(0)

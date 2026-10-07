@@ -57,6 +57,7 @@ export default async function LaborPresetsPage({
           name: p.name,
           partNumber: p.partNumber,
           unit: p.unit,
+          category: p.category,
           sellPrice: p.sellPrice,
           unitCost: p.unitCost,
           quantity: p.quantity,

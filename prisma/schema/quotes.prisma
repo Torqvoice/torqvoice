@@ -104,6 +104,9 @@ model QuotePart {
   /// Unit of measure snapshotted from InventoryPart at pick time; null for
   /// free-text lines and legacy rows.
   unit          String?
+  /// Category snapshotted from InventoryPart at pick time, or typed on a
+  /// free-text line; carried into ServicePart on conversion. See there.
+  category      String?
   /// Internal purchase cost — never shown to customers (quote PDF/share
   /// render unitPrice only)
   unitCost      Float   @default(0)
