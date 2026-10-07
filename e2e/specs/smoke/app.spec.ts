@@ -16,7 +16,10 @@ test.describe('smoke', () => {
   test('the seeded workshop has customers and vehicles', async ({ page }) => {
     // Lists render a card for phones and a table for wider screens and hide
     // one of them; the table is the visible one at the desktop size used here.
-    await page.goto('/customers')
+    // Searched, like the vehicles below: the list shows the twenty customers
+    // touched last, and the specs that run before this one plant their own,
+    // so the seed's are not on the first page of an unsearched list.
+    await page.goto('/customers?search=James%20Mitchell')
     await expect(page.getByRole('table').getByText('James Mitchell').first()).toBeVisible()
 
     // The vehicle list opens as a grid of cards, each headed by the vehicle's
