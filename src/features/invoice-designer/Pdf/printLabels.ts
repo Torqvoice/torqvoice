@@ -4,6 +4,7 @@
  * routes have always applied.
  */
 
+import { invoiceLabels } from '../Lib/invoiceLabels'
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { isMarineWorkshop, type PdfMessages, withMarineDocumentLabels } from '../Lib/marineLabels'
 import { withWorkOrderLabels } from '../Lib/workOrderLabels'
@@ -29,21 +30,15 @@ export async function loadPrintLabels(
 ): Promise<Record<string, string>> {
   const pdfMessages = await loadPdfMessages(locale)
   const quote = documentType === 'quote'
-  // A quote sheet is an invoice sheet with different wording in a handful of
-  // places, and the two are drawn by the same builder. Layering the quote over
-  // the invoice means every shared label (column heads, panel titles, warranty)
-  // is translated for a quote too, instead of falling through to English.
-  let labels: Record<string, string> = {
-    ...pdfMessages.invoice,
-    ...(quote ? pdfMessages.quote : {}),
-    ...pdfMessages.common,
-  }
+  // The quote's wording over the invoice's, with the inspection's vocabulary
+  // under both for the result sections a design can switch on.
+  let labels: Record<string, string> = invoiceLabels(pdfMessages, quote ? 'quote' : 'invoice')
 
   if (isMarineWorkshop(settingsMap)) {
     labels = withMarineDocumentLabels(labels, pdfMessages, quote ? 'quote' : 'invoice')
   }
   if (documentType === 'work_order') {
-    labels = withWorkOrderLabels(labels, pdfMessages.workOrder)
+    labels = withWorkOrderLabels(labels, pdfMessages.workOrder, pdfMessages.inspection)
   }
 
   const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()

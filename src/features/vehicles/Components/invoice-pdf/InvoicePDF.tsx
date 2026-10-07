@@ -1,6 +1,7 @@
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import type { VisitConditionMap } from '@/features/condition-map/Lib/print'
+import type { InspectionResults } from '@/features/inspections/Lib/inspectionResults'
 import { pdfFamily } from '@/features/invoice-designer/Pdf/renderPdf'
 import { SpecPdfPage } from '@/features/invoice-designer/Pdf/SpecPdf'
 import type {
@@ -39,6 +40,7 @@ export function InvoicePDF({
   telegramLabel,
   labels = {},
   conditionMap,
+  inspectionResults,
 }: {
   data: InvoiceData
   workshop?: WorkshopInfo
@@ -56,6 +58,7 @@ export function InvoicePDF({
   telegramLabel?: string
   labels?: Record<string, string>
   conditionMap?: VisitConditionMap
+  inspectionResults?: InspectionResults | null
 }) {
   const spec = buildInvoicePrintSpec({
     data,
@@ -73,6 +76,7 @@ export function InvoicePDF({
     telegramLabel,
     labels,
     conditionMap,
+    inspectionResults,
   })
 
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'

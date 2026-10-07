@@ -43,6 +43,38 @@
     "convertNoOpenWorkOrders": "Questo veicolo non ha ordini di lavoro aperti.",
     "convertSelectWorkOrder": "Seleziona un ordine di lavoro",
     "convertAdd": "Aggiungi all'ordine di lavoro",
+    "convertConflicts": {
+      "heading": "Prima di aggiungere, decidi cosa mantiene l'ordine di lavoro",
+      "checking": "Confronto del preventivo con l'ordine di lavoro...",
+      "unanswered": "Scegli cosa mantiene l'ordine di lavoro prima di aggiungere il preventivo.",
+      "discount": {
+        "title": "Sconto",
+        "summary": "L'ordine di lavoro ha uno sconto del {percent}%, pari a {jobAmount} allo stato attuale. Il preventivo include uno sconto di {quoteAmount}.",
+        "keepJob": "Mantieni lo sconto del {percent}% e scarta i {quoteAmount} del preventivo",
+        "combine": "Trasforma il {percent}% in {jobAmount} e aggiungi i {quoteAmount} del preventivo, {total} in totale"
+      },
+      "tax": {
+        "title": "Imposte",
+        "summary": "L'ordine di lavoro è calcolato con {job}. Il preventivo è stato calcolato con {quote}.",
+        "keepJob": "Mantieni le imposte dell'ordine di lavoro. Le righe del preventivo passano agli importi preventivati.",
+        "useQuote": "Passa l'ordine di lavoro alle imposte del preventivo. Tutto il contenuto viene ricalcolato.",
+        "inclusive": "{rate}% di imposte incluso nelle righe",
+        "exclusive": "{rate}% di imposte aggiunto a parte",
+        "components": "{rate}% di imposte ({names})"
+      },
+      "warranty": {
+        "title": "Garanzia",
+        "summary": "L'ordine di lavoro indica {job}. Il preventivo accettato dal cliente indica {quote}.",
+        "keepJob": "Mantieni la garanzia dell'ordine di lavoro",
+        "useQuote": "Usa la garanzia del preventivo, come accettata dal cliente",
+        "none": "nulla sulla garanzia",
+        "notIncluded": "nessuna garanzia dell'officina",
+        "included": "garanzia inclusa",
+        "includedWithTerms": "garanzia inclusa, {terms}",
+        "months": "{count, plural, one {# mese} other {# mesi}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Converti",
     "convertToWorkOrder": "Converti in ordine di lavoro",
     "cancel": "Annulla",

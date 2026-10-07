@@ -40,6 +40,7 @@ export function conditionMapBlock(
       : full
   const fields = new Set(sectionFields(section))
   const look = lookOf(section, theme)
+  const dense = look.dense
   const size = look.fontSize ?? theme.fontSize
   const children: Node[] = []
   // The drawing is most of a page and moves to the next one whole. The
@@ -90,7 +91,8 @@ export function conditionMapBlock(
     // Numbered rows to write in, matching the numbers pencilled on the drawing.
     children.push({
       kind: 'table',
-      rowPadding: 9,
+      rowPadding: dense ? DENSE_BLANK_PADDING : 9,
+      headerPadding: dense ? DENSE_HEADER_PADDING : undefined,
       ruleWidth: look.ruleWidth,
       rowBackground: theme.background || '#ffffff',
       style: {
@@ -116,7 +118,8 @@ export function conditionMapBlock(
   } else if (fields.has('legend') && map.rows.length > 0) {
     children.push({
       kind: 'table',
-      rowPadding: Math.max(2, theme.rowPadding - 1),
+      rowPadding: dense ? DENSE_PADDING : Math.max(2, theme.rowPadding - 1),
+      headerPadding: dense ? DENSE_HEADER_PADDING : undefined,
       ruleWidth: look.ruleWidth,
       rowBackground: theme.background || '#ffffff',
       stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
@@ -146,6 +149,12 @@ export function conditionMapBlock(
 
 /** Rows a blank sheet leaves to write in; a walk-round rarely finds more. */
 const BLANK_ROWS = 6
+/** A dense legend's row padding: the lines of text all but touch. */
+const DENSE_PADDING = 1
+/** A dense table's column headings: tighter too, so they do not sit heavy on the rows. */
+const DENSE_HEADER_PADDING = 3
+/** A dense blank row's: closer together, and still room for handwriting. */
+const DENSE_BLANK_PADDING = 4
 
 /**
  * The key of a blank sheet: each kind's symbol beside its name, four to a

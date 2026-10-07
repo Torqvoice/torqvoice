@@ -50,8 +50,11 @@ export async function retotalServiceRecord(
     taxComponents: record.taxComponents,
   })
 
+  // The discount amount is stored as well as the rule that gave it, so a
+  // fixed discount capped by a smaller subtotal, or lines added from outside
+  // the editor, never leave the stored amount behind the printed one.
   await tx.serviceRecord.update({
     where: { id: serviceRecordId },
-    data: { subtotal, taxAmount, totalAmount, taxComponents },
+    data: { subtotal, discountAmount, taxAmount, totalAmount, taxComponents },
   })
 }

@@ -43,6 +43,38 @@
     "convertNoOpenWorkOrders": "Ši transporto priemonė neturi atidarytų darbo užsakymų.",
     "convertSelectWorkOrder": "Pasirinkite darbo užsakymą",
     "convertAdd": "Pridėti prie darbo užsakymo",
+    "convertConflicts": {
+      "heading": "Prieš pridedant nuspręskite, ką darbo užsakymas pasilieka",
+      "checking": "Pasiūlymas lyginamas su darbo užsakymu...",
+      "unanswered": "Prieš pridėdami pasiūlymą pasirinkite, ką darbo užsakymas pasilieka.",
+      "discount": {
+        "title": "Nuolaida",
+        "summary": "Darbo užsakymas turi {percent}% nuolaidą, šiuo metu {jobAmount}. Pasiūlyme yra {quoteAmount} nuolaida.",
+        "keepJob": "Palikti {percent}% nuolaidą ir atmesti pasiūlymo {quoteAmount}",
+        "combine": "Paversti {percent}% į {jobAmount} ir pridėti pasiūlymo {quoteAmount}, iš viso {total}"
+      },
+      "tax": {
+        "title": "Mokesčiai",
+        "summary": "Darbo užsakymas įkainotas su {job}. Pasiūlymas buvo įkainotas su {quote}.",
+        "keepJob": "Palikti darbo užsakymo mokesčius. Pasiūlymo eilutės perkeliamos pasiūlytomis sumomis.",
+        "useQuote": "Perjungti darbo užsakymą į pasiūlymo mokesčius. Viskas jame perskaičiuojama.",
+        "inclusive": "{rate}% mokesčiai įskaičiuoti į eilutes",
+        "exclusive": "{rate}% mokesčiai pridedami papildomai",
+        "components": "{rate}% mokesčiai ({names})"
+      },
+      "warranty": {
+        "title": "Garantija",
+        "summary": "Darbo užsakyme nurodyta {job}. Kliento priimtame pasiūlyme nurodyta {quote}.",
+        "keepJob": "Palikti darbo užsakymo garantiją",
+        "useQuote": "Naudoti pasiūlymo garantiją, kokią klientas priėmė",
+        "none": "nieko apie garantiją",
+        "notIncluded": "be dirbtuvių garantijos",
+        "included": "garantija įtraukta",
+        "includedWithTerms": "garantija įtraukta, {terms}",
+        "months": "{count, plural, one {# mėnuo} few {# mėnesiai} other {# mėnesių}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Konvertuoti",
     "convertToWorkOrder": "Konvertuoti į darbo užsakymą",
     "cancel": "Atšaukti",

@@ -225,6 +225,8 @@ export function lookOf(section: InvoiceSection, theme: DocumentTheme) {
     padding: s?.padding,
     /** Banding behind alternate rows; unset follows the sheet's setting. */
     stripes: s?.stripes,
+    /** Rows and column headings set close together. */
+    dense: s?.dense === true,
     fontSize: s?.fontSize,
     /**
      * Resolved against the sheet, not left blank when the section sets none.

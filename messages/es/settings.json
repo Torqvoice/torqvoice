@@ -757,12 +757,14 @@
       "next_test_due": "Próxima prueba",
       "defect_notes": "Notas",
       "defect_photos": "Fotos",
+      "no_defects_note": "Nota cuando no hay deficiencias",
       "passed_checks": "Comprobaciones superadas",
       "not_applicable_checks": "Comprobaciones no aplicables",
       "check_notes": "Columna de notas",
       "result_detail": "Explicación",
       "result_summary": "Recuento por valoración",
       "combined_table": "Una sola tabla para todas las secciones",
+      "ungraded_checks": "Comprobaciones aún sin valorar",
       "inspector_line": "Línea de firma",
       "inspector_name": "Nombre del firmante",
       "date_line": "Línea de fecha",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Equipo de alumbrado",
       "checkHeadlamps": "Estado de los faros",
       "checkFogLamp": "Luz antiniebla trasera",
+      "checkStopLamps": "Luces de freno",
       "photoFront": "Frontal",
       "photoOdometer": "Cuentakilómetros",
       "concernNoise": "Ruido de roce delante al frenar",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Las cinco",
     "conditionMapViewsTop": "Solo desde arriba",
     "conditionMapViewsSides": "Solo los laterales",
-    "conditionMapWidthHint": "Vacío ocupa toda la fila. Indique puntos para reducir el dibujo; se colocará según la alineación y la leyenda conserva todo el ancho."
+    "conditionMapWidthHint": "Vacío ocupa toda la fila. Indique puntos para reducir el dibujo; se colocará según la alineación y la leyenda conserva todo el ancho.",
+    "conditionMapDense": "Tabla compacta",
+    "conditionMapDenseHint": "Junta las filas de la tabla bajo el dibujo para que ocupe menos espacio en la página."
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

@@ -53,6 +53,12 @@ vi.mock('@/lib/db', () => {
       store.marks.push(row)
       return { ...row }
     },
+    update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+      const row = store.marks.find((r) => r.id === where.id)
+      if (!row) throw new Error('not found')
+      Object.assign(row, data)
+      return { ...row }
+    },
   }
   const db = {
     conditionMark,
@@ -281,11 +287,23 @@ describe('confirming every earlier mark on a work order', () => {
       (m) => m.vehicleId === 'car' && m.organizationId === 'org' && !m.resolvedAt
     )
     expect(open).toHaveLength(2)
-    // The earlier rows are kept as history, closed by whoever confirmed them.
+    // The earlier rows are kept as history, closed by whoever confirmed them
+    // and pointing at the mark that took their place.
     expect(store.marks.find((m) => m.id === 'dent')).toMatchObject({
       serviceRecordId: 'job_old',
       resolvedById: 'user',
+      carriedToId: 'new_1',
     })
+    expect(store.marks.find((m) => m.id === 'scratch')).toMatchObject({ carriedToId: 'new_2' })
+  })
+
+  it('leaves the earlier sheet its own record of the dent', async () => {
+    await carryConditionMarks({ vehicleId: 'car', serviceRecordId: 'job_now' })
+    // Closed on the car, but not repaired: the old job still prints what it
+    // found at drop-off, and does not meet the newer copy as "earlier".
+    const { own, previous } = await split(oldJob)
+    expect(ids(own)).toEqual(['dent'])
+    expect(ids(previous)).toEqual([])
   })
 
   it('keeps the photo on both marks, so the file manager still counts two rows', async () => {

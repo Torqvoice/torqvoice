@@ -39,7 +39,9 @@ describe('invoice print labels', () => {
 
   it('leaves an automotive workshop exactly as the translation file has it', async () => {
     const en = pdfMessages('en')
-    const expected = { ...en.invoice, ...en.common }
+    // The inspection's vocabulary lies underneath, for the result sections a
+    // design can switch on; every word the invoice has of its own wins.
+    const expected = { ...en.inspection, ...en.invoice, ...en.common }
     expect(await loadPrintLabels('en', AUTOMOTIVE)).toEqual(expected)
     // No setting at all is an automotive workshop.
     expect(await loadPrintLabels('en', {})).toEqual(expected)
@@ -77,7 +79,7 @@ describe('quote print labels', () => {
   it('leaves an automotive quote exactly as the translation file has it', async () => {
     const en = pdfMessages('en')
     const labels = await loadPrintLabels('en', AUTOMOTIVE, 'quote')
-    expect(labels).toEqual({ ...en.invoice, ...en.quote, ...en.common })
+    expect(labels).toEqual({ ...en.inspection, ...en.invoice, ...en.quote, ...en.common })
     expect(labels.vehicle).toBe('Vehicle')
     expect(labels.vin).toBe('VIN: {vin}')
     expect(labels.plate).toBe('Plate: {plate}')

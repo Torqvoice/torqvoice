@@ -27,8 +27,17 @@ export interface CertificateResultRow {
   name: string
   grade: string
   notes: string | null
-  /** Which kind of row this is, so a design can leave some out. */
-  kind: 'pass' | 'defect' | 'not_applicable'
+  /**
+   * Which kind of row this is, so a design can leave some out. A check nobody
+   * has graded yet is `not_inspected`, and only ever appears in `checklist`.
+   */
+  kind: 'pass' | 'defect' | 'not_applicable' | 'not_inspected'
+}
+
+export interface CertificateResultSection {
+  code: string | null
+  name: string
+  rows: CertificateResultRow[]
 }
 
 export interface CertificateData {
@@ -40,8 +49,18 @@ export interface CertificateData {
   /** "12 passed · 1 minor defect", already worded. */
   summary: string
   defects: CertificateDefect[]
-  /** Every graded check, section by section, in checklist order. */
-  sections: { code: string | null; name: string; rows: CertificateResultRow[] }[]
+  /**
+   * Every graded check, section by section, in checklist order. Empty means
+   * nobody has graded anything yet, which the blocks read as "say nothing".
+   */
+  sections: CertificateResultSection[]
+  /**
+   * The whole checklist, the ungraded checks in their places with an empty
+   * grade: what the results table prints for a design that asks for them, so
+   * an inspection nobody has started prints as a sheet to fill in. Kept apart
+   * from `sections` so a design that does not ask prints exactly what it did.
+   */
+  checklist?: CertificateResultSection[]
   /** Photographs of the vehicle as a whole, with the captions the desk gave them. */
   photos: { dataUri: string; caption: string | null }[]
 }

@@ -757,12 +757,14 @@
       "next_test_due": "Nächste Prüfung fällig",
       "defect_notes": "Anmerkungen",
       "defect_photos": "Fotos",
+      "no_defects_note": "Hinweis, wenn keine Mängel vorliegen",
       "passed_checks": "Bestandene Prüfungen",
       "not_applicable_checks": "Nicht zutreffende Prüfungen",
       "check_notes": "Spalte Anmerkungen",
       "result_detail": "Erläuterung",
       "result_summary": "Anzahl je Bewertung",
       "combined_table": "Eine Tabelle für alle Abschnitte",
+      "ungraded_checks": "Noch nicht bewertete Prüfungen",
       "inspector_line": "Unterschriftszeile",
       "inspector_name": "Name des Unterzeichners",
       "date_line": "Datumszeile",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Beleuchtungseinrichtungen",
       "checkHeadlamps": "Zustand der Scheinwerfer",
       "checkFogLamp": "Nebelschlussleuchte",
+      "checkStopLamps": "Bremsleuchten",
       "photoFront": "Vorne",
       "photoOdometer": "Kilometerstand",
       "concernNoise": "Schleifgeräusch vorne beim Bremsen",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Alle fünf",
     "conditionMapViewsTop": "Nur von oben",
     "conditionMapViewsSides": "Nur die Seiten",
-    "conditionMapWidthHint": "Leer füllt die Zeile. Punkte angeben, um die Zeichnung zu verkleinern; sie sitzt dann nach der Ausrichtung, und die Legende behält die volle Breite."
+    "conditionMapWidthHint": "Leer füllt die Zeile. Punkte angeben, um die Zeichnung zu verkleinern; sie sitzt dann nach der Ausrichtung, und die Legende behält die volle Breite.",
+    "conditionMapDense": "Kompakte Tabelle",
+    "conditionMapDenseHint": "Setzt die Zeilen der Tabelle unter der Zeichnung enger, sodass sie weniger Platz auf der Seite braucht."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

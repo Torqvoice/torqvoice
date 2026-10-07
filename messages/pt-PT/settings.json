@@ -757,12 +757,14 @@
       "next_test_due": "Próximo teste",
       "defect_notes": "Observações",
       "defect_photos": "Fotografias",
+      "no_defects_note": "Nota quando não há deficiências",
       "passed_checks": "Itens aprovados",
       "not_applicable_checks": "Itens não aplicáveis",
       "check_notes": "Coluna de observações",
       "result_detail": "Explicação",
       "result_summary": "Contagem por avaliação",
       "combined_table": "Uma tabela para todas as secções",
+      "ungraded_checks": "Itens ainda não avaliados",
       "inspector_line": "Linha de assinatura",
       "inspector_name": "Nome de quem assina",
       "date_line": "Linha da data",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Iluminação",
       "checkHeadlamps": "Estado dos faróis",
       "checkFogLamp": "Farolim de nevoeiro traseiro",
+      "checkStopLamps": "Luzes de travagem",
       "photoFront": "Frente",
       "photoOdometer": "Conta-quilómetros",
       "concernNoise": "Ruído de atrito à frente ao travar",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Todas as cinco",
     "conditionMapViewsTop": "Só de cima",
     "conditionMapViewsSides": "Só as laterais",
-    "conditionMapWidthHint": "Vazio ocupa a linha toda. Indique pontos para reduzir o desenho; fica onde o alinhamento o colocar e a legenda mantém a largura total."
+    "conditionMapWidthHint": "Vazio ocupa a linha toda. Indique pontos para reduzir o desenho; fica onde o alinhamento o colocar e a legenda mantém a largura total.",
+    "conditionMapDense": "Tabela compacta",
+    "conditionMapDenseHint": "Aproxima as linhas da tabela por baixo do desenho, para que ocupe menos espaço na página."
   },
   "preview": {
     "title": "Revisão dos travões e mudança de óleo",

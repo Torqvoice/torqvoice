@@ -757,12 +757,14 @@
       "next_test_due": "Kita patikra",
       "defect_notes": "Pastabos",
       "defect_photos": "Nuotraukos",
+      "no_defects_note": "Pastaba, kai trūkumų nėra",
       "passed_checks": "Išlaikyti patikrinimai",
       "not_applicable_checks": "Netaikomi patikrinimai",
       "check_notes": "Pastabų stulpelis",
       "result_detail": "Paaiškinimas",
       "result_summary": "Kiekis pagal įvertinimą",
       "combined_table": "Viena lentelė visiems skyriams",
+      "ungraded_checks": "Dar neįvertinti patikrinimai",
       "inspector_line": "Parašo eilutė",
       "inspector_name": "Pasirašiusiojo vardas",
       "date_line": "Datos eilutė",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Apšvietimo įranga",
       "checkHeadlamps": "Priekinių žibintų būklė",
       "checkFogLamp": "Galinis rūko žibintas",
+      "checkStopLamps": "Stabdžių žibintai",
       "photoFront": "Priekis",
       "photoOdometer": "Odometras",
       "concernNoise": "Šlifavimo garsas priekyje stabdant",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Visi penki",
     "conditionMapViewsTop": "Tik iš viršaus",
     "conditionMapViewsSides": "Tik šonai",
-    "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį."
+    "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį.",
+    "conditionMapDense": "Glausta lentelė",
+    "conditionMapDenseHint": "Suglaudina lentelės po brėžiniu eilutes, kad ji užimtų mažiau vietos puslapyje."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

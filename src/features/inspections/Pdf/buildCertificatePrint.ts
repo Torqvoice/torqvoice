@@ -14,7 +14,11 @@ import {
   type DocumentTheme,
 } from '@/features/invoice-designer/Spec/buildSpec'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
-import type { CertificateData } from '@/features/invoice-designer/Spec/certificateData'
+import type {
+  CertificateData,
+  CertificateResultRow,
+  CertificateResultSection,
+} from '@/features/invoice-designer/Spec/certificateData'
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import {
@@ -149,6 +153,121 @@ function notesHtml(notes: string | null): string | undefined {
     .join('')
 }
 
+/**
+ * What an inspection found, worded and coloured for the certificate's blocks:
+ * the outcome, the defects worst first, and every graded check by section.
+ * A check nobody has graded yet is left out of all three, so an inspection
+ * still under way says what has been found so far and nothing about the
+ * rest; the whole checklist rides along beside them for a design that asks
+ * for the ungraded checks too.
+ *
+ * Apart from the certificate itself so a work order can print the results of
+ * the inspection linked to its job through the same blocks.
+ */
+export function certificateDataFor(input: {
+  items: CertificatePrintItem[]
+  scale: SeverityScale
+  country: string | null
+  labels: Record<string, string>
+  itemPhotos?: Record<string, { dataUri: string }[]>
+  overviewPhotos?: { dataUri: string; caption: string | null }[]
+}): CertificateData {
+  const { scale, country, labels } = input
+  const L = (key: string, fallback: string) => labels[key] || fallback
+
+  // The grade as the certificate words it, with the national number where
+  // the country has one: "2 — Major defect".
+  const conditionText = (condition: string) => {
+    const suffix = condition.replace(/(^|_)([a-z])/g, (_, __, c: string) => c.toUpperCase())
+    return L(`${scale}${suffix}`, CONDITION_TOKENS[condition as Condition]?.label ?? condition)
+  }
+  const gradeOf = (condition: string) =>
+    gradedConditionLabel(condition, scale, country, conditionText(condition))
+
+  const graded = input.items
+    .filter((item) => item.condition !== 'not_inspected')
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+  const counts = countConditions(graded)
+  const result = deriveTestResult(graded)
+  const resultToken = TEST_RESULT_TOKENS[result]
+
+  const summaryParts: string[] = []
+  for (const [key, count] of [
+    ['pass', counts.pass],
+    ['attention', counts.attention],
+    ['fail', counts.fail],
+    ['dangerous', counts.dangerous],
+    ['not_applicable', counts.notApplicable],
+  ] as const) {
+    if (count > 0) summaryParts.push(`${count} × ${conditionText(key)}`)
+  }
+
+  const itemPhotos = input.itemPhotos ?? {}
+  const readingOf = (item: CertificatePrintItem): string | null => {
+    if (item.measuredValue !== null && item.measuredValue !== undefined) {
+      return `${item.measuredValue}${item.unit ? ` ${item.unit}` : ''}`
+    }
+    return item.textValue?.trim() || null
+  }
+  const noteOf = (item: CertificatePrintItem): string | null => {
+    const reading = readingOf(item)
+    const note = item.notes?.trim() || null
+    return [reading, note].filter(Boolean).join(' · ') || null
+  }
+
+  const rowOf = (item: CertificatePrintItem): CertificateResultRow => ({
+    code: item.code ?? null,
+    name: item.name,
+    // An ungraded check has no grade to print: the cell is left for a pen.
+    grade: item.condition === 'not_inspected' ? '' : gradeOf(item.condition),
+    notes: noteOf(item),
+    kind:
+      item.condition === 'not_inspected'
+        ? 'not_inspected'
+        : isDefect(item.condition)
+          ? 'defect'
+          : item.condition === 'not_applicable'
+            ? 'not_applicable'
+            : 'pass',
+  })
+  const bySection = (items: CertificatePrintItem[]): CertificateResultSection[] => {
+    const order: string[] = []
+    const groups: Record<string, CertificatePrintItem[]> = {}
+    for (const item of items) {
+      if (!groups[item.section]) {
+        groups[item.section] = []
+        order.push(item.section)
+      }
+      groups[item.section].push(item)
+    }
+    return order.map((name) => ({
+      code: groups[name][0]?.sectionCode ?? null,
+      name,
+      rows: groups[name].map(rowOf),
+    }))
+  }
+
+  return {
+    result: {
+      label: L(RESULT_LABEL_KEY[result], resultToken.label),
+      detail: L(RESULT_DETAIL_KEY[result], resultToken.detail),
+      color: resultToken.pdf,
+    },
+    summary: summaryParts.join(' · '),
+    defects: defectsWorstFirst(graded).map((item) => ({
+      code: item.code ?? null,
+      name: item.name,
+      grade: gradeOf(item.condition),
+      color: CONDITION_TOKENS[item.condition as Condition]?.pdf ?? resultToken.pdf,
+      notes: noteOf(item),
+      photos: (itemPhotos[item.id] ?? []).map((photo) => photo.dataUri),
+    })),
+    sections: bySection(graded),
+    checklist: bySection([...input.items].sort((a, b) => a.sortOrder - b.sortOrder)),
+    photos: input.overviewPhotos ?? [],
+  }
+}
+
 export function buildCertificatePrintSpec(input: CertificatePrintInput): DocumentSpec {
   const { data, workshop, template } = input
   const labels = input.labels ?? {}
@@ -168,15 +287,6 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
   const country = data.country ?? data.template.country
   const inspector = data.inspectorName || data.technician?.name || ''
   const mileage = data.mileage ?? data.vehicle.mileage
-
-  // The grade as the certificate words it, with the national number where
-  // the country has one: "2 — Major defect".
-  const conditionText = (condition: string) => {
-    const suffix = condition.replace(/(^|_)([a-z])/g, (_, __, c: string) => c.toUpperCase())
-    return L(`${scale}${suffix}`, CONDITION_TOKENS[condition as Condition]?.label ?? condition)
-  }
-  const gradeOf = (condition: string) =>
-    gradedConditionLabel(condition, scale, country, conditionText(condition))
 
   const fields: Record<string, string> = {
     customer_name: data.vehicle.customer?.name || '',
@@ -224,79 +334,14 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
     footer_note: fillTemplate(L('footerText', 'Vehicle Inspection — {shopName}'), { shopName }),
   }
 
-  const graded = data.items
-    .filter((item) => item.condition !== 'not_inspected')
-    .sort((a, b) => a.sortOrder - b.sortOrder)
-  const counts = countConditions(graded)
-  const result = deriveTestResult(graded)
-  const resultToken = TEST_RESULT_TOKENS[result]
-
-  const summaryParts: string[] = []
-  for (const [key, count] of [
-    ['pass', counts.pass],
-    ['attention', counts.attention],
-    ['fail', counts.fail],
-    ['dangerous', counts.dangerous],
-    ['not_applicable', counts.notApplicable],
-  ] as const) {
-    if (count > 0) summaryParts.push(`${count} × ${conditionText(key)}`)
-  }
-
-  const itemPhotos = input.itemPhotos ?? {}
-  const readingOf = (item: CertificatePrintItem): string | null => {
-    if (item.measuredValue !== null && item.measuredValue !== undefined) {
-      return `${item.measuredValue}${item.unit ? ` ${item.unit}` : ''}`
-    }
-    return item.textValue?.trim() || null
-  }
-  const noteOf = (item: CertificatePrintItem): string | null => {
-    const reading = readingOf(item)
-    const note = item.notes?.trim() || null
-    return [reading, note].filter(Boolean).join(' · ') || null
-  }
-
-  const sectionOrder: string[] = []
-  const bySection: Record<string, CertificatePrintItem[]> = {}
-  for (const item of graded) {
-    if (!bySection[item.section]) {
-      bySection[item.section] = []
-      sectionOrder.push(item.section)
-    }
-    bySection[item.section].push(item)
-  }
-
-  const certificate: CertificateData = {
-    result: {
-      label: L(RESULT_LABEL_KEY[result], resultToken.label),
-      detail: L(RESULT_DETAIL_KEY[result], resultToken.detail),
-      color: resultToken.pdf,
-    },
-    summary: summaryParts.join(' · '),
-    defects: defectsWorstFirst(graded).map((item) => ({
-      code: item.code ?? null,
-      name: item.name,
-      grade: gradeOf(item.condition),
-      color: CONDITION_TOKENS[item.condition as Condition]?.pdf ?? resultToken.pdf,
-      notes: noteOf(item),
-      photos: (itemPhotos[item.id] ?? []).map((photo) => photo.dataUri),
-    })),
-    sections: sectionOrder.map((name) => ({
-      code: bySection[name][0]?.sectionCode ?? null,
-      name,
-      rows: bySection[name].map((item) => ({
-        code: item.code ?? null,
-        name: item.name,
-        grade: gradeOf(item.condition),
-        notes: noteOf(item),
-        kind: isDefect(item.condition)
-          ? 'defect'
-          : item.condition === 'not_applicable'
-            ? 'not_applicable'
-            : 'pass',
-      })),
-    })),
-    photos: input.overviewPhotos ?? [],
-  }
+  const certificate = certificateDataFor({
+    items: data.items,
+    scale,
+    country,
+    labels,
+    itemPhotos: input.itemPhotos,
+    overviewPhotos: input.overviewPhotos,
+  })
 
   // The map: this inspection's own marks in colour and, when the design
   // asks, the ones still open from earlier visits in grey. Like the work

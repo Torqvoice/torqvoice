@@ -390,6 +390,11 @@ export function buildSampleData(
           },
     ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
     ...(docType === 'work_order' ? sampleWorkOrder(t, labels, values, sample) : {}),
+    // An inspection with one minor defect and one check still to do, so the
+    // result sections have something to draw on every document: the
+    // certificate's own, and elsewhere a stand-in for the inspection linked
+    // to a job or the one a quote was raised from.
+    certificate: sampleInspectionResults(t, labels),
     // A car with a dent, a scratch and one mark from an earlier visit, so the
     // condition map section has something to draw on every document. An
     // invoice or a quote prints this visit's marks only.
@@ -555,9 +560,8 @@ function sampleCertificate(
   labels: PrintLabels,
   values: Record<string, string>,
   sample: SampleTables
-): Pick<DocumentData, 'fields' | 'meta' | 'certificate' | 'notes' | 'attachedDocuments'> {
+): Pick<DocumentData, 'fields' | 'meta' | 'notes' | 'attachedDocuments'> {
   const L = (key: string, fallback: string) => labels[key] || fallback
-  const grade = (key: string, fallback: string) => L(key, fallback)
   return {
     fields: {
       ...values,
@@ -584,79 +588,112 @@ function sampleCertificate(
         name: 'signed-inspection-form.pdf',
       }),
     ],
-    certificate: {
-      result: {
-        label: L('resultPassMinor', 'Pass with minor defects'),
-        detail: L(
-          'resultDetailPassMinor',
-          'The vehicle passes. Repair the minor deficiencies without undue delay.'
-        ),
-        color: { bg: '#fef9c3', text: '#713f12' },
-      },
-      summary: `11 × ${grade('euPass', 'No defect')} · 1 × ${grade('euAttention', 'Minor defect')} · 1 × ${grade('euNotApplicable', 'Not applicable')}`,
-      defects: [
+  }
+}
+
+/**
+ * The inspection the sample stands on: a car that passed with one minor
+ * defect, so every result block has something to draw, and one check nobody
+ * has graded yet, so the switch for those has a row to show.
+ */
+function sampleInspectionResults(
+  t: SampleT,
+  labels: PrintLabels
+): NonNullable<DocumentData['certificate']> {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const grade = (key: string, fallback: string) => L(key, fallback)
+  const sections: NonNullable<DocumentData['certificate']>['sections'] = [
+    {
+      code: '1',
+      name: t('sample.sectionBrakes'),
+      rows: [
+        {
+          code: '1.1.1',
+          name: t('sample.checkBrakePedal'),
+          grade: grade('euPass', 'No defect'),
+          notes: null,
+          kind: 'pass',
+        },
         {
           code: '1.1.13',
           name: t('sample.checkBrakeHoses'),
           grade: `1 — ${grade('euAttention', 'Minor defect')}`,
-          color: { bg: '#fef9c3', text: '#713f12' },
           notes: t('sample.checkBrakeHosesNote'),
-          photos: [SAMPLE_PHOTO],
-        },
-      ],
-      sections: [
-        {
-          code: '1',
-          name: t('sample.sectionBrakes'),
-          rows: [
-            {
-              code: '1.1.1',
-              name: t('sample.checkBrakePedal'),
-              grade: grade('euPass', 'No defect'),
-              notes: null,
-              kind: 'pass',
-            },
-            {
-              code: '1.1.13',
-              name: t('sample.checkBrakeHoses'),
-              grade: `1 — ${grade('euAttention', 'Minor defect')}`,
-              notes: t('sample.checkBrakeHosesNote'),
-              kind: 'defect',
-            },
-            {
-              code: '1.1.17',
-              name: t('sample.checkBrakeFluid'),
-              grade: grade('euPass', 'No defect'),
-              notes: null,
-              kind: 'pass',
-            },
-          ],
+          kind: 'defect',
         },
         {
-          code: '4',
-          name: t('sample.sectionLighting'),
-          rows: [
-            {
-              code: '4.1.1',
-              name: t('sample.checkHeadlamps'),
-              grade: grade('euPass', 'No defect'),
-              notes: null,
-              kind: 'pass',
-            },
-            {
-              code: '4.5.1',
-              name: t('sample.checkFogLamp'),
-              grade: grade('euNotApplicable', 'Not applicable'),
-              notes: null,
-              kind: 'not_applicable',
-            },
-          ],
+          code: '1.1.17',
+          name: t('sample.checkBrakeFluid'),
+          grade: grade('euPass', 'No defect'),
+          notes: null,
+          kind: 'pass',
         },
-      ],
-      photos: [
-        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
-        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
       ],
     },
+    {
+      code: '4',
+      name: t('sample.sectionLighting'),
+      rows: [
+        {
+          code: '4.1.1',
+          name: t('sample.checkHeadlamps'),
+          grade: grade('euPass', 'No defect'),
+          notes: null,
+          kind: 'pass',
+        },
+        {
+          code: '4.5.1',
+          name: t('sample.checkFogLamp'),
+          grade: grade('euNotApplicable', 'Not applicable'),
+          notes: null,
+          kind: 'not_applicable',
+        },
+      ],
+    },
+  ]
+  return {
+    result: {
+      label: L('resultPassMinor', 'Pass with minor defects'),
+      detail: L(
+        'resultDetailPassMinor',
+        'The vehicle passes. Repair the minor deficiencies without undue delay.'
+      ),
+      color: { bg: '#fef9c3', text: '#713f12' },
+    },
+    summary: `11 × ${grade('euPass', 'No defect')} · 1 × ${grade('euAttention', 'Minor defect')} · 1 × ${grade('euNotApplicable', 'Not applicable')}`,
+    defects: [
+      {
+        code: '1.1.13',
+        name: t('sample.checkBrakeHoses'),
+        grade: `1 — ${grade('euAttention', 'Minor defect')}`,
+        color: { bg: '#fef9c3', text: '#713f12' },
+        notes: t('sample.checkBrakeHosesNote'),
+        photos: [SAMPLE_PHOTO],
+      },
+    ],
+    sections,
+    // The same checklist with the stop lamps still to do, in their place.
+    checklist: sections.map((section) =>
+      section.code === '4'
+        ? {
+            ...section,
+            rows: [
+              section.rows[0],
+              {
+                code: '4.3.1',
+                name: t('sample.checkStopLamps'),
+                grade: '',
+                notes: null,
+                kind: 'not_inspected' as const,
+              },
+              ...section.rows.slice(1),
+            ],
+          }
+        : section
+    ),
+    photos: [
+      { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
+      { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
+    ],
   }
 }

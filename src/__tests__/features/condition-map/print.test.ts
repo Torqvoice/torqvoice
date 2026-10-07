@@ -249,6 +249,27 @@ describe('the documents', () => {
     expect(ids(certificate({ conditionMarks: [] }))).not.toContain('condition_map')
   })
 
+  it('sets the legend rows closer together when the design asks for a dense table', () => {
+    const tableOf = (spec: any) =>
+      spec.blocks
+        .find((b: any) => b.id === 'condition_map')
+        .content.children.find((c: any) => c.kind === 'table')
+    const layout = getDefaultLayout('certificate')
+    const dense = {
+      ...layout,
+      sections: layout.sections.map((s) =>
+        s.id === 'condition_map' ? { ...s, style: { ...s.style, dense: true } } : s
+      ),
+    }
+    const loose = tableOf(certificate())
+    const tight = tableOf(certificate({ layoutConfig: dense }))
+    expect(tight.rowPadding).toBe(1)
+    expect(tight.headerPadding).toBe(3)
+    expect(loose.headerPadding).toBeUndefined()
+    expect(tight.rowPadding).toBeLessThan(loose.rowPadding)
+    expect(tight.rows).toEqual(loose.rows)
+  })
+
   it('counts every condition map check on the inspection as its own', () => {
     // A mark on a second map check (a hand-back after the check-in) is this
     // inspection's too: printed in colour, not grey and "recorded earlier".

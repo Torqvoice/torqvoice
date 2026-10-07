@@ -113,7 +113,7 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
 
     case 'table': {
       const headerSize = node.headerStyle?.fontSize ?? inherited.fontSize
-      const headerHeight = headerSize * DEFAULT_LINE_HEIGHT + 12
+      const headerHeight = headerSize * DEFAULT_LINE_HEIGHT + (node.headerPadding ?? 6) * 2
       const rowPadding = node.rowPadding ?? 5
       const inner = width - 16
       const gap = 0

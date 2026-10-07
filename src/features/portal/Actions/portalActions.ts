@@ -337,6 +337,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       telegramLabel: labels?.telegramConnect,
       labels,
       conditionMap,
+      inspectionResults: assembly.inspectionResults,
     })
 
     return {

@@ -757,12 +757,14 @@
       "next_test_due": "Sonraki test",
       "defect_notes": "Notlar",
       "defect_photos": "Fotoğraflar",
+      "no_defects_note": "Kusur olmadığında not",
       "passed_checks": "Geçen kontroller",
       "not_applicable_checks": "Uygulanamayan kontroller",
       "check_notes": "Notlar sütunu",
       "result_detail": "Açıklama",
       "result_summary": "Nota göre sayılar",
       "combined_table": "Tüm bölümler için tek tablo",
+      "ungraded_checks": "Henüz değerlendirilmemiş kontroller",
       "inspector_line": "İmza satırı",
       "inspector_name": "İmzalayanın adı",
       "date_line": "Tarih satırı",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Aydınlatma donanımı",
       "checkHeadlamps": "Far durumu",
       "checkFogLamp": "Arka sis lambası",
+      "checkStopLamps": "Fren lambaları",
       "photoFront": "Ön",
       "photoOdometer": "Kilometre sayacı",
       "concernNoise": "Frenlerken önden sürtünme sesi",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Beşi de",
     "conditionMapViewsTop": "Yalnızca üstten",
     "conditionMapViewsSides": "Yalnızca yanlar",
-    "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır."
+    "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır.",
+    "conditionMapDense": "Sıkışık tablo",
+    "conditionMapDenseHint": "Çizimin altındaki tablonun satırlarını birbirine yaklaştırır, böylece sayfada daha az yer kaplar."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

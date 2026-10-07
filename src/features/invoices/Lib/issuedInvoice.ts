@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
+import type { InspectionResults } from '@/features/inspections/Lib/inspectionResults'
+import { isDefect } from '@/features/inspections/Lib/conditions'
 
 /**
  * What an issued invoice carries with it, beyond its own rows.
@@ -151,6 +153,45 @@ export const issuedInvoiceDataSchema = z
       .passthrough()
       .nullable()
       .optional(),
+    /**
+     * The checks of the inspection linked to the job, as they stood when
+     * issued, for a design that prints Defects or All Results. Absent on
+     * invoices issued before the invoice printed them, and on one whose
+     * design printed neither at issue: both print none.
+     *
+     * Read more leniently than the rest. Every other block failing to read
+     * means the snapshot cannot be trusted and the invoice falls back to
+     * live rows; a results block that will not read costs only the results.
+     */
+    inspectionResults: z
+      .object({
+        severityScale: z.string().nullable().optional(),
+        country: z.string().nullable().optional(),
+        items: z.array(
+          z
+            .object({
+              id: z.string(),
+              name: z.string(),
+              section: z.string(),
+              sectionCode: z.string().nullable().optional(),
+              code: z.string().nullable().optional(),
+              condition: z.string(),
+              notes: z.string().nullable().optional(),
+              sortOrder: z.number().default(0),
+              measuredValue: z.number().nullable().optional(),
+              unit: z.string().nullable().optional(),
+              textValue: z.string().nullable().optional(),
+              inputType: z.string().nullable().optional(),
+              /** Where a defect's photographs are stored; never the bytes. */
+              imageUrls: z.array(z.string()).optional(),
+            })
+            .passthrough()
+        ),
+      })
+      .passthrough()
+      .nullable()
+      .optional()
+      .catch(null),
   })
   .passthrough()
 
@@ -233,6 +274,77 @@ export function thawConditionMap(
       imageUrls: [],
       recordedAt: m.recordedAt,
       resolvedAt: null,
+    })),
+  }
+}
+
+type FrozenInspectionResults = NonNullable<
+  z.infer<typeof issuedInvoiceDataSchema>['inspectionResults']
+>
+
+/**
+ * The linked inspection's checks as the snapshot keeps them: every check, the
+ * ungraded ones too, since a design may print the whole checklist. A check
+ * graded, renamed or removed later leaves a sent invoice as it went out.
+ *
+ * The photographs are kept as the places they are stored, and only for the
+ * defects, the one kind of row that prints them. Like the job's own pictures
+ * they are not copied into the invoice: the print reads them again, and one
+ * that has been deleted since is simply not there.
+ */
+export function freezeInspectionResults(
+  results: InspectionResults | null | undefined
+): FrozenInspectionResults | null {
+  if (!results || results.items.length === 0) return null
+  return {
+    severityScale: results.severityScale,
+    country: results.country,
+    items: results.items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      section: item.section,
+      sectionCode: item.sectionCode ?? null,
+      code: item.code ?? null,
+      condition: item.condition,
+      notes: item.notes ?? null,
+      sortOrder: item.sortOrder,
+      measuredValue: item.measuredValue ?? null,
+      unit: item.unit ?? null,
+      textValue: item.textValue ?? null,
+      inputType: item.inputType ?? null,
+      ...(isDefect(item.condition) && item.imageUrls?.length
+        ? { imageUrls: [...item.imageUrls] }
+        : {}),
+    })),
+  }
+}
+
+/**
+ * The frozen checks in the shape the print reads, without their photographs,
+ * which the assembler embeds for a design that shows them. An invoice issued
+ * without results has none, and never borrows today's.
+ */
+export function thawInspectionResults(
+  frozen: FrozenInspectionResults | null | undefined
+): InspectionResults | null {
+  if (!frozen || frozen.items.length === 0) return null
+  return {
+    severityScale: frozen.severityScale === 'basic' ? 'basic' : 'eu',
+    country: frozen.country ?? null,
+    items: frozen.items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      section: item.section,
+      sectionCode: item.sectionCode ?? null,
+      code: item.code ?? null,
+      condition: item.condition,
+      notes: item.notes ?? null,
+      sortOrder: item.sortOrder,
+      measuredValue: item.measuredValue ?? null,
+      unit: item.unit ?? null,
+      textValue: item.textValue ?? null,
+      inputType: item.inputType ?? null,
+      imageUrls: item.imageUrls ?? [],
     })),
   }
 }

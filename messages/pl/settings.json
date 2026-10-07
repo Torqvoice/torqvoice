@@ -757,12 +757,14 @@
       "next_test_due": "Następne badanie",
       "defect_notes": "Uwagi",
       "defect_photos": "Zdjęcia",
+      "no_defects_note": "Adnotacja, gdy nie ma usterek",
       "passed_checks": "Pozycje zaliczone",
       "not_applicable_checks": "Pozycje nie dotyczy",
       "check_notes": "Kolumna uwag",
       "result_detail": "Objaśnienie",
       "result_summary": "Liczba według oceny",
       "combined_table": "Jedna tabela dla wszystkich sekcji",
+      "ungraded_checks": "Pozycje jeszcze nieocenione",
       "inspector_line": "Linia podpisu",
       "inspector_name": "Imię i nazwisko podpisującego",
       "date_line": "Linia daty",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Oświetlenie",
       "checkHeadlamps": "Stan reflektorów",
       "checkFogLamp": "Tylne światło przeciwmgłowe",
+      "checkStopLamps": "Światła stopu",
       "photoFront": "Przód",
       "photoOdometer": "Licznik",
       "concernNoise": "Zgrzytanie z przodu przy hamowaniu",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Wszystkie pięć",
     "conditionMapViewsTop": "Tylko z góry",
     "conditionMapViewsSides": "Tylko boki",
-    "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość."
+    "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość.",
+    "conditionMapDense": "Zwarta tabela",
+    "conditionMapDenseHint": "Zmniejsza odstępy między wierszami tabeli pod rysunkiem, dzięki czemu zajmuje ona mniej miejsca na stronie."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

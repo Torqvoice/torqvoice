@@ -7,6 +7,7 @@ import {
 import { assembleInvoicePrint, type InvoicePrintAssembly } from './assembleInvoicePrint'
 import {
   freezeConditionMap,
+  freezeInspectionResults,
   ISSUED_INVOICE_VERSION,
   shouldIssue,
   type IssueReason,
@@ -59,6 +60,7 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
       fieldType: cf.fieldType,
     })),
     conditionMap: freezeConditionMap(a.conditionMap),
+    inspectionResults: freezeInspectionResults(a.inspectionResults),
   }
 }
 
@@ -73,7 +75,12 @@ async function captureIssue(
   organizationId: string,
   issuedAt: Date
 ): Promise<boolean> {
-  const assembly = await assembleInvoicePrint(recordId, { mode: 'live' })
+  // The inspection's rows are frozen, never its photographs, so they are not
+  // decoded here only to be thrown away.
+  const assembly = await assembleInvoicePrint(recordId, {
+    mode: 'live',
+    inspectionResults: 'rows',
+  })
   if (!assembly) return false
 
   const [issuedDesignSnapshotId, issuedLogoSnapshotId, issuedSignatureSnapshotId] =

@@ -28,6 +28,7 @@ import {
 } from '@/features/invoice-designer/Lib/designSnapshots'
 import { contentHash } from '@/features/invoice-designer/Lib/designHash'
 import {
+  designSourceFromSnapshot,
   designSourceFromStored,
   materializeDesignSource,
 } from '@/features/invoice-designer/Lib/designSource'
@@ -175,7 +176,7 @@ export async function issuedDesignState(organizationId: string, recordId: string
     select: {
       ...RECORD_SELECT,
       issuedAt: true,
-      issuedDesignSnapshot: { select: { hash: true } },
+      issuedDesignSnapshot: { select: { hash: true, layout: true, template: true } },
     },
   })
   if (!record?.issuedAt) return null
@@ -191,9 +192,16 @@ export async function issuedDesignState(organizationId: string, recordId: string
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
 
-  const frozenHash = record.issuedDesignSnapshot?.hash ?? null
   const hashOf = (source: DesignSource | null) =>
     source ? contentHash(materializeDesignSource(source)) : null
+  // The frozen look is filled in the way today's designs are before the two
+  // are compared. Its stored hash is of the look as it was frozen, and a
+  // section added to every design since would make an invoice nobody has
+  // redesigned read as sent with a design the workshop no longer has.
+  const snapshot = record.issuedDesignSnapshot
+  const frozenHash = snapshot
+    ? (hashOf(designSourceFromSnapshot(snapshot.layout, snapshot.template)) ?? snapshot.hash)
+    : null
 
   const customerDesignId =
     record.customer?.invoiceDesignId ?? record.vehicle?.customer?.invoiceDesignId ?? null

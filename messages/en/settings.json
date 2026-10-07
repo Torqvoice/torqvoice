@@ -757,12 +757,14 @@
       "next_test_due": "Next test due",
       "defect_notes": "Notes",
       "defect_photos": "Photos",
+      "no_defects_note": "Note when there are no defects",
       "passed_checks": "Passed checks",
       "not_applicable_checks": "Not applicable checks",
       "check_notes": "Notes column",
       "result_detail": "Explanation",
       "result_summary": "Counts per grade",
       "combined_table": "One table for all sections",
+      "ungraded_checks": "Checks not graded yet",
       "inspector_line": "Signature line",
       "inspector_name": "Signer's name",
       "date_line": "Date line",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Lighting equipment",
       "checkHeadlamps": "Headlamp condition",
       "checkFogLamp": "Rear fog lamp",
+      "checkStopLamps": "Stop lamps",
       "photoFront": "Front",
       "photoOdometer": "Odometer",
       "concernNoise": "Grinding noise from the front when braking",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "All five",
     "conditionMapViewsTop": "Top only",
     "conditionMapViewsSides": "Sides only",
-    "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width."
+    "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width.",
+    "conditionMapDense": "Dense table",
+    "conditionMapDenseHint": "Sets the rows of the table under the drawing closer together, so it takes less of the page."
   },
   "preview": {
     "title": "Brake Service & Oil Change",

@@ -24,6 +24,7 @@ import { readFile } from 'fs/promises'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { isOwnUploadUrl } from '@/lib/upload-url'
 import { formatDateForPdf } from '@/lib/format'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import {
@@ -54,6 +55,7 @@ import {
   readIssuedInvoiceData,
   rendersFromIssue,
   thawConditionMap,
+  thawInspectionResults,
   type InvoiceConditionMap,
   type IssuedInvoiceData,
 } from './issuedInvoice'
@@ -62,6 +64,14 @@ import {
   loadMarkTypeRows,
   loadVisitConditionMap,
 } from '@/features/condition-map/Lib/loadMarks.server'
+import {
+  type InspectionResults,
+  inspectionResultsWanted,
+} from '@/features/inspections/Lib/inspectionResults'
+import {
+  inspectionResultsFor,
+  loadDefectPhotos,
+} from '@/features/inspections/Lib/linkedInspectionResults.server'
 
 const PARTY_SELECT = {
   name: true,
@@ -119,6 +129,14 @@ export interface AssembleOptions {
    * rows. `live` always reads the rows, which is what issuing itself needs.
    */
   mode?: PrintMode
+  /**
+   * How much of the linked inspection to read for a design that prints its
+   * results. `print`, the default, reads the checks and the defects'
+   * photographs. `rows` leaves the photographs, which is all issuing needs:
+   * a snapshot keeps where they are, not the pictures. `none` is for the
+   * work order, which prints from the same job by its own design.
+   */
+  inspectionResults?: 'print' | 'rows' | 'none'
 }
 
 export interface InvoicePrintAssembly {
@@ -149,6 +167,12 @@ export interface InvoicePrintAssembly {
    * inspection, as issued on an issued invoice. Absent when nothing was noted.
    */
   conditionMap?: InvoiceConditionMap | null
+  /**
+   * The checks of the inspection linked to the job, when the design prints
+   * Defects or All Results: as they stand for a draft, as issued on an issued
+   * invoice. Absent when the design prints neither or there is no inspection.
+   */
+  inspectionResults?: InspectionResults | null
 }
 
 export interface PrintSigner {
@@ -363,15 +387,17 @@ export async function assembleInvoicePrint(
   const frozen: IssuedInvoiceData | null =
     mode === 'auto' && rendersFromIssue(record) ? readIssuedInvoiceData(record.issuedData) : null
 
-  if (frozen) return assembleFrozen(record, organizationId, org, settingsMap, frozen)
-  return assembleLive(record, organizationId, org, settingsMap)
+  const results = options.inspectionResults ?? 'print'
+  if (frozen) return assembleFrozen(record, organizationId, org, settingsMap, frozen, results)
+  return assembleLive(record, organizationId, org, settingsMap, results)
 }
 
 async function assembleLive(
   record: InvoiceRecordForPrint,
   organizationId: string,
   org: InvoicePrintAssembly['org'],
-  settingsMap: Record<string, string>
+  settingsMap: Record<string, string>,
+  results: NonNullable<AssembleOptions['inspectionResults']>
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
   const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
@@ -410,6 +436,18 @@ async function assembleLive(
   const taxLabel = settingsMap['workshop.taxLabel']?.trim() || undefined
   const template = templateConfigFromSource(designSource)
 
+  // The linked inspection as it stands, read only for a design that prints
+  // its results: every other invoice costs no query more than it did.
+  const inspectionResults =
+    results === 'none'
+      ? null
+      : await inspectionResultsFor(
+          organizationId,
+          { vehicleId: record.vehicleId, inspectionId: record.inspectionId },
+          template.layoutConfig!,
+          { photos: results === 'print' }
+        )
+
   const data: InvoiceData = {
     ...record,
     customer: partyOf(record.customer),
@@ -446,16 +484,18 @@ async function assembleLive(
       'workshop.orgNumberLabel': settingsMap['workshop.orgNumberLabel'] ?? '',
     },
     conditionMap,
+    inspectionResults,
   }
 }
 
-function assembleFrozen(
+async function assembleFrozen(
   record: InvoiceRecordForPrint,
   organizationId: string,
   org: InvoicePrintAssembly['org'],
   settingsMap: Record<string, string>,
-  frozen: IssuedInvoiceData
-): InvoicePrintAssembly {
+  frozen: IssuedInvoiceData,
+  results: NonNullable<AssembleOptions['inspectionResults']>
+): Promise<InvoicePrintAssembly> {
   const snapshot = record.issuedDesignSnapshot
   // A snapshot that cannot be read falls back to the live look rather than
   // to nothing: the words on the sheet are still the frozen ones.
@@ -499,6 +539,31 @@ function assembleFrozen(
     findings: (frozen.findings ?? []).map((f) => ({ ...f, notes: f.notes ?? null })),
   }
 
+  // The inspection's checks as they were when issued. An invoice issued
+  // before it printed them, or by a design that printed neither section,
+  // froze none and prints none: it never borrows today's results. The
+  // defects' photographs are read again from where they were stored, for a
+  // design that shows them; one deleted since is left out. A snapshot is
+  // stored data like any other, so only an address in this workshop's own
+  // uploads is ever read for it.
+  const wanted = inspectionResultsWanted(template.layoutConfig!)
+  const thawed =
+    results !== 'none' && wanted.wanted ? thawInspectionResults(frozen.inspectionResults) : null
+  const inspectionResults =
+    thawed && wanted.photos && results === 'print'
+      ? {
+          ...thawed,
+          itemPhotos: await loadDefectPhotos(
+            thawed.items.map((item) => ({
+              ...item,
+              imageUrls: (item.imageUrls ?? []).filter((url) =>
+                isOwnUploadUrl(url.replace('/api/files/', '/api/protected/files/'), organizationId)
+              ),
+            }))
+          ),
+        }
+      : thawed
+
   return {
     record,
     organizationId,
@@ -531,6 +596,7 @@ function assembleFrozen(
     // As it was when issued. An invoice issued before it printed the map has
     // none, and never borrows today's marks.
     conditionMap: thawConditionMap(frozen.conditionMap),
+    inspectionResults,
   }
 }
 

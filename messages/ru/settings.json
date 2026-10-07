@@ -757,12 +757,14 @@
       "next_test_due": "Следующая проверка",
       "defect_notes": "Примечания",
       "defect_photos": "Фото",
+      "no_defects_note": "Пометка, когда неисправностей нет",
       "passed_checks": "Пройденные пункты",
       "not_applicable_checks": "Неприменимые пункты",
       "check_notes": "Столбец примечаний",
       "result_detail": "Пояснение",
       "result_summary": "Количество по оценкам",
       "combined_table": "Одна таблица для всех разделов",
+      "ungraded_checks": "Ещё не оценённые пункты",
       "inspector_line": "Строка подписи",
       "inspector_name": "Имя подписавшего",
       "date_line": "Строка даты",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Световые приборы",
       "checkHeadlamps": "Состояние фар",
       "checkFogLamp": "Задний противотуманный фонарь",
+      "checkStopLamps": "Стоп-сигналы",
       "photoFront": "Спереди",
       "photoOdometer": "Одометр",
       "concernNoise": "Скрежет спереди при торможении",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Все пять",
     "conditionMapViewsTop": "Только сверху",
     "conditionMapViewsSides": "Только бока",
-    "conditionMapWidthHint": "Пусто занимает всю строку. Укажите пункты, чтобы уменьшить рисунок; он встанет по выравниванию, а легенда сохранит полную ширину."
+    "conditionMapWidthHint": "Пусто занимает всю строку. Укажите пункты, чтобы уменьшить рисунок; он встанет по выравниванию, а легенда сохранит полную ширину.",
+    "conditionMapDense": "Плотная таблица",
+    "conditionMapDenseHint": "Сближает строки таблицы под рисунком, чтобы она занимала меньше места на странице."
   },
   "preview": {
     "title": "Обслуживание тормозов и замена масла",

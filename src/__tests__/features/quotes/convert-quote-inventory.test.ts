@@ -85,6 +85,7 @@ function setupConversion(partItems: any[]) {
   vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null as any)
 
   const servicePartCreateMany = vi.fn().mockResolvedValue({ count: partItems.length })
+  const quoteUpdateMany = vi.fn().mockResolvedValue({ count: 1 })
   const stockMovementCreateMany = vi.fn().mockResolvedValue({ count: 1 })
   const queryRaw = vi.fn().mockResolvedValue([{ quantity: 7 }])
 
@@ -101,13 +102,13 @@ function setupConversion(partItems: any[]) {
       servicePart: { createMany: servicePartCreateMany },
       serviceLabor: { createMany: vi.fn() },
       serviceAttachment: { createMany: vi.fn() },
-      quote: { update: vi.fn() },
+      quote: { updateMany: quoteUpdateMany },
       stockMovement: { createMany: stockMovementCreateMany },
       $queryRaw: queryRaw,
     })
   )
 
-  return { servicePartCreateMany, stockMovementCreateMany, queryRaw }
+  return { servicePartCreateMany, stockMovementCreateMany, queryRaw, quoteUpdateMany }
 }
 
 describe('convertQuoteToServiceRecord — inventory', () => {
@@ -219,5 +220,51 @@ describe('convertQuoteToServiceRecord — inventory', () => {
     await convertQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID)
 
     expect(queryRaw).not.toHaveBeenCalled()
+  })
+})
+
+describe('convertQuoteToServiceRecord — once only', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setupAuth()
+  })
+
+  it('refuses a quote that is already converted', async () => {
+    const { servicePartCreateMany } = setupConversion([])
+    vi.mocked(db.quote.findFirst).mockResolvedValue({ id: QUOTE_ID, status: 'converted' } as any)
+
+    const result = await convertQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID)
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/already converted/)
+    expect(servicePartCreateMany).not.toHaveBeenCalled()
+  })
+
+  it('claims the quote inside the transaction, so a second click raises no second job', async () => {
+    const { quoteUpdateMany, stockMovementCreateMany } = setupConversion([
+      {
+        name: 'Pad',
+        quantity: 1,
+        unitPrice: 10,
+        total: 10,
+        excluded: false,
+        inventoryPartId: 'inv-1',
+      },
+    ])
+    // Somebody else converted it between the read and the claim.
+    quoteUpdateMany.mockResolvedValue({ count: 0 })
+
+    const result = await convertQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID)
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/already converted/)
+    expect(quoteUpdateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: QUOTE_ID, status: { not: 'converted' } }),
+      })
+    )
+    // The transaction threw after the lines were written, so the whole of it
+    // rolls back; the stock movement must not be left standing on its own.
+    expect(stockMovementCreateMany).toHaveBeenCalledTimes(1)
   })
 })

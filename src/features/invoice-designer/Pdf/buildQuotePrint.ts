@@ -31,6 +31,10 @@ import {
   type VisitConditionMap,
   visitConditionMapForPrint,
 } from '@/features/condition-map/Lib/print'
+import {
+  type InspectionResults,
+  inspectionResultsForPrint,
+} from '@/features/inspections/Lib/inspectionResults'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -120,6 +124,11 @@ export interface QuotePrintInput {
   lineItemsInclTax?: boolean
   /** The car's condition as the inspection the quote came from found it. */
   conditionMap?: VisitConditionMap
+  /**
+   * The inspection the quote was raised from, for a layout with Defects or
+   * All Results on. Read as it stands at every print, like the condition map.
+   */
+  inspectionResults?: InspectionResults | null
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -364,6 +373,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     warranty: warrantyForPrint(data, { labels, unitSystem: input.unitSystem }),
     payment: [],
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
+    // What the inspection found, through the certificate's own blocks.
+    certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
     signature: {
@@ -382,6 +393,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
       condition_map: L('conditionMapTitle', 'Vehicle condition'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
     },
   }
 

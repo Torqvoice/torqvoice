@@ -757,12 +757,14 @@
       "next_test_due": "Neste test",
       "defect_notes": "Merknader",
       "defect_photos": "Bilder",
+      "no_defects_note": "Merknad når det ikke er mangler",
       "passed_checks": "Beståtte kontroller",
       "not_applicable_checks": "Ikke aktuelle kontroller",
       "check_notes": "Merknadskolonne",
       "result_detail": "Forklaring",
       "result_summary": "Antall per vurdering",
       "combined_table": "Én tabell for alle seksjoner",
+      "ungraded_checks": "Kontroller som ikke er vurdert ennå",
       "inspector_line": "Signaturlinje",
       "inspector_name": "Underskriverens navn",
       "date_line": "Datolinje",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Lysutstyr",
       "checkHeadlamps": "Frontlyktenes tilstand",
       "checkFogLamp": "Tåkelys bak",
+      "checkStopLamps": "Bremselys",
       "photoFront": "Front",
       "photoOdometer": "Kilometerteller",
       "concernNoise": "Skrapelyd foran ved bremsing",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Alle fem",
     "conditionMapViewsTop": "Bare ovenfra",
     "conditionMapViewsSides": "Bare sidene",
-    "conditionMapWidthHint": "Tomt fyller raden. Angi punkter for å gjøre tegningen mindre; den plasseres da etter justeringen, og listen beholder full bredde."
+    "conditionMapWidthHint": "Tomt fyller raden. Angi punkter for å gjøre tegningen mindre; den plasseres da etter justeringen, og listen beholder full bredde.",
+    "conditionMapDense": "Tett tabell",
+    "conditionMapDenseHint": "Setter radene i tabellen under tegningen tettere, så den tar mindre plass på siden."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

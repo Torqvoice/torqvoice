@@ -43,6 +43,7 @@ import {
   saveQuoteLayoutConfig,
   saveWorkOrderLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
+import { invoiceLabels } from '../Lib/invoiceLabels'
 import { workOrderLabels } from '../Lib/workOrderLabels'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -296,14 +297,7 @@ export function InvoiceDesigner({
     if (docType === 'work_order') {
       return withOrgNumberLabel(workOrderLabels(pdf), workshop.orgNumberLabel)
     }
-    return withOrgNumberLabel(
-      {
-        ...(pdf.invoice ?? {}),
-        ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-        ...(pdf.common ?? {}),
-      },
-      workshop.orgNumberLabel
-    )
+    return withOrgNumberLabel(invoiceLabels(pdf, docType), workshop.orgNumberLabel)
   }, [messages, docType, workshop.orgNumberLabel])
   const L = useCallback(
     (key: string, fallback: string) => printLabels[key] || fallback,

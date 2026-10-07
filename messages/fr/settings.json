@@ -757,12 +757,14 @@
       "next_test_due": "Prochain contrôle",
       "defect_notes": "Remarques",
       "defect_photos": "Photos",
+      "no_defects_note": "Mention en l'absence de défaillance",
       "passed_checks": "Contrôles réussis",
       "not_applicable_checks": "Contrôles sans objet",
       "check_notes": "Colonne remarques",
       "result_detail": "Explication",
       "result_summary": "Nombre par note",
       "combined_table": "Un seul tableau pour toutes les sections",
+      "ungraded_checks": "Contrôles pas encore évalués",
       "inspector_line": "Ligne de signature",
       "inspector_name": "Nom du signataire",
       "date_line": "Ligne de date",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Équipement d'éclairage",
       "checkHeadlamps": "État des projecteurs",
       "checkFogLamp": "Feu de brouillard arrière",
+      "checkStopLamps": "Feux stop",
       "photoFront": "Avant",
       "photoOdometer": "Compteur",
       "concernNoise": "Bruit de frottement à l'avant au freinage",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Les cinq",
     "conditionMapViewsTop": "Dessus seulement",
     "conditionMapViewsSides": "Côtés seulement",
-    "conditionMapWidthHint": "Vide occupe toute la ligne. Indiquez des points pour réduire le dessin ; il se place selon l'alignement et la légende garde toute la largeur."
+    "conditionMapWidthHint": "Vide occupe toute la ligne. Indiquez des points pour réduire le dessin ; il se place selon l'alignement et la légende garde toute la largeur.",
+    "conditionMapDense": "Tableau compact",
+    "conditionMapDenseHint": "Resserre les lignes du tableau sous le dessin pour qu'il prenne moins de place sur la page."
   },
   "preview": {
     "title": "Révision des freins et vidange",

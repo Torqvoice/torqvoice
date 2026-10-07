@@ -43,6 +43,38 @@
     "convertNoOpenWorkOrders": "Ten pojazd nie ma otwartych zleceń.",
     "convertSelectWorkOrder": "Wybierz zlecenie",
     "convertAdd": "Dodaj do zlecenia",
+    "convertConflicts": {
+      "heading": "Przed dodaniem zdecyduj, co zachowuje zlecenie",
+      "checking": "Porównywanie oferty ze zleceniem...",
+      "unanswered": "Wybierz, co zachowuje zlecenie, zanim oferta zostanie dodana.",
+      "discount": {
+        "title": "Rabat",
+        "summary": "Zlecenie ma rabat {percent}%, obecnie {jobAmount}. Oferta zawiera rabat {quoteAmount}.",
+        "keepJob": "Zachowaj rabat {percent}% i odrzuć {quoteAmount} z oferty",
+        "combine": "Zamień {percent}% na {jobAmount} i dodaj {quoteAmount} z oferty, łącznie {total}"
+      },
+      "tax": {
+        "title": "Podatek",
+        "summary": "Zlecenie jest wycenione z {job}. Oferta została wyceniona z {quote}.",
+        "keepJob": "Zachowaj podatek zlecenia. Pozycje z oferty przechodzą w zaoferowanych kwotach.",
+        "useQuote": "Przełącz zlecenie na podatek z oferty. Wszystko na nim zostanie przeliczone.",
+        "inclusive": "{rate}% podatku wliczone w pozycje",
+        "exclusive": "{rate}% podatku doliczane",
+        "components": "{rate}% podatku ({names})"
+      },
+      "warranty": {
+        "title": "Gwarancja",
+        "summary": "Zlecenie mówi {job}. Oferta przyjęta przez klienta mówi {quote}.",
+        "keepJob": "Zachowaj gwarancję zlecenia",
+        "useQuote": "Użyj gwarancji z oferty, tak jak przyjął ją klient",
+        "none": "nic o gwarancji",
+        "notIncluded": "brak gwarancji warsztatu",
+        "included": "gwarancja wliczona",
+        "includedWithTerms": "gwarancja wliczona, {terms}",
+        "months": "{count, plural, one {# miesiąc} few {# miesiące} other {# miesięcy}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Przekonwertuj",
     "convertToWorkOrder": "Przekonwertuj na zlecenie",
     "cancel": "Anuluj",

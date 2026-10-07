@@ -43,7 +43,8 @@ import {
   Save,
   Trash2,
 } from 'lucide-react'
-import { getCurrencySymbol } from '@/lib/format'
+import { formatCurrency, getCurrencySymbol } from '@/lib/format'
+import { ConvertConflictChoices } from './ConvertConflictChoices'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
 import { useQuoteFormState, type ConvertTarget } from './useQuoteFormState'
@@ -626,6 +627,21 @@ export function QuotePageClient({
                       <p className="text-xs text-muted-foreground">
                         {t('page.convertExistingHint')}
                       </p>
+                      {state.loadingConvertConflicts && (
+                        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                          {t('page.convertConflicts.checking')}
+                        </p>
+                      )}
+                      {state.convertConflicts.length > 0 && (
+                        <ConvertConflictChoices
+                          conflicts={state.convertConflicts}
+                          resolutions={state.convertResolutions}
+                          onChoose={state.setConvertResolution}
+                          money={(amount) => formatCurrency(amount, currencyCode)}
+                          distanceUnit={distanceUnit}
+                        />
+                      )}
                     </>
                   )}
                 </div>
@@ -637,7 +653,10 @@ export function QuotePageClient({
                   disabled={
                     state.converting ||
                     !state.convertVehicleId ||
-                    (state.convertMode === 'existing' && !state.convertTargetId)
+                    (state.convertMode === 'existing' &&
+                      (!state.convertTargetId ||
+                        state.loadingConvertConflicts ||
+                        state.convertConflictsUnresolved))
                   }
                 >
                   {state.converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

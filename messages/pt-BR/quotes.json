@@ -43,6 +43,38 @@
     "convertNoOpenWorkOrders": "Este veículo não tem ordens de serviço abertas.",
     "convertSelectWorkOrder": "Selecione uma ordem de serviço",
     "convertAdd": "Adicionar à ordem de serviço",
+    "convertConflicts": {
+      "heading": "Antes de adicionar, decida o que a ordem de serviço mantém",
+      "checking": "Comparando o orçamento com a ordem de serviço...",
+      "unanswered": "Escolha o que a ordem de serviço mantém antes de adicionar o orçamento.",
+      "discount": {
+        "title": "Desconto",
+        "summary": "A ordem de serviço tem {percent}% de desconto, {jobAmount} no momento. O orçamento traz um desconto de {quoteAmount}.",
+        "keepJob": "Manter o desconto de {percent}% e descartar os {quoteAmount} do orçamento",
+        "combine": "Transformar os {percent}% em {jobAmount} e somar os {quoteAmount} do orçamento, {total} no total"
+      },
+      "tax": {
+        "title": "Impostos",
+        "summary": "A ordem de serviço está precificada com {job}. O orçamento foi precificado com {quote}.",
+        "keepJob": "Manter os impostos da ordem de serviço. As linhas do orçamento passam pelos valores orçados.",
+        "useQuote": "Mudar a ordem de serviço para os impostos do orçamento. Tudo nela é recalculado.",
+        "inclusive": "{rate}% de impostos incluídos nas linhas",
+        "exclusive": "{rate}% de impostos acrescidos",
+        "components": "{rate}% de impostos ({names})"
+      },
+      "warranty": {
+        "title": "Garantia",
+        "summary": "A ordem de serviço diz {job}. O orçamento que o cliente aceitou diz {quote}.",
+        "keepJob": "Manter a garantia da ordem de serviço",
+        "useQuote": "Usar a garantia do orçamento, como o cliente aceitou",
+        "none": "nada sobre garantia",
+        "notIncluded": "sem garantia da oficina",
+        "included": "garantia incluída",
+        "includedWithTerms": "garantia incluída, {terms}",
+        "months": "{count, plural, one {# mês} other {# meses}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Converter",
     "convertToWorkOrder": "Converter em ordem de serviço",
     "cancel": "Cancelar",

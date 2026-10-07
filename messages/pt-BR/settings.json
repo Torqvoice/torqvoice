@@ -757,12 +757,14 @@
       "next_test_due": "Próximo teste",
       "defect_notes": "Observações",
       "defect_photos": "Fotos",
+      "no_defects_note": "Aviso quando não há deficiências",
       "passed_checks": "Itens aprovados",
       "not_applicable_checks": "Itens não aplicáveis",
       "check_notes": "Coluna de observações",
       "result_detail": "Explicação",
       "result_summary": "Contagem por avaliação",
       "combined_table": "Uma tabela para todas as seções",
+      "ungraded_checks": "Itens ainda não avaliados",
       "inspector_line": "Linha de assinatura",
       "inspector_name": "Nome de quem assina",
       "date_line": "Linha da data",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Iluminação",
       "checkHeadlamps": "Estado dos faróis",
       "checkFogLamp": "Luz de neblina traseira",
+      "checkStopLamps": "Luzes de freio",
       "photoFront": "Frente",
       "photoOdometer": "Hodômetro",
       "concernNoise": "Barulho de raspagem na frente ao frear",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Todas as cinco",
     "conditionMapViewsTop": "Só de cima",
     "conditionMapViewsSides": "Só as laterais",
-    "conditionMapWidthHint": "Vazio ocupa a linha toda. Informe pontos para reduzir o desenho; ele fica onde o alinhamento colocar e a legenda mantém a largura total."
+    "conditionMapWidthHint": "Vazio ocupa a linha toda. Informe pontos para reduzir o desenho; ele fica onde o alinhamento colocar e a legenda mantém a largura total.",
+    "conditionMapDense": "Tabela compacta",
+    "conditionMapDenseHint": "Aproxima as linhas da tabela abaixo do desenho, para que ela ocupe menos espaço na página."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

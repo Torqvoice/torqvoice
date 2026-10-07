@@ -757,12 +757,14 @@
       "next_test_due": "Prossimo controllo",
       "defect_notes": "Note",
       "defect_photos": "Foto",
+      "no_defects_note": "Nota quando non ci sono carenze",
       "passed_checks": "Controlli superati",
       "not_applicable_checks": "Controlli non applicabili",
       "check_notes": "Colonna note",
       "result_detail": "Spiegazione",
       "result_summary": "Conteggio per esito",
       "combined_table": "Una sola tabella per tutte le sezioni",
+      "ungraded_checks": "Controlli non ancora valutati",
       "inspector_line": "Riga della firma",
       "inspector_name": "Nome del firmatario",
       "date_line": "Riga della data",
@@ -2146,6 +2148,7 @@
       "sectionLighting": "Dispositivi di illuminazione",
       "checkHeadlamps": "Stato dei proiettori",
       "checkFogLamp": "Retronebbia",
+      "checkStopLamps": "Luci di arresto",
       "photoFront": "Frontale",
       "photoOdometer": "Contachilometri",
       "concernNoise": "Rumore di sfregamento davanti in frenata",
@@ -2218,7 +2221,9 @@
     "conditionMapViewsAll": "Tutte e cinque",
     "conditionMapViewsTop": "Solo dall’alto",
     "conditionMapViewsSides": "Solo i lati",
-    "conditionMapWidthHint": "Vuoto occupa tutta la riga. Indica i punti per rimpicciolire il disegno; si posiziona secondo l’allineamento e la legenda mantiene tutta la larghezza."
+    "conditionMapWidthHint": "Vuoto occupa tutta la riga. Indica i punti per rimpicciolire il disegno; si posiziona secondo l’allineamento e la legenda mantiene tutta la larghezza.",
+    "conditionMapDense": "Tabella compatta",
+    "conditionMapDenseHint": "Avvicina le righe della tabella sotto il disegno, così occupa meno spazio sulla pagina."
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

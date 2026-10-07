@@ -277,7 +277,7 @@ function NodeBody({ node }: { node: Node }): ReactNode {
               display: 'flex',
               ...boxCss(node.headerStyle),
               ...textCss(node.headerStyle),
-              padding: '6px 8px',
+              padding: `${node.headerPadding ?? 6}px 8px`,
             }}
           >
             {node.columns.map((column) => (
