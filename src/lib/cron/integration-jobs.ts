@@ -1,4 +1,5 @@
 import { CronJob } from 'cron'
+import { createTickSummary } from './tick-summary'
 import {
   cleanupIntegrationHistory,
   recoverStuckJobs,
@@ -11,13 +12,13 @@ import {
  * left running, queue the timed syncs that are due, then run due jobs.
  */
 export function processIntegrationJobs() {
+  const summary = createTickSummary('Integration jobs processed')
   const job = new CronJob('* * * * *', async () => {
     try {
       const recovered = await recoverStuckJobs()
       if (recovered > 0) console.warn(`[cron] Recovered ${recovered} stuck integration jobs`)
       await scheduleDueSyncs()
-      const ran = await runDueJobs(50)
-      if (ran > 0) console.warn(`[cron] Integration jobs processed: ${ran}`)
+      summary.add(await runDueJobs(50))
     } catch (err) {
       console.error('[cron] Integration job runner failed:', err)
     }

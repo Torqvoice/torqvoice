@@ -1,6 +1,7 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { processDueDeliveries, recoverStuckDeliveries } from '@/features/webhooks/Lib/deliver'
+import { createTickSummary } from './tick-summary'
 
 /**
  * Webhook delivery retry cron — runs every minute. First sweeps any
@@ -8,16 +9,14 @@ import { processDueDeliveries, recoverStuckDeliveries } from '@/features/webhook
  * picks up due retries and re-attempts them with HMAC signing.
  */
 export function processWebhookDeliveries() {
+  const summary = createTickSummary('Webhook deliveries processed')
   const job = new CronJob('* * * * *', async () => {
     try {
       const recovered = await recoverStuckDeliveries()
       if (recovered > 0) {
         console.warn(`[cron] Recovered ${recovered} stuck webhook deliveries`)
       }
-      const count = await processDueDeliveries(100)
-      if (count > 0) {
-        console.warn(`[cron] Webhook deliveries processed: ${count}`)
-      }
+      summary.add(await processDueDeliveries(100))
     } catch (err) {
       console.error('[cron] Webhook delivery processor failed:', err)
     }
