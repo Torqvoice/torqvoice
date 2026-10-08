@@ -136,13 +136,17 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const ext = container ? 'mp4' : extensionForType(file.type)
-  const filename = `${crypto.randomUUID()}.${ext}`
+  // A video is re-encoded to MP4 when ffmpeg is there and manages it;
+  // otherwise it is kept as it came, under the container it really holds.
+  let ext = container ? 'mp4' : extensionForType(file.type)
+  const baseName = crypto.randomUUID()
+  let filename = `${baseName}.${ext}`
   const uploadDir = path.join(uploadsRoot(), ctx.organizationId, 'services')
 
   await mkdir(uploadDir, { recursive: true })
 
-  const finalPath = path.join(uploadDir, filename)
+  let finalPath = path.join(uploadDir, filename)
+  let storedType = file.type
 
   if (container) {
     // The original goes to a temporary file named for the container the
@@ -157,14 +161,19 @@ export async function POST(request: NextRequest) {
       await discardUnsavedUpload(ctx.organizationId, 'services', tempFilename)
     }
 
-    // The original is never kept in place of a failed encode: its bytes
-    // were only checked at the start, and are not what would be served.
-    if (!compressed) {
+    if (compressed) {
+      storedType = 'video/mp4'
+    } else {
+      // No ffmpeg on this install, or a take it could not read. The bytes
+      // were checked to be the container they claim before anything ran,
+      // and nothing has touched them since, so they are kept as they are:
+      // a larger file, named and served as what it is, never as MP4.
       await discardUnsavedUpload(ctx.organizationId, 'services', filename)
-      return NextResponse.json(
-        { error: 'The video could not be processed. Try another file or format.' },
-        { status: 422 }
-      )
+      ext = container
+      filename = `${baseName}.${ext}`
+      finalPath = path.join(uploadDir, filename)
+      storedType = `video/${container}`
+      await writeFile(finalPath, bytes)
     }
   } else {
     await writeFile(finalPath, bytes)
@@ -175,7 +184,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     url: `/api/protected/files/${ctx.organizationId}/services/${filename}`,
     fileName: file.name,
-    fileType: container ? 'video/mp4' : file.type,
+    fileType: storedType,
     fileSize: finalStat.size,
   })
 }

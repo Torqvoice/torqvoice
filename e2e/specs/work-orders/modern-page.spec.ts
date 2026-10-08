@@ -295,9 +295,9 @@ test.describe('the overhauled work order page', () => {
 
     // A video goes to the customer too, as on the classic page: the shared
     // link plays it. And it plays here, not in a new tab.
-    // The server only keeps a video ffmpeg has re-encoded, and the runner has
-    // no ffmpeg, so the upload's answer is stood in for. What is under test
-    // here is the card and the player, not the encoder.
+    // The server reads the bytes before it believes the file is a video, and
+    // these are not one, so the upload's answer is stood in for. What is
+    // under test here is the card and the player, not the upload.
     const clip = `e2e-clip-${stamp}.mp4`
     const clipUrl = `/api/protected/files/${await ownerOrganizationId()}/services/e2e-clip-${stamp}.mp4`
     await page.route('**/api/protected/upload/service-files', (route) =>
