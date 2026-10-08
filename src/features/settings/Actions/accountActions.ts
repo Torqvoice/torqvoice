@@ -33,6 +33,9 @@ export async function updateEmail(data: { email: string }) {
       return { email: parsed.email }
     },
     {
+      // The email is the account's, and whoever holds it can reset the
+      // password: never from a session a workshop minted for a phone.
+      accountLevel: true,
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
@@ -116,6 +119,9 @@ export async function requestEmailChange(data: { email: string }) {
       return { sent: true }
     },
     {
+      // The email is the account's, and whoever holds it can reset the
+      // password: never from a session a workshop minted for a phone.
+      accountLevel: true,
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],

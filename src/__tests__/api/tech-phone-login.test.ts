@@ -241,7 +241,17 @@ describe('verifying a code', () => {
     const res = await verify({ code: CODE, phone: '+4791234567' })
 
     expect(await res.json()).toEqual({ data: { token: 'session-token', organizationId: ORG } })
-    expect(createSession).toHaveBeenCalledWith('user-1', false)
+    expect(createSession).toHaveBeenCalledWith('user-1', false, { organizationId: ORG })
+  })
+
+  it('binds the session to this workshop and no other', async () => {
+    vi.mocked(db.technicianLoginCode.findFirst).mockResolvedValue(live() as never)
+    await verify({ code: CODE, phone: '+4791234567' })
+
+    // Written in the same insert that creates the session, so there is no
+    // moment in which the token exists without its workshop.
+    const [, , override] = createSession.mock.calls[0] ?? []
+    expect(override).toEqual({ organizationId: ORG })
   })
 
   it('finds the code by who is claiming it, inside this workshop', async () => {

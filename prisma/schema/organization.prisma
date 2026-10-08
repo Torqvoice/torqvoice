@@ -63,6 +63,7 @@ model Organization {
   timeEntries                 TimeEntry[]
   pushDevices                 PushDevice[]
   appSetupCodes               TechnicianSetupCode[]
+  scopedSessions              Session[]
   technicianLoginCodes        TechnicianLoginCode[]
   auditLogs                   AuditLog[]
   statusReports               StatusReport[]

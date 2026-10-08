@@ -43,6 +43,8 @@ import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { deleteWorkshop } from '@/features/team/Actions/deleteWorkshop'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
 import { signOut } from '@/lib/auth-client'
+import type { ReauthRequirement } from '@/lib/reauth'
+import { ReauthField } from './reauth-field'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -124,12 +126,15 @@ export function DataSettings({
   workshopName = '',
   isOwner = false,
   hasSampleData = false,
+  reauth = 'password',
 }: {
   contentCounts: ContentCounts
   lastBackupAt?: string | null
   workshopName?: string
   isOwner?: boolean
   hasSampleData?: boolean
+  /** What the delete dialogs must ask for before the server will delete. */
+  reauth?: ReauthRequirement
 }) {
   const t = useTranslations('settings')
   const format = useFormatter()
@@ -250,18 +255,35 @@ export function DataSettings({
   const [accountDialogOpen, setAccountDialogOpen] = useState(false)
   const [accountConfirmText, setAccountConfirmText] = useState('')
   const [deletingAccount, setDeletingAccount] = useState(false)
+  // The password or two-factor code the delete dialogs ask for, and the
+  // server's refusal, shown in the dialog rather than a toast so it sits next
+  // to the field it is about.
+  const [reauthValue, setReauthValue] = useState('')
+  const [reauthError, setReauthError] = useState<string | null>(null)
+  const reauthReady = reauth === 'none' || reauthValue.trim() !== ''
+  const reauthInput =
+    reauth === 'password'
+      ? { password: reauthValue }
+      : reauth === 'totp'
+        ? { totpCode: reauthValue }
+        : {}
+  const resetReauth = () => {
+    setReauthValue('')
+    setReauthError(null)
+  }
 
   const handleDeleteWorkshop = async () => {
-    if (workshopConfirmText !== workshopName) return
+    if (workshopConfirmText !== workshopName || !reauthReady) return
     setDeletingWorkshop(true)
+    setReauthError(null)
     try {
-      const result = await deleteWorkshop({ confirmName: workshopConfirmText })
+      const result = await deleteWorkshop({ confirmName: workshopConfirmText, ...reauthInput })
       if (result.success) {
         toast.success(t('account.deleteWorkshopSuccess'))
         // The layout resolves the next membership, or onboarding if none left.
         window.location.href = '/'
       } else {
-        toast.error(result.error || t('account.deleteWorkshopFailed'))
+        setReauthError(result.error || t('account.deleteWorkshopFailed'))
         setDeletingWorkshop(false)
       }
     } catch {
@@ -271,15 +293,16 @@ export function DataSettings({
   }
 
   const handleDeleteAccount = async () => {
-    if (accountConfirmText !== 'delete me') return
+    if (accountConfirmText !== 'delete me' || !reauthReady) return
     setDeletingAccount(true)
+    setReauthError(null)
     try {
-      const result = await deleteAccount()
+      const result = await deleteAccount(reauthInput)
       if (result.success) {
         await signOut()
         router.push('/auth/sign-in')
       } else {
-        toast.error(result.error || t('account.failedDeleteAccount'))
+        setReauthError(result.error || t('account.failedDeleteAccount'))
         setDeletingAccount(false)
       }
     } catch {
@@ -793,6 +816,7 @@ export function DataSettings({
                   variant="destructive"
                   onClick={() => {
                     setWorkshopConfirmText('')
+                    resetReauth()
                     setWorkshopDialogOpen(true)
                   }}
                 >
@@ -815,6 +839,7 @@ export function DataSettings({
               variant="destructive"
               onClick={() => {
                 setAccountConfirmText('')
+                resetReauth()
                 setAccountDialogOpen(true)
               }}
             >
@@ -849,6 +874,14 @@ export function DataSettings({
               placeholder={workshopName}
               autoComplete="off"
             />
+            <ReauthField
+              id="delete-workshop-reauth"
+              requirement={reauth}
+              value={reauthValue}
+              onChange={setReauthValue}
+              onSubmit={handleDeleteWorkshop}
+              error={reauthError}
+            />
           </div>
           <DialogFooter>
             <Button
@@ -861,7 +894,7 @@ export function DataSettings({
             <Button
               variant="destructive"
               onClick={handleDeleteWorkshop}
-              disabled={workshopConfirmText !== workshopName || deletingWorkshop}
+              disabled={workshopConfirmText !== workshopName || !reauthReady || deletingWorkshop}
             >
               {deletingWorkshop ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -897,6 +930,14 @@ export function DataSettings({
               placeholder={t('account.deleteAccountConfirmPhrase')}
               autoComplete="off"
             />
+            <ReauthField
+              id="delete-account-reauth"
+              requirement={reauth}
+              value={reauthValue}
+              onChange={setReauthValue}
+              onSubmit={handleDeleteAccount}
+              error={reauthError}
+            />
           </div>
           <DialogFooter>
             <Button
@@ -909,7 +950,7 @@ export function DataSettings({
             <Button
               variant="destructive"
               onClick={handleDeleteAccount}
-              disabled={accountConfirmText !== 'delete me' || deletingAccount}
+              disabled={accountConfirmText !== 'delete me' || !reauthReady || deletingAccount}
             >
               {deletingAccount ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

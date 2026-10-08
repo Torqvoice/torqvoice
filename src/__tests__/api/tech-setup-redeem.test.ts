@@ -81,7 +81,22 @@ describe('POST /api/v1/tech/setup/redeem', () => {
       organizationId: 'org-1',
       workshop: 'Bay Street Motors',
     })
-    expect(mockCreateSession).toHaveBeenCalledWith('user-1', false)
+    expect(mockCreateSession).toHaveBeenCalledWith('user-1', false, { organizationId: 'org-1' })
+  })
+
+  it('binds the session to the workshop that issued the code', async () => {
+    // Whoever scans the code is signed in as this person, on the issuing
+    // desk's word alone. That word is good for one workshop: the session must
+    // not be pointable at any other the technician belongs to.
+    findCode.mockResolvedValue(live({ organizationId: 'org-issuer' }) as never)
+    findTechnician.mockResolvedValue({ id: 'tech-1', name: 'Kari' } as never)
+
+    const res = await post({ code: CODE })
+
+    expect(res.status).toBe(200)
+    const [userId, , override] = mockCreateSession.mock.calls[0] ?? []
+    expect(userId).toBe('user-1')
+    expect(override).toEqual({ organizationId: 'org-issuer' })
   })
 
   it('looks the code up by hash, never by its value', async () => {

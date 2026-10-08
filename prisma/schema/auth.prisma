@@ -78,7 +78,21 @@ model Session {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  /// The one workshop this session may act in, for sessions minted without a
+  /// password: an app setup code from the desk, or a one-time code sent to a
+  /// technician's phone. Null for every ordinary sign-in.
+  ///
+  /// Those sessions are handed out on a workshop's say-so, and a workshop can
+  /// only vouch for itself. Left unscoped, the token was the person's whole
+  /// account: whoever redeemed a setup code could name any other workshop the
+  /// technician belongs to in a header and act there with their role. When
+  /// this is set it is the workshop, and no header or cookie can choose
+  /// another. Removing the workshop ends the session with it.
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@index([userId])
+  @@index([organizationId])
   @@map("sessions")
 }
 

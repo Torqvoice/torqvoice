@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
+import { SCOPED_SESSION_MESSAGE, sessionOrganizationScope } from '@/lib/session-scope'
 import { classifyUserAgent, describeUserAgent, type DeviceKind } from '@/lib/known-devices'
 import { logAudit } from '@/lib/audit'
 import { demoGuard } from '@/lib/demo'
@@ -55,6 +56,11 @@ export async function signOutDevice(input: unknown) {
   demoGuard()
   const session = await getCachedSession()
   if (!session?.user?.id) return { success: false as const, error: 'Unauthorized' }
+  // The account's sessions are the account's business, not the workshop's
+  // that minted this one for a phone (lib/session-scope.ts).
+  if (sessionOrganizationScope(session)) {
+    return { success: false as const, error: SCOPED_SESSION_MESSAGE }
+  }
   const id = sessionIdSchema.parse(input)
 
   const { count } = await db.session.deleteMany({ where: { id, userId: session.user.id } })
@@ -73,6 +79,9 @@ export async function signOutOtherDevices() {
   demoGuard()
   const session = await getCachedSession()
   if (!session?.user?.id) return { success: false as const, error: 'Unauthorized' }
+  if (sessionOrganizationScope(session)) {
+    return { success: false as const, error: SCOPED_SESSION_MESSAGE }
+  }
 
   const { count } = await db.session.deleteMany({
     where: { userId: session.user.id, id: { not: session.session.id } },

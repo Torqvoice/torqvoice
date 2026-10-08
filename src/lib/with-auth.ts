@@ -9,6 +9,7 @@ import type { AuditEvent } from '@/lib/audit'
 import type { FeatureGatedError } from '@/lib/features'
 import { publicErrorMessage } from '@/lib/public-error-message'
 import { runAsActor } from '@/lib/realtime/actor.server'
+import { SCOPED_SESSION_MESSAGE, sessionOrganizationScope } from './session-scope'
 
 /** What the plan refused, and the number it stopped at when there is one. */
 export type GatedFeature = { feature: string; limit?: number }
@@ -39,6 +40,13 @@ type AuditBuilder<T> = (args: { ctx: AuthContext; result: T }) => AuditEvent | n
 
 type WithAuthOptions<T = unknown> = {
   requiredPermissions?: PermissionInput[]
+  /**
+   * The action changes the person's account rather than the workshop: their
+   * email, the account itself, a workshop of their own. Refused to a session
+   * a workshop minted without a password (lib/session-scope.ts), because that
+   * workshop can only vouch for the person inside itself.
+   */
+  accountLevel?: boolean
   // Optional audit config. If provided, runs after successful action.
   audit?: AuditEvent | AuditBuilder<T>
 }
@@ -66,12 +74,19 @@ export async function withAuth<T>(
       return { success: false, error: 'Unauthorized' }
     }
 
+    // A session bound to one workshop acts as a member of it and nothing
+    // more: no account changes, and none of the account's platform rights.
+    const scope = sessionOrganizationScope(session)
+    if (scope && options.accountLevel) {
+      return { success: false, error: SCOPED_SESSION_MESSAGE, forbidden: true }
+    }
+
     const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: { isSuperAdmin: true },
     })
 
-    const isSuperAdmin = user?.isSuperAdmin ?? false
+    const isSuperAdmin = !scope && (user?.isSuperAdmin ?? false)
 
     const membership = await getCachedMembership(session.user.id)
 

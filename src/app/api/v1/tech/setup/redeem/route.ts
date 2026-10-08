@@ -73,8 +73,14 @@ export async function POST(request: Request) {
   // Two phones scanning the same screen at once. Exactly one of them wins.
   if (burned.count === 0) return bad('code_used')
 
+  // Bound to the workshop that issued the code, in the same insert that makes
+  // it. The desk can vouch for this person here and nowhere else, so the
+  // session cannot be pointed at any other workshop they belong to, or used
+  // for anything that belongs to their account (lib/session-scope.ts).
   const ctx = await auth.$context
-  const session = await ctx.internalAdapter.createSession(record.userId, false)
+  const session = await ctx.internalAdapter.createSession(record.userId, false, {
+    organizationId: record.organizationId,
+  })
 
   logAudit(
     { userId: record.userId, organizationId: record.organizationId },

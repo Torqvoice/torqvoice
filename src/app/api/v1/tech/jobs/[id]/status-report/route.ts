@@ -7,6 +7,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { sendStatusReport } from '@/features/status-reports/Actions/sendStatusReport'
 import { uploadsRoot } from '@/lib/upload-root'
+import { assertContentLength } from '@/lib/backup/zip-guard'
+import { sniffDeclaredVideo } from '@/lib/video-sniff'
 
 /**
  * A short update for the customer, recorded standing at the car.
@@ -39,6 +41,10 @@ const ALLOWED_VIDEO = new Map<string, string>([
 /** Roughly two minutes of phone video. Longer than that is not a status update. */
 const MAX_BYTES = 120 * 1024 * 1024
 
+// The multipart framing and the text fields add a little to the body. The
+// margin keeps a video just under the cap from being refused for it.
+const MAX_BODY = MAX_BYTES + 1024 * 1024
+
 /** Matches the web's default: a link that outlives the repair by a fortnight. */
 const DEFAULT_TTL_MS = 14 * 24 * 60 * 60 * 1000
 
@@ -57,6 +63,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         select: { id: true, technicianId: true },
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
+
+      // Refused from the header, before the body is buffered into memory.
+      try {
+        assertContentLength(request, MAX_BODY)
+      } catch {
+        return apiError(
+          413,
+          'invalid_request',
+          'That video is too long. Keep it under two minutes.'
+        )
+      }
 
       const form = await request.formData()
       const title = (form.get('title') as string | null)?.slice(0, 200) || undefined
@@ -80,12 +97,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           )
         }
 
+        // The declared type is the client's word. The video is kept and
+        // sent to the customer only when its bytes are the container it claims.
+        const bytes = new Uint8Array(await video.arrayBuffer())
+        if (!sniffDeclaredVideo(video.type, bytes)) {
+          return apiError(400, 'invalid_request', 'That file is not a video we can read.')
+        }
+
         // Generated name, never the client's. See the attachments route.
         const filename = `${crypto.randomUUID()}.${ext}`
         const dir = path.join(uploadsRoot(), ctx.organizationId, 'services')
         await mkdir(dir, { recursive: true })
         const target = path.join(dir, filename)
-        await writeFile(target, new Uint8Array(await video.arrayBuffer()))
+        await writeFile(target, bytes)
         await stat(target)
 
         videoUrl = `/api/protected/files/${ctx.organizationId}/services/${filename}`

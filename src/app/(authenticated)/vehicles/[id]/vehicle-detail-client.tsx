@@ -105,6 +105,7 @@ import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { useServiceType } from '@/components/service-type-context'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 
 interface CustomerOption {
   id: string
@@ -1787,7 +1788,7 @@ export function VehicleDetailClient({
           </DialogHeader>
           <div
             className="notes-content max-h-[60vh] overflow-y-auto text-sm break-all"
-            dangerouslySetInnerHTML={{ __html: selectedNote?.content ?? '' }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedNote?.content ?? '') }}
           />
           <div className="flex justify-end pt-2">
             <Button

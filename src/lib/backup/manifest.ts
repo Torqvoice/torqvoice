@@ -375,6 +375,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',
+  Session:
+    'A signed-in device, bound to a workshop only when the workshop signed a phone in. A credential, so it never travels in a backup; the phone signs in again.',
   Subscription: 'Billing state owned by Stripe, not by us.',
   TechnicianLoginCode:
     'One-time code for signing a technician back in, dead five minutes after it is sent.',

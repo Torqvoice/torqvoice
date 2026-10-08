@@ -3,6 +3,7 @@ import { getContentCounts } from '@/features/settings/Actions/deleteContent'
 import { getBackupHeartbeat } from '@/lib/backup-heartbeat'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
+import { reauthRequirement } from '@/lib/reauth.server'
 import {
   SAMPLE_DATA_IDS_KEY,
   hasAnySampleIds,
@@ -17,6 +18,8 @@ export default async function DataSettingsPage() {
   const session = await getCachedSession()
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const isOwner = membership?.role === 'owner'
+  // Which proof the delete dialogs ask for; the actions check it again.
+  const reauth = session?.user?.id ? await reauthRequirement(session.user.id) : 'none'
   const [org, sampleRow] = membership
     ? await Promise.all([
         db.organization.findUnique({
@@ -57,6 +60,7 @@ export default async function DataSettingsPage() {
       workshopName={org?.name ?? ''}
       isOwner={isOwner}
       hasSampleData={hasSampleData}
+      reauth={reauth}
     />
   )
 }

@@ -107,8 +107,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
   })
   if (burned.count === 0) return bad('invalid_code')
 
+  // Bound to this workshop, in the same insert that makes it. The code proves
+  // the person holds a phone or inbox this workshop has on file, which is
+  // this workshop's word and no one else's (lib/session-scope.ts).
   const ctx = await auth.$context
-  const session = await ctx.internalAdapter.createSession(technician.userId, false)
+  const session = await ctx.internalAdapter.createSession(technician.userId, false, {
+    organizationId: orgId,
+  })
 
   logAudit(
     { userId: technician.userId, organizationId: orgId },
