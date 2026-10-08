@@ -21,7 +21,15 @@ import { db } from '@/lib/db'
  */
 export async function revokeTechnicianCredentials(
   organizationId: string,
-  userId: string | null
+  userId: string | null,
+  options: {
+    /**
+     * The session doing the revoking, when it belongs to the same person.
+     * Somebody signing their own phone out from the team page is not asking
+     * to be signed out of the browser they are pressing the button in.
+     */
+    keepSessionToken?: string | null
+  } = {}
 ): Promise<void> {
   if (!userId) return
 
@@ -37,22 +45,30 @@ export async function revokeTechnicianCredentials(
     db.technicianSetupCode.deleteMany({ where: { organizationId, userId } }),
   ])
 
-  // Only where this person is a member of nowhere else. Somebody covering two
-  // branches of a chain should not be signed out of the other one because this
-  // branch let them go.
+  // Every session only where this person is a member of nowhere else.
+  // Somebody covering two branches of a chain should not be signed out of the
+  // other one because this branch let them go. The sessions this workshop
+  // minted for a phone (lib/session-scope.ts) are its own, though, and good
+  // for nothing anywhere else, so those end either way.
   const elsewhere = await db.organizationMember.count({
     where: { userId, organizationId: { not: organizationId } },
   })
 
-  if (elsewhere === 0) {
-    const ctx = await auth.$context
-    const sessions = await db.session.findMany({ where: { userId }, select: { token: true } })
-    // Through Better Auth rather than a raw delete, so its own caches let go
-    // of them too.
-    await Promise.all(
-      sessions.map((s) => ctx.internalAdapter.deleteSession(s.token).catch(() => undefined))
-    )
-  }
+  const ctx = await auth.$context
+  const sessions = await db.session.findMany({
+    where: elsewhere === 0 ? { userId } : { userId, organizationId },
+    select: { token: true, organizationId: true },
+  })
+  // Through Better Auth rather than a raw delete, so its own caches let go
+  // of them too. The one pressing the button is spared, unless it is itself
+  // a session this workshop minted for a phone, which is exactly what is
+  // being revoked.
+  const keep = options.keepSessionToken
+  await Promise.all(
+    sessions
+      .filter((s) => !(keep && s.token === keep && s.organizationId !== organizationId))
+      .map((s) => ctx.internalAdapter.deleteSession(s.token).catch(() => undefined))
+  )
 
   await db.pushDevice.updateMany({
     where: { userId, organizationId },

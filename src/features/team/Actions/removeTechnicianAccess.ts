@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -39,7 +40,7 @@ const schema = z.object({
 
 export async function removeTechnicianAccess(input: unknown) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId: callerId }) => {
       const { userId } = schema.parse(input)
 
       const technician = await db.technician.findFirst({
@@ -53,7 +54,12 @@ export async function removeTechnicianAccess(input: unknown) {
         data: { isActive: false },
       })
 
-      await revokeTechnicianCredentials(organizationId, technician.userId)
+      // Pressing this on your own row signs your phone out, not the browser
+      // you are standing in.
+      const current = technician.userId === callerId ? await getCachedSession() : null
+      await revokeTechnicianCredentials(organizationId, technician.userId, {
+        keepSessionToken: current?.session?.token ?? null,
+      })
 
       notificationBus.emit('workboard', {
         type: 'technician_updated',

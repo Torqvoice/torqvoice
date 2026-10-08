@@ -64,6 +64,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/settings/account?error=email-taken', request.url))
     }
 
+    const before = await db.user.findUnique({
+      where: { id: uid },
+      select: { name: true, email: true },
+    })
+
     // Update the user's email and mark as verified
     await db.$transaction([
       db.user.update({
@@ -77,6 +82,25 @@ export async function GET(request: NextRequest) {
         where: { id: verification.id },
       }),
     ])
+
+    // The address that just stopped being the account's is told so. It is
+    // the last mail it will get from this account, and the one that matters
+    // if the change was not theirs.
+    if (before?.email && before.email !== stored.email) {
+      const { sendAccountMail } = await import('@/lib/account-mail')
+      await sendAccountMail({
+        to: before.email,
+        subject: 'Your Torqvoice email was changed',
+        name: before.name,
+        paragraphs: [
+          'Your Torqvoice account has moved to a different email address. This address no longer signs in to it.',
+        ],
+        notes: [
+          'If this was you, there is nothing to do.',
+          'If it was not, contact your workshop owner or support straight away.',
+        ],
+      }).catch(() => undefined)
+    }
 
     return NextResponse.redirect(new URL('/settings/account?emailChanged=true', request.url))
   } catch {

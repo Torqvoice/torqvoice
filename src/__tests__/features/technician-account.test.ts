@@ -47,11 +47,27 @@ import { normalizeOrgPhone } from '@/lib/sms'
 import { createTechnicianAccount } from '@/features/team/Actions/createTechnicianAccount'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { removeMember } from '@/features/team/Actions/teamActions'
+import { PLACEHOLDER_EMAIL_DOMAIN } from '@/features/team/Lib/technicianRole'
 
 const deleteSession = vi.mocked(
   (await auth.$context).internalAdapter.deleteSession as ReturnType<typeof vi.fn>
 )
 const ORG = 'org-a'
+
+/**
+ * Which workshops the person under the number belongs to. The action counts
+ * memberships both here and elsewhere, and the two must answer differently.
+ */
+function memberOf(...orgs: string[]) {
+  vi.mocked(db.organizationMember.count).mockImplementation((async (args: {
+    where: { organizationId?: string | { not: string } }
+  }) => {
+    const where = args.where.organizationId
+    if (typeof where === 'string') return orgs.includes(where) ? 1 : 0
+    if (where && typeof where === 'object') return orgs.filter((o) => o !== where.not).length
+    return orgs.length
+  }) as never)
+}
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -62,7 +78,11 @@ beforeEach(() => {
     roleId: null,
     customRole: null,
   } as never)
-  vi.mocked(db.user.findUnique).mockResolvedValue(null as never)
+  // By id: the account a reinstatement reads, invented at a counter. By
+  // email: nobody holds the address yet.
+  vi.mocked(db.user.findUnique).mockImplementation((async (args: {
+    where: { id?: string; email?: string }
+  }) => (args.where.id ? { email: `tech-x@${PLACEHOLDER_EMAIL_DOMAIN}` } : null)) as never)
   vi.mocked(normalizeOrgPhone).mockResolvedValue('+4791234567')
   vi.mocked(db.technician.findFirst).mockResolvedValue(null as never)
   vi.mocked(db.technician.aggregate).mockResolvedValue({ _max: { sortOrder: 2 } } as never)
@@ -72,8 +92,9 @@ beforeEach(() => {
   } as never)
   vi.mocked(db.user.create).mockResolvedValue({ id: 'user-1' } as never)
   vi.mocked(db.role.findFirst).mockResolvedValue({ id: 'role-tech' } as never)
-  vi.mocked(db.organizationMember.count).mockResolvedValue(0 as never)
+  memberOf(ORG)
   vi.mocked(db.technician.findMany).mockResolvedValue([] as never)
+  vi.mocked(db.session.findMany).mockResolvedValue([] as never)
   vi.mocked(db.technicianLoginCode.deleteMany).mockResolvedValue({ count: 0 } as never)
   vi.mocked(db.technicianSetupCode.deleteMany).mockResolvedValue({ count: 0 } as never)
   vi.mocked(db.$transaction).mockImplementation(async (arg: unknown) =>
@@ -175,7 +196,7 @@ describe('creating a technician account at the counter', () => {
       isActive: true,
       userId: 'user-9',
     } as never)
-    vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
+    memberOf(ORG)
     vi.mocked(db.technician.update).mockResolvedValue({ id: 'tech-9', userId: 'user-9' } as never)
     vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
       id: 'mem-9',
@@ -199,7 +220,7 @@ describe('creating a technician account at the counter', () => {
       isActive: true,
       userId: 'user-9',
     } as never)
-    vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
+    memberOf(ORG)
 
     await createTechnicianAccount({ name: 'Ola', phone: '912 34 567', resolve: 'takeover' })
 
@@ -209,6 +230,26 @@ describe('creating a technician account at the counter', () => {
       data: { phone: null },
     })
     expect(db.user.create).toHaveBeenCalled()
+  })
+
+  it('will not cut off a number that also opens another workshop', async () => {
+    vi.mocked(db.technician.findFirst).mockResolvedValue({
+      id: 'tech-9',
+      name: 'Kari',
+      isActive: true,
+      userId: 'user-9',
+    } as never)
+    memberOf(ORG, 'org-b')
+
+    const result = await createTechnicianAccount({
+      name: 'Ola',
+      phone: '912 34 567',
+      resolve: 'takeover',
+    })
+
+    expect(result.success).toBe(false)
+    expect(db.user.update).not.toHaveBeenCalled()
+    expect(db.user.create).not.toHaveBeenCalled()
   })
 
   it('never refuses outright', async () => {
@@ -257,6 +298,76 @@ describe('creating a technician account at the counter', () => {
           data: { isActive: true, name: 'Petter' },
         })
       )
+    })
+
+    it('puts a real address onto the invented one, unverified', async () => {
+      await createTechnicianAccount({
+        name: 'Petter',
+        phone: '912 34 567',
+        email: 'petter@x.test',
+      })
+
+      expect(db.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-old' },
+        data: { name: 'Petter', email: 'petter@x.test', emailVerified: false },
+      })
+    })
+
+    it('will not replace an address the person chose themselves', async () => {
+      vi.mocked(db.user.findUnique).mockImplementation((async (args: { where: { id?: string } }) =>
+        args.where.id ? { email: 'petter@real.test' } : null) as never)
+
+      const result = await createTechnicianAccount({
+        name: 'Petter',
+        phone: '912 34 567',
+        email: 'desk@evil.test',
+      })
+
+      expect(result.success).toBe(false)
+      expect(db.user.update).not.toHaveBeenCalled()
+      expect(db.technician.update).not.toHaveBeenCalled()
+    })
+
+    it('typing their own address again is not a change', async () => {
+      vi.mocked(db.user.findUnique).mockImplementation((async (args: { where: { id?: string } }) =>
+        args.where.id ? { email: 'petter@real.test' } : null) as never)
+
+      const result = await createTechnicianAccount({
+        name: 'Petter',
+        phone: '912 34 567',
+        email: 'petter@real.test',
+      })
+
+      expect(result.success).toBe(true)
+      expect(db.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-old' },
+        data: { name: 'Petter' },
+      })
+    })
+
+    describe('when they also belong to another workshop', () => {
+      beforeEach(() => memberOf('org-b'))
+
+      it('brings them back without touching their account', async () => {
+        const result = await createTechnicianAccount({ name: 'Petter N', phone: '912 34 567' })
+
+        expect(result.success).toBe(true)
+        expect(db.user.update).not.toHaveBeenCalled()
+        expect(db.technician.update).toHaveBeenCalledWith(
+          expect.objectContaining({ data: { isActive: true, name: 'Petter N' } })
+        )
+      })
+
+      it('refuses to give their account a new address from this desk', async () => {
+        const result = await createTechnicianAccount({
+          name: 'Petter',
+          phone: '912 34 567',
+          email: 'desk@evil.test',
+        })
+
+        expect(result.success).toBe(false)
+        expect(db.user.update).not.toHaveBeenCalled()
+      })
     })
 
     it('keeps their history by reusing the row, not making a second one', async () => {
@@ -336,7 +447,7 @@ describe('removing a technician', () => {
       name: 'Ola',
       userId: 'user-1',
     } as never)
-    vi.mocked(db.organizationMember.count).mockResolvedValue(0 as never)
+    memberOf(ORG)
     // The real deleteSession is async and the code chains .catch onto it.
     deleteSession.mockResolvedValue(undefined)
     vi.mocked(db.technician.findMany).mockResolvedValue([{ id: 'tech-1' }] as never)
@@ -359,11 +470,50 @@ describe('removing a technician', () => {
     expect(deleteSession).toHaveBeenCalledWith('tok-2')
   })
 
-  it('leaves sessions alone when they still work at another branch', async () => {
+  it('ends only the sessions this workshop minted when they still work at another branch', async () => {
     vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
+    vi.mocked(db.session.findMany).mockResolvedValue([{ token: 'tok-phone' }] as never)
 
     await removeTechnicianAccess({ userId: 'user-1' })
-    expect(deleteSession).not.toHaveBeenCalled()
+
+    // Their ordinary sign-ins open the other branch too and are left alone;
+    // a session bound to this workshop is good for nothing once they are out.
+    expect(db.session.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1', organizationId: ORG },
+      select: { token: true, organizationId: true },
+    })
+    expect(deleteSession).toHaveBeenCalledTimes(1)
+    expect(deleteSession).toHaveBeenCalledWith('tok-phone')
+  })
+
+  it('spares the browser you press the button in when it is your own phone', async () => {
+    vi.mocked(getCachedSession).mockResolvedValue({
+      user: { id: 'user-1' },
+      session: { token: 'tok-1' },
+    } as never)
+    vi.mocked(db.session.findMany).mockResolvedValue([
+      { token: 'tok-1', organizationId: null },
+      { token: 'tok-2', organizationId: ORG },
+    ] as never)
+
+    await removeTechnicianAccess({ userId: 'user-1' })
+
+    expect(deleteSession).toHaveBeenCalledTimes(1)
+    expect(deleteSession).toHaveBeenCalledWith('tok-2')
+  })
+
+  it('does not spare the button press when it comes from the phone being revoked', async () => {
+    vi.mocked(getCachedSession).mockResolvedValue({
+      user: { id: 'user-1' },
+      session: { token: 'tok-phone', organizationId: ORG },
+    } as never)
+    vi.mocked(db.session.findMany).mockResolvedValue([
+      { token: 'tok-phone', organizationId: ORG },
+    ] as never)
+
+    await removeTechnicianAccess({ userId: 'user-1' })
+
+    expect(deleteSession).toHaveBeenCalledWith('tok-phone')
   })
 
   it('destroys anything outstanding that could still be redeemed', async () => {

@@ -257,7 +257,12 @@ export function UPGRADE(ws: WebSocket, _server: unknown, _request: IncomingMessa
 
       const session = await db.session.findUnique({
         where: { token: sessionToken },
-        select: { userId: true, expiresAt: true, user: { select: { name: true, email: true } } },
+        select: {
+          userId: true,
+          expiresAt: true,
+          organizationId: true,
+          user: { select: { name: true, email: true } },
+        },
       })
 
       if (!session || session.expiresAt < new Date()) {
@@ -268,11 +273,13 @@ export function UPGRADE(ws: WebSocket, _server: unknown, _request: IncomingMessa
         return
       }
 
-      const activeOrgId = cookieStore.get('active-org-id')?.value
-
       // Decided where the rest of the app decides it, so the socket and the
-      // pages can never disagree about which workshop this person is in.
-      const membership = await resolveMembership(session.userId, activeOrgId)
+      // pages can never disagree about which workshop this person is in. A
+      // session bound to one workshop (lib/session-scope.ts) is in that one
+      // whatever the cookie says.
+      const membership = session.organizationId
+        ? await resolveMembership(session.userId, session.organizationId, { bound: true })
+        : await resolveMembership(session.userId, cookieStore.get('active-org-id')?.value)
 
       if (!membership) {
         trace(`socket refused: ${session.user?.name ?? session.userId} is in no workshop`)

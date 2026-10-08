@@ -10,6 +10,7 @@ import {
   hashSetupCode,
   SETUP_CODE_TTL_MS,
 } from '../Lib/appSetupCode'
+import { canIssueAppSetupCode } from '../Lib/appSetupRules'
 
 /**
  * Issues the one-time code that puts a technician's phone onto this workshop.
@@ -29,7 +30,7 @@ const schema = z.object({
 
 export async function createAppSetupCode(input: unknown) {
   return withAuth(
-    async ({ organizationId, userId: issuerId }) => {
+    async ({ organizationId, userId: issuerId, role, isAdmin }) => {
       const { userId } = schema.parse(input)
 
       // Only for people already in this workshop, and only for people who can
@@ -37,9 +38,25 @@ export async function createAppSetupCode(input: unknown) {
       // session for any user id sent to it, which is the whole ballgame.
       const member = await db.organizationMember.findFirst({
         where: { userId, organizationId },
-        select: { user: { select: { id: true, name: true, email: true } } },
+        select: {
+          role: true,
+          customRole: { select: { isAdmin: true } },
+          user: { select: { id: true, name: true, email: true } },
+        },
       })
       if (!member?.user) throw new Error('That person is not a member of this workshop.')
+
+      // Whoever holds the code is signed in as this person, so it is only
+      // issued looking down the team, never across or up (appSetupRules.ts).
+      const decision = canIssueAppSetupCode(
+        { userId: issuerId, role, isAdmin },
+        {
+          userId,
+          role: member.role,
+          customRoleIsAdmin: member.customRole?.isAdmin === true,
+        }
+      )
+      if (!decision.ok) throw new Error(decision.reason)
 
       const technician = await db.technician.findFirst({
         where: { userId, organizationId, isActive: true },

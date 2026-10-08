@@ -6,6 +6,8 @@ import { getFeatures, type PlanFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { uploadsRoot } from '@/lib/upload-root'
+import { assertContentLength } from '@/lib/backup/zip-guard'
+import { isDeclaredVideo, sniffDeclaredVideo } from '@/lib/video-sniff'
 
 /**
  * Attaches a photo or video shot in the bay to a job.
@@ -39,6 +41,10 @@ const ALLOWED = new Map<string, string>([
  */
 const MAX_BYTES = 60 * 1024 * 1024
 
+// The multipart framing around the file adds a little to the body. The
+// margin keeps a file just under the cap from being refused for it.
+const MAX_BODY = MAX_BYTES + 1024 * 1024
+
 const CATEGORY_LIMIT: Record<string, keyof PlanFeatures | undefined> = {
   image: 'maxImagesPerService',
   diagnostic: 'maxDiagnosticsPerService',
@@ -61,6 +67,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
 
+      // Refused from the header, before the body is buffered into memory.
+      try {
+        assertContentLength(request, MAX_BODY)
+      } catch {
+        return apiError(413, 'invalid_request', 'That file is too large. Keep it under 60 MB.')
+      }
+
       const form = await request.formData()
       const file = form.get('file')
       if (!(file instanceof File)) {
@@ -78,7 +91,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return apiError(400, 'invalid_request', 'That file is too large. Keep it under 60 MB.')
       }
 
-      const category = file.type.startsWith('video/') ? 'video' : 'image'
+      const bytes = new Uint8Array(await file.arrayBuffer())
+
+      // The declared type is the client's word. A video is kept, served and
+      // played as one only when its bytes are the container it claims.
+      if (isDeclaredVideo(file.type) && !sniffDeclaredVideo(file.type, bytes)) {
+        return apiError(400, 'invalid_request', 'That file is not a video we can read.')
+      }
+
+      const category = isDeclaredVideo(file.type) ? 'video' : 'image'
       const description = (form.get('description') as string | null)?.slice(0, 500) || undefined
 
       const limitKey = CATEGORY_LIMIT[category]
@@ -105,7 +126,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       await mkdir(dir, { recursive: true })
       const target = path.join(dir, filename)
 
-      await writeFile(target, new Uint8Array(await file.arrayBuffer()))
+      await writeFile(target, bytes)
       const written = await stat(target)
 
       const attachment = await db.serviceAttachment.create({

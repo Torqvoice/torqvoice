@@ -1,5 +1,6 @@
 import { getCachedSession, getCachedMembership } from './cached-session'
 import { db } from './db'
+import { sessionOrganizationScope } from './session-scope'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
@@ -52,7 +53,9 @@ export async function getLayoutData(): Promise<AuthResult> {
   // User record deleted (e.g. admin removed the account) but session cookie still cached
   if (!user) return { status: 'unauthenticated' }
 
-  const isSuperAdmin = user.isSuperAdmin
+  // None of the account's platform rights on a session bound to one workshop
+  // (lib/session-scope.ts).
+  const isSuperAdmin = !sessionOrganizationScope(session) && user.isSuperAdmin
 
   if (!membership && !isSuperAdmin) return { status: 'no-organization' }
 

@@ -3,14 +3,18 @@
 import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeCountryCode } from '@/lib/portal-phone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { withAuth } from '@/lib/with-auth'
-import { ensureTechnicianRole, PLACEHOLDER_EMAIL_DOMAIN } from '../Lib/technicianRole'
+import {
+  ensureTechnicianRole,
+  isPlaceholderEmail,
+  PLACEHOLDER_EMAIL_DOMAIN,
+} from '../Lib/technicianRole'
 import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 
 /**
@@ -124,6 +128,15 @@ export async function createTechnicianAccount(input: unknown) {
         // Takeover. The number moves to the new person and the old record keeps
         // everything it ever did, minus the ability to sign in. Nobody's work
         // is rewritten; somebody's way in is closed.
+        //
+        // Unless that way in is also how they reach another workshop. The
+        // number is on their account, not on this membership, and this desk
+        // does not get to cut somebody off from a workshop it is not part of.
+        if (await belongsElsewhere(existing.userId, organizationId)) {
+          throw new Error(
+            'That number belongs to an account that is also a member of another workshop. Ask them to change their number from their own account.'
+          )
+        }
         await db.user.update({ where: { id: existing.userId }, data: { phone: null } })
         await revokeTechnicianCredentials(organizationId, existing.userId)
         // Falls through to a fresh account below, deliberately. This is a
@@ -236,12 +249,52 @@ async function reinstate(
   email: string | null
 ) {
   const technician = await db.$transaction(async (tx) => {
-    // A married name, a corrected spelling. Whatever the desk typed now is
-    // more current than whatever was typed before.
-    await tx.user.update({
+    const current = await tx.user.findUnique({
       where: { id: userId },
-      data: { name, ...(email ? { email } : {}) },
+      select: { email: true },
     })
+    if (!current) throw new Error('That account no longer exists.')
+
+    // The account is theirs, and the membership is ours. Whatever the desk
+    // types reaches the account only while this is the one workshop it
+    // belongs to; once it also opens the door to somebody else's workshop,
+    // changing its name or its address from here is not a correction, it is
+    // a way in. Rewriting the address and then asking for a password reset
+    // on it would have handed this desk their account everywhere.
+    const shared = await belongsElsewhere(userId, organizationId, tx)
+    const wantsEmail = !!email && email !== current.email
+    if (wantsEmail && shared) {
+      throw new Error(
+        'This person is also a member of another workshop, so their email is theirs to change. Leave it empty to bring them back as they are.'
+      )
+    }
+    // An address that was invented at the counter is nobody's, so it can be
+    // replaced. A real one was chosen by the person it reaches, and the desk
+    // is not that person.
+    if (wantsEmail && !isPlaceholderEmail(current.email)) {
+      throw new Error(
+        'This person already has an email on their account. They can change it from their own account settings.'
+      )
+    }
+    if (wantsEmail) {
+      const taken = await tx.user.findUnique({
+        where: { email: email as string },
+        select: { id: true },
+      })
+      if (taken && taken.id !== userId) {
+        throw new Error('Someone already has an account with that email. Invite them instead.')
+      }
+    }
+
+    if (!shared) {
+      // A married name, a corrected spelling. Whatever the desk typed now is
+      // more current than whatever was typed before. Nothing was sent to a
+      // new address, so nothing about it has been verified.
+      await tx.user.update({
+        where: { id: userId },
+        data: { name, ...(wantsEmail ? { email: email as string, emailVerified: false } : {}) },
+      })
+    }
 
     const roleId = await ensureTechnicianRole(tx, organizationId)
     const membership = await tx.organizationMember.findFirst({
@@ -274,6 +327,18 @@ async function reinstate(
   revalidatePath('/work-board')
 
   return { conflict: null, technicianId: technician.id, userId, name, reinstated: true }
+}
+
+/**
+ * Whether this account also opens some other workshop. A technician's number
+ * and address live on the account, so anything done to them here is done
+ * there as well.
+ */
+async function belongsElsewhere(userId: string, organizationId: string, tx: TxClient = db) {
+  const elsewhere = await tx.organizationMember.count({
+    where: { userId, organizationId: { not: organizationId } },
+  })
+  return elsewhere > 0
 }
 
 /** Stores the workshop's country code the first time somebody supplies one. */

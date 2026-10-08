@@ -1,5 +1,6 @@
 import { getCachedSession } from './cached-session'
 import { db } from './db'
+import { sessionOrganizationScope } from './session-scope'
 import type { ActionResult } from './with-auth'
 import { publicErrorMessage } from '@/lib/public-error-message'
 
@@ -22,7 +23,9 @@ export async function withSuperAdmin<T>(
       select: { isSuperAdmin: true },
     })
 
-    if (!user?.isSuperAdmin) {
+    // A session a workshop minted without a password (lib/session-scope.ts)
+    // carries none of the account's platform rights.
+    if (!user?.isSuperAdmin || sessionOrganizationScope(session)) {
       return { success: false, error: 'Forbidden' }
     }
 
