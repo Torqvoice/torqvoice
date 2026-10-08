@@ -21,12 +21,15 @@ vi.mock('@/lib/db', () => ({
 }))
 
 // Mock email
+vi.mock('@/lib/email-verification-policy', () => ({ emailVerificationRequired: vi.fn() }))
+vi.mock('@/lib/account-mail', () => ({ sendAccountMail: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/lib/email', () => ({
   sendMail: vi.fn().mockResolvedValue(undefined),
   getFromAddress: vi.fn().mockResolvedValue('noreply@test.com'),
 }))
 
-import { updateEmail, requestEmailChange } from '@/features/settings/Actions/accountActions'
+import { requestEmailChange } from '@/features/settings/Actions/accountActions'
+import { emailVerificationRequired } from '@/lib/email-verification-policy'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 
@@ -51,42 +54,43 @@ function setupAuth() {
   mockGetCachedMembership.mockResolvedValue(MEMBERSHIP as any)
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.resetAllMocks()
+  // The strict install unless a test says otherwise, and a mail that sends.
+  vi.mocked(emailVerificationRequired).mockResolvedValue(true)
+  const { sendAccountMail } = await import('@/lib/account-mail')
+  vi.mocked(sendAccountMail).mockResolvedValue(undefined)
 })
 
-describe('updateEmail', () => {
-  it('returns Unauthorized when no session', async () => {
-    mockGetCachedSession.mockResolvedValue(null)
-    const result = await updateEmail({ email: 'new@example.com' })
-    expect(result).toEqual({ success: false, error: 'Unauthorized' })
-  })
-
-  it('returns validation error for invalid email', async () => {
+describe('changing the address where the install does not require verification', () => {
+  it('changes it at once, unverified, and tells the old address', async () => {
+    const { sendAccountMail } = await import('@/lib/account-mail')
     setupAuth()
-    const result = await updateEmail({ email: 'not-an-email' })
-    expect(result.success).toBe(false)
-    expect(result.error).toContain('email')
-  })
-
-  it('returns error when email is already in use', async () => {
-    setupAuth()
-    mockFindFirst.mockResolvedValue({ id: 'other-user' } as any)
-    const result = await updateEmail({ email: 'taken@example.com' })
-    expect(result).toEqual({ success: false, error: 'Email is already in use' })
-  })
-
-  it('updates email and sets emailVerified=false on success', async () => {
-    setupAuth()
+    vi.mocked(emailVerificationRequired).mockResolvedValue(false)
     mockFindFirst.mockResolvedValue(null)
+    mockFindUnique.mockResolvedValue({ name: 'Anna', email: 'user@example.com' } as any)
     mockUpdate.mockResolvedValue({} as any)
 
-    const result = await updateEmail({ email: 'new@example.com' })
-    expect(result).toEqual({ success: true, data: { email: 'new@example.com' } })
+    const result = await requestEmailChange({ email: 'new@example.com' })
+
+    expect(result).toEqual({ success: true, data: { sent: false, email: 'new@example.com' } })
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: 'user-1' },
       data: { email: 'new@example.com', emailVerified: false },
     })
+    expect(mockUpsert).not.toHaveBeenCalled()
+    expect(sendAccountMail).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'user@example.com' })
+    )
+  })
+
+  it('still refuses an address somebody else holds', async () => {
+    setupAuth()
+    vi.mocked(emailVerificationRequired).mockResolvedValue(false)
+    mockFindFirst.mockResolvedValue({ id: 'other-user' } as any)
+    const result = await requestEmailChange({ email: 'taken@example.com' })
+    expect(result).toEqual({ success: false, error: 'Email is already in use' })
+    expect(mockUpdate).not.toHaveBeenCalled()
   })
 })
 
@@ -131,7 +135,7 @@ describe('requestEmailChange', () => {
     mockUpsert.mockResolvedValue({} as any)
 
     const result = await requestEmailChange({ email: 'new@example.com' })
-    expect(result).toEqual({ success: true, data: { sent: true } })
+    expect(result).toEqual({ success: true, data: { sent: true, email: 'new@example.com' } })
 
     // Verify upsert was called with the correct identifier pattern
     expect(mockUpsert).toHaveBeenCalledWith(
@@ -149,13 +153,16 @@ describe('requestEmailChange', () => {
     expect(storedValue).toHaveProperty('tokenHash')
     expect(storedValue).toHaveProperty('email', 'new@example.com')
 
-    // Verify email was sent to the NEW address
-    const { sendMail } = await import('@/lib/email')
-    expect(sendMail).toHaveBeenCalledWith(
+    // The link goes to the NEW address, and the current one is told.
+    const { sendAccountMail } = await import('@/lib/account-mail')
+    expect(sendAccountMail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'new@example.com',
-        from: 'noreply@test.com',
+        link: expect.objectContaining({ url: expect.stringContaining('confirm-email-change') }),
       })
+    )
+    expect(sendAccountMail).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'user@example.com' })
     )
   })
 

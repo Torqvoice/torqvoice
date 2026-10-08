@@ -12,6 +12,7 @@ import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { setTechnicianStanding } from '../Lib/technicianStanding'
 import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
+import { emailVerificationRequired } from '@/lib/email-verification-policy'
 import {
   getFeatures,
   isCloudMode,
@@ -178,10 +179,17 @@ export async function inviteMember(input: unknown) {
       // under pending, which is all the desk needs.
       const invitedUser = await db.user.findFirst({
         where: { email: data.email },
-        select: { id: true },
+        select: { id: true, emailVerified: true },
       })
 
-      if (!invitedUser) {
+      // An account joins on the spot only when its address has been proved,
+      // or on an install that does not ask for proof. Otherwise the address
+      // is a claim, and the person it reaches is the one the desk means;
+      // they get the invitation mail and accept it, and an account that
+      // merely typed the address gets nothing.
+      const seatsDirectly =
+        !!invitedUser && (invitedUser.emailVerified || !(await emailVerificationRequired()))
+      if (!seatsDirectly) {
         await createAndSendInvitation({
           organizationId,
           organizationName: membership.organization.name,

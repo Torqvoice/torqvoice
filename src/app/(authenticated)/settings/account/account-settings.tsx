@@ -35,7 +35,7 @@ import {
 } from 'lucide-react'
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
 import { QRCodeSVG } from 'qrcode.react'
-import { updateEmail, requestEmailChange } from '@/features/settings/Actions/accountActions'
+import { requestEmailChange } from '@/features/settings/Actions/accountActions'
 import { useCooldown } from '@/hooks/use-cooldown'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -201,21 +201,14 @@ export function AccountSettings({
         return
       }
       if (email !== session?.user?.email) {
-        if (emailVerificationRequired) {
-          const emailResult = await requestEmailChange({ email })
-          if (!emailResult.success) {
-            toast.error(emailResult.error || t('account.failedUpdateEmail'))
-            return
-          }
-          toast.success(t('account.emailChangeSent'))
-        } else {
-          const emailResult = await updateEmail({ email })
-          if (!emailResult.success) {
-            toast.error(emailResult.error || t('account.failedUpdateEmail'))
-            return
-          }
-          toast.success(t('account.profileUpdated'))
+        const emailResult = await requestEmailChange({ email })
+        if (!emailResult.success) {
+          toast.error(emailResult.error || t('account.failedUpdateEmail'))
+          return
         }
+        toast.success(
+          emailResult.data?.sent ? t('account.emailChangeSent') : t('account.profileUpdated')
+        )
       } else {
         toast.success(t('account.profileUpdated'))
       }

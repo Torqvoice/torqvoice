@@ -37,6 +37,7 @@ vi.mock('@/lib/features', () => ({
   FeatureGatedError: class extends Error {},
 }))
 
+vi.mock('@/lib/email-verification-policy', () => ({ emailVerificationRequired: vi.fn() }))
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn(), findFirst: vi.fn(), update: vi.fn() },
@@ -71,6 +72,7 @@ import {
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { getPendingInvitations } from '@/features/team/Actions/getPendingInvitations'
 import { inviteMember } from '@/features/team/Actions/teamActions'
+import { emailVerificationRequired } from '@/lib/email-verification-policy'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
 const mockSession = vi.mocked(getCachedSession)
@@ -98,6 +100,7 @@ function actAsSettingsManager() {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(emailVerificationRequired).mockResolvedValue(true)
   vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
     id: 'mem-1',
     organizationId: ORG,
@@ -197,7 +200,10 @@ describe('inviteMember agrees with sendInvitation', () => {
     vi.mocked(db.user.findFirst).mockResolvedValueOnce(null)
     const unknown = await inviteMember({ email: 'new@example.com', role: 'member' })
 
-    vi.mocked(db.user.findFirst).mockResolvedValueOnce({ id: 'user-x' } as any)
+    vi.mocked(db.user.findFirst).mockResolvedValueOnce({
+      id: 'user-x',
+      emailVerified: true,
+    } as any)
     vi.mocked(db.organizationMember.findFirst)
       .mockResolvedValueOnce({ id: 'mem-1', organization: { name: 'Org A' } } as any)
       .mockResolvedValueOnce(null)
@@ -208,6 +214,41 @@ describe('inviteMember agrees with sendInvitation', () => {
     // The unknown address got an invitation mail; the known one joined directly.
     expect(db.teamInvitation.create).toHaveBeenCalledTimes(1)
     expect(db.organizationMember.create).toHaveBeenCalledTimes(1)
+  })
+
+  it('mails the address rather than seating an account that only typed it', async () => {
+    actAs('admin')
+    vi.mocked(emailVerificationRequired).mockResolvedValue(true)
+
+    // An account exists under the address, but nobody has proved it reaches
+    // them. Joining it directly would seat whoever claimed the address.
+    vi.mocked(db.user.findFirst).mockResolvedValueOnce({
+      id: 'user-squat',
+      emailVerified: false,
+    } as any)
+    const result = await inviteMember({ email: 'anna@garage.test', role: 'member' })
+
+    expect(result.data).toEqual({ invited: true, email: 'anna@garage.test', role: 'member' })
+    expect(db.organizationMember.create).not.toHaveBeenCalled()
+    expect(db.teamInvitation.create).toHaveBeenCalledTimes(1)
+  })
+
+  it('seats an unconfirmed account where the install does not require verification', async () => {
+    actAs('admin')
+    vi.mocked(emailVerificationRequired).mockResolvedValue(false)
+
+    vi.mocked(db.user.findFirst).mockResolvedValueOnce({
+      id: 'user-local',
+      emailVerified: false,
+    } as any)
+    vi.mocked(db.organizationMember.findFirst)
+      .mockResolvedValueOnce({ id: 'mem-1', organization: { name: 'Org A' } } as any)
+      .mockResolvedValueOnce(null)
+    const result = await inviteMember({ email: 'anna@garage.test', role: 'member' })
+
+    expect(result.data).toEqual({ invited: true, email: 'anna@garage.test', role: 'member' })
+    expect(db.organizationMember.create).toHaveBeenCalledTimes(1)
+    expect(db.teamInvitation.create).not.toHaveBeenCalled()
   })
 })
 

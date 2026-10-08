@@ -6,48 +6,22 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { z } from 'zod'
 import crypto from 'crypto'
 import { demoGuard } from '@/lib/demo'
+import { emailVerificationRequired } from '@/lib/email-verification-policy'
 
 const updateEmailSchema = z.object({
   email: z.string().email('Invalid email address'),
 })
 
-export async function updateEmail(data: { email: string }) {
-  return withAuth(
-    async ({ userId }) => {
-      demoGuard()
-      const parsed = updateEmailSchema.parse(data)
-
-      const existing = await db.user.findFirst({
-        where: { email: parsed.email, NOT: { id: userId } },
-      })
-
-      if (existing) {
-        throw new Error('Email is already in use')
-      }
-
-      await db.user.update({
-        where: { id: userId },
-        data: { email: parsed.email, emailVerified: false },
-      })
-
-      return { email: parsed.email }
-    },
-    {
-      // The email is the account's, and whoever holds it can reset the
-      // password: never from a session a workshop minted for a phone.
-      accountLevel: true,
-      requiredPermissions: [
-        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
-      ],
-    }
-  )
-}
-
 /**
- * Request email change with verification.
- * Instead of changing the email immediately, sends a confirmation link
- * to the NEW email address. The user's current email stays unchanged
- * until they click the confirmation link.
+ * Changes the account's email. The only action that does.
+ *
+ * Where the install requires verification, this sends a confirmation link
+ * to the NEW address and nothing changes until it is opened. Where it does
+ * not, the address changes at once. There used to be a second action for
+ * the second case, and the page chose between them: the choice lived in the
+ * page, so the instant action answered anybody on any install, and an
+ * address nobody had proved could be claimed ahead of the person it belongs
+ * to and then invited into their workshop. Now the server reads the setting.
  *
  * Security:
  * - Random opaque token in URL (no user data leaked)
@@ -76,6 +50,33 @@ export async function requestEmailChange(data: { email: string }) {
 
       if (!user) throw new Error('User not found')
 
+      const { sendAccountMail } = await import('@/lib/account-mail')
+
+      // An install that does not require verification changes the address
+      // at once, as the admin chose; there may be no mail server to send a
+      // link through. The current address is still told, when mail works.
+      if (!(await emailVerificationRequired())) {
+        await db.user.update({
+          where: { id: userId },
+          data: { email: parsed.email, emailVerified: false },
+        })
+        if (user.email && user.email !== parsed.email) {
+          await sendAccountMail({
+            to: user.email,
+            subject: 'Your Torqvoice email was changed',
+            name: user.name,
+            paragraphs: [
+              'Your Torqvoice account has moved to a different email address. This address no longer signs in to it.',
+            ],
+            notes: [
+              'If this was you, there is nothing to do.',
+              'If it was not, contact your workshop owner or support straight away.',
+            ],
+          }).catch(() => undefined)
+        }
+        return { sent: false, email: parsed.email }
+      }
+
       // Generate a cryptographically random token
       const token = crypto.randomBytes(32).toString('hex')
 
@@ -101,7 +102,6 @@ export async function requestEmailChange(data: { email: string }) {
       const baseURL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const confirmUrl = `${baseURL}/api/public/confirm-email-change?token=${token}&uid=${userId}`
 
-      const { sendAccountMail } = await import('@/lib/account-mail')
       await sendAccountMail({
         to: parsed.email,
         subject: 'Confirm your new Torqvoice email',
@@ -116,7 +116,25 @@ export async function requestEmailChange(data: { email: string }) {
         ],
       })
 
-      return { sent: true }
+      // The current address hears about it too. Somebody at an unattended
+      // screen can ask for the move; the person it belongs to is the one who
+      // should find out, before the link is clicked rather than after.
+      if (user.email && user.email !== parsed.email) {
+        await sendAccountMail({
+          to: user.email,
+          subject: 'A change to your Torqvoice email was requested',
+          name: user.name,
+          paragraphs: [
+            'Somebody signed in to your Torqvoice account asked to move it to a different email address. Nothing changes until the link sent to that address is opened.',
+          ],
+          notes: [
+            'If this was you, there is nothing to do here.',
+            'If it was not, change your password now, and sign out of the devices you do not recognise from Settings.',
+          ],
+        }).catch(() => undefined)
+      }
+
+      return { sent: true, email: parsed.email }
     },
     {
       // The email is the account's, and whoever holds it can reset the
