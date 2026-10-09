@@ -137,8 +137,8 @@ you are about to read twice in one file.
 ## In CI
 
 `.github/workflows/e2e.yml` runs the suite on every pull request to main, and on
-demand from the Actions tab. The specs are split into four shards
-(`--shard=1/4` and so on) plus a job for the cloud specs, all at once. Each job
+demand from the Actions tab. The specs are split into eight shards
+(`--shard=1/8` and so on) plus a job for the cloud specs, all at once. Each job
 has its own `postgres:16-alpine` service holding `torqvoice_e2e`, installs
 Chromium, builds with `NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100`, and seeds its
 own database, so the one-test-at-a-time rule still holds inside every job.
@@ -147,7 +147,7 @@ A spec that only passes because another file ran before it will fail here.
 To run one shard the way CI does:
 
 ```bash
-npx playwright test --shard=2/4
+npx playwright test --shard=2/8
 ```
 
 On CI every job writes a blob report, and the last job, `Playwright`, merges them
