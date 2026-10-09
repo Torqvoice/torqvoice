@@ -39,6 +39,7 @@ export function timesheetCsv(
       e.source,
       e.editedByName ?? '',
       e.note ?? '',
+      e.job.clientName ?? '',
     ]
   })
 

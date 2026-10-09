@@ -1,12 +1,14 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useFormatter, useTranslations } from 'next-intl'
+import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import type { DateRange } from 'react-day-picker'
 import {
+  ArrowDownWideNarrow,
+  ArrowUpNarrowWide,
   CalendarIcon,
   Clock,
   Download,
@@ -14,6 +16,7 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
+  Printer,
   Square,
   Timer,
   Trash2,
@@ -55,6 +58,11 @@ import {
   entryMinutes,
   formatElapsed,
   formatMinutes,
+  groupTimesheetEntries,
+  sortTimesheetEntries,
+  type EntryGroup,
+  type SortDirection,
+  type TimesheetSort,
   type SheetEntry,
   type TechnicianSheet,
   type Timesheet,
@@ -64,6 +72,8 @@ import { useClockEvents } from '@/features/time-tracking/Components/TimeClockPro
 import { useTick } from '@/features/time-tracking/hooks/useTick'
 import { SourceBadge } from '@/features/time-tracking/Components/SourceBadge'
 import { TimeEntryDialog } from '@/features/time-tracking/Components/TimeEntryDialog'
+import { TimesheetPrintSheet } from '@/features/time-tracking/Components/TimesheetPrintSheet'
+import { printTimesheet } from '@/features/time-tracking/Lib/print-timesheet'
 
 /** A day key as a Date that formats to that day in any zone within twelve hours of UTC. */
 function noonOf(dayKey: string): Date {
@@ -80,6 +90,8 @@ function localKey(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
+
+const SORTS: TimesheetSort[] = ['default', 'client', 'vehicle', 'clientVehicle']
 
 type Preset = 'today' | 'yesterday' | 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth'
 const PRESETS: Preset[] = ['today', 'yesterday', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth']
@@ -139,6 +151,8 @@ export default function TimesheetsClient({
   initialError: string | null
 }) {
   const t = useTranslations('timeTracking.page')
+  const tDialog = useTranslations('timeTracking.dialog')
+  const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
   const format = useFormatter()
@@ -150,6 +164,29 @@ export default function TimesheetsClient({
   const [error, setError] = useState<string | null>(initialError)
   const [loading, setLoading] = useState(false)
   const [technicianId, setTechnicianId] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<TimesheetSort>('default')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+  // A new order is a new list, and usually a shorter one: left alone, the
+  // browser clamps the scroll to wherever the page now ends. If the reader was
+  // already down among the entries, put them at the start of the new list.
+  const entriesRef = useRef<HTMLDivElement>(null)
+  const lastSort = useRef(`${sortBy}:${sortDirection}`)
+  useLayoutEffect(() => {
+    const sort = `${sortBy}:${sortDirection}`
+    if (lastSort.current === sort) return
+    lastSort.current = sort
+    const el = entriesRef.current
+    if (el && el.getBoundingClientRect().top < 128) el.scrollIntoView({ block: 'start' })
+  }, [sortBy, sortDirection])
+
+  // The print copy exists only while a print is being handed to the browser.
+  const [printing, setPrinting] = useState(false)
+  const printRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!printing) return
+    if (printRef.current) printTimesheet(printRef.current, t('title'))
+    setPrinting(false)
+  }, [printing, t])
   const [dialog, setDialog] = useState<{
     open: boolean
     entry?: SheetEntry | null
@@ -211,6 +248,38 @@ export default function TimesheetsClient({
       now,
     })
   }, [data, technicianId, now])
+
+  const sortedEntries = useMemo(
+    () =>
+      sortTimesheetEntries(
+        sheet?.technicians.flatMap((s) => s.entries) ?? [],
+        sortBy,
+        sortDirection,
+        locale
+      ),
+    [sheet, sortBy, sortDirection, locale]
+  )
+
+  // Per technician by default, which only the print copy reads.
+  const groups = useMemo(
+    () =>
+      sortBy === 'default' && !printing ? [] : groupTimesheetEntries(sortedEntries, sortBy, now),
+    [sortedEntries, sortBy, printing, now]
+  )
+
+  const groupLabel = (group: EntryGroup) =>
+    [
+      group.technicianName,
+      group.vehicle || group.technicianName
+        ? group.clientName
+        : (group.clientName ?? t('noClient')),
+      group.vehicle &&
+        [group.vehicle.label ?? t('table.counterSale'), group.vehicle.licensePlate]
+          .filter(Boolean)
+          .join(' · '),
+    ]
+      .filter(Boolean)
+      .join(' · ')
 
   const activePreset = useMemo<Preset | null>(() => {
     if (!data) return null
@@ -275,8 +344,7 @@ export default function TimesheetsClient({
 
   const exportCsv = () => {
     if (!data || !sheet) return
-    const entries = sheet.technicians.flatMap((s) => s.entries)
-    const csv = timesheetCsv(entries, data.timeZone, now, [
+    const csv = timesheetCsv(sortedEntries, data.timeZone, now, [
       t('csv.technician'),
       t('csv.date'),
       t('csv.start'),
@@ -289,6 +357,7 @@ export default function TimesheetsClient({
       t('csv.source'),
       t('csv.editedBy'),
       t('csv.note'),
+      t('csv.client'),
     ])
     downloadText(`timesheet-${data.fromKey}-${data.toKey}.csv`, `﻿${csv}`)
   }
@@ -308,7 +377,9 @@ export default function TimesheetsClient({
   return (
     <div className="space-y-4">
       {/* ── Toolbar ─────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Pinned under the page header from md up; on a phone it wraps to
+          several rows and would take the screen with it. */}
+      <div className="-mx-4 flex flex-wrap items-center gap-2 bg-background px-4 py-2 md:sticky md:top-16 md:z-20 md:border-b">
         <div className="flex flex-wrap items-center gap-1 rounded-md border bg-muted/40 p-1">
           {PRESETS.map((preset) => (
             <Button
@@ -364,6 +435,47 @@ export default function TimesheetsClient({
               ))}
             </SelectContent>
           </Select>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as TimesheetSort)}>
+            <SelectTrigger className="h-8 w-44" size="sm" aria-label={t('sortBy')}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORTS.map((sort) => (
+                <SelectItem key={sort} value={sort}>
+                  {t(`sort.${sort}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {sortBy !== 'default' && (
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              className="size-8"
+              aria-label={`${t('sortDirection')}: ${t(sortDirection === 'asc' ? 'ascending' : 'descending')}`}
+              title={t(sortDirection === 'asc' ? 'ascending' : 'descending')}
+              onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+            >
+              {sortDirection === 'asc' ? (
+                <ArrowUpNarrowWide className="size-3.5" />
+              ) : (
+                <ArrowDownWideNarrow className="size-3.5" />
+              )}
+            </Button>
+          )}
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-8"
+            aria-label={t('print')}
+            onClick={() => setPrinting(true)}
+            disabled={loading || sortedEntries.length === 0}
+          >
+            <Printer className="size-3.5" />
+            <span className="hidden sm:inline">{t('print')}</span>
+          </Button>
           <Button
             type="button"
             size="sm"
@@ -497,44 +609,86 @@ export default function TimesheetsClient({
       )}
 
       {/* ── Entries ─────────────────────────────────────────────────────── */}
-      {sheet.totalMinutes === 0 && sheet.runningCount === 0 ? (
-        <div className="rounded-xl border border-dashed p-10 text-center">
-          <Timer className="mx-auto mb-3 size-8 text-muted-foreground/60" />
-          <p className="font-medium">{t('empty.title')}</p>
-          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            {data.technicians.length === 0 ? t('empty.noTechnicians') : t('empty.body')}
-          </p>
-          {data.technicians.length === 0 && (
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <Link href="/settings/team">{t('empty.teamLink')}</Link>
-            </Button>
-          )}
-        </div>
-      ) : (
-        sheet.technicians
-          .filter((s) => s.entries.length > 0)
-          .map((s) => (
-            <TechnicianCard
-              key={s.technician.id}
-              sheet={s}
+      <div ref={entriesRef} className="scroll-mt-20 space-y-4 md:scroll-mt-32">
+        {sheet.totalMinutes === 0 && sheet.runningCount === 0 ? (
+          <div className="rounded-xl border border-dashed p-10 text-center">
+            <Timer className="mx-auto mb-3 size-8 text-muted-foreground/60" />
+            <p className="font-medium">{t('empty.title')}</p>
+            <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+              {data.technicians.length === 0 ? t('empty.noTechnicians') : t('empty.body')}
+            </p>
+            {data.technicians.length === 0 && (
+              <Button asChild variant="outline" size="sm" className="mt-4">
+                <Link href="/settings/team">{t('empty.teamLink')}</Link>
+              </Button>
+            )}
+          </div>
+        ) : sortBy !== 'default' ? (
+          groups.map((group) => (
+            <GroupCard
+              key={group.key}
+              title={groupLabel(group)}
+              group={group}
               now={now}
-              timeZone={timeZone}
               canEdit={data.canEdit}
-              dayLabel={dayLabel}
+              formatDate={formatDate}
               formatTime={formatTime}
               stoppingId={stoppingId}
               onEdit={(entry) => setDialog({ open: true, entry })}
               onStop={(entry) => void handleStop(entry)}
               onDelete={(entry) => void handleDelete(entry)}
-              onAdd={(dayKey) =>
-                setDialog({
-                  open: true,
-                  entry: null,
-                  defaults: { technicianId: s.technician.id, dayKey },
-                })
-              }
             />
           ))
+        ) : (
+          sheet.technicians
+            .filter((s) => s.entries.length > 0)
+            .map((s) => (
+              <TechnicianCard
+                key={s.technician.id}
+                sheet={s}
+                now={now}
+                timeZone={timeZone}
+                canEdit={data.canEdit}
+                dayLabel={dayLabel}
+                formatTime={formatTime}
+                stoppingId={stoppingId}
+                onEdit={(entry) => setDialog({ open: true, entry })}
+                onStop={(entry) => void handleStop(entry)}
+                onDelete={(entry) => void handleDelete(entry)}
+                onAdd={(dayKey) =>
+                  setDialog({
+                    open: true,
+                    entry: null,
+                    defaults: { technicianId: s.technician.id, dayKey },
+                  })
+                }
+              />
+            ))
+        )}
+      </div>
+
+      {printing && (
+        <div className="hidden" aria-hidden="true">
+          <div ref={printRef}>
+            <TimesheetPrintSheet
+              title={t('title')}
+              range={
+                data.fromKey === data.toKey
+                  ? formatDate(noonOf(data.fromKey))
+                  : `${formatDate(noonOf(data.fromKey))} – ${formatDate(noonOf(data.toKey))}`
+              }
+              technician={
+                data.technicians.find((tech) => tech.id === technicianId)?.name ??
+                t('allTechnicians')
+              }
+              zoneNote={tDialog('timesInWorkshopZone', { zone: timeZone })}
+              groups={groups.map((group) => ({ ...group, label: groupLabel(group) }))}
+              now={now}
+              formatDate={formatDate}
+              formatTime={formatTime}
+            />
+          </div>
+        </div>
       )}
 
       <TimeEntryDialog
@@ -692,8 +846,9 @@ function DayGrid({
     return h === 0 ? `${m}m` : m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, '0')}`
   }
 
+  // isolate: the pinned first column must not climb over the page header.
   return (
-    <div className="overflow-x-auto">
+    <div className="isolate overflow-x-auto">
       <table className="w-full border-collapse text-xs">
         <thead>
           <tr className="border-b">
@@ -855,7 +1010,7 @@ function TechnicianCard({
         <section
           key={day.key}
           id={`day-${sheet.technician.id}-${day.key}`}
-          className="scroll-mt-20"
+          className="scroll-mt-20 md:scroll-mt-32"
         >
           <div className="flex items-center gap-2 border-b bg-muted/30 px-3 py-1.5 text-xs">
             <span className="font-medium">{dayLabel(day.key, 'long')}</span>
@@ -923,10 +1078,58 @@ type RowProps = {
   now: Date
   canEdit: boolean
   formatTime: (date: string) => string
+  /** Given where a row is not already under its technician and day. */
+  formatDate?: (date: string) => string
   stoppingId: string | null
   onEdit: (entry: SheetEntry) => void
   onStop: (entry: SheetEntry) => void
   onDelete: (entry: SheetEntry) => void
+}
+
+/** One client's or vehicle's entries, across technicians and days. */
+function GroupCard({
+  title,
+  group,
+  ...row
+}: { title: string; group: EntryGroup } & Omit<RowProps, 'entry'>) {
+  return (
+    <AppCard title={title} badge={formatMinutes(group.minutes)} contentClassName="p-0">
+      {/* Table above md */}
+      <table className="hidden w-full text-sm md:table">
+        <tbody>
+          {group.entries.map((e) => (
+            <EntryRow key={e.id} entry={e} {...row} />
+          ))}
+        </tbody>
+      </table>
+
+      {/* Cards below md */}
+      <ul className="divide-y md:hidden">
+        {group.entries.map((e) => (
+          <EntryCard key={e.id} entry={e} {...row} />
+        ))}
+      </ul>
+    </AppCard>
+  )
+}
+
+function EntryWho({
+  entry,
+  formatDate,
+}: {
+  entry: SheetEntry
+  formatDate: (date: string) => string
+}) {
+  return (
+    <span className="inline-flex items-center gap-2 whitespace-nowrap">
+      <span
+        className="size-2 shrink-0 rounded-full"
+        style={{ backgroundColor: entry.technicianColor }}
+      />
+      <span className="font-medium">{entry.technicianName}</span>
+      <span className="text-xs text-muted-foreground">{formatDate(entry.startedAt)}</span>
+    </span>
+  )
 }
 
 function EntryActions({ entry, canEdit, stoppingId, onEdit, onStop, onDelete }: RowProps) {
@@ -973,11 +1176,16 @@ function EntryActions({ entry, canEdit, stoppingId, onEdit, onStop, onDelete }: 
 }
 
 function EntryRow(props: RowProps) {
-  const { entry, now, formatTime } = props
+  const { entry, now, formatTime, formatDate } = props
   const t = useTranslations('timeTracking.page.table')
   const running = !entry.endedAt
   return (
     <tr className={cn('border-b last:border-b-0', running && 'bg-primary/5')}>
+      {formatDate && (
+        <td className="px-3 py-2">
+          <EntryWho entry={entry} formatDate={formatDate} />
+        </td>
+      )}
       <td className="whitespace-nowrap px-3 py-2 font-mono text-xs tabular-nums text-muted-foreground">
         {formatTime(entry.startedAt)}
         <span className="mx-1 opacity-60">–</span>
@@ -996,6 +1204,9 @@ function EntryRow(props: RowProps) {
         <Link href={jobHref(entry)} className="block truncate hover:underline">
           {entry.job.title}
         </Link>
+        {entry.job.clientName && (
+          <div className="truncate text-xs text-muted-foreground">{entry.job.clientName}</div>
+        )}
       </td>
       <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">
         {entry.job.licensePlate ? (
@@ -1026,12 +1237,13 @@ function EntryRow(props: RowProps) {
 }
 
 function EntryCard(props: RowProps) {
-  const { entry, now, formatTime } = props
+  const { entry, now, formatTime, formatDate } = props
   const t = useTranslations('timeTracking.page.table')
   const running = !entry.endedAt
   return (
     <li className={cn('flex items-start gap-3 px-3 py-2.5', running && 'bg-primary/5')}>
       <div className="min-w-0 flex-1 space-y-1">
+        {formatDate && <EntryWho entry={entry} formatDate={formatDate} />}
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs tabular-nums text-muted-foreground">
             {formatTime(entry.startedAt)}
@@ -1051,6 +1263,9 @@ function EntryCard(props: RowProps) {
         <Link href={jobHref(entry)} className="block truncate text-sm hover:underline">
           {entry.job.title}
         </Link>
+        {entry.job.clientName && (
+          <div className="truncate text-xs text-muted-foreground">{entry.job.clientName}</div>
+        )}
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           {entry.job.licensePlate && (
             <span className="rounded border px-1 font-mono text-[11px] font-semibold uppercase text-foreground">

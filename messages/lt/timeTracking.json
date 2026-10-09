@@ -44,6 +44,20 @@
     "apply": "Taikyti",
     "allTechnicians": "Visi technikai",
     "export": "Eksportuoti CSV",
+    "print": "Spausdinti darbo laiko žiniaraštį",
+    "client": "Klientas",
+    "noClient": "Nėra kliento",
+    "signature": "Parašas",
+    "sortBy": "Rikiuoti pagal",
+    "sort": {
+      "default": "Technikas / diena",
+      "client": "Klientas",
+      "vehicle": "Transporto priemonė",
+      "clientVehicle": "Klientas, tada transporto priemonė"
+    },
+    "sortDirection": "Rikiavimo kryptis",
+    "ascending": "Didėjančia tvarka",
+    "descending": "Mažėjančia tvarka",
     "addEntry": "Pridėti įrašą",
     "stats": {
       "total": "Bendras laikas",
@@ -101,6 +115,7 @@
       "duration": "Trukmė",
       "hours": "Valandos",
       "job": "Darbas",
+      "client": "Klientas",
       "vehicle": "Transporto priemonė",
       "plate": "Numeris",
       "source": "Šaltinis",

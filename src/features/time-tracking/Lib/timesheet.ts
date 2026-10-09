@@ -31,7 +31,86 @@ export interface SheetEntry {
     vehicleId: string | null
     vehicleLabel: string | null
     licensePlate: string | null
+    clientName?: string | null
   }
+}
+
+export type TimesheetSort = 'default' | 'client' | 'vehicle' | 'clientVehicle'
+export type SortDirection = 'asc' | 'desc'
+
+/** Sort a copy, with missing clients/vehicles last in either direction. */
+export function sortTimesheetEntries(
+  entries: SheetEntry[],
+  sort: TimesheetSort,
+  direction: SortDirection = 'asc',
+  locale?: string
+): SheetEntry[] {
+  if (sort === 'default') return [...entries]
+  const collator = new Intl.Collator(locale, { sensitivity: 'base', numeric: true })
+  const compare = (a: string | null | undefined, b: string | null | undefined) => {
+    if (!a || !b) return a ? -1 : b ? 1 : 0
+    return collator.compare(a, b) * (direction === 'asc' ? 1 : -1)
+  }
+  return [...entries].sort((a, b) => {
+    const client = sort !== 'vehicle' ? compare(a.job.clientName, b.job.clientName) : 0
+    const vehicle =
+      sort !== 'client'
+        ? compare(a.job.vehicleLabel, b.job.vehicleLabel) ||
+          compare(a.job.licensePlate, b.job.licensePlate)
+        : 0
+    return client || vehicle || b.startedAt.localeCompare(a.startedAt) || a.id.localeCompare(b.id)
+  })
+}
+
+export interface EntryGroup {
+  key: string
+  /** Null when the grouping does not involve that field. */
+  technicianName: string | null
+  clientName: string | null
+  /** Set when the group is one vehicle, or the jobs with none. */
+  vehicle: { label: string | null; licensePlate: string | null } | null
+  entries: SheetEntry[]
+  minutes: number
+}
+
+/**
+ * Entries under the headings a sort implies: one group per client, per
+ * vehicle, or per client's vehicle, and per technician for the default.
+ * Groups come in the order their first entry does, so a sorted list stays
+ * sorted; minutes are whole entries, as the day lists and the CSV count them.
+ */
+export function groupTimesheetEntries(
+  entries: SheetEntry[],
+  sort: TimesheetSort,
+  now: Date
+): EntryGroup[] {
+  const byClient = sort === 'client' || sort === 'clientVehicle'
+  const byVehicle = sort === 'vehicle' || sort === 'clientVehicle'
+  const groups = new Map<string, EntryGroup>()
+  for (const entry of entries) {
+    const { job } = entry
+    const key =
+      sort === 'default'
+        ? entry.technicianId
+        : [byClient ? (job.clientName ?? '') : null, byVehicle ? (job.vehicleId ?? '') : null]
+            .filter((part) => part !== null)
+            .join('\u0000')
+    let group = groups.get(key)
+    if (!group) {
+      group = {
+        key,
+        technicianName: sort === 'default' ? entry.technicianName : null,
+        clientName: byClient ? (job.clientName ?? null) : null,
+        vehicle: byVehicle ? { label: job.vehicleLabel, licensePlate: job.licensePlate } : null,
+        entries: [],
+        minutes: 0,
+      }
+      groups.set(key, group)
+    }
+    group.entries.push(entry)
+    group.minutes += entryMinutes(entry, now)
+  }
+  return [...groups.values()]
 }
 
 export interface SheetTechnician {

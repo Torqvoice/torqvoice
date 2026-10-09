@@ -288,7 +288,15 @@ export const entrySelect = {
       title: true,
       status: true,
       vehicleId: true,
-      vehicle: { select: { make: true, model: true, licensePlate: true } },
+      customer: { select: { name: true } },
+      vehicle: {
+        select: {
+          make: true,
+          model: true,
+          licensePlate: true,
+          customer: { select: { name: true } },
+        },
+      },
     },
   },
 } as const

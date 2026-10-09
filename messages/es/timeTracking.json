@@ -44,6 +44,20 @@
     "apply": "Aplicar",
     "allTechnicians": "Todos los técnicos",
     "export": "Exportar CSV",
+    "print": "Imprimir hoja de horas",
+    "client": "Cliente",
+    "noClient": "Sin cliente",
+    "signature": "Firma",
+    "sortBy": "Ordenar por",
+    "sort": {
+      "default": "Técnico / día",
+      "client": "Cliente",
+      "vehicle": "Vehículo",
+      "clientVehicle": "Cliente, luego vehículo"
+    },
+    "sortDirection": "Sentido de ordenación",
+    "ascending": "Ascendente",
+    "descending": "Descendente",
     "addEntry": "Añadir entrada",
     "stats": {
       "total": "Tiempo total",
@@ -101,6 +115,7 @@
       "duration": "Duración",
       "hours": "Horas",
       "job": "Trabajo",
+      "client": "Cliente",
       "vehicle": "Vehículo",
       "plate": "Matrícula",
       "source": "Origen",

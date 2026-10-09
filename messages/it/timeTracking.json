@@ -44,6 +44,20 @@
     "apply": "Applica",
     "allTechnicians": "Tutti i tecnici",
     "export": "Esporta CSV",
+    "print": "Stampa foglio ore",
+    "client": "Cliente",
+    "noClient": "Nessun cliente",
+    "signature": "Firma",
+    "sortBy": "Ordina per",
+    "sort": {
+      "default": "Tecnico / giorno",
+      "client": "Cliente",
+      "vehicle": "Veicolo",
+      "clientVehicle": "Cliente, poi veicolo"
+    },
+    "sortDirection": "Direzione di ordinamento",
+    "ascending": "Crescente",
+    "descending": "Decrescente",
     "addEntry": "Aggiungi voce",
     "stats": {
       "total": "Tempo totale",
@@ -101,6 +115,7 @@
       "duration": "Durata",
       "hours": "Ore",
       "job": "Lavoro",
+      "client": "Cliente",
       "vehicle": "Veicolo",
       "plate": "Targa",
       "source": "Origine",
