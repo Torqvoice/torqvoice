@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
@@ -166,6 +166,19 @@ export default function TimesheetsClient({
   const [technicianId, setTechnicianId] = useState<string>('all')
   const [sortBy, setSortBy] = useState<TimesheetSort>('default')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+  // A new order is a new list, and usually a shorter one: left alone, the
+  // browser clamps the scroll to wherever the page now ends. If the reader was
+  // already down among the entries, put them at the start of the new list.
+  const entriesRef = useRef<HTMLDivElement>(null)
+  const lastSort = useRef(`${sortBy}:${sortDirection}`)
+  useLayoutEffect(() => {
+    const sort = `${sortBy}:${sortDirection}`
+    if (lastSort.current === sort) return
+    lastSort.current = sort
+    const el = entriesRef.current
+    if (el && el.getBoundingClientRect().top < 128) el.scrollIntoView({ block: 'start' })
+  }, [sortBy, sortDirection])
+
   // The print copy exists only while a print is being handed to the browser.
   const [printing, setPrinting] = useState(false)
   const printRef = useRef<HTMLDivElement>(null)
@@ -596,61 +609,63 @@ export default function TimesheetsClient({
       )}
 
       {/* ── Entries ─────────────────────────────────────────────────────── */}
-      {sheet.totalMinutes === 0 && sheet.runningCount === 0 ? (
-        <div className="rounded-xl border border-dashed p-10 text-center">
-          <Timer className="mx-auto mb-3 size-8 text-muted-foreground/60" />
-          <p className="font-medium">{t('empty.title')}</p>
-          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            {data.technicians.length === 0 ? t('empty.noTechnicians') : t('empty.body')}
-          </p>
-          {data.technicians.length === 0 && (
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <Link href="/settings/team">{t('empty.teamLink')}</Link>
-            </Button>
-          )}
-        </div>
-      ) : sortBy !== 'default' ? (
-        groups.map((group) => (
-          <GroupCard
-            key={group.key}
-            title={groupLabel(group)}
-            group={group}
-            now={now}
-            canEdit={data.canEdit}
-            formatDate={formatDate}
-            formatTime={formatTime}
-            stoppingId={stoppingId}
-            onEdit={(entry) => setDialog({ open: true, entry })}
-            onStop={(entry) => void handleStop(entry)}
-            onDelete={(entry) => void handleDelete(entry)}
-          />
-        ))
-      ) : (
-        sheet.technicians
-          .filter((s) => s.entries.length > 0)
-          .map((s) => (
-            <TechnicianCard
-              key={s.technician.id}
-              sheet={s}
+      <div ref={entriesRef} className="scroll-mt-20 space-y-4 md:scroll-mt-32">
+        {sheet.totalMinutes === 0 && sheet.runningCount === 0 ? (
+          <div className="rounded-xl border border-dashed p-10 text-center">
+            <Timer className="mx-auto mb-3 size-8 text-muted-foreground/60" />
+            <p className="font-medium">{t('empty.title')}</p>
+            <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+              {data.technicians.length === 0 ? t('empty.noTechnicians') : t('empty.body')}
+            </p>
+            {data.technicians.length === 0 && (
+              <Button asChild variant="outline" size="sm" className="mt-4">
+                <Link href="/settings/team">{t('empty.teamLink')}</Link>
+              </Button>
+            )}
+          </div>
+        ) : sortBy !== 'default' ? (
+          groups.map((group) => (
+            <GroupCard
+              key={group.key}
+              title={groupLabel(group)}
+              group={group}
               now={now}
-              timeZone={timeZone}
               canEdit={data.canEdit}
-              dayLabel={dayLabel}
+              formatDate={formatDate}
               formatTime={formatTime}
               stoppingId={stoppingId}
               onEdit={(entry) => setDialog({ open: true, entry })}
               onStop={(entry) => void handleStop(entry)}
               onDelete={(entry) => void handleDelete(entry)}
-              onAdd={(dayKey) =>
-                setDialog({
-                  open: true,
-                  entry: null,
-                  defaults: { technicianId: s.technician.id, dayKey },
-                })
-              }
             />
           ))
-      )}
+        ) : (
+          sheet.technicians
+            .filter((s) => s.entries.length > 0)
+            .map((s) => (
+              <TechnicianCard
+                key={s.technician.id}
+                sheet={s}
+                now={now}
+                timeZone={timeZone}
+                canEdit={data.canEdit}
+                dayLabel={dayLabel}
+                formatTime={formatTime}
+                stoppingId={stoppingId}
+                onEdit={(entry) => setDialog({ open: true, entry })}
+                onStop={(entry) => void handleStop(entry)}
+                onDelete={(entry) => void handleDelete(entry)}
+                onAdd={(dayKey) =>
+                  setDialog({
+                    open: true,
+                    entry: null,
+                    defaults: { technicianId: s.technician.id, dayKey },
+                  })
+                }
+              />
+            ))
+        )}
+      </div>
 
       {printing && (
         <div className="hidden" aria-hidden="true">
