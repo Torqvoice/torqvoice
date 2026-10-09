@@ -44,6 +44,20 @@
     "apply": "Apply",
     "allTechnicians": "All technicians",
     "export": "Export CSV",
+    "print": "Print timesheet",
+    "client": "Client",
+    "noClient": "No client",
+    "signature": "Signature",
+    "sortBy": "Sort by",
+    "sort": {
+      "default": "Technician / day",
+      "client": "Client",
+      "vehicle": "Vehicle",
+      "clientVehicle": "Client, then vehicle"
+    },
+    "sortDirection": "Sort direction",
+    "ascending": "Ascending",
+    "descending": "Descending",
     "addEntry": "Add entry",
     "stats": {
       "total": "Total time",
@@ -101,6 +115,7 @@
       "duration": "Duration",
       "hours": "Hours",
       "job": "Job",
+      "client": "Client",
       "vehicle": "Vehicle",
       "plate": "Plate",
       "source": "Source",

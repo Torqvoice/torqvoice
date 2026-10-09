@@ -44,6 +44,20 @@
     "apply": "Toepassen",
     "allTechnicians": "Alle monteurs",
     "export": "CSV exporteren",
+    "print": "Urenstaat afdrukken",
+    "client": "Klant",
+    "noClient": "Geen klant",
+    "signature": "Handtekening",
+    "sortBy": "Sorteren op",
+    "sort": {
+      "default": "Monteur / dag",
+      "client": "Klant",
+      "vehicle": "Voertuig",
+      "clientVehicle": "Klant, daarna voertuig"
+    },
+    "sortDirection": "Sorteerrichting",
+    "ascending": "Oplopend",
+    "descending": "Aflopend",
     "addEntry": "Registratie toevoegen",
     "stats": {
       "total": "Totale tijd",
@@ -101,6 +115,7 @@
       "duration": "Duur",
       "hours": "Uren",
       "job": "Klus",
+      "client": "Klant",
       "vehicle": "Voertuig",
       "plate": "Kenteken",
       "source": "Bron",

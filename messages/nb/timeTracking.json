@@ -44,6 +44,20 @@
     "apply": "Bruk",
     "allTechnicians": "Alle teknikere",
     "export": "Eksporter CSV",
+    "print": "Skriv ut timeliste",
+    "client": "Kunde",
+    "noClient": "Ingen kunde",
+    "signature": "Signatur",
+    "sortBy": "Sorter etter",
+    "sort": {
+      "default": "Tekniker / dag",
+      "client": "Kunde",
+      "vehicle": "Kjøretøy",
+      "clientVehicle": "Kunde, deretter kjøretøy"
+    },
+    "sortDirection": "Sorteringsretning",
+    "ascending": "Stigende",
+    "descending": "Synkende",
     "addEntry": "Legg til oppføring",
     "stats": {
       "total": "Total tid",
@@ -101,6 +115,7 @@
       "duration": "Varighet",
       "hours": "Timer",
       "job": "Jobb",
+      "client": "Kunde",
       "vehicle": "Kjøretøy",
       "plate": "Skilt",
       "source": "Kilde",

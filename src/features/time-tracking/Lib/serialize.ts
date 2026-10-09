@@ -18,7 +18,13 @@ export interface EntryRow {
     title: string
     status: string
     vehicleId: string | null
-    vehicle: { make: string; model: string; licensePlate: string | null } | null
+    customer?: { name: string } | null
+    vehicle: {
+      make: string
+      model: string
+      licensePlate: string | null
+      customer?: { name: string } | null
+    } | null
   }
 }
 
@@ -62,6 +68,7 @@ export async function toSheetEntries(rows: EntryRow[]): Promise<SheetEntry[]> {
         vehicleId: r.serviceRecord.vehicleId,
         vehicleLabel,
         licensePlate: v?.licensePlate ?? null,
+        clientName: v ? (v.customer?.name ?? null) : (r.serviceRecord.customer?.name ?? null),
       },
     }
   })

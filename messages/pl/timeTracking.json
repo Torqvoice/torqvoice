@@ -44,6 +44,20 @@
     "apply": "Zastosuj",
     "allTechnicians": "Wszyscy technicy",
     "export": "Eksportuj CSV",
+    "print": "Drukuj ewidencję czasu",
+    "client": "Klient",
+    "noClient": "Brak klienta",
+    "signature": "Podpis",
+    "sortBy": "Sortuj według",
+    "sort": {
+      "default": "Technik / dzień",
+      "client": "Klient",
+      "vehicle": "Pojazd",
+      "clientVehicle": "Klient, następnie pojazd"
+    },
+    "sortDirection": "Kierunek sortowania",
+    "ascending": "Rosnąco",
+    "descending": "Malejąco",
     "addEntry": "Dodaj wpis",
     "stats": {
       "total": "Łączny czas",
@@ -101,6 +115,7 @@
       "duration": "Czas trwania",
       "hours": "Godziny",
       "job": "Zlecenie",
+      "client": "Klient",
       "vehicle": "Pojazd",
       "plate": "Rejestracja",
       "source": "Źródło",

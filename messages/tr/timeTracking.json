@@ -44,6 +44,20 @@
     "apply": "Uygula",
     "allTechnicians": "Tüm teknisyenler",
     "export": "CSV dışa aktar",
+    "print": "Zaman çizelgesini yazdır",
+    "client": "Müşteri",
+    "noClient": "Müşteri yok",
+    "signature": "İmza",
+    "sortBy": "Sıralama ölçütü",
+    "sort": {
+      "default": "Teknisyen / gün",
+      "client": "Müşteri",
+      "vehicle": "Araç",
+      "clientVehicle": "Müşteri, ardından araç"
+    },
+    "sortDirection": "Sıralama yönü",
+    "ascending": "Artan",
+    "descending": "Azalan",
     "addEntry": "Kayıt ekle",
     "stats": {
       "total": "Toplam süre",
@@ -101,6 +115,7 @@
       "duration": "Süre",
       "hours": "Saat",
       "job": "İş",
+      "client": "Müşteri",
       "vehicle": "Araç",
       "plate": "Plaka",
       "source": "Kaynak",
