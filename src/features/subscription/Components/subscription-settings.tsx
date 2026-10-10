@@ -261,19 +261,32 @@ export function SubscriptionSettings({
     new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency.toUpperCase(),
-      minimumFractionDigits: 0,
+      // Whole amounts stay bare; anything else gets both decimals ("$14.50").
+      minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
       maximumFractionDigits: 2,
     }).format(amount)
   const priceLine = (selectedPlan: BillingPlan): string | null => {
     const price = prices?.[selectedPlan]?.[interval]
     if (!price) return null
+    // With a discount on, the line states what checkout will charge.
+    const amount = price.discount?.amount ?? price.amount
     if (interval === 'month') {
-      return `${formatPrice(price.amount, price.currency)}/${t('subscription.perMonth')}`
+      return `${formatPrice(amount, price.currency)}/${t('subscription.perMonth')}`
     }
-    const perMonth = formatPrice(price.amount / 12, price.currency)
+    const perMonth = formatPrice(amount / 12, price.currency)
     return `${perMonth}/${t('subscription.perMonth')} · ${t('subscription.billedAnnually', {
-      amount: formatPrice(price.amount, price.currency),
+      amount: formatPrice(amount, price.currency),
     })}`
+  }
+  // A discount that ends says what the plan costs afterwards.
+  const discountEnds = (selectedPlan: BillingPlan): string | null => {
+    const price = prices?.[selectedPlan]?.[interval]
+    const discount = price?.discount
+    if (!price || !discount || discount.duration === 'forever') return null
+    const amount = formatPrice(price.amount, price.currency)
+    return discount.duration === 'once'
+      ? t('subscription.discountOnce', { amount })
+      : t('subscription.discountRepeating', { months: discount.durationInMonths ?? 1, amount })
   }
 
   // The annual saving against twelve monthly payments, from the Pro prices.
@@ -282,6 +295,16 @@ export function SubscriptionSettings({
     const yearly = prices?.pro?.year?.amount
     if (!monthly || !yearly) return 0
     return Math.round((1 - yearly / (monthly * 12)) * 100)
+  })()
+  // The same saving as whole months left out ("2 months free"), when the
+  // prices work out that way; 0 when they do not and the percentage is shown.
+  const annualFreeMonths = (() => {
+    const monthly = prices?.pro?.month?.amount
+    const yearly = prices?.pro?.year?.amount
+    if (!monthly || !yearly) return 0
+    const months = 12 - yearly / monthly
+    const whole = Math.round(months)
+    return whole >= 1 && Math.abs(months - whole) < 0.01 ? whole : 0
   })()
   const offers = (selectedInterval: BillingInterval) =>
     Boolean(prices?.pro?.[selectedInterval] || prices?.enterprise?.[selectedInterval])
@@ -468,7 +491,9 @@ export function SubscriptionSettings({
                       : t('subscription.billingAnnual')}
                     {value === 'year' && annualSaving > 0 && (
                       <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
-                        {t('subscription.billingSave', { percent: annualSaving })}
+                        {annualFreeMonths > 0
+                          ? t('subscription.billingMonthsFree', { months: annualFreeMonths })
+                          : t('subscription.billingSave', { percent: annualSaving })}
                       </span>
                     )}
                   </button>
@@ -479,6 +504,9 @@ export function SubscriptionSettings({
           <div className="grid gap-3 sm:grid-cols-2">
             {(['pro', 'enterprise'] as const).map((offer) => {
               const line = priceLine(offer)
+              const price = prices?.[offer]?.[interval]
+              const discount = price?.discount
+              const ends = discountEnds(offer)
               const available = prices === null || Boolean(prices[offer]?.[interval])
               return (
                 <div key={offer} className="flex flex-col gap-2 rounded-md border p-3">
@@ -493,8 +521,31 @@ export function SubscriptionSettings({
                         ? t('subscription.planPro')
                         : t('subscription.planEnterprise')}
                     </span>
+                    {price && discount && (
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
+                        {discount.name ? `${discount.name} · ` : ''}
+                        {t('subscription.discountBadge', {
+                          value: discount.percentOff
+                            ? `${discount.percentOff}%`
+                            : formatPrice(discount.amountOff ?? 0, price.currency),
+                        })}
+                      </span>
+                    )}
                   </div>
-                  {line && <p className="text-sm text-muted-foreground">{line}</p>}
+                  {line && (
+                    <p className="text-sm text-muted-foreground">
+                      {price && discount && (
+                        <span className="mr-1.5 line-through">
+                          {formatPrice(
+                            price.amount / (interval === 'year' ? 12 : 1),
+                            price.currency
+                          )}
+                        </span>
+                      )}
+                      {line}
+                    </p>
+                  )}
+                  {ends && <p className="text-xs text-muted-foreground">{ends}</p>}
                   <Button
                     variant={offer === 'pro' ? 'default' : 'outline'}
                     size="sm"

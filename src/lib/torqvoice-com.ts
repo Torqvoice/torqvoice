@@ -257,10 +257,28 @@ export function billingErrorResponse(error: unknown, fallback: string) {
   return NextResponse.json({ error: fallback }, { status: 500 })
 }
 
+/**
+ * The discount torqvoice.com takes off a new purchase at checkout, when one
+ * is on: a Stripe coupon it reads there. Amounts are in whole currency units.
+ */
+export type BillingPriceDiscount = {
+  /** the coupon's name in Stripe, shown beside the amount off */
+  name?: string
+  /** what the plan costs with the discount */
+  amount: number
+  percentOff?: number
+  amountOff?: number
+  /** once: the first payment; repeating: `durationInMonths`; forever: every payment */
+  duration: 'once' | 'repeating' | 'forever'
+  durationInMonths?: number
+}
+
 /** What torqvoice.com sells today, per plan and billing interval. */
 export type BillingPriceList = Record<
   BillingPlan,
-  Partial<Record<BillingInterval, { amount: number; currency: string }>>
+  Partial<
+    Record<BillingInterval, { amount: number; currency: string; discount?: BillingPriceDiscount }>
+  >
 >
 
 /**
