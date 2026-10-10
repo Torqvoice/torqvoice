@@ -188,6 +188,7 @@
     "signature_remove": "Removed Signature",
     "conditionMark_add": "Added a condition mark",
     "conditionMark_remove": "Removed a condition mark",
+    "conditionMark_carry": "Confirmed earlier condition marks",
     "conditionMark_onInvoice": "Condition map on invoice",
     "settings_markType_create": "Added a kind of mark",
     "settings_markType_update": "Changed a kind of mark",
@@ -234,6 +235,7 @@
     "payment_delete": "Deleted payment {id}",
     "quoteRequest_update": "Updated quote request status to {status, select, pending {pending} approved {approved} rejected {rejected} completed {completed} other {{status}}}",
     "quote_convert": "Converted quote {ref} to service record {serviceRecordId}",
+    "quote_convert_existing": "Added quote {ref} to existing work order {jobRef}",
     "quote_create": "Created quote {ref}",
     "quote_delete": "Deleted quote {ref}",
     "quote_status": "Changed quote status to {status, select, draft {draft} sent {sent} accepted {accepted} rejected {rejected} expired {expired} converted {converted} other {{status}}}",
@@ -342,6 +344,7 @@
     "inspection_phoneUpload": "Added a file from a phone to inspection {ref}",
     "condition_mark_add": "Added a mark to the condition map",
     "condition_mark_remove": "Removed a mark from the condition map",
+    "condition_mark_carry": "Confirmed {count, plural, one {# earlier mark} other {# earlier marks}} as still there on the condition map",
     "condition_map_on_invoice_on": "Printed the condition map on the invoice",
     "condition_map_on_invoice_off": "Left the condition map off the invoice"
   }

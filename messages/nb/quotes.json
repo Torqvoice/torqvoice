@@ -36,6 +36,45 @@
     "selectVehicle": "Vennligst velg et kjøretøy",
     "convertTitle": "Konverter tilbud til arbeidsordre",
     "convertDescription": "Dette vil opprette en ny servicepost (arbeidsordre) fra dette tilbudet. Velg et kjøretøy for arbeidsordren.",
+    "convertChoiceDescription": "Velg et kjøretøy, og opprett en ny arbeidsordre fra tilbudet eller legg det til en som allerede er åpen.",
+    "convertNew": "Opprett en ny arbeidsordre",
+    "convertExisting": "Legg til en eksisterende arbeidsordre",
+    "convertExistingHint": "Tilbudets deler, arbeid og filer legges til arbeidsordren. Det som allerede står på den, blir stående som det er.",
+    "convertNoOpenWorkOrders": "Dette kjøretøyet har ingen åpne arbeidsordrer.",
+    "convertSelectWorkOrder": "Velg en arbeidsordre",
+    "convertAdd": "Legg til arbeidsordre",
+    "convertConflicts": {
+      "heading": "Før du legger til: bestem hva arbeidsordren beholder",
+      "checking": "Sammenligner tilbudet med arbeidsordren...",
+      "unanswered": "Velg hva arbeidsordren beholder før tilbudet legges til.",
+      "discount": {
+        "title": "Rabatt",
+        "summary": "Arbeidsordren har {percent} % rabatt, {jobAmount} slik den står nå. Tilbudet har en rabatt på {quoteAmount}.",
+        "keepJob": "Behold {percent} % rabatt og dropp tilbudets {quoteAmount}",
+        "combine": "Gjør {percent} % om til {jobAmount} og legg til tilbudets {quoteAmount}, {total} til sammen"
+      },
+      "tax": {
+        "title": "Avgift",
+        "summary": "Arbeidsordren er priset med {job}. Tilbudet ble priset med {quote}.",
+        "keepJob": "Behold arbeidsordrens avgift. Tilbudets linjer kommer over med beløpene som ble tilbudt.",
+        "useQuote": "Bytt arbeidsordren til tilbudets avgift. Alt på den summeres på nytt.",
+        "inclusive": "{rate} % avgift inkludert i linjene",
+        "exclusive": "{rate} % avgift lagt til",
+        "components": "{rate} % avgift ({names})"
+      },
+      "warranty": {
+        "title": "Garanti",
+        "summary": "Arbeidsordren sier {job}. Tilbudet kunden godtok sier {quote}.",
+        "keepJob": "Behold arbeidsordrens garanti",
+        "useQuote": "Bruk tilbudets garanti, slik kunden godtok den",
+        "none": "ingenting om garanti",
+        "notIncluded": "ingen verkstedgaranti",
+        "included": "garanti inkludert",
+        "includedWithTerms": "garanti inkludert, {terms}",
+        "months": "{count, plural, one {# måned} other {# måneder}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Konverter",
     "convertToWorkOrder": "Konverter til arbeidsordre",
     "cancel": "Avbryt",
@@ -68,6 +107,7 @@
     "title": "Deler",
     "addPart": "Legg til del",
     "partNumber": "Delnr.",
+    "category": "Kategori",
     "name": "Navn",
     "namePlaceholder": "Navn *",
     "qty": "Ant.",

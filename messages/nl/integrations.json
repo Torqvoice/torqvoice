@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Elke 30 minuten. Een betaling die in QuickBooks op een factuur van Torqvoice is ontvangen, wordt hier op de factuur geregistreerd."
       }
     },
+    "fiken": {
+      "description": "Stuur uitgegeven facturen, hun klanten en hun betalingen naar Fiken en haal daar geregistreerde betalingen terug.",
+      "tenantHelp": "Maak in Fiken onder Rediger konto, API een app aan voor je eigen bedrijven. Vul de redirect-URI hieronder in bij de app en kopieer de client-ID en het client-secret hierheen. Het bedrijf heeft de API-module van Fiken nodig.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "companySlug": "Bedrijf in Fiken",
+        "companySlugHelp": "Het bedrijf in wiens boekhouding de facturen komen. Je Fiken-gebruiker kan toegang hebben tot meerdere.",
+        "pushInvoices": "Uitgegeven facturen naar Fiken sturen",
+        "pushOnComplete": "Facturen ook sturen zodra de klus als voltooid is gemarkeerd",
+        "pushOnCompleteHelp": "Zonder deze optie gaat een factuur over zodra hij is verzonden, gedeeld of betaald. Met deze optie gaat een voltooide klus direct over en wordt hij bijgewerkt als er iets verandert.",
+        "startDate": "Alleen facturen gedateerd op of na",
+        "startDateHelp": "Laat leeg om elke uitgegeven factuur te sturen. Gebruik de datum waarop je boekhouding naar Fiken is overgegaan, zodat oudere facturen niet dubbel worden ingevoerd.",
+        "attachPdf": "Factuur-pdf bijvoegen",
+        "attachPdfHelp": "Een factuur komt in Fiken als een verkoop (Annet salg) met zijn Torqvoice-nummer. Met dit aan wordt de pdf die de klant ontving als boekstuk bij de verkoop bewaard.",
+        "laborAccount": "Omzetrekening voor arbeid",
+        "laborAccountHelp": "Laat leeg om 3000 te gebruiken.",
+        "partsAccount": "Omzetrekening voor onderdelen",
+        "partsAccountHelp": "Laat leeg om 3000 te gebruiken.",
+        "zeroVatType": "Btw-type voor facturen zonder btw",
+        "zeroVatTypeHelp": "Hoe Fiken een verkoop zonder btw boekt. Een bedrijf dat niet btw-geregistreerd is, hoeft hier niets te kiezen. Een geregistreerd bedrijf moet kiezen voordat zo'n factuur wordt verzonden; vraag je boekhouder welke van toepassing is.",
+        "vatNone": "Geen (geen btw-behandeling)",
+        "vatExempt": "Vrijgesteld (fritatt)",
+        "vatOutside": "Buiten het btw-gebied (utenfor)",
+        "vatExport": "Vrijgesteld, export",
+        "vatReverse": "Vrijgesteld, verlegd",
+        "zeroAccount": "Omzetrekening voor facturen zonder btw",
+        "zeroAccountHelp": "Laat leeg om de rekeningen voor arbeid en onderdelen hierboven te gebruiken. Weigert Fiken de rekening met het btw-type, dan staat de reden in het activiteitenlogboek.",
+        "pushPayments": "Betalingen in Fiken registreren",
+        "paymentAccount": "Betalingen storten op",
+        "paymentAccountHelp": "Laat leeg om de eerste bankrekening van het bedrijf te gebruiken.",
+        "manualPaidAsPayment": "Een betaling registreren als een factuur handmatig als betaald wordt gemarkeerd",
+        "manualPaidAsPaymentHelp": "Een factuur die in Torqvoice zonder betalingsregistratie als betaald is gemarkeerd, krijgt in Fiken één betaling voor wat daar nog openstaat. Uit blijft hij daar open tot er een betaling wordt geregistreerd.",
+        "pullPayments": "In Fiken geregistreerde betalingen terughalen",
+        "pullPaymentsHelp": "Elke 30 minuten. Een betaling die in Fiken op een factuur van Torqvoice is ontvangen, wordt hier op de factuur geregistreerd."
+      }
+    },
     "nhtsa": {
       "description": "Vul een voertuig in vanuit het VIN en bekijk terugroepacties, klachten van eigenaren en botsproefscores per modeljaar, van de Amerikaanse verkeersveiligheidsautoriteit. Gratis, zonder sleutel.",
       "fields": {},

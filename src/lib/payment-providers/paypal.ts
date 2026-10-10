@@ -1,4 +1,5 @@
 import type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
+import { toPayPalValue } from './vendor-amounts'
 import { paypalApiBase } from './vendor-hosts'
 
 export interface PayPalConfig {
@@ -68,7 +69,7 @@ export class PayPalProvider implements PaymentProvider {
           {
             amount: {
               currency_code: req.currency,
-              value: req.amount.toFixed(2),
+              value: toPayPalValue(req.amount, req.currency),
             },
             description: req.description,
             invoice_id: req.invoiceNumber,

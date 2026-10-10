@@ -7,6 +7,7 @@ export const quotePartSchema = z.object({
   quantity: z.coerce.number().min(0).default(1),
   /** Unit of measure snapshotted from the picked inventory part. */
   unit: z.string().nullish(),
+  category: z.string().nullish(),
   unitCost: z.coerce.number().min(0).default(0),
   /**
    * Selling below cost is a real decision (a goodwill line, matching a price),

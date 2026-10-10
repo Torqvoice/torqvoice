@@ -1,7 +1,18 @@
 import 'server-only'
 
 import type { Dirent } from 'node:fs'
-import { constants, copyFile, lstat, mkdir, readdir, rename, rm, unlink } from 'node:fs/promises'
+import {
+  constants,
+  copyFile,
+  cp,
+  lstat,
+  mkdir,
+  readdir,
+  rename,
+  rm,
+  rmdir,
+  unlink,
+} from 'node:fs/promises'
 import path from 'node:path'
 import { isDemoMode } from '@/lib/demo'
 import { UPLOAD_CATEGORIES } from '@/lib/upload-url'
@@ -255,29 +266,67 @@ function organizationDir(root: string, organizationId: string): string | null {
 }
 
 /**
- * Everything a workshop uploaded, under every root, and its trash: only when
- * the workshop itself is deleted. Gone at once, not trashed: nothing of a
- * deleted workshop is kept.
+ * Moves a file or folder to `destination`, merging into a folder already
+ * there: each child is moved in turn, and a name already taken by something
+ * else gets a counter, as in trashFile, so nothing in the trash is ever
+ * overwritten. A trash on another disk is reached by copy and delete, since a
+ * rename cannot cross disks.
  */
-export async function removeOrganizationFiles(organizationId: string): Promise<void> {
+async function moveInto(source: string, destination: string): Promise<void> {
+  if (await taken(destination)) {
+    const [from, to] = await Promise.all([lstat(source), lstat(destination)])
+    if (from.isDirectory() && to.isDirectory()) {
+      for (const child of await readdir(source)) {
+        await moveInto(path.join(source, child), path.join(destination, child))
+      }
+      // Empty by now; rmdir rather than rm, so a child that somehow stayed
+      // behind stops the removal instead of being deleted with it.
+      await rmdir(source)
+      return
+    }
+    let free = destination
+    for (let n = 1; await taken(free); n++) free = `${destination}.${n}`
+    destination = free
+  }
+  await mkdir(path.dirname(destination), { recursive: true })
+  try {
+    await rename(source, destination)
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'EXDEV') throw err
+    await cp(source, destination, {
+      recursive: true,
+      errorOnExist: true,
+      force: false,
+      verbatimSymlinks: true,
+    })
+    await rm(source, { recursive: true, force: true })
+  }
+}
+
+/**
+ * Everything a workshop uploaded, under every root: only when the workshop
+ * itself is deleted. The folder is moved whole into that root's trash for
+ * today, `<uploads>/.trash/<date>/<org>`, which is the same layout a single
+ * released file lands in, so purgeTrash expires it TRASH_DAYS later like any
+ * other. It used to be removed at once, and one call from a hijacked or
+ * unattended session took every photo and document of the workshop beyond
+ * reach of anything but the server's own backup.
+ *
+ * Earlier trash of the workshop is left where it is, for the same reason.
+ */
+export async function removeOrganizationFiles(
+  organizationId: string,
+  { now = Date.now() }: { now?: number } = {}
+): Promise<void> {
+  const day = new Date(now).toISOString().slice(0, 10)
   for (const root of uploadsRoots()) {
     const dir = organizationDir(root, organizationId)
     if (!dir) return
-    await rm(dir, { recursive: true, force: true }).catch((err) =>
-      console.error(`[files] could not remove the uploads of ${organizationId}:`, err)
-    )
-    let days: Dirent[] = []
     try {
-      days = await readdir(path.join(path.resolve(root), TRASH), { withFileTypes: true })
-    } catch {
-      continue
-    }
-    for (const day of days) {
-      if (!day.isDirectory() || !DAY_FOLDER.test(day.name)) continue
-      await rm(path.join(path.resolve(root), TRASH, day.name, organizationId), {
-        recursive: true,
-        force: true,
-      }).catch(() => undefined)
+      if (!(await taken(dir))) continue
+      await moveInto(dir, path.join(path.resolve(root), TRASH, day, organizationId))
+    } catch (err) {
+      console.error(`[files] could not move the uploads of ${organizationId} to the trash:`, err)
     }
   }
 }

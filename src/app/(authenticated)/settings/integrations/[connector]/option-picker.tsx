@@ -53,6 +53,8 @@ export function OptionPicker({
           aria-expanded={open}
           disabled={disabled || loading}
           className="h-8 w-full justify-between font-normal"
+          // The button is narrow and cuts a long name short; hovering shows all of it.
+          title={label ?? undefined}
         >
           <span className={cn('truncate', !label && 'text-muted-foreground')}>
             {loading ? t('connection.loading') : (label ?? t('connection.choose'))}
@@ -64,7 +66,12 @@ export function OptionPicker({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-64 p-0" align="end">
+      {/* As wide as its longest entry, within the screen: an account is told
+          apart by the end of its name, which a list the width of the button cut off. */}
+      <PopoverContent
+        className="w-max min-w-[max(16rem,var(--radix-popover-trigger-width))] max-w-[min(32rem,calc(100vw-2rem))] p-0"
+        align="end"
+      >
         <Command>
           <CommandInput placeholder={t('connection.search')} />
           <CommandList>
@@ -94,9 +101,12 @@ export function OptionPicker({
                   }}
                 >
                   <Check
-                    className={cn('mr-2 h-4 w-4', o.value === value ? 'opacity-100' : 'opacity-0')}
+                    className={cn(
+                      'mr-2 h-4 w-4 shrink-0',
+                      o.value === value ? 'opacity-100' : 'opacity-0'
+                    )}
                   />
-                  <span className="truncate">{o.label}</span>
+                  <span className="min-w-0 break-words">{o.label}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

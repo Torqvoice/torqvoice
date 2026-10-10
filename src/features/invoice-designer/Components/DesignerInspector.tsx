@@ -34,6 +34,12 @@ import type { DesignerTemplate } from './types'
 /** Sections whose body is a table, and so offer line controls. */
 const TABLE_SECTIONS = new Set(['items_table', 'parts_table', 'labor_table', 'findings'])
 
+/**
+ * Tables of lines that can be divided by the parts' category. The labor table
+ * is not one: labor lines carry no category.
+ */
+const GROUPABLE_SECTIONS = new Set(['items_table', 'parts_table'])
+
 /** Sections that print a small heading of their own, which can be hidden. */
 const HEADED_SECTIONS = new Set([
   'customer',
@@ -581,6 +587,16 @@ export function DesignerInspector({
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">
                 {t('conditionMapWidthHint')}
               </p>
+              <Row label={t('conditionMapDense')}>
+                <Toggle
+                  on={style.dense === true}
+                  onChange={(on) => setStyle({ dense: on ? true : undefined })}
+                  testId="condition-map-dense"
+                />
+              </Row>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {t('conditionMapDenseHint')}
+              </p>
             </Group>
           )}
 
@@ -659,6 +675,24 @@ export function DesignerInspector({
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">
                 {section.id === 'items_table' ? t('itemsTableHint') : t('tablesExclusiveHint')}
               </p>
+            )}
+            {GROUPABLE_SECTIONS.has(section.id) && (
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('groupLines')}</div>
+                <Choice
+                  value={section.groupBy ?? 'none'}
+                  options={[
+                    { value: 'none', label: t('groupLinesOff') },
+                    { value: 'category', label: t('groupLinesCategory') },
+                  ]}
+                  onChange={(v) =>
+                    onSection(section.id, { groupBy: v === 'category' ? 'category' : undefined })
+                  }
+                />
+                <p className="mt-1.5 text-[11.5px] leading-snug text-[#8a8f97]">
+                  {t('groupLinesHint')}
+                </p>
+              </div>
             )}
             {COLUMN_ELIGIBLE_SECTIONS.has(section.id) && (
               <Choice

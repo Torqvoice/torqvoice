@@ -137,7 +137,7 @@ export function TreatmentCard({
             <Button variant="outline" size="sm" onClick={() => setEditing(false)} disabled={saving}>
               {t('common.cancel')}
             </Button>
-            <Button size="sm" onClick={handleSaveList} disabled={saving}>
+            <Button data-save-shortcut size="sm" onClick={handleSaveList} disabled={saving}>
               {saving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
               {t('common.save')}
             </Button>

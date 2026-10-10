@@ -39,6 +39,8 @@ export const invoiceSectionStyleSchema = z.object({
   outerBorder: z.boolean().optional(),
   /** Banding behind alternate rows for this table. Unset follows the sheet. */
   stripes: z.boolean().optional(),
+  /** Rows set close together, for a table that should take less of the page. */
+  dense: z.boolean().optional(),
   /** Body text size in points. Headings scale with it. */
   fontSize: z.number().min(5).max(24).optional(),
   /** Typeface for this section, from the families the app embeds. */
@@ -93,6 +95,14 @@ export const invoiceSectionSchema = z.object({
    * Blank or unset prints the document's own name in the reader's language.
    */
   text: z.string().max(60).optional(),
+  /**
+   * How a table of lines is divided. `category` prints the part lines under
+   * a heading per category with a subtotal for each, the way a long bill is
+   * easier to read when brakes, service and tyres are added up on their own.
+   * Only the items and parts tables offer it; labor lines have no category
+   * and print after the parts in their own group. Unset prints one flat list.
+   */
+  groupBy: z.enum(['category']).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
@@ -239,6 +249,12 @@ export const BUILTIN_SECTIONS = [
   { id: 'attached_documents', name: 'Attached Documents' },
   { id: 'warranty', name: 'Warranty' },
   { id: 'bank_account', name: 'Bank Account' },
+  // What the inspection linked to the job, or the one a quote was raised
+  // from, found: the certificate's own two blocks. In front of the condition
+  // map, so the inspection's findings and the body's sit together as the
+  // appendix. Off until a workshop wants the check's results on the bill.
+  { id: 'defects', name: 'Defects' },
+  { id: 'results_table', name: 'All Results' },
   // The car's condition this visit: the job's drop-off and the inspection
   // linked to it. Last, as an appendix: the bill first, then the record of
   // the dents that were already there. Off until a workshop wants it on
@@ -280,7 +296,8 @@ export const CERTIFICATE_SECTIONS = [
  * technician takes off the board. The invoice's sections, less what belongs
  * to a bill (bank details, payments), plus the facts of the job, the
  * customer's concerns, a checklist of the work and a code that opens the
- * job on a phone.
+ * job on a phone. The results of the inspection linked to the job can ride
+ * along, in the two sections the certificate prints them with.
  */
 export const WORK_ORDER_SECTIONS = [
   { id: 'header', name: 'Header' },
@@ -294,6 +311,10 @@ export const WORK_ORDER_SECTIONS = [
   { id: 'concerns', name: 'Customer Concerns' },
   { id: 'job_description', name: 'Work Requested' },
   { id: 'condition_map', name: 'Vehicle Condition' },
+  // What the inspection linked to the job found, drawn by the certificate's
+  // own blocks. Off until a workshop wants the check's results on the sheet.
+  { id: 'defects', name: 'Defects' },
+  { id: 'results_table', name: 'All Results' },
   { id: 'work_checklist', name: 'Work Checklist' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
@@ -450,6 +471,11 @@ export const BUILTIN_RESULT_FIELDS = [
 export const BUILTIN_DEFECTS_FIELDS = [
   { id: 'defect_notes', name: 'Notes' },
   { id: 'defect_photos', name: 'Photos' },
+  /**
+   * The line a car with nothing wrong prints under the heading. Off, a clean
+   * inspection prints no defects section at all.
+   */
+  { id: 'no_defects_note', name: 'Note when there are no defects' },
 ] as const
 
 /**
@@ -488,6 +514,11 @@ export const BUILTIN_RESULTS_TABLE_FIELDS = [
   { id: 'check_notes', name: 'Notes column' },
   /** Every check in one table with a section column, instead of a table per section. */
   { id: 'combined_table', name: 'One table' },
+  /**
+   * The checks nobody has graded yet, in their places with the grade left
+   * empty: an inspection that has not started prints as a sheet to fill in.
+   */
+  { id: 'ungraded_checks', name: 'Checks not graded yet' },
 ] as const
 
 /**
@@ -503,6 +534,9 @@ export const BUILTIN_RESULTS_TABLE_FIELDS = [
 export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
   bank_account: ['payment_terms', 'due_date'],
   document_title: ['title', 'invoice_number', 'customer_number', 'date', 'due_date'],
+  // "No deficiencies were recorded." printed on every clean certificate
+  // before a design could leave it out.
+  defects: ['no_defects_note'],
 }
 
 /** The ids of `sectionId`'s grandfathered fields that `fields` never mentions. */
@@ -606,6 +640,16 @@ export const FIXED_SLOT_FIELDS: Record<string, readonly string[]> = {
   // The signature sits on its line, the name under it and the date beside:
   // where each goes is the shape of a signature block, not an order.
   signature: ['signature_image', 'inspector_line', 'inspector_name', 'date_line', 'customer_line'],
+  // The inspection's two sections list switches, not rows: what a defect
+  // carries and which kinds of check the table prints. None has a position.
+  defects: ['defect_notes', 'defect_photos', 'no_defects_note'],
+  results_table: [
+    'passed_checks',
+    'not_applicable_checks',
+    'check_notes',
+    'combined_table',
+    'ungraded_checks',
+  ],
 }
 
 /** Whether this field prints where the list puts it, or in a slot of its own. */
@@ -731,8 +775,8 @@ function getDefaultFieldsForSection(
       return BUILTIN_DEFECTS_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'results_table':
       // Only the checks that were not OK, with their notes, a table per
-      // section: what a reader wants to know. Passed and not-applicable rows
-      // and the one-table form are switches a design turns on.
+      // section: what a reader wants to know. Passed, not-applicable and
+      // ungraded rows and the one-table form are switches a design turns on.
       return BUILTIN_RESULTS_TABLE_FIELDS.map((f) => ({
         id: f.id,
         visible: f.id === 'check_notes',
@@ -756,15 +800,30 @@ const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
   'items_table',
   'signature',
   'condition_map',
+  'defects',
+  'results_table',
 ])
 /**
  * Sections that join a saved invoice or quote design in front of the ones
  * that close the sheet, rather than after their neighbour in the default
  * order. The condition map is an appendix: after everything, before the
- * signing line and the footer.
+ * signing line and the footer. The inspection's results are part of the
+ * same appendix and close the sheet the same way.
  */
 const INSERTS_BEFORE: Record<string, readonly string[]> = {
   condition_map: ['signature', 'footer'],
+  defects: ['signature', 'footer'],
+  results_table: ['signature', 'footer'],
+}
+/**
+ * Sections that join a saved invoice or quote design directly in front of
+ * another one, wherever a workshop has put it. The inspection's results go
+ * in front of the condition map; a design saved before the map existed has
+ * none, and the closing rule above places all three together.
+ */
+const INSERTS_IN_FRONT_OF: Record<string, string> = {
+  defects: 'condition_map',
+  results_table: 'condition_map',
 }
 /** A signature line is a choice; most certificates are issued unsigned. */
 const HIDDEN_BY_DEFAULT_CERTIFICATE_SECTIONS = new Set<string>(['slogan', 'signature'])
@@ -791,6 +850,10 @@ const HIDDEN_BY_DEFAULT_WORK_ORDER_SECTIONS = new Set<string>([
   // The letterhead: the customer signs at the counter of the shop whose
   // name is over the door, and the strip already says which sheet this is.
   'header',
+  // The linked inspection's findings have a sheet of their own, the
+  // certificate. They join the work order only where a workshop asks.
+  'defects',
+  'results_table',
 ])
 
 /** The work order's panels print as bare lines: no fills, no boxes, no colour. */
@@ -1061,15 +1124,33 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
   // An appendix instead goes in front of the sections that close the sheet,
   // wherever a workshop has put those: the condition map printed after the
   // signature in a design whose bank details sat below the signing line.
+  // The inspection's results go in front of the condition map itself.
   const defaultOrder = defaults.sections.map((s) => s.id)
+  // Positions below are read off the list and the list is renumbered as it
+  // stands, so it has to be in the order the sheet prints first. A design
+  // built from a starting point and saved without moving a section keeps
+  // the built-in list with the starting point's numbers on it; left like
+  // that, the first section added afterwards put the whole sheet back in the
+  // built-in order, on every design and on every issued copy of one.
+  if (defaults.sections.some((def) => !seen.has(def.id))) {
+    merged.sort((a, b) => a.order - b.order)
+  }
   const toInsert: { section: InvoiceSection; afterIdx: number; defaultIdx: number }[] = []
   for (const def of defaults.sections) {
     if (seen.has(def.id)) continue
     const defaultIdx = defaultOrder.indexOf(def.id)
     let insertAfterIdx = -1
     // 'invoice' covers quotes too: they share one section list.
-    const closing = documentType === 'invoice' ? INSERTS_BEFORE[def.id] : undefined
-    const closingIdx = closing ? merged.findIndex((s) => closing.includes(s.id)) : -1
+    const invoice = documentType === 'invoice'
+    const neighbour = invoice ? INSERTS_IN_FRONT_OF[def.id] : undefined
+    const neighbourIdx = neighbour ? merged.findIndex((s) => s.id === neighbour) : -1
+    const closing = invoice ? INSERTS_BEFORE[def.id] : undefined
+    const closingIdx =
+      neighbourIdx !== -1
+        ? neighbourIdx
+        : closing
+          ? merged.findIndex((s) => closing.includes(s.id))
+          : -1
     if (closingIdx !== -1) {
       insertAfterIdx = closingIdx - 1
     } else {

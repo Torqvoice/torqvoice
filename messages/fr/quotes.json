@@ -36,6 +36,45 @@
     "selectVehicle": "Veuillez sélectionner un véhicule",
     "convertTitle": "Convertir le devis en ordre de travail",
     "convertDescription": "Un nouveau dossier de service (ordre de travail) sera créé à partir de ce devis. Sélectionnez un véhicule pour l'ordre de travail.",
+    "convertChoiceDescription": "Sélectionnez un véhicule, puis créez un nouvel ordre de travail à partir de ce devis ou ajoutez-le à un ordre déjà ouvert.",
+    "convertNew": "Créer un nouvel ordre de travail",
+    "convertExisting": "Ajouter à un ordre de travail existant",
+    "convertExistingHint": "Les pièces, la main-d'œuvre et les fichiers du devis sont ajoutés à l'ordre de travail. Ce qui s'y trouve déjà reste inchangé.",
+    "convertNoOpenWorkOrders": "Ce véhicule n'a aucun ordre de travail ouvert.",
+    "convertSelectWorkOrder": "Sélectionnez un ordre de travail",
+    "convertAdd": "Ajouter à l'ordre de travail",
+    "convertConflicts": {
+      "heading": "Avant d'ajouter, décidez ce que l'ordre de travail conserve",
+      "checking": "Comparaison du devis avec l'ordre de travail...",
+      "unanswered": "Choisissez ce que l'ordre de travail conserve avant d'ajouter le devis.",
+      "discount": {
+        "title": "Remise",
+        "summary": "L'ordre de travail a une remise de {percent} %, soit {jobAmount} à ce jour. Le devis comporte une remise de {quoteAmount}.",
+        "keepJob": "Conserver la remise de {percent} % et abandonner les {quoteAmount} du devis",
+        "combine": "Convertir les {percent} % en {jobAmount} et ajouter les {quoteAmount} du devis, soit {total} au total"
+      },
+      "tax": {
+        "title": "Taxe",
+        "summary": "L'ordre de travail est établi avec {job}. Le devis a été établi avec {quote}.",
+        "keepJob": "Conserver la taxe de l'ordre de travail. Les lignes du devis sont reprises aux montants devisés.",
+        "useQuote": "Passer l'ordre de travail à la taxe du devis. Tout son contenu est recalculé.",
+        "inclusive": "{rate} % de taxe inclus dans les lignes",
+        "exclusive": "{rate} % de taxe ajoutés en sus",
+        "components": "{rate} % de taxe ({names})"
+      },
+      "warranty": {
+        "title": "Garantie",
+        "summary": "L'ordre de travail indique {job}. Le devis accepté par le client indique {quote}.",
+        "keepJob": "Conserver la garantie de l'ordre de travail",
+        "useQuote": "Utiliser la garantie du devis, telle que le client l'a acceptée",
+        "none": "rien sur la garantie",
+        "notIncluded": "pas de garantie atelier",
+        "included": "garantie incluse",
+        "includedWithTerms": "garantie incluse, {terms}",
+        "months": "{count, plural, one {# mois} other {# mois}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Convertir",
     "convertToWorkOrder": "Convertir en ordre de travail",
     "cancel": "Annuler",
@@ -68,6 +107,7 @@
     "title": "Pièces",
     "addPart": "Ajouter une pièce",
     "partNumber": "N° de pièce",
+    "category": "Catégorie",
     "name": "Nom",
     "namePlaceholder": "Nom *",
     "qty": "Qté",

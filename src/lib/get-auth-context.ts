@@ -1,5 +1,6 @@
 import { getCachedSession, getCachedMembership } from './cached-session'
 import { db } from './db'
+import { sessionOrganizationScope } from './session-scope'
 import type { AuthContext } from './with-auth'
 
 type AuthContextResult =
@@ -26,7 +27,9 @@ export async function getAuthContextDetailed(): Promise<AuthContextResult> {
     }),
   ])
 
-  const isSuperAdmin = user?.isSuperAdmin ?? false
+  // None of the account's platform rights on a session bound to one workshop
+  // (lib/session-scope.ts).
+  const isSuperAdmin = !sessionOrganizationScope(session) && (user?.isSuperAdmin ?? false)
 
   if (!membership?.organizationId) return { status: 'no-organization' }
 

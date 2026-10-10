@@ -9,6 +9,7 @@ import { sendStatusReport } from '@/features/status-reports/Actions/sendStatusRe
 import { isDemoMode } from '@/lib/demo'
 import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
+import { sniffDeclaredVideo } from '@/lib/video-sniff'
 
 /**
  * A short update for the customer, recorded standing at the car.
@@ -67,7 +68,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         ? `That video is too large for the demo. Keep it under ${Math.round(maxBytes / (1024 * 1024))} MB.`
         : 'That video is too long. Keep it under two minutes.'
       if (refuseDeclaredOversize(request, MAX_BYTES)) {
-        return apiError(400, 'invalid_request', tooLarge)
+        return apiError(413, 'invalid_request', tooLarge)
       }
 
       const form = await request.formData()
@@ -88,12 +89,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           return apiError(400, 'invalid_request', tooLarge)
         }
 
+        // The declared type is the client's word. The video is kept and
+        // sent to the customer only when its bytes are the container it claims.
+        const bytes = new Uint8Array(await video.arrayBuffer())
+        if (!sniffDeclaredVideo(video.type, bytes)) {
+          return apiError(400, 'invalid_request', 'That file is not a video we can read.')
+        }
+
         // Generated name, never the client's. See the attachments route.
         const filename = `${crypto.randomUUID()}.${ext}`
         const dir = path.join(uploadsRoot(), ctx.organizationId, 'services')
         await mkdir(dir, { recursive: true })
         const target = path.join(dir, filename)
-        await writeFile(target, new Uint8Array(await video.arrayBuffer()))
+        await writeFile(target, bytes)
         await stat(target)
 
         videoUrl = `/api/protected/files/${ctx.organizationId}/services/${filename}`

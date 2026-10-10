@@ -3,6 +3,7 @@ import type WebSocket from 'ws'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
+import { sessionOrganizationScope } from '@/lib/session-scope'
 
 /**
  * Live updates for the technician app.
@@ -107,17 +108,25 @@ export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessag
         .find((p) => p.startsWith('org.'))
         ?.slice('org.'.length)
 
-      const membership =
-        (wantedOrg
-          ? await db.organizationMember.findFirst({
-              where: { userId: session.user.id, organizationId: wantedOrg },
-              select: { organizationId: true },
-            })
-          : null) ??
-        (await db.organizationMember.findFirst({
-          where: { userId: session.user.id },
-          select: { organizationId: true },
-        }))
+      //
+      // A session bound to one workshop (lib/session-scope.ts) does not get to
+      // choose: it is that workshop or nothing.
+      const scope = sessionOrganizationScope(session)
+      const membership = scope
+        ? await db.organizationMember.findFirst({
+            where: { userId: session.user.id, organizationId: scope },
+            select: { organizationId: true },
+          })
+        : ((wantedOrg
+            ? await db.organizationMember.findFirst({
+                where: { userId: session.user.id, organizationId: wantedOrg },
+                select: { organizationId: true },
+              })
+            : null) ??
+          (await db.organizationMember.findFirst({
+            where: { userId: session.user.id },
+            select: { organizationId: true },
+          })))
       if (!membership) {
         ws.close(4001, 'No organization')
         return

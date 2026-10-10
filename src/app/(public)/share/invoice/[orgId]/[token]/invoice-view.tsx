@@ -15,7 +15,7 @@ import {
   FileCheck2,
 } from 'lucide-react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { useLocale, useTranslations } from 'next-intl'
 import {
   isCustomFieldId,
@@ -296,12 +296,11 @@ export function InvoiceView({
   const partsSubtotalStored = record.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotalStored = record.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotalStored = partsSubtotalStored + laborSubtotalStored
-  const computedDiscountStored =
-    record.discountType === 'percentage'
-      ? computedSubtotalStored * (record.discountValue / 100)
-      : record.discountType === 'fixed'
-        ? Math.min(record.discountValue, computedSubtotalStored)
-        : 0
+  const computedDiscountStored = discountAmountFor(
+    computedSubtotalStored,
+    record.discountType,
+    record.discountValue
+  )
   const recordTaxInclusive = record.taxInclusive ?? false
   const { taxAmount: computedTax, totalAmount: computedTotal } = calculateTotals({
     subtotal: computedSubtotalStored,

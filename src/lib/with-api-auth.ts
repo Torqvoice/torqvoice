@@ -6,6 +6,7 @@ import { db } from './db'
 import { hasAllPermissions, type PermissionInput } from './permissions'
 import { rateLimit } from './rate-limit'
 import { DocumentLockedError } from './document-lock'
+import { sessionOrganizationScope } from './session-scope'
 
 /**
  * Request wrapper for the token-authenticated API the technician app talks to.
@@ -109,17 +110,25 @@ export async function withApiAuth(
 
   const userId = session.user.id
 
+  // A session minted from a setup code or a one-time code is bound to the
+  // workshop that minted it (lib/session-scope.ts). It is that workshop and
+  // nothing else, and it carries none of the account's platform rights.
+  const scope = sessionOrganizationScope(session)
+
   const user = await db.user.findUnique({
     where: { id: userId },
     select: { isSuperAdmin: true },
   })
-  const isSuperAdmin = user?.isSuperAdmin ?? false
+  const isSuperAdmin = !scope && (user?.isSuperAdmin ?? false)
 
   // The app names which workshop it is talking to, because a user may belong
   // to several. The header only selects; it never grants. Membership is what
   // decides, and an id the user is not a member of falls through to their
   // default rather than erroring, so a stale header cannot lock the app out.
-  const requestedOrgId = request.headers.get('x-org-id')
+  //
+  // A bound session does not get to select. Its workshop is the only answer,
+  // and if the person has left it there is nothing to fall back to.
+  const requestedOrgId = scope ?? request.headers.get('x-org-id')
 
   const memberSelect = {
     organizationId: true,
@@ -136,6 +145,12 @@ export async function withApiAuth(
         select: memberSelect,
       })
     : null
+
+  // 401 rather than 403: this session can never work again, and the app
+  // treats a 401 as the cue to sign in afresh.
+  if (!membership && scope) {
+    return apiError(401, 'unauthorized', 'You are no longer a member of this workshop.')
+  }
 
   if (!membership) {
     membership = await db.organizationMember.findFirst({

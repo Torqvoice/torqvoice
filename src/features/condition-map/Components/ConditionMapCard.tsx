@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Eraser, Loader2 } from 'lucide-react'
+import { CheckCheck, Eraser, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils'
 import {
   addConditionMark,
   addConditionMarkPhotos,
+  carryConditionMarks,
   discardConditionMarkUploads,
   removeConditionMark,
   removeConditionMarkPhoto,
@@ -53,6 +54,8 @@ import { MarkEditor } from './MarkEditor'
 
 /** Photos saved on a mark per call, the action's own limit. */
 const PHOTOS_PER_SAVE = 10
+/** How a mark shown before its save has answered is told from a saved one. */
+const STAND_IN = 'pending:'
 /**
  * The condition map with everything around it: the body type, the view
  * switcher, the drawing, the legend of this sheet's marks, and the marks
@@ -88,6 +91,12 @@ export function ConditionMapCard({
   const t = useTranslations('conditionMap')
   const router = useRouter()
   const [marks, setMarks] = useState<ConditionMarkData[]>(initialMarks)
+  // What the server says replaces what a tab remembers whenever the page is
+  // re-read: another tab or another person may have changed the vehicle's
+  // marks since this one was opened.
+  useEffect(() => {
+    setMarks(initialMarks)
+  }, [initialMarks])
   const [body, setBody] = useState<BodyType>(bodyTypeFor(vehicle, { serviceType }))
   const [focusView, setFocusView] = useState<View | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -118,7 +127,8 @@ export function ConditionMapCard({
       severity: m.severity,
       number: numberOf.get(m.id) ?? 0,
       previous: !ownIds.has(m.id),
-      fixed: elsewhereSheet.has(m.id),
+      // A mark still being saved has nothing to move yet.
+      fixed: elsewhereSheet.has(m.id) || m.id.startsWith(STAND_IN),
     }))
   // Marks drawn on another body type cannot be placed on this drawing; they
   // still count and are still listed.
@@ -281,6 +291,54 @@ export function ConditionMapCard({
     })
   }
 
+  // Every earlier mark confirmed as still there at once. Each is recorded
+  // again on this sheet and the earlier one closed, so the map shows that
+  // straight away: the grey ones turn to colour as this visit's own.
+  const handleConfirmAll = () => {
+    if (readOnly || previous.length === 0) return
+    const sheet =
+      'inspectionItemId' in scope
+        ? { inspectionId: scope.inspectionId, inspectionItemId: scope.inspectionItemId }
+        : { serviceRecordId: scope.serviceRecordId ?? null }
+    const before = marks
+    const now = Date.now()
+    const earlier = new Set(previous.map((m) => m.id))
+    // Stand-ins until the saved ones arrive, in the order the earlier ones had.
+    const standIns: ConditionMarkData[] = numberedMarks(previous).map((m, index) => ({
+      ...m,
+      id: `${STAND_IN}${m.id}`,
+      inspectionId: null,
+      inspectionItemId: null,
+      serviceRecordId: null,
+      ...sheet,
+      recordedAt: new Date(now + index).toISOString(),
+      resolvedAt: null,
+      sheetOpenedAt: undefined,
+    }))
+    setEditingId(null)
+    setMarks((prev) => [
+      ...prev.map((m) =>
+        earlier.has(m.id) ? { ...m, resolvedAt: new Date(now).toISOString() } : m
+      ),
+      ...standIns,
+    ])
+    startTransition(async () => {
+      const result = await carryConditionMarks({ vehicleId: vehicle.id, ...sheet })
+      if (!result.success || !result.data) {
+        setMarks(before)
+        toast.error(result.success ? t('saveFailed') : result.error || t('saveFailed'))
+        return
+      }
+      // What was saved is the answer. A mark not carried was taken by
+      // somebody else a moment ago, confirmed on another sheet or cleared, so
+      // this tab's picture of the vehicle is stale: it stays closed here and
+      // the page is re-read rather than guessed at.
+      const { marks: saved, carried } = result.data
+      setMarks((prev) => [...prev.filter((m) => !m.id.startsWith(STAND_IN)), ...saved])
+      if (carried.length !== earlier.size) router.refresh()
+    })
+  }
+
   const handleBody = (next: string) => {
     if (!BODY_TYPES.includes(next as BodyType)) return
     setBody(next as BodyType)
@@ -411,6 +469,21 @@ export function ConditionMapCard({
                 {t('previousHeading')} · {t('previousCount', { count: previous.length })}
               </p>
               <p className="mb-1 text-xs text-muted-foreground">{t('previousHint')}</p>
+              {!readOnly && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mb-2 h-8 text-xs"
+                  disabled={pending}
+                  title={t('confirmAllHint')}
+                  onClick={handleConfirmAll}
+                  data-testid="condition-map-confirm-all"
+                >
+                  <CheckCheck className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                  {t('confirmAll')}
+                </Button>
+              )}
               <ul className="divide-y rounded-md border">
                 {numbered
                   .filter((m) => !ownIds.has(m.id))
@@ -495,13 +568,24 @@ export function ConditionMapCard({
             : null
         }
         open={editing !== null}
-        readOnly={readOnly || (editing ? !isDrawnOnSheet(editing, scope) : false)}
+        readOnly={
+          readOnly ||
+          (editing
+            ? !isDrawnOnSheet(editing, scope) ||
+              editing.id.startsWith(STAND_IN) ||
+              Boolean(editing.carriedToId)
+            : false)
+        }
         readOnlyReason={
-          readOnly || !editing || isDrawnOnSheet(editing, scope)
+          readOnly || !editing
             ? undefined
-            : isOwnMark(editing, scope)
-              ? t('inspectionItemId' in scope ? 'readOnlyOtherCheck' : 'readOnlyLinked')
-              : t('readOnlyEarlier')
+            : editing.carriedToId
+              ? t('readOnlyCarried')
+              : isDrawnOnSheet(editing, scope)
+                ? undefined
+                : isOwnMark(editing, scope)
+                  ? t('inspectionItemId' in scope ? 'readOnlyOtherCheck' : 'readOnlyLinked')
+                  : t('readOnlyEarlier')
         }
         busy={pending}
         onChange={handleChange}

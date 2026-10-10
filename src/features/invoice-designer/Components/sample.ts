@@ -1,7 +1,8 @@
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { calculateTotals } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
-import type { DocumentData, PaymentPair, TotalLine } from '../Spec/buildSpec'
+import type { DocumentData, LineGroup, PaymentPair, TotalLine } from '../Spec/buildSpec'
+import { LABOR_GROUP, OTHER_PARTS_GROUP, partGroupKey } from '../Pdf/lineGroups'
 import type { DesignerWorkshop, DocumentType } from './types'
 import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
@@ -42,6 +43,8 @@ export interface SampleTables {
     unit: string
     desc: string
     sku?: string
+    /** A stocked part's category, for the grouped tables. */
+    category?: string
     price: string
     total: string
   }[]
@@ -76,6 +79,7 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         unit: t('sample.unitPcs'),
         desc: t('sample.itemDisc'),
         sku: 'BD-1042',
+        category: t('sample.categoryBrakes'),
         price: '€ 149.00',
         total: '€ 149.00',
       },
@@ -85,6 +89,7 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         unit: t('sample.unitSet'),
         desc: t('sample.itemPads'),
         sku: 'BP-2210',
+        category: t('sample.categoryBrakes'),
         price: '€ 96.50',
         total: '€ 96.50',
       },
@@ -93,6 +98,10 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         qty: '1',
         unit: t('sample.unitEach'),
         desc: t('sample.itemConsumables'),
+        // A stocked part in a category of its own, so a sheet grouped by
+        // category previews two groups rather than one.
+        sku: 'WS-0001',
+        category: t('sample.categoryConsumables'),
         price: '€ 12.00',
         total: '€ 12.00',
       },
@@ -243,6 +252,35 @@ function sampleTax(
  * sample standing in for a job. One builder, so the designer's canvas and the
  * template cards in settings preview exactly the same paper.
  */
+/** The sample's line groups, summed from its own rows. */
+function sampleLineGroups(sample: SampleTables, labels: PrintLabels): LineGroup[] {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const amount = (total: string) => Number(total.replace(/[^\d.]/g, ''))
+  const sum = (rows: SampleTables['items']) =>
+    `€ ${rows.reduce((acc, row) => acc + amount(row.total), 0).toFixed(2)}`
+  const group = (key: string, title: string, rows: SampleTables['items']) => ({
+    key,
+    title,
+    subtotalLabel: fillTemplate(L('groupSubtotal', '{group} subtotal'), { group: title }),
+    subtotal: sum(rows),
+  })
+  const labor = sample.items.filter((item) => !item.sku)
+  const parts = sample.items.filter((item) => item.sku)
+  const categories = [...new Set(parts.map((item) => item.category).filter(Boolean))] as string[]
+  const other = parts.filter((item) => !item.category)
+  return [
+    group(LABOR_GROUP, L('labor', 'Labor'), labor),
+    ...categories.map((category) =>
+      group(
+        partGroupKey(category),
+        category,
+        parts.filter((item) => item.category === category)
+      )
+    ),
+    ...(other.length ? [group(OTHER_PARTS_GROUP, L('otherParts', 'Other parts'), other)] : []),
+  ]
+}
+
 export function buildSampleData(
   workshop: DesignerWorkshop,
   customFields: { id: string; label?: string | null; name: string; isActive: boolean }[],
@@ -283,6 +321,7 @@ export function buildSampleData(
       sub: item.sku,
       price: item.price,
       total: item.total,
+      group: item.sku ? partGroupKey(item.category) : LABOR_GROUP,
     })),
     parts: sample.items
       .filter((item) => item.sku)
@@ -292,7 +331,11 @@ export function buildSampleData(
         qty: item.qty,
         price: item.price,
         total: item.total,
+        group: partGroupKey(item.category),
       })),
+    // The groups a table divided by category shows: the brake parts added
+    // up on their own, the consumables after them, the labor first.
+    lineGroups: sampleLineGroups(sample, labels),
     labor: sample.items
       .filter((item) => !item.sku)
       .map((item) => ({
@@ -390,6 +433,11 @@ export function buildSampleData(
           },
     ...(docType === 'certificate' ? sampleCertificate(t, labels, values, sample) : {}),
     ...(docType === 'work_order' ? sampleWorkOrder(t, labels, values, sample) : {}),
+    // An inspection with one minor defect and one check still to do, so the
+    // result sections have something to draw on every document: the
+    // certificate's own, and elsewhere a stand-in for the inspection linked
+    // to a job or the one a quote was raised from.
+    certificate: sampleInspectionResults(t, labels),
     // A car with a dent, a scratch and one mark from an earlier visit, so the
     // condition map section has something to draw on every document. An
     // invoice or a quote prints this visit's marks only.
@@ -555,9 +603,8 @@ function sampleCertificate(
   labels: PrintLabels,
   values: Record<string, string>,
   sample: SampleTables
-): Pick<DocumentData, 'fields' | 'meta' | 'certificate' | 'notes' | 'attachedDocuments'> {
+): Pick<DocumentData, 'fields' | 'meta' | 'notes' | 'attachedDocuments'> {
   const L = (key: string, fallback: string) => labels[key] || fallback
-  const grade = (key: string, fallback: string) => L(key, fallback)
   return {
     fields: {
       ...values,
@@ -584,79 +631,112 @@ function sampleCertificate(
         name: 'signed-inspection-form.pdf',
       }),
     ],
-    certificate: {
-      result: {
-        label: L('resultPassMinor', 'Pass with minor defects'),
-        detail: L(
-          'resultDetailPassMinor',
-          'The vehicle passes. Repair the minor deficiencies without undue delay.'
-        ),
-        color: { bg: '#fef9c3', text: '#713f12' },
-      },
-      summary: `11 × ${grade('euPass', 'No defect')} · 1 × ${grade('euAttention', 'Minor defect')} · 1 × ${grade('euNotApplicable', 'Not applicable')}`,
-      defects: [
+  }
+}
+
+/**
+ * The inspection the sample stands on: a car that passed with one minor
+ * defect, so every result block has something to draw, and one check nobody
+ * has graded yet, so the switch for those has a row to show.
+ */
+function sampleInspectionResults(
+  t: SampleT,
+  labels: PrintLabels
+): NonNullable<DocumentData['certificate']> {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const grade = (key: string, fallback: string) => L(key, fallback)
+  const sections: NonNullable<DocumentData['certificate']>['sections'] = [
+    {
+      code: '1',
+      name: t('sample.sectionBrakes'),
+      rows: [
+        {
+          code: '1.1.1',
+          name: t('sample.checkBrakePedal'),
+          grade: grade('euPass', 'No defect'),
+          notes: null,
+          kind: 'pass',
+        },
         {
           code: '1.1.13',
           name: t('sample.checkBrakeHoses'),
           grade: `1 — ${grade('euAttention', 'Minor defect')}`,
-          color: { bg: '#fef9c3', text: '#713f12' },
           notes: t('sample.checkBrakeHosesNote'),
-          photos: [SAMPLE_PHOTO],
-        },
-      ],
-      sections: [
-        {
-          code: '1',
-          name: t('sample.sectionBrakes'),
-          rows: [
-            {
-              code: '1.1.1',
-              name: t('sample.checkBrakePedal'),
-              grade: grade('euPass', 'No defect'),
-              notes: null,
-              kind: 'pass',
-            },
-            {
-              code: '1.1.13',
-              name: t('sample.checkBrakeHoses'),
-              grade: `1 — ${grade('euAttention', 'Minor defect')}`,
-              notes: t('sample.checkBrakeHosesNote'),
-              kind: 'defect',
-            },
-            {
-              code: '1.1.17',
-              name: t('sample.checkBrakeFluid'),
-              grade: grade('euPass', 'No defect'),
-              notes: null,
-              kind: 'pass',
-            },
-          ],
+          kind: 'defect',
         },
         {
-          code: '4',
-          name: t('sample.sectionLighting'),
-          rows: [
-            {
-              code: '4.1.1',
-              name: t('sample.checkHeadlamps'),
-              grade: grade('euPass', 'No defect'),
-              notes: null,
-              kind: 'pass',
-            },
-            {
-              code: '4.5.1',
-              name: t('sample.checkFogLamp'),
-              grade: grade('euNotApplicable', 'Not applicable'),
-              notes: null,
-              kind: 'not_applicable',
-            },
-          ],
+          code: '1.1.17',
+          name: t('sample.checkBrakeFluid'),
+          grade: grade('euPass', 'No defect'),
+          notes: null,
+          kind: 'pass',
         },
-      ],
-      photos: [
-        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
-        { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
       ],
     },
+    {
+      code: '4',
+      name: t('sample.sectionLighting'),
+      rows: [
+        {
+          code: '4.1.1',
+          name: t('sample.checkHeadlamps'),
+          grade: grade('euPass', 'No defect'),
+          notes: null,
+          kind: 'pass',
+        },
+        {
+          code: '4.5.1',
+          name: t('sample.checkFogLamp'),
+          grade: grade('euNotApplicable', 'Not applicable'),
+          notes: null,
+          kind: 'not_applicable',
+        },
+      ],
+    },
+  ]
+  return {
+    result: {
+      label: L('resultPassMinor', 'Pass with minor defects'),
+      detail: L(
+        'resultDetailPassMinor',
+        'The vehicle passes. Repair the minor deficiencies without undue delay.'
+      ),
+      color: { bg: '#fef9c3', text: '#713f12' },
+    },
+    summary: `11 × ${grade('euPass', 'No defect')} · 1 × ${grade('euAttention', 'Minor defect')} · 1 × ${grade('euNotApplicable', 'Not applicable')}`,
+    defects: [
+      {
+        code: '1.1.13',
+        name: t('sample.checkBrakeHoses'),
+        grade: `1 — ${grade('euAttention', 'Minor defect')}`,
+        color: { bg: '#fef9c3', text: '#713f12' },
+        notes: t('sample.checkBrakeHosesNote'),
+        photos: [SAMPLE_PHOTO],
+      },
+    ],
+    sections,
+    // The same checklist with the stop lamps still to do, in their place.
+    checklist: sections.map((section) =>
+      section.code === '4'
+        ? {
+            ...section,
+            rows: [
+              section.rows[0],
+              {
+                code: '4.3.1',
+                name: t('sample.checkStopLamps'),
+                grade: '',
+                notes: null,
+                kind: 'not_inspected' as const,
+              },
+              ...section.rows.slice(1),
+            ],
+          }
+        : section
+    ),
+    photos: [
+      { dataUri: SAMPLE_PHOTO, caption: t('sample.photoFront') },
+      { dataUri: SAMPLE_PHOTO, caption: t('sample.photoOdometer') },
+    ],
   }
 }

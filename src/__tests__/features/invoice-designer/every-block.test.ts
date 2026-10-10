@@ -96,9 +96,19 @@ describe('the sections a default sheet prints', () => {
   it('accounts for every section the designer offers', () => {
     // The guard on the two lists above: a section added to the schema
     // tomorrow is either on the default sheet, and so covered by the
-    // hides-it test, or one of the five known to start off. Neither, and
-    // this fails rather than quietly leaving a block untested.
-    const offByDefault = ['items_table', 'telegram_qr', 'general', 'signature', 'condition_map']
+    // hides-it test, or one of the seven known to start off. Neither, and
+    // this fails rather than quietly leaving a block untested. The two
+    // inspection sections are held to their own rules in
+    // invoice-quote-inspection-results.test.ts.
+    const offByDefault = [
+      'items_table',
+      'telegram_qr',
+      'general',
+      'signature',
+      'condition_map',
+      'defects',
+      'results_table',
+    ]
     expect([...DEFAULT_SHEET, ...offByDefault].sort()).toEqual(
       BUILTIN_SECTIONS.map((section) => section.id).sort()
     )

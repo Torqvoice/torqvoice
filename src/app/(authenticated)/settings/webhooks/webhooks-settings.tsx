@@ -714,7 +714,7 @@ function WebhookFormDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
             {t('cancel')}
           </Button>
-          <Button onClick={submit} disabled={isPending}>
+          <Button data-save-shortcut onClick={submit} disabled={isPending}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {editing ? t('save') : t('create')}
           </Button>

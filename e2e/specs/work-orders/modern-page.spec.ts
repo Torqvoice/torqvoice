@@ -295,15 +295,24 @@ test.describe('the overhauled work order page', () => {
 
     // A video goes to the customer too, as on the classic page: the shared
     // link plays it. And it plays here, not in a new tab.
+    // The server reads the bytes before it believes the file is a video, and
+    // these are not one, so the upload's answer is stood in for. What is
+    // under test here is the card and the player, not the upload.
     const clip = `e2e-clip-${stamp}.mp4`
+    const clipUrl = `/api/protected/files/${await ownerOrganizationId()}/services/e2e-clip-${stamp}.mp4`
+    await page.route('**/api/protected/upload/service-files', (route) =>
+      route.fulfill({
+        json: { url: clipUrl, fileName: clip, fileType: 'video/mp4', fileSize: 1024 },
+      })
+    )
     await files.getByRole('tab', { name: /^Video/ }).click()
     await files.locator('input[type="file"]').setInputFiles({
       name: clip,
       mimeType: 'video/mp4',
-      // The server keeps the bytes as they came when it cannot re-encode them.
       buffer: Buffer.from(`not really a video ${stamp}`),
     })
     await expect(tiles).toHaveCount(1)
+    await page.unroute('**/api/protected/upload/service-files')
     await expect(tiles.first()).toContainText('Customer can see')
     await tiles.first().getByRole('button', { name: clip }).click()
     const player = page.getByRole('dialog', { name: clip })
@@ -471,11 +480,16 @@ test.describe('the overhauled work order page', () => {
       }).toPass({ timeout: 30_000 })
       await page.getByRole('menuitem', { name: 'Waiting Parts' }).click()
       await expectStatus(page, /Waiting Parts/)
+      // The status says "Saved" for two seconds. Let that one go, or it answers
+      // for the notes below before they have been written.
+      const saved = page.getByText('Saved', { exact: true })
+      await expect(saved).toBeVisible()
+      await expect(saved).toBeHidden()
 
       // Still written: the internal notes, saved on their own.
       const note = `Customer will collect on Friday ${stamp}`
       await typeInNotes(page, page.getByTestId('notes-internal'), note)
-      await expect(page.getByText('Saved', { exact: true })).toBeVisible()
+      await expect(saved).toBeVisible()
 
       // Still paid: the bar's button opens a form that works, and Enter in
       // the amount records the payment rather than saving the job.

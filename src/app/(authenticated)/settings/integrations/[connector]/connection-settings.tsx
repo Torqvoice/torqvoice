@@ -577,6 +577,13 @@ export function ConnectionSettings({
 
       {connected && manifest.settings.length > 0 && (
         <SettingsForm
+          // A list can hang on a choice above it, the way a company's
+          // accounts hang on the company. Once that choice is saved the form
+          // starts over and reads the lists again.
+          key={manifest.settings
+            .filter((f) => f.type === 'remote-select' && f.required)
+            .map((f) => String(connection.settings[f.key] ?? ''))
+            .join('|')}
           connectorId={manifest.id}
           fields={manifest.settings}
           initial={connection.settings}
@@ -777,7 +784,11 @@ function ConnectForm({
       <div className="flex flex-wrap gap-2">
         {manifest.auth.type === 'oauth2' ? (
           needsTenantApp ? (
-            <Button onClick={saveAndConnect} disabled={busy !== null || !tenantComplete}>
+            <Button
+              data-save-shortcut
+              onClick={saveAndConnect}
+              disabled={busy !== null || !tenantComplete}
+            >
               {busy === 'credentials' ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

@@ -6,7 +6,12 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { db, type TxClient } from '@/lib/db'
 import { isDemoMode, demoOffMessage } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
-import { rewriteFileUrl, rewriteFileUrlsWithin, withFileUrls } from '@/lib/backup/file-urls'
+import {
+  rewriteFileUrl,
+  rewriteFileUrlsWithin,
+  withFileUrls,
+  withIssuedDataFileUrls,
+} from '@/lib/backup/file-urls'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
 import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
@@ -182,7 +187,7 @@ async function importServiceRecordTree(
       issuedSignatureSnapshotId: keptReference(sr.issuedSignatureSnapshotId, opts.assetSnapshotIds),
       issuedData:
         sr.issuedData && typeof sr.issuedData === 'object'
-          ? (sr.issuedData as Prisma.InputJsonValue)
+          ? (withIssuedDataFileUrls(sr.issuedData, opts.organizationId) as Prisma.InputJsonValue)
           : undefined,
     },
   })
@@ -197,6 +202,7 @@ async function importServiceRecordTree(
         name: p.name as string,
         quantity: (p.quantity as number) || 1,
         unit: (p.unit as string) || null,
+        category: (p.category as string) || null,
         unitPrice: (p.unitPrice as number) || 0,
         total: (p.total as number) || 0,
         unitCost: (p.unitCost as number) || 0,
@@ -1127,6 +1133,7 @@ export async function POST(request: NextRequest) {
                 name: p.name as string,
                 quantity: (p.quantity as number) || 1,
                 unit: (p.unit as string) || null,
+                category: (p.category as string) || null,
                 unitPrice: (p.unitPrice as number) || 0,
                 total: (p.total as number) || 0,
                 unitCost: (p.unitCost as number) || 0,

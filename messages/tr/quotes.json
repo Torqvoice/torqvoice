@@ -36,6 +36,45 @@
     "selectVehicle": "Lütfen bir araç seçin",
     "convertTitle": "Teklifi İş Emrine Dönüştür",
     "convertDescription": "Bu tekliften yeni bir servis kaydı (iş emri) oluşturulacaktır. İş emri için bir araç seçin.",
+    "convertChoiceDescription": "Bir araç seçin, ardından bu tekliften yeni bir iş emri oluşturun veya teklifi zaten açık olan bir iş emrine ekleyin.",
+    "convertNew": "Yeni bir iş emri oluştur",
+    "convertExisting": "Mevcut bir iş emrine ekle",
+    "convertExistingHint": "Teklifteki parçalar, işçilik ve dosyalar iş emrine eklenir. İş emrinde zaten bulunanlar olduğu gibi kalır.",
+    "convertNoOpenWorkOrders": "Bu aracın açık iş emri yok.",
+    "convertSelectWorkOrder": "Bir iş emri seçin",
+    "convertAdd": "İş emrine ekle",
+    "convertConflicts": {
+      "heading": "Eklemeden önce iş emrinin neyi koruyacağına karar verin",
+      "checking": "Teklif iş emriyle karşılaştırılıyor...",
+      "unanswered": "Teklifi eklemeden önce iş emrinin neyi koruyacağını seçin.",
+      "discount": {
+        "title": "İndirim",
+        "summary": "İş emrinde %{percent} indirim var, şu an {jobAmount}. Teklifte {quoteAmount} indirim var.",
+        "keepJob": "%{percent} indirimi koru ve teklifin {quoteAmount} indirimini bırak",
+        "combine": "%{percent} indirimi {jobAmount} tutara çevir ve teklifin {quoteAmount} indirimini ekle, toplam {total}"
+      },
+      "tax": {
+        "title": "Vergi",
+        "summary": "İş emri {job} ile fiyatlandırılmış. Teklif {quote} ile fiyatlandırılmıştı.",
+        "keepJob": "İş emrinin vergisini koru. Teklif satırları teklif edilen tutarlarla aktarılır.",
+        "useQuote": "İş emrini teklifin vergisine geçir. Üzerindeki her şey yeniden toplanır.",
+        "inclusive": "satırlara dahil %{rate} vergi",
+        "exclusive": "üzerine eklenen %{rate} vergi",
+        "components": "%{rate} vergi ({names})"
+      },
+      "warranty": {
+        "title": "Garanti",
+        "summary": "İş emrinde {job} yazıyor. Müşterinin kabul ettiği teklifte {quote} yazıyor.",
+        "keepJob": "İş emrinin garantisini koru",
+        "useQuote": "Müşterinin kabul ettiği haliyle teklifin garantisini kullan",
+        "none": "garantiyle ilgili bir şey yok",
+        "notIncluded": "atölye garantisi yok",
+        "included": "garanti dahil",
+        "includedWithTerms": "garanti dahil, {terms}",
+        "months": "{count, plural, one {# ay} other {# ay}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Dönüştür",
     "convertToWorkOrder": "İş Emrine Dönüştür",
     "cancel": "İptal",
@@ -68,6 +107,7 @@
     "title": "Parçalar",
     "addPart": "Parça Ekle",
     "partNumber": "Parça No.",
+    "category": "Kategori",
     "name": "Ad",
     "namePlaceholder": "Ad *",
     "qty": "Adet",

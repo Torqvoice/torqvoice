@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { getRecurringInvoices } from '@/features/billing/Actions/recurringInvoiceActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -32,7 +33,7 @@ export default async function RecurringInvoicesPage() {
   ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   const invoices = result.success && result.data ? result.data : []
 
   return (

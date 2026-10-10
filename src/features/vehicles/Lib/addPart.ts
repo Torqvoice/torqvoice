@@ -1,3 +1,4 @@
+import { discountAmountFor } from '@/lib/tax'
 import { db } from '@/lib/db'
 import { refreshShopFeeLines } from './shopFeeLines'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
@@ -21,6 +22,7 @@ export interface AddPartInput {
   name: string
   quantity: number
   unit?: string | null
+  category?: string | null
   unitPrice: number
   total: number
   unitCost: number
@@ -73,6 +75,7 @@ export async function addPart(args: {
         name: input.name,
         quantity: input.quantity,
         unit: input.unit || null,
+        category: input.category || null,
         unitPrice: input.unitPrice,
         total: input.total,
         unitCost: input.unitCost,
@@ -95,12 +98,7 @@ export async function addPart(args: {
     ])
 
     const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
-    const discountAmount =
-      record.discountType === 'percentage'
-        ? subtotal * ((record.discountValue ?? 0) / 100)
-        : record.discountType === 'fixed'
-          ? Math.min(record.discountValue ?? 0, subtotal)
-          : 0
+    const discountAmount = discountAmountFor(subtotal, record.discountType, record.discountValue)
     const { taxAmount, totalAmount, taxComponents } = documentTotals({
       subtotal,
       discountAmount,

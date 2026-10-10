@@ -255,7 +255,11 @@ export function NewInspectionDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('cancel')}
             </Button>
-            <Button type="submit" disabled={isPending || !vehicleId || !templateId}>
+            <Button
+              data-save-shortcut
+              type="submit"
+              disabled={isPending || !vehicleId || !templateId}
+            >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Start Inspection
             </Button>

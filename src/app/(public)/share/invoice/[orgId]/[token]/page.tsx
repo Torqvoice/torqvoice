@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
@@ -64,8 +65,10 @@ export default async function PublicInvoicePage({
     email: assembly.workshop.email,
   }
 
-  const currencyCode = assembly.invoiceSettings.currencyCode || 'USD'
-  const currencyFormat: 'symbol' | 'code' = assembly.invoiceSettings.currencyFormat || 'symbol'
+  const currencyCode = resolveCurrencyCode(assembly.invoiceSettings.currencyCode)
+  const currencyFormat: 'symbol' | 'code' = resolveCurrencyFormat(
+    assembly.invoiceSettings.currencyFormat
+  )
 
   const invoiceSettings = {
     bankAccount: assembly.invoiceSettings.bankAccount || '',
@@ -99,6 +102,7 @@ export default async function PublicInvoicePage({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit,
+      category: p.category,
       unitPrice: p.unitPrice,
       total: p.total,
     })),
@@ -138,6 +142,7 @@ export default async function PublicInvoicePage({
     telegramLabel: labels?.telegramConnect,
     labels,
     conditionMap,
+    inspectionResults: assembly.inspectionResults,
   })
 
   const termsOfSaleUrl =

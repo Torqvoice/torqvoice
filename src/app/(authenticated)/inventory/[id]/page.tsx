@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
 import {
   getInventoryPart,
@@ -85,7 +86,7 @@ export default async function InventoryPartDetailPage({
         pageSize={movements.pageSize}
         totalPages={movements.totalPages}
         reason={sp.reason ?? ''}
-        currencyCode={settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'}
+        currencyCode={resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])}
         markupMultiplier={Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1}
         categories={categoriesResult.data ?? []}
         lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}

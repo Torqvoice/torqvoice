@@ -122,6 +122,7 @@
     "fromInventory": "Fra beholdning",
     "addPart": "Legg til del",
     "partNumber": "Del #",
+    "category": "Kategori",
     "name": "Navn",
     "qty": "Antall",
     "unitCost": "Kostnad",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Flere statuser",
     "fromInspection": "Fra inspeksjon {name}, {date}",
+    "fromQuote": "Fra tilbud {ref}",
     "startInspection": "Start inspeksjon"
   },
   "photoHandoff": {

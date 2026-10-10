@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { workshopCurrencySettings } from '@/lib/workshop-currency'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import {
@@ -9,7 +10,7 @@ import {
 import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-import { calculateTotals } from '@/lib/tax'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { getFeatures } from '@/lib/features'
 
 const checkoutSchema = z.object({
@@ -68,12 +69,11 @@ export async function POST(
     const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
     const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
     const computedSubtotal = partsSubtotal + laborSubtotal
-    const computedDiscount =
-      record.discountType === 'percentage'
-        ? computedSubtotal * (record.discountValue / 100)
-        : record.discountType === 'fixed'
-          ? Math.min(record.discountValue, computedSubtotal)
-          : 0
+    const computedDiscount = discountAmountFor(
+      computedSubtotal,
+      record.discountType,
+      record.discountValue
+    )
     const { totalAmount: computedTotal } = calculateTotals({
       subtotal: computedSubtotal,
       discountAmount: computedDiscount,
@@ -108,11 +108,7 @@ export async function POST(
       )
     }
 
-    const currencySetting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: orgId, key: 'workshop.currencyCode' } },
-      select: { value: true },
-    })
-    const currencyCode = currencySetting?.value || 'USD'
+    const { currencyCode } = await workshopCurrencySettings(orgId)
     const invoiceNumber = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''

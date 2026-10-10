@@ -863,7 +863,7 @@ export function InventoryPartForm({
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               {t('form.cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button data-save-shortcut type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {part ? t('form.saveChanges') : t('form.addPart')}
             </Button>

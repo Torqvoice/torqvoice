@@ -11,9 +11,16 @@ import {
   updateQuoteStatus,
   deleteQuote,
   convertQuoteToServiceRecord,
+  addQuoteToServiceRecord,
+  getQuoteConversionConflicts,
+  getWorkOrdersForQuoteConversion,
 } from '@/features/quotes/Actions/quoteActions'
+import type {
+  ConversionConflict,
+  ConversionResolutions,
+} from '@/features/quotes/Lib/conversionConflicts'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
-import { calculateTotals } from '@/lib/tax'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { zonedDateInput } from '@/lib/timezone'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
@@ -35,6 +42,13 @@ interface SelectedVehicle {
   licensePlate: string | null
   customerId: string | null
   customer: { id: string; name: string } | null
+}
+
+/** An open work order the quote could be added to. */
+export interface ConvertTarget {
+  id: string
+  title: string
+  invoiceNumber: string | null
 }
 
 interface SelectedCustomer {
@@ -90,6 +104,7 @@ export function useQuoteFormState({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit ?? null,
+      category: p.category ?? null,
       unitCost: p.unitCost ?? 0,
       markupPercent: p.markupPercent ?? 0,
       unitPrice: p.unitPrice,
@@ -135,6 +150,17 @@ export function useQuoteFormState({
   const [showConvertDialog, setShowConvertDialog] = useState(false)
   const [convertVehicleId, setConvertVehicleId] = useState(quote.vehicle?.id || '')
   const [converting, setConverting] = useState(false)
+  // A new job is the default; adding to one the vehicle already has open is
+  // the second choice, offered only when there is such a job.
+  const [convertMode, setConvertMode] = useState<'new' | 'existing'>('new')
+  const [convertTargets, setConvertTargets] = useState<ConvertTarget[]>([])
+  const [convertTargetId, setConvertTargetId] = useState('')
+  const [loadingConvertTargets, setLoadingConvertTargets] = useState(false)
+  // Where the quote and the chosen job disagree, and what the user said the
+  // job keeps. Adding waits until every conflict has an answer.
+  const [convertConflicts, setConvertConflicts] = useState<ConversionConflict[]>([])
+  const [convertResolutions, setConvertResolutions] = useState<ConversionResolutions>({})
+  const [loadingConvertConflicts, setLoadingConvertConflicts] = useState(false)
   const [resolving, setResolving] = useState(false)
 
   // The day the quote is valid until, as the workshop's calendar has it. The
@@ -275,12 +301,7 @@ export function useQuoteFormState({
   }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
 
   const subtotal = partsSubtotal + laborSubtotal
-  const discountAmount =
-    discountType === 'percentage'
-      ? subtotal * (discountValue / 100)
-      : discountType === 'fixed'
-        ? Math.min(discountValue, subtotal)
-        : 0
+  const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
   const {
     taxAmount,
     totalAmount,
@@ -528,14 +549,80 @@ export function useQuoteFormState({
     setDownloading(false)
   }
 
+  // The open jobs follow the vehicle picked in the dialog, read each time it
+  // opens so a job finished in the meantime is not offered.
+  useEffect(() => {
+    if (!showConvertDialog || !convertVehicleId) {
+      setConvertTargets([])
+      setConvertTargetId('')
+      setConvertMode('new')
+      return
+    }
+    let cancelled = false
+    setLoadingConvertTargets(true)
+    getWorkOrdersForQuoteConversion(convertVehicleId).then((result) => {
+      if (cancelled) return
+      const targets = result.success && result.data ? result.data : []
+      setConvertTargets(targets)
+      setConvertTargetId(targets[0]?.id ?? '')
+      if (targets.length === 0) setConvertMode('new')
+      setLoadingConvertTargets(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [showConvertDialog, convertVehicleId])
+
+  // The conflicts follow the job picked, read afresh each time so a job
+  // edited in the meantime is asked about as it now stands. Earlier answers
+  // are dropped with them: they were about another job.
+  useEffect(() => {
+    setConvertConflicts([])
+    setConvertResolutions({})
+    if (!showConvertDialog || convertMode !== 'existing' || !convertTargetId) return
+    let cancelled = false
+    setLoadingConvertConflicts(true)
+    getQuoteConversionConflicts(quote.id, convertTargetId).then((result) => {
+      if (cancelled) return
+      setConvertConflicts(result.success && result.data ? result.data : [])
+      setLoadingConvertConflicts(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [showConvertDialog, convertMode, convertTargetId, quote.id])
+
+  const setConvertResolution = <K extends keyof ConversionResolutions>(
+    kind: K,
+    choice: NonNullable<ConversionResolutions[K]>
+  ) => setConvertResolutions((prev) => ({ ...prev, [kind]: choice }))
+
+  const convertConflictsUnresolved = convertConflicts.some((c) => !convertResolutions[c.kind])
+
   const handleConvert = async () => {
     if (hasUnsavedChanges) await saveNow()
     if (!convertVehicleId) {
       modal.open('error', 'Error', t('page.selectVehicle'))
       return
     }
+    const addToExisting = convertMode === 'existing'
+    if (addToExisting && !convertTargetId) {
+      modal.open('error', 'Error', t('page.convertSelectWorkOrder'))
+      return
+    }
+    if (addToExisting && (loadingConvertConflicts || convertConflictsUnresolved)) {
+      modal.open('error', 'Error', t('page.convertConflicts.unanswered'))
+      return
+    }
     setConverting(true)
-    const result = await convertQuoteToServiceRecord(quote.id, convertVehicleId)
+    const result = addToExisting
+      ? await addQuoteToServiceRecord(
+          quote.id,
+          convertVehicleId,
+          convertTargetId,
+          convertResolutions
+        )
+      : await convertQuoteToServiceRecord(quote.id, convertVehicleId)
     if (result.success && result.data) {
       router.push(`/vehicles/${convertVehicleId}/service/${result.data.id}`)
       router.refresh()
@@ -599,6 +686,17 @@ export function useQuoteFormState({
     convertVehicleId,
     setConvertVehicleId,
     converting,
+    convertMode,
+    setConvertMode,
+    convertTargets,
+    convertTargetId,
+    setConvertTargetId,
+    loadingConvertTargets,
+    convertConflicts,
+    convertResolutions,
+    setConvertResolution,
+    convertConflictsUnresolved,
+    loadingConvertConflicts,
     resolving,
     changeStatus,
     changingStatus,

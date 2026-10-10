@@ -1214,7 +1214,7 @@ function ServiceRequestCard({
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
               />
-              <Button size="sm" onClick={handleSaveNotes} disabled={isPending}>
+              <Button data-save-shortcut size="sm" onClick={handleSaveNotes} disabled={isPending}>
                 {isPending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
                 {t('saveNotes')}
               </Button>

@@ -32,6 +32,9 @@ export type PlanFeatures = {
   tireHotel: boolean
 }
 
+// The admin on torqvoice.com shows the Pro and Enterprise limits a workshop
+// starts from (its src/lib/app-billing/workshop-limits.ts, PLAN_LIMITS):
+// change a number here and change it there.
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
   free: {
     maxOrganizations: 1,
@@ -61,7 +64,11 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     tireHotel: false,
   },
   pro: {
-    maxOrganizations: 3,
+    // One shop and a small team. A bigger team or several locations is what
+    // Enterprise sells. Lowered from 3 workshops on 4 Oct 2026; every paid
+    // owner had exactly one at the time, so nobody lost one. Seats went to 10
+    // that day and back to 5 on 10 Oct 2026, when no Pro workshop had more.
+    maxOrganizations: 1,
     maxCustomers: 999999,
     maxUsers: 5,
     templates: 999999,
@@ -155,6 +162,42 @@ function cloudPlan(plan: Plan): PlanFeatures {
 // cron time to sync. 3 days covers Stripe's initial retry window.
 const SUBSCRIPTION_GRACE_MS = 3 * 24 * 60 * 60 * 1000
 
+/**
+ * The limits that can be raised for one workshop by hand, from the admin on
+ * torqvoice.com (its src/lib/app-billing/workshop-limits.ts writes the same
+ * keys; keep the two lists in step).
+ */
+const OVERRIDABLE_LIMITS = [
+  'maxUsers',
+  'maxOrganizations',
+  'maxImagesPerService',
+  'maxDiagnosticsPerService',
+  'maxDocumentsPerService',
+] as const satisfies readonly (keyof PlanFeatures)[]
+
+/**
+ * A paid plan with whatever was agreed with this workshop on top. A limit
+ * set by hand only ever raises the plan's own; anything else is ignored.
+ */
+async function withLimitOverrides(
+  organizationId: string,
+  features: PlanFeatures
+): Promise<PlanFeatures> {
+  const rows = await db.systemSetting.findMany({
+    where: { key: { in: OVERRIDABLE_LIMITS.map((limit) => `limits.${limit}.${organizationId}`) } },
+    select: { key: true, value: true },
+  })
+  if (rows.length === 0) return features
+
+  const raised = { ...features }
+  for (const limit of OVERRIDABLE_LIMITS) {
+    const row = rows.find((candidate) => candidate.key === `limits.${limit}.${organizationId}`)
+    const value = Number.parseInt(row?.value ?? '', 10)
+    if (Number.isFinite(value) && value > raised[limit]) raised[limit] = value
+  }
+  return raised
+}
+
 export const getFeatures = cache(async (organizationId: string): Promise<PlanFeatures> => {
   // The demo exists to show the product, so nothing is plan-gated there — the
   // messages, Telegram, portal and custom-field pages all need their feature
@@ -197,7 +240,8 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
       : name.includes('pro')
         ? 'pro'
         : 'free'
-    return cloudPlan(planName)
+    const features = cloudPlan(planName)
+    return planName === 'free' ? features : withLimitOverrides(organizationId, features)
   }
 
   // Self-hosted mode — all features unlocked, license only controls branding.

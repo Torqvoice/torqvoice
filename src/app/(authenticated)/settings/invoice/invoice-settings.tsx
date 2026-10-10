@@ -734,7 +734,7 @@ export function InvoiceSettings({
 
             <SaveButton>
               <div className="flex items-center gap-3">
-                <Button onClick={handleSaveGeneral} disabled={saving}>
+                <Button data-save-shortcut onClick={handleSaveGeneral} disabled={saving}>
                   {saving ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (

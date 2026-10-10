@@ -15,12 +15,14 @@ import { getTranslations } from 'next-intl/server'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { workshopMoneyFormatter } from '@/lib/workshop-currency'
 
 export default async function PortalQuotesPage({ params }: { params: Promise<{ orgId: string }> }) {
   const { orgId } = await params
   // Dates on the portal are the workshop's calendar days, not the server's.
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
+  const money = await workshopMoneyFormatter(org?.id)
   const t = await getTranslations('portal.quotes')
   const tQuoteStatus = await getTranslations('quotes.statusLabels')
   const result = await getPortalQuotes()
@@ -58,7 +60,7 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                     <span className="min-w-0 flex-1 truncate font-medium">
                       {q.quoteNumber ? `#${q.quoteNumber}` : q.title}
                     </span>
-                    <span className="shrink-0 font-semibold">${q.totalAmount.toFixed(2)}</span>
+                    <span className="shrink-0 font-semibold">{money(q.totalAmount)}</span>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
                     <Badge
@@ -131,7 +133,7 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                           {quoteStatusLabel(q.status, tQuoteStatus)}
                         </Badge>
                       </TableCell>
-                      <TableCell>${q.totalAmount.toFixed(2)}</TableCell>
+                      <TableCell>{money(q.totalAmount)}</TableCell>
                       <TableCell>
                         {q.validUntil
                           ? new Date(q.validUntil).toLocaleDateString(undefined, { timeZone })

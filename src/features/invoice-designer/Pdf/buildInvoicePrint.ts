@@ -1,9 +1,11 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
+import { LABOR_GROUP, lineGroupsFor, partGroupKey } from './lineGroups'
 import {
   getDefaultInvoiceLayout,
   isCustomFieldId,
@@ -36,6 +38,10 @@ import {
   type VisitConditionMap,
   visitConditionMapForPrint,
 } from '@/features/condition-map/Lib/print'
+import {
+  type InspectionResults,
+  inspectionResultsForPrint,
+} from '@/features/inspections/Lib/inspectionResults'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -65,6 +71,11 @@ export interface InvoicePrintInput {
   labels?: Record<string, string>
   /** The car's condition this visit, for a layout with Vehicle Condition on. */
   conditionMap?: VisitConditionMap
+  /**
+   * The inspection linked to the job, for a layout with Defects or All
+   * Results on: as it stands for a draft, as issued for an issued invoice.
+   */
+  inspectionResults?: InspectionResults | null
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -139,8 +150,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const layout = resolveLayout(input)
   const doc = layout.document ?? {}
 
-  const cc = invoiceSettings?.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
+  const cc = resolveCurrencyCode(invoiceSettings?.currencyCode)
+  const cf: 'symbol' | 'code' = resolveCurrencyFormat(invoiceSettings?.currencyFormat)
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
@@ -155,12 +166,11 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotal = partsSubtotal + laborSubtotal
-  const computedDiscount =
-    data.discountType === 'percentage'
-      ? computedSubtotal * ((data.discountValue || 0) / 100)
-      : data.discountType === 'fixed'
-        ? Math.min(data.discountValue || 0, computedSubtotal)
-        : 0
+  const computedDiscount = discountAmountFor(
+    computedSubtotal,
+    data.discountType,
+    data.discountValue
+  )
   const { totalAmount: computedTotal } = calculateTotals({
     subtotal: computedSubtotal,
     discountAmount: computedDiscount,
@@ -267,6 +277,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       desc: l.description,
       price: money(shown(l.rate)),
       total: money(shown(l.total)),
+      group: LABOR_GROUP,
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
@@ -276,6 +287,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       sub: p.partNumber || undefined,
       price: money(shown(p.unitPrice)),
       total: money(shown(p.total)),
+      group: partGroupKey(p.category),
     })),
   ]
 
@@ -285,7 +297,16 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     qty: formatQuantity(p.quantity, p.unit),
     price: money(shown(p.unitPrice)),
     total: money(shown(p.total)),
+    group: partGroupKey(p.category),
   }))
+
+  const lineGroups = lineGroupsFor({
+    parts: data.partItems,
+    labor: data.laborItems,
+    labels,
+    shown,
+    money,
+  })
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
     // A shop fee prints as one unit at its price, like a service line.
@@ -449,6 +470,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     items,
     parts,
     labor,
+    lineGroups,
     findings,
     totals,
     notes: { html: data.invoiceNotes ?? undefined },
@@ -462,6 +484,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     }),
     payment,
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
+    // The linked inspection's findings, through the certificate's own blocks.
+    certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,
@@ -486,6 +510,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
       condition_map: L('conditionMapTitle', 'Vehicle condition'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
     },
   }
 

@@ -876,7 +876,7 @@ export function CheckInDialog({
               </Button>
             )}
             {last ? (
-              <Button onClick={handleSubmit} disabled={saving || !locationId}>
+              <Button data-save-shortcut onClick={handleSubmit} disabled={saving || !locationId}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t(returning ? 'checkIn.submitReturn' : 'checkIn.submit')}
               </Button>

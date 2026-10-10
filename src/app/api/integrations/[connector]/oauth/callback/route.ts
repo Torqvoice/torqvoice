@@ -65,6 +65,7 @@ export async function GET(
       code,
       redirectUri: redirectUriFor(appUrl(), connector),
       codeVerifier: previous.codeVerifier,
+      state,
       previous,
     })
   } catch (err) {

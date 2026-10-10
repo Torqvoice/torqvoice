@@ -36,6 +36,45 @@
     "selectVehicle": "Please select a vehicle",
     "convertTitle": "Convert Quote to Work Order",
     "convertDescription": "This will create a new service record (work order) from this quote. Select a vehicle for the work order.",
+    "convertChoiceDescription": "Select a vehicle, then create a new work order from this quote or add it to one that is already open.",
+    "convertNew": "Create a new work order",
+    "convertExisting": "Add to an existing work order",
+    "convertExistingHint": "The quote's parts, labor and files are added to the work order. What is already on it stays as it is.",
+    "convertNoOpenWorkOrders": "This vehicle has no open work orders.",
+    "convertSelectWorkOrder": "Select a work order",
+    "convertAdd": "Add to work order",
+    "convertConflicts": {
+      "heading": "Before adding, decide what the work order keeps",
+      "checking": "Checking the quote against the work order...",
+      "unanswered": "Choose what the work order keeps before adding the quote.",
+      "discount": {
+        "title": "Discount",
+        "summary": "The work order has a {percent}% discount, {jobAmount} as it stands. The quote carries a discount of {quoteAmount}.",
+        "keepJob": "Keep the {percent}% discount and drop the quote's {quoteAmount}",
+        "combine": "Turn the {percent}% into {jobAmount} and add the quote's {quoteAmount}, {total} in all"
+      },
+      "tax": {
+        "title": "Tax",
+        "summary": "The work order is priced with {job}. The quote was priced with {quote}.",
+        "keepJob": "Keep the work order's tax. The quote's lines come across at the amounts quoted.",
+        "useQuote": "Switch the work order to the quote's tax. Everything on it is re-totalled.",
+        "inclusive": "{rate}% tax included in the lines",
+        "exclusive": "{rate}% tax added on top",
+        "components": "{rate}% tax ({names})"
+      },
+      "warranty": {
+        "title": "Warranty",
+        "summary": "The work order says {job}. The quote the customer accepted says {quote}.",
+        "keepJob": "Keep the work order's warranty",
+        "useQuote": "Use the quote's warranty, as the customer accepted it",
+        "none": "nothing about warranty",
+        "notIncluded": "no workshop warranty",
+        "included": "warranty included",
+        "includedWithTerms": "warranty included, {terms}",
+        "months": "{count, plural, one {# month} other {# months}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Convert",
     "convertToWorkOrder": "Convert to Work Order",
     "cancel": "Cancel",
@@ -68,6 +107,7 @@
     "title": "Parts",
     "addPart": "Add Part",
     "partNumber": "Part #",
+    "category": "Category",
     "name": "Name",
     "namePlaceholder": "Name *",
     "qty": "Qty",

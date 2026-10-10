@@ -44,6 +44,20 @@
     "apply": "Appliquer",
     "allTechnicians": "Tous les techniciens",
     "export": "Exporter en CSV",
+    "print": "Imprimer la feuille de temps",
+    "client": "Client",
+    "noClient": "Aucun client",
+    "signature": "Signature",
+    "sortBy": "Trier par",
+    "sort": {
+      "default": "Technicien / jour",
+      "client": "Client",
+      "vehicle": "Véhicule",
+      "clientVehicle": "Client, puis véhicule"
+    },
+    "sortDirection": "Sens du tri",
+    "ascending": "Croissant",
+    "descending": "Décroissant",
     "addEntry": "Ajouter une entrée",
     "stats": {
       "total": "Temps total",
@@ -101,6 +115,7 @@
       "duration": "Durée",
       "hours": "Heures",
       "job": "Travail",
+      "client": "Client",
       "vehicle": "Véhicule",
       "plate": "Immatriculation",
       "source": "Source",

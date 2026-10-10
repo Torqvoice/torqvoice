@@ -20,6 +20,8 @@
     "type": "Typ: {type}",
     "tech": "Techniker: {tech}",
     "parts": "Teile",
+    "otherParts": "Sonstige Teile",
+    "groupSubtotal": "Zwischensumme {group}",
     "partNumber": "Teilenr.",
     "description": "Beschreibung",
     "qty": "Menge",

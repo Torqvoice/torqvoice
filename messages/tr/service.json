@@ -122,6 +122,7 @@
     "fromInventory": "Stoktan",
     "addPart": "Parça Ekle",
     "partNumber": "Parça #",
+    "category": "Kategori",
     "name": "Ad",
     "qty": "Mik.",
     "unitCost": "Maliyet",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Diğer durumlar",
     "fromInspection": "{name} muayenesinden, {date}",
+    "fromQuote": "{ref} teklifinden",
     "startInspection": "Muayeneyi başlat"
   },
   "photoHandoff": {

@@ -122,6 +122,7 @@
     "fromInventory": "Iš inventoriaus",
     "addPart": "Pridėti dalį",
     "partNumber": "Dalies Nr.",
+    "category": "Kategorija",
     "name": "Pavadinimas",
     "qty": "Kiekis",
     "unitCost": "Savikaina",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Daugiau būsenų",
     "fromInspection": "Iš apžiūros {name}, {date}",
+    "fromQuote": "Iš pasiūlymo {ref}",
     "startInspection": "Pradėti apžiūrą"
   },
   "photoHandoff": {

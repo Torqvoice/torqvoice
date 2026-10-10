@@ -63,6 +63,9 @@ export async function createNewOrganization(input: unknown) {
       return org
     },
     {
+      // A new workshop belongs to the account, not to the workshop a phone's
+      // session was minted for.
+      accountLevel: true,
       audit: ({ result }) => ({
         action: 'organization.create',
         entity: 'Organization',

@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Toutes les 30 minutes. Un paiement reçu dans QuickBooks sur une facture Torqvoice est enregistré ici sur la facture."
       }
     },
+    "fiken": {
+      "description": "Envoyez les factures émises, leurs clients et leurs paiements vers Fiken, et récupérez les paiements enregistrés là-bas.",
+      "tenantHelp": "Créez une application dans Fiken sous Rediger konto, API, pour vos propres sociétés. Saisissez l'URI de redirection ci-dessous dans l'application, puis copiez ici son identifiant client et son secret client. La société doit avoir le module API de Fiken.",
+      "fields": {
+        "clientId": "Identifiant client",
+        "clientSecret": "Secret client"
+      },
+      "settings": {
+        "companySlug": "Société dans Fiken",
+        "companySlugHelp": "La société dont la comptabilité reçoit les factures. Votre utilisateur Fiken peut avoir accès à plusieurs sociétés.",
+        "pushInvoices": "Envoyer les factures émises vers Fiken",
+        "pushOnComplete": "Envoyer aussi les factures quand le travail est marqué terminé",
+        "pushOnCompleteHelp": "Sans cette option, une facture part une fois envoyée, partagée ou payée. Avec, un travail terminé part tout de suite et est mis à jour s'il change.",
+        "startDate": "Uniquement les factures datées à partir du",
+        "startDateHelp": "Laissez vide pour envoyer toutes les factures émises. Utilisez la date où votre comptabilité est passée sur Fiken pour ne pas saisir deux fois les anciennes factures.",
+        "attachPdf": "Joindre le PDF de la facture",
+        "attachPdfHelp": "Une facture entre dans Fiken comme une vente (Annet salg) sous son numéro Torqvoice. Avec cette option, le PDF reçu par le client est classé sur la vente comme pièce justificative.",
+        "laborAccount": "Compte de produits pour la main-d'œuvre",
+        "laborAccountHelp": "Laissez vide pour utiliser le 3000.",
+        "partsAccount": "Compte de produits pour les pièces",
+        "partsAccountHelp": "Laissez vide pour utiliser le 3000.",
+        "zeroVatType": "Type de TVA pour les factures sans TVA",
+        "zeroVatTypeHelp": "Comment Fiken comptabilise une vente sans TVA. Une société non assujettie à la TVA n'a rien à choisir ici. Une société assujettie doit choisir avant l'envoi d'une telle facture ; demandez à votre comptable ce qui s'applique.",
+        "vatNone": "Aucun (pas de traitement de TVA)",
+        "vatExempt": "Exonéré (fritatt)",
+        "vatOutside": "Hors champ de la TVA (utenfor)",
+        "vatExport": "Exonéré, exportation",
+        "vatReverse": "Exonéré, autoliquidation",
+        "zeroAccount": "Compte de produits pour les factures sans TVA",
+        "zeroAccountHelp": "Laissez vide pour utiliser les comptes main-d'œuvre et pièces ci-dessus. Si Fiken refuse le compte avec le type de TVA, la raison figure dans le journal d'activité.",
+        "pushPayments": "Enregistrer les paiements dans Fiken",
+        "paymentAccount": "Déposer les paiements sur",
+        "paymentAccountHelp": "Laissez vide pour utiliser le premier compte bancaire de la société.",
+        "manualPaidAsPayment": "Enregistrer un paiement quand une facture est marquée payée à la main",
+        "manualPaidAsPaymentHelp": "Une facture marquée payée dans Torqvoice sans écriture de paiement reçoit dans Fiken un paiement du montant qu'elle y affiche encore comme dû. Désactivé, elle y reste ouverte jusqu'à l'enregistrement d'un paiement.",
+        "pullPayments": "Récupérer les paiements enregistrés dans Fiken",
+        "pullPaymentsHelp": "Toutes les 30 minutes. Un paiement reçu dans Fiken sur une facture Torqvoice est enregistré ici sur la facture."
+      }
+    },
     "nhtsa": {
       "description": "Remplissez un véhicule à partir de son VIN et consultez les rappels, les plaintes de propriétaires et les notes aux crash-tests pour chaque année-modèle, auprès de l'autorité de sécurité américaine. Gratuit, sans clé.",
       "fields": {},

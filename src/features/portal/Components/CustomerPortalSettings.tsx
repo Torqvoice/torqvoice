@@ -197,7 +197,13 @@ export function CustomerPortalSettings({
           footer={
             enabled ? (
               <div className="flex justify-end">
-                <Button type="button" size="sm" onClick={handleSave} disabled={saving || !dirty}>
+                <Button
+                  data-save-shortcut
+                  type="button"
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={saving || !dirty}
+                >
                   {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {t('portal.save')}
                 </Button>

@@ -122,6 +122,7 @@
     "fromInventory": "Aus Bestand",
     "addPart": "Teil hinzufügen",
     "partNumber": "Teil #",
+    "category": "Kategorie",
     "name": "Name",
     "qty": "Menge",
     "unitCost": "Kosten",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Weitere Status",
     "fromInspection": "Aus Inspektion {name}, {date}",
+    "fromQuote": "Aus Angebot {ref}",
     "startInspection": "Inspektion starten"
   },
   "photoHandoff": {

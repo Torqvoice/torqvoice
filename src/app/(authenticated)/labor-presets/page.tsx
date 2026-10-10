@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getLaborPresetsPaginated } from '@/features/labor-presets/Actions/laborPresetActions'
@@ -56,12 +57,13 @@ export default async function LaborPresetsPage({
           name: p.name,
           partNumber: p.partNumber,
           unit: p.unit,
+          category: p.category,
           sellPrice: p.sellPrice,
           unitCost: p.unitCost,
           quantity: p.quantity,
         }))
       : []
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
 
   return (

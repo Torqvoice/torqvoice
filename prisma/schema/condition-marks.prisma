@@ -48,6 +48,11 @@ model ConditionMark {
   resolvedAt   DateTime?
   resolvedById String?
   resolvedBy   User?     @relation("ConditionMarkResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+  /// Set with resolvedAt when a later visit confirmed the damage still there
+  /// and recorded it again: the id of that newer mark. Closed because it was
+  /// superseded, not repaired, so the sheet it was drawn on still prints it
+  /// as its own record while the vehicle shows the dent once.
+  carriedToId  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

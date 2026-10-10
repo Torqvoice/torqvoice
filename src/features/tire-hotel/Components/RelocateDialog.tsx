@@ -105,7 +105,7 @@ export function RelocateDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={saving || !locationId}>
+          <Button data-save-shortcut onClick={handleSubmit} disabled={saving || !locationId}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t('relocate.submit')}
           </Button>

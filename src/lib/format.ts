@@ -1,99 +1,11 @@
-const CURRENCY_LOCALES: Record<string, string> = {
-  USD: 'en-US',
-  EUR: 'de-DE',
-  GBP: 'en-GB',
-  NOK: 'nb-NO',
-  SEK: 'sv-SE',
-  DKK: 'da-DK',
-  CHF: 'de-CH',
-  JPY: 'ja-JP',
-  CAD: 'en-CA',
-  AUD: 'en-AU',
-  NZD: 'en-NZ',
-  PLN: 'pl-PL',
-  CZK: 'cs-CZ',
-  HUF: 'hu-HU',
-  BRL: 'pt-BR',
-  MXN: 'es-MX',
-  INR: 'en-IN',
-  CNY: 'zh-CN',
-  KRW: 'ko-KR',
-  TRY: 'tr-TR',
-  ZAR: 'en-ZA',
-  RUB: 'ru-RU',
-  ISK: 'is-IS',
-  THB: 'th-TH',
-  SGD: 'en-SG',
-  HKD: 'zh-HK',
-  TWD: 'zh-TW',
-  PHP: 'en-PH',
-  ILS: 'en',
-  AED: 'en',
-  SAR: 'en',
-  RON: 'ro-RO',
-  BGN: 'bg-BG',
-  HRK: 'hr-HR',
-  UAH: 'uk-UA',
-  CLP: 'es-CL',
-  COP: 'es-CO',
-  ARS: 'es-AR',
-  PEN: 'es-PE',
-  IDR: 'id-ID',
-  MYR: 'ms-MY',
-  VND: 'vi-VN',
-  LKR: 'en-LK',
-  PKR: 'en-PK',
-  BDT: 'en-BD',
-  NPR: 'en-NP',
-  EGP: 'en-EG',
-  NGN: 'en-NG',
-  KES: 'en-KE',
-  MAD: 'en-MA',
-  // French-Algerian formatting gives the idiomatic Latin "DA" symbol; the
-  // Arabic locale's د.ج would fall outside the PDF font's encoding.
-  DZD: 'fr-DZ',
-  GHS: 'en-GH',
-  QAR: 'en',
-  KWD: 'en',
-  BHD: 'en',
-  OMR: 'en',
-  JOD: 'en',
-}
+import {
+  type CurrencyFormat,
+  currencyDefinition,
+  DEFAULT_CURRENCY_CODE,
+  DEFAULT_CURRENCY_FORMAT,
+} from '@/lib/currencies'
 
-/**
- * Currencies whose narrow symbol falls outside the WinAnsi encoding used by
- * the default Helvetica font in @react-pdf/renderer (renders as "?" in PDFs).
- * For these we fall back to the ISO code in symbol mode.
- */
-const LATIN_FALLBACK_CURRENCIES = new Set([
-  'JPY',
-  'PLN',
-  'CZK',
-  'INR',
-  'KRW',
-  'TRY',
-  'RUB',
-  'THB',
-  'PHP',
-  'ILS',
-  'BGN',
-  'UAH',
-  'VND',
-  'BDT',
-  'NGN',
-  'GHS',
-])
-
-/**
- * Symbol overrides for currencies where CLDR's narrowSymbol is ambiguous or
- * locally non-idiomatic on business documents. Applied only in 'symbol' mode.
- */
-const CURRENCY_SYMBOL_OVERRIDES: Record<string, string> = {
-  CNY: 'RMB', // disambiguates from JPY ¥; matches Chinese invoice convention
-}
-
-export type CurrencyFormat = 'symbol' | 'code'
-export const DEFAULT_CURRENCY_FORMAT: CurrencyFormat = 'symbol'
+export { type CurrencyFormat, DEFAULT_CURRENCY_FORMAT } from '@/lib/currencies'
 
 /**
  * Format a number as currency using the correct locale for the given ISO 4217 currency code.
@@ -105,14 +17,15 @@ export const DEFAULT_CURRENCY_FORMAT: CurrencyFormat = 'symbol'
  */
 export function formatCurrency(
   amount: number,
-  currencyCode: string = 'USD',
+  currencyCode: string = DEFAULT_CURRENCY_CODE,
   format: CurrencyFormat = DEFAULT_CURRENCY_FORMAT
 ): string {
-  const locale = CURRENCY_LOCALES[currencyCode] || 'en-US'
+  const definition = currencyDefinition(currencyCode)
+  const locale = definition?.locale || 'en-US'
   // 'code' mode: always render the ISO code.
   // 'symbol' mode: prefer narrowSymbol, but fall back to code for currencies
   // whose symbol isn't WinAnsi-safe in the default PDF font.
-  const useCode = format === 'code' || LATIN_FALLBACK_CURRENCIES.has(currencyCode)
+  const useCode = format === 'code' || definition?.printCode === true
   const display = useCode ? 'code' : 'narrowSymbol'
   try {
     let result = new Intl.NumberFormat(locale, {
@@ -122,7 +35,8 @@ export function formatCurrency(
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount)
-    if (format === 'symbol' && CURRENCY_SYMBOL_OVERRIDES[currencyCode]) {
+    const override = definition?.symbol
+    if (format === 'symbol' && override) {
       // Replace CLDR's currency token with our override (e.g. ¥ → RMB).
       const parts = new Intl.NumberFormat(locale, {
         style: 'currency',
@@ -133,7 +47,6 @@ export function formatCurrency(
       }).formatToParts(amount)
       const sym = parts.find((p) => p.type === 'currency')?.value
       if (sym) {
-        const override = CURRENCY_SYMBOL_OVERRIDES[currencyCode]
         // If the original symbol was glued to a digit/letter (e.g. "¥1,234.56"),
         // a multi-character override needs a space for readability.
         result = result
@@ -158,12 +71,13 @@ export function formatCurrency(
  *   getCurrencySymbol("EUR") → "€"
  */
 export function getCurrencySymbol(
-  currencyCode: string = 'USD',
+  currencyCode: string = DEFAULT_CURRENCY_CODE,
   format: CurrencyFormat = DEFAULT_CURRENCY_FORMAT
 ): string {
   if (format === 'code') return currencyCode
-  if (CURRENCY_SYMBOL_OVERRIDES[currencyCode]) return CURRENCY_SYMBOL_OVERRIDES[currencyCode]
-  if (LATIN_FALLBACK_CURRENCIES.has(currencyCode)) return currencyCode
+  const definition = currencyDefinition(currencyCode)
+  if (definition?.symbol) return definition.symbol
+  if (definition?.printCode) return currencyCode
   try {
     const parts = new Intl.NumberFormat('en', {
       style: 'currency',

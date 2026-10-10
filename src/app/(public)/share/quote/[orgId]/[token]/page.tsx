@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -9,6 +10,7 @@ import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuoteP
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
 import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
+import { inspectionResultsFor } from '@/features/inspections/Lib/linkedInspectionResults.server'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
@@ -48,6 +50,7 @@ export default async function PublicQuotePage({
           name: true,
           quantity: true,
           unit: true,
+          category: true,
           unitPrice: true,
           total: true,
           excluded: true,
@@ -158,9 +161,10 @@ export default async function PublicQuotePage({
     slogan: settingsMap['workshop.slogan'] || undefined,
   }
 
-  const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
-  const currencyFormat: 'symbol' | 'code' =
-    settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
+  const currencyCode = resolveCurrencyCode(settingsMap['workshop.currencyCode'])
+  const currencyFormat: 'symbol' | 'code' = resolveCurrencyFormat(
+    settingsMap['workshop.currencyFormat']
+  )
 
   // Rewrite logo URL for public access
   const rawLogoUrl = documentLogoPath(settingsMap, 'quote')
@@ -207,10 +211,12 @@ export default async function PublicQuotePage({
   const pick = (key: string) => settingsMap[`quote.${key}`] || settingsMap[`invoice.${key}`]
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
-  const [labels, conditionMap, certificateInspection] = await Promise.all([
+  const [labels, conditionMap, certificateInspection, inspectionResults] = await Promise.all([
     loadPrintLabels(locale, settingsMap, 'quote'),
     quoteConditionMap(orgId, quote, locale),
     linkedCertificateInspectionId(orgId, quote.inspectionId),
+    // The same results the PDF prints, read the same way.
+    inspectionResultsFor(orgId, quote, layoutConfig),
   ])
 
   const torqvoiceLogoDataUri = features.brandingRemoved
@@ -249,6 +255,7 @@ export default async function PublicQuotePage({
     labels,
     layoutConfig,
     conditionMap,
+    inspectionResults,
   })
 
   const appUrl = getAppBaseUrl()

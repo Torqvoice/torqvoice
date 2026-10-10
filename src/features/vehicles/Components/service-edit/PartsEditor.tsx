@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useCallback, useState, useEffect } from 'react'
+import { useRef, useCallback, useState, useEffect, useId, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -78,10 +78,13 @@ function SortablePartRow({
   onSelectSuggestion,
   defaultMarkupPercent,
   markupAppliesToInventory,
+  categoryListId,
 }: {
   id: string
   part: ServicePartInput
   index: number
+  /** The datalist of categories the workshop's stock already uses. */
+  categoryListId: string
   updatePart: (
     index: number,
     field: keyof ServicePartInput,
@@ -134,11 +137,24 @@ function SortablePartRow({
       </button>
       <div className="flex min-w-0 flex-col gap-2 @2xl:contents">
         <FieldRow label={t('partNumber')}>
-          <Input
-            placeholder={t('partNumber')}
-            value={part.partNumber ?? ''}
-            onChange={(e) => updatePart(index, 'partNumber', e.target.value)}
-          />
+          <div className="flex w-full flex-col gap-1">
+            <Input
+              placeholder={t('partNumber')}
+              value={part.partNumber ?? ''}
+              onChange={(e) => updatePart(index, 'partNumber', e.target.value)}
+            />
+            {/* The category decides which group the line prints under on a
+                sheet that groups its parts. A stocked part brings its own;
+                a typed line can be given one here. */}
+            <Input
+              list={categoryListId}
+              placeholder={t('category')}
+              aria-label={t('category')}
+              value={part.category ?? ''}
+              onChange={(e) => updatePart(index, 'category', e.target.value)}
+              className="h-7 text-xs"
+            />
+          </div>
         </FieldRow>
         {/* The name identifies the row, so it leads the stacked card even
             though the part number comes first in the desktop grid */}
@@ -262,6 +278,16 @@ export function PartsEditor({
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
   const modern = useModernWorkOrder()
+  const categoryListId = useId()
+  // The categories the stock already uses, offered as the line is typed, so a
+  // free-text part lands in the same group as the stocked ones.
+  const categories = useMemo(
+    () =>
+      [
+        ...new Set(inventoryParts.map((p) => p.category?.trim()).filter(Boolean)),
+      ].sort() as string[],
+    [inventoryParts]
+  )
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const keyCounterRef = useRef(0)
@@ -286,6 +312,7 @@ export function PartsEditor({
             name: picked.name,
             partNumber: picked.partNumber ?? '',
             unit: picked.unit ?? null,
+            category: picked.category ?? null,
             unitCost: picked.unitCost,
             unitPrice,
             markupPercent,
@@ -394,6 +421,11 @@ export function PartsEditor({
     <>
       {partItems.length > 0 && (
         <>
+          <datalist id={categoryListId}>
+            {categories.map((category) => (
+              <option key={category} value={category} />
+            ))}
+          </datalist>
           <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
             <span className="w-6" />
             <span>{t('partNumber')}</span>
@@ -416,6 +448,7 @@ export function PartsEditor({
                   <SortablePartRow
                     key={keysRef.current[i]}
                     id={keysRef.current[i]}
+                    categoryListId={categoryListId}
                     part={part}
                     index={i}
                     updatePart={updatePart}
@@ -434,6 +467,7 @@ export function PartsEditor({
           ) : (
             partItems.map((part, i) => (
               <SortablePartRow
+                categoryListId={categoryListId}
                 key={keysRef.current[i]}
                 id={keysRef.current[i]}
                 part={part}

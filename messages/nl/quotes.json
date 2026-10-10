@@ -36,6 +36,45 @@
     "selectVehicle": "Selecteer een voertuig",
     "convertTitle": "Offerte omzetten naar werkorder",
     "convertDescription": "Er wordt een nieuw servicerecord (werkorder) aangemaakt op basis van deze offerte. Selecteer een voertuig voor de werkorder.",
+    "convertChoiceDescription": "Selecteer een voertuig en maak van deze offerte een nieuwe werkorder of voeg haar toe aan een werkorder die al openstaat.",
+    "convertNew": "Een nieuwe werkorder aanmaken",
+    "convertExisting": "Toevoegen aan een bestaande werkorder",
+    "convertExistingHint": "De onderdelen, het arbeidsloon en de bestanden van de offerte worden aan de werkorder toegevoegd. Wat er al op staat, blijft ongewijzigd.",
+    "convertNoOpenWorkOrders": "Dit voertuig heeft geen openstaande werkorders.",
+    "convertSelectWorkOrder": "Selecteer een werkorder",
+    "convertAdd": "Toevoegen aan werkorder",
+    "convertConflicts": {
+      "heading": "Bepaal voor het toevoegen wat de werkorder behoudt",
+      "checking": "Offerte wordt vergeleken met de werkorder...",
+      "unanswered": "Kies wat de werkorder behoudt voordat de offerte wordt toegevoegd.",
+      "discount": {
+        "title": "Korting",
+        "summary": "De werkorder heeft {percent}% korting, nu {jobAmount}. De offerte bevat een korting van {quoteAmount}.",
+        "keepJob": "{percent}% korting behouden en de {quoteAmount} van de offerte laten vervallen",
+        "combine": "{percent}% omzetten naar {jobAmount} en de {quoteAmount} van de offerte erbij, {total} in totaal"
+      },
+      "tax": {
+        "title": "Btw",
+        "summary": "De werkorder is geprijsd met {job}. De offerte was geprijsd met {quote}.",
+        "keepJob": "Btw van de werkorder behouden. De offerteregels komen over voor de geoffreerde bedragen.",
+        "useQuote": "Werkorder omzetten naar de btw van de offerte. Alles erop wordt opnieuw getotaliseerd.",
+        "inclusive": "{rate}% btw inbegrepen in de regels",
+        "exclusive": "{rate}% btw erbovenop",
+        "components": "{rate}% btw ({names})"
+      },
+      "warranty": {
+        "title": "Garantie",
+        "summary": "De werkorder vermeldt {job}. De offerte die de klant heeft geaccepteerd vermeldt {quote}.",
+        "keepJob": "Garantie van de werkorder behouden",
+        "useQuote": "Garantie van de offerte gebruiken, zoals de klant die heeft geaccepteerd",
+        "none": "niets over garantie",
+        "notIncluded": "geen werkplaatsgarantie",
+        "included": "garantie inbegrepen",
+        "includedWithTerms": "garantie inbegrepen, {terms}",
+        "months": "{count, plural, one {# maand} other {# maanden}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Omzetten",
     "convertToWorkOrder": "Omzetten naar werkorder",
     "cancel": "Annuleren",
@@ -68,6 +107,7 @@
     "title": "Onderdelen",
     "addPart": "Onderdeel toevoegen",
     "partNumber": "Onderdeelnr.",
+    "category": "Categorie",
     "name": "Naam",
     "namePlaceholder": "Naam *",
     "qty": "Aantal",

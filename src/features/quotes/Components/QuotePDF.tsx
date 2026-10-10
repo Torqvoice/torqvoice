@@ -1,3 +1,4 @@
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import {
   buildQuotePrintSpec,
@@ -7,6 +8,7 @@ import { pdfFamily } from '@/features/invoice-designer/Pdf/renderPdf'
 import { SpecPdfPage } from '@/features/invoice-designer/Pdf/SpecPdf'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { VisitConditionMap } from '@/features/condition-map/Lib/print'
+import type { InspectionResults } from '@/features/inspections/Lib/inspectionResults'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 
 interface ImageAttachmentPDF {
@@ -28,7 +30,7 @@ interface OtherAttachmentPDF {
 export function QuotePDF({
   data,
   workshop,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   currencyFormat = 'symbol',
   logoDataUri,
   signer,
@@ -46,6 +48,7 @@ export function QuotePDF({
   layoutConfig,
   lineItemsInclTax,
   conditionMap,
+  inspectionResults,
 }: {
   data: QuotePrintData
   workshop?: { name: string; address: string; phone: string; email: string; slogan?: string }
@@ -67,6 +70,7 @@ export function QuotePDF({
   lineItemsInclTax?: boolean
   layoutConfig?: InvoiceLayoutConfig
   conditionMap?: VisitConditionMap
+  inspectionResults?: InspectionResults | null
 }) {
   const spec = buildQuotePrintSpec({
     data,
@@ -88,6 +92,7 @@ export function QuotePDF({
     labels,
     layoutConfig,
     conditionMap,
+    inspectionResults,
   })
 
   const quoteNum = data.quoteNumber || 'QUOTE'

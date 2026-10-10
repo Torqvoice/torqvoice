@@ -1,3 +1,4 @@
+import { SaveShortcutListener } from '@/components/save-shortcut-listener'
 import { redirect } from 'next/navigation'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getCachedMembership } from '@/lib/cached-session'
@@ -43,6 +44,7 @@ export default async function DesignerLayout({ children }: { children: React.Rea
     <ServiceTypeProvider serviceType={data.serviceType ?? 'automotive'}>
       <TypeKeyProvider enabled={data.typeKeyEnabled}>
         <ConfirmProvider>
+          <SaveShortcutListener />
           <div className="h-screen overflow-hidden bg-[#eceef1] text-[#1a1d21]">{children}</div>
         </ConfirmProvider>
       </TypeKeyProvider>

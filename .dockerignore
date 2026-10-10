@@ -9,3 +9,13 @@ plans
 public/uploads
 backups
 data/uploads
+.github
+.claude
+.vscode
+e2e
+test-results
+playwright-report
+playwright.config.ts
+vitest.config.ts
+tsconfig.tsbuildinfo
+src/__tests__

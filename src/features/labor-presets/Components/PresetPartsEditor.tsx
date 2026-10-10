@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ export interface PresetPartItem {
   quantity: number
   /** Unit of measure snapshotted from the picked inventory part. */
   unit: string | null
+  category?: string | null
   unitPrice: number
   inventoryPartId: string
 }
@@ -34,7 +36,7 @@ export function PresetPartsEditor({
   parts,
   onPartsChange,
   inventoryParts,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
 }: PresetPartsEditorProps) {
   const t = useTranslations('laborPresets')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -69,6 +71,7 @@ export function PresetPartsEditor({
               name: picked.name,
               partNumber: picked.partNumber ?? '',
               unit: picked.unit ?? null,
+              category: picked.category ?? null,
               unitPrice,
               inventoryPartId: picked.id,
             }
@@ -86,6 +89,7 @@ export function PresetPartsEditor({
         partNumber: ip.partNumber || '',
         quantity: 1,
         unit: ip.unit ?? null,
+        category: ip.category ?? null,
         unitPrice: price,
         inventoryPartId: ip.id,
       },

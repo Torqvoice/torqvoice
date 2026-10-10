@@ -98,6 +98,13 @@ export type Node =
       subKey?: string
       /** Rows whose value here is truthy print struck through and dimmed. */
       strikeKey?: string
+      /**
+       * Rows whose value here is set are group headings: that value prints
+       * bold across the whole row, and the row is never banded.
+       */
+      groupKey?: string
+      /** Rows whose value here is truthy print bold, for a group's subtotal. */
+      emphasisKey?: string
       /** Thickness of the rule under each row, in points. */
       ruleWidth?: number
       /**
@@ -109,6 +116,8 @@ export type Node =
       style?: BoxStyle
       headerStyle?: TextStyle & BoxStyle
       rowPadding?: number
+      /** Vertical padding of the column headings, in points. Unset is 6. */
+      headerPadding?: number
       stripe?: string
       anchor?: Anchor
     }

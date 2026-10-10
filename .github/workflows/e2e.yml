@@ -28,10 +28,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { id: shard-1, name: shard 1 of 4, shard: 1/4 }
-          - { id: shard-2, name: shard 2 of 4, shard: 2/4 }
-          - { id: shard-3, name: shard 3 of 4, shard: 3/4 }
-          - { id: shard-4, name: shard 4 of 4, shard: 4/4 }
+          - { id: shard-1, name: shard 1 of 8, shard: 1/8 }
+          - { id: shard-2, name: shard 2 of 8, shard: 2/8 }
+          - { id: shard-3, name: shard 3 of 8, shard: 3/8 }
+          - { id: shard-4, name: shard 4 of 8, shard: 4/8 }
+          - { id: shard-5, name: shard 5 of 8, shard: 5/8 }
+          - { id: shard-6, name: shard 6 of 8, shard: 6/8 }
+          - { id: shard-7, name: shard 7 of 8, shard: 7/8 }
+          - { id: shard-8, name: shard 8 of 8, shard: 8/8 }
           # The same build started in cloud mode: plan limits, the sign-up
           # pitch and Google sign-in only exist there.
           - { id: cloud, name: cloud, mode: cloud }

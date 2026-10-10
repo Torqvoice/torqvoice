@@ -2,6 +2,7 @@
 
 import { cookies, headers } from 'next/headers'
 import { auth } from '@/lib/auth'
+import { SCOPED_SESSION_MESSAGE, sessionOrganizationScope } from '@/lib/session-scope'
 import { db } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
@@ -12,6 +13,13 @@ export async function switchOrganization(organizationId: string) {
 
   if (!session?.user?.id) {
     return { success: false, error: 'Unauthorized' }
+  }
+
+  // A session bound to one workshop stays in it (lib/session-scope.ts). The
+  // cookie would be ignored anyway; refusing says so instead of appearing to
+  // switch and then showing the same workshop.
+  if (sessionOrganizationScope(session)) {
+    return { success: false, error: SCOPED_SESSION_MESSAGE }
   }
 
   const membership = await db.organizationMember.findFirst({

@@ -60,6 +60,12 @@ export interface ConditionMarkData {
   recordedAt: Date | string
   resolvedAt: Date | string | null
   /**
+   * The newer mark a later visit recorded in its place when it confirmed the
+   * damage still there. Set with resolvedAt: closed because it was
+   * superseded, not repaired, so its own sheet still shows it.
+   */
+  carriedToId?: string | null
+  /**
    * When the visit the mark was drawn on was opened: its job's, or its
    * inspection's. Read with the vehicle's marks; absent on a mark an action
    * just returned, which is always the sheet in hand.
@@ -153,7 +159,10 @@ export function splitMarks(
   marks: ConditionMarkData[],
   scope: MarkScope
 ): { own: ConditionMarkData[]; previous: ConditionMarkData[] } {
-  const open = marks.filter((m) => !m.resolvedAt)
+  // A mark closed only because a later visit recorded it again is still this
+  // visit's record of the car: its own sheet keeps it, every other sheet
+  // meets the newer one instead.
+  const open = marks.filter((m) => !m.resolvedAt || (m.carriedToId && isOwnMark(m, scope)))
   return {
     own: open.filter((m) => isOwnMark(m, scope)),
     previous: open.filter((m) => !isOwnMark(m, scope) && !isLaterVisit(m, scope)),

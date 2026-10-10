@@ -155,7 +155,7 @@ export function NewQuoteDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('form.cancel')}
             </Button>
-            <Button type="submit" disabled={creating || !title.trim()}>
+            <Button data-save-shortcut type="submit" disabled={creating || !title.trim()}>
               {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('form.createQuote')}
             </Button>

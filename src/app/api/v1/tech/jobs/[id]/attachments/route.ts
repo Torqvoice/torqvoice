@@ -7,6 +7,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
+import { isDeclaredVideo, sniffDeclaredVideo } from '@/lib/video-sniff'
 
 /**
  * Attaches a photo or video shot in the bay to a job.
@@ -67,7 +68,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       const maxBytes = uploadLimit(MAX_BYTES)
       const tooLarge = `That file is too large. Keep it under ${Math.round(maxBytes / (1024 * 1024))} MB.`
       if (refuseDeclaredOversize(request, MAX_BYTES)) {
-        return apiError(400, 'invalid_request', tooLarge)
+        return apiError(413, 'invalid_request', tooLarge)
       }
 
       const form = await request.formData()
@@ -87,7 +88,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return apiError(400, 'invalid_request', tooLarge)
       }
 
-      const category = file.type.startsWith('video/') ? 'video' : 'image'
+      const bytes = new Uint8Array(await file.arrayBuffer())
+
+      // The declared type is the client's word. A video is kept, served and
+      // played as one only when its bytes are the container it claims.
+      if (isDeclaredVideo(file.type) && !sniffDeclaredVideo(file.type, bytes)) {
+        return apiError(400, 'invalid_request', 'That file is not a video we can read.')
+      }
+
+      const category = isDeclaredVideo(file.type) ? 'video' : 'image'
       const description = (form.get('description') as string | null)?.slice(0, 500) || undefined
 
       const limitKey = CATEGORY_LIMIT[category]
@@ -114,7 +123,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       await mkdir(dir, { recursive: true })
       const target = path.join(dir, filename)
 
-      await writeFile(target, new Uint8Array(await file.arrayBuffer()))
+      await writeFile(target, bytes)
       const written = await stat(target)
 
       const attachment = await db.serviceAttachment.create({

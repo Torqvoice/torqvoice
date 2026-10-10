@@ -18,6 +18,9 @@ import './documentFonts.css'
  */
 
 const SHADOW_SHADES = ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)']
+/** How wide each pale line is on the paper that waits for its blocks. */
+const LOADING_LINES = ['34%', '20%', '100%', '93%', '97%', '62%']
+const PAPER_SHADOW = '0 1px 3px rgba(26,29,33,0.12), 0 10px 28px rgba(26,29,33,0.14)'
 
 export function SpecSheet({ spec }: { spec: DocumentSpec }) {
   const measureRef = useRef<HTMLDivElement>(null)
@@ -25,6 +28,14 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
   const [heights, setHeights] = useState<number[]>([])
   const [, setMeasureTick] = useState(0)
   const [scale, setScale] = useState(1)
+  /**
+   * False until the blocks have been measured and the sheet fitted once,
+   * which takes a browser. The server knows neither, so its HTML has every
+   * row at the top margin, one over the other, on a sheet at full size, and
+   * that is what a customer's phone showed until hydration. It never goes
+   * back to false: later measurements move what is already in place.
+   */
+  const [ready, setReady] = useState(false)
 
   const contentWidth = spec.page.width - spec.page.margin.left - spec.page.margin.right
   const colWidth = (contentWidth - BLOCK_GAP) / 2
@@ -49,6 +60,9 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
     setHeights((prev) =>
       prev.length === next.length && prev.every((h, i) => h === next[i]) ? prev : next
     )
+    // With the heights, so the sheet is let through in the render that
+    // places its blocks and the browser never paints the one before it.
+    setReady(true)
   })
 
   // Late images and webfonts change the heights without causing a render.
@@ -68,7 +82,8 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
 
   // Fit the sheet to the container, like a PDF viewer fits a page: smaller
   // screens shrink it, wider pages grow it, so it always spans the content.
-  useEffect(() => {
+  // Before the first paint, so the sheet is never shown at the wrong size.
+  useLayoutEffect(() => {
     const frame = frameRef.current
     if (!frame) return
     const fit = () => setScale(frame.clientWidth / spec.page.width || 1)
@@ -249,7 +264,7 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
         fontSize: spec.page.fontSize,
         // The sheet is its own paper on the page; it carries its own shadow
         // rather than being set inside a card.
-        boxShadow: '0 1px 3px rgba(26,29,33,0.12), 0 10px 28px rgba(26,29,33,0.14)',
+        boxShadow: PAPER_SHADOW,
         borderRadius: 2,
       }}
     >
@@ -342,10 +357,57 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
         ))}
       </div>
 
+      {/* The paper waiting for its blocks: the first page's size by CSS
+          alone, since nothing else runs before hydration, with a few pale
+          lines where the document starts. The sheet takes its place exactly. */}
+      {!ready && (
+        <div
+          aria-hidden
+          data-sheet-loading
+          style={{
+            width: '100%',
+            aspectRatio: `${spec.page.width} / ${spec.page.height}`,
+            boxSizing: 'border-box',
+            padding: `${(spec.page.margin.top / spec.page.width) * 100}% ${
+              (spec.page.margin.right / spec.page.width) * 100
+            }% 0 ${(spec.page.margin.left / spec.page.width) * 100}%`,
+            background: spec.page.background || '#ffffff',
+            boxShadow: PAPER_SHADOW,
+            borderRadius: 2,
+          }}
+        >
+          <div
+            className="animate-pulse motion-reduce:animate-none"
+            style={{ display: 'flex', flexDirection: 'column', gap: 9 }}
+          >
+            {LOADING_LINES.map((width) => (
+              <div
+                key={width}
+                style={{
+                  width,
+                  height: 8,
+                  borderRadius: 2,
+                  background: spec.page.text,
+                  opacity: 0.1,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div
-        style={{
-          height: layout.pageCount * spec.page.height * scale + (layout.pageCount - 1) * 12 * scale,
-        }}
+        aria-busy={ready ? undefined : true}
+        style={
+          ready
+            ? {
+                height:
+                  layout.pageCount * spec.page.height * scale + (layout.pageCount - 1) * 12 * scale,
+              }
+            : // Kept in the page so it is the same element before and after,
+              // out of sight and taking no room while the paper stands in.
+              { height: 0, overflow: 'hidden', visibility: 'hidden' }
+        }
       >
         <div
           style={{

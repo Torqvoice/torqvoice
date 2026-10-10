@@ -11,11 +11,13 @@ vi.mock('@/lib/db', () => ({
     },
     user: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       update: vi.fn(),
     },
     $transaction: vi.fn(),
   },
 }))
+vi.mock('@/lib/account-mail', () => ({ sendAccountMail: vi.fn().mockResolvedValue(undefined) }))
 
 import { GET } from '@/app/api/public/confirm-email-change/route'
 import { db } from '@/lib/db'
@@ -23,6 +25,7 @@ import { db } from '@/lib/db'
 const mockFindVerification = vi.mocked(db.verification.findUnique)
 const mockDeleteVerification = vi.mocked(db.verification.delete)
 const mockFindUser = vi.mocked(db.user.findFirst)
+const mockFindUserById = vi.mocked(db.user.findUnique)
 const mockTransaction = vi.mocked(db.$transaction)
 
 function makeRequest(params: Record<string, string> = {}) {
@@ -160,11 +163,32 @@ describe('GET /api/public/confirm-email-change', () => {
       updatedAt: new Date(),
     } as any)
     mockFindUser.mockResolvedValue(null) // no other user has this email
+    mockFindUserById.mockResolvedValue({ name: 'Anna', email: 'old@example.com' } as any)
     mockTransaction.mockResolvedValue([{}, {}] as any)
 
     const res = await GET(makeRequest({ token, uid: 'user-1' }))
     expect(res.status).toBe(307)
     expect(redirectUrl(res)).toContain('emailChanged=true')
     expect(mockTransaction).toHaveBeenCalled()
+  })
+
+  it('tells the old address that it no longer signs in', async () => {
+    const { sendAccountMail } = await import('@/lib/account-mail')
+    const { token, tokenHash } = makeTokenAndHash()
+    mockFindVerification.mockResolvedValue({
+      id: 'v-1',
+      identifier: 'email-change:user-1',
+      value: JSON.stringify({ tokenHash, email: 'new@example.com' }),
+      expiresAt: new Date(Date.now() + 60000),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any)
+    mockFindUser.mockResolvedValue(null)
+    mockFindUserById.mockResolvedValue({ name: 'Anna', email: 'old@example.com' } as any)
+    mockTransaction.mockResolvedValue([{}, {}] as any)
+
+    await GET(makeRequest({ token, uid: 'user-1' }))
+
+    expect(sendAccountMail).toHaveBeenCalledWith(expect.objectContaining({ to: 'old@example.com' }))
   })
 })

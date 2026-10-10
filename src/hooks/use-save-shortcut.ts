@@ -11,7 +11,9 @@ export function useSaveShortcut(onSave: () => void | Promise<void>, enabled = tr
         void onSave()
       }
     }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+    // On the document so it runs before SaveShortcutListener's page fallback,
+    // which sits on the window and steps aside once this has handled the key.
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
   }, [onSave, enabled])
 }

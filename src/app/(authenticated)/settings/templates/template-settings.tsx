@@ -780,7 +780,7 @@ export function TemplateSettings({
           </ReadOnlyWrapper>
           <SaveButton>
             <div className="flex justify-end">
-              <Button onClick={handleSave} disabled={saving}>
+              <Button data-save-shortcut onClick={handleSave} disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('templates.saveSmsTemplates')}
               </Button>
@@ -817,7 +817,7 @@ export function TemplateSettings({
 
           <SaveButton>
             <div className="flex justify-end">
-              <Button onClick={handleSave} disabled={saving}>
+              <Button data-save-shortcut onClick={handleSave} disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t(
                   tab === 'invoice'

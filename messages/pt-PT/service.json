@@ -122,6 +122,7 @@
     "fromInventory": "Do stock",
     "addPart": "Adicionar peça",
     "partNumber": "Ref. peça",
+    "category": "Categoria",
     "name": "Nome",
     "qty": "Qtd.",
     "unitCost": "Custo",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Mais estados",
     "fromInspection": "Da inspeção {name}, {date}",
+    "fromQuote": "Do orçamento {ref}",
     "startInspection": "Iniciar inspeção"
   },
   "photoHandoff": {

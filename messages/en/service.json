@@ -122,6 +122,7 @@
     "fromInventory": "From Inventory",
     "addPart": "Add Part",
     "partNumber": "Part #",
+    "category": "Category",
     "name": "Name",
     "qty": "Qty",
     "unitCost": "Cost",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "More statuses",
     "fromInspection": "From inspection {name}, {date}",
+    "fromQuote": "From quote {ref}",
     "startInspection": "Start inspection"
   },
   "photoHandoff": {

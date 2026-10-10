@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Co 30 minut. Płatność przyjęta w QuickBooks za fakturę z Torqvoice zostaje zarejestrowana tutaj na fakturze."
       }
     },
+    "fiken": {
+      "description": "Wysyłaj wystawione faktury, ich klientów i płatności do Fiken i pobieraj płatności zarejestrowane tam.",
+      "tenantHelp": "Utwórz aplikację w Fiken w sekcji Rediger konto, API, dla własnych firm. Wpisz w aplikacji poniższy adres URI przekierowania, a następnie skopiuj tutaj jej identyfikator klienta i sekret klienta. Firma musi mieć moduł API Fiken.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "companySlug": "Firma w Fiken",
+        "companySlugHelp": "Firma, do której ksiąg trafiają faktury. Twój użytkownik Fiken może mieć dostęp do kilku.",
+        "pushInvoices": "Wysyłaj wystawione faktury do Fiken",
+        "pushOnComplete": "Wysyłaj faktury także wtedy, gdy zlecenie zostanie oznaczone jako ukończone",
+        "pushOnCompleteHelp": "Bez tej opcji faktura trafia do księgowości po wysłaniu, udostępnieniu lub opłaceniu. Z nią ukończone zlecenie trafia od razu i jest aktualizowane, gdy się zmieni.",
+        "startDate": "Tylko faktury z datą od",
+        "startDateHelp": "Zostaw puste, aby wysyłać każdą wystawioną fakturę. Użyj daty przeniesienia księgowości do Fiken, aby starsze faktury nie zostały wprowadzone dwa razy.",
+        "attachPdf": "Dołącz PDF faktury",
+        "attachPdfHelp": "Faktura trafia do Fiken jako sprzedaż (Annet salg) ze swoim numerem z Torqvoice. Po włączeniu PDF, który otrzymał klient, jest zapisywany przy sprzedaży jako dowód księgowy.",
+        "laborAccount": "Konto przychodów dla robocizny",
+        "laborAccountHelp": "Pozostaw puste, aby użyć 3000.",
+        "partsAccount": "Konto przychodów dla części",
+        "partsAccountHelp": "Pozostaw puste, aby użyć 3000.",
+        "zeroVatType": "Typ VAT dla faktur bez VAT",
+        "zeroVatTypeHelp": "Jak Fiken księguje sprzedaż bez VAT. Firma niezarejestrowana jako podatnik VAT nie musi tu niczego wybierać. Zarejestrowana musi wybrać, zanim taka faktura zostanie wysłana; zapytaj księgowego, który typ ma zastosowanie.",
+        "vatNone": "Brak (bez obsługi VAT)",
+        "vatExempt": "Zwolniona (fritatt)",
+        "vatOutside": "Poza zakresem VAT (utenfor)",
+        "vatExport": "Zwolniona, eksport",
+        "vatReverse": "Zwolniona, odwrotne obciążenie",
+        "zeroAccount": "Konto przychodów dla faktur bez VAT",
+        "zeroAccountHelp": "Pozostaw puste, aby użyć powyższych kont robocizny i części. Jeśli Fiken odrzuci konto z tym typem VAT, powód pojawi się w dzienniku aktywności.",
+        "pushPayments": "Rejestruj płatności w Fiken",
+        "paymentAccount": "Wpłacaj płatności na",
+        "paymentAccountHelp": "Pozostaw puste, aby użyć pierwszego konta bankowego firmy.",
+        "manualPaidAsPayment": "Rejestruj płatność, gdy faktura zostanie ręcznie oznaczona jako opłacona",
+        "manualPaidAsPaymentHelp": "Faktura oznaczona w Torqvoice jako opłacona bez wpisu płatności otrzymuje w Fiken jedną płatność na kwotę, która tam nadal figuruje jako należna. Wyłączone: pozostaje tam otwarta do czasu zarejestrowania płatności.",
+        "pullPayments": "Pobieraj płatności zarejestrowane w Fiken",
+        "pullPaymentsHelp": "Co 30 minut. Płatność przyjęta w Fiken za fakturę z Torqvoice zostaje zarejestrowana tutaj na fakturze."
+      }
+    },
     "nhtsa": {
       "description": "Uzupełnij pojazd na podstawie VIN i zobacz akcje serwisowe, skargi właścicieli i oceny z testów zderzeniowych dla każdego rocznika, z amerykańskiego urzędu bezpieczeństwa ruchu. Za darmo, bez klucza.",
       "fields": {},

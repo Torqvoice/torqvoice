@@ -377,7 +377,7 @@ describe('discardUnsavedUpload', () => {
 })
 
 describe('removeOrganizationFiles', () => {
-  it('removes the workshop’s folder and its trash under both roots, and nobody else’s', async () => {
+  it('moves the workshop’s folder under both roots into today’s trash, and nobody else’s', async () => {
     await put(roots.current, ORG, 'services', PHOTO)
     await put(roots.legacy, ORG, 'logos', PHOTO)
     await put(roots.current, OTHER, 'services', PHOTO_2)
@@ -386,21 +386,65 @@ describe('removeOrganizationFiles', () => {
       reason: 'test',
       now: NOW,
     })
+    const theirs = await put(roots.current, OTHER, 'services', PHOTO)
+
+    await removeOrganizationFiles(ORG, { now: NOW })
+
+    expect(existsSync(path.join(roots.current, ORG))).toBe(false)
+    expect(existsSync(path.join(roots.legacy, ORG))).toBe(false)
+    expect(existsSync(trashed(roots.current, ORG, 'services', PHOTO))).toBe(true)
+    expect(existsSync(trashed(roots.legacy, ORG, 'logos', PHOTO))).toBe(true)
+    expect(existsSync(theirs)).toBe(true)
+    expect(existsSync(trashed(roots.current, OTHER, 'services', PHOTO_2))).toBe(true)
+  })
+
+  it('merges into what the workshop already has in today’s trash, overwriting nothing', async () => {
+    // Released earlier today: already in the trash under the same name the
+    // folder move would use.
     await put(roots.current, ORG, 'quotes', PHOTO_2)
     await releaseFiles([url(ORG, 'quotes', PHOTO_2)], {
       organizationId: ORG,
       reason: 'test',
       now: NOW,
     })
-    const theirs = await put(roots.current, OTHER, 'services', PHOTO)
+    await writeFile(trashed(roots.current, ORG, 'quotes', PHOTO_2), 'released earlier')
+    await put(roots.current, ORG, 'quotes', PHOTO_2)
+    await put(roots.current, ORG, 'services', PHOTO)
 
-    await removeOrganizationFiles(ORG)
+    await removeOrganizationFiles(ORG, { now: NOW })
 
     expect(existsSync(path.join(roots.current, ORG))).toBe(false)
-    expect(existsSync(path.join(roots.legacy, ORG))).toBe(false)
-    expect(existsSync(path.join(roots.current, '.trash', TODAY, ORG))).toBe(false)
-    expect(existsSync(theirs)).toBe(true)
-    expect(existsSync(trashed(roots.current, OTHER, 'services', PHOTO_2))).toBe(true)
+    expect(existsSync(trashed(roots.current, ORG, 'services', PHOTO))).toBe(true)
+    expect(await readFile(trashed(roots.current, ORG, 'quotes', PHOTO_2), 'utf8')).toBe(
+      'released earlier'
+    )
+    expect(await readFile(trashed(roots.current, ORG, 'quotes', `${PHOTO_2}.1`), 'utf8')).toBe(
+      'bytes'
+    )
+  })
+
+  it('copies the folder then deletes it when the trash is on another disk', async () => {
+    await put(roots.current, ORG, 'services', PHOTO)
+    vi.mocked(rename).mockRejectedValueOnce(
+      Object.assign(new Error('cross-device link'), { code: 'EXDEV' })
+    )
+
+    await removeOrganizationFiles(ORG, { now: NOW })
+
+    expect(existsSync(path.join(roots.current, ORG))).toBe(false)
+    expect(await readFile(trashed(roots.current, ORG, 'services', PHOTO), 'utf8')).toBe('bytes')
+  })
+
+  it('leaves the workshop’s earlier trash for purgeTrash to expire', async () => {
+    const earlier = path.join(roots.current, '.trash', '2026-09-10', ORG, 'services', PHOTO)
+    await mkdir(path.dirname(earlier), { recursive: true })
+    await writeFile(earlier, 'bytes')
+    await put(roots.current, ORG, 'services', PHOTO)
+
+    await removeOrganizationFiles(ORG, { now: NOW })
+
+    expect(existsSync(earlier)).toBe(true)
+    expect(existsSync(trashed(roots.current, ORG, 'services', PHOTO))).toBe(true)
   })
 
   it('refuses an id that is not one, rather than removing the uploads root', async () => {

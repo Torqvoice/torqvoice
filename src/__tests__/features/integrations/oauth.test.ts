@@ -10,6 +10,7 @@ import {
   refreshToken,
   resolveClient,
 } from '@/features/integrations/Lib/oauth'
+import { manifest as fiken } from '@/integrations/fiken/manifest'
 import { manifest as google } from '@/integrations/google-calendar/manifest'
 
 const spec = google.auth.type === 'oauth2' ? google.auth : null
@@ -144,6 +145,73 @@ describe('integration oauth', () => {
     const sent = new URLSearchParams(String(init?.body))
     expect(sent.get('client_secret')).toBeNull()
     expect(sent.get('grant_type')).toBe('authorization_code')
+  })
+
+  it('follows Fiken: no scope on the consent page, and the state again on the exchange', async () => {
+    const fikenSpec = fiken.auth.type === 'oauth2' ? fiken.auth : null
+    if (!fikenSpec) throw new Error('fiken manifest is not oauth2')
+    const client = { clientId: 'fid', clientSecret: 'fsec', ownership: 'platform' as const }
+    const url = new URL(
+      buildAuthorizeUrl({
+        spec: fikenSpec,
+        client,
+        redirectUri: redirectUriFor('https://shop.example.com', 'fiken'),
+        state: 'st4te',
+      })
+    )
+    expect(url.origin + url.pathname).toBe('https://fiken.no/oauth/authorize')
+    expect(Object.fromEntries(url.searchParams.entries())).toEqual({
+      response_type: 'code',
+      client_id: 'fid',
+      redirect_uri: 'https://shop.example.com/api/integrations/fiken/oauth/callback',
+      state: 'st4te',
+    })
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          access_token: 'fa',
+          refresh_token: 'fr',
+          token_type: 'bearer',
+          expires_in: 86157,
+        }),
+        { status: 200 }
+      )
+    )
+    await exchangeCode({
+      spec: fikenSpec,
+      client,
+      code: 'AUTHCODE',
+      redirectUri: 'https://shop.example.com/api/integrations/fiken/oauth/callback',
+      state: 'st4te',
+    })
+    const [tokenUrl, init] = fetchMock.mock.calls[0]
+    expect(tokenUrl).toBe('https://fiken.no/oauth/token')
+    expect(new Headers(init?.headers).get('authorization')).toBe(
+      `Basic ${Buffer.from('fid:fsec').toString('base64')}`
+    )
+    expect(Object.fromEntries(new URLSearchParams(String(init?.body)).entries())).toEqual({
+      grant_type: 'authorization_code',
+      code: 'AUTHCODE',
+      redirect_uri: 'https://shop.example.com/api/integrations/fiken/oauth/callback',
+      state: 'st4te',
+    })
+  })
+
+  it('keeps the state off the exchange for vendors that follow the standard', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ access_token: 'a', expires_in: 3600 }), { status: 200 })
+    )
+    await exchangeCode({
+      spec,
+      client: { clientId: 'c', clientSecret: 's', ownership: 'tenant' },
+      code: 'x',
+      redirectUri: 'https://x/cb',
+      state: 'st4te',
+    })
+    expect(new URLSearchParams(String(fetchMock.mock.calls[0][1]?.body)).get('state')).toBeNull()
   })
 
   it('knows when a token is about to expire', () => {

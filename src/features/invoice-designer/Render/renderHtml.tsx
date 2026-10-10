@@ -270,6 +270,7 @@ function NodeBody({ node }: { node: Node }): ReactNode {
     case 'table': {
       const cell = (width: number | 'flex'): CSSProperties =>
         width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }
+      let band = 0
       return (
         <div {...id} style={boxCss(node.style)}>
           <div
@@ -277,7 +278,7 @@ function NodeBody({ node }: { node: Node }): ReactNode {
               display: 'flex',
               ...boxCss(node.headerStyle),
               ...textCss(node.headerStyle),
-              padding: '6px 8px',
+              padding: `${node.headerPadding ?? 6}px 8px`,
             }}
           >
             {node.columns.map((column) => (
@@ -288,6 +289,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
           </div>
           {node.rows.flatMap((row, i) => {
             const struck = node.strikeKey ? !!row[node.strikeKey] : false
+            const heading = node.groupKey ? row[node.groupKey] : undefined
+            const emphasis = node.emphasisKey ? !!row[node.emphasisKey] : false
+            // Banding counts the lines, not the headings between them, so a
+            // group never starts on a band because of how many came before.
+            const banded = !!node.stripe && !heading && band++ % 2 === 1
             // Rules are their own elements between rows, overlapping both
             // neighbours by a hair so scaled rendering cannot leave seams;
             // a banded background paints after the rule and covers the
@@ -313,28 +319,34 @@ function NodeBody({ node }: { node: Node }): ReactNode {
                   display: 'flex',
                   alignItems: 'flex-start',
                   padding: `${node.rowPadding ?? 5}px 8px`,
-                  background: node.stripe && i % 2 === 1 ? node.stripe : node.rowBackground,
+                  background: banded ? node.stripe : node.rowBackground,
                   opacity: struck ? 0.5 : undefined,
                   textDecoration: struck ? 'line-through' : undefined,
+                  fontWeight: emphasis ? 700 : undefined,
                 }}
               >
-                {node.columns.map((column) => (
-                  <span
-                    key={column.key}
-                    style={{
-                      ...cell(column.width),
-                      textAlign: column.align,
-                      whiteSpace: 'pre-line',
-                    }}
-                  >
-                    {row[column.key]}
-                    {node.subKey && column.width === 'flex' && row[node.subKey] ? (
-                      <span style={{ display: 'block', opacity: 0.6, fontSize: '0.85em' }}>
-                        {row[node.subKey]}
+                {heading ? (
+                  <span style={{ flex: 1, minWidth: 0, fontWeight: 700 }}>{heading}</span>
+                ) : null}
+                {heading
+                  ? null
+                  : node.columns.map((column) => (
+                      <span
+                        key={column.key}
+                        style={{
+                          ...cell(column.width),
+                          textAlign: column.align,
+                          whiteSpace: 'pre-line',
+                        }}
+                      >
+                        {row[column.key]}
+                        {node.subKey && column.width === 'flex' && row[node.subKey] ? (
+                          <span style={{ display: 'block', opacity: 0.6, fontSize: '0.85em' }}>
+                            {row[node.subKey]}
+                          </span>
+                        ) : null}
                       </span>
-                    ) : null}
-                  </span>
-                ))}
+                    ))}
               </div>
             )
             return rule ? [body, rule] : [body]

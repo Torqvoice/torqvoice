@@ -13,6 +13,7 @@ import type {
   AccountingInvoice,
   AccountingPayment,
 } from '@/features/integrations/Lib/accounting-sync'
+import { roundAsPrinted } from '@/lib/money'
 import { zonedDayKey } from '@/lib/timezone'
 
 /** Intuit retires older minor versions; this one carries the current field set. */
@@ -159,8 +160,9 @@ export function paymentUrl(env: Environment, id: string): string {
   return `${appHost(env)}/app/recvpayment?txnId=${encodeURIComponent(id)}`
 }
 
+/** To the cent, the way the invoice prints the amount, so the ledger carries the printed figure. */
 export function round2(n: number): number {
-  return Math.round((n + Number.EPSILON) * 100) / 100
+  return roundAsPrinted(n)
 }
 
 /** A value for the query language, which escapes a quote with a backslash. */
@@ -417,13 +419,4 @@ export function localPaymentMethod(name: string | undefined): string {
   return 'other'
 }
 
-/** Stable hash of a body, so an unchanged record is not pushed twice. */
-export function checksumOf(body: unknown): string {
-  const input = JSON.stringify(body)
-  let h = 2166136261
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i)
-    h = Math.imul(h, 16777619) >>> 0
-  }
-  return h.toString(16)
-}
+export { checksumOf } from '@/features/integrations/Lib/checksum'

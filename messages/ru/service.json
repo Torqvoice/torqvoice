@@ -122,6 +122,7 @@
     "fromInventory": "Со склада",
     "addPart": "Добавить запчасть",
     "partNumber": "Арт. №",
+    "category": "Категория",
     "name": "Название",
     "qty": "Кол-во",
     "unitCost": "Себестоимость",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Другие статусы",
     "fromInspection": "Из осмотра {name}, {date}",
+    "fromQuote": "Из предложения {ref}",
     "startInspection": "Начать осмотр"
   },
   "photoHandoff": {

@@ -46,6 +46,7 @@ import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
 import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { TimeClockProvider } from '@/features/time-tracking/Components/TimeClockProvider'
 import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
+import { SaveShortcutListener } from '@/components/save-shortcut-listener'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -328,6 +329,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                           channels the remaining pages still read. */}
                         <RealtimeProvider>
                           <TimeClockProvider technicianIds={technicianIds}>
+                            <SaveShortcutListener />
                             <AppSidebar
                               companyLogo={data.companyLogo}
                               organizations={data.organizations}

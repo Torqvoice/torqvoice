@@ -1,5 +1,6 @@
 'use client'
 
+import { formatCurrency } from '@/lib/format'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useLocale, useTranslations } from 'next-intl'
@@ -36,6 +37,7 @@ import {
   resumeSubscription,
 } from '@/features/subscription/Actions/subscriptionActions'
 import type { PlanFeatures } from '@/lib/features'
+import type { BillingInterval, BillingPlan, BillingPriceList } from '@/lib/torqvoice-com'
 
 type Props = {
   plan: string
@@ -53,6 +55,8 @@ type Props = {
   accountLinkAvailable: boolean
   usage: { customers: number; members: number }
   features: PlanFeatures
+  /** Today's prices from torqvoice.com, or null when it could not be asked. */
+  prices: BillingPriceList | null
 }
 
 export function SubscriptionSettings({
@@ -69,11 +73,13 @@ export function SubscriptionSettings({
   accountLinkAvailable,
   usage,
   features,
+  prices,
 }: Props) {
   const t = useTranslations('settings')
   const locale = useLocale()
   const router = useRouter()
-  const [checkoutLoading, setCheckoutLoading] = useState<'pro' | 'enterprise' | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState<BillingPlan | null>(null)
+  const [interval, setInterval] = useState<BillingInterval>('year')
   const [cancelLoading, setCancelLoading] = useState(false)
   const [resumeLoading, setResumeLoading] = useState(false)
   const [billingLoading, setBillingLoading] = useState(false)
@@ -107,13 +113,13 @@ export function SubscriptionSettings({
       ? Math.max(0, Math.ceil((new Date(currentPeriodEnd).getTime() - Date.now()) / 86_400_000))
       : null
 
-  const handleCheckout = async (selectedPlan: 'pro' | 'enterprise') => {
+  const handleCheckout = async (selectedPlan: BillingPlan) => {
     setCheckoutLoading(selectedPlan)
     try {
       const res = await fetch('/api/protected/subscription/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: selectedPlan }),
+        body: JSON.stringify({ plan: selectedPlan, interval }),
       })
       const data = await res.json()
       if (data.url) {
@@ -246,6 +252,65 @@ export function SubscriptionSettings({
   const intervalLabel =
     planInterval === 'month' ? t('subscription.perMonth') : t('subscription.perYear')
 
+  // What a plan costs at the selected interval, quoted per month either way,
+  // with the yearly total beside it for annual billing. Nothing is shown when
+  // the site could not be asked; the checkout page states the price anyway.
+  // Plan prices are shown the way the pricing page shows them ("$29",
+  // "$24.17"), with the symbol, not as an accounting figure.
+  const formatPrice = (amount: number, currency: string) =>
+    new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+      // Whole amounts stay bare; anything else gets both decimals ("$14.50").
+      minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+      maximumFractionDigits: 2,
+    }).format(amount)
+  const priceLine = (selectedPlan: BillingPlan): string | null => {
+    const price = prices?.[selectedPlan]?.[interval]
+    if (!price) return null
+    // With a discount on, the line states what checkout will charge.
+    const amount = price.discount?.amount ?? price.amount
+    if (interval === 'month') {
+      return `${formatPrice(amount, price.currency)}/${t('subscription.perMonth')}`
+    }
+    const perMonth = formatPrice(amount / 12, price.currency)
+    return `${perMonth}/${t('subscription.perMonth')} · ${t('subscription.billedAnnually', {
+      amount: formatPrice(amount, price.currency),
+    })}`
+  }
+  // A discount that ends says what the plan costs afterwards.
+  const discountEnds = (selectedPlan: BillingPlan): string | null => {
+    const price = prices?.[selectedPlan]?.[interval]
+    const discount = price?.discount
+    if (!price || !discount || discount.duration === 'forever') return null
+    const amount = formatPrice(price.amount, price.currency)
+    return discount.duration === 'once'
+      ? t('subscription.discountOnce', { amount })
+      : t('subscription.discountRepeating', { months: discount.durationInMonths ?? 1, amount })
+  }
+
+  // The annual saving against twelve monthly payments, from the Pro prices.
+  const annualSaving = (() => {
+    const monthly = prices?.pro?.month?.amount
+    const yearly = prices?.pro?.year?.amount
+    if (!monthly || !yearly) return 0
+    return Math.round((1 - yearly / (monthly * 12)) * 100)
+  })()
+  // The same saving as whole months left out ("2 months free"), when the
+  // prices work out that way; 0 when they do not and the percentage is shown.
+  const annualFreeMonths = (() => {
+    const monthly = prices?.pro?.month?.amount
+    const yearly = prices?.pro?.year?.amount
+    if (!monthly || !yearly) return 0
+    const months = 12 - yearly / monthly
+    const whole = Math.round(months)
+    return whole >= 1 && Math.abs(months - whole) < 0.01 ? whole : 0
+  })()
+  const offers = (selectedInterval: BillingInterval) =>
+    Boolean(prices?.pro?.[selectedInterval] || prices?.enterprise?.[selectedInterval])
+  // Both intervals are offered unless the site said one is not for sale.
+  const showIntervalSwitch = prices === null || (offers('month') && offers('year'))
+
   const planIcon =
     plan === 'enterprise' ? (
       <Crown className="h-5 w-5" />
@@ -278,50 +343,27 @@ export function SubscriptionSettings({
     </Badge>
   ) : null
 
-  const featureRows: { label: string; type: 'usage' | 'boolean'; value: boolean | string }[] = [
+  // What the plan allows, in two shapes: the two counted limits as meters,
+  // and the switches as one plain checklist, included first.
+  const UNLIMITED = 999999
+  const meters: { label: string; used: number; limit: number }[] = [
     {
       label: t('subscription.featureCustomers'),
-      type: 'usage',
-      value:
-        features.maxCustomers >= 999999
-          ? t('subscription.usageUnlimited', { used: String(usage.customers) })
-          : t('subscription.usageOf', {
-              used: String(usage.customers),
-              limit: String(features.maxCustomers),
-            }),
+      used: usage.customers,
+      limit: features.maxCustomers,
     },
-    {
-      label: t('subscription.featureTeamMembers'),
-      type: 'usage',
-      value:
-        features.maxUsers >= 999999
-          ? t('subscription.usageUnlimited', { used: String(usage.members) })
-          : t('subscription.usageOf', {
-              used: String(usage.members),
-              limit: String(features.maxUsers),
-            }),
-    },
-    { label: t('subscription.featureSmtp'), type: 'boolean', value: features.smtp },
-    { label: t('subscription.featureApi'), type: 'boolean', value: features.api },
-    { label: t('subscription.featurePayments'), type: 'boolean', value: features.payments },
-    { label: t('subscription.featureCustomFields'), type: 'boolean', value: features.customFields },
-    { label: t('subscription.featureSms'), type: 'boolean', value: features.sms },
-    {
-      label: t('subscription.featureCustomerPortal'),
-      type: 'boolean',
-      value: features.customerPortal,
-    },
-    {
-      label: t('subscription.featureCustomTemplates'),
-      type: 'boolean',
-      value: features.customTemplates,
-    },
-    {
-      label: t('subscription.featureBrandingRemoved'),
-      type: 'boolean',
-      value: features.brandingRemoved,
-    },
+    { label: t('subscription.featureTeamMembers'), used: usage.members, limit: features.maxUsers },
   ]
+  const switches: { label: string; on: boolean }[] = [
+    { label: t('subscription.featureSmtp'), on: features.smtp },
+    { label: t('subscription.featureApi'), on: features.api },
+    { label: t('subscription.featurePayments'), on: features.payments },
+    { label: t('subscription.featureCustomFields'), on: features.customFields },
+    { label: t('subscription.featureSms'), on: features.sms },
+    { label: t('subscription.featureCustomerPortal'), on: features.customerPortal },
+    { label: t('subscription.featureCustomTemplates'), on: features.customTemplates },
+    { label: t('subscription.featureBrandingRemoved'), on: features.brandingRemoved },
+  ].sort((a, b) => Number(b.on) - Number(a.on))
 
   return (
     <div className="space-y-6">
@@ -417,34 +459,171 @@ export function SubscriptionSettings({
         )}
       </AppCard>
 
+      {/* Upgrade, right under the current plan: it is what a free workshop opens this page for. */}
+      {(plan === 'free' || isDemo) && !activating && (
+        <AppCard
+          title={t('subscription.upgradeTitle')}
+          description={t('subscription.upgradeToProDescription')}
+        >
+          {showIntervalSwitch && (
+            <div
+              role="radiogroup"
+              aria-label={t('subscription.billingInterval')}
+              className="mb-4 inline-flex items-center rounded-full border bg-muted/40 p-1 text-sm"
+            >
+              {(['month', 'year'] as const).map((value) => {
+                const active = interval === value
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => setInterval(value)}
+                    className={`flex items-center gap-2 rounded-full px-3 py-1 font-medium transition-colors ${
+                      active
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {value === 'month'
+                      ? t('subscription.billingMonthly')
+                      : t('subscription.billingAnnual')}
+                    {value === 'year' && annualSaving > 0 && (
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
+                        {annualFreeMonths > 0
+                          ? t('subscription.billingMonthsFree', { months: annualFreeMonths })
+                          : t('subscription.billingSave', { percent: annualSaving })}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(['pro', 'enterprise'] as const).map((offer) => {
+              const line = priceLine(offer)
+              const price = prices?.[offer]?.[interval]
+              const discount = price?.discount
+              const ends = discountEnds(offer)
+              const available = prices === null || Boolean(prices[offer]?.[interval])
+              return (
+                <div key={offer} className="flex flex-col gap-2 rounded-md border p-3">
+                  <div className="flex items-center gap-2">
+                    {offer === 'pro' ? (
+                      <Zap className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <Crown className="h-4 w-4 text-purple-600" />
+                    )}
+                    <span className="text-sm font-medium">
+                      {offer === 'pro'
+                        ? t('subscription.planPro')
+                        : t('subscription.planEnterprise')}
+                    </span>
+                    {price && discount && (
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
+                        {discount.name ? `${discount.name} · ` : ''}
+                        {t('subscription.discountBadge', {
+                          value: discount.percentOff
+                            ? `${discount.percentOff}%`
+                            : formatPrice(discount.amountOff ?? 0, price.currency),
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  {line && (
+                    <p className="text-sm text-muted-foreground">
+                      {price && discount && (
+                        <span className="mr-1.5 line-through">
+                          {formatPrice(
+                            price.amount / (interval === 'year' ? 12 : 1),
+                            price.currency
+                          )}
+                        </span>
+                      )}
+                      {line}
+                    </p>
+                  )}
+                  {ends && <p className="text-xs text-muted-foreground">{ends}</p>}
+                  <Button
+                    variant={offer === 'pro' ? 'default' : 'outline'}
+                    size="sm"
+                    className="mt-auto"
+                    onClick={() => handleCheckout(offer)}
+                    disabled={checkoutLoading !== null || !available}
+                  >
+                    {checkoutLoading === offer ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : offer === 'pro' ? (
+                      <Zap className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Crown className="mr-2 h-4 w-4" />
+                    )}
+                    {offer === 'pro'
+                      ? t('subscription.upgradeToPro')
+                      : t('subscription.upgradeToEnterprise')}
+                  </Button>
+                </div>
+              )
+            })}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {t('subscription.checkoutOnTorqvoice')}
+          </p>
+        </AppCard>
+      )}
+
       {/* Card 2: Plan Features */}
       <AppCard
         title={t('subscription.featuresTitle')}
         description={t('subscription.featuresDescription')}
+        contentClassName="space-y-5"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {featureRows.map((row) => (
-            <div
-              key={row.label}
-              className="flex items-center justify-between rounded-md border px-3 py-2"
-            >
-              <span className="text-sm">{row.label}</span>
-              {row.type === 'usage' ? (
-                <span className="text-sm text-muted-foreground">{row.value as string}</span>
-              ) : row.value ? (
-                <div className="flex items-center gap-1 text-green-600">
-                  <Check className="h-4 w-4" />
-                  <span className="text-xs">{t('subscription.included')}</span>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {meters.map((meter) => {
+            const unlimited = meter.limit >= UNLIMITED
+            const over = !unlimited && meter.used > meter.limit
+            const share = unlimited ? 0 : Math.min(100, (meter.used / meter.limit) * 100)
+            return (
+              <div key={meter.label}>
+                <div className="flex items-baseline justify-between text-sm">
+                  <span>{meter.label}</span>
+                  <span className={over ? 'font-medium text-destructive' : 'text-muted-foreground'}>
+                    {unlimited
+                      ? t('subscription.usageUnlimited', { used: String(meter.used) })
+                      : t('subscription.usageOf', {
+                          used: String(meter.used),
+                          limit: String(meter.limit),
+                        })}
+                  </span>
                 </div>
-              ) : (
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <X className="h-4 w-4" />
-                  <span className="text-xs">{t('subscription.notIncluded')}</span>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className={`h-full rounded-full ${over ? 'bg-destructive' : 'bg-primary'}`}
+                    style={{ width: `${unlimited ? 100 : share}%` }}
+                  />
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            )
+          })}
         </div>
+
+        <ul className="grid gap-x-6 gap-y-2 border-t pt-4 sm:grid-cols-2">
+          {switches.map((item) => (
+            <li key={item.label} className="flex items-center gap-2 text-sm">
+              {item.on ? (
+                <Check aria-hidden="true" className="h-4 w-4 shrink-0 text-green-600" />
+              ) : (
+                <X aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+              )}
+              <span className={item.on ? '' : 'text-muted-foreground'}>{item.label}</span>
+              <span className="sr-only">
+                {item.on ? t('subscription.included') : t('subscription.notIncluded')}
+              </span>
+            </li>
+          ))}
+        </ul>
       </AppCard>
 
       {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
@@ -514,46 +693,6 @@ export function SubscriptionSettings({
         </AppCard>
       )}
 
-      {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout */}
-      {(plan === 'free' || isDemo) && !activating && (
-        <AppCard
-          title={t('subscription.upgradeTitle')}
-          description={t('subscription.upgradeToProDescription')}
-        >
-          <div className="flex gap-2">
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => handleCheckout('pro')}
-              disabled={checkoutLoading !== null}
-            >
-              {checkoutLoading === 'pro' ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Zap className="mr-2 h-4 w-4" />
-              )}
-              {t('subscription.upgradeToPro')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleCheckout('enterprise')}
-              disabled={checkoutLoading !== null}
-            >
-              {checkoutLoading === 'enterprise' ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Crown className="mr-2 h-4 w-4" />
-              )}
-              {t('subscription.upgradeToEnterprise')}
-            </Button>
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            {t('subscription.checkoutOnTorqvoice')}
-          </p>
-        </AppCard>
-      )}
-
       {plan === 'pro' && !isDemo && (
         <AppCard
           title={t('subscription.upgradeTitle')}
@@ -588,7 +727,11 @@ export function SubscriptionSettings({
                   <p>
                     {t('subscription.upgradeAmountDue')}:{' '}
                     <span className="font-semibold">
-                      ${upgradePreview.amountDue.toFixed(2)} {upgradePreview.currency.toUpperCase()}
+                      {formatCurrency(
+                        upgradePreview.amountDue,
+                        upgradePreview.currency.toUpperCase(),
+                        'code'
+                      )}
                     </span>
                   </p>
                 </div>

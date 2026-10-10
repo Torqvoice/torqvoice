@@ -313,7 +313,7 @@ describe('everything at once', () => {
     }
   })
 
-  it('a whole workshop: its own folder, after the rows, never file by file', async () => {
+  it('a whole workshop: its own folder to the trash, after the rows, never file by file', async () => {
     const { deleteOrganizationWithData } = await import('@/lib/delete-user-data')
     await deleteOrganizationWithData(ORG)
     expect(at('removeOrganizationFiles:org-a')).toBeGreaterThan(at('organization.delete'))

@@ -189,7 +189,10 @@ jobs:
         # dead. A boolean input is a real boolean in the `inputs` context.
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.reseed }}
         run: |
+          # The seed runs from /app/tools, beside the full Prisma client and
+          # tsx the image keeps there for it (see Dockerfile).
           docker exec \
+            -w /app/tools \
             -e DEMO_USER_EMAIL="demo@torqvoice.com" \
             -e DEMO_USER_PASSWORD="demo" \
             -e DATA_ROOT=/app/data \

@@ -15,6 +15,7 @@
  * appended whole where they are PDFs.
  */
 
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -24,6 +25,7 @@ import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomF
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
+import { inspectionResultsFor } from '@/features/inspections/Lib/linkedInspectionResults.server'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -166,6 +168,10 @@ export async function buildQuotePdfBuffer(
       documentSigner(organizationId, quote.userId),
       quoteConditionMap(organizationId, quote, locale),
     ])
+  const layoutConfig = mergeWithDefaults(layoutRow?.value ? JSON.parse(layoutRow.value) : {})
+  // What the inspection the quote was raised from found, as it stands now and
+  // only for a design that prints it: a quote keeps no copy of its own.
+  const inspectionResults = await inspectionResultsFor(organizationId, quote, layoutConfig)
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
@@ -180,10 +186,8 @@ export async function buildQuotePdfBuffer(
       email: settingsMap['workshop.email'] || '',
       slogan: settingsMap['workshop.slogan'] || undefined,
     },
-    currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
-      | 'symbol'
-      | 'code',
+    currencyCode: resolveCurrencyCode(settingsMap['workshop.currencyCode']),
+    currencyFormat: resolveCurrencyFormat(settingsMap['workshop.currencyFormat']),
     logoDataUri,
     signer,
     // The mark comes off for the plans that paid to remove it.
@@ -198,8 +202,9 @@ export async function buildQuotePdfBuffer(
     pdfAttachmentNames: pdfAttachments.map((att) => att.fileName),
     customFields,
     labels,
-    layoutConfig: mergeWithDefaults(layoutRow?.value ? JSON.parse(layoutRow.value) : {}),
+    layoutConfig,
     conditionMap,
+    inspectionResults,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
 

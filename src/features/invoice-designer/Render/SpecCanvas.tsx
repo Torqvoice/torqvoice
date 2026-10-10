@@ -35,6 +35,8 @@ const PAIR_ZONE = 44
 const FLOAT_ZONE = 56
 /** Pointer travel, in screen pixels, before a press becomes a drag. */
 const DRAG_THRESHOLD = 4
+/** How wide each pale line is on a sheet whose blocks are not placed yet. */
+const LOADING_LINES = ['34%', '20%', '100%', '93%', '97%', '62%']
 
 export interface Guide {
   axis: 'x' | 'y'
@@ -277,6 +279,13 @@ export function SpecCanvas({
   const pagesRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [heights, setHeights] = useState<number[]>([])
+  /**
+   * False until the blocks have been measured once, which takes a browser.
+   * The server has no heights, so its rows all start at the top margin, one
+   * over the other, and its HTML is what a reload shows until hydration. It
+   * never goes back to false: an edit re-measures what is already in place.
+   */
+  const [measured, setMeasured] = useState(false)
   /** Bumped when a late asset arrives, purely to run the measurement again. */
   const [measureTick, setMeasureTick] = useState(0)
   const [drag, setDrag] = useState<Drag | null>(null)
@@ -321,6 +330,9 @@ export function SpecCanvas({
     setHeights((prev) =>
       prev.length === next.length && prev.every((h, i) => h === next[i]) ? prev : next
     )
+    // Set here, with the heights, so the blocks are let through in the render
+    // that places them and the browser never paints the one before it.
+    setMeasured(true)
   })
 
   // A logo or a webfont arriving after first paint changes the heights without
@@ -856,6 +868,9 @@ export function SpecCanvas({
       style={{
         position: 'relative',
         cursor: 'grab',
+        // Held back until there are heights to place it by. Hidden rather
+        // than left out, so it is the same element before and after.
+        visibility: measured ? undefined : 'hidden',
         outline:
           selected === block.id
             ? '2px solid #2563eb'
@@ -1040,6 +1055,40 @@ export function SpecCanvas({
             </>
           )}
 
+          {/* The paper waiting for its blocks: a few pale lines where the
+              document starts. Only a reload shows it, between the server's
+              HTML and hydration, so it has to move by CSS alone. */}
+          {!measured && pageNumber === 1 && (
+            <div
+              aria-hidden
+              data-sheet-loading
+              className="animate-pulse motion-reduce:animate-none"
+              style={{
+                position: 'absolute',
+                top: spec.page.margin.top,
+                left: spec.page.margin.left,
+                right: spec.page.margin.right,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 9,
+                pointerEvents: 'none',
+              }}
+            >
+              {LOADING_LINES.map((width) => (
+                <div
+                  key={width}
+                  style={{
+                    width,
+                    height: 8,
+                    borderRadius: 2,
+                    background: spec.page.text,
+                    opacity: 0.1,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
           {placed.map((r) => {
             const row = r.row
             return (
@@ -1181,7 +1230,15 @@ export function SpecCanvas({
               />
             ))}
         </div>
-        <div style={{ textAlign: 'center', fontSize: 12, color: '#8a8f97' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 12,
+            color: '#8a8f97',
+            // How many pages there are is not known before measuring either.
+            visibility: measured ? undefined : 'hidden',
+          }}
+        >
           Page {pageNumber} of {renderLayout.pageCount}
         </div>
       </div>
@@ -1195,6 +1252,7 @@ export function SpecCanvas({
         className="flex flex-1 flex-col items-center overflow-auto bg-[#e4e7eb] px-10 pb-16 pt-9 outline-none"
         tabIndex={0}
         onKeyDown={nudge}
+        aria-busy={measured ? undefined : true}
         style={{ cursor: dragActive ? 'grabbing' : undefined }}
       >
         {/* Laid out but not shown, to measure every block at print width. */}

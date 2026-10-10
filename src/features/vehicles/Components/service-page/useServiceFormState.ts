@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { calculateTotals } from '@/lib/tax'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
@@ -274,12 +274,7 @@ export function useServiceFormState({
   )
   const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0)
   const subtotal = partsSubtotal + laborSubtotal
-  const discountAmount =
-    discountType === 'percentage'
-      ? subtotal * (discountValue / 100)
-      : discountType === 'fixed'
-        ? Math.min(discountValue, subtotal)
-        : 0
+  const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
   const {
     taxAmount,
     totalAmount,

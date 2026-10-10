@@ -61,11 +61,12 @@ describe('createHandoffToken', () => {
   const input = {
     organizationId: 'org-1',
     plan: 'pro' as const,
+    interval: 'year' as const,
     email: 'owner@example.com',
     name: 'Owner',
   }
 
-  it('signs the organization, plan, buyer and this app origin with the shared secret', () => {
+  it('signs the organization, plan, interval, buyer and this app origin with the shared secret', () => {
     const now = 1_700_000_000_000
     const token = createHandoffToken(input, now)
     const { prefix, payload, signature, encodedPayload } = decode(token)
@@ -75,6 +76,7 @@ describe('createHandoffToken', () => {
       v: 1,
       org: 'org-1',
       plan: 'pro',
+      interval: 'year',
       email: 'owner@example.com',
       name: 'Owner',
       appUrl: 'https://app.torqvoice.com',
@@ -206,7 +208,7 @@ describe('billingRequest', () => {
 
   it('caps the name at what the site accepts', () => {
     const token = createHandoffToken({
-      ...{ organizationId: 'o', plan: 'pro', email: 'a@b.c' },
+      ...{ organizationId: 'o', plan: 'pro', interval: 'month', email: 'a@b.c' },
       name: 'x'.repeat(500),
     })
     expect(decode(token).payload.name).toHaveLength(200)

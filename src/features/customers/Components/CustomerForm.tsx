@@ -371,7 +371,7 @@ export function CustomerForm({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {tc('buttons.cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button data-save-shortcut type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {customer ? tc('buttons.saveChanges') : t('addTitle')}
             </Button>

@@ -122,6 +122,7 @@
     "fromInventory": "Uit voorraad",
     "addPart": "Onderdeel toevoegen",
     "partNumber": "Onderdeel #",
+    "category": "Categorie",
     "name": "Naam",
     "qty": "Hoeveelheid",
     "unitCost": "Inkoop",
@@ -666,6 +667,7 @@
     },
     "moreStatuses": "Meer statussen",
     "fromInspection": "Uit inspectie {name}, {date}",
+    "fromQuote": "Uit offerte {ref}",
     "startInspection": "Inspectie starten"
   },
   "photoHandoff": {

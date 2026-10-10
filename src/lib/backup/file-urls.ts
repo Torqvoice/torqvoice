@@ -72,3 +72,32 @@ export function rewriteFileUrlsWithin(value: unknown, newOrgId: string): unknown
   }
   return value
 }
+
+/**
+ * An issued invoice's frozen data, restored. It is words, with one exception:
+ * the results of the linked inspection keep where each defect's photographs
+ * are stored, and those addresses move with the files like any other. The
+ * rest comes back exactly as it was issued.
+ */
+export function withIssuedDataFileUrls(issuedData: unknown, newOrgId: string): unknown {
+  if (!issuedData || typeof issuedData !== 'object') return issuedData
+  const data = issuedData as { inspectionResults?: { items?: unknown } | null }
+  const items = data.inspectionResults?.items
+  if (!Array.isArray(items)) return issuedData
+  return {
+    ...data,
+    inspectionResults: {
+      ...data.inspectionResults,
+      items: items.map((item) => {
+        const urls = (item as { imageUrls?: unknown } | null)?.imageUrls
+        if (!Array.isArray(urls)) return item
+        return {
+          ...(item as object),
+          imageUrls: urls.map((url) =>
+            typeof url === 'string' ? (rewriteFileUrl(url, newOrgId) ?? url) : url
+          ),
+        }
+      }),
+    },
+  }
+}

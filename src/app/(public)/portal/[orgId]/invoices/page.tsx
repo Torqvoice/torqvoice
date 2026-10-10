@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { workshopMoneyFormatter } from '@/lib/workshop-currency'
 
 export default async function PortalInvoicesPage({
   params,
@@ -24,6 +25,7 @@ export default async function PortalInvoicesPage({
   // Dates on the portal are the workshop's calendar days, not the server's.
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
+  const money = await workshopMoneyFormatter(org?.id)
   const t = await getTranslations('portal.invoices')
   const result = await getPortalInvoices()
 
@@ -70,7 +72,7 @@ export default async function PortalInvoicesPage({
                       <span className="min-w-0 flex-1 truncate font-medium">
                         {inv.invoiceNumber ? `#${inv.invoiceNumber}` : inv.title}
                       </span>
-                      <span className="shrink-0 font-semibold">${inv.totalAmount.toFixed(2)}</span>
+                      <span className="shrink-0 font-semibold">{money(inv.totalAmount)}</span>
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
                       <Badge
@@ -151,7 +153,7 @@ export default async function PortalInvoicesPage({
                             { timeZone }
                           )}
                         </TableCell>
-                        <TableCell>${inv.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>{money(inv.totalAmount)}</TableCell>
                         <TableCell>
                           <Badge
                             variant={

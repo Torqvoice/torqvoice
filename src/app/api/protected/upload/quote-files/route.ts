@@ -6,6 +6,7 @@ import path from 'path'
 import crypto from 'crypto'
 import { uploadsRoot } from '@/lib/upload-root'
 import { guardUpload, uploadLimit, uploadTooLargeMessage } from '@/lib/upload-guard'
+import { isDeclaredVideo, NOT_A_VIDEO_MESSAGE, sniffDeclaredVideo } from '@/lib/video-sniff'
 
 const ALLOWED_TYPES = [
   'image/jpeg',
@@ -53,13 +54,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: uploadTooLargeMessage(maxBytes) }, { status: 400 })
     }
 
+    const bytes = new Uint8Array(await file.arrayBuffer())
+
+    // A video is stored and served as one only when its bytes are the
+    // container its declared type promises.
+    if (isDeclaredVideo(file.type) && !sniffDeclaredVideo(file.type, bytes)) {
+      return NextResponse.json({ error: NOT_A_VIDEO_MESSAGE }, { status: 400 })
+    }
+
     const ext = extensionForType(file.type)
     const filename = `${crypto.randomUUID()}.${ext}`
     const uploadDir = path.join(uploadsRoot(), ctx.organizationId, 'quotes')
 
     await mkdir(uploadDir, { recursive: true })
 
-    const bytes = new Uint8Array(await file.arrayBuffer())
     await writeFile(path.join(uploadDir, filename), bytes)
 
     return NextResponse.json({

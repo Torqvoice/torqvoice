@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { formatQuantity } from '@/lib/format-quantity'
@@ -131,7 +132,7 @@ export function InventoryClient({
   search,
   category,
   categories,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   markupMultiplier: initialMarkup = 1.0,
   defaultUnit = '',
   unitSystem = 'imperial',

@@ -1,6 +1,7 @@
 import { passkey } from '@better-auth/passkey'
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
+import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { nextCookies } from 'better-auth/next-js'
 import { bearer } from 'better-auth/plugins/bearer'
 import { twoFactor } from 'better-auth/plugins/two-factor'
@@ -10,6 +11,7 @@ import { noteDevice, sendNewDeviceMail } from '@/lib/known-devices'
 import { sendAccountMail } from '@/lib/account-mail'
 import { isDemoMode } from './demo'
 import { googleSignInConfig } from './auth-providers'
+import { scopedSessionMayCall, sessionTokensInHeaders } from './session-scope'
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
 const google = googleSignInConfig()
@@ -188,6 +190,35 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: false,
     },
+    // The workshop a passwordless phone sign-in is bound to (see
+    // lib/session-scope.ts). Declared so getSession hands it back with the
+    // session, and so the setup and one-time code routes can write it in the
+    // same insert that creates the session. Never accepted from a caller.
+    additionalFields: {
+      organizationId: { type: 'string', required: false, input: false },
+    },
+  },
+  hooks: {
+    // A session bound to one workshop gets nothing from the auth handler but
+    // its own session and a sign-out. The rest of it is the account's: the
+    // other sessions and their tokens, passkeys, the password, the name.
+    before: createAuthMiddleware(async (ctx) => {
+      if (scopedSessionMayCall(ctx.path)) return
+      const tokens = [
+        ...sessionTokensInHeaders(ctx.request?.headers, ctx.context.authCookies.sessionToken.name),
+        ...sessionTokensInHeaders(ctx.headers, ctx.context.authCookies.sessionToken.name),
+      ]
+      if (tokens.length === 0) return
+      const scoped = await db.session.findFirst({
+        where: { token: { in: tokens }, organizationId: { not: null } },
+        select: { id: true },
+      })
+      if (scoped) {
+        throw new APIError('FORBIDDEN', {
+          message: 'This sign-in only works in the technician app.',
+        })
+      }
+    }),
   },
   advanced: {
     useSecureCookies: isProduction,
@@ -248,9 +279,14 @@ export const auth = betterAuth({
             }
           }
 
-          // Audit: log successful login
+          // Audit: log successful login. A session bound to a workshop is
+          // logged there, not in whichever workshop the account joined first.
+          const boundTo = (session as Record<string, unknown>).organizationId
           const membership = await db.organizationMember.findFirst({
-            where: { userId: session.userId },
+            where: {
+              userId: session.userId,
+              ...(typeof boundTo === 'string' && boundTo ? { organizationId: boundTo } : {}),
+            },
             select: { organizationId: true },
           })
           logAudit(

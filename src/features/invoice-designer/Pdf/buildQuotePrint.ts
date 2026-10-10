@@ -1,9 +1,11 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
+import { LABOR_GROUP, lineGroupsFor, partGroupKey } from './lineGroups'
 import {
   getDefaultInvoiceLayout,
   isCustomFieldId,
@@ -30,6 +32,10 @@ import {
   type VisitConditionMap,
   visitConditionMapForPrint,
 } from '@/features/condition-map/Lib/print'
+import {
+  type InspectionResults,
+  inspectionResultsForPrint,
+} from '@/features/inspections/Lib/inspectionResults'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -64,6 +70,8 @@ export interface QuotePrintData {
     name: string
     quantity: number
     unit?: string | null
+    /** For a layout that groups the lines by category. */
+    category?: string | null
     unitPrice: number
     total: number
     excluded?: boolean
@@ -119,6 +127,11 @@ export interface QuotePrintInput {
   lineItemsInclTax?: boolean
   /** The car's condition as the inspection the quote came from found it. */
   conditionMap?: VisitConditionMap
+  /**
+   * The inspection the quote was raised from, for a layout with Defects or
+   * All Results on. Read as it stands at every print, like the condition map.
+   */
+  inspectionResults?: InspectionResults | null
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -162,8 +175,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   }
 
   const doc = layout.document ?? {}
-  const cc = input.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = input.currencyFormat === 'code' ? 'code' : 'symbol'
+  const cc = resolveCurrencyCode(input.currencyCode)
+  const cf: 'symbol' | 'code' = resolveCurrencyFormat(input.currencyFormat)
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
@@ -240,6 +253,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       price: money(shown(l.rate)),
       total: money(shown(l.total)),
       excluded: l.excluded,
+      group: LABOR_GROUP,
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
@@ -250,6 +264,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       price: money(shown(p.unitPrice)),
       total: money(shown(p.total)),
       excluded: p.excluded,
+      group: partGroupKey(p.category),
     })),
   ]
 
@@ -260,7 +275,16 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     price: money(shown(p.unitPrice)),
     total: money(shown(p.total)),
     excluded: p.excluded,
+    group: partGroupKey(p.category),
   }))
+
+  const lineGroups = lineGroupsFor({
+    parts: data.partItems,
+    labor: data.laborItems,
+    labels,
+    shown,
+    money,
+  })
 
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
     // A shop fee prints as one unit at its price, like a service line.
@@ -282,12 +306,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const laborTotal = data.laborItems.reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0)
   const partsTotal = data.partItems.reduce((sum, p) => (p.excluded ? sum : sum + p.total), 0)
   const subtotal = laborTotal + partsTotal
-  const discount =
-    data.discountType === 'percentage'
-      ? subtotal * (data.discountValue / 100)
-      : data.discountType === 'fixed'
-        ? Math.min(data.discountValue, subtotal)
-        : 0
+  const discount = discountAmountFor(subtotal, data.discountType, data.discountValue)
   const { taxAmount, totalAmount } = calculateTotals({
     subtotal,
     discountAmount: discount,
@@ -361,6 +380,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     items,
     parts,
     labor,
+    lineGroups,
     findings: [],
     totals,
     notes: { html: data.description ?? undefined },
@@ -368,6 +388,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     warranty: warrantyForPrint(data, { labels, unitSystem: input.unitSystem }),
     payment: [],
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
+    // What the inspection found, through the certificate's own blocks.
+    certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
     signature: {
@@ -386,6 +408,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
       condition_map: L('conditionMapTitle', 'Vehicle condition'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
     },
   }
 

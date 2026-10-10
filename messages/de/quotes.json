@@ -36,6 +36,45 @@
     "selectVehicle": "Bitte wählen Sie ein Fahrzeug",
     "convertTitle": "Angebot in Arbeitsauftrag umwandeln",
     "convertDescription": "Es wird ein neuer Serviceauftrag (Arbeitsauftrag) aus diesem Angebot erstellt. Wählen Sie ein Fahrzeug für den Arbeitsauftrag.",
+    "convertChoiceDescription": "Wählen Sie ein Fahrzeug und erstellen Sie aus diesem Angebot einen neuen Arbeitsauftrag oder fügen Sie es einem bereits offenen hinzu.",
+    "convertNew": "Neuen Arbeitsauftrag erstellen",
+    "convertExisting": "Zu einem bestehenden Arbeitsauftrag hinzufügen",
+    "convertExistingHint": "Teile, Arbeitszeit und Dateien des Angebots werden dem Arbeitsauftrag hinzugefügt. Was bereits darauf steht, bleibt unverändert.",
+    "convertNoOpenWorkOrders": "Für dieses Fahrzeug gibt es keine offenen Arbeitsaufträge.",
+    "convertSelectWorkOrder": "Arbeitsauftrag auswählen",
+    "convertAdd": "Zum Arbeitsauftrag hinzufügen",
+    "convertConflicts": {
+      "heading": "Vor dem Hinzufügen: Was behält der Arbeitsauftrag?",
+      "checking": "Angebot wird mit dem Arbeitsauftrag abgeglichen...",
+      "unanswered": "Legen Sie fest, was der Arbeitsauftrag behält, bevor das Angebot hinzugefügt wird.",
+      "discount": {
+        "title": "Rabatt",
+        "summary": "Der Arbeitsauftrag hat {percent}% Rabatt, derzeit {jobAmount}. Das Angebot enthält einen Rabatt von {quoteAmount}.",
+        "keepJob": "{percent}% Rabatt behalten und die {quoteAmount} des Angebots verwerfen",
+        "combine": "{percent}% in {jobAmount} umwandeln und die {quoteAmount} des Angebots hinzufügen, insgesamt {total}"
+      },
+      "tax": {
+        "title": "Steuer",
+        "summary": "Der Arbeitsauftrag ist mit {job} kalkuliert. Das Angebot wurde mit {quote} kalkuliert.",
+        "keepJob": "Steuer des Arbeitsauftrags behalten. Die Positionen des Angebots werden zu den angebotenen Beträgen übernommen.",
+        "useQuote": "Arbeitsauftrag auf die Steuer des Angebots umstellen. Alles darauf wird neu summiert.",
+        "inclusive": "{rate}% Steuer in den Positionen enthalten",
+        "exclusive": "{rate}% Steuer kommt hinzu",
+        "components": "{rate}% Steuer ({names})"
+      },
+      "warranty": {
+        "title": "Garantie",
+        "summary": "Der Arbeitsauftrag sagt {job}. Das vom Kunden angenommene Angebot sagt {quote}.",
+        "keepJob": "Garantie des Arbeitsauftrags behalten",
+        "useQuote": "Garantie des Angebots übernehmen, wie der Kunde sie angenommen hat",
+        "none": "nichts zur Garantie",
+        "notIncluded": "keine Werkstattgarantie",
+        "included": "Garantie inbegriffen",
+        "includedWithTerms": "Garantie inbegriffen, {terms}",
+        "months": "{count, plural, one {# Monat} other {# Monate}}",
+        "mileage": "{count} {unit}"
+      }
+    },
     "convert": "Umwandeln",
     "convertToWorkOrder": "In Arbeitsauftrag umwandeln",
     "cancel": "Abbrechen",
@@ -68,6 +107,7 @@
     "title": "Teile",
     "addPart": "Teil hinzufügen",
     "partNumber": "Teilenr.",
+    "category": "Kategorie",
     "name": "Name",
     "namePlaceholder": "Name *",
     "qty": "Menge",

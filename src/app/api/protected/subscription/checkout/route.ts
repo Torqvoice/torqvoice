@@ -5,6 +5,7 @@ import { isDemoMode, DEMO_DISABLED_MESSAGE } from '@/lib/demo'
 import {
   checkoutUrl,
   createHandoffToken,
+  isBillingInterval,
   isTorqvoiceComBillingConfigured,
 } from '@/lib/torqvoice-com'
 
@@ -31,10 +32,19 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const plan = body.plan as string
+    // Annual unless asked otherwise, which is what the page offered before
+    // monthly billing existed.
+    const interval = body.interval ?? 'year'
 
     if (plan !== 'pro' && plan !== 'enterprise') {
       return NextResponse.json(
         { error: "Invalid plan. Must be 'pro' or 'enterprise'" },
+        { status: 400 }
+      )
+    }
+    if (!isBillingInterval(interval)) {
+      return NextResponse.json(
+        { error: "Invalid interval. Must be 'month' or 'year'" },
         { status: 400 }
       )
     }
@@ -54,6 +64,7 @@ export async function POST(request: Request) {
     const token = createHandoffToken({
       organizationId: ctx.organizationId,
       plan,
+      interval,
       email: user.email,
       name: user.name ?? '',
     })

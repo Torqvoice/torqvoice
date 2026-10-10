@@ -1,3 +1,4 @@
+import { discountAmountFor } from '@/lib/tax'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
@@ -90,12 +91,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         ])
 
         const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
-        const discountAmount =
-          job.discountType === 'percentage'
-            ? subtotal * ((job.discountValue ?? 0) / 100)
-            : job.discountType === 'fixed'
-              ? Math.min(job.discountValue ?? 0, subtotal)
-              : 0
+        const discountAmount = discountAmountFor(subtotal, job.discountType, job.discountValue)
         const { taxAmount, totalAmount, taxComponents } = documentTotals({
           subtotal,
           discountAmount,

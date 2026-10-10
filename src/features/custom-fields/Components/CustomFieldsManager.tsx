@@ -583,7 +583,11 @@ export function CustomFieldsManager({
               >
                 {t('customFields.cancel')}
               </Button>
-              <Button onClick={handleSave} disabled={loading || !formData.name || !formData.label}>
+              <Button
+                data-save-shortcut
+                onClick={handleSave}
+                disabled={loading || !formData.name || !formData.label}
+              >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {editing ? t('customFields.update') : t('customFields.create')}
               </Button>

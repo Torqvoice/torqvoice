@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
+import { sessionOrganizationScope } from '@/lib/session-scope'
 import { PageHeader } from '@/components/page-header'
 import { AdminNav } from './admin-nav'
 
@@ -15,7 +16,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     select: { isSuperAdmin: true },
   })
 
-  if (!user?.isSuperAdmin) redirect('/')
+  // Not on a session a workshop minted for a phone (lib/session-scope.ts).
+  if (!user?.isSuperAdmin || sessionOrganizationScope(session)) redirect('/')
 
   const t = await getTranslations('admin')
 

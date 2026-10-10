@@ -113,7 +113,7 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
 
     case 'table': {
       const headerSize = node.headerStyle?.fontSize ?? inherited.fontSize
-      const headerHeight = headerSize * DEFAULT_LINE_HEIGHT + 12
+      const headerHeight = headerSize * DEFAULT_LINE_HEIGHT + (node.headerPadding ?? 6) * 2
       const rowPadding = node.rowPadding ?? 5
       const inner = width - 16
       const gap = 0
@@ -128,6 +128,9 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
       let body = 0
       for (const row of node.rows) {
         let lines = 1
+        // A group heading is one run of text across the whole row.
+        const heading = node.groupKey ? row[node.groupKey] : undefined
+        if (heading) lines = lineCount(heading, inner, cellStyle, inherited.fontSize)
         for (const column of node.columns) {
           const value = row[column.key]
           if (!value) continue

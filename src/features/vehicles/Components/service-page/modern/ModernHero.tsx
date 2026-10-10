@@ -3,7 +3,7 @@
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useState, type ReactNode } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
 import { ArrowLeft, CalendarClock, ClipboardCheck, Pencil, Shield } from 'lucide-react'
 import {
   Select,
@@ -366,6 +366,20 @@ export function ModernHero({
                     </Link>
                   </>
                 )}
+                {/* The quotes the job came from: what the customer accepted is
+                  written there, so each is one click away. */}
+                {record.quotes?.map((quote) => (
+                  <Fragment key={quote.id}>
+                    <span aria-hidden="true">·</span>
+                    <Link
+                      href={`/quotes/${quote.id}`}
+                      className={factLink}
+                      data-testid="service-from-quote"
+                    >
+                      {t('modern.fromQuote', { ref: quote.quoteNumber || quote.title })}
+                    </Link>
+                  </Fragment>
+                ))}
                 {/* A job booked as an inspection with no checklist yet: start it
                   here, and it lands on this booking rather than beside it. */}
                 {!record.inspection && record.type === 'inspection' && vehicle && (

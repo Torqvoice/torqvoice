@@ -237,12 +237,13 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
       const cell = (width: number | 'flex'): Style => (width === 'flex' ? { flex: 1 } : { width })
       const headerText = textStylePdf(node.headerStyle, base)
       const borderColor = node.style?.borderColor ?? '#eceef1'
+      let band = 0
       return (
         <View style={boxStylePdf(node.style)}>
           <View
             style={{
               flexDirection: 'row',
-              paddingVertical: 6,
+              paddingVertical: node.headerPadding ?? 6,
               paddingHorizontal: 8,
               ...(node.headerStyle?.background
                 ? { backgroundColor: node.headerStyle.background }
@@ -260,6 +261,11 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
           </View>
           {node.rows.flatMap((row, i) => {
             const struck = node.strikeKey ? !!row[node.strikeKey] : false
+            const heading = node.groupKey ? row[node.groupKey] : undefined
+            const emphasis = node.emphasisKey ? !!row[node.emphasisKey] : false
+            // Banding counts the lines, not the headings between them, so a
+            // group never starts on a band because of how many came before.
+            const banded = !!node.stripe && !heading && band++ % 2 === 1
             // Rules are their own elements between rows, and they overlap both
             // neighbours by a hair: PDF viewers leave antialiasing seams
             // between rectangles that merely touch, which showed as white
@@ -293,7 +299,7 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                   alignItems: 'flex-start',
                   paddingVertical: node.rowPadding ?? 5,
                   paddingHorizontal: 8,
-                  ...(node.stripe && i % 2 === 1
+                  ...(banded
                     ? { backgroundColor: node.stripe }
                     : node.rowBackground
                       ? { backgroundColor: node.rowBackground }
@@ -301,30 +307,37 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                   ...(struck ? { opacity: 0.5 } : {}),
                 }}
               >
-                {node.columns.map((column) => (
-                  <View key={column.key} style={cell(column.width)}>
-                    <Text
-                      style={{
-                        ...textStylePdf(undefined, base),
-                        textAlign: column.align,
-                        ...(struck ? { textDecoration: 'line-through' as const } : {}),
-                      }}
-                    >
-                      {row[column.key]}
-                    </Text>
-                    {node.subKey && column.width === 'flex' && row[node.subKey] ? (
-                      <Text
-                        style={{
-                          ...textStylePdf(undefined, base),
-                          fontSize: (base.fontSize ?? 9) * 0.85,
-                          opacity: 0.6,
-                        }}
-                      >
-                        {row[node.subKey]}
-                      </Text>
-                    ) : null}
+                {heading ? (
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ ...textStylePdf({ bold: true }, base) }}>{heading}</Text>
                   </View>
-                ))}
+                ) : null}
+                {heading
+                  ? null
+                  : node.columns.map((column) => (
+                      <View key={column.key} style={cell(column.width)}>
+                        <Text
+                          style={{
+                            ...textStylePdf(emphasis ? { bold: true } : undefined, base),
+                            textAlign: column.align,
+                            ...(struck ? { textDecoration: 'line-through' as const } : {}),
+                          }}
+                        >
+                          {row[column.key]}
+                        </Text>
+                        {node.subKey && column.width === 'flex' && row[node.subKey] ? (
+                          <Text
+                            style={{
+                              ...textStylePdf(undefined, base),
+                              fontSize: (base.fontSize ?? 9) * 0.85,
+                              opacity: 0.6,
+                            }}
+                          >
+                            {row[node.subKey]}
+                          </Text>
+                        ) : null}
+                      </View>
+                    ))}
               </View>
             )
             return rule ? [body, rule] : [body]

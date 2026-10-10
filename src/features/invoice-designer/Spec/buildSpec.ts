@@ -47,6 +47,15 @@ export interface PaymentPair {
   value: string
 }
 
+/** One division of a grouped table: its heading and the sum of its lines. */
+export interface LineGroup {
+  key: string
+  title: string
+  /** The subtotal row's wording, e.g. "Brakes subtotal". */
+  subtotalLabel: string
+  subtotal: string
+}
+
 export interface DocumentData {
   /** Field id to the value it prints, covering every field a layout can show. */
   fields: Record<string, string>
@@ -72,6 +81,8 @@ export interface DocumentData {
     total: string
     /** Lines the customer opted out of print struck through. */
     excluded?: boolean
+    /** The key of the line's group in `lineGroups`, for a table grouping by category. */
+    group?: string
   }[]
   parts: {
     ref: string
@@ -80,8 +91,17 @@ export interface DocumentData {
     price: string
     total: string
     excluded?: boolean
+    group?: string
   }[]
   labor: { desc: string; qty: string; rate: string; total: string; excluded?: boolean }[]
+  /**
+   * The groups a table divides its lines into when its layout asks to group
+   * by category, in print order: one per part category, one for parts without
+   * a category and one for the labor lines, each with its subtotal already
+   * worded. Absent or empty when no part line has a category, and a grouped
+   * table prints flat.
+   */
+  lineGroups?: LineGroup[]
   findings: { severity: string; color: string; description: string; notes: string }[]
   totals: TotalLine[]
   notes: { html?: string }
@@ -225,6 +245,8 @@ export function lookOf(section: InvoiceSection, theme: DocumentTheme) {
     padding: s?.padding,
     /** Banding behind alternate rows; unset follows the sheet's setting. */
     stripes: s?.stripes,
+    /** Rows and column headings set close together. */
+    dense: s?.dense === true,
     fontSize: s?.fontSize,
     /**
      * Resolved against the sheet, not left blank when the section sets none.
@@ -968,6 +990,47 @@ function documentTitle(
   }
 }
 
+/** Row keys a grouped table reads its heading and subtotal rows by. */
+const GROUP_TITLE_KEY = 'groupTitle'
+const GROUP_SUBTOTAL_KEY = 'groupSubtotal'
+
+/**
+ * The rows of a table of lines, divided the way the section asks.
+ *
+ * Flat unless the layout groups by category and the document has groups to
+ * show; then each group prints a heading row, its lines and a subtotal row,
+ * in the order `lineGroups` gives, and a line in no known group closes the
+ * table on its own. `toRow` gets the line's place in print order, so a
+ * numbered list counts the way the reader sees it.
+ */
+function groupedRows<L extends { group?: string }>(
+  section: InvoiceSection,
+  data: DocumentData,
+  lines: L[],
+  toRow: (line: L, index: number) => Record<string, string>,
+  labelKey: string
+): { rows: Record<string, string>[]; grouped: boolean } {
+  const groups = data.lineGroups ?? []
+  if (section.groupBy !== 'category' || groups.length === 0) {
+    return { rows: lines.map(toRow), grouped: false }
+  }
+  const rows: Record<string, string>[] = []
+  const placed = new Set<L>()
+  let index = 0
+  for (const group of groups) {
+    const members = lines.filter((line) => line.group === group.key)
+    if (!members.length) continue
+    rows.push({ [GROUP_TITLE_KEY]: group.title })
+    for (const line of members) {
+      rows.push(toRow(line, index++))
+      placed.add(line)
+    }
+    rows.push({ [labelKey]: group.subtotalLabel, total: group.subtotal, [GROUP_SUBTOTAL_KEY]: '1' })
+  }
+  for (const line of lines) if (!placed.has(line)) rows.push(toRow(line, index++))
+  return { rows, grouped: true }
+}
+
 /** The one numbered list of everything on the job. */
 function itemsTable(
   section: InvoiceSection,
@@ -977,6 +1040,24 @@ function itemsTable(
   if (!data.items.length) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
+  // Grouped, the list is renumbered in print order; flat, it keeps the
+  // numbers the document gave its lines.
+  const items = groupedRows(
+    section,
+    data,
+    data.items,
+    (item, index) => ({
+      n: section.groupBy === 'category' ? String(index + 1) : item.n,
+      qty: item.qty,
+      unit: item.unit,
+      desc: item.desc,
+      sub: item.sub ?? '',
+      price: item.price,
+      total: item.total,
+      struck: item.excluded ? '1' : '',
+    }),
+    'desc'
+  )
   return {
     kind: 'table',
     id: section.id,
@@ -1002,16 +1083,8 @@ function itemsTable(
     ],
     subKey: 'sub',
     strikeKey: 'struck',
-    rows: data.items.map((item) => ({
-      n: item.n,
-      qty: item.qty,
-      unit: item.unit,
-      desc: item.desc,
-      sub: item.sub ?? '',
-      price: item.price,
-      total: item.total,
-      struck: item.excluded ? '1' : '',
-    })),
+    ...(items.grouped ? { groupKey: GROUP_TITLE_KEY, emphasisKey: GROUP_SUBTOTAL_KEY } : {}),
+    rows: items.rows,
   }
 }
 
@@ -1056,6 +1129,20 @@ function partsTable(
   if (!data.parts.length) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
+  const parts = groupedRows(
+    section,
+    data,
+    data.parts,
+    (p) => ({
+      ref: p.ref,
+      desc: p.desc,
+      qty: p.qty,
+      price: p.price,
+      total: p.total,
+      struck: p.excluded ? '1' : '',
+    }),
+    'desc'
+  )
   return titledTable(section, theme, label(data, 'parts', 'Parts'), undefined, {
     kind: 'table',
     rowPadding: theme.rowPadding,
@@ -1078,14 +1165,8 @@ function partsTable(
       { key: 'total', label: label(data, 'total', 'Total'), width: 74, align: 'right' },
     ],
     strikeKey: 'struck',
-    rows: data.parts.map((p) => ({
-      ref: p.ref,
-      desc: p.desc,
-      qty: p.qty,
-      price: p.price,
-      total: p.total,
-      struck: p.excluded ? '1' : '',
-    })),
+    ...(parts.grouped ? { groupKey: GROUP_TITLE_KEY, emphasisKey: GROUP_SUBTOTAL_KEY } : {}),
+    rows: parts.rows,
   })
 }
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
@@ -72,7 +73,7 @@ export function LaborPresetsClient({
   search,
   sortBy,
   sortOrder,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   defaultLaborRate = 0,
   inventoryParts = [],
 }: {

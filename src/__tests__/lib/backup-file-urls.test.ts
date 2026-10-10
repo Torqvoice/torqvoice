@@ -14,7 +14,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { rewriteFileUrl, rewriteFileUrlsWithin, withFileUrls } from '@/lib/backup/file-urls'
+import {
+  rewriteFileUrl,
+  rewriteFileUrlsWithin,
+  withFileUrls,
+  withIssuedDataFileUrls,
+} from '@/lib/backup/file-urls'
 import { FILE_REFERENCES } from '@/lib/files/references'
 
 const OLD = 'orgFromTheBackup'
@@ -138,6 +143,58 @@ describe('rewriteFileUrlsWithin', () => {
  * (the file manager keeps a file while any of them mentions it). Each one the
  * import route restores has to rewrite it.
  */
+describe('withIssuedDataFileUrls', () => {
+  // An issued invoice keeps where the photographs of the linked inspection's
+  // defects are stored. Left naming the backup's workshop they would stop
+  // printing, since a snapshot only ever reads this workshop's own uploads.
+  const issued = () => ({
+    version: 1,
+    workshop: { name: 'Shop', address: '/uploads/are/not/an/address' },
+    customer: { name: 'Alex', address: 'Old street 1' },
+    inspectionResults: {
+      severityScale: 'eu',
+      items: [
+        { id: 'i1', name: 'Brake pedal', condition: 'pass', notes: '/api/files/a/note' },
+        {
+          id: 'i2',
+          name: 'Brake hoses',
+          condition: 'fail',
+          imageUrls: [stored(OLD, 'services', 'hose.jpg'), `/api/files/${OLD}/services/b.jpg`],
+        },
+      ],
+    },
+  })
+
+  it('points the frozen photographs at this workshop and leaves every word alone', () => {
+    const restored = withIssuedDataFileUrls(issued(), NEW) as ReturnType<typeof issued>
+    expect(restored.inspectionResults.items[1].imageUrls).toEqual([
+      stored(NEW, 'services', 'hose.jpg'),
+      stored(NEW, 'services', 'b.jpg'),
+    ])
+    expect({ ...restored, inspectionResults: null }).toEqual({
+      ...issued(),
+      inspectionResults: null,
+    })
+    expect(restored.inspectionResults.items[0]).toEqual(issued().inspectionResults.items[0])
+  })
+
+  it('hands back a snapshot without results exactly as it was', () => {
+    const old = { version: 1, workshop: { name: 'Shop' }, conditionMap: null }
+    expect(withIssuedDataFileUrls(old, NEW)).toBe(old)
+    expect(withIssuedDataFileUrls(null, NEW)).toBeNull()
+    const none = { version: 1, inspectionResults: null }
+    expect(withIssuedDataFileUrls(none, NEW)).toBe(none)
+  })
+
+  it('is what the import route restores issued data through', () => {
+    const route = fs.readFileSync(
+      path.join(process.cwd(), 'src/app/api/protected/backup/import/route.ts'),
+      'utf8'
+    )
+    expect(route).toMatch(/issuedData:[\s\S]{0,200}?withIssuedDataFileUrls\(sr\.issuedData/)
+  })
+})
+
 describe('the import route rewrites every restored file column', () => {
   const source = fs.readFileSync(
     path.join(process.cwd(), 'src/app/api/protected/backup/import/route.ts'),

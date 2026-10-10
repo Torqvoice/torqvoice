@@ -801,7 +801,7 @@ export default function RecurringInvoicesClient({
               >
                 {t('recurring.cancel')}
               </Button>
-              <Button onClick={handleCreate} disabled={isPending}>
+              <Button data-save-shortcut onClick={handleCreate} disabled={isPending}>
                 {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
                 {t('recurring.create')}
               </Button>

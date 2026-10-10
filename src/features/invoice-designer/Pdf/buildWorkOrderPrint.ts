@@ -1,3 +1,4 @@
+import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -7,7 +8,7 @@ import {
 } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal } from '@/lib/tax'
+import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
 import {
@@ -38,6 +39,10 @@ import { warrantyForPrint } from './warrantyPrint'
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import {
+  type InspectionResults,
+  inspectionResultsForPrint,
+} from '@/features/inspections/Lib/inspectionResults'
 
 /**
  * A job as the sheet the customer signs and the technician works from.
@@ -75,6 +80,11 @@ export interface WorkOrderJob {
   openedAt?: Date | string | null
   bodyType?: string | null
   conditionMapLabels?: ConditionMapLabels
+  /**
+   * The checks of the inspection linked to the job, for the result sections
+   * a design can switch on. As they stand at this print, graded or not.
+   */
+  linkedInspection?: InspectionResults | null
 }
 
 export interface WorkOrderPrintInput {
@@ -151,8 +161,8 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const layout = resolveLayout(input)
   const doc = layout.document ?? {}
 
-  const cc = invoiceSettings?.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
+  const cc = resolveCurrencyCode(invoiceSettings?.currencyCode)
+  const cf: 'symbol' | 'code' = resolveCurrencyFormat(invoiceSettings?.currencyFormat)
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
@@ -164,12 +174,11 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotal = partsSubtotal + laborSubtotal
-  const computedDiscount =
-    data.discountType === 'percentage'
-      ? computedSubtotal * ((data.discountValue || 0) / 100)
-      : data.discountType === 'fixed'
-        ? Math.min(data.discountValue || 0, computedSubtotal)
-        : 0
+  const computedDiscount = discountAmountFor(
+    computedSubtotal,
+    data.discountType,
+    data.discountValue
+  )
   const { totalAmount: computedTotal } = calculateTotals({
     subtotal: computedSubtotal,
     discountAmount: computedDiscount,
@@ -425,8 +434,15 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       general: L('customFieldsTitle', 'Additional Information'),
       findings: L('findings', 'Findings'),
       condition_map: L('conditionMapTitle', 'Vehicle condition'),
+      defects: L('deficiencies', 'Deficiencies found'),
+      results_table: L('allResults', 'All results'),
     },
     conditionMap: conditionMap ?? undefined,
+    // What the linked inspection has found so far, for the certificate's two
+    // result blocks. Built only for a design that prints one of them; each
+    // block then decides for itself what an inspection with nothing wrong,
+    // or with nothing graded yet, prints.
+    certificate: inspectionResultsForPrint(layout, job.linkedInspection, labels),
     workOrder: {
       concerns: job.concerns.map((concern) => ({
         description: concern.description,

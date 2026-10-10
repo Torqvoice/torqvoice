@@ -262,7 +262,12 @@ export function TimeEntryDialog({
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('cancel')}
           </Button>
-          <Button type="button" onClick={() => void submit()} disabled={!canSave}>
+          <Button
+            data-save-shortcut
+            type="button"
+            onClick={() => void submit()}
+            disabled={!canSave}
+          >
             {saving && <Loader2 className="size-4 animate-spin" />}
             {editing ? t('save') : t('add')}
           </Button>

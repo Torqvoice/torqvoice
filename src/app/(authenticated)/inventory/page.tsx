@@ -1,3 +1,4 @@
+import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import {
   getInventoryPartsPaginated,
@@ -62,7 +63,7 @@ export default async function InventoryPage({
 
   const categories = categoriesResult.success && categoriesResult.data ? categoriesResult.data : []
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   const markupMultiplier = Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1.0
 
   return (

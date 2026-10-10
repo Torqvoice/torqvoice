@@ -573,6 +573,45 @@
         "pullPaymentsHelp": "Hvert 30. minutt. En betaling mottatt i QuickBooks mot en faktura fra Torqvoice registreres her på fakturaen."
       }
     },
+    "fiken": {
+      "description": "Send utstedte fakturaer, kundene deres og betalingene deres til Fiken, og hent tilbake betalinger registrert der.",
+      "tenantHelp": "Opprett en app i Fiken under Rediger konto, API, for dine egne foretak. Legg inn omdirigerings-URI-en nedenfor på appen, og kopier klient-ID og klienthemmelighet hit. Foretaket må ha Fikens API-modul.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "companySlug": "Foretak i Fiken",
+        "companySlugHelp": "Foretaket som fakturaene skal bokføres i. Fiken-brukeren din kan ha tilgang til flere.",
+        "pushInvoices": "Send utstedte fakturaer til Fiken",
+        "pushOnComplete": "Send også fakturaer når jobben markeres som fullført",
+        "pushOnCompleteHelp": "Uten dette går en faktura over når den er sendt, delt eller betalt. Med det går en fullført jobb over med en gang og oppdateres om den endres.",
+        "startDate": "Bare fakturaer datert fra og med",
+        "startDateHelp": "La stå tomt for å sende alle utstedte fakturaer. Bruk datoen regnskapet flyttet til Fiken, så eldre fakturaer ikke føres to ganger.",
+        "attachPdf": "Legg ved faktura-PDF-en",
+        "attachPdfHelp": "En faktura går inn i Fiken som et salg (Annet salg) med fakturanummeret fra Torqvoice. Med dette på legges PDF-en kunden fikk ved salget som bilag.",
+        "laborAccount": "Inntektskonto for arbeid",
+        "laborAccountHelp": "La stå tom for å bruke 3000.",
+        "partsAccount": "Inntektskonto for deler",
+        "partsAccountHelp": "La stå tom for å bruke 3000.",
+        "zeroVatType": "Mva-type for fakturaer uten mva",
+        "zeroVatTypeHelp": "Hvordan Fiken bokfører et salg uten mva. Et foretak som ikke er mva-registrert trenger ikke velge noe her. Et registrert foretak må velge før en slik faktura sendes; spør regnskapsføreren hva som gjelder.",
+        "vatNone": "Ingen (ingen mva-behandling)",
+        "vatExempt": "Fritatt",
+        "vatOutside": "Utenfor avgiftsområdet",
+        "vatExport": "Fritatt, eksport",
+        "vatReverse": "Fritatt, omvendt avgiftsplikt",
+        "zeroAccount": "Inntektskonto for fakturaer uten mva",
+        "zeroAccountHelp": "La stå tom for å bruke kontoene for arbeid og deler ovenfor. Hvis Fiken avviser kontoen sammen med mva-typen, står årsaken i aktivitetsloggen.",
+        "pushPayments": "Registrer betalinger i Fiken",
+        "paymentAccount": "Sett betalinger inn på",
+        "paymentAccountHelp": "La stå tom for å bruke foretakets første bankkonto.",
+        "manualPaidAsPayment": "Registrer en betaling når en faktura markeres som betalt for hånd",
+        "manualPaidAsPaymentHelp": "En faktura markert som betalt i Torqvoice uten betalingsføring får én betaling i Fiken for det den fortsatt viser som skyldig der. Avslått blir den stående åpen der til en betaling registreres.",
+        "pullPayments": "Hent tilbake betalinger registrert i Fiken",
+        "pullPaymentsHelp": "Hvert 30. minutt. En betaling mottatt i Fiken mot en faktura fra Torqvoice registreres her på fakturaen."
+      }
+    },
     "nhtsa": {
       "description": "Fyll ut et kjøretøy fra VIN, og se tilbakekallinger, eierklager og kollisjonsvurderinger for hver årsmodell, fra den amerikanske trafikksikkerhetsmyndigheten. Gratis, uten nøkkel.",
       "fields": {},

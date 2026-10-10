@@ -44,6 +44,20 @@
     "apply": "Aplicar",
     "allTechnicians": "Todos os técnicos",
     "export": "Exportar CSV",
+    "print": "Imprimir folha de horas",
+    "client": "Cliente",
+    "noClient": "Sem cliente",
+    "signature": "Assinatura",
+    "sortBy": "Ordenar por",
+    "sort": {
+      "default": "Técnico / dia",
+      "client": "Cliente",
+      "vehicle": "Viatura",
+      "clientVehicle": "Cliente, depois viatura"
+    },
+    "sortDirection": "Sentido da ordenação",
+    "ascending": "Crescente",
+    "descending": "Decrescente",
     "addEntry": "Adicionar registo",
     "stats": {
       "total": "Tempo total",
@@ -101,6 +115,7 @@
       "duration": "Duração",
       "hours": "Horas",
       "job": "Trabalho",
+      "client": "Cliente",
       "vehicle": "Viatura",
       "plate": "Matrícula",
       "source": "Origem",

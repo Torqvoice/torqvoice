@@ -2,19 +2,19 @@
 
 import { createContext, useCallback, useContext } from 'react'
 import {
+  type CurrencySettings,
+  DEFAULT_CURRENCY_CODE,
+  DEFAULT_CURRENCY_FORMAT,
+  resolveCurrencyCode,
+  resolveCurrencyFormat,
+} from '@/lib/currencies'
+import {
   formatCurrency as formatCurrencyRaw,
   getCurrencySymbol as getCurrencySymbolRaw,
-  DEFAULT_CURRENCY_FORMAT,
-  type CurrencyFormat,
 } from '@/lib/format'
 
-interface CurrencySettings {
-  currencyCode: string
-  currencyFormat: CurrencyFormat
-}
-
 const defaultSettings: CurrencySettings = {
-  currencyCode: 'USD',
+  currencyCode: DEFAULT_CURRENCY_CODE,
   currencyFormat: DEFAULT_CURRENCY_FORMAT,
 }
 
@@ -30,8 +30,8 @@ export function CurrencySettingsProvider({
   children: React.ReactNode
 }) {
   const value: CurrencySettings = {
-    currencyCode: currencyCode || 'USD',
-    currencyFormat: currencyFormat === 'code' ? 'code' : 'symbol',
+    currencyCode: resolveCurrencyCode(currencyCode),
+    currencyFormat: resolveCurrencyFormat(currencyFormat),
   }
   return (
     <CurrencySettingsContext.Provider value={value}>{children}</CurrencySettingsContext.Provider>

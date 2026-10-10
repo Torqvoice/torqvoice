@@ -4,7 +4,7 @@ import { billingRequest, isTorqvoiceComBillingConfigured } from '@/lib/torqvoice
 
 /**
  * Delete an organization completely: cancels its Stripe subscription, deletes
- * the org row (cascading all data), and removes its upload files from disk.
+ * the org row (cascading all data), and moves its upload files to the trash.
  * The single implementation behind admin deletion, account deletion and the
  * owner's "delete workshop" — org deletion has ordering constraints (see the
  * inspections note below), so new deletion paths must call this rather than
@@ -49,7 +49,8 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
   ])
 
   // Every file the workshop uploaded lives in its own folder, so that folder
-  // is removed whole, under each upload root. Nothing is unlinked by the URLs
+  // goes to the trash whole, under each upload root, and is purged with the
+  // rest of the trash TRASH_DAYS later. Nothing is unlinked by the URLs
   // its rows held: a row restored from another workshop's backup can still
   // name that workshop, and its files are not this one's to delete.
   await removeOrganizationFiles(organizationId)

@@ -22,6 +22,12 @@
  * (net in exclusive mode, gross in inclusive mode), so existing PDFs and DB
  * rows remain consistent.
  *
+ * Every figure is held to the cent, and the total is built from the rounded
+ * ones, so the sheet always adds up: subtotal less discount plus tax is the
+ * total, to the cent. The tax is rounded once and the other side follows
+ * from it. Left unrounded, each figure was rounded on its own when printed,
+ * and 0.94 plus 25% came out as 0.94 + 0.24 = 1.17.
+ *
  * A document may carry more than one tax, the way a Québec invoice carries
  * GST and QST, or an Indian one CGST and SGST. Those are `components`: the
  * combined `taxRate` and `taxAmount` keep their meaning, and the components
@@ -29,6 +35,8 @@
  * each. A document with no components is a single-rate document and every
  * formula above applies unchanged.
  */
+
+import { roundMoney } from './money'
 
 /** One tax on a document, as the workshop defines it in settings. */
 export interface TaxComponentDefinition {
@@ -50,16 +58,6 @@ export interface TaxComponentDefinition {
 /** A component as stored on a document: the definition plus its share of the tax. */
 export interface TaxComponent extends TaxComponentDefinition {
   amount: number
-}
-
-/**
- * Money is kept to the cent per component, because that is how each tax is
- * declared and how each line prints. The nudge keeps a value that sits
- * exactly on a half-cent in binary (89.775 is really 89.77499...) rounding
- * the way a person expects.
- */
-function roundCents(value: number): number {
-  return Math.round((value + Number.EPSILON) * 100) / 100
 }
 
 /**
@@ -114,11 +112,11 @@ export function splitTaxAmount(args: {
     const shares = exclusiveShares(base, components)
     return components.map((component, index) => ({
       ...component,
-      amount: roundCents(shares[index]),
+      amount: roundMoney(shares[index]),
     }))
   }
 
-  const target = roundCents(taxAmount)
+  const target = roundMoney(taxAmount)
   const shares = exclusiveShares(1, components)
   const total = shares.reduce((sum, share) => sum + share, 0)
   const split: TaxComponent[] = []
@@ -126,9 +124,9 @@ export function splitTaxAmount(args: {
   components.forEach((component, index) => {
     const last = index === components.length - 1
     const amount = last
-      ? roundCents(target - allocated)
+      ? roundMoney(target - allocated)
       : total > 0
-        ? roundCents(target * (shares[index] / total))
+        ? roundMoney(target * (shares[index] / total))
         : 0
     allocated += amount
     split.push({ ...component, amount })
@@ -154,7 +152,8 @@ export function calculateTotals({
    */
   components?: TaxComponentDefinition[] | null
 }): { taxAmount: number; totalAmount: number; components: TaxComponent[] | null } {
-  const base = Math.max(0, subtotal - discountAmount)
+  // The printed subtotal less the printed discount, so the sum on the sheet holds.
+  const base = Math.max(0, roundMoney(roundMoney(subtotal) - roundMoney(discountAmount)))
   const split = components && components.length > 0 ? components : null
   const rate = split ? combinedTaxRate(split) : taxRate
 
@@ -163,7 +162,7 @@ export function calculateTotals({
       return { taxAmount: 0, totalAmount: base, components: split ? withZero(split) : null }
     }
     const net = base / (1 + rate / 100)
-    const taxAmount = base - net
+    const taxAmount = roundMoney(base - net)
     return {
       taxAmount,
       totalAmount: base,
@@ -175,11 +174,28 @@ export function calculateTotals({
 
   if (split) {
     const parts = splitTaxAmount({ base, taxAmount: 0, taxInclusive: false, components: split })
-    const taxAmount = parts.reduce((sum, part) => sum + part.amount, 0)
-    return { taxAmount, totalAmount: base + taxAmount, components: parts }
+    const taxAmount = roundMoney(parts.reduce((sum, part) => sum + part.amount, 0))
+    return { taxAmount, totalAmount: roundMoney(base + taxAmount), components: parts }
   }
-  const taxAmount = base * (rate / 100)
-  return { taxAmount, totalAmount: base + taxAmount, components: null }
+  const taxAmount = roundMoney(base * (rate / 100))
+  return { taxAmount, totalAmount: roundMoney(base + taxAmount), components: null }
+}
+
+/**
+ * The discount on a subtotal, to the cent: a percentage of it, or a fixed
+ * amount that cannot take more than there is. Every place that totals a
+ * document asks here, so the discount that is stored and printed is the one
+ * the total was built from.
+ */
+export function discountAmountFor(
+  subtotal: number,
+  discountType: string | null | undefined,
+  discountValue: number | null | undefined
+): number {
+  const value = Number(discountValue) || 0
+  if (discountType === 'percentage') return roundMoney(subtotal * (value / 100))
+  if (discountType === 'fixed') return roundMoney(Math.min(value, subtotal))
+  return 0
 }
 
 function withZero(components: TaxComponentDefinition[]): TaxComponent[] {

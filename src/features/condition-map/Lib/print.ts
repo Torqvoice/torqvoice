@@ -137,10 +137,11 @@ export function conditionMapForPrint(input: ConditionMapPrintInput): ConditionMa
   const body: BodyType = isBodyType(input.bodyType) ? input.bodyType : 'sedan'
   // A mark drawn on another body type is still on the car: it is listed,
   // though it has no place on this drawing. The map on screen says so.
-  const open = input.marks.filter((m) => !m.resolvedAt)
+  // What is still open is the scope's to say: a mark a later visit carried
+  // forward is closed on the car but still this sheet's own record.
   const { own, previous } = input.scope
-    ? splitMarks(open, input.scope)
-    : { own: open, previous: [] as ConditionMarkData[] }
+    ? splitMarks(input.marks, input.scope)
+    : { own: input.marks.filter((m) => !m.resolvedAt), previous: [] as ConditionMarkData[] }
   const recorded = numberedMarks([...(input.includePrevious ? previous : []), ...own])
   const nothing = (input.requireOwn && own.length === 0) || recorded.length === 0
   if (nothing && !input.blank) return null

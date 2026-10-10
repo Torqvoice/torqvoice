@@ -7,6 +7,7 @@ import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import {
@@ -42,6 +43,7 @@ import {
   saveQuoteLayoutConfig,
   saveWorkOrderLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
+import { invoiceLabels } from '../Lib/invoiceLabels'
 import { workOrderLabels } from '../Lib/workOrderLabels'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -295,14 +297,7 @@ export function InvoiceDesigner({
     if (docType === 'work_order') {
       return withOrgNumberLabel(workOrderLabels(pdf), workshop.orgNumberLabel)
     }
-    return withOrgNumberLabel(
-      {
-        ...(pdf.invoice ?? {}),
-        ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
-        ...(pdf.common ?? {}),
-      },
-      workshop.orgNumberLabel
-    )
+    return withOrgNumberLabel(invoiceLabels(pdf, docType), workshop.orgNumberLabel)
   }, [messages, docType, workshop.orgNumberLabel])
   const L = useCallback(
     (key: string, fallback: string) => printLabels[key] || fallback,
@@ -751,6 +746,13 @@ export function InvoiceDesigner({
     setSaving(false)
   }
 
+  useSaveShortcut(
+    () => {
+      if (dirty[docType] && !saving) return save()
+    },
+    view !== 'gallery' && !namingDesign
+  )
+
   if (view === 'gallery') {
     // A bounded height, not a minimum: the tool sits in a fixed, non-scrolling
     // frame, so a gallery that grows past the viewport has to scroll inside
@@ -1181,7 +1183,7 @@ export function InvoiceDesigner({
               <Button type="button" variant="outline" onClick={() => setNamingDesign(false)}>
                 {t('cancel')}
               </Button>
-              <Button type="submit" disabled={!designName.trim()}>
+              <Button data-save-shortcut type="submit" disabled={!designName.trim()}>
                 {savedDesigns.some(
                   (d) => d.name.trim().toLowerCase() === designName.trim().toLowerCase()
                 )

@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import { ShopFeeProvider } from '@/features/settings/Components/ShopFeeContext'
 import { DocumentLockBanner } from '@/components/document-lock-banner'
@@ -14,6 +15,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
@@ -35,10 +43,11 @@ import {
   Save,
   Trash2,
 } from 'lucide-react'
-import { getCurrencySymbol } from '@/lib/format'
+import { formatCurrency, getCurrencySymbol } from '@/lib/format'
+import { ConvertConflictChoices } from './ConvertConflictChoices'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
-import { useQuoteFormState } from './useQuoteFormState'
+import { useQuoteFormState, type ConvertTarget } from './useQuoteFormState'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import {
   LaborPresetPickerDialog,
@@ -55,6 +64,12 @@ import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import type { WarrantyTexts } from '@/lib/warranty'
 
 const LG_BREAKPOINT = 1024
+
+/** A job's number and title, without the number twice when the title carries it. */
+function convertTargetLabel(target: ConvertTarget) {
+  if (!target.invoiceNumber || target.title.includes(target.invoiceNumber)) return target.title
+  return `${target.invoiceNumber} · ${target.title}`
+}
 
 function useIsLargeScreen() {
   const [isLarge, setIsLarge] = useState(false)
@@ -73,7 +88,7 @@ export function QuotePageClient({
   organizationId,
   lockState,
   canUnlock,
-  currencyCode = 'USD',
+  currencyCode = DEFAULT_CURRENCY_CODE,
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
@@ -134,6 +149,8 @@ export function QuotePageClient({
     t,
   })
 
+  const hasConvertTargets = state.convertTargets.length > 0
+
   // Sending is what can lock the quote — by email or by link — so the page is
   // re-rendered to pick up the lock rather than leaving the fieldset open and
   // the next autosave to be refused.
@@ -166,6 +183,7 @@ export function QuotePageClient({
           partNumber: part.partNumber || '',
           quantity: part.quantity,
           unit: part.unit ?? null,
+          category: part.category ?? null,
           unitCost: 0,
           markupPercent: 0,
           unitPrice: part.unitPrice,
@@ -546,7 +564,7 @@ export function QuotePageClient({
               <DialogTitle>{t('page.convertTitle')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">{t('page.convertDescription')}</p>
+              <p className="text-sm text-muted-foreground">{t('page.convertChoiceDescription')}</p>
               <VehicleCombobox
                 value={state.convertVehicleId}
                 initialVehicle={state.selectedVehicle}
@@ -554,14 +572,96 @@ export function QuotePageClient({
                 noneLabel={t('details.none')}
                 onChange={(id) => state.setConvertVehicleId(id)}
               />
+              <div className="space-y-2">
+                <label className="flex cursor-pointer items-start gap-2 rounded-lg border p-3 text-sm">
+                  <input
+                    type="radio"
+                    name="convert-mode"
+                    className="mt-0.5"
+                    checked={state.convertMode === 'new'}
+                    onChange={() => state.setConvertMode('new')}
+                  />
+                  <span className="font-medium">{t('page.convertNew')}</span>
+                </label>
+                <div
+                  className={`space-y-2 rounded-lg border p-3 text-sm ${
+                    hasConvertTargets ? '' : 'opacity-60'
+                  }`}
+                >
+                  <label
+                    className={`flex items-start gap-2 ${
+                      hasConvertTargets ? 'cursor-pointer' : 'cursor-not-allowed'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="convert-mode"
+                      className="mt-0.5"
+                      checked={state.convertMode === 'existing'}
+                      disabled={!hasConvertTargets}
+                      onChange={() => state.setConvertMode('existing')}
+                    />
+                    <span className="font-medium">{t('page.convertExisting')}</span>
+                  </label>
+                  {!hasConvertTargets && state.convertVehicleId && !state.loadingConvertTargets && (
+                    <p className="text-xs text-muted-foreground">
+                      {t('page.convertNoOpenWorkOrders')}
+                    </p>
+                  )}
+                  {state.convertMode === 'existing' && hasConvertTargets && (
+                    <>
+                      <Select
+                        value={state.convertTargetId}
+                        onValueChange={state.setConvertTargetId}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder={t('page.convertSelectWorkOrder')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {state.convertTargets.map((target) => (
+                            <SelectItem key={target.id} value={target.id}>
+                              {convertTargetLabel(target)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        {t('page.convertExistingHint')}
+                      </p>
+                      {state.loadingConvertConflicts && (
+                        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                          {t('page.convertConflicts.checking')}
+                        </p>
+                      )}
+                      {state.convertConflicts.length > 0 && (
+                        <ConvertConflictChoices
+                          conflicts={state.convertConflicts}
+                          resolutions={state.convertResolutions}
+                          onChoose={state.setConvertResolution}
+                          money={(amount) => formatCurrency(amount, currencyCode)}
+                          distanceUnit={distanceUnit}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
               <div className="flex gap-2">
                 <Button
                   type="button"
                   onClick={state.handleConvert}
-                  disabled={state.converting || !state.convertVehicleId}
+                  disabled={
+                    state.converting ||
+                    !state.convertVehicleId ||
+                    (state.convertMode === 'existing' &&
+                      (!state.convertTargetId ||
+                        state.loadingConvertConflicts ||
+                        state.convertConflictsUnresolved))
+                  }
                 >
                   {state.converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('page.convert')}
+                  {state.convertMode === 'existing' ? t('page.convertAdd') : t('page.convert')}
                 </Button>
                 <Button
                   type="button"

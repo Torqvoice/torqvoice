@@ -44,6 +44,20 @@
     "apply": "Anwenden",
     "allTechnicians": "Alle Techniker",
     "export": "CSV exportieren",
+    "print": "Stundenzettel drucken",
+    "client": "Kunde",
+    "noClient": "Kein Kunde",
+    "signature": "Unterschrift",
+    "sortBy": "Sortieren nach",
+    "sort": {
+      "default": "Techniker / Tag",
+      "client": "Kunde",
+      "vehicle": "Fahrzeug",
+      "clientVehicle": "Kunde, dann Fahrzeug"
+    },
+    "sortDirection": "Sortierrichtung",
+    "ascending": "Aufsteigend",
+    "descending": "Absteigend",
     "addEntry": "Eintrag hinzufügen",
     "stats": {
       "total": "Gesamtzeit",
@@ -101,6 +115,7 @@
       "duration": "Dauer",
       "hours": "Stunden",
       "job": "Auftrag",
+      "client": "Kunde",
       "vehicle": "Fahrzeug",
       "plate": "Kennzeichen",
       "source": "Quelle",

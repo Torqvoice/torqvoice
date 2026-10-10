@@ -63,7 +63,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           },
           customer: { select: { id: true, name: true, phone: true, email: true } },
           partItems: {
-            select: { id: true, name: true, quantity: true, unit: true, partNumber: true },
+            select: {
+              id: true,
+              name: true,
+              quantity: true,
+              unit: true,
+              category: true,
+              partNumber: true,
+            },
             orderBy: { id: 'asc' },
           },
           laborItems: {

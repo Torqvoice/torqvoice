@@ -64,6 +64,7 @@ import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import { InspectionItemRow, type InspectionItemData } from './InspectionItemRow'
 import { MediaLightbox, type LightboxImage } from './MediaLightbox'
 import { useServiceType } from '@/components/service-type-context'
+import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
@@ -402,6 +403,14 @@ export function InspectionPageClient({
       toast.success(t('allSaved'))
     }
   }
+
+  // The shortcut is pressed mid-sentence, so the field gets its focus back
+  // once the blur has sent what was typed.
+  useSaveShortcut(() => {
+    const focused = document.activeElement as HTMLElement | null
+    handleSaveNow()
+    focused?.focus()
+  }, !isCompleted)
 
   const openImage = (url: string) => {
     const index = images.findIndex((img) => img.url === url)
