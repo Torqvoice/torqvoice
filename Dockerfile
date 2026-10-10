@@ -27,6 +27,17 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
+# What the container runs beside the server: the Prisma CLI for the migrations
+# at start, and tsx with a full Prisma client for the demo seed. Installed in
+# a folder of its own, with no package.json beside it. Run inside /app, where
+# the standalone build keeps the project's package.json, the same install
+# pulled in every production dependency the project has, replaced the patched
+# next the build had traced, and made the image well over a gigabyte larger.
+FROM base AS tools
+WORKDIR /tools
+RUN npm install --no-save --no-audit --no-fund \
+      prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
@@ -49,65 +60,35 @@ RUN mkdir .next && chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy prisma schema and config for migrations
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
-
 # Copy generated Prisma client
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
-# Give the install below the lockfile the app was built with. Without it npm
-# re-resolves the whole tree against the live registry on every build, so the
-# runtime image drifts from what was tested, and a registry change can break
-# the build with nothing changed here (npm 10 crashed with "Cannot read
-# properties of null (reading 'edgesOut')" resolving vitest's peers this way).
-COPY --from=builder --chown=nextjs:nodejs /app/package-lock.json ./package-lock.json
-
-# Remove Next.js standalone's traced stubs for pg/prisma (tracer copies package.json
-# but not all files), then install the full runtime packages fresh.
-RUN rm -rf \
-      /app/node_modules/pg \
-      /app/node_modules/pg-types \
-      /app/node_modules/pg-pool \
-      /app/node_modules/pg-connection-string \
-      /app/node_modules/pg-protocol \
-      /app/node_modules/pg-int8 \
-      /app/node_modules/pg-cloudflare \
-      /app/node_modules/pgpass \
-      /app/node_modules/postgres-array \
-      /app/node_modules/postgres-bytea \
-      /app/node_modules/postgres-date \
-      /app/node_modules/postgres-interval \
-      /app/node_modules/split2 \
-      /app/node_modules/prisma \
-      /app/node_modules/@prisma \
-      /app/node_modules/.prisma \
-    && npm install --omit=dev prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx sharp
-
-# The npm install above re-resolves the dependency tree and replaces the
-# standalone build's PATCHED next package with a fresh unpatched copy from the
-# registry, which silently breaks all WebSocket routes (live updates, work
-# board sync). Re-apply the next-ws patch so the runtime server can accept
-# WebSocket upgrades. next-ws itself is already in the standalone bundle.
+# The server runs on the node_modules Next traced for it. That is exactly what
+# the build ran with: next carrying the next-ws patch and the first-upgrade fix
+# the prepare script applied in the deps stage, and sharp with the binary for
+# this image's platform. Nothing is installed over it, so none of that has to
+# be patched or resolved a second time here.
 #
-# sharp is named in that install for the same reason. It is the only native
-# module in the tree, its binary lives in a platform-specific optional
-# dependency (@img/sharp-linuxmusl-x64 on this image), and re-resolving the
-# tree can leave the traced copy without one. Installing it by name makes npm
-# resolve the binary against the platform the image will actually run on.
-RUN npx next-ws patch --yes
+# The traced node_modules is not a full install, though: several packages are
+# a package.json with their entry point pruned away, and a plain Node script
+# run in /app dies on a missing module. So what runs beside the server lives
+# in /app/tools with its own complete node_modules: the migrations (see
+# init-db.sh) and the demo seed (see .github/workflows/deploy-demo.yml), each
+# next to the files it reads.
+COPY --from=tools --chown=nextjs:nodejs /tools/node_modules ./tools/node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./tools/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./tools/prisma.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./tools/src/generated
 
-# next-ws reads a route module's exports the moment an upgrade arrives, and
-# Next 16.3 loads route modules lazily, so the first WebSocket connection after
-# every boot died with "The lazy module is still loading" until the fix below
-# is applied to the fresh copy the install above pulled in.
+# Fail the build here rather than at the first live update or certificate
+# download. WebSocket routes only work on a next that carries the next-ws
+# patch, with next-ws waiting for the lazily loaded route module; a native
+# module that cannot be loaded throws while its route is being evaluated,
+# which reaches the browser as an empty HTTP 500 with nothing to explain it.
 COPY --from=builder --chown=nextjs:nodejs /app/scripts/patch-next-ws-first-upgrade.mjs ./scripts/patch-next-ws-first-upgrade.mjs
+RUN grep -qs "next-ws" node_modules/next/dist/server/next-server.js \
+      || { echo "the traced next is missing the next-ws patch"; exit 1; }
 RUN node scripts/patch-next-ws-first-upgrade.mjs
-
-# Fail the build here rather than at the first certificate download: a native
-# module that cannot be loaded throws while the route module is being
-# evaluated, which reaches the browser as an empty HTTP 500 with nothing in it
-# to explain itself.
 RUN node -e "require('sharp'); console.log('sharp loads')"
 
 # Copy init script

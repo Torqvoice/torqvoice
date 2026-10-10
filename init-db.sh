@@ -17,6 +17,11 @@ until pg_isready -d "$DATABASE_URL" -q; do
 done
 echo "PostgreSQL is ready!"
 
+# The Prisma CLI, the schema and the migrations live in their own folder so
+# the CLI's dependencies stay out of the server's node_modules (see Dockerfile).
+app_dir="$PWD"
+cd "$app_dir/tools"
+
 echo "Applying database migrations..."
 if ! npx prisma migrate deploy 2>/dev/null; then
   # P3005: existing DB without migration history (from db push).
@@ -27,6 +32,8 @@ if ! npx prisma migrate deploy 2>/dev/null; then
   npx prisma migrate deploy
 fi
 echo "Migrations applied successfully!"
+
+cd "$app_dir"
 
 # Photo embedding is the one thing here that depends on a native module, and
 # sharp's prebuilt binaries need an x86-64-v2 CPU. Some virtualised hosts do not
