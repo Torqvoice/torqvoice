@@ -10,6 +10,7 @@ vi.mock('@/lib/db', () => ({
   db: {
     subscription: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
+    systemSetting: { findMany: vi.fn() },
     organization: { count: vi.fn() },
     organizationMember: { count: vi.fn(), findMany: vi.fn() },
   },
@@ -35,6 +36,7 @@ import { scheduleLicenseSelfHeal } from '@/lib/license/revalidate'
 
 const mockFindUnique = vi.mocked(db.subscription.findUnique)
 const mockFindMany = vi.mocked(db.appSetting.findMany)
+const mockLimitOverrides = vi.mocked(db.systemSetting.findMany)
 const mockVerify = vi.mocked(verifyLicenseToken)
 const mockSelfHeal = vi.mocked(scheduleLicenseSelfHeal)
 
@@ -46,6 +48,7 @@ beforeEach(() => {
   vi.resetAllMocks()
   vi.unstubAllEnvs()
   mockVerify.mockReturnValue(verification('missing'))
+  mockLimitOverrides.mockResolvedValue([])
 })
 
 describe('getFeatures — cloud mode', () => {
@@ -149,6 +152,45 @@ describe('getFeatures — cloud mode', () => {
     } as any)
     const features = await getFeatures('org-1')
     expect(features).toEqual({ ...PLAN_FEATURES.free, brandingRemoved: true })
+  })
+})
+
+describe('limits set by hand for one workshop', () => {
+  const proSubscription = { status: 'active', plan: { name: 'Torq Pro' }, currentPeriodEnd: null }
+  const stored = (limits: Record<string, string>, org: string) =>
+    Object.entries(limits).map(([limit, value]) => ({ key: `limits.${limit}.${org}`, value }))
+
+  beforeEach(() => {
+    vi.stubEnv('TORQVOICE_MODE', 'cloud')
+  })
+
+  it('raise a paid plan above its own limits', async () => {
+    mockFindUnique.mockResolvedValue(proSubscription as any)
+    mockLimitOverrides.mockResolvedValue(
+      stored({ maxUsers: '8', maxOrganizations: '3', maxImagesPerService: '60' }, 'org-l1') as any
+    )
+    const features = await getFeatures('org-l1')
+    expect(features).toMatchObject({ maxUsers: 8, maxOrganizations: 3, maxImagesPerService: 60 })
+    // What was not set stays the plan's.
+    expect(features.maxDocumentsPerService).toBe(PLAN_FEATURES.pro.maxDocumentsPerService)
+    expect(features.customerPortal).toBe(true)
+  })
+
+  it('never lower the plan, and a value that is not a number is ignored', async () => {
+    mockFindUnique.mockResolvedValue(proSubscription as any)
+    mockLimitOverrides.mockResolvedValue(
+      stored({ maxUsers: '2', maxOrganizations: 'lots' }, 'org-l2') as any
+    )
+    const features = await getFeatures('org-l2')
+    expect(features.maxUsers).toBe(PLAN_FEATURES.pro.maxUsers)
+    expect(features.maxOrganizations).toBe(PLAN_FEATURES.pro.maxOrganizations)
+  })
+
+  it('do not follow a workshop down to the free plan', async () => {
+    mockFindUnique.mockResolvedValue(null)
+    mockLimitOverrides.mockResolvedValue(stored({ maxUsers: '8' }, 'org-l3') as any)
+    expect((await getFeatures('org-l3')).maxUsers).toBe(PLAN_FEATURES.free.maxUsers)
+    expect(mockLimitOverrides).not.toHaveBeenCalled()
   })
 })
 

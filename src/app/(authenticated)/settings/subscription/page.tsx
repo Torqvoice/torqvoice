@@ -1,7 +1,7 @@
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
-import { PLAN_FEATURES, type Plan } from '@/lib/features'
+import { getFeatures, PLAN_FEATURES, type Plan } from '@/lib/features'
 import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { SubscriptionSettings } from '@/features/subscription/Components/subscription-settings'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
@@ -43,7 +43,10 @@ export default async function SubscriptionPage({
   // admin panel). It carries full plan features but expires at currentPeriodEnd.
   const isDemo = subscription?.status === 'trialing' && !subscription?.stripeSubscriptionId
 
-  const features = PLAN_FEATURES[plan]
+  // The member meter shows the limit that is enforced, which for a workshop
+  // with a team size agreed by hand is higher than its plan's.
+  const enforced = await getFeatures(authContext.organizationId)
+  const features = { ...PLAN_FEATURES[plan], maxUsers: enforced.maxUsers }
 
   const canBuy = plan === 'free' || isDemo
   const [customerCount, memberCount, prices] = await Promise.all([
