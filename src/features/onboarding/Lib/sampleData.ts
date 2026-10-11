@@ -162,6 +162,7 @@ export async function seedSampleData(
         status: 'completed',
         mileage: 86200,
         serviceDate: daysAgo(12),
+        startDateTime: daysAgo(12),
         invoiceDate: daysAgo(12),
         invoiceNumber: `${invoicePrefix}1001`,
         subtotal: oilSubtotal,

@@ -174,6 +174,87 @@ describe('getRevenueReport — net parts/labor calculation', () => {
   })
 })
 
+describe('getRevenueReport — a discount on the job comes off the profit', () => {
+  /** 100 of parts (cost 50) and 200 of labor, 10% off the job, 25% tax. */
+  const discounted = (taxInclusive: boolean) => {
+    const scale = taxInclusive ? 1.25 : 1
+    return {
+      serviceDate: new Date('2026-01-15'),
+      startDateTime: new Date('2026-01-15'),
+      totalAmount: 337.5, // (300 - 30) net + 25% tax
+      cost: 337.5,
+      type: 'repair',
+      taxRate: 25,
+      taxInclusive,
+      subtotal: 300 * scale,
+      discountAmount: 30 * scale,
+      manuallyPaid: false,
+      payments: [],
+      partItems: [{ unitCost: 50, quantity: 1, total: 100 * scale }],
+      laborItems: [{ total: 200 * scale }],
+    }
+  }
+
+  it('spreads the discount over parts and labor in exclusive mode', async () => {
+    setupAuth()
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([discounted(false)] as any)
+
+    const result = await getRevenueReport({})
+
+    expect(result.data?.summary.totalPartsRevenue).toBeCloseTo(90)
+    expect(result.data?.summary.totalLaborRevenue).toBeCloseTo(180)
+    expect(result.data?.summary.totalPartsNetProfit).toBeCloseTo(40)
+    // What was earned before tax (270) less what the parts cost (50).
+    expect(result.data?.summary.netProfit).toBeCloseTo(220)
+    expect(result.data?.monthly[0].netProfit).toBeCloseTo(220)
+  })
+
+  it('gives the same profit when the same job is entered tax-inclusive', async () => {
+    setupAuth()
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([discounted(true)] as any)
+
+    const result = await getRevenueReport({})
+
+    expect(result.data?.summary.totalPartsRevenue).toBeCloseTo(90)
+    expect(result.data?.summary.totalLaborRevenue).toBeCloseTo(180)
+    expect(result.data?.summary.netProfit).toBeCloseTo(220)
+  })
+
+  it('makes revenue before tax and net profit differ by the parts cost alone', async () => {
+    setupAuth()
+    const record = discounted(false)
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([record] as any)
+
+    const result = await getRevenueReport({})
+    const summary = result.data!.summary
+
+    const revenueBeforeTax = record.totalAmount / 1.25
+    expect(summary.netProfit).toBeCloseTo(revenueBeforeTax - summary.totalPartsCost)
+  })
+})
+
+describe('getPartsUsageReport — a discount on the job comes off the part', () => {
+  it('agrees with the revenue report on the same job', async () => {
+    setupAuth()
+    vi.mocked(db.servicePart.findMany).mockResolvedValue([
+      {
+        name: 'Brake disc',
+        partNumber: 'BD-1',
+        quantity: 1,
+        total: 100,
+        unitCost: 50,
+        serviceRecord: { taxRate: 25, taxInclusive: false, subtotal: 300, discountAmount: 30 },
+      },
+    ] as any)
+
+    const result = await getPartsUsageReport({})
+
+    expect(result.data?.totalPartsRevenue).toBeCloseTo(90)
+    expect(result.data?.totalPartsNetProfit).toBeCloseTo(40)
+    expect(result.data?.parts[0].netProfit).toBeCloseTo(40)
+  })
+})
+
 // ---------------------------------------------------------------------------
 // getTaxReport
 // ---------------------------------------------------------------------------

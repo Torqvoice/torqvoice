@@ -448,6 +448,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
     if (!vehicleId || !s.date || !s.title)
       throw new Error('Service row is missing its vehicle, date or title')
     const total = s.total ?? 0
+    const serviceDate = new Date(s.date)
     await tx.serviceRecord.create({
       data: {
         title: s.title,
@@ -458,7 +459,10 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
         subtotal: total,
         totalAmount: total,
         mileage: s.mileage,
-        serviceDate: new Date(s.date),
+        serviceDate,
+        // Reports and the calendar find a job by when it started; a job
+        // without a start is in none of them.
+        startDateTime: serviceDate,
         invoiceNumber: s.invoiceNumber,
         invoiceDate: s.invoiceNumber ? new Date(s.date) : null,
         diagnosticNotes: s.notes,

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { formatCurrency } from '@/lib/format'
 import { roundAsPrinted, roundMoney } from '@/lib/money'
-import { calculateTotals, discountAmountFor, netLineTotal } from '@/lib/tax'
+import { calculateTotals, discountAmountFor, earnedLineTotal, netLineTotal } from '@/lib/tax'
 
 describe('calculateTotals', () => {
   describe('exclusive mode', () => {
@@ -553,5 +553,47 @@ describe('totals that add up to the cent', () => {
     }
     expect(checked).toBeGreaterThan(70_000)
     expect(wrong).toEqual([])
+  })
+})
+
+describe('earnedLineTotal', () => {
+  const exclusive = { taxRate: 25, taxInclusive: false }
+  const inclusive = { taxRate: 25, taxInclusive: true }
+
+  it('is the net line total when the job has no discount', () => {
+    expect(earnedLineTotal(100, { ...exclusive, subtotal: 300, discountAmount: 0 })).toBe(100)
+    expect(earnedLineTotal(125, { ...inclusive, subtotal: 375, discountAmount: 0 })).toBeCloseTo(
+      100
+    )
+  })
+
+  it("takes the line's share of the discount off", () => {
+    // 10% off a 300 job: a 100 line earned 90.
+    expect(earnedLineTotal(100, { ...exclusive, subtotal: 300, discountAmount: 30 })).toBeCloseTo(
+      90
+    )
+  })
+
+  it('gives the same figure in inclusive mode, where line and discount are both gross', () => {
+    // The same job entered gross: lines 125 + 250, discount 37.50 gross.
+    expect(earnedLineTotal(125, { ...inclusive, subtotal: 375, discountAmount: 37.5 })).toBeCloseTo(
+      90
+    )
+  })
+
+  it('adds up across the lines to the subtotal less the discount', () => {
+    const record = { ...exclusive, subtotal: 300, discountAmount: 45 }
+    const earned = [100, 120, 80].reduce((sum, line) => sum + earnedLineTotal(line, record), 0)
+    expect(earned).toBeCloseTo(255)
+  })
+
+  it('never goes below zero when the stored discount exceeds the subtotal', () => {
+    expect(earnedLineTotal(100, { ...exclusive, subtotal: 100, discountAmount: 150 })).toBe(0)
+  })
+
+  it('leaves the line alone when the record carries no subtotal or discount', () => {
+    expect(earnedLineTotal(100, exclusive)).toBe(100)
+    expect(earnedLineTotal(100, { ...exclusive, subtotal: 0, discountAmount: 20 })).toBe(100)
+    expect(earnedLineTotal(100, { ...exclusive, subtotal: null, discountAmount: null })).toBe(100)
   })
 })
