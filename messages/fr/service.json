@@ -617,6 +617,7 @@
     "titleField": "Titre",
     "media": {
       "tabs": {
+        "all": "Tout",
         "photos": "Photos",
         "diagnostics": "Diagnostics",
         "dropoff": "Réception"
@@ -626,6 +627,7 @@
       "showToCustomer": "Montrer au client",
       "hideFromCustomer": "Masquer au client",
       "add": {
+        "all": "Ajouter des fichiers",
         "image": "Ajouter des photos",
         "document": "Ajouter des documents",
         "diagnostic": "Ajouter un rapport de diagnostic",

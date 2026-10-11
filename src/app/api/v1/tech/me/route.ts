@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry, loggedMinutes } from '@/features/time-tracking/Lib/timeEntries'
+import { TECH_API_FEATURES } from '@/lib/tech-api-features'
 import { MIN_APP_VERSION } from '@/lib/tech-app-version'
 
 /**
@@ -40,6 +41,9 @@ export async function GET(request: Request) {
         // Repeated from /health because that one is only read at setup, and a
         // minimum the app never re-checks is a minimum that cannot be raised.
         minAppVersion: MIN_APP_VERSION,
+        // What a newer app may rely on here. An app that finds a name missing
+        // switches that part off rather than letting it fail.
+        features: TECH_API_FEATURES,
         user,
         organization,
         technicians,

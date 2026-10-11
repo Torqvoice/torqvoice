@@ -4,7 +4,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 
 /**
- * Removes a photo from a job.
+ * Removes a photo or video from a job.
  *
  * A technician photographing a dark wheel arch takes three before one is
  * usable, and without this the other two stay on the job forever and end up
@@ -37,7 +37,7 @@ export async function DELETE(
         },
         select: { id: true, fileUrl: true },
       })
-      if (!attachment) return apiError(404, 'not_found', 'That photo is not on this job.')
+      if (!attachment) return apiError(404, 'not_found', 'That file is not on this job.')
 
       await db.serviceAttachment.delete({ where: { id: attachment.id } })
 

@@ -84,6 +84,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               fileUrl: true,
               fileName: true,
               fileType: true,
+              description: true,
               createdAt: true,
             },
             orderBy: { createdAt: 'desc' },

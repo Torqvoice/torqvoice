@@ -617,6 +617,7 @@
     "titleField": "Tittel",
     "media": {
       "tabs": {
+        "all": "Alle",
         "photos": "Bilder",
         "diagnostics": "Diagnostikk",
         "dropoff": "Innlevering"
@@ -626,6 +627,7 @@
       "showToCustomer": "Vis for kunden",
       "hideFromCustomer": "Skjul for kunden",
       "add": {
+        "all": "Legg til filer",
         "image": "Legg til bilder",
         "document": "Legg til dokumenter",
         "diagnostic": "Legg til diagnoserapport",

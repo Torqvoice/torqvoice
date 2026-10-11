@@ -617,6 +617,7 @@
     "titleField": "Başlık",
     "media": {
       "tabs": {
+        "all": "Tümü",
         "photos": "Fotoğraflar",
         "diagnostics": "Tanı",
         "dropoff": "Teslim alma"
@@ -626,6 +627,7 @@
       "showToCustomer": "Müşteriye göster",
       "hideFromCustomer": "Müşteriden gizle",
       "add": {
+        "all": "Dosya ekle",
         "image": "Fotoğraf ekle",
         "document": "Belge ekle",
         "diagnostic": "Tanı raporu ekle",

@@ -617,6 +617,7 @@
     "titleField": "Title",
     "media": {
       "tabs": {
+        "all": "All",
         "photos": "Photos",
         "diagnostics": "Diagnostics",
         "dropoff": "Drop-off"
@@ -626,6 +627,7 @@
       "showToCustomer": "Show to the customer",
       "hideFromCustomer": "Hide from the customer",
       "add": {
+        "all": "Add files",
         "image": "Add photos",
         "document": "Add documents",
         "diagnostic": "Add diagnostic report",
