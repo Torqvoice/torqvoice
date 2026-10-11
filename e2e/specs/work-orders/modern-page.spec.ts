@@ -479,6 +479,11 @@ test.describe('the overhauled work order page', () => {
           timeout: 2_000,
         })
       }).toPass({ timeout: 30_000 })
+      // The menu ends with the way to add a status, for somebody who may.
+      await expect(page.getByTestId('status-add-in-progress')).toHaveAttribute(
+        'href',
+        '/settings/work-order-statuses'
+      )
       await page.getByRole('menuitem', { name: 'Waiting Parts' }).click()
       await expectStatus(page, /Waiting Parts/)
       // The status says "Saved" for two seconds. Let that one go, or it answers

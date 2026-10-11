@@ -668,6 +668,7 @@
       "customerSince": "Kunde siden"
     },
     "moreStatuses": "Flere statuser",
+    "addStatus": "Legg til status",
     "fromInspection": "Fra inspeksjon {name}, {date}",
     "fromQuote": "Fra tilbud {ref}",
     "startInspection": "Start inspeksjon"

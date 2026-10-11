@@ -84,6 +84,7 @@ export function ServicePageClient({
   tireHotelEnabled = false,
   onlinePayments = false,
   workOrderStatuses = [],
+  canAddStatus = false,
   videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
@@ -689,6 +690,7 @@ export function ServicePageClient({
                 {...leftColumnProps}
                 {...rightColumnProps}
                 workOrderStatuses={workOrderStatuses}
+                canAddStatus={canAddStatus}
                 onNotifyForStatus={handleNotifyForStatus}
                 locked={lockState.locked}
                 lockedLabel={t('invoice.lockedFieldsetLabel')}

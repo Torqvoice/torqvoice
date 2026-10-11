@@ -668,6 +668,7 @@
       "customerSince": "Klant sinds"
     },
     "moreStatuses": "Meer statussen",
+    "addStatus": "Status toevoegen",
     "fromInspection": "Uit inspectie {name}, {date}",
     "fromQuote": "Uit offerte {ref}",
     "startInspection": "Inspectie starten"

@@ -1,7 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, Plus } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,12 +39,16 @@ type Chosen = { id: string; name: string; color: string } | null
  * A stage with nothing under it has no arrow, so a workshop that defines no
  * statuses sees three stages and one arrow, and nothing else changes for it.
  *
+ * Each menu ends with the way to add a status, for somebody who may change
+ * settings: the menu is where the missing status is noticed.
+ *
  * It sits outside the form's lock: a locked invoice still moves along.
  */
 export function StatusStepper({
   status,
   customStatus = null,
   options = [],
+  canAddStatus = false,
   onChange,
 }: {
   status: string
@@ -51,6 +56,8 @@ export function StatusStepper({
   customStatus?: { id: string; name: string; color: string } | null
   /** The workshop's statuses that can be chosen. */
   options?: WorkOrderStatusOption[]
+  /** The viewer may change settings, so each menu ends with the way to add a status. */
+  canAddStatus?: boolean
   /** A stage alone, or a stage with one of the workshop's statuses under it. */
   onChange: (status: string, custom: WorkOrderStatusOption | null) => void
 }) {
@@ -142,6 +149,7 @@ export function StatusStepper({
                 stageLabel={label}
                 waitingLabel={waitingLabel}
                 moreLabel={t('modern.moreStatuses')}
+                addLabel={canAddStatus ? t('modern.addStatus') : null}
                 under={under}
                 chosenId={sub?.id ?? null}
                 isCurrent={isCurrent}
@@ -171,6 +179,7 @@ function StageMenu({
   stageLabel,
   waitingLabel,
   moreLabel,
+  addLabel,
   under,
   chosenId,
   isCurrent,
@@ -180,6 +189,8 @@ function StageMenu({
   stageLabel: string
   waitingLabel: string
   moreLabel: string
+  /** The words for the way to add a status, or null for somebody who may not. */
+  addLabel: string | null
   under: WorkOrderStatusOption[]
   chosenId: string | null
   isCurrent: boolean
@@ -233,6 +244,23 @@ function StageMenu({
             {tick(chosenId === option.id)}
           </DropdownMenuItem>
         ))}
+        {addLabel && (
+          <>
+            <DropdownMenuSeparator />
+            {/* A new tab, like the page's other ways into settings: the job
+                may hold changes nobody has saved yet. */}
+            <DropdownMenuItem asChild className={cn(row, 'text-muted-foreground')}>
+              <Link
+                href="/settings/work-order-statuses"
+                target="_blank"
+                data-testid={`status-add-${stage}`}
+              >
+                <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                {addLabel}
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

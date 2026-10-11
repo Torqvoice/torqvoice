@@ -668,6 +668,7 @@
       "customerSince": "Cliente desde"
     },
     "moreStatuses": "Mais estados",
+    "addStatus": "Adicionar estado",
     "fromInspection": "Da inspeção {name}, {date}",
     "fromQuote": "Do orçamento {ref}",
     "startInspection": "Iniciar inspeção"

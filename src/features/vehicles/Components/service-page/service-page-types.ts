@@ -125,6 +125,8 @@ export interface ServicePageClientProps {
   onlinePayments?: boolean
   /** The workshop's own statuses, for the menus on the status stepper. */
   workOrderStatuses?: WorkOrderStatusOption[]
+  /** The viewer may change settings, so the status menus offer to add a status. */
+  canAddStatus?: boolean
   /** The work order's video call, and the connected services that could add one. */
   videoCall?: ServiceVideoCall
   /** The workshop's tread limits, so a set checked in here grades correctly. */

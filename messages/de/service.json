@@ -668,6 +668,7 @@
       "customerSince": "Kunde seit"
     },
     "moreStatuses": "Weitere Status",
+    "addStatus": "Status hinzufügen",
     "fromInspection": "Aus Inspektion {name}, {date}",
     "fromQuote": "Aus Angebot {ref}",
     "startInspection": "Inspektion starten"

@@ -668,6 +668,7 @@
       "customerSince": "Müşteri olma tarihi"
     },
     "moreStatuses": "Diğer durumlar",
+    "addStatus": "Durum ekle",
     "fromInspection": "{name} muayenesinden, {date}",
     "fromQuote": "{ref} teklifinden",
     "startInspection": "Muayeneyi başlat"

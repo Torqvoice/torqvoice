@@ -668,6 +668,7 @@
       "customerSince": "Klient od"
     },
     "moreStatuses": "Więcej statusów",
+    "addStatus": "Dodaj status",
     "fromInspection": "Z przeglądu {name}, {date}",
     "fromQuote": "Z wyceny {ref}",
     "startInspection": "Rozpocznij przegląd"
