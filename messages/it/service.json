@@ -668,6 +668,7 @@
       "customerSince": "Cliente dal"
     },
     "moreStatuses": "Altri stati",
+    "addStatus": "Aggiungi stato",
     "fromInspection": "Dall'ispezione {name}, {date}",
     "fromQuote": "Dal preventivo {ref}",
     "startInspection": "Avvia ispezione"

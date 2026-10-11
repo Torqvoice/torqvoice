@@ -45,6 +45,8 @@ type RightProps = ComponentProps<typeof DetailsRightColumn>
 export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof LeftProps> {
   /** The workshop's own statuses, for the menus on the stepper. */
   workOrderStatuses?: WorkOrderStatusOption[]
+  /** The viewer may change settings, so the status menus offer to add a status. */
+  canAddStatus?: boolean
   /** Offers to tell the customer about a status that asks for it. */
   onNotifyForStatus?: (status: WorkOrderStatusOption) => void
   /**
@@ -292,6 +294,7 @@ export function ModernDetails(props: ModernDetailsProps) {
               status={formState.status}
               customStatus={customStatus}
               options={props.workOrderStatuses}
+              canAddStatus={props.canAddStatus}
               onChange={(next, custom) => void changeStatus(next, custom)}
             />
 

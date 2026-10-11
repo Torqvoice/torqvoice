@@ -668,6 +668,7 @@
       "customerSince": "Клиент с"
     },
     "moreStatuses": "Другие статусы",
+    "addStatus": "Добавить статус",
     "fromInspection": "Из осмотра {name}, {date}",
     "fromQuote": "Из предложения {ref}",
     "startInspection": "Начать осмотр"

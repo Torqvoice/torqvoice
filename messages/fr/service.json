@@ -668,6 +668,7 @@
       "customerSince": "Client depuis"
     },
     "moreStatuses": "Autres statuts",
+    "addStatus": "Ajouter un statut",
     "fromInspection": "Issu de l'inspection {name}, {date}",
     "fromQuote": "Issu du devis {ref}",
     "startInspection": "Commencer l'inspection"

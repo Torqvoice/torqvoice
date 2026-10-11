@@ -40,6 +40,7 @@ import {
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
+import { canEditSettings } from '@/lib/settings-access'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
@@ -175,6 +176,9 @@ export async function ServiceRecordPage({
   // Fetch team members and features
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
+  // Whether the status menus offer the way to add a status. Somebody who
+  // cannot change settings is better off not seeing a link that turns them away.
+  const canAddStatus = await canEditSettings(session?.user?.id ?? '', membership?.role)
 
   const [currentUser, features, aiProvider, dictation, tireHotel] = await Promise.all([
     session?.user?.id
@@ -437,6 +441,7 @@ export async function ServiceRecordPage({
         dictationMode={dictation.mode}
         tireHotelEnabled={tireHotel.enabled}
         onlinePayments={onlinePayments}
+        canAddStatus={canAddStatus}
         workOrderStatuses={
           workOrderStatusesResult.success && workOrderStatusesResult.data
             ? workOrderStatusesResult.data

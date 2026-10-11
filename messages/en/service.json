@@ -668,6 +668,7 @@
       "customerSince": "Customer since"
     },
     "moreStatuses": "More statuses",
+    "addStatus": "Add status",
     "fromInspection": "From inspection {name}, {date}",
     "fromQuote": "From quote {ref}",
     "startInspection": "Start inspection"
