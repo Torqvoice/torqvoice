@@ -7,7 +7,7 @@ import React from 'react'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { netLineTotal } from '@/lib/tax'
+import { earnedLineTotal } from '@/lib/tax'
 import { TaxByRateTable } from '@/features/reports/Lib/taxByRate'
 import {
   addZonedDays,
@@ -124,6 +124,8 @@ async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: str
       type: true,
       taxRate: true,
       taxInclusive: true,
+      subtotal: true,
+      discountAmount: true,
       manuallyPaid: true,
       payments: { select: { amount: true } },
       partItems: { select: { unitCost: true, quantity: true, total: true } },
@@ -155,15 +157,9 @@ async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: str
     const total = r.totalAmount > 0 ? r.totalAmount : r.cost
     const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
     const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
-    // Net (pre-tax) parts/labor so profit math works in both tax modes.
-    const partsRevenue = r.partItems.reduce(
-      (s, p) => s + netLineTotal(p.total, r.taxRate, r.taxInclusive),
-      0
-    )
-    const laborRevenue = r.laborItems.reduce(
-      (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
-      0
-    )
+    // Net (pre-tax) parts/labor, after the job's discount, so profit math works in both tax modes.
+    const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r), 0)
+    const laborRevenue = r.laborItems.reduce((s, l) => s + earnedLineTotal(l.total, r), 0)
     const _d = r.startDateTime ?? r.serviceDate
     const month = workshopMonthKey(_d, timeZone)
 
@@ -329,12 +325,14 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
       quantity: true,
       total: true,
       unitCost: true,
-      serviceRecord: { select: { taxRate: true, taxInclusive: true } },
+      serviceRecord: {
+        select: { taxRate: true, taxInclusive: true, subtotal: true, discountAmount: true },
+      },
     },
   })
   const partWithNet = parts.map((p) => ({
     ...p,
-    netTotal: netLineTotal(p.total, p.serviceRecord.taxRate, p.serviceRecord.taxInclusive),
+    netTotal: earnedLineTotal(p.total, p.serviceRecord),
   }))
   const byPart: Record<
     string,

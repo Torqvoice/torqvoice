@@ -488,7 +488,8 @@ export async function createServiceRecord(input: unknown) {
         : data.vehicleId
           ? warrantyFieldsForNewDocument(readWarrantyDefaults(settingsMap), 'workOrder')
           : EMPTY_WARRANTY
-      const warrantyStartsOn = toSafeWorkshopDate(serviceDate, timeZone) ?? new Date()
+      const startsAt = toSafeWorkshopDate(serviceDate, timeZone) ?? new Date()
+      const warrantyStartsOn = startsAt
 
       const record = await db.$transaction(async (tx) => {
         const created = await tx.serviceRecord.create({
@@ -509,7 +510,10 @@ export async function createServiceRecord(input: unknown) {
               : {}),
             shopName,
             invoiceNumber,
-            serviceDate: toSafeWorkshopDate(serviceDate, timeZone) ?? new Date(),
+            serviceDate: startsAt,
+            // Reports and the calendar find a job by when it started; a job
+            // without a start is in none of them.
+            startDateTime: startsAt,
             invoiceDate:
               toSafeWorkshopDate(invoiceDate, timeZone) ??
               toSafeWorkshopDate(serviceDate, timeZone) ??

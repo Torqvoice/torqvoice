@@ -383,6 +383,7 @@ export async function POST(request: NextRequest) {
         nextInvoiceNum++
 
         const cost = parseDecimal(sr.Cost)
+        const serviceDate = toSafeWorkshopDate(sr.Date, timeZone) ?? new Date()
 
         const created = await tx.serviceRecord.create({
           data: {
@@ -393,7 +394,10 @@ export async function POST(request: NextRequest) {
             status: 'completed',
             cost,
             mileage: sr.Mileage || null,
-            serviceDate: toSafeWorkshopDate(sr.Date, timeZone) ?? new Date(),
+            serviceDate,
+            // Reports and the calendar find a job by when it started; a job
+            // without a start is in none of them.
+            startDateTime: serviceDate,
             invoiceNumber,
             subtotal: cost,
             totalAmount: cost,

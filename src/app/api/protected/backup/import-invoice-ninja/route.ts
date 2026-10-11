@@ -407,6 +407,7 @@ export async function POST(request: NextRequest) {
 
           const partsTotal = partItems.reduce((sum, li) => sum + (li.line_total || 0), 0)
           const laborTotal = laborItems.reduce((sum, li) => sum + (li.line_total || 0), 0)
+          const serviceDate = toSafeWorkshopDate(invoice.date, timeZone) ?? new Date()
 
           const record = await tx.serviceRecord.create({
             data: {
@@ -417,7 +418,10 @@ export async function POST(request: NextRequest) {
               type: 'repair',
               status: 'completed',
               cost: amount,
-              serviceDate: toSafeWorkshopDate(invoice.date, timeZone) ?? new Date(),
+              serviceDate,
+              // Reports and the calendar find a job by when it started; a
+              // job without a start is in none of them.
+              startDateTime: serviceDate,
               invoiceNumber,
               subtotal: partsTotal + laborTotal,
               discountType:

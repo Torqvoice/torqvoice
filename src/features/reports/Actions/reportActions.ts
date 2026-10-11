@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { listOrgEntries } from '@/features/time-tracking/Lib/timeEntries'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { netLineTotal } from '@/lib/tax'
+import { earnedLineTotal, netLineTotal } from '@/lib/tax'
 import { TaxByRateTable } from '../Lib/taxByRate'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
@@ -68,6 +68,8 @@ export async function getRevenueReport(params: ReportRange) {
           type: true,
           taxRate: true,
           taxInclusive: true,
+          subtotal: true,
+          discountAmount: true,
           manuallyPaid: true,
           payments: { select: { amount: true } },
           partItems: { select: { unitCost: true, quantity: true, total: true } },
@@ -78,8 +80,9 @@ export async function getRevenueReport(params: ReportRange) {
 
       // Monthly breakdown.
       // `revenue` is the gross customer-facing total (what was charged).
-      // `partsRevenue` and `laborRevenue` are NET (pre-tax) so they add up
-      // consistently with `partsCost` (which is always net) for profit math.
+      // `partsRevenue` and `laborRevenue` are NET (pre-tax) and carry their
+      // share of the job's discount, so they add up consistently with
+      // `partsCost` (which is always net) for profit math.
       const monthly: Record<
         string,
         {
@@ -105,14 +108,8 @@ export async function getRevenueReport(params: ReportRange) {
         const total = r.totalAmount > 0 ? r.totalAmount : r.cost
         const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
         const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
-        const partsRevenue = r.partItems.reduce(
-          (s, p) => s + netLineTotal(p.total, r.taxRate, r.taxInclusive),
-          0
-        )
-        const laborRevenue = r.laborItems.reduce(
-          (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
-          0
-        )
+        const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r), 0)
+        const laborRevenue = r.laborItems.reduce((s, l) => s + earnedLineTotal(l.total, r), 0)
         const _date = r.startDateTime ?? r.serviceDate
         const month = workshopMonthKey(_date, tz)
 
@@ -431,15 +428,18 @@ export async function getPartsUsageReport(params: ReportRange) {
           quantity: true,
           total: true,
           unitCost: true,
-          serviceRecord: { select: { taxRate: true, taxInclusive: true } },
+          serviceRecord: {
+            select: { taxRate: true, taxInclusive: true, subtotal: true, discountAmount: true },
+          },
         },
       })
 
-      // Use net (pre-tax) line totals so revenue/profit math is consistent
-      // across inclusive- and exclusive-tax records.
+      // Use net (pre-tax) line totals, less each line's share of the job's
+      // discount, so revenue/profit math is consistent across inclusive- and
+      // exclusive-tax records and agrees with the revenue report.
       const partWithNet = parts.map((p) => ({
         ...p,
-        netTotal: netLineTotal(p.total, p.serviceRecord.taxRate, p.serviceRecord.taxInclusive),
+        netTotal: earnedLineTotal(p.total, p.serviceRecord),
       }))
 
       const byPart: Record<

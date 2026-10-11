@@ -215,3 +215,31 @@ export function netLineTotal(lineTotal: number, taxRate: number, taxInclusive: b
   if (!taxInclusive || taxRate <= 0) return lineTotal
   return lineTotal / (1 + taxRate / 100)
 }
+
+/**
+ * What a line earned before tax, once the job's discount is counted.
+ *
+ * The discount comes off the subtotal as a whole rather than off any one
+ * line, so each line carries it in proportion to its size. Reports that add
+ * lines up (parts revenue, labor revenue, profit) ask here, or a discounted
+ * job reads as having earned what it would have without the discount.
+ *
+ * `subtotal` and `discountAmount` are the stored figures the document was
+ * totalled from, in the same terms as the line (gross in inclusive mode), so
+ * the share is the same whichever way the prices were entered.
+ */
+export function earnedLineTotal(
+  lineTotal: number,
+  record: {
+    taxRate: number
+    taxInclusive: boolean
+    subtotal?: number | null
+    discountAmount?: number | null
+  }
+): number {
+  const net = netLineTotal(lineTotal, record.taxRate, record.taxInclusive)
+  const subtotal = Number(record.subtotal) || 0
+  const discount = Number(record.discountAmount) || 0
+  if (subtotal <= 0 || discount <= 0) return net
+  return net * (Math.max(0, subtotal - discount) / subtotal)
+}
