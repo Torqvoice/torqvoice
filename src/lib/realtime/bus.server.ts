@@ -194,17 +194,34 @@ function createBridge(connectionString: string): Bridge {
   // nobody on it writes anything, still has to hear the others.
   void ensure().catch(() => undefined)
 
+  const send = async (payload: string): Promise<void> => {
+    const connection = await ensure()
+    if (!connection) return
+    try {
+      await connection.query('SELECT pg_notify($1, $2)', [CHANNEL, payload])
+    } catch (error) {
+      // The write that caused this has already happened and must not fail
+      // because the other instances could not be told.
+      console.error('[realtime] could not relay an event:', error)
+    }
+  }
+
+  /**
+   * One at a time, in the order they were published.
+   *
+   * A connection runs one query at a time, and a save announces several
+   * things in the same breath. Handed all of them at once, pg queues them
+   * itself for now, warns that it will stop, and from version 9 refuses
+   * them, which would lose the event for every other instance. So the queue
+   * is kept here. `send` never rejects, so one that fails does not stop the
+   * ones behind it.
+   */
+  let sending: Promise<void> = Promise.resolve()
+
   return {
-    async notify(payload: string) {
-      const connection = await ensure()
-      if (!connection) return
-      try {
-        await connection.query('SELECT pg_notify($1, $2)', [CHANNEL, payload])
-      } catch (error) {
-        // The write that caused this has already happened and must not fail
-        // because the other instances could not be told.
-        console.error('[realtime] could not relay an event:', error)
-      }
+    notify(payload: string) {
+      sending = sending.then(() => send(payload))
+      return sending
     },
   }
 }
