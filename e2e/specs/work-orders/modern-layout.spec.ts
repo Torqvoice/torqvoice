@@ -73,9 +73,20 @@ test.describe('the work order page', () => {
     await expect(files).toBeVisible()
     await expect(page.getByRole('button', { name: /^Images/ })).toHaveCount(0)
     await expect(page.getByRole('button', { name: /^Status Reports/ })).toHaveCount(0)
-    for (const name of [/^Photos/, /^Documents/, /^Diagnostics/, /^Video/, /^Status Reports/]) {
+    for (const name of [
+      /^All/,
+      /^Photos/,
+      /^Documents/,
+      /^Diagnostics/,
+      /^Video/,
+      /^Status Reports/,
+    ]) {
       await expect(files.getByRole('tab', { name })).toBeVisible()
     }
+    // It opens on everything, and each kind has its own way in.
+    await expect(files.getByRole('tab', { name: /^All/ })).toHaveAttribute('aria-selected', 'true')
+    await expect(files.getByTestId('media-add')).toContainText('Add files')
+    await files.getByRole('tab', { name: /^Photos/ }).click()
     await expect(files.getByTestId('media-add')).toContainText('Add photos')
     await files.getByRole('tab', { name: /^Status Reports/ }).click()
     await expect(files.getByTestId('status-reports-section')).toBeVisible()

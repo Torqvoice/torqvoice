@@ -617,6 +617,7 @@
     "titleField": "Pavadinimas",
     "media": {
       "tabs": {
+        "all": "Visi",
         "photos": "Nuotraukos",
         "diagnostics": "Diagnostika",
         "dropoff": "Priėmimas"
@@ -626,6 +627,7 @@
       "showToCustomer": "Rodyti klientui",
       "hideFromCustomer": "Slėpti nuo kliento",
       "add": {
+        "all": "Pridėti failus",
         "image": "Pridėti nuotraukų",
         "document": "Pridėti dokumentų",
         "diagnostic": "Pridėti diagnostikos ataskaitą",

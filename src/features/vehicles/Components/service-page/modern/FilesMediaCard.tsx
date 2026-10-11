@@ -16,7 +16,14 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
 
-type FileTab = 'images' | 'dropoff' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
+type FileTab =
+  | 'all'
+  | 'images'
+  | 'dropoff'
+  | 'documents'
+  | 'diagnostics'
+  | 'video'
+  | 'statusReports'
 
 /** A walk round a car is a handful of shots; this is the phone route's cap too. */
 const MAX_DROPOFF = 30
@@ -49,7 +56,9 @@ interface FilesMediaCardProps {
 
 /**
  * Everything filed on the job in one card: photos, documents, diagnostic
- * reports, video, and the status reports sent to the customer. The classic
+ * reports, video, and the status reports sent to the customer. It opens on
+ * all of the files together, since the question is usually "what is on this
+ * job", and the tabs after it are the same files one kind at a time. The classic
  * page gives most of these a tab of its own at the top of the page; here they
  * are tabs of one card, each a grid of tiles with the way to add one at the end.
  *
@@ -71,7 +80,7 @@ export function FilesMediaCard({
   maxImages,
   maxDiagnostics,
   maxDocuments,
-  initialTab = 'images',
+  initialTab = 'all',
   statusReports,
 }: FilesMediaCardProps) {
   const t = useTranslations('service')
@@ -123,8 +132,16 @@ export function FilesMediaCard({
   const diagnostics = documents.filter((file) => file.category === 'diagnostic')
   const otherDocuments = documents.filter((file) => file.category !== 'diagnostic')
 
+  const total = images.length + dropoff.length + videos.length + documents.length
+  // Everything on the job in the order it arrived, whichever tab it is filed
+  // under. The status reports are not files and keep to their own tab.
+  const everything = [...images, ...dropoff, ...documents, ...videos].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  )
+
   // A tab under a plan cap says how much of it is used, as the classic photo tab did.
   const tabs: { value: FileTab; label: string; count: number; max?: number }[] = [
+    { value: 'all', label: t('modern.media.tabs.all'), count: total },
     {
       value: 'images',
       label: t('modern.media.tabs.photos'),
@@ -159,8 +176,6 @@ export function FilesMediaCard({
         ]
       : []),
   ]
-  const total = images.length + dropoff.length + videos.length + documents.length
-
   return (
     <div
       id="files-media"
@@ -224,6 +239,16 @@ export function FilesMediaCard({
         {/* Each grid is keyed by its tab, so switching tabs starts it from the
             job's files rather than from the last tab's tiles. */}
         <div role="tabpanel" className="@container">
+          {tab === 'all' && (
+            <MediaGrid
+              key="all"
+              kind="all"
+              serviceRecordId={serviceRecordId}
+              files={everything}
+              caps={{ image: capOf(maxImages), document: capOf(maxDocuments) }}
+              customerId={customerId}
+            />
+          )}
           {tab === 'images' && (
             <MediaGrid
               key="image"

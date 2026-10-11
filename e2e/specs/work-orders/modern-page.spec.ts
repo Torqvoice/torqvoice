@@ -388,7 +388,8 @@ test.describe('the overhauled work order page', () => {
       timeout: 15_000,
     })
     await dialog.getByRole('button', { name: 'Done' }).click()
-    await expect(files.getByTestId('media-tile')).toHaveCount(before + 1)
+    // The card is on all of the job's files, so both are there.
+    await expect(files.getByTestId('media-tile')).toHaveCount(before + 2)
     await files.getByRole('tab', { name: /^Documents/ }).click()
     // A document's name is its caption until somebody writes one.
     await expect(files.getByPlaceholder(`e2e-registration-${stamp}.pdf`)).toHaveCount(1)

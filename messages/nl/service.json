@@ -617,6 +617,7 @@
     "titleField": "Titel",
     "media": {
       "tabs": {
+        "all": "Alles",
         "photos": "Foto's",
         "diagnostics": "Diagnose",
         "dropoff": "Inname"
@@ -626,6 +627,7 @@
       "showToCustomer": "Aan de klant tonen",
       "hideFromCustomer": "Voor de klant verbergen",
       "add": {
+        "all": "Bestanden toevoegen",
         "image": "Foto's toevoegen",
         "document": "Documenten toevoegen",
         "diagnostic": "Diagnostisch verslag toevoegen",

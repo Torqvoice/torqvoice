@@ -1,13 +1,15 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises'
 import crypto from 'node:crypto'
 import path from 'node:path'
+import { after } from 'next/server'
 import { db } from '@/lib/db'
 import { getFeatures, type PlanFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { uploadsRoot } from '@/lib/upload-root'
 import { assertContentLength } from '@/lib/backup/zip-guard'
-import { isDeclaredVideo, sniffDeclaredVideo } from '@/lib/video-sniff'
+import { queueVideoDownscale } from '@/lib/video-downscale'
+import { isDeclaredVideo, sniffDeclaredVideo, type VideoContainer } from '@/lib/video-sniff'
 
 /**
  * Attaches a photo or video shot in the bay to a job.
@@ -39,11 +41,19 @@ const ALLOWED = new Map<string, string>([
  * is a request that will not finish, and a limit that cannot be met in the
  * field is not a limit, it is a timeout with extra steps.
  */
-const MAX_BYTES = 60 * 1024 * 1024
+const MAX_PHOTO_BYTES = 60 * 1024 * 1024
+
+/**
+ * More room for a video, because not every one comes from the app's own
+ * recorder. That one writes 1080p and stays well under the photo limit; a
+ * clip picked from the library was shot at whatever the phone was set to,
+ * and a short 4K take is already past it. Those are scaled down once saved.
+ */
+const MAX_VIDEO_BYTES = 250 * 1024 * 1024
 
 // The multipart framing around the file adds a little to the body. The
 // margin keeps a file just under the cap from being refused for it.
-const MAX_BODY = MAX_BYTES + 1024 * 1024
+const MAX_BODY = MAX_VIDEO_BYTES + 1024 * 1024
 
 const CATEGORY_LIMIT: Record<string, keyof PlanFeatures | undefined> = {
   image: 'maxImagesPerService',
@@ -71,7 +81,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       try {
         assertContentLength(request, MAX_BODY)
       } catch {
-        return apiError(413, 'invalid_request', 'That file is too large. Keep it under 60 MB.')
+        return apiError(413, 'invalid_request', 'That file is too large. Keep it under 250 MB.')
       }
 
       const form = await request.formData()
@@ -87,19 +97,28 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (file.size === 0) {
         return apiError(400, 'invalid_request', 'That file is empty.')
       }
-      if (file.size > MAX_BYTES) {
-        return apiError(400, 'invalid_request', 'That file is too large. Keep it under 60 MB.')
+      const maxBytes = isDeclaredVideo(file.type) ? MAX_VIDEO_BYTES : MAX_PHOTO_BYTES
+      if (file.size > maxBytes) {
+        return apiError(
+          400,
+          'invalid_request',
+          `That file is too large. Keep it under ${maxBytes / (1024 * 1024)} MB.`
+        )
       }
 
       const bytes = new Uint8Array(await file.arrayBuffer())
 
       // The declared type is the client's word. A video is kept, served and
       // played as one only when its bytes are the container it claims.
-      if (isDeclaredVideo(file.type) && !sniffDeclaredVideo(file.type, bytes)) {
-        return apiError(400, 'invalid_request', 'That file is not a video we can read.')
+      let container: VideoContainer | null = null
+      if (isDeclaredVideo(file.type)) {
+        container = sniffDeclaredVideo(file.type, bytes)
+        if (!container) {
+          return apiError(400, 'invalid_request', 'That file is not a video we can read.')
+        }
       }
 
-      const category = isDeclaredVideo(file.type) ? 'video' : 'image'
+      const category = container ? 'video' : 'image'
       const description = (form.get('description') as string | null)?.slice(0, 500) || undefined
 
       const limitKey = CATEGORY_LIMIT[category]
@@ -148,9 +167,24 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           fileType: true,
           fileSize: true,
           category: true,
+          description: true,
           createdAt: true,
         },
       })
+
+      // After the answer, not before it: the phone has its yes, and a video
+      // shot above 1080p is brought down to it without anyone waiting.
+      if (container) {
+        const videoContainer = container
+        after(() =>
+          queueVideoDownscale({
+            attachmentId: attachment.id,
+            organizationId: ctx.organizationId,
+            fileUrl: attachment.fileUrl,
+            container: videoContainer,
+          })
+        )
+      }
 
       return apiOk({ attachment }, 201)
     },
