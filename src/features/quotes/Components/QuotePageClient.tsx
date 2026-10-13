@@ -273,6 +273,7 @@ export function QuotePageClient({
         onDescriptionChange={handleDescriptionChange}
         notes={state.notes}
         onNotesChange={handleNotesChange}
+        locked={lockState.locked}
         t={t}
       />
     </fieldset>

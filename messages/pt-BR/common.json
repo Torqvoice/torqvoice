@@ -131,5 +131,8 @@
     "retake": "Gravar novamente",
     "use": "Usar este vídeo",
     "limit": "A gravação para sozinha após {minutes} minutos."
+  },
+  "richText": {
+    "openLinkHint": "Segure {key} e clique para abrir"
   }
 }

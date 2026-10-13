@@ -131,5 +131,8 @@
     "retake": "Ta opp på nytt",
     "use": "Bruk denne videoen",
     "limit": "Opptaket stopper av seg selv etter {minutes} minutter."
+  },
+  "richText": {
+    "openLinkHint": "Hold {key} og klikk for å åpne"
   }
 }

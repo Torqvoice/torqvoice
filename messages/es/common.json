@@ -131,5 +131,8 @@
     "retake": "Volver a grabar",
     "use": "Usar este vídeo",
     "limit": "La grabación se detiene sola a los {minutes} minutos."
+  },
+  "richText": {
+    "openLinkHint": "Mantén pulsado {key} y haz clic para abrir"
   }
 }

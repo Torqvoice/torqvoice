@@ -13,6 +13,11 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect } from 'react'
+import {
+  EDITOR_LINK_OPTIONS,
+  openLinkOnModifierClick,
+  useLinkHint,
+} from '@/components/ui/rich-text-links'
 
 interface RichTextEditorProps {
   content: string
@@ -56,6 +61,8 @@ export function RichTextEditor({
       StarterKit.configure({
         bulletList: { HTMLAttributes: { class: 'list-disc pl-4' } },
         orderedList: { HTMLAttributes: { class: 'list-decimal pl-4' } },
+        // The same link behaviour as every other editor; see rich-text-links.
+        link: EDITOR_LINK_OPTIONS,
       }),
       Placeholder.configure({ placeholder }),
     ],
@@ -64,12 +71,15 @@ export function RichTextEditor({
       onChange(editor.getHTML())
     },
     editorProps: {
+      handleClick: openLinkOnModifierClick,
       attributes: {
         class:
           'tiptap-content min-h-[120px] max-h-[40vh] overflow-y-auto overflow-x-hidden px-3 py-2 text-sm outline-none break-all',
       },
     },
   })
+
+  const linkHint = useLinkHint(true)
 
   // Sync external content changes (e.g. when switching between create/edit)
   useEffect(() => {
@@ -127,7 +137,10 @@ export function RichTextEditor({
       </div>
 
       {/* Editor */}
-      <EditorContent editor={editor} />
+      <div {...linkHint.handlers}>
+        <EditorContent editor={editor} />
+      </div>
+      {linkHint.hint}
     </div>
   )
 }

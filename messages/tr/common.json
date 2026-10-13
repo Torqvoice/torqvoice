@@ -131,5 +131,8 @@
     "retake": "Yeniden kaydet",
     "use": "Bu videoyu kullan",
     "limit": "Kayıt {minutes} dakika sonra kendiliğinden durur."
+  },
+  "richText": {
+    "openLinkHint": "Açmak için {key} tuşunu basılı tutup tıklayın"
   }
 }

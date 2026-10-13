@@ -131,5 +131,8 @@
     "retake": "Įrašyti iš naujo",
     "use": "Naudoti šį įrašą",
     "limit": "Įrašymas sustoja savaime po {minutes} min."
+  },
+  "richText": {
+    "openLinkHint": "Laikykite {key} ir spustelėkite, kad atidarytumėte"
   }
 }

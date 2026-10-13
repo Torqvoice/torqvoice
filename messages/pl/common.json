@@ -131,5 +131,8 @@
     "retake": "Nagraj ponownie",
     "use": "Użyj tego nagrania",
     "limit": "Nagrywanie zatrzyma się samo po {minutes} min."
+  },
+  "richText": {
+    "openLinkHint": "Przytrzymaj {key} i kliknij, aby otworzyć"
   }
 }

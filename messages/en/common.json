@@ -131,5 +131,8 @@
     "retake": "Record again",
     "use": "Use this video",
     "limit": "Recording stops by itself after {minutes} minutes."
+  },
+  "richText": {
+    "openLinkHint": "Hold {key} and click to open"
   }
 }
