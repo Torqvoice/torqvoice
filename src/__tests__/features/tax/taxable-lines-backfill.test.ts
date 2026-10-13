@@ -35,6 +35,7 @@ import {
 } from '@/features/settings/Actions/applyTaxRateToExisting'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
+import { recurringTaxableSubtotal } from '@/lib/cron/recurring-invoices'
 import { calculateTotals } from '@/lib/tax'
 
 function settings(rows: { key: string; value: string }[]) {
@@ -122,6 +123,40 @@ describe('an invoice generated from a recurring template', () => {
     expect(data).toMatchObject({ taxableSubtotal: 200, taxAmount: 16, totalAmount: 516 })
     expect(data.partItems.create.map((p) => p.taxable)).toEqual([true])
     expect(data.laborItems.create.map((l) => l.taxable)).toEqual([false])
+  })
+})
+
+describe('a recurring template that carries a shop fee', () => {
+  const template = {
+    cost: 0,
+    templateParts: [{ quantity: 2, unitPrice: 100 }],
+    templateLabor: [
+      { hours: 3, rate: 100, pricingType: 'hourly' },
+      { hours: 1, rate: 20, pricingType: 'shopFee' },
+    ],
+  }
+
+  it('taxes the fee by the rule for the fee, not the rule for labor', () => {
+    // Labor untaxed, fee taxed: 200 of parts and the 20 fee.
+    expect(recurringTaxableSubtotal(template, { parts: true, labor: false, shopFee: true })).toBe(
+      220
+    )
+    // The other way round: 200 of parts and the 300 of labor.
+    expect(recurringTaxableSubtotal(template, { parts: true, labor: true, shopFee: false })).toBe(
+      500
+    )
+    expect(recurringTaxableSubtotal(template, { parts: false, labor: false, shopFee: false })).toBe(
+      0
+    )
+  })
+
+  it('counts the template cost and every line when everything is taxed', () => {
+    expect(
+      recurringTaxableSubtotal(
+        { ...template, cost: 50 },
+        { parts: true, labor: true, shopFee: true }
+      )
+    ).toBe(570)
   })
 })
 

@@ -19,7 +19,8 @@ import {
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
-import { calculateNextRunDate } from '@/lib/cron/recurring-invoices'
+import { calculateNextRunDate, recurringTaxableSubtotal } from '@/lib/cron/recurring-invoices'
+import { laborTaxable } from '@/lib/taxable-lines'
 import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
@@ -344,10 +345,7 @@ export async function processRecurringInvoices() {
           taxRate: ri.taxRate,
           taxInclusive: ri.taxInclusive,
           taxComponents: ri.taxComponents,
-          taxableSubtotal:
-            ri.cost +
-            (taxApplies.parts ? partsSubtotal : 0) +
-            (taxApplies.labor ? laborSubtotal : 0),
+          taxableSubtotal: recurringTaxableSubtotal(ri, taxApplies),
         })
 
         const serviceRecord = await db.$transaction(async (tx) => {
@@ -387,7 +385,10 @@ export async function processRecurringInvoices() {
                   hours: l.hours,
                   rate: l.rate,
                   total: l.hours * l.rate,
-                  taxable: taxApplies.labor,
+                  // The kind goes with the line, as the hourly run copies it,
+                  // so a shop fee stays a shop fee and is taxed as one.
+                  pricingType: l.pricingType || 'hourly',
+                  taxable: laborTaxable(l, taxApplies),
                 })),
               },
             },
