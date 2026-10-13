@@ -127,7 +127,13 @@ export function TotalsSection({
         aria-label={label}
         disabled={inert}
         onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
-        className="h-7 w-20 pr-7 text-right text-xs"
+        // Wide enough for a five-figure amount beside its unit. The room
+        // kept for the unit follows the unit's length: "%" is one character,
+        // "kr" is two and a currency code three, and a fixed inset left a
+        // discount in kroner with space for two digits. The browser's own
+        // step arrows are hidden, since the unit stands where they would.
+        className="h-7 w-28 text-right text-xs [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        style={{ paddingRight: `${1 + unit.length * 0.5}rem` }}
       />
       <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-xs text-muted-foreground">
         {unit}
