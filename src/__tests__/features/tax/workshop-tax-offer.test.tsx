@@ -348,8 +348,14 @@ describe('the prompt on the totals card', () => {
   })
 
   it('applies on click and cannot be clicked twice while it does', async () => {
-    let finish: () => void = () => {}
-    const apply = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)))
+    // Held open until the test lets it finish.
+    const pending: { finish?: () => void } = {}
+    const apply = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          pending.finish = resolve
+        })
+    )
     prompt({ rate: 25, currentRate: 0, apply })
     const button = screen.getByRole('button', { name: 'Apply 25% tax' })
 
@@ -358,7 +364,7 @@ describe('the prompt on the totals card', () => {
     fireEvent.click(button)
     expect(apply).toHaveBeenCalledTimes(1)
 
-    finish()
+    pending.finish?.()
     await waitFor(() => expect(button).toBeEnabled())
   })
 })
