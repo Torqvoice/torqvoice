@@ -167,12 +167,11 @@ export async function saveWorkOrder(page: Page): Promise<void> {
 export function totalsRow(page: Page, label: string): Locator {
   // Scoped to the totals rows: "Parts" and "Labor" are also section headings.
   const panel = page.getByTestId('totals')
-  // The row is the nearest box that spreads label and figure apart; the tax
-  // label sits one level deeper, beside its percentage input.
+  // Every line of the card, the total included, is marked as a row.
   return panel
     .getByText(label, { exact: true })
     .first()
-    .locator('xpath=ancestor::div[contains(@class,"justify-between")][1]')
+    .locator('xpath=ancestor::div[@data-totals-row][1]')
 }
 
 /** Sets the discount on the open work order. */
@@ -182,8 +181,9 @@ export async function setDiscount(
   value?: number
 ): Promise<void> {
   const row = totalsRow(page, 'Discount')
-  await row.getByRole('combobox').click()
-  await page.getByRole('option', { name: kind, exact: true }).click()
+  // Off, a percentage or an amount: a three-way switch named as the old
+  // dropdown's options were.
+  await row.getByRole('radio', { name: kind, exact: true }).click()
   if (value !== undefined) await row.locator('input[type="number"]').fill(String(value))
 }
 

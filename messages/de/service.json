@@ -188,6 +188,7 @@
     "subtotalInclTax": "Zwischensumme (inkl. Steuer)",
     "discount": "Rabatt",
     "discountNone": "Keine",
+    "discountOff": "Aus",
     "discountPercentage": "Prozentsatz",
     "discountFixed": "Festbetrag",
     "tax": "Steuern",

@@ -188,6 +188,7 @@
     "subtotalInclTax": "Razem Częściowe (z podatkiem)",
     "discount": "Rabat",
     "discountNone": "Brak",
+    "discountOff": "Brak",
     "discountPercentage": "Procent",
     "discountFixed": "Stały",
     "tax": "Podatek",

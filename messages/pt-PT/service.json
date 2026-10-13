@@ -188,6 +188,7 @@
     "subtotalInclTax": "Subtotal (com IVA)",
     "discount": "Desconto",
     "discountNone": "Nenhum",
+    "discountOff": "Não",
     "discountPercentage": "Percentagem",
     "discountFixed": "Fixo",
     "tax": "IVA",

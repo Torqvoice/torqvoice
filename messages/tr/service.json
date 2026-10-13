@@ -188,6 +188,7 @@
     "subtotalInclTax": "Ara Toplam (KDV dahil)",
     "discount": "İndirim",
     "discountNone": "Yok",
+    "discountOff": "Yok",
     "discountPercentage": "Yüzde",
     "discountFixed": "Sabit",
     "tax": "Vergi",

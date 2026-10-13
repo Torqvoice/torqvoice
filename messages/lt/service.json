@@ -188,6 +188,7 @@
     "subtotalInclTax": "Tarpinė suma (su mokesčiu)",
     "discount": "Nuolaida",
     "discountNone": "Nėra",
+    "discountOff": "Ne",
     "discountPercentage": "Procentinė",
     "discountFixed": "Fiksuota",
     "tax": "Mokestis",

@@ -188,6 +188,7 @@
     "subtotalInclTax": "Подитог (с НДС)",
     "discount": "Скидка",
     "discountNone": "Нет",
+    "discountOff": "Нет",
     "discountPercentage": "Процент",
     "discountFixed": "Фиксированная",
     "tax": "Налог",

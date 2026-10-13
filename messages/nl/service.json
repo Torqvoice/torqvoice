@@ -188,6 +188,7 @@
     "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "discountNone": "Geen",
+    "discountOff": "Uit",
     "discountPercentage": "Percentage",
     "discountFixed": "Vast",
     "tax": "Belasting",

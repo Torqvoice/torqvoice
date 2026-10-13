@@ -188,6 +188,7 @@
     "subtotalInclTax": "Delsum (inkl. avgift)",
     "discount": "Rabatt",
     "discountNone": "Ingen",
+    "discountOff": "Av",
     "discountPercentage": "Prosent",
     "discountFixed": "Fast",
     "tax": "Skatt",

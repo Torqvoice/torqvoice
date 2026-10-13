@@ -188,6 +188,7 @@
     "subtotalInclTax": "Sous-total (TTC)",
     "discount": "Remise",
     "discountNone": "Aucune",
+    "discountOff": "Non",
     "discountPercentage": "Pourcentage",
     "discountFixed": "Fixe",
     "tax": "Taxe",
