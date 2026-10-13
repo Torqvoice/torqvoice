@@ -20,6 +20,14 @@ function isApplePlatform(): boolean {
 }
 
 /**
+ * The kinds of address a click may open: a web page, a mail address and a
+ * phone number. The link extension accepts a few more on its own list (ftp,
+ * sms and the like); a workshop's notes have no use for them, and anything
+ * that is not on this list, a script address above all, is never opened.
+ */
+const OPENABLE = /^(https?:|mailto:|tel:)/i
+
+/**
  * The address a click in the editor should open, or null when the click is
  * an ordinary one. Only Ctrl or Cmd with the click, only on a link, only in
  * editable text, and only the kinds of address the link extension writes.
@@ -31,7 +39,7 @@ export function linkToOpen(
   if (!editable || !(event.ctrlKey || event.metaKey)) return null
   const anchor = (event.target as HTMLElement | null)?.closest?.('a[href]')
   if (!(anchor instanceof HTMLAnchorElement)) return null
-  return /^(https?:|mailto:)/i.test(anchor.href) ? anchor.href : null
+  return OPENABLE.test(anchor.href) ? anchor.href : null
 }
 
 /** The tiptap `handleClick` that opens a link on Ctrl or Cmd click. */
@@ -76,7 +84,11 @@ export function useLinkHint(editable: boolean) {
     onMouseOut: (e: React.MouseEvent) => {
       if ((e.target as HTMLElement).closest?.('a[href]')) hide()
     },
-    onScroll: hide,
+    // On the way down, not up: scroll events do not bubble, and the element
+    // that scrolls is the editor's own, somewhere inside whatever these are
+    // spread on. Caught in the capture phase, a scroll of any of them hides
+    // a hint that would otherwise stay where the link used to be.
+    onScrollCapture: hide,
     onKeyDown: hide,
   }
 

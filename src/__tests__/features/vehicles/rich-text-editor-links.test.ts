@@ -42,6 +42,11 @@ describe('a click on a link in a note', () => {
     expect(linkToOpen(clickOn(LINK, { ctrlKey: true }), false)).toBeNull()
   })
 
+  it('opens a phone number', () => {
+    const phone = '<p><a href="tel:+4712345678" data-target>call</a></p>'
+    expect(linkToOpen(clickOn(phone, { ctrlKey: true }), true)).toBe('tel:+4712345678')
+  })
+
   it('opens a mail address, and refuses a script', () => {
     const mail = '<p><a href="mailto:parts@example.com" data-target>mail</a></p>'
     expect(linkToOpen(clickOn(mail, { ctrlKey: true }), true)).toBe('mailto:parts@example.com')
