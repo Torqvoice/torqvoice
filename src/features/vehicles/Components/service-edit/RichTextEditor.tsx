@@ -19,6 +19,11 @@ import {
   Redo,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+  EDITOR_LINK_OPTIONS,
+  openLinkOnModifierClick,
+  useLinkHint,
+} from '@/components/ui/rich-text-links'
 
 interface RichTextEditorProps {
   content: string
@@ -30,6 +35,20 @@ interface RichTextEditorProps {
    * be typed into and was then quietly never saved.
    */
   editable?: boolean
+  /**
+   * `boxed` (the default) draws the editor as a field of its own, for a form
+   * with other fields beside it. `flush` is for a card that holds nothing
+   * but the editor: no border, no fill and no rounding, the toolbar a strip
+   * under the card's header and the text on the card's own margins, so the
+   * card is the field rather than a frame around one.
+   */
+  variant?: 'boxed' | 'flush'
+  /**
+   * For a flush editor: how far in the text starts, to match the container
+   * it fills. `card` is the house card's margin, `panel` the tighter one of
+   * the plain bordered panels on the quote page and the classic work order.
+   */
+  gutter?: 'card' | 'panel'
 }
 
 export function RichTextEditor({
@@ -37,7 +56,11 @@ export function RichTextEditor({
   onChange,
   placeholder,
   editable = true,
+  variant = 'boxed',
+  gutter = 'card',
 }: RichTextEditorProps) {
+  const flush = variant === 'flush'
+  const linkHint = useLinkHint(editable)
   const lastContentRef = useRef(content)
 
   const editor = useEditor({
@@ -50,15 +73,7 @@ export function RichTextEditor({
       // warns about and which makes the toolbar's active state unreliable.
       StarterKit.configure({
         heading: { levels: [2, 3] },
-        link: {
-          openOnClick: false,
-          autolink: true,
-          linkOnPaste: true,
-          HTMLAttributes: {
-            rel: 'noopener noreferrer',
-            target: '_blank',
-          },
-        },
+        link: EDITOR_LINK_OPTIONS,
       }),
       Placeholder.configure({
         placeholder: placeholder || 'Write something...',
@@ -75,8 +90,14 @@ export function RichTextEditor({
       onChange(html)
     },
     editorProps: {
+      // Ctrl or Cmd with a click opens a link; see rich-text-links.
+      handleClick: openLinkOnModifierClick,
       attributes: {
-        class: 'tiptap-content px-3 py-2 text-sm outline-none h-full',
+        class: cn(
+          'tiptap-content text-sm outline-none h-full',
+          // In a card the text starts where the card's title does.
+          flush && gutter === 'card' ? 'px-5 py-3' : 'px-3 py-2'
+        ),
       },
     },
   })
@@ -117,13 +138,29 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-md border border-input flex flex-col resize-y',
-        editable ? 'bg-background' : 'bg-muted/40 text-muted-foreground'
+        'flex flex-col overflow-hidden resize-y',
+        flush
+          ? // The card is the field: nothing drawn around the editor, and a
+            // locked one is told apart by its muted text alone.
+            !editable && 'text-muted-foreground'
+          : cn(
+              'rounded-md border border-input',
+              editable ? 'bg-background' : 'bg-muted/40 text-muted-foreground'
+            )
       )}
       style={{ minHeight: 180 }}
     >
       {editable && (
-        <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
+        <div
+          className={cn(
+            'flex shrink-0 flex-wrap items-center gap-0.5 border-b py-1',
+            // Lined up with the card's title; the first button's own inset
+            // makes up the rest of the margin.
+            flush
+              ? cn('border-border/70', gutter === 'card' ? 'px-3.5' : 'px-1.5')
+              : 'bg-muted/30 px-1'
+          )}
+        >
           <ToolbarButton
             active={editor.isActive('bold')}
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -214,6 +251,7 @@ export function RichTextEditor({
       <div
         data-testid="rich-text-area"
         className={cn('flex-1 overflow-y-auto', editable && 'cursor-text')}
+        {...linkHint.handlers}
         onMouseDown={(e) => {
           if (!editable) return
           if ((e.target as HTMLElement).closest('.ProseMirror')) return
@@ -223,6 +261,7 @@ export function RichTextEditor({
       >
         <EditorContent editor={editor} className="h-full [&>.tiptap]:h-full" />
       </div>
+      {linkHint.hint}
     </div>
   )
 }

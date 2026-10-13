@@ -200,8 +200,12 @@ export function NotesSection({
             description={t('internalHelper')}
             action={aiButton('internal')}
             className="border-amber-500/30 bg-amber-500/5 hover:border-amber-500/40"
+            // The editor fills the card to its edges: the card is the field,
+            // where it used to be a frame around a second, smaller box.
+            contentClassName="p-0"
           >
             <RichTextEditor
+              variant="flush"
               content={internalNotes}
               onChange={handleInternalChange}
               editable={!internalLocked}
@@ -215,8 +219,10 @@ export function NotesSection({
             title={t('publicTitle')}
             description={t('publicHelper')}
             action={aiButton('public')}
+            contentClassName="p-0"
           >
             <RichTextEditor
+              variant="flush"
               content={publicNotes}
               onChange={handlePublicChange}
               editable={!publicLocked}
@@ -230,14 +236,16 @@ export function NotesSection({
   }
 
   return (
-    <div className="rounded-lg border p-3 space-y-3">
-      <h3 className="flex items-center gap-2 text-sm font-semibold">
+    // The panel is the field, as on the quote: header, tabs, then the editor
+    // to the panel's edges and one line saying who reads the note.
+    <div className="overflow-hidden rounded-lg border">
+      <h3 className="flex items-center gap-2 px-3 pt-3 text-sm font-semibold">
         <FileText className="h-3.5 w-3.5" />
         {t('title')}
       </h3>
 
       <Tabs value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 px-3 py-2">
           <TabsList className="h-8">
             <TabsTrigger value="public" className="text-xs">
               {t('public')}
@@ -271,24 +279,32 @@ export function NotesSection({
           )}
         </div>
 
-        <TabsContent value="public" className="space-y-1">
+        <TabsContent value="public" className="mt-0 border-t">
           <RichTextEditor
+            variant="flush"
+            gutter="panel"
             content={publicNotes}
             onChange={handlePublicChange}
             editable={!publicLocked}
             placeholder={t('publicPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">{t('publicHelper')}</p>
+          <p className="border-t bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+            {t('publicHelper')}
+          </p>
         </TabsContent>
 
-        <TabsContent value="internal" className="space-y-1">
+        <TabsContent value="internal" className="mt-0 border-t">
           <RichTextEditor
+            variant="flush"
+            gutter="panel"
             content={internalNotes}
             onChange={handleInternalChange}
             editable={!internalLocked}
             placeholder={t('internalPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>
+          <p className="border-t bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+            {t('internalHelper')}
+          </p>
         </TabsContent>
       </Tabs>
 

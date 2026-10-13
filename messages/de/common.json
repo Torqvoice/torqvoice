@@ -131,5 +131,8 @@
     "retake": "Neu aufnehmen",
     "use": "Dieses Video verwenden",
     "limit": "Die Aufnahme endet automatisch nach {minutes} Minuten."
+  },
+  "richText": {
+    "openLinkHint": "{key} gedrückt halten und klicken, um zu öffnen"
   }
 }
