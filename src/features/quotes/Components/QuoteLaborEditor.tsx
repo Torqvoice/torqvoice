@@ -10,6 +10,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import type { QuoteLaborInput } from './quote-page-types'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { laborTaxable } from '@/lib/taxable-lines'
 
 const QuoteLaborRow = memo(function QuoteLaborRow({
   labor,
@@ -47,6 +50,7 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   const isFee = isShopFeeLine(labor)
   const feeLocked = useShopFeeLocked()
   const formatCurrency = useFormatCurrency()
+  const { applies } = useLineTax()
   return (
     <div
       className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? 'line-through opacity-50' : ''}`}
@@ -97,6 +101,11 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
         {formatCurrency(labor.total, currencyCode)}
       </div>
       <div className="flex items-center gap-1">
+        <LineTaxToggle
+          className="h-7 self-center"
+          taxable={laborTaxable(labor, applies)}
+          onToggle={() => onUpdate(index, 'taxable', !laborTaxable(labor, applies))}
+        />
         <input
           type="checkbox"
           checked={labor.excluded ?? false}

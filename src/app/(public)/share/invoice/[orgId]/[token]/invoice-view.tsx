@@ -15,6 +15,7 @@ import {
   FileCheck2,
 } from 'lucide-react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { taxableSubtotalOf } from '@/lib/taxable-lines'
 import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -307,6 +308,8 @@ export function InvoiceView({
     discountAmount: computedDiscountStored,
     taxRate: record.taxRate,
     taxInclusive: recordTaxInclusive,
+    // The same lines the checkout totals, read the same way.
+    taxableSubtotal: taxableSubtotalOf(record.partItems, record.laborItems),
   })
 
   // Universal display: net per-line/category in both modes (no-op for exclusive,

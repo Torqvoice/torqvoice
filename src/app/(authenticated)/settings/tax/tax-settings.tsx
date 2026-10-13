@@ -88,6 +88,18 @@ export function TaxSettings({
   // Off for every workshop that has not asked for it: the page then reads
   // exactly as it did before the split existed.
   const [splitTax, setSplitTax] = useState(settings[SETTING_KEYS.TAX_MODE] === 'split')
+  // Which kinds of charge the tax is put on. The three answers are kept when
+  // the switch above them is turned off, so they are there if it comes back.
+  const [taxSelective, setTaxSelective] = useState(settings[SETTING_KEYS.TAX_SELECTIVE] === 'true')
+  const [taxOnParts, setTaxOnParts] = useState(
+    settings[SETTING_KEYS.TAX_APPLIES_TO_PARTS] !== 'false'
+  )
+  const [taxOnLabor, setTaxOnLabor] = useState(
+    settings[SETTING_KEYS.TAX_APPLIES_TO_LABOR] !== 'false'
+  )
+  const [taxOnShopFee, setTaxOnShopFee] = useState(
+    settings[SETTING_KEYS.TAX_APPLIES_TO_SHOP_FEE] !== 'false'
+  )
   const [components, setComponents] = useState<ComponentRow[]>(() =>
     rowsFromSettings(settings[SETTING_KEYS.TAX_COMPONENTS])
   )
@@ -137,6 +149,10 @@ export function TaxSettings({
       [SETTING_KEYS.TAX_LABEL]: taxLabel.trim(),
       [SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX]: String(lineItemsInclTax),
       [SETTING_KEYS.TAX_MODE]: taxEnabled && splitTax ? 'split' : 'single',
+      [SETTING_KEYS.TAX_SELECTIVE]: String(taxSelective),
+      [SETTING_KEYS.TAX_APPLIES_TO_PARTS]: String(taxOnParts),
+      [SETTING_KEYS.TAX_APPLIES_TO_LABOR]: String(taxOnLabor),
+      [SETTING_KEYS.TAX_APPLIES_TO_SHOP_FEE]: String(taxOnShopFee),
       [SETTING_KEYS.TAX_COMPONENTS]:
         taxEnabled && splitTax && splitDefinitions
           ? serializeTaxComponentDefinitions(splitDefinitions)
@@ -353,6 +369,47 @@ export function TaxSettings({
                     <p className="text-xs text-muted-foreground">{t('tax.combinedRateHint')}</p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Many places tax the parts and not the labor, or leave a fee
+                out. Off, the tax is on everything and nothing about it shows
+                on a work order or a quote. */}
+            {taxEnabled && (
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="taxSelective">{t('tax.selectiveLabel')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('tax.selectiveHint')}</p>
+                </div>
+                <Switch
+                  id="taxSelective"
+                  checked={taxSelective}
+                  onCheckedChange={setTaxSelective}
+                />
+              </div>
+            )}
+
+            {taxEnabled && taxSelective && (
+              <div
+                className="space-y-3 rounded-lg border bg-muted/30 p-4"
+                data-testid="tax-applies"
+              >
+                <p className="text-sm font-medium">{t('tax.appliesTitle')}</p>
+                {(
+                  [
+                    ['taxOnParts', 'appliesParts', taxOnParts, setTaxOnParts],
+                    ['taxOnLabor', 'appliesLabor', taxOnLabor, setTaxOnLabor],
+                    ['taxOnShopFee', 'appliesShopFee', taxOnShopFee, setTaxOnShopFee],
+                  ] as const
+                ).map(([id, labelKey, checked, onChange]) => (
+                  <div key={id} className="flex items-center justify-between gap-4">
+                    <Label htmlFor={id} className="font-normal">
+                      {t(`tax.${labelKey}`)}
+                    </Label>
+                    <Switch id={id} checked={checked} onCheckedChange={onChange} />
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground">{t('tax.appliesHint')}</p>
               </div>
             )}
 

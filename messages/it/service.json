@@ -188,13 +188,29 @@
     "subtotalInclTax": "Subtotale (incl. imposta)",
     "discount": "Sconto",
     "discountNone": "Nessuno",
+    "discountOff": "No",
     "discountPercentage": "Percentuale",
     "discountFixed": "Fisso",
     "tax": "Imposta",
     "taxIncluded": "Imposta (incl.)",
+    "taxableAmount": "Imponibile",
     "total": "Totale",
     "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta.",
     "partsCost": "Costo ricambi (interno)"
+  },
+  "lineTax": {
+    "label": "Imposta su questa riga",
+    "taxedTag": "IMP.",
+    "untaxedTag": "NO IMP.",
+    "taxedHint": "Su questa riga si applica l'imposta. Fai clic per escluderla dall'imposta.",
+    "untaxedHint": "Su questa riga non si applica l'imposta. Fai clic per applicarla."
+  },
+  "taxOffer": {
+    "noTax": "Questo documento è stato creato senza imposta. L'officina ora applica il {rate}%.",
+    "otherRate": "Questo documento è al {current}%. L'officina ora applica il {rate}%.",
+    "apply": "Applica il {rate}% di imposta",
+    "failed": "Impossibile aggiornare l'imposta",
+    "saveFirst": "Salva prima le modifiche, poi applica l'imposta."
   },
   "notes": {
     "title": "Note",
@@ -227,6 +243,7 @@
     "discount": "Sconto",
     "tax": "Imposta ({rate}%)",
     "taxIncluded": "Imposta (incl., {rate}%)",
+    "taxableAmount": "Imponibile",
     "total": "Totale",
     "paid": "Pagato",
     "balanceDue": "Importo Dovuto",

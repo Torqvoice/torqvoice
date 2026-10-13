@@ -3,11 +3,13 @@
 import { db } from '@/lib/db'
 import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
-  documentTotals,
   readWorkshopTax,
+  savedDocumentTax,
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import { withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
 import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
@@ -18,6 +20,7 @@ import { EMPTY_WARRANTY, normalizeWarranty } from '@/lib/warranty'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
+import { parseSentFields } from '@/lib/parse-sent-fields'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
 import { isSystemStatus, statusColumns } from '@/features/work-order-statuses/Lib/stages'
@@ -424,16 +427,22 @@ export async function createServiceRecord(input: unknown) {
       // split-tax workshop's invoice prints GST and QST apart from the start.
       // A rate the caller set by hand is one figure and stays one.
       const workshopTax = readWorkshopTax(settingsMap)
-      const splitTax =
+      const atWorkshopRate =
         !customerExempt && data.taxRate > 0 && data.taxRate === workshopTax.rate
-          ? documentTotals({
-              subtotal: data.subtotal,
-              discountAmount: data.discountAmount,
-              taxRate: data.taxRate,
-              taxInclusive,
-              taxComponents: taxFieldsForNewDocument(workshopTax).taxComponents,
-            })
-          : null
+      // Each line is stored saying whether it is taxed: what the caller chose
+      // for it, or the workshop's rule for its kind. The tax is then the
+      // server's to state whenever the lines decide it (see savedDocumentTax).
+      const taxedParts = withTaxableParts(data.partItems ?? [], workshopTax.applies)
+      const taxedLabor = withTaxableLabor(data.laborItems ?? [], workshopTax.applies)
+      const savedTax = savedDocumentTax({
+        subtotal: data.subtotal,
+        discountAmount: data.discountAmount,
+        taxRate: data.taxRate,
+        taxInclusive,
+        taxComponents: atWorkshopRate ? taxFieldsForNewDocument(workshopTax).taxComponents : null,
+        parts: taxedParts,
+        labor: taxedLabor,
+      })
 
       // Generate sequential invoice number
       const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
@@ -501,13 +510,14 @@ export async function createServiceRecord(input: unknown) {
             // records always resolve their customer through the vehicle.
             customerId: data.vehicleId ? null : data.customerId,
             taxInclusive,
-            ...(splitTax?.taxComponents
+            ...(savedTax.totals
               ? {
-                  taxComponents: splitTax.taxComponents,
-                  taxAmount: splitTax.taxAmount,
-                  totalAmount: splitTax.totalAmount,
+                  taxComponents: savedTax.totals.taxComponents,
+                  taxAmount: savedTax.totals.taxAmount,
+                  totalAmount: savedTax.totals.totalAmount,
                 }
               : {}),
+            taxableSubtotal: savedTax.taxableSubtotal,
             shopName,
             invoiceNumber,
             serviceDate: startsAt,
@@ -528,7 +538,7 @@ export async function createServiceRecord(input: unknown) {
           // Enrich parts with unitCost from inventory (stock movement is handled
           // by reconcileInventoryForParts below).
           const enrichedParts = []
-          for (const p of partItems) {
+          for (const p of taxedParts) {
             let resolvedUnitCost = p.unitCost ?? 0
             if (p.inventoryPartId) {
               const invPart = await tx.inventoryPart.findFirst({
@@ -549,6 +559,7 @@ export async function createServiceRecord(input: unknown) {
               unitCost: resolvedUnitCost,
               markupPercent: p.markupPercent ?? 0,
               inventoryPartId: p.inventoryPartId || null,
+              taxable: p.taxable,
               serviceRecordId: created.id,
             })
           }
@@ -578,7 +589,7 @@ export async function createServiceRecord(input: unknown) {
 
         if (laborItems && laborItems.length > 0) {
           await tx.serviceLabor.createMany({
-            data: laborItems.map((l) => ({
+            data: taxedLabor.map((l) => ({
               ...l,
               serviceRecordId: created.id,
             })),
@@ -645,7 +656,8 @@ export async function createServiceRecord(input: unknown) {
 export async function updateServiceRecord(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const data = updateServiceSchema.parse(input)
+      // Only what was sent: see parseSentFields for what the defaults did.
+      const data = parseSentFields(updateServiceSchema, input)
       // Refused before anything is read or written: this is the main way the
       // money on an invoice changes.
       await assertInvoiceEditable(data.id, organizationId)
@@ -717,20 +729,59 @@ export async function updateServiceRecord(input: unknown) {
       // lines the client sent: the amounts are recomputed here from the
       // components on the row, because the editor only knows the combined
       // rate and must not leave the printed GST and QST lines stale.
-      const splitTax =
-        recordData.subtotal !== undefined && parseTaxComponentDefinitions(existing.taxComponents)
-          ? documentTotals({
-              subtotal: recordData.subtotal,
-              discountAmount: recordData.discountAmount ?? existing.discountAmount,
-              taxRate: existing.taxRate,
-              taxInclusive: existing.taxInclusive,
-              taxComponents: existing.taxComponents,
-            })
+      //
+      // The same goes for a job with a line left out of the tax: what the
+      // tax is charged on comes from the lines as they are about to be
+      // stored, so it is worked out here and never taken from the caller.
+      // Lines the caller did not send are the ones already on the job.
+      const linesSent = partItems !== undefined || laborItems !== undefined
+      const taxApplies = linesSent ? await loadTaxApplies(organizationId) : null
+      const taxedParts =
+        partItems !== undefined && taxApplies ? withTaxableParts(partItems, taxApplies) : undefined
+      const taxedLabor =
+        laborItems !== undefined && taxApplies
+          ? withTaxableLabor(laborItems, taxApplies)
+          : undefined
+      const moneyTouched =
+        linesSent ||
+        recordData.subtotal !== undefined ||
+        recordData.discountAmount !== undefined ||
+        recordData.taxRate !== undefined
+      const savedTax = moneyTouched
+        ? savedDocumentTax({
+            subtotal: recordData.subtotal ?? existing.subtotal,
+            discountAmount: recordData.discountAmount ?? existing.discountAmount,
+            // A job with components keeps the rate they add up to.
+            taxRate: parseTaxComponentDefinitions(existing.taxComponents)
+              ? existing.taxRate
+              : (recordData.taxRate ?? existing.taxRate),
+            taxInclusive: recordData.taxInclusive ?? existing.taxInclusive,
+            taxComponents: existing.taxComponents,
+            parts:
+              taxedParts ??
+              (await db.servicePart.findMany({
+                where: { serviceRecordId: id },
+                select: { total: true, taxable: true },
+              })),
+            labor:
+              taxedLabor ??
+              (await db.serviceLabor.findMany({
+                where: { serviceRecordId: id },
+                select: { total: true, taxable: true, pricingType: true },
+              })),
+          })
+        : null
+      // The split is restated only by a save that restates the subtotal, as
+      // before; a job with untaxed lines is restated by any save that touches
+      // its money, since any of them moves what the tax is charged on.
+      const restated =
+        savedTax?.totals && (recordData.subtotal !== undefined || savedTax.taxableSubtotal !== null)
+          ? savedTax.totals
           : null
-      if (splitTax) {
-        recordData.taxRate = existing.taxRate
-        recordData.taxAmount = splitTax.taxAmount
-        recordData.totalAmount = splitTax.totalAmount
+      if (restated) {
+        if (restated.taxComponents) recordData.taxRate = existing.taxRate
+        recordData.taxAmount = restated.taxAmount
+        recordData.totalAmount = restated.totalAmount
       }
 
       // A null vehicleId from the client means "no vehicle" (counter sale) —
@@ -773,7 +824,8 @@ export async function updateServiceRecord(input: unknown) {
             ...(recordData.status !== undefined && recordData.status !== existing.status
               ? { customStatusId: null, customStatusSince: null }
               : {}),
-            taxComponents: splitTax?.taxComponents,
+            taxComponents: restated?.taxComponents,
+            ...(savedTax ? { taxableSubtotal: savedTax.taxableSubtotal } : {}),
             // Attaching a vehicle to a counter sale: the direct customer link is
             // cleared so the invoice follows the vehicle's customer again.
             customerId:
@@ -822,9 +874,9 @@ export async function updateServiceRecord(input: unknown) {
           })
 
           await tx.servicePart.deleteMany({ where: { serviceRecordId: id } })
-          if (partItems.length > 0) {
+          if (taxedParts && taxedParts.length > 0) {
             await tx.servicePart.createMany({
-              data: partItems.map((p) => ({
+              data: taxedParts.map((p) => ({
                 partNumber: p.partNumber,
                 name: p.name,
                 quantity: p.quantity,
@@ -835,6 +887,7 @@ export async function updateServiceRecord(input: unknown) {
                 unitCost: p.unitCost ?? 0,
                 markupPercent: p.markupPercent ?? 0,
                 inventoryPartId: p.inventoryPartId || null,
+                taxable: p.taxable,
                 serviceRecordId: id,
               })),
             })
@@ -905,9 +958,9 @@ export async function updateServiceRecord(input: unknown) {
         // Replace labor if provided
         if (laborItems !== undefined) {
           await tx.serviceLabor.deleteMany({ where: { serviceRecordId: id } })
-          if (laborItems.length > 0) {
+          if (taxedLabor && taxedLabor.length > 0) {
             await tx.serviceLabor.createMany({
-              data: laborItems.map((l) => ({
+              data: taxedLabor.map((l) => ({
                 ...l,
                 serviceRecordId: id,
               })),

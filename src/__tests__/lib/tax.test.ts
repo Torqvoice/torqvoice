@@ -485,6 +485,7 @@ describe('totals that add up to the cent', () => {
       taxAmount: 0.24,
       totalAmount: 1.18,
       components: null,
+      taxableAmount: 0.94,
     })
     // A part at 149.90: 37.475 of VAT is 37.48, and the total follows.
     expect(
@@ -493,6 +494,7 @@ describe('totals that add up to the cent', () => {
       taxAmount: 37.48,
       totalAmount: 187.38,
       components: null,
+      taxableAmount: 149.9,
     })
   })
 
@@ -503,6 +505,7 @@ describe('totals that add up to the cent', () => {
       taxAmount: 29.98,
       totalAmount: 149.9,
       components: null,
+      taxableAmount: 119.92,
     })
   })
 

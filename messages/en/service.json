@@ -188,13 +188,29 @@
     "subtotalInclTax": "Subtotal (incl. tax)",
     "discount": "Discount",
     "discountNone": "None",
+    "discountOff": "Off",
     "discountPercentage": "Percentage",
     "discountFixed": "Fixed",
     "tax": "Tax",
     "taxIncluded": "Tax (incl.)",
+    "taxableAmount": "Taxable amount",
     "total": "Total",
     "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown.",
     "partsCost": "Parts cost (internal)"
+  },
+  "lineTax": {
+    "label": "Tax on this line",
+    "taxedTag": "TAX",
+    "untaxedTag": "NO TAX",
+    "taxedHint": "Tax is charged on this line. Click to leave it out of the tax.",
+    "untaxedHint": "No tax is charged on this line. Click to tax it."
+  },
+  "taxOffer": {
+    "noTax": "This was created without tax. The workshop now charges {rate}%.",
+    "otherRate": "This is at {current}%. The workshop now charges {rate}%.",
+    "apply": "Apply {rate}% tax",
+    "failed": "Could not update the tax",
+    "saveFirst": "Save your changes first, then apply the tax."
   },
   "notes": {
     "title": "Notes",
@@ -227,6 +243,7 @@
     "discount": "Discount",
     "tax": "Tax ({rate}%)",
     "taxIncluded": "Tax (incl., {rate}%)",
+    "taxableAmount": "Taxable amount",
     "total": "Total",
     "paid": "Paid",
     "balanceDue": "Balance Due",

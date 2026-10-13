@@ -19,6 +19,12 @@ export const servicePartSchema = z.object({
    */
   markupPercent: z.coerce.number().min(-100).default(0),
   inventoryPartId: z.string().optional(),
+  /**
+   * Whether the document's tax is charged on this line. Left out by a caller
+   * that does not choose, and the server then takes the workshop's answer
+   * for this kind of line (Settings, Tax).
+   */
+  taxable: z.boolean().optional(),
 })
 
 export const serviceLaborSchema = z.object({
@@ -27,6 +33,12 @@ export const serviceLaborSchema = z.object({
   rate: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
   pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
+  /**
+   * Whether the document's tax is charged on this line. Left out by a caller
+   * that does not choose, and the server then takes the workshop's answer
+   * for this kind of line (Settings, Tax).
+   */
+  taxable: z.boolean().optional(),
 })
 
 export const serviceAttachmentSchema = z.object({

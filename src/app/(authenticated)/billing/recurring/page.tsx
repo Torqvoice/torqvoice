@@ -2,6 +2,7 @@ import { resolveCurrencyCode } from '@/lib/currencies'
 import { getRecurringInvoices } from '@/features/billing/Actions/recurringInvoiceActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { readTaxApplies, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import RecurringInvoicesClient from '@/features/billing/Components/RecurringInvoicesClient'
@@ -18,7 +19,7 @@ export default async function RecurringInvoicesPage() {
 
   const [result, settingsResult, vehicles] = await Promise.all([
     getRecurringInvoices(),
-    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
+    getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, ...TAX_APPLIES_SETTING_KEYS]),
     db.vehicle.findMany({
       where: { organizationId: membership.organizationId, isArchived: false },
       select: {
@@ -44,6 +45,7 @@ export default async function RecurringInvoicesPage() {
           invoices={invoices}
           vehicles={vehicles}
           currencyCode={currencyCode}
+          taxApplies={readTaxApplies(settings)}
         />
       </ListPage>
     </>

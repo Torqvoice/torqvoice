@@ -10,6 +10,7 @@ import {
 import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { taxableSubtotalOf } from '@/lib/taxable-lines'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { getFeatures } from '@/lib/features'
 
@@ -79,6 +80,8 @@ export async function POST(
       discountAmount: computedDiscount,
       taxRate: record.taxRate,
       taxInclusive: record.taxInclusive ?? false,
+      // The stored lines carry a plain yes or no.
+      taxableSubtotal: taxableSubtotalOf(record.partItems, record.laborItems),
     })
     const displayTotal =
       record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost

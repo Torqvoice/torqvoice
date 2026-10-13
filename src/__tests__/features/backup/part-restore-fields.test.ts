@@ -48,6 +48,11 @@ function restoreMap(delegate: string): string {
 describe.each([
   { model: 'ServicePart', delegate: 'servicePart' },
   { model: 'QuotePart', delegate: 'quotePart' },
+  // Labor lines too: a restore that dropped pricingType turned a shop fee
+  // into an hour of labor, and one that dropped excluded put a declined
+  // quote line back into the total.
+  { model: 'ServiceLabor', delegate: 'serviceLabor' },
+  { model: 'QuoteLabor', delegate: 'quoteLabor' },
 ])('$model restore', ({ model, delegate }) => {
   it('carries every schema column, so nothing is dropped on restore', () => {
     const map = restoreMap(delegate)
@@ -71,5 +76,21 @@ describe('restore ordering', () => {
     expect(firstTreeCall).toBeGreaterThan(-1)
     expect(inventory).toBeLessThan(firstTreeCall)
     expect(inventory).toBeLessThan(importSource.indexOf('tx.quotePart.createMany'))
+  })
+})
+
+describe('which lines were taxed', () => {
+  it('comes back with the document: the flag on every line and the taxable subtotal', () => {
+    // Two documents and four line tables carry it.
+    expect(importSource.match(/taxableSubtotal: storedTaxableSubtotalFromBackup\(/g)).toHaveLength(
+      2
+    )
+    expect(importSource.match(/taxable: [pl]\.taxable !== false/g)).toHaveLength(4)
+  })
+
+  it('reads a backup from before the flag as every line taxed', () => {
+    // `!== false` rather than `|| false`: a missing flag is a taxed line,
+    // which is what every line was when such a backup was taken.
+    expect(importSource).not.toMatch(/taxable: \([pl]\.taxable as boolean\) \|\| false/)
   })
 })

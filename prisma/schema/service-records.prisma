@@ -29,6 +29,11 @@ model ServiceRecord {
   /// no change. Shape in src/lib/tax-components.ts; read leniently so an old
   /// row renders on new code.
   taxComponents   Json?
+  /// The sum of the lines the tax is charged on, before the discount and in
+  /// the same terms as subtotal. Null when every line is taxable, which is
+  /// every document written before a line could be left untaxed. Written
+  /// with the totals by documentTotals; see src/lib/taxable-lines.ts.
+  taxableSubtotal Float?
   totalAmount     Float     @default(0)
   invoiceNumber   String?
   invoiceDate     DateTime?
@@ -305,6 +310,9 @@ model ServicePart {
   unitCost        Float   @default(0)
   markupPercent   Float   @default(0)
   inventoryPartId String?
+  /// Whether the document's tax is charged on this line. Starts as the
+  /// workshop's answer for parts (Settings, Tax) and is then the line's own.
+  taxable         Boolean @default(true)
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
@@ -320,6 +328,9 @@ model ServiceLabor {
   rate        Float  @default(0)
   total       Float  @default(0)
   pricingType String @default("hourly")
+  /// Whether the document's tax is charged on this line. Starts as the
+  /// workshop's answer for labor, or for the shop fee, and is then the line's own.
+  taxable     Boolean @default(true)
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)

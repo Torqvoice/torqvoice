@@ -77,13 +77,16 @@ describe('the fee on a job', () => {
   it('is the flat amount whatever the job holds', () => {
     const flat = percent({ mode: 'flat', amount: 15 })
     expect(shopFeeAmount(flat, { labor: 1000, parts: 500 })).toBe(15)
-    expect(newShopFeeLine(flat)).toEqual({
+    expect(newShopFeeLine(flat, { labor: 0, parts: 0 }, true)).toEqual({
       description: 'Shop supplies',
       hours: 1,
       rate: 15,
       total: 15,
       pricingType: 'shopFee',
+      taxable: true,
     })
+    // The workshop's answer for the fee is the line's own from the start.
+    expect(newShopFeeLine(flat, { labor: 0, parts: 0 }, false).taxable).toBe(false)
   })
 })
 

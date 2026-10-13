@@ -13,9 +13,11 @@ import {
 import {
   documentTotals,
   readWorkshopTax,
+  savedDocumentTax,
   taxFieldsForNewDocument,
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
+import { taxableSubtotalOf, withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
 import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
@@ -87,7 +89,11 @@ export async function createQuoteRecord(
   if (shopFee && !(data.laborItems ?? []).some(isShopFeeLine)) {
     const labor = (data.laborItems ?? []).reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0)
     const parts = (data.partItems ?? []).reduce((sum, p) => sum + p.total, 0)
-    const feeLine = newShopFeeLine(shopFee, { labor, parts })
+    const feeLine = newShopFeeLine(
+      shopFee,
+      { labor, parts },
+      readWorkshopTax(settingsMap).applies.shopFee
+    )
     data.laborItems = [...(data.laborItems ?? []), { ...feeLine, excluded: false }]
     if (feeLine.total > 0) {
       data.subtotal += feeLine.total
@@ -126,6 +132,13 @@ export async function createQuoteRecord(
   // split-tax workshop's quote prints GST and QST apart from the start.
   // A rate the caller set by hand is one figure and stays one.
   const taxRate = data.taxRate > 0 ? data.taxRate : defaultTaxRate
+  // Each line is stored saying whether it is taxed: what the caller chose
+  // for it, or the workshop's rule for its kind.
+  const taxedParts = withTaxableParts(data.partItems ?? [], workshopTax.applies)
+  const taxedLabor = withTaxableLabor(data.laborItems ?? [], workshopTax.applies)
+  const counted = <T extends { excluded?: boolean }>(lines: T[]) =>
+    lines.filter((line) => !line.excluded)
+  const taxableSubtotal = taxableSubtotalOf(counted(taxedParts), counted(taxedLabor))
   // The fee moved the subtotal, so the caller's tax and total are recomputed.
   if (feeAdded) {
     const totals = documentTotals({
@@ -134,20 +147,25 @@ export async function createQuoteRecord(
       taxRate,
       taxInclusive,
       taxComponents: null,
+      taxableSubtotal,
     })
     data.taxAmount = totals.taxAmount
     data.totalAmount = totals.totalAmount
   }
-  const splitTax =
-    taxRate > 0 && taxRate === workshopTax.rate && !customerExempt
-      ? documentTotals({
-          subtotal: data.subtotal,
-          discountAmount: data.discountAmount,
-          taxRate,
-          taxInclusive,
-          taxComponents: taxFieldsForNewDocument(workshopTax).taxComponents,
-        })
-      : null
+  // The tax is the server's to state whenever the lines decide it: a split
+  // into components, or a line left out of the tax (see savedDocumentTax).
+  const savedTax = savedDocumentTax({
+    subtotal: data.subtotal,
+    discountAmount: data.discountAmount,
+    taxRate,
+    taxInclusive,
+    taxComponents:
+      taxRate > 0 && taxRate === workshopTax.rate && !customerExempt
+        ? taxFieldsForNewDocument(workshopTax).taxComponents
+        : null,
+    parts: taxedParts,
+    labor: taxedLabor,
+  })
 
   const lastQuote = await db.quote.findFirst({
     where: { organizationId },
@@ -192,13 +210,14 @@ export async function createQuoteRecord(
         organizationId,
         taxRate,
         taxInclusive,
-        ...(splitTax?.taxComponents
+        ...(savedTax.totals
           ? {
-              taxComponents: splitTax.taxComponents,
-              taxAmount: splitTax.taxAmount,
-              totalAmount: splitTax.totalAmount,
+              taxComponents: savedTax.totals.taxComponents,
+              taxAmount: savedTax.totals.taxAmount,
+              totalAmount: savedTax.totals.totalAmount,
             }
           : {}),
+        taxableSubtotal: savedTax.taxableSubtotal,
         validUntil:
           toSafeWorkshopDate(quoteData.validUntil, await workshopTimeZone(organizationId)) ??
           defaultValidUntil(settingsMap['workshop.quoteValidDays']),
@@ -208,13 +227,13 @@ export async function createQuoteRecord(
 
     if (partItems && partItems.length > 0) {
       await tx.quotePart.createMany({
-        data: partItems.map((p) => ({ ...p, quoteId: created.id })),
+        data: taxedParts.map((p) => ({ ...p, quoteId: created.id })),
       })
     }
 
     if (laborItems && laborItems.length > 0) {
       await tx.quoteLabor.createMany({
-        data: laborItems.map((l) => ({ ...l, quoteId: created.id })),
+        data: taxedLabor.map((l) => ({ ...l, quoteId: created.id })),
       })
     }
 

@@ -232,6 +232,7 @@ export function DetailsLeftColumn({
           taxAmount={formState.taxAmount}
           taxInclusive={formState.taxInclusive}
           taxComponents={formState.taxComponents}
+          taxableShare={formState.taxableShare}
           displayTotal={formState.displayTotal}
           totalPaid={formState.totalPaid}
           balanceDue={formState.balanceDue}

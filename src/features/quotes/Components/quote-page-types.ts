@@ -60,6 +60,7 @@ export interface QuoteRecord {
     unitPrice: number
     total: number
     excluded?: boolean
+    taxable?: boolean
     inventoryPartId?: string | null
   }[]
   laborItems: {
@@ -70,6 +71,7 @@ export interface QuoteRecord {
     total: number
     pricingType?: string
     excluded?: boolean
+    taxable?: boolean
   }[]
   customer: {
     id: string

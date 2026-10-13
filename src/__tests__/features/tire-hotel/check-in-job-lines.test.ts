@@ -11,7 +11,12 @@
 
 import { it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@/lib/db', () => ({ db: { appSetting: { findUnique: vi.fn() } } }))
+vi.mock('@/lib/db', () => ({
+  db: {
+    // findMany is the workshop's tax rule for the lines; none set, so all taxed.
+    appSetting: { findUnique: vi.fn(), findMany: vi.fn().mockResolvedValue([]) },
+  },
+}))
 vi.mock('@/features/tire-hotel/Lib/serverMessages', () => ({
   invoiceLineWords: vi.fn(async () => ({
     storage: 'Tire storage',
@@ -49,8 +54,22 @@ it('prices prep from settings, as flat service lines', async () => {
   })
 
   expect(lines).toEqual([
-    { description: 'Wash tires', hours: 1, rate: 150, total: 150, pricingType: 'service' },
-    { description: 'Balancing', hours: 1, rate: 400, total: 400, pricingType: 'service' },
+    {
+      description: 'Wash tires',
+      hours: 1,
+      rate: 150,
+      total: 150,
+      pricingType: 'service',
+      taxable: true,
+    },
+    {
+      description: 'Balancing',
+      hours: 1,
+      rate: 400,
+      total: 400,
+      pricingType: 'service',
+      taxable: true,
+    },
   ])
 })
 

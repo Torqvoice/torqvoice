@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { listOrgEntries } from '@/features/time-tracking/Lib/timeEntries'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { earnedLineTotal, netLineTotal } from '@/lib/tax'
+import { earnedLineTotal, netLineTotal, taxedNetAmountOf } from '@/lib/tax'
 import { TaxByRateTable } from '../Lib/taxByRate'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
@@ -72,8 +72,8 @@ export async function getRevenueReport(params: ReportRange) {
           discountAmount: true,
           manuallyPaid: true,
           payments: { select: { amount: true } },
-          partItems: { select: { unitCost: true, quantity: true, total: true } },
-          laborItems: { select: { total: true } },
+          partItems: { select: { unitCost: true, quantity: true, total: true, taxable: true } },
+          laborItems: { select: { total: true, taxable: true } },
         },
         orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
       })
@@ -108,8 +108,14 @@ export async function getRevenueReport(params: ReportRange) {
         const total = r.totalAmount > 0 ? r.totalAmount : r.cost
         const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
         const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
-        const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r), 0)
-        const laborRevenue = r.laborItems.reduce((s, l) => s + earnedLineTotal(l.total, r), 0)
+        const partsRevenue = r.partItems.reduce(
+          (s, p) => s + earnedLineTotal(p.total, r, p.taxable),
+          0
+        )
+        const laborRevenue = r.laborItems.reduce(
+          (s, l) => s + earnedLineTotal(l.total, r, l.taxable),
+          0
+        )
         const _date = r.startDateTime ?? r.serviceDate
         const month = workshopMonthKey(_date, tz)
 
@@ -427,6 +433,7 @@ export async function getPartsUsageReport(params: ReportRange) {
           partNumber: true,
           quantity: true,
           total: true,
+          taxable: true,
           unitCost: true,
           serviceRecord: {
             select: { taxRate: true, taxInclusive: true, subtotal: true, discountAmount: true },
@@ -439,7 +446,7 @@ export async function getPartsUsageReport(params: ReportRange) {
       // exclusive-tax records and agrees with the revenue report.
       const partWithNet = parts.map((p) => ({
         ...p,
-        netTotal: earnedLineTotal(p.total, p.serviceRecord),
+        netTotal: earnedLineTotal(p.total, p.serviceRecord, p.taxable),
       }))
 
       const byPart: Record<
@@ -885,7 +892,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
               total: true,
             },
           },
-          laborItems: { select: { hours: true, total: true, pricingType: true } },
+          laborItems: { select: { hours: true, total: true, pricingType: true, taxable: true } },
         },
         orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
       })
@@ -912,7 +919,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
         // Labor "cost" here is what was charged to the customer for labor.
         // Net (pre-tax) so monthly breakdowns are consistent across modes.
         const laborCost = r.laborItems.reduce(
-          (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+          (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive, l.taxable),
           0
         )
         const laborHrs = r.laborItems.reduce((s, l) => s + laborHours(l), 0)
@@ -1011,6 +1018,7 @@ export async function getTaxReport(params: ReportRange) {
           serviceDate: true,
           startDateTime: true,
           subtotal: true,
+          taxableSubtotal: true,
           taxRate: true,
           taxAmount: true,
           taxInclusive: true,
@@ -1038,7 +1046,7 @@ export async function getTaxReport(params: ReportRange) {
         // The taxable base = total - tax. This is the net amount on which tax
         // was calculated, and it works in BOTH inclusive and exclusive modes
         // (and accounts for any discount applied).
-        const taxableBase = Math.max(0, r.totalAmount - r.taxAmount)
+        const taxableBase = taxedNetAmountOf(r)
 
         if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
         monthly[month].taxCollected += r.taxAmount

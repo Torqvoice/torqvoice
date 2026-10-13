@@ -192,6 +192,7 @@
     "discountFixed": "Vast bedrag",
     "tax": "Btw",
     "taxIncluded": "Btw (incl.)",
+    "taxableAmount": "Belastbaar bedrag",
     "total": "Totaal",
     "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
   },

@@ -42,7 +42,11 @@ vi.mock('@/lib/db', () => {
   return {
     db: {
       serviceRecord: { findFirst: vi.fn(async () => state.job) },
-      appSetting: { findFirst: vi.fn(async () => ({ value: '900' })) },
+      appSetting: {
+        findFirst: vi.fn(async () => ({ value: '900' })),
+        // The workshop's tax rule for labor; none set, so the line is taxed.
+        findMany: vi.fn(async () => []),
+      },
       $transaction: vi.fn(async (run: (t: typeof tx) => Promise<unknown>) => {
         if (state.transactionThrows) throw new Error('rolled back')
         return run(tx)

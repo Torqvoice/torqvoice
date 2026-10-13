@@ -1,3 +1,4 @@
+import { workshopTaxOffer } from '@/features/settings/Lib/workshopTaxOffer'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
@@ -10,6 +11,7 @@ import {
   SHOP_FEE_SETTING_KEYS,
   shopFeeLinesLast,
 } from '@/features/settings/Lib/shopFee'
+import { readLineTaxSettings, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
@@ -88,6 +90,7 @@ export async function ServiceRecordPage({
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.DEFAULT_TAX_RATE,
       SETTING_KEYS.TAX_ENABLED,
+      ...TAX_APPLIES_SETTING_KEYS,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
       SETTING_KEYS.INVOICE_DUE_DAYS,
       SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
@@ -134,6 +137,11 @@ export async function ServiceRecordPage({
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
   const shopFee = readShopFee(settings)
+  const lineTax = readLineTaxSettings(settings)
+  // Whether this job was created under another tax than the workshop charges now.
+  const taxOffer = authContext?.organizationId
+    ? await workshopTaxOffer(authContext.organizationId, 'workOrder', serviceId)
+    : null
   const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0
   const { defaultMarkupPercent, markupAppliesToInventory } = readPartsPricingSettings(settings, {
     defaultMarkupPercent: SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
@@ -290,6 +298,10 @@ export async function ServiceRecordPage({
       // deducting the right stock. Without this, a saved edit sends unlinked
       // parts and inventory reconciliation restocks the "removed" part.
       inventoryPartId: p.inventoryPartId ?? undefined,
+      // Whether the line is taxed is the line's own. Left out here, a save
+      // would send the line back without it and the server would put the
+      // workshop's default over whatever had been chosen.
+      taxable: p.taxable,
     })),
     laborItems: shopFeeLinesLast(record.laborItems).map((l) => ({
       description: l.description,
@@ -297,6 +309,7 @@ export async function ServiceRecordPage({
       rate: l.rate,
       total: l.total,
       pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
+      taxable: l.taxable,
     })),
     attachments: [],
     subtotal: record.subtotal,
@@ -417,6 +430,8 @@ export async function ServiceRecordPage({
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
         shopFee={shopFee}
+        lineTax={lineTax}
+        taxOffer={taxOffer}
         initialData={initialData}
         inventoryParts={inventoryParts}
         laborPresets={laborPresets}

@@ -188,13 +188,29 @@
     "subtotalInclTax": "Sous-total (TTC)",
     "discount": "Remise",
     "discountNone": "Aucune",
+    "discountOff": "Non",
     "discountPercentage": "Pourcentage",
     "discountFixed": "Fixe",
     "tax": "Taxe",
     "taxIncluded": "Taxe (incl.)",
+    "taxableAmount": "Montant taxable",
     "total": "Total",
     "inclusiveModeHint": "Les prix de ligne sont saisis taxe incluse. Les totaux affichent la répartition net + taxe.",
     "partsCost": "Coût des pièces (interne)"
+  },
+  "lineTax": {
+    "label": "Taxe sur cette ligne",
+    "taxedTag": "TAXE",
+    "untaxedTag": "SANS TAXE",
+    "taxedHint": "Cette ligne est taxée. Cliquez pour l'exclure de la taxe.",
+    "untaxedHint": "Cette ligne n'est pas taxée. Cliquez pour la taxer."
+  },
+  "taxOffer": {
+    "noTax": "Ce document a été créé sans taxe. L'atelier applique maintenant {rate} %.",
+    "otherRate": "Ce document est à {current} %. L'atelier applique maintenant {rate} %.",
+    "apply": "Appliquer {rate} % de taxe",
+    "failed": "Impossible de mettre à jour la taxe",
+    "saveFirst": "Enregistrez d'abord vos modifications, puis appliquez la taxe."
   },
   "notes": {
     "title": "Notes",
@@ -227,6 +243,7 @@
     "discount": "Remise",
     "tax": "Taxe ({rate}%)",
     "taxIncluded": "Taxe (incl., {rate}%)",
+    "taxableAmount": "Montant taxable",
     "total": "Total",
     "paid": "Payé",
     "balanceDue": "Solde Dû",

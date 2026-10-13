@@ -32,6 +32,11 @@ export const MEMBER_READABLE_SETTINGS: ReadonlySet<SettingKey> = new Set<Setting
   // The defaults a new line, quote or invoice starts from.
   SETTING_KEYS.TAX_ENABLED,
   SETTING_KEYS.DEFAULT_TAX_RATE,
+  // Which lines are taxed: the editors total a job with it as it is typed.
+  SETTING_KEYS.TAX_SELECTIVE,
+  SETTING_KEYS.TAX_APPLIES_TO_PARTS,
+  SETTING_KEYS.TAX_APPLIES_TO_LABOR,
+  SETTING_KEYS.TAX_APPLIES_TO_SHOP_FEE,
   SETTING_KEYS.DEFAULT_LABOR_RATE,
   SETTING_KEYS.INVOICE_DUE_DAYS,
   ...SHOP_FEE_SETTING_KEYS,

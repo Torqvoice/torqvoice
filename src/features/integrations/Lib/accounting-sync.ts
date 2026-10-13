@@ -37,6 +37,8 @@ export interface AccountingLine {
   quantity: number
   unitPrice: number
   total: number
+  /** Whether the invoice's tax was charged on the line; a ledger books it under a code that says so. */
+  taxable: boolean
 }
 
 export interface AccountingPayment {
@@ -64,6 +66,8 @@ export interface AccountingInvoice {
   mileage: number | null
   notes: string | null
   subtotal: number
+  /** The sum of the taxable lines, or null when every line is taxed. */
+  taxableSubtotal: number | null
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -124,6 +128,7 @@ export async function loadInvoiceForAccounting(
       mileage: true,
       invoiceNotes: true,
       subtotal: true,
+      taxableSubtotal: true,
       discountType: true,
       discountValue: true,
       discountAmount: true,
@@ -150,10 +155,18 @@ export async function loadInvoiceForAccounting(
           rate: true,
           total: true,
           pricingType: true,
+          taxable: true,
         },
       },
       partItems: {
-        select: { partNumber: true, name: true, quantity: true, unitPrice: true, total: true },
+        select: {
+          partNumber: true,
+          name: true,
+          quantity: true,
+          unitPrice: true,
+          total: true,
+          taxable: true,
+        },
       },
       payments: {
         select: {
@@ -181,6 +194,7 @@ export async function loadInvoiceForAccounting(
         quantity: hourly ? l.hours : 1,
         unitPrice: hourly ? l.rate : l.total,
         total: l.total,
+        taxable: l.taxable,
       }
     }),
     ...r.partItems.map((p) => ({
@@ -190,6 +204,7 @@ export async function loadInvoiceForAccounting(
       quantity: p.quantity > 0 ? p.quantity : 1,
       unitPrice: p.quantity > 0 ? p.unitPrice : p.total,
       total: p.total,
+      taxable: p.taxable,
     })),
   ]
   return {
@@ -204,6 +219,7 @@ export async function loadInvoiceForAccounting(
     mileage: r.mileage,
     notes: r.invoiceNotes,
     subtotal: r.subtotal,
+    taxableSubtotal: r.taxableSubtotal,
     discountType: r.discountType,
     discountValue: r.discountValue,
     discountAmount: r.discountAmount,

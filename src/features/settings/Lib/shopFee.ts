@@ -137,10 +137,16 @@ export function shopFeeAmount(
   return config.cap !== null ? Math.min(fee, round(config.cap)) : fee
 }
 
-/** The line a new job starts with, priced for the lines it starts with. */
+/**
+ * The line a new job starts with, priced for the lines it starts with.
+ * `taxable` is the workshop's answer for the shop fee (Settings, Tax), which
+ * the caller has to hand over: the fee is taxed in some places and not in
+ * others, and a line written without saying would always be taxed.
+ */
 export function newShopFeeLine(
   config: ShopFeeConfig,
-  totals: { labor: number; parts: number } = { labor: 0, parts: 0 }
+  totals: { labor: number; parts: number },
+  taxable: boolean
 ) {
   const fee = shopFeeAmount(config, totals)
   return {
@@ -149,6 +155,7 @@ export function newShopFeeLine(
     rate: fee,
     total: fee,
     pricingType: SHOP_FEE_PRICING,
+    taxable,
   }
 }
 

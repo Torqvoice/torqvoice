@@ -24,6 +24,12 @@ export const quotePartSchema = z.object({
    * conversion so the resulting job deducts this exact inventory item.
    */
   inventoryPartId: z.string().nullish(),
+  /**
+   * Whether the document's tax is charged on this line. Left out by a caller
+   * that does not choose, and the server then takes the workshop's answer
+   * for this kind of line (Settings, Tax).
+   */
+  taxable: z.boolean().optional(),
 })
 
 export const quoteLaborSchema = z.object({
@@ -33,6 +39,12 @@ export const quoteLaborSchema = z.object({
   total: z.coerce.number().min(0).default(0),
   pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
   excluded: z.boolean().optional().default(false),
+  /**
+   * Whether the document's tax is charged on this line. Left out by a caller
+   * that does not choose, and the server then takes the workshop's answer
+   * for this kind of line (Settings, Tax).
+   */
+  taxable: z.boolean().optional(),
 })
 
 export const quoteAttachmentSchema = z.object({

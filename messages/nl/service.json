@@ -188,13 +188,29 @@
     "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "discountNone": "Geen",
+    "discountOff": "Uit",
     "discountPercentage": "Percentage",
     "discountFixed": "Vast",
     "tax": "Belasting",
     "taxIncluded": "Belasting (incl.)",
+    "taxableAmount": "Belastbaar bedrag",
     "total": "Totaal",
     "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting.",
     "partsCost": "Onderdelenkosten (intern)"
+  },
+  "lineTax": {
+    "label": "Belasting op deze regel",
+    "taxedTag": "BEL.",
+    "untaxedTag": "GEEN BEL.",
+    "taxedHint": "Over deze regel wordt belasting berekend. Klik om de regel buiten de belasting te houden.",
+    "untaxedHint": "Over deze regel wordt geen belasting berekend. Klik om de regel te belasten."
+  },
+  "taxOffer": {
+    "noTax": "Dit is zonder belasting aangemaakt. De werkplaats rekent nu {rate}%.",
+    "otherRate": "Dit staat op {current}%. De werkplaats rekent nu {rate}%.",
+    "apply": "{rate}% belasting toepassen",
+    "failed": "De belasting kon niet worden bijgewerkt",
+    "saveFirst": "Sla eerst je wijzigingen op en pas daarna de belasting toe."
   },
   "notes": {
     "title": "Opmerkingen",
@@ -227,6 +243,7 @@
     "discount": "Korting",
     "tax": "Belasting ({rate}%)",
     "taxIncluded": "Btw (incl., {rate}%)",
+    "taxableAmount": "Belastbaar bedrag",
     "total": "Totaal",
     "paid": "Betaald",
     "balanceDue": "Verschuldigd bedrag",

@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Package, Plus, Trash2 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { partTaxable } from '@/lib/taxable-lines'
 import { cn } from '@/lib/utils'
 import { InventoryPickerDialog } from '@/features/vehicles/Components/service-edit/InventoryPickerDialog'
 import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
@@ -57,6 +60,7 @@ const QuotePartRow = memo(function QuotePartRow({
   tExcludeFromTotal: string
 }) {
   const formatCurrency = useFormatCurrency()
+  const { applies } = useLineTax()
   // Content without a name would be silently dropped on save (name is
   // required); flag it loudly instead
   const nameMissing =
@@ -155,6 +159,11 @@ const QuotePartRow = memo(function QuotePartRow({
         {formatCurrency(part.total, currencyCode)}
       </div>
       <div className="flex items-center gap-1">
+        <LineTaxToggle
+          className="h-7 self-center"
+          taxable={partTaxable(part, applies)}
+          onToggle={() => onUpdate(index, 'taxable', !partTaxable(part, applies))}
+        />
         <input
           type="checkbox"
           checked={part.excluded ?? false}

@@ -20,6 +20,21 @@ export const SETTING_KEYS = {
   TAX_MODE: 'workshop.taxMode',
   /** JSON array of tax components; see src/lib/tax-components.ts. */
   TAX_COMPONENTS: 'workshop.taxComponents',
+  /**
+   * `true` when the workshop taxes only some of what it charges. Off, every
+   * line is taxed and nothing about it shows in the editors, which is how
+   * every workshop starts and how most stay.
+   */
+  TAX_SELECTIVE: 'workshop.taxSelective',
+  /**
+   * Which kinds of charge the tax is put on, read only while TAX_SELECTIVE
+   * is on. Each is on unless it holds `false`. The default for a new line
+   * of that kind; the line then keeps its own answer. See
+   * src/lib/taxable-lines.ts.
+   */
+  TAX_APPLIES_TO_PARTS: 'workshop.taxAppliesToParts',
+  TAX_APPLIES_TO_LABOR: 'workshop.taxAppliesToLabor',
+  TAX_APPLIES_TO_SHOP_FEE: 'workshop.taxAppliesToShopFee',
   ORG_NUMBER_LABEL: 'workshop.orgNumberLabel',
   INVOICE_PREFIX: 'workshop.invoicePrefix',
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',

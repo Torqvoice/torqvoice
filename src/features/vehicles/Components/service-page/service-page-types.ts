@@ -1,6 +1,7 @@
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
+import type { LineTaxSettings } from '@/features/settings/Lib/workshopTax'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
@@ -69,6 +70,10 @@ export interface ServicePageClientProps {
   defaultLaborRate: number
   /** The workshop's shop fee, for re-pricing a percentage one as lines change. */
   shopFee?: ShopFeeConfig | null
+  /** How the workshop taxes its lines; every line taxed when left out. */
+  lineTax?: LineTaxSettings
+  /** Set when the job could be put on the workshop's tax; see workshopTaxOffer. */
+  taxOffer?: { rate: number; currentRate: number } | null
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
   initialVehicle: {

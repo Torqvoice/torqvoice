@@ -7,7 +7,7 @@ import React from 'react'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { earnedLineTotal } from '@/lib/tax'
+import { earnedLineTotal, taxedNetAmountOf } from '@/lib/tax'
 import { TaxByRateTable } from '@/features/reports/Lib/taxByRate'
 import {
   addZonedDays,
@@ -128,8 +128,8 @@ async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: str
       discountAmount: true,
       manuallyPaid: true,
       payments: { select: { amount: true } },
-      partItems: { select: { unitCost: true, quantity: true, total: true } },
-      laborItems: { select: { total: true } },
+      partItems: { select: { unitCost: true, quantity: true, total: true, taxable: true } },
+      laborItems: { select: { total: true, taxable: true } },
     },
     orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
   })
@@ -158,8 +158,11 @@ async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: str
     const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
     const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
     // Net (pre-tax) parts/labor, after the job's discount, so profit math works in both tax modes.
-    const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r), 0)
-    const laborRevenue = r.laborItems.reduce((s, l) => s + earnedLineTotal(l.total, r), 0)
+    const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r, p.taxable), 0)
+    const laborRevenue = r.laborItems.reduce(
+      (s, l) => s + earnedLineTotal(l.total, r, l.taxable),
+      0
+    )
     const _d = r.startDateTime ?? r.serviceDate
     const month = workshopMonthKey(_d, timeZone)
 
@@ -324,6 +327,7 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
       partNumber: true,
       quantity: true,
       total: true,
+      taxable: true,
       unitCost: true,
       serviceRecord: {
         select: { taxRate: true, taxInclusive: true, subtotal: true, discountAmount: true },
@@ -332,7 +336,7 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
   })
   const partWithNet = parts.map((p) => ({
     ...p,
-    netTotal: earnedLineTotal(p.total, p.serviceRecord),
+    netTotal: earnedLineTotal(p.total, p.serviceRecord, p.taxable),
   }))
   const byPart: Record<
     string,
@@ -611,6 +615,7 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
       serviceDate: true,
       startDateTime: true,
       subtotal: true,
+      taxableSubtotal: true,
       taxRate: true,
       taxAmount: true,
       taxInclusive: true,
@@ -632,7 +637,7 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
     const _d = r.startDateTime ?? r.serviceDate
     const month = workshopMonthKey(_d, timeZone)
     // Net taxable base = totalAmount - taxAmount, valid for both modes.
-    const taxableBase = Math.max(0, r.totalAmount - r.taxAmount)
+    const taxableBase = taxedNetAmountOf(r)
     if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
     monthly[month].taxCollected += r.taxAmount
     monthly[month].invoiceCount += 1

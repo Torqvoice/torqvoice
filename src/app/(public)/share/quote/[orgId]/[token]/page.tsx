@@ -54,6 +54,9 @@ export default async function PublicQuotePage({
           unitPrice: true,
           total: true,
           excluded: true,
+          // The sheet works its tax out from the lines, so each has to say
+          // whether it is taxed; left out here, every line would be.
+          taxable: true,
         },
       },
       laborItems: true,

@@ -55,6 +55,11 @@ export interface InvoiceData {
   taxInclusive?: boolean
   /** The stored split, when the job has one; see src/lib/tax-components.ts. */
   taxComponents?: unknown
+  /**
+   * The sum of the taxable lines, or null when every line is taxed. Absent
+   * where a caller predates untaxed lines, which means the same.
+   */
+  taxableSubtotal?: number | null
   totalAmount: number
   cost: number
   invoiceNumber: string | null
@@ -70,6 +75,8 @@ export interface InvoiceData {
     category?: string | null
     unitPrice: number
     total: number
+    /** False when the document's tax is not charged on the line. */
+    taxable?: boolean | null
   }[]
   laborItems: {
     description: string
@@ -77,6 +84,8 @@ export interface InvoiceData {
     rate: number
     total: number
     pricingType?: string
+    /** False when the document's tax is not charged on the line. */
+    taxable?: boolean | null
   }[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   findings?: Array<{ description: string; severity: string; notes: string | null }>

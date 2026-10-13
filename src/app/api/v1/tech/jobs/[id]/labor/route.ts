@@ -9,6 +9,8 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { announceLaborAdded } from '@/features/vehicles/Lib/jobEvents'
 import { refreshShopFeeLines } from '@/features/vehicles/Lib/shopFeeLines'
+import { serviceRecordLineSums } from '@/features/vehicles/Lib/lineSums'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 
 /**
  * Adds a line of work to the job.
@@ -68,6 +70,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // refusal. The work still happened, and the office can price it.
       const safeRate = Number.isFinite(rate) && rate > 0 ? rate : 0
 
+      // Whether labor is taxed is the workshop's rule, like the rate: the
+      // phone does not say, and a line written without asking would be taxed
+      // in a workshop that taxes parts alone.
+      const taxApplies = await loadTaxApplies(ctx.organizationId)
+
       const line = await db.$transaction(async (tx) => {
         const created = await tx.serviceLabor.create({
           data: {
@@ -76,6 +83,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             rate: safeRate,
             total: roundMoney(safeRate * hours),
             pricingType: 'hourly',
+            taxable: taxApplies.labor,
             serviceRecordId: job.id,
           },
           select: { id: true, description: true, hours: true, rate: true, total: true },
@@ -85,24 +93,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         // the job's totals can never disagree with its lines.
         await refreshShopFeeLines(tx, job.id, ctx.organizationId)
 
-        const [partsAgg, laborAgg] = await Promise.all([
-          tx.servicePart.aggregate({ where: { serviceRecordId: job.id }, _sum: { total: true } }),
-          tx.serviceLabor.aggregate({ where: { serviceRecordId: job.id }, _sum: { total: true } }),
-        ])
-
-        const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
+        const sums = await serviceRecordLineSums(tx, job.id)
+        const subtotal = sums.subtotal
         const discountAmount = discountAmountFor(subtotal, job.discountType, job.discountValue)
-        const { taxAmount, totalAmount, taxComponents } = documentTotals({
+        const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
           subtotal,
           discountAmount,
           taxRate: job.taxRate,
           taxInclusive: job.taxInclusive,
           taxComponents: job.taxComponents,
+          taxableSubtotal: sums.taxableSubtotal,
         })
 
         await tx.serviceRecord.update({
           where: { id: job.id },
-          data: { subtotal, taxAmount, totalAmount, taxComponents },
+          data: { subtotal, taxAmount, totalAmount, taxComponents, taxableSubtotal },
         })
 
         return created

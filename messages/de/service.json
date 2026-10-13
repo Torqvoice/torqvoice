@@ -188,13 +188,29 @@
     "subtotalInclTax": "Zwischensumme (inkl. Steuer)",
     "discount": "Rabatt",
     "discountNone": "Keine",
+    "discountOff": "Aus",
     "discountPercentage": "Prozentsatz",
     "discountFixed": "Festbetrag",
     "tax": "Steuern",
     "taxIncluded": "Steuer (inkl.)",
+    "taxableAmount": "Steuerpflichtiger Betrag",
     "total": "Gesamt",
     "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer.",
     "partsCost": "Teilekosten (intern)"
+  },
+  "lineTax": {
+    "label": "Steuer auf diese Position",
+    "taxedTag": "STEUER",
+    "untaxedTag": "OHNE ST.",
+    "taxedHint": "Auf diese Position wird Steuer berechnet. Klicken, um sie von der Steuer auszunehmen.",
+    "untaxedHint": "Auf diese Position wird keine Steuer berechnet. Klicken, um sie zu besteuern."
+  },
+  "taxOffer": {
+    "noTax": "Dies wurde ohne Steuer erstellt. Die Werkstatt berechnet jetzt {rate} %.",
+    "otherRate": "Dies steht auf {current} %. Die Werkstatt berechnet jetzt {rate} %.",
+    "apply": "{rate} % Steuer anwenden",
+    "failed": "Die Steuer konnte nicht aktualisiert werden",
+    "saveFirst": "Speichern Sie zuerst Ihre Änderungen und wenden Sie dann die Steuer an."
   },
   "notes": {
     "title": "Notizen",
@@ -227,6 +243,7 @@
     "discount": "Rabatt",
     "tax": "Steuern ({rate}%)",
     "taxIncluded": "Steuer (inkl., {rate}%)",
+    "taxableAmount": "Steuerpflichtiger Betrag",
     "total": "Gesamt",
     "paid": "Bezahlt",
     "balanceDue": "Ausstehend",

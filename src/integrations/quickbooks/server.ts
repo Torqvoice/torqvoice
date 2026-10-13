@@ -1,3 +1,4 @@
+import { taxedNetAmountOf } from '@/lib/tax'
 import {
   type AccountingCustomer,
   type AccountingInvoice,
@@ -334,7 +335,9 @@ async function resolveTax(
           rateId,
           percent: inv.taxRate,
           taxAmount: inv.taxAmount,
-          netTaxable: inv.totalAmount - inv.taxAmount,
+          // What the tax was charged on, which is less than the invoice's
+          // net when some of its lines are left out of the tax.
+          netTaxable: taxedNetAmountOf(inv),
         })
       : null
   return { taxCodeId: pick.id, zeroTaxCodeId, txnTaxDetail, note }

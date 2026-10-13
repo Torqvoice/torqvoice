@@ -188,13 +188,29 @@
     "subtotalInclTax": "Subtotal (com imposto)",
     "discount": "Desconto",
     "discountNone": "Nenhum",
+    "discountOff": "Não",
     "discountPercentage": "Percentual",
     "discountFixed": "Fixo",
     "tax": "Imposto",
     "taxIncluded": "Imposto (incl.)",
+    "taxableAmount": "Base tributável",
     "total": "Total",
     "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto.",
     "partsCost": "Custo das peças (interno)"
+  },
+  "lineTax": {
+    "label": "Imposto nesta linha",
+    "taxedTag": "IMP.",
+    "untaxedTag": "SEM IMP.",
+    "taxedHint": "Esta linha tem imposto. Clique para deixá-la fora do imposto.",
+    "untaxedHint": "Esta linha não tem imposto. Clique para aplicar."
+  },
+  "taxOffer": {
+    "noTax": "Isto foi criado sem imposto. A oficina agora cobra {rate}%.",
+    "otherRate": "Isto está em {current}%. A oficina agora cobra {rate}%.",
+    "apply": "Aplicar {rate}% de imposto",
+    "failed": "Não foi possível atualizar o imposto",
+    "saveFirst": "Salve as alterações primeiro e depois aplique o imposto."
   },
   "notes": {
     "title": "Notas",
@@ -227,6 +243,7 @@
     "discount": "Desconto",
     "tax": "Imposto ({rate}%)",
     "taxIncluded": "Imposto (incl., {rate}%)",
+    "taxableAmount": "Base tributável",
     "total": "Total",
     "paid": "Pago",
     "balanceDue": "Saldo Devedor",

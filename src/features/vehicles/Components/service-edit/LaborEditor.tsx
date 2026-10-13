@@ -2,6 +2,9 @@
 
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { laborTaxable } from '@/lib/taxable-lines'
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -62,6 +65,7 @@ function SortableLaborRow({
   index,
   updateLabor,
   onDelete,
+  onToggleTax,
   currencyCode,
   rateLabel,
   t,
@@ -72,6 +76,8 @@ function SortableLaborRow({
   index: number
   updateLabor: (index: number, field: keyof ServiceLaborInput, value: string | number) => void
   onDelete: () => void
+  /** Flips whether the job's tax is charged on this line. */
+  onToggleTax: () => void
   currencyCode: string
   /** Pre-formatted "Rate (kr/hr)" header, which needs the currency symbol. */
   rateLabel: string
@@ -97,6 +103,7 @@ function SortableLaborRow({
   const isService = labor.pricingType === 'service'
   const isFee = isShopFeeLine(labor)
   const feeLocked = useShopFeeLocked()
+  const { applies } = useLineTax()
 
   return (
     <div
@@ -148,6 +155,7 @@ function SortableLaborRow({
               {isService ? t('serviceTag') : t('hourlyTag')}
             </button>
           )}
+          <LineTaxToggle taxable={laborTaxable(labor, applies)} onToggle={onToggleTax} />
         </div>
         <FieldRow label={isService || isFee ? t('qty') : t('hours')}>
           <Input
@@ -266,6 +274,20 @@ export function LaborEditor({
     setLaborItems((prev) => [...prev, makeEmptyService()])
   }, [setLaborItems])
 
+  // A line that has not chosen follows the workshop's rule for its kind, so
+  // the flip starts from what the line is taken as now.
+  const { applies: taxApplies } = useLineTax()
+  const toggleLaborTax = useCallback(
+    (index: number) => {
+      setLaborItems((prev) =>
+        prev.map((row, j) =>
+          j === index ? { ...row, taxable: !laborTaxable(row, taxApplies) } : row
+        )
+      )
+    },
+    [setLaborItems, taxApplies]
+  )
+
   const deleteLabor = useCallback(
     (index: number) => {
       keysRef.current = keysRef.current.filter((_, j) => j !== index)
@@ -354,6 +376,7 @@ export function LaborEditor({
                     index={i}
                     updateLabor={updateLabor}
                     onDelete={() => deleteLabor(i)}
+                    onToggleTax={() => toggleLaborTax(i)}
                     currencyCode={currencyCode}
                     rateLabel={t('rate', { currency: cs })}
                     t={t}
@@ -371,6 +394,7 @@ export function LaborEditor({
                 index={i}
                 updateLabor={updateLabor}
                 onDelete={() => deleteLabor(i)}
+                onToggleTax={() => toggleLaborTax(i)}
                 currencyCode={currencyCode}
                 rateLabel={t('rate', { currency: cs })}
                 t={t}

@@ -50,6 +50,8 @@ export async function copyQuotePartsToJob(
       // Preserve the stock link so the job — and any later edit or
       // deletion of it — reconciles against the right inventory item.
       inventoryPartId: p.inventoryPartId,
+      // Taxed on the job as it was quoted, whatever the settings say today.
+      taxable: p.taxable,
       serviceRecordId: target.id,
     })),
   })
@@ -82,6 +84,7 @@ export async function copyQuoteLaborToJob(
       rate: l.rate,
       total: l.total,
       pricingType: l.pricingType || 'hourly',
+      taxable: l.taxable,
       serviceRecordId,
     })),
   })

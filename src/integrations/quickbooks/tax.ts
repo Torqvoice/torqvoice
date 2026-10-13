@@ -1,3 +1,4 @@
+import { ratesMatch } from '@/lib/tax'
 import { type QboRef, type QboTaxCode, type QboTaxRate, round2 } from './mapping'
 
 /**
@@ -35,10 +36,7 @@ export interface TaxCatalogEntry {
   percent: number | null
 }
 
-/** Two percentages that print the same are the same rate. */
-export function ratesMatch(a: number, b: number): boolean {
-  return Math.abs(a - b) < 0.005
-}
+export { ratesMatch }
 
 /** The codes with their combined sales rate, from the two tables QuickBooks keeps them in. */
 export function buildTaxCatalog(codes: QboTaxCode[], rates: QboTaxRate[]): TaxCatalogEntry[] {

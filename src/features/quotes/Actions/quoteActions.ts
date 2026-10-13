@@ -13,7 +13,10 @@ import { db } from '@/lib/db'
 import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
 import { Prisma } from '@/generated/prisma/client'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
-import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import { savedDocumentTax, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import { withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
+import { parseSentFields } from '@/lib/parse-sent-fields'
 import {
   isShopFeeLine,
   newShopFeeLine,
@@ -249,7 +252,8 @@ export async function createQuote(input: unknown) {
 export async function updateQuote(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const data = updateQuoteSchema.parse(input)
+      // Only what was sent: see parseSentFields for what the defaults did.
+      const data = parseSentFields(updateQuoteSchema, input)
       await assertQuoteEditable(data.id, organizationId)
       const existing = await db.quote.findFirst({
         where: { id: data.id, organizationId },
@@ -288,20 +292,55 @@ export async function updateQuote(input: unknown) {
 
       // Same as the work order: a quote with tax components has its split
       // recomputed from the row, since the editor sends one combined figure.
-      const splitTax =
-        quoteData.subtotal !== undefined && parseTaxComponentDefinitions(existing.taxComponents)
-          ? documentTotals({
-              subtotal: quoteData.subtotal,
-              discountAmount: quoteData.discountAmount ?? existing.discountAmount,
-              taxRate: existing.taxRate,
-              taxInclusive: existing.taxInclusive,
-              taxComponents: existing.taxComponents,
-            })
+      //
+      // And the same for a quote with a line left out of the tax: what the
+      // tax is charged on comes from the lines as they are about to be
+      // stored. Lines the caller did not send are the ones already there.
+      const linesSent = partItems !== undefined || laborItems !== undefined
+      const taxApplies = linesSent ? await loadTaxApplies(organizationId) : null
+      const taxedParts =
+        partItems !== undefined && taxApplies ? withTaxableParts(partItems, taxApplies) : undefined
+      const taxedLabor =
+        laborItems !== undefined && taxApplies
+          ? withTaxableLabor(laborItems, taxApplies)
+          : undefined
+      const moneyTouched =
+        linesSent ||
+        quoteData.subtotal !== undefined ||
+        quoteData.discountAmount !== undefined ||
+        quoteData.taxRate !== undefined
+      const savedTax = moneyTouched
+        ? savedDocumentTax({
+            subtotal: quoteData.subtotal ?? existing.subtotal,
+            discountAmount: quoteData.discountAmount ?? existing.discountAmount,
+            // A quote with components keeps the rate they add up to.
+            taxRate: parseTaxComponentDefinitions(existing.taxComponents)
+              ? existing.taxRate
+              : (quoteData.taxRate ?? existing.taxRate),
+            taxInclusive: quoteData.taxInclusive ?? existing.taxInclusive,
+            taxComponents: existing.taxComponents,
+            parts:
+              taxedParts ??
+              (await db.quotePart.findMany({
+                where: { quoteId: id },
+                select: { total: true, taxable: true, excluded: true },
+              })),
+            labor:
+              taxedLabor ??
+              (await db.quoteLabor.findMany({
+                where: { quoteId: id },
+                select: { total: true, taxable: true, excluded: true, pricingType: true },
+              })),
+          })
+        : null
+      const restated =
+        savedTax?.totals && (quoteData.subtotal !== undefined || savedTax.taxableSubtotal !== null)
+          ? savedTax.totals
           : null
-      if (splitTax) {
-        quoteData.taxRate = existing.taxRate
-        quoteData.taxAmount = splitTax.taxAmount
-        quoteData.totalAmount = splitTax.totalAmount
+      if (restated) {
+        if (restated.taxComponents) quoteData.taxRate = existing.taxRate
+        quoteData.taxAmount = restated.taxAmount
+        quoteData.totalAmount = restated.totalAmount
       }
 
       const quote = await db.$transaction(async (tx) => {
@@ -312,7 +351,8 @@ export async function updateQuote(input: unknown) {
           data: {
             ...quoteData,
             ...warranty,
-            taxComponents: splitTax?.taxComponents,
+            taxComponents: restated?.taxComponents,
+            ...(savedTax ? { taxableSubtotal: savedTax.taxableSubtotal } : {}),
             description: clearedToNull(quoteData.description),
             notes: clearedToNull(quoteData.notes),
             customerId: clearedToNull(quoteData.customerId),
@@ -330,18 +370,18 @@ export async function updateQuote(input: unknown) {
 
         if (partItems !== undefined) {
           await tx.quotePart.deleteMany({ where: { quoteId: id } })
-          if (partItems.length > 0) {
+          if (taxedParts && taxedParts.length > 0) {
             await tx.quotePart.createMany({
-              data: partItems.map((p) => ({ ...p, quoteId: id })),
+              data: taxedParts.map((p) => ({ ...p, quoteId: id })),
             })
           }
         }
 
         if (laborItems !== undefined) {
           await tx.quoteLabor.deleteMany({ where: { quoteId: id } })
-          if (laborItems.length > 0) {
+          if (taxedLabor && taxedLabor.length > 0) {
             await tx.quoteLabor.createMany({
-              data: laborItems.map((l) => ({ ...l, quoteId: id })),
+              data: taxedLabor.map((l) => ({ ...l, quoteId: id })),
             })
           }
         }
@@ -523,6 +563,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             invoiceNumber,
             subtotal: quote.subtotal,
             taxComponents: taxComponentsForCopy(quote.taxComponents),
+            taxableSubtotal: quote.taxableSubtotal,
             taxRate: quote.taxRate,
             taxAmount: quote.taxAmount,
             taxInclusive: quote.taxInclusive,
@@ -554,10 +595,14 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         // A quote that carried the fee already brought it across above.
         const jobFee = shopFeeFor(readShopFee(settingsMap), 'workOrder')
         if (jobFee && !includedLabor.some(isShopFeeLine)) {
-          const feeLine = newShopFeeLine(jobFee, {
-            labor: includedLabor.reduce((sum, l) => sum + l.total, 0),
-            parts: includedParts.reduce((sum, p) => sum + p.total, 0),
-          })
+          const feeLine = newShopFeeLine(
+            jobFee,
+            {
+              labor: includedLabor.reduce((sum, l) => sum + l.total, 0),
+              parts: includedParts.reduce((sum, p) => sum + p.total, 0),
+            },
+            (await loadTaxApplies(organizationId, tx)).shopFee
+          )
           await tx.serviceLabor.create({ data: { ...feeLine, serviceRecordId: created.id } })
           await retotalServiceRecord(created.id, tx)
         }

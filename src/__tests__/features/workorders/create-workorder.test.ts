@@ -973,7 +973,14 @@ describe('createDraftServiceRecord — shop fee', () => {
 
     const data = vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as any
     expect(data.laborItems.create).toEqual([
-      { description: 'Shop supplies', hours: 1, rate: 12.5, total: 12.5, pricingType: 'shopFee' },
+      {
+        description: 'Shop supplies',
+        hours: 1,
+        rate: 12.5,
+        total: 12.5,
+        pricingType: 'shopFee',
+        taxable: true,
+      },
     ])
     expect(data.subtotal).toBe(12.5)
     // 25% of 12.50 is 3.125, which is 3.13 on the sheet, so the total is 15.63.
