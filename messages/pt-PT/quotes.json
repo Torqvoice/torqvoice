@@ -192,6 +192,7 @@
     "discountFixed": "Fixo",
     "tax": "IVA",
     "taxIncluded": "IVA (incluído)",
+    "taxableAmount": "Valor tributável",
     "total": "Total",
     "inclusiveModeHint": "Os preços das linhas são introduzidos com IVA incluído. Os totais mostram a divisão entre valor líquido e IVA."
   },

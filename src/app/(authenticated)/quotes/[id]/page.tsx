@@ -1,3 +1,4 @@
+import { workshopTaxOffer } from '@/features/settings/Lib/workshopTaxOffer'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -14,6 +15,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { getQuoteLockState } from '@/lib/document-lock.server'
 import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
+import { readLineTaxSettings, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,6 +26,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.DEFAULT_TAX_RATE,
       SETTING_KEYS.TAX_ENABLED,
+      ...TAX_APPLIES_SETTING_KEYS,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
       SETTING_KEYS.UNIT_SYSTEM,
       ...WARRANTY_SETTING_KEYS,
@@ -85,6 +88,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
         shopFee={readShopFee(settings)}
+        lineTax={readLineTaxSettings(settings)}
+        taxOffer={orgId ? await workshopTaxOffer(orgId, 'quote', id) : null}
         warrantyTexts={warrantyTextsOf(readWarrantyDefaults(settings))}
         distanceUnit={settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'km' : 'mi'}
         laborPresets={laborPresets}

@@ -3,7 +3,8 @@
 import { useTranslations } from 'next-intl'
 import { Separator } from '@/components/ui/separator'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { netLineTotal, type TaxComponent } from '@/lib/tax'
+import { taxDisplay, type TaxComponent } from '@/lib/tax'
+import type { TaxableShare } from '@/lib/taxable-lines'
 import { taxComponentLabel } from '@/lib/tax-components'
 
 interface InvoiceSummaryProps {
@@ -19,6 +20,8 @@ interface InvoiceSummaryProps {
   taxAmount: number
   taxInclusive: boolean
   taxComponents?: TaxComponent[] | null
+  /** Set when some lines are left out of the tax; adds the "Taxable amount" row. */
+  taxableShare?: TaxableShare | null
   displayTotal: number
   totalPaid: number
   balanceDue: number
@@ -39,6 +42,7 @@ export function InvoiceSummary({
   taxAmount,
   taxInclusive,
   taxComponents,
+  taxableShare = null,
   displayTotal,
   totalPaid,
   balanceDue,
@@ -50,10 +54,13 @@ export function InvoiceSummary({
 
   // Universal display: net per category, net subtotal, net discount, tax, gross total.
   // No-op for exclusive records; back-calculates the net portions for inclusive records.
-  const displayPartsSubtotal = netLineTotal(partsSubtotal, taxRate, taxInclusive)
-  const displayLaborSubtotal = netLineTotal(laborSubtotal, taxRate, taxInclusive)
-  const displaySubtotal = netLineTotal(subtotal, taxRate, taxInclusive)
-  const displayDiscountAmount = netLineTotal(discountAmount, taxRate, taxInclusive)
+  // A line left out of the tax holds none, so only the taxable part of each
+  // figure is taken net; with every line taxed that is the whole figure.
+  const display = taxDisplay({ taxRate, taxInclusive })
+  const displayPartsSubtotal = display.mixed(partsSubtotal, taxableShare?.parts)
+  const displayLaborSubtotal = display.mixed(laborSubtotal, taxableShare?.labor)
+  const displaySubtotal = display.mixed(subtotal, taxableShare?.subtotal)
+  const displayDiscountAmount = display.discount(discountAmount, subtotal, taxableShare?.subtotal)
 
   return (
     <div className="rounded-lg border p-3">
@@ -87,6 +94,12 @@ export function InvoiceSummary({
             <span className="text-destructive">
               {formatCurrency(-displayDiscountAmount, currencyCode)}
             </span>
+          </div>
+        )}
+        {taxableShare && taxRate > 0 && (
+          <div className="flex justify-between text-sm" data-testid="taxable-amount-row">
+            <span className="text-muted-foreground">{t('taxableAmount')}</span>
+            <span>{formatCurrency(taxableShare.taxableAmount, currencyCode)}</span>
           </div>
         )}
         {taxComponents && taxComponents.length > 0 ? (

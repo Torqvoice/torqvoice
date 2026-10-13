@@ -161,6 +161,7 @@ export function DetailsRightColumn({
         taxAmount={formState.taxAmount}
         taxInclusive={formState.taxInclusive}
         taxComponents={formState.taxComponents}
+        taxableShare={formState.taxableShare}
         totalAmount={formState.totalAmount}
         currencyCode={currencyCode}
       />

@@ -1,6 +1,8 @@
 import { discountAmountFor } from '@/lib/tax'
 import { db } from '@/lib/db'
 import { refreshShopFeeLines } from './shopFeeLines'
+import { serviceRecordLineSums } from './lineSums'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
@@ -27,6 +29,8 @@ export interface AddPartInput {
   total: number
   unitCost: number
   inventoryPartId?: string | null
+  /** Left out, the line takes the workshop's answer for parts. */
+  taxable?: boolean
 }
 
 export class AddPartError extends Error {
@@ -68,6 +72,8 @@ export async function addPart(args: {
   })
   if (!record) throw new AddPartError('job_not_found', 'Service record not found')
 
+  const taxable = input.taxable ?? (await loadTaxApplies(organizationId)).parts
+
   const part = await db.$transaction(async (tx) => {
     const created = await tx.servicePart.create({
       data: {
@@ -80,36 +86,28 @@ export async function addPart(args: {
         total: input.total,
         unitCost: input.unitCost,
         inventoryPartId: input.inventoryPartId || null,
+        taxable,
         serviceRecordId: record.id,
       },
     })
 
     await refreshShopFeeLines(tx, record.id, organizationId)
 
-    const [partsAgg, laborAgg] = await Promise.all([
-      tx.servicePart.aggregate({
-        where: { serviceRecordId: record.id },
-        _sum: { total: true },
-      }),
-      tx.serviceLabor.aggregate({
-        where: { serviceRecordId: record.id },
-        _sum: { total: true },
-      }),
-    ])
-
-    const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
+    const sums = await serviceRecordLineSums(tx, record.id)
+    const subtotal = sums.subtotal
     const discountAmount = discountAmountFor(subtotal, record.discountType, record.discountValue)
-    const { taxAmount, totalAmount, taxComponents } = documentTotals({
+    const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
       subtotal,
       discountAmount,
       taxRate: record.taxRate,
       taxInclusive: record.taxInclusive,
       taxComponents: record.taxComponents,
+      taxableSubtotal: sums.taxableSubtotal,
     })
 
     await tx.serviceRecord.update({
       where: { id: record.id },
-      data: { subtotal, taxAmount, totalAmount, taxComponents },
+      data: { subtotal, taxAmount, totalAmount, taxComponents, taxableSubtotal },
     })
 
     // Deduct stock for the newly added line (delta from empty).

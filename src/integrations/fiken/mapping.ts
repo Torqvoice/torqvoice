@@ -310,22 +310,50 @@ export function buildSale(inv: AccountingInvoice, o: SaleOptions): Record<string
   const vat = taxable ? toCents(inv.taxAmount) : 0
   const net = gross - vat
   const vatType = taxable && o.vatType ? o.vatType : o.zeroVatType
-  const accountFor = (kind: 'labor' | 'part') =>
-    (!taxable && o.zeroAccount) || (kind === 'labor' ? o.laborAccount : o.partsAccount)
+  // A line carries VAT when the invoice does and the line is not left out of
+  // it. One that is left out is booked as a sale without VAT, like a whole
+  // invoice without VAT is: its own VAT type, and the account for such sales
+  // when the workshop has named one.
+  const carries = (line: AccountingInvoice['lines'][number]) => taxable && line.taxable
+  const accountFor = (line: { kind: 'labor' | 'part'; taxable: boolean }) =>
+    (!(taxable && line.taxable) && o.zeroAccount) ||
+    (line.kind === 'labor' ? o.laborAccount : o.partsAccount)
 
   const charged = inv.lines.filter((l) => toCents(l.total) !== 0)
   const weights = charged.map((l) => toCents(l.total))
   const weightSum = weights.reduce((a, b) => a + b, 0)
   let lines: FikenOrderLine[]
   if (charged.length > 0 && weightSum !== 0 && net !== 0) {
-    const nets = allocate(net, weights)
-    const vats = allocate(vat, nets)
+    let nets: number[]
+    let vats: number[]
+    if (!taxable || charged.every((line) => line.taxable)) {
+      // Every line under the same VAT: the net and the VAT are shared by size.
+      nets = allocate(net, weights)
+      vats = allocate(vat, nets)
+    } else if (inv.taxInclusive) {
+      // Prices with VAT in them: what the customer pays is shared by size,
+      // and the VAT is found inside the shares of the lines that carry it.
+      const grosses = allocate(gross, weights)
+      vats = allocate(
+        vat,
+        charged.map((line, i) => (carries(line) ? grosses[i] : 0))
+      )
+      nets = grosses.map((amount, i) => amount - vats[i])
+    } else {
+      // Prices without VAT: the net is shared by size, and the VAT is put
+      // on the shares of the lines that carry it.
+      nets = allocate(net, weights)
+      vats = allocate(
+        vat,
+        charged.map((line, i) => (carries(line) ? nets[i] : 0))
+      )
+    }
     lines = charged.map((line, i) => ({
       description: lineDescription(line),
       netPrice: nets[i],
       ...(vats[i] !== 0 && { vat: vats[i] }),
-      account: accountFor(line.kind),
-      vatType,
+      account: accountFor(line),
+      vatType: carries(line) ? vatType : o.zeroVatType,
     }))
   } else {
     // An old record with a total and no lines, or lines that cancel out.
@@ -334,7 +362,7 @@ export function buildSale(inv: AccountingInvoice, o: SaleOptions): Record<string
         description: `Faktura ${inv.invoiceNumber ?? ''}`.trim().slice(0, TEXT_MAX),
         netPrice: net,
         ...(vat !== 0 && { vat }),
-        account: accountFor('labor'),
+        account: accountFor({ kind: 'labor', taxable: true }),
         vatType,
       },
     ]

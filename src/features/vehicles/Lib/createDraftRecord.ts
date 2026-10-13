@@ -174,7 +174,8 @@ export async function createDraftRecord(
 
   // The workshop's default tax, components included when it splits its tax.
   // Tax-exempt customers always get a 0% rate regardless of org default.
-  const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap), {
+  const workshopTax = readWorkshopTax(settingsMap)
+  const taxFields = taxFieldsForNewDocument(workshopTax, {
     customerExempt: opts.customerExempt,
   })
 
@@ -244,7 +245,9 @@ export async function createDraftRecord(
   // The workshop's shop fee, on work done to a vehicle. A counter sale is
   // parts over the desk and uses none of the supplies the fee pays for.
   const shopFee = isShopWork ? shopFeeFor(readShopFee(settingsMap), 'workOrder') : null
-  const feeLine = shopFee ? newShopFeeLine(shopFee) : null
+  const feeLine = shopFee
+    ? newShopFeeLine(shopFee, { labor: 0, parts: 0 }, workshopTax.applies.shopFee)
+    : null
   const feeTotals =
     feeLine && feeLine.total > 0
       ? {
@@ -255,6 +258,8 @@ export async function createDraftRecord(
             taxRate: taxFields.taxRate,
             taxInclusive: taxFields.taxInclusive,
             taxComponents: taxFields.taxComponents,
+            // The fee is the job's only line so far.
+            taxableSubtotal: feeLine.taxable ? null : 0,
           }),
         }
       : null

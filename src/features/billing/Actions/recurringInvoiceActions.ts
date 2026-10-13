@@ -2,6 +2,7 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import {
@@ -326,6 +327,7 @@ export async function processRecurringInvoices() {
       })
 
       const results: { id: string; serviceRecordId: string }[] = []
+      const taxApplies = await loadTaxApplies(organizationId)
 
       for (const ri of dueInvoices) {
         const invoiceNumber = await generateInvoiceNumber(organizationId)
@@ -334,12 +336,18 @@ export async function processRecurringInvoices() {
         const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
         const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
         const subtotal = ri.cost + partsSubtotal + laborSubtotal
-        const { taxAmount, totalAmount, taxComponents } = documentTotals({
+        // A template's lines carry no tax choice of their own, so each
+        // invoice it generates follows the workshop's rule on the day.
+        const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
           subtotal,
           discountAmount: 0,
           taxRate: ri.taxRate,
           taxInclusive: ri.taxInclusive,
           taxComponents: ri.taxComponents,
+          taxableSubtotal:
+            ri.cost +
+            (taxApplies.parts ? partsSubtotal : 0) +
+            (taxApplies.labor ? laborSubtotal : 0),
         })
 
         const serviceRecord = await db.$transaction(async (tx) => {
@@ -358,6 +366,7 @@ export async function processRecurringInvoices() {
               taxRate: ri.taxRate,
               taxInclusive: ri.taxInclusive,
               taxComponents,
+              taxableSubtotal,
               taxAmount,
               totalAmount,
               invoiceNumber,
@@ -369,6 +378,7 @@ export async function processRecurringInvoices() {
                   quantity: p.quantity,
                   unitPrice: p.unitPrice,
                   total: lineTotal(p.quantity, p.unitPrice),
+                  taxable: taxApplies.parts,
                 })),
               },
               laborItems: {
@@ -377,6 +387,7 @@ export async function processRecurringInvoices() {
                   hours: l.hours,
                   rate: l.rate,
                   total: l.hours * l.rate,
+                  taxable: taxApplies.labor,
                 })),
               },
             },

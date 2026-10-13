@@ -192,9 +192,23 @@
     "discountFixed": "Sabit",
     "tax": "Vergi",
     "taxIncluded": "Vergi (dahil)",
+    "taxableAmount": "Vergiye tabi tutar",
     "total": "Toplam",
     "inclusiveModeHint": "Satır fiyatları KDV dahil girilir. Toplamlar net + vergi dağılımını gösterir.",
     "partsCost": "Parça maliyeti (dahili)"
+  },
+  "lineTax": {
+    "label": "Bu satırda vergi",
+    "taxedTag": "VERGİ",
+    "untaxedTag": "VERGİSİZ",
+    "taxedHint": "Bu satıra vergi uygulanıyor. Vergi dışında bırakmak için tıklayın.",
+    "untaxedHint": "Bu satıra vergi uygulanmıyor. Vergilendirmek için tıklayın."
+  },
+  "taxOffer": {
+    "noTax": "Bu, vergisiz oluşturuldu. Atölye artık %{rate} uyguluyor.",
+    "otherRate": "Bu, %{current} oranında. Atölye artık %{rate} uyguluyor.",
+    "apply": "%{rate} vergi uygula",
+    "failed": "Vergi güncellenemedi"
   },
   "notes": {
     "title": "Notlar",
@@ -227,6 +241,7 @@
     "discount": "İndirim",
     "tax": "Vergi ({rate}%)",
     "taxIncluded": "Vergi (dahil, %{rate})",
+    "taxableAmount": "Vergiye tabi tutar",
     "total": "Toplam",
     "paid": "Ödendi",
     "balanceDue": "Kalan Bakiye",

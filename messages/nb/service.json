@@ -192,9 +192,23 @@
     "discountFixed": "Fast",
     "tax": "Skatt",
     "taxIncluded": "Avgift (inkl.)",
+    "taxableAmount": "Avgiftspliktig beløp",
     "total": "Total",
     "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift.",
     "partsCost": "Delekostnad (intern)"
+  },
+  "lineTax": {
+    "label": "Avgift på denne linjen",
+    "taxedTag": "AVG.",
+    "untaxedTag": "UTEN AVG.",
+    "taxedHint": "Det beregnes avgift på denne linjen. Klikk for å holde den utenfor avgiften.",
+    "untaxedHint": "Det beregnes ikke avgift på denne linjen. Klikk for å legge avgift på den."
+  },
+  "taxOffer": {
+    "noTax": "Denne ble opprettet uten avgift. Verkstedet beregner nå {rate} %.",
+    "otherRate": "Denne står på {current} %. Verkstedet beregner nå {rate} %.",
+    "apply": "Bruk {rate} % avgift",
+    "failed": "Kunne ikke oppdatere avgiften"
   },
   "notes": {
     "title": "Notater",
@@ -227,6 +241,7 @@
     "discount": "Rabatt",
     "tax": "Skatt ({rate}%)",
     "taxIncluded": "Mva. inkl. ({rate}%)",
+    "taxableAmount": "Avgiftspliktig beløp",
     "total": "Total",
     "paid": "Betalt",
     "balanceDue": "Skyld beløp",

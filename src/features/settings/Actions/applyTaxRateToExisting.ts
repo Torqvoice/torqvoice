@@ -1,5 +1,6 @@
 'use server'
 
+import { taxModeConversion } from '@/lib/tax-mode-conversion'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -56,6 +57,7 @@ export async function applyTaxRateToExisting() {
         select: {
           id: true,
           subtotal: true,
+          taxableSubtotal: true,
           discountAmount: true,
           taxInclusive: true,
           sentAt: true,
@@ -76,6 +78,7 @@ export async function applyTaxRateToExisting() {
         select: {
           id: true,
           subtotal: true,
+          taxableSubtotal: true,
           discountAmount: true,
           taxInclusive: true,
           status: true,
@@ -106,6 +109,8 @@ export async function applyTaxRateToExisting() {
             taxRate: defaultTaxRate,
             taxInclusive: r.taxInclusive,
             taxComponents: defaultComponents,
+            // Which lines are taxed is already on the document; only the rate is new.
+            taxableSubtotal: r.taxableSubtotal,
           })
           await tx.serviceRecord.update({
             where: { id: r.id },
@@ -126,6 +131,8 @@ export async function applyTaxRateToExisting() {
             taxRate: defaultTaxRate,
             taxInclusive: q.taxInclusive,
             taxComponents: defaultComponents,
+            // Which lines are taxed is already on the document; only the rate is new.
+            taxableSubtotal: q.taxableSubtotal,
           })
           await tx.quote.update({
             where: { id: q.id },
@@ -277,13 +284,14 @@ export async function convertRecordsToInclusive() {
         select: {
           id: true,
           subtotal: true,
+          taxableSubtotal: true,
           discountType: true,
           discountValue: true,
           discountAmount: true,
           taxRate: true,
           taxComponents: true,
-          partItems: { select: { id: true, unitPrice: true, total: true } },
-          laborItems: { select: { id: true, rate: true, total: true } },
+          partItems: { select: { id: true, unitPrice: true, total: true, taxable: true } },
+          laborItems: { select: { id: true, rate: true, total: true, taxable: true } },
         },
       })
 
@@ -296,13 +304,14 @@ export async function convertRecordsToInclusive() {
         select: {
           id: true,
           subtotal: true,
+          taxableSubtotal: true,
           discountType: true,
           discountValue: true,
           discountAmount: true,
           taxRate: true,
           taxComponents: true,
-          partItems: { select: { id: true, unitPrice: true, total: true } },
-          laborItems: { select: { id: true, rate: true, total: true } },
+          partItems: { select: { id: true, unitPrice: true, total: true, taxable: true } },
+          laborItems: { select: { id: true, rate: true, total: true, taxable: true } },
         },
       })
 
@@ -311,32 +320,34 @@ export async function convertRecordsToInclusive() {
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
-          const factor = 1 + r.taxRate / 100
-          const newSubtotal = r.subtotal * factor
-          const newDiscountAmount = r.discountAmount * factor
-          // Fixed discount: scale discountValue too. Percentage: leave it alone.
-          const newDiscountValue =
-            r.discountType === 'fixed' ? r.discountValue * factor : r.discountValue
+          // Only the taxable lines hold tax, so only they are re-priced.
+          const moved = taxModeConversion(r, 'inclusive')
 
-          const { taxAmount, totalAmount, taxComponents } = documentTotals({
-            subtotal: newSubtotal,
-            discountAmount: newDiscountAmount,
+          const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
+            subtotal: moved.subtotal,
+            discountAmount: moved.discountAmount,
             taxRate: r.taxRate,
             taxInclusive: true,
             taxComponents: r.taxComponents,
+            taxableSubtotal: moved.taxableSubtotal,
           })
 
           if (r.taxRate > 0) {
             for (const p of r.partItems) {
+              if (!p.taxable) continue
               await tx.servicePart.update({
                 where: { id: p.id },
-                data: { unitPrice: p.unitPrice * factor, total: p.total * factor },
+                data: {
+                  unitPrice: moved.scaleLine(p.unitPrice),
+                  total: moved.scaleLine(p.total),
+                },
               })
             }
             for (const l of r.laborItems) {
+              if (!l.taxable) continue
               await tx.serviceLabor.update({
                 where: { id: l.id },
-                data: { rate: l.rate * factor, total: l.total * factor },
+                data: { rate: moved.scaleLine(l.rate), total: moved.scaleLine(l.total) },
               })
             }
           }
@@ -345,43 +356,47 @@ export async function convertRecordsToInclusive() {
             where: { id: r.id },
             data: {
               taxInclusive: true,
-              subtotal: newSubtotal,
-              discountValue: newDiscountValue,
-              discountAmount: newDiscountAmount,
+              subtotal: moved.subtotal,
+              discountValue: moved.discountValue,
+              discountAmount: moved.discountAmount,
               taxAmount,
               totalAmount,
               taxComponents,
+              taxableSubtotal,
             },
           })
           serviceRecordsUpdated++
         }
 
         for (const q of quotes) {
-          const factor = 1 + q.taxRate / 100
-          const newSubtotal = q.subtotal * factor
-          const newDiscountAmount = q.discountAmount * factor
-          const newDiscountValue =
-            q.discountType === 'fixed' ? q.discountValue * factor : q.discountValue
+          // Only the taxable lines hold tax, so only they are re-priced.
+          const moved = taxModeConversion(q, 'inclusive')
 
-          const { taxAmount, totalAmount, taxComponents } = documentTotals({
-            subtotal: newSubtotal,
-            discountAmount: newDiscountAmount,
+          const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
+            subtotal: moved.subtotal,
+            discountAmount: moved.discountAmount,
             taxRate: q.taxRate,
             taxInclusive: true,
             taxComponents: q.taxComponents,
+            taxableSubtotal: moved.taxableSubtotal,
           })
 
           if (q.taxRate > 0) {
             for (const p of q.partItems) {
+              if (!p.taxable) continue
               await tx.quotePart.update({
                 where: { id: p.id },
-                data: { unitPrice: p.unitPrice * factor, total: p.total * factor },
+                data: {
+                  unitPrice: moved.scaleLine(p.unitPrice),
+                  total: moved.scaleLine(p.total),
+                },
               })
             }
             for (const l of q.laborItems) {
+              if (!l.taxable) continue
               await tx.quoteLabor.update({
                 where: { id: l.id },
-                data: { rate: l.rate * factor, total: l.total * factor },
+                data: { rate: moved.scaleLine(l.rate), total: moved.scaleLine(l.total) },
               })
             }
           }
@@ -390,12 +405,13 @@ export async function convertRecordsToInclusive() {
             where: { id: q.id },
             data: {
               taxInclusive: true,
-              subtotal: newSubtotal,
-              discountValue: newDiscountValue,
-              discountAmount: newDiscountAmount,
+              subtotal: moved.subtotal,
+              discountValue: moved.discountValue,
+              discountAmount: moved.discountAmount,
               taxAmount,
               totalAmount,
               taxComponents,
+              taxableSubtotal,
             },
           })
           quotesUpdated++
@@ -455,13 +471,14 @@ export async function convertRecordsToExclusive() {
         select: {
           id: true,
           subtotal: true,
+          taxableSubtotal: true,
           discountType: true,
           discountValue: true,
           discountAmount: true,
           taxRate: true,
           taxComponents: true,
-          partItems: { select: { id: true, unitPrice: true, total: true } },
-          laborItems: { select: { id: true, rate: true, total: true } },
+          partItems: { select: { id: true, unitPrice: true, total: true, taxable: true } },
+          laborItems: { select: { id: true, rate: true, total: true, taxable: true } },
         },
       })
 
@@ -473,13 +490,14 @@ export async function convertRecordsToExclusive() {
         select: {
           id: true,
           subtotal: true,
+          taxableSubtotal: true,
           discountType: true,
           discountValue: true,
           discountAmount: true,
           taxRate: true,
           taxComponents: true,
-          partItems: { select: { id: true, unitPrice: true, total: true } },
-          laborItems: { select: { id: true, rate: true, total: true } },
+          partItems: { select: { id: true, unitPrice: true, total: true, taxable: true } },
+          laborItems: { select: { id: true, rate: true, total: true, taxable: true } },
         },
       })
 
@@ -488,31 +506,34 @@ export async function convertRecordsToExclusive() {
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
-          const factor = 1 + r.taxRate / 100
-          const newSubtotal = r.subtotal / factor
-          const newDiscountAmount = r.discountAmount / factor
-          const newDiscountValue =
-            r.discountType === 'fixed' ? r.discountValue / factor : r.discountValue
+          // Only the taxable lines hold tax, so only they are re-priced.
+          const moved = taxModeConversion(r, 'exclusive')
 
-          const { taxAmount, totalAmount, taxComponents } = documentTotals({
-            subtotal: newSubtotal,
-            discountAmount: newDiscountAmount,
+          const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
+            subtotal: moved.subtotal,
+            discountAmount: moved.discountAmount,
             taxRate: r.taxRate,
             taxInclusive: false,
             taxComponents: r.taxComponents,
+            taxableSubtotal: moved.taxableSubtotal,
           })
 
           if (r.taxRate > 0) {
             for (const p of r.partItems) {
+              if (!p.taxable) continue
               await tx.servicePart.update({
                 where: { id: p.id },
-                data: { unitPrice: p.unitPrice / factor, total: p.total / factor },
+                data: {
+                  unitPrice: moved.scaleLine(p.unitPrice),
+                  total: moved.scaleLine(p.total),
+                },
               })
             }
             for (const l of r.laborItems) {
+              if (!l.taxable) continue
               await tx.serviceLabor.update({
                 where: { id: l.id },
-                data: { rate: l.rate / factor, total: l.total / factor },
+                data: { rate: moved.scaleLine(l.rate), total: moved.scaleLine(l.total) },
               })
             }
           }
@@ -521,43 +542,47 @@ export async function convertRecordsToExclusive() {
             where: { id: r.id },
             data: {
               taxInclusive: false,
-              subtotal: newSubtotal,
-              discountValue: newDiscountValue,
-              discountAmount: newDiscountAmount,
+              subtotal: moved.subtotal,
+              discountValue: moved.discountValue,
+              discountAmount: moved.discountAmount,
               taxAmount,
               totalAmount,
               taxComponents,
+              taxableSubtotal,
             },
           })
           serviceRecordsUpdated++
         }
 
         for (const q of quotes) {
-          const factor = 1 + q.taxRate / 100
-          const newSubtotal = q.subtotal / factor
-          const newDiscountAmount = q.discountAmount / factor
-          const newDiscountValue =
-            q.discountType === 'fixed' ? q.discountValue / factor : q.discountValue
+          // Only the taxable lines hold tax, so only they are re-priced.
+          const moved = taxModeConversion(q, 'exclusive')
 
-          const { taxAmount, totalAmount, taxComponents } = documentTotals({
-            subtotal: newSubtotal,
-            discountAmount: newDiscountAmount,
+          const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
+            subtotal: moved.subtotal,
+            discountAmount: moved.discountAmount,
             taxRate: q.taxRate,
             taxInclusive: false,
             taxComponents: q.taxComponents,
+            taxableSubtotal: moved.taxableSubtotal,
           })
 
           if (q.taxRate > 0) {
             for (const p of q.partItems) {
+              if (!p.taxable) continue
               await tx.quotePart.update({
                 where: { id: p.id },
-                data: { unitPrice: p.unitPrice / factor, total: p.total / factor },
+                data: {
+                  unitPrice: moved.scaleLine(p.unitPrice),
+                  total: moved.scaleLine(p.total),
+                },
               })
             }
             for (const l of q.laborItems) {
+              if (!l.taxable) continue
               await tx.quoteLabor.update({
                 where: { id: l.id },
-                data: { rate: l.rate / factor, total: l.total / factor },
+                data: { rate: moved.scaleLine(l.rate), total: moved.scaleLine(l.total) },
               })
             }
           }
@@ -566,12 +591,13 @@ export async function convertRecordsToExclusive() {
             where: { id: q.id },
             data: {
               taxInclusive: false,
-              subtotal: newSubtotal,
-              discountValue: newDiscountValue,
-              discountAmount: newDiscountAmount,
+              subtotal: moved.subtotal,
+              discountValue: moved.discountValue,
+              discountAmount: moved.discountAmount,
               taxAmount,
               totalAmount,
               taxComponents,
+              taxableSubtotal,
             },
           })
           quotesUpdated++

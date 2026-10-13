@@ -192,6 +192,7 @@
     "discountFixed": "Fijo",
     "tax": "Impuesto",
     "taxIncluded": "Impuesto (incl.)",
+    "taxableAmount": "Base imponible",
     "total": "Total",
     "inclusiveModeHint": "Los precios por línea se introducen con impuesto incluido. Los totales muestran el desglose neto + impuesto."
   },

@@ -11,6 +11,8 @@ model Quote {
   taxInclusive    Boolean   @default(false)
   /// See ServiceRecord.taxComponents.
   taxComponents   Json?
+  /// See ServiceRecord.taxableSubtotal.
+  taxableSubtotal Float?
   discountType    String?
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)
@@ -114,6 +116,8 @@ model QuotePart {
   unitPrice     Float   @default(0)
   total         Float   @default(0)
   excluded      Boolean @default(false)
+  /// Carried into ServicePart on conversion. See there.
+  taxable       Boolean @default(true)
 
   /// Optional link to the stocked part this line was picked from. Carried into
   /// ServicePart on conversion so the job deducts the right inventory item.
@@ -134,6 +138,8 @@ model QuoteLabor {
   total       Float   @default(0)
   pricingType String  @default("hourly")
   excluded    Boolean @default(false)
+  /// Carried into ServiceLabor on conversion. See there.
+  taxable     Boolean @default(true)
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)

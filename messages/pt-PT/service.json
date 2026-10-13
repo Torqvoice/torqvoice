@@ -192,9 +192,23 @@
     "discountFixed": "Fixo",
     "tax": "IVA",
     "taxIncluded": "IVA (incl.)",
+    "taxableAmount": "Valor tributável",
     "total": "Total",
     "inclusiveModeHint": "Os preços das linhas são introduzidos com IVA incluído. Os totais mostram a divisão entre valor líquido e IVA.",
     "partsCost": "Custo das peças (interno)"
+  },
+  "lineTax": {
+    "label": "Imposto nesta linha",
+    "taxedTag": "IMP.",
+    "untaxedTag": "SEM IMP.",
+    "taxedHint": "Esta linha tem imposto. Clique para a deixar fora do imposto.",
+    "untaxedHint": "Esta linha não tem imposto. Clique para o aplicar."
+  },
+  "taxOffer": {
+    "noTax": "Isto foi criado sem imposto. A oficina cobra agora {rate}%.",
+    "otherRate": "Isto está a {current}%. A oficina cobra agora {rate}%.",
+    "apply": "Aplicar {rate}% de imposto",
+    "failed": "Não foi possível atualizar o imposto"
   },
   "notes": {
     "title": "Notas",
@@ -227,6 +241,7 @@
     "discount": "Desconto",
     "tax": "IVA ({rate}%)",
     "taxIncluded": "IVA (incl., {rate}%)",
+    "taxableAmount": "Valor tributável",
     "total": "Total",
     "paid": "Pago",
     "balanceDue": "Valor em dívida",

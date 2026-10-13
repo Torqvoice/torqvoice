@@ -2,6 +2,8 @@ import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import type { TaxApplies } from '@/lib/taxable-lines'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import { shiftWorkshopTime } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -77,6 +79,7 @@ export function processRecurringInvoices() {
       let processed = 0
       // One settings read per workshop, however many of its invoices are due
       const zones = new Map<string, string>()
+      const applies = new Map<string, TaxApplies>()
 
       for (const ri of dueInvoices) {
         const organizationId = ri.vehicle.organizationId
@@ -93,13 +96,25 @@ export function processRecurringInvoices() {
           const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
           const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
           const subtotal = ri.cost + partsSubtotal + laborSubtotal
-          const { taxAmount, totalAmount, taxComponents } = documentTotals({
+          // A template's lines carry no tax choice of their own, so each
+          // invoice it generates follows the workshop's rule on the day.
+          let taxApplies = applies.get(organizationId)
+          if (!taxApplies) {
+            taxApplies = await loadTaxApplies(organizationId)
+            applies.set(organizationId, taxApplies)
+          }
+          const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
             subtotal,
             discountAmount: 0,
             taxRate: ri.taxRate,
             taxInclusive: ri.taxInclusive,
             taxComponents: ri.taxComponents,
+            taxableSubtotal:
+              ri.cost +
+              (taxApplies.parts ? partsSubtotal : 0) +
+              (taxApplies.labor ? laborSubtotal : 0),
           })
+          const lineTax = taxApplies
 
           await db.$transaction(async (tx) => {
             await tx.serviceRecord.create({
@@ -117,6 +132,7 @@ export function processRecurringInvoices() {
                 taxRate: ri.taxRate,
                 taxInclusive: ri.taxInclusive,
                 taxComponents,
+                taxableSubtotal,
                 taxAmount,
                 totalAmount,
                 invoiceNumber,
@@ -128,6 +144,7 @@ export function processRecurringInvoices() {
                     quantity: p.quantity,
                     unitPrice: p.unitPrice,
                     total: lineTotal(p.quantity, p.unitPrice),
+                    taxable: lineTax.parts,
                   })),
                 },
                 laborItems: {
@@ -137,6 +154,7 @@ export function processRecurringInvoices() {
                     rate: l.rate,
                     total: l.hours * l.rate,
                     pricingType: l.pricingType || 'hourly',
+                    taxable: lineTax.labor,
                   })),
                 },
               },

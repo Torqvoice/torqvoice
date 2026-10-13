@@ -26,6 +26,7 @@ import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
 import { TREATMENT_TYPES } from '../Lib/treatments'
 import { billablePrep, storageLine, treatmentLines } from '../Lib/jobLines'
+import { taxableSubtotalOf } from '@/lib/taxable-lines'
 import { jobNoteWords, seasonNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
@@ -316,10 +317,10 @@ export async function createQuoteFromTireSet(input: unknown) {
       })
       const map = new Map(settings.map((s) => [s.key, s.value]))
 
-      const { taxRate, taxInclusive, taxComponents } = taxFieldsForNewDocument(
-        readWorkshopTax(Object.fromEntries(map)),
-        { customerExempt: set.customer?.taxExempt }
-      )
+      const workshopTax = readWorkshopTax(Object.fromEntries(map))
+      const { taxRate, taxInclusive, taxComponents } = taxFieldsForNewDocument(workshopTax, {
+        customerExempt: set.customer?.taxExempt,
+      })
 
       const prefix = resolveInvoicePrefix(map.get('workshop.quotePrefix') ?? 'QT-')
       const lastQuote = await db.quote.findFirst({
@@ -338,15 +339,19 @@ export async function createQuoteFromTireSet(input: unknown) {
       const lineQuantity = data.quantity ?? set.quantity
       const lineTotal = data.includeTires ? Math.round(unitPrice * lineQuantity * 100) / 100 : 0
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
-      if (data.includeStorage) labor.push(await storageLine(set, data))
+      if (data.includeStorage) labor.push(await storageLine(organizationId, set, data))
       const laborTotal = labor.reduce((sum, line) => sum + line.total, 0)
       const subtotal = Math.round((lineTotal + laborTotal) * 100) / 100
+      // The tires are a part and the storage and prep are services; each is
+      // taxed as the workshop taxes its kind.
+      const tiresTaxable = workshopTax.applies.parts
       const totals = documentTotals({
         subtotal,
         discountAmount: 0,
         taxRate,
         taxInclusive,
         taxComponents,
+        taxableSubtotal: taxableSubtotalOf([{ total: lineTotal, taxable: tiresTaxable }], labor),
       })
 
       const quote = await db.quote.create({
@@ -360,6 +365,7 @@ export async function createQuoteFromTireSet(input: unknown) {
           taxAmount: totals.taxAmount,
           taxInclusive,
           taxComponents: totals.taxComponents,
+          taxableSubtotal: totals.taxableSubtotal,
           totalAmount: totals.totalAmount,
           customerId: set.customerId,
           vehicleId: set.vehicleId,
@@ -382,6 +388,7 @@ export async function createQuoteFromTireSet(input: unknown) {
                       unitPrice,
                       total: lineTotal,
                       inventoryPartId: part?.id ?? null,
+                      taxable: tiresTaxable,
                     },
                   ],
                 },
@@ -462,7 +469,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
       const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
-      if (data.includeStorage) labor.push(await storageLine(set, data))
+      if (data.includeStorage) labor.push(await storageLine(organizationId, set, data))
 
       await db.$transaction(async (tx) => {
         // The tires themselves, which a quote and an add-to-existing already
@@ -635,7 +642,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
       const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
-      if (data.includeStorage) labor.push(await storageLine(set, data))
+      if (data.includeStorage) labor.push(await storageLine(organizationId, set, data))
 
       await db.$transaction(async (tx) => {
         if (data.includeTires) {

@@ -16,7 +16,8 @@ import {
 import { ArrowRight, Car, ClipboardCheck, Users, X } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { netLineTotal } from '@/lib/tax'
+import { taxDisplay } from '@/lib/tax'
+import { WorkshopTaxOfferPrompt } from '@/features/settings/Components/WorkshopTaxOffer'
 import { taxComponentLabel } from '@/lib/tax-components'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { type LockReason, quoteStatusKeepsLock } from '@/lib/document-lock'
@@ -308,21 +309,17 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
         {(() => {
           // Universal display: net per category, net subtotal, net discount, tax, gross total.
           // Same layout as the quote PDF/share view so the user always sees the breakdown.
-          const displayPartsSubtotal = netLineTotal(
-            state.partsSubtotal,
-            state.taxRate,
-            state.taxInclusive
-          )
-          const displayLaborSubtotal = netLineTotal(
-            state.laborSubtotal,
-            state.taxRate,
-            state.taxInclusive
-          )
-          const displaySubtotal = netLineTotal(state.subtotal, state.taxRate, state.taxInclusive)
-          const displayDiscountAmount = netLineTotal(
+          // A line left out of the tax holds none, so only the taxable part
+          // of each figure is taken net.
+          const display = taxDisplay({ taxRate: state.taxRate, taxInclusive: state.taxInclusive })
+          const share = state.taxableShare
+          const displayPartsSubtotal = display.mixed(state.partsSubtotal, share?.parts)
+          const displayLaborSubtotal = display.mixed(state.laborSubtotal, share?.labor)
+          const displaySubtotal = display.mixed(state.subtotal, share?.subtotal)
+          const displayDiscountAmount = display.discount(
             state.discountAmount,
-            state.taxRate,
-            state.taxInclusive
+            state.subtotal,
+            share?.subtotal
           )
           return (
             <div className="rounded-lg border p-3 space-y-2">
@@ -384,6 +381,15 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                     </span>
                   )}
                 </div>
+                {state.taxEnabled && share && state.taxRate > 0 && (
+                  <div
+                    className="flex items-center justify-between text-sm"
+                    data-testid="taxable-amount-row"
+                  >
+                    <span className="text-muted-foreground">{t('totals.taxableAmount')}</span>
+                    <span>{formatCurrency(share.taxableAmount, currencyCode)}</span>
+                  </div>
+                )}
                 {state.taxEnabled && state.taxComponents && state.taxComponents.length > 0 ? (
                   state.taxComponents.map((component) => (
                     <div
@@ -415,6 +421,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                     <span>{formatCurrency(state.taxAmount, currencyCode)}</span>
                   </div>
                 ) : null}
+                <WorkshopTaxOfferPrompt />
                 <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
                   <span>{t('totals.total')}</span>
                   <span>{formatCurrency(state.totalAmount, currencyCode)}</span>

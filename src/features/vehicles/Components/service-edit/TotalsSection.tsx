@@ -10,9 +10,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { netLineTotal, type TaxComponent } from '@/lib/tax'
+import { taxDisplay, type TaxComponent } from '@/lib/tax'
+import type { TaxableShare } from '@/lib/taxable-lines'
 import { taxComponentLabel } from '@/lib/tax-components'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
+import { WorkshopTaxOfferPrompt } from '@/features/settings/Components/WorkshopTaxOffer'
 
 interface TotalsSectionProps {
   partsSubtotal: number
@@ -32,6 +34,8 @@ interface TotalsSectionProps {
   taxInclusive: boolean
   /** One row per tax when the job splits its tax; the rate is then not editable here. */
   taxComponents?: TaxComponent[] | null
+  /** Set when some lines are left out of the tax; adds the "Taxable amount" row. */
+  taxableShare?: TaxableShare | null
   totalAmount: number
   currencyCode: string
 }
@@ -52,6 +56,7 @@ export function TotalsSection({
   taxAmount,
   taxInclusive,
   taxComponents,
+  taxableShare = null,
   totalAmount,
   currencyCode,
 }: TotalsSectionProps) {
@@ -62,10 +67,13 @@ export function TotalsSection({
   // Universal display: net per category, net subtotal, net discount, tax, gross total.
   // Matches the invoice/PDF/share view exactly so the user always sees how the
   // tax breaks down — even when they're entering prices in inclusive mode.
-  const displayPartsSubtotal = netLineTotal(partsSubtotal, taxRate, taxInclusive)
-  const displayLaborSubtotal = netLineTotal(laborSubtotal, taxRate, taxInclusive)
-  const displaySubtotal = netLineTotal(subtotal, taxRate, taxInclusive)
-  const displayDiscountAmount = netLineTotal(discountAmount, taxRate, taxInclusive)
+  // A line left out of the tax holds none, so only the taxable part of each
+  // figure is taken net; with every line taxed that is the whole figure.
+  const display = taxDisplay({ taxRate, taxInclusive })
+  const displayPartsSubtotal = display.mixed(partsSubtotal, taxableShare?.parts)
+  const displayLaborSubtotal = display.mixed(laborSubtotal, taxableShare?.labor)
+  const displaySubtotal = display.mixed(subtotal, taxableShare?.subtotal)
+  const displayDiscountAmount = display.discount(discountAmount, subtotal, taxableShare?.subtotal)
 
   const rows = (
     <div className="space-y-2" data-testid="totals">
@@ -120,6 +128,15 @@ export function TotalsSection({
         )}
       </div>
 
+      {taxEnabled && taxableShare && taxRate > 0 && (
+        // The tax is a percentage of this row, not of the subtotal, once a
+        // line is left out of it; without the row the card would not add up.
+        <div className="flex items-center justify-between text-sm" data-testid="taxable-amount-row">
+          <span className="text-muted-foreground">{t('taxableAmount')}</span>
+          <span>{formatCurrency(taxableShare.taxableAmount, currencyCode)}</span>
+        </div>
+      )}
+
       {taxEnabled && taxComponents && taxComponents.length > 0 ? (
         // A split tax is the workshop's, set once in settings: each part
         // gets its own line here, as it does on the invoice, and the
@@ -151,6 +168,8 @@ export function TotalsSection({
           <span>{formatCurrency(taxAmount, currencyCode)}</span>
         </div>
       ) : null}
+
+      <WorkshopTaxOfferPrompt />
 
       <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
         <span>{t('total')}</span>

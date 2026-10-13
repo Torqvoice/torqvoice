@@ -12,6 +12,11 @@ function fillTemplate(template: string, values: Record<string, string>): string 
  * otherwise the single line every document printed before. A document with
  * no tax prints none.
  *
+ * When some of the document's lines are left out of the tax, a "Taxable
+ * amount" row goes above the tax: the tax is then a percentage of that row
+ * and not of the subtotal, and a sheet that did not say so would not add up
+ * for anyone checking it.
+ *
  * Shared by the invoice and the quote so the two sheets cannot drift.
  */
 export function taxLines(args: {
@@ -22,26 +27,42 @@ export function taxLines(args: {
   linesInclTax: boolean
   labels: Record<string, string>
   money: (value: number) => string
+  /** What the tax was charged on, when that is not the whole document; see printFigures. */
+  taxableAmount?: number | null
 }): TotalLine[] {
   const { taxRate, taxAmount, components, linesInclTax, labels, money } = args
   const L = (key: string, fallback: string) => labels[key] || fallback
+  const taxed: TotalLine[] =
+    args.taxableAmount != null
+      ? [
+          {
+            label: L('taxableAmount', 'Taxable amount'),
+            value: money(args.taxableAmount),
+            kind: 'line',
+          },
+        ]
+      : []
 
   if (components && components.length > 0) {
-    return components.map((component) => ({
-      label: linesInclTax
-        ? fillTemplate(L('taxIncludedNamed', 'Includes {name} ({rate}%)'), {
-            name: component.name,
-            rate: String(component.rate),
-          })
-        : taxComponentLabel(component),
-      value: money(component.amount),
-      kind: 'line' as const,
-    }))
+    return [
+      ...taxed,
+      ...components.map((component) => ({
+        label: linesInclTax
+          ? fillTemplate(L('taxIncludedNamed', 'Includes {name} ({rate}%)'), {
+              name: component.name,
+              rate: String(component.rate),
+            })
+          : taxComponentLabel(component),
+        value: money(component.amount),
+        kind: 'line' as const,
+      })),
+    ]
   }
 
   if (taxRate <= 0) return []
   const rate = { rate: String(taxRate) }
   return [
+    ...taxed,
     {
       label: linesInclTax
         ? fillTemplate(L('taxIncluded', 'Includes tax ({rate}%)'), rate)

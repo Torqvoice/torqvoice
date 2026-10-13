@@ -1,5 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { calculateTotals, discountAmountFor } from '@/lib/tax'
+import { calculateTotals, discountAmountFor, storedTaxableSubtotal } from '@/lib/tax'
+import {
+  TAX_APPLIES_TO_ALL,
+  type TaxApplies,
+  type TaxableShare,
+  taxableLaborTotal,
+  taxablePartsTotal,
+} from '@/lib/taxable-lines'
 import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
@@ -22,6 +29,7 @@ export function useServiceFormState({
   record,
   locked = false,
   shopFee = null,
+  taxApplies = TAX_APPLIES_TO_ALL,
 }: {
   vehicleId: string | null
   initialData: InitialData
@@ -32,6 +40,8 @@ export function useServiceFormState({
   shopFee?: ShopFeeConfig | null
   /** A locked invoice refuses saves, so it must not queue one. */
   locked?: boolean
+  /** What a line that has not chosen is taxed as: the workshop's rule for its kind. */
+  taxApplies?: TaxApplies
 }) {
   // Form state
   const [loading, setLoading] = useState(false)
@@ -275,17 +285,33 @@ export function useServiceFormState({
   const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0)
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
+  // The tax is charged on the taxable lines alone. A line says whether it
+  // is taxed, and one that has not been asked follows the workshop's rule
+  // for its kind; the server settles it the same way when the job is saved.
+  const taxableParts = taxablePartsTotal(partItems, taxApplies)
+  const taxableLabor = taxableLaborTotal(laborItems, taxApplies)
+  const taxableSubtotal = storedTaxableSubtotal(subtotal, taxableParts + taxableLabor)
   const {
     taxAmount,
     totalAmount,
     components: taxComponents,
+    taxableAmount,
   } = calculateTotals({
     subtotal,
     discountAmount,
     taxRate,
     taxInclusive,
     components: taxComponentDefinitions,
+    taxableSubtotal,
   })
+  /**
+   * How much of each figure is taxed, for the totals card; null while every
+   * line is taxed, which leaves the card showing what it always has.
+   */
+  const taxableShare: TaxableShare | null =
+    taxableSubtotal === null
+      ? null
+      : { parts: taxableParts, labor: taxableLabor, subtotal: taxableSubtotal, taxableAmount }
 
   const [localManuallyPaid, setLocalManuallyPaid] = useState(record.manuallyPaid)
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
@@ -507,6 +533,7 @@ export function useServiceFormState({
     discountAmount,
     taxAmount,
     totalAmount,
+    taxableShare,
     displayTotal,
     totalPaid,
     balanceDue,

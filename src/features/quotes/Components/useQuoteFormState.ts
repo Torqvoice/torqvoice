@@ -20,7 +20,14 @@ import type {
   ConversionResolutions,
 } from '@/features/quotes/Lib/conversionConflicts'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
-import { calculateTotals, discountAmountFor } from '@/lib/tax'
+import { calculateTotals, discountAmountFor, storedTaxableSubtotal } from '@/lib/tax'
+import {
+  TAX_APPLIES_TO_ALL,
+  type TaxApplies,
+  type TaxableShare,
+  taxableLaborTotal,
+  taxablePartsTotal,
+} from '@/lib/taxable-lines'
 import { zonedDateInput } from '@/lib/timezone'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { normalizeWarranty, WARRANTY_NONE, type WarrantyFields } from '@/lib/warranty'
@@ -65,6 +72,7 @@ export function useQuoteFormState({
   defaultLaborRate,
   locked = false,
   shopFee = null,
+  taxApplies = TAX_APPLIES_TO_ALL,
   t,
 }: {
   quote: QuoteRecord
@@ -76,6 +84,8 @@ export function useQuoteFormState({
   locked?: boolean
   /** The workshop's shop fee; a percentage one is re-priced as lines change. */
   shopFee?: ShopFeeConfig | null
+  /** What a line that has not chosen is taxed as: the workshop's rule for its kind. */
+  taxApplies?: TaxApplies
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }) {
@@ -110,6 +120,9 @@ export function useQuoteFormState({
       unitPrice: p.unitPrice,
       total: p.total,
       excluded: p.excluded ?? false,
+      // The line's own answer; left out, a save would let the workshop's
+      // default overwrite what had been chosen.
+      taxable: p.taxable,
       inventoryPartId: p.inventoryPartId ?? null,
       // Evaluated once, on settled values from the database; see
       // isPriceOverridden for why it must not be recomputed while typing.
@@ -129,6 +142,7 @@ export function useQuoteFormState({
       total: l.total,
       pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
       excluded: l.excluded ?? false,
+      taxable: l.taxable,
     }))
   )
   const [taxRate, setTaxRate] = useState(quote.taxRate ?? defaultTaxRate)
@@ -302,17 +316,36 @@ export function useQuoteFormState({
 
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
+  // The tax is charged on the taxable lines the customer kept. A line says
+  // whether it is taxed, and one that has not been asked follows the
+  // workshop's rule for its kind; the server settles it the same way.
+  const taxableParts = taxablePartsTotal(
+    partItems.filter((p) => !p.excluded),
+    taxApplies
+  )
+  const taxableLabor = taxableLaborTotal(
+    laborItems.filter((l) => !l.excluded),
+    taxApplies
+  )
+  const taxableSubtotal = storedTaxableSubtotal(subtotal, taxableParts + taxableLabor)
   const {
     taxAmount,
     totalAmount,
     components: taxComponents,
+    taxableAmount,
   } = calculateTotals({
     subtotal,
     discountAmount,
     taxRate,
     taxInclusive,
     components: taxComponentDefinitions,
+    taxableSubtotal,
   })
+  /** How much of each figure is taxed; null while every counted line is. */
+  const taxableShare: TaxableShare | null =
+    taxableSubtotal === null
+      ? null
+      : { parts: taxableParts, labor: taxableLabor, subtotal: taxableSubtotal, taxableAmount }
 
   // Cost, markup and price stay consistent with each other; repricePartRow
   // owns which of them moves, and work order parts use the same rules.
@@ -707,6 +740,7 @@ export function useQuoteFormState({
     formRef,
     // Computed
     partsSubtotal,
+    taxableShare,
     laborSubtotal,
     subtotal,
     discountAmount,

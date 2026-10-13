@@ -192,9 +192,23 @@
     "discountFixed": "Stały",
     "tax": "Podatek",
     "taxIncluded": "Podatek (zaw.)",
+    "taxableAmount": "Podstawa opodatkowania",
     "total": "Razem",
     "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek.",
     "partsCost": "Koszt części (wewnętrzny)"
+  },
+  "lineTax": {
+    "label": "Podatek od tej pozycji",
+    "taxedTag": "POD.",
+    "untaxedTag": "BEZ POD.",
+    "taxedHint": "Od tej pozycji naliczany jest podatek. Kliknij, aby wyłączyć ją z podatku.",
+    "untaxedHint": "Od tej pozycji nie jest naliczany podatek. Kliknij, aby go naliczyć."
+  },
+  "taxOffer": {
+    "noTax": "Ten dokument utworzono bez podatku. Warsztat nalicza teraz {rate}%.",
+    "otherRate": "Ten dokument ma stawkę {current}%. Warsztat nalicza teraz {rate}%.",
+    "apply": "Zastosuj podatek {rate}%",
+    "failed": "Nie udało się zaktualizować podatku"
   },
   "notes": {
     "title": "Notatki",
@@ -227,6 +241,7 @@
     "discount": "Rabat",
     "tax": "Podatek ({rate}%)",
     "taxIncluded": "Podatek (zaw., {rate}%)",
+    "taxableAmount": "Podstawa opodatkowania",
     "total": "Razem",
     "paid": "Zapłacone",
     "balanceDue": "Pozostało do Zapłaty",

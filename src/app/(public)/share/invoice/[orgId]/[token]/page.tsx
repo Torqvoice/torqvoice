@@ -105,6 +105,7 @@ export default async function PublicInvoicePage({
       category: p.category,
       unitPrice: p.unitPrice,
       total: p.total,
+      taxable: p.taxable,
     })),
     attachments: record.attachments
       .filter((att) => att.includeInInvoice !== false)

@@ -192,6 +192,7 @@
     "discountFixed": "Stały",
     "tax": "Podatek",
     "taxIncluded": "Podatek (zaw.)",
+    "taxableAmount": "Podstawa opodatkowania",
     "total": "Suma",
     "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek."
   },

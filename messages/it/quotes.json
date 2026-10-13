@@ -192,6 +192,7 @@
     "discountFixed": "Fisso",
     "tax": "IVA",
     "taxIncluded": "IVA (incl.)",
+    "taxableAmount": "Imponibile",
     "total": "Totale",
     "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta."
   },

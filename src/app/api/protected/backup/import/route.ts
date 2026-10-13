@@ -75,6 +75,15 @@ async function parseBackup(
   return { backup, files: null }
 }
 
+/**
+ * A document's taxable subtotal as the backup holds it: the figure when some
+ * of its lines were untaxed, null (the whole subtotal) otherwise, which is
+ * also what every backup from before the column existed says by omission.
+ */
+function storedTaxableSubtotalFromBackup(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null
+}
+
 /** A foreign key from the backup, kept only when this import restored its target. */
 function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): string | null {
   return typeof id === 'string' && id && restored?.has(id) ? id : null
@@ -153,6 +162,7 @@ async function importServiceRecordTree(
       taxAmount: (sr.taxAmount as number) || 0,
       taxInclusive: (sr.taxInclusive as boolean) ?? false,
       taxComponents: taxComponentsForCopy(sr.taxComponents),
+      taxableSubtotal: storedTaxableSubtotalFromBackup(sr.taxableSubtotal),
       totalAmount: (sr.totalAmount as number) || 0,
       invoiceNumber: (sr.invoiceNumber as string) || null,
       discountType: (sr.discountType as string) || null,
@@ -210,6 +220,9 @@ async function importServiceRecordTree(
         // Inventory parts are restored earlier in this transaction with their
         // ids preserved, so the stock link survives a restore verbatim.
         inventoryPartId: (p.inventoryPartId as string) || null,
+        // A backup taken before lines could be untaxed has no flag: every
+        // line in it was taxed. One that says false is restored as it was.
+        taxable: p.taxable !== false,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -246,6 +259,10 @@ async function importServiceRecordTree(
         hours: (l.hours as number) || 0,
         rate: (l.rate as number) || 0,
         total: (l.total as number) || 0,
+        // How the line is priced is what makes a shop fee a shop fee; left
+        // out, a restored fee came back as an hour of labor.
+        pricingType: (l.pricingType as string) || 'hourly',
+        taxable: l.taxable !== false,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -1107,6 +1124,7 @@ export async function POST(request: NextRequest) {
               taxAmount: (q.taxAmount as number) || 0,
               taxInclusive: (q.taxInclusive as boolean) ?? false,
               taxComponents: taxComponentsForCopy(q.taxComponents),
+              taxableSubtotal: storedTaxableSubtotalFromBackup(q.taxableSubtotal),
               discountType: (q.discountType as string) || null,
               discountValue: (q.discountValue as number) || 0,
               discountAmount: (q.discountAmount as number) || 0,
@@ -1142,6 +1160,7 @@ export async function POST(request: NextRequest) {
                 // Same-transaction inventory restore keeps ids, so the link
                 // carried into ServicePart on conversion stays intact.
                 inventoryPartId: (p.inventoryPartId as string) || null,
+                taxable: p.taxable !== false,
                 quoteId: q.id as string,
               })),
             })
@@ -1157,6 +1176,11 @@ export async function POST(request: NextRequest) {
                 hours: (l.hours as number) || 0,
                 rate: (l.rate as number) || 0,
                 total: (l.total as number) || 0,
+                pricingType: (l.pricingType as string) || 'hourly',
+                // A line the customer declined stays declined; left out, it
+                // came back counted in a total that never included it.
+                excluded: (l.excluded as boolean) || false,
+                taxable: l.taxable !== false,
                 quoteId: q.id as string,
               })),
             })
