@@ -292,6 +292,7 @@ export function QuotePageClient({
     />
   )
 
+  const tTaxOffer = useTranslations('service.taxOffer')
   const taxOfferValue = useTaxOfferValue({
     offer: taxOffer,
     kind: 'quote',
@@ -300,8 +301,12 @@ export function QuotePageClient({
     finished: state.status !== 'draft',
     taxRate: state.taxRate,
     saveFirst: async () => {
-      if (state.hasUnsavedChanges) await state.saveNow()
+      if (state.isDirty()) await state.saveNow()
+      // The save ends a render before the page hears of it.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      return !state.isDirty()
     },
+    unsavedMessage: tTaxOffer('saveFirst'),
   })
 
   return (

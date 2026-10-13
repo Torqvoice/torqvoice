@@ -209,7 +209,8 @@
     "noTax": "Esto se creó sin impuesto. El taller cobra ahora un {rate} %.",
     "otherRate": "Esto está al {current} %. El taller cobra ahora un {rate} %.",
     "apply": "Aplicar {rate} % de impuesto",
-    "failed": "No se pudo actualizar el impuesto"
+    "failed": "No se pudo actualizar el impuesto",
+    "saveFirst": "Guarda primero los cambios y después aplica el impuesto."
   },
   "notes": {
     "title": "Notas",

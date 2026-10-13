@@ -519,6 +519,12 @@ export function useServiceFormState({
     flashSaved,
     markDirty,
     saveNow,
+    /**
+     * Whether edits are still unsaved, read at the moment of the call. For
+     * code that awaits saveNow and has to know whether the save went
+     * through: a save the rules refuse resolves too, and leaves this true.
+     */
+    isDirty: () => hasUnsavedChangesRef.current,
     // Notes
     notesRef,
     handleNotesChange,

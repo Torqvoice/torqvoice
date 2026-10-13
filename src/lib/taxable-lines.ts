@@ -140,3 +140,25 @@ export interface TaxableShare {
   /** The "Taxable amount" a totals box shows above the tax. */
   taxableAmount: number
 }
+
+/**
+ * The sum of a template's lines that the workshop taxes today, for the
+ * invoice about to be generated from it. A template's lines carry no tax
+ * choice of their own, so each follows the rule for its kind; a shop fee is
+ * a labor row told apart by how it is priced, and has its own rule.
+ */
+export function recurringTaxableSubtotal(
+  template: {
+    cost: number
+    templateParts: { quantity: number; unitPrice: number }[]
+    templateLabor: { hours: number; rate: number; pricingType?: string | null }[]
+  },
+  applies: TaxApplies
+): number {
+  const parts = template.templateParts.reduce((sum, p) => sum + p.quantity * p.unitPrice, 0)
+  const labor = template.templateLabor.reduce(
+    (sum, l) => (laborTaxable(l, applies) ? sum + l.hours * l.rate : sum),
+    0
+  )
+  return template.cost + (applies.parts ? parts : 0) + labor
+}

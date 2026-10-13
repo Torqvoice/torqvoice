@@ -83,16 +83,25 @@ export function useTaxOfferValue(args: {
   locked: boolean
   finished: boolean
   taxRate: number
-  /** Saves what is on screen first, so the reload after applying loses nothing. */
-  saveFirst: () => Promise<void>
+  /**
+   * Saves what is on screen and says whether the page is clean afterwards.
+   * A save the form refuses (a row without a name, a locked document)
+   * resolves like any other, so the answer has to be asked for: applying
+   * the tax ends in a reload, and a reload over unsaved edits loses them.
+   */
+  saveFirst: () => Promise<boolean>
+  /** Shown when that save did not go through. */
+  unsavedMessage: string
 }): TaxOfferValue | null {
-  const { offer, kind, id, locked, finished, taxRate, saveFirst } = args
+  const { offer, kind, id, locked, finished, taxRate, saveFirst, unsavedMessage } = args
   if (!offer || locked || finished || ratesMatch(taxRate, offer.rate)) return null
   return {
     rate: offer.rate,
     currentRate: taxRate,
     apply: async () => {
-      await saveFirst()
+      // Nothing is applied and nothing reloaded over edits that are still
+      // on screen only; the form has already said what is wrong with them.
+      if (!(await saveFirst())) throw new Error(unsavedMessage)
       const result = await applyWorkshopTaxToDocument({ kind, id })
       if (!result.success) throw new Error(result.error || '')
       // The editor holds the rate, the split and every line's flag in its own

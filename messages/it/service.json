@@ -209,7 +209,8 @@
     "noTax": "Questo documento è stato creato senza imposta. L'officina ora applica il {rate}%.",
     "otherRate": "Questo documento è al {current}%. L'officina ora applica il {rate}%.",
     "apply": "Applica il {rate}% di imposta",
-    "failed": "Impossibile aggiornare l'imposta"
+    "failed": "Impossibile aggiornare l'imposta",
+    "saveFirst": "Salva prima le modifiche, poi applica l'imposta."
   },
   "notes": {
     "title": "Note",

@@ -209,7 +209,8 @@
     "noTax": "Isto foi criado sem imposto. A oficina agora cobra {rate}%.",
     "otherRate": "Isto está em {current}%. A oficina agora cobra {rate}%.",
     "apply": "Aplicar {rate}% de imposto",
-    "failed": "Não foi possível atualizar o imposto"
+    "failed": "Não foi possível atualizar o imposto",
+    "saveFirst": "Salve as alterações primeiro e depois aplique o imposto."
   },
   "notes": {
     "title": "Notas",

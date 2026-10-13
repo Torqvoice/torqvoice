@@ -209,7 +209,8 @@
     "noTax": "Denne ble opprettet uten avgift. Verkstedet beregner nå {rate} %.",
     "otherRate": "Denne står på {current} %. Verkstedet beregner nå {rate} %.",
     "apply": "Bruk {rate} % avgift",
-    "failed": "Kunne ikke oppdatere avgiften"
+    "failed": "Kunne ikke oppdatere avgiften",
+    "saveFirst": "Lagre endringene først, og bruk deretter avgiften."
   },
   "notes": {
     "title": "Notater",

@@ -209,7 +209,8 @@
     "noTax": "Dies wurde ohne Steuer erstellt. Die Werkstatt berechnet jetzt {rate} %.",
     "otherRate": "Dies steht auf {current} %. Die Werkstatt berechnet jetzt {rate} %.",
     "apply": "{rate} % Steuer anwenden",
-    "failed": "Die Steuer konnte nicht aktualisiert werden"
+    "failed": "Die Steuer konnte nicht aktualisiert werden",
+    "saveFirst": "Speichern Sie zuerst Ihre Änderungen und wenden Sie dann die Steuer an."
   },
   "notes": {
     "title": "Notizen",

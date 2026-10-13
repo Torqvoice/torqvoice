@@ -209,7 +209,8 @@
     "noTax": "Ten dokument utworzono bez podatku. Warsztat nalicza teraz {rate}%.",
     "otherRate": "Ten dokument ma stawkę {current}%. Warsztat nalicza teraz {rate}%.",
     "apply": "Zastosuj podatek {rate}%",
-    "failed": "Nie udało się zaktualizować podatku"
+    "failed": "Nie udało się zaktualizować podatku",
+    "saveFirst": "Najpierw zapisz zmiany, a potem zastosuj podatek."
   },
   "notes": {
     "title": "Notatki",

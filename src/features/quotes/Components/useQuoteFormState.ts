@@ -550,6 +550,10 @@ export function useQuoteFormState({
     }
   }
 
+  // Read through a ref by code that awaits a save and must know its outcome.
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
+  hasUnsavedChangesRef.current = hasUnsavedChanges
+
   const saveNow = async () => {
     if (!formRef.current || isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
@@ -736,6 +740,8 @@ export function useQuoteFormState({
     defaultValidDate,
     // Unsaved
     hasUnsavedChanges,
+    /** Whether edits are still unsaved, read at the moment of the call. */
+    isDirty: () => hasUnsavedChangesRef.current,
     showSaved,
     formRef,
     // Computed

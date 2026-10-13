@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
-import { laborTaxable, type TaxApplies } from '@/lib/taxable-lines'
+import { laborTaxable, recurringTaxableSubtotal, type TaxApplies } from '@/lib/taxable-lines'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import { shiftWorkshopTime } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -12,27 +12,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
  * One period on from `current`, at the same time on the workshop's clock.
  * Shared with the manual "run now" action so both paths agree.
  */
-/**
- * The sum of a template's lines that the workshop taxes today, for the
- * invoice about to be generated from it. A template's lines carry no tax
- * choice of their own, so each follows the rule for its kind; a shop fee is
- * a labor row told apart by how it is priced, and has its own rule.
- */
-export function recurringTaxableSubtotal(
-  template: {
-    cost: number
-    templateParts: { quantity: number; unitPrice: number }[]
-    templateLabor: { hours: number; rate: number; pricingType?: string | null }[]
-  },
-  applies: TaxApplies
-): number {
-  const parts = template.templateParts.reduce((sum, p) => sum + p.quantity * p.unitPrice, 0)
-  const labor = template.templateLabor.reduce(
-    (sum, l) => (laborTaxable(l, applies) ? sum + l.hours * l.rate : sum),
-    0
-  )
-  return template.cost + (applies.parts ? parts : 0) + labor
-}
+export { recurringTaxableSubtotal }
 
 export function calculateNextRunDate(current: Date, frequency: string, timeZone: string): Date {
   switch (frequency) {

@@ -209,7 +209,8 @@
     "noTax": "This was created without tax. The workshop now charges {rate}%.",
     "otherRate": "This is at {current}%. The workshop now charges {rate}%.",
     "apply": "Apply {rate}% tax",
-    "failed": "Could not update the tax"
+    "failed": "Could not update the tax",
+    "saveFirst": "Save your changes first, then apply the tax."
   },
   "notes": {
     "title": "Notes",

@@ -209,7 +209,8 @@
     "noTax": "Ce document a été créé sans taxe. L'atelier applique maintenant {rate} %.",
     "otherRate": "Ce document est à {current} %. L'atelier applique maintenant {rate} %.",
     "apply": "Appliquer {rate} % de taxe",
-    "failed": "Impossible de mettre à jour la taxe"
+    "failed": "Impossible de mettre à jour la taxe",
+    "saveFirst": "Enregistrez d'abord vos modifications, puis appliquez la taxe."
   },
   "notes": {
     "title": "Notes",

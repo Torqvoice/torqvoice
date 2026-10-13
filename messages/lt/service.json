@@ -209,7 +209,8 @@
     "noTax": "Tai sukurta be mokesčio. Dirbtuvės dabar taiko {rate} %.",
     "otherRate": "Čia taikoma {current} %. Dirbtuvės dabar taiko {rate} %.",
     "apply": "Taikyti {rate} % mokestį",
-    "failed": "Nepavyko atnaujinti mokesčio"
+    "failed": "Nepavyko atnaujinti mokesčio",
+    "saveFirst": "Pirmiausia išsaugokite pakeitimus, tada taikykite mokestį."
   },
   "notes": {
     "title": "Pastabos",

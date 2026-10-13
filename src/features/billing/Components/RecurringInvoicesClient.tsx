@@ -40,7 +40,7 @@ import { TableCellLink } from '@/components/table-cell-link'
 import { Car, Loader2, Plus, Pause, Play, Trash2, User, Zap, X } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { calculateTotals } from '@/lib/tax'
-import { TAX_APPLIES_TO_ALL, type TaxApplies } from '@/lib/taxable-lines'
+import { recurringTaxableSubtotal, TAX_APPLIES_TO_ALL, type TaxApplies } from '@/lib/taxable-lines'
 import {
   createRecurringInvoice,
   toggleRecurringInvoice,
@@ -70,6 +70,8 @@ interface TemplateLabor {
   description: string
   hours: number
   rate: number
+  /** A shop fee is a labor row told apart by this, and is taxed by its own rule. */
+  pricingType?: string | null
 }
 
 interface RecurringInvoice {
@@ -359,10 +361,8 @@ export default function RecurringInvoicesClient({
                   discountAmount: 0,
                   taxRate: inv.taxRate,
                   taxInclusive: inv.taxInclusive,
-                  taxableSubtotal:
-                    inv.cost +
-                    (taxApplies.parts ? partsTotal : 0) +
-                    (taxApplies.labor ? laborTotal : 0),
+                  // The same rule the generated invoice is totalled by.
+                  taxableSubtotal: recurringTaxableSubtotal(inv, taxApplies),
                 })
                 return (
                   <div key={inv.id} className="rounded-lg border bg-card p-3">
@@ -446,10 +446,8 @@ export default function RecurringInvoicesClient({
                       discountAmount: 0,
                       taxRate: inv.taxRate,
                       taxInclusive: inv.taxInclusive,
-                      taxableSubtotal:
-                        inv.cost +
-                        (taxApplies.parts ? partsTotal : 0) +
-                        (taxApplies.labor ? laborTotal : 0),
+                      // The same rule the generated invoice is totalled by.
+                      taxableSubtotal: recurringTaxableSubtotal(inv, taxApplies),
                     })
 
                     return (

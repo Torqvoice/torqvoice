@@ -209,7 +209,8 @@
     "noTax": "Bu, vergisiz oluşturuldu. Atölye artık %{rate} uyguluyor.",
     "otherRate": "Bu, %{current} oranında. Atölye artık %{rate} uyguluyor.",
     "apply": "%{rate} vergi uygula",
-    "failed": "Vergi güncellenemedi"
+    "failed": "Vergi güncellenemedi",
+    "saveFirst": "Önce değişikliklerinizi kaydedin, sonra vergiyi uygulayın."
   },
   "notes": {
     "title": "Notlar",
