@@ -16,6 +16,7 @@ import { GoogleMark } from '@/components/auth/google-mark'
 import { Separator } from '@/components/ui/separator'
 import { TERMS_URL } from '@/lib/marketing-urls'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
+import { track } from '@/lib/analytics'
 
 export function SignUpForm({
   inviteToken,
@@ -104,6 +105,7 @@ export function SignUpForm({
 
     try {
       const result = await signUp.email({ name, email, password })
+      if (!result.error) track('account:sign_up', { invited: Boolean(inviteToken) })
       if (result.error) {
         const message = result.error.message || t('errors.couldNotCreate')
         const lower = message.toLowerCase()

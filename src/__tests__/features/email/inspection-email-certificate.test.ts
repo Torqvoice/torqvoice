@@ -26,7 +26,10 @@ vi.mock('@/lib/with-auth', () => ({
     }
   },
 }))
-vi.mock('@/lib/features', () => ({ requireFeature: vi.fn() }))
+vi.mock('@/features/email/Lib/emailAllowance', () => ({
+  requireEmailSending: vi.fn().mockResolvedValue('unlimited'),
+  withPlatformMailAllowance: (_org: string, _mode: string, send: () => Promise<unknown>) => send(),
+}))
 vi.mock('@/lib/demo', () => ({ demoGuard: vi.fn() }))
 vi.mock('@/lib/document-lock.server', () => ({ markInvoiceSent: vi.fn(), markQuoteSent: vi.fn() }))
 vi.mock('@/features/invoices/Lib/issueInvoice', () => ({ issueInvoice: vi.fn() }))

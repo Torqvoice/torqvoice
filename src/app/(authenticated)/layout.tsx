@@ -47,6 +47,7 @@ import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { TimeClockProvider } from '@/features/time-tracking/Components/TimeClockProvider'
 import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
 import { SaveShortcutListener } from '@/components/save-shortcut-listener'
+import { AnalyticsIdentity } from '@/components/analytics-identity'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -330,6 +331,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         <RealtimeProvider>
                           <TimeClockProvider technicianIds={technicianIds}>
                             <SaveShortcutListener />
+                            <AnalyticsIdentity
+                              userId={data.userId}
+                              organizationId={data.organizationId}
+                            />
                             <AppSidebar
                               companyLogo={data.companyLogo}
                               organizations={data.organizations}

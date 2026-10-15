@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { useGlassModal } from '@/components/glass-modal'
 import { Gauge, Loader2 } from 'lucide-react'
 import { createOnboardingOrg } from '../Actions/createOnboardingOrg'
+import { track } from '@/lib/analytics'
 
 export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
   const t = useTranslations('onboarding.form')
@@ -35,6 +36,7 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
       if (!result.success) {
         modal.open('error', t('setupFailed'), result.error || t('couldNotCreate'))
       } else {
+        track('workshop:create', { sample_data: loadSampleData })
         router.push(safeRedirectPath(redirectTo))
         router.refresh()
       }

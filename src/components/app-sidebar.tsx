@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { signOut, useSession } from '@/lib/auth-client'
+import { resetAnalytics } from '@/lib/analytics'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -444,6 +445,7 @@ export function AppSidebar({
 
   const handleSignOut = async () => {
     await signOut()
+    resetAnalytics()
     router.push('/auth/sign-in')
   }
 

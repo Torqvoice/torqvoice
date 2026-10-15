@@ -85,6 +85,7 @@
     "title": "Upgrade, um weiterzumachen",
     "maxCustomers": "Ihr Tarif umfasst bis zu {limit} Kunden, und diese Zahl ist erreicht. Mit einem Upgrade legen Sie so viele an, wie Sie brauchen.",
     "maxUsers": "Ihr Tarif umfasst {limit, plural, one {ein Teammitglied} other {# Teammitglieder}}. Mit einem Upgrade laden Sie weitere Personen ein.",
+    "maxPlatformMail": "Ihr Tarif versendet bis zu {limit} E-Mails pro Tag über die Torqvoice-Adresse, und die heutigen sind aufgebraucht. Upgraden Sie, um so viele zu senden, wie Sie brauchen, oder senden Sie den Rest morgen.",
     "generic": "Diese Funktion ist in Ihrem aktuellen Tarif nicht enthalten.",
     "featureNotIncluded": "{feature} ist in Ihrem aktuellen Tarif nicht enthalten.",
     "notNow": "Später"

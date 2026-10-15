@@ -188,3 +188,18 @@ model TeamInvitation {
   @@index([token])
   @@map("team_invitations")
 }
+
+/// Customer mail a workshop sent through the platform's own address in one
+/// day, for the daily cap on plans without custom email
+/// (src/features/email/Lib/emailAllowance.ts). In the database rather than in
+/// memory, so a restart or a second server does not hand out a fresh allowance.
+/// A slot is taken just before a mail goes out and given back if it fails.
+model PlatformMailUsage {
+  organizationId String
+  /// The UTC day, YYYY-MM-DD
+  day            String
+  count          Int    @default(0)
+
+  @@id([organizationId, day])
+  @@map("platform_mail_usage")
+}

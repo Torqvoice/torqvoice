@@ -1,5 +1,6 @@
 'use client'
 
+import { track } from '@/lib/analytics'
 import Link from 'next/link'
 import { create } from 'zustand'
 import { useTranslations } from 'next-intl'
@@ -44,6 +45,7 @@ export function handleGated(
   result: { success?: boolean; error?: string; gated?: GatedFeature } | null | undefined
 ): boolean {
   if (!result?.gated) return false
+  track('plan:gate_show', { feature: result.gated.feature })
   useUpgradeGate.getState().open(result.gated)
   return true
 }
@@ -59,7 +61,9 @@ export function UpgradeGateDialog() {
       ? t('maxCustomers', { limit: gate.limit })
       : gate?.feature === 'maxUsers' && gate.limit != null
         ? t('maxUsers', { limit: gate.limit })
-        : t('generic')
+        : gate?.feature === 'platformMailDaily' && gate.limit != null
+          ? t('maxPlatformMail', { limit: gate.limit })
+          : t('generic')
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
@@ -85,7 +89,14 @@ export function UpgradeGateDialog() {
           <Button size="sm" variant="outline" onClick={close}>
             {t('notNow')}
           </Button>
-          <Button size="sm" asChild onClick={close}>
+          <Button
+            size="sm"
+            asChild
+            onClick={() => {
+              track('plan:upgrade_click', { feature: gate?.feature ?? null })
+              close()
+            }}
+          >
             <Link href="/settings/subscription">{ts('viewPlans')}</Link>
           </Button>
         </DialogFooter>

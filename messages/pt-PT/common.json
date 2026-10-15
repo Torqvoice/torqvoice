@@ -85,6 +85,7 @@
     "title": "Mude de plano para continuar",
     "maxCustomers": "O seu plano inclui até {limit} clientes e já atingiu esse número. Mude de plano para adicionar todos os clientes de que precisa.",
     "maxUsers": "O seu plano inclui {limit, plural, one {um membro da equipa} other {# membros da equipa}}. Mude de plano para convidar mais pessoas.",
+    "maxPlatformMail": "O seu plano envia até {limit} e-mails por dia a partir do endereço da Torqvoice, e os de hoje já foram utilizados. Atualize o plano para enviar quantos precisar ou envie os restantes amanhã.",
     "generic": "Esta funcionalidade não está incluída no seu plano atual.",
     "featureNotIncluded": "{feature} não está incluído no seu plano atual.",
     "notNow": "Agora não"

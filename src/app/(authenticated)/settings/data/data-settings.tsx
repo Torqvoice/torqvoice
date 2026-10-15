@@ -43,6 +43,7 @@ import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { deleteWorkshop } from '@/features/team/Actions/deleteWorkshop'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
 import { signOut } from '@/lib/auth-client'
+import { resetAnalytics } from '@/lib/analytics'
 import type { ReauthRequirement } from '@/lib/reauth'
 import { ReauthField } from './reauth-field'
 import { toast } from 'sonner'
@@ -300,6 +301,7 @@ export function DataSettings({
       const result = await deleteAccount(reauthInput)
       if (result.success) {
         await signOut()
+        resetAnalytics()
         router.push('/auth/sign-in')
       } else {
         setReauthError(result.error || t('account.failedDeleteAccount'))

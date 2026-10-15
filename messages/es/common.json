@@ -85,6 +85,7 @@
     "title": "Mejore su plan para continuar",
     "maxCustomers": "Su plan incluye hasta {limit} clientes y ya ha alcanzado ese número. Mejore el plan para añadir todos los que necesite.",
     "maxUsers": "Su plan incluye {limit, plural, one {un miembro del equipo} other {# miembros del equipo}}. Mejore el plan para invitar a más personas.",
+    "maxPlatformMail": "Su plan envía hasta {limit} correos al día desde la dirección de Torqvoice, y los de hoy ya se han usado. Mejore su plan para enviar todos los que necesite, o envíe el resto mañana.",
     "generic": "Esta función no está incluida en su plan actual.",
     "featureNotIncluded": "{feature} no está incluido en su plan actual.",
     "notNow": "Ahora no"

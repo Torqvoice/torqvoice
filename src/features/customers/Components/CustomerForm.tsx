@@ -1,5 +1,6 @@
 'use client'
 
+import { track } from '@/lib/analytics'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -148,6 +149,7 @@ export function CustomerForm({
       : await createCustomer(data)
 
     if (result.success) {
+      if (!customer) track('customer:create')
       toast.success(customer ? t('customerUpdated') : t('customerCreated'))
       const created = result.data as
         | { id: string; name: string; company: string | null }

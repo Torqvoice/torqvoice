@@ -85,6 +85,7 @@
     "title": "Passez au niveau supérieur pour continuer",
     "maxCustomers": "Votre offre inclut jusqu'à {limit} clients et vous avez atteint ce nombre. Passez au niveau supérieur pour en ajouter autant que nécessaire.",
     "maxUsers": "Votre offre inclut {limit, plural, one {un membre d'équipe} other {# membres d'équipe}}. Passez au niveau supérieur pour inviter d'autres personnes.",
+    "maxPlatformMail": "Votre offre envoie jusqu'à {limit} e-mails par jour depuis l'adresse Torqvoice, et ceux d'aujourd'hui sont épuisés. Passez à une offre supérieure pour en envoyer autant que nécessaire, ou envoyez le reste demain.",
     "generic": "Cette fonctionnalité n'est pas incluse dans votre offre actuelle.",
     "featureNotIncluded": "{feature} n'est pas inclus dans votre offre actuelle.",
     "notNow": "Pas maintenant"

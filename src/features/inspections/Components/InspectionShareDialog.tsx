@@ -1,5 +1,7 @@
 'use client'
 
+import { track } from '@/lib/analytics'
+import { handleGated } from '@/components/upgrade-gate'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -117,11 +119,12 @@ export function InspectionShareDialog({
         attachPdf,
       })
       if (res.success) {
+        track('document:email_send', { document: 'inspection' })
         results.push('Email sent')
         setNotifyEmail(false)
       } else {
         failed = true
-        toast.error(res.error || 'Failed to send email')
+        if (!handleGated(res)) toast.error(res.error || 'Failed to send email')
       }
     }
 

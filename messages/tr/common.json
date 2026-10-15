@@ -85,6 +85,7 @@
     "title": "Devam etmek için planınızı yükseltin",
     "maxCustomers": "Planınız en fazla {limit} müşteri içeriyor ve bu sayıya ulaştınız. İhtiyacınız kadar müşteri eklemek için planınızı yükseltin.",
     "maxUsers": "Planınız {limit, plural, one {bir ekip üyesi} other {# ekip üyesi}} içeriyor. Daha fazla kişi davet etmek için planınızı yükseltin.",
+    "maxPlatformMail": "Planınız Torqvoice adresinden günde en fazla {limit} e-posta gönderir ve bugünkü hakkınız doldu. İhtiyacınız kadar göndermek için planınızı yükseltin veya kalanları yarın gönderin.",
     "generic": "Bu özellik mevcut planınıza dahil değil.",
     "featureNotIncluded": "{feature} mevcut planınıza dahil değil.",
     "notNow": "Şimdi değil"

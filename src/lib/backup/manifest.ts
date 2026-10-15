@@ -373,6 +373,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
     'Remote ids in a connected system, only valid for the connection that created them.',
   IntegrationLog: 'Connector activity log, rewritten every time a job runs.',
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
+  PlatformMailUsage:
+    "Today's count of mail sent through the platform address, for the daily cap; it starts again every day.",
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',
   Session:
