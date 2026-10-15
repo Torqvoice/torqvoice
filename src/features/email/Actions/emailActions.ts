@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
-import { requireFeature } from '@/lib/features'
+import { requireEmailSending } from '@/features/email/Lib/emailAllowance'
 import { demoGuard } from '@/lib/demo'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
@@ -98,7 +98,7 @@ export async function sendQuoteEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      await requireEmailSending(organizationId)
 
       const { quoteId, recipientEmail, message } = input
 
@@ -220,7 +220,7 @@ export async function sendNotificationEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      await requireEmailSending(organizationId)
 
       const settings = await getWorkshopSettings(organizationId)
       if (settings['workshop.emailEnabled'] === 'false') {
@@ -268,7 +268,7 @@ export async function sendInvoiceEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      await requireEmailSending(organizationId)
 
       const { serviceRecordId, recipientEmail, message } = input
 
@@ -383,7 +383,7 @@ export async function sendInspectionEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      await requireEmailSending(organizationId)
 
       const { inspectionId, recipientEmail, message } = input
 

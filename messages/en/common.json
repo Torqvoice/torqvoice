@@ -85,6 +85,7 @@
     "title": "Upgrade to keep going",
     "maxCustomers": "Your plan includes up to {limit} customers, and you have reached that number. Upgrade to add as many as you need.",
     "maxUsers": "Your plan includes {limit, plural, one {one team member} other {# team members}}. Upgrade to invite more people.",
+    "maxPlatformMail": "Your plan sends up to {limit} emails a day from the Torqvoice address, and today's are used. Upgrade to send as many as you need, or send the rest tomorrow.",
     "generic": "This feature is not included in your current plan.",
     "featureNotIncluded": "{feature} is not included in your current plan.",
     "notNow": "Not now"

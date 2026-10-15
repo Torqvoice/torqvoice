@@ -1,5 +1,6 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
 import { useState, useEffect } from 'react'
 import {
   Dialog,
@@ -116,7 +117,7 @@ export function NotifyCustomerDialog({
           : null,
       })
       if (res.success) results.push(t('emailSent'))
-      else toast.error(res.error || t('failedEmail'))
+      else if (!handleGated(res)) toast.error(res.error || t('failedEmail'))
     }
 
     if (results.length > 0) {

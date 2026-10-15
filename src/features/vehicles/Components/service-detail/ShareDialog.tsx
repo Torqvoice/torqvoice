@@ -1,5 +1,7 @@
 'use client'
 
+import { track } from '@/lib/analytics'
+import { handleGated } from '@/components/upgrade-gate'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -107,11 +109,12 @@ export function ShareDialog({
         attachPdf,
       })
       if (res.success) {
+        track('document:email_send', { document: 'invoice' })
         results.push(t('emailSent'))
         setNotifyEmail(false)
       } else {
         failed = true
-        toast.error(res.error || t('failedEmail'))
+        if (!handleGated(res)) toast.error(res.error || t('failedEmail'))
       }
     }
 

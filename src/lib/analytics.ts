@@ -25,12 +25,26 @@ export type AnalyticsEvent =
   | 'work_order:layout_switch'
   /** The invitation to try the overhauled page closed without trying it. */
   | 'work_order:layout_invite_dismiss'
+  /** An account made with email and password. Google sign-ups show as workshop:create. */
+  | 'account:sign_up'
+  /** The onboarding form made the person's first workshop, with or without sample data. */
+  | 'workshop:create'
+  /** A customer saved from the customer form. */
+  | 'customer:create'
+  /** An invoice, quote or inspection emailed to the customer. */
+  | 'document:email_send'
+  /** An action the plan refused; the upgrade dialog opened. */
+  | 'plan:gate_show'
+  /** The upgrade dialog's button to the plans. */
+  | 'plan:upgrade_click'
 
 type Properties = Record<string, string | number | boolean | null>
 
 type Pending =
   | { kind: 'capture'; event: AnalyticsEvent; properties?: Properties }
   | { kind: 'register'; properties: Properties }
+  | { kind: 'identify'; userId: string; organizationId: string }
+  | { kind: 'reset' }
 
 /** A page opened and closed many times before PostHog starts, or on an install that never does. */
 const MAX_PENDING = 20
@@ -58,11 +72,39 @@ export function registerAnalyticsProperties(properties: Properties): void {
   else hold({ kind: 'register', properties })
 }
 
+/**
+ * Ties this browser to the signed-in account and its workshop.
+ *
+ * Without it every browser was a separate person, so someone who signed up
+ * on a laptop and came back on a phone counted as one person who left and
+ * another who arrived. Only ids go to PostHog: no name, no email. The
+ * workshop is a group, so a workshop's activity can be counted whoever in it
+ * did the work.
+ */
+export function identifyUser(userId: string, organizationId: string): void {
+  if (ready) sendIdentify(userId, organizationId)
+  else hold({ kind: 'identify', userId, organizationId })
+}
+
+/** Forgets the account on sign-out, so the next person on this browser is not merged into it. */
+export function resetAnalytics(): void {
+  if (ready) posthog.reset()
+  else hold({ kind: 'reset' })
+}
+
+function sendIdentify(userId: string, organizationId: string) {
+  // Already this person: identify again would only add a request per page.
+  if (posthog.get_distinct_id?.() !== userId) posthog.identify(userId)
+  posthog.group('organization', organizationId)
+}
+
 /** Called by the provider once PostHog has started: sends what was held, in order. */
 export function analyticsStarted(): void {
   ready = true
   for (const item of pending.splice(0)) {
     if (item.kind === 'register') posthog.register(item.properties)
+    else if (item.kind === 'identify') sendIdentify(item.userId, item.organizationId)
+    else if (item.kind === 'reset') posthog.reset()
     else posthog.capture(item.event, item.properties)
   }
 }

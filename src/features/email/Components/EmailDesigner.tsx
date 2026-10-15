@@ -1,5 +1,6 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -420,6 +421,7 @@ export function EmailDesigner({
     setSending(true)
     try {
       const result = await sendTestEmail(inputFor(saved?.name ?? template.name), testEmail)
+      if (handleGated(result)) return
       if (!result.success) throw new Error(result.error)
       setTestOpen(false)
       openModal(

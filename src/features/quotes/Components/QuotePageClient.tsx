@@ -1,5 +1,6 @@
 'use client'
 
+import { track } from '@/lib/analytics'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import { ShopFeeProvider } from '@/features/settings/Components/ShopFeeContext'
@@ -577,7 +578,10 @@ export function QuotePageClient({
                   message,
                   attachPdf,
                 })
-                if (result.success) handleQuoteSent()
+                if (result.success) {
+                  track('document:email_send', { document: 'quote' })
+                  handleQuoteSent()
+                }
                 return result
               }}
             />

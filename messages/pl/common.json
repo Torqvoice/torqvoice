@@ -85,6 +85,7 @@
     "title": "Zmień plan, aby kontynuować",
     "maxCustomers": "Twój plan obejmuje do {limit} klientów i ta liczba została osiągnięta. Zmień plan, aby dodać tylu, ilu potrzebujesz.",
     "maxUsers": "Twój plan obejmuje {limit, plural, one {jednego członka zespołu} few {# członków zespołu} many {# członków zespołu} other {# członka zespołu}}. Zmień plan, aby zaprosić więcej osób.",
+    "maxPlatformMail": "Twój plan wysyła do {limit} e-maili dziennie z adresu Torqvoice, a dzisiejszy limit został wykorzystany. Przejdź na wyższy plan, aby wysyłać bez ograniczeń, lub wyślij resztę jutro.",
     "generic": "Ta funkcja nie jest dostępna w Twoim obecnym planie.",
     "featureNotIncluded": "{feature} nie jest dostępne w Twoim obecnym planie.",
     "notNow": "Nie teraz"

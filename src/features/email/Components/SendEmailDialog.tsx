@@ -1,5 +1,7 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
+import type { GatedFeature } from '@/lib/with-auth'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,7 +21,7 @@ interface SendEmailDialogProps {
     email: string,
     message?: string,
     attachPdf?: boolean
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<{ success: boolean; error?: string; gated?: GatedFeature }>
 }
 
 export function SendEmailDialog({
@@ -44,6 +46,8 @@ export function SendEmailDialog({
       modal.open('success', 'Email Sent', `${entityLabel} has been sent to ${email}`)
       onOpenChange(false)
       setMessage('')
+    } else if (handleGated(result)) {
+      onOpenChange(false)
     } else {
       modal.open('error', 'Error', result.error || 'Failed to send email')
     }

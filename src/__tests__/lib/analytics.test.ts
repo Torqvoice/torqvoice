@@ -6,7 +6,14 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const posthog = vi.hoisted(() => ({ capture: vi.fn(), register: vi.fn() }))
+const posthog = vi.hoisted(() => ({
+  capture: vi.fn(),
+  register: vi.fn(),
+  identify: vi.fn(),
+  group: vi.fn(),
+  reset: vi.fn(),
+  get_distinct_id: vi.fn(),
+}))
 vi.mock('posthog-js', () => ({ default: posthog }))
 
 async function freshAnalytics() {
@@ -15,8 +22,8 @@ async function freshAnalytics() {
 }
 
 beforeEach(() => {
-  posthog.capture.mockReset()
-  posthog.register.mockReset()
+  for (const fn of Object.values(posthog)) fn.mockReset()
+  posthog.get_distinct_id.mockReturnValue('anonymous-browser')
 })
 
 describe('analytics', () => {
@@ -65,5 +72,33 @@ describe('analytics', () => {
     // Were it ever to start, the backlog is capped rather than a hundred views.
     analyticsStarted()
     expect(posthog.capture).toHaveBeenCalledTimes(20)
+  })
+
+  it('ties the browser to the account and workshop, held like any event', async () => {
+    const { identifyUser, analyticsStarted } = await freshAnalytics()
+    identifyUser('user-1', 'org-1')
+    expect(posthog.identify).not.toHaveBeenCalled()
+
+    analyticsStarted()
+    expect(posthog.identify).toHaveBeenCalledWith('user-1')
+    expect(posthog.group).toHaveBeenCalledWith('organization', 'org-1')
+  })
+
+  it('does not identify again on every page once the browser is that account', async () => {
+    const { identifyUser, analyticsStarted } = await freshAnalytics()
+    analyticsStarted()
+    posthog.get_distinct_id.mockReturnValue('user-1')
+    identifyUser('user-1', 'org-2')
+
+    expect(posthog.identify).not.toHaveBeenCalled()
+    // The workshop can change without the person changing.
+    expect(posthog.group).toHaveBeenCalledWith('organization', 'org-2')
+  })
+
+  it('forgets the account on sign-out', async () => {
+    const { resetAnalytics, analyticsStarted } = await freshAnalytics()
+    analyticsStarted()
+    resetAnalytics()
+    expect(posthog.reset).toHaveBeenCalledTimes(1)
   })
 })
