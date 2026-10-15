@@ -9,6 +9,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
 import { WorkOrdersClient } from './work-orders-client'
 import { PageHeader } from '@/components/page-header'
@@ -51,6 +52,7 @@ export default async function WorkOrdersPage({
   ])
 
   const features = authCtx ? await getFeatures(authCtx.organizationId) : null
+  const emailEnabled = authCtx ? await canEmailCustomers(authCtx.organizationId) : false
 
   if (!result.success || !result.data) {
     return (
@@ -96,7 +98,7 @@ export default async function WorkOrdersPage({
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
           smsEnabled={features?.sms ?? false}
-          emailEnabled={features?.smtp ?? false}
+          emailEnabled={emailEnabled}
         />
       </ListPage>
     </>

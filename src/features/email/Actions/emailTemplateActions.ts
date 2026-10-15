@@ -22,7 +22,7 @@ import { buildTemplatedMail } from '../Lib/sendTemplatedMail'
 import { sampleContextFor } from '../Lib/emailContext'
 import { missingAssets, sweepEmailAssets } from '../Lib/emailAssets.server'
 import { requireFeature } from '@/lib/features'
-import { requireEmailSending } from '@/features/email/Lib/emailAllowance'
+import { requireEmailSending, withPlatformMailAllowance } from '@/features/email/Lib/emailAllowance'
 import {
   emailKindSchema,
   type SaveEmailTemplateInput,
@@ -308,7 +308,7 @@ export async function sendTestEmail(input: SaveEmailTemplateInput, recipientEmai
       demoGuard()
       // The same gates as a real send: the plan allows this send, and the
       // workshop has not switched it off.
-      await requireEmailSending(organizationId)
+      const sendingMode = await requireEmailSending(organizationId)
       const enabled = await db.appSetting.findUnique({
         where: { organizationId_key: { organizationId, key: 'workshop.emailEnabled' } },
         select: { value: true },
@@ -326,13 +326,15 @@ export async function sendTestEmail(input: SaveEmailTemplateInput, recipientEmai
         template: data,
         attached: kindSpec(data.kind).hasAttachment,
       })
-      await sendOrgMail(organizationId, {
-        from: await getOrgFromAddress(organizationId),
-        to,
-        subject: `[Test] ${mail.subject}`,
-        html: mail.html,
-        text: mail.text,
-      })
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendOrgMail(organizationId, {
+          from: await getOrgFromAddress(organizationId),
+          to,
+          subject: `[Test] ${mail.subject}`,
+          html: mail.html,
+          text: mail.text,
+        })
+      )
       return { sent: true, recipientEmail: to }
     },
     { requiredPermissions: MANAGE }

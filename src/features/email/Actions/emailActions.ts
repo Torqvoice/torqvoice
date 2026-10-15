@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
-import { requireEmailSending } from '@/features/email/Lib/emailAllowance'
+import { requireEmailSending, withPlatformMailAllowance } from '@/features/email/Lib/emailAllowance'
 import { demoGuard } from '@/lib/demo'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
@@ -98,7 +98,7 @@ export async function sendQuoteEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireEmailSending(organizationId)
+      const sendingMode = await requireEmailSending(organizationId)
 
       const { quoteId, recipientEmail, message } = input
 
@@ -158,31 +158,33 @@ export async function sendQuoteEmail(input: {
       }
       const publicLink = token ? `${getAppBaseUrl()}/share/quote/${organizationId}/${token}` : null
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'quote_sent',
-        to: recipientEmail,
-        attached: attachPdf,
-        attachments: pdfBuffer
-          ? [
-              { filename: `${quoteNum}.pdf`, content: pdfBuffer },
-              ...(certificate ? [certificate] : []),
-            ]
-          : undefined,
-        context: {
-          customerName: quote.customer?.name,
-          vehicle: quote.vehicle,
-          currentUser: await senderName(userId),
-          message,
-          document: {
-            number: quoteNum,
-            title: quote.title,
-            total: quote.totalAmount,
-            currencyCode,
-            currencyFormat,
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'quote_sent',
+          to: recipientEmail,
+          attached: attachPdf,
+          attachments: pdfBuffer
+            ? [
+                { filename: `${quoteNum}.pdf`, content: pdfBuffer },
+                ...(certificate ? [certificate] : []),
+              ]
+            : undefined,
+          context: {
+            customerName: quote.customer?.name,
+            vehicle: quote.vehicle,
+            currentUser: await senderName(userId),
+            message,
+            document: {
+              number: quoteNum,
+              title: quote.title,
+              total: quote.totalAmount,
+              currencyCode,
+              currencyFormat,
+            },
+            shareLink: publicLink,
           },
-          shareLink: publicLink,
-        },
-      })
+        })
+      )
 
       // Stamps sentAt and moves a draft to "sent" (accepted and converted
       // quotes keep their status).
@@ -220,7 +222,7 @@ export async function sendNotificationEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireEmailSending(organizationId)
+      const sendingMode = await requireEmailSending(organizationId)
 
       const settings = await getWorkshopSettings(organizationId)
       if (settings['workshop.emailEnabled'] === 'false') {
@@ -236,17 +238,19 @@ export async function sendNotificationEmail(input: {
       })
       if (!customer) throw new Error('The recipient is not a customer of this workshop')
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'message',
-        to,
-        subject: input.subject,
-        context: {
-          message: input.body,
-          customerName: input.customerName,
-          vehicle: input.vehicle,
-          currentUser: await senderName(userId),
-        },
-      })
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'message',
+          to,
+          subject: input.subject,
+          context: {
+            message: input.body,
+            customerName: input.customerName,
+            vehicle: input.vehicle,
+            currentUser: await senderName(userId),
+          },
+        })
+      )
 
       return { sent: true }
     },
@@ -268,7 +272,7 @@ export async function sendInvoiceEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireEmailSending(organizationId)
+      const sendingMode = await requireEmailSending(organizationId)
 
       const { serviceRecordId, recipientEmail, message } = input
 
@@ -322,34 +326,36 @@ export async function sendInvoiceEmail(input: {
         ? `${getAppBaseUrl()}/share/invoice/${organizationId}/${token}`
         : null
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'invoice_sent',
-        to: recipientEmail,
-        locale,
-        attached: attachPdf,
-        attachments: pdfBuffer
-          ? [
-              { filename: `${invoiceNum}.pdf`, content: pdfBuffer },
-              ...(certificate ? [certificate] : []),
-            ]
-          : undefined,
-        context: {
-          customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
-          vehicle: assembly.data.vehicle,
-          currentUser: await senderName(userId),
-          message,
-          document: {
-            number: invoiceNum,
-            title: record.title,
-            total: record.totalAmount > 0 ? record.totalAmount : record.cost,
-            paid: assembly.paymentSummary?.totalPaid,
-            dueDate: record.invoiceDueDate,
-            currencyCode: assembly.invoiceSettings.currencyCode,
-            currencyFormat: assembly.invoiceSettings.currencyFormat,
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'invoice_sent',
+          to: recipientEmail,
+          locale,
+          attached: attachPdf,
+          attachments: pdfBuffer
+            ? [
+                { filename: `${invoiceNum}.pdf`, content: pdfBuffer },
+                ...(certificate ? [certificate] : []),
+              ]
+            : undefined,
+          context: {
+            customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
+            vehicle: assembly.data.vehicle,
+            currentUser: await senderName(userId),
+            message,
+            document: {
+              number: invoiceNum,
+              title: record.title,
+              total: record.totalAmount > 0 ? record.totalAmount : record.cost,
+              paid: assembly.paymentSummary?.totalPaid,
+              dueDate: record.invoiceDueDate,
+              currencyCode: assembly.invoiceSettings.currencyCode,
+              currencyFormat: assembly.invoiceSettings.currencyFormat,
+            },
+            shareLink: publicLink,
           },
-          shareLink: publicLink,
-        },
-      })
+        })
+      )
 
       await markInvoiceSent(serviceRecordId, organizationId, { alreadyIssued: true })
 
@@ -383,7 +389,7 @@ export async function sendInspectionEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireEmailSending(organizationId)
+      const sendingMode = await requireEmailSending(organizationId)
 
       const { inspectionId, recipientEmail, message } = input
 
@@ -448,20 +454,22 @@ export async function sendInspectionEmail(input: {
         ? `${getAppBaseUrl()}/share/inspection/${organizationId}/${token}`
         : null
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'inspection_sent',
-        to: recipientEmail,
-        locale,
-        attached: attachPdf,
-        attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
-        context: {
-          customerName: inspection.vehicle.customer?.name,
-          vehicle: inspection.vehicle,
-          currentUser: await senderName(userId),
-          message,
-          shareLink: publicLink,
-        },
-      })
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'inspection_sent',
+          to: recipientEmail,
+          locale,
+          attached: attachPdf,
+          attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
+          context: {
+            customerName: inspection.vehicle.customer?.name,
+            vehicle: inspection.vehicle,
+            currentUser: await senderName(userId),
+            message,
+            shareLink: publicLink,
+          },
+        })
+      )
 
       return { sent: true, inspectionId, recipientEmail }
     },

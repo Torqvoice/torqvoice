@@ -17,6 +17,7 @@ import { getQuoteResponses } from '@/features/quotes/Actions/quoteResponseAction
 import { getAuthContext } from '@/lib/get-auth-context'
 import { PermissionSubject } from '@/lib/permissions'
 import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
+import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
 import { getRecentSmsThreads } from '@/features/sms/Actions/smsActions'
 import { getNotifications } from '@/features/notifications/Actions/notificationActions'
@@ -36,6 +37,9 @@ import { getInspectionsDueSummary } from '@/features/vehicles/Actions/inspection
 export default async function DashboardPage() {
   const auth = await getAuthContext()
   const features = auth ? await getFeatures(auth.organizationId) : null
+  // Every plan can email customers from the platform's address; only a workshop
+  // left with its own provider on a plan that no longer includes it cannot.
+  const emailEnabled = auth ? await canEmailCustomers(auth.organizationId) : false
   const smsEnabled = features?.sms ?? false
   // The plan decides whether the portal exists at all; the setting decides
   // whether this shop turned it on. Gate the query on the first so a shop
@@ -134,7 +138,7 @@ export default async function DashboardPage() {
             <MyActiveJobs
               jobs={myJobs}
               smsEnabled={features?.sms ?? false}
-              emailEnabled={features?.smtp ?? false}
+              emailEnabled={emailEnabled}
               telegramEnabled={features?.telegram ?? false}
               showEmpty
             />
@@ -185,7 +189,7 @@ export default async function DashboardPage() {
         <MyActiveJobs
           jobs={myJobs}
           smsEnabled={features?.sms ?? false}
-          emailEnabled={features?.smtp ?? false}
+          emailEnabled={emailEnabled}
           telegramEnabled={features?.telegram ?? false}
         />
         <DashboardClient
