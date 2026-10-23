@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -10,20 +10,32 @@ import { getAttachPdfDefault } from '@/features/email/Actions/emailPreferenceAct
  * The workshop's default answer to "attach the PDF", fetched when the dialog
  * opens so no page has to thread the setting down to it. Attaching until the
  * answer arrives: it is the old behaviour and the common one.
+ *
+ * A tick made before the answer arrives wins over it, so a slow fetch never
+ * puts back a PDF the user just took off.
  */
 export function useAttachPdf(open: boolean) {
-  const [attachPdf, setAttachPdf] = useState(true)
+  const [attachPdf, setAttachPdfState] = useState(true)
+  const chosen = useRef(false)
 
   useEffect(() => {
     if (!open) return
+    chosen.current = false
     let cancelled = false
     getAttachPdfDefault().then((result) => {
-      if (!cancelled && result.success && result.data) setAttachPdf(result.data.attachPdf)
+      if (!cancelled && !chosen.current && result.success && result.data) {
+        setAttachPdfState(result.data.attachPdf)
+      }
     })
     return () => {
       cancelled = true
     }
   }, [open])
+
+  const setAttachPdf = useCallback((checked: boolean) => {
+    chosen.current = true
+    setAttachPdfState(checked)
+  }, [])
 
   return [attachPdf, setAttachPdf] as const
 }
