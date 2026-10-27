@@ -35,16 +35,20 @@ import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 
 const OFFICE = 'Someone in the office'
 
-function renderDialog() {
-  return render(
+function dialog(open = true) {
+  return (
     <AddPersonDialog
-      open
+      open={open}
       onOpenChange={vi.fn()}
       dialCode="+47"
       roles={[{ id: 'role-desk', name: 'Desk' }]}
       onChanged={vi.fn()}
     />
   )
+}
+
+function renderDialog() {
+  return render(dialog())
 }
 
 function officeChoice() {
@@ -90,6 +94,26 @@ describe('AddPersonDialog, office seats', () => {
     fireEvent.click(officeChoice())
     expect(screen.getByLabelText('Invite by Email')).toBeInTheDocument()
   })
+
+  it('forgets a full plan between openings when the new answer fails', async () => {
+    getMemberSeats.mockResolvedValueOnce({
+      success: true,
+      data: { used: 1, limit: 1, full: true },
+    })
+    const { rerender } = renderDialog()
+    await waitFor(() => expect(officeChoice()).toHaveAttribute('data-locked', 'true'))
+
+    // A member was removed meanwhile; this time the seat check itself fails
+    getMemberSeats.mockResolvedValueOnce({ success: false, error: 'Network error' })
+    rerender(dialog(false))
+    rerender(dialog(true))
+    await waitFor(() => expect(getMemberSeats).toHaveBeenCalledTimes(2))
+
+    expect(officeChoice()).not.toHaveAttribute('data-locked')
+    fireEvent.click(officeChoice())
+    expect(handleGated).not.toHaveBeenCalled()
+    expect(screen.getByLabelText('Invite by Email')).toBeInTheDocument()
+  })
 })
 
 describe('AddPersonDialog, invite address', () => {
@@ -117,6 +141,10 @@ describe('AddPersonDialog, invite address', () => {
       await screen.findByText('Check the email address. It should look like name@example.com.')
     ).toBeInTheDocument()
     expect(field).toHaveAttribute('aria-invalid', 'true')
+    // Announced, and read out with the field, since the browser says nothing
+    const message = screen.getByRole('alert')
+    expect(message).toHaveTextContent('Check the email address.')
+    expect(field).toHaveAttribute('aria-describedby', message.id)
     expect(inviteMember).not.toHaveBeenCalled()
   })
 

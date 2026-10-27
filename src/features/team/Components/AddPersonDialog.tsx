@@ -173,6 +173,10 @@ export function AddPersonDialog({
   const [seats, setSeats] = useState<MemberSeats | null>(null)
   useEffect(() => {
     if (!open) return
+    // The dialog stays mounted while closed, so forget the last answer: a
+    // seat freed since then must not stay locked while this one is pending,
+    // or for the whole opening if the request fails
+    setSeats(null)
     let cancelled = false
     getMemberSeats().then((result) => {
       if (!cancelled && result.success && result.data) setSeats(result.data)
@@ -611,6 +615,7 @@ export function AddPersonDialog({
                   if (error) setError(null)
                 }}
                 aria-invalid={error === t('team.invalidInviteEmail') || undefined}
+                aria-describedby={error ? 'member-invite-error' : undefined}
                 placeholder={t('team.inviteEmailPlaceholder')}
                 autoComplete="off"
                 required
@@ -667,7 +672,14 @@ export function AddPersonDialog({
               <p className="text-muted-foreground text-xs">{t('team.roleHint')}</p>
             </div>
 
-            {error && <p className="text-destructive text-sm">{error}</p>}
+            {/* Announced, and tied to the address field, because with the
+                browser's own check turned off this is the only explanation
+                of why Invite stopped */}
+            {error && (
+              <p id="member-invite-error" role="alert" className="text-destructive text-sm">
+                {error}
+              </p>
+            )}
 
             <Footer
               backLabel={t('team.stepBack')}
