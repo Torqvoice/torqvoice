@@ -429,8 +429,10 @@
       "settings": {
         "country": "Land",
         "countryHelp": "Registeret som skal søkes i. Franske og italienske skilt ser like ut, så landet kan ikke leses av skiltet.",
-        "bikes": "Slå også opp motorsykler",
-        "bikesHelp": "Når et skilt ikke er en bil, spørres motorsykkelregisteret også. Et bomskudd på bilsiden er gratis, så dette koster ikke noe ekstra med mindre en motorsykkel blir funnet. Ikke tilgjengelig for Portugal."
+        "cars": "Slå opp biler",
+        "carsHelp": "Søk i bilregisteret. Slå av dette hvis dere bare jobber med motorsykler, så hopper oppslaget over bilsøket og svarer raskere.",
+        "bikes": "Slå opp motorsykler",
+        "bikesHelp": "Søk i motorsykkelregisteret. Når biler også er på, spørres det bare når ingen bil passer, og et bomskudd på bilsiden er gratis. Ikke tilgjengelig for Portugal."
       }
     },
     "rdw": {

@@ -429,8 +429,10 @@
       "settings": {
         "country": "Kraj",
         "countryHelp": "Rejestr, w którym szukać. Francuskie i włoskie tablice wyglądają tak samo, więc kraju nie da się odczytać z tablicy.",
-        "bikes": "Wyszukuj także motocykle",
-        "bikesHelp": "Gdy tablica nie należy do samochodu, odpytywany jest również rejestr motocykli. Brak wyniku dla samochodu jest bezpłatny, więc nie kosztuje to nic więcej, chyba że zostanie znaleziony motocykl. Niedostępne dla Portugalii."
+        "cars": "Wyszukuj samochody",
+        "carsHelp": "Przeszukuje rejestr samochodów. Wyłącz, jeśli obsługujesz tylko motocykle, wtedy wyszukiwanie pomija samochody i odpowiada szybciej.",
+        "bikes": "Wyszukuj motocykle",
+        "bikesHelp": "Przeszukuje rejestr motocykli. Gdy samochody też są włączone, jest odpytywany tylko wtedy, gdy żaden samochód nie pasuje, a brak wyniku dla samochodu jest bezpłatny. Niedostępne dla Portugalii."
       }
     },
     "rdw": {

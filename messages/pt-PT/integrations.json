@@ -429,8 +429,10 @@
       "settings": {
         "country": "País",
         "countryHelp": "O registo a consultar. As matrículas francesas e italianas têm o mesmo formato, por isso o país não pode ser deduzido da matrícula.",
-        "bikes": "Consultar também motociclos",
-        "bikesHelp": "Quando uma matrícula não é de um automóvel, o registo de motociclos também é consultado. Uma consulta de automóvel sem resultado é gratuita, por isso não custa nada a mais, a menos que seja encontrado um motociclo. Indisponível para Portugal."
+        "cars": "Consultar automóveis",
+        "carsHelp": "Consulta o registo de automóveis. Desative se só trabalha com motociclos, assim a consulta salta os automóveis e responde mais depressa.",
+        "bikes": "Consultar motociclos",
+        "bikesHelp": "Consulta o registo de motociclos. Com os automóveis também ativos, só é consultado quando nenhum automóvel corresponde, e uma consulta de automóvel sem resultado é gratuita. Indisponível para Portugal."
       }
     },
     "rdw": {

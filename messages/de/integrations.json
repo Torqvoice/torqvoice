@@ -429,8 +429,10 @@
       "settings": {
         "country": "Land",
         "countryHelp": "Das zu durchsuchende Register. Französische und italienische Kennzeichen sehen gleich aus, das Land lässt sich daher nicht am Kennzeichen ablesen.",
-        "bikes": "Auch Motorräder abfragen",
-        "bikesHelp": "Ist ein Kennzeichen kein Pkw, wird zusätzlich das Motorradregister gefragt. Ein Fehltreffer beim Pkw ist kostenlos, es entstehen also nur Kosten, wenn ein Motorrad gefunden wird. Für Portugal nicht verfügbar."
+        "cars": "Pkw abfragen",
+        "carsHelp": "Das Pkw-Register durchsuchen. Schalten Sie dies aus, wenn Sie nur Motorräder betreuen, dann entfällt die Pkw-Suche und die Abfrage antwortet schneller.",
+        "bikes": "Motorräder abfragen",
+        "bikesHelp": "Das Motorradregister durchsuchen. Ist auch Pkw eingeschaltet, wird es nur gefragt, wenn kein Pkw passt, und ein Fehltreffer beim Pkw ist kostenlos. Für Portugal nicht verfügbar."
       }
     },
     "rdw": {

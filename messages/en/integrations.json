@@ -429,8 +429,10 @@
       "settings": {
         "country": "Country",
         "countryHelp": "The registry to search. French and Italian plates look the same, so the country cannot be read off the plate.",
-        "bikes": "Also look up motorcycles",
-        "bikesHelp": "When a plate is not a car, ask the motorcycle registry too. A miss on the car side is free, so this costs nothing extra unless a motorcycle is found. Not available for Portugal."
+        "cars": "Look up cars",
+        "carsHelp": "Search the car registry. Turn this off if you only work on motorcycles, so a lookup skips the car search and answers faster.",
+        "bikes": "Look up motorcycles",
+        "bikesHelp": "Search the motorcycle registry. With cars on too, it is asked only when no car matches, and a miss on the car side is free. Not available for Portugal."
       }
     },
     "rdw": {
