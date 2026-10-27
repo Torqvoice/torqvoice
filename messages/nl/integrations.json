@@ -429,8 +429,10 @@
       "settings": {
         "country": "Land",
         "countryHelp": "Het register om in te zoeken. Franse en Italiaanse kentekens zien er hetzelfde uit, dus het land is niet van het kenteken af te lezen.",
-        "bikes": "Ook motorfietsen opzoeken",
-        "bikesHelp": "Als een kenteken geen auto is, wordt ook het motorfietsregister bevraagd. Geen resultaat bij auto's is gratis, dus dit kost niets extra tenzij een motorfiets wordt gevonden. Niet beschikbaar voor Portugal."
+        "cars": "Auto's opzoeken",
+        "carsHelp": "Doorzoek het autoregister. Zet dit uit als u alleen aan motorfietsen werkt, dan slaat de zoekopdracht auto's over en antwoordt sneller.",
+        "bikes": "Motorfietsen opzoeken",
+        "bikesHelp": "Doorzoek het motorfietsregister. Staan auto's ook aan, dan wordt het alleen bevraagd als geen auto overeenkomt, en geen resultaat bij auto's is gratis. Niet beschikbaar voor Portugal."
       }
     },
     "rdw": {

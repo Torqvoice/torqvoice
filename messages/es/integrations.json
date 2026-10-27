@@ -429,8 +429,10 @@
       "settings": {
         "country": "País",
         "countryHelp": "El registro donde buscar. Las matrículas francesas e italianas son iguales, así que el país no puede deducirse de la matrícula.",
-        "bikes": "Buscar también motocicletas",
-        "bikesHelp": "Cuando una matrícula no es de un coche, se consulta también el registro de motocicletas. Un fallo en la búsqueda de coches es gratis, así que no cuesta nada más salvo que se encuentre una motocicleta. No disponible para Portugal."
+        "cars": "Buscar coches",
+        "carsHelp": "Consulta el registro de coches. Desactívalo si solo trabajas con motocicletas, así la búsqueda se salta los coches y responde más rápido.",
+        "bikes": "Buscar motocicletas",
+        "bikesHelp": "Consulta el registro de motocicletas. Si los coches también están activados, solo se consulta cuando no coincide ningún coche, y un fallo en la búsqueda de coches es gratis. No disponible para Portugal."
       }
     },
     "rdw": {

@@ -429,8 +429,10 @@
       "settings": {
         "country": "Paese",
         "countryHelp": "Il registro da consultare. Le targhe francesi e italiane hanno lo stesso formato, quindi il paese non si può ricavare dalla targa.",
-        "bikes": "Cerca anche i motocicli",
-        "bikesHelp": "Quando una targa non è di un'auto, viene consultato anche il registro dei motocicli. Una ricerca auto senza esito è gratuita, quindi non costa nulla in più a meno che non venga trovato un motociclo. Non disponibile per il Portogallo."
+        "cars": "Cerca le auto",
+        "carsHelp": "Consulta il registro delle auto. Disattivalo se lavori solo su motocicli, così la ricerca salta le auto e risponde più in fretta.",
+        "bikes": "Cerca i motocicli",
+        "bikesHelp": "Consulta il registro dei motocicli. Se sono attive anche le auto, viene consultato solo quando nessuna auto corrisponde, e una ricerca auto senza esito è gratuita. Non disponibile per il Portogallo."
       }
     },
     "rdw": {

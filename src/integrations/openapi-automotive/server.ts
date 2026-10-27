@@ -307,6 +307,21 @@ async function fetchRecord(
   }
 }
 
+/**
+ * The registries a lookup asks, in order. Cars come first when both are on,
+ * as before the car switch existed; a workshop that only sees motorcycles
+ * turns cars off and saves the wait on a car search that finds nothing.
+ * Connections saved before the car switch have no value for it and keep
+ * searching cars. Portugal has no motorcycle registry.
+ */
+export function endpointsOf(ctx: ConnectorContext, country: Country): string[] {
+  const { car, bike } = ENDPOINTS[country]
+  const out: string[] = []
+  if (ctx.connection.settings.cars !== false) out.push(car)
+  if (ctx.connection.settings.bikes === true && bike) out.push(bike)
+  return out
+}
+
 /** One vehicle by plate. This registry has no VIN search, so a VIN alone finds nothing. */
 async function lookupVehicle(
   ctx: ConnectorContext,
@@ -319,17 +334,15 @@ async function lookupVehicle(
   }
   const country = countryOf(ctx)
   if (!country) throw new Error('Openapi Automotive: choose a country on the integration page')
-  const endpoints = ENDPOINTS[country]
-  const car = await fetchRecord(ctx, endpoints.car, plate)
-  if (car) {
-    await ctx.log('info', 'Vehicle lookup: match', { endpoint: endpoints.car })
-    return mapRecord(car, plate)
+  const endpoints = endpointsOf(ctx, country)
+  if (endpoints.length === 0) {
+    throw new Error('Openapi Automotive: turn on cars or motorcycles on the integration page')
   }
-  if (ctx.connection.settings.bikes === true && endpoints.bike) {
-    const bike = await fetchRecord(ctx, endpoints.bike, plate)
-    if (bike) {
-      await ctx.log('info', 'Vehicle lookup: match', { endpoint: endpoints.bike })
-      return mapRecord(bike, plate)
+  for (const endpoint of endpoints) {
+    const record = await fetchRecord(ctx, endpoint, plate)
+    if (record) {
+      await ctx.log('info', 'Vehicle lookup: match', { endpoint })
+      return mapRecord(record, plate)
     }
   }
   await ctx.log('info', 'Vehicle lookup: no match', { country })
@@ -343,6 +356,16 @@ export const connector: ConnectorServer = {
     if (!token(ctx)) return { ok: false, message: 'Openapi Automotive: a token is required' }
     if (!countryOf(ctx)) {
       return { ok: false, message: 'Openapi Automotive: choose the country to search' }
+    }
+    const country = countryOf(ctx) as Country
+    if (endpointsOf(ctx, country).length === 0) {
+      return {
+        ok: false,
+        message:
+          country === 'PT'
+            ? 'Openapi Automotive: Portugal has no motorcycle registry, turn on cars'
+            : 'Openapi Automotive: turn on cars or motorcycles',
+      }
     }
     // There is no ping endpoint and every lookup is billed, so the request
     // status endpoint is asked about an id that was never issued: a good

@@ -429,8 +429,10 @@
       "settings": {
         "country": "Pays",
         "countryHelp": "Le registre à interroger. Les plaques françaises et italiennes ont le même format, le pays ne peut donc pas être déduit de la plaque.",
-        "bikes": "Rechercher aussi les motos",
-        "bikesHelp": "Quand une plaque n'est pas celle d'une voiture, le registre des motos est interrogé à son tour. Une recherche voiture sans résultat est gratuite, cela ne coûte donc rien de plus sauf si une moto est trouvée. Indisponible pour le Portugal."
+        "cars": "Rechercher les voitures",
+        "carsHelp": "Interroge le registre des voitures. Désactivez-le si vous ne travaillez que sur des motos : la recherche saute alors les voitures et répond plus vite.",
+        "bikes": "Rechercher les motos",
+        "bikesHelp": "Interroge le registre des motos. Si les voitures sont aussi activées, il n'est interrogé que lorsqu'aucune voiture ne correspond, et une recherche voiture sans résultat est gratuite. Indisponible pour le Portugal."
       }
     },
     "rdw": {

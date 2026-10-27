@@ -422,6 +422,50 @@ describe('openapi automotive connector', () => {
     expect(pt.fetch).toHaveBeenCalledTimes(1)
   })
 
+  it('skips the car search when cars are off', async () => {
+    const bike: AutomotiveRecord = {
+      CarMake: 'TRIUMPH',
+      CarModel: 'BONNEVILLE',
+      FuelType: 'PETROL',
+    }
+    const answer = async (url: string) =>
+      url.includes('UK-bike')
+        ? envelope(bike)
+        : Response.json({ data: [], success: true, message: 'car not found' }, { status: 404 })
+    const bikesOnly = context(answer, { country: 'GB', cars: false, bikes: true })
+    const found = await connector.lookupVehicle?.(bikesOnly.ctx, { plate: 'AB12 CDE' })
+    expect(found?.model).toBe('BONNEVILLE')
+    expect(bikesOnly.fetch.mock.calls.map((c) => c[0])).toEqual([
+      'https://automotive.openapi.com/UK-bike/AB12CDE',
+    ])
+    // A connection saved before the car switch existed still searches cars.
+    const saved = context(answer, { country: 'GB', bikes: true })
+    await connector.lookupVehicle?.(saved.ctx, { plate: 'AB12CDE' })
+    expect(saved.fetch.mock.calls.map((c) => c[0])).toEqual([
+      'https://automotive.openapi.com/UK-car/AB12CDE',
+      'https://automotive.openapi.com/UK-bike/AB12CDE',
+    ])
+  })
+
+  it('refuses to look up with both cars and motorcycles off', async () => {
+    const { ctx, fetch } = context(async () => envelope(FRANCE), {
+      country: 'GB',
+      cars: false,
+      bikes: false,
+    })
+    await expect(connector.lookupVehicle?.(ctx, { plate: 'AB12CDE' })).rejects.toThrow(
+      /turn on cars or motorcycles/
+    )
+    expect(fetch).not.toHaveBeenCalled()
+    const test = await connector.test(ctx)
+    expect(test.ok).toBe(false)
+    // Portugal has no motorcycle registry, so cars off leaves nothing to search.
+    const pt = context(async () => envelope(FRANCE), { country: 'PT', cars: false, bikes: true })
+    await expect(connector.lookupVehicle?.(pt.ctx, { plate: '9027QL' })).rejects.toThrow(
+      /turn on cars/
+    )
+  })
+
   it('polls the status endpoint while the vendor is still fetching', async () => {
     const pending = { state: 'PENDING', id: '66a8ed9b82cf2ae627012068' }
     let polls = 0

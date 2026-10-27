@@ -429,8 +429,10 @@
       "settings": {
         "country": "País",
         "countryHelp": "O registro a consultar. Placas francesas e italianas têm o mesmo formato, então o país não pode ser deduzido da placa.",
-        "bikes": "Consultar também motocicletas",
-        "bikesHelp": "Quando uma placa não é de carro, o registro de motocicletas também é consultado. Uma consulta de carro sem resultado é gratuita, então não custa nada a mais a menos que uma motocicleta seja encontrada. Indisponível para Portugal."
+        "cars": "Consultar carros",
+        "carsHelp": "Consulta o registro de carros. Desative se você só trabalha com motocicletas, assim a consulta pula os carros e responde mais rápido.",
+        "bikes": "Consultar motocicletas",
+        "bikesHelp": "Consulta o registro de motocicletas. Com carros também ativado, ele só é consultado quando nenhum carro corresponde, e uma consulta de carro sem resultado é gratuita. Indisponível para Portugal."
       }
     },
     "rdw": {

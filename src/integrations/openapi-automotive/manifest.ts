@@ -38,6 +38,13 @@ export const manifest: ConnectorManifest = {
       ],
     },
     {
+      key: 'cars',
+      type: 'boolean',
+      label: 'cars',
+      help: 'carsHelp',
+      default: true,
+    },
+    {
       key: 'bikes',
       type: 'boolean',
       label: 'bikes',

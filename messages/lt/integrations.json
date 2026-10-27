@@ -429,8 +429,10 @@
       "settings": {
         "country": "Šalis",
         "countryHelp": "Registras, kuriame ieškoti. Prancūziški ir itališki numeriai atrodo vienodai, todėl šalies negalima nustatyti iš numerio.",
-        "bikes": "Ieškoti ir motociklų",
-        "bikesHelp": "Kai numeris nėra automobilio, papildomai užklausiamas motociklų registras. Nerastas automobilis nekainuoja, todėl papildomų išlaidų nėra, nebent randamas motociklas. Portugalijai neprieinama."
+        "cars": "Ieškoti automobilių",
+        "carsHelp": "Užklausiamas automobilių registras. Išjunkite, jei dirbate tik su motociklais: paieška praleis automobilius ir atsakys greičiau.",
+        "bikes": "Ieškoti motociklų",
+        "bikesHelp": "Užklausiamas motociklų registras. Jei įjungti ir automobiliai, jis užklausiamas tik neradus automobilio, o nerastas automobilis nekainuoja. Portugalijai neprieinama."
       }
     },
     "rdw": {
