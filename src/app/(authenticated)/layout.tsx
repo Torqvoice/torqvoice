@@ -19,6 +19,9 @@ import { CurrencySettingsProvider } from '@/components/currency-settings-context
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { OnlineTracker } from '@/components/online-tracker'
+import { UpdateWatcher } from '@/components/update-watcher'
+import { buildVersion } from '@/lib/build-version.server'
+import { redirectToSignIn } from '@/lib/sign-in-redirect.server'
 import { InstallBanner } from '@/components/pwa-install-prompt'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { SupportBubble } from '@/features/support/Components/SupportBubble'
@@ -57,7 +60,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // dashboard grid).
   const sidebarOpen = (await cookies()).get('sidebar_state')?.value !== 'false'
 
-  if (data.status === 'unauthenticated') redirect('/auth/sign-in')
+  if (data.status === 'unauthenticated') return redirectToSignIn()
   if (data.status === 'no-organization') redirect('/onboarding')
 
   // Check email verification requirement (super admins bypass this)
@@ -363,6 +366,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                             <PlateLookupCommand />
                             {isOwnerOrAdmin && <NotificationInitializer />}
                             <OnlineTracker />
+                            <UpdateWatcher version={buildVersion()} />
                             <InstallBanner />
                           </TimeClockProvider>
                         </RealtimeProvider>

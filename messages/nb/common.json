@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Hold {key} og klikk for å åpne"
+  },
+  "appUpdated": {
+    "title": "En ny versjon er tilgjengelig",
+    "description": "Last inn siden på nytt for å få de siste oppdateringene.",
+    "reload": "Last inn på nytt"
+  },
+  "signedOut": {
+    "title": "Du er logget ut",
+    "description": "Logg inn igjen for å fortsette. Kopier det du holdt på å skrive først.",
+    "signIn": "Logg inn"
   }
 }

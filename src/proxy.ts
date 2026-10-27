@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { isCrossSiteWrite } from '@/lib/same-origin'
+import { REQUEST_PATH_HEADER } from '@/lib/request-path'
 
 /**
  * Cross-origin access to the technician API, in development only.
@@ -45,7 +46,23 @@ function applyCors(response: NextResponse, origin: string | null) {
 
 const PROTECTED_API = '/api/protected/'
 
+/**
+ * A page request carries the path it asked for, so a layout that sends a
+ * visitor to sign-in can bring them back there (lib/sign-in-redirect.server.ts).
+ * A layout has no other way to see its URL. Next's own `_rsc` marker is left
+ * out, and anything a client sent under the same name is overwritten.
+ */
+function withRequestPath(request: NextRequest) {
+  const url = request.nextUrl.clone()
+  url.searchParams.delete('_rsc')
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set(REQUEST_PATH_HEADER, `${url.pathname}${url.search}`)
+  return NextResponse.next({ request: { headers: requestHeaders } })
+}
+
 export default function proxy(request: NextRequest) {
+  if (!request.nextUrl.pathname.startsWith('/api/')) return withRequestPath(request)
+
   // A write to the cookie-authenticated API from another site is refused
   // before any handler runs. See lib/same-origin.ts.
   if (request.nextUrl.pathname.startsWith(PROTECTED_API)) {
@@ -79,5 +96,8 @@ export const config = {
     '/api/public/auth/:path*',
     // The cookie-authenticated API: cross-site writes are refused here.
     '/api/protected/:path*',
+    // Pages, for the requested path above. Not the API, Next's own files, or
+    // anything with a file extension (icons, images, the manifest).
+    '/((?!api/|_next/|.*\\.[^/]+$).*)',
   ],
 }

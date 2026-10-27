@@ -883,6 +883,12 @@ export default function ReportsClient({
                     selected={pendingDateRange}
                     onSelect={(range) => range && setPendingDateRange(range)}
                     numberOfMonths={2}
+                    // Month and year as dropdowns: reports often span a
+                    // financial year, and stepping back to last July one
+                    // arrow click at a time is what people rage-clicked.
+                    captionLayout="dropdown"
+                    startMonth={new Date(2000, 0)}
+                    endMonth={new Date(currentYear, new Date().getMonth())}
                   />
                   <div className="border-l p-2 flex flex-col gap-0.5 min-w-[130px]">
                     {(() => {

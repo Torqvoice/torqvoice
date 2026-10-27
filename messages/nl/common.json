@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Houd {key} ingedrukt en klik om te openen"
+  },
+  "appUpdated": {
+    "title": "Er is een nieuwe versie beschikbaar",
+    "description": "Laad de pagina opnieuw om de nieuwste updates te krijgen.",
+    "reload": "Opnieuw laden"
+  },
+  "signedOut": {
+    "title": "Je bent afgemeld",
+    "description": "Meld je opnieuw aan om verder te werken. Kopieer eerst wat je aan het typen was.",
+    "signIn": "Aanmelden"
   }
 }

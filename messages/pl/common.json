@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Przytrzymaj {key} i kliknij, aby otworzyć"
+  },
+  "appUpdated": {
+    "title": "Dostępna jest nowa wersja",
+    "description": "Odśwież stronę, aby pobrać najnowsze aktualizacje.",
+    "reload": "Odśwież"
+  },
+  "signedOut": {
+    "title": "Sesja wygasła",
+    "description": "Zaloguj się ponownie, aby kontynuować pracę. Najpierw skopiuj wpisany tekst.",
+    "signIn": "Zaloguj się"
   }
 }
