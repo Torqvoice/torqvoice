@@ -2,7 +2,9 @@ import { act, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const toast = vi.fn()
-vi.mock('sonner', () => ({ toast: (...args: unknown[]) => toast(...args) }))
+vi.mock('@/components/notice-toast', () => ({
+  showNotice: (notice: unknown) => toast(notice),
+}))
 
 import {
   ACTION_NOT_FOUND_HEADER,
@@ -90,10 +92,14 @@ describe('UpdateWatcher', () => {
     await flush()
 
     expect(toast).toHaveBeenCalledTimes(1)
-    const [title, options] = toast.mock.calls[0]
-    expect(title).toBe('A new version is available')
-    expect(options.action.label).toBe('Reload')
-    expect(options.duration).toBe(Number.POSITIVE_INFINITY)
+    const [notice] = toast.mock.calls[0]
+    expect(notice).toMatchObject({
+      id: 'app-update',
+      title: 'A new version is available',
+      description: 'Reload the page to get the latest updates.',
+      actionLabel: 'Reload',
+      dismissLabel: 'Dismiss',
+    })
   })
 
   it('says nothing while the build is the same', async () => {
@@ -134,7 +140,7 @@ describe('UpdateWatcher', () => {
     await flush()
 
     expect(toast).toHaveBeenCalledTimes(1)
-    expect(toast.mock.calls[0][0]).toBe('A new version is available')
+    expect(toast.mock.calls[0][0]).toMatchObject({ title: 'A new version is available' })
   })
 
   it('hands every response back untouched', async () => {

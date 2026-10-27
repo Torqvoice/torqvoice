@@ -698,3 +698,89 @@ html body[data-scroll-locked] {
   -webkit-text-security: disc;
   text-security: disc;
 }
+
+/* Toasts in the app's own look, for every toast sonner draws: the glass
+   surface and icon tile of the upgrade dialog, and the primary hairline the
+   layout runs along the top of the window. One step more specific than
+   sonner's own `[data-sonner-toast][data-styled='true']` rules, so these win
+   without !important. `--toast-accent` is the one colour that changes with
+   the kind of toast. Sonner uses both pseudo-elements itself (swipe and the
+   hover gap), so the hairline is a background layer instead. */
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
+  --toast-accent: var(--primary);
+  background:
+    linear-gradient(
+        to right,
+        var(--toast-accent),
+        color-mix(in oklab, var(--toast-accent) 35%, transparent) 45%,
+        transparent
+      )
+      top / 100% 1px no-repeat,
+    radial-gradient(
+      9rem 5rem at 1.9rem 50%,
+      color-mix(in oklab, var(--toast-accent) 12%, transparent),
+      transparent 70%
+    ),
+    color-mix(in oklab, var(--popover) 90%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-color: color-mix(in oklab, var(--border) 70%, transparent);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 18px 40px -16px rgb(0 0 0 / 0.45);
+  padding: 12px 14px;
+  gap: 12px;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type='error'] {
+  --toast-accent: var(--destructive);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type='warning'] {
+  --toast-accent: oklch(0.75 0.15 70);
+}
+
+/* The icon sits in a tile, like the upgrade dialog's */
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-icon] {
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  justify-content: center;
+  border-radius: 0.5rem;
+  color: var(--toast-accent);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--toast-accent) 16%, transparent),
+    color-mix(in oklab, var(--toast-accent) 5%, transparent)
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--toast-accent) 28%, transparent),
+    inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-icon] svg {
+  margin: 0;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-title] {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-description] {
+  color: var(--muted-foreground);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: calc(var(--radius) - 2px);
+  font-weight: 500;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-cancel] {
+  background: transparent;
+  color: var(--muted-foreground);
+  box-shadow: inset 0 0 0 1px var(--border);
+}

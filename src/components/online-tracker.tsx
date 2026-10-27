@@ -1,7 +1,8 @@
 'use client'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
-import { toast } from 'sonner'
+import { LogIn } from 'lucide-react'
+import { showNotice } from '@/components/notice-toast'
 import { leaveForSignInNow, signInUrlFor } from '@/lib/signed-out'
 
 const SIGNED_OUT_TOAST_ID = 'signed-out'
@@ -17,6 +18,7 @@ const SIGNED_OUT_TOAST_ID = 'signed-out'
  */
 export function OnlineTracker() {
   const t = useTranslations('common.signedOut')
+  const tDismiss = useTranslations('common.updateBanner')
 
   useEffect(() => {
     let lastInputAt = 0
@@ -34,11 +36,14 @@ export function OnlineTracker() {
         return
       }
       // Typing just now: a page change would lose it, so ask instead
-      toast(t('title'), {
+      showNotice({
         id: SIGNED_OUT_TOAST_ID,
+        icon: LogIn,
+        title: t('title'),
         description: t('description'),
-        duration: Number.POSITIVE_INFINITY,
-        action: { label: t('signIn'), onClick: goToSignIn },
+        actionLabel: t('signIn'),
+        onAction: goToSignIn,
+        dismissLabel: tDismiss('dismiss'),
       })
     }
 
@@ -68,7 +73,7 @@ export function OnlineTracker() {
       window.removeEventListener('keydown', onInput, { capture: true })
       window.removeEventListener('input', onInput, { capture: true })
     }
-  }, [t])
+  }, [t, tDismiss])
 
   return null
 }
