@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} został wylogowany z aplikacji",
     "noAccessTitle": "Brak dostępu",
     "noAccessBody": "Twoje konto należy do {workshop}, ale nie ma jeszcze przypisanej roli, więc nie ma tu nic, co możesz otworzyć. Poproś właściciela lub administratora warsztatu o rolę.",
-    "setupPageInstall": "Pobierz z Google Play"
+    "setupPageInstall": "Pobierz z Google Play",
+    "invalidInviteEmail": "Sprawdź adres e-mail. Powinien wyglądać tak: imie@przyklad.pl."
   },
   "invoice": {
     "title": "Układ faktury",

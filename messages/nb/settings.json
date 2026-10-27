@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} er logget ut av appen",
     "noAccessTitle": "Ingen tilgang ennå",
     "noAccessBody": "Kontoen din tilhører {workshop}, men den har ikke fått en rolle ennå, så det er ingenting her du kan åpne. Be en eier eller administrator på verkstedet om å gi deg en.",
-    "setupPageInstall": "Last ned fra Google Play"
+    "setupPageInstall": "Last ned fra Google Play",
+    "invalidInviteEmail": "Sjekk e-postadressen. Den skal se ut som navn@eksempel.no."
   },
   "invoice": {
     "title": "Faktura og tilbud",

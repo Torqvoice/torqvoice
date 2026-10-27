@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "Foi terminada a sessão de {name} na aplicação",
     "noAccessTitle": "Ainda sem acesso",
     "noAccessBody": "A sua conta faz parte de {workshop}, mas ainda não lhe foi atribuída uma função, por isso ainda não há nada aqui que possa abrir. Peça ao proprietário ou a um administrador da sua oficina que lhe atribua uma.",
-    "setupPageInstall": "Disponível no Google Play"
+    "setupPageInstall": "Disponível no Google Play",
+    "invalidInviteEmail": "Verifique o endereço de email. Deve ter o formato nome@exemplo.pt."
   },
   "invoice": {
     "title": "Faturas e orçamentos",
