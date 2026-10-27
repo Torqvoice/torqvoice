@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} uygulamadan çıkarıldı",
     "noAccessTitle": "Henüz erişim yok",
     "noAccessBody": "Hesabınız {workshop} atölyesine ait, ancak henüz bir rol verilmemiş; bu yüzden burada açabileceğiniz bir şey yok. Atölyenizdeki bir sahip ya da yöneticiden rol isteyin.",
-    "setupPageInstall": "Google Play’den indirin"
+    "setupPageInstall": "Google Play’den indirin",
+    "invalidInviteEmail": "E-posta adresini kontrol edin. ad@ornek.com gibi görünmelidir."
   },
   "invoice": {
     "title": "Fatura Düzeni",

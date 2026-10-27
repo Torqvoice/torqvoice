@@ -214,9 +214,10 @@ export default async function RootLayout({
                   <GlassModal />
                   <UpgradeGateDialog />
                   {/* Centred at the bottom, and lifted clear of the mobile
-                      bottom nav so a toast never lands on the tab bar. */}
+                      bottom nav so a toast never lands on the tab bar. No
+                      richColors: toasts take the app's own look from
+                      globals.css, tinted by kind, instead of pastel fills. */}
                   <Toaster
-                    richColors
                     position="bottom-center"
                     mobileOffset={{ bottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}
                   />

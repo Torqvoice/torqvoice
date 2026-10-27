@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} è stato disconnesso dall’app",
     "noAccessTitle": "Ancora nessun accesso",
     "noAccessBody": "Il tuo account fa parte di {workshop}, ma non ha ancora un ruolo, quindi qui non c’è nulla da aprire. Chiedi un ruolo a un titolare o a un amministratore della tua officina.",
-    "setupPageInstall": "Scaricala su Google Play"
+    "setupPageInstall": "Scaricala su Google Play",
+    "invalidInviteEmail": "Controlla l'indirizzo email. Deve avere la forma nome@esempio.it."
   },
   "invoice": {
     "title": "Layout fattura",

@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} foi desconectado do aplicativo",
     "noAccessTitle": "Ainda sem acesso",
     "noAccessBody": "Sua conta faz parte da {workshop}, mas ainda não recebeu uma função, então não há nada aqui que você possa abrir. Peça uma função ao proprietário ou a um administrador da sua oficina.",
-    "setupPageInstall": "Baixar no Google Play"
+    "setupPageInstall": "Baixar no Google Play",
+    "invalidInviteEmail": "Confira o endereço de e-mail. Ele deve ter o formato nome@exemplo.com."
   },
   "invoice": {
     "title": "Faturas e orçamentos",

@@ -14,7 +14,6 @@ import { setTechnicianStanding } from '../Lib/technicianStanding'
 import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 import { emailVerificationRequired } from '@/lib/email-verification-policy'
 import {
-  getFeatures,
   isCloudMode,
   organizationAllowance,
   FeatureGatedError,
@@ -23,6 +22,7 @@ import {
 import { demoGuard } from '@/lib/demo'
 import { canInvite } from '../Lib/invitationRules'
 import { createAndSendInvitation } from '../Lib/createInvitation'
+import { memberSeats } from '../Lib/memberSeats'
 
 export async function getOrganization() {
   return withAuth(
@@ -161,13 +161,13 @@ export async function inviteMember(input: unknown) {
       })
       if (!membership) throw new Error("You don't belong to an organization")
 
-      const features = await getFeatures(organizationId)
-      const memberCount = await db.organizationMember.count({ where: { organizationId } })
-      if (memberCount >= features.maxUsers) {
+      // The same count the add-person dialog reads before it offers the form
+      const seats = await memberSeats(organizationId)
+      if (seats.full) {
         throw new FeatureGatedError(
           'maxUsers',
           'Team member limit reached. Upgrade your plan to add more members.',
-          features.maxUsers
+          seats.limit
         )
       }
 

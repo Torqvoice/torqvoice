@@ -12,6 +12,7 @@ import {
   Mail,
   UserCheck,
   Wrench,
+  Zap,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -46,6 +47,19 @@ import { CountryPicker } from './CountryPicker'
 import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 import { handleGated } from '@/components/upgrade-gate'
+import { getMemberSeats } from '@/features/team/Actions/getMemberSeats'
+import type { MemberSeats } from '@/features/team/Lib/memberSeats'
+import { inviteMemberSchema } from '@/features/team/Schema/teamSchema'
+
+/**
+ * The same address rule the invite action applies. The browser's own
+ * `type="email"` check is looser: it lets `name@gmail` through, the server
+ * then refused it with a raw English validation line, and Invite looked
+ * like it did nothing.
+ */
+function isInviteEmail(value: string): boolean {
+  return inviteMemberSchema.shape.email.safeParse(value.trim()).success
+}
 
 /**
  * Adding somebody to the workshop, whoever they are.
@@ -121,6 +135,7 @@ export function AddPersonDialog({
   onChanged: () => void
 }) {
   const t = useTranslations('settings')
+  const tUpgrade = useTranslations('common.upgrade')
   const locale = useLocale()
   /**
    * The country, held as a region code rather than a dial code.
@@ -149,6 +164,28 @@ export function AddPersonDialog({
       cancelled = true
     }
   }, [open, fetched, dialCodeProp, rolesProp])
+
+  /**
+   * Seats on the plan, asked every time the dialog opens since a member may
+   * have joined or left since the last time. Until the answer arrives the
+   * office choice works as before and the server still has the last word.
+   */
+  const [seats, setSeats] = useState<MemberSeats | null>(null)
+  useEffect(() => {
+    if (!open) return
+    // The dialog stays mounted while closed, so forget the last answer: a
+    // seat freed since then must not stay locked while this one is pending,
+    // or for the whole opening if the request fails
+    setSeats(null)
+    let cancelled = false
+    getMemberSeats().then((result) => {
+      if (!cancelled && result.success && result.data) setSeats(result.data)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open])
+  const officeSeatsFull = seats?.full === true
 
   const dialCode = dialCodeProp ?? fetched?.dialCode ?? ''
   const router = useRouter()
@@ -271,6 +308,10 @@ export function AddPersonDialog({
     async (e: React.FormEvent) => {
       e.preventDefault()
       if (busy || !email.trim()) return
+      if (!isInviteEmail(email)) {
+        setError(t('team.invalidInviteEmail'))
+        return
+      }
       setBusy(true)
       setError(null)
 
@@ -400,11 +441,22 @@ export function AddPersonDialog({
               hint={t('team.choiceTechnicianHint')}
               onClick={() => choose('technician')}
             />
+            {/* A full plan says so here, before an address is typed. The
+                upgrade dialog it opens is the one Invite would have shown. */}
             <ChoiceButton
               icon={<Mail className="h-5 w-5" />}
               title={t('team.choiceMember')}
-              hint={t('team.choiceMemberHint')}
-              onClick={() => choose('member')}
+              hint={
+                officeSeatsFull && seats
+                  ? tUpgrade('maxUsers', { limit: seats.limit })
+                  : t('team.choiceMemberHint')
+              }
+              locked={officeSeatsFull}
+              onClick={() =>
+                officeSeatsFull && seats
+                  ? handleGated({ gated: { feature: 'maxUsers', limit: seats.limit } })
+                  : choose('member')
+              }
             />
             <ChoiceButton
               icon={<CalendarClock className="h-5 w-5" />}
@@ -547,7 +599,10 @@ export function AddPersonDialog({
         )}
 
         {step === 'details' && kind === 'member' && (
-          <form onSubmit={addMember} className="space-y-4">
+          // noValidate: the address is checked by isInviteEmail, which says
+          // what is wrong in the workshop's language, instead of a browser
+          // bubble that follows a looser rule than the server
+          <form onSubmit={addMember} noValidate className="space-y-4">
             <StepIntro title={t('team.memberDetailsTitle')} blurb={t('team.memberDetailsBlurb')} />
             <div className="space-y-2">
               <Label htmlFor="member-email">{t('team.inviteByEmail')}</Label>
@@ -555,7 +610,12 @@ export function AddPersonDialog({
                 id="member-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (error) setError(null)
+                }}
+                aria-invalid={error === t('team.invalidInviteEmail') || undefined}
+                aria-describedby={error ? 'member-invite-error' : undefined}
                 placeholder={t('team.inviteEmailPlaceholder')}
                 autoComplete="off"
                 required
@@ -612,7 +672,14 @@ export function AddPersonDialog({
               <p className="text-muted-foreground text-xs">{t('team.roleHint')}</p>
             </div>
 
-            {error && <p className="text-destructive text-sm">{error}</p>}
+            {/* Announced, and tied to the address field, because with the
+                browser's own check turned off this is the only explanation
+                of why Invite stopped */}
+            {error && (
+              <p id="member-invite-error" role="alert" className="text-destructive text-sm">
+                {error}
+              </p>
+            )}
 
             <Footer
               backLabel={t('team.stepBack')}
@@ -737,23 +804,28 @@ function ChoiceButton({
   title,
   hint,
   onClick,
+  locked = false,
 }: {
   icon: React.ReactNode
   title: string
   hint: string
   onClick: () => void
+  /** The plan has no room for this answer: marked, and the click offers the upgrade. */
+  locked?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-locked={locked || undefined}
       className="flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent"
     >
       <span className="mt-0.5 text-primary">{icon}</span>
-      <span className="space-y-0.5">
+      <span className="flex-1 space-y-0.5">
         <span className="block font-medium text-sm">{title}</span>
         <span className="block text-muted-foreground text-xs">{hint}</span>
       </span>
+      {locked && <Zap className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />}
     </button>
   )
 }

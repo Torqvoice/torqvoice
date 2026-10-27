@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
-import { toast } from 'sonner'
+import { RefreshCw } from 'lucide-react'
+import { showNotice } from '@/components/notice-toast'
 
 const TOAST_ID = 'app-update'
 /**
@@ -39,6 +40,7 @@ export function isOutdatedActionError(error: unknown): boolean {
  */
 export function UpdateWatcher({ version }: { version: string }) {
   const t = useTranslations('common.appUpdated')
+  const tDismiss = useTranslations('common.updateBanner')
 
   useEffect(() => {
     if (version === 'development' || version === 'unknown') return
@@ -49,11 +51,14 @@ export function UpdateWatcher({ version }: { version: string }) {
     const show = () => {
       if (shown) return
       shown = true
-      toast(t('title'), {
+      showNotice({
         id: TOAST_ID,
+        icon: RefreshCw,
+        title: t('title'),
         description: t('description'),
-        duration: Number.POSITIVE_INFINITY,
-        action: { label: t('reload'), onClick: () => window.location.reload() },
+        actionLabel: t('reload'),
+        onAction: () => window.location.reload(),
+        dismissLabel: tDismiss('dismiss'),
       })
     }
 
@@ -103,7 +108,7 @@ export function UpdateWatcher({ version }: { version: string }) {
       window.removeEventListener('focus', onVisible)
       window.removeEventListener('unhandledrejection', onRejection)
     }
-  }, [version, t])
+  }, [version, t, tDismiss])
 
   return null
 }

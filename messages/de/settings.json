@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} wurde aus der App abgemeldet",
     "noAccessTitle": "Noch kein Zugriff",
     "noAccessBody": "Ihr Konto gehört zu {workshop}, hat aber noch keine Rolle, deshalb gibt es hier nichts zu öffnen. Bitten Sie einen Inhaber oder Administrator Ihrer Werkstatt um eine Rolle.",
-    "setupPageInstall": "Bei Google Play laden"
+    "setupPageInstall": "Bei Google Play laden",
+    "invalidInviteEmail": "Prüfen Sie die E-Mail-Adresse. Sie sollte so aussehen: name@beispiel.de."
   },
   "invoice": {
     "title": "Rechnungslayout",

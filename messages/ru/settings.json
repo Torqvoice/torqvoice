@@ -562,7 +562,8 @@
     "revokeTechnicianDone": "{name} вышел из приложения",
     "noAccessTitle": "Доступа пока нет",
     "noAccessBody": "Ваша учётная запись относится к {workshop}, но ей ещё не назначена роль, поэтому открыть здесь нечего. Попросите владельца или администратора мастерской назначить вам роль.",
-    "setupPageInstall": "Загрузить в Google Play"
+    "setupPageInstall": "Загрузить в Google Play",
+    "invalidInviteEmail": "Проверьте адрес электронной почты. Он должен выглядеть так: name@example.com."
   },
   "invoice": {
     "title": "Счета и предложения",

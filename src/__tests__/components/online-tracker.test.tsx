@@ -2,7 +2,9 @@ import { act, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const toast = vi.fn()
-vi.mock('sonner', () => ({ toast: (...args: unknown[]) => toast(...args) }))
+vi.mock('@/components/notice-toast', () => ({
+  showNotice: (notice: unknown) => toast(notice),
+}))
 
 import { OnlineTracker } from '@/components/online-tracker'
 
@@ -69,9 +71,9 @@ describe('OnlineTracker', () => {
 
     expect(assign).not.toHaveBeenCalled()
     expect(toast).toHaveBeenCalledTimes(1)
-    const [title, options] = toast.mock.calls[0]
-    expect(title).toBe('You have been signed out')
-    options.action.onClick()
+    const [notice] = toast.mock.calls[0]
+    expect(notice).toMatchObject({ title: 'You have been signed out', actionLabel: 'Sign in' })
+    notice.onAction()
     expect(assign).toHaveBeenCalledWith('/auth/sign-in?redirect=%2Fwork-orders%3Fstatus%3Dpending')
   })
 

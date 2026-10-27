@@ -137,18 +137,24 @@ test.describe('the free plan', () => {
   })
 
   test('offers an upgrade when inviting a colleague', async ({ page }) => {
-    // The free plan is one person, so the first invitation is the limit.
+    // The free plan is one person, so the first invitation is the limit. The
+    // add-person dialog says so on the office choice, before an address is
+    // typed: a workshop in PostHog filled in the whole form four times first.
     await page.goto('/settings/team')
     await settle(page)
+    const office = page.getByRole('button', { name: /Someone in the office/ })
     await expect(async () => {
       await page.getByRole('button', { name: 'Add', exact: true }).first().click()
-      await expect(page.getByText('Someone in the office')).toBeVisible({ timeout: 2_000 })
+      await expect(office).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await page.getByText('Someone in the office').click()
-    await page.locator('#member-email').fill(`e2e-colleague-${stamp}@example.com`)
-    await page.getByRole('button', { name: 'Invite', exact: true }).click()
+    await expect(office, 'the full plan is named on the choice').toContainText(
+      'Your plan includes one team member'
+    )
+    await expect(office).toHaveAttribute('data-locked', 'true')
 
+    await office.click()
     await expectUpgradeOffered(page, /one team member/)
+    await expect(page.locator('#member-email'), 'no form to fill in for nothing').toHaveCount(0)
     expect(await teamInvitations(organizationId), 'no invitation went out').toBe(0)
   })
 
