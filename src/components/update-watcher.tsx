@@ -4,8 +4,15 @@ import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
-const UPDATE_EVENT = 'torqvoice:update-available'
 const TOAST_ID = 'app-update'
+/**
+ * The header Next's server puts on its answer to a server action it does not
+ * have, which is what an old tab's actions get after a deploy. Next's client
+ * reads it and throws, but callers catch that error to show their own message,
+ * so the header is watched instead: it is seen on every action call, caught
+ * or not.
+ */
+export const ACTION_NOT_FOUND_HEADER = 'x-nextjs-action-not-found'
 /** How often an open tab asks which build is running */
 const POLL_MS = 5 * 60 * 1000
 /** A tab coming back to the front asks at most this often */
@@ -22,17 +29,6 @@ export function isOutdatedActionError(error: unknown): boolean {
     error.name === 'UnrecognizedActionError' ||
     /Server Action .* was not found on the server|Failed to find Server Action/.test(error.message)
   )
-}
-
-/**
- * True when the error says the tab runs code of an older build: a server
- * action it calls no longer exists on the server. The reload toast is shown
- * too, so a caller only has to skip its own error message.
- */
-export function reportIfOutdated(error: unknown): boolean {
-  if (!isOutdatedActionError(error)) return false
-  if (typeof window !== 'undefined') window.dispatchEvent(new Event(UPDATE_EVENT))
-  return true
 }
 
 /**
@@ -79,21 +75,33 @@ export function UpdateWatcher({ version }: { version: string }) {
         void check()
       }
     }
+    // A fallback for a Next version that stops sending the header
     const onRejection = (event: PromiseRejectionEvent) => {
       if (isOutdatedActionError(event.reason)) show()
     }
+
+    // Next's router calls the global fetch for every server action, so this
+    // sees each answer. It only looks at the headers; the response is handed
+    // back untouched.
+    const originalFetch = window.fetch
+    const watchedFetch: typeof window.fetch = async (input, init) => {
+      const response = await originalFetch.call(window, input, init)
+      if (response.headers.get(ACTION_NOT_FOUND_HEADER) === '1') show()
+      return response
+    }
+    window.fetch = watchedFetch
 
     const timer = window.setInterval(check, POLL_MS)
     document.addEventListener('visibilitychange', onVisible)
     window.addEventListener('focus', onVisible)
     window.addEventListener('unhandledrejection', onRejection)
-    window.addEventListener(UPDATE_EVENT, show)
     return () => {
+      // Put fetch back only if nothing else replaced it in the meantime
+      if (window.fetch === watchedFetch) window.fetch = originalFetch
       window.clearInterval(timer)
       document.removeEventListener('visibilitychange', onVisible)
       window.removeEventListener('focus', onVisible)
       window.removeEventListener('unhandledrejection', onRejection)
-      window.removeEventListener(UPDATE_EVENT, show)
     }
   }, [version, t])
 
