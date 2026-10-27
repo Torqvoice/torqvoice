@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Laikykite {key} ir spustelėkite, kad atidarytumėte"
+  },
+  "appUpdated": {
+    "title": "Yra nauja versija",
+    "description": "Perkraukite puslapį, kad gautumėte naujausius atnaujinimus.",
+    "reload": "Perkrauti"
+  },
+  "signedOut": {
+    "title": "Sesija baigėsi",
+    "description": "Prisijunkite iš naujo, kad galėtumėte tęsti darbą. Pirmiausia nukopijuokite tai, ką rašėte.",
+    "signIn": "Prisijungti"
   }
 }

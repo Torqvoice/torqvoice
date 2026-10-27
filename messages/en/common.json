@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Hold {key} and click to open"
+  },
+  "appUpdated": {
+    "title": "A new version is available",
+    "description": "Reload the page to get the latest updates.",
+    "reload": "Reload"
+  },
+  "signedOut": {
+    "title": "You have been signed out",
+    "description": "Sign in again to keep working. Copy anything you were typing first.",
+    "signIn": "Sign in"
   }
 }

@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Mantenha {key} premido e clique para abrir"
+  },
+  "appUpdated": {
+    "title": "Está disponível uma nova versão",
+    "description": "Recarregue a página para obter as atualizações mais recentes.",
+    "reload": "Recarregar"
+  },
+  "signedOut": {
+    "title": "A sua sessão terminou",
+    "description": "Inicie sessão novamente para continuar a trabalhar. Copie primeiro o que estava a escrever.",
+    "signIn": "Iniciar sessão"
   }
 }

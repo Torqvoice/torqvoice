@@ -135,5 +135,15 @@
   },
   "richText": {
     "openLinkHint": "Açmak için {key} tuşunu basılı tutup tıklayın"
+  },
+  "appUpdated": {
+    "title": "Yeni bir sürüm mevcut",
+    "description": "En son güncellemeleri almak için sayfayı yeniden yükleyin.",
+    "reload": "Yeniden yükle"
+  },
+  "signedOut": {
+    "title": "Oturumunuz kapandı",
+    "description": "Çalışmaya devam etmek için yeniden giriş yapın. Önce yazmakta olduğunuz metni kopyalayın.",
+    "signIn": "Giriş yap"
   }
 }
