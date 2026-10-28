@@ -118,6 +118,12 @@ export function engineSize(value: string | number | undefined): string | undefin
   return `${litres} L`
 }
 
+/** Exact displacement, for the lookup to write in the workshop's unit. */
+function cubicCentimetres(value: string | number | undefined): number | undefined {
+  const cc = Number(text(value))
+  return Number.isFinite(cc) && cc >= 30 ? cc : undefined
+}
+
 /** The date part of 2027-01-26 or 2007-05-14T00:00:00. */
 export function isoDate(value: string | undefined): string | undefined {
   const m = value ? /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim()) : null
@@ -178,6 +184,7 @@ export function mapRegistration(record: RegistrationRecord): VehicleLookupResult
     color: colour ? makeCase(colour) : undefined,
     fuelType: fuelType(text(record.fuelType)),
     engineSize: engineSize(record.engineCapacity),
+    engineCc: cubicCentimetres(record.engineCapacity),
     vehicleClass: vehicleClass(record.typeApproval),
     inspectionDue: isoDate(text(record.mot?.motDueDate)),
   })
@@ -200,6 +207,7 @@ export function mapFull(record: FullRecord): VehicleLookupResult {
     fuelType: fuelType(text(reg.FuelType)),
     transmission: transmission(text(reg.TransmissionType) ?? text(reg.Transmission)),
     engineSize: engineSize(reg.EngineCapacity),
+    engineCc: cubicCentimetres(reg.EngineCapacity),
     vehicleClass: text(reg.VehicleClass),
     firstRegistered: isoDate(text(reg.DateFirstRegistered)),
     weights: kerb || grossMax ? { kerb, grossMax } : undefined,

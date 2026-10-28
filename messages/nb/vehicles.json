@@ -336,6 +336,7 @@
     "outboard": "Utenbords",
     "inboard": "Innenbords",
     "engineSizeMarine": "Motor",
+    "engineSizeSavedAs": "Lagres som {unit}",
     "twoStroke": "Totakt",
     "vinMarine": "HIN",
     "licensePlateMarine": "Registreringsnummer",

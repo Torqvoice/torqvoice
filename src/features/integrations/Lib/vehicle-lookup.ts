@@ -1,6 +1,7 @@
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getManifest } from '@/integrations/registry'
 import { db } from '@/lib/db'
+import { type EngineSizeUnit, engineSizeUnitOf, formatEngineSize } from '@/lib/engine-size'
 import { loadConnection } from './connections'
 import type { VehicleLookupKey, VehicleLookupQuery, VehicleLookupResult } from './types'
 
@@ -134,5 +135,18 @@ export async function askRegistry(
   const { ctx, server } = await loadConnection(connectionId)
   if (!server.lookupVehicle) throw new Error('This integration cannot look up vehicles')
   const result = await server.lookupVehicle(ctx, query)
+  if (result?.engineCc !== undefined) {
+    const unit = await engineSizeUnitFor(ctx.connection.organizationId)
+    result.engineSize = formatEngineSize(result.engineCc, unit) ?? result.engineSize
+  }
   return { result, source: server.manifest.name, connectorId: server.manifest.id }
+}
+
+/** The unit this workshop writes engine size in, from Settings → Workshop → Units. */
+async function engineSizeUnitFor(organizationId: string): Promise<EngineSizeUnit> {
+  const row = await db.appSetting.findUnique({
+    where: { organizationId_key: { organizationId, key: SETTING_KEYS.ENGINE_SIZE_UNIT } },
+    select: { value: true },
+  })
+  return engineSizeUnitOf(row?.value)
 }

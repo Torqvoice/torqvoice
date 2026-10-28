@@ -336,6 +336,7 @@
     "outboard": "Pakabinamas",
     "inboard": "Įmontuotas",
     "engineSizeMarine": "Variklis",
+    "engineSizeSavedAs": "Bus išsaugota kaip {unit}",
     "twoStroke": "Dvitaktis",
     "vinMarine": "HIN",
     "licensePlateMarine": "Registracijos numeris",

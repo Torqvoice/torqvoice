@@ -68,6 +68,8 @@ export const SETTING_KEYS = {
   QUOTE_LOCK_ENABLED: 'quote.lockEnabled',
   QUOTE_LOCK_TRIGGER: 'quote.lockTrigger',
   UNIT_SYSTEM: 'workshop.unitSystem',
+  /** 'litres' | 'cc': how a plate lookup writes engine size. Unset means litres. */
+  ENGINE_SIZE_UNIT: 'workshop.engineSizeUnit',
   DEFAULT_TECHNICIAN: 'workshop.defaultTechnician',
   DEFAULT_TECHNICIAN_ID: 'workshop.defaultTechnicianId',
   DEFAULT_LABOR_RATE: 'workshop.defaultLaborRate',

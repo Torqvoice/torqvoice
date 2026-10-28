@@ -97,6 +97,7 @@ describe('checkcardetails mapping', () => {
       color: 'Black',
       fuelType: 'diesel',
       engineSize: '3.0 L',
+      engineCc: 2967,
       vehicleClass: 'Car',
       inspectionDue: '2027-01-26',
     })
@@ -113,6 +114,7 @@ describe('checkcardetails mapping', () => {
       fuelType: 'gasoline',
       transmission: 'automatic',
       engineSize: '1.6 L',
+      engineCc: 1598,
       vehicleClass: 'Car',
       firstRegistered: '2007-05-14',
       weights: { kerb: 1155, grossMax: 1605 },

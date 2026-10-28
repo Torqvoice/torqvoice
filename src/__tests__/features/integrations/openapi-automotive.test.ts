@@ -141,6 +141,7 @@ describe('openapi automotive mapper', () => {
       fuelType: 'gasoline',
       transmission: 'manual',
       engineSize: '1.6 L',
+      engineCc: 1598,
       vehicleClass: 'BERLINE',
       firstRegistered: '2008-10-22',
     })
@@ -157,6 +158,7 @@ describe('openapi automotive mapper', () => {
       fuelType: 'diesel',
       transmission: 'automatic',
       engineSize: '3.0 L',
+      engineCc: 2987,
       engineCode: 'B630WM',
       vehicleClass: 'SUV',
     })
@@ -278,6 +280,7 @@ describe('openapi automotive sandbox contract', () => {
       fuelType: 'diesel',
       transmission: 'manual',
       engineSize: '1.5 L',
+      engineCc: 1461,
       vehicleClass: 'MONOSPACE COMPACT',
       firstRegistered: '2016-06-24',
     })
@@ -307,6 +310,7 @@ describe('openapi automotive sandbox contract', () => {
       licensePlate: 'FS918BG',
       fuelType: 'diesel',
       engineSize: '1.6 L',
+      engineCc: 1560,
     })
   })
 
@@ -321,6 +325,7 @@ describe('openapi automotive sandbox contract', () => {
       fuelType: 'diesel',
       transmission: 'automatic',
       engineSize: '3.0 L',
+      engineCc: 2987,
       engineCode: 'B630WM',
       vehicleClass: 'SUV',
     })
@@ -337,6 +342,7 @@ describe('openapi automotive sandbox contract', () => {
       licensePlate: '5428GXS',
       fuelType: 'diesel',
       engineSize: '1.5 L',
+      engineCc: 1461,
       firstRegistered: '2010-07-06',
     })
   })

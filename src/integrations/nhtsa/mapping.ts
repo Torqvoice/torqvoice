@@ -35,6 +35,7 @@ export interface VpicRow {
   ElectrificationLevel?: string
   TransmissionStyle?: string
   DisplacementL?: string
+  DisplacementCC?: string
   EngineModel?: string
   EngineCylinders?: string
   VehicleType?: string
@@ -143,6 +144,14 @@ export function engineSize(row: VpicRow): string | undefined {
   return (Math.round(litres * 10) / 10).toFixed(1)
 }
 
+/** Exact displacement: vPIC gives cubic centimetres, worked out from litres when it does not. */
+export function engineCc(row: VpicRow): number | undefined {
+  const cc = Number(text(row.DisplacementCC))
+  if (Number.isFinite(cc) && cc > 0) return Math.round(cc)
+  const litres = Number(text(row.DisplacementL))
+  return Number.isFinite(litres) && litres > 0 ? Math.round(litres * 1000) : undefined
+}
+
 export function decodeToLookup(row: VpicRow, vin: string): VehicleLookupResult | null {
   if (decodeFailed(row)) return null
   const year = Number(text(row.ModelYear))
@@ -155,6 +164,7 @@ export function decodeToLookup(row: VpicRow, vin: string): VehicleLookupResult |
     fuelType: fuelType(row),
     transmission: transmission(row),
     engineSize: engineSize(row),
+    engineCc: engineCc(row),
     engineCode: text(row.EngineModel),
     vehicleClass: text(row.BodyClass) ?? text(row.VehicleType),
   }

@@ -336,6 +336,7 @@
     "outboard": "Подвесной",
     "inboard": "Стационарный",
     "engineSizeMarine": "Двигатель",
+    "engineSizeSavedAs": "Сохранится как {unit}",
     "twoStroke": "Двухтактный",
     "vinMarine": "HIN",
     "licensePlateMarine": "Регистрационный Номер",
