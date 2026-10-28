@@ -336,6 +336,7 @@
     "outboard": "Fuoribordo",
     "inboard": "Entrobordo",
     "engineSizeMarine": "Motore",
+    "engineSizeSavedAs": "Salvato come {unit}",
     "twoStroke": "Due Tempi",
     "vinMarine": "HIN",
     "licensePlateMarine": "Numero di Registrazione",

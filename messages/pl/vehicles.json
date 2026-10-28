@@ -336,6 +336,7 @@
     "outboard": "Zaburtowy",
     "inboard": "Stacjonarny",
     "engineSizeMarine": "Silnik",
+    "engineSizeSavedAs": "Zostanie zapisane jako {unit}",
     "twoStroke": "Dwusuwowy",
     "vinMarine": "HIN",
     "licensePlateMarine": "Numer Rejestracyjny",

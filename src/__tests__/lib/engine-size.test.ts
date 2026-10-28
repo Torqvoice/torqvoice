@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
   bareEngineUnit,
+  engineSizeHint,
   engineSizePlaceholder,
+  engineSizeToSave,
   engineSizeUnitOf,
   formatEngineSize,
   withEngineUnit,
@@ -64,5 +66,24 @@ describe('the workshop setting', () => {
   it('suggests the same engine in either unit', () => {
     expect(engineSizePlaceholder('litres')).toBe('1.6 L')
     expect(engineSizePlaceholder('cc')).toBe('1598 cc')
+  })
+})
+
+describe('editing a vehicle that already has an engine size', () => {
+  it('keeps the saved value exactly when the field was not changed', () => {
+    expect(engineSizeToSave('649', '649')).toBe('649')
+    expect(engineSizeToSave('2,0', '2,0')).toBe('2,0')
+    expect(engineSizeHint('649', '649')).toBeNull()
+  })
+
+  it('adds the unit once the field is changed', () => {
+    expect(engineSizeToSave('690', '649')).toBe('690 cc')
+    expect(engineSizeHint('690', '649')).toBe('cc')
+  })
+
+  it('adds the unit to a new vehicle', () => {
+    expect(engineSizeToSave('1.6', undefined)).toBe('1.6 L')
+    expect(engineSizeToSave('', null)).toBe('')
+    expect(engineSizeHint('1.6', '')).toBe('L')
   })
 })

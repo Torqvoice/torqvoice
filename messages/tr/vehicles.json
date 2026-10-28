@@ -336,6 +336,7 @@
     "outboard": "Dıştan Takma",
     "inboard": "İçten Takma",
     "engineSizeMarine": "Motor",
+    "engineSizeSavedAs": "{unit} olarak kaydedilir",
     "twoStroke": "İki Zamanlı",
     "vinMarine": "HIN",
     "licensePlateMarine": "Tescil Numarası",

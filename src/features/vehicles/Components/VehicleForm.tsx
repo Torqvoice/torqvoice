@@ -1,9 +1,9 @@
 'use client'
 
 import { useEngineSizeUnit } from '@/components/engine-size-context'
-import { bareEngineUnit, engineSizePlaceholder, withEngineUnit } from '@/lib/engine-size'
+import { engineSizeHint, engineSizePlaceholder, engineSizeToSave } from '@/lib/engine-size'
 import { interactiveRow } from '@/lib/interactive-row'
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo, useEffect, useId } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -356,7 +356,9 @@ export function VehicleForm({
       // empty field out is the same thing as clearing it.
       const optional = (name: string) => clearableInput(formData.get(name), Boolean(vehicle))
       const withUnit = <T,>(value: T) =>
-        typeof value === 'string' && !isMarine ? withEngineUnit(value) : value
+        typeof value === 'string' && !isMarine
+          ? engineSizeToSave(value, vehicle?.engineSize)
+          : value
       const data: CreateVehicleInput & { imageUrl?: string } = {
         make: formData.get('make') as string,
         model: formData.get('model') as string,
@@ -936,9 +938,11 @@ export function VehicleForm({
  * is litres and 649 is cubic centimetres.
  */
 function EngineSizeInput({ defaultValue }: { defaultValue: string }) {
+  const t = useTranslations('vehicles.form')
   const unit = useEngineSizeUnit()
+  const hintId = useId()
   const [draft, setDraft] = useState(defaultValue)
-  const suffix = bareEngineUnit(draft)
+  const suffix = engineSizeHint(draft, defaultValue)
   return (
     <div className="relative">
       <Input
@@ -947,6 +951,7 @@ function EngineSizeInput({ defaultValue }: { defaultValue: string }) {
         placeholder={engineSizePlaceholder(unit)}
         defaultValue={defaultValue}
         onInput={(e) => setDraft(e.currentTarget.value)}
+        aria-describedby={hintId}
         className={suffix ? 'pr-10' : undefined}
       />
       {suffix && (
@@ -957,6 +962,10 @@ function EngineSizeInput({ defaultValue }: { defaultValue: string }) {
           {suffix}
         </span>
       )}
+      {/* Always mounted, so a screen reader hears the unit as it changes. */}
+      <span id={hintId} className="sr-only" aria-live="polite">
+        {suffix ? t('engineSizeSavedAs', { unit: suffix }) : ''}
+      </span>
     </div>
   )
 }

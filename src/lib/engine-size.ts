@@ -44,6 +44,20 @@ export function withEngineUnit(value: string): string {
   return unit ? `${value.trim().replace(',', '.')} ${unit}` : value
 }
 
+/**
+ * What the form saves for the field: a value typed or changed here gets its
+ * unit; one saved before is kept exactly as it was, so editing the mileage
+ * never rewrites an old "649" as "649 cc".
+ */
+export function engineSizeToSave(value: string, saved: string | null | undefined): string {
+  return value.trim() === (saved ?? '').trim() ? value : withEngineUnit(value)
+}
+
+/** The unit the field shows beside an edited bare number, matching what will be saved. */
+export function engineSizeHint(draft: string, saved: string | null | undefined): 'L' | 'cc' | null {
+  return draft.trim() === (saved ?? '').trim() ? null : bareEngineUnit(draft)
+}
+
 /** What the empty field shows, in the workshop's unit. */
 export function engineSizePlaceholder(unit: EngineSizeUnit): string {
   return unit === 'cc' ? '1598 cc' : '1.6 L'

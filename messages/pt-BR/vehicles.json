@@ -336,6 +336,7 @@
     "outboard": "De Popa",
     "inboard": "De Centro",
     "engineSizeMarine": "Motor",
+    "engineSizeSavedAs": "Salvo como {unit}",
     "twoStroke": "Dois Tempos",
     "vinMarine": "HIN",
     "licensePlateMarine": "Número de Registro",

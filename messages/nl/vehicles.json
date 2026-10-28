@@ -336,6 +336,7 @@
     "outboard": "Buitenboord",
     "inboard": "Binnenboord",
     "engineSizeMarine": "Motor",
+    "engineSizeSavedAs": "Wordt opgeslagen als {unit}",
     "twoStroke": "Tweetakt",
     "vinMarine": "HIN",
     "licensePlateMarine": "Registratienummer",
