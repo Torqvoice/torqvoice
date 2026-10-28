@@ -27,9 +27,9 @@ vi.mock('@/lib/email', () => ({
   getOrgFromAddress: (...args: unknown[]) => getOrgFromAddress(...args),
 }))
 
-const resolveCustomerLocale = vi.fn().mockResolvedValue('en')
+const resolveDocumentLocale = vi.fn().mockResolvedValue('en')
 vi.mock('@/i18n/locale-from-request', () => ({
-  resolveCustomerLocale: (...args: unknown[]) => resolveCustomerLocale(...args),
+  resolveDocumentLocale: (...args: unknown[]) => resolveDocumentLocale(...args),
 }))
 
 const { sendTemplatedMail } = await import('@/features/email/Lib/sendTemplatedMail')
@@ -51,7 +51,7 @@ function lastMail(): SentMail {
 beforeEach(() => {
   sendOrgMail.mockClear()
   getOrgFromAddress.mockClear()
-  resolveCustomerLocale.mockClear()
+  resolveDocumentLocale.mockClear()
 })
 
 describe('sendTemplatedMail', () => {
@@ -114,13 +114,13 @@ describe('sendTemplatedMail', () => {
       locale: 'nb',
       context: { message: 'Hei' },
     })
-    expect(resolveCustomerLocale).not.toHaveBeenCalled()
+    expect(resolveDocumentLocale).not.toHaveBeenCalled()
 
     await sendTemplatedMail('org', {
       kind: 'message',
       to: 'ola@example.com',
       context: { message: 'Hi' },
     })
-    expect(resolveCustomerLocale).toHaveBeenCalledWith('org', null)
+    expect(resolveDocumentLocale).toHaveBeenCalledWith('org')
   })
 })

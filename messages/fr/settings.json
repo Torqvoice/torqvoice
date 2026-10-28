@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Code: {value}"
   },
   "localization": {
-    "languageTitle": "Langue",
-    "languageDescription": "Choisissez la langue d'affichage de l'application.",
+    "languageTitle": "Langue de l'atelier",
+    "languageDescription": "Les factures, devis, ordres de travail et e-mails envoyés à vos clients sont rédigés dans cette langue. Pour changer uniquement la langue que vous voyez, utilisez le sélecteur de langue de votre menu utilisateur.",
     "language": "Langue",
     "forceCustomerLocale": "Forcer cette langue sur les pages destinées aux clients",
     "forceCustomerLocaleHint": "Lorsqu'il est activé, le portail client et les factures, devis et inspections partagés s'affichent dans la langue de votre atelier, quels que soient les paramètres du navigateur du visiteur. Lorsqu'il est désactivé, les pages destinées aux clients suivent la langue du navigateur du visiteur.",

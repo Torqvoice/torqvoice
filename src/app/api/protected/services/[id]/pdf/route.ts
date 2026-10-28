@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { readFile } from 'fs/promises'
@@ -40,10 +40,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     // in the data, so record it here. Best-effort, never blocks the PDF.
     void markInvoiceIssued(ctx.organizationId, ctx.userId, record.id)
 
-    // The workshop reads its own copy in its own language; the customer's
-    // copy follows the customer's, which the shared renderer resolves.
-    const cookieStore = await cookies()
-    const locale = cookieStore.get('locale')?.value || 'en'
+    // The workshop's language, the one the customer receives it in.
+    const locale = await resolveDocumentLocale(ctx.organizationId)
 
     // Load image attachments as base64 data URIs for PDF embedding
     const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = []

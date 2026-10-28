@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Codice: {value}"
   },
   "localization": {
-    "languageTitle": "Lingua",
-    "languageDescription": "Scegli la lingua di visualizzazione dell'applicazione.",
+    "languageTitle": "Lingua dell'officina",
+    "languageDescription": "Fatture, preventivi, ordini di lavoro ed email ai clienti sono scritti in questa lingua. Per cambiare solo la lingua che vedi, usa il selettore della lingua nel tuo menu utente.",
     "language": "Lingua",
     "forceCustomerLocale": "Forza questa lingua sulle pagine rivolte al cliente",
     "forceCustomerLocaleHint": "Quando attivato, il portale clienti e le fatture, i preventivi e le ispezioni condivise vengono mostrati nella lingua della tua officina, indipendentemente dalle impostazioni del browser del visitatore. Quando disattivato, le pagine rivolte ai clienti seguono la lingua del browser del visitatore.",

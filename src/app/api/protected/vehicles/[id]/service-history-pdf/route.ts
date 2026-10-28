@@ -2,7 +2,7 @@ import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
-import { cookies } from 'next/headers'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { ServiceHistoryPDF } from '@/features/vehicles/Components/service-history-pdf/ServiceHistoryPDF'
@@ -25,9 +25,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Load locale-based PDF translations
-    const cookieStore = await cookies()
-    const locale = cookieStore.get('locale')?.value || 'en'
+    // Load the PDF translations in the workshop's language
+    const locale = await resolveDocumentLocale(ctx.organizationId)
     let pdfMessages: Record<string, Record<string, string>>
     try {
       pdfMessages = (await import(`../../../../../../../messages/${locale}/pdf.json`)).default

@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Kode: {value}"
   },
   "localization": {
-    "languageTitle": "Språk",
-    "languageDescription": "Velg visningsspråk for applikasjonen.",
+    "languageTitle": "Verkstedets språk",
+    "languageDescription": "Fakturaer, tilbud, arbeidsordrer og e-post til kundene dine skrives på dette språket. Vil du bare endre språket du selv ser, bruker du språkvalget i brukermenyen din.",
     "language": "Språk",
     "forceCustomerLocale": "Tving dette språket på kundesider",
     "forceCustomerLocaleHint": "Når aktivert vises kundeportalen og delte fakturaer, tilbud og inspeksjoner på verkstedets språk uavhengig av besøkendes nettleserinnstillinger. Når deaktivert, følger kundesidene besøkendes nettleserspråk.",

@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Code: {value}"
   },
   "localization": {
-    "languageTitle": "Language",
-    "languageDescription": "Choose the display language for the application.",
+    "languageTitle": "Workshop language",
+    "languageDescription": "Invoices, quotes, work orders and emails to your customers are written in this language. To change only the language you see, use the language picker in your user menu.",
     "language": "Language",
     "forceCustomerLocale": "Force this language on customer-facing pages",
     "forceCustomerLocaleHint": "When enabled, the customer portal and shared invoices, quotes and inspections will appear in your workshop's language regardless of the visitor's browser settings. When disabled, customer-facing pages follow the visitor's browser language.",

@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { db } from '@/lib/db'
 import { getOrgFromAddress, type SendMailOptions, sendOrgMail } from '@/lib/email'
 import { formatDate } from '@/lib/format'
@@ -95,7 +95,7 @@ export async function buildTemplatedMail<K extends EmailKind>(
   options: TemplatedMailOptions<K>
 ) {
   const [locale, settings] = await Promise.all([
-    options.locale ?? resolveCustomerLocale(organizationId, null),
+    options.locale ?? resolveDocumentLocale(organizationId),
     loadWorkshop(organizationId),
   ])
   const [template, messages] = await Promise.all([
