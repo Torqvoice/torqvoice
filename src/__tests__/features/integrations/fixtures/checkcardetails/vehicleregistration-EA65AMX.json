@@ -1,25 +1,25 @@
 {
-    "registrationNumber": "EA65AMX",
-    "make": "AUDI",
-    "model": "A7",
-    "colour": "BLACK",
-    "fuelType": "DIESEL",
-    "engineCapacity": 2967,
-    "yearOfManufacture": 2015,
-    "vehicleAge": "11 years",
-    "wheelplan": "2 AXLE RIGID BODY",
-    "dateOfLastV5CIssued": "2024-09-25",
-    "typeApproval": "M1",
-    "co2Emissions": 142,
-    "registrationPlace": "Chelmsford",
-    "tax": {
-        "taxStatus": "Taxed",
-        "taxDueDate": "2027-08-01",
-        "days": "278"
-    },
-    "mot": {
-        "motStatus": "Valid",
-        "motDueDate": "2027-01-26",
-        "days": 91
-    }
+  "registrationNumber": "EA65AMX",
+  "make": "AUDI",
+  "model": "A7",
+  "colour": "BLACK",
+  "fuelType": "DIESEL",
+  "engineCapacity": 2967,
+  "yearOfManufacture": 2015,
+  "vehicleAge": "11 years",
+  "wheelplan": "2 AXLE RIGID BODY",
+  "dateOfLastV5CIssued": "2024-09-25",
+  "typeApproval": "M1",
+  "co2Emissions": 142,
+  "registrationPlace": "Chelmsford",
+  "tax": {
+    "taxStatus": "Taxed",
+    "taxDueDate": "2027-08-01",
+    "days": "278"
+  },
+  "mot": {
+    "motStatus": "Valid",
+    "motDueDate": "2027-01-26",
+    "days": 91
+  }
 }

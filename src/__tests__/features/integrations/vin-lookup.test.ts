@@ -40,7 +40,11 @@ const VIN = '1HGCM82633A004352'
 
 function connected(...connectorIds: string[]) {
   vi.mocked(db.integrationConnection.findMany).mockResolvedValue(
-    connectorIds.map((connectorId) => ({ id: `conn-${connectorId}`, connectorId })) as never
+    connectorIds.map((connectorId) => ({
+      id: `conn-${connectorId}`,
+      connectorId,
+      settings: {},
+    })) as never
   )
 }
 
@@ -104,6 +108,28 @@ describe('findLookupConnection', () => {
     expect(db.integrationConnection.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ orderBy: { createdAt: 'desc' } })
     )
+  })
+
+  it('matches a multi-country registry on the country chosen in its settings', async () => {
+    country('+44')
+    // Openapi was connected last, but for France: a British plate belongs to Check Car Details.
+    vi.mocked(db.integrationConnection.findMany).mockResolvedValue([
+      { id: 'conn-openapi', connectorId: 'openapi-automotive', settings: { country: 'FR' } },
+      { id: 'conn-ccd', connectorId: 'checkcardetails', settings: {} },
+    ] as never)
+    expect(await findLookupConnection('org1', 'plate')).toEqual({
+      id: 'conn-ccd',
+      connectorId: 'checkcardetails',
+    })
+    // Set to the United Kingdom, the newer Openapi connection wins the tie.
+    vi.mocked(db.integrationConnection.findMany).mockResolvedValue([
+      { id: 'conn-openapi', connectorId: 'openapi-automotive', settings: { country: 'GB' } },
+      { id: 'conn-ccd', connectorId: 'checkcardetails', settings: {} },
+    ] as never)
+    expect(await findLookupConnection('org1', 'plate')).toEqual({
+      id: 'conn-openapi',
+      connectorId: 'openapi-automotive',
+    })
   })
 
   it('reads the phone prefix in the forms people type it', () => {

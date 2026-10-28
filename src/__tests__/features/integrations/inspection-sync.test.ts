@@ -5,9 +5,13 @@ const vehicle = { findMany: vi.fn() }
 const vehicleInspectionStatus = { upsert: vi.fn(), count: vi.fn() }
 vi.mock('@/lib/db', () => ({ db: { vehicle, vehicleInspectionStatus } }))
 
-const { BATCH_SIZE, recordRegistryAnswer, refreshInspections, vehiclesDueForCheck } = await import(
-  '@/features/integrations/Lib/inspection-sync'
-)
+const {
+  BATCH_SIZE,
+  RegistryQuotaError,
+  recordRegistryAnswer,
+  refreshInspections,
+  vehiclesDueForCheck,
+} = await import('@/features/integrations/Lib/inspection-sync')
 
 function context(settings: Record<string, unknown>, state: Record<string, unknown> = {}) {
   const log = vi.fn(
@@ -111,6 +115,22 @@ describe('inspection refresh job', () => {
     const { ctx } = context({ syncInspections: true })
     await expect(refreshInspections(ctx, lookup)).rejects.toThrow(/rejected/)
     expect(lookup).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops the pass when the registry allowance is spent, leaving the rest unchecked', async () => {
+    vehicle.findMany.mockResolvedValueOnce([
+      { id: 'v1', licensePlate: 'EA65AMX' },
+      { id: 'v2', licensePlate: 'MA19ZXC' },
+    ])
+    const lookup = vi
+      .fn()
+      .mockRejectedValue(
+        new RegistryQuotaError('Check Car Details: the daily lookup limit is reached')
+      )
+    const { ctx } = context({ syncInspections: true })
+    await expect(refreshInspections(ctx, lookup)).rejects.toThrow(RegistryQuotaError)
+    expect(lookup).toHaveBeenCalledTimes(1)
+    expect(vehicleInspectionStatus.upsert).not.toHaveBeenCalled()
   })
 
   it('notes a one-off failure and moves on', async () => {

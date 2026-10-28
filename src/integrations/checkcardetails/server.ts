@@ -1,4 +1,4 @@
-import { inspectionJobs } from '@/features/integrations/Lib/inspection-sync'
+import { inspectionJobs, RegistryQuotaError } from '@/features/integrations/Lib/inspection-sync'
 import { makeCase } from '@/features/integrations/Lib/make-case'
 import type {
   ConnectorContext,
@@ -106,11 +106,16 @@ export function transmission(value: string | undefined): string | undefined {
   return undefined
 }
 
-/** Displacement as the form shows it, from cubic centimetres. */
+/**
+ * Displacement as the form shows it, from cubic centimetres. Cars round to a
+ * tenth of a litre as the badge does; motorcycles and mopeds keep every
+ * cubic centimetre, so a 49 cc moped is 0.049 L and never rounds to zero.
+ */
 export function engineSize(value: string | number | undefined): string | undefined {
   const cc = Number(text(value))
   if (!Number.isFinite(cc) || cc < 30) return undefined
-  return `${(cc / 1000).toFixed(1)} L`
+  const litres = cc < 1000 ? Number((cc / 1000).toFixed(3)) : (cc / 1000).toFixed(1)
+  return `${litres} L`
 }
 
 /** The date part of 2027-01-26 or 2007-05-14T00:00:00. */
@@ -273,7 +278,7 @@ async function ask<T>(
   }
   if (said.includes('daily limit')) {
     await ctx.log('warn', 'Vehicle lookup: daily limit reached', { dataPoint })
-    throw new Error(
+    throw new RegistryQuotaError(
       'Check Car Details: the daily lookup limit is reached, ask Check Car Details support to raise it'
     )
   }

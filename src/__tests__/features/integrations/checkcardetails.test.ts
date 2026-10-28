@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+import { RegistryQuotaError } from '@/features/integrations/Lib/inspection-sync'
 import type { ConnectorContext } from '@/features/integrations/Lib/types'
 import {
   connector,
@@ -153,9 +154,11 @@ describe('checkcardetails mapping', () => {
     expect(vehicleClass('XYZ')).toBe('XYZ')
   })
 
-  it('writes small motorcycle engines too', () => {
-    expect(engineSize(125)).toBe('0.1 L')
-    expect(engineSize('649')).toBe('0.6 L')
+  it('keeps small engines exact instead of rounding them to zero', () => {
+    expect(engineSize(49)).toBe('0.049 L')
+    expect(engineSize(125)).toBe('0.125 L')
+    expect(engineSize('649')).toBe('0.649 L')
+    expect(engineSize(2993)).toBe('3.0 L')
     expect(engineSize(0)).toBeUndefined()
   })
 
@@ -262,8 +265,9 @@ describe('checkcardetails lookup', () => {
         ukvehicledata: () => json(NOT_AUTHORISED, 403),
       })
     )
+    // A typed error, so the MOT sync stops instead of marking the rest checked.
     await expect(connector.lookupVehicle?.(limited.ctx, { plate: 'EA65AMX' })).rejects.toThrow(
-      /daily lookup limit/
+      RegistryQuotaError
     )
   })
 

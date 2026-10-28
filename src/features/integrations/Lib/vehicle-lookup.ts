@@ -83,7 +83,7 @@ export async function findLookupConnection(
   const [rows, countrySetting] = await Promise.all([
     db.integrationConnection.findMany({
       where: { organizationId, status: 'active' },
-      select: { id: true, connectorId: true },
+      select: { id: true, connectorId: true, settings: true },
       // Newest first: a workshop that connects a second registry for the
       // same country is switching to it.
       orderBy: { createdAt: 'desc' },
@@ -102,11 +102,21 @@ export async function findLookupConnection(
       lookupKeys(r.connectorId).includes(by)
   )
   if (candidates.length === 0) return null
-  const local = candidates.find((r) => {
-    const served = getManifest(r.connectorId)?.countries
-    return Array.isArray(served) && served.some((c) => countries.includes(c))
-  })
-  return local ?? candidates[0]
+  const local = candidates.find((r) => servedCountries(r).some((c) => countries.includes(c)))
+  const pick = local ?? candidates[0]
+  return { id: pick.id, connectorId: pick.connectorId }
+}
+
+/**
+ * The countries one connection actually searches. A registry that covers
+ * several countries, such as Openapi or RegCheck, searches only the one
+ * chosen on its integration page; the rest serve what their manifest lists.
+ */
+function servedCountries(row: { connectorId: string; settings: unknown }): string[] {
+  const settings = (row.settings ?? {}) as Record<string, unknown>
+  if (typeof settings.country === 'string' && settings.country) return [settings.country]
+  const served = getManifest(row.connectorId)?.countries
+  return Array.isArray(served) ? served : []
 }
 
 export interface RegistryAnswer {
