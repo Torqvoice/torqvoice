@@ -154,7 +154,11 @@
       "never": "Brak pełnego przebiegu",
       "inProgress": "Trwa przebieg",
       "off": "Włącz ustawienie i zapisz; do tego czasu przebieg niczego nie sprawdza.",
-      "syncNowHelp": "Synchronizuj teraz uruchamia przebieg od razu zamiast czekać na cogodzinny. Sprawdza po 25 pojazdów i kontynuuje sam, aż wszystkie oczekujące pojazdy zostaną obsłużone."
+      "syncNowHelp": "Synchronizuj teraz uruchamia przebieg od razu zamiast czekać na cogodzinny. Sprawdza po 25 pojazdów i kontynuuje sam, aż wszystkie oczekujące pojazdy zostaną obsłużone. Pierwszy przebieg sprawdza każdy pojazd z tablicą rejestracyjną.",
+      "confirmTitle": "Sprawdzić pojazdy teraz?",
+      "confirmDescription": "{count} z {total} pojazdów z tablicą zostanie teraz sprawdzonych w {name}, po 25 naraz, a ich terminy przeglądów zostaną zapisane. Pojazdy sprawdzone niedawno są pomijane. Jeśli {name} pobiera opłatę za wyszukanie, każdy znaleziony pojazd jest rozliczany na Twoim koncie.",
+      "confirmLabel": "Sprawdź {count} pojazdów",
+      "nothingDue": "Wszystkie pojazdy z tablicą zostały niedawno sprawdzone, więc na razie nie ma czego sprawdzać."
     },
     "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
     "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Przeszukuje rejestr samochodów. Wyłącz, jeśli obsługujesz tylko motocykle, wtedy wyszukiwanie pomija samochody i odpowiada szybciej.",
         "bikes": "Wyszukuj motocykle",
         "bikesHelp": "Przeszukuje rejestr motocykli. Gdy samochody też są włączone, jest odpytywany tylko wtedy, gdy żaden samochód nie pasuje, a brak wyniku dla samochodu jest bezpłatny. Niedostępne dla Portugalii."
+      }
+    },
+    "checkcardetails": {
+      "description": "Uzupełnij pojazd na podstawie brytyjskiej tablicy rejestracyjnej lub numeru VIN: marka, model, rok, kolor, paliwo, pojemność silnika i termin MOT, z danych DVLA przez Check Car Details. Samochody i motocykle pochodzą z tego samego rejestru. Gdy na koncie włączone jest UK Vehicle Data, przychodzą też VIN, skrzynia biegów i masy. Każde wyszukanie jest rozliczane na własnym koncie Check Car Details warsztatu. Dane właściciela nie są zwracane.",
+      "fields": {
+        "apiKey": "Klucz API",
+        "apiKeyHelp": "Załóż konto na api.checkcardetails.co.uk i skopiuj klucz produkcyjny w API Keys. Vehicle Registration jest w każdym koncie. Aby dostawać też VIN, kliknij Request Access przy UK Vehicle Data w Your Data Points; wyszukiwania korzystają z niego, gdy tylko zostanie włączone. Klucz testowy znajduje tylko tablice zawierające literę A."
+      },
+      "settings": {
+        "syncInspections": "Aktualizuj terminy MOT wszystkich pojazdów w tym warsztacie",
+        "syncInspectionsHelp": "Gdy to jest włączone, każdy pojazd w warsztacie z tablicą rejestracyjną jest raz wyszukiwany i zapisywany jest jego termin MOT. Potem każdy pojazd jest sprawdzany co miesiąc, a co tydzień, gdy MOT upływa za mniej niż dwa miesiące. Każdy znaleziony pojazd jest rozliczany jako jedno wyszukanie Vehicle Registration, więc pierwszy przebieg kosztuje najwięcej; tablice nieznane rejestrowi są bezpłatne. Wysyłane są tylko pojazdy zapisane w tym warsztacie."
       }
     },
     "rdw": {

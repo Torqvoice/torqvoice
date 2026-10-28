@@ -27,7 +27,11 @@ import {
   lookupVehicle,
 } from '@/features/integrations/Actions/vehicleLookupActions'
 import { recordRegistryAnswer } from '@/features/integrations/Lib/inspection-sync'
-import { askRegistry, findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup'
+import {
+  askRegistry,
+  countriesForDialCode,
+  findLookupConnection,
+} from '@/features/integrations/Lib/vehicle-lookup'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
@@ -57,7 +61,7 @@ beforeEach(() => {
   } as never)
   vi.mocked(getFeatures).mockResolvedValue({ integrations: true } as never)
   vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: 'v1' } as never)
-  country('US')
+  country('+1')
 })
 
 describe('findLookupConnection', () => {
@@ -74,14 +78,44 @@ describe('findLookupConnection', () => {
   })
 
   it('treats a registry that answers to both as either', async () => {
-    country('NO')
+    country('+47')
     connected('vegvesen')
     expect(await findLookupConnection('org1', 'vin')).toMatchObject({ connectorId: 'vegvesen' })
     expect(await findLookupConnection('org1', 'plate')).toMatchObject({ connectorId: 'vegvesen' })
   })
 
+  it("prefers the registry for the workshop's country, read from its phone prefix", async () => {
+    connected('vegvesen', 'checkcardetails')
+    country('+44')
+    expect(await findLookupConnection('org1', 'plate')).toMatchObject({
+      connectorId: 'checkcardetails',
+    })
+    country('+47')
+    expect(await findLookupConnection('org1', 'plate')).toMatchObject({ connectorId: 'vegvesen' })
+  })
+
+  it('takes the newest of two registries for the same country', async () => {
+    country('+44')
+    // The query asks for the newest first; the mock returns rows in that order.
+    connected('checkcardetails', 'openapi-automotive')
+    expect(await findLookupConnection('org1', 'plate')).toMatchObject({
+      connectorId: 'checkcardetails',
+    })
+    expect(db.integrationConnection.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: { createdAt: 'desc' } })
+    )
+  })
+
+  it('reads the phone prefix in the forms people type it', () => {
+    expect(countriesForDialCode('+44')).toEqual(['GB'])
+    expect(countriesForDialCode('0047')).toEqual(['NO'])
+    expect(countriesForDialCode('47')).toEqual(['NO'])
+    expect(countriesForDialCode('+999')).toEqual([])
+    expect(countriesForDialCode(null)).toEqual([])
+  })
+
   it('offers no VIN lookup for plate-only registries', async () => {
-    country('NL')
+    country('+31')
     connected('rdw', 'openapi-automotive')
     expect(await findLookupConnection('org1', 'vin')).toBeNull()
   })
@@ -121,7 +155,7 @@ describe('lookupVehicle by VIN', () => {
   })
 
   it('still records what a registry says when it was asked by VIN', async () => {
-    country('NO')
+    country('+47')
     connected('vegvesen')
     vi.mocked(askRegistry).mockResolvedValue({
       result: { make: 'Toyota', vin: VIN, inspectionDue: '2027-04-26' },

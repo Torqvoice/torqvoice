@@ -154,7 +154,11 @@
       "never": "Nessun passaggio completo finora",
       "inProgress": "Un passaggio è in corso",
       "off": "Attiva l'impostazione e salva; fino ad allora un passaggio non controlla nulla.",
-      "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
+      "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti. Il primo passaggio cerca tutti i veicoli con una targa.",
+      "confirmTitle": "Cercare i veicoli adesso?",
+      "confirmDescription": "{count} dei {total} veicoli con targa verranno cercati in {name} adesso, 25 alla volta, e verranno salvate le loro scadenze di revisione. I veicoli controllati di recente vengono saltati. Se {name} addebita ogni ricerca, ogni veicolo trovato viene addebitato al tuo account.",
+      "confirmLabel": "Cerca {count} veicoli",
+      "nothingDue": "Tutti i veicoli con targa sono stati controllati di recente, quindi non c'è ancora niente da cercare."
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Consulta il registro delle auto. Disattivalo se lavori solo su motocicli, così la ricerca salta le auto e risponde più in fretta.",
         "bikes": "Cerca i motocicli",
         "bikesHelp": "Consulta il registro dei motocicli. Se sono attive anche le auto, viene consultato solo quando nessuna auto corrisponde, e una ricerca auto senza esito è gratuita. Non disponibile per il Portogallo."
+      }
+    },
+    "checkcardetails": {
+      "description": "Compila un veicolo dalla sua targa britannica o dal VIN: marca, modello, anno, colore, alimentazione, cilindrata e la scadenza della MOT, dai dati DVLA tramite Check Car Details. Auto e moto arrivano dallo stesso registro. Con UK Vehicle Data attivo sul tuo account arrivano anche VIN, cambio e pesi. Ogni ricerca è addebitata all'account Check Car Details dell'officina. Non vengono restituiti dati del proprietario.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Crea un account su api.checkcardetails.co.uk e copia la chiave di produzione in API Keys. Vehicle Registration è incluso in ogni account. Per avere anche il VIN, fai clic su Request Access accanto a UK Vehicle Data in Your Data Points; le ricerche lo usano appena è attivo. Una chiave di prova trova solo targhe che contengono la lettera A."
+      },
+      "settings": {
+        "syncInspections": "Mantieni aggiornate le scadenze MOT di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Quando è attivo, ogni veicolo dell'officina con una targa viene cercato una volta e viene salvata la scadenza della MOT. Poi ogni veicolo viene ricontrollato ogni mese, e ogni settimana quando la MOT scade entro due mesi. Ogni veicolo trovato è addebitato come una ricerca Vehicle Registration, quindi il primo passaggio è il più costoso; le targhe che il registro non conosce sono gratuite. Vengono inviati solo i veicoli salvati in questa officina."
       }
     },
     "rdw": {

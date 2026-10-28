@@ -196,6 +196,38 @@ export function ConnectionSettings({
 
   const firstSchedule = manifest.schedules?.[0]?.job
   const hasSync = Boolean(firstSchedule)
+  // An inspection pass does nothing while its setting is off, so the button
+  // waits for it rather than looking like it worked.
+  const inspectionSyncOff =
+    Boolean(view.inspectionSync) && connection?.settings.syncInspections !== true
+
+  async function syncNow() {
+    if (!firstSchedule) return
+    // A registry pass looks up every vehicle that is due, and a paid
+    // registry bills each one found, so it says how many before it starts.
+    const sync = view.inspectionSync
+    if (sync) {
+      if (sync.dueForCheck === 0) {
+        toast.info(t('connection.inspectionSync.nothingDue'))
+        return
+      }
+      const ok = await confirm({
+        title: t('connection.inspectionSync.confirmTitle'),
+        description: t('connection.inspectionSync.confirmDescription', {
+          count: sync.dueForCheck,
+          total: sync.vehiclesWithPlate,
+          name: manifest.name,
+        }),
+        confirmLabel: t('connection.inspectionSync.confirmLabel', { count: sync.dueForCheck }),
+      })
+      if (!ok) return
+    }
+    await run(
+      'sync',
+      () => runIntegrationJob(manifest.id, firstSchedule),
+      isAccounting ? t('connection.pullQueued') : t('connection.syncQueued')
+    )
+  }
   const isCalendar = manifest.category === 'calendar'
   const isAccounting = manifest.category === 'accounting'
   // Mail vendors can prove themselves by delivering a message to the person
@@ -489,14 +521,9 @@ export function ConnectionSettings({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  run(
-                    'sync',
-                    () => runIntegrationJob(manifest.id, firstSchedule),
-                    isAccounting ? t('connection.pullQueued') : t('connection.syncQueued')
-                  )
-                }
-                disabled={busy !== null || setupMissing}
+                onClick={syncNow}
+                disabled={busy !== null || setupMissing || inspectionSyncOff}
+                title={inspectionSyncOff ? t('connection.inspectionSync.off') : undefined}
               >
                 {busy === 'sync' ? (
                   <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />

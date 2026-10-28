@@ -154,7 +154,11 @@
       "never": "No complete pass yet",
       "inProgress": "A pass is running",
       "off": "Turn the setting on and save; until then a pass checks nothing.",
-      "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done."
+      "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done. The first pass looks up every vehicle with a plate.",
+      "confirmTitle": "Look up vehicles now?",
+      "confirmDescription": "{count} of the {total} vehicles with a plate will be looked up in {name} now, 25 at a time, and their inspection due dates saved. Vehicles checked recently are skipped. If {name} charges per lookup, each vehicle found is billed to your account.",
+      "confirmLabel": "Look up {count} vehicles",
+      "nothingDue": "Every vehicle with a plate was checked recently, so there is nothing to look up yet."
     },
     "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live.",
     "batchRetried": "{count, plural, =0 {Nothing to retry} one {# job queued again} other {# jobs queued again}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Search the car registry. Turn this off if you only work on motorcycles, so a lookup skips the car search and answers faster.",
         "bikes": "Look up motorcycles",
         "bikesHelp": "Search the motorcycle registry. With cars on too, it is asked only when no car matches, and a miss on the car side is free. Not available for Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Fill in a vehicle from its British plate or VIN: make, model, year, colour, fuel, engine size and the MOT due date, from DVLA data through Check Car Details. Cars and motorcycles come from the same register. With UK Vehicle Data turned on for your account, the VIN, transmission and weights come too. Each lookup is billed to the workshop's own Check Car Details account. No owner data is returned.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Create an account on api.checkcardetails.co.uk and copy the live key under API Keys. Vehicle Registration is included on every account. To get the VIN as well, click Request Access next to UK Vehicle Data under Your Data Points; lookups use it as soon as it is turned on. A test key only finds plates that contain the letter A."
+      },
+      "settings": {
+        "syncInspections": "Keep MOT dates up to date for every vehicle in this workshop",
+        "syncInspectionsHelp": "When this is on, every vehicle in the workshop that has a plate is looked up once, and its MOT due date is saved. After that, each vehicle is checked again monthly, and weekly once its MOT is due within two months. Every vehicle found is billed as one Vehicle Registration lookup, so the first pass costs the most; plates the register does not know are free. Only vehicles stored in this workshop are sent."
       }
     },
     "rdw": {

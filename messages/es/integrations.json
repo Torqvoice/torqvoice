@@ -154,7 +154,11 @@
       "never": "Aún no hay una pasada completa",
       "inProgress": "Hay una pasada en curso",
       "off": "Activa el ajuste y guarda; hasta entonces una pasada no comprueba nada.",
-      "syncNowHelp": "Sincronizar ahora inicia una pasada de inmediato en vez de esperar a la horaria. Consulta 25 vehículos cada vez y continúa sola hasta terminar con todos los pendientes."
+      "syncNowHelp": "Sincronizar ahora inicia una pasada de inmediato en vez de esperar a la horaria. Consulta 25 vehículos cada vez y continúa sola hasta terminar con todos los pendientes. La primera pasada consulta todos los vehículos con matrícula.",
+      "confirmTitle": "¿Consultar vehículos ahora?",
+      "confirmDescription": "Se consultarán ahora {count} de los {total} vehículos con matrícula en {name}, 25 cada vez, y se guardarán sus fechas de inspección. Los vehículos comprobados hace poco se omiten. Si {name} cobra por consulta, cada vehículo encontrado se cobra a tu cuenta.",
+      "confirmLabel": "Consultar {count} vehículos",
+      "nothingDue": "Todos los vehículos con matrícula se comprobaron hace poco, así que aún no hay nada que consultar."
     },
     "supersedes": "Conectar {next} desconecta {current}. Solo uno puede estar activo a la vez, así que {current} deja de usarse en cuanto {next} entra en servicio.",
     "batchRetried": "{count, plural, =0 {Nada que reintentar} one {# tarea vuelta a la cola} other {# tareas vueltas a la cola}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Consulta el registro de coches. Desactívalo si solo trabajas con motocicletas, así la búsqueda se salta los coches y responde más rápido.",
         "bikes": "Buscar motocicletas",
         "bikesHelp": "Consulta el registro de motocicletas. Si los coches también están activados, solo se consulta cuando no coincide ningún coche, y un fallo en la búsqueda de coches es gratis. No disponible para Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Rellena un vehículo a partir de su matrícula británica o su VIN: marca, modelo, año, color, combustible, cilindrada y la fecha de la próxima MOT, con datos de la DVLA a través de Check Car Details. Coches y motos vienen del mismo registro. Si tu cuenta tiene activado UK Vehicle Data, también llegan el VIN, la transmisión y los pesos. Cada consulta se cobra a la cuenta de Check Car Details del propio taller. No se devuelven datos del propietario.",
+      "fields": {
+        "apiKey": "Clave de API",
+        "apiKeyHelp": "Crea una cuenta en api.checkcardetails.co.uk y copia la clave real en API Keys. Vehicle Registration está incluido en todas las cuentas. Para obtener también el VIN, pulsa Request Access junto a UK Vehicle Data en Your Data Points; las consultas lo usan en cuanto se activa. Una clave de prueba solo encuentra matrículas que contienen la letra A."
+      },
+      "settings": {
+        "syncInspections": "Mantener al día las fechas de MOT de todos los vehículos de este taller",
+        "syncInspectionsHelp": "Con esto activado, cada vehículo del taller que tenga matrícula se consulta una vez y se guarda la fecha de su próxima MOT. Después, cada vehículo se vuelve a comprobar cada mes, y cada semana cuando su MOT vence en menos de dos meses. Cada vehículo encontrado se cobra como una consulta de Vehicle Registration, así que la primera pasada es la más cara; las matrículas que el registro no conoce son gratis. Solo se envían vehículos guardados en este taller."
       }
     },
     "rdw": {

@@ -154,7 +154,11 @@
       "never": "Ingen fullstendig gjennomgang ennå",
       "inProgress": "En gjennomgang pågår",
       "off": "Slå på innstillingen og lagre; før det sjekker en gjennomgang ingenting.",
-      "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige."
+      "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige. Første gjennomgang slår opp alle kjøretøy med skilt.",
+      "confirmTitle": "Slå opp kjøretøy nå?",
+      "confirmDescription": "{count} av de {total} kjøretøyene med skilt slås opp i {name} nå, 25 om gangen, og kontrollfristene lagres. Kjøretøy som er sjekket nylig hoppes over. Tar {name} betalt per oppslag, faktureres hvert kjøretøy som blir funnet til kontoen din.",
+      "confirmLabel": "Slå opp {count} kjøretøy",
+      "nothingDue": "Alle kjøretøy med skilt er sjekket nylig, så det er ingenting å slå opp ennå."
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Søk i bilregisteret. Slå av dette hvis dere bare jobber med motorsykler, så hopper oppslaget over bilsøket og svarer raskere.",
         "bikes": "Slå opp motorsykler",
         "bikesHelp": "Søk i motorsykkelregisteret. Når biler også er på, spørres det bare når ingen bil passer, og et bomskudd på bilsiden er gratis. Ikke tilgjengelig for Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Fyll ut et kjøretøy fra britisk skilt eller VIN: merke, modell, år, farge, drivstoff, motorvolum og MOT-fristen, fra DVLA-data via Check Car Details. Biler og motorsykler kommer fra samme register. Med UK Vehicle Data slått på for kontoen din kommer også VIN, girkasse og vekter. Hvert oppslag faktureres verkstedets egen Check Car Details-konto. Ingen eierdata returneres.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Opprett en konto på api.checkcardetails.co.uk og kopier produksjonsnøkkelen under API Keys. Vehicle Registration følger med alle kontoer. For å få VIN også, klikk Request Access ved UK Vehicle Data under Your Data Points; oppslagene bruker det så snart det er slått på. En testnøkkel finner bare skilt som inneholder bokstaven A."
+      },
+      "settings": {
+        "syncInspections": "Hold MOT-fristen oppdatert for alle kjøretøy i dette verkstedet",
+        "syncInspectionsHelp": "Når dette er på, slås hvert kjøretøy i verkstedet som har skilt opp én gang, og MOT-fristen lagres. Etter det sjekkes hvert kjøretøy på nytt hver måned, og hver uke når MOT-fristen er under to måneder unna. Hvert kjøretøy som blir funnet faktureres som ett Vehicle Registration-oppslag, så første gjennomgang koster mest; skilt registeret ikke kjenner er gratis. Bare kjøretøy lagret i dette verkstedet sendes."
       }
     },
     "rdw": {

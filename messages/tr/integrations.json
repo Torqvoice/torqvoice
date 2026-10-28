@@ -154,7 +154,11 @@
       "never": "Henüz tam tarama yok",
       "inProgress": "Bir tarama sürüyor",
       "off": "Ayarı açıp kaydedin; o zamana kadar tarama hiçbir şeyi kontrol etmez.",
-      "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
+      "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder. İlk tarama plakası olan her aracı sorgular.",
+      "confirmTitle": "Araçlar şimdi sorgulansın mı?",
+      "confirmDescription": "Plakası olan {total} aracın {count} tanesi şimdi {name} üzerinde, her seferinde 25 araç olmak üzere sorgulanacak ve muayene tarihleri kaydedilecek. Yakın zamanda kontrol edilen araçlar atlanır. {name} sorgu başına ücret alıyorsa bulunan her araç hesabınıza faturalanır.",
+      "confirmLabel": "{count} aracı sorgula",
+      "nothingDue": "Plakası olan tüm araçlar yakın zamanda kontrol edildi, şimdilik sorgulanacak bir şey yok."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Otomobil sicilini sorgular. Yalnızca motosikletle çalışıyorsanız kapatın, böylece sorgu otomobil aramasını atlar ve daha hızlı yanıt verir.",
         "bikes": "Motosikletleri sorgula",
         "bikesHelp": "Motosiklet sicilini sorgular. Otomobiller de açıksa yalnızca hiçbir otomobil eşleşmediğinde sorgulanır ve otomobil tarafında sonuçsuz sorgu ücretsizdir. Portekiz için kullanılamaz."
+      }
+    },
+    "checkcardetails": {
+      "description": "Bir aracı İngiliz plakasından veya VIN'inden doldurun: marka, model, yıl, renk, yakıt, motor hacmi ve MOT bitiş tarihi, Check Car Details üzerinden DVLA verileriyle. Otomobiller ve motosikletler aynı sicilden gelir. Hesabınızda UK Vehicle Data açıksa VIN, şanzıman ve ağırlıklar da gelir. Her sorgu atölyenin kendi Check Car Details hesabına faturalanır. Sahip bilgisi döndürülmez.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "api.checkcardetails.co.uk üzerinde bir hesap açın ve API Keys altındaki canlı anahtarı kopyalayın. Vehicle Registration her hesapta vardır. VIN'i de almak için Your Data Points altında UK Vehicle Data yanındaki Request Access'e tıklayın; sorgular açılır açılmaz onu kullanır. Test anahtarı yalnızca A harfi içeren plakaları bulur."
+      },
+      "settings": {
+        "syncInspections": "Bu atölyedeki tüm araçların MOT tarihlerini güncel tut",
+        "syncInspectionsHelp": "Bu açıkken atölyedeki plakası olan her araç bir kez sorgulanır ve MOT bitiş tarihi kaydedilir. Ardından her araç ayda bir, MOT'una iki aydan az kaldığında ise haftada bir yeniden kontrol edilir. Bulunan her araç bir Vehicle Registration sorgusu olarak faturalanır, bu yüzden ilk tarama en pahalısıdır; sicilin tanımadığı plakalar ücretsizdir. Yalnızca bu atölyede kayıtlı araçlar gönderilir."
       }
     },
     "rdw": {
