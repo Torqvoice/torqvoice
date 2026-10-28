@@ -56,6 +56,7 @@ describe('NHTSA VIN decode', () => {
       fuelType: 'gasoline',
       transmission: 'automatic',
       engineSize: '3.0',
+      engineCc: 2999,
       engineCode: 'J30A4',
       vehicleClass: 'Coupe',
     })

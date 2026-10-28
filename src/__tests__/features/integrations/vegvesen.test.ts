@@ -90,6 +90,7 @@ describe('vegvesen mapper', () => {
       fuelType: 'diesel',
       transmission: 'automatic',
       engineSize: '2.0 L',
+      engineCc: 1969,
       engineCode: 'D4204T14',
       vehicleClass: 'Personbil',
       firstRegistered: '2017-03-21',

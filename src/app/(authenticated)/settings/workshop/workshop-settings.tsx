@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assignTechToUnassignedWorkOrders } from '@/features/workboard/Actions/technicianActions'
 import {
@@ -101,6 +102,9 @@ export function WorkshopSettings({
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ''
   )
   const [unitSystem, setUnitSystem] = useState(settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial')
+  const [engineSizeUnit, setEngineSizeUnit] = useState<EngineSizeUnit>(
+    engineSizeUnitOf(settings[SETTING_KEYS.ENGINE_SIZE_UNIT])
+  )
   const [defaultUnit, setDefaultUnit] = useState(
     settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''
   )
@@ -198,6 +202,7 @@ export function WorkshopSettings({
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: selectedTechName,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
       [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
+      [SETTING_KEYS.ENGINE_SIZE_UNIT]: engineSizeUnit,
       [SETTING_KEYS.INVENTORY_DEFAULT_UNIT]: defaultUnit.trim(),
       [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
       [SETTING_KEYS.WORKBOARD_WORK_DAY_END]: workDayEnd,
@@ -549,6 +554,26 @@ export function WorkshopSettings({
                 </div>
               )}
             </div>
+
+            {/* A marine workshop's engine field holds a model and power, not a displacement. */}
+            {serviceType !== 'marine' && (
+              <div className="space-y-2">
+                <Label htmlFor="engineSizeUnit">{t('workshop.engineSizeUnit')}</Label>
+                <Select
+                  value={engineSizeUnit}
+                  onValueChange={(value) => setEngineSizeUnit(engineSizeUnitOf(value))}
+                >
+                  <SelectTrigger id="engineSizeUnit" className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="litres">{t('workshop.engineSizeLitres')}</SelectItem>
+                    <SelectItem value="cc">{t('workshop.engineSizeCc')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">{t('workshop.engineSizeUnitHint')}</p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="defaultUnit">{t('workshop.defaultStockUnit')}</Label>

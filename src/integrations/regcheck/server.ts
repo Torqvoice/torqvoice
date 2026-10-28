@@ -196,13 +196,19 @@ export function transmission(value: string | undefined): string | undefined {
  * from Australia's extended data, or "5.7L V8 MPI" from the United States.
  */
 export function engineSize(value: string | undefined, unit?: string): string | undefined {
+  const cc = engineCc(value, unit)
+  return cc === undefined ? undefined : `${(cc / 1000).toFixed(1)} L`
+}
+
+/** The same capacity in cubic centimetres, for the lookup to write in the workshop's unit. */
+export function engineCc(value: string | undefined, unit?: string): number | undefined {
   if (!value) return undefined
   const m = /(\d+(?:[.,]\d+)?)\s*(l\b|litre|liter)?/i.exec(value)
   if (!m) return undefined
   const n = Number(m[1].replace(',', '.'))
   if (!Number.isFinite(n) || n <= 0) return undefined
   const litres = Boolean(m[2]) || unit?.toUpperCase() === 'L' || n < 30
-  return `${(litres ? n : n / 1000).toFixed(1)} L`
+  return Math.round(litres ? n * 1000 : n)
 }
 
 /**
@@ -230,6 +236,12 @@ export function isoDate(value: string | undefined): string | undefined {
 function engineFieldSize(value: string | undefined): string | undefined {
   if (!value) return undefined
   if (/litre|liter|\bl\b/i.test(value) || /^\d{3,5}$/.test(value.trim())) return engineSize(value)
+  return undefined
+}
+
+function engineFieldCc(value: string | undefined): number | undefined {
+  if (!value) return undefined
+  if (/litre|liter|\bl\b/i.test(value) || /^\d{3,5}$/.test(value.trim())) return engineCc(value)
   return undefined
 }
 
@@ -323,6 +335,11 @@ export function mapVehicle(record: RegCheckVehicle, plate?: string): VehicleLook
       engineSize(text(record.extended?.capacityValue), record.extended?.capacityUnit) ??
       engineSize(text(record.EngineSize)) ??
       engineFieldSize(text(record.Engine)),
+    engineCc:
+      engineCc(text(capacity?.value), capacity?.unit) ??
+      engineCc(text(record.extended?.capacityValue), record.extended?.capacityUnit) ??
+      engineCc(text(record.EngineSize)) ??
+      engineFieldCc(text(record.Engine)),
     engineCode: text(record.EngineCode),
     vehicleClass: text(record.BodyStyle) ?? text(record.VehicleType),
     firstRegistered,

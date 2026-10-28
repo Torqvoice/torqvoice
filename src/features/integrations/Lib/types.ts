@@ -272,7 +272,14 @@ export interface VehicleLookupResult {
   fuelType?: string
   /** One of the form's transmission options, already normalised. */
   transmission?: string
+  /**
+   * Displacement as the form shows it. Registries that know the exact
+   * figure also give engineCc, and the lookup rewrites this from it in the
+   * workshop's own unit (litres or cubic centimetres).
+   */
   engineSize?: string
+  /** Exact displacement in cubic centimetres, when the registry gives it. */
+  engineCc?: number
   engineCode?: string
   /** Registry's own class label, such as "Personbil" or "Light goods vehicle". */
   vehicleClass?: string

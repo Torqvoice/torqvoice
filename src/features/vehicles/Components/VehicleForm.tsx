@@ -1,5 +1,7 @@
 'use client'
 
+import { useEngineSizeUnit } from '@/components/engine-size-context'
+import { bareEngineUnit, engineSizePlaceholder, withEngineUnit } from '@/lib/engine-size'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useRef, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -353,6 +355,8 @@ export function VehicleForm({
       // touched" and would bring the old value back. On create, leaving an
       // empty field out is the same thing as clearing it.
       const optional = (name: string) => clearableInput(formData.get(name), Boolean(vehicle))
+      const withUnit = <T,>(value: T) =>
+        typeof value === 'string' && !isMarine ? withEngineUnit(value) : value
       const data: CreateVehicleInput & { imageUrl?: string } = {
         make: formData.get('make') as string,
         model: formData.get('model') as string,
@@ -363,7 +367,8 @@ export function VehicleForm({
         mileage: Number(formData.get('mileage')) || 0,
         fuelType: fuelType || undefined,
         transmission: transmission || undefined,
-        engineSize: optional('engineSize'),
+        // A bare number is saved with its unit, so "649" is kept as "649 cc".
+        engineSize: withUnit(optional('engineSize')),
         engineCode: optional('engineCode'),
         hsn: showTypeKey ? optional('hsn') : undefined,
         tsn: showTypeKey ? optional('tsn') : undefined,
@@ -758,12 +763,19 @@ export function VehicleForm({
                   <Label htmlFor="engineSize">
                     {isMarine ? t('engineSizeMarine') : t('engineSize')}
                   </Label>
-                  <Input
-                    id="engineSize"
-                    name="engineSize"
-                    placeholder={isMarine ? 'Mercury F 350 XXL Verado V-10 (350 hp)' : '2.5L'}
-                    defaultValue={vehicle?.engineSize ?? ''}
-                  />
+                  {isMarine ? (
+                    <Input
+                      id="engineSize"
+                      name="engineSize"
+                      placeholder="Mercury F 350 XXL Verado V-10 (350 hp)"
+                      defaultValue={vehicle?.engineSize ?? ''}
+                    />
+                  ) : (
+                    <EngineSizeInput
+                      key={vehicle?.id ?? 'new'}
+                      defaultValue={vehicle?.engineSize ?? ''}
+                    />
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="engineCode">{t('engineCode')}</Label>
@@ -915,5 +927,36 @@ export function VehicleForm({
         }}
       />
     </>
+  )
+}
+
+/**
+ * The engine size field. Its placeholder is in the workshop's unit, and a
+ * bare number shows the unit it will be saved with, read from its size: 1.6
+ * is litres and 649 is cubic centimetres.
+ */
+function EngineSizeInput({ defaultValue }: { defaultValue: string }) {
+  const unit = useEngineSizeUnit()
+  const [draft, setDraft] = useState(defaultValue)
+  const suffix = bareEngineUnit(draft)
+  return (
+    <div className="relative">
+      <Input
+        id="engineSize"
+        name="engineSize"
+        placeholder={engineSizePlaceholder(unit)}
+        defaultValue={defaultValue}
+        onInput={(e) => setDraft(e.currentTarget.value)}
+        className={suffix ? 'pr-10' : undefined}
+      />
+      {suffix && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground"
+        >
+          {suffix}
+        </span>
+      )}
+    </div>
   )
 }

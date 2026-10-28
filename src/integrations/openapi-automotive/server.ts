@@ -147,6 +147,12 @@ export function engineSize(value: string | number | undefined): string | undefin
   return `${(cc / 1000).toFixed(1)} L`
 }
 
+/** The same capacity as a number, for the lookup to write in the workshop's unit. */
+export function engineCc(value: string | number | undefined): number | undefined {
+  const cc = Number(text(value))
+  return Number.isFinite(cc) && cc >= 100 ? cc : undefined
+}
+
 /** ISO date from the formats the five countries use: 2008-10-22, 17/11/2003, 1/4/2025 and 22102008. */
 export function isoDate(value: string | undefined): string | undefined {
   if (!value) return undefined
@@ -202,6 +208,7 @@ export function mapRecord(record: AutomotiveRecord, plate?: string): VehicleLook
       text(record.Transmission) ?? text(record.ExtendedData?.boiteDeVitesse)
     ),
     engineSize: engineSize(record.ExtendedData?.EngineCC) ?? engineSize(record.EngineSize),
+    engineCc: engineCc(record.ExtendedData?.EngineCC) ?? engineCc(record.EngineSize),
     engineCode: text(record.EngineCode),
     vehicleClass: text(record.BodyStyle),
     firstRegistered,
