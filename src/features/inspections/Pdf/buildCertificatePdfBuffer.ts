@@ -159,6 +159,7 @@ export async function buildCertificatePdfBuffer({
       slogan: settingsMap['workshop.slogan'] || undefined,
     },
     labels,
+    locale,
     logoDataUri,
     signatureDataUri,
     torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),

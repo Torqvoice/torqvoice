@@ -7,7 +7,7 @@ import {
   formatDateTime,
 } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
-import { formatQuantity } from '@/lib/format-quantity'
+import { documentNumbers, serviceTypeName } from '@/lib/document-numbers'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
@@ -99,6 +99,8 @@ export interface WorkOrderPrintInput {
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   labels?: Record<string, string>
+  /** The document's language, the one its labels are in; numbers are written its way. */
+  locale?: string
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -157,6 +159,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const { workshop, invoiceSettings, template, job } = input
   const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
+  const nums = documentNumbers(input.locale)
   const L = (key: string, fallback: string) => labels[key] || fallback
 
   const layout = resolveLayout(input)
@@ -228,11 +231,13 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       : '',
     mileage: data.mileage
       ? `${fillTemplate(L('mileage', 'Mileage: {mileage}'), {
-          mileage: data.mileage.toLocaleString(),
+          mileage: nums.distance(data.mileage),
         })} ${unit}`
       : '',
     service_title: data.title || '',
-    service_type: data.vehicle ? fillTemplate(L('type', 'Type: {type}'), { type: data.type }) : '',
+    service_type: data.vehicle
+      ? fillTemplate(L('type', 'Type: {type}'), { type: serviceTypeName(data.type, labels) })
+      : '',
     tech_name: tech ? fillTemplate(L('tech', 'Tech: {tech}'), { tech }) : '',
     // The facts of the job, each already worded as its own line.
     status: job.statusLabel
@@ -273,7 +278,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const items: DocumentData['items'] = [
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
-      qty: String(l.hours),
+      qty: nums.count(l.hours),
       unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
       price: money(shown(l.rate, l.taxable !== false)),
@@ -281,7 +286,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
-      qty: formatQuantity(p.quantity, p.unit),
+      qty: nums.quantity(p.quantity, p.unit),
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
@@ -292,7 +297,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const parts: DocumentData['parts'] = data.partItems.map((p) => ({
     ref: p.partNumber || '-',
     desc: p.name,
-    qty: formatQuantity(p.quantity, p.unit),
+    qty: nums.quantity(p.quantity, p.unit),
     price: money(shown(p.unitPrice, p.taxable !== false)),
     total: money(shown(p.total, p.taxable !== false)),
   }))
@@ -300,7 +305,9 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
-      qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
+      qty: isService
+        ? `${nums.count(l.hours)} ${L('unit', 'unit')}`
+        : `${nums.count(l.hours)} ${L('hrs', 'hrs')}`,
       rate: isService
         ? money(shown(l.rate, l.taxable !== false))
         : fillTemplate(L('ratePerHour', '{rate}/hr'), {
@@ -320,7 +327,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
         l.pricingType === 'service'
           ? undefined
           : l.hours
-            ? `${l.hours} ${L('hrs', 'hrs')}`
+            ? `${nums.count(l.hours)} ${L('hrs', 'hrs')}`
             : undefined,
     }))
 
@@ -433,6 +440,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     notes: { html: data.invoiceNotes ?? undefined },
     warranty: warrantyForPrint(data, {
       labels,
+      locale: input.locale,
       unitSystem: invoiceSettings?.unitSystem,
       expires: data.warrantyExpiresAt ? day(data.warrantyExpiresAt) : undefined,
     }),

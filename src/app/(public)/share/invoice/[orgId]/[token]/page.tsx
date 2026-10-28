@@ -142,6 +142,7 @@ export default async function PublicInvoicePage({
     telegramQrDataUri: telegramQr?.dataUri,
     telegramLabel: labels?.telegramConnect,
     labels,
+    locale,
     conditionMap,
     inspectionResults: assembly.inspectionResults,
   })

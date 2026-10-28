@@ -221,7 +221,11 @@
     "conditionMapArea": "Vieta",
     "conditionMapKind": "Tipas",
     "conditionMapSeverity": "Sunkumas",
-    "conditionMapNote": "Pastaba"
+    "conditionMapNote": "Pastaba",
+    "serviceTypeMaintenance": "Priežiūra",
+    "serviceTypeRepair": "Remontas",
+    "serviceTypeUpgrade": "Pagerinimas",
+    "serviceTypeInspection": "Apžiūra"
   },
   "workOrder": {
     "title": "DARBO UŽSAKYMAS",

@@ -24,6 +24,7 @@ export const MEMBER_READABLE_SETTINGS: ReadonlySet<SettingKey> = new Set<Setting
   // Money and measures, as shown on every list and document.
   SETTING_KEYS.CURRENCY_CODE,
   SETTING_KEYS.UNIT_SYSTEM,
+  SETTING_KEYS.MEASURE_SYSTEM,
   SETTING_KEYS.ENGINE_SIZE_UNIT,
   SETTING_KEYS.DATE_FORMAT,
   SETTING_KEYS.TIME_FORMAT,

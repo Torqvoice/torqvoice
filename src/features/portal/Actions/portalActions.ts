@@ -336,6 +336,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       telegramQrDataUri: telegramQr?.dataUri,
       telegramLabel: labels?.telegramConnect,
       labels,
+      locale,
       conditionMap,
       inspectionResults: assembly.inspectionResults,
     })

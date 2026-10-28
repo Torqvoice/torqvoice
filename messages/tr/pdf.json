@@ -221,7 +221,11 @@
     "conditionMapArea": "Bölge",
     "conditionMapKind": "Tür",
     "conditionMapSeverity": "Önem",
-    "conditionMapNote": "Not"
+    "conditionMapNote": "Not",
+    "serviceTypeMaintenance": "Bakım",
+    "serviceTypeRepair": "Onarım",
+    "serviceTypeUpgrade": "Yükseltme",
+    "serviceTypeInspection": "Muayene"
   },
   "workOrder": {
     "title": "İŞ EMRİ",

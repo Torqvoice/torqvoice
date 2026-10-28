@@ -221,7 +221,11 @@
     "conditionMapArea": "Miejsce",
     "conditionMapKind": "Typ",
     "conditionMapSeverity": "Stopień",
-    "conditionMapNote": "Notatka"
+    "conditionMapNote": "Notatka",
+    "serviceTypeMaintenance": "Konserwacja",
+    "serviceTypeRepair": "Naprawa",
+    "serviceTypeUpgrade": "Modernizacja",
+    "serviceTypeInspection": "Inspekcja"
   },
   "workOrder": {
     "title": "ZLECENIE",

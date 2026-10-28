@@ -33,6 +33,7 @@ import {
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
+import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assignTechToUnassignedWorkOrders } from '@/features/workboard/Actions/technicianActions'
 import {
@@ -102,6 +103,9 @@ export function WorkshopSettings({
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ''
   )
   const [unitSystem, setUnitSystem] = useState(settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial')
+  const [measureSystem, setMeasureSystem] = useState<'metric' | 'imperial'>(
+    measureSystemIn(settings)
+  )
   const [engineSizeUnit, setEngineSizeUnit] = useState<EngineSizeUnit>(
     engineSizeUnitOf(settings[SETTING_KEYS.ENGINE_SIZE_UNIT])
   )
@@ -202,6 +206,7 @@ export function WorkshopSettings({
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: selectedTechName,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
       [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
+      [SETTING_KEYS.MEASURE_SYSTEM]: measureSystem,
       [SETTING_KEYS.ENGINE_SIZE_UNIT]: engineSizeUnit,
       [SETTING_KEYS.INVENTORY_DEFAULT_UNIT]: defaultUnit.trim(),
       [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
@@ -516,43 +521,36 @@ export function WorkshopSettings({
             </div>
             <p className="text-sm text-muted-foreground">{t('workshop.unitsDescription')}</p>
 
-            <div className="space-y-2">
-              <Label htmlFor="unitSystem">{t('workshop.unitSystem')}</Label>
-              <Select value={unitSystem} onValueChange={setUnitSystem}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="metric">{t('workshop.metric')}</SelectItem>
-                  <SelectItem value="imperial">{t('workshop.imperial')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="rounded-lg border p-3 text-sm text-muted-foreground">
-              {unitSystem === 'metric' ? (
-                <div className="space-y-1">
-                  <p>
-                    {t('workshop.distanceLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.kilometers')}</span>
-                  </p>
-                  <p>
-                    {t('workshop.volumeLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.liters')}</span>
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  <p>
-                    {t('workshop.distanceLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.miles')}</span>
-                  </p>
-                  <p>
-                    {t('workshop.volumeLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.gallons')}</span>
-                  </p>
-                </div>
-              )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="unitSystem">{t('workshop.distanceLabel')}</Label>
+                <Select value={unitSystem} onValueChange={setUnitSystem}>
+                  <SelectTrigger id="unitSystem" className="w-full sm:w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">{t('workshop.kilometers')}</SelectItem>
+                    <SelectItem value="imperial">{t('workshop.miles')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="measureSystem">{t('workshop.measureSystem')}</Label>
+                <Select
+                  value={measureSystem}
+                  onValueChange={(value) =>
+                    setMeasureSystem(value === 'metric' ? 'metric' : 'imperial')
+                  }
+                >
+                  <SelectTrigger id="measureSystem" className="w-full sm:w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">{t('workshop.measureMetric')}</SelectItem>
+                    <SelectItem value="imperial">{t('workshop.measureImperial')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* A marine workshop's engine field holds a model and power, not a displacement. */}
@@ -584,7 +582,7 @@ export function WorkshopSettings({
                 className="w-48"
                 value={defaultUnit}
                 onChange={setDefaultUnit}
-                unitSystem={unitSystem}
+                unitSystem={measureSystem}
               />
               <p className="text-sm text-muted-foreground">{t('workshop.defaultStockUnitHint')}</p>
             </div>

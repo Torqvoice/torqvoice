@@ -1,7 +1,7 @@
 'use server'
 
 import { headers, cookies } from 'next/headers'
-import { getLocale, getTranslations } from 'next-intl/server'
+import { getLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { logAudit } from '@/lib/audit'
@@ -10,10 +10,12 @@ import {
   installDefaultInspectionTemplates,
   installDefaultLaborPresets,
 } from '../Lib/onboardingDefaults'
+import { onboardingTranslator } from '../Lib/onboardingTranslator'
 import { seedSampleData } from '../Lib/sampleData'
 import { CHECKLIST_DISMISSED_KEY, SAMPLE_DATA_IDS_KEY } from '../Lib/onboardingKeys'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { saveInitialWorkshopLocale } from '@/features/settings/Lib/initialWorkshopLocale'
+import { setupSettings } from '../Lib/setupSettings'
 import { safeTimeZone } from '@/lib/timezone'
 import type { ActionResult } from '@/lib/with-auth'
 import { organizationAllowance, SINGLE_WORKSHOP_MESSAGE } from '@/lib/features'
@@ -66,22 +68,39 @@ export async function createOnboardingOrg(
     // membership above are what onboarding must not lose, so a hiccup here
     // never fails the action — the library sync tops templates up later
     // anyway.
+    // The language customers get: chosen in the guided setup, else the one
+    // the owner set the workshop up in, so invoices and mails never fall
+    // back to English on their own.
+    const workshopLocale = data.setup?.locale ?? (await getLocale())
+
+    // What the owner chose, step by step. Kept apart from the first-run
+    // content below, so a hiccup in one never skips the other.
     try {
-      const zone = safeTimeZone(data.timeZone, '')
-      if (zone) {
-        await db.appSetting.create({
-          data: {
-            organizationId: org.id,
-            key: SETTING_KEYS.TIMEZONE,
-            value: zone,
-            userId: session.user.id,
-          },
-        })
-      }
-      const [locale, t] = await Promise.all([getLocale(), getTranslations('onboarding')])
-      // The workshop's language starts as the one its owner set it up in, so
-      // invoices and mails never fall back to English on their own.
-      await saveInitialWorkshopLocale(db, org.id, session.user.id, locale)
+      const rows = data.setup
+        ? setupSettings(data.setup, data.timeZone)
+        : timeZoneOnly(data.timeZone)
+      await db.appSetting.createMany({
+        data: Object.entries(rows).map(([key, value]) => ({
+          organizationId: org.id,
+          key,
+          value,
+          userId: session.user.id,
+        })),
+        skipDuplicates: true,
+      })
+      await saveInitialWorkshopLocale(db, org.id, session.user.id, workshopLocale)
+    } catch (settingsError) {
+      console.error(
+        '[createOnboardingOrg] Saving the setup failed:',
+        settingsError instanceof Error ? settingsError.message : settingsError
+      )
+    }
+
+    try {
+      // Templates, labour presets and sample jobs end up on documents, so
+      // they are written in the customers' language, not the owner's screens.
+      const t = await onboardingTranslator(workshopLocale)
+      const locale = workshopLocale
 
       const template = await installDefaultInspectionTemplates(org.id, locale)
       await installDefaultLaborPresets(org.id, session.user.id, t)
@@ -146,4 +165,10 @@ export async function createOnboardingOrg(
     console.error('[createOnboardingOrg] Error:', message)
     return { success: false, error: message }
   }
+}
+
+/** An older client sends only the browser's zone; keep it as the workshop's. */
+function timeZoneOnly(timeZone: string | undefined): Record<string, string> {
+  const zone = safeTimeZone(timeZone, '')
+  return zone ? { [SETTING_KEYS.TIMEZONE]: zone } : {}
 }

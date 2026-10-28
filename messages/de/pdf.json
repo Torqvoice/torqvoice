@@ -221,7 +221,11 @@
     "conditionMapArea": "Bereich",
     "conditionMapKind": "Art",
     "conditionMapSeverity": "Schwere",
-    "conditionMapNote": "Notiz"
+    "conditionMapNote": "Notiz",
+    "serviceTypeMaintenance": "Wartung",
+    "serviceTypeRepair": "Reparatur",
+    "serviceTypeUpgrade": "Verbesserung",
+    "serviceTypeInspection": "Überprüfung"
   },
   "workOrder": {
     "title": "ARBEITSAUFTRAG",

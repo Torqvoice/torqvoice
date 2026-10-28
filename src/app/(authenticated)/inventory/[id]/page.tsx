@@ -1,3 +1,4 @@
+import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
 import {
@@ -37,6 +38,7 @@ export default async function InventoryPartDetailPage({
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
       SETTING_KEYS.UNIT_SYSTEM,
+      SETTING_KEYS.MEASURE_SYSTEM,
       SETTING_KEYS.DATE_FORMAT,
       SETTING_KEYS.TIME_FORMAT,
       SETTING_KEYS.TIMEZONE,
@@ -90,7 +92,7 @@ export default async function InventoryPartDetailPage({
         markupMultiplier={Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1}
         categories={categoriesResult.data ?? []}
         lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}
-        unitSystem={settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial'}
+        unitSystem={measureSystemIn(settings)}
       />
     </>
   )

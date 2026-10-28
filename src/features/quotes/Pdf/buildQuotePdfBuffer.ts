@@ -202,6 +202,7 @@ export async function buildQuotePdfBuffer(
     pdfAttachmentNames: pdfAttachments.map((att) => att.fileName),
     customFields,
     labels,
+    locale,
     layoutConfig,
     conditionMap,
     inspectionResults,

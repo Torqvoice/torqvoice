@@ -221,7 +221,11 @@
     "conditionMapArea": "Område",
     "conditionMapKind": "Type",
     "conditionMapSeverity": "Alvorlighet",
-    "conditionMapNote": "Notat"
+    "conditionMapNote": "Notat",
+    "serviceTypeMaintenance": "Vedlikehold",
+    "serviceTypeRepair": "Reparasjon",
+    "serviceTypeUpgrade": "Oppgradering",
+    "serviceTypeInspection": "Inspeksjon"
   },
   "workOrder": {
     "title": "ARBEIDSORDRE",

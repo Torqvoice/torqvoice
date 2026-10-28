@@ -221,7 +221,11 @@
     "conditionMapArea": "Area",
     "conditionMapKind": "Type",
     "conditionMapSeverity": "Severity",
-    "conditionMapNote": "Note"
+    "conditionMapNote": "Note",
+    "serviceTypeMaintenance": "Maintenance",
+    "serviceTypeRepair": "Repair",
+    "serviceTypeUpgrade": "Upgrade",
+    "serviceTypeInspection": "Inspection"
   },
   "workOrder": {
     "title": "WORK ORDER",

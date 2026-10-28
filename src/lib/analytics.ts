@@ -29,6 +29,8 @@ export type AnalyticsEvent =
   | 'account:sign_up'
   /** The onboarding form made the person's first workshop, with or without sample data. */
   | 'workshop:create'
+  /** A setup step was finished or skipped; `step` and `action` say which, to measure where people stop. */
+  | 'workshop:setup_step'
   /** A customer saved from the customer form. */
   | 'customer:create'
   /** An invoice, quote or inspection emailed to the customer. */
