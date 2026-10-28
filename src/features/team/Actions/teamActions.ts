@@ -1,6 +1,8 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import { getLocale } from 'next-intl/server'
+import { saveInitialWorkshopLocale } from '@/features/settings/Lib/initialWorkshopLocale'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -98,6 +100,9 @@ export async function createOrganization(input: unknown) {
         )
       }
 
+      // Invoices and mails print in the workshop's language, which starts as
+      // the one its owner is using now.
+      const locale = await getLocale()
       const org = await db.$transaction(async (tx) => {
         const created = await tx.organization.create({
           data: { name: data.name },
@@ -110,6 +115,7 @@ export async function createOrganization(input: unknown) {
             role: 'owner',
           },
         })
+        await saveInitialWorkshopLocale(tx, created.id, userId, locale)
 
         return created
       })

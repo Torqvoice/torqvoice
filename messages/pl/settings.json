@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Kod: {value}"
   },
   "localization": {
-    "languageTitle": "Język",
-    "languageDescription": "Wybierz język wyświetlania aplikacji.",
+    "languageTitle": "Język warsztatu",
+    "languageDescription": "Faktury, oferty, zlecenia i e-maile do klientów są tworzone w tym języku. Aby zmienić tylko język, który widzisz, użyj wyboru języka w menu użytkownika.",
     "language": "Język",
     "forceCustomerLocale": "Wymuś ten język na stronach dla klientów",
     "forceCustomerLocaleHint": "Po włączeniu portal klienta oraz udostępnione faktury, oferty i inspekcje wyświetlają się w języku Twojego warsztatu, niezależnie od ustawień przeglądarki odwiedzającego. Gdy wyłączone, strony dla klientów używają języka przeglądarki odwiedzającego.",

@@ -15,7 +15,7 @@ import {
   buildCustomerCertificatePdf,
   linkedCertificateAttachment,
 } from '@/features/inspections/Pdf/customerCertificatePdf'
-import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { randomUUID } from 'crypto'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
@@ -124,7 +124,7 @@ export async function sendQuoteEmail(input: {
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       // One language for the PDF's labels and the mail around it.
-      const locale = await resolveCustomerLocale(organizationId, null)
+      const locale = await resolveDocumentLocale(organizationId)
       // The mail's own summary of the document quotes a figure, so it needs
       // the same currency the sheet prints in.
       const currencyCode = resolveCurrencyCode(settings['workshop.currencyCode'])
@@ -296,7 +296,7 @@ export async function sendInvoiceEmail(input: {
       const { record } = assembly
 
       // One language for the PDF's labels and the mail around it.
-      const locale = await resolveCustomerLocale(organizationId, null)
+      const locale = await resolveDocumentLocale(organizationId)
 
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {
@@ -422,7 +422,7 @@ export async function sendInspectionEmail(input: {
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       // One language for the certificate's labels and the mail around it.
-      const locale = await resolveCustomerLocale(organizationId, null)
+      const locale = await resolveDocumentLocale(organizationId)
 
       const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
       const fileName = `Inspection-${vehicleName}.pdf`

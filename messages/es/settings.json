@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Código: {value}"
   },
   "localization": {
-    "languageTitle": "Idioma",
-    "languageDescription": "Elija el idioma de visualización de la aplicación.",
+    "languageTitle": "Idioma del taller",
+    "languageDescription": "Las facturas, presupuestos, órdenes de trabajo y correos a sus clientes se escriben en este idioma. Para cambiar solo el idioma que usted ve, use el selector de idioma de su menú de usuario.",
     "language": "Idioma",
     "forceCustomerLocale": "Forzar este idioma en las páginas dirigidas al cliente",
     "forceCustomerLocaleHint": "Cuando está activado, el portal de clientes y las facturas, presupuestos e inspecciones compartidas aparecen en el idioma de su taller, independientemente de la configuración del navegador del visitante. Cuando está desactivado, las páginas para clientes siguen el idioma del navegador del visitante.",

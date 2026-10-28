@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Kod: {value}"
   },
   "localization": {
-    "languageTitle": "Dil",
-    "languageDescription": "Uygulamanın görüntüleme dilini seçin.",
+    "languageTitle": "Atölye dili",
+    "languageDescription": "Faturalar, teklifler, iş emirleri ve müşterilerinize giden e-postalar bu dilde yazılır. Yalnızca kendi gördüğünüz dili değiştirmek için kullanıcı menünüzdeki dil seçiciyi kullanın.",
     "language": "Dil",
     "forceCustomerLocale": "Bu dili müşteriye yönelik sayfalarda zorla",
     "forceCustomerLocaleHint": "Etkinleştirildiğinde, müşteri portalı ve paylaşılan faturalar, teklifler ve incelemeler, ziyaretçinin tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görüntülenir. Devre dışı bırakıldığında, müşteriye yönelik sayfalar ziyaretçinin tarayıcı dilini kullanır.",

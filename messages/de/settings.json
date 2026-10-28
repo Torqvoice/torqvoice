@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Code: {value}"
   },
   "localization": {
-    "languageTitle": "Sprache",
-    "languageDescription": "Wählen Sie die Anzeigesprache der Anwendung.",
+    "languageTitle": "Werkstattsprache",
+    "languageDescription": "Rechnungen, Angebote, Arbeitsaufträge und E-Mails an Ihre Kunden werden in dieser Sprache erstellt. Um nur Ihre eigene Anzeigesprache zu ändern, nutzen Sie die Sprachauswahl in Ihrem Benutzermenü.",
     "language": "Sprache",
     "forceCustomerLocale": "Diese Sprache für kundenseitige Seiten erzwingen",
     "forceCustomerLocaleHint": "Wenn aktiviert, erscheinen das Kundenportal sowie geteilte Rechnungen, Angebote und Inspektionen in der Sprache Ihrer Werkstatt, unabhängig von den Browsereinstellungen des Besuchers. Wenn deaktiviert, folgen kundenseitige Seiten der Browsersprache des Besuchers.",

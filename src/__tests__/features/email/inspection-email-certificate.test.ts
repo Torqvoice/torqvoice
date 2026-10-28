@@ -40,7 +40,7 @@ vi.mock('@/features/invoices/Lib/assembleInvoicePrint', () => ({
 vi.mock('@/features/invoices/Pdf/buildInvoicePdfBuffer', () => ({ renderInvoicePdf: vi.fn() }))
 vi.mock('@/features/quotes/Pdf/buildQuotePdfBuffer', () => ({ buildQuotePdfBuffer: vi.fn() }))
 vi.mock('@/i18n/locale-from-request', () => ({
-  resolveCustomerLocale: vi.fn().mockResolvedValue('nb'),
+  resolveDocumentLocale: vi.fn().mockResolvedValue('nb'),
 }))
 vi.mock('@/lib/app-url', () => ({ getAppBaseUrl: () => 'https://app.example' }))
 

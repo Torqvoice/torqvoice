@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Código: {value}"
   },
   "localization": {
-    "languageTitle": "Idioma",
-    "languageDescription": "Escolha o idioma de exibição do aplicativo.",
+    "languageTitle": "Idioma da oficina",
+    "languageDescription": "Faturas, orçamentos, ordens de serviço e e-mails para seus clientes são escritos neste idioma. Para mudar apenas o idioma que você vê, use o seletor de idioma no seu menu de usuário.",
     "language": "Idioma",
     "forceCustomerLocale": "Forçar este idioma nas páginas voltadas ao cliente",
     "forceCustomerLocaleHint": "Quando ativado, o portal do cliente e as faturas, orçamentos e inspeções compartilhadas aparecem no idioma da sua oficina, independentemente das configurações do navegador do visitante. Quando desativado, as páginas voltadas aos clientes seguem o idioma do navegador do visitante.",

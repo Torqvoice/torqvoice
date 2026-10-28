@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Kodas: {value}"
   },
   "localization": {
-    "languageTitle": "Kalba",
-    "languageDescription": "Pasirinkite programos rodymo kalbą.",
+    "languageTitle": "Dirbtuvių kalba",
+    "languageDescription": "Sąskaitos, pasiūlymai, darbo užsakymai ir el. laiškai klientams rašomi šia kalba. Norėdami pakeisti tik jums rodomą kalbą, naudokite kalbos pasirinkimą savo naudotojo meniu.",
     "language": "Kalba",
     "forceCustomerLocale": "Priverstinai naudoti šią kalbą klientams matomuose puslapiuose",
     "forceCustomerLocaleHint": "Kai įjungta, klientų portalas ir bendrinos sąskaitos, pasiūlymai bei apžiūros rodomi jūsų dirbtuvių kalba, nepriklausomai nuo lankytojo naršyklės nustatymų. Kai išjungta, klientams skirti puslapiai naudoja lankytojo naršyklės kalbą.",

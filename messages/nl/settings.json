@@ -1103,8 +1103,8 @@
     "formatCodeLabel": "Code: {value}"
   },
   "localization": {
-    "languageTitle": "Taal",
-    "languageDescription": "Kies de weergavetaal van de applicatie.",
+    "languageTitle": "Taal van de werkplaats",
+    "languageDescription": "Facturen, offertes, werkorders en e-mails aan uw klanten worden in deze taal opgesteld. Wilt u alleen de taal wijzigen die u zelf ziet, gebruik dan de taalkeuze in uw gebruikersmenu.",
     "language": "Taal",
     "forceCustomerLocale": "Forceer deze taal op klantgerichte pagina's",
     "forceCustomerLocaleHint": "Wanneer ingeschakeld, verschijnen het klantenportaal en gedeelde facturen, offertes en inspecties in de taal van uw werkplaats, ongeacht de browserinstellingen van de bezoeker. Wanneer uitgeschakeld, volgen klantgerichte pagina's de browsertaal van de bezoeker.",

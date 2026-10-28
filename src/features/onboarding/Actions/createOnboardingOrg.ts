@@ -13,6 +13,7 @@ import {
 import { seedSampleData } from '../Lib/sampleData'
 import { CHECKLIST_DISMISSED_KEY, SAMPLE_DATA_IDS_KEY } from '../Lib/onboardingKeys'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { saveInitialWorkshopLocale } from '@/features/settings/Lib/initialWorkshopLocale'
 import { safeTimeZone } from '@/lib/timezone'
 import type { ActionResult } from '@/lib/with-auth'
 import { organizationAllowance, SINGLE_WORKSHOP_MESSAGE } from '@/lib/features'
@@ -78,6 +79,9 @@ export async function createOnboardingOrg(
         })
       }
       const [locale, t] = await Promise.all([getLocale(), getTranslations('onboarding')])
+      // The workshop's language starts as the one its owner set it up in, so
+      // invoices and mails never fall back to English on their own.
+      await saveInitialWorkshopLocale(db, org.id, session.user.id, locale)
 
       const template = await installDefaultInspectionTemplates(org.id, locale)
       await installDefaultLaborPresets(org.id, session.user.id, t)
