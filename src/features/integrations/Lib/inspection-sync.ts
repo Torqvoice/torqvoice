@@ -55,6 +55,18 @@ export function inspectionJobs(lookup: VehicleLookup): Record<string, JobHandler
   return { [INSPECTION_JOB]: (ctx) => refreshInspections(ctx, lookup) }
 }
 
+/**
+ * Thrown by a registry whose allowance is spent for now, such as a daily
+ * limit. A pass stops on it instead of marking every remaining vehicle as
+ * checked, so they are retried once the allowance comes back.
+ */
+export class RegistryQuotaError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'RegistryQuotaError'
+  }
+}
+
 /** Deadlines closer than this are "soon" and rechecked more often. */
 export const SOON_DAYS = 60
 export const RECHECK_SOON_DAYS = 7
@@ -263,7 +275,7 @@ export async function refreshInspections(
       const message = err instanceof Error ? err.message : String(err)
       // A rejected key or a spent quota will fail every vehicle in turn, so
       // stop here and let the job's own retry pick the pass up later.
-      if (/rejected the API key|quota/i.test(message)) {
+      if (err instanceof RegistryQuotaError || /rejected the API key|quota/i.test(message)) {
         await ctx.saveState({ inspectionRun: tally })
         throw err
       }

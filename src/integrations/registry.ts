@@ -12,6 +12,7 @@ import { isCloudInstance } from '@/lib/cloud-instance'
 import { manifest as amazonSes } from './amazon-ses/manifest'
 import { manifest as anthropic } from './anthropic/manifest'
 import { manifest as fiken } from './fiken/manifest'
+import { manifest as checkCarDetails } from './checkcardetails/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
 import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
@@ -54,6 +55,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: zoom, load: () => import('./zoom/server') },
   { manifest: vegvesen, load: () => import('./vegvesen/server') },
   { manifest: openapiAutomotive, load: () => import('./openapi-automotive/server') },
+  { manifest: checkCarDetails, load: () => import('./checkcardetails/server') },
   { manifest: rdw, load: () => import('./rdw/server') },
   { manifest: regcheck, load: () => import('./regcheck/server') },
   { manifest: nhtsa, load: () => import('./nhtsa/server') },

@@ -1,0 +1,25 @@
+{
+  "registrationNumber": "AB12CDE",
+  "make": "VAUXHALL",
+  "model": "ASTRA",
+  "colour": "WHITE",
+  "fuelType": "PETROL",
+  "engineCapacity": 1399,
+  "yearOfManufacture": 2017,
+  "vehicleAge": "9 years 4 months",
+  "wheelplan": "2 AXLE RIGID BODY",
+  "dateOfLastV5CIssued": "2025-04-25",
+  "typeApproval": "M1",
+  "co2Emissions": 128,
+  "registrationPlace": "Peterborough",
+  "tax": {
+    "taxStatus": "Taxed",
+    "taxDueDate": "2026-12-01",
+    "days": "35"
+  },
+  "mot": {
+    "motStatus": "Valid",
+    "motDueDate": "2027-06-11",
+    "days": 227
+  }
+}

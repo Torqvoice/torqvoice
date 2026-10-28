@@ -154,7 +154,11 @@
       "never": "Aucun passage complet pour l'instant",
       "inProgress": "Un passage est en cours",
       "off": "Activez le réglage et enregistrez ; d'ici là, un passage ne vérifie rien.",
-      "syncNowHelp": "Synchroniser maintenant lance un passage immédiatement au lieu d'attendre celui de l'heure. Il recherche 25 véhicules à la fois et continue seul jusqu'à ce que tous les véhicules à vérifier soient traités."
+      "syncNowHelp": "Synchroniser maintenant lance un passage immédiatement au lieu d'attendre celui de l'heure. Il recherche 25 véhicules à la fois et continue seul jusqu'à ce que tous les véhicules à vérifier soient traités. Le premier passage recherche tous les véhicules qui ont une plaque.",
+      "confirmTitle": "Rechercher les véhicules maintenant ?",
+      "confirmDescription": "{count} des {total} véhicules qui ont une plaque vont être recherchés dans {name} maintenant, 25 à la fois, et leurs dates de contrôle enregistrées. Les véhicules vérifiés récemment sont ignorés. Si {name} facture chaque recherche, chaque véhicule trouvé est facturé à votre compte.",
+      "confirmLabel": "Rechercher {count} véhicules",
+      "nothingDue": "Tous les véhicules qui ont une plaque ont été vérifiés récemment, il n'y a encore rien à rechercher."
     },
     "supersedes": "Connecter {next} déconnecte {current}. Un seul peut être actif à la fois : {current} cesse d'être utilisé dès que {next} est en service.",
     "batchRetried": "{count, plural, =0 {Rien à réessayer} one {# tâche remise en file} other {# tâches remises en file}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Interroge le registre des voitures. Désactivez-le si vous ne travaillez que sur des motos : la recherche saute alors les voitures et répond plus vite.",
         "bikes": "Rechercher les motos",
         "bikesHelp": "Interroge le registre des motos. Si les voitures sont aussi activées, il n'est interrogé que lorsqu'aucune voiture ne correspond, et une recherche voiture sans résultat est gratuite. Indisponible pour le Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Remplissez un véhicule à partir de sa plaque britannique ou de son VIN : marque, modèle, année, couleur, carburant, cylindrée et la date du prochain MOT, à partir des données de la DVLA via Check Car Details. Voitures et motos viennent du même registre. Si UK Vehicle Data est activé sur votre compte, le VIN, la transmission et les poids arrivent aussi. Chaque recherche est facturée au compte Check Car Details de l'atelier. Aucune donnée sur le propriétaire n'est renvoyée.",
+      "fields": {
+        "apiKey": "Clé API",
+        "apiKeyHelp": "Créez un compte sur api.checkcardetails.co.uk et copiez la clé de production sous API Keys. Vehicle Registration est inclus dans tous les comptes. Pour obtenir aussi le VIN, cliquez sur Request Access à côté de UK Vehicle Data sous Your Data Points ; les recherches l'utilisent dès qu'il est activé. Une clé de test ne trouve que les plaques contenant la lettre A."
+      },
+      "settings": {
+        "syncInspections": "Tenir à jour les dates de MOT de tous les véhicules de cet atelier",
+        "syncInspectionsHelp": "Une fois activé, chaque véhicule de l'atelier qui a une plaque est recherché une fois, et la date de son prochain MOT est enregistrée. Ensuite, chaque véhicule est revérifié chaque mois, et chaque semaine lorsque son MOT arrive à échéance dans moins de deux mois. Chaque véhicule trouvé est facturé comme une recherche Vehicle Registration, le premier passage est donc le plus coûteux ; les plaques inconnues du registre sont gratuites. Seuls les véhicules de cet atelier sont envoyés."
       }
     },
     "rdw": {

@@ -154,7 +154,11 @@
       "never": "Pilno perėjimo dar nebuvo",
       "inProgress": "Perėjimas vyksta",
       "off": "Įjunkite nustatymą ir išsaugokite; iki tol perėjimas nieko netikrina.",
-      "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
+      "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas. Pirmas perėjimas patikrina kiekvieną transporto priemonę su numeriu.",
+      "confirmTitle": "Tikrinti transporto priemones dabar?",
+      "confirmDescription": "{count} iš {total} transporto priemonių su numeriu dabar bus patikrinta {name}, po 25, ir išsaugotos jų apžiūros datos. Neseniai tikrintos praleidžiamos. Jei {name} ima mokestį už paiešką, kiekviena rasta transporto priemonė apmokestinama jūsų paskyroje.",
+      "confirmLabel": "Tikrinti {count} transporto priemones",
+      "nothingDue": "Visos transporto priemonės su numeriu neseniai patikrintos, todėl kol kas nėra ką tikrinti."
     },
     "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
     "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Užklausiamas automobilių registras. Išjunkite, jei dirbate tik su motociklais: paieška praleis automobilius ir atsakys greičiau.",
         "bikes": "Ieškoti motociklų",
         "bikesHelp": "Užklausiamas motociklų registras. Jei įjungti ir automobiliai, jis užklausiamas tik neradus automobilio, o nerastas automobilis nekainuoja. Portugalijai neprieinama."
+      }
+    },
+    "checkcardetails": {
+      "description": "Užpildykite transporto priemonę pagal jos britišką numerį arba VIN: markė, modelis, metai, spalva, kuras, variklio tūris ir MOT termino data, iš DVLA duomenų per Check Car Details. Automobiliai ir motociklai gaunami iš to paties registro. Jei jūsų paskyroje įjungta UK Vehicle Data, gaunami ir VIN, pavarų dėžė bei svoriai. Kiekviena paieška apmokestinama pačių dirbtuvių Check Car Details paskyroje. Savininko duomenys negrąžinami.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Susikurkite paskyrą api.checkcardetails.co.uk ir skiltyje API Keys nukopijuokite tikrąjį raktą. Vehicle Registration įtraukta į kiekvieną paskyrą. Kad gautumėte ir VIN, skiltyje Your Data Points prie UK Vehicle Data spustelėkite Request Access; paieškos ją naudoja vos tik ji įjungiama. Bandomasis raktas randa tik numerius, kuriuose yra raidė A."
+      },
+      "settings": {
+        "syncInspections": "Atnaujinti MOT datas visoms šių dirbtuvių transporto priemonėms",
+        "syncInspectionsHelp": "Kai tai įjungta, kiekviena dirbtuvių transporto priemonė su numeriu patikrinama vieną kartą ir išsaugoma jos MOT termino data. Vėliau kiekviena transporto priemonė tikrinama kas mėnesį, o kai MOT terminas arčiau nei du mėnesiai, kas savaitę. Kiekviena rasta transporto priemonė apmokestinama kaip viena Vehicle Registration paieška, todėl pirmas perėjimas kainuoja daugiausia; registrui nežinomi numeriai nemokami. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės."
       }
     },
     "rdw": {

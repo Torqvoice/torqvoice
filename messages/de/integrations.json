@@ -154,7 +154,11 @@
       "never": "Noch kein vollständiger Durchlauf",
       "inProgress": "Ein Durchlauf läuft",
       "off": "Einstellung einschalten und speichern; bis dahin prüft ein Durchlauf nichts.",
-      "syncNowHelp": "Jetzt synchronisieren startet sofort einen Durchlauf statt auf den stündlichen zu warten. Er fragt 25 Fahrzeuge auf einmal ab und macht von selbst weiter, bis alle fälligen Fahrzeuge erledigt sind."
+      "syncNowHelp": "Jetzt synchronisieren startet sofort einen Durchlauf statt auf den stündlichen zu warten. Er fragt 25 Fahrzeuge auf einmal ab und macht von selbst weiter, bis alle fälligen Fahrzeuge erledigt sind. Der erste Durchlauf fragt jedes Fahrzeug mit Kennzeichen ab.",
+      "confirmTitle": "Fahrzeuge jetzt abfragen?",
+      "confirmDescription": "{count} der {total} Fahrzeuge mit Kennzeichen werden jetzt bei {name} abgefragt, 25 auf einmal, und ihre Prüftermine gespeichert. Kürzlich geprüfte Fahrzeuge werden übersprungen. Berechnet {name} jede Abfrage, wird jedes gefundene Fahrzeug Ihrem Konto belastet.",
+      "confirmLabel": "{count} Fahrzeuge abfragen",
+      "nothingDue": "Alle Fahrzeuge mit Kennzeichen wurden kürzlich geprüft, es gibt noch nichts abzufragen."
     },
     "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
     "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Das Pkw-Register durchsuchen. Schalten Sie dies aus, wenn Sie nur Motorräder betreuen, dann entfällt die Pkw-Suche und die Abfrage antwortet schneller.",
         "bikes": "Motorräder abfragen",
         "bikesHelp": "Das Motorradregister durchsuchen. Ist auch Pkw eingeschaltet, wird es nur gefragt, wenn kein Pkw passt, und ein Fehltreffer beim Pkw ist kostenlos. Für Portugal nicht verfügbar."
+      }
+    },
+    "checkcardetails": {
+      "description": "Füllen Sie ein Fahrzeug anhand seines britischen Kennzeichens oder der FIN aus: Marke, Modell, Baujahr, Farbe, Kraftstoff, Hubraum und der MOT-Termin, aus DVLA-Daten über Check Car Details. Autos und Motorräder kommen aus demselben Register. Ist UK Vehicle Data für Ihr Konto freigeschaltet, kommen auch FIN, Getriebe und Gewichte. Jede Abfrage wird dem eigenen Check-Car-Details-Konto der Werkstatt berechnet. Es werden keine Halterdaten übermittelt.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Legen Sie ein Konto auf api.checkcardetails.co.uk an und kopieren Sie unter API Keys den Live-Schlüssel. Vehicle Registration ist in jedem Konto enthalten. Um auch die FIN zu erhalten, klicken Sie unter Your Data Points bei UK Vehicle Data auf Request Access; Abfragen nutzen es, sobald es freigeschaltet ist. Ein Testschlüssel findet nur Kennzeichen, die den Buchstaben A enthalten."
+      },
+      "settings": {
+        "syncInspections": "MOT-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
+        "syncInspectionsHelp": "Ist dies aktiv, wird jedes Fahrzeug der Werkstatt mit Kennzeichen einmal abgefragt und sein MOT-Termin gespeichert. Danach wird jedes Fahrzeug monatlich erneut geprüft, wöchentlich sobald der MOT in weniger als zwei Monaten fällig ist. Jedes gefundene Fahrzeug wird als eine Vehicle-Registration-Abfrage berechnet, daher kostet der erste Durchlauf am meisten; Kennzeichen, die das Register nicht kennt, sind kostenlos. Es werden nur Fahrzeuge dieser Werkstatt gesendet."
       }
     },
     "rdw": {

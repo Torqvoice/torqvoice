@@ -154,7 +154,11 @@
       "never": "Ainda não houve nenhuma passagem completa",
       "inProgress": "Está uma passagem em curso",
       "off": "Ative a opção e guarde; até lá, uma passagem não verifica nada.",
-      "syncNowHelp": "Sincronizar agora inicia uma passagem de imediato, em vez de esperar pela passagem horária. Consulta 25 viaturas de cada vez e continua sozinha até terminar todas as viaturas pendentes."
+      "syncNowHelp": "Sincronizar agora inicia uma passagem de imediato, em vez de esperar pela passagem horária. Consulta 25 viaturas de cada vez e continua sozinha até terminar todas as viaturas pendentes. A primeira passagem consulta todas as viaturas com matrícula.",
+      "confirmTitle": "Consultar viaturas agora?",
+      "confirmDescription": "{count} das {total} viaturas com matrícula vão ser consultadas no {name} agora, 25 de cada vez, e as datas de inspeção guardadas. As viaturas verificadas recentemente são ignoradas. Se o {name} cobrar por consulta, cada viatura encontrada é cobrada na sua conta.",
+      "confirmLabel": "Consultar {count} viaturas",
+      "nothingDue": "Todas as viaturas com matrícula foram verificadas recentemente, por isso ainda não há nada para consultar."
     },
     "supersedes": "Ligar {next} desliga {current}. Só pode estar uma ativa de cada vez, por isso {current} deixa de ser utilizada assim que {next} entrar em funcionamento.",
     "batchRetried": "{count, plural, =0 {Nada para tentar novamente} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Consulta o registo de automóveis. Desative se só trabalha com motociclos, assim a consulta salta os automóveis e responde mais depressa.",
         "bikes": "Consultar motociclos",
         "bikesHelp": "Consulta o registo de motociclos. Com os automóveis também ativos, só é consultado quando nenhum automóvel corresponde, e uma consulta de automóvel sem resultado é gratuita. Indisponível para Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Preencha um veículo a partir da matrícula britânica ou do VIN: marca, modelo, ano, cor, combustível, cilindrada e a data do próximo MOT, com dados da DVLA através do Check Car Details. Automóveis e motociclos vêm do mesmo registo. Com o UK Vehicle Data ativado na sua conta, chegam também o VIN, a caixa de velocidades e os pesos. Cada consulta é cobrada na conta Check Car Details da própria oficina. Não são devolvidos dados do proprietário.",
+      "fields": {
+        "apiKey": "Chave de API",
+        "apiKeyHelp": "Crie uma conta em api.checkcardetails.co.uk e copie a chave de produção em API Keys. O Vehicle Registration está incluído em todas as contas. Para obter também o VIN, clique em Request Access junto a UK Vehicle Data em Your Data Points; as consultas passam a usá-lo assim que for ativado. Uma chave de teste só encontra matrículas que contêm a letra A."
+      },
+      "settings": {
+        "syncInspections": "Manter as datas de MOT atualizadas para todos os veículos desta oficina",
+        "syncInspectionsHelp": "Com isto ativado, cada viatura da oficina que tem matrícula é consultada uma vez e a data do próximo MOT é guardada. Depois, cada viatura é verificada de novo todos os meses, e todas as semanas quando o MOT vence em menos de dois meses. Cada viatura encontrada é cobrada como uma consulta Vehicle Registration, por isso a primeira passagem é a mais cara; as matrículas que o registo não conhece são gratuitas. Só são enviadas viaturas guardadas nesta oficina."
       }
     },
     "rdw": {

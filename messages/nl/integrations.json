@@ -154,7 +154,11 @@
       "never": "Nog geen volledige ronde",
       "inProgress": "Er loopt een ronde",
       "off": "Zet de instelling aan en sla op; tot die tijd controleert een ronde niets.",
-      "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
+      "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest. De eerste ronde zoekt elk voertuig met een kenteken op.",
+      "confirmTitle": "Voertuigen nu opzoeken?",
+      "confirmDescription": "{count} van de {total} voertuigen met een kenteken worden nu opgezocht bij {name}, 25 tegelijk, en hun keuringsdatums opgeslagen. Voertuigen die onlangs zijn gecontroleerd worden overgeslagen. Rekent {name} per opzoeking, dan wordt elk gevonden voertuig aan uw account gefactureerd.",
+      "confirmLabel": "{count} voertuigen opzoeken",
+      "nothingDue": "Alle voertuigen met een kenteken zijn onlangs gecontroleerd, er valt nog niets op te zoeken."
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
     "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
@@ -433,6 +437,17 @@
         "carsHelp": "Doorzoek het autoregister. Zet dit uit als u alleen aan motorfietsen werkt, dan slaat de zoekopdracht auto's over en antwoordt sneller.",
         "bikes": "Motorfietsen opzoeken",
         "bikesHelp": "Doorzoek het motorfietsregister. Staan auto's ook aan, dan wordt het alleen bevraagd als geen auto overeenkomt, en geen resultaat bij auto's is gratis. Niet beschikbaar voor Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Vul een voertuig in op basis van het Britse kenteken of het VIN: merk, model, bouwjaar, kleur, brandstof, cilinderinhoud en de MOT-vervaldatum, uit DVLA-gegevens via Check Car Details. Auto's en motoren komen uit hetzelfde register. Staat UK Vehicle Data aan voor uw account, dan komen ook het VIN, de transmissie en de gewichten mee. Elke opzoeking wordt gefactureerd aan het eigen Check Car Details-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Maak een account aan op api.checkcardetails.co.uk en kopieer de live-sleutel onder API Keys. Vehicle Registration zit in elk account. Wilt u ook het VIN, klik dan op Request Access naast UK Vehicle Data onder Your Data Points; opzoekingen gebruiken het zodra het aanstaat. Een testsleutel vindt alleen kentekens met de letter A erin."
+      },
+      "settings": {
+        "syncInspections": "MOT-datums van alle voertuigen in deze werkplaats actueel houden",
+        "syncInspectionsHelp": "Staat dit aan, dan wordt elk voertuig in de werkplaats met een kenteken één keer opgezocht en wordt de MOT-vervaldatum opgeslagen. Daarna wordt elk voertuig maandelijks opnieuw gecontroleerd, en wekelijks zodra de MOT binnen twee maanden vervalt. Elk gevonden voertuig wordt gefactureerd als één Vehicle Registration-opzoeking, dus de eerste ronde kost het meest; kentekens die het register niet kent zijn gratis. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verstuurd."
       }
     },
     "rdw": {
