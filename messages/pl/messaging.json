@@ -26,5 +26,29 @@
     "markUnread": "Oznacz jako nieprzeczytane",
     "nothingToMarkUnread": "Klient jeszcze nic nie napisał w tej rozmowie.",
     "markUnreadFailed": "Nie udało się oznaczyć rozmowy jako nieprzeczytanej."
+  },
+  "email": {
+    "badge": "E-mail",
+    "empty": "W tej rozmowie nie ma jeszcze wiadomości.",
+    "placeholder": "Napisz odpowiedź",
+    "subjectPlaceholder": "Temat",
+    "send": "Wyślij",
+    "sendFailed": "Nie udało się wysłać e-maila",
+    "sentDocument": "Wysłano: {subject}",
+    "showQuoted": "Pokaż cytowany tekst",
+    "hideQuoted": "Ukryj cytowany tekst",
+    "spamFlag": "Filtr poczty oznaczył tę wiadomość jako możliwy spam.",
+    "unknownSender": "Ten adres nie należy jeszcze do żadnego klienta. Dodaj go jako klienta, aby odpowiedzieć.",
+    "ownVendorChoice": "Wysyłasz e-maile przez własnego dostawcę, więc odpowiedzi trafiają na ten adres.",
+    "ownVendorSettings": "Ustawienia e-mail",
+    "ownVendorThread": "Wysyłasz e-maile przez własnego dostawcę, więc odpowiedzi tego klienta trafiają do Twojej skrzynki.",
+    "replyFromMailApp": "Odpowiedz w swojej aplikacji pocztowej",
+    "attachment": "Załącznik",
+    "compose": {
+      "title": "Nowy e-mail",
+      "searchPlaceholder": "Szukaj klientów",
+      "noMatches": "Żaden klient nie pasuje do wyszukiwania.",
+      "noRecipients": "Brak klientów z adresem e-mail."
+    }
   }
 }

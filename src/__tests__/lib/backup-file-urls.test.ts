@@ -215,6 +215,7 @@ describe('the import route rewrites every restored file column', () => {
     'ConditionMark.imageUrls': /imageUrls: \(\(mark\.imageUrls[\s\S]{0,200}?rewriteFileUrl/,
     'StatusReport.videoUrl': /statusReport[\s\S]{0,400}?fields: \['videoUrl'\]/,
     'WhatsappMessage.mediaUrl': /whatsappMessage[\s\S]{0,400}?fields: \['mediaUrl'\]/,
+    'EmailAttachment.url': /emailAttachment[\s\S]{0,400}?fields: \['url'\]/,
     'AppSetting.value': /const value = \(rewriteFileUrl\(s\.value/,
     'DocumentDesign.template': /template: rewriteFileUrlsWithin\(/,
     'EmailTemplate.theme': /theme: rewriteAssets\(/,

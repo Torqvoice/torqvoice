@@ -38,6 +38,13 @@ jobs:
           POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           BACKUP_HEARTBEAT_TOKEN: ${{ secrets.BACKUP_HEARTBEAT_TOKEN }}
           INTEGRATIONS_ENCRYPTION_KEY: ${{ secrets.STAGING_INTEGRATIONS_ENCRYPTION_KEY }}
+          # Customer replies by email; see deploy-prod.yml. Staging needs its
+          # own reply domain, bucket and topic, or these stay empty and the
+          # channel stays off there.
+          INBOUND_MAIL_DOMAIN: ${{ secrets.STAGING_INBOUND_MAIL_DOMAIN }}
+          INBOUND_MAIL_BUCKET: ${{ secrets.STAGING_INBOUND_MAIL_BUCKET }}
+          INBOUND_MAIL_REGION: ${{ secrets.STAGING_INBOUND_MAIL_REGION }}
+          INBOUND_MAIL_TOPIC_ARN: ${{ secrets.STAGING_INBOUND_MAIL_TOPIC_ARN }}
           # Optional. Next encrypts what a server action closes over with a key
           # made fresh by every build, so a tab left open across a deploy can
           # no longer be read by the new container. A fixed key keeps those tabs
@@ -60,7 +67,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/staging
           cd $HOME/torqvoice-deploy/staging
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_|FIKEN_INTEGRATION_|NEXT_SERVER_ACTIONS_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_|FIKEN_INTEGRATION_|INBOUND_MAIL_|NEXT_SERVER_ACTIONS_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
@@ -92,6 +99,10 @@ jobs:
                 POSTHOG_HOST: ${POSTHOG_HOST}
                 BACKUP_HEARTBEAT_TOKEN: ${BACKUP_HEARTBEAT_TOKEN}
                 INTEGRATIONS_ENCRYPTION_KEY: ${INTEGRATIONS_ENCRYPTION_KEY}
+                INBOUND_MAIL_DOMAIN: ${INBOUND_MAIL_DOMAIN}
+                INBOUND_MAIL_BUCKET: ${INBOUND_MAIL_BUCKET}
+                INBOUND_MAIL_REGION: ${INBOUND_MAIL_REGION}
+                INBOUND_MAIL_TOPIC_ARN: ${INBOUND_MAIL_TOPIC_ARN}
                 NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
                 GOOGLE_INTEGRATION_CLIENT_ID: ${GOOGLE_INTEGRATION_CLIENT_ID}
                 GOOGLE_INTEGRATION_CLIENT_SECRET: ${GOOGLE_INTEGRATION_CLIENT_SECRET}

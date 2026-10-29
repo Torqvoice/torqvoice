@@ -472,6 +472,8 @@ export async function POST(request: NextRequest) {
         SmsMessage: () => tx.smsMessage.deleteMany({ where: { organizationId } }),
         WhatsappMessage: () => tx.whatsappMessage.deleteMany({ where: { organizationId } }),
         TelegramMessage: () => tx.telegramMessage.deleteMany({ where: { organizationId } }),
+        // Attachment rows go with their message by cascade.
+        EmailMessage: () => tx.emailMessage.deleteMany({ where: { organizationId } }),
         ScheduledMessage: () => tx.scheduledMessage.deleteMany({ where: { organizationId } }),
         InspectionReminderSend: () =>
           tx.inspectionReminderSend.deleteMany({ where: { organizationId } }),
@@ -1548,6 +1550,43 @@ export async function POST(request: NextRequest) {
         data.telegramMessages,
         { organizationId }
       )
+
+      // Mail, with the files that came with it. A message whose customer is
+      // not in this workshop after the restore keeps its thread, which reads
+      // by address, and only loses the link: a dangling id would fail the
+      // whole import on its foreign key.
+      if (data.emailMessages?.length) {
+        const customerIds = new Set(
+          (await tx.customer.findMany({ where: { organizationId }, select: { id: true } })).map(
+            (c) => c.id
+          )
+        )
+        const messages = (data.emailMessages as Record<string, unknown>[]).map(
+          (m): Record<string, unknown> => ({
+            ...m,
+            customerId: keptReference(m.customerId, customerIds),
+          })
+        )
+        await restoreRows(
+          'email messages',
+          (rows) => tx.emailMessage.createMany({ data: rows as never }),
+          messages,
+          { organizationId }
+        )
+        // Messages keep their ids, so each attachment points at its own again.
+        await restoreRows(
+          'email attachments',
+          (rows) => tx.emailAttachment.createMany({ data: rows as never }),
+          messages.flatMap((m) =>
+            ((m.attachments as Record<string, unknown>[] | undefined) ?? []).map((a) => ({
+              ...a,
+              messageId: m.id,
+            }))
+          ),
+          {},
+          { fields: ['url'], organizationId }
+        )
+      }
 
       // Workshop configuration: the kinds of mark, labour presets, webhooks,
       // report schedules.

@@ -26,5 +26,29 @@
     "markUnread": "Markeren als ongelezen",
     "nothingToMarkUnread": "De klant heeft in dit gesprek nog niets geschreven.",
     "markUnreadFailed": "Het gesprek kon niet als ongelezen worden gemarkeerd."
+  },
+  "email": {
+    "badge": "E-mail",
+    "empty": "Nog geen berichten in dit gesprek.",
+    "placeholder": "Schrijf een antwoord",
+    "subjectPlaceholder": "Onderwerp",
+    "send": "Versturen",
+    "sendFailed": "Kon de e-mail niet versturen",
+    "sentDocument": "Verstuurd: {subject}",
+    "showQuoted": "Geciteerde tekst tonen",
+    "hideQuoted": "Geciteerde tekst verbergen",
+    "spamFlag": "Het mailfilter heeft dit bericht als mogelijke spam gemarkeerd.",
+    "unknownSender": "Dit adres hoort nog bij geen klant. Voeg ze als klant toe om te antwoorden.",
+    "ownVendorChoice": "Je verstuurt e-mail via je eigen provider, dus antwoorden komen op dat adres binnen.",
+    "ownVendorSettings": "E-mailinstellingen",
+    "ownVendorThread": "Je verstuurt e-mail via je eigen provider, dus antwoorden van deze klant komen in je eigen mailbox binnen.",
+    "replyFromMailApp": "Antwoord vanuit je mailapp",
+    "attachment": "Bijlage",
+    "compose": {
+      "title": "Nieuwe e-mail",
+      "searchPlaceholder": "Klanten zoeken",
+      "noMatches": "Geen klant komt overeen met je zoekopdracht.",
+      "noRecipients": "Nog geen klanten met een e-mailadres."
+    }
   }
 }

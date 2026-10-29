@@ -84,6 +84,7 @@ export const FILE_REFERENCES: FileReference[] = [
   { model: 'ConditionMark', field: 'imageUrls', sql: array('condition_marks', 'imageUrls') },
   { model: 'StatusReport', field: 'videoUrl', sql: text('status_reports', 'videoUrl') },
   { model: 'WhatsappMessage', field: 'mediaUrl', sql: text('whatsapp_messages', 'mediaUrl') },
+  { model: 'EmailAttachment', field: 'url', sql: text('email_attachments', 'url') },
   // Workshop logo, invoice and quote logos, the portal background. Every
   // setting is searched, so a new file-valued setting is covered too.
   { model: 'AppSetting', field: 'value', sql: anywhere('app_settings', 'value') },

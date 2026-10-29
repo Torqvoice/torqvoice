@@ -20,6 +20,7 @@ export const UPLOAD_CATEGORIES = [
   'quotes',
   'portal',
   'tire-hotel',
+  'email',
 ] as const
 
 export type UploadCategory = (typeof UPLOAD_CATEGORIES)[number]

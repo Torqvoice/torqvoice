@@ -29,6 +29,7 @@ model Customer {
   smsMessages         SmsMessage[]
   telegramMessages    TelegramMessage[]
   whatsappMessages    WhatsappMessage[]
+  emailMessages       EmailMessage[]
   customerSessions    CustomerSession[]
   scheduledMessages   ScheduledMessage[]
   serviceRequests     ServiceRequest[]

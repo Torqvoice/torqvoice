@@ -14,7 +14,7 @@ import type { InboxFocus } from '@/features/messaging/Components/UnifiedInbox'
 import { PageHeader } from '@/components/page-header'
 import { listInspectionReminderCampaigns } from '@/features/inspection-reminders/Actions/inspectionReminderActions'
 
-const CHANNELS: MessagingChannel[] = ['sms', 'whatsapp', 'telegram']
+const CHANNELS: MessagingChannel[] = ['sms', 'whatsapp', 'telegram', 'email']
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -39,13 +39,17 @@ async function resolveFocus(sp: SearchParams, organizationId: string): Promise<I
   if (customerId) {
     const customer = await db.customer.findFirst({
       where: { id: customerId, organizationId },
-      select: { id: true, name: true, phone: true },
+      select: { id: true, name: true, phone: true, email: true },
     })
     if (!customer) return null
-    return { channel, customerId: customer.id, name: customer.name, contact: customer.phone ?? '' }
+    const contact = channel === 'email' ? customer.email : customer.phone
+    return { channel, customerId: customer.id, name: customer.name, contact: contact ?? '' }
   }
-  if (contact && channel === 'whatsapp') {
-    return { channel, customerId: null, name: contact, contact }
+  // A WhatsApp number or an email address that matched no customer: the
+  // thread is filed under the contact itself.
+  if (contact && (channel === 'whatsapp' || channel === 'email')) {
+    const named = channel === 'email' ? contact.toLowerCase() : contact
+    return { channel, customerId: null, name: named, contact: named }
   }
   return null
 }
@@ -74,7 +78,7 @@ export default async function MessagesPage({
   const inbox: InboxPage =
     inboxResult.success && inboxResult.data
       ? inboxResult.data
-      : { threads: [], nextCursor: null, channels: [] }
+      : { threads: [], nextCursor: null, channels: [], emailState: 'off' }
   const scheduled = scheduledResult.success && scheduledResult.data ? scheduledResult.data : []
   const campaigns = campaignsResult.success && campaignsResult.data ? campaignsResult.data : []
 
@@ -89,6 +93,7 @@ export default async function MessagesPage({
             threads={inbox.threads}
             initialCursor={inbox.nextCursor}
             channels={inbox.channels}
+            emailState={inbox.emailState}
             initialScheduled={scheduled}
             campaigns={campaigns}
             availableChannels={messageChannels}

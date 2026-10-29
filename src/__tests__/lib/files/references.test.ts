@@ -54,6 +54,7 @@ const NOT_FILES: Record<string, string> = {
   'StatusReport.videoFileName': 'a label',
   'WhatsappMessage.mediaFilename': 'a label',
   'WhatsappMessage.mediaType': 'image, document, video…',
+  'EmailAttachment.fileName': 'a label',
   'User.image': 'an avatar URL from a sign-in provider; never an upload',
   'User.dashboardLayout': 'dashboard layout',
   'VehicleInspectionStatus.extras': 'what a vehicle registry returned',

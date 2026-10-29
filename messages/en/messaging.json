@@ -26,5 +26,29 @@
     "markUnread": "Mark as unread",
     "nothingToMarkUnread": "The customer has not written in this conversation yet.",
     "markUnreadFailed": "Could not mark the conversation as unread."
+  },
+  "email": {
+    "badge": "Email",
+    "empty": "No messages in this conversation yet.",
+    "placeholder": "Write a reply…",
+    "subjectPlaceholder": "Subject",
+    "send": "Send",
+    "sendFailed": "Could not send the email",
+    "sentDocument": "Sent: {subject}",
+    "showQuoted": "Show quoted text",
+    "hideQuoted": "Hide quoted text",
+    "spamFlag": "The mail filter flagged this message as possible spam.",
+    "unknownSender": "This address belongs to no customer yet. Add them as a customer to reply.",
+    "ownVendorChoice": "You send email through your own vendor, so replies go to that address.",
+    "ownVendorSettings": "Email settings",
+    "ownVendorThread": "You send email through your own vendor, so replies to this customer go to your own mailbox.",
+    "replyFromMailApp": "Reply from your mail app",
+    "attachment": "Attachment",
+    "compose": {
+      "title": "New email",
+      "searchPlaceholder": "Search customers",
+      "noMatches": "No customers match your search.",
+      "noRecipients": "No customers with an email address yet."
+    }
   }
 }

@@ -18,7 +18,7 @@ import {
   type ScheduledMessageListItem,
 } from '@/features/scheduled-messages/Actions/scheduledMessageActions'
 import type { MessageChannel } from '@/features/scheduled-messages/Schema/scheduledMessageSchema'
-import type { InboxThread, MessagingChannel } from '../Actions/inboxActions'
+import type { EmailChannelState, InboxThread, MessagingChannel } from '../Actions/inboxActions'
 import { type InboxFocus, UnifiedInbox } from './UnifiedInbox'
 
 /**
@@ -35,6 +35,7 @@ export function MessagesPageClient({
   threads,
   initialCursor = null,
   channels,
+  emailState,
   initialScheduled = [],
   campaigns = [],
   availableChannels = [],
@@ -45,6 +46,8 @@ export function MessagesPageClient({
   initialCursor?: string | null
   /** Channels with a working provider, for the composer. */
   channels: MessagingChannel[]
+  /** Whether email is a channel here, one the workshop answers elsewhere, or neither. */
+  emailState: EmailChannelState
   initialScheduled?: ScheduledMessageListItem[]
   campaigns?: CampaignListItem[]
   availableChannels?: MessageChannel[]
@@ -155,6 +158,7 @@ export function MessagesPageClient({
             threads={threads}
             initialCursor={initialCursor}
             channels={channels}
+            emailState={emailState}
             onChanged={() => startRefresh(() => router.refresh())}
           />
         )}

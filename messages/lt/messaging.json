@@ -26,5 +26,29 @@
     "markUnread": "Pažymėti kaip neskaitytą",
     "nothingToMarkUnread": "Klientas šiame pokalbyje dar nieko nerašė.",
     "markUnreadFailed": "Nepavyko pažymėti pokalbio kaip neskaityto."
+  },
+  "email": {
+    "badge": "El. paštas",
+    "empty": "Šiame pokalbyje žinučių dar nėra.",
+    "placeholder": "Rašykite atsakymą",
+    "subjectPlaceholder": "Tema",
+    "send": "Siųsti",
+    "sendFailed": "Nepavyko išsiųsti el. laiško",
+    "sentDocument": "Išsiųsta: {subject}",
+    "showQuoted": "Rodyti cituojamą tekstą",
+    "hideQuoted": "Slėpti cituojamą tekstą",
+    "spamFlag": "Pašto filtras pažymėjo šią žinutę kaip galimą šlamštą.",
+    "unknownSender": "Šis adresas dar nepriskirtas klientui. Norėdami atsakyti, pridėkite jį kaip klientą.",
+    "ownVendorChoice": "El. laiškus siunčiate per savo tiekėją, todėl atsakymai ateina tuo adresu.",
+    "ownVendorSettings": "El. pašto nustatymai",
+    "ownVendorThread": "El. laiškus siunčiate per savo tiekėją, todėl šio kliento atsakymai ateina į jūsų pašto dėžutę.",
+    "replyFromMailApp": "Atsakyti pašto programoje",
+    "attachment": "Priedas",
+    "compose": {
+      "title": "Naujas el. laiškas",
+      "searchPlaceholder": "Ieškoti klientų",
+      "noMatches": "Pagal paiešką klientų nerasta.",
+      "noRecipients": "Dar nėra klientų su el. pašto adresu."
+    }
   }
 }

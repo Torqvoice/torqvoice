@@ -26,5 +26,29 @@
     "markUnread": "Marcar como não lida",
     "nothingToMarkUnread": "O cliente ainda não escreveu nesta conversa.",
     "markUnreadFailed": "Não foi possível marcar a conversa como não lida."
+  },
+  "email": {
+    "badge": "E-mail",
+    "empty": "Ainda não há mensagens nesta conversa.",
+    "placeholder": "Escreva uma resposta",
+    "subjectPlaceholder": "Assunto",
+    "send": "Enviar",
+    "sendFailed": "Não foi possível enviar o e-mail",
+    "sentDocument": "Enviado: {subject}",
+    "showQuoted": "Mostrar texto citado",
+    "hideQuoted": "Ocultar texto citado",
+    "spamFlag": "O filtro de e-mail marcou esta mensagem como possível spam.",
+    "unknownSender": "Este endereço ainda não pertence a nenhum cliente. Cadastre-o como cliente para responder.",
+    "ownVendorChoice": "Você envia e-mails pelo seu próprio provedor, então as respostas chegam nesse endereço.",
+    "ownVendorSettings": "Configurações de e-mail",
+    "ownVendorThread": "Você envia e-mails pelo seu próprio provedor, então as respostas deste cliente chegam na sua própria caixa de entrada.",
+    "replyFromMailApp": "Responder pelo seu app de e-mail",
+    "attachment": "Anexo",
+    "compose": {
+      "title": "Novo e-mail",
+      "searchPlaceholder": "Buscar clientes",
+      "noMatches": "Nenhum cliente corresponde à sua busca.",
+      "noRecipients": "Ainda não há clientes com endereço de e-mail."
+    }
   }
 }

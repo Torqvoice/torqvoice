@@ -184,6 +184,21 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 12,
   },
+  // Mail to and from customers is part of the same conversation history as
+  // the other channels, so it rides the same checkbox.
+  {
+    model: 'EmailMessage',
+    key: 'emailMessages',
+    option: 'smsMessages',
+    restore: 'replace',
+    clearOrder: 14,
+  },
+  {
+    model: 'EmailAttachment',
+    option: 'smsMessages',
+    nestedUnder: 'EmailMessage',
+    restore: 'replace',
+  },
   {
     model: 'ScheduledMessage',
     key: 'scheduledMessages',
@@ -403,6 +418,7 @@ export const UPLOAD_CATEGORIES: readonly string[] = [
   'quotes',
   'tire-hotel',
   'portal',
+  'email',
 ]
 
 /** Entities written at the top level of the backup, with their key. */
