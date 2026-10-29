@@ -256,6 +256,7 @@ export default async function PublicQuotePage({
     },
     customFields,
     labels,
+    locale,
     layoutConfig,
     conditionMap,
     inspectionResults,

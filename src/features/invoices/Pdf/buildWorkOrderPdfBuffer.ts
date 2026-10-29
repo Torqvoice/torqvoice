@@ -54,6 +54,7 @@ export async function buildWorkOrderPdfBuffer(
     template: assembly.template,
     torqvoiceLogoDataUri,
     labels,
+    locale,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
   const buffer = await renderToBuffer(element)

@@ -1,3 +1,4 @@
+import { documentNumbers } from '@/lib/document-numbers'
 import { DEFAULT_DATE_FORMAT, formatDateForPdf } from '@/lib/format'
 import {
   getDefaultLayout,
@@ -96,6 +97,8 @@ export interface CertificatePrintInput {
   data: CertificatePrintData
   workshop?: { name: string; address: string; phone: string; email: string; slogan?: string }
   labels?: Record<string, string>
+  /** The document's language, the one its labels are in; numbers are written its way. */
+  locale?: string
   logoDataUri?: string
   /** The inspector's saved signature, drawn on the signature line. */
   signatureDataUri?: string
@@ -271,6 +274,7 @@ export function certificateDataFor(input: {
 export function buildCertificatePrintSpec(input: CertificatePrintInput): DocumentSpec {
   const { data, workshop, template } = input
   const labels = input.labels ?? {}
+  const nums = documentNumbers(input.locale)
   const L = (key: string, fallback: string) => labels[key] || fallback
   const layout = input.layoutConfig
     ? mergeWithDefaults({ ...input.layoutConfig, documentType: 'certificate' })
@@ -303,7 +307,7 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
       : '',
     mileage:
       mileage !== null && mileage !== undefined
-        ? fillTemplate(L('mileage', 'Mileage: {mileage}'), { mileage: mileage.toLocaleString() })
+        ? fillTemplate(L('mileage', 'Mileage: {mileage}'), { mileage: nums.distance(mileage) })
         : '',
     // The facts of the test, each already worded as its own line.
     test_date: `${L('testDate', 'Date of test')}: ${testDate}`,
@@ -319,7 +323,7 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
       : '',
     odometer:
       mileage !== null && mileage !== undefined
-        ? fillTemplate(L('mileage', 'Mileage: {mileage}'), { mileage: mileage.toLocaleString() })
+        ? fillTemplate(L('mileage', 'Mileage: {mileage}'), { mileage: nums.distance(mileage) })
         : '',
     next_test_due: nextDue ? `${L('nextTestDue', 'Next test due')}: ${nextDue}` : '',
     company_name: shopName,

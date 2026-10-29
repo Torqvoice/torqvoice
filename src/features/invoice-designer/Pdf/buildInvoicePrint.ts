@@ -1,7 +1,7 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
-import { formatQuantity } from '@/lib/format-quantity'
+import { documentNumbers, serviceTypeName } from '@/lib/document-numbers'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
@@ -70,6 +70,8 @@ export interface InvoicePrintInput {
   telegramQrDataUri?: string
   telegramLabel?: string
   labels?: Record<string, string>
+  /** The document's language, the one its labels are in; numbers are written its way. */
+  locale?: string
   /** The car's condition this visit, for a layout with Vehicle Condition on. */
   conditionMap?: VisitConditionMap
   /**
@@ -147,6 +149,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
   const L = (key: string, fallback: string) => labels[key] || fallback
+  const nums = documentNumbers(input.locale)
 
   const layout = resolveLayout(input)
   const doc = layout.document ?? {}
@@ -235,16 +238,16 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     mileage: data.mileage
       ? `${
           labels.mileage
-            ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() })
-            : `Mileage: ${data.mileage.toLocaleString()}`
+            ? fillTemplate(labels.mileage, { mileage: nums.distance(data.mileage) })
+            : `Mileage: ${nums.distance(data.mileage)}`
         } ${invoiceSettings?.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`
       : '',
     service_title: data.title || '',
     // Counter sales (no vehicle) aren't a service; the default type is noise.
     service_type: data.vehicle
       ? labels.type
-        ? fillTemplate(labels.type, { type: data.type })
-        : `Type: ${data.type}`
+        ? fillTemplate(labels.type, { type: serviceTypeName(data.type, labels) })
+        : `Type: ${serviceTypeName(data.type, labels)}`
       : '',
     tech_name: tech ? (labels.tech ? fillTemplate(labels.tech, { tech }) : `Tech: ${tech}`) : '',
     company_name: shopDisplayName,
@@ -278,7 +281,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const items: DocumentData['items'] = [
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
-      qty: String(l.hours),
+      qty: nums.count(l.hours),
       unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
       price: money(shown(l.rate, l.taxable !== false)),
@@ -287,7 +290,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
-      qty: formatQuantity(p.quantity, p.unit),
+      qty: nums.quantity(p.quantity, p.unit),
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
@@ -300,7 +303,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const parts: DocumentData['parts'] = data.partItems.map((p) => ({
     ref: p.partNumber || '-',
     desc: p.name,
-    qty: formatQuantity(p.quantity, p.unit),
+    qty: nums.quantity(p.quantity, p.unit),
     price: money(shown(p.unitPrice, p.taxable !== false)),
     total: money(shown(p.total, p.taxable !== false)),
     group: partGroupKey(p.category),
@@ -319,7 +322,9 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
-      qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
+      qty: isService
+        ? `${nums.count(l.hours)} ${L('unit', 'unit')}`
+        : `${nums.count(l.hours)} ${L('hrs', 'hrs')}`,
       rate: isService
         ? money(shown(l.rate, l.taxable !== false))
         : labels.ratePerHour
@@ -484,6 +489,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
     warranty: warrantyForPrint(data, {
       labels,
+      locale: input.locale,
       unitSystem: invoiceSettings?.unitSystem,
       expires: data.warrantyExpiresAt
         ? formatDateForPdf(data.warrantyExpiresAt, df, tz)

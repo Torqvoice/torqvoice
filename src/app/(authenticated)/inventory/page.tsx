@@ -1,3 +1,4 @@
+import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import {
@@ -45,6 +46,7 @@ export default async function InventoryPage({
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
       SETTING_KEYS.INVENTORY_DEFAULT_UNIT,
       SETTING_KEYS.UNIT_SYSTEM,
+      SETTING_KEYS.MEASURE_SYSTEM,
       SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
     ]),
     hasAnyReorderPoint(),
@@ -78,7 +80,7 @@ export default async function InventoryPage({
           currencyCode={currencyCode}
           markupMultiplier={markupMultiplier}
           defaultUnit={settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''}
-          unitSystem={settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial'}
+          unitSystem={measureSystemIn(settings)}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
           lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}

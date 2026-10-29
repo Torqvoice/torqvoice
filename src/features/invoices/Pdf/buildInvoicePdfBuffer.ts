@@ -90,6 +90,7 @@ export async function renderInvoicePdf(
     telegramQrDataUri: telegramQr?.dataUri,
     telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
     labels,
+    locale,
     conditionMap,
     inspectionResults: assembly.inspectionResults,
     ...attachments,

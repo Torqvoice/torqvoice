@@ -67,7 +67,14 @@ export const SETTING_KEYS = {
   INVOICE_LOCK_TRIGGER: 'invoice.lockTrigger',
   QUOTE_LOCK_ENABLED: 'quote.lockEnabled',
   QUOTE_LOCK_TRIGGER: 'quote.lockTrigger',
+  /** 'metric' (km) | 'imperial' (miles): distance, as mileage and intervals are written. */
   UNIT_SYSTEM: 'workshop.unitSystem',
+  /**
+   * 'metric' (litres, kilograms) | 'imperial' (quarts, gallons, pounds): fluids
+   * and parts. Unset follows UNIT_SYSTEM, which is how every workshop worked
+   * before the two were separate; a British shop is miles with litres.
+   */
+  MEASURE_SYSTEM: 'workshop.measureSystem',
   /** 'litres' | 'cc': how a plate lookup writes engine size. Unset means litres. */
   ENGINE_SIZE_UNIT: 'workshop.engineSizeUnit',
   DEFAULT_TECHNICIAN: 'workshop.defaultTechnician',

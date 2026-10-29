@@ -192,6 +192,7 @@ export default async function PublicInspectionPage({
         : undefined,
       workshop: { ...workshop, slogan: settingsMap['workshop.slogan'] || undefined },
       labels,
+      locale,
       logoDataUri: toPublic(documentLogoPath(settingsMap, 'certificate')) || undefined,
       signatureDataUri: await certificateSignatureDataUri(orgId, inspection),
       torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),

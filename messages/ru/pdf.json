@@ -221,7 +221,11 @@
     "conditionMapArea": "Место",
     "conditionMapKind": "Тип",
     "conditionMapSeverity": "Степень",
-    "conditionMapNote": "Заметка"
+    "conditionMapNote": "Заметка",
+    "serviceTypeMaintenance": "Техобслуживание",
+    "serviceTypeRepair": "Ремонт",
+    "serviceTypeUpgrade": "Модернизация",
+    "serviceTypeInspection": "Осмотр"
   },
   "workOrder": {
     "title": "ЗАКАЗ-НАРЯД",

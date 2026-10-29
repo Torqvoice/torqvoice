@@ -221,7 +221,11 @@
     "conditionMapArea": "Zone",
     "conditionMapKind": "Type",
     "conditionMapSeverity": "Gravité",
-    "conditionMapNote": "Note"
+    "conditionMapNote": "Note",
+    "serviceTypeMaintenance": "Maintenance",
+    "serviceTypeRepair": "Réparation",
+    "serviceTypeUpgrade": "Mise à Niveau",
+    "serviceTypeInspection": "Inspection"
   },
   "workOrder": {
     "title": "ORDRE DE TRAVAIL",

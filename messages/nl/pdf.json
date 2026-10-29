@@ -221,7 +221,11 @@
     "conditionMapArea": "Plaats",
     "conditionMapKind": "Type",
     "conditionMapSeverity": "Ernst",
-    "conditionMapNote": "Notitie"
+    "conditionMapNote": "Notitie",
+    "serviceTypeMaintenance": "Onderhoud",
+    "serviceTypeRepair": "Reparatie",
+    "serviceTypeUpgrade": "Upgrade",
+    "serviceTypeInspection": "Inspectie"
   },
   "workOrder": {
     "title": "WERKORDER",
