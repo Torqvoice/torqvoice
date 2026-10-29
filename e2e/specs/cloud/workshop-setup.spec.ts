@@ -80,7 +80,12 @@ test('a workshop in France gets French documents from an English browser', async
  * longer moves it.
  */
 test.describe('the language follows the country until the owner picks one', () => {
-  test.use({ timezoneId: 'Europe/Oslo', locale: 'nb-NO' })
+  // The config pins every request to English; a Norwegian browser sends its own header.
+  test.use({
+    timezoneId: 'Europe/Oslo',
+    locale: 'nb-NO',
+    extraHTTPHeaders: { 'accept-language': 'nb-NO,nb;q=0.9' },
+  })
 
   const email = `e2e-setup-uk-${stamp}@example.com`
   const workshop = `Riverside Motors ${stamp}`
