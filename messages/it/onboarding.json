@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Configura la tua officina",
       "subtitle": "Quattro brevi passaggi, perché la tua prima fattura sia giusta. Potrai cambiare tutto più tardi nelle Impostazioni.",
+      "language": "Lingua",
+      "languageBoth": "Le tue schermate e le fatture, i preventivi e le email ai tuoi clienti la usano.",
+      "languageFromCountry": "Suggerita per {country}. Le tue schermate e le fatture, i preventivi e le email ai tuoi clienti la usano.",
+      "languageMissing": "Torqvoice non è ancora disponibile in {language}, quindi per {country} è suggerito l'inglese. Scegli un'altra lingua se preferisci.",
+      "languageScreensOnly": "Usata sulle tue schermate.",
+      "customerLanguageDifferent": "Usa un'altra lingua per i clienti",
+      "customerLanguageSame": "Uguale alla mia ({language})",
+      "customerLanguageFromCountry": "Suggerita per {country}.",
       "name": "Nome dell'officina",
       "namePlaceholder": "La mia officina",
       "kindLegend": "Su cosa lavori soprattutto?",
@@ -128,7 +136,8 @@
       "countryDetected": "Trovato dal tuo fuso orario, {zone}. Il passaggio successivo propone ciò che è consueto in {country}, e tu confermi ogni scelta.",
       "countryChosen": "Il passaggio successivo propone ciò che è consueto in {country}, e tu confermi ogni scelta.",
       "countryMissing": "Scegli il paese e il passaggio successivo ne proporrà lingua, valuta e formato della data.",
-      "skip": "Usa i suggerimenti e vai a Pronto"
+      "skip": "Usa i suggerimenti e vai a Pronto",
+      "nameMissing": "Dai all'officina un nome di almeno 2 caratteri."
     },
     "region": {
       "title": "Lingua e regione",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Fatture, preventivi, ordini di lavoro ed email sono scritti in questa lingua, chiunque in officina li stampi o li invii.",
       "languageSearch": "Cerca lingue",
       "noLanguage": "Nessuna lingua trovata",
-      "ownScreens": "Le tue schermate restano in {language}.",
-      "ownScreensHint": "Ognuno sceglie la lingua delle proprie schermate nel menu utente. Non cambia mai ciò che ricevono i clienti.",
       "defaults": "Impostazioni regionali",
       "change": "Cambia",
       "done": "Fatto",
@@ -174,8 +181,7 @@
       "phonePrefix": "Prefisso internazionale",
       "phoneHint": "Aggiunto ai numeri dei clienti scritti senza prefisso, come +39.",
       "phoneInvalid": "Usa + e cifre, come +39.",
-      "forceTitle": "Mostra anche il portale clienti e i link condivisi in {language}",
-      "forceHint": "Disattivato: un cliente che apre un link lo legge nella lingua del suo browser. I documenti scaricati e inviati via email sono sempre in {language}."
+      "later": "Puoi modificarli in seguito in <b>{localization}</b>. Unità e cilindrata si trovano in <b>{workshop}</b>."
     },
     "tax": {
       "title": "Imposte sulle tue fatture",
@@ -196,9 +202,10 @@
       "including": "Imposte incluse",
       "includingExample": "Scrivi {total}. Il cliente paga {total}, di cui {tax} di {label}.",
       "noTax": "Non viene stampata alcuna riga d'imposta e il totale è ciò che hai scritto.",
-      "skippedHint": "Saltato per ora, quindi non viene aggiunta alcuna imposta. Scegli Sì per configurarla qui, o più tardi in Impostazioni, Imposte.",
-      "advanced": "Due imposte su una fattura, come GST e QST, o imposta solo sui ricambi? Impostalo in Impostazioni, Imposte, quando l'officina è aperta.",
-      "skip": "Salta per ora"
+      "skippedHint": "Saltato per ora, quindi non viene aggiunta alcuna imposta. Scegli Sì per configurarla qui.",
+      "later": "Puoi modificarlo in seguito in <b>{tax}</b>. Lì imposti anche due imposte su una fattura, come GST e QST, o l'imposta solo sui ricambi.",
+      "skip": "Salta per ora",
+      "rateMissing": "Inserisci la tua aliquota, oppure scegli No se non applichi imposte."
     },
     "ready": {
       "title": "Pronto ad aprire {name}",
@@ -228,7 +235,8 @@
       "label": "Anteprima della fattura",
       "first": "La tua prima fattura, come la riceve un cliente",
       "live": "Cambia con le tue scelte",
-      "loading": "Preparazione dell'anteprima"
+      "loading": "Preparazione dell'anteprima",
+      "enlarge": "Mostra a grandezza piena"
     },
     "sample": {
       "jobTitle": "Cambio olio e controllo",
@@ -237,7 +245,13 @@
       "customerAddress": "Via Roma 12, 20121 Milano",
       "laborLine": "Cambio olio e controllo",
       "partLine": "Filtro dell'olio",
-      "workshopName": "La tua officina"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Olio motore 5W-30",
+      "part3": "Filtro aria",
+      "part4": "Spazzole tergicristallo",
+      "labor2": "Sostituzione filtro aria",
+      "labor3": "Sostituzione spazzole tergicristallo",
+      "labor4": "Controllo freni"
     }
   }
 }

@@ -6,7 +6,11 @@ import fr from '../../../../messages/fr/onboarding.json'
 import frPdf from '../../../../messages/fr/pdf.json'
 import { invoiceLabels } from '@/features/invoice-designer/Lib/invoiceLabels'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
+import { pickerScore } from '@/features/onboarding/Components/setup/SearchPicker'
+import { countrySearchTerms } from '@/lib/country-defaults'
+import { exampleDate } from '@/features/onboarding/Components/setup/StepRegion'
 import { previewInvoiceInput } from '@/features/onboarding/Lib/previewInvoice'
+import { starterDesignSettings, starterLayout } from '@/features/onboarding/Lib/starterDesign'
 import {
   initialDraft,
   parseTaxRate,
@@ -14,7 +18,10 @@ import {
   setupPayload,
   taxStepComplete,
   withCountry,
+  withCustomerLanguage,
   withKind,
+  withLanguage,
+  withSameLanguage,
 } from '@/features/onboarding/Lib/setupDraft'
 import { setupSettings } from '@/features/onboarding/Lib/setupSettings'
 import { onboardingSchema } from '@/features/onboarding/Schema/onboardingSchema'
@@ -186,7 +193,23 @@ describe('the preview', () => {
     expect(text).toContain('Facturer à')
     expect(text).toContain('TVA (20%)')
     expect(text).toContain('28/10/2026')
-    expect(text).toMatch(/132,48\s€/)
+    // Four parts and four labour lines, 302,45 € before tax.
+    expect(text).toContain('Huile moteur 5W-30')
+    expect(text).toContain('4,5 l')
+    expect(text).toContain('Contrôle des freins')
+    expect(text).toMatch(/302,45\s€/)
+    expect(text).toMatch(/362,94\s€/)
+    expect(text).toContain('camille.dubois@example.com')
+  })
+
+  it('measures the oil in quarts for a workshop on US measures', () => {
+    const us = withCountry(frenchWorkshop(), 'US', 'en-US')
+    const text = JSON.stringify(
+      buildInvoicePrintSpec(
+        previewInvoiceInput(us, invoiceLabels(frPdf, 'invoice'), fr.setup.sample)
+      )
+    )
+    expect(text).toContain('5 qt')
   })
 })
 
@@ -197,5 +220,199 @@ describe('the first-run content', () => {
     expect(t('sample.prefix')).toBe('Exemple :')
     expect(t('sample.parts.oilFilter')).toBe('Filtre à huile')
     expect((await onboardingTranslator('nb'))('sample.parts.oilFilter')).toBe('Oljefilter')
+  })
+})
+
+describe('the dates row', () => {
+  // 13:05 UTC on 29 October 2026, after Europe moved its clocks back.
+  const now = new Date(Date.UTC(2026, 9, 29, 13, 5))
+
+  it('shows the time now at the workshop', () => {
+    expect(exampleDate('dd.MM.yyyy', '24h', true, 'Europe/Oslo', now)).toBe('29.10.2026, 14:05')
+    expect(exampleDate('MM/dd/yyyy', '12h', true, 'America/New_York', now)).toBe(
+      '10/29/2026, 9:05 AM'
+    )
+  })
+
+  it('shows the workshop its own date where it is already tomorrow', () => {
+    expect(exampleDate('dd/MM/yyyy', '24h', true, 'Pacific/Auckland', now)).toBe(
+      '30/10/2026, 02:05'
+    )
+  })
+
+  it('writes midnight and noon on a 12-hour clock', () => {
+    expect(
+      exampleDate('dd/MM/yyyy', '12h', true, 'UTC', new Date(Date.UTC(2026, 0, 5, 0, 0)))
+    ).toBe('05/01/2026, 12:00 AM')
+    expect(
+      exampleDate('dd/MM/yyyy', '12h', true, 'UTC', new Date(Date.UTC(2026, 0, 5, 12, 0)))
+    ).toBe('05/01/2026, 12:00 PM')
+  })
+
+  it('falls back to the browser zone for a zone it does not know', () => {
+    expect(exampleDate('yyyy-MM-dd', '24h', false, 'Not/AZone', now)).toMatch(/^2026-10-(29|30)$/)
+  })
+})
+
+describe('searching the pickers', () => {
+  const uk = `Storbritannia ${countrySearchTerms('GB')} GB`
+  const ukraine = `Ukraina ${countrySearchTerms('UA')} UA`
+
+  it('puts the United Kingdom above Ukraine for "UK"', () => {
+    expect(pickerScore(uk, 'UK')).toBeGreaterThan(pickerScore(ukraine, 'UK'))
+  })
+
+  it('does not match letters scattered through a name', () => {
+    expect(pickerScore(`Usbekistan ${countrySearchTerms('UZ')} UZ`, 'UK')).toBe(0)
+  })
+
+  it('finds by the start of any word and by a phrase', () => {
+    expect(pickerScore(uk, 'engl')).toBeGreaterThan(0)
+    expect(pickerScore(uk, 'great brit')).toBeGreaterThan(0)
+    expect(pickerScore('Norske kroner (NOK) NOK', 'nok')).toBe(1)
+    expect(pickerScore('America/Los Angeles America/Los_Angeles', 'los angeles')).toBeGreaterThan(0)
+  })
+})
+
+describe('the language', () => {
+  it('starts from the browser, and a detected country suggests its own', () => {
+    expect(
+      initialDraft({ timeZone: 'UTC', languages: ['de'], uiLocale: 'de' }).languageSource
+    ).toBe('browser')
+    expect(frenchWorkshop()).toMatchObject({ locale: 'fr', languageSource: 'country' })
+  })
+
+  it('follows a country the owner picks while they have not picked a language', () => {
+    const norwegianPc = initialDraft({ timeZone: 'Europe/Oslo', languages: ['nb'], uiLocale: 'nb' })
+    expect(withCountry(norwegianPc, 'GB', 'nb')).toMatchObject({
+      locale: 'en',
+      languageSource: 'country',
+      currencyCode: 'GBP',
+    })
+  })
+
+  it('suggests English where the app does not ship the country language', () => {
+    const norwegianPc = initialDraft({ timeZone: 'Europe/Oslo', languages: ['nb'], uiLocale: 'nb' })
+    expect(withCountry(norwegianPc, 'SE', 'nb')).toMatchObject({
+      locale: 'en',
+      currencyCode: 'SEK',
+    })
+    expect(withCountry(norwegianPc, 'JP', 'nb').locale).toBe('en')
+  })
+
+  it('keeps a language the owner picked, whatever country follows', () => {
+    const picked = withLanguage(
+      initialDraft({ timeZone: 'Europe/Oslo', languages: ['nb'], uiLocale: 'nb' }),
+      'nb'
+    )
+    expect(withCountry(picked, 'ES', 'nb')).toMatchObject({
+      country: 'ES',
+      locale: 'nb',
+      languageSource: 'chosen',
+      currencyCode: 'EUR',
+    })
+  })
+
+  it('uses a picked language among those a country speaks', () => {
+    const picked = withLanguage(
+      initialDraft({ timeZone: 'Europe/Oslo', languages: ['nb'], uiLocale: 'nb' }),
+      'nl'
+    )
+    expect(withCountry(picked, 'BE', 'en-US')).toMatchObject({ locale: 'nl', taxLabel: 'BTW' })
+  })
+})
+
+describe('one language, and customers on another only when asked', () => {
+  const norwegianPc = () =>
+    initialDraft({ timeZone: 'Europe/Oslo', languages: ['nb'], uiLocale: 'nb' })
+
+  it('gives everything the owner language where the country speaks it', () => {
+    expect(norwegianPc()).toMatchObject({ locale: 'nb', customerLanguageSeparate: false })
+  })
+
+  it('opens the customer language by itself where the detected country speaks another', () => {
+    expect(frenchWorkshop()).toMatchObject({ locale: 'fr', customerLanguageSeparate: true })
+  })
+
+  it('keeps a separate customer language when the owner changes their own', () => {
+    expect(withLanguage(frenchWorkshop(), 'de')).toMatchObject({
+      locale: 'fr',
+      customerLanguageSeparate: true,
+      languageSource: 'chosen',
+    })
+  })
+
+  it('moves customers with the owner while they share it', () => {
+    expect(withLanguage(norwegianPc(), 'de').locale).toBe('de')
+  })
+
+  it('puts customers back on the owner language', () => {
+    expect(withSameLanguage(frenchWorkshop(), 'en')).toMatchObject({
+      locale: 'en',
+      customerLanguageSeparate: false,
+    })
+  })
+
+  it('keeps a picked customer language when the country changes', () => {
+    const picked = withCustomerLanguage(norwegianPc(), 'de')
+    expect(withCountry(picked, 'ES', 'nb')).toMatchObject({
+      locale: 'de',
+      customerLanguageSeparate: true,
+      currencyCode: 'EUR',
+    })
+  })
+
+  it('folds a separate language away when a country suggests one for everything', () => {
+    expect(withCountry(frenchWorkshop(), 'GB', 'en-US')).toMatchObject({
+      locale: 'en',
+      customerLanguageSeparate: false,
+    })
+  })
+})
+
+describe('the time zone', () => {
+  it('moves to the picked country unless the browser is already there', () => {
+    const norwegianPc = initialDraft({ timeZone: 'Europe/Oslo', languages: ['nb'], uiLocale: 'nb' })
+    expect(norwegianPc.timezone).toBe('Europe/Oslo')
+    expect(withCountry(norwegianPc, 'IE', 'nb').timezone).toBe('Europe/Dublin')
+    expect(withCountry(norwegianPc, 'NO', 'nb').timezone).toBe('Europe/Oslo')
+  })
+})
+
+describe('the starter template', () => {
+  it('gives a new workshop the Compact template for invoices and quotes', () => {
+    const rows = starterDesignSettings()
+    for (const prefix of ['invoice', 'quote']) {
+      expect(rows[`${prefix}.headerStyle`]).toBe('compact')
+      expect(rows[`${prefix}.activeDesign`]).toBe('preset:compact')
+      const layout = JSON.parse(rows[`${prefix}.layoutConfig`])
+      expect(layout.version).toBe(3)
+      expect(layout.document).toMatchObject({ fontSize: 9, margin: 30 })
+    }
+  })
+
+  it('prints the title, the number and the dates on the invoices of a new workshop', () => {
+    for (const prefix of ['invoice', 'quote']) {
+      const layout = JSON.parse(starterDesignSettings()[`${prefix}.layoutConfig`])
+      const title = layout.sections.find((s: { id: string }) => s.id === 'document_title')
+      expect(title?.visible).toBe(true)
+    }
+  })
+
+  it('is a layout the schema accepts, every section accounted for', () => {
+    const layout = starterLayout()
+    expect(layout.sections.find((s) => s.id === 'customer')).toMatchObject({
+      visible: true,
+      boxed: false,
+    })
+    expect(layout.sections.find((s) => s.id === 'findings')?.visible).toBe(false)
+  })
+
+  it('is what the preview draws', () => {
+    const spec = buildInvoicePrintSpec(
+      previewInvoiceInput(frenchWorkshop(), invoiceLabels(frPdf, 'invoice'), fr.setup.sample)
+    )
+    expect(spec.page.fontSize).toBe(9)
+    expect(spec.page.margin.left).toBe(30)
   })
 })

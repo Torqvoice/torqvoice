@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Set up your workshop",
       "subtitle": "Four short steps, so your first invoice comes out right. You can change all of it later in Settings.",
+      "language": "Language",
+      "languageBoth": "Your screens and your customers' invoices, quotes and emails use it.",
+      "languageFromCountry": "Suggested for {country}. Your screens and your customers' invoices, quotes and emails use it.",
+      "languageMissing": "Torqvoice is not available in {language} yet, so English is suggested for {country}. Pick another language if you prefer.",
+      "languageScreensOnly": "Used on your screens.",
+      "customerLanguageDifferent": "Use a different language for customers",
+      "customerLanguageSame": "Same as mine ({language})",
+      "customerLanguageFromCountry": "Suggested for {country}.",
       "name": "Workshop name",
       "namePlaceholder": "My Auto Workshop",
       "kindLegend": "What do you mostly work on?",
@@ -128,7 +136,8 @@
       "countryDetected": "Found from your time zone, {zone}. The next step suggests what is usual in {country}, and you confirm each one.",
       "countryChosen": "The next step suggests what is usual in {country}, and you confirm each one.",
       "countryMissing": "Choose the country, and the next step suggests its language, currency and date format.",
-      "skip": "Use the suggestions and skip to Ready"
+      "skip": "Use the suggestions and skip to Ready",
+      "nameMissing": "Give the workshop a name of at least 2 characters."
     },
     "region": {
       "title": "Language and region",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Invoices, quotes, work orders and emails are written in it, whoever in the workshop prints or sends them.",
       "languageSearch": "Search languages",
       "noLanguage": "No language found",
-      "ownScreens": "Your own screens stay in {language}.",
-      "ownScreensHint": "Each person picks their screen language in their user menu. It never changes what customers get.",
       "defaults": "Regional defaults",
       "change": "Change",
       "done": "Done",
@@ -174,8 +181,7 @@
       "phonePrefix": "Country code",
       "phoneHint": "Added to customer numbers typed without a country code, like +44.",
       "phoneInvalid": "Use + and digits, like +44.",
-      "forceTitle": "Show the customer portal and shared links in {language} too",
-      "forceHint": "Off: a customer who opens a link reads it in their own browser's language. Downloaded and emailed documents are always in {language}."
+      "later": "You can change these later in <b>{localization}</b>. Units and engine size are in <b>{workshop}</b>."
     },
     "tax": {
       "title": "Taxes on your invoices",
@@ -196,9 +202,10 @@
       "including": "Including tax",
       "includingExample": "You type {total}. The customer pays {total}, of which {tax} is {label}.",
       "noTax": "No tax line is printed, and the total is what you typed.",
-      "skippedHint": "Skipped for now, so no tax is added. Choose Yes to set it up here, or later in Settings, Tax.",
-      "advanced": "Two taxes on one invoice, like GST and QST, or tax on parts only? Set that up in Settings, Tax, once the workshop is open.",
-      "skip": "Skip for now"
+      "skippedHint": "Skipped for now, so no tax is added. Choose Yes to set it up here.",
+      "later": "You can change this later in <b>{tax}</b>. That is also where you set up two taxes on one invoice, like GST and QST, or tax on parts only.",
+      "skip": "Skip for now",
+      "rateMissing": "Type your tax rate, or choose No if you do not charge tax."
     },
     "ready": {
       "title": "Ready to open {name}",
@@ -228,7 +235,8 @@
       "label": "Invoice preview",
       "first": "Your first invoice, as a customer gets it",
       "live": "Changes as you choose",
-      "loading": "Drawing the preview"
+      "loading": "Drawing the preview",
+      "enlarge": "Show at full size"
     },
     "sample": {
       "jobTitle": "Oil change and inspection",
@@ -237,7 +245,13 @@
       "customerAddress": "12 Station Road, Riverside",
       "laborLine": "Oil change and inspection",
       "partLine": "Oil filter",
-      "workshopName": "Your workshop"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Engine oil 5W-30",
+      "part3": "Air filter",
+      "part4": "Wiper blades",
+      "labor2": "Air filter replacement",
+      "labor3": "Wiper blade replacement",
+      "labor4": "Brake check"
     }
   }
 }

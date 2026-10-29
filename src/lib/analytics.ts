@@ -29,8 +29,25 @@ export type AnalyticsEvent =
   | 'account:sign_up'
   /** The onboarding form made the person's first workshop, with or without sample data. */
   | 'workshop:create'
-  /** A setup step was finished or skipped; `step` and `action` say which, to measure where people stop. */
+  /** The guided setup opened, with what the browser suggested: country, languages, time zone. */
+  | 'workshop:setup_start'
+  /**
+   * The setup moved between steps: `action` is continue, skip, back or jump
+   * (the step bar or an Edit link), with the seconds spent on the step left.
+   */
   | 'workshop:setup_step'
+  /** Continue pressed while the step was incomplete; `reason` names what was missing. */
+  | 'workshop:setup_blocked'
+  /** The language changed: `via` the language field, a country, or the customer language. */
+  | 'workshop:setup_language_change'
+  /** The owner picked a country, replacing the detected one or another pick. */
+  | 'workshop:setup_country_change'
+  /** A suggested regional value opened for editing; `field` says which. */
+  | 'workshop:setup_suggestion_edit'
+  /** The invoice preview opened at full size. */
+  | 'workshop:setup_preview_open'
+  /** Create workshop failed; the error dialog opened. */
+  | 'workshop:setup_create_fail'
   /** A customer saved from the customer form. */
   | 'customer:create'
   /** An invoice, quote or inspection emailed to the customer. */
@@ -45,6 +62,7 @@ type Properties = Record<string, string | number | boolean | null>
 type Pending =
   | { kind: 'capture'; event: AnalyticsEvent; properties?: Properties }
   | { kind: 'register'; properties: Properties }
+  | { kind: 'unregister'; names: string[] }
   | { kind: 'identify'; userId: string; organizationId: string }
   | { kind: 'reset' }
 
@@ -72,6 +90,12 @@ export function track(event: AnalyticsEvent, properties?: Properties): void {
 export function registerAnalyticsProperties(properties: Properties): void {
   if (ready) posthog.register(properties)
   else hold({ kind: 'register', properties })
+}
+
+/** Stops attaching properties registered with registerAnalyticsProperties. */
+export function unregisterAnalyticsProperties(names: string[]): void {
+  if (ready) for (const name of names) posthog.unregister(name)
+  else hold({ kind: 'unregister', names })
 }
 
 /**
@@ -105,6 +129,7 @@ export function analyticsStarted(): void {
   ready = true
   for (const item of pending.splice(0)) {
     if (item.kind === 'register') posthog.register(item.properties)
+    else if (item.kind === 'unregister') for (const name of item.names) posthog.unregister(name)
     else if (item.kind === 'identify') sendIdentify(item.userId, item.organizationId)
     else if (item.kind === 'reset') posthog.reset()
     else posthog.capture(item.event, item.properties)

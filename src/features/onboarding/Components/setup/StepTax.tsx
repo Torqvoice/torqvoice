@@ -6,22 +6,28 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { parseTaxRate, type SetupDraft } from '../../Lib/setupDraft'
+import { LaterInSettings, settingsPathTag, useSettingsPath } from './LaterInSettings'
 
 export function StepTax({
   draft,
+  showErrors,
   countryName,
   money,
   onChange,
 }: {
   draft: SetupDraft
+  /** Continue was pressed with the rate missing: say so. */
+  showErrors: boolean
   countryName: (code: string) => string
   /** An amount written in the chosen currency. */
   money: (value: number) => string
   onChange: (patch: Partial<SetupDraft>) => void
 }) {
   const t = useTranslations('onboarding.setup.tax')
+  const settingsPath = useSettingsPath()
   const charges = draft.taxChoice === 'yes'
   const rate = parseTaxRate(draft.taxRate)
+  const rateMissing = charges && showErrors && draft.taxRate.trim() === ''
   const rateInvalid = charges && draft.taxRate.trim() !== '' && rate === null
   const label = draft.taxLabel.trim() || t('namePlaceholder')
   const shownRate = rate ?? 0
@@ -80,7 +86,7 @@ export function StepTax({
                   inputMode="decimal"
                   value={draft.taxRate}
                   onChange={(e) => onChange({ taxRate: e.target.value })}
-                  aria-invalid={rateInvalid}
+                  aria-invalid={rateInvalid || rateMissing}
                   aria-describedby="taxRateHint"
                   className="h-11 bg-background pr-9 text-[15px]"
                 />
@@ -95,10 +101,10 @@ export function StepTax({
                 id="taxRateHint"
                 className={cn(
                   'text-[12.5px] leading-relaxed',
-                  rateInvalid ? 'text-destructive' : 'text-muted-foreground'
+                  rateInvalid || rateMissing ? 'text-destructive' : 'text-muted-foreground'
                 )}
               >
-                {rateInvalid ? t('rateInvalid') : t('rateHint')}
+                {rateInvalid ? t('rateInvalid') : rateMissing ? t('rateMissing') : t('rateHint')}
               </p>
             </div>
             <div className="flex flex-col gap-2">
@@ -169,14 +175,16 @@ export function StepTax({
               })}
             </div>
           </fieldset>
-
-          <p className="text-[13px] leading-relaxed text-muted-foreground">{t('advanced')}</p>
         </>
       ) : (
         <p className="rounded-xl border bg-background p-4 text-[13.5px] leading-relaxed text-muted-foreground">
           {draft.taxChoice === 'skipped' ? t('skippedHint') : t('noTax')}
         </p>
       )}
+
+      <LaterInSettings>
+        {t.rich('later', { tax: settingsPath('tax'), b: settingsPathTag })}
+      </LaterInSettings>
     </div>
   )
 }

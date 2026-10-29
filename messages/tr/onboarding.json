@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Atölyenizi kurun",
       "subtitle": "İlk faturanızın doğru çıkması için dört kısa adım. Hepsini daha sonra Ayarlar'dan değiştirebilirsiniz.",
+      "language": "Dil",
+      "languageBoth": "Ekranlarınız ve müşterilerinize giden faturalar, teklifler ve e-postalar bu dili kullanır.",
+      "languageFromCountry": "{country} için önerildi. Ekranlarınız ve müşterilerinize giden faturalar, teklifler ve e-postalar bu dili kullanır.",
+      "languageMissing": "Torqvoice henüz {language} olarak sunulmuyor, bu yüzden {country} için İngilizce önerildi. İsterseniz başka bir dil seçin.",
+      "languageScreensOnly": "Ekranlarınızda kullanılır.",
+      "customerLanguageDifferent": "Müşteriler için farklı bir dil kullan",
+      "customerLanguageSame": "Benimkiyle aynı ({language})",
+      "customerLanguageFromCountry": "{country} için önerildi.",
       "name": "Atölye adı",
       "namePlaceholder": "Benim Atölyem",
       "kindLegend": "En çok ne üzerinde çalışıyorsunuz?",
@@ -128,7 +136,8 @@
       "countryDetected": "Saat diliminizden bulundu, {zone}. Sonraki adım {country} için olağan olanı önerir ve siz her birini onaylarsınız.",
       "countryChosen": "Sonraki adım {country} için olağan olanı önerir ve siz her birini onaylarsınız.",
       "countryMissing": "Ülkeyi seçin, sonraki adım dilini, para birimini ve tarih biçimini önersin.",
-      "skip": "Önerileri kullan ve Hazır adımına geç"
+      "skip": "Önerileri kullan ve Hazır adımına geç",
+      "nameMissing": "Atölyeye en az 2 karakterlik bir ad verin."
     },
     "region": {
       "title": "Dil ve bölge",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Faturalar, teklifler, iş emirleri ve e-postalar, atölyede kim yazdırırsa ya da gönderirse göndersin bu dilde yazılır.",
       "languageSearch": "Dil ara",
       "noLanguage": "Dil bulunamadı",
-      "ownScreens": "Kendi ekranlarınız {language} olarak kalır.",
-      "ownScreensHint": "Herkes ekran dilini kendi kullanıcı menüsünden seçer. Bu, müşterilerin aldığını asla değiştirmez.",
       "defaults": "Bölgesel varsayılanlar",
       "change": "Değiştir",
       "done": "Tamam",
@@ -174,8 +181,7 @@
       "phonePrefix": "Ülke kodu",
       "phoneHint": "Ülke kodu olmadan yazılan müşteri numaralarına eklenir, örneğin +90.",
       "phoneInvalid": "+ ve rakam kullanın, örneğin +90.",
-      "forceTitle": "Müşteri portalını ve paylaşılan bağlantıları da {language} göster",
-      "forceHint": "Kapalı: bağlantıyı açan müşteri onu kendi tarayıcısının dilinde okur. İndirilen ve e-postayla gönderilen belgeler her zaman {language} olur."
+      "later": "Bunları daha sonra <b>{localization}</b> bölümünden değiştirebilirsiniz. Birimler ve motor hacmi <b>{workshop}</b> bölümündedir."
     },
     "tax": {
       "title": "Faturalarınızdaki vergiler",
@@ -196,9 +202,10 @@
       "including": "Vergi dahil",
       "includingExample": "{total} yazarsınız. Müşteri {total} öder, bunun {tax} kadarı {label}.",
       "noTax": "Vergi satırı basılmaz ve toplam, yazdığınız tutardır.",
-      "skippedHint": "Şimdilik atlandı, bu yüzden vergi eklenmiyor. Burada ayarlamak için Evet'i seçin ya da daha sonra Ayarlar, Vergi bölümünden ayarlayın.",
-      "advanced": "Bir faturada GST ve QST gibi iki vergi mi, yoksa yalnızca parçalarda vergi mi? Atölye açıldığında Ayarlar, Vergi bölümünden ayarlayın.",
-      "skip": "Şimdilik atla"
+      "skippedHint": "Şimdilik atlandı, bu yüzden vergi eklenmiyor. Burada ayarlamak için Evet'i seçin.",
+      "later": "Bunu daha sonra <b>{tax}</b> bölümünden değiştirebilirsiniz. Bir faturada GST ve QST gibi iki vergi ya da yalnızca parçalarda vergi de orada ayarlanır.",
+      "skip": "Şimdilik atla",
+      "rateMissing": "Vergi oranınızı yazın veya vergi almıyorsanız Hayır'ı seçin."
     },
     "ready": {
       "title": "{name} açılmaya hazır",
@@ -228,7 +235,8 @@
       "label": "Fatura önizlemesi",
       "first": "İlk faturanız, müşterinin aldığı haliyle",
       "live": "Seçimlerinize göre değişir",
-      "loading": "Önizleme çiziliyor"
+      "loading": "Önizleme çiziliyor",
+      "enlarge": "Tam boyutta göster"
     },
     "sample": {
       "jobTitle": "Yağ değişimi ve kontrol",
@@ -237,7 +245,13 @@
       "customerAddress": "İstasyon Caddesi 12, Kadıköy, İstanbul",
       "laborLine": "Yağ değişimi ve kontrol",
       "partLine": "Yağ filtresi",
-      "workshopName": "Atölyeniz"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Motor yağı 5W-30",
+      "part3": "Hava filtresi",
+      "part4": "Silecek lastikleri",
+      "labor2": "Hava filtresi değişimi",
+      "labor3": "Silecek lastiği değişimi",
+      "labor4": "Fren kontrolü"
     }
   }
 }

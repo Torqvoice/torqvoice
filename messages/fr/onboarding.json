@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Configurez votre atelier",
       "subtitle": "Quatre courtes étapes, pour que votre première facture soit juste. Vous pourrez tout modifier plus tard dans les Paramètres.",
+      "language": "Langue",
+      "languageBoth": "Vos écrans et les factures, devis et e-mails de vos clients l'utilisent.",
+      "languageFromCountry": "Suggérée pour {country}. Vos écrans et les factures, devis et e-mails de vos clients l'utilisent.",
+      "languageMissing": "Torqvoice n'est pas encore disponible en {language}, l'anglais est donc suggéré pour {country}. Choisissez une autre langue si vous préférez.",
+      "languageScreensOnly": "Utilisée sur vos écrans.",
+      "customerLanguageDifferent": "Utiliser une autre langue pour les clients",
+      "customerLanguageSame": "Comme la mienne ({language})",
+      "customerLanguageFromCountry": "Suggérée pour {country}.",
       "name": "Nom de l'atelier",
       "namePlaceholder": "Mon garage",
       "kindLegend": "Sur quoi travaillez-vous surtout ?",
@@ -128,7 +136,8 @@
       "countryDetected": "Trouvé grâce à votre fuseau horaire, {zone}. L'étape suivante propose ce qui est courant en {country}, et vous confirmez chaque choix.",
       "countryChosen": "L'étape suivante propose ce qui est courant en {country}, et vous confirmez chaque choix.",
       "countryMissing": "Choisissez le pays, et l'étape suivante propose sa langue, sa devise et son format de date.",
-      "skip": "Utiliser les suggestions et passer à Prêt"
+      "skip": "Utiliser les suggestions et passer à Prêt",
+      "nameMissing": "Donnez à l'atelier un nom d'au moins 2 caractères."
     },
     "region": {
       "title": "Langue et région",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Les factures, devis, ordres de travail et e-mails sont rédigés dans cette langue, quelle que soit la personne de l'atelier qui les imprime ou les envoie.",
       "languageSearch": "Rechercher une langue",
       "noLanguage": "Aucune langue trouvée",
-      "ownScreens": "Vos propres écrans restent en {language}.",
-      "ownScreensHint": "Chacun choisit la langue de ses écrans dans son menu utilisateur. Cela ne change jamais ce que reçoivent les clients.",
       "defaults": "Réglages régionaux",
       "change": "Modifier",
       "done": "Terminé",
@@ -174,8 +181,7 @@
       "phonePrefix": "Indicatif pays",
       "phoneHint": "Ajouté aux numéros des clients saisis sans indicatif pays, comme +33.",
       "phoneInvalid": "Utilisez + et des chiffres, comme +33.",
-      "forceTitle": "Afficher aussi le portail client et les liens partagés en {language}",
-      "forceHint": "Désactivé : un client qui ouvre un lien le lit dans la langue de son navigateur. Les documents téléchargés et envoyés par e-mail sont toujours en {language}."
+      "later": "Vous pourrez les modifier plus tard dans <b>{localization}</b>. Les unités et la cylindrée se trouvent dans <b>{workshop}</b>."
     },
     "tax": {
       "title": "Taxes sur vos factures",
@@ -196,9 +202,10 @@
       "including": "Taxe comprise",
       "includingExample": "Vous saisissez {total}. Le client paie {total}, dont {tax} de {label}.",
       "noTax": "Aucune ligne de taxe n'est imprimée, et le total est ce que vous avez saisi.",
-      "skippedHint": "Passé pour l'instant : aucune taxe n'est ajoutée. Choisissez Oui pour la configurer ici, ou plus tard dans Paramètres, Taxe.",
-      "advanced": "Deux taxes sur une facture, comme la TPS et la TVQ, ou une taxe sur les pièces seulement ? Configurez-le dans Paramètres, Taxe, une fois l'atelier ouvert.",
-      "skip": "Passer pour l'instant"
+      "skippedHint": "Passé pour l'instant : aucune taxe n'est ajoutée. Choisissez Oui pour la configurer ici.",
+      "later": "Vous pourrez le modifier plus tard dans <b>{tax}</b>. C'est aussi là que vous configurez deux taxes sur une facture, comme la TPS et la TVQ, ou une taxe sur les pièces seulement.",
+      "skip": "Passer pour l'instant",
+      "rateMissing": "Saisissez votre taux de taxe, ou choisissez Non si vous ne facturez pas de taxe."
     },
     "ready": {
       "title": "Prêt à ouvrir {name}",
@@ -228,7 +235,8 @@
       "label": "Aperçu de la facture",
       "first": "Votre première facture, telle qu'un client la reçoit",
       "live": "Change selon vos choix",
-      "loading": "Préparation de l'aperçu"
+      "loading": "Préparation de l'aperçu",
+      "enlarge": "Afficher en taille réelle"
     },
     "sample": {
       "jobTitle": "Vidange et contrôle",
@@ -237,7 +245,13 @@
       "customerAddress": "12 rue des Lilas, 69003 Lyon",
       "laborLine": "Vidange et contrôle",
       "partLine": "Filtre à huile",
-      "workshopName": "Votre atelier"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Huile moteur 5W-30",
+      "part3": "Filtre à air",
+      "part4": "Balais d'essuie-glace",
+      "labor2": "Remplacement du filtre à air",
+      "labor3": "Remplacement des balais d'essuie-glace",
+      "labor4": "Contrôle des freins"
     }
   }
 }

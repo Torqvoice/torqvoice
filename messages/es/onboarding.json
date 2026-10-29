@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Configura tu taller",
       "subtitle": "Cuatro pasos cortos, para que tu primera factura salga bien. Podrás cambiarlo todo más tarde en Configuración.",
+      "language": "Idioma",
+      "languageBoth": "Tus pantallas y las facturas, presupuestos y correos de tus clientes lo usan.",
+      "languageFromCountry": "Sugerido para {country}. Tus pantallas y las facturas, presupuestos y correos de tus clientes lo usan.",
+      "languageMissing": "Torqvoice todavía no está disponible en {language}, así que se sugiere el inglés para {country}. Elige otro idioma si lo prefieres.",
+      "languageScreensOnly": "Se usa en tus pantallas.",
+      "customerLanguageDifferent": "Usar otro idioma para los clientes",
+      "customerLanguageSame": "Igual que el mío ({language})",
+      "customerLanguageFromCountry": "Sugerido para {country}.",
       "name": "Nombre del taller",
       "namePlaceholder": "Mi taller",
       "kindLegend": "¿En qué trabajas sobre todo?",
@@ -128,7 +136,8 @@
       "countryDetected": "Detectado por tu zona horaria, {zone}. El siguiente paso sugiere lo habitual en {country}, y tú confirmas cada opción.",
       "countryChosen": "El siguiente paso sugiere lo habitual en {country}, y tú confirmas cada opción.",
       "countryMissing": "Elige el país y el siguiente paso sugerirá su idioma, moneda y formato de fecha.",
-      "skip": "Usar las sugerencias e ir a Listo"
+      "skip": "Usar las sugerencias e ir a Listo",
+      "nameMissing": "Pon al taller un nombre de al menos 2 caracteres."
     },
     "region": {
       "title": "Idioma y región",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Las facturas, presupuestos, órdenes de trabajo y correos se escriben en este idioma, sea quien sea del taller quien los imprima o envíe.",
       "languageSearch": "Buscar idiomas",
       "noLanguage": "No se encontró el idioma",
-      "ownScreens": "Tus propias pantallas siguen en {language}.",
-      "ownScreensHint": "Cada persona elige el idioma de sus pantallas en su menú de usuario. Nunca cambia lo que reciben los clientes.",
       "defaults": "Ajustes regionales",
       "change": "Cambiar",
       "done": "Listo",
@@ -174,8 +181,7 @@
       "phonePrefix": "Prefijo del país",
       "phoneHint": "Se añade a los números de clientes escritos sin prefijo, como +34.",
       "phoneInvalid": "Usa + y dígitos, como +34.",
-      "forceTitle": "Mostrar también el portal del cliente y los enlaces compartidos en {language}",
-      "forceHint": "Desactivado: un cliente que abre un enlace lo lee en el idioma de su navegador. Los documentos descargados y enviados por correo siempre están en {language}."
+      "later": "Puedes cambiarlos más adelante en <b>{localization}</b>. Las unidades y la cilindrada están en <b>{workshop}</b>."
     },
     "tax": {
       "title": "Impuestos en tus facturas",
@@ -196,9 +202,10 @@
       "including": "Con impuestos",
       "includingExample": "Escribes {total}. El cliente paga {total}, de los que {tax} son {label}.",
       "noTax": "No se imprime ninguna línea de impuesto y el total es lo que escribiste.",
-      "skippedHint": "Omitido por ahora, así que no se añade ningún impuesto. Elige Sí para configurarlo aquí, o más tarde en Configuración, Impuestos.",
-      "advanced": "¿Dos impuestos en una factura, como GST y QST, o impuesto solo en las piezas? Configúralo en Configuración, Impuestos, cuando el taller esté abierto.",
-      "skip": "Omitir por ahora"
+      "skippedHint": "Omitido por ahora, así que no se añade ningún impuesto. Elige Sí para configurarlo aquí.",
+      "later": "Puedes cambiarlo más adelante en <b>{tax}</b>. Ahí también configuras dos impuestos en una factura, como GST y QST, o impuesto solo en las piezas.",
+      "skip": "Omitir por ahora",
+      "rateMissing": "Escribe tu tipo de impuesto, o elige No si no cobras impuestos."
     },
     "ready": {
       "title": "Listo para abrir {name}",
@@ -228,7 +235,8 @@
       "label": "Vista previa de la factura",
       "first": "Tu primera factura, tal como la recibe un cliente",
       "live": "Cambia según lo que elijas",
-      "loading": "Dibujando la vista previa"
+      "loading": "Dibujando la vista previa",
+      "enlarge": "Ver a tamaño completo"
     },
     "sample": {
       "jobTitle": "Cambio de aceite y revisión",
@@ -237,7 +245,13 @@
       "customerAddress": "Calle Mayor 12, 28013 Madrid",
       "laborLine": "Cambio de aceite y revisión",
       "partLine": "Filtro de aceite",
-      "workshopName": "Tu taller"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Aceite de motor 5W-30",
+      "part3": "Filtro de aire",
+      "part4": "Escobillas limpiaparabrisas",
+      "labor2": "Cambio del filtro de aire",
+      "labor3": "Cambio de escobillas",
+      "labor4": "Revisión de frenos"
     }
   }
 }

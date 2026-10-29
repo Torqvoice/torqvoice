@@ -16,6 +16,7 @@ import { CHECKLIST_DISMISSED_KEY, SAMPLE_DATA_IDS_KEY } from '../Lib/onboardingK
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { saveInitialWorkshopLocale } from '@/features/settings/Lib/initialWorkshopLocale'
 import { setupSettings } from '../Lib/setupSettings'
+import { starterDesignSettings } from '../Lib/starterDesign'
 import { safeTimeZone } from '@/lib/timezone'
 import type { ActionResult } from '@/lib/with-auth'
 import { organizationAllowance, SINGLE_WORKSHOP_MESSAGE } from '@/lib/features'
@@ -76,9 +77,12 @@ export async function createOnboardingOrg(
     // What the owner chose, step by step. Kept apart from the first-run
     // content below, so a hiccup in one never skips the other.
     try {
-      const rows = data.setup
-        ? setupSettings(data.setup, data.timeZone)
-        : timeZoneOnly(data.timeZone)
+      // A new workshop starts on the starter template; its own setup wins
+      // should the two ever name the same key.
+      const rows = {
+        ...starterDesignSettings(),
+        ...(data.setup ? setupSettings(data.setup, data.timeZone) : timeZoneOnly(data.timeZone)),
+      }
       await db.appSetting.createMany({
         data: Object.entries(rows).map(([key, value]) => ({
           organizationId: org.id,

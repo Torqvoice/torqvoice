@@ -3,13 +3,13 @@
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { AuthLogo } from '@/components/auth-logo'
 import { useGlassModal } from '@/components/glass-modal'
 import { Button } from '@/components/ui/button'
-import { defaultLocale, type Locale, locales } from '@/i18n/config'
-import { track } from '@/lib/analytics'
-import { COUNTRY_CODES, detectCountry } from '@/lib/country-defaults'
+import { defaultLocale, type Locale, localeNames, locales } from '@/i18n/config'
+import { registerAnalyticsProperties, track, unregisterAnalyticsProperties } from '@/lib/analytics'
+import { COUNTRY_CODES, countrySearchTerms, detectCountry } from '@/lib/country-defaults'
 import { currencyName, SELECTABLE_CURRENCIES } from '@/lib/currencies'
 import { formatCurrency } from '@/lib/format'
 import { safeRedirectPath } from '@/lib/safe-redirect'
@@ -19,9 +19,12 @@ import {
   type SetupDraft,
   setupPayload,
   taxStepComplete,
-  type WorkKind,
   withCountry,
+  withCustomerLanguage,
   withKind,
+  withLanguage,
+  withSameLanguage,
+  type WorkKind,
 } from '../../Lib/setupDraft'
 import type { PickerOption } from './SearchPicker'
 import { SETUP_STEPS, type SetupStep, SetupStepper } from './SetupStepper'
@@ -30,22 +33,53 @@ import { exampleDate, StepRegion } from './StepRegion'
 import { StepReady } from './StepReady'
 import { StepTax } from './StepTax'
 import { StepWorkshop } from './StepWorkshop'
+import { useScreenLanguage } from './useScreenLanguage'
 
-function browserFacts() {
-  if (typeof window === 'undefined') return { timeZone: 'UTC', languages: [] as string[] }
-  return {
+interface BrowserFacts {
+  timeZone: string
+  languages: string[]
+}
+
+let cachedFacts: BrowserFacts | null = null
+
+/** Where the browser says it is. Read once; the same object every time, as useSyncExternalStore wants. */
+function readBrowserFacts(): BrowserFacts {
+  cachedFacts ??= {
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     languages: [...(navigator.languages ?? [navigator.language])].filter(Boolean),
   }
+  return cachedFacts
 }
+
+const noSubscription = () => () => undefined
 
 /**
  * The guided setup of a new workshop: what it is and where, the language its
  * customers get, its taxes, and a last look. Every regional choice starts
  * from the country and stays editable, beside a preview of the first invoice
  * as it would print. Nothing is saved until Create workshop.
+ *
+ * The first draft comes from the browser's time zone and languages, which the
+ * server cannot know, so the wizard is drawn once the page runs in the
+ * browser. Drawing it on the server too would show an empty country there
+ * and a detected one in the browser, and React would refuse to hydrate.
  */
 export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
+  const facts = useSyncExternalStore(noSubscription, readBrowserFacts, () => null)
+  if (!facts) {
+    return (
+      <div
+        className="relative z-10 mx-auto flex min-h-[60vh] w-full max-w-[1120px] items-center justify-center"
+        aria-busy="true"
+      >
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+      </div>
+    )
+  }
+  return <SetupWizardSteps redirectTo={redirectTo} facts={facts} />
+}
+
+function SetupWizardSteps({ redirectTo, facts }: { redirectTo?: string; facts: BrowserFacts }) {
   const t = useTranslations('onboarding.setup')
   const tRegion = useTranslations('onboarding.setup.region')
   const tForm = useTranslations('onboarding.form')
@@ -58,12 +92,12 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
   const router = useRouter()
   const modal = useGlassModal()
 
-  const [facts] = useState(browserFacts)
   const [draft, setDraft] = useState<SetupDraft>(() =>
     initialDraft({ timeZone: facts.timeZone, languages: facts.languages, uiLocale })
   )
   // The zone that decided the country, kept to say so on the first step.
-  const [detectedZone] = useState(() => (detectCountry(facts.timeZone, []) ? facts.timeZone : null))
+  const [detectedCountry] = useState(() => detectCountry(facts.timeZone, []))
+  const detectedZone = detectedCountry ? facts.timeZone : null
   const [step, setStep] = useState<SetupStep>('workshop')
   const [reached, setReached] = useState(0)
   const [saving, setSaving] = useState(false)
@@ -72,6 +106,34 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
 
   const patch = useCallback((p: Partial<SetupDraft>) => setDraft((d) => ({ ...d, ...p })), [])
 
+  // Analytics. Every event while the wizard is open carries the step it
+  // happened on, autocaptured rage clicks included, so a stuck step shows.
+  const startedAt = useRef(Date.now())
+  const stepOpenedAt = useRef(Date.now())
+  const countryPicked = useRef(false)
+  const blockedCount = useRef(0)
+  const secondsOnStep = () => Math.round((Date.now() - stepOpenedAt.current) / 1000)
+  // Sent once, as the wizard opens.
+  useEffect(() => {
+    track('workshop:setup_start', {
+      detected_country: draft.country ?? 'none',
+      detected_from: detectedZone ? 'time_zone' : draft.country ? 'browser_language' : 'none',
+      browser_language: facts.languages[0] ?? 'unknown',
+      time_zone: facts.timeZone,
+      screen_language: uiLocale,
+      customer_language: draft.locale,
+    })
+    return () => unregisterAnalyticsProperties(['setup_step'])
+  }, [])
+  useEffect(() => {
+    registerAnalyticsProperties({ setup_step: step })
+    stepOpenedAt.current = Date.now()
+  }, [step])
+
+  // The step whose Continue was pressed while something was missing: its
+  // fields say what, until it is put right.
+  const [blockedStep, setBlockedStep] = useState<SetupStep | null>(null)
+
   const regionNames = useMemo(
     () => new Intl.DisplayNames([uiLocale], { type: 'region' }),
     [uiLocale]
@@ -79,11 +141,75 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
   const countryName = useCallback((code: string) => regionNames.of(code) ?? code, [regionNames])
   const countryOptions: PickerOption[] = useMemo(
     () =>
-      COUNTRY_CODES.map((code) => ({ value: code, label: countryName(code), keywords: code })).sort(
-        (a, b) => a.label.localeCompare(b.label, uiLocale)
-      ),
+      COUNTRY_CODES.map((code) => ({
+        value: code,
+        label: countryName(code),
+        keywords: countrySearchTerms(code),
+      })).sort((a, b) => a.label.localeCompare(b.label, uiLocale)),
     [countryName, uiLocale]
   )
+  // Every language by its own name, found by its English name and by its
+  // name in the language on screen too: "English" on a Norwegian page.
+  const languageOptions: PickerOption[] = useMemo(() => {
+    const inEnglish = new Intl.DisplayNames(['en'], { type: 'language' })
+    const onScreen = new Intl.DisplayNames([uiLocale], { type: 'language' })
+    return locales.map((l) => ({
+      value: l,
+      label: localeNames[l],
+      keywords: `${l} ${inEnglish.of(l) ?? ''} ${onScreen.of(l) ?? ''}`,
+    }))
+  }, [uiLocale])
+
+  const screens = useScreenLanguage()
+
+  /** The owner's own language: their screens switch to it, and their customers get it. */
+  const chooseLanguage = (locale: Locale) => {
+    track('workshop:setup_language_change', {
+      via: 'language_field',
+      from: uiLocale,
+      to: locale,
+      customer_from: draft.locale,
+    })
+    setDraft((d) => withLanguage(d, locale))
+    if (locale !== uiLocale) screens.switchTo(locale)
+  }
+
+  /** A language for customers alone, under the owner's. */
+  const chooseCustomerLanguage = (locale: Locale) => {
+    if (locale === draft.locale) return
+    track('workshop:setup_language_change', {
+      via: 'customer_language',
+      from: draft.locale,
+      to: locale,
+    })
+    setDraft((d) => withCustomerLanguage(d, locale))
+  }
+
+  /**
+   * A country the owner picked fills in its region, and its language too
+   * unless they picked one themselves; their screens then follow it.
+   */
+  const chooseCountry = (country: string) => {
+    if (country === draft.country) return
+    const next = withCountry(draft, country, facts.languages[0])
+    track('workshop:setup_country_change', {
+      from: draft.country ?? 'none',
+      to: country,
+      replaced: draft.country ? (countryPicked.current ? 'pick' : 'detected') : 'none',
+    })
+    countryPicked.current = true
+    setDraft(next)
+    if (next.languageSource !== 'chosen' && next.locale !== uiLocale) {
+      track('workshop:setup_language_change', {
+        via: 'country',
+        from: uiLocale,
+        to: next.locale,
+        customer_from: draft.locale,
+      })
+      screens.switchTo(next.locale)
+    }
+  }
+
   const currencyOptions: PickerOption[] = useMemo(
     () =>
       SELECTABLE_CURRENCIES.map((c) => ({
@@ -136,7 +262,15 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
   const go = (next: SetupStep) => {
     const index = SETUP_STEPS.indexOf(next)
     setReached((r) => Math.max(r, index))
+    setBlockedStep(null)
     setStep(next)
+  }
+
+  /** The step bar and the Edit links on Ready. */
+  const jump = (next: SetupStep) => {
+    if (next === step) return
+    track('workshop:setup_step', { step, action: 'jump', to: next, seconds: secondsOnStep() })
+    go(next)
   }
 
   const nameValid = draft.workshopName.trim().length >= 2
@@ -151,7 +285,8 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
           : nameValid
 
   const advance = (action: 'continue' | 'skip') => {
-    track('workshop:setup_step', { step, action })
+    const to = action === 'skip' ? 'ready' : (SETUP_STEPS[SETUP_STEPS.indexOf(step) + 1] ?? 'ready')
+    track('workshop:setup_step', { step, action, to, seconds: secondsOnStep() })
     if (step === 'workshop' && action === 'skip') {
       // The suggestions as they stand; the tax is left to Settings.
       patch({ taxChoice: 'skipped' })
@@ -169,18 +304,42 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
 
   const back = () => {
     const previous = SETUP_STEPS[SETUP_STEPS.indexOf(step) - 1]
-    if (previous) setStep(previous)
+    if (!previous) return
+    track('workshop:setup_step', { step, action: 'back', to: previous, seconds: secondsOnStep() })
+    setBlockedStep(null)
+    setStep(previous)
+  }
+
+  /** Continue on an incomplete step: say what is missing, and go to it. */
+  const block = () => {
+    const reason =
+      step === 'workshop'
+        ? 'name'
+        : step === 'region'
+          ? 'phone_prefix'
+          : draft.taxRate.trim() === ''
+            ? 'tax_rate_missing'
+            : 'tax_rate_invalid'
+    blockedCount.current += 1
+    track('workshop:setup_blocked', { step, reason, attempt: blockedCount.current })
+    setBlockedStep(step)
+    const field = step === 'workshop' ? 'workshopName' : step === 'region' ? 'dialCode' : 'taxRate'
+    requestAnimationFrame(() => document.getElementById(field)?.focus())
   }
 
   const create = async () => {
     if (!nameValid) {
+      blockedCount.current += 1
+      track('workshop:setup_blocked', { step, reason: 'name', attempt: blockedCount.current })
       go('workshop')
+      setBlockedStep('workshop')
       return
     }
     setSaving(true)
     try {
       const result = await createOnboardingOrg(setupPayload(draft))
       if (!result.success) {
+        track('workshop:setup_create_fail', { reason: 'refused' })
         modal.open('error', tForm('setupFailed'), result.error || tForm('couldNotCreate'))
         return
       }
@@ -188,12 +347,19 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
         sample_data: draft.loadSampleData,
         country: draft.country ?? 'unknown',
         locale: draft.locale,
+        screen_language: uiLocale,
+        language_source: draft.languageSource,
+        currency: draft.currencyCode,
+        distance: draft.distance,
+        measure: draft.measure,
         kind: draft.kind,
         tax: draft.taxChoice,
+        seconds: Math.round((Date.now() - startedAt.current) / 1000),
       })
       router.push(safeRedirectPath(redirectTo))
       router.refresh()
     } catch {
+      track('workshop:setup_create_fail', { reason: 'error' })
       modal.open('error', tForm('setupFailed'), tForm('unexpectedError'))
     } finally {
       setSaving(false)
@@ -204,6 +370,7 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
     e.preventDefault()
     if (step === 'ready') void create()
     else if (canContinue) advance('continue')
+    else block()
   }
 
   return (
@@ -211,7 +378,7 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* The brand mark, as on the sign-up page: a new workshop has no logo of its own yet. */}
         <AuthLogo alt={tCommon('brandName')} />
-        <SetupStepper current={step} reached={reached} onGo={go} />
+        <SetupStepper current={step} reached={reached} onGo={jump} />
       </div>
 
       <div className="flex flex-wrap items-start gap-8">
@@ -225,21 +392,37 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
             {step === 'workshop' && (
               <StepWorkshop
                 draft={draft}
-                detectedZone={draft.country && detectedZone ? detectedZone : null}
+                showErrors={blockedStep === 'workshop'}
+                uiLocale={uiLocale}
+                switchingScreens={screens.pending}
+                languageOptions={languageOptions}
+                // Only while the country is still the one the clock gave.
+                detectedZone={draft.country === detectedCountry ? detectedZone : null}
                 countryOptions={countryOptions}
                 countryName={countryName}
+                onLanguage={chooseLanguage}
+                onCustomerLanguage={chooseCustomerLanguage}
+                onSeparateLanguage={() => {
+                  track('workshop:setup_suggestion_edit', { field: 'customer_language' })
+                  patch({ customerLanguageSeparate: true })
+                }}
+                onSameLanguage={() => {
+                  track('workshop:setup_language_change', {
+                    via: 'customer_language_same',
+                    from: draft.locale,
+                    to: uiLocale,
+                  })
+                  setDraft((d) => withSameLanguage(d, uiLocale))
+                }}
                 onName={(workshopName) => patch({ workshopName })}
                 onKind={(kind: WorkKind) => setDraft((d) => withKind(d, kind))}
-                onCountry={(country) =>
-                  setDraft((d) => withCountry(d, country, facts.languages[0]))
-                }
+                onCountry={chooseCountry}
               />
             )}
             {step === 'region' && (
               <StepRegion
                 draft={draft}
                 countryName={countryName}
-                uiLocale={uiLocale}
                 currencyOptions={currencyOptions}
                 zoneOptions={zoneOptions}
                 moneyExample={money(1234.56)}
@@ -247,7 +430,13 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
               />
             )}
             {step === 'tax' && (
-              <StepTax draft={draft} countryName={countryName} money={money} onChange={patch} />
+              <StepTax
+                draft={draft}
+                showErrors={blockedStep === 'tax'}
+                countryName={countryName}
+                money={money}
+                onChange={patch}
+              />
             )}
             {step === 'ready' && (
               <StepReady
@@ -255,10 +444,10 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
                 uiLocale={uiLocale}
                 countryName={countryName}
                 currencyLabel={currencyLabel}
-                datesValue={exampleDate(draft.dateFormat, draft.timeFormat)}
+                datesValue={exampleDate(draft.dateFormat, draft.timeFormat, false, draft.timezone)}
                 unitsValue={unitsValue}
                 taxFallbackLabel={tTax('namePlaceholder')}
-                onEdit={go}
+                onEdit={jump}
                 onChange={patch}
               />
             )}
@@ -305,8 +494,10 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
               ) : (
                 <Button
                   type="submit"
-                  className="h-11 w-full px-6 text-[15px] font-semibold sm:w-auto"
-                  disabled={!canContinue}
+                  className="h-11 w-full px-6 text-[15px] font-semibold aria-disabled:opacity-50 sm:w-auto"
+                  // Still pressable when the step is incomplete, so the press can
+                  // say what is missing; it only looks unavailable.
+                  aria-disabled={!canContinue || undefined}
                 >
                   {t('continue')}
                   <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
@@ -316,7 +507,9 @@ export function SetupWizard({ redirectTo }: { redirectTo?: string }) {
           </div>
         </form>
 
-        <div className="w-full min-w-0 flex-[1_1_360px] md:max-w-[440px]">
+        {/* Only beside the form: on a phone or a tablet it would sit below the
+            buttons, a long scroll away from the choices it follows. */}
+        <div className="hidden min-w-0 lg:block lg:max-w-[500px] lg:flex-[1_1_400px] xl:basis-[500px]">
           <SetupPreview
             draft={draft}
             caption={step === 'workshop' ? t('preview.first') : t('preview.live')}

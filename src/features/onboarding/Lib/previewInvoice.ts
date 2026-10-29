@@ -1,6 +1,7 @@
 import type { InvoicePrintInput } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { calculateTotals } from '@/lib/tax'
 import { parseTaxRate, type SetupDraft } from './setupDraft'
+import { starterTemplate } from './starterDesign'
 
 /** The made-up job's prose, in the language customers get. */
 export interface PreviewSample {
@@ -10,11 +11,65 @@ export interface PreviewSample {
   customerAddress: string
   laborLine: string
   partLine: string
+  /** Three more parts after the first, so the sheet looks like a real job. */
+  part2: string
+  part3: string
+  part4: string
+  /** Three more labour lines after the first. */
+  labor2: string
+  labor3: string
+  labor4: string
   workshopName: string
 }
 
-const LABOR = { hours: 1.5, rate: 65 }
-const PART = { quantity: 1, unitPrice: 12.9 }
+const RATE = 65
+
+/** The sample's parts: the oil in the workshop's own measure. */
+function sampleParts(draft: SetupDraft, sample: PreviewSample) {
+  const imperial = draft.measure === 'imperial'
+  const lines = [
+    { partNumber: 'OF-1182', name: sample.partLine, quantity: 1, unit: null, unitPrice: 12.9 },
+    {
+      partNumber: 'OL-5W30',
+      name: sample.part2,
+      quantity: imperial ? 5 : 4.5,
+      unit: imperial ? 'qt' : 'l',
+      unitPrice: imperial ? 13.5 : 14.5,
+    },
+    { partNumber: 'AF-2210', name: sample.part3, quantity: 1, unit: null, unitPrice: 24 },
+    { partNumber: 'WB-650', name: sample.part4, quantity: 2, unit: null, unitPrice: 18.9 },
+  ]
+  return lines
+    .filter((line) => line.name)
+    .map((line) => ({ ...line, total: round(line.quantity * line.unitPrice) }))
+}
+
+function sampleLabor(sample: PreviewSample) {
+  const lines = [
+    { description: sample.laborLine, hours: 1.5 },
+    { description: sample.labor2, hours: 0.3 },
+    { description: sample.labor3, hours: 0.2 },
+    { description: sample.labor4, hours: 0.5 },
+  ]
+  return lines
+    .filter((line) => line.description)
+    .map((line) => ({ ...line, rate: RATE, total: round(line.hours * RATE) }))
+}
+
+function round(value: number): number {
+  return Math.round(value * 100) / 100
+}
+
+/** An address for the sample customer, made from their name: "camille.dubois@example.com". */
+function sampleEmail(name: string): string {
+  const local = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '.')
+    .replace(/^\.+|\.+$/g, '')
+  return `${local || 'customer'}@example.com`
+}
 
 /** The tax the preview charges, as the draft stands. */
 export function previewTax(draft: SetupDraft): { rate: number; inclusive: boolean } {
@@ -33,9 +88,9 @@ export function previewInvoiceInput(
   sample: PreviewSample,
   today: Date = new Date()
 ): InvoicePrintInput {
-  const laborTotal = LABOR.hours * LABOR.rate
-  const partTotal = PART.quantity * PART.unitPrice
-  const subtotal = Math.round((laborTotal + partTotal) * 100) / 100
+  const partItems = sampleParts(draft, sample)
+  const laborItems = sampleLabor(sample)
+  const subtotal = round([...partItems, ...laborItems].reduce((sum, line) => sum + line.total, 0))
   const tax = previewTax(draft)
   const totals = calculateTotals({
     subtotal,
@@ -46,10 +101,11 @@ export function previewInvoiceInput(
   const taxLabel = draft.taxChoice === 'yes' ? draft.taxLabel.trim() : ''
   const due = new Date(today)
   due.setDate(due.getDate() + 14)
+  const dial = draft.dialCode ? `${draft.dialCode} ` : ''
   const customer = {
     name: sample.customerName,
-    email: null,
-    phone: null,
+    email: sampleEmail(sample.customerName),
+    phone: `${dial}412 55 018`,
     address: sample.customerAddress,
     company: null,
   }
@@ -74,18 +130,8 @@ export function previewInvoiceInput(
       totalAmount: totals.totalAmount,
       cost: totals.totalAmount,
       invoiceNumber: '1001',
-      partItems: [
-        {
-          partNumber: null,
-          name: sample.partLine,
-          quantity: PART.quantity,
-          unitPrice: PART.unitPrice,
-          total: partTotal,
-        },
-      ],
-      laborItems: [
-        { description: sample.laborLine, hours: LABOR.hours, rate: LABOR.rate, total: laborTotal },
-      ],
+      partItems,
+      laborItems,
       customer,
       vehicle:
         draft.kind === 'marine'
@@ -121,7 +167,7 @@ export function previewInvoiceInput(
     workshop: {
       name: draft.workshopName.trim() || sample.workshopName,
       address: draft.address.trim(),
-      phone: '',
+      phone: `${dial}22 33 44 55`,
       email: '',
     },
     invoiceSettings: {
@@ -134,5 +180,7 @@ export function previewInvoiceInput(
     // As the PDF routes do: the workshop's own name for its tax.
     labels: taxLabel ? { ...labels, tax: `${taxLabel} ({rate}%)` } : labels,
     locale: draft.locale,
+    // The template the workshop will start on, so the preview is its first invoice.
+    template: starterTemplate(),
   }
 }

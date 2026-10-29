@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Sett opp verkstedet ditt",
       "subtitle": "Fire korte steg, så den første fakturaen blir riktig. Du kan endre alt senere i Innstillinger.",
+      "language": "Språk",
+      "languageBoth": "Skjermene dine og fakturaer, tilbud og e-post til kundene dine bruker det.",
+      "languageFromCountry": "Foreslått for {country}. Skjermene dine og fakturaer, tilbud og e-post til kundene dine bruker det.",
+      "languageMissing": "Torqvoice finnes ikke på {language} ennå, så engelsk er foreslått for {country}. Velg et annet språk om du vil.",
+      "languageScreensOnly": "Brukes på skjermene dine.",
+      "customerLanguageDifferent": "Bruk et annet språk for kundene",
+      "customerLanguageSame": "Samme som mitt ({language})",
+      "customerLanguageFromCountry": "Foreslått for {country}.",
       "name": "Navn på verkstedet",
       "namePlaceholder": "Mitt bilverksted",
       "kindLegend": "Hva jobber du mest med?",
@@ -117,7 +125,7 @@
           "hint": "Motorvolum i cc"
         },
         "marine": {
-          "title": "Båt",
+          "title": "Marine",
           "hint": "Fartøy, skrognummer og motortimer"
         }
       },
@@ -128,7 +136,8 @@
       "countryDetected": "Funnet fra tidssonen din, {zone}. Neste steg foreslår det som er vanlig i {country}, og du bekrefter hvert valg.",
       "countryChosen": "Neste steg foreslår det som er vanlig i {country}, og du bekrefter hvert valg.",
       "countryMissing": "Velg landet, så foreslår neste steg språk, valuta og datoformat.",
-      "skip": "Bruk forslagene og hopp til Klar"
+      "skip": "Bruk forslagene og hopp til Klar",
+      "nameMissing": "Gi verkstedet et navn på minst 2 tegn."
     },
     "region": {
       "title": "Språk og region",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Fakturaer, tilbud, arbeidsordrer og e-post skrives på dette språket, uansett hvem i verkstedet som skriver ut eller sender dem.",
       "languageSearch": "Søk etter språk",
       "noLanguage": "Fant ikke språket",
-      "ownScreens": "Dine egne skjermer forblir på {language}.",
-      "ownScreensHint": "Hver person velger skjermspråk i brukermenyen sin. Det endrer aldri hva kundene får.",
       "defaults": "Regionale standarder",
       "change": "Endre",
       "done": "Ferdig",
@@ -174,8 +181,7 @@
       "phonePrefix": "Landkode",
       "phoneHint": "Legges til kundenumre skrevet uten landkode, som +47.",
       "phoneInvalid": "Bruk + og sifre, som +47.",
-      "forceTitle": "Vis kundeportalen og delte lenker på {language} også",
-      "forceHint": "Av: en kunde som åpner en lenke leser den på nettleserens språk. Nedlastede og e-postede dokumenter er alltid på {language}."
+      "later": "Du kan endre dette senere i <b>{localization}</b>. Enheter og motorstørrelse finner du i <b>{workshop}</b>."
     },
     "tax": {
       "title": "Avgifter på fakturaene dine",
@@ -196,9 +202,10 @@
       "including": "Med avgift",
       "includingExample": "Du skriver {total}. Kunden betaler {total}, hvorav {tax} er {label}.",
       "noTax": "Ingen avgiftslinje skrives ut, og totalen er det du skrev inn.",
-      "skippedHint": "Hoppet over for nå, så ingen avgift legges til. Velg Ja for å sette den opp her, eller senere i Innstillinger, Avgift.",
-      "advanced": "To avgifter på én faktura, som GST og QST, eller avgift bare på deler? Sett det opp i Innstillinger, Avgift, når verkstedet er åpnet.",
-      "skip": "Hopp over for nå"
+      "skippedHint": "Hoppet over for nå, så ingen avgift legges til. Velg Ja for å sette den opp her.",
+      "later": "Du kan endre dette senere i <b>{tax}</b>. Der setter du også opp to avgifter på én faktura, som GST og QST, eller avgift bare på deler.",
+      "skip": "Hopp over for nå",
+      "rateMissing": "Skriv inn avgiftssatsen, eller velg Nei hvis du ikke tar avgift."
     },
     "ready": {
       "title": "Klar til å åpne {name}",
@@ -212,7 +219,7 @@
       "kinds": {
         "cars": "biler og varebiler",
         "motorcycles": "motorsykler",
-        "marine": "båt"
+        "marine": "marine"
       },
       "taxBefore": "{label} {rate} %, priser skrevet uten avgift",
       "taxIncluding": "{label} {rate} %, priser skrevet med avgift",
@@ -228,7 +235,8 @@
       "label": "Forhåndsvisning av faktura",
       "first": "Den første fakturaen din, slik en kunde får den",
       "live": "Endres etter hva du velger",
-      "loading": "Tegner forhåndsvisningen"
+      "loading": "Tegner forhåndsvisningen",
+      "enlarge": "Vis i full størrelse"
     },
     "sample": {
       "jobTitle": "Oljeskift og kontroll",
@@ -237,7 +245,13 @@
       "customerAddress": "Storgata 12, 0155 Oslo",
       "laborLine": "Oljeskift og kontroll",
       "partLine": "Oljefilter",
-      "workshopName": "Verkstedet ditt"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Motorolje 5W-30",
+      "part3": "Luftfilter",
+      "part4": "Vindusviskerblader",
+      "labor2": "Bytte av luftfilter",
+      "labor3": "Bytte av viskerblader",
+      "labor4": "Bremsekontroll"
     }
   }
 }

@@ -17,6 +17,8 @@ export type DateFormatOption = 'dd/MM/yyyy' | 'dd.MM.yyyy' | 'MM/dd/yyyy' | 'yyy
 export interface CountryDefaults {
   /** ISO 3166-1 alpha-2. */
   country: string
+  /** The language the country writes in (BCP 47), shipped by the app or not. */
+  language: string
   /** The app language to write documents in, when we ship the country's language. */
   locale: Locale | undefined
   /** ISO 4217, only when the app offers it. */
@@ -87,6 +89,12 @@ const COUNTRIES: Record<string, [currency: string, dial: string, language: strin
   TR: ['TRY', '90', 'tr'],
   UA: ['UAH', '380', 'uk'],
   XK: ['EUR', '383', 'sq'],
+  AX: ['EUR', '358', 'sv'],
+  GG: ['GBP', '44', 'en'],
+  IM: ['GBP', '44', 'en'],
+  JE: ['GBP', '44', 'en'],
+  SJ: ['NOK', '47', 'nb'],
+  VA: ['EUR', '39', 'it'],
   // Americas
   AR: ['ARS', '54', 'es'],
   BB: ['BBD', '1', 'en'],
@@ -114,6 +122,35 @@ const COUNTRIES: Record<string, [currency: string, dial: string, language: strin
   US: ['USD', '1', 'en'],
   UY: ['UYU', '598', 'es'],
   VE: ['VES', '58', 'es'],
+  AG: ['XCD', '1', 'en'],
+  AI: ['XCD', '1', 'en'],
+  AW: ['AWG', '297', 'nl'],
+  BL: ['EUR', '590', 'fr'],
+  BM: ['BMD', '1', 'en'],
+  BQ: ['USD', '599', 'nl'],
+  BZ: ['BZD', '501', 'en'],
+  CW: ['XCG', '599', 'nl'],
+  DM: ['XCD', '1', 'en'],
+  FK: ['FKP', '500', 'en'],
+  GD: ['XCD', '1', 'en'],
+  GF: ['EUR', '594', 'fr'],
+  GL: ['DKK', '299', 'kl'],
+  GP: ['EUR', '590', 'fr'],
+  GY: ['GYD', '592', 'en'],
+  HT: ['HTG', '509', 'fr'],
+  KN: ['XCD', '1', 'en'],
+  KY: ['KYD', '1', 'en'],
+  LC: ['XCD', '1', 'en'],
+  MF: ['EUR', '590', 'fr'],
+  MQ: ['EUR', '596', 'fr'],
+  MS: ['XCD', '1', 'en'],
+  PM: ['EUR', '508', 'fr'],
+  SR: ['SRD', '597', 'nl'],
+  SX: ['XCG', '1', 'nl'],
+  TC: ['USD', '1', 'en'],
+  VC: ['XCD', '1', 'en'],
+  VG: ['USD', '1', 'en'],
+  VI: ['USD', '1', 'en'],
   // Asia and Oceania
   AE: ['AED', '971', 'ar'],
   AF: ['AFN', '93', 'fa'],
@@ -155,6 +192,42 @@ const COUNTRIES: Record<string, [currency: string, dial: string, language: strin
   TW: ['TWD', '886', 'zh'],
   UZ: ['UZS', '998', 'uz'],
   VN: ['VND', '84', 'vi'],
+  AS: ['USD', '1', 'en'],
+  BN: ['BND', '673', 'ms'],
+  BT: ['BTN', '975', 'dz'],
+  CC: ['AUD', '61', 'en'],
+  CK: ['NZD', '682', 'en'],
+  CX: ['AUD', '61', 'en'],
+  FM: ['USD', '691', 'en'],
+  GU: ['USD', '1', 'en'],
+  KG: ['KGS', '996', 'ky'],
+  KI: ['AUD', '686', 'en'],
+  KP: ['KPW', '850', 'ko'],
+  LA: ['LAK', '856', 'lo'],
+  MH: ['USD', '692', 'en'],
+  MO: ['MOP', '853', 'zh'],
+  MP: ['USD', '1', 'en'],
+  MV: ['MVR', '960', 'dv'],
+  NC: ['XPF', '687', 'fr'],
+  NF: ['AUD', '672', 'en'],
+  NR: ['AUD', '674', 'en'],
+  NU: ['NZD', '683', 'en'],
+  PF: ['XPF', '689', 'fr'],
+  PN: ['NZD', '64', 'en'],
+  PS: ['ILS', '970', 'ar'],
+  PW: ['USD', '680', 'en'],
+  SB: ['SBD', '677', 'en'],
+  SY: ['SYP', '963', 'ar'],
+  TJ: ['TJS', '992', 'tg'],
+  TK: ['NZD', '690', 'en'],
+  TL: ['USD', '670', 'pt'],
+  TM: ['TMT', '993', 'tk'],
+  TO: ['TOP', '676', 'en'],
+  TV: ['AUD', '688', 'en'],
+  VU: ['VUV', '678', 'en'],
+  WF: ['XPF', '681', 'fr'],
+  WS: ['WST', '685', 'en'],
+  YE: ['YER', '967', 'ar'],
   // Africa
   AO: ['AOA', '244', 'pt'],
   BW: ['BWP', '267', 'en'],
@@ -181,12 +254,44 @@ const COUNTRIES: Record<string, [currency: string, dial: string, language: strin
   ZA: ['ZAR', '27', 'en'],
   ZM: ['ZMW', '260', 'en'],
   ZW: ['USD', '263', 'en'],
+  BF: ['XOF', '226', 'fr'],
+  BI: ['BIF', '257', 'fr'],
+  BJ: ['XOF', '229', 'fr'],
+  CD: ['CDF', '243', 'fr'],
+  CF: ['XAF', '236', 'fr'],
+  CG: ['XAF', '242', 'fr'],
+  CV: ['CVE', '238', 'pt'],
+  DJ: ['DJF', '253', 'fr'],
+  ER: ['ERN', '291', 'ti'],
+  GA: ['XAF', '241', 'fr'],
+  GM: ['GMD', '220', 'en'],
+  GN: ['GNF', '224', 'fr'],
+  GQ: ['XAF', '240', 'es'],
+  GW: ['XOF', '245', 'pt'],
+  KM: ['KMF', '269', 'fr'],
+  LR: ['LRD', '231', 'en'],
+  LS: ['LSL', '266', 'en'],
+  ML: ['XOF', '223', 'fr'],
+  MR: ['MRU', '222', 'ar'],
+  MW: ['MWK', '265', 'en'],
+  NE: ['XOF', '227', 'fr'],
+  RE: ['EUR', '262', 'fr'],
+  SC: ['SCR', '248', 'en'],
+  SH: ['SHP', '290', 'en'],
+  SL: ['SLE', '232', 'en'],
+  SO: ['SOS', '252', 'so'],
+  SS: ['SSP', '211', 'en'],
+  ST: ['STN', '239', 'pt'],
+  SZ: ['SZL', '268', 'en'],
+  TD: ['XAF', '235', 'fr'],
+  TG: ['XOF', '228', 'fr'],
+  YT: ['EUR', '262', 'fr'],
 }
 
 /** Countries that drive in miles. */
-const MILES = new Set(['US', 'GB', 'LR', 'MM', 'PR'])
+const MILES = new Set(['US', 'GB', 'GG', 'IM', 'JE', 'LR', 'MM', 'PR', 'GU', 'VI', 'AS', 'MP'])
 /** Countries that buy oil by the quart and parts by the pound. */
-const US_CUSTOMARY = new Set(['US', 'LR', 'MM', 'PR'])
+const US_CUSTOMARY = new Set(['US', 'LR', 'MM', 'PR', 'GU', 'VI', 'AS', 'MP'])
 
 /** The name a sales tax goes by on an invoice, where there is one common name. */
 const TAX_LABELS: Record<string, string> = {
@@ -251,6 +356,59 @@ const TAX_LABELS_BY_LANGUAGE: Record<string, Record<string, string>> = {
 /** The countries a workshop can choose, as ISO codes. */
 export const COUNTRY_CODES: readonly string[] = Object.keys(COUNTRIES).sort()
 
+/** Names people search for that neither the English nor the local name contains. */
+const SEARCH_ALIASES: Record<string, string> = {
+  GB: 'UK England Scotland Wales Northern Ireland Great Britain Britain',
+  US: 'USA America',
+  AE: 'UAE Emirates Dubai',
+  NL: 'Holland',
+  CZ: 'Czech Republic',
+  KR: 'Korea',
+  KP: 'Korea',
+  CI: 'Ivory Coast',
+  CD: 'DRC Congo',
+  CG: 'Congo',
+  MM: 'Burma',
+  SZ: 'Swaziland',
+  TR: 'Turkey',
+  MK: 'Macedonia',
+  CV: 'Cape Verde',
+  TL: 'East Timor',
+  VA: 'Holy See Vatican',
+  BA: 'Bosnia',
+}
+
+/**
+ * What a country is found by in the picker, besides its name in the owner's
+ * own language: its code, its English name, its name in its own language and
+ * the short names people type ("UK" for Storbritannia).
+ */
+export function countrySearchTerms(code: string): string {
+  const cc = code.toUpperCase()
+  const name = (locale: string) => {
+    try {
+      return new Intl.DisplayNames([locale], { type: 'region', fallback: 'none' }).of(cc) ?? ''
+    } catch {
+      return ''
+    }
+  }
+  const local = COUNTRIES[cc] ? name(`${COUNTRIES[cc][2]}-${cc}`) : ''
+  return [cc, name('en'), local, SEARCH_ALIASES[cc] ?? ''].filter(Boolean).join(' ')
+}
+
+/**
+ * The time zone to suggest for a workshop in a country: the browser's own
+ * when it is in that country, otherwise the country's first listed zone (its
+ * capital's, or its most populous). Undefined where the table has none.
+ */
+export function timeZoneFor(country: string, browserZone: string | undefined): string | undefined {
+  const cc = country.toUpperCase()
+  if (browserZone && ZONE_COUNTRIES[browserZone] === cc) return browserZone
+  for (const [zone, code] of Object.entries(ZONE_COUNTRIES)) if (code === cc) return zone
+  // Kosovo has no zone of its own in the time zone database; it keeps Belgrade's.
+  return cc === 'XK' ? 'Europe/Belgrade' : undefined
+}
+
 export function isCountryCode(value: unknown): value is string {
   return typeof value === 'string' && value in COUNTRIES
 }
@@ -309,6 +467,7 @@ export function countryDefaults(country: string, preferredLanguage?: string): Co
   const formatLocale = `${language}-${cc}`
   return {
     country: cc,
+    language,
     locale: appLocaleFor(language, cc),
     currency: currencyDefinition(currency) ? currency : undefined,
     dialCode: `+${dial}`,
@@ -515,6 +674,112 @@ const ZONE_COUNTRIES: Record<string, string> = {
   'Africa/Johannesburg': 'ZA',
   'Africa/Lusaka': 'ZM',
   'Africa/Harare': 'ZW',
+  'Europe/Mariehamn': 'AX',
+  'Europe/Guernsey': 'GG',
+  'Europe/Isle_of_Man': 'IM',
+  'Europe/Jersey': 'JE',
+  'Arctic/Longyearbyen': 'SJ',
+  'Europe/Vatican': 'VA',
+  'America/Antigua': 'AG',
+  'America/Anguilla': 'AI',
+  'America/Aruba': 'AW',
+  'America/St_Barthelemy': 'BL',
+  'Atlantic/Bermuda': 'BM',
+  'America/Kralendijk': 'BQ',
+  'America/Belize': 'BZ',
+  'America/Curacao': 'CW',
+  'America/Dominica': 'DM',
+  'Atlantic/Stanley': 'FK',
+  'America/Grenada': 'GD',
+  'America/Cayenne': 'GF',
+  'America/Nuuk': 'GL',
+  'America/Godthab': 'GL',
+  'America/Guadeloupe': 'GP',
+  'America/Guyana': 'GY',
+  'America/Port-au-Prince': 'HT',
+  'America/St_Kitts': 'KN',
+  'America/Cayman': 'KY',
+  'America/St_Lucia': 'LC',
+  'America/Marigot': 'MF',
+  'America/Martinique': 'MQ',
+  'America/Montserrat': 'MS',
+  'America/Miquelon': 'PM',
+  'America/Paramaribo': 'SR',
+  'America/Lower_Princes': 'SX',
+  'America/Grand_Turk': 'TC',
+  'America/St_Vincent': 'VC',
+  'America/Tortola': 'VG',
+  'America/St_Thomas': 'VI',
+  'Pacific/Pago_Pago': 'AS',
+  'Asia/Brunei': 'BN',
+  'Asia/Thimphu': 'BT',
+  'Indian/Cocos': 'CC',
+  'Pacific/Rarotonga': 'CK',
+  'Indian/Christmas': 'CX',
+  'Pacific/Pohnpei': 'FM',
+  'Pacific/Guam': 'GU',
+  'Asia/Bishkek': 'KG',
+  'Pacific/Tarawa': 'KI',
+  'Asia/Pyongyang': 'KP',
+  'Asia/Vientiane': 'LA',
+  'Pacific/Majuro': 'MH',
+  'Asia/Macau': 'MO',
+  'Pacific/Saipan': 'MP',
+  'Indian/Maldives': 'MV',
+  'Pacific/Noumea': 'NC',
+  'Pacific/Norfolk': 'NF',
+  'Pacific/Nauru': 'NR',
+  'Pacific/Niue': 'NU',
+  'Pacific/Tahiti': 'PF',
+  'Pacific/Pitcairn': 'PN',
+  'Asia/Gaza': 'PS',
+  'Asia/Hebron': 'PS',
+  'Pacific/Palau': 'PW',
+  'Pacific/Guadalcanal': 'SB',
+  'Asia/Damascus': 'SY',
+  'Asia/Dushanbe': 'TJ',
+  'Pacific/Fakaofo': 'TK',
+  'Asia/Dili': 'TL',
+  'Asia/Ashgabat': 'TM',
+  'Pacific/Tongatapu': 'TO',
+  'Pacific/Funafuti': 'TV',
+  'Pacific/Efate': 'VU',
+  'Pacific/Wallis': 'WF',
+  'Pacific/Apia': 'WS',
+  'Asia/Aden': 'YE',
+  'Africa/Ouagadougou': 'BF',
+  'Africa/Bujumbura': 'BI',
+  'Africa/Porto-Novo': 'BJ',
+  'Africa/Kinshasa': 'CD',
+  'Africa/Lubumbashi': 'CD',
+  'Africa/Bangui': 'CF',
+  'Africa/Brazzaville': 'CG',
+  'Atlantic/Cape_Verde': 'CV',
+  'Africa/Djibouti': 'DJ',
+  'Africa/Asmara': 'ER',
+  'Africa/Libreville': 'GA',
+  'Africa/Banjul': 'GM',
+  'Africa/Conakry': 'GN',
+  'Africa/Malabo': 'GQ',
+  'Africa/Bissau': 'GW',
+  'Indian/Comoro': 'KM',
+  'Africa/Monrovia': 'LR',
+  'Africa/Maseru': 'LS',
+  'Africa/Bamako': 'ML',
+  'Africa/Nouakchott': 'MR',
+  'Africa/Blantyre': 'MW',
+  'Africa/Niamey': 'NE',
+  'Indian/Reunion': 'RE',
+  'Indian/Mahe': 'SC',
+  'Atlantic/St_Helena': 'SH',
+  'Africa/Freetown': 'SL',
+  'Africa/Mogadishu': 'SO',
+  'Africa/Juba': 'SS',
+  'Africa/Sao_Tome': 'ST',
+  'Africa/Mbabane': 'SZ',
+  'Africa/Ndjamena': 'TD',
+  'Africa/Lome': 'TG',
+  'Indian/Mayotte': 'YT',
 }
 
 /**

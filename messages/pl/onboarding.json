@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Skonfiguruj swój warsztat",
       "subtitle": "Cztery krótkie kroki, aby Twoja pierwsza faktura była poprawna. Wszystko zmienisz później w Ustawieniach.",
+      "language": "Język",
+      "languageBoth": "Używają go Twoje ekrany oraz faktury, oferty i e-maile do Twoich klientów.",
+      "languageFromCountry": "Propozycja dla kraju {country}. Używają go Twoje ekrany oraz faktury, oferty i e-maile do Twoich klientów.",
+      "languageMissing": "Torqvoice nie jest jeszcze dostępny w tym języku ({language}), więc dla kraju {country} proponujemy angielski. Wybierz inny język, jeśli wolisz.",
+      "languageScreensOnly": "Używany na Twoich ekranach.",
+      "customerLanguageDifferent": "Użyj innego języka dla klientów",
+      "customerLanguageSame": "Taki sam jak mój ({language})",
+      "customerLanguageFromCountry": "Propozycja dla kraju {country}.",
       "name": "Nazwa warsztatu",
       "namePlaceholder": "Mój warsztat",
       "kindLegend": "Nad czym głównie pracujesz?",
@@ -128,7 +136,8 @@
       "countryDetected": "Ustalone na podstawie strefy czasowej, {zone}. Następny krok podpowie, co jest typowe w kraju {country}, a Ty potwierdzisz każdy wybór.",
       "countryChosen": "Następny krok podpowie, co jest typowe w kraju {country}, a Ty potwierdzisz każdy wybór.",
       "countryMissing": "Wybierz kraj, a następny krok podpowie jego język, walutę i format daty.",
-      "skip": "Użyj podpowiedzi i przejdź do Gotowe"
+      "skip": "Użyj podpowiedzi i przejdź do Gotowe",
+      "nameMissing": "Nadaj warsztatowi nazwę o długości co najmniej 2 znaków."
     },
     "region": {
       "title": "Język i region",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Faktury, oferty, zlecenia i e-maile są pisane w tym języku, niezależnie od tego, kto w warsztacie je drukuje lub wysyła.",
       "languageSearch": "Szukaj języków",
       "noLanguage": "Nie znaleziono języka",
-      "ownScreens": "Twoje ekrany pozostają w języku: {language}.",
-      "ownScreensHint": "Każdy wybiera język swoich ekranów w menu użytkownika. Nigdy nie zmienia to tego, co otrzymują klienci.",
       "defaults": "Ustawienia regionalne",
       "change": "Zmień",
       "done": "Gotowe",
@@ -174,8 +181,7 @@
       "phonePrefix": "Kierunkowy kraju",
       "phoneHint": "Dodawany do numerów klientów wpisanych bez kierunkowego, np. +48.",
       "phoneInvalid": "Użyj + i cyfr, np. +48.",
-      "forceTitle": "Pokazuj też portal klienta i udostępnione linki w języku: {language}",
-      "forceHint": "Wyłączone: klient otwierający link czyta go w języku swojej przeglądarki. Pobrane i wysłane e-mailem dokumenty są zawsze w języku: {language}."
+      "later": "Możesz je później zmienić w <b>{localization}</b>. Jednostki i pojemność silnika znajdziesz w <b>{workshop}</b>."
     },
     "tax": {
       "title": "Podatki na Twoich fakturach",
@@ -196,9 +202,10 @@
       "including": "Z podatkiem",
       "includingExample": "Wpisujesz {total}. Klient płaci {total}, z czego {tax} to {label}.",
       "noTax": "Nie jest drukowana żadna linia podatku, a suma jest tym, co wpisałeś.",
-      "skippedHint": "Na razie pominięto, więc podatek nie jest doliczany. Wybierz Tak, aby go ustawić tutaj, lub później w Ustawieniach, Podatek.",
-      "advanced": "Dwa podatki na jednej fakturze, jak GST i QST, albo podatek tylko od części? Ustaw to w Ustawieniach, Podatek, gdy warsztat będzie otwarty.",
-      "skip": "Pomiń na razie"
+      "skippedHint": "Na razie pominięto, więc podatek nie jest doliczany. Wybierz Tak, aby go ustawić tutaj.",
+      "later": "Możesz to później zmienić w <b>{tax}</b>. Tam też ustawisz dwa podatki na jednej fakturze, jak GST i QST, albo podatek tylko od części.",
+      "skip": "Pomiń na razie",
+      "rateMissing": "Wpisz stawkę podatku albo wybierz Nie, jeśli nie naliczasz podatku."
     },
     "ready": {
       "title": "Gotowe, by otworzyć {name}",
@@ -228,7 +235,8 @@
       "label": "Podgląd faktury",
       "first": "Twoja pierwsza faktura, tak jak otrzyma ją klient",
       "live": "Zmienia się wraz z Twoimi wyborami",
-      "loading": "Rysowanie podglądu"
+      "loading": "Rysowanie podglądu",
+      "enlarge": "Pokaż w pełnym rozmiarze"
     },
     "sample": {
       "jobTitle": "Wymiana oleju i przegląd",
@@ -237,7 +245,13 @@
       "customerAddress": "ul. Dworcowa 12, 00-001 Warszawa",
       "laborLine": "Wymiana oleju i przegląd",
       "partLine": "Filtr oleju",
-      "workshopName": "Twój warsztat"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Olej silnikowy 5W-30",
+      "part3": "Filtr powietrza",
+      "part4": "Pióra wycieraczek",
+      "labor2": "Wymiana filtra powietrza",
+      "labor3": "Wymiana piór wycieraczek",
+      "labor4": "Kontrola hamulców"
     }
   }
 }

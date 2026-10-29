@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Susikurkite savo dirbtuves",
       "subtitle": "Keturi trumpi žingsniai, kad pirmoji sąskaita būtų teisinga. Viską galėsite pakeisti vėliau nustatymuose.",
+      "language": "Kalba",
+      "languageBoth": "Ja naudojami jūsų ekranai ir klientams siunčiamos sąskaitos, pasiūlymai bei el. laiškai.",
+      "languageFromCountry": "Pasiūlyta šaliai {country}. Ja naudojami jūsų ekranai ir klientams siunčiamos sąskaitos, pasiūlymai bei el. laiškai.",
+      "languageMissing": "Torqvoice dar nėra {language} kalba, todėl šaliai {country} siūloma anglų kalba. Jei norite, pasirinkite kitą kalbą.",
+      "languageScreensOnly": "Naudojama jūsų ekranuose.",
+      "customerLanguageDifferent": "Klientams naudoti kitą kalbą",
+      "customerLanguageSame": "Tokia pati kaip mano ({language})",
+      "customerLanguageFromCountry": "Pasiūlyta šaliai {country}.",
       "name": "Dirbtuvių pavadinimas",
       "namePlaceholder": "Mano dirbtuvės",
       "kindLegend": "Su kuo daugiausia dirbate?",
@@ -128,7 +136,8 @@
       "countryDetected": "Nustatyta pagal jūsų laiko juostą, {zone}. Kitame žingsnyje bus pasiūlyta, kas įprasta šalyje {country}, o jūs patvirtinsite kiekvieną pasirinkimą.",
       "countryChosen": "Kitame žingsnyje bus pasiūlyta, kas įprasta šalyje {country}, o jūs patvirtinsite kiekvieną pasirinkimą.",
       "countryMissing": "Pasirinkite šalį, ir kitame žingsnyje bus pasiūlyta jos kalba, valiuta ir datos formatas.",
-      "skip": "Naudoti pasiūlymus ir pereiti prie Paruošta"
+      "skip": "Naudoti pasiūlymus ir pereiti prie Paruošta",
+      "nameMissing": "Įveskite dirbtuvių pavadinimą, bent 2 simbolių."
     },
     "region": {
       "title": "Kalba ir regionas",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Sąskaitos, pasiūlymai, darbo užsakymai ir el. laiškai rašomi šia kalba, nesvarbu, kas dirbtuvėse juos spausdina ar siunčia.",
       "languageSearch": "Ieškoti kalbų",
       "noLanguage": "Kalba nerasta",
-      "ownScreens": "Jūsų ekranai lieka kalba: {language}.",
-      "ownScreensHint": "Kiekvienas savo ekranų kalbą pasirenka naudotojo meniu. Tai niekada nekeičia to, ką gauna klientai.",
       "defaults": "Regioniniai numatytieji",
       "change": "Keisti",
       "done": "Atlikta",
@@ -174,8 +181,7 @@
       "phonePrefix": "Šalies kodas",
       "phoneHint": "Pridedamas prie klientų numerių, įvestų be šalies kodo, pvz. +370.",
       "phoneInvalid": "Naudokite + ir skaitmenis, pvz. +370.",
-      "forceTitle": "Klientų portalą ir bendrinamas nuorodas taip pat rodyti kalba: {language}",
-      "forceHint": "Išjungta: nuorodą atidaręs klientas ją skaito savo naršyklės kalba. Atsisiųsti ir el. paštu išsiųsti dokumentai visada būna kalba: {language}."
+      "later": "Vėliau juos galite pakeisti skiltyje <b>{localization}</b>. Vienetai ir variklio tūris yra skiltyje <b>{workshop}</b>."
     },
     "tax": {
       "title": "Mokesčiai jūsų sąskaitose",
@@ -196,9 +202,10 @@
       "including": "Su mokesčiu",
       "includingExample": "Įvedate {total}. Klientas moka {total}, iš kurių {tax} yra {label}.",
       "noTax": "Mokesčio eilutė nespausdinama, o suma yra tai, ką įvedėte.",
-      "skippedHint": "Kol kas praleista, todėl mokestis nepridedamas. Pasirinkite Taip, kad nustatytumėte čia, arba vėliau nustatymuose, Mokesčiai.",
-      "advanced": "Du mokesčiai vienoje sąskaitoje, kaip GST ir QST, ar mokestis tik dalims? Nustatykite tai nustatymuose, Mokesčiai, kai dirbtuvės bus atidarytos.",
-      "skip": "Kol kas praleisti"
+      "skippedHint": "Kol kas praleista, todėl mokestis nepridedamas. Pasirinkite Taip, kad nustatytumėte čia.",
+      "later": "Vėliau tai galite pakeisti skiltyje <b>{tax}</b>. Ten taip pat nustatysite du mokesčius vienoje sąskaitoje, kaip GST ir QST, arba mokestį tik dalims.",
+      "skip": "Kol kas praleisti",
+      "rateMissing": "Įveskite mokesčio tarifą arba pasirinkite Ne, jei mokesčio netaikote."
     },
     "ready": {
       "title": "Pasiruošta atidaryti {name}",
@@ -228,7 +235,8 @@
       "label": "Sąskaitos peržiūra",
       "first": "Jūsų pirmoji sąskaita, kokią gauna klientas",
       "live": "Keičiasi pagal jūsų pasirinkimus",
-      "loading": "Piešiama peržiūra"
+      "loading": "Piešiama peržiūra",
+      "enlarge": "Rodyti visu dydžiu"
     },
     "sample": {
       "jobTitle": "Alyvos keitimas ir patikra",
@@ -237,7 +245,13 @@
       "customerAddress": "Stoties g. 12, 01100 Vilnius",
       "laborLine": "Alyvos keitimas ir patikra",
       "partLine": "Alyvos filtras",
-      "workshopName": "Jūsų dirbtuvės"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Variklio alyva 5W-30",
+      "part3": "Oro filtras",
+      "part4": "Valytuvų šluotelės",
+      "labor2": "Oro filtro keitimas",
+      "labor3": "Valytuvų šluotelių keitimas",
+      "labor4": "Stabdžių patikra"
     }
   }
 }

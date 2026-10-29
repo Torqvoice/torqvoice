@@ -21,6 +21,24 @@ export interface PickerOption {
   keywords?: string
 }
 
+/**
+ * Ranks an option for what is typed. Whole words first, so "UK" finds the
+ * United Kingdom before Ukraine; then names starting with it, words starting
+ * with it, and anything containing it. No fuzzy matching: "UK" matching
+ * Uzbekistan letter by letter only buries the answer.
+ */
+export function pickerScore(value: string, search: string): number {
+  const q = search.trim().toLowerCase()
+  if (!q) return 1
+  const text = value.toLowerCase()
+  const words = text.split(/[\s,()/-]+/)
+  if (words.includes(q)) return 1
+  if (text.startsWith(q)) return 0.9
+  if (words.some((w) => w.startsWith(q))) return 0.7
+  if (text.includes(q)) return 0.4
+  return 0
+}
+
 /** A searchable list behind a button, for long lists: countries, currencies, zones. */
 export function SearchPicker({
   id,
@@ -32,6 +50,7 @@ export function SearchPicker({
   empty,
   icon,
   className,
+  disabled,
 }: {
   id?: string
   value: string | null
@@ -42,6 +61,7 @@ export function SearchPicker({
   empty: string
   icon?: React.ReactNode
   className?: string
+  disabled?: boolean
 }) {
   const [open, setOpen] = useState(false)
   const selected = options.find((o) => o.value === value)
@@ -51,6 +71,7 @@ export function SearchPicker({
         <Button
           id={id}
           type="button"
+          disabled={disabled}
           variant="outline"
           role="combobox"
           aria-expanded={open}
@@ -69,7 +90,7 @@ export function SearchPicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] min-w-64 p-0" align="start">
-        <Command>
+        <Command filter={pickerScore}>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{empty}</CommandEmpty>

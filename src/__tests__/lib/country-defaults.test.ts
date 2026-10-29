@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   COUNTRY_CODES,
   countryDefaults,
+  countrySearchTerms,
+  timeZoneFor,
   dateFormatFor,
   detectCountry,
   timeFormatFor,
@@ -12,6 +14,7 @@ describe('countryDefaults', () => {
   it('suggests what a French workshop writes', () => {
     expect(countryDefaults('FR')).toEqual({
       country: 'FR',
+      language: 'fr',
       locale: 'fr',
       currency: 'EUR',
       dialCode: '+33',
@@ -118,5 +121,96 @@ describe('detectCountry', () => {
 
   it('says nothing when neither tells', () => {
     expect(detectCountry('UTC', ['en'])).toBeNull()
+  })
+})
+
+describe('the country list', () => {
+  it('covers every inhabited country and territory Intl knows by its current code', () => {
+    const names = new Intl.DisplayNames(['en'], { type: 'region', fallback: 'none' })
+    // Uninhabited, retired or not a country of its own.
+    const left = new Set([
+      'AQ',
+      'BV',
+      'GS',
+      'HM',
+      'TF',
+      'UM',
+      'IO',
+      'EH',
+      'AC',
+      'CP',
+      'CQ',
+      'DG',
+      'EA',
+      'IC',
+      'TA',
+      'XK',
+      'EU',
+      'EZ',
+      'UN',
+      'QO',
+      'ZZ',
+    ])
+    const missing: string[] = []
+    for (let a = 65; a <= 90; a++) {
+      for (let b = 65; b <= 90; b++) {
+        const code = String.fromCharCode(a, b)
+        const name = names.of(code)
+        if (!name || left.has(code) || name.startsWith('Pseudo')) continue
+        // Retired codes resolve to a current country's name under another code.
+        const current = [...COUNTRY_CODES, ...left].some(
+          (cc) => cc !== code && names.of(cc) === name
+        )
+        if (!current && !COUNTRY_CODES.includes(code)) missing.push(`${code} ${name}`)
+      }
+    }
+    expect(missing).toEqual([])
+  })
+
+  it('gives the Crown Dependencies pounds, +44 and miles', () => {
+    for (const cc of ['JE', 'GG', 'IM']) {
+      expect(countryDefaults(cc)).toMatchObject({
+        currency: 'GBP',
+        dialCode: '+44',
+        distance: 'imperial',
+        measure: 'metric',
+      })
+    }
+  })
+
+  it('finds the United Kingdom by the names people type', () => {
+    const terms = countrySearchTerms('GB')
+    for (const word of ['UK', 'England', 'Great Britain', 'United Kingdom']) {
+      expect(terms).toContain(word)
+    }
+  })
+
+  it('finds a country by its own name', () => {
+    expect(countrySearchTerms('DE')).toContain('Deutschland')
+    expect(countrySearchTerms('NO')).toContain('Norge')
+  })
+})
+
+describe('timeZoneFor', () => {
+  it("keeps the browser's zone when it is in the country", () => {
+    expect(timeZoneFor('US', 'America/Chicago')).toBe('America/Chicago')
+  })
+
+  it("gives the country's own zone when the browser is elsewhere", () => {
+    expect(timeZoneFor('IE', 'Europe/Oslo')).toBe('Europe/Dublin')
+    expect(timeZoneFor('GB', 'Europe/Oslo')).toBe('Europe/London')
+    expect(timeZoneFor('SE', 'Europe/Oslo')).toBe('Europe/Stockholm')
+  })
+
+  it('starts a country of several zones at its main one', () => {
+    expect(timeZoneFor('US', 'Europe/Oslo')).toBe('America/New_York')
+    expect(timeZoneFor('AU', 'Europe/Oslo')).toBe('Australia/Sydney')
+    expect(timeZoneFor('CA', 'Europe/Oslo')).toBe('America/Toronto')
+    expect(timeZoneFor('BR', 'Europe/Oslo')).toBe('America/Sao_Paulo')
+  })
+
+  it('has a zone for every country in the list', () => {
+    const without = COUNTRY_CODES.filter((cc) => !timeZoneFor(cc, undefined))
+    expect(without).toEqual([])
   })
 })

@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Richten Sie Ihre Werkstatt ein",
       "subtitle": "Vier kurze Schritte, damit Ihre erste Rechnung stimmt. Alles lässt sich später in den Einstellungen ändern.",
+      "language": "Sprache",
+      "languageBoth": "Ihre Bildschirme und die Rechnungen, Angebote und E-Mails an Ihre Kunden verwenden sie.",
+      "languageFromCountry": "Vorschlag für {country}. Ihre Bildschirme und die Rechnungen, Angebote und E-Mails an Ihre Kunden verwenden sie.",
+      "languageMissing": "Torqvoice gibt es noch nicht auf {language}, daher wird für {country} Englisch vorgeschlagen. Wählen Sie eine andere Sprache, wenn Sie möchten.",
+      "languageScreensOnly": "Wird auf Ihren Bildschirmen verwendet.",
+      "customerLanguageDifferent": "Für Kunden eine andere Sprache verwenden",
+      "customerLanguageSame": "Wie meine ({language})",
+      "customerLanguageFromCountry": "Vorschlag für {country}.",
       "name": "Name der Werkstatt",
       "namePlaceholder": "Meine Autowerkstatt",
       "kindLegend": "Woran arbeiten Sie hauptsächlich?",
@@ -128,7 +136,8 @@
       "countryDetected": "Aus Ihrer Zeitzone ermittelt, {zone}. Der nächste Schritt schlägt vor, was in {country} üblich ist, und Sie bestätigen jeden Punkt.",
       "countryChosen": "Der nächste Schritt schlägt vor, was in {country} üblich ist, und Sie bestätigen jeden Punkt.",
       "countryMissing": "Wählen Sie das Land, dann schlägt der nächste Schritt Sprache, Währung und Datumsformat vor.",
-      "skip": "Vorschläge übernehmen und direkt zu Fertig"
+      "skip": "Vorschläge übernehmen und direkt zu Fertig",
+      "nameMissing": "Geben Sie der Werkstatt einen Namen mit mindestens 2 Zeichen."
     },
     "region": {
       "title": "Sprache und Region",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Rechnungen, Angebote, Arbeitsaufträge und E-Mails werden in dieser Sprache geschrieben, egal wer in der Werkstatt sie druckt oder sendet.",
       "languageSearch": "Sprachen suchen",
       "noLanguage": "Keine Sprache gefunden",
-      "ownScreens": "Ihre eigenen Bildschirme bleiben auf {language}.",
-      "ownScreensHint": "Jede Person wählt ihre Bildschirmsprache im Benutzermenü. Das ändert nie, was Kunden erhalten.",
       "defaults": "Regionale Standards",
       "change": "Ändern",
       "done": "Fertig",
@@ -174,8 +181,7 @@
       "phonePrefix": "Ländervorwahl",
       "phoneHint": "Wird Kundennummern ohne Ländervorwahl vorangestellt, zum Beispiel +49.",
       "phoneInvalid": "Verwenden Sie + und Ziffern, zum Beispiel +49.",
-      "forceTitle": "Kundenportal und geteilte Links ebenfalls auf {language} anzeigen",
-      "forceHint": "Aus: Ein Kunde, der einen Link öffnet, liest ihn in der Sprache seines Browsers. Heruntergeladene und per E-Mail gesendete Dokumente sind immer auf {language}."
+      "later": "Sie können das später unter <b>{localization}</b> ändern. Einheiten und Motorgröße finden Sie unter <b>{workshop}</b>."
     },
     "tax": {
       "title": "Steuern auf Ihren Rechnungen",
@@ -196,9 +202,10 @@
       "including": "Inklusive Steuer",
       "includingExample": "Sie geben {total} ein. Der Kunde zahlt {total}, davon sind {tax} {label}.",
       "noTax": "Es wird keine Steuerzeile gedruckt, und die Summe ist das, was Sie eingeben.",
-      "skippedHint": "Vorerst übersprungen, daher wird keine Steuer berechnet. Wählen Sie Ja, um sie hier einzurichten, oder später unter Einstellungen, Steuer.",
-      "advanced": "Zwei Steuern auf einer Rechnung, wie GST und QST, oder Steuer nur auf Teile? Richten Sie das unter Einstellungen, Steuer ein, sobald die Werkstatt geöffnet ist.",
-      "skip": "Vorerst überspringen"
+      "skippedHint": "Vorerst übersprungen, daher wird keine Steuer berechnet. Wählen Sie Ja, um sie hier einzurichten.",
+      "later": "Sie können das später unter <b>{tax}</b> ändern. Dort richten Sie auch zwei Steuern auf einer Rechnung ein, wie GST und QST, oder Steuer nur auf Teile.",
+      "skip": "Vorerst überspringen",
+      "rateMissing": "Geben Sie Ihren Steuersatz ein, oder wählen Sie Nein, wenn Sie keine Steuer berechnen."
     },
     "ready": {
       "title": "Bereit, {name} zu eröffnen",
@@ -228,7 +235,8 @@
       "label": "Rechnungsvorschau",
       "first": "Ihre erste Rechnung, so wie ein Kunde sie erhält",
       "live": "Ändert sich mit Ihrer Auswahl",
-      "loading": "Vorschau wird gezeichnet"
+      "loading": "Vorschau wird gezeichnet",
+      "enlarge": "In voller Größe anzeigen"
     },
     "sample": {
       "jobTitle": "Ölwechsel und Inspektion",
@@ -237,7 +245,13 @@
       "customerAddress": "Bahnhofstraße 12, 80335 München",
       "laborLine": "Ölwechsel und Inspektion",
       "partLine": "Ölfilter",
-      "workshopName": "Ihre Werkstatt"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Motoröl 5W-30",
+      "part3": "Luftfilter",
+      "part4": "Scheibenwischerblätter",
+      "labor2": "Luftfilter wechseln",
+      "labor3": "Wischerblätter wechseln",
+      "labor4": "Bremsenprüfung"
     }
   }
 }

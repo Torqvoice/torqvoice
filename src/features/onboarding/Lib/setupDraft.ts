@@ -1,5 +1,5 @@
 import { defaultLocale, type Locale, locales } from '@/i18n/config'
-import { countryDefaults, detectCountry } from '@/lib/country-defaults'
+import { countryDefaults, detectCountry, timeZoneFor } from '@/lib/country-defaults'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import type { EngineSizeUnit } from '@/lib/engine-size'
 
@@ -10,6 +10,15 @@ import type { EngineSizeUnit } from '@/lib/engine-size'
 
 export type WorkKind = 'cars' | 'motorcycles' | 'marine'
 export type TaxChoice = 'yes' | 'no' | 'skipped'
+
+/**
+ * Where the language came from. Only one the owner picked themselves is kept
+ * when the country changes; a suggestion moves with the country.
+ */
+export type LanguageSource = 'browser' | 'country' | 'chosen'
+
+/** The language for a country whose own the app does not ship yet. */
+export const FALLBACK_LOCALE: Locale = 'en'
 
 export const SETUP_DATE_FORMATS = [
   'dd/MM/yyyy',
@@ -25,8 +34,11 @@ export interface SetupDraft {
   workshopName: string
   kind: WorkKind
   country: string | null
-  /** The language customers get. */
+  /** The language customers get: the owner's own, unless they asked for another. */
   locale: Locale
+  languageSource: LanguageSource
+  /** True when customers get a language of their own, picked under the owner's. */
+  customerLanguageSeparate: boolean
   forceCustomerLocale: boolean
   currencyCode: string
   dateFormat: string
@@ -54,26 +66,55 @@ function asLocale(value: string | undefined): Locale | undefined {
 /**
  * Fill the regional choices from a country. The workshop's name, its kind,
  * address and tax answer are the owner's own and are kept; a tax name they
- * typed is kept too.
+ * typed is kept too, and so is a language they picked. Otherwise the language
+ * follows the country, or English where the app does not ship the country's.
  */
 export function withCountry(
   draft: SetupDraft,
   country: string,
   browserLanguage: string | undefined
 ): SetupDraft {
-  const d = countryDefaults(country, browserLanguage)
+  const chosen = draft.languageSource === 'chosen'
+  const d = countryDefaults(country, chosen ? draft.locale : browserLanguage)
   return {
     ...draft,
     country: d.country,
-    locale: d.locale ?? draft.locale,
+    locale: chosen ? draft.locale : (d.locale ?? FALLBACK_LOCALE),
+    languageSource: chosen ? 'chosen' : 'country',
+    // A suggestion is one language for everything; the screens follow it.
+    customerLanguageSeparate: chosen ? draft.customerLanguageSeparate : false,
     currencyCode: d.currency ?? draft.currencyCode,
     dateFormat: d.dateFormat,
     timeFormat: d.timeFormat,
     distance: d.distance,
     measure: d.measure,
+    // The workshop's clock is where the workshop is, not where the browser is.
+    timezone: timeZoneFor(d.country, draft.timezone) ?? draft.timezone,
     dialCode: d.dialCode,
     taxLabel: draft.taxLabelEdited ? draft.taxLabel : (d.taxLabel ?? ''),
   }
+}
+
+/**
+ * The owner's own language, picked: their screens, the workshop and its
+ * customers get it, unless customers were given another one.
+ */
+export function withLanguage(draft: SetupDraft, locale: Locale): SetupDraft {
+  return {
+    ...draft,
+    locale: draft.customerLanguageSeparate ? draft.locale : locale,
+    languageSource: 'chosen',
+  }
+}
+
+/** A language for customers alone, picked under the owner's. */
+export function withCustomerLanguage(draft: SetupDraft, locale: Locale): SetupDraft {
+  return { ...draft, locale, customerLanguageSeparate: true, languageSource: 'chosen' }
+}
+
+/** Customers back on the owner's language. */
+export function withSameLanguage(draft: SetupDraft, ownLocale: Locale): SetupDraft {
+  return { ...draft, locale: ownLocale, customerLanguageSeparate: false }
 }
 
 /** What the kind of work decides: the marine fields, and how engines are written. */
@@ -92,6 +133,8 @@ export function initialDraft(args: {
     kind: 'cars',
     country: null,
     locale: asLocale(args.uiLocale) ?? defaultLocale,
+    languageSource: 'browser',
+    customerLanguageSeparate: false,
     forceCustomerLocale: false,
     currencyCode: DEFAULT_CURRENCY_CODE,
     dateFormat: 'dd/MM/yyyy',
@@ -110,7 +153,11 @@ export function initialDraft(args: {
     loadSampleData: true,
   }
   const country = detectCountry(args.timeZone, args.languages)
-  return country ? withCountry(base, country, args.languages[0]) : base
+  if (!country) return base
+  // A detected country does not turn the screens; where its language is not
+  // the browser's, customers get it on their own, shown under the owner's.
+  const detected = withCountry(base, country, args.languages[0])
+  return { ...detected, customerLanguageSeparate: detected.locale !== base.locale }
 }
 
 /** The rate as a number, or null while what is typed is not one. */

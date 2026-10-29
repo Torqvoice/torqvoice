@@ -1,24 +1,58 @@
 'use client'
 
-import { FileText, Monitor } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { type Locale, localeNames } from '@/i18n/config'
+import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 import { SETUP_DATE_FORMATS, type SetupDraft } from '../../Lib/setupDraft'
+import { LaterInSettings, settingsPathTag, useSettingsPath } from './LaterInSettings'
 import { type PickerOption, SearchPicker } from './SearchPicker'
 
 type Row = 'currency' | 'dates' | 'timeZone' | 'units' | 'phone'
 
-const SAMPLE_DATE = new Date(Date.UTC(2026, 9, 28, 14, 30))
+/** Now, as a wall clock in the workshop's time zone. */
+function wallClock(now: Date, timeZone: string | undefined) {
+  const read = (zone: string | undefined) =>
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: zone,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(now)
+  let parts: Intl.DateTimeFormatPart[]
+  try {
+    parts = read(timeZone)
+  } catch {
+    parts = read(undefined)
+  }
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0)
+  return {
+    year: get('year'),
+    month: get('month') - 1,
+    day: get('day'),
+    hour: get('hour') % 24,
+    minute: get('minute'),
+  }
+}
 
-/** A date written the way a pattern writes it, for the choices and the summary. */
-export function exampleDate(pattern: string, timeFormat: '12h' | '24h', withTime = false): string {
-  const d = SAMPLE_DATE
+/**
+ * Today written the way a pattern writes it, for the choices and the summary,
+ * at the workshop's own time.
+ */
+export function exampleDate(
+  pattern: string,
+  timeFormat: '12h' | '24h',
+  withTime = false,
+  timeZone?: string,
+  now: Date = new Date()
+): string {
+  const d = wallClock(now, timeZone)
   const months = [
     'Jan',
     'Feb',
@@ -47,23 +81,27 @@ export function exampleDate(pattern: string, timeFormat: '12h' | '24h', withTime
     'November',
     'December',
   ]
-  const dd = String(d.getUTCDate()).padStart(2, '0')
-  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const dd = String(d.day).padStart(2, '0')
+  const mm = String(d.month + 1).padStart(2, '0')
   const date = pattern
-    .replace('yyyy', String(d.getUTCFullYear()))
-    .replace('MMMM', longMonths[d.getUTCMonth()])
-    .replace('MMM', months[d.getUTCMonth()])
+    .replace('yyyy', String(d.year))
+    .replace('MMMM', longMonths[d.month])
+    .replace('MMM', months[d.month])
     .replace('MM', mm)
     .replace('dd', dd)
-    .replace(/\bd\b/, String(d.getUTCDate()))
+    .replace(/\bd\b/, String(d.day))
   if (!withTime) return date
-  return `${date}, ${timeFormat === '12h' ? '2:30 PM' : '14:30'}`
+  const minutes = String(d.minute).padStart(2, '0')
+  const time =
+    timeFormat === '12h'
+      ? `${d.hour % 12 || 12}:${minutes} ${d.hour < 12 ? 'AM' : 'PM'}`
+      : `${String(d.hour).padStart(2, '0')}:${minutes}`
+  return `${date}, ${time}`
 }
 
 export function StepRegion({
   draft,
   countryName,
-  uiLocale,
   currencyOptions,
   zoneOptions,
   moneyExample,
@@ -71,7 +109,6 @@ export function StepRegion({
 }: {
   draft: SetupDraft
   countryName: (code: string) => string
-  uiLocale: Locale
   currencyOptions: PickerOption[]
   zoneOptions: PickerOption[]
   /** 1234.56 written in the chosen currency. */
@@ -79,15 +116,16 @@ export function StepRegion({
   onChange: (patch: Partial<SetupDraft>) => void
 }) {
   const t = useTranslations('onboarding.setup.region')
+  const settingsPath = useSettingsPath()
   const [open, setOpen] = useState<Row | null>(null)
-  const language = localeNames[draft.locale]
+  // The dates row shows the time now, so it keeps up with the clock.
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 15_000)
+    return () => clearInterval(timer)
+  }, [])
   const currencyLabel =
     currencyOptions.find((o) => o.value === draft.currencyCode)?.label ?? draft.currencyCode
-  const languageOptions: PickerOption[] = (Object.keys(localeNames) as Locale[]).map((l) => ({
-    value: l,
-    label: localeNames[l],
-  }))
-
   const distance = draft.distance === 'imperial' ? t('distanceMiles') : t('distanceKm')
   const measure = draft.measure === 'imperial' ? t('measureImperial') : t('measureMetric')
   const units =
@@ -119,7 +157,7 @@ export function StepRegion({
     {
       key: 'dates',
       label: t('dates'),
-      value: exampleDate(draft.dateFormat, draft.timeFormat, true),
+      value: exampleDate(draft.dateFormat, draft.timeFormat, true, draft.timezone, now),
       editor: (
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
@@ -134,7 +172,7 @@ export function StepRegion({
             >
               {SETUP_DATE_FORMATS.map((f) => (
                 <option key={f} value={f}>
-                  {exampleDate(f, draft.timeFormat)}
+                  {exampleDate(f, draft.timeFormat, false, draft.timezone, now)}
                 </option>
               ))}
             </select>
@@ -269,48 +307,15 @@ export function StepRegion({
         </p>
       </div>
 
-      <div className="flex flex-col gap-3.5 rounded-2xl border border-primary/30 bg-primary/5 p-5">
-        <div className="flex items-start gap-3">
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-foreground">
-            <FileText className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <div className="flex min-w-0 flex-col gap-1">
-            <Label htmlFor="docLanguage" className="text-[15px] font-semibold">
-              {t('docLanguage')}
-            </Label>
-            <span className="text-[13px] leading-relaxed text-muted-foreground">
-              {t('docLanguageHint')}
-            </span>
-          </div>
-        </div>
-        <SearchPicker
-          id="docLanguage"
-          value={draft.locale}
-          options={languageOptions}
-          onChange={(locale) => onChange({ locale: locale as Locale })}
-          placeholder={t('docLanguage')}
-          searchPlaceholder={t('languageSearch')}
-          empty={t('noLanguage')}
-          className="font-medium"
-        />
-        <div className="flex items-start gap-2.5 border-t border-primary/20 pt-3">
-          <Monitor className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-          <p className="text-[13px] leading-relaxed text-muted-foreground">
-            <strong className="font-semibold text-foreground">
-              {t('ownScreens', { language: localeNames[uiLocale] })}
-            </strong>{' '}
-            {t('ownScreensHint')}
-          </p>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold" id="defaultsLabel">
           {t('defaults')}
         </span>
         <dl aria-labelledby="defaultsLabel" className="divide-y rounded-xl border bg-background">
           {rows.map((row) => {
-            const editing = open === row.key
+            // A prefix that is not one stays open, so its error is never hidden.
+            const stuck = row.key === 'phone' && !phoneValid
+            const editing = open === row.key || stuck
             return (
               <div key={row.key} className="flex flex-col gap-3 px-4 py-3">
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -323,7 +328,11 @@ export function StepRegion({
                     variant="link"
                     className="h-auto p-0 text-[13.5px] font-semibold"
                     aria-expanded={editing}
-                    onClick={() => setOpen(editing ? null : row.key)}
+                    disabled={stuck}
+                    onClick={() => {
+                      if (!editing) track('workshop:setup_suggestion_edit', { field: row.key })
+                      setOpen(editing ? null : row.key)
+                    }}
                   >
                     {editing ? t('done') : t('change')}
                   </Button>
@@ -335,22 +344,13 @@ export function StepRegion({
         </dl>
       </div>
 
-      <div className="flex items-start justify-between gap-4 rounded-xl border bg-background p-4">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="forceCustomerLocale" className="text-sm font-semibold">
-            {t('forceTitle', { language })}
-          </Label>
-          <p className="text-[13px] leading-relaxed text-muted-foreground">
-            {t('forceHint', { language })}
-          </p>
-        </div>
-        <Switch
-          id="forceCustomerLocale"
-          checked={draft.forceCustomerLocale}
-          onCheckedChange={(forceCustomerLocale) => onChange({ forceCustomerLocale })}
-          className="mt-0.5"
-        />
-      </div>
+      <LaterInSettings>
+        {t.rich('later', {
+          localization: settingsPath('localization'),
+          workshop: settingsPath('workshop'),
+          b: settingsPathTag,
+        })}
+      </LaterInSettings>
     </div>
   )
 }

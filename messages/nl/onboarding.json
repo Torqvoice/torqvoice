@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Richt uw werkplaats in",
       "subtitle": "Vier korte stappen, zodat uw eerste factuur klopt. U kunt alles later wijzigen in Instellingen.",
+      "language": "Taal",
+      "languageBoth": "Uw schermen en de facturen, offertes en e-mails aan uw klanten gebruiken deze taal.",
+      "languageFromCountry": "Voorgesteld voor {country}. Uw schermen en de facturen, offertes en e-mails aan uw klanten gebruiken deze taal.",
+      "languageMissing": "Torqvoice is nog niet beschikbaar in het {language}, dus voor {country} wordt Engels voorgesteld. Kies een andere taal als u dat wilt.",
+      "languageScreensOnly": "Gebruikt op uw schermen.",
+      "customerLanguageDifferent": "Een andere taal voor klanten gebruiken",
+      "customerLanguageSame": "Zelfde als de mijne ({language})",
+      "customerLanguageFromCountry": "Voorgesteld voor {country}.",
       "name": "Naam van de werkplaats",
       "namePlaceholder": "Mijn garage",
       "kindLegend": "Waar werkt u vooral aan?",
@@ -128,7 +136,8 @@
       "countryDetected": "Gevonden via uw tijdzone, {zone}. De volgende stap stelt voor wat in {country} gebruikelijk is, en u bevestigt elke keuze.",
       "countryChosen": "De volgende stap stelt voor wat in {country} gebruikelijk is, en u bevestigt elke keuze.",
       "countryMissing": "Kies het land, dan stelt de volgende stap de taal, valuta en datumnotatie voor.",
-      "skip": "Suggesties gebruiken en naar Klaar gaan"
+      "skip": "Suggesties gebruiken en naar Klaar gaan",
+      "nameMissing": "Geef de werkplaats een naam van minstens 2 tekens."
     },
     "region": {
       "title": "Taal en regio",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Facturen, offertes, werkorders en e-mails worden in deze taal geschreven, wie ze in de werkplaats ook afdrukt of verstuurt.",
       "languageSearch": "Talen zoeken",
       "noLanguage": "Geen taal gevonden",
-      "ownScreens": "Uw eigen schermen blijven in het {language}.",
-      "ownScreensHint": "Iedereen kiest de taal van de eigen schermen in het gebruikersmenu. Dat verandert nooit wat klanten krijgen.",
       "defaults": "Regionale standaarden",
       "change": "Wijzigen",
       "done": "Klaar",
@@ -174,8 +181,7 @@
       "phonePrefix": "Landcode",
       "phoneHint": "Toegevoegd aan klantnummers die zonder landcode zijn getypt, zoals +31.",
       "phoneInvalid": "Gebruik + en cijfers, zoals +31.",
-      "forceTitle": "Ook het klantenportaal en gedeelde links in het {language} tonen",
-      "forceHint": "Uit: een klant die een link opent, leest die in de taal van zijn browser. Gedownloade en gemailde documenten zijn altijd in het {language}."
+      "later": "Je kunt dit later wijzigen in <b>{localization}</b>. Eenheden en motorinhoud staan in <b>{workshop}</b>."
     },
     "tax": {
       "title": "Belastingen op uw facturen",
@@ -196,9 +202,10 @@
       "including": "Inclusief belasting",
       "includingExample": "U typt {total}. De klant betaalt {total}, waarvan {tax} {label} is.",
       "noTax": "Er wordt geen belastingregel afgedrukt en het totaal is wat u typte.",
-      "skippedHint": "Voorlopig overgeslagen, dus er wordt geen belasting toegevoegd. Kies Ja om het hier in te stellen, of later onder Instellingen, Belasting.",
-      "advanced": "Twee belastingen op één factuur, zoals GST en QST, of belasting alleen op onderdelen? Stel dat in onder Instellingen, Belasting, zodra de werkplaats open is.",
-      "skip": "Nu overslaan"
+      "skippedHint": "Voorlopig overgeslagen, dus er wordt geen belasting toegevoegd. Kies Ja om het hier in te stellen.",
+      "later": "Je kunt dit later wijzigen in <b>{tax}</b>. Daar stel je ook twee belastingen op één factuur in, zoals GST en QST, of belasting alleen op onderdelen.",
+      "skip": "Nu overslaan",
+      "rateMissing": "Vul uw belastingtarief in, of kies Nee als u geen belasting rekent."
     },
     "ready": {
       "title": "Klaar om {name} te openen",
@@ -228,7 +235,8 @@
       "label": "Factuurvoorbeeld",
       "first": "Uw eerste factuur, zoals een klant die krijgt",
       "live": "Verandert met uw keuzes",
-      "loading": "Voorbeeld wordt getekend"
+      "loading": "Voorbeeld wordt getekend",
+      "enlarge": "Op ware grootte tonen"
     },
     "sample": {
       "jobTitle": "Olie verversen en controle",
@@ -237,7 +245,13 @@
       "customerAddress": "Stationsstraat 12, 3511 Utrecht",
       "laborLine": "Olie verversen en controle",
       "partLine": "Oliefilter",
-      "workshopName": "Uw werkplaats"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Motorolie 5W-30",
+      "part3": "Luchtfilter",
+      "part4": "Ruitenwisserbladen",
+      "labor2": "Luchtfilter vervangen",
+      "labor3": "Ruitenwisserbladen vervangen",
+      "labor4": "Remmencontrole"
     }
   }
 }

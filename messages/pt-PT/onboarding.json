@@ -104,6 +104,14 @@
     "workshop": {
       "title": "Configure a sua oficina",
       "subtitle": "Quatro passos curtos, para que a sua primeira fatura saia certa. Pode alterar tudo mais tarde nas Definições.",
+      "language": "Idioma",
+      "languageBoth": "Os seus ecrãs e as faturas, orçamentos e e-mails dos seus clientes usam este idioma.",
+      "languageFromCountry": "Sugerido para {country}. Os seus ecrãs e as faturas, orçamentos e e-mails dos seus clientes usam este idioma.",
+      "languageMissing": "O Torqvoice ainda não está disponível em {language}, por isso o inglês é sugerido para {country}. Escolha outro idioma se preferir.",
+      "languageScreensOnly": "Usado nos seus ecrãs.",
+      "customerLanguageDifferent": "Usar outro idioma para os clientes",
+      "customerLanguageSame": "Igual ao meu ({language})",
+      "customerLanguageFromCountry": "Sugerido para {country}.",
       "name": "Nome da oficina",
       "namePlaceholder": "A minha oficina",
       "kindLegend": "Em que trabalha sobretudo?",
@@ -128,7 +136,8 @@
       "countryDetected": "Encontrado pelo seu fuso horário, {zone}. O passo seguinte sugere o que é habitual em {country}, e confirma cada escolha.",
       "countryChosen": "O passo seguinte sugere o que é habitual em {country}, e confirma cada escolha.",
       "countryMissing": "Escolha o país e o passo seguinte sugere o idioma, a moeda e o formato de data.",
-      "skip": "Usar as sugestões e ir para Pronto"
+      "skip": "Usar as sugestões e ir para Pronto",
+      "nameMissing": "Dê à oficina um nome com pelo menos 2 caracteres."
     },
     "region": {
       "title": "Idioma e região",
@@ -138,8 +147,6 @@
       "docLanguageHint": "Faturas, orçamentos, ordens de trabalho e e-mails são escritos neste idioma, seja quem for na oficina que os imprima ou envie.",
       "languageSearch": "Pesquisar idiomas",
       "noLanguage": "Nenhum idioma encontrado",
-      "ownScreens": "Os seus próprios ecrãs continuam em {language}.",
-      "ownScreensHint": "Cada pessoa escolhe o idioma dos seus ecrãs no menu de utilizador. Nunca muda o que os clientes recebem.",
       "defaults": "Predefinições regionais",
       "change": "Alterar",
       "done": "Concluído",
@@ -174,8 +181,7 @@
       "phonePrefix": "Indicativo do país",
       "phoneHint": "Adicionado aos números de clientes escritos sem indicativo, como +351.",
       "phoneInvalid": "Use + e algarismos, como +351.",
-      "forceTitle": "Mostrar também o portal do cliente e as ligações partilhadas em {language}",
-      "forceHint": "Desligado: um cliente que abre uma ligação lê-a no idioma do seu navegador. Os documentos descarregados e enviados por e-mail estão sempre em {language}."
+      "later": "Pode alterar isto mais tarde em <b>{localization}</b>. As unidades e a cilindrada estão em <b>{workshop}</b>."
     },
     "tax": {
       "title": "Impostos nas suas faturas",
@@ -196,9 +202,10 @@
       "including": "Com imposto",
       "includingExample": "Escreve {total}. O cliente paga {total}, dos quais {tax} são {label}.",
       "noTax": "Não é impressa nenhuma linha de imposto, e o total é o que escreveu.",
-      "skippedHint": "Saltado por agora, por isso não é acrescentado nenhum imposto. Escolha Sim para o configurar aqui, ou mais tarde em Definições, Impostos.",
-      "advanced": "Dois impostos numa fatura, como GST e QST, ou imposto só nas peças? Configure isso em Definições, Impostos, quando a oficina estiver aberta.",
-      "skip": "Saltar por agora"
+      "skippedHint": "Saltado por agora, por isso não é acrescentado nenhum imposto. Escolha Sim para o configurar aqui.",
+      "later": "Pode alterar isto mais tarde em <b>{tax}</b>. É também aí que configura dois impostos numa fatura, como GST e QST, ou imposto só nas peças.",
+      "skip": "Saltar por agora",
+      "rateMissing": "Escreva a sua taxa de imposto, ou escolha Não se não cobra imposto."
     },
     "ready": {
       "title": "Pronto para abrir {name}",
@@ -228,7 +235,8 @@
       "label": "Pré-visualização da fatura",
       "first": "A sua primeira fatura, tal como o cliente a recebe",
       "live": "Muda com as suas escolhas",
-      "loading": "A desenhar a pré-visualização"
+      "loading": "A desenhar a pré-visualização",
+      "enlarge": "Ver em tamanho real"
     },
     "sample": {
       "jobTitle": "Mudança de óleo e revisão",
@@ -237,7 +245,13 @@
       "customerAddress": "Rua das Flores 12, 1200-195 Lisboa",
       "laborLine": "Mudança de óleo e revisão",
       "partLine": "Filtro de óleo",
-      "workshopName": "A sua oficina"
+      "workshopName": "Torqvoice Auto",
+      "part2": "Óleo de motor 5W-30",
+      "part3": "Filtro de ar",
+      "part4": "Escovas limpa-vidros",
+      "labor2": "Substituição do filtro de ar",
+      "labor3": "Substituição das escovas",
+      "labor4": "Verificação dos travões"
     }
   }
 }

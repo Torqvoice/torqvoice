@@ -32,6 +32,9 @@ export function StepReady({
   onChange: (patch: Partial<SetupDraft>) => void
 }) {
   const t = useTranslations('onboarding.setup.ready')
+  const tWorkshop = useTranslations('onboarding.setup.workshop')
+  // One language for everything is one line; customers on another get two.
+  const oneLanguage = draft.locale === uiLocale
   const tForm = useTranslations('onboarding.form')
   const name = draft.workshopName.trim()
   const kind = t(`kinds.${draft.kind}`)
@@ -52,17 +55,17 @@ export function StepReady({
     label: string
     value: React.ReactNode
     step: SetupStep
-    highlight?: boolean
   }[] = [
     { key: 'workshop', label: t('rowWorkshop'), value: workshop, step: 'workshop' },
     {
       key: 'customers',
-      label: t('rowCustomers'),
-      highlight: true,
-      step: 'region',
-      value: (
+      label: oneLanguage ? tWorkshop('language') : t('rowCustomers'),
+      step: 'workshop',
+      value: oneLanguage ? (
+        localeNames[draft.locale]
+      ) : (
         <span className="flex flex-col gap-0.5">
-          <span className="font-semibold">{localeNames[draft.locale]}</span>
+          <span>{localeNames[draft.locale]}</span>
           <span className="text-[12.5px] font-normal text-muted-foreground">
             {t('rowScreens', { language: localeNames[uiLocale] })}
           </span>
@@ -90,10 +93,7 @@ export function StepReady({
 
       <dl className="divide-y rounded-xl border bg-background">
         {rows.map((row) => (
-          <div
-            key={row.key}
-            className={`flex flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3.5 ${row.highlight ? 'bg-primary/5' : ''}`}
-          >
+          <div key={row.key} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3.5">
             <dt className="w-full text-[13.5px] text-muted-foreground sm:w-36 sm:shrink-0">
               {row.label}
             </dt>
