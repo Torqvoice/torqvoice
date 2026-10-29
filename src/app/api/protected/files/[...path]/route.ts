@@ -55,6 +55,7 @@ export async function GET(
     'quotes',
     'portal',
     'tire-hotel',
+    'email',
   ]
   if (!allowedCategories.includes(category)) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 })

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
@@ -60,10 +61,14 @@ import {
   getInboxThreads,
   markThreadRead,
   markThreadUnread,
+  type EmailChannelState,
   type InboxThread,
   type MessagingChannel,
 } from '../Actions/inboxActions'
+import { deleteEmailConversation } from '../Actions/emailThreadActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
+import { EmailConversation } from './EmailConversation'
+import { NewEmailDialog } from './NewEmailDialog'
 import { avatarTint, initials } from '../Lib/threadDisplay'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
@@ -90,7 +95,7 @@ export interface InboxFocus {
 }
 
 /** Channels a workshop can start a conversation on. */
-const INITIABLE: MessagingChannel[] = ['sms', 'whatsapp']
+const INITIABLE: MessagingChannel[] = ['sms', 'whatsapp', 'email']
 
 /**
  * Taken from what the actions actually return rather than declared here.
@@ -107,6 +112,7 @@ export function UnifiedInbox({
   threads: initialThreads,
   initialCursor = null,
   channels,
+  emailState,
   onChanged,
   focus = null,
 }: {
@@ -114,12 +120,18 @@ export function UnifiedInbox({
   /** Where the next page starts, or null when the first page is all of it. */
   initialCursor?: string | null
   channels: MessagingChannel[]
+  /**
+   * Where email replies land. With the workshop's own vendor they go to its
+   * own mailbox, so email shows as a channel that is answered elsewhere.
+   */
+  emailState: EmailChannelState
   /** Asks the page to reload its server data after something is sent. */
   onChanged?: () => void
   /** The conversation the address asks for, opened on arrival. */
   focus?: InboxFocus | null
 }) {
   const t = useTranslations('messaging.inbox')
+  const te = useTranslations('messaging.email')
   const router = useRouter()
   const [threads, setThreads] = useState(initialThreads)
   const [cursor, setCursor] = useState<string | null>(initialCursor)
@@ -236,7 +248,10 @@ export function UnifiedInbox({
     [router, t]
   )
 
-  /** SMS and Telegram hand their history over as props, so it loads on select. */
+  /**
+   * SMS and Telegram hand their history over as props, so it loads on select.
+   * WhatsApp and email load their own.
+   */
   const select = useCallback(
     async (thread: InboxThread) => {
       setSelected(thread)
@@ -294,14 +309,18 @@ export function UnifiedInbox({
     setIsDeleting(true)
 
     // A WhatsApp thread can exist under a bare number, and those are the ones
-    // most worth clearing away: test sends and wrong numbers.
-    const result = !thread.customerId
-      ? await deleteWhatsappConversationByPhone(thread.contact)
-      : thread.channel === 'sms'
-        ? await deleteConversation(thread.customerId)
-        : thread.channel === 'telegram'
-          ? await deleteTelegramConversation(thread.customerId)
-          : await deleteWhatsappConversation(thread.customerId)
+    // most worth clearing away: test sends and wrong numbers. Email threads
+    // are filed by customer or by address, and one action handles both.
+    const result =
+      thread.channel === 'email'
+        ? await deleteEmailConversation({ customerId: thread.customerId, contact: thread.contact })
+        : !thread.customerId
+          ? await deleteWhatsappConversationByPhone(thread.contact)
+          : thread.channel === 'sms'
+            ? await deleteConversation(thread.customerId)
+            : thread.channel === 'telegram'
+              ? await deleteTelegramConversation(thread.customerId)
+              : await deleteWhatsappConversation(thread.customerId)
 
     setIsDeleting(false)
     setDeleteTarget(null)
@@ -316,7 +335,9 @@ export function UnifiedInbox({
 
   const startCompose = () => {
     const options = channels.filter((channel) => INITIABLE.includes(channel))
-    if (options.length === 1) {
+    // The dialog is where a workshop on its own email vendor learns why email
+    // is not offered, so it is always shown to them, even with one choice.
+    if (options.length === 1 && emailState !== 'ownVendor') {
       setComposeChannel(options[0])
       return
     }
@@ -325,7 +346,7 @@ export function UnifiedInbox({
 
   const openThreadFor = (
     channel: MessagingChannel,
-    customer: { id: string; name: string; phone?: string | null }
+    customer: { id: string; name: string; phone?: string | null; email?: string | null }
   ) => {
     const existing = threads.find(
       (thread) => thread.channel === channel && thread.customerId === customer.id
@@ -336,7 +357,7 @@ export function UnifiedInbox({
         channel,
         customerId: customer.id,
         name: customer.name,
-        contact: customer.phone ?? '',
+        contact: (channel === 'email' ? customer.email : customer.phone) ?? '',
         lastMessage: '',
         lastDirection: 'outbound',
         lastAt: new Date(0).toISOString(),
@@ -346,6 +367,7 @@ export function UnifiedInbox({
   }
 
   const composeOptions = channels.filter((channel) => INITIABLE.includes(channel))
+  const canCompose = composeOptions.length > 0 || emailState === 'ownVendor'
 
   return (
     <>
@@ -364,7 +386,7 @@ export function UnifiedInbox({
             </div>
             {/* Starting a conversation used to be offered only by the empty
                 state, so it disappeared as soon as there was anything to read. */}
-            {composeOptions.length > 0 && (
+            {canCompose && (
               <Button size="sm" variant="ghost" className="h-7 px-2" onClick={startCompose}>
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 {t('newMessage')}
@@ -389,7 +411,7 @@ export function UnifiedInbox({
               <p className="text-center text-sm text-muted-foreground">
                 {search ? t('noSearchResults') : t('empty')}
               </p>
-              {!search && composeOptions.length > 0 && (
+              {!search && canCompose && (
                 <Button size="sm" variant="outline" className="mt-3" onClick={startCompose}>
                   <Plus className="mr-1 h-3.5 w-3.5" />
                   {t('newMessage')}
@@ -499,7 +521,9 @@ export function UnifiedInbox({
                 </div>
                 <p className="truncate text-xs text-muted-foreground">{selected.contact}</p>
               </div>
-              {(selected.customerId || selected.channel === 'whatsapp') && (
+              {(selected.customerId ||
+                selected.channel === 'whatsapp' ||
+                selected.channel === 'email') && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
@@ -540,6 +564,19 @@ export function UnifiedInbox({
                 onSent={onChanged}
                 className="h-auto min-h-0 flex-1"
               />
+            ) : selected.channel === 'email' ? (
+              <EmailConversation
+                key={selected.key}
+                thread={{
+                  key: selected.key,
+                  customerId: selected.customerId,
+                  name: selected.name,
+                  address: selected.contact,
+                }}
+                emailState={emailState}
+                onSent={onChanged}
+                className="h-auto min-h-0 flex-1"
+              />
             ) : selected.channel === 'sms' && smsData && selected.customerId ? (
               <SmsConversation
                 key={selected.key}
@@ -570,7 +607,7 @@ export function UnifiedInbox({
           <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground">
             <Inbox className="mb-3 h-10 w-10 text-muted-foreground/40" />
             <p className="text-sm">{t('selectConversation')}</p>
-            {composeOptions.length > 0 && (
+            {canCompose && (
               <Button size="sm" variant="outline" className="mt-3" onClick={startCompose}>
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 {t('newMessage')}
@@ -580,7 +617,8 @@ export function UnifiedInbox({
         )}
       </div>
 
-      {/* Which channel, asked only when there is a choice to make */}
+      {/* Which channel, asked when there is a choice to make or when email
+          has to explain that it is answered elsewhere */}
       <Dialog open={showChannelChoice} onOpenChange={setShowChannelChoice}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
@@ -603,6 +641,26 @@ export function UnifiedInbox({
                 {channelLabel(channel)}
               </Button>
             ))}
+            {/* Shown, not hidden: a workshop that expects email here should
+                learn why it is missing rather than wonder. */}
+            {emailState === 'ownVendor' && (
+              <div className="space-y-1.5">
+                <Button type="button" variant="outline" className="w-full justify-start" disabled>
+                  <ChannelBadge channel="email" withIcon className="mr-2" />
+                  {channelLabel('email')}
+                </Button>
+                <p className="px-1 text-xs text-muted-foreground">
+                  {te('ownVendorChoice')}
+                  <Link
+                    href="/settings/integrations"
+                    className="ml-1 font-medium text-primary hover:underline"
+                    onClick={() => setShowChannelChoice(false)}
+                  >
+                    {te('ownVendorSettings')}
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -643,6 +701,12 @@ export function UnifiedInbox({
         open={composeChannel === 'whatsapp'}
         onOpenChange={(open) => !open && setComposeChannel(null)}
         onSelect={(recipient) => openThreadFor('whatsapp', recipient)}
+      />
+
+      <NewEmailDialog
+        open={composeChannel === 'email'}
+        onOpenChange={(open) => !open && setComposeChannel(null)}
+        onSelect={(recipient) => openThreadFor('email', recipient)}
       />
     </>
   )

@@ -415,6 +415,17 @@ export async function POST(request: NextRequest) {
           data.telegramMessages = result
         })
     )
+    // Attachments ride inside their message, which is what they belong to.
+    queries.push(
+      db.emailMessage
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: { attachments: true },
+        })
+        .then((result) => {
+          data.emailMessages = result
+        })
+    )
   }
 
   if (options.scheduledMessages) {

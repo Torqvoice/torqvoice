@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { MessageCircle, MessageSquare, Send } from 'lucide-react'
+import { Mail, MessageCircle, MessageSquare, Send } from 'lucide-react'
 import type { MessagingChannel } from '../Actions/inboxActions'
 
 /**
@@ -26,6 +26,11 @@ const STYLES: Record<MessagingChannel, { label: string; className: string; Icon:
     label: 'Telegram',
     className: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
     Icon: Send,
+  },
+  email: {
+    label: 'Email',
+    className: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+    Icon: Mail,
   },
 }
 

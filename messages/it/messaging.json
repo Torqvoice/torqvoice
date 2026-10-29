@@ -26,5 +26,29 @@
     "markUnread": "Segna come non letto",
     "nothingToMarkUnread": "Il cliente non ha ancora scritto in questa conversazione.",
     "markUnreadFailed": "Impossibile segnare la conversazione come non letta."
+  },
+  "email": {
+    "badge": "Email",
+    "empty": "Ancora nessun messaggio in questa conversazione.",
+    "placeholder": "Scrivi una risposta",
+    "subjectPlaceholder": "Oggetto",
+    "send": "Invia",
+    "sendFailed": "Impossibile inviare l'email",
+    "sentDocument": "Inviato: {subject}",
+    "showQuoted": "Mostra testo citato",
+    "hideQuoted": "Nascondi testo citato",
+    "spamFlag": "Il filtro della posta ha segnalato questo messaggio come possibile spam.",
+    "unknownSender": "Questo indirizzo non appartiene ancora a nessun cliente. Aggiungilo come cliente per rispondere.",
+    "ownVendorChoice": "Invii le email tramite il tuo provider, quindi le risposte arrivano a quell'indirizzo.",
+    "ownVendorSettings": "Impostazioni email",
+    "ownVendorThread": "Invii le email tramite il tuo provider, quindi le risposte di questo cliente arrivano nella tua casella di posta.",
+    "replyFromMailApp": "Rispondi dalla tua app di posta",
+    "attachment": "Allegato",
+    "compose": {
+      "title": "Nuova email",
+      "searchPlaceholder": "Cerca clienti",
+      "noMatches": "Nessun cliente corrisponde alla ricerca.",
+      "noRecipients": "Ancora nessun cliente con indirizzo email."
+    }
   }
 }

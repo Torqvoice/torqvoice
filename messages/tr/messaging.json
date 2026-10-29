@@ -26,5 +26,29 @@
     "markUnread": "Okunmadı olarak işaretle",
     "nothingToMarkUnread": "Müşteri bu konuşmada henüz bir şey yazmadı.",
     "markUnreadFailed": "Konuşma okunmadı olarak işaretlenemedi."
+  },
+  "email": {
+    "badge": "E-posta",
+    "empty": "Bu görüşmede henüz mesaj yok.",
+    "placeholder": "Bir yanıt yazın",
+    "subjectPlaceholder": "Konu",
+    "send": "Gönder",
+    "sendFailed": "E-posta gönderilemedi",
+    "sentDocument": "Gönderildi: {subject}",
+    "showQuoted": "Alıntılanan metni göster",
+    "hideQuoted": "Alıntılanan metni gizle",
+    "spamFlag": "Posta filtresi bu mesajı olası spam olarak işaretledi.",
+    "unknownSender": "Bu adres henüz bir müşteriye ait değil. Yanıtlamak için müşteri olarak ekleyin.",
+    "ownVendorChoice": "E-postalarınızı kendi sağlayıcınız üzerinden gönderiyorsunuz, bu yüzden yanıtlar o adrese gider.",
+    "ownVendorSettings": "E-posta ayarları",
+    "ownVendorThread": "E-postalarınızı kendi sağlayıcınız üzerinden gönderiyorsunuz, bu yüzden bu müşterinin yanıtları kendi posta kutunuza gider.",
+    "replyFromMailApp": "E-posta uygulamanızdan yanıtlayın",
+    "attachment": "Ek",
+    "compose": {
+      "title": "Yeni e-posta",
+      "searchPlaceholder": "Müşteri ara",
+      "noMatches": "Aramanızla eşleşen müşteri yok.",
+      "noRecipients": "Henüz e-posta adresi olan müşteri yok."
+    }
   }
 }

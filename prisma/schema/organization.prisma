@@ -32,11 +32,15 @@ model DashboardWidget {
 }
 
 model Organization {
-  id         String   @id @default(cuid())
-  name       String
-  portalSlug String?  @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  portalSlug     String?  @unique
+  /// The secret in this workshop's reply address (`reply-<token>@…`) on the
+  /// cloud instance. Minted by the first customer mail that needs one; never
+  /// the organization id, which anyone could guess.
+  replyMailToken String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   members                     OrganizationMember[]
   roles                       Role[]
@@ -58,6 +62,7 @@ model Organization {
   smsMessages                 SmsMessage[]
   telegramMessages            TelegramMessage[]
   whatsappMessages            WhatsappMessage[]
+  emailMessages               EmailMessage[]
   technicians                 Technician[]
   workBays                    WorkBay[]
   timeEntries                 TimeEntry[]

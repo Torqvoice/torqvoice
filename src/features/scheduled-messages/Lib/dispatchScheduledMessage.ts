@@ -47,6 +47,14 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
         to,
         subject: message.subject?.trim() || undefined,
         context: { message: message.body, customerName: customer?.name },
+        // Kept for context, not listed: a reminder campaign mails many
+        // customers at once, and the inbox should show the ones who answer.
+        thread: {
+          customerId: customer?.id,
+          kind: 'document',
+          relatedEntityType: 'ScheduledMessage',
+          relatedEntityId: message.id,
+        },
       })
       return
     }

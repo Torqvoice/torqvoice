@@ -13,6 +13,7 @@ import {
 } from '@/features/integrations/Lib/messaging'
 import { messagingProvider } from '@/integrations/messaging/catalog'
 import { db } from './db'
+import { formatMailAddress, parseMailAddress } from './email-address'
 import { SYSTEM_SETTING_KEYS } from '@/features/admin/Schema/systemSettingsSchema'
 import { ORG_EMAIL_KEYS } from '@/features/email/Schema/emailSettingsSchema'
 
@@ -40,6 +41,37 @@ export interface SendMailOptions {
     filename: string
     content: Buffer
   }[]
+  /**
+   * Threading headers, for a mail a customer may answer. The Message-ID is
+   * ours (without angle brackets) so a reply's In-Reply-To names something
+   * we stored; In-Reply-To and References point a reply of ours at the
+   * customer's mail so their client files it in the same conversation.
+   */
+  messageId?: string
+  inReplyTo?: string
+  references?: string[]
+}
+
+const bracketed = (id: string) => (id.startsWith('<') ? id : `<${id}>`)
+
+/** The threading headers as a mail API wants them, with angle brackets on. */
+function threadHeaders(options: SendMailOptions): Record<string, string> {
+  const headers: Record<string, string> = {}
+  if (options.messageId) headers['Message-ID'] = bracketed(options.messageId)
+  if (options.inReplyTo) headers['In-Reply-To'] = bracketed(options.inReplyTo)
+  if (options.references?.length) {
+    headers.References = options.references.map(bracketed).join(' ')
+  }
+  return headers
+}
+
+/** The same headers in nodemailer's own fields. */
+function nodemailerThreading(options: SendMailOptions) {
+  return {
+    messageId: options.messageId ? bracketed(options.messageId) : undefined,
+    inReplyTo: options.inReplyTo ? bracketed(options.inReplyTo) : undefined,
+    references: options.references?.length ? options.references.map(bracketed) : undefined,
+  }
 }
 
 // ─── Settings map helper ────────────────────────────────────────────────────
@@ -216,6 +248,7 @@ async function sendViaSmtpWithSettings(
       filename: a.filename,
       content: a.content,
     })),
+    ...nodemailerThreading(options),
   })
 }
 
@@ -259,6 +292,7 @@ async function sendViaResendWithSettings(
   }
 
   const resend = new Resend(apiKey)
+  const headers = threadHeaders(options)
   await resend.emails.send({
     from: options.from,
     to: options.to,
@@ -270,6 +304,7 @@ async function sendViaResendWithSettings(
       filename: a.filename,
       content: a.content,
     })),
+    ...(Object.keys(headers).length > 0 && { headers }),
   })
 }
 
@@ -291,6 +326,8 @@ async function sendViaPostmarkWithSettings(
   }
 
   const client = new PostmarkClient(apiKey)
+  const headers = Object.entries(threadHeaders(options)).map(([Name, Value]) => ({ Name, Value }))
+  const Headers = headers.length > 0 ? headers : undefined
 
   if (options.attachments?.length) {
     await client.sendEmail({
@@ -300,6 +337,7 @@ async function sendViaPostmarkWithSettings(
       Subject: options.subject,
       HtmlBody: options.html,
       TextBody: options.text,
+      Headers,
       Attachments: options.attachments.map((a) => ({
         Name: a.filename,
         Content: a.content.toString('base64'),
@@ -315,6 +353,7 @@ async function sendViaPostmarkWithSettings(
       Subject: options.subject,
       HtmlBody: options.html,
       TextBody: options.text,
+      Headers,
     })
   }
 }
@@ -346,10 +385,14 @@ async function sendViaMailgunWithSettings(
     url: region === 'eu' ? 'https://api.eu.mailgun.net' : undefined,
   })
 
+  const headers = Object.fromEntries(
+    Object.entries(threadHeaders(options)).map(([name, value]) => [`h:${name}`, value])
+  )
   await mg.messages.create(domain, {
     from: options.from,
     to: [options.to],
     ...(options.replyTo && { 'h:Reply-To': options.replyTo }),
+    ...headers,
     subject: options.subject,
     html: options.html,
     ...(options.text && { text: options.text }),
@@ -390,6 +433,7 @@ async function sendViaSendGridWithSettings(
 
   sgMail.setApiKey(apiKey)
 
+  const headers = threadHeaders(options)
   const msg: MailDataRequired = {
     from: options.from,
     to: options.to,
@@ -397,6 +441,7 @@ async function sendViaSendGridWithSettings(
     subject: options.subject,
     html: options.html,
     ...(options.text && { text: options.text }),
+    ...(Object.keys(headers).length > 0 && { headers }),
   }
 
   if (options.attachments?.length) {
@@ -443,6 +488,7 @@ async function sendViaSesWithSettings(
       filename: a.filename,
       content: a.content,
     })),
+    ...nodemailerThreading(options),
   })
 
   const rawMessage = Buffer.isBuffer(info.message)
@@ -582,6 +628,28 @@ export async function getOrgFromAddress(organizationId: string): Promise<string>
 
   const settings = await channelSettings(organizationId, 'email')
   return orgFromAddressFor(provider, settings)
+}
+
+/**
+ * Whether this workshop's customer mail leaves from the platform's address:
+ * it connected no mail vendor of its own, and named none. The reply address
+ * and the inbox email channel exist only for these workshops; a vendor of
+ * the workshop's own sends from its own address, and replies go there.
+ */
+export async function usesPlatformMail(organizationId: string): Promise<boolean> {
+  return (await channelProvider(organizationId, 'email')) === null
+}
+
+/**
+ * The platform's sending address under another name: the workshop's own,
+ * on a mail sent for it. The address stays the platform's, since that is
+ * the domain the mail is signed for; only the name a customer sees changes.
+ */
+export async function platformFromAddressAs(displayName: string): Promise<string> {
+  const platform = await getFromAddress()
+  const parsed = parseMailAddress(platform)
+  if (!parsed) return platform
+  return formatMailAddress(displayName, parsed.email) || platform
 }
 
 /**

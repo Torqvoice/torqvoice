@@ -26,5 +26,29 @@
     "markUnread": "Marquer comme non lu",
     "nothingToMarkUnread": "Le client n'a pas encore écrit dans cette conversation.",
     "markUnreadFailed": "Impossible de marquer la conversation comme non lue."
+  },
+  "email": {
+    "badge": "E-mail",
+    "empty": "Aucun message dans cette conversation pour l'instant.",
+    "placeholder": "Écrire une réponse",
+    "subjectPlaceholder": "Objet",
+    "send": "Envoyer",
+    "sendFailed": "Impossible d'envoyer l'e-mail",
+    "sentDocument": "Envoyé : {subject}",
+    "showQuoted": "Afficher le texte cité",
+    "hideQuoted": "Masquer le texte cité",
+    "spamFlag": "Le filtre de messagerie a signalé ce message comme spam possible.",
+    "unknownSender": "Cette adresse n'appartient encore à aucun client. Ajoutez-le comme client pour répondre.",
+    "ownVendorChoice": "Vous envoyez vos e-mails via votre propre fournisseur, les réponses arrivent donc à cette adresse.",
+    "ownVendorSettings": "Paramètres e-mail",
+    "ownVendorThread": "Vous envoyez vos e-mails via votre propre fournisseur, les réponses de ce client arrivent donc dans votre propre boîte mail.",
+    "replyFromMailApp": "Répondre depuis votre messagerie",
+    "attachment": "Pièce jointe",
+    "compose": {
+      "title": "Nouvel e-mail",
+      "searchPlaceholder": "Rechercher des clients",
+      "noMatches": "Aucun client ne correspond à votre recherche.",
+      "noRecipients": "Aucun client avec une adresse e-mail pour l'instant."
+    }
   }
 }

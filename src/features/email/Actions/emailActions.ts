@@ -183,6 +183,12 @@ export async function sendQuoteEmail(input: {
             },
             shareLink: publicLink,
           },
+          thread: {
+            customerId: quote.customerId,
+            kind: 'document',
+            relatedEntityType: 'quote',
+            relatedEntityId: quoteId,
+          },
         })
       )
 
@@ -249,6 +255,7 @@ export async function sendNotificationEmail(input: {
             vehicle: input.vehicle,
             currentUser: await senderName(userId),
           },
+          thread: { customerId: customer.id, kind: 'message' },
         })
       )
 
@@ -278,7 +285,7 @@ export async function sendInvoiceEmail(input: {
 
       const owned = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
-        select: { id: true, publicToken: true },
+        select: { id: true, publicToken: true, customerId: true },
       })
       if (!owned) throw new Error('Service record not found')
 
@@ -354,6 +361,12 @@ export async function sendInvoiceEmail(input: {
             },
             shareLink: publicLink,
           },
+          thread: {
+            customerId: owned.customerId,
+            kind: 'document',
+            relatedEntityType: 'service_record',
+            relatedEntityId: serviceRecordId,
+          },
         })
       )
 
@@ -408,6 +421,7 @@ export async function sendInspectionEmail(input: {
               hsn: true,
               tsn: true,
               mileage: true,
+              customerId: true,
               customer: { select: { name: true, email: true, phone: true } },
             },
           },
@@ -467,6 +481,12 @@ export async function sendInspectionEmail(input: {
             currentUser: await senderName(userId),
             message,
             shareLink: publicLink,
+          },
+          thread: {
+            customerId: inspection.vehicle.customerId,
+            kind: 'document',
+            relatedEntityType: 'inspection',
+            relatedEntityId: inspectionId,
           },
         })
       )
