@@ -9,6 +9,7 @@ import { getFeatures, FeatureGatedError } from '@/lib/features'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
+import { claimEmailMessagesForCustomer } from '@/features/messaging/Lib/emailClaim.server'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 import { clearedToNull } from '@/lib/clearable'
 
@@ -123,9 +124,10 @@ export async function createCustomer(input: unknown) {
             organizationId,
           },
         })
-        // Someone added from an unknown WhatsApp number keeps the thread that
-        // prompted it.
+        // Someone added from an unknown WhatsApp number or email address
+        // keeps the thread that prompted it.
         await claimWhatsappMessagesForCustomer(organizationId, customer.id, customer.phone)
+        await claimEmailMessagesForCustomer(organizationId, customer.id, customer.email)
 
         revalidatePath('/customers')
         return customer
@@ -181,6 +183,7 @@ export async function updateCustomer(input: unknown) {
       }
       if (result.count === 0) throw new Error('Customer not found')
       if (data.phone) await claimWhatsappMessagesForCustomer(organizationId, id, data.phone)
+      if (data.email) await claimEmailMessagesForCustomer(organizationId, id, data.email)
       revalidatePath('/customers')
       revalidatePath(`/customers/${id}`)
       return { id }

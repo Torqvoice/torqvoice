@@ -98,6 +98,16 @@ describe('isAutomatedMail', () => {
     expect(isAutomatedMail(headerView({ 'auto-submitted': 'auto-replied' }), 'k@x.no')).toBe(true)
     expect(isAutomatedMail(headerView({ 'auto-submitted': 'no' }), 'k@x.no')).toBe(false)
     expect(isAutomatedMail(headerView({ 'x-auto-response-suppress': 'All' }), 'k@x.no')).toBe(true)
+    expect(
+      isAutomatedMail(headerView({ 'x-auto-response-suppress': 'OOF, AutoReply' }), 'k@x.no')
+    ).toBe(true)
+    // A person's mail may carry the header too, declining receipts or saying nothing.
+    expect(isAutomatedMail(headerView({ 'x-auto-response-suppress': 'None' }), 'k@x.no')).toBe(
+      false
+    )
+    expect(isAutomatedMail(headerView({ 'x-auto-response-suppress': 'DR, RN' }), 'k@x.no')).toBe(
+      false
+    )
     expect(isAutomatedMail(headerView({ precedence: 'bulk' }), 'k@x.no')).toBe(true)
     expect(isAutomatedMail(headerView({ precedence: 'first-class' }), 'k@x.no')).toBe(false)
     expect(

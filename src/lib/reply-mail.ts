@@ -38,14 +38,22 @@ function env(name: string): string | undefined {
   return value ? value : undefined
 }
 
-/**
- * The reply domain, when customer mail should carry a reply address at all:
- * the cloud instance with `INBOUND_MAIL_DOMAIN` set.
- */
-export function replyMailDomain(): string | null {
+/** `INBOUND_MAIL_DOMAIN` as set, on the cloud instance only. */
+function configuredDomain(): string | null {
   if (!isCloudInstance()) return null
   const domain = env('INBOUND_MAIL_DOMAIN')?.toLowerCase()
   return domain && /^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain) ? domain : null
+}
+
+/**
+ * The reply domain, when customer mail should carry a reply address at all:
+ * the cloud instance with the whole receiving setup in place. A domain on
+ * its own would put a reply address on every mail while the webhook, which
+ * refuses half a setup, could file nothing that came back to it.
+ */
+export function replyMailDomain(): string | null {
+  const result = inboundMailConfig()
+  return result.ok ? result.config.domain : null
 }
 
 export function replyMailEnabled(): boolean {
@@ -59,7 +67,7 @@ export function replyMailEnabled(): boolean {
 export function inboundMailConfig():
   | { ok: true; config: InboundMailConfig }
   | { ok: false; missing: string[] } {
-  const domain = replyMailDomain()
+  const domain = configuredDomain()
   const bucket = env('INBOUND_MAIL_BUCKET')
   const region = env('INBOUND_MAIL_REGION')
   const topicArn = env('INBOUND_MAIL_TOPIC_ARN')

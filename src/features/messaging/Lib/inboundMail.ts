@@ -131,7 +131,11 @@ const SYSTEM_SENDER =
 export function isAutomatedMail(headers: MailHeaderView, fromAddress: string | null): boolean {
   const autoSubmitted = headers.get('auto-submitted')
   if (autoSubmitted && autoSubmitted !== 'no') return true
-  if (headers.get('x-auto-response-suppress') !== null) return true
+  // Exchange puts All on the mail it generates. A sender can also set the
+  // header on ordinary mail to decline receipts (DR, RN, NRN) or to say
+  // None, so only the values that mark the mail itself as generated count.
+  const suppress = headers.get('x-auto-response-suppress')
+  if (suppress && /\b(all|oof|autoreply)\b/.test(suppress)) return true
   if (headers.get('x-autoreply') !== null || headers.get('x-autorespond') !== null) return true
 
   const precedence = headers.get('precedence')

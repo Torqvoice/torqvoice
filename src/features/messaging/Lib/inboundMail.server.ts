@@ -152,6 +152,8 @@ export async function receiveSesMail(
   const body = cleanBody(parsed?.text)
 
   let id: string
+  /** The customer whose thread the row went into, if any. */
+  let filedUnder: string | null
   try {
     const row = await db.emailMessage.create({
       data: {
@@ -179,6 +181,7 @@ export async function receiveSesMail(
       select: { id: true, customerId: true },
     })
     id = row.id
+    filedUnder = row.customerId
   } catch (error) {
     // Two deliveries racing past the check above: the unique id lets one in.
     if ((error as { code?: string }).code === 'P2002') {
@@ -197,8 +200,11 @@ export async function receiveSesMail(
     message: `${who}: ${preview}`.slice(0, 200),
     entityType: 'email_message',
     entityId: id,
-    entityUrl: customer
-      ? `/messages?channel=email&customerId=${customer.id}`
+    // Where the row went, which is the customer's thread also when only the
+    // mail answered named the customer; the address alone would open an
+    // empty one.
+    entityUrl: filedUnder
+      ? `/messages?channel=email&customerId=${filedUnder}`
       : `/messages?channel=email&contact=${contact}`,
   })
 

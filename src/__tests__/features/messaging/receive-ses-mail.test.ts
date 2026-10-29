@@ -184,6 +184,11 @@ describe('receiveSesMail', () => {
     const { data } = db.emailMessage.create.mock.calls[0][0]
     expect(data.address).toBe('new@example.org')
     expect(data.customerId).toBe('cust_1')
+    // The notification opens the thread the row went into, not an empty one
+    // under the address.
+    expect(notify).toHaveBeenLastCalledWith(
+      expect.objectContaining({ entityUrl: '/messages?channel=email&customerId=cust_1' })
+    )
 
     db.emailMessage.findMany.mockResolvedValue([])
     db.emailMessage.create.mockClear()

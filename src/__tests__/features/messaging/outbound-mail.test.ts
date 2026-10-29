@@ -30,6 +30,9 @@ const TOKEN = 'abcdefghijklmnopqrstuvwxyz'
 beforeEach(() => {
   vi.clearAllMocks()
   vi.stubEnv('INBOUND_MAIL_DOMAIN', 'reply.torqvoice.com')
+  vi.stubEnv('INBOUND_MAIL_BUCKET', 'torqvoice-inbound-mail')
+  vi.stubEnv('INBOUND_MAIL_REGION', 'eu-west-1')
+  vi.stubEnv('INBOUND_MAIL_TOPIC_ARN', 'arn:aws:sns:eu-west-1:123456789012:inbound')
   vi.mocked(isCloudInstance).mockReturnValue(true)
   email.usesPlatformMail.mockResolvedValue(true)
   db.organization.findUnique.mockResolvedValue({ name: 'EF Moto', replyMailToken: TOKEN })
@@ -50,6 +53,8 @@ describe('prepareCustomerMail', () => {
     expect(prepared?.headers.from).toBe('"EF Moto" <post@torqvoice.com>')
     expect(prepared?.headers.replyTo).toBe(`reply-${TOKEN}@reply.torqvoice.com`)
     expect(prepared?.headers.messageId).toMatch(/@reply\.torqvoice\.com$/)
+    // Also in References, which survives a provider rewriting Message-ID.
+    expect(prepared?.headers.references).toEqual([prepared?.headers.messageId])
 
     await prepared?.record({ status: 'sent', subject: 'Invoice 2026-104', body: 'See attached' })
     expect(db.emailMessage.create).toHaveBeenCalledWith(
@@ -82,6 +87,7 @@ describe('prepareCustomerMail', () => {
     expect(prepared?.headers.references).toEqual([
       'ours@reply.torqvoice.com',
       'abc@mail.example.com',
+      prepared?.headers.messageId,
     ])
   })
 
@@ -93,6 +99,11 @@ describe('prepareCustomerMail', () => {
 
   it('does nothing without a reply domain', async () => {
     vi.stubEnv('INBOUND_MAIL_DOMAIN', '')
+    expect(await prepareCustomerMail('org_1', 'kari@example.com', { kind: 'message' })).toBeNull()
+  })
+
+  it('does nothing on half a setup, where a reply address would lead nowhere', async () => {
+    vi.stubEnv('INBOUND_MAIL_TOPIC_ARN', '')
     expect(await prepareCustomerMail('org_1', 'kari@example.com', { kind: 'message' })).toBeNull()
   })
 

@@ -59,12 +59,16 @@ export async function getEmailConversation(thread: EmailThreadRef, limit = 100) 
   return withAuth(
     async ({ organizationId }) => {
       const [messages, customer] = await Promise.all([
-        db.emailMessage.findMany({
-          where: threadWhere(organizationId, thread),
-          orderBy: { createdAt: 'asc' },
-          take: Math.min(limit, 200),
-          select: MESSAGE_SELECT,
-        }),
+        // The newest rows, put back in reading order: a thread longer than
+        // the limit shows its latest mail, not its first.
+        db.emailMessage
+          .findMany({
+            where: threadWhere(organizationId, thread),
+            orderBy: { createdAt: 'desc' },
+            take: Math.min(limit, 200),
+            select: MESSAGE_SELECT,
+          })
+          .then((rows) => rows.reverse()),
         thread.customerId
           ? db.customer.findFirst({
               where: { id: thread.customerId, organizationId },

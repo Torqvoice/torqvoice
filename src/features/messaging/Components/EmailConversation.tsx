@@ -50,12 +50,18 @@ export function EmailConversation({
   thread,
   emailState,
   onSent,
+  refreshKey,
   className,
 }: {
   thread: EmailThread
   emailState: EmailChannelState
   /** Lets the surrounding list reload once a message is on its way. */
   onSent?: () => void
+  /**
+   * Changes when the list hears of a newer message on this thread, so the
+   * history is re-read without being reopened.
+   */
+  refreshKey?: string
   /** How the surrounding pane wants this sized. */
   className?: string
 }) {
@@ -92,6 +98,15 @@ export function EmailConversation({
     setLoading(true)
     load()
   }, [load])
+
+  // A reply that arrived while this was open: re-read quietly, keeping what
+  // is on screen until the new rows are in.
+  const lastRefreshKey = useRef(refreshKey)
+  useEffect(() => {
+    if (refreshKey === lastRefreshKey.current) return
+    lastRefreshKey.current = refreshKey
+    void load()
+  }, [refreshKey, load])
 
   // Land on the newest message once the history is on screen, not before:
   // scrolling an empty list leaves the reader at the top.
@@ -150,7 +165,9 @@ export function EmailConversation({
 
   const handleSend = () => {
     const customerId = thread.customerId
-    if (!customerId || !body.trim()) return
+    // Enter in the box is not disabled while a send is running, so the
+    // guard is here: the body is only cleared once the first send is through.
+    if (isSending || !customerId || !body.trim()) return
 
     startSending(async () => {
       const result = await sendEmailMessage({

@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { useNotificationStore } from '@/features/notifications/store/notificationStore'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -219,6 +220,46 @@ export function UnifiedInbox({
     },
     [router]
   )
+
+  /**
+   * The open thread as the list now has it. The list is replaced whenever
+   * the page's data reloads, and a reply that arrived meanwhile shows there
+   * first: a newer `lastAt` on the open row means the conversation has
+   * something to re-read, and that it has been read by being on screen.
+   */
+  const current = useMemo(
+    () => (selected ? (threads.find((row) => row.key === selected.key) ?? selected) : null),
+    [threads, selected]
+  )
+  const seen = useRef<{ key: string; lastAt: string } | null>(null)
+  useEffect(() => {
+    if (!current) {
+      seen.current = null
+      return
+    }
+    if (seen.current?.key !== current.key) {
+      // Opening it marked it read already.
+      seen.current = { key: current.key, lastAt: current.lastAt }
+      return
+    }
+    if (seen.current.lastAt === current.lastAt) return
+    seen.current = { key: current.key, lastAt: current.lastAt }
+    if (current.unread > 0) void markRead(current)
+  }, [current, markRead])
+
+  // A message arriving on any channel is announced to the workshop's
+  // notification feed over the socket. That is the inbox's cue to reload
+  // its data; the feed's own first fill, of older notifications, is not.
+  const latest = useNotificationStore((state) => state.notifications[0])
+  const mountedAt = useRef(Date.now())
+  const announced = useRef<string | null>(null)
+  useEffect(() => {
+    if (!latest || announced.current === latest.id) return
+    announced.current = latest.id
+    if (!latest.type.endsWith('_inbound')) return
+    if (new Date(latest.createdAt).getTime() < mountedAt.current - 60_000) return
+    onChanged?.()
+  }, [latest, onChanged])
 
   /**
    * The opposite gesture, for "come back to this later". The thread stays
@@ -575,6 +616,7 @@ export function UnifiedInbox({
                 }}
                 emailState={emailState}
                 onSent={onChanged}
+                refreshKey={current?.lastAt ?? selected.lastAt}
                 className="h-auto min-h-0 flex-1"
               />
             ) : selected.channel === 'sms' && smsData && selected.customerId ? (

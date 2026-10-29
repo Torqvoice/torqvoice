@@ -74,7 +74,12 @@ export async function prepareCustomerMail(
       replyTo: replyMailAddress(token, domain),
       messageId,
       inReplyTo: thread.inReplyTo ?? undefined,
-      references: thread.references,
+      // Our id goes in References as well as Message-ID. Amazon SES, which
+      // the platform sends through, replaces Message-ID with one of its own
+      // on the wire but leaves References alone, and a reply carries every
+      // reference back; so this is how a reply is matched to the mail it
+      // answers whatever the provider did to the Message-ID.
+      references: [...(thread.references ?? []), messageId],
     },
     async record(outcome) {
       const row = await db.emailMessage.create({

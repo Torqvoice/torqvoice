@@ -285,7 +285,14 @@ export async function sendInvoiceEmail(input: {
 
       const owned = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
-        select: { id: true, publicToken: true, customerId: true },
+        select: {
+          id: true,
+          publicToken: true,
+          customerId: true,
+          // A record on a vehicle carries no customer of its own; the
+          // vehicle's is who the invoice goes to.
+          vehicle: { select: { customerId: true } },
+        },
       })
       if (!owned) throw new Error('Service record not found')
 
@@ -362,7 +369,7 @@ export async function sendInvoiceEmail(input: {
             shareLink: publicLink,
           },
           thread: {
-            customerId: owned.customerId,
+            customerId: owned.customerId ?? owned.vehicle?.customerId ?? null,
             kind: 'document',
             relatedEntityType: 'service_record',
             relatedEntityId: serviceRecordId,

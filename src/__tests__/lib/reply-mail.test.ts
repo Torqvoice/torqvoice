@@ -24,6 +24,18 @@ import {
 
 const DOMAIN = 'reply.torqvoice.com'
 
+/** The whole receiving setup, with any one part replaced. */
+function stubSetup(overrides: Record<string, string> = {}) {
+  const setup: Record<string, string> = {
+    INBOUND_MAIL_DOMAIN: DOMAIN,
+    INBOUND_MAIL_BUCKET: 'torqvoice-inbound-mail',
+    INBOUND_MAIL_REGION: 'eu-west-1',
+    INBOUND_MAIL_TOPIC_ARN: 'arn:aws:sns:eu-west-1:123456789012:inbound',
+    ...overrides,
+  }
+  for (const [name, value] of Object.entries(setup)) vi.stubEnv(name, value)
+}
+
 afterEach(() => {
   vi.unstubAllEnvs()
   vi.mocked(isCloudInstance).mockReturnValue(true)
@@ -81,21 +93,30 @@ describe('parseReplyMailAddress', () => {
 })
 
 describe('replyMailDomain', () => {
-  it('is the configured domain on the cloud instance', () => {
-    vi.stubEnv('INBOUND_MAIL_DOMAIN', 'Reply.Torqvoice.com')
+  it('is the configured domain on the cloud instance with the whole setup in place', () => {
+    stubSetup({ INBOUND_MAIL_DOMAIN: 'Reply.Torqvoice.com' })
     expect(replyMailDomain()).toBe('reply.torqvoice.com')
   })
 
   it('is nothing on a self-hosted install, whatever the environment says', () => {
-    vi.stubEnv('INBOUND_MAIL_DOMAIN', DOMAIN)
+    stubSetup()
     vi.mocked(isCloudInstance).mockReturnValue(false)
     expect(replyMailDomain()).toBeNull()
   })
 
   it('is nothing when the variable is unset or not a domain', () => {
-    vi.stubEnv('INBOUND_MAIL_DOMAIN', '')
+    stubSetup({ INBOUND_MAIL_DOMAIN: '' })
     expect(replyMailDomain()).toBeNull()
-    vi.stubEnv('INBOUND_MAIL_DOMAIN', 'not a domain')
+    stubSetup({ INBOUND_MAIL_DOMAIN: 'not a domain' })
+    expect(replyMailDomain()).toBeNull()
+  })
+
+  it('is nothing while the bucket, region or topic is missing, so no mail promises a reply nothing can file', () => {
+    stubSetup({ INBOUND_MAIL_BUCKET: '' })
+    expect(replyMailDomain()).toBeNull()
+    stubSetup({ INBOUND_MAIL_REGION: '' })
+    expect(replyMailDomain()).toBeNull()
+    stubSetup({ INBOUND_MAIL_TOPIC_ARN: '' })
     expect(replyMailDomain()).toBeNull()
   })
 })
