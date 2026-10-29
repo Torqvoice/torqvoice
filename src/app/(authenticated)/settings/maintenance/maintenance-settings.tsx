@@ -49,7 +49,12 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <AppCard icon={Gauge} title={t('maintenance.title')} contentClassName="space-y-6">
+        <AppCard
+          id="maintenance-predicted"
+          icon={Gauge}
+          title={t('maintenance.title')}
+          contentClassName="space-y-6"
+        >
           <p className="text-sm text-muted-foreground">{t('maintenance.description')}</p>
 
           <div className="flex items-center justify-between">

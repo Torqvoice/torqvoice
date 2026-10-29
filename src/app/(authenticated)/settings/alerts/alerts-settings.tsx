@@ -67,6 +67,7 @@ function TechnicianStatusAlerts({ settings }: { settings: Record<string, string>
 
   return (
     <AppCard
+      id="alerts-technician-status"
       icon={Smartphone}
       title={t('alerts.technicianStatus.title')}
       contentClassName="space-y-6"
@@ -127,7 +128,12 @@ function ServiceRequestAlertCard({ settings }: { settings: Record<string, string
   }
 
   return (
-    <AppCard icon={Wrench} title={t('alerts.serviceRequest.title')} contentClassName="space-y-6">
+    <AppCard
+      id="alerts-service-request"
+      icon={Wrench}
+      title={t('alerts.serviceRequest.title')}
+      contentClassName="space-y-6"
+    >
       <p className="text-sm text-muted-foreground">{t('alerts.serviceRequest.description')}</p>
 
       <div className="flex items-center justify-between">
@@ -244,6 +250,7 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
 
   return (
     <AppCard
+      id="alerts-low-stock"
       icon={PackageSearch}
       title={t('alerts.lowStock.title')}
       action={
@@ -346,7 +353,12 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
             {t('alerts.lowStock.save')}
           </Button>
           {enabled && (
-            <Button variant="outline" onClick={handleCheckNow} disabled={checking}>
+            <Button
+              id="alerts-low-stock-check-now"
+              variant="outline"
+              onClick={handleCheckNow}
+              disabled={checking}
+            >
               {checking ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

@@ -119,7 +119,12 @@ export function PasskeySettings() {
 
   return (
     <>
-      <AppCard icon={Fingerprint} title={t('account.passkey.title')} contentClassName="space-y-4">
+      <AppCard
+        id="account-passkeys"
+        icon={Fingerprint}
+        title={t('account.passkey.title')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('account.passkey.description')}</p>
 
         {loading ? (
@@ -179,7 +184,7 @@ export function PasskeySettings() {
         )}
 
         <Separator />
-        <Button onClick={handleRegister} disabled={registering}>
+        <Button id="account-register-passkey" onClick={handleRegister} disabled={registering}>
           {registering ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (

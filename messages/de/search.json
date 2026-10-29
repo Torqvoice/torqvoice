@@ -1,9 +1,41 @@
 {
   "title": "Suche",
   "description": "Fahrzeuge, Kunden, Aufträge und Einstellungen durchsuchen",
-  "placeholder": "Nach Name, Kennzeichen, Telefon, FIN, Rechnung suchen…",
+  "placeholder": "Kunden, Kennzeichen, Rechnungen, Einstellungen suchen…",
   "noResults": "Keine Treffer.",
+  "noResultsFor": "Keine Treffer für „{query}“",
+  "noResultsHint": "Versuchen Sie ein Kennzeichen, eine Telefonnummer, eine Rechnungsnummer oder den Namen einer Einstellung.",
   "recentCustomers": "Zuletzt genutzte Kunden",
   "services": "Serviceeinträge",
-  "toClose": "zum Schließen"
+  "toClose": "zum Schließen",
+  "groups": {
+    "recent": "Zuletzt",
+    "settings": "Einstellungen",
+    "pages": "Seiten",
+    "actions": "Aktionen",
+    "integrations": "Integrationen"
+  },
+  "hints": {
+    "navigate": "navigieren",
+    "open": "öffnen",
+    "close": "schließen",
+    "searching": "Suche läuft…",
+    "start": "Einstellungen, Seiten, Kunden, Fahrzeuge, Rechnungen und Ersatzteile, alles von hier aus."
+  },
+  "open": "Öffnen",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Neuer Arbeitsauftrag",
+    "newCustomer": "Neuer Kunde",
+    "newVehicle": "Neues Fahrzeug",
+    "newQuote": "Neues Angebot",
+    "newPart": "Neues Ersatzteil",
+    "inviteMember": "Teammitglied einladen"
+  },
+  "settingsSearch": {
+    "placeholder": "Einstellungen suchen…",
+    "label": "Einstellungen suchen",
+    "empty": "Keine Einstellung passt zu „{query}“",
+    "shortcutHint": "Drücken Sie überall {shortcut}, um zu suchen"
+  }
 }

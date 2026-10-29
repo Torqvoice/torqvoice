@@ -18,6 +18,7 @@ export function AppearanceSettings() {
   return (
     <div className="space-y-6">
       <AppCard
+        id="appearance-theme"
         icon={Palette}
         title={t('themeLabel')}
         description={t('themeHint')}
@@ -27,6 +28,7 @@ export function AppearanceSettings() {
       </AppCard>
 
       <AppCard
+        id="appearance-font"
         icon={Type}
         title={t('fontLabel')}
         description={t('fontHint')}

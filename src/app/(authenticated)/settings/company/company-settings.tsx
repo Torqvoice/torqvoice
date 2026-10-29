@@ -113,7 +113,7 @@ export function CompanySettings({
     <div className="space-y-4">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <AppCard icon={ImageIcon} title={t('company.logoTitle')}>
+        <AppCard id="company-logo" icon={ImageIcon} title={t('company.logoTitle')}>
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted/50">
               {logoUrl ? (
@@ -171,7 +171,12 @@ export function CompanySettings({
             />
           </div>
         </AppCard>
-        <AppCard icon={Building2} title={t('company.detailsTitle')} contentClassName="space-y-4">
+        <AppCard
+          id="company-details"
+          icon={Building2}
+          title={t('company.detailsTitle')}
+          contentClassName="space-y-4"
+        >
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
               <Label htmlFor="workshopName" className="text-xs">
@@ -268,7 +273,12 @@ export function CompanySettings({
               )}
               {t('company.saveCompany')}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
+            <Button
+              id="company-add-company"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCreateOrg(true)}
+            >
               <Plus className="mr-1.5 h-3.5 w-3.5" />
               {t('company.addNewCompany')}
             </Button>

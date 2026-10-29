@@ -116,7 +116,12 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
         <DocsLink href="/docs/features/tire-hotel" variant="hint" className="mt-1" />
       </div>
       <ReadOnlyWrapper>
-        <AppCard icon={Warehouse} title={t('tireHotel.cardTitle')} contentClassName="space-y-6">
+        <AppCard
+          id="tire-hotel-storage"
+          icon={Warehouse}
+          title={t('tireHotel.cardTitle')}
+          contentClassName="space-y-6"
+        >
           <div className="flex items-center justify-between">
             <div className="space-y-0.5 pr-4">
               <Label htmlFor="tireHotelEnabled">{t('tireHotel.enable')}</Label>
@@ -161,7 +166,7 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
 
               <Separator />
 
-              <div>
+              <div id="tire-hotel-tread">
                 <p className="text-sm font-medium">{t('tireHotel.treadTitle')}</p>
                 <p className="text-xs text-muted-foreground">{t('tireHotel.treadHint')}</p>
               </div>
@@ -197,7 +202,7 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
 
               <Separator />
 
-              <div>
+              <div id="tire-hotel-billing">
                 <p className="text-sm font-medium">{t('tireHotel.billingTitle')}</p>
                 <p className="text-xs text-muted-foreground">{t('tireHotel.billingHint')}</p>
               </div>
@@ -220,7 +225,7 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
 
               <Separator />
 
-              <div>
+              <div id="tire-hotel-prep">
                 <p className="text-sm font-medium">{t('tireHotel.prepTitle')}</p>
                 <p className="text-xs text-muted-foreground">{t('tireHotel.prepHint')}</p>
               </div>

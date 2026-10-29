@@ -593,7 +593,7 @@ export function ReportScheduleSettings({ schedules, members }: Props) {
           <h2 className="text-lg font-semibold">{t('title')}</h2>
           <p className="text-sm text-muted-foreground">{t('description')}</p>
         </div>
-        <Button size="sm" onClick={openNew}>
+        <Button id="report-schedule-new" size="sm" onClick={openNew}>
           <Plus className="mr-1.5 h-3.5 w-3.5" />
           {t('newSchedule')}
         </Button>
@@ -613,7 +613,7 @@ export function ReportScheduleSettings({ schedules, members }: Props) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div id="report-schedule-list" className="grid gap-4 sm:grid-cols-2">
           {schedules.map((schedule) => (
             <ScheduleCard
               key={schedule.id}

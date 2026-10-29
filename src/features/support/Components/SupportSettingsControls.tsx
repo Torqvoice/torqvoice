@@ -57,7 +57,7 @@ export function SupportSettingsControls() {
 
       <Separator />
 
-      <div className="flex items-center justify-between gap-4">
+      <div id="support-contact" className="flex items-center justify-between gap-4">
         <div className="space-y-0.5">
           <Label>{t('support.contactTitle')}</Label>
           <p className="text-xs text-muted-foreground">{t('support.contactHint')}</p>

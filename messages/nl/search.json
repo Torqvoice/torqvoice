@@ -1,9 +1,41 @@
 {
   "title": "Zoeken",
   "description": "Zoek naar voertuigen, klanten, werkorders en instellingen",
-  "placeholder": "Zoek op naam, kenteken, telefoon, VIN, factuur…",
+  "placeholder": "Zoek klanten, kentekens, facturen, instellingen…",
   "noResults": "Geen resultaten.",
+  "noResultsFor": "Niets gevonden voor \"{query}\"",
+  "noResultsHint": "Probeer een kenteken, een telefoonnummer, een factuurnummer of de naam van een instelling.",
   "recentCustomers": "Recente klanten",
   "services": "Serviceregistraties",
-  "toClose": "om te sluiten"
+  "toClose": "om te sluiten",
+  "groups": {
+    "recent": "Recent",
+    "settings": "Instellingen",
+    "pages": "Pagina’s",
+    "actions": "Acties",
+    "integrations": "Integraties"
+  },
+  "hints": {
+    "navigate": "navigeren",
+    "open": "openen",
+    "close": "sluiten",
+    "searching": "Zoeken…",
+    "start": "Instellingen, pagina’s, klanten, voertuigen, facturen en onderdelen, allemaal vanaf hier."
+  },
+  "open": "Openen",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nieuwe werkorder",
+    "newCustomer": "Nieuwe klant",
+    "newVehicle": "Nieuw voertuig",
+    "newQuote": "Nieuwe offerte",
+    "newPart": "Nieuw onderdeel",
+    "inviteMember": "Teamlid uitnodigen"
+  },
+  "settingsSearch": {
+    "placeholder": "Instellingen zoeken…",
+    "label": "Instellingen zoeken",
+    "empty": "Geen instelling komt overeen met \"{query}\"",
+    "shortcutHint": "Druk overal op {shortcut} om te zoeken"
+  }
 }

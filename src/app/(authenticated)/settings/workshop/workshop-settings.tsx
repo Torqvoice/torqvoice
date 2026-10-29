@@ -225,12 +225,19 @@ export function WorkshopSettings({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
-        <AppCard icon={Wrench} title={t('workshop.title')} contentClassName="space-y-6">
+        <div id="workshop-service-type">
+          <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
+        </div>
+        <AppCard
+          id="workshop-defaults"
+          icon={Wrench}
+          title={t('workshop.title')}
+          contentClassName="space-y-6"
+        >
           <p className="text-sm text-muted-foreground">{t('workshop.description')}</p>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div id="workshop-default-technician" className="space-y-2">
               <Label>{t('workshop.defaultTechnician')}</Label>
               <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
                 <PopoverTrigger asChild>
@@ -391,7 +398,7 @@ export function WorkshopSettings({
           {/* What a job is called before anybody types a title. Resolved on
               the server when the draft is made, so the preview here uses
               sample values; the rules are in workOrderTitle.ts. */}
-          <div className="space-y-4">
+          <div id="workshop-title-template" className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Tag className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold">{t('workshop.titleTemplateTitle')}</h3>
@@ -443,7 +450,7 @@ export function WorkshopSettings({
           {/* Pricing, not paperwork: the markup decides what a part costs the
               customer, which is settled here on the job, long before an
               invoice exists. */}
-          <div className="space-y-4">
+          <div id="workshop-parts-markup" className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Percent className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold">{t('workshop.partsMarkupTitle')}</h3>
@@ -514,7 +521,7 @@ export function WorkshopSettings({
 
           <Separator />
 
-          <div className="space-y-4">
+          <div id="workshop-units" className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Ruler className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold">{t('workshop.unitsTitle')}</h3>
@@ -522,7 +529,7 @@ export function WorkshopSettings({
             <p className="text-sm text-muted-foreground">{t('workshop.unitsDescription')}</p>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
+              <div id="workshop-unit-system" className="space-y-2">
                 <Label htmlFor="unitSystem">{t('workshop.distanceLabel')}</Label>
                 <Select value={unitSystem} onValueChange={setUnitSystem}>
                   <SelectTrigger id="unitSystem" className="w-full sm:w-56">

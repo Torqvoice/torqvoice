@@ -41,7 +41,8 @@ import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { WORKSHOP_CHAT_ENABLED } from '@/features/ai/constants'
-import { getManifest } from '@/integrations/registry'
+import { getManifest, listManifests } from '@/integrations/registry'
+import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
@@ -233,6 +234,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
       ? await findLookupConnection(data.organizationId)
       : null
   const plateLookupAvailable = lookupConnection !== null
+
+  // What the search palette can reach without asking the server: which
+  // settings pages exist on this install, and the connectors the catalog
+  // offers, trimmed to a name and a logo.
+  const cloudLinked = await isCloudLinked()
+  const searchConnectors = listManifests().map((m) => ({
+    id: m.id,
+    name: m.name,
+    category: m.category,
+    logo: m.logo,
+  }))
   const plateLookupRegistry = lookupConnection
     ? (getManifest(lookupConnection.connectorId)?.name ?? null)
     : null
@@ -365,7 +377,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                   {children}
                                 </div>
                               </SidebarInset>
-                              <SearchCommand />
+                              <SearchCommand
+                                visibleSubjects={visibleSubjects}
+                                features={features}
+                                tireHotelEnabled={tireHotelEnabled}
+                                aiEnabled={aiEnabled}
+                                isAdminOrOwner={isOwnerOrAdmin}
+                                isCloud={cloudLinked}
+                                supportEnabled={supportEnabled}
+                                isMarine={data.serviceType === 'marine'}
+                                connectors={searchConnectors}
+                              />
                               <PlateLookupCommand />
                               {isOwnerOrAdmin && <NotificationInitializer />}
                               <OnlineTracker />

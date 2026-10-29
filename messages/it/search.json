@@ -1,9 +1,41 @@
 {
   "title": "Cerca",
   "description": "Cerca veicoli, clienti, interventi e impostazioni",
-  "placeholder": "Cerca per nome, targa, telefono, telaio, fattura…",
+  "placeholder": "Cerca clienti, targhe, fatture, impostazioni…",
   "noResults": "Nessun risultato.",
+  "noResultsFor": "Nessun risultato per \"{query}\"",
+  "noResultsHint": "Prova con una targa, un numero di telefono, un numero di fattura o il nome di un’impostazione.",
   "recentCustomers": "Clienti recenti",
   "services": "Interventi",
-  "toClose": "per chiudere"
+  "toClose": "per chiudere",
+  "groups": {
+    "recent": "Recenti",
+    "settings": "Impostazioni",
+    "pages": "Pagine",
+    "actions": "Azioni",
+    "integrations": "Integrazioni"
+  },
+  "hints": {
+    "navigate": "naviga",
+    "open": "apri",
+    "close": "chiudi",
+    "searching": "Ricerca in corso…",
+    "start": "Impostazioni, pagine, clienti, veicoli, fatture e ricambi, tutto da qui."
+  },
+  "open": "Apri",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nuovo ordine di lavoro",
+    "newCustomer": "Nuovo cliente",
+    "newVehicle": "Nuovo veicolo",
+    "newQuote": "Nuovo preventivo",
+    "newPart": "Nuovo ricambio",
+    "inviteMember": "Invita un membro del team"
+  },
+  "settingsSearch": {
+    "placeholder": "Cerca impostazioni…",
+    "label": "Cerca impostazioni",
+    "empty": "Nessuna impostazione corrisponde a \"{query}\"",
+    "shortcutHint": "Premi {shortcut} ovunque per cercare"
+  }
 }
