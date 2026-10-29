@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
-import { SETUP_DATE_FORMATS, type SetupDraft } from '../../Lib/setupDraft'
+import { dialCodeValid, SETUP_DATE_FORMATS, type SetupDraft } from '../../Lib/setupDraft'
 import { LaterInSettings, settingsPathTag, useSettingsPath } from './LaterInSettings'
 import { type PickerOption, SearchPicker } from './SearchPicker'
 
@@ -136,7 +136,12 @@ export function StepRegion({
           measure,
           engine: draft.engineSizeUnit === 'cc' ? t('engineCcShort') : t('engineLitresShort'),
         })
-  const phoneValid = draft.dialCode === '' || /^\+\d{1,4}$/.test(draft.dialCode)
+  const phoneValid = dialCodeValid(draft.dialCode)
+  // A prefix that is not one opens its row, and the row stays open once it is
+  // fixed, so it does not shut under the owner's fingers mid-typing.
+  useEffect(() => {
+    if (!phoneValid) setOpen('phone')
+  }, [phoneValid])
 
   const rows: { key: Row; label: string; value: string; editor: React.ReactNode }[] = [
     {

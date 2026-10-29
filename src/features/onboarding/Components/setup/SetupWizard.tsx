@@ -17,6 +17,8 @@ import { createOnboardingOrg } from '../../Actions/createOnboardingOrg'
 import {
   initialDraft,
   type SetupDraft,
+  dialCodeValid,
+  firstIncompleteStep,
   setupPayload,
   taxStepComplete,
   withCountry,
@@ -274,7 +276,7 @@ function SetupWizardSteps({ redirectTo, facts }: { redirectTo?: string; facts: B
   }
 
   const nameValid = draft.workshopName.trim().length >= 2
-  const phoneValid = draft.dialCode === '' || /^\+\d{1,4}$/.test(draft.dialCode)
+  const phoneValid = dialCodeValid(draft.dialCode)
   const canContinue =
     step === 'workshop'
       ? nameValid
@@ -310,29 +312,34 @@ function SetupWizardSteps({ redirectTo, facts }: { redirectTo?: string; facts: B
     setStep(previous)
   }
 
-  /** Continue on an incomplete step: say what is missing, and go to it. */
-  const block = () => {
+  /**
+   * Continue on an incomplete step: say what is missing, and go to it. From
+   * Ready, `at` is the earlier step that was emptied again.
+   */
+  const block = (at: 'workshop' | 'region' | 'tax' = step as 'workshop' | 'region' | 'tax') => {
     const reason =
-      step === 'workshop'
+      at === 'workshop'
         ? 'name'
-        : step === 'region'
+        : at === 'region'
           ? 'phone_prefix'
           : draft.taxRate.trim() === ''
             ? 'tax_rate_missing'
             : 'tax_rate_invalid'
     blockedCount.current += 1
     track('workshop:setup_blocked', { step, reason, attempt: blockedCount.current })
-    setBlockedStep(step)
-    const field = step === 'workshop' ? 'workshopName' : step === 'region' ? 'dialCode' : 'taxRate'
-    requestAnimationFrame(() => document.getElementById(field)?.focus())
+    if (at !== step) go(at)
+    setBlockedStep(at)
+    const field = at === 'workshop' ? 'workshopName' : at === 'region' ? 'dialCode' : 'taxRate'
+    // Two frames: a step switched to here is drawn before its field exists.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => document.getElementById(field)?.focus())
+    )
   }
 
   const create = async () => {
-    if (!nameValid) {
-      blockedCount.current += 1
-      track('workshop:setup_blocked', { step, reason: 'name', attempt: blockedCount.current })
-      go('workshop')
-      setBlockedStep('workshop')
+    const incomplete = firstIncompleteStep(draft)
+    if (incomplete) {
+      block(incomplete)
       return
     }
     setSaving(true)

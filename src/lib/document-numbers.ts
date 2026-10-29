@@ -43,7 +43,9 @@ export function documentNumbers(locale: string | undefined): DocumentNumbers {
       quantity: (value, unit) => formatQuantity(value, unit),
     }
   }
-  const counts = formatter(locale, { useGrouping: false, maximumFractionDigits: 2 })
+  // As many decimals as a stored quantity has: 0.125 h prints whole, since the
+  // line total is charged on it. Six still drops float noise such as 0.30000000000000004.
+  const counts = formatter(locale, { useGrouping: false, maximumFractionDigits: 6 })
   const distances = formatter(locale, { maximumFractionDigits: 0 })
   const count = (value: number) => (counts ? printable(counts.format(value)) : String(value))
   return {

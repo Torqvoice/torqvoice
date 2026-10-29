@@ -26,6 +26,10 @@ describe('documentNumbers', () => {
     expect(documentNumbers('de').count(1.5)).toBe('1,5')
     expect(documentNumbers('en').count(1.5)).toBe('1.5')
     expect(documentNumbers('fr').count(1000)).toBe('1000')
+    // A stored quantity keeps its precision: the line is charged on all of it.
+    expect(documentNumbers('fr').count(0.125)).toBe('0,125')
+    expect(documentNumbers('en').count(0.004)).toBe('0.004')
+    expect(documentNumbers('en').count(0.1 + 0.2)).toBe('0.3')
     expect(documentNumbers('fr').quantity(2.5, 'l')).toBe('2,5 l')
     expect(documentNumbers('fr').quantity(4)).toBe('4')
   })

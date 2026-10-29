@@ -171,6 +171,23 @@ export function taxStepComplete(draft: SetupDraft): boolean {
   return draft.taxChoice !== 'yes' || parseTaxRate(draft.taxRate) !== null
 }
 
+/** A phone prefix the server accepts: empty, or + and up to four digits. */
+export function dialCodeValid(dialCode: string): boolean {
+  return dialCode === '' || /^\+\d{1,4}$/.test(dialCode)
+}
+
+/**
+ * The first step still missing something, or null when the workshop can be
+ * created. Ready can be reached from the step bar after a step was emptied
+ * again, so creating checks every step, not only the one on screen.
+ */
+export function firstIncompleteStep(draft: SetupDraft): 'workshop' | 'region' | 'tax' | null {
+  if (draft.workshopName.trim().length < 2) return 'workshop'
+  if (!dialCodeValid(draft.dialCode)) return 'region'
+  if (!taxStepComplete(draft)) return 'tax'
+  return null
+}
+
 /** What the server is sent: the draft, settled into saved values. */
 export function setupPayload(draft: SetupDraft) {
   const charges = draft.taxChoice === 'yes'

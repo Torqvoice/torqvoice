@@ -5,6 +5,7 @@ vi.unmock('next-intl')
 import fr from '../../../../messages/fr/onboarding.json'
 import frPdf from '../../../../messages/fr/pdf.json'
 import { invoiceLabels } from '@/features/invoice-designer/Lib/invoiceLabels'
+import { withMarineDocumentLabels } from '@/features/invoice-designer/Lib/marineLabels'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { pickerScore } from '@/features/onboarding/Components/setup/SearchPicker'
 import { countrySearchTerms } from '@/lib/country-defaults'
@@ -17,6 +18,7 @@ import {
   type SetupDraft,
   setupPayload,
   taxStepComplete,
+  firstIncompleteStep,
   withCountry,
   withCustomerLanguage,
   withKind,
@@ -109,6 +111,20 @@ describe('the tax step', () => {
     expect(taxStepComplete({ ...frenchWorkshop(), taxRate: '' })).toBe(false)
     expect(taxStepComplete({ ...frenchWorkshop(), taxChoice: 'no', taxRate: '' })).toBe(true)
     expect(taxStepComplete({ ...frenchWorkshop(), taxChoice: 'skipped', taxRate: '' })).toBe(true)
+  })
+})
+
+describe('creating from Ready', () => {
+  // Ready is reachable from the step bar after an earlier step was emptied again.
+  it('finds the first step still missing something', () => {
+    expect(firstIncompleteStep(frenchWorkshop())).toBeNull()
+    expect(firstIncompleteStep({ ...frenchWorkshop(), taxRate: '' })).toBe('tax')
+    expect(firstIncompleteStep({ ...frenchWorkshop(), taxRate: '150' })).toBe('tax')
+    expect(firstIncompleteStep({ ...frenchWorkshop(), dialCode: '33' })).toBe('region')
+    expect(firstIncompleteStep({ ...frenchWorkshop(), dialCode: '' })).toBeNull()
+    expect(
+      firstIncompleteStep({ ...frenchWorkshop(), workshopName: ' G ', dialCode: 'x', taxRate: '' })
+    ).toBe('workshop')
   })
 })
 
@@ -210,6 +226,22 @@ describe('the preview', () => {
       )
     )
     expect(text).toContain('5 qt')
+  })
+
+  it('uses the boat yard words for a marine workshop', () => {
+    const marine = withKind(frenchWorkshop(), 'marine')
+    const labels = withMarineDocumentLabels(invoiceLabels(frPdf, 'invoice'), frPdf)
+    const text = JSON.stringify(
+      buildInvoicePrintSpec(previewInvoiceInput(marine, labels, fr.setup.sample))
+    )
+    expect(text).toContain(frPdf.invoice.vehicleMarine)
+    expect(text).toContain('Yamaha')
+    const cars = JSON.stringify(
+      buildInvoicePrintSpec(
+        previewInvoiceInput(frenchWorkshop(), invoiceLabels(frPdf, 'invoice'), fr.setup.sample)
+      )
+    )
+    expect(cars).not.toContain(frPdf.invoice.vehicleMarine)
   })
 })
 

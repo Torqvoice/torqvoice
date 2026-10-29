@@ -4,6 +4,10 @@ import { Maximize2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { invoiceLabels } from '@/features/invoice-designer/Lib/invoiceLabels'
+import {
+  type PdfMessages,
+  withMarineDocumentLabels,
+} from '@/features/invoice-designer/Lib/marineLabels'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 import { SpecThumbnail } from '@/features/invoice-designer/Render/SpecThumbnail'
@@ -16,6 +20,8 @@ import type { SetupDraft } from '../../Lib/setupDraft'
 interface LanguagePack {
   locale: Locale
   labels: Record<string, string>
+  /** The same labels with a boat yard's words: vessel, HIN, engine hours. */
+  marineLabels: Record<string, string>
   sample: PreviewSample
 }
 
@@ -25,9 +31,11 @@ async function loadPack(locale: Locale): Promise<LanguagePack> {
     import(`../../../../../messages/${locale}/pdf.json`),
     import(`../../../../../messages/${locale}/onboarding.json`),
   ])
+  const labels = invoiceLabels(pdf.default, 'invoice')
   return {
     locale,
-    labels: invoiceLabels(pdf.default, 'invoice'),
+    labels,
+    marineLabels: withMarineDocumentLabels(labels, pdf.default as PdfMessages),
     sample: onboarding.default.setup.sample,
   }
 }
@@ -123,7 +131,15 @@ export function SetupPreview({ draft, caption }: { draft: SetupDraft; caption: s
 
   const spec = useMemo(
     () =>
-      pack ? buildInvoicePrintSpec(previewInvoiceInput(draft, pack.labels, pack.sample)) : null,
+      pack
+        ? buildInvoicePrintSpec(
+            previewInvoiceInput(
+              draft,
+              draft.kind === 'marine' ? pack.marineLabels : pack.labels,
+              pack.sample
+            )
+          )
+        : null,
     [draft, pack]
   )
 
