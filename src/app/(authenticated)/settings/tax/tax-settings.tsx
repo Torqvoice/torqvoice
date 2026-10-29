@@ -206,7 +206,7 @@ export function TaxSettings({
 
         <ReadOnlyWrapper>
           <div className="space-y-6">
-            <div className="flex items-center justify-between gap-4">
+            <div id="tax-enabled" className="flex items-center justify-between gap-4">
               <div className="space-y-1">
                 <Label>{t('currency.enableTax')}</Label>
                 <p className="text-xs text-muted-foreground">{t('currency.enableTaxHint')}</p>
@@ -288,7 +288,7 @@ export function TaxSettings({
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                <div id="tax-components" className="space-y-2">
                   <div className="hidden grid-cols-[1fr_7rem_1fr_2rem] gap-2 text-xs text-muted-foreground sm:grid">
                     <span>{t('tax.componentName')}</span>
                     <span>{t('tax.componentRate')}</span>
@@ -391,6 +391,7 @@ export function TaxSettings({
 
             {taxEnabled && taxSelective && (
               <div
+                id="tax-applies-to"
                 className="space-y-3 rounded-lg border bg-muted/30 p-4"
                 data-testid="tax-applies"
               >
@@ -414,7 +415,7 @@ export function TaxSettings({
             )}
 
             {taxEnabled && (
-              <div className="space-y-2">
+              <div id="tax-mode" className="space-y-2">
                 <Label>{t('tax.modeLabel')}</Label>
                 <p className="text-xs text-muted-foreground">{t('tax.modeHint')}</p>
                 <div className="inline-flex rounded-md border p-0.5">

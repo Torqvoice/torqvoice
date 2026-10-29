@@ -78,6 +78,7 @@ export function SignedInDevices({ devices }: { devices: SignedInDevice[] }) {
 
   return (
     <AppCard
+      id="account-devices"
       icon={MonitorSmartphone}
       title={t('account.devicesTitle')}
       description={t('account.devicesDescription')}

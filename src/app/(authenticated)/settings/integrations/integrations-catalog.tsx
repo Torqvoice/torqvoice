@@ -124,6 +124,7 @@ export function IntegrationsCatalog({
   return (
     <div className="space-y-4">
       <AppCard
+        id="integrations-connected"
         icon={Check}
         title={t('catalog.connectedTitle')}
         badge={connected.length || undefined}
@@ -177,6 +178,7 @@ export function IntegrationsCatalog({
       </AppCard>
 
       <AppCard
+        id="integrations-available"
         icon={Plug}
         title={t('catalog.availableTitle')}
         description={t('catalog.availableDescription')}
@@ -194,6 +196,7 @@ export function IntegrationsCatalog({
         <div className="relative mb-4">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            id="integrations-search"
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -204,7 +207,10 @@ export function IntegrationsCatalog({
         </div>
 
         {categories.length > 1 && (
-          <div className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 sm:flex-wrap sm:overflow-visible">
+          <div
+            id="integrations-categories"
+            className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 sm:flex-wrap sm:overflow-visible"
+          >
             <Button
               variant={category === 'all' ? 'default' : 'outline'}
               size="sm"
@@ -291,7 +297,10 @@ export function IntegrationsCatalog({
         )}
 
         {canSuggest && (
-          <div className="mt-4 flex flex-col gap-3 rounded-lg border border-dashed px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div
+            id="integrations-suggest"
+            className="mt-4 flex flex-col gap-3 rounded-lg border border-dashed px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+          >
             <div className="flex items-start gap-3">
               <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <div>

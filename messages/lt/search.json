@@ -1,9 +1,41 @@
 {
   "title": "Paieška",
   "description": "Ieškokite transporto priemonių, klientų, darbų ir nustatymų",
-  "placeholder": "Ieškoti pagal vardą, numerį, telefoną, VIN, sąskaitą…",
+  "placeholder": "Ieškoti klientų, numerių, sąskaitų, nustatymų…",
   "noResults": "Rezultatų nėra.",
+  "noResultsFor": "Nieko nerasta pagal „{query}“",
+  "noResultsHint": "Pabandykite valstybinį numerį, telefono numerį, sąskaitos numerį arba nustatymo pavadinimą.",
   "recentCustomers": "Naujausi klientai",
   "services": "Serviso įrašai",
-  "toClose": "kad uždarytumėte"
+  "toClose": "kad uždarytumėte",
+  "groups": {
+    "recent": "Naujausi",
+    "settings": "Nustatymai",
+    "pages": "Puslapiai",
+    "actions": "Veiksmai",
+    "integrations": "Integracijos"
+  },
+  "hints": {
+    "navigate": "naršyti",
+    "open": "atidaryti",
+    "close": "uždaryti",
+    "searching": "Ieškoma…",
+    "start": "Nustatymai, puslapiai, klientai, transporto priemonės, sąskaitos ir dalys, viskas iš čia."
+  },
+  "open": "Atidaryti",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "newCustomer": "Naujas klientas",
+    "newVehicle": "Nauja transporto priemonė",
+    "newQuote": "Naujas pasiūlymas",
+    "newPart": "Nauja dalis",
+    "inviteMember": "Pakviesti komandos narį"
+  },
+  "settingsSearch": {
+    "placeholder": "Ieškoti nustatymų…",
+    "label": "Ieškoti nustatymų",
+    "empty": "Joks nustatymas neatitinka „{query}“",
+    "shortcutHint": "Paspauskite {shortcut} bet kur, kad ieškotumėte"
+  }
 }

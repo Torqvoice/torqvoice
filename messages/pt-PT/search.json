@@ -1,9 +1,41 @@
 {
   "title": "Pesquisar",
   "description": "Pesquise viaturas, clientes, serviços e definições",
-  "placeholder": "Pesquisar por nome, matrícula, telefone, VIN, fatura…",
+  "placeholder": "Pesquisar clientes, matrículas, faturas, definições…",
   "noResults": "Nenhum resultado encontrado.",
+  "noResultsFor": "Nada corresponde a \"{query}\"",
+  "noResultsHint": "Experimente uma matrícula, um número de telefone, um número de fatura ou o nome de uma definição.",
   "recentCustomers": "Clientes recentes",
   "services": "Registos de serviço",
-  "toClose": "para fechar"
+  "toClose": "para fechar",
+  "groups": {
+    "recent": "Recentes",
+    "settings": "Definições",
+    "pages": "Páginas",
+    "actions": "Ações",
+    "integrations": "Integrações"
+  },
+  "hints": {
+    "navigate": "navegar",
+    "open": "abrir",
+    "close": "fechar",
+    "searching": "A pesquisar…",
+    "start": "Definições, páginas, clientes, viaturas, faturas e peças, tudo a partir daqui."
+  },
+  "open": "Abrir",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nova ordem de serviço",
+    "newCustomer": "Novo cliente",
+    "newVehicle": "Nova viatura",
+    "newQuote": "Novo orçamento",
+    "newPart": "Nova peça",
+    "inviteMember": "Convidar um membro da equipa"
+  },
+  "settingsSearch": {
+    "placeholder": "Pesquisar definições…",
+    "label": "Pesquisar definições",
+    "empty": "Nenhuma definição corresponde a \"{query}\"",
+    "shortcutHint": "Prima {shortcut} em qualquer lado para pesquisar"
+  }
 }

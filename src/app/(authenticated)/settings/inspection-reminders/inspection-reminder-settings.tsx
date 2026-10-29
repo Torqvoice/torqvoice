@@ -107,6 +107,7 @@ export function InspectionReminderSettings({
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
         <AppCard
+          id="inspection-reminders-booking"
           icon={ClipboardCheck}
           title={t('title')}
           action={<DocsLink href="/docs/features/inspection-reminders" variant="hint" />}
@@ -128,18 +129,28 @@ export function InspectionReminderSettings({
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {field('ir-duration', t('duration'), t('durationHint'), duration, setDuration, 15)}
-            {field('ir-lead', t('leadDays'), t('leadDaysHint'), leadDays, setLeadDays, 1)}
-            {field('ir-horizon', t('horizonWeeks'), t('horizonHint'), horizon, setHorizon, 1)}
-            {field('ir-reserve', t('reserve'), t('reserveHint'), reserve, setReserve, 0)}
-            {field(
-              'ir-link',
-              t('linkValidDays'),
-              t('linkValidHint', { min: MIN_LINK_DAYS }),
-              linkDays,
-              setLinkDays,
-              MIN_LINK_DAYS
-            )}
+            <div id="inspection-reminders-duration">
+              {field('ir-duration', t('duration'), t('durationHint'), duration, setDuration, 15)}
+            </div>
+            <div id="inspection-reminders-lead-days">
+              {field('ir-lead', t('leadDays'), t('leadDaysHint'), leadDays, setLeadDays, 1)}
+            </div>
+            <div id="inspection-reminders-horizon">
+              {field('ir-horizon', t('horizonWeeks'), t('horizonHint'), horizon, setHorizon, 1)}
+            </div>
+            <div id="inspection-reminders-reserve">
+              {field('ir-reserve', t('reserve'), t('reserveHint'), reserve, setReserve, 0)}
+            </div>
+            <div id="inspection-reminders-link-valid">
+              {field(
+                'ir-link',
+                t('linkValidDays'),
+                t('linkValidHint', { min: MIN_LINK_DAYS }),
+                linkDays,
+                setLinkDays,
+                MIN_LINK_DAYS
+              )}
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="ir-mode">{t('bookingMode')}</Label>
               <Select value={mode} onValueChange={setMode}>

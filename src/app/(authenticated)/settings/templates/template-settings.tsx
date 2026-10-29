@@ -227,7 +227,12 @@ function TemplateTab({
   }
 
   return (
-    <AppCard icon={Palette} title={t('templates.presets')} contentClassName="space-y-4">
+    <AppCard
+      id="templates-designs"
+      icon={Palette}
+      title={t('templates.presets')}
+      contentClassName="space-y-4"
+    >
       <p className="text-sm text-muted-foreground">{t('templates.designerIntro')}</p>
 
       {/* The workshop's own saved designs, above the built-in starting
@@ -351,7 +356,10 @@ function TemplateTab({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-t pt-4">
+      <div
+        id="templates-open-designer"
+        className="flex items-center justify-between gap-4 border-t pt-4"
+      >
         <p className="text-xs text-muted-foreground">{t('templates.designerHint')}</p>
         <Button asChild variant="outline">
           <Link href={`/invoice-designer?doc=${documentType}`}>
@@ -444,7 +452,7 @@ function SmsTemplateTab({
 
   return (
     <div className="space-y-4">
-      <AppCard icon={MessageSquare} title={t('templates.smsTemplates')}>
+      <AppCard id="templates-sms" icon={MessageSquare} title={t('templates.smsTemplates')}>
         <p className="mb-4 text-sm text-muted-foreground">
           {t.rich('templates.smsTemplatesDescription', {
             code: (chunks) => (
@@ -652,7 +660,7 @@ export function TemplateSettings({
       {/* Two levels: what kind of template, then which document. The page
           holds three different editors, and the four printed documents are
           only one of them. */}
-      <div className="space-y-3">
+      <div id="templates-tabs" className="space-y-3">
         <div
           role="tablist"
           aria-label={t('templates.title')}

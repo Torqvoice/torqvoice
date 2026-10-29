@@ -89,6 +89,7 @@ export function LicenseSettings({
   return (
     <div className="space-y-6">
       <AppCard
+        id="license-white-label"
         icon={Key}
         title={t('license.title')}
         description={t('license.description')}
@@ -96,6 +97,7 @@ export function LicenseSettings({
           !licenseValid && !demoMode ? (
             <Button asChild variant="default" size="sm" className="shrink-0">
               <a
+                id="license-purchase"
                 href={`${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'}/subscriptions/white-label`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -108,7 +110,7 @@ export function LicenseSettings({
         }
         contentClassName="space-y-4"
       >
-        <div className="flex flex-wrap items-center gap-2">
+        <div id="license-status" className="flex flex-wrap items-center gap-2">
           <Label>{t('license.status')}</Label>
           {statusBadge}
           {initialExpiresAt && (
@@ -132,6 +134,7 @@ export function LicenseSettings({
         )}
         <div className="flex gap-2">
           <Input
+            id="license-key"
             placeholder={t('license.enterLicenseKey')}
             value={licenseKey}
             onChange={(e) => setLicenseKey(e.target.value)}

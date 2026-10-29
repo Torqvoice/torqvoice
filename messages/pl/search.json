@@ -1,9 +1,41 @@
 {
   "title": "Szukaj",
   "description": "Szukaj pojazdów, klientów, zleceń i ustawień",
-  "placeholder": "Szukaj po nazwie, rejestracji, telefonie, VIN, fakturze…",
+  "placeholder": "Szukaj klientów, rejestracji, faktur, ustawień…",
   "noResults": "Brak wyników.",
+  "noResultsFor": "Brak wyników dla „{query}”",
+  "noResultsHint": "Spróbuj numeru rejestracyjnego, numeru telefonu, numeru faktury lub nazwy ustawienia.",
   "recentCustomers": "Ostatni klienci",
   "services": "Historia serwisowa",
-  "toClose": "aby zamknąć"
+  "toClose": "aby zamknąć",
+  "groups": {
+    "recent": "Ostatnie",
+    "settings": "Ustawienia",
+    "pages": "Strony",
+    "actions": "Akcje",
+    "integrations": "Integracje"
+  },
+  "hints": {
+    "navigate": "nawiguj",
+    "open": "otwórz",
+    "close": "zamknij",
+    "searching": "Szukanie…",
+    "start": "Ustawienia, strony, klienci, pojazdy, faktury i części, wszystko stąd."
+  },
+  "open": "Otwórz",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nowe zlecenie",
+    "newCustomer": "Nowy klient",
+    "newVehicle": "Nowy pojazd",
+    "newQuote": "Nowa wycena",
+    "newPart": "Nowa część",
+    "inviteMember": "Zaproś członka zespołu"
+  },
+  "settingsSearch": {
+    "placeholder": "Szukaj ustawień…",
+    "label": "Szukaj ustawień",
+    "empty": "Żadne ustawienie nie pasuje do „{query}”",
+    "shortcutHint": "Naciśnij {shortcut} w dowolnym miejscu, aby wyszukać"
+  }
 }

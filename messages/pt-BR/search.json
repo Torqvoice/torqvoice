@@ -1,9 +1,41 @@
 {
   "title": "Buscar",
   "description": "Busque veículos, clientes, serviços e configurações",
-  "placeholder": "Buscar por nome, placa, telefone, chassi, nota…",
+  "placeholder": "Buscar clientes, placas, faturas, configurações…",
   "noResults": "Nenhum resultado.",
+  "noResultsFor": "Nada corresponde a \"{query}\"",
+  "noResultsHint": "Tente uma placa, um telefone, um número de fatura ou o nome de uma configuração.",
   "recentCustomers": "Clientes recentes",
   "services": "Histórico de serviço",
-  "toClose": "para fechar"
+  "toClose": "para fechar",
+  "groups": {
+    "recent": "Recentes",
+    "settings": "Configurações",
+    "pages": "Páginas",
+    "actions": "Ações",
+    "integrations": "Integrações"
+  },
+  "hints": {
+    "navigate": "navegar",
+    "open": "abrir",
+    "close": "fechar",
+    "searching": "Buscando…",
+    "start": "Configurações, páginas, clientes, veículos, faturas e peças, tudo daqui."
+  },
+  "open": "Abrir",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nova ordem de serviço",
+    "newCustomer": "Novo cliente",
+    "newVehicle": "Novo veículo",
+    "newQuote": "Novo orçamento",
+    "newPart": "Nova peça",
+    "inviteMember": "Convidar um membro da equipe"
+  },
+  "settingsSearch": {
+    "placeholder": "Buscar configurações…",
+    "label": "Buscar configurações",
+    "empty": "Nenhuma configuração corresponde a \"{query}\"",
+    "shortcutHint": "Pressione {shortcut} em qualquer lugar para buscar"
+  }
 }

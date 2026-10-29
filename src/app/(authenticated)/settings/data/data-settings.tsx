@@ -453,6 +453,7 @@ export function DataSettings({
             ageHours < 3 ? 'bg-emerald-500' : ageHours < 26 ? 'bg-amber-500' : 'bg-red-500'
           return (
             <AppCard
+              id="data-protection"
               icon={ShieldCheck}
               title={t('data.backupStatus.title')}
               className="gap-2 border border-primary/30 shadow-sm"
@@ -490,6 +491,7 @@ export function DataSettings({
       <ReadOnlyWrapper>
         {/* Bring data in: one card, one row per source */}
         <AppCard
+          id="data-import"
           icon={Upload}
           title={t('data.importTitle')}
           description={t('data.importHubDescription')}
@@ -497,6 +499,7 @@ export function DataSettings({
         >
           <ul className="divide-y">
             <ImportSourceRow
+              id="data-import-spreadsheet"
               icon={FileSpreadsheet}
               title={t('data.sourceSpreadsheet')}
               description={t('data.sourceSpreadsheetDesc')}
@@ -513,6 +516,7 @@ export function DataSettings({
               ))}
             </ImportSourceRow>
             <ImportSourceRow
+              id="data-import-lubelog"
               icon={Wrench}
               title={
                 <Image
@@ -531,6 +535,7 @@ export function DataSettings({
               </Button>
             </ImportSourceRow>
             <ImportSourceRow
+              id="data-import-invoice-ninja"
               icon={Receipt}
               title={
                 <Image
@@ -549,6 +554,7 @@ export function DataSettings({
               </Button>
             </ImportSourceRow>
             <ImportSourceRow
+              id="data-import-backup"
               icon={FileArchive}
               title={t('data.sourceBackup')}
               description={t('data.sourceBackupDesc')}
@@ -564,6 +570,7 @@ export function DataSettings({
 
         {/* Export */}
         <AppCard
+          id="data-export"
           icon={Download}
           title={t('data.exportTitle')}
           description={t('data.exportDescription')}
@@ -581,7 +588,10 @@ export function DataSettings({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              id="data-export-options"
+              className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {OPTION_META.map(({ key, labelKey, descKey }) => (
                 <label
                   key={key}
@@ -766,13 +776,13 @@ export function DataSettings({
       </Dialog>
 
       {/* Danger Zone */}
-      <Card className="border-destructive/30 shadow-sm">
+      <Card id="data-danger-zone" className="border-destructive/30 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <AlertTriangle className="h-5 w-5 text-destructive" />
           <CardTitle className="text-lg text-destructive">{t('account.dangerZone')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-start justify-between gap-4">
+          <div id="data-delete-content" className="flex items-start justify-between gap-4">
             <div>
               <p className="font-medium">{t('account.deleteContentTitle')}</p>
               <p className="text-sm text-muted-foreground">
@@ -807,7 +817,7 @@ export function DataSettings({
           {isOwner && (
             <>
               <div className="my-4 border-t border-destructive/20" />
-              <div className="flex items-start justify-between gap-4">
+              <div id="data-delete-workshop" className="flex items-start justify-between gap-4">
                 <div>
                   <p className="font-medium">{t('account.deleteWorkshopTitle')}</p>
                   <p className="text-sm text-muted-foreground">
@@ -830,7 +840,7 @@ export function DataSettings({
           )}
 
           <div className="my-4 border-t border-destructive/20" />
-          <div className="flex items-start justify-between gap-4">
+          <div id="data-delete-account" className="flex items-start justify-between gap-4">
             <div>
               <p className="font-medium">{t('account.deleteAccountTitle')}</p>
               <p className="text-sm text-muted-foreground">
@@ -1214,18 +1224,21 @@ export function DataSettings({
  * the title slot where it has room.
  */
 function ImportSourceRow({
+  id,
   icon: Icon,
   title,
   description,
   children,
 }: {
+  /** Anchor for deep links from settings search. */
+  id?: string
   icon: React.ComponentType<{ className?: string }>
   title: React.ReactNode
   description: string
   children: React.ReactNode
 }) {
   return (
-    <li className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+    <li id={id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
         <Icon className="h-5 w-5" />
       </div>

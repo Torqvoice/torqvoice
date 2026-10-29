@@ -1,9 +1,41 @@
 {
   "title": "Buscar",
   "description": "Busca vehículos, clientes, trabajos y ajustes",
-  "placeholder": "Buscar por nombre, matrícula, teléfono, VIN, factura…",
+  "placeholder": "Buscar clientes, matrículas, facturas, ajustes…",
   "noResults": "Sin resultados.",
+  "noResultsFor": "Nada coincide con \"{query}\"",
+  "noResultsHint": "Prueba con una matrícula, un número de teléfono, un número de factura o el nombre de un ajuste.",
   "recentCustomers": "Clientes recientes",
   "services": "Historial de servicio",
-  "toClose": "para cerrar"
+  "toClose": "para cerrar",
+  "groups": {
+    "recent": "Recientes",
+    "settings": "Configuración",
+    "pages": "Páginas",
+    "actions": "Acciones",
+    "integrations": "Integraciones"
+  },
+  "hints": {
+    "navigate": "navegar",
+    "open": "abrir",
+    "close": "cerrar",
+    "searching": "Buscando…",
+    "start": "Ajustes, páginas, clientes, vehículos, facturas y piezas, todo desde aquí."
+  },
+  "open": "Abrir",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nueva orden de trabajo",
+    "newCustomer": "Nuevo cliente",
+    "newVehicle": "Nuevo vehículo",
+    "newQuote": "Nuevo presupuesto",
+    "newPart": "Nueva pieza",
+    "inviteMember": "Invitar a un miembro del equipo"
+  },
+  "settingsSearch": {
+    "placeholder": "Buscar ajustes…",
+    "label": "Buscar ajustes",
+    "empty": "Ningún ajuste coincide con \"{query}\"",
+    "shortcutHint": "Pulsa {shortcut} en cualquier lugar para buscar"
+  }
 }

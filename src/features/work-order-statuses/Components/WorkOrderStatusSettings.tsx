@@ -202,7 +202,7 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
       <ReadOnlyWrapper>
         <div className="space-y-6">
           {offered.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div id="work-order-statuses-quick-add" className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t('suggestionsLabel')}
               </span>
@@ -227,7 +227,12 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
             </div>
           )}
 
-          <AppCard icon={ListChecks} title={t('cardTitle')} contentClassName="p-0">
+          <AppCard
+            id="work-order-statuses-stages"
+            icon={ListChecks}
+            title={t('cardTitle')}
+            contentClassName="p-0"
+          >
             <div className="divide-y divide-card-edge">
               {STAGES.map((stage, stageIndex) => {
                 const inStage = statuses.filter((s) => s.stage === stage)

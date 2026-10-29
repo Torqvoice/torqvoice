@@ -279,7 +279,12 @@ export function AccountSettings({
       </Card> */}
 
       {/* Update Name */}
-      <AppCard icon={User} title={t('account.profileTitle')} contentClassName="space-y-4">
+      <AppCard
+        id="account-profile"
+        icon={User}
+        title={t('account.profileTitle')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('account.profileDescription')}</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -354,10 +359,13 @@ export function AccountSettings({
         </div>
       </AppCard>
 
-      <SignatureCard initial={signature} />
+      <div id="account-signature">
+        <SignatureCard initial={signature} />
+      </div>
 
       {/* Change Password */}
       <AppCard
+        id="account-password"
         icon={KeyRound}
         title={t('account.changePasswordTitle')}
         contentClassName="space-y-4"
@@ -405,7 +413,12 @@ export function AccountSettings({
         </div>
       </AppCard>
       {/* Two-Factor Authentication */}
-      <AppCard icon={Shield} title={t('account.twoFactorTitle')} contentClassName="space-y-4">
+      <AppCard
+        id="account-two-factor"
+        icon={Shield}
+        title={t('account.twoFactorTitle')}
+        contentClassName="space-y-4"
+      >
         {twoFactorEnabled ? (
           <>
             <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-3">

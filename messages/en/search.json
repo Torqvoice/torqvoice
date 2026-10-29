@@ -1,9 +1,41 @@
 {
   "title": "Search",
   "description": "Search for vehicles, customers, services and settings",
-  "placeholder": "Search by name, plate, phone, VIN, invoice…",
+  "placeholder": "Search customers, plates, invoices, settings…",
   "noResults": "No results found.",
+  "noResultsFor": "Nothing matches “{query}”",
+  "noResultsHint": "Try a plate, a phone number, an invoice number, or the name of a setting.",
   "recentCustomers": "Recent customers",
   "services": "Service records",
-  "toClose": "to close"
+  "toClose": "to close",
+  "groups": {
+    "recent": "Recent",
+    "settings": "Settings",
+    "pages": "Pages",
+    "actions": "Actions",
+    "integrations": "Integrations"
+  },
+  "hints": {
+    "navigate": "navigate",
+    "open": "open",
+    "close": "close",
+    "searching": "Searching…",
+    "start": "Settings, pages, customers, vehicles, invoices and parts, all from here."
+  },
+  "open": "Open",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "New work order",
+    "newCustomer": "New customer",
+    "newVehicle": "New vehicle",
+    "newQuote": "New quote",
+    "newPart": "New part",
+    "inviteMember": "Invite a team member"
+  },
+  "settingsSearch": {
+    "placeholder": "Search settings…",
+    "label": "Search settings",
+    "empty": "No setting matches “{query}”",
+    "shortcutHint": "Press {shortcut} anywhere to search"
+  }
 }

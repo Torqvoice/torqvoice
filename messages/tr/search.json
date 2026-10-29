@@ -1,9 +1,41 @@
 {
   "title": "Ara",
   "description": "Araç, müşteri, iş emri ve ayarlarda arayın",
-  "placeholder": "İsim, plaka, telefon, şasi, fatura ara…",
+  "placeholder": "Müşteri, plaka, fatura, ayar ara…",
   "noResults": "Sonuç yok.",
+  "noResultsFor": "\"{query}\" ile eşleşen sonuç yok",
+  "noResultsHint": "Bir plaka, telefon numarası, fatura numarası veya bir ayarın adını deneyin.",
   "recentCustomers": "Son müşteriler",
   "services": "Servis kayıtları",
-  "toClose": "kapatmak için"
+  "toClose": "kapatmak için",
+  "groups": {
+    "recent": "Son kullanılanlar",
+    "settings": "Ayarlar",
+    "pages": "Sayfalar",
+    "actions": "İşlemler",
+    "integrations": "Entegrasyonlar"
+  },
+  "hints": {
+    "navigate": "gezin",
+    "open": "aç",
+    "close": "kapat",
+    "searching": "Aranıyor…",
+    "start": "Ayarlar, sayfalar, müşteriler, araçlar, faturalar ve parçalar, hepsi buradan."
+  },
+  "open": "Aç",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Yeni iş emri",
+    "newCustomer": "Yeni müşteri",
+    "newVehicle": "Yeni araç",
+    "newQuote": "Yeni teklif",
+    "newPart": "Yeni parça",
+    "inviteMember": "Ekip üyesi davet et"
+  },
+  "settingsSearch": {
+    "placeholder": "Ayarlarda ara…",
+    "label": "Ayarlarda ara",
+    "empty": "\"{query}\" ile eşleşen ayar yok",
+    "shortcutHint": "Aramak için herhangi bir yerde {shortcut} tuşuna basın"
+  }
 }

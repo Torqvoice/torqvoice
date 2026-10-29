@@ -262,7 +262,7 @@ export function CustomerPortalSettings({
                 <p className="text-xs text-muted-foreground">{t('portal.hoursHint')}</p>
               </div>
 
-              <div className="space-y-2">
+              <div id="customer-portal-url" className="space-y-2">
                 <Label>{t('portal.portalUrl')}</Label>
                 <div className="flex gap-2">
                   <Input value={portalUrl} readOnly className="font-mono text-sm" />
@@ -282,7 +282,10 @@ export function CustomerPortalSettings({
               {/* Requests are submitted here but the alert that announces them
                     is configured on another page. Without a pointer, an operator
                     turning the portal on has no reason to go looking for it. */}
-              <div className="flex items-start gap-2 rounded-md border bg-muted/40 p-3">
+              <div
+                id="customer-portal-request-alerts"
+                className="flex items-start gap-2 rounded-md border bg-muted/40 p-3"
+              >
                 <Bell className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <p className="text-xs text-muted-foreground">
                   {t('portal.serviceRequestAlertsHint')}{' '}
@@ -297,13 +300,14 @@ export function CustomerPortalSettings({
 
         {enabled && (
           <AppCard
+            id="customer-portal-background"
             icon={ImageIcon}
             title={t('portal.background.title')}
             description={t('portal.background.description')}
             contentClassName="space-y-6"
           >
             {/* Type selector */}
-            <div className="grid grid-cols-3 gap-2">
+            <div id="customer-portal-background-type" className="grid grid-cols-3 gap-2">
               {(
                 [
                   { id: 'none', label: t('portal.background.typeNone') },
@@ -329,7 +333,7 @@ export function CustomerPortalSettings({
 
             {/* Template grid */}
             {backgroundType === 'template' && (
-              <div className="space-y-2">
+              <div id="customer-portal-background-template" className="space-y-2">
                 <Label>{t('portal.background.chooseTemplate')}</Label>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {PORTAL_BACKGROUND_TEMPLATES.map((tpl) => {
@@ -365,7 +369,7 @@ export function CustomerPortalSettings({
 
             {/* Image upload */}
             {backgroundType === 'image' && (
-              <div className="space-y-3">
+              <div id="customer-portal-background-image" className="space-y-3">
                 <Label>{t('portal.background.uploadLabel')}</Label>
                 <div className="flex items-center gap-4">
                   <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-lg border bg-muted">

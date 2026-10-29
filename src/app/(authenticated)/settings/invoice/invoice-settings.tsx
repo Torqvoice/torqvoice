@@ -333,6 +333,7 @@ export function InvoiceSettings({
             {t('invoice.tabs.general')}
           </button>
           <button
+            id="invoice-tab-custom-fields"
             type="button"
             onClick={() => setTab('customFields')}
             className={cn(
@@ -351,6 +352,7 @@ export function InvoiceSettings({
         <ReadOnlyWrapper>
           <div className="space-y-6">
             <AppCard
+              id="invoice-numbering"
               icon={Hash}
               title={t('invoice.numberingTitle')}
               description={t('invoice.numberingDescription')}
@@ -434,6 +436,7 @@ export function InvoiceSettings({
             </AppCard>
 
             <AppCard
+              id="invoice-documents"
               icon={FileText}
               title={t('invoice.documentsTitle')}
               description={t('invoice.documentsDescription')}
@@ -462,6 +465,7 @@ export function InvoiceSettings({
             </AppCard>
 
             <AppCard
+              id="invoice-shop-fee"
               icon={Receipt}
               title={t('invoice.shopFee.title')}
               description={t('invoice.shopFee.description')}
@@ -572,6 +576,7 @@ export function InvoiceSettings({
             </AppCard>
 
             <AppCard
+              id="invoice-lock"
               icon={Lock}
               title={t('invoice.lockTitle')}
               description={t('invoice.lockDescription')}
@@ -670,7 +675,7 @@ export function InvoiceSettings({
               </div>
 
               {unfrozen > 0 && (
-                <div className="rounded-md border p-3">
+                <div id="invoice-freeze-legacy" className="rounded-md border p-3">
                   <h4 className="text-sm font-medium">{t('invoice.freezeTitle')}</h4>
                   <div className="mt-1.5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <p className="text-xs leading-relaxed text-muted-foreground">
@@ -699,6 +704,7 @@ export function InvoiceSettings({
 
             {issuedInvoices > 0 && (
               <AppCard
+                id="invoice-reapply-design"
                 icon={Palette}
                 title={t('invoice.reapplyTitle')}
                 description={t('invoice.reapplyDescription')}

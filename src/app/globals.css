@@ -784,3 +784,61 @@ html body[data-scroll-locked] {
   color: var(--muted-foreground);
   box-shadow: inset 0 0 0 1px var(--border);
 }
+
+/* Search palette and settings deep links.
+
+   The spotlight is what a deep link from the palette lands on: the card or
+   the field grows a ring in the theme colour that fades over a couple of
+   seconds, so the eye is taken to the thing searched for rather than left at
+   the top of the page. The progress line sits under the palette's input
+   while the workshop's records are being fetched; local matches arrive on
+   the keystroke itself and never wait for it. */
+@keyframes settings-spotlight {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 0%, transparent);
+  }
+  20% {
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 0 28px 6px color-mix(in oklab, var(--primary) 22%, transparent);
+  }
+  100% {
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--primary) 0%, transparent),
+      0 0 0 0 color-mix(in oklab, var(--primary) 0%, transparent);
+  }
+}
+
+.settings-spotlight {
+  animation: settings-spotlight 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) 1;
+  border-radius: max(var(--radius), 6px);
+}
+
+@keyframes search-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.search-progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.search-progress::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 33%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  animation: search-progress 1.1s ease-in-out infinite;
+}

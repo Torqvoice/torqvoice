@@ -1,9 +1,41 @@
 {
   "title": "Søk",
   "description": "Søk etter kjøretøy, kunder, jobber og innstillinger",
-  "placeholder": "Søk på navn, skilt, telefon, VIN, faktura…",
+  "placeholder": "Søk etter kunder, skilt, fakturaer, innstillinger…",
   "noResults": "Ingen treff.",
+  "noResultsFor": "Ingen treff på «{query}»",
+  "noResultsHint": "Prøv et skiltnummer, et telefonnummer, et fakturanummer eller navnet på en innstilling.",
   "recentCustomers": "Nylige kunder",
   "services": "Servicehistorikk",
-  "toClose": "for å lukke"
+  "toClose": "for å lukke",
+  "groups": {
+    "recent": "Nylige",
+    "settings": "Innstillinger",
+    "pages": "Sider",
+    "actions": "Handlinger",
+    "integrations": "Integrasjoner"
+  },
+  "hints": {
+    "navigate": "naviger",
+    "open": "åpne",
+    "close": "lukk",
+    "searching": "Søker…",
+    "start": "Innstillinger, sider, kunder, kjøretøy, fakturaer og deler, alt herfra."
+  },
+  "open": "Åpne",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Ny arbeidsordre",
+    "newCustomer": "Ny kunde",
+    "newVehicle": "Nytt kjøretøy",
+    "newQuote": "Nytt tilbud",
+    "newPart": "Ny del",
+    "inviteMember": "Inviter et teammedlem"
+  },
+  "settingsSearch": {
+    "placeholder": "Søk i innstillinger…",
+    "label": "Søk i innstillinger",
+    "empty": "Ingen innstilling passer med «{query}»",
+    "shortcutHint": "Trykk {shortcut} hvor som helst for å søke"
+  }
 }

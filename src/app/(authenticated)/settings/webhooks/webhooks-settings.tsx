@@ -129,7 +129,10 @@ export function WebhooksSettings({ webhooks }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div
+        id="webhooks-header"
+        className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+      >
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('subtitle')}</p>
@@ -143,7 +146,7 @@ export function WebhooksSettings({ webhooks }: Props) {
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as 'webhooks' | 'reference')}>
-        <TabsList>
+        <TabsList id="webhooks-tabs">
           <TabsTrigger value="webhooks">
             <WebhookIcon className="mr-2 h-4 w-4" />
             {t('tabWebhooks')}
@@ -1168,7 +1171,7 @@ function EventsReference() {
 function SignatureHelpCard() {
   const t = useTranslations('settings.webhooks')
   return (
-    <Card>
+    <Card id="webhooks-signatures">
       <CardContent className="space-y-3 p-4 text-sm">
         <h2 className="font-semibold">{t('helpTitle')}</h2>
         <p className="text-muted-foreground">{t('helpIntro')}</p>

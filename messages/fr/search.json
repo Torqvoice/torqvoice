@@ -1,9 +1,41 @@
 {
   "title": "Recherche",
   "description": "Rechercher véhicules, clients, interventions et paramètres",
-  "placeholder": "Nom, plaque, téléphone, VIN, facture…",
+  "placeholder": "Rechercher clients, plaques, factures, paramètres…",
   "noResults": "Aucun résultat.",
+  "noResultsFor": "Aucun résultat pour « {query} »",
+  "noResultsHint": "Essayez une plaque, un numéro de téléphone, un numéro de facture ou le nom d’un paramètre.",
   "recentCustomers": "Clients récents",
   "services": "Interventions",
-  "toClose": "pour fermer"
+  "toClose": "pour fermer",
+  "groups": {
+    "recent": "Récents",
+    "settings": "Paramètres",
+    "pages": "Pages",
+    "actions": "Actions",
+    "integrations": "Intégrations"
+  },
+  "hints": {
+    "navigate": "naviguer",
+    "open": "ouvrir",
+    "close": "fermer",
+    "searching": "Recherche…",
+    "start": "Paramètres, pages, clients, véhicules, factures et pièces, tout depuis ici."
+  },
+  "open": "Ouvrir",
+  "pro": "Pro",
+  "actions": {
+    "newWorkOrder": "Nouvel ordre de travail",
+    "newCustomer": "Nouveau client",
+    "newVehicle": "Nouveau véhicule",
+    "newQuote": "Nouveau devis",
+    "newPart": "Nouvelle pièce",
+    "inviteMember": "Inviter un membre de l’équipe"
+  },
+  "settingsSearch": {
+    "placeholder": "Rechercher un paramètre…",
+    "label": "Rechercher un paramètre",
+    "empty": "Aucun paramètre ne correspond à « {query} »",
+    "shortcutHint": "Appuyez sur {shortcut} n’importe où pour rechercher"
+  }
 }

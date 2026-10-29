@@ -369,6 +369,7 @@ export function SubscriptionSettings({
     <div className="space-y-6">
       {/* Card 1: Current Plan */}
       <AppCard
+        id="subscription-plan"
         title={
           <span className="flex items-center gap-2">
             {planIcon} {t('subscription.title')}
@@ -462,11 +463,13 @@ export function SubscriptionSettings({
       {/* Upgrade, right under the current plan: it is what a free workshop opens this page for. */}
       {(plan === 'free' || isDemo) && !activating && (
         <AppCard
+          id="subscription-upgrade"
           title={t('subscription.upgradeTitle')}
           description={t('subscription.upgradeToProDescription')}
         >
           {showIntervalSwitch && (
             <div
+              id="subscription-billing-interval"
               role="radiogroup"
               aria-label={t('subscription.billingInterval')}
               className="mb-4 inline-flex items-center rounded-full border bg-muted/40 p-1 text-sm"
@@ -576,6 +579,7 @@ export function SubscriptionSettings({
 
       {/* Card 2: Plan Features */}
       <AppCard
+        id="subscription-features"
         title={t('subscription.featuresTitle')}
         description={t('subscription.featuresDescription')}
         contentClassName="space-y-5"
@@ -629,6 +633,7 @@ export function SubscriptionSettings({
       {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
       {isPaid && !isDemo && (
         <AppCard
+          id="subscription-manage"
           title={t('subscription.manageTitle')}
           description={accountLinkAvailable ? t('subscription.accountOnTorqvoice') : undefined}
           contentClassName="flex flex-wrap gap-3"
@@ -695,6 +700,7 @@ export function SubscriptionSettings({
 
       {plan === 'pro' && !isDemo && (
         <AppCard
+          id="subscription-upgrade-enterprise"
           title={t('subscription.upgradeTitle')}
           description={t('subscription.upgradeToEnterpriseDescription')}
         >
