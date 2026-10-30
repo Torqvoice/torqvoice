@@ -108,6 +108,11 @@ export function NotificationPanel() {
   }
 
   const handleConfirmClearAll = async () => {
+    // The list can have been emptied one by one while the question was up.
+    if (notifications.length === 0) {
+      setPendingClearAll(false)
+      return
+    }
     // The newest notification on screen is the cutoff: one that arrives while
     // the request is in flight was never shown, so it is not cleared.
     const newest = Math.max(...notifications.map((n) => new Date(n.createdAt).getTime()))

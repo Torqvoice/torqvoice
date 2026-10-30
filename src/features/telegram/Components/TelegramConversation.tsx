@@ -118,7 +118,7 @@ export function TelegramConversation({
       const latest = notifications[0]
       if (
         latest?.type === 'telegram_inbound' &&
-        latest.entityUrl === `/telegram?customerId=${customerId}`
+        latest.entityUrl === `/messages?tab=telegram&customerId=${customerId}`
       ) {
         refreshConversation()
       }

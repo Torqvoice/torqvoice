@@ -123,6 +123,24 @@ describe('NotificationPanel clear all', () => {
     expect(screen.getByRole('button', { name: 'Clear all' })).toBeInTheDocument()
   })
 
+  it('does nothing when the list emptied while the question was up', async () => {
+    seed(1)
+    render(<NotificationPanel />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all' }))
+    // The one notification goes by its own delete control meanwhile.
+    act(() => {
+      useNotificationStore.getState().removeNotification('n0')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await flush()
+
+    expect(deleteAllNotifications).not.toHaveBeenCalled()
+    expect(screen.queryByText('Remove all notifications?')).not.toBeInTheDocument()
+    expect(screen.getByText('No notifications yet')).toBeInTheDocument()
+  })
+
   it('is hidden when there is nothing to clear', () => {
     useNotificationStore.getState().setPanelOpen(true)
     render(<NotificationPanel />)
