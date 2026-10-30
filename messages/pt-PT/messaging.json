@@ -33,6 +33,7 @@
     "placeholder": "Escreva uma resposta",
     "subjectPlaceholder": "Assunto",
     "send": "Enviar",
+    "sendHint": "Enter envia, Shift+Enter adiciona uma linha",
     "sendFailed": "Não foi possível enviar o e-mail",
     "sentDocument": "Enviado: {subject}",
     "showQuoted": "Mostrar texto citado",

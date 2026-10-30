@@ -447,11 +447,22 @@ describe('one vendor per channel', () => {
   })
 
   it('names the vendor an unfinished email setup pointed at', async () => {
-    appSetting.findUnique.mockResolvedValue({ value: 'mailgun' })
+    appSetting.findMany.mockResolvedValue([{ key: 'email.provider', value: 'mailgun' }])
     expect(await legacyProviderNamed('org-15', 'email')).toBe('mailgun')
-    appSetting.findUnique.mockResolvedValue({ value: '' })
+    appSetting.findMany.mockResolvedValue([{ key: 'email.provider', value: '' }])
     expect(await legacyProviderNamed('org-15', 'email')).toBeNull()
     expect(await legacyProviderNamed('org-15', 'telegram')).toBeNull()
+  })
+
+  it('stops naming the vendor once the setup was adopted and then disconnected', async () => {
+    // The old provider row is never cleared; the marker says the connection
+    // took over, so a vendor the workshop since disconnected no longer blocks
+    // platform mail.
+    appSetting.findMany.mockResolvedValue([
+      { key: 'email.provider', value: 'smtp' },
+      { key: adoptedMarkerKey('email'), value: '2026-10-30T00:00:00.000Z' },
+    ])
+    expect(await legacyProviderNamed('org-16', 'email')).toBeNull()
   })
 })
 

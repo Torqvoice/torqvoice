@@ -33,6 +33,7 @@
     "placeholder": "Scrivi una risposta",
     "subjectPlaceholder": "Oggetto",
     "send": "Invia",
+    "sendHint": "Invio invia, Maiusc+Invio va a capo",
     "sendFailed": "Impossibile inviare l'email",
     "sentDocument": "Inviato: {subject}",
     "showQuoted": "Mostra testo citato",

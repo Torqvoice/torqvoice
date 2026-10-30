@@ -271,9 +271,13 @@ export async function legacySetupFor(
 }
 
 /**
- * Whether the old rows name a vendor for the channel, adopted or not. Lets a
- * send path fail the way it used to ("Mailgun is not configured") instead of
- * quietly doing something else when a named vendor's setup is incomplete.
+ * Whether the old rows still name a vendor for the channel. Lets a send path
+ * fail the way it used to ("Mailgun is not configured") instead of quietly
+ * doing something else when a named vendor's setup is incomplete.
+ *
+ * Once the setup has been adopted, the connection is the truth and the old
+ * row is history: a workshop that disconnected its vendor afterwards sends
+ * from the platform again, and the row it never cleared must not stop it.
  */
 export async function legacyProviderNamed(
   organizationId: string,
@@ -281,11 +285,13 @@ export async function legacyProviderNamed(
 ): Promise<string | null> {
   const key = LEGACY_PROVIDER_KEY[channel]
   if (!key) return null
-  const row = await db.appSetting.findUnique({
-    where: { organizationId_key: { organizationId, key } },
-    select: { value: true },
+  const marker = adoptedMarkerKey(channel)
+  const rows = await db.appSetting.findMany({
+    where: { organizationId, key: { in: [key, marker] } },
+    select: { key: true, value: true },
   })
-  const named = row?.value?.trim()
+  if (rows.some((row) => row.key === marker)) return null
+  const named = rows.find((row) => row.key === key)?.value?.trim()
   return named && providerForLegacyId(channel, named) ? named : null
 }
 

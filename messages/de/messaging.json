@@ -33,6 +33,7 @@
     "placeholder": "Antwort schreiben",
     "subjectPlaceholder": "Betreff",
     "send": "Senden",
+    "sendHint": "Enter sendet, Shift+Enter beginnt eine neue Zeile",
     "sendFailed": "E-Mail konnte nicht gesendet werden",
     "sentDocument": "Gesendet: {subject}",
     "showQuoted": "Zitierten Text anzeigen",

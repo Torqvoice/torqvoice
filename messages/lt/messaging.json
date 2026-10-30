@@ -33,6 +33,7 @@
     "placeholder": "Rašykite atsakymą",
     "subjectPlaceholder": "Tema",
     "send": "Siųsti",
+    "sendHint": "Enter išsiunčia, Shift+Enter prideda eilutę",
     "sendFailed": "Nepavyko išsiųsti el. laiško",
     "sentDocument": "Išsiųsta: {subject}",
     "showQuoted": "Rodyti cituojamą tekstą",

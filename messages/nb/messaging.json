@@ -33,6 +33,7 @@
     "placeholder": "Skriv et svar",
     "subjectPlaceholder": "Emne",
     "send": "Send",
+    "sendHint": "Enter sender, Shift+Enter gir ny linje",
     "sendFailed": "Kunne ikke sende e-posten",
     "sentDocument": "Sendt: {subject}",
     "showQuoted": "Vis sitert tekst",

@@ -33,6 +33,7 @@
     "placeholder": "Напишите ответ",
     "subjectPlaceholder": "Тема",
     "send": "Отправить",
+    "sendHint": "Enter отправляет, Shift+Enter добавляет строку",
     "sendFailed": "Не удалось отправить письмо",
     "sentDocument": "Отправлено: {subject}",
     "showQuoted": "Показать цитату",

@@ -33,6 +33,7 @@
     "placeholder": "Écrire une réponse",
     "subjectPlaceholder": "Objet",
     "send": "Envoyer",
+    "sendHint": "Entrée envoie, Maj+Entrée ajoute une ligne",
     "sendFailed": "Impossible d'envoyer l'e-mail",
     "sentDocument": "Envoyé : {subject}",
     "showQuoted": "Afficher le texte cité",
