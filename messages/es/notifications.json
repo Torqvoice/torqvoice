@@ -2,6 +2,9 @@
   "panel": {
     "title": "Notificaciones",
     "markAllRead": "Marcar todo como leído",
+    "clearAll": "Borrar todo",
+    "confirmClearAll": "¿Eliminar todas las notificaciones?",
+    "clearAllFailed": "No se pudieron borrar las notificaciones",
     "empty": "Aún no hay notificaciones",
     "confirmDelete": "¿Estás seguro?",
     "delete": "Eliminar",

@@ -2,6 +2,9 @@
   "panel": {
     "title": "Notificações",
     "markAllRead": "Marcar todas como lidas",
+    "clearAll": "Limpar tudo",
+    "confirmClearAll": "Excluir todas as notificações?",
+    "clearAllFailed": "Não foi possível limpar as notificações",
     "empty": "Nenhuma notificação ainda",
     "confirmDelete": "Tem certeza?",
     "delete": "Excluir",

@@ -2,6 +2,9 @@
   "panel": {
     "title": "Bildirimler",
     "markAllRead": "Tümünü okundu olarak işaretle",
+    "clearAll": "Tümünü temizle",
+    "confirmClearAll": "Tüm bildirimler silinsin mi?",
+    "clearAllFailed": "Bildirimler temizlenemedi",
     "empty": "Henüz bildirim yok",
     "confirmDelete": "Emin misiniz?",
     "delete": "Sil",

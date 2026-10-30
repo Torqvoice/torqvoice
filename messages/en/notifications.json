@@ -2,6 +2,9 @@
   "panel": {
     "title": "Notifications",
     "markAllRead": "Mark all read",
+    "clearAll": "Clear all",
+    "confirmClearAll": "Remove all notifications?",
+    "clearAllFailed": "Could not clear the notifications",
     "empty": "No notifications yet",
     "confirmDelete": "Are you sure?",
     "delete": "Delete",
