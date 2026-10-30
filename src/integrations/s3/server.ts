@@ -1,5 +1,10 @@
+import { ListBucketsCommand, S3Client } from '@aws-sdk/client-s3'
 import type { ResticRepository } from '@/features/integrations/Lib/backup-types'
-import type { ConnectorContext, ConnectorServer } from '@/features/integrations/Lib/types'
+import type {
+  ConnectorContext,
+  ConnectorServer,
+  SettingOption,
+} from '@/features/integrations/Lib/types'
 import { describeRepository, forgetRepositoryCache, testBackupTarget } from '@/lib/backup/target'
 import { isCloudInstance } from '@/lib/cloud-instance'
 import { manifest } from './manifest'
@@ -173,6 +178,56 @@ async function repository(ctx: ConnectorContext): Promise<ResticRepository> {
   return repositoryFor(ctx.connection.settings, ctx.credentials, isCloudInstance())
 }
 
+/**
+ * The buckets the key can see at the chosen provider, for the bucket picker.
+ * Anything short of a list is an empty list: a provider without its region
+ * yet, a key that may use one bucket but not list them, a vendor that is
+ * down. The form then takes a typed name, and the connect step is where a
+ * wrong key is told about.
+ */
+export async function listBuckets(
+  credentials: Record<string, unknown>,
+  settings: Record<string, unknown>,
+  cloud: boolean
+): Promise<SettingOption[]> {
+  const provider = text(settings, 'provider') as S3Provider
+  if (!PROVIDERS.includes(provider)) return []
+  const accessKeyId =
+    typeof credentials.accessKeyId === 'string' ? credentials.accessKeyId.trim() : ''
+  const secretAccessKey =
+    typeof credentials.secretAccessKey === 'string' ? credentials.secretAccessKey.trim() : ''
+  if (!accessKeyId || !secretAccessKey) return []
+  let host: string
+  let region: string
+  try {
+    const typedEndpoint =
+      typeof credentials.endpoint === 'string' ? credentials.endpoint : undefined
+    ;({ host, region } = endpointHost(provider, settings, typedEndpoint, cloud))
+  } catch {
+    return []
+  }
+  const client = new S3Client({
+    region: region || 'us-east-1',
+    endpoint: host.startsWith('http://') ? host : `https://${host}`,
+    forcePathStyle: true,
+    credentials: { accessKeyId, secretAccessKey },
+  })
+  try {
+    const out = await client.send(new ListBucketsCommand({}), {
+      abortSignal: AbortSignal.timeout(10_000),
+    })
+    return (out.Buckets ?? [])
+      .map((b) => b.Name)
+      .filter((name): name is string => Boolean(name))
+      .sort()
+      .map((name) => ({ value: name, label: name }))
+  } catch {
+    return []
+  } finally {
+    client.destroy()
+  }
+}
+
 export const connector: ConnectorServer = {
   manifest,
   async identify(ctx) {
@@ -189,6 +244,12 @@ export const connector: ConnectorServer = {
   },
   async onDisconnect(ctx) {
     await forgetRepositoryCache(ctx.connection.organizationId)
+  },
+  remoteOptions: {
+    buckets: (ctx) => listBuckets(ctx.credentials, ctx.connection.settings, isCloudInstance()),
+  },
+  previewOptions: {
+    buckets: ({ credentials, settings }) => listBuckets(credentials, settings, isCloudInstance()),
   },
   jobs: {},
   backupTarget: { repository },

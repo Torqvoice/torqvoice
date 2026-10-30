@@ -207,7 +207,11 @@
         "skipped": "Ignorée"
       }
     },
-    "lockedBackups": "Des sauvegardes chiffrées et planifiées de votre atelier vers un stockage qui vous appartient."
+    "lockedBackups": "Des sauvegardes chiffrées et planifiées de votre atelier vers un stockage qui vous appartient.",
+    "searchOrType": "Rechercher ou saisir un nom",
+    "useTyped": "Utiliser « {value} »",
+    "listNeedsKeys": "Saisissez les clés ci-dessus pour voir la liste",
+    "listEmpty": "Rien n'a été listé. Saisissez plutôt un nom."
   },
   "activity": {
     "title": "Activité",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Des sauvegardes chiffrées de cet atelier vers un bucket qui vous appartient, selon le calendrier de votre choix. Compatible avec Amazon S3, Cloudflare R2, Backblaze B2, Wasabi et Hetzner Object Storage. Après la première exécution, seules les modifications sont envoyées, si bien que les sauvegardes horaires restent bon marché.",
+      "description": "Des sauvegardes chiffrées de cet atelier vers un bucket qui vous appartient chez Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ou tout autre stockage compatible S3, selon le calendrier de votre choix. Après la première exécution, seules les modifications sont envoyées, si bien que les sauvegardes horaires restent bon marché.",
       "fields": {
         "accessKeyId": "ID de clé d'accès",
         "accessKeyIdHelp": "Une clé de votre fournisseur de stockage autorisée à lister, lire, écrire et supprimer des objets dans le bucket. Créez une clé réservée à Torqvoice, pour pouvoir la révoquer séparément.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Autre stockage compatible S3",
         "region": "Région",
-        "regionHelp": "Telle que le fournisseur la nomme, par exemple eu-central-1 chez Amazon, us-west-004 chez Backblaze ou fsn1 chez Hetzner. Non utilisée par Cloudflare R2.",
+        "regionHelp": "L'emplacement du bucket. Choisissez la région dans la liste du fournisseur ; pour un autre stockage, saisissez ce qu'il attend, s'il en demande une. Non utilisée par Cloudflare R2.",
         "accountId": "ID de compte Cloudflare",
         "accountIdHelp": "L'identifiant de 32 caractères affiché sur la page de présentation R2 de votre tableau de bord Cloudflare.",
         "bucket": "Bucket",
+        "bucketHelp": "La liste vient de la clé dès qu'elle est saisie. Si la clé peut utiliser un bucket sans pouvoir les lister, saisissez son nom.",
         "prefix": "Dossier dans le bucket",
         "prefixHelp": "Les sauvegardes sont rangées dans ce dossier. Utilisez un dossier différent pour chaque atelier qui partage le bucket.",
         "frequency": "Fréquence",

@@ -207,7 +207,11 @@
         "skipped": "Hoppet over"
       }
     },
-    "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv."
+    "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv.",
+    "searchOrType": "Søk eller skriv et navn",
+    "useTyped": "Bruk «{value}»",
+    "listNeedsKeys": "Skriv inn nøklene ovenfor for å se listen",
+    "listEmpty": "Ingenting ble listet opp. Skriv inn et navn i stedet."
   },
   "activity": {
     "title": "Aktivitet",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Krypterte sikkerhetskopier av dette verkstedet til en bøtte du eier, etter en tidsplan du velger. Fungerer med Amazon S3, Cloudflare R2, Backblaze B2, Wasabi og Hetzner Object Storage. Etter første kjøring lastes bare det som er endret opp, så sikkerhetskopier hver time forblir billige.",
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en bøtte du eier hos Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage eller annen S3-kompatibel lagring, etter en tidsplan du velger. Etter første kjøring lastes bare det som er endret opp, så sikkerhetskopier hver time forblir billige.",
       "fields": {
         "accessKeyId": "Tilgangsnøkkel-ID",
         "accessKeyIdHelp": "En nøkkel fra lagringsleverandøren din med tillatelse til å liste, lese, skrive og slette objekter i bøtta. Lag en egen nøkkel bare for Torqvoice, så den kan trekkes tilbake for seg selv.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Annen S3-kompatibel lagring",
         "region": "Region",
-        "regionHelp": "Slik leverandøren kaller den, for eksempel eu-central-1 hos Amazon, us-west-004 hos Backblaze eller fsn1 hos Hetzner. Brukes ikke av Cloudflare R2.",
+        "regionHelp": "Hvor bøtta ligger. Velg den fra leverandørens liste; for annen lagring skriver du inn det lagringen forventer, hvis den trenger en region. Brukes ikke av Cloudflare R2.",
         "accountId": "Cloudflare-konto-ID",
         "accountIdHelp": "ID-en på 32 tegn som vises på R2-oversiktssiden i Cloudflare-dashbordet ditt.",
         "bucket": "Bøtte",
+        "bucketHelp": "Listen hentes med nøkkelen så snart den er skrevet inn. Kan nøkkelen bruke én bøtte, men ikke liste dem, skriver du inn navnet selv.",
         "prefix": "Mappe i bøtta",
         "prefixHelp": "Sikkerhetskopiene ligger under denne mappen. Bruk en egen mappe for hvert verksted som deler bøtta.",
         "frequency": "Hvor ofte",

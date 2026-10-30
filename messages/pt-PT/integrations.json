@@ -207,7 +207,11 @@
         "skipped": "Ignorada"
       }
     },
-    "lockedBackups": "Cópias de segurança agendadas e encriptadas da sua oficina para um armazenamento seu."
+    "lockedBackups": "Cópias de segurança agendadas e encriptadas da sua oficina para um armazenamento seu.",
+    "searchOrType": "Pesquisar ou escrever um nome",
+    "useTyped": "Usar \"{value}\"",
+    "listNeedsKeys": "Introduza as chaves acima para ver a lista",
+    "listEmpty": "A lista está vazia. Escreva um nome."
   },
   "activity": {
     "title": "Atividade",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Cópias de segurança encriptadas desta oficina para um bucket seu, com a frequência que escolher. Funciona com Amazon S3, Cloudflare R2, Backblaze B2, Wasabi e Hetzner Object Storage. Depois da primeira execução, só é enviado o que mudou, por isso as cópias de hora a hora continuam baratas.",
+      "description": "Cópias de segurança encriptadas desta oficina para um bucket seu no Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ou em qualquer outro armazenamento compatível com S3, com a frequência que escolher. Depois da primeira execução, só é enviado o que mudou, por isso as cópias de hora a hora continuam baratas.",
       "fields": {
         "accessKeyId": "ID da chave de acesso",
         "accessKeyIdHelp": "Uma chave do seu fornecedor de armazenamento com permissão para listar, ler, escrever e eliminar objetos no bucket. Crie uma chave só para o Torqvoice, para que possa ser revogada separadamente.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Outro armazenamento compatível com S3",
         "region": "Região",
-        "regionHelp": "Tal como o fornecedor lhe chama, por exemplo eu-central-1 na Amazon, us-west-004 na Backblaze ou fsn1 na Hetzner. Não é usada pelo Cloudflare R2.",
+        "regionHelp": "Onde está o bucket. Escolha-a na lista do fornecedor; noutro armazenamento, escreva a que este pedir, se pedir alguma. Não é usada pelo Cloudflare R2.",
         "accountId": "ID da conta Cloudflare",
         "accountIdHelp": "O ID de 32 caracteres apresentado na página de visão geral do R2 no painel da Cloudflare.",
         "bucket": "Bucket",
+        "bucketHelp": "Os buckets são listados com a chave assim que esta é introduzida. Se a chave puder usar um bucket, mas não os listar, escreva o nome.",
         "prefix": "Pasta no bucket",
         "prefixHelp": "As cópias de segurança ficam nesta pasta. Use uma pasta diferente para cada oficina que partilha o bucket.",
         "frequency": "Frequência",

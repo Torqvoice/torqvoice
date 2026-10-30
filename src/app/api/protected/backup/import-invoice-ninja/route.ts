@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
@@ -10,7 +10,13 @@ import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { mkdir, writeFile, rm } from 'fs/promises'
 import path from 'path'
 import os from 'os'
-import JSZip from 'jszip'
+import {
+  extractEntry,
+  openZip,
+  readEntryJson,
+  spoolUpload,
+  type SpooledUpload,
+} from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
 
@@ -226,59 +232,59 @@ export async function POST(request: NextRequest) {
   const { organizationId, userId } = ctx
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
+  let upload: SpooledUpload | null = null
 
   try {
-    // Read zip from request body
+    // The zip goes to disk as it arrives; nothing of it is held in memory
     assertContentLength(request, 200 * 1024 * 1024)
-    const arrayBuffer = await request.arrayBuffer()
-    const zipBuffer = Buffer.from(arrayBuffer)
+    upload = await spoolUpload(request, 200 * 1024 * 1024, 'invoice-ninja-upload')
 
-    if (zipBuffer.length < 100) {
+    if (upload.size < 100) {
       return NextResponse.json(
         { error: 'Uploaded file is too small to be a valid backup' },
         { status: 400 }
       )
     }
 
-    // Extract zip
-    const zip = await JSZip.loadAsync(zipBuffer)
-    assertZipWithinLimits(zip.files)
-
-    // Find and parse backup.json
-    const backupEntry = zip.file('backup.json')
-    if (!backupEntry) {
-      return NextResponse.json({ error: 'No backup.json found in the zip file' }, { status: 400 })
-    }
-
-    const backupJson = await backupEntry.async('string')
-    const body = JSON.parse(backupJson) as INBackup
-
-    if (!body.clients || !Array.isArray(body.clients)) {
-      return NextResponse.json(
-        { error: 'Invalid Invoice Ninja export: missing clients array' },
-        { status: 400 }
-      )
-    }
-
-    // Extract zip to temp dir for document file access
-    tmpDir = path.join(os.tmpdir(), `in-import-${Date.now()}`)
-    await mkdir(tmpDir, { recursive: true })
-
-    for (const [relativePath, entry] of Object.entries(zip.files)) {
-      if (entry.dir) continue
-      // Only extract document files, not the full backup
-      if (!relativePath.startsWith('documents/')) continue
-      // Guard against zip-slip: `startsWith("documents/")` alone is bypassable
-      // with `documents/../../..`, so verify the resolved path stays in tmpDir.
-      const targetPath = resolveWithinDir(tmpDir, relativePath)
-      if (!targetPath) {
-        console.warn(`[import-invoice-ninja] Skipping unsafe zip entry: ${relativePath}`)
-        continue
+    const zip = await openZip(upload.path)
+    let body: INBackup
+    try {
+      // Find and parse backup.json straight from the archive
+      const backupEntry = zip.find('backup.json')
+      if (!backupEntry) {
+        return NextResponse.json({ error: 'No backup.json found in the zip file' }, { status: 400 })
       }
-      await mkdir(path.dirname(targetPath), { recursive: true })
-      const content = await entry.async('nodebuffer')
-      await writeFile(targetPath, content)
+      body = await readEntryJson<INBackup>(zip, backupEntry)
+
+      if (!body.clients || !Array.isArray(body.clients)) {
+        return NextResponse.json(
+          { error: 'Invalid Invoice Ninja export: missing clients array' },
+          { status: 400 }
+        )
+      }
+
+      // Extract the documents to a temp dir, one file at a time
+      tmpDir = path.join(os.tmpdir(), `in-import-${Date.now()}`)
+      await mkdir(tmpDir, { recursive: true })
+
+      for (const entry of zip.entries) {
+        if (entry.dir) continue
+        // Only extract document files, not the full backup
+        if (!entry.name.startsWith('documents/')) continue
+        // Guard against zip-slip: `startsWith("documents/")` alone is bypassable
+        // with `documents/../../..`, so verify the resolved path stays in tmpDir.
+        const targetPath = resolveWithinDir(tmpDir, entry.name)
+        if (!targetPath) {
+          console.warn(`[import-invoice-ninja] Skipping unsafe zip entry: ${entry.name}`)
+          continue
+        }
+        await extractEntry(zip, entry, targetPath)
+      }
+    } finally {
+      zip.close()
     }
+    await upload.remove()
+    upload = null
 
     const clients = body.clients.filter((c) => !c.is_deleted)
     const contacts = body.client_contacts || []
@@ -563,5 +569,9 @@ export async function POST(request: NextRequest) {
         /* ignore cleanup errors */
       })
     }
+    // The upload is still there when the request failed before it was extracted.
+    upload?.remove().catch(() => {
+      /* ignore cleanup errors */
+    })
   }
 }

@@ -4,6 +4,7 @@ import {
   BACKUP_SETTINGS,
 } from '@/features/integrations/Lib/backup'
 import type { ConnectorManifest } from '@/features/integrations/Lib/types'
+import { REGIONS_BY_PROVIDER } from './regions'
 
 /**
  * S3-compatible object storage as a backup destination: the workshop's own
@@ -16,11 +17,14 @@ import type { ConnectorManifest } from '@/features/integrations/Lib/types'
  */
 export const manifest: ConnectorManifest = {
   id: 's3',
-  name: 'S3-compatible storage',
+  name: 'Cloud storage bucket',
   category: 'storage',
   countries: 'global',
   logo: '/images/integrations/s3.svg',
   docs: '/docs/integrations/s3',
+  // The provider decides the rest of the page: which region list, whether an
+  // account id or an endpoint is asked for, which buckets can be listed.
+  settingsFirst: true,
   auth: {
     type: 'api-key',
     fields: [
@@ -39,7 +43,8 @@ export const manifest: ConnectorManifest = {
         type: 'url',
         help: 'endpointHelp',
         placeholder: 'https://minio.example.com:9000',
-        advanced: true,
+        required: true,
+        showWhen: { key: 'provider', equals: 'other' },
         selfHostedOnly: true,
       },
     ],
@@ -62,7 +67,16 @@ export const manifest: ConnectorManifest = {
         { value: 'other', label: 'providerOther', selfHostedOnly: true },
       ],
     },
-    { key: 'region', type: 'text', label: 'region', help: 'regionHelp' },
+    {
+      // A list for the vendors that have one, a text box for other storage,
+      // nothing for Cloudflare R2, which has no regions.
+      key: 'region',
+      type: 'select',
+      label: 'region',
+      help: 'regionHelp',
+      optionsBy: { key: 'provider', options: REGIONS_BY_PROVIDER },
+      showWhen: { key: 'provider', in: ['aws', 'b2', 'wasabi', 'hetzner', 'other'] },
+    },
     {
       key: 'accountId',
       type: 'text',
@@ -70,7 +84,21 @@ export const manifest: ConnectorManifest = {
       help: 'accountIdHelp',
       showWhen: { key: 'provider', equals: 'r2' },
     },
-    { key: 'bucket', type: 'text', label: 'bucket', required: true },
+    {
+      // Listed from the keys as soon as they are typed; a key that may use
+      // one bucket but not list them takes the name typed in.
+      key: 'bucket',
+      type: 'remote-select',
+      source: 'buckets',
+      label: 'bucket',
+      help: 'bucketHelp',
+      required: true,
+      allowCustom: true,
+      preview: {
+        credentials: ['accessKeyId', 'secretAccessKey', 'endpoint'],
+        settings: ['provider', 'region', 'accountId'],
+      },
+    },
     { key: 'prefix', type: 'text', label: 'prefix', help: 'prefixHelp', default: 'torqvoice' },
     ...BACKUP_SETTINGS,
   ],

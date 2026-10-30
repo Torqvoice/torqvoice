@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -33,6 +33,7 @@ import { Button } from '@/components/ui/button'
 import { DateInput } from '@/components/ui/date-input'
 import { BackupCard } from './backup-card'
 import { OptionPicker } from './option-picker'
+import { conditionMet } from '@/features/integrations/Lib/conditions'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -50,6 +51,7 @@ import {
   type ConnectionView,
   disconnectIntegration,
   getIntegrationRemoteOptions,
+  previewIntegrationRemoteOptions,
   retryIntegrationBatch,
   retryIntegrationJob,
   runIntegrationJob,
@@ -118,8 +120,8 @@ export function ConnectionSettings({
   const savedSettings = initialSettingValues(manifest.settings, connection?.settings ?? {})
   const unfinishedSetup =
     connection?.status === 'active'
-      ? visibleSettingFields(manifest.settings, savedSettings).filter(
-          (f) => f.required && !savedSettings[f.key]
+      ? visibleSettingFields(manifest.settings, savedSettings).filter((f) =>
+          settingMissing(f, savedSettings)
         )
       : []
   const setupMissing = unfinishedSetup.length > 0
@@ -711,15 +713,79 @@ function ConnectForm({
   // SMTP port means nothing without its TLS choice, and a from address is
   // needed before a test email can go out. Remote selects need a connection
   // to list from, so they wait for the settings card.
-  const settingFields: SettingField[] =
-    manifest.auth.type === 'oauth2'
-      ? []
-      : manifest.settings.filter((f) => f.type !== 'remote-select')
+  // A remote select that can list from the typed keys (a storage key's
+  // buckets) is the exception, read as the keys are typed.
+  const settingFields: SettingField[] = useMemo(
+    () =>
+      manifest.auth.type === 'oauth2'
+        ? []
+        : manifest.settings.filter((f) => f.type !== 'remote-select' || f.preview),
+    [manifest]
+  )
   const [settings, setSettings] = useState<SettingValues>(() =>
     initialSettingValues(settingFields, initialSettings ?? {})
   )
   const visibleSettings = visibleSettingFields(settingFields, settings)
-  const settingsMissing = visibleSettings.some((f) => f.required && !settings[f.key])
+  const settingsMissing = visibleSettings.some((f) => settingMissing(f, settings))
+  // A key that belongs to one provider choice is only asked for under it.
+  const visibleFields = fields.filter((f) => conditionMet(f.showWhen, settings))
+
+  const previewFields = useMemo(
+    () => settingFields.filter((f) => f.type === 'remote-select' && f.preview && f.source),
+    [settingFields]
+  )
+  // Nothing can be listed before the keys are typed, so the lists start out
+  // as "not yet" rather than "loading".
+  const [remote, setRemote] = useState<Record<string, SettingOption[] | null | undefined>>(() =>
+    Object.fromEntries(previewFields.map((f) => [f.source as string, null]))
+  )
+  // What is typed right now, for the effect below to read without running on
+  // every keystroke: a password being typed must not restart the listing.
+  const typed = useRef({ values, settings })
+  typed.current = { values, settings }
+  // The typed values each list depends on, as one string: the list is read
+  // again when any of them changes and left alone while anything else is typed.
+  const previewKey = previewFields
+    .map((f) =>
+      [
+        f.source,
+        ...(f.preview?.credentials ?? []).map((k) => values[k] ?? ''),
+        ...(f.preview?.settings ?? []).map((k) => String(settings[k] ?? '')),
+      ].join('\u0000')
+    )
+    .join('\u0001')
+  useEffect(() => {
+    if (previewFields.length === 0) return
+    let cancelled = false
+    const timer = setTimeout(() => {
+      const { values: typedValues, settings: typedSettings } = typed.current
+      for (const f of previewFields) {
+        const source = f.source as string
+        const needed = (f.preview?.credentials ?? []).filter((k) =>
+          fields.some((c) => c.key === k && c.required && conditionMet(c.showWhen, typedSettings))
+        )
+        if (needed.some((k) => !typedValues[k]?.trim())) {
+          setRemote((r) => ({ ...r, [source]: null }))
+          continue
+        }
+        setRemote((r) => ({ ...r, [source]: undefined }))
+        const credentials = Object.fromEntries(
+          (f.preview?.credentials ?? []).map((k) => [k, typedValues[k] ?? ''])
+        )
+        const picked = Object.fromEntries(
+          (f.preview?.settings ?? []).map((k) => [k, typedSettings[k] ?? ''])
+        )
+        previewIntegrationRemoteOptions(manifest.id, source, credentials, picked).then((res) => {
+          if (cancelled) return
+          setRemote((r) => ({ ...r, [source]: res.success && res.data ? res.data : [] }))
+        })
+      }
+    }, 500)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [previewKey, previewFields, fields, manifest.id])
   const tenantReady = Boolean(tenantClientId)
   // A made-up secret, such as a backup password, is shown once it is
   // generated so it can be copied somewhere safe.
@@ -758,8 +824,34 @@ function ConnectForm({
     setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 2000)
   }
 
-  const usualFields = fields.filter((f) => !f.advanced)
-  const advancedFields = fields.filter((f) => f.advanced)
+  const usualFields = visibleFields.filter((f) => !f.advanced)
+  const advancedFields = visibleFields.filter((f) => f.advanced)
+
+  // With the settings first, only the ones the keys hang on lead: the
+  // provider and its region or account. A bucket listed from the keys, the
+  // folder and the schedule follow the keys, in the order a person needs them.
+  const leading = new Set<string>([
+    ...fields.flatMap((c) => (c.showWhen ? [c.showWhen.key] : [])),
+    ...previewFields.flatMap((f) => f.preview?.settings ?? []),
+  ])
+  const leadingSettings = manifest.settingsFirst
+    ? visibleSettings.filter((f) => leading.has(f.key))
+    : []
+  const trailingSettings = manifest.settingsFirst
+    ? visibleSettings.filter((f) => !leading.has(f.key))
+    : visibleSettings
+  const settingsBox = (list: SettingField[]) =>
+    list.length > 0 && (
+      <div className="rounded-lg border p-3">
+        <SettingFieldList
+          connectorId={manifest.id}
+          fields={list}
+          values={settings}
+          setValues={setSettings}
+          remote={remote}
+        />
+      </div>
+    )
 
   const credentialField = (f: CredentialField) => (
     <div key={f.key} className="space-y-1">
@@ -840,6 +932,8 @@ function ConnectForm({
         </div>
       )}
 
+      {settingsBox(leadingSettings)}
+
       {usualFields.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-2">{usualFields.map(credentialField)}</div>
       )}
@@ -859,17 +953,7 @@ function ConnectForm({
         </details>
       )}
 
-      {visibleSettings.length > 0 && (
-        <div className="rounded-lg border p-3">
-          <SettingFieldList
-            connectorId={manifest.id}
-            fields={visibleSettings}
-            values={settings}
-            setValues={setSettings}
-            remote={{}}
-          />
-        </div>
-      )}
+      {settingsBox(trailingSettings)}
 
       <div className="flex flex-wrap gap-2">
         {manifest.auth.type === 'oauth2' ? (
@@ -898,7 +982,9 @@ function ConnectForm({
           <Button
             onClick={() => onSave(values, settings)}
             disabled={
-              busy !== null || settingsMissing || fields.some((f) => f.required && !values[f.key])
+              busy !== null ||
+              settingsMissing ||
+              visibleFields.some((f) => f.required && !values[f.key])
             }
           >
             {busy === 'credentials' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -948,7 +1034,31 @@ function initialSettingValues(
 }
 
 function visibleSettingFields(fields: SettingField[], values: SettingValues): SettingField[] {
-  return fields.filter((f) => !f.showWhen || values[f.showWhen.key] === f.showWhen.equals)
+  return fields.filter((f) => conditionMet(f.showWhen, values))
+}
+
+/**
+ * The choices a select offers right now: its own list, or the list for the
+ * current value of the setting it hangs on. Undefined when that value has no
+ * list, which makes the select a text box.
+ */
+function optionsFor(f: SettingField, values: SettingValues): readonly SettingOption[] | undefined {
+  if (!f.optionsBy) return f.options
+  return f.optionsBy.options[String(values[f.optionsBy.key] ?? '')]
+}
+
+/**
+ * Whether a setting still needs an answer before the form can go. A list that
+ * hangs on another choice is the list of the only valid answers, so a code
+ * left over from the previous provider counts as missing too.
+ */
+function settingMissing(f: SettingField, values: SettingValues): boolean {
+  const current = values[f.key]
+  if (f.type === 'select' && (f.required || f.optionsBy)) {
+    const options = optionsFor(f, values)
+    if (options) return !options.some((o) => o.value === current)
+  }
+  return Boolean(f.required) && (current === '' || current === undefined || current === null)
 }
 
 /** The rows of a settings form, shared by the connect page and the settings card. */
@@ -963,7 +1073,8 @@ function SettingFieldList({
   fields: SettingField[]
   values: SettingValues
   setValues: (update: (prev: SettingValues) => SettingValues) => void
-  remote: Record<string, SettingOption[] | null>
+  /** Per source: the list, undefined while loading, null while it cannot be read yet. */
+  remote: Record<string, SettingOption[] | null | undefined>
 }) {
   const t = useTranslations('integrations')
   const tc = useTranslations(`integrations.connectors.${connectorId}`)
@@ -1016,18 +1127,45 @@ function SettingFieldList({
                 options={remote[f.source ?? '']}
                 onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
                 required={f.required}
+                allowCustom={f.allowCustom}
+                emptyHint={
+                  remote[f.source ?? ''] === null
+                    ? t('connection.listNeedsKeys')
+                    : f.allowCustom
+                      ? t('connection.listEmpty')
+                      : undefined
+                }
               />
             )}
-            {f.type === 'select' && (
-              <Select
+            {f.type === 'select' && optionsFor(f, values) === undefined && (
+              // The choice this list hangs on has no list: anything goes.
+              <Input
+                type="text"
+                name={`${connectorId}-${f.key}`}
+                className="h-8"
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
                 value={String(values[f.key] ?? '')}
+                onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))}
+              />
+            )}
+            {f.type === 'select' && optionsFor(f, values) !== undefined && (
+              <Select
+                // A value the current list does not have shows as unset.
+                value={
+                  optionsFor(f, values)?.some((o) => o.value === values[f.key])
+                    ? String(values[f.key])
+                    : ''
+                }
                 onValueChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
               >
                 <SelectTrigger className="h-8">
                   <SelectValue placeholder={t('connection.choose')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(f.options ?? []).map((o) => (
+                  {(optionsFor(f, values) ?? []).map((o) => (
                     <SelectItem key={o.value} value={o.value}>
                       {tc.has(`settings.${o.label}`) ? tc(`settings.${o.label}`) : o.label}
                     </SelectItem>
@@ -1078,7 +1216,7 @@ function SettingsForm({
   }, [connectorId, remoteSources])
 
   const visible = visibleSettingFields(fields, values)
-  const missing = visible.some((f) => f.required && !values[f.key])
+  const missing = visible.some((f) => settingMissing(f, values))
 
   return (
     <AppCard

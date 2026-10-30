@@ -207,7 +207,11 @@
         "skipped": "Skipped"
       }
     },
-    "lockedBackups": "Scheduled, encrypted backups of your workshop to storage you own."
+    "lockedBackups": "Scheduled, encrypted backups of your workshop to storage you own.",
+    "searchOrType": "Search or type a name",
+    "useTyped": "Use \"{value}\"",
+    "listNeedsKeys": "Enter the keys above to see the list",
+    "listEmpty": "Nothing was listed. Type a name instead."
   },
   "activity": {
     "title": "Activity",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Encrypted backups of this workshop to a bucket you own, on a schedule you choose. Works with Amazon S3, Cloudflare R2, Backblaze B2, Wasabi and Hetzner Object Storage. After the first run only what changed is uploaded, so hourly backups stay cheap.",
+      "description": "Encrypted backups of this workshop to a bucket you own at Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage or any other S3-compatible storage, on a schedule you choose. After the first run only what changed is uploaded, so hourly backups stay cheap.",
       "fields": {
         "accessKeyId": "Access key ID",
         "accessKeyIdHelp": "A key from your storage provider with permission to list, read, write and delete objects in the bucket. Make a key for Torqvoice alone, so it can be revoked on its own.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Other S3-compatible storage",
         "region": "Region",
-        "regionHelp": "As the provider names it, for example eu-central-1 on Amazon, us-west-004 on Backblaze or fsn1 on Hetzner. Not used by Cloudflare R2.",
+        "regionHelp": "Where the bucket lives. Pick it from the provider's list; for other storage, type what it expects, if anything. Not used by Cloudflare R2.",
         "accountId": "Cloudflare account ID",
         "accountIdHelp": "The 32-character id shown on the R2 overview page of your Cloudflare dashboard.",
         "bucket": "Bucket",
+        "bucketHelp": "Listed from the key as soon as it is entered. A key that may use one bucket but not list them takes the name typed in.",
         "prefix": "Folder in the bucket",
         "prefixHelp": "The backups live under this folder. Use a different folder for each workshop that shares the bucket.",
         "frequency": "How often",

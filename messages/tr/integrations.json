@@ -207,7 +207,11 @@
         "skipped": "Atlandı"
       }
     },
-    "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri."
+    "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri.",
+    "searchOrType": "Ara veya bir ad yaz",
+    "useTyped": "\"{value}\" değerini kullan",
+    "listNeedsKeys": "Listeyi görmek için önce yukarıdaki anahtarları girin",
+    "listEmpty": "Hiçbir şey listelenmedi. Bunun yerine adı yazın."
   },
   "activity": {
     "title": "Aktivite",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Bu atölyenin, size ait bir bucket'a, seçtiğiniz zamanlamayla şifreli yedekleri. Amazon S3, Cloudflare R2, Backblaze B2, Wasabi ve Hetzner Object Storage ile çalışır. İlk çalıştırmadan sonra yalnızca değişenler yüklenir, bu yüzden saatlik yedekler ucuz kalır.",
+      "description": "Bu atölyenin Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage veya başka bir S3 uyumlu depolamadaki size ait bir bucket'a, seçtiğiniz zamanlamayla şifreli yedekleri. İlk çalıştırmadan sonra yalnızca değişenler yüklenir, bu yüzden saatlik yedekler ucuz kalır.",
       "fields": {
         "accessKeyId": "Erişim anahtarı kimliği",
         "accessKeyIdHelp": "Depolama sağlayıcınızdan, bucket'taki nesneleri listeleme, okuma, yazma ve silme izni olan bir anahtar. Tek başına iptal edilebilmesi için yalnızca Torqvoice'a özel bir anahtar oluşturun.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Diğer S3 uyumlu depolama",
         "region": "Bölge",
-        "regionHelp": "Sağlayıcının verdiği adla, örneğin Amazon'da eu-central-1, Backblaze'de us-west-004 veya Hetzner'de fsn1. Cloudflare R2 tarafından kullanılmaz.",
+        "regionHelp": "Bucket'ın bulunduğu yer. Sağlayıcının listesinden seçin; başka bir depolama için, bir değer bekliyorsa onu yazın. Cloudflare R2 tarafından kullanılmaz.",
         "accountId": "Cloudflare hesap kimliği",
         "accountIdHelp": "Cloudflare panonuzun R2 genel bakış sayfasında gösterilen 32 karakterlik kimlik.",
         "bucket": "Bucket",
+        "bucketHelp": "Anahtar girilir girilmez anahtarın görebildiği bucket'lar listelenir. Anahtar bir bucket'ı kullanabiliyor ama bucket'ları listeleyemiyorsa adını yazın.",
         "prefix": "Bucket içindeki klasör",
         "prefixHelp": "Yedekler bu klasörün altında tutulur. Bucket'ı paylaşan her atölye için ayrı bir klasör kullanın.",
         "frequency": "Sıklık",

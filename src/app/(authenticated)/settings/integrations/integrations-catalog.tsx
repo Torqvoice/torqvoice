@@ -277,7 +277,7 @@ export function IntegrationsCatalog({
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {t(`connectors.${m.id}.description`)}
                       </p>
                     </div>

@@ -5,10 +5,14 @@ import { recipientFitsChannel } from '@/features/tire-hotel/Lib/recipient'
 import { hasAllPermissions } from '@/lib/permissions'
 
 describe('backup archive limits', () => {
-  const entry = (size: number, dir = false) => ({ dir, _data: { uncompressedSize: size } })
+  const entry = (name: string, size: number, dir = false) => ({
+    name,
+    dir,
+    uncompressedSize: size,
+  })
 
   it('accepts an ordinary archive and reports its size', () => {
-    const files = { 'a.json': entry(100), 'files/': entry(0, true), 'files/x.png': entry(2000) }
+    const files = [entry('a.json', 100), entry('files/', 0, true), entry('files/x.png', 2000)]
     expect(assertZipWithinLimits(files, { maxEntries: 10, maxTotalBytes: 10_000 })).toEqual({
       entries: 3,
       totalBytes: 2100,
@@ -16,14 +20,14 @@ describe('backup archive limits', () => {
   })
 
   it('refuses too many entries before inflating any', () => {
-    const files = Object.fromEntries(Array.from({ length: 11 }, (_, i) => [`f${i}`, entry(1)]))
+    const files = Array.from({ length: 11 }, (_, i) => entry(`f${i}`, 1))
     expect(() => assertZipWithinLimits(files, { maxEntries: 10, maxTotalBytes: 10_000 })).toThrow(
       /too many entries/
     )
   })
 
   it('refuses a promised size that would not fit', () => {
-    const files = { 'bomb.bin': entry(20_000) }
+    const files = [entry('bomb.bin', 20_000)]
     expect(() => assertZipWithinLimits(files, { maxEntries: 10, maxTotalBytes: 10_000 })).toThrow(
       /too large/
     )

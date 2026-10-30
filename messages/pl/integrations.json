@@ -207,7 +207,11 @@
         "skipped": "Pominięte"
       }
     },
-    "lockedBackups": "Zaplanowane, szyfrowane kopie zapasowe warsztatu do własnej przestrzeni dyskowej."
+    "lockedBackups": "Zaplanowane, szyfrowane kopie zapasowe warsztatu do własnej przestrzeni dyskowej.",
+    "searchOrType": "Szukaj lub wpisz nazwę",
+    "useTyped": "Użyj „{value}”",
+    "listNeedsKeys": "Wpisz klucze powyżej, aby zobaczyć listę",
+    "listEmpty": "Lista jest pusta. Wpisz nazwę ręcznie."
   },
   "activity": {
     "title": "Aktywność",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Szyfrowane kopie zapasowe tego warsztatu do własnego bucketu, według wybranego harmonogramu. Działa z Amazon S3, Cloudflare R2, Backblaze B2, Wasabi i Hetzner Object Storage. Po pierwszym uruchomieniu wysyłane są tylko zmiany, więc kopie co godzinę pozostają tanie.",
+      "description": "Szyfrowane kopie zapasowe tego warsztatu do własnego bucketu w Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage lub innej przestrzeni zgodnej z S3, według wybranego harmonogramu. Po pierwszym uruchomieniu wysyłane są tylko zmiany, więc kopie co godzinę pozostają tanie.",
       "fields": {
         "accessKeyId": "Identyfikator klucza dostępu",
         "accessKeyIdHelp": "Klucz od dostawcy przestrzeni z uprawnieniami do listowania, odczytu, zapisu i usuwania obiektów w buckecie. Utwórz osobny klucz tylko dla Torqvoice, aby można go było unieważnić niezależnie.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Inna przestrzeń zgodna z S3",
         "region": "Region",
-        "regionHelp": "Tak jak nazywa go dostawca, na przykład eu-central-1 w Amazon, us-west-004 w Backblaze lub fsn1 w Hetzner. Nieużywany przez Cloudflare R2.",
+        "regionHelp": "Gdzie znajduje się bucket. Wybierz go z listy dostawcy; w przypadku innej przestrzeni wpisz wartość, jakiej oczekuje, o ile jej potrzebuje. Nieużywany przez Cloudflare R2.",
         "accountId": "Identyfikator konta Cloudflare",
         "accountIdHelp": "32-znakowy identyfikator widoczny na stronie przeglądu R2 w panelu Cloudflare.",
         "bucket": "Bucket",
+        "bucketHelp": "Lista bucketów pojawia się zaraz po wpisaniu klucza. Jeśli klucz ma dostęp do jednego bucketu, ale nie może wyświetlić ich listy, wpisz jego nazwę.",
         "prefix": "Folder w buckecie",
         "prefixHelp": "Kopie zapasowe są przechowywane w tym folderze. Użyj innego folderu dla każdego warsztatu, który korzysta z tego samego bucketu.",
         "frequency": "Jak często",

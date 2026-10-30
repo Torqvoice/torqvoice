@@ -112,6 +112,7 @@ describe('organisation scope', () => {
       'smsMessages',
       'whatsappMessages',
       'telegramMessages',
+      'emailMessages',
       'scheduledMessages',
       'inspectionReminderCampaigns',
       'inspectionReminderSends',

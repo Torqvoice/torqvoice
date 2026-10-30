@@ -9,7 +9,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures, isCloudMode } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getManifest, listManifests } from '@/integrations/registry'
+import { getConnector, getManifest, listManifests } from '@/integrations/registry'
+import { conditionMet } from '../Lib/conditions'
 import { invoicesForBackfill } from '../Lib/accounting-sync'
 import { clearPulledEvents } from '../Lib/calendar-sync'
 import {
@@ -422,8 +423,12 @@ export async function saveIntegrationCredentials(
 
       const fields =
         manifest.auth.type === 'oauth2' ? (manifest.auth.tenantFields ?? []) : manifest.auth.fields
+      // A key that is only asked for under one provider choice is only
+      // required there; the choice is in the settings typed on the same page.
+      const chosen = { ...(rawSettings === undefined ? {} : settings) }
       for (const f of fields) {
-        if (f.required && !input[f.key]?.trim()) throw new Error(`${f.key} is required`)
+        if (f.required && conditionMet(f.showWhen, chosen) && !input[f.key]?.trim())
+          throw new Error(`${f.key} is required`)
       }
       const allowed = new Set(fields.map((f) => f.key))
       const clean: Record<string, string> = {}
@@ -564,6 +569,45 @@ export async function getIntegrationRemoteOptions(connectorId: string, source: s
       return provider(ctx)
     },
     { requiredPermissions: READ_PERMISSION }
+  )
+}
+
+/**
+ * A remote-select's list from keys and settings typed on the connect page,
+ * before anything is saved: the buckets a storage key can see, for instance.
+ * The typed values go to the vendor and nowhere else; a key that cannot list
+ * gives an empty list, and the form takes a typed name instead.
+ */
+export async function previewIntegrationRemoteOptions(
+  connectorId: string,
+  source: string,
+  rawCredentials: unknown,
+  rawSettings: unknown
+) {
+  return withAuth(
+    async ({ organizationId }): Promise<SettingOption[]> => {
+      await requireConnectorPlan(organizationId, connectorId)
+      const manifest = getManifest(connectorId)
+      if (!manifest) throw new Error('Unknown integration')
+      const field = manifest.settings.find(
+        (f) => f.type === 'remote-select' && f.source === source && f.preview
+      )
+      if (!field?.preview) return []
+      const credentials = credentialsSchema.parse(rawCredentials)
+      const settings = cleanSettings(manifest, rawSettings)
+      // Only what the field says it depends on goes to the vendor.
+      const picked = {
+        credentials: Object.fromEntries(
+          field.preview.credentials.map((k) => [k, credentials[k] ?? ''])
+        ),
+        settings: Object.fromEntries(field.preview.settings.map((k) => [k, settings[k] ?? ''])),
+      }
+      const server = await getConnector(connectorId)
+      const provider = server.previewOptions?.[source]
+      if (!provider) return []
+      return provider(picked)
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
   )
 }
 

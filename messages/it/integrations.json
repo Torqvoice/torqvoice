@@ -207,7 +207,11 @@
         "skipped": "Saltato"
       }
     },
-    "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo."
+    "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo.",
+    "searchOrType": "Cerca o digita un nome",
+    "useTyped": "Usa \"{value}\"",
+    "listNeedsKeys": "Inserisci le chiavi qui sopra per vedere l'elenco",
+    "listEmpty": "L'elenco è vuoto. Digita un nome."
   },
   "activity": {
     "title": "Attività",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Backup cifrati di questa officina in un bucket di tua proprietà, con la frequenza che scegli. Funziona con Amazon S3, Cloudflare R2, Backblaze B2, Wasabi e Hetzner Object Storage. Dopo la prima esecuzione viene caricato solo ciò che è cambiato, quindi i backup orari restano economici.",
+      "description": "Backup cifrati di questa officina in un bucket di tua proprietà su Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage o qualsiasi altro storage compatibile S3, con la frequenza che scegli. Dopo la prima esecuzione viene caricato solo ciò che è cambiato, quindi i backup orari restano economici.",
       "fields": {
         "accessKeyId": "ID chiave di accesso",
         "accessKeyIdHelp": "Una chiave del tuo fornitore di archiviazione con il permesso di elencare, leggere, scrivere ed eliminare gli oggetti nel bucket. Crea una chiave solo per Torqvoice, così puoi revocarla separatamente.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Altro storage compatibile S3",
         "region": "Regione",
-        "regionHelp": "Come la chiama il fornitore, ad esempio eu-central-1 su Amazon, us-west-004 su Backblaze o fsn1 su Hetzner. Non usata da Cloudflare R2.",
+        "regionHelp": "Dove si trova il bucket. Sceglila dall'elenco del fornitore; per un altro storage, digita quella che richiede, se ne richiede una. Non usata da Cloudflare R2.",
         "accountId": "ID account Cloudflare",
         "accountIdHelp": "L'ID di 32 caratteri mostrato nella pagina di panoramica di R2 nella dashboard di Cloudflare.",
         "bucket": "Bucket",
+        "bucketHelp": "I bucket vengono elencati con la chiave appena la inserisci. Se la chiave può usare un bucket ma non elencarli, digita il nome.",
         "prefix": "Cartella nel bucket",
         "prefixHelp": "I backup vengono salvati in questa cartella. Usa una cartella diversa per ogni officina che condivide il bucket.",
         "frequency": "Frequenza",

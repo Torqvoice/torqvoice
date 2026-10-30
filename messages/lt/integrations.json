@@ -207,7 +207,11 @@
         "skipped": "Praleista"
       }
     },
-    "lockedBackups": "Suplanuotos, šifruotos jūsų dirbtuvės atsarginės kopijos į jums priklausančią saugyklą."
+    "lockedBackups": "Suplanuotos, šifruotos jūsų dirbtuvės atsarginės kopijos į jums priklausančią saugyklą.",
+    "searchOrType": "Ieškoti arba įvesti pavadinimą",
+    "useTyped": "Naudoti „{value}“",
+    "listNeedsKeys": "Įveskite raktus aukščiau, kad pamatytumėte sąrašą",
+    "listEmpty": "Sąrašas tuščias. Įveskite pavadinimą ranka."
   },
   "activity": {
     "title": "Veikla",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Šifruotos šios dirbtuvės atsarginės kopijos į jums priklausančią talpyklą (bucket) pagal jūsų pasirinktą grafiką. Veikia su Amazon S3, Cloudflare R2, Backblaze B2, Wasabi ir Hetzner Object Storage. Po pirmojo vykdymo įkeliama tik tai, kas pasikeitė, todėl kas valandą daromos kopijos išlieka pigios.",
+      "description": "Šifruotos šios dirbtuvės atsarginės kopijos į jums priklausančią talpyklą (bucket) Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ar bet kurioje kitoje su S3 suderinamoje saugykloje pagal jūsų pasirinktą grafiką. Po pirmojo vykdymo įkeliama tik tai, kas pasikeitė, todėl kas valandą daromos kopijos išlieka pigios.",
       "fields": {
         "accessKeyId": "Prieigos rakto ID",
         "accessKeyIdHelp": "Jūsų saugyklos teikėjo raktas su leidimu išvardyti, skaityti, rašyti ir trinti objektus talpykloje. Sukurkite atskirą raktą tik „Torqvoice“, kad jį būtų galima atšaukti atskirai.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Kita su S3 suderinama saugykla",
         "region": "Regionas",
-        "regionHelp": "Taip, kaip jį vadina teikėjas, pavyzdžiui, eu-central-1 Amazon, us-west-004 Backblaze arba fsn1 Hetzner. Cloudflare R2 jo nenaudoja.",
+        "regionHelp": "Kur yra talpykla. Pasirinkite iš teikėjo sąrašo; kitai saugyklai įveskite reikšmę, kurios ji tikisi, jei jos reikia. Cloudflare R2 jo nenaudoja.",
         "accountId": "Cloudflare paskyros ID",
         "accountIdHelp": "32 simbolių ID, rodomas jūsų Cloudflare valdymo skydelio R2 apžvalgos puslapyje.",
         "bucket": "Talpykla (bucket)",
+        "bucketHelp": "Talpyklų sąrašas parodomas vos įvedus raktą. Jei raktas gali naudoti vieną talpyklą, bet negali gauti jų sąrašo, įveskite jos pavadinimą.",
         "prefix": "Aplankas talpykloje",
         "prefixHelp": "Atsarginės kopijos laikomos šiame aplanke. Kiekvienai dirbtuvei, kuri naudoja tą pačią talpyklą, naudokite atskirą aplanką.",
         "frequency": "Kaip dažnai",

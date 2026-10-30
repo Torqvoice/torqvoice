@@ -207,7 +207,11 @@
         "skipped": "Overgeslagen"
       }
     },
-    "lockedBackups": "Geplande, versleutelde back-ups van uw werkplaats naar opslag die van u is."
+    "lockedBackups": "Geplande, versleutelde back-ups van uw werkplaats naar opslag die van u is.",
+    "searchOrType": "Zoek of typ een naam",
+    "useTyped": "\"{value}\" gebruiken",
+    "listNeedsKeys": "Vul hierboven de sleutels in om de lijst te zien",
+    "listEmpty": "Er is niets opgehaald. Typ in plaats daarvan een naam."
   },
   "activity": {
     "title": "Activiteit",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Versleutelde back-ups van deze werkplaats naar een bucket die van u is, volgens een schema dat u kiest. Werkt met Amazon S3, Cloudflare R2, Backblaze B2, Wasabi en Hetzner Object Storage. Na de eerste run wordt alleen geüpload wat er veranderd is, dus back-ups elk uur blijven goedkoop.",
+      "description": "Versleutelde back-ups van deze werkplaats naar een bucket die van u is, bij Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage of andere S3-compatibele opslag, volgens een schema dat u kiest. Na de eerste run wordt alleen geüpload wat er veranderd is, dus back-ups elk uur blijven goedkoop.",
       "fields": {
         "accessKeyId": "Toegangssleutel-ID",
         "accessKeyIdHelp": "Een sleutel van uw opslagaanbieder met toestemming om objecten in de bucket op te sommen, te lezen, te schrijven en te verwijderen. Maak een sleutel alleen voor Torqvoice, zodat u die los kunt intrekken.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Andere S3-compatibele opslag",
         "region": "Regio",
-        "regionHelp": "Zoals de aanbieder hem noemt, bijvoorbeeld eu-central-1 bij Amazon, us-west-004 bij Backblaze of fsn1 bij Hetzner. Niet gebruikt door Cloudflare R2.",
+        "regionHelp": "Waar de bucket staat. Kies hem uit de lijst van de aanbieder; voor andere opslag typt u wat die verwacht, als die een regio nodig heeft. Niet gebruikt door Cloudflare R2.",
         "accountId": "Cloudflare-account-ID",
         "accountIdHelp": "De ID van 32 tekens op de R2-overzichtspagina van uw Cloudflare-dashboard.",
         "bucket": "Bucket",
+        "bucketHelp": "De lijst komt van de sleutel zodra die is ingevuld. Mag de sleutel één bucket gebruiken maar ze niet opsommen, typ dan zelf de naam.",
         "prefix": "Map in de bucket",
         "prefixHelp": "De back-ups staan in deze map. Gebruik een andere map voor elke werkplaats die de bucket deelt.",
         "frequency": "Hoe vaak",

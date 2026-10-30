@@ -207,7 +207,11 @@
         "skipped": "Übersprungen"
       }
     },
-    "lockedBackups": "Geplante, verschlüsselte Sicherungen Ihrer Werkstatt in Ihren eigenen Speicher."
+    "lockedBackups": "Geplante, verschlüsselte Sicherungen Ihrer Werkstatt in Ihren eigenen Speicher.",
+    "searchOrType": "Suchen oder Namen eingeben",
+    "useTyped": "„{value}“ verwenden",
+    "listNeedsKeys": "Geben Sie oben die Schlüssel ein, um die Liste zu sehen",
+    "listEmpty": "Es wurde nichts aufgelistet. Geben Sie stattdessen einen Namen ein."
   },
   "activity": {
     "title": "Aktivität",
@@ -701,7 +705,7 @@
       }
     },
     "s3": {
-      "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Bucket, der Ihnen gehört, nach einem Zeitplan Ihrer Wahl. Funktioniert mit Amazon S3, Cloudflare R2, Backblaze B2, Wasabi und Hetzner Object Storage. Nach dem ersten Lauf wird nur hochgeladen, was sich geändert hat, daher bleiben stündliche Sicherungen günstig.",
+      "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Bucket, der Ihnen gehört, bei Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage oder jedem anderen S3-kompatiblen Speicher, nach einem Zeitplan Ihrer Wahl. Nach dem ersten Lauf wird nur hochgeladen, was sich geändert hat, daher bleiben stündliche Sicherungen günstig.",
       "fields": {
         "accessKeyId": "Zugriffsschlüssel-ID",
         "accessKeyIdHelp": "Ein Schlüssel Ihres Speicheranbieters mit der Berechtigung, Objekte im Bucket aufzulisten, zu lesen, zu schreiben und zu löschen. Erstellen Sie einen eigenen Schlüssel nur für Torqvoice, damit er sich einzeln widerrufen lässt.",
@@ -720,10 +724,11 @@
         "providerHetzner": "Hetzner Object Storage",
         "providerOther": "Anderer S3-kompatibler Speicher",
         "region": "Region",
-        "regionHelp": "So, wie der Anbieter sie nennt, zum Beispiel eu-central-1 bei Amazon, us-west-004 bei Backblaze oder fsn1 bei Hetzner. Wird von Cloudflare R2 nicht verwendet.",
+        "regionHelp": "Wo der Bucket liegt. Wählen Sie die Region aus der Liste des Anbieters; bei anderem Speicher geben Sie ein, was dieser erwartet, falls er eine Region braucht. Wird von Cloudflare R2 nicht verwendet.",
         "accountId": "Cloudflare-Konto-ID",
         "accountIdHelp": "Die 32-stellige ID auf der R2-Übersichtsseite Ihres Cloudflare-Dashboards.",
         "bucket": "Bucket",
+        "bucketHelp": "Die Liste kommt vom Schlüssel, sobald er eingegeben ist. Darf der Schlüssel einen Bucket nutzen, aber nicht auflisten, geben Sie den Namen selbst ein.",
         "prefix": "Ordner im Bucket",
         "prefixHelp": "Die Sicherungen liegen in diesem Ordner. Verwenden Sie für jede Werkstatt, die den Bucket mitbenutzt, einen eigenen Ordner.",
         "frequency": "Wie oft",

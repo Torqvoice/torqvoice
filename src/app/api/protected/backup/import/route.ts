@@ -1,6 +1,6 @@
 import { isStage } from '@/features/work-order-statuses/Lib/stages'
 import { NextRequest, NextResponse } from 'next/server'
-import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db, type TxClient } from '@/lib/db'
@@ -22,8 +22,15 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { generateWebhookSecret } from '@/features/webhooks/Lib/sign'
 import { isRedacted, keepCurrentSecrets, keepCurrentWebhookSecrets } from '@/lib/backup/secrets'
 import { Prisma } from '@/generated/prisma/client'
-import JSZip from 'jszip'
-import { mkdir, writeFile } from 'fs/promises'
+import {
+  extractEntry,
+  openZip,
+  readEntryJson,
+  readJsonFile,
+  spoolUpload,
+  type OpenedZip,
+  type SpooledUpload,
+} from '@/lib/backup/zip-file'
 import { releaseFilesNotRestored } from '@/lib/files/manager'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
@@ -34,47 +41,47 @@ const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04]
 /** Larger than any workshop's backup by a wide margin, and small enough to hold in memory. */
 const MAX_BACKUP_UPLOAD_BYTES = 200 * 1024 * 1024
 
-function isZipBuffer(buffer: ArrayBuffer): boolean {
-  const view = new Uint8Array(buffer)
-  if (view.length < 4) return false
-  return ZIP_MAGIC.every((byte, i) => view[i] === byte)
-}
-
 interface BackupData {
   version: number
   data: Record<string, any>
 }
 
+/**
+ * The upload goes to a temporary file as it arrives, and data.json is parsed
+ * straight out of the archive: the one thing held in memory is the parsed
+ * backup. The caller closes the zip and removes the upload when it is done.
+ */
 async function parseBackup(
   request: NextRequest
-): Promise<{ backup: BackupData; files: JSZip | null }> {
+): Promise<{ backup: BackupData; files: OpenedZip | null; upload: SpooledUpload | null }> {
   const contentType = request.headers.get('content-type') || ''
 
   if (contentType.includes('application/json')) {
     const backup = await request.json()
-    return { backup, files: null }
+    return { backup, files: null, upload: null }
   }
 
-  // For any other content type, read as binary and detect format
+  // For any other content type, write it to disk and look at the first bytes
   assertContentLength(request, MAX_BACKUP_UPLOAD_BYTES)
-  const buffer = await request.arrayBuffer()
-
-  if (isZipBuffer(buffer)) {
-    const zip = await JSZip.loadAsync(buffer)
-    assertZipWithinLimits(zip.files)
-    const dataJsonFile = zip.file('data.json')
-    if (!dataJsonFile) {
-      throw new Error('Zip archive does not contain data.json')
+  const upload = await spoolUpload(request, MAX_BACKUP_UPLOAD_BYTES, 'torqvoice-restore')
+  try {
+    if (upload.isZip) {
+      const zip = await openZip(upload.path)
+      const dataJson = zip.find('data.json')
+      if (!dataJson) {
+        zip.close()
+        throw new Error('Zip archive does not contain data.json')
+      }
+      const backup = await readEntryJson<BackupData>(zip, dataJson)
+      return { backup, files: zip, upload }
     }
-    const jsonStr = await dataJsonFile.async('string')
-    const backup = JSON.parse(jsonStr)
-    return { backup, files: zip }
+    // Plain JSON with the wrong content type
+    const backup = await readJsonFile<BackupData>(upload.path)
+    return { backup, files: null, upload }
+  } catch (err) {
+    await upload.remove()
+    throw err
   }
-
-  // Try parsing as JSON (e.g. if content-type header is wrong)
-  const text = new TextDecoder().decode(buffer)
-  const backup = JSON.parse(text)
-  return { backup, files: null }
 }
 
 /**
@@ -375,20 +382,20 @@ async function restoreRows(
   }
 }
 
-async function restoreFiles(zip: JSZip, organizationId: string) {
+async function restoreFiles(zip: OpenedZip, organizationId: string) {
   const uploadsDir = path.join(uploadsRoot(), organizationId)
 
-  const fileEntries = Object.keys(zip.files).filter(
-    (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))
+  const fileEntries = zip.entries.filter(
+    (e) => !e.dir && (e.name.startsWith('files/') || e.name.startsWith('uploads/'))
   )
 
   // The backup's files are written first, over whatever has the same name.
   const restored = new Map<string, Set<string>>()
-  for (const filePath of fileEntries) {
+  for (const entry of fileEntries) {
     // Supports both formats:
     //   files/{category}/{filename}  (v2 backup)
     //   uploads/{category}/{filename} (legacy backup)
-    const parts = filePath.split('/')
+    const parts = entry.name.split('/')
     if (parts.length !== 3) continue
 
     const category = parts[1]
@@ -399,11 +406,8 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     // Prevent directory traversal
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) continue
 
-    const targetDir = path.join(uploadsDir, category)
-    await mkdir(targetDir, { recursive: true })
-
-    const fileData = await zip.files[filePath].async('nodebuffer')
-    await writeFile(path.join(targetDir, filename), fileData)
+    // Each file streams from the archive to its place; none is held whole.
+    await extractEntry(zip, entry, path.join(uploadsDir, category, filename))
 
     const names = restored.get(category) ?? new Set<string>()
     names.add(filename)
@@ -439,23 +443,35 @@ export async function POST(request: NextRequest) {
   }
 
   let backup: BackupData
-  let zipFiles: JSZip | null = null
+  let zipFiles: OpenedZip | null = null
+  let upload: SpooledUpload | null = null
 
   try {
     const result = await parseBackup(request)
     backup = result.backup
     zipFiles = result.files
+    upload = result.upload
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid backup file'
     return NextResponse.json({ error: message }, { status: 400 })
   }
+  // The archive stays open until the files are restored; the upload goes
+  // whichever way the request ends.
+  const discard = async () => {
+    zipFiles?.close()
+    zipFiles = null
+    await upload?.remove()
+    upload = null
+  }
 
   if (!backup?.version || (backup.version !== 1 && backup.version !== 2)) {
+    await discard()
     return NextResponse.json({ error: 'Unsupported or missing backup version' }, { status: 400 })
   }
 
   const data = backup.data
   if (!data) {
+    await discard()
     return NextResponse.json({ error: 'No data found in backup' }, { status: 400 })
   }
 
@@ -1989,5 +2005,7 @@ export async function POST(request: NextRequest) {
     console.error('[backup import]', error)
     const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
+  } finally {
+    await discard().catch(() => undefined)
   }
 }
