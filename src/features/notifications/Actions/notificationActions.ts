@@ -44,7 +44,8 @@ export async function markAllNotificationsRead() {
 }
 
 export async function deleteNotification(id: string) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ organizationId, role }) => {
+    if (!readsNotifications(role)) throw new Error(ONLY_FEED_READERS)
     await db.notification.deleteMany({
       where: { id, organizationId },
     })
@@ -52,10 +53,21 @@ export async function deleteNotification(id: string) {
   })
 }
 
-export async function deleteAllNotifications() {
-  return withAuth(async ({ organizationId }) => {
+const ONLY_FEED_READERS = 'Only the roles that read the notification feed can delete from it'
+
+/**
+ * Empty the workshop's feed. `before` is the newest notification the person
+ * was looking at when they confirmed: anything that arrived after that is
+ * not something they chose to clear, so it stays, and the panel and the
+ * database agree on what is left.
+ */
+export async function deleteAllNotifications(before: string) {
+  return withAuth(async ({ organizationId, role }) => {
+    if (!readsNotifications(role)) throw new Error(ONLY_FEED_READERS)
+    const cutoff = new Date(before)
+    if (Number.isNaN(cutoff.getTime())) throw new Error('Invalid cutoff')
     await db.notification.deleteMany({
-      where: { organizationId },
+      where: { organizationId, createdAt: { lte: cutoff } },
     })
     return { success: true }
   })

@@ -4,6 +4,7 @@
     "markAllRead": "Alles als gelezen markeren",
     "clearAll": "Alles wissen",
     "confirmClearAll": "Alle meldingen verwijderen?",
+    "clearAllFailed": "Meldingen konden niet worden gewist",
     "empty": "Nog geen meldingen",
     "confirmDelete": "Weet je het zeker?",
     "delete": "Verwijderen",

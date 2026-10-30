@@ -4,6 +4,7 @@
     "markAllRead": "Merk alle som lest",
     "clearAll": "Fjern alle",
     "confirmClearAll": "Fjerne alle varsler?",
+    "clearAllFailed": "Kunne ikke fjerne varslene",
     "empty": "Ingen varsler ennå",
     "confirmDelete": "Er du sikker?",
     "delete": "Slett",

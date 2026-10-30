@@ -4,6 +4,7 @@
     "markAllRead": "Marcar todas como lidas",
     "clearAll": "Limpar tudo",
     "confirmClearAll": "Eliminar todas as notificações?",
+    "clearAllFailed": "Não foi possível limpar as notificações",
     "empty": "Ainda não há notificações",
     "confirmDelete": "Tem a certeza?",
     "delete": "Eliminar",

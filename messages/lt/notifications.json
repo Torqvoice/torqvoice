@@ -4,6 +4,7 @@
     "markAllRead": "Pažymėti visus kaip skaitytus",
     "clearAll": "Išvalyti visus",
     "confirmClearAll": "Pašalinti visus pranešimus?",
+    "clearAllFailed": "Nepavyko išvalyti pranešimų",
     "empty": "Pranešimų dar nėra",
     "confirmDelete": "Ar tikrai?",
     "delete": "Ištrinti",

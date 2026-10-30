@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { formatDistanceToNow } from 'date-fns'
 import { Bell, FileText, ClipboardCheck, Receipt, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useNotificationStore } from '../store/notificationStore'
 import {
+  getNotifications,
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
@@ -57,6 +59,7 @@ export function NotificationPanel() {
     markAllRead,
     removeNotification,
     clearAll,
+    setNotifications,
   } = useNotificationStore()
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [pendingClearAll, setPendingClearAll] = useState(false)
@@ -104,11 +107,29 @@ export function NotificationPanel() {
     markAllNotificationsRead()
   }
 
-  const handleConfirmClearAll = () => {
+  const handleConfirmClearAll = async () => {
+    // The newest notification on screen is the cutoff: one that arrives while
+    // the request is in flight was never shown, so it is not cleared.
+    const newest = Math.max(...notifications.map((n) => new Date(n.createdAt).getTime()))
+    const before = new Date(newest).toISOString()
+
     clearAll()
-    deleteAllNotifications()
     setPendingClearAll(false)
     setPendingDeleteId(null)
+
+    const result = await deleteAllNotifications(before).catch(() => ({ success: false }))
+    if (result.success) {
+      // The dashboard's Recent Notifications card is server-fetched, not read
+      // from the store, so it only empties with a refresh.
+      router.refresh()
+      return
+    }
+
+    toast.error(t('panel.clearAllFailed'))
+    const fresh = await getNotifications().catch(() => null)
+    if (fresh?.success && fresh.data) {
+      setNotifications(fresh.data.notifications, fresh.data.unreadCount)
+    }
   }
 
   return (
@@ -124,7 +145,8 @@ export function NotificationPanel() {
     >
       <SheetContent className="w-[380px] p-0 sm:max-w-[380px]">
         <SheetHeader className="border-b px-4 py-3">
-          <div className="flex items-center justify-between">
+          {/* pr-8 keeps the actions clear of the sheet's own close control. */}
+          <div className="flex items-center justify-between pr-8">
             <div className="flex items-center gap-2">
               <SheetTitle>{t('panel.title')}</SheetTitle>
               {unreadCount > 0 && (
@@ -153,12 +175,15 @@ export function NotificationPanel() {
           </div>
           {pendingClearAll && (
             <div className="mt-2 flex items-center justify-between gap-2">
-              <span className="text-xs text-muted-foreground">{t('panel.confirmClearAll')}</span>
+              <span id="notifications-clear-all-question" className="text-xs text-muted-foreground">
+                {t('panel.confirmClearAll')}
+              </span>
               <div className="flex items-center gap-2">
                 <Button
                   variant="destructive"
                   size="sm"
                   className="h-6 px-2 text-xs"
+                  aria-describedby="notifications-clear-all-question"
                   onClick={handleConfirmClearAll}
                 >
                   {t('panel.delete')}
