@@ -2,6 +2,9 @@
   "panel": {
     "title": "Benachrichtigungen",
     "markAllRead": "Alle als gelesen markieren",
+    "clearAll": "Alle entfernen",
+    "confirmClearAll": "Alle Benachrichtigungen entfernen?",
+    "clearAllFailed": "Benachrichtigungen konnten nicht entfernt werden",
     "empty": "Noch keine Benachrichtigungen",
     "confirmDelete": "Sind Sie sicher?",
     "delete": "Löschen",
