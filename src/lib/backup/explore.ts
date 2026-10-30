@@ -63,10 +63,18 @@ interface OpenPoint {
   byId: Record<ExploreDataset, Map<string, Row>>
 }
 
-const g = globalThis as unknown as { __torqvoiceExplore?: Map<string, OpenPoint> }
+const g = globalThis as unknown as {
+  __torqvoiceExplore?: Map<string, OpenPoint>
+  __torqvoiceExploreOpening?: Map<string, Promise<RestorePointSummary>>
+}
 function open(): Map<string, OpenPoint> {
   if (!g.__torqvoiceExplore) g.__torqvoiceExplore = new Map()
   return g.__torqvoiceExplore
+}
+/** Opens in flight, so two requests for one snapshot share one download. */
+function opening(): Map<string, Promise<RestorePointSummary>> {
+  if (!g.__torqvoiceExploreOpening) g.__torqvoiceExploreOpening = new Map()
+  return g.__torqvoiceExploreOpening
 }
 
 export function exploreDirFor(organizationId: string, snapshotId: string): string {
@@ -85,10 +93,14 @@ async function forget(point: OpenPoint): Promise<void> {
   await rm(point.dir, { recursive: true, force: true }).catch(() => undefined)
 }
 
-/** Drops restore points open too long, and the oldest beyond the cap. */
-async function sweep(now = Date.now()): Promise<void> {
+/**
+ * Drops restore points open too long and, when one more is about to be
+ * added, the oldest beyond the cap.
+ */
+async function sweep(makingRoom: boolean, now = Date.now()): Promise<void> {
   const points = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
   for (const p of points) if (now - p.openedAt > KEEP_OPEN_MS) await forget(p)
+  if (!makingRoom) return
   const left = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
   while (left.length >= MAX_OPEN) {
     const oldest = left.shift()
@@ -144,16 +156,43 @@ export async function openRestorePoint(
   const opened: OpenedTarget = await openTarget(target)
   const organizationId = opened.organizationId
   const key = keyOf(organizationId, snapshotId)
-  await sweep()
   const existing = open().get(key)
   if (existing) {
     existing.openedAt = Date.now()
+    await sweep(false)
     return summaryOf(existing)
   }
+  const inFlight = opening().get(key)
+  if (inFlight) return inFlight
 
-  const dir = exploreDirFor(organizationId, snapshotId)
-  await rm(dir, { recursive: true, force: true })
-  await mkdir(dir, { recursive: true, mode: 0o700 })
+  const promise = (async () => {
+    await sweep(true)
+    const dir = exploreDirFor(organizationId, snapshotId)
+    await rm(dir, { recursive: true, force: true })
+    await mkdir(dir, { recursive: true, mode: 0o700 })
+    try {
+      return await pull(opened, target, organizationId, snapshotId, key, dir)
+    } catch (err) {
+      await rm(dir, { recursive: true, force: true }).catch(() => undefined)
+      throw err
+    }
+  })()
+  opening().set(key, promise)
+  try {
+    return await promise
+  } finally {
+    opening().delete(key)
+  }
+}
+
+async function pull(
+  opened: OpenedTarget,
+  target: RunTarget,
+  organizationId: string,
+  snapshotId: string,
+  key: string,
+  dir: string
+): Promise<RestorePointSummary> {
   const matches = await resticFind(opened.base, { snapshotId, pattern: 'data.json' })
   const staged = matches.filter((m) => isStagedDataFile(m.path))
   const dataPath = (staged.find((m) => m.path.split('/').at(-2) === organizationId) ?? staged[0])
@@ -166,11 +205,14 @@ export async function openRestorePoint(
     target: dataFile,
     maxBytes: MAX_DATA_BYTES,
   })
-  const parsed = backupShape.safeParse(await readJsonFile<unknown>(dataFile))
-  if (!parsed.success) {
-    await rm(dir, { recursive: true, force: true })
+  let raw: unknown
+  try {
+    raw = await readJsonFile<unknown>(dataFile)
+  } catch {
     throw new Error('The data file in this restore point could not be read')
   }
+  const parsed = backupShape.safeParse(raw)
+  if (!parsed.success) throw new Error('The data file in this restore point could not be read')
   const data = parsed.data.data
   const vehicles = rowsOf(data.vehicles)
   // Work orders live inside their vehicle in the file (and counter sales on
@@ -359,7 +401,7 @@ export function listRestorePointRows(
   const all = point.rows[dataset]
     .map((row) => ({ row, item: listItem(dataset, row, point) }))
     .filter(({ row, item }) => !q || matches(item, row, q))
-    .sort((a, b) => Date.parse(b.item.at ?? '') - Date.parse(a.item.at ?? ''))
+    .sort((a, b) => (Date.parse(b.item.at ?? '') || 0) - (Date.parse(a.item.at ?? '') || 0))
   const pages = Math.max(1, Math.ceil(all.length / PAGE))
   const p = Math.min(Math.max(1, page), pages)
   return {

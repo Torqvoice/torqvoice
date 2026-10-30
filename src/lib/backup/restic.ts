@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { createWriteStream } from 'node:fs'
-import { mkdir } from 'node:fs/promises'
+import { mkdir, rm } from 'node:fs/promises'
 import type { BackupSettings, ResticRepository } from '@/features/integrations/Lib/backup-types'
 import { retentionFlags } from '@/lib/backup/schedule'
 
@@ -439,7 +439,7 @@ export async function resticDumpToFile(
   await mkdir(path.dirname(input.target), { recursive: true, mode: 0o700 })
   const command = [resticBinary(), ...redactArgv(argv)].join(' ')
   const env = resticEnv(opts.repository, opts.password, opts.cacheDir)
-  return new Promise((resolve, reject) => {
+  return new Promise<{ bytes: number }>((resolve, reject) => {
     const child = spawn(resticBinary(), argv, {
       env: env as NodeJS.ProcessEnv,
       cwd: opts.cacheDir,
@@ -522,6 +522,10 @@ export async function resticDumpToFile(
         resolve({ bytes })
       })
     })
+  }).catch(async (err) => {
+    // A half-written file must never be served as the whole one later.
+    await rm(input.target, { force: true }).catch(() => undefined)
+    throw err
   })
 }
 
