@@ -1399,6 +1399,11 @@
     "importComplete": "Import zakończony",
     "importCompleteMessage": "Wszystkie dane zostaly przywrocone z pliku kopii zapasowej.",
     "importFailed": "Import nie powiódł się",
+    "restoreRefused": {
+      "busy": "Na tym serwerze trwa już tworzenie kopii zapasowej lub przywracanie. Spróbuj ponownie, gdy się zakończy.",
+      "ownerOnly": "W Torqvoice Cloud kopię zapasową może przywrócić tylko właściciel warsztatu.",
+      "foreignIds": "Plik odwołuje się do rekordów należących do innego warsztatu, więc niczego nie przywrócono."
+    },
     "importFromOther": "Importuj z innych uslug",
     "importFromOtherDescription": "Migruj dane z innej platformy. Wybierz usluge, aby rozpocząć.",
     "lubelogTitle": "Importuj z LubeLog",

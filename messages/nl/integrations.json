@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Schema",
-        "manual": "Handmatig"
+        "manual": "Handmatig",
+        "restore": "Terugzetten"
       },
       "status": {
         "queued": "In de wachtrij",
@@ -205,6 +206,35 @@
         "done": "Klaar",
         "failed": "Mislukt",
         "skipped": "Overgeslagen"
+      },
+      "restoring": "Terugzetten bezig",
+      "restoringHint": "Er wordt een back-up teruggezet: de gegevens van de werkplaats worden vervangen door de back-up. Deze pagina werkt zichzelf bij tot het klaar is. Werk tot die tijd niet in de werkplaats.",
+      "restore": {
+        "title": "Terugzetten",
+        "description": "Zet de werkplaats terug zoals hij was bij een van deze back-ups. Alles wat er nu in staat, wordt vervangen.",
+        "show": "Back-ups tonen",
+        "refresh": "Vernieuwen",
+        "loading": "De back-ups op de bestemming worden gelezen",
+        "loadFailed": "De back-ups konden niet worden opgehaald",
+        "empty": "Nog geen back-ups op deze bestemming.",
+        "columns": {
+          "taken": "Gemaakt",
+          "trigger": "Gestart door",
+          "files": "Foto's en bestanden",
+          "size": "Grootte"
+        },
+        "filesIncluded": "Meegenomen",
+        "filesNotIncluded": "Niet meegenomen",
+        "earlierInstall": "Eerdere installatie",
+        "action": "Terugzetten",
+        "dialogTitle": "De back-up van {time} terugzetten?",
+        "warning": "Terugzetten <bold>vervangt alles wat deze werkplaats nu heeft</bold>: klanten, voertuigen, werkorders, facturen, instellingen en, als de back-up ze bevat, foto's en bestanden. Alles wat sinds de back-up is toegevoegd, gaat verloren. Dit kan niet ongedaan worden gemaakt.",
+        "secretsNote": "Geheime sleutels die de back-up heeft weggelaten, houden de waarden die deze installatie nu heeft. Gebruikersaccounts en wachtwoorden blijven ongemoeid.",
+        "confirmPrompt": "Typ de naam van de werkplaats, <bold>{name}</bold>, om te bevestigen.",
+        "whileRunning": "Het terugzetten draait op de achtergrond en duurt een paar minuten als er veel foto's zijn. De pagina werkt zichzelf bij tot het klaar is.",
+        "cancel": "Annuleren",
+        "confirm": "Deze back-up terugzetten",
+        "started": "Terugzetten gestart"
       }
     },
     "lockedBackups": "Geplande, versleutelde back-ups van uw werkplaats naar opslag die van u is.",
@@ -260,7 +290,9 @@
     "state": "Deze aanmelding is verlopen of hoort bij een andere sessie. Begin opnieuw.",
     "exchange": "De provider heeft de aanmelding geweigerd. Controleer de app-gegevens en probeer het opnieuw.",
     "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen.",
-    "backupRunning": "Er loopt al een back-up."
+    "backupRunning": "Er loopt al een back-up.",
+    "restoreOwnerOnly": "In Torqvoice Cloud kan alleen de eigenaar van de werkplaats een back-up terugzetten.",
+    "restoreBusy": "Er loopt al een back-up of herstel op deze server. Probeer het opnieuw als dat klaar is."
   },
   "meeting": {
     "join": "Deelnemen aan videogesprek",

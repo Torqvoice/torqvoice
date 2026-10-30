@@ -1399,6 +1399,11 @@
     "importComplete": "Import abgeschlossen",
     "importCompleteMessage": "Alle Daten wurden aus der Backup-Datei wiederhergestellt.",
     "importFailed": "Import fehlgeschlagen",
+    "restoreRefused": {
+      "busy": "Auf diesem Server läuft bereits eine Sicherung oder Wiederherstellung. Versuchen Sie es erneut, wenn sie fertig ist.",
+      "ownerOnly": "In der Torqvoice Cloud kann nur der Inhaber der Werkstatt eine Sicherung wiederherstellen.",
+      "foreignIds": "Die Datei verweist auf Datensätze, die zu einer anderen Werkstatt gehören, daher wurde nichts wiederhergestellt."
+    },
     "importFromOther": "Von anderen Diensten importieren",
     "importFromOtherDescription": "Migrieren Sie Ihre Daten von einer anderen Plattform. Wählen Sie einen Dienst, um zu beginnen.",
     "lubelogTitle": "Von LubeLog importieren",

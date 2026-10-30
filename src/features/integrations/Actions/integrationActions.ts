@@ -41,7 +41,7 @@ import type {
   SettingOption,
 } from '../Lib/types'
 import type { BackupOverview } from '../Lib/backup-types'
-import { BACKUP_CAPABILITY, backupOverview } from '../Lib/backup'
+import { BACKUP_CAPABILITY, backupOverview, canRestoreBackups } from '../Lib/backup'
 import { messagingProvider, providersForChannel } from '@/integrations/messaging/catalog'
 import {
   type InboundWebhook,
@@ -321,7 +321,7 @@ async function supersededVendor(
 
 export async function getIntegrationConnection(connectorId: string) {
   return withAuth(
-    async ({ organizationId }): Promise<ConnectionView> => {
+    async ({ organizationId, isAdmin, role }): Promise<ConnectionView> => {
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
       // Opening a vendor's page directly, without passing the catalog, still
@@ -380,15 +380,18 @@ export async function getIntegrationConnection(connectorId: string) {
             : null,
         backup:
           row && manifest.capabilities.includes(BACKUP_CAPABILITY)
-            ? await backupOverview({
-                id: row.id,
-                organizationId,
-                settings: effectiveSettings(
-                  connectorId,
-                  (row.settings as Record<string, unknown>) ?? {}
-                ),
-                state: (row.state as Record<string, unknown>) ?? {},
-              })
+            ? await backupOverview(
+                {
+                  id: row.id,
+                  organizationId,
+                  settings: effectiveSettings(
+                    connectorId,
+                    (row.settings as Record<string, unknown>) ?? {}
+                  ),
+                  state: (row.state as Record<string, unknown>) ?? {},
+                },
+                { canRestore: isAdmin && canRestoreBackups(role) }
+              )
             : null,
       }
     },

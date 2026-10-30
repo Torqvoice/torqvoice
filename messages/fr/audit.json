@@ -194,7 +194,8 @@
     "settings_markType_update": "Type de marque modifié",
     "settings_markType_remove": "Type de marque supprimé",
     "settings_markType_reorder": "Types de marque réordonnés",
-    "integration_backup_run": "Sauvegarde lancée"
+    "integration_backup_run": "Sauvegarde lancée",
+    "integration_backup_restore": "Sauvegarde restaurée"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -348,6 +349,8 @@
     "condition_mark_carry": "A confirmé que {count, plural, one {# marque antérieure est} other {# marques antérieures sont}} toujours là sur la carte d'état",
     "condition_map_on_invoice_on": "A mis la carte d'état sur la facture",
     "condition_map_on_invoice_off": "A retiré la carte d'état de la facture",
-    "backup_run_started": "A lancé une sauvegarde vers {name}"
+    "backup_run_started": "A lancé une sauvegarde vers {name}",
+    "backup_restore_started": "A lancé la restauration de la sauvegarde {snapshot} depuis {name}",
+    "backup_restored": "A restauré la sauvegarde {snapshot} depuis {name}"
   }
 }

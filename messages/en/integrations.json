@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Schedule",
-        "manual": "Manual"
+        "manual": "Manual",
+        "restore": "Restore"
       },
       "status": {
         "queued": "Queued",
@@ -205,6 +206,35 @@
         "done": "Done",
         "failed": "Failed",
         "skipped": "Skipped"
+      },
+      "restoring": "Restoring",
+      "restoringHint": "A restore is running: the workshop's data is being replaced with the backup. This page updates by itself until it is done. Do not work in the workshop until then.",
+      "restore": {
+        "title": "Restore",
+        "description": "Put the workshop back the way it was at one of these backups. Everything it holds now is replaced.",
+        "show": "Show backups",
+        "refresh": "Refresh",
+        "loading": "Reading the backups at the destination",
+        "loadFailed": "The backups could not be listed",
+        "empty": "No backups at this destination yet.",
+        "columns": {
+          "taken": "Taken",
+          "trigger": "Started by",
+          "files": "Photos and files",
+          "size": "Size"
+        },
+        "filesIncluded": "Included",
+        "filesNotIncluded": "Not included",
+        "earlierInstall": "Earlier install",
+        "action": "Restore",
+        "dialogTitle": "Restore the backup from {time}?",
+        "warning": "Restoring <bold>replaces everything this workshop has now</bold>: customers, vehicles, jobs, invoices, settings and, when the backup includes them, photos and files. Anything added since the backup was taken is gone. This cannot be undone.",
+        "secretsNote": "Secret keys the backup left out keep the values this install has now. User accounts and passwords are not touched.",
+        "confirmPrompt": "Type the workshop's name, <bold>{name}</bold>, to confirm.",
+        "whileRunning": "The restore runs in the background and takes a few minutes when there are many photos. The page updates by itself until it is done.",
+        "cancel": "Cancel",
+        "confirm": "Restore this backup",
+        "started": "Restore started"
       }
     },
     "lockedBackups": "Scheduled, encrypted backups of your workshop to storage you own.",
@@ -260,7 +290,9 @@
     "state": "This sign-in has expired or belongs to another session. Start again.",
     "exchange": "The provider refused the sign-in. Check the app credentials and try again.",
     "identify": "Connected, but the account could not be read. Try reconnecting.",
-    "backupRunning": "A backup is already running."
+    "backupRunning": "A backup is already running.",
+    "restoreOwnerOnly": "On Torqvoice Cloud only the workshop's owner can restore a backup.",
+    "restoreBusy": "A backup or restore is already running on this server. Try again when it is done."
   },
   "meeting": {
     "join": "Join video call",

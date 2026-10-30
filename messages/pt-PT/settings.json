@@ -1399,6 +1399,11 @@
     "importComplete": "Importação concluída",
     "importCompleteMessage": "Todos os dados foram repostos a partir do ficheiro de cópia de segurança.",
     "importFailed": "A importação falhou",
+    "restoreRefused": {
+      "busy": "Já está a decorrer uma cópia de segurança ou uma reposição neste servidor. Tente novamente quando terminar.",
+      "ownerOnly": "No Torqvoice Cloud, só o proprietário da oficina pode repor uma cópia de segurança.",
+      "foreignIds": "O ficheiro refere registos que pertencem a outra oficina, por isso nada foi reposto."
+    },
     "importFromOther": "Importar de outros serviços",
     "importFromOtherDescription": "Migre os seus dados de outra plataforma. Selecione um serviço para começar.",
     "lubelogTitle": "Importar do LubeLog",

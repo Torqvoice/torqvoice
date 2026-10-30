@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Agendamento",
-        "manual": "Manual"
+        "manual": "Manual",
+        "restore": "Restauração"
       },
       "status": {
         "queued": "Na fila",
@@ -205,6 +206,35 @@
         "done": "Concluído",
         "failed": "Falhou",
         "skipped": "Ignorado"
+      },
+      "restoring": "Restaurando",
+      "restoringHint": "Uma restauração está em andamento: os dados da oficina estão sendo substituídos pelo backup. Esta página se atualiza sozinha até terminar. Não trabalhe na oficina até lá.",
+      "restore": {
+        "title": "Restaurar",
+        "description": "Volte a oficina ao estado em que estava em um destes backups. Tudo o que ela tem agora é substituído.",
+        "show": "Mostrar backups",
+        "refresh": "Atualizar",
+        "loading": "Lendo os backups no destino",
+        "loadFailed": "Não foi possível listar os backups",
+        "empty": "Ainda não há backups neste destino.",
+        "columns": {
+          "taken": "Feito em",
+          "trigger": "Iniciado por",
+          "files": "Fotos e arquivos",
+          "size": "Tamanho"
+        },
+        "filesIncluded": "Incluídos",
+        "filesNotIncluded": "Não incluídos",
+        "earlierInstall": "Instalação anterior",
+        "action": "Restaurar",
+        "dialogTitle": "Restaurar o backup de {time}?",
+        "warning": "A restauração <bold>substitui tudo o que esta oficina tem agora</bold>: clientes, veículos, ordens de serviço, faturas, configurações e, quando o backup os inclui, fotos e arquivos. Tudo o que foi adicionado depois que o backup foi feito é perdido. Isso não pode ser desfeito.",
+        "secretsNote": "As chaves secretas que o backup deixou de fora mantêm os valores que esta instalação tem agora. Contas de usuário e senhas não são alteradas.",
+        "confirmPrompt": "Digite o nome da oficina, <bold>{name}</bold>, para confirmar.",
+        "whileRunning": "A restauração roda em segundo plano e leva alguns minutos quando há muitas fotos. A página se atualiza sozinha até terminar.",
+        "cancel": "Cancelar",
+        "confirm": "Restaurar este backup",
+        "started": "Restauração iniciada"
       }
     },
     "lockedBackups": "Backups agendados e criptografados da sua oficina para um armazenamento seu.",
@@ -260,7 +290,9 @@
     "state": "Este login expirou ou pertence a outra sessão. Comece de novo.",
     "exchange": "O provedor recusou o login. Verifique as credenciais do aplicativo e tente novamente.",
     "identify": "Conectado, mas não foi possível ler a conta. Tente reconectar.",
-    "backupRunning": "Já há um backup em andamento."
+    "backupRunning": "Já há um backup em andamento.",
+    "restoreOwnerOnly": "No Torqvoice Cloud, só o proprietário da oficina pode restaurar um backup.",
+    "restoreBusy": "Já há um backup ou uma restauração em andamento neste servidor. Tente de novo quando terminar."
   },
   "meeting": {
     "join": "Entrar na videochamada",

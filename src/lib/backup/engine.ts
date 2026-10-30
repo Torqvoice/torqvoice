@@ -55,13 +55,17 @@ export function backupLockHolder(): Lock | null {
   return g.__torqvoiceBackupLock ?? null
 }
 
-function acquireLock(runId: string): boolean {
+/**
+ * The server-wide lock a backup or a restore holds while it runs. Shared
+ * between the two: a restore replaces the rows a backup would be reading.
+ */
+export function acquireBackupLock(runId: string): boolean {
   if (g.__torqvoiceBackupLock) return false
   g.__torqvoiceBackupLock = { runId, since: Date.now() }
   return true
 }
 
-function releaseLock(runId: string): void {
+export function releaseBackupLock(runId: string): void {
   if (g.__torqvoiceBackupLock?.runId === runId) g.__torqvoiceBackupLock = null
 }
 
@@ -84,11 +88,13 @@ export function stagingDirFor(organizationId: string): string {
 /**
  * Queue a run for a connection. Refuses when one is queued or running for
  * it already, so a double click or an overlapping cron tick cannot start
- * two. The caller decides whether to await `runBackup` or let it go.
+ * two. The caller decides whether to await `runBackup` or let it go. A
+ * restore names the snapshot it will put back.
  */
 export async function queueBackupRun(
   connectionId: string,
-  trigger: BackupTrigger
+  trigger: BackupTrigger,
+  extra: { snapshotId?: string } = {}
 ): Promise<{ runId: string }> {
   const open = await db.backupRun.findFirst({
     where: { connectionId, status: { in: ['queued', 'running'] } },
@@ -105,13 +111,20 @@ export async function queueBackupRun(
     throw new Error('This integration is not a backup destination')
   }
   const run = await db.backupRun.create({
-    data: { organizationId: row.organizationId, connectionId, trigger, status: 'queued' },
+    data: {
+      organizationId: row.organizationId,
+      connectionId,
+      trigger,
+      status: 'queued',
+      snapshotId: extra.snapshotId ?? null,
+    },
     select: { id: true },
   })
   return { runId: run.id }
 }
 
-async function finishRun(
+/** Records how a run ended, and returns the row as the page shows it. */
+export async function finishRun(
   runId: string,
   data: {
     status: 'done' | 'failed' | 'skipped'
@@ -142,7 +155,7 @@ export async function runBackup(runId: string): Promise<BackupRunView> {
   if (!run) throw new Error('Backup run not found')
   if (run.status !== 'queued') return runView(run)
 
-  if (!acquireLock(runId)) {
+  if (!acquireBackupLock(runId)) {
     return finishRun(runId, {
       status: 'skipped',
       error: 'Another backup was running; this one was skipped',
@@ -276,7 +289,7 @@ export async function runBackup(runId: string): Promise<BackupRunView> {
         console.warn('[backup] could not remove the staging file:', err)
       )
     }
-    releaseLock(runId)
+    releaseBackupLock(runId)
   }
 }
 

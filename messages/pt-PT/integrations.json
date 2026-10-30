@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Agendamento",
-        "manual": "Manual"
+        "manual": "Manual",
+        "restore": "Reposição"
       },
       "status": {
         "queued": "Na fila",
@@ -205,6 +206,35 @@
         "done": "Concluída",
         "failed": "Falhou",
         "skipped": "Ignorada"
+      },
+      "restoring": "A repor",
+      "restoringHint": "Está a decorrer uma reposição: os dados da oficina estão a ser substituídos pela cópia de segurança. Esta página atualiza-se sozinha até terminar. Não trabalhe na oficina até lá.",
+      "restore": {
+        "title": "Repor",
+        "description": "Devolva a oficina ao estado em que estava numa destas cópias de segurança. Tudo o que tem agora é substituído.",
+        "show": "Mostrar cópias de segurança",
+        "refresh": "Atualizar",
+        "loading": "A ler as cópias de segurança no destino",
+        "loadFailed": "Não foi possível listar as cópias de segurança",
+        "empty": "Ainda não há cópias de segurança neste destino.",
+        "columns": {
+          "taken": "Feita em",
+          "trigger": "Iniciada por",
+          "files": "Fotografias e ficheiros",
+          "size": "Tamanho"
+        },
+        "filesIncluded": "Incluídos",
+        "filesNotIncluded": "Não incluídos",
+        "earlierInstall": "Instalação anterior",
+        "action": "Repor",
+        "dialogTitle": "Repor a cópia de segurança de {time}?",
+        "warning": "Repor <bold>substitui tudo o que esta oficina tem agora</bold>: clientes, viaturas, ordens de reparação, faturas, definições e, quando a cópia os inclui, fotografias e ficheiros. Tudo o que foi acrescentado depois de a cópia ser feita perde-se. Não é possível anular.",
+        "secretsNote": "As chaves secretas que a cópia deixou de fora mantêm os valores que esta instalação tem agora. As contas de utilizador e as palavras-passe não são alteradas.",
+        "confirmPrompt": "Escreva o nome da oficina, <bold>{name}</bold>, para confirmar.",
+        "whileRunning": "A reposição decorre em segundo plano e demora alguns minutos quando há muitas fotografias. A página atualiza-se sozinha até terminar.",
+        "cancel": "Cancelar",
+        "confirm": "Repor esta cópia de segurança",
+        "started": "Reposição iniciada"
       }
     },
     "lockedBackups": "Cópias de segurança agendadas e encriptadas da sua oficina para um armazenamento seu.",
@@ -260,7 +290,9 @@
     "state": "Este início de sessão expirou ou pertence a outra sessão. Comece de novo.",
     "exchange": "O fornecedor recusou o início de sessão. Verifique as credenciais da aplicação e tente novamente.",
     "identify": "Ligado, mas não foi possível ler a conta. Tente voltar a ligar.",
-    "backupRunning": "Já está a decorrer uma cópia de segurança."
+    "backupRunning": "Já está a decorrer uma cópia de segurança.",
+    "restoreOwnerOnly": "No Torqvoice Cloud, só o proprietário da oficina pode repor uma cópia de segurança.",
+    "restoreBusy": "Já está a decorrer uma cópia de segurança ou uma reposição neste servidor. Tente novamente quando terminar."
   },
   "meeting": {
     "join": "Entrar na videochamada",

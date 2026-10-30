@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Zamanlama",
-        "manual": "Elle"
+        "manual": "Elle",
+        "restore": "Geri yükleme"
       },
       "status": {
         "queued": "Kuyrukta",
@@ -205,6 +206,35 @@
         "done": "Tamamlandı",
         "failed": "Başarısız",
         "skipped": "Atlandı"
+      },
+      "restoring": "Geri yükleniyor",
+      "restoringHint": "Bir geri yükleme çalışıyor: atölyenin verileri yedektekilerle değiştiriliyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir. O zamana kadar atölyede çalışmayın.",
+      "restore": {
+        "title": "Geri yükleme",
+        "description": "Atölyeyi bu yedeklerden birinin alındığı andaki hâline geri getirin. Şu anda içerdiği her şeyin yerini yedek alır.",
+        "show": "Yedekleri göster",
+        "refresh": "Yenile",
+        "loading": "Hedefteki yedekler okunuyor",
+        "loadFailed": "Yedekler listelenemedi",
+        "empty": "Bu hedefte henüz yedek yok.",
+        "columns": {
+          "taken": "Alınma zamanı",
+          "trigger": "Başlatan",
+          "files": "Fotoğraflar ve dosyalar",
+          "size": "Boyut"
+        },
+        "filesIncluded": "Dahil",
+        "filesNotIncluded": "Dahil değil",
+        "earlierInstall": "Önceki kurulum",
+        "action": "Geri yükle",
+        "dialogTitle": "{time} tarihli yedek geri yüklensin mi?",
+        "warning": "Geri yükleme <bold>bu atölyede şu anda bulunan her şeyin yerini alır</bold>: müşteriler, araçlar, iş emirleri, faturalar, ayarlar ve yedek içeriyorsa fotoğraflar ile dosyalar. Yedek alındıktan sonra eklenen her şey kaybolur. Bu işlem geri alınamaz.",
+        "secretsNote": "Yedeğin dışarıda bıraktığı gizli anahtarlar, bu kurulumda şu anda bulunan değerlerini korur. Kullanıcı hesaplarına ve parolalara dokunulmaz.",
+        "confirmPrompt": "Onaylamak için atölyenin adını yazın: <bold>{name}</bold>.",
+        "whileRunning": "Geri yükleme arka planda çalışır ve çok sayıda fotoğraf olduğunda birkaç dakika sürer. Sayfa, işlem bitene kadar kendiliğinden güncellenir.",
+        "cancel": "İptal",
+        "confirm": "Bu yedeği geri yükle",
+        "started": "Geri yükleme başlatıldı"
       }
     },
     "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri.",
@@ -260,7 +290,9 @@
     "state": "Bu oturum açma işleminin süresi doldu veya başka bir oturuma ait. Yeniden başlayın.",
     "exchange": "Sağlayıcı oturum açmayı reddetti. Uygulama kimlik bilgilerini kontrol edip yeniden deneyin.",
     "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin.",
-    "backupRunning": "Zaten çalışan bir yedekleme var."
+    "backupRunning": "Zaten çalışan bir yedekleme var.",
+    "restoreOwnerOnly": "Torqvoice Cloud'da bir yedeği yalnızca atölyenin sahibi geri yükleyebilir.",
+    "restoreBusy": "Bu sunucuda zaten bir yedekleme veya geri yükleme çalışıyor. İşlem bitince yeniden deneyin."
   },
   "meeting": {
     "join": "Görüntülü görüşmeye katıl",

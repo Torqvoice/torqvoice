@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Tidsplan",
-        "manual": "Manuelt"
+        "manual": "Manuelt",
+        "restore": "Gjenoppretting"
       },
       "status": {
         "queued": "I kø",
@@ -205,6 +206,35 @@
         "done": "Ferdig",
         "failed": "Feilet",
         "skipped": "Hoppet over"
+      },
+      "restoring": "Gjenoppretter",
+      "restoringHint": "En gjenoppretting kjører: verkstedets data erstattes med sikkerhetskopien. Siden oppdaterer seg selv til den er ferdig. Ikke arbeid i verkstedet før da.",
+      "restore": {
+        "title": "Gjenopprett",
+        "description": "Sett verkstedet tilbake slik det var ved en av disse sikkerhetskopiene. Alt det har nå, blir erstattet.",
+        "show": "Vis sikkerhetskopier",
+        "refresh": "Oppdater",
+        "loading": "Leser sikkerhetskopiene på målet",
+        "loadFailed": "Sikkerhetskopiene kunne ikke listes opp",
+        "empty": "Ingen sikkerhetskopier på dette målet ennå.",
+        "columns": {
+          "taken": "Tatt",
+          "trigger": "Startet av",
+          "files": "Bilder og filer",
+          "size": "Størrelse"
+        },
+        "filesIncluded": "Tatt med",
+        "filesNotIncluded": "Ikke tatt med",
+        "earlierInstall": "Tidligere installasjon",
+        "action": "Gjenopprett",
+        "dialogTitle": "Gjenopprette sikkerhetskopien fra {time}?",
+        "warning": "Gjenoppretting <bold>erstatter alt dette verkstedet har nå</bold>: kunder, kjøretøy, arbeidsordrer, fakturaer, innstillinger og, når sikkerhetskopien inneholder dem, bilder og filer. Alt som er lagt til etter at sikkerhetskopien ble tatt, forsvinner. Dette kan ikke angres.",
+        "secretsNote": "Hemmelige nøkler som sikkerhetskopien utelot, beholder verdiene denne installasjonen har nå. Brukerkontoer og passord røres ikke.",
+        "confirmPrompt": "Skriv inn verkstedets navn, <bold>{name}</bold>, for å bekrefte.",
+        "whileRunning": "Gjenopprettingen kjører i bakgrunnen og tar noen minutter når det er mange bilder. Siden oppdaterer seg selv til den er ferdig.",
+        "cancel": "Avbryt",
+        "confirm": "Gjenopprett denne sikkerhetskopien",
+        "started": "Gjenoppretting startet"
       }
     },
     "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv.",
@@ -260,7 +290,9 @@
     "state": "Denne påloggingen har utløpt eller tilhører en annen økt. Start på nytt.",
     "exchange": "Leverandøren avviste påloggingen. Sjekk app-legitimasjonen og prøv igjen.",
     "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt.",
-    "backupRunning": "En sikkerhetskopi kjører allerede."
+    "backupRunning": "En sikkerhetskopi kjører allerede.",
+    "restoreOwnerOnly": "På Torqvoice Cloud kan bare verkstedets eier gjenopprette en sikkerhetskopi.",
+    "restoreBusy": "En sikkerhetskopi eller gjenoppretting kjører allerede på denne serveren. Prøv igjen når den er ferdig."
   },
   "meeting": {
     "join": "Bli med i videosamtale",

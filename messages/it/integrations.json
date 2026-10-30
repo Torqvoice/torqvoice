@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Pianificazione",
-        "manual": "Manuale"
+        "manual": "Manuale",
+        "restore": "Ripristino"
       },
       "status": {
         "queued": "In coda",
@@ -205,6 +206,35 @@
         "done": "Completato",
         "failed": "Non riuscito",
         "skipped": "Saltato"
+      },
+      "restoring": "Ripristino in corso",
+      "restoringHint": "È in corso un ripristino: i dati dell'officina vengono sostituiti con il backup. Questa pagina si aggiorna da sola finché non è terminato. Fino ad allora non lavorare nell'officina.",
+      "restore": {
+        "title": "Ripristino",
+        "description": "Riporta l'officina com'era al momento di uno di questi backup. Tutto ciò che contiene ora viene sostituito.",
+        "show": "Mostra i backup",
+        "refresh": "Aggiorna",
+        "loading": "Lettura dei backup nella destinazione",
+        "loadFailed": "Non è stato possibile elencare i backup",
+        "empty": "Ancora nessun backup in questa destinazione.",
+        "columns": {
+          "taken": "Eseguito",
+          "trigger": "Avviato da",
+          "files": "Foto e file",
+          "size": "Dimensione"
+        },
+        "filesIncluded": "Inclusi",
+        "filesNotIncluded": "Non inclusi",
+        "earlierInstall": "Installazione precedente",
+        "action": "Ripristina",
+        "dialogTitle": "Ripristinare il backup del {time}?",
+        "warning": "Il ripristino <bold>sostituisce tutto ciò che questa officina contiene ora</bold>: clienti, veicoli, lavori, fatture, impostazioni e, quando il backup li include, foto e file. Tutto ciò che è stato aggiunto dopo il backup va perso. L'operazione non è reversibile.",
+        "secretsNote": "Le chiavi segrete lasciate fuori dal backup mantengono i valori che questa installazione ha ora. Account utente e password non vengono toccati.",
+        "confirmPrompt": "Digita il nome dell'officina, <bold>{name}</bold>, per confermare.",
+        "whileRunning": "Il ripristino avviene in background e richiede qualche minuto quando ci sono molte foto. La pagina si aggiorna da sola finché non è terminato.",
+        "cancel": "Annulla",
+        "confirm": "Ripristina questo backup",
+        "started": "Ripristino avviato"
       }
     },
     "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo.",
@@ -260,7 +290,9 @@
     "state": "Questo accesso è scaduto o appartiene a un'altra sessione. Ricomincia da capo.",
     "exchange": "Il provider ha rifiutato l'accesso. Controlla le credenziali dell'app e riprova.",
     "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo.",
-    "backupRunning": "È già in corso un backup."
+    "backupRunning": "È già in corso un backup.",
+    "restoreOwnerOnly": "Su Torqvoice Cloud solo il proprietario dell'officina può ripristinare un backup.",
+    "restoreBusy": "Su questo server è già in corso un backup o un ripristino. Riprova quando è terminato."
   },
   "meeting": {
     "join": "Partecipa alla videochiamata",

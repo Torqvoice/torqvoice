@@ -19,9 +19,10 @@ const MANAGER = 'src/lib/files/manager.ts'
 
 /**
  * Deletes that never touch the uploads folder: what each may delete (every
- * delete call in the file has to name one of these) and why.
+ * delete call in the file has to name one of these), why, and the folder it
+ * works under when that is not os.tmpdir().
  */
-const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string }> = {
+const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string; under?: string }> = {
   'src/features/import/Lib/staging.ts': {
     targets: /\brm\((?:p|fileFor\()/,
     why: 'spreadsheet imports staged under os.tmpdir()',
@@ -41,6 +42,11 @@ const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string }> = {
   'src/lib/backup/target.ts': {
     targets: /\brm\((?:probe\b|cacheDirFor\()/,
     why: "a probe folder under os.tmpdir(), and restic's own cache folder",
+  },
+  'src/lib/backup/restore.ts': {
+    targets: /\brm\(target\b/,
+    why: 'the folder restic wrote a snapshot into, under restore-tmp in the data root',
+    under: 'restoreDirFor(',
   },
 }
 
@@ -75,9 +81,9 @@ describe('deleting uploaded files', () => {
   })
 
   it('in the temp-folder exceptions, deletes only their own temp files', () => {
-    for (const [file, { targets }] of Object.entries(TEMP_FOLDER_ONLY)) {
+    for (const [file, { targets, under = 'os.tmpdir()' }] of Object.entries(TEMP_FOLDER_ONLY)) {
       const source = fs.readFileSync(file, 'utf8')
-      expect(source, `${file} works under os.tmpdir()`).toContain('os.tmpdir()')
+      expect(source, `${file} works under ${under}`).toContain(under)
       const calls = source.split('\n').filter((line) => DELETE_CALL.test(line))
       expect(calls.length, `${file} still deletes something`).toBeGreaterThan(0)
       for (const call of calls) expect(call.trim(), file).toMatch(targets)

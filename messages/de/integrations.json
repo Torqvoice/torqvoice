@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Zeitplan",
-        "manual": "Manuell"
+        "manual": "Manuell",
+        "restore": "Wiederherstellung"
       },
       "status": {
         "queued": "In der Warteschlange",
@@ -205,6 +206,35 @@
         "done": "Fertig",
         "failed": "Fehlgeschlagen",
         "skipped": "Übersprungen"
+      },
+      "restoring": "Wird wiederhergestellt",
+      "restoringHint": "Eine Wiederherstellung läuft: Die Daten der Werkstatt werden durch die Sicherung ersetzt. Diese Seite aktualisiert sich selbst, bis sie fertig ist. Arbeiten Sie bis dahin nicht in der Werkstatt.",
+      "restore": {
+        "title": "Wiederherstellen",
+        "description": "Bringen Sie die Werkstatt auf den Stand einer dieser Sicherungen zurück. Alles, was sie jetzt enthält, wird ersetzt.",
+        "show": "Sicherungen anzeigen",
+        "refresh": "Aktualisieren",
+        "loading": "Die Sicherungen am Ziel werden gelesen",
+        "loadFailed": "Die Sicherungen konnten nicht aufgelistet werden",
+        "empty": "An diesem Ziel gibt es noch keine Sicherungen.",
+        "columns": {
+          "taken": "Angelegt",
+          "trigger": "Gestartet von",
+          "files": "Fotos und Dateien",
+          "size": "Größe"
+        },
+        "filesIncluded": "Eingeschlossen",
+        "filesNotIncluded": "Nicht eingeschlossen",
+        "earlierInstall": "Frühere Installation",
+        "action": "Wiederherstellen",
+        "dialogTitle": "Die Sicherung vom {time} wiederherstellen?",
+        "warning": "Eine Wiederherstellung <bold>ersetzt alles, was diese Werkstatt jetzt enthält</bold>: Kunden, Fahrzeuge, Arbeitsaufträge, Rechnungen, Einstellungen und, wenn die Sicherung sie enthält, Fotos und Dateien. Alles, was seit der Sicherung hinzugekommen ist, ist weg. Das lässt sich nicht rückgängig machen.",
+        "secretsNote": "Geheime Schlüssel, die die Sicherung ausgelassen hat, behalten die Werte, die diese Installation jetzt hat. Benutzerkonten und Passwörter bleiben unberührt.",
+        "confirmPrompt": "Geben Sie zur Bestätigung den Namen der Werkstatt ein, <bold>{name}</bold>.",
+        "whileRunning": "Die Wiederherstellung läuft im Hintergrund und dauert bei vielen Fotos einige Minuten. Die Seite aktualisiert sich selbst, bis sie fertig ist.",
+        "cancel": "Abbrechen",
+        "confirm": "Diese Sicherung wiederherstellen",
+        "started": "Wiederherstellung gestartet"
       }
     },
     "lockedBackups": "Geplante, verschlüsselte Sicherungen Ihrer Werkstatt in Ihren eigenen Speicher.",
@@ -260,7 +290,9 @@
     "state": "Diese Anmeldung ist abgelaufen oder gehört zu einer anderen Sitzung. Beginnen Sie erneut.",
     "exchange": "Der Anbieter hat die Anmeldung abgelehnt. Prüfen Sie die App-Zugangsdaten und versuchen Sie es erneut.",
     "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen.",
-    "backupRunning": "Es läuft bereits eine Sicherung."
+    "backupRunning": "Es läuft bereits eine Sicherung.",
+    "restoreOwnerOnly": "In der Torqvoice Cloud kann nur der Inhaber der Werkstatt eine Sicherung wiederherstellen.",
+    "restoreBusy": "Auf diesem Server läuft bereits eine Sicherung oder Wiederherstellung. Versuchen Sie es erneut, wenn sie fertig ist."
   },
   "meeting": {
     "join": "Videoanruf beitreten",

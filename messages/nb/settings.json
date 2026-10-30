@@ -1399,6 +1399,11 @@
     "importComplete": "Import fullført",
     "importCompleteMessage": "Alle data er gjenopprettet fra sikkerhetskopifilen.",
     "importFailed": "Import mislyktes",
+    "restoreRefused": {
+      "busy": "En sikkerhetskopi eller gjenoppretting kjører allerede på denne serveren. Prøv igjen når den er ferdig.",
+      "ownerOnly": "På Torqvoice Cloud kan bare verkstedets eier gjenopprette en sikkerhetskopi.",
+      "foreignIds": "Filen viser til oppføringer som tilhører et annet verksted, så ingenting ble gjenopprettet."
+    },
     "importFromOther": "Importer fra andre tjenester",
     "importFromOtherDescription": "Migrer dataene dine fra en annen plattform. Velg en tjeneste for å komme i gang.",
     "lubelogTitle": "Importer fra LubeLog",

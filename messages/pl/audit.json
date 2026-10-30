@@ -194,7 +194,8 @@
     "settings_markType_update": "Zmieniono rodzaj oznaczenia",
     "settings_markType_remove": "Usunięto rodzaj oznaczenia",
     "settings_markType_reorder": "Zmieniono kolejność rodzajów oznaczeń",
-    "integration_backup_run": "Rozpoczęto kopię zapasową"
+    "integration_backup_run": "Rozpoczęto kopię zapasową",
+    "integration_backup_restore": "Przywrócono kopię zapasową"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -348,6 +349,8 @@
     "condition_mark_carry": "Potwierdzono, że {count, plural, one {# wcześniejsze oznaczenie nadal jest} few {# wcześniejsze oznaczenia nadal są} many {# wcześniejszych oznaczeń nadal jest} other {# wcześniejszego oznaczenia nadal jest}} na mapie stanu",
     "condition_map_on_invoice_on": "Umieszczono mapę stanu na fakturze",
     "condition_map_on_invoice_off": "Usunięto mapę stanu z faktury",
-    "backup_run_started": "Rozpoczęto kopię zapasową do {name}"
+    "backup_run_started": "Rozpoczęto kopię zapasową do {name}",
+    "backup_restore_started": "Rozpoczęto przywracanie kopii zapasowej {snapshot} z {name}",
+    "backup_restored": "Przywrócono kopię zapasową {snapshot} z {name}"
   }
 }

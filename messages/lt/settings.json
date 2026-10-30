@@ -1399,6 +1399,11 @@
     "importComplete": "Importas baigtas",
     "importCompleteMessage": "Visi duomenys atkurti iš atsarginės kopijos failo.",
     "importFailed": "Importas nepavyko",
+    "restoreRefused": {
+      "busy": "Šiame serveryje jau vykdomas atsarginės kopijos kūrimas arba atkūrimas. Bandykite dar kartą, kai jis bus baigtas.",
+      "ownerOnly": "Torqvoice Cloud atsarginę kopiją atkurti gali tik dirbtuvės savininkas.",
+      "foreignIds": "Faile nurodyti įrašai, priklausantys kitai dirbtuvei, todėl niekas nebuvo atkurta."
+    },
     "importFromOther": "Importuoti iš kitų paslaugų",
     "importFromOtherDescription": "Perkelkite duomenis iš kitos platformos. Pasirinkite paslaugą, kad pradėtumėte.",
     "lubelogTitle": "Importuoti iš LubeLog",

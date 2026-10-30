@@ -11,10 +11,7 @@ import { describe, expect, it } from 'vitest'
  * restored workshop lost them without a word.
  */
 
-const importSource = fs.readFileSync(
-  path.join(process.cwd(), 'src/app/api/protected/backup/import/route.ts'),
-  'utf-8'
-)
+const importSource = fs.readFileSync(path.join(process.cwd(), 'src/lib/backup/import.ts'), 'utf-8')
 
 function vehicleRestoreMap(): string {
   const start = importSource.indexOf('tx.vehicle.create(')

@@ -119,6 +119,16 @@ export const BACKUP_SETTINGS: SettingField[] = [
   },
 ]
 
+/**
+ * Who may put a backup back. Self-hosted: an owner or administrator, as for
+ * the upload under Settings, Data. On the cloud, where hundreds of workshops
+ * share one database, the owner alone.
+ */
+export function canRestoreBackups(role: string): boolean {
+  if (role === 'owner') return true
+  return !isCloudMode() && (role === 'admin' || role === 'super_admin')
+}
+
 /** The host restic files this workshop's snapshots under, and the tag on each. */
 export function backupHost(organizationId: string): string {
   return `torqvoice-${organizationId}`
@@ -181,20 +191,24 @@ export async function nextScheduledRun(
 }
 
 /** What the connection page shows. */
-export async function backupOverview(connection: {
-  id: string
-  organizationId: string
-  settings: Record<string, unknown>
-  state: Record<string, unknown>
-}): Promise<BackupOverview> {
+export async function backupOverview(
+  connection: {
+    id: string
+    organizationId: string
+    settings: Record<string, unknown>
+    state: Record<string, unknown>
+  },
+  viewer: { canRestore: boolean } = { canRestore: false }
+): Promise<BackupOverview> {
   const [recentRows, lastGoodRow] = await Promise.all([
     db.backupRun.findMany({
       where: { connectionId: connection.id },
       orderBy: { createdAt: 'desc' },
       take: 10,
     }),
+    // A restore that finished is not a backup that did.
     db.backupRun.findFirst({
-      where: { connectionId: connection.id, status: 'done' },
+      where: { connectionId: connection.id, status: 'done', trigger: { not: 'restore' } },
       orderBy: { createdAt: 'desc' },
     }),
   ])
@@ -206,7 +220,11 @@ export async function backupOverview(connection: {
     lastRun: recentRows[0] ? runView(recentRows[0]) : null,
     nextRunAt: next.toISOString(),
     running: recentRows.some((r) => r.status === 'running' || r.status === 'queued'),
+    restoring: recentRows.some(
+      (r) => r.trigger === 'restore' && (r.status === 'running' || r.status === 'queued')
+    ),
     recent: recentRows.map(runView),
     repositorySize: typeof size === 'number' ? size : null,
+    canRestore: viewer.canRestore,
   }
 }

@@ -26,6 +26,7 @@ import {
   resticUnlock,
   resticVersion,
   runRestic,
+  resticRestore,
 } from '@/lib/backup/restic'
 
 // Lines below are copied from restic 0.19.1 `--json` output.
@@ -51,6 +52,11 @@ const FORGET_LINE =
   '[{"tags":["manual","org:org1"],"host":"torqvoice-org1","paths":null,"keep":[{"id":"9d6c","short_id":"9d6cb16e"}],"remove":[{"id":"2889","short_id":"28891c8f"}],"reasons":[]},{"tags":["org:org1"],"host":"torqvoice-org1","paths":null,"keep":[{"id":"9284","short_id":"92846caf"}],"remove":null,"reasons":[]}]'
 const CHECK_LINE =
   '{"message_type":"summary","num_errors":0,"broken_packs":null,"suggest_repair_index":false,"suggest_prune":false}'
+// From `restic --json restore <id> --target <dir>` on restic 0.19.1.
+const RESTORE_STATUS_LINE =
+  '{"message_type":"status","seconds_elapsed":0,"percent_done":0.5,"total_files":12,"files_restored":6,"total_bytes":19,"bytes_restored":9}'
+const RESTORE_LINE =
+  '{"message_type":"summary","total_files":12,"files_restored":12,"total_bytes":19,"bytes_restored":19}'
 const VERSION_LINE =
   '{"message_type":"version","version":"0.19.1","go_version":"go1.26.4","go_os":"linux","go_arch":"amd64"}'
 
@@ -290,6 +296,7 @@ describe('JSON parsing', () => {
         id: '28891c8f448a3c36c2271f6dc4e03b08052265e671b6a8c438c9358a8a1e602b',
         shortId: '28891c8f',
         time: '2026-10-29T09:09:10.444930802+01:00',
+        hostname: 'torqvoice-org1',
         tags: ['org:org1', 'manual'],
         paths: ['/stage'],
         summary: {
@@ -386,6 +393,16 @@ describe('JSON parsing', () => {
     fakeRestic('exit 0')
     await resticUnlock(base())
     expect(readChildArgv().slice(5)).toEqual(['unlock'])
+  })
+
+  it('restores one snapshot into a target folder and reads the summary', async () => {
+    fakeRestic(out(RESTORE_STATUS_LINE, RESTORE_LINE))
+    const summary = await resticRestore(base(), { snapshotId: '28891c8f', target: '/tmp/out' })
+    expect(readChildArgv().slice(5)).toEqual(['restore', '--target', '/tmp/out', '--', '28891c8f'])
+    expect(summary).toEqual({ filesRestored: 12, bytesRestored: 19 })
+    await expect(
+      resticRestore(base(), { snapshotId: 'latest', target: '/tmp/out' })
+    ).rejects.toThrow(/snapshot id/)
   })
 })
 
