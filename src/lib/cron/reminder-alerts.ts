@@ -2,6 +2,7 @@ import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { isRestoring } from '@/lib/backup/freeze'
 
 const LOG_PREFIX = '[reminder-alerts]'
 
@@ -103,7 +104,7 @@ async function sendReminderEmail(organizationId: string, reminders: DueReminder[
  * exactly once; rescheduling (changing dueDate) re-arms it.
  */
 export async function processDueReminders(now = new Date()) {
-  const due = (await db.reminder.findMany({
+  const found = (await db.reminder.findMany({
     where: {
       isCompleted: false,
       notifiedAt: null,
@@ -132,6 +133,8 @@ export async function processDueReminders(now = new Date()) {
     },
     take: 500,
   })) as DueReminder[]
+  // A workshop being restored is left out; its reminders stay due for the next run.
+  const due = found.filter((r) => !r.organizationId || !isRestoring(r.organizationId))
 
   if (due.length === 0) return 0
 

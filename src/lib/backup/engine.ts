@@ -150,6 +150,11 @@ export interface OpenedTarget {
   }): Promise<void>
   /** Record a failure of a scheduled run, so one retry follows. */
   recordRetry(at: Date): Promise<void>
+  /**
+   * Platform only: replace the restore points listed for the workshop, without
+   * marking a good run. Used after a safety copy, so it can be restored at once.
+   */
+  recordSnapshots?(snapshots: ResticSnapshot[]): Promise<void>
 }
 
 function toRunTarget(run: {
@@ -247,6 +252,12 @@ export async function openPlatform(organizationId: string): Promise<OpenedTarget
     },
     async recordRetry(at) {
       await db.platformBackup.update({ where: { organizationId }, data: { retryAt: at } })
+    },
+    async recordSnapshots(snapshots) {
+      await db.platformBackup.update({
+        where: { organizationId },
+        data: { snapshots: snapshotViews(snapshots) as object },
+      })
     },
   }
 }
@@ -428,14 +439,18 @@ async function prepareRepository(target: OpenedTarget): Promise<void> {
 export async function takeSnapshot(
   target: OpenedTarget,
   trigger: string,
-  options: { includeSecrets?: boolean } = {}
+  options: { includeSecrets?: boolean; includeFiles?: boolean } = {}
 ) {
   const { staging, dataFile } = await stageBackupData(
     target.organizationId,
     options.includeSecrets ?? target.includeSecrets
   )
   try {
-    const paths = await snapshotPaths(target.organizationId, staging, target.includeFiles)
+    const paths = await snapshotPaths(
+      target.organizationId,
+      staging,
+      options.includeFiles ?? target.includeFiles
+    )
     await prepareRepository(target)
     return await resticBackup(target.base, { paths, host: target.host, tags: target.tags(trigger) })
   } finally {
@@ -449,10 +464,15 @@ export async function takeSnapshot(
  * The safety copy taken right before a restore replaces the workshop: into
  * the platform repository when this workshop has one, else into the
  * repository the restore reads from (a self-hosted install restoring from its
- * own destination). Into our own repository the secret keys go too, so
- * undoing the restore gives back exactly what was there; into the workshop's
- * own storage only what the workshop chose to keep there. Throws when it
- * cannot be taken; the restore then does not start.
+ * own destination). The uploads folder always goes in, whatever the
+ * destination is set to keep, so undoing a restore of an older snapshot that
+ * had files gives the photos back too. Into our own repository the secret
+ * keys go too, so undoing the restore gives back exactly what was there; into
+ * the workshop's own storage only the secrets the workshop chose to keep
+ * there. In our own repository the restore points listed on the Backups card
+ * are refreshed right after, so the safety copy can be restored at once (a
+ * failure to list them is logged and does not stop the restore). Throws when
+ * the copy cannot be taken; the restore then does not start.
  */
 export async function takeSafetySnapshot(
   organizationId: string,
@@ -465,8 +485,22 @@ export async function takeSafetySnapshot(
   }
   const result = await takeSnapshot(target, PRE_RESTORE_TAG, {
     includeSecrets: target.kind === 'platform' ? true : target.includeSecrets,
+    includeFiles: true,
   })
   await target.log('info', 'Safety copy taken before a restore', { snapshot: result.snapshotId })
+  if (target.kind === 'platform' && target.recordSnapshots) {
+    try {
+      const snapshots = await resticSnapshots(target.base, {
+        host: target.host,
+        tags: [backupTag(organizationId)],
+      })
+      await target.recordSnapshots(snapshots)
+    } catch (err) {
+      await target.log('error', 'Could not list the restore points after the safety copy', {
+        error: err instanceof Error ? err.message : String(err),
+      })
+    }
+  }
   return { snapshotId: result.snapshotId, kind: target.kind }
 }
 

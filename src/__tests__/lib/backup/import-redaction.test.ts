@@ -67,7 +67,10 @@ beforeEach(() => {
 
 describe('restoring a backup without secret keys', () => {
   it('keeps the install values, skips keys it has none for, and lists them', async () => {
-    state.current.appSetting = [{ key: 'payment.stripe.secretKey', value: 'sk_now' }]
+    state.current.appSetting = [
+      { id: 'x1', key: 'payment.stripe.secretKey', value: 'sk_now', userId: 'u0' },
+      { id: 'x2', key: 'workshop.phone', value: '+47 999', userId: 'u0' },
+    ]
 
     const response = await importJson({
       settings: [
@@ -91,10 +94,12 @@ describe('restoring a backup without secret keys', () => {
     const lookup = state.calls.find(
       (c) => c.model === 'appSetting' && c.method === 'findMany' && c.args?.where?.key
     )
-    expect(lookup?.args.where).toEqual({
-      organizationId: 'org-1',
-      key: { in: ['payment.stripe.secretKey', 'ai.apiKey'] },
-    })
+    expect(lookup).toBeUndefined()
+    // Every setting the workshop has, so a secret the file does not carry is kept too.
+    const read = state.calls.find(
+      (c) => c.model === 'appSetting' && c.method === 'findMany' && c.args?.select?.value
+    )
+    expect(read?.args.where).toEqual({ organizationId: 'org-1' })
 
     const rows = created('appSetting')
     expect(rows.map((r: any) => [r.key, r.value])).toEqual([
@@ -102,6 +107,42 @@ describe('restoring a backup without secret keys', () => {
       ['payment.stripe.secretKey', 'sk_now'],
     ])
     expect(JSON.stringify(rows)).not.toContain(REDACTED)
+  })
+
+  it('keeps a secret entered after a data-only backup was taken', async () => {
+    state.current.appSetting = [
+      { id: 'x1', key: 'payment.stripe.secretKey', value: 'sk_now', userId: 'u0' },
+      { id: 'x2', key: 'ai.apiKey', value: 'sk-ai-now', userId: 'u0' },
+      { id: 'x3', key: 'workshop.email', value: 'now@x.test', userId: 'u0' },
+    ]
+
+    const response = await importJson({
+      settings: [
+        { id: 's1', key: 'workshop.phone', value: '+47 123' },
+        { id: 's2', key: 'payment.stripe.secretKey', value: REDACTED },
+      ],
+    })
+
+    expect(await response.json()).toEqual({
+      success: true,
+      redactedSettings: ['ai.apiKey', 'payment.stripe.secretKey'],
+    })
+    const rows = created('appSetting')
+    expect(rows.map((r: any) => [r.id, r.key, r.value])).toEqual([
+      ['s1', 'workshop.phone', '+47 123'],
+      ['s2', 'payment.stripe.secretKey', 'sk_now'],
+      ['x2', 'ai.apiKey', 'sk-ai-now'],
+    ])
+    expect(rows.every((r: any) => r.organizationId === 'org-1' && r.userId === 'user-1')).toBe(true)
+  })
+
+  it('drops a secret a full backup does not carry', async () => {
+    state.current.appSetting = [{ id: 'x2', key: 'ai.apiKey', value: 'sk-ai-now', userId: 'u0' }]
+    const response = await importJson({
+      settings: [{ id: 's1', key: 'workshop.phone', value: '+47 123' }],
+    })
+    expect(await response.json()).toEqual({ success: true, redactedSettings: [] })
+    expect(created('appSetting').map((r: any) => r.key)).toEqual(['workshop.phone'])
   })
 
   it('restores secrets a full backup carries', async () => {

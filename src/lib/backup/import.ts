@@ -18,7 +18,12 @@ import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { generateWebhookSecret } from '@/features/webhooks/Lib/sign'
-import { isRedacted, keepCurrentSecrets, keepCurrentWebhookSecrets } from '@/lib/backup/secrets'
+import {
+  isRedacted,
+  isSecretSettingKey,
+  keepCurrentSecrets,
+  keepCurrentWebhookSecrets,
+} from '@/lib/backup/secrets'
 import { Prisma } from '@/generated/prisma/client'
 import { extractEntry, type OpenedZip, readJsonFile, type ZipEntry } from '@/lib/backup/zip-file'
 import { releaseFilesNotRestored } from '@/lib/files/manager'
@@ -502,19 +507,24 @@ export async function restoreBackup(
         sanitiseForeignIds(data, mergeIds(fileIds, own))
 
         // 0. A redacted secret keeps what the install has now, so read those
-        // before the tables are cleared.
+        // before the tables are cleared. A "Data only" file (one with a
+        // marker) also keeps every secret the install has that the file does
+        // not carry at all, such as a key entered after the backup was taken.
         if (Array.isArray(data.settings)) {
           const settingRows = data.settings as { key: string; value: unknown }[]
-          const redactedKeys = settingRows.filter((s) => isRedacted(s.value)).map((s) => s.key)
-          const current = redactedKeys.length
-            ? await tx.appSetting.findMany({
-                where: { organizationId, key: { in: redactedKeys } },
-                select: { key: true, value: true },
-              })
+          const dataOnly = settingRows.some((s) => isRedacted(s.value))
+          const current = dataOnly
+            ? (
+                await tx.appSetting.findMany({
+                  where: { organizationId },
+                  select: { id: true, key: true, value: true },
+                })
+              ).filter((s) => isSecretSettingKey(s.key))
             : []
           const kept = keepCurrentSecrets(
             settingRows,
-            new Map(current.map((s) => [s.key, s.value]))
+            new Map(current.map((s) => [s.key, s.value])),
+            current
           )
           data.settings = kept.rows
           redactedSettings = kept.redacted

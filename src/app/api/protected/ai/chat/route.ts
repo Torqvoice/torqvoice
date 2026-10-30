@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { getLocale } from 'next-intl/server'
 import type OpenAI from 'openai'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { getCachedMembership } from '@/lib/cached-session'
 import {
   hasAllPermissions,
@@ -51,6 +52,8 @@ function json(status: number, error: string) {
 export async function POST(request: NextRequest) {
   const ctx = await getAuthContext()
   if (!ctx) return json(401, 'Unauthorized')
+  // The finished answer is saved as a chat; not while a restore replaces the workshop.
+  if (isRestoring(ctx.organizationId)) return json(409, RESTORE_IN_PROGRESS_MESSAGE)
   const { organizationId, userId } = ctx
 
   let body: unknown

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
@@ -223,6 +224,10 @@ export async function POST(request: NextRequest) {
   const ctx = await getAuthContext()
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // While a restore replaces this workshop's rows and files, nothing is written here.
+  if (isRestoring(ctx.organizationId)) {
+    return NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
   }
   // Reading or replacing the whole workshop is an owner's or admin's call.
   if (!ctx.isAdmin) {

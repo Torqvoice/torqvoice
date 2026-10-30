@@ -7,6 +7,7 @@ import { laborTaxable, recurringTaxableSubtotal, type TaxApplies } from '@/lib/t
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import { shiftWorkshopTime } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { isRestoring } from '@/lib/backup/freeze'
 
 /**
  * One period on from `current`, at the same time on the workshop's clock.
@@ -86,6 +87,8 @@ export function processRecurringInvoices() {
       for (const ri of dueInvoices) {
         const organizationId = ri.vehicle.organizationId
         if (!organizationId) continue
+        // Left due while the workshop is being restored; the next hourly run picks it up.
+        if (isRestoring(organizationId)) continue
 
         try {
           let timeZone = zones.get(organizationId)

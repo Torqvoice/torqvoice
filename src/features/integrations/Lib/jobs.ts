@@ -13,6 +13,7 @@
  */
 
 import { db } from '@/lib/db'
+import { isRestoring } from '@/lib/backup/freeze'
 import { getManifest } from '@/integrations/registry'
 import { getFeatures } from '@/lib/features'
 import { connectorAllowed } from './plan'
@@ -207,9 +208,11 @@ export async function runDueJobs(limit = 50): Promise<number> {
     where: { status: 'queued', runAfter: { lte: new Date() } },
     orderBy: { runAfter: 'asc' },
     take: limit,
-    select: { id: true },
+    select: { id: true, organizationId: true },
   })
   for (const job of due) {
+    // Left queued while its workshop is being restored; it runs on a tick after.
+    if (isRestoring(job.organizationId)) continue
     try {
       await runJob(job.id)
     } catch (err) {
@@ -231,6 +234,8 @@ export async function scheduleDueSyncs(): Promise<number> {
   })
   let queued = 0
   for (const c of connections) {
+    // Nothing is queued for a workshop that is being restored; the next tick catches up.
+    if (isRestoring(c.organizationId)) continue
     const manifest = getManifest(c.connectorId)
     if (!manifest?.schedules?.length) continue
     if (!connectorAllowed(manifest, await getFeatures(c.organizationId))) continue

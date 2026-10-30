@@ -68,10 +68,19 @@ export function redactWebhookRow<T extends { secret: string }>(row: T): T {
 /**
  * Settings rows from a backup with every redacted value replaced by what the
  * install has now. A redacted key the install has no value for is dropped.
+ *
+ * A file with at least one marker is a "Data only" backup, which says nothing
+ * about the secrets it left out. Every secret the install holds that such a
+ * file does not carry at all (one entered after the backup was taken) is kept
+ * too: `installed` is the install's settings rows, and each secret among them
+ * is appended as it stands. Every key kept or dropped this way is listed in
+ * `redacted`. A file without a marker carries its secrets in full and is
+ * restored as written.
  */
 export function keepCurrentSecrets<T extends { key: string; value: unknown }>(
   rows: readonly T[],
-  current: ReadonlyMap<string, string>
+  current: ReadonlyMap<string, string>,
+  installed: readonly T[] = []
 ): { rows: T[]; redacted: string[] } {
   const kept: T[] = []
   const redacted: string[] = []
@@ -83,6 +92,15 @@ export function keepCurrentSecrets<T extends { key: string; value: unknown }>(
     redacted.push(row.key)
     const value = current.get(row.key)
     if (value !== undefined) kept.push({ ...row, value })
+  }
+  if (redacted.length > 0) {
+    const inFile = new Set(rows.map((row) => row.key))
+    for (const row of installed) {
+      if (!isSecretSettingKey(row.key) || inFile.has(row.key)) continue
+      inFile.add(row.key)
+      kept.push(row)
+      redacted.push(row.key)
+    }
   }
   return { rows: kept, redacted: [...new Set(redacted)].sort() }
 }

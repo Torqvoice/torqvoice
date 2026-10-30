@@ -32,6 +32,13 @@ vi.mock('@/lib/workshop-timezone', () => ({
   },
 }))
 
+// Workshops being restored, read at call time like the zone lookups above.
+const frozen = new Set<string>()
+vi.mock('@/lib/backup/freeze', () => ({
+  isRestoring: (organizationId: string) => frozen.has(organizationId),
+  RESTORE_IN_PROGRESS_MESSAGE: 'A restore of this workshop is in progress.',
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
@@ -41,6 +48,7 @@ vi.mock('@/lib/db', () => ({
 }))
 
 import { db } from '@/lib/db'
+import { notify } from '@/lib/notify'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { nextSendAt } from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
 import { processDueMessages } from '@/lib/cron/scheduled-messages'
@@ -65,6 +73,7 @@ function setupAuth(organizationId: string) {
 beforeEach(() => {
   vi.resetAllMocks()
   zoneLookups.length = 0
+  frozen.clear()
 })
 
 describe('nextSendAt', () => {
@@ -110,6 +119,43 @@ describe('processDueMessages', () => {
     const updates = vi.mocked(db.scheduledMessage.update).mock.calls.map((c) => c[0].data)
     expect(updates[0].sendAt).toEqual(new Date('2026-10-25T17:00:00.000Z'))
     expect(updates[1].sendAt).toEqual(new Date('2026-10-25T17:00:00.000Z'))
+    expect(zoneLookups).toEqual(['org-oslo'])
+  })
+
+  it('leaves the messages of a workshop being restored untouched and sends the rest', async () => {
+    const base = {
+      channel: 'in_app',
+      subject: 'Reminder',
+      body: 'Time for a service',
+      recipient: null,
+      customerId: null,
+      vehicleId: null,
+      frequency: 'once',
+      endDate: null,
+      runCount: 0,
+      sendAt: new Date('2026-10-24T16:00:00Z'),
+    }
+    frozen.add('org-restoring')
+    vi.mocked(db.scheduledMessage.findMany).mockResolvedValue([
+      { ...base, id: 'msg-frozen', organizationId: 'org-restoring' },
+      // A day late as well: a frozen workshop's message is not marked missed either
+      {
+        ...base,
+        id: 'msg-frozen-stale',
+        organizationId: 'org-restoring',
+        sendAt: new Date('2026-10-22T16:00:00Z'),
+      },
+      { ...base, id: 'msg-live', organizationId: 'org-oslo' },
+    ] as any)
+    vi.mocked(db.scheduledMessage.update).mockResolvedValue({} as any)
+
+    const sent = await processDueMessages(new Date('2026-10-24T16:00:30Z'))
+
+    expect(sent).toBe(1)
+    const updated = vi.mocked(db.scheduledMessage.update).mock.calls.map((c) => c[0].where.id)
+    expect(updated).toEqual(['msg-live'])
+    expect(vi.mocked(notify)).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(notify).mock.calls[0][0]).toMatchObject({ organizationId: 'org-oslo' })
     expect(zoneLookups).toEqual(['org-oslo'])
   })
 })

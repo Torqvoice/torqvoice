@@ -45,11 +45,11 @@ jobs:
           INBOUND_MAIL_BUCKET: ${{ secrets.STAGING_INBOUND_MAIL_BUCKET }}
           INBOUND_MAIL_REGION: ${{ secrets.STAGING_INBOUND_MAIL_REGION }}
           INBOUND_MAIL_TOPIC_ARN: ${{ secrets.STAGING_INBOUND_MAIL_TOPIC_ARN }}
-          # Backups by Torqvoice: one restic repository per Pro workshop in a bucket
-          # of ours. All of the first six or none: with any missing the schedule
-          # stays off and the log says so once. The master key derives every
-          # repository password, so it belongs in the disaster recovery vault too.
-          # The alert address is optional and hears about failed runs.
+          # Backups by Torqvoice: one restic repository per Pro workshop in a bucket of ours.
+          # Endpoint, bucket, access key, secret key and master key go together, or the schedule
+          # stays off. The master key derives every repository password: keep it in the DR vault.
+          # Region is optional and defaults to auto, right for Cloudflare R2; set it for a
+          # regional bucket anywhere else. The alert email is optional.
           PLATFORM_BACKUP_S3_ENDPOINT: ${{ secrets.STAGING_PLATFORM_BACKUP_S3_ENDPOINT }}
           PLATFORM_BACKUP_S3_BUCKET: ${{ secrets.STAGING_PLATFORM_BACKUP_S3_BUCKET }}
           PLATFORM_BACKUP_S3_REGION: ${{ secrets.STAGING_PLATFORM_BACKUP_S3_REGION }}
@@ -79,7 +79,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/staging
           cd $HOME/torqvoice-deploy/staging
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_|FIKEN_INTEGRATION_|INBOUND_MAIL_|NEXT_SERVER_ACTIONS_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|TORQVOICE_|POSTHOG_|BACKUP_|INTEGRATIONS_|GOOGLE_INTEGRATION_|GOOGLE_AUTH_|MICROSOFT_INTEGRATION_|ZOOM_INTEGRATION_|QUICKBOOKS_INTEGRATION_|FIKEN_INTEGRATION_|INBOUND_MAIL_|PLATFORM_BACKUP_|NEXT_SERVER_ACTIONS_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:

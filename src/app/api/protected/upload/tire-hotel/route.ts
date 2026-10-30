@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { extensionForType } from '@/lib/upload-url'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { writeFile, mkdir, stat } from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
@@ -23,6 +24,10 @@ export async function POST(request: NextRequest) {
   const ctx = await getAuthContext()
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // While a restore replaces this workshop's rows and files, nothing is written here.
+  if (isRestoring(ctx.organizationId)) {
+    return NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
   }
 
   const formData = await request.formData()

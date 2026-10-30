@@ -34,14 +34,26 @@ function modelName(delegate: string): string {
   return delegate.charAt(0).toUpperCase() + delegate.slice(1)
 }
 
-/** Every value under an `organizationId` key anywhere inside a where, however nested. */
-function organizationIdsIn(where: unknown, out: unknown[] = []): unknown[] {
+/**
+ * The operators that can widen a where beyond the rows an organisation id
+ * constrains: `{ OR: [{ organizationId }, { id }] }` matches the other row
+ * too. `AND` cannot, so it stays allowed.
+ */
+const WIDENING_OPERATORS = new Set(['OR', 'NOT', 'XOR'])
+
+/**
+ * Every value under an `organizationId` key anywhere inside a where, however
+ * nested. Returns null when the where uses OR, NOT or XOR at any depth, where
+ * an organisation id no longer limits what matches.
+ */
+function organizationIdsIn(where: unknown, out: unknown[] = []): unknown[] | null {
   if (Array.isArray(where)) {
-    for (const item of where) organizationIdsIn(item, out)
+    for (const item of where) if (organizationIdsIn(item, out) === null) return null
   } else if (where && typeof where === 'object') {
     for (const [key, value] of Object.entries(where as Record<string, unknown>)) {
+      if (WIDENING_OPERATORS.has(key)) return null
       if (key === 'organizationId') out.push(value)
-      else organizationIdsIn(value, out)
+      else if (organizationIdsIn(value, out) === null) return null
     }
   }
   return out
@@ -66,6 +78,11 @@ export function assertTenantScopedCall(
   const a = (args ?? {}) as Record<string, unknown>
   if (WRITES_BY_WHERE.has(operation)) {
     const ids = organizationIdsIn(a.where)
+    if (ids === null) {
+      throw new TenantGuardError(
+        `${describe(model, operation)} may not use OR, NOT or XOR in its where during a restore`
+      )
+    }
     if (ids.length === 0) {
       throw new TenantGuardError(
         `${describe(model, operation)} must name the organisation in its where`

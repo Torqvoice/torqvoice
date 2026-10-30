@@ -20,6 +20,7 @@ import {
 import { shiftWorkshopTime, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { isRestoring } from '@/lib/backup/freeze'
 
 // --------------- date helpers ---------------
 // All in the workshop's zone: the server runs in UTC and its clock says
@@ -810,6 +811,8 @@ export function processReportSchedules() {
     const zones = new Map<string, string>()
 
     for (const schedule of dueSchedules) {
+      // A workshop halfway through a restore would report on half its rows; the next hourly run sends it.
+      if (isRestoring(schedule.organizationId)) continue
       try {
         let timeZone = zones.get(schedule.organizationId)
         if (!timeZone) {

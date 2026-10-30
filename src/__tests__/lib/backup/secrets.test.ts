@@ -97,6 +97,56 @@ describe('keepCurrentSecrets', () => {
     expect(result.redacted).toEqual(['ai.apiKey', 'payment.stripe.secretKey'])
   })
 
+  it('keeps a secret the install has that a data-only file does not carry', () => {
+    const rows = [
+      { id: 'a', key: 'workshop.phone', value: '123' },
+      { id: 'b', key: 'payment.stripe.secretKey', value: REDACTED },
+    ]
+    const installed = [
+      { id: 'x1', key: 'payment.stripe.secretKey', value: 'sk_now' },
+      // Entered after the backup was taken: not in the file at all.
+      { id: 'x2', key: 'ai.apiKey', value: 'sk-ai-now' },
+      { id: 'x3', key: 'whatsapp.cred.twilio.authToken', value: 'tw-now' },
+      // Not a secret: the file is the truth for it, so it is not kept.
+      { id: 'x4', key: 'workshop.email', value: 'post@x.test' },
+    ]
+    const result = keepCurrentSecrets(
+      rows,
+      new Map([['payment.stripe.secretKey', 'sk_now']]),
+      installed
+    )
+    expect(result.rows).toEqual([
+      { id: 'a', key: 'workshop.phone', value: '123' },
+      { id: 'b', key: 'payment.stripe.secretKey', value: 'sk_now' },
+      { id: 'x2', key: 'ai.apiKey', value: 'sk-ai-now' },
+      { id: 'x3', key: 'whatsapp.cred.twilio.authToken', value: 'tw-now' },
+    ])
+    expect(result.redacted).toEqual([
+      'ai.apiKey',
+      'payment.stripe.secretKey',
+      'whatsapp.cred.twilio.authToken',
+    ])
+  })
+
+  it('keeps nothing extra from the install when the file carries its secrets', () => {
+    const rows = [
+      { id: 'a', key: 'workshop.phone', value: '123' },
+      { id: 'b', key: 'payment.stripe.secretKey', value: 'sk_backup' },
+    ]
+    const installed = [{ id: 'x2', key: 'ai.apiKey', value: 'sk-ai-now' }]
+    const result = keepCurrentSecrets(rows, new Map([['ai.apiKey', 'sk-ai-now']]), installed)
+    expect(result.rows).toEqual(rows)
+    expect(result.redacted).toEqual([])
+  })
+
+  it('still drops a redacted key the install has no value for', () => {
+    const rows = [{ id: 'c', key: 'ai.apiKey', value: REDACTED }]
+    const installed = [{ id: 'x1', key: 'telegram.botToken', value: 'tg-now' }]
+    const result = keepCurrentSecrets(rows, new Map(), installed)
+    expect(result.rows).toEqual([{ id: 'x1', key: 'telegram.botToken', value: 'tg-now' }])
+    expect(result.redacted).toEqual(['ai.apiKey', 'telegram.botToken'])
+  })
+
   it('writes a secret the backup carries in full', () => {
     const rows = [{ key: 'ai.apiKey', value: 'sk-from-backup' }]
     const result = keepCurrentSecrets(rows, new Map([['ai.apiKey', 'sk-now']]))

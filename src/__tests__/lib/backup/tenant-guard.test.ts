@@ -75,10 +75,74 @@ describe('assertTenantScopedCall', () => {
       assertTenantScopedCall(
         'customer',
         'deleteMany',
-        { where: { OR: [{ organizationId: ORG }, { organizationId: 'org-b' }] } },
+        { where: { AND: [{ organizationId: ORG }, { organizationId: 'org-b' }] } },
         ORG
       )
     ).toThrow(/another organisation/)
+  })
+
+  it('refuses OR, NOT and XOR anywhere in the where of a write', () => {
+    const refused = [
+      // The organisation in one branch, another row in the other.
+      ['customer', 'deleteMany', { where: { OR: [{ organizationId: ORG }, { id: 'c-other' }] } }],
+      ['customer', 'deleteMany', { where: { organizationId: ORG, NOT: { id: 'c1' } } }],
+      ['customer', 'deleteMany', { where: { NOT: { organizationId: ORG } } }],
+      [
+        'customer',
+        'updateMany',
+        { where: { XOR: [{ organizationId: ORG }, { id: 'c1' }] }, data: {} },
+      ],
+      // Inside a relation filter, under an AND, still refused.
+      [
+        'servicePart',
+        'deleteMany',
+        { where: { serviceRecord: { OR: [{ organizationId: ORG }, { id: 's-other' }] } } },
+      ],
+      [
+        'customer',
+        'deleteMany',
+        { where: { AND: [{ organizationId: ORG }, { OR: [{ id: 'c1' }, { id: 'c2' }] }] } },
+      ],
+      [
+        'customer',
+        'upsert',
+        {
+          where: { id: 'c1', organizationId: ORG, NOT: { name: 'x' } },
+          create: { id: 'c1', organizationId: ORG },
+          update: {},
+        },
+      ],
+    ] as const
+    for (const [delegate, op, args] of refused) {
+      expect(() => assertTenantScopedCall(delegate, op, args, ORG), `${delegate}.${op}`).toThrow(
+        /may not use OR, NOT or XOR/
+      )
+    }
+  })
+
+  it('accepts the organisation at the top or inside an AND', () => {
+    expect(() =>
+      assertTenantScopedCall('customer', 'deleteMany', { where: { organizationId: ORG } }, ORG)
+    ).not.toThrow()
+    expect(() =>
+      assertTenantScopedCall(
+        'customer',
+        'updateMany',
+        { where: { AND: [{ organizationId: ORG }, { id: 'c1' }] }, data: {} },
+        ORG
+      )
+    ).not.toThrow()
+  })
+
+  it('leaves OR alone in a read', () => {
+    expect(() =>
+      assertTenantScopedCall(
+        'role',
+        'findFirst',
+        { where: { organizationId: ORG, OR: [{ id: 'r1' }, { name: 'Owner' }] } },
+        ORG
+      )
+    ).not.toThrow()
   })
 
   it('refuses a create stamped with another organisation, or not stamped at all', () => {

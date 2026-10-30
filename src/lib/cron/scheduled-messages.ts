@@ -5,6 +5,7 @@ import {
   nextSendAt,
 } from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { isRestoring } from '@/lib/backup/freeze'
 
 const LOG_PREFIX = '[scheduled-messages]'
 
@@ -44,6 +45,8 @@ export async function processDueMessages(now = new Date()): Promise<number> {
   const zones = new Map<string, string>()
 
   for (const message of due) {
+    // Left as it is while its workshop is being restored; the next tick after the restore sends it.
+    if (isRestoring(message.organizationId)) continue
     const isStale = now.getTime() - message.sendAt.getTime() > MAX_LATENESS_MS
     let timeZone = zones.get(message.organizationId)
     if (!timeZone) {

@@ -86,15 +86,17 @@ vi.mock('@/lib/db', () => ({
       }),
     },
     platformBackup: {
-      upsert: vi.fn(async ({ where, create }: { where: { organizationId: string }; create: Row }) => {
-        const row = h.platform.get(where.organizationId) ?? {
-          lastPruneAt: null,
-          lastCheckAt: null,
-          ...create,
+      upsert: vi.fn(
+        async ({ where, create }: { where: { organizationId: string }; create: Row }) => {
+          const row = h.platform.get(where.organizationId) ?? {
+            lastPruneAt: null,
+            lastCheckAt: null,
+            ...create,
+          }
+          h.platform.set(where.organizationId, row)
+          return row
         }
-        h.platform.set(where.organizationId, row)
-        return row
-      }),
+      ),
       update: vi.fn(async ({ where, data }: { where: { organizationId: string }; data: Row }) => {
         const row = merge(h.platform.get(where.organizationId) ?? {}, data)
         h.platform.set(where.organizationId, row)
@@ -190,9 +192,11 @@ import {
   backupLockHolder,
   drainBackupQueue,
   openPlatform,
+  openTarget,
   queueBackupRun,
   runBackup,
   stagingDirFor,
+  takeSafetySnapshot,
 } from '@/lib/backup/engine'
 import { platformRepositoryPassword } from '@/lib/backup/platform'
 import { resticSnapshots } from '@/lib/backup/restic'
@@ -461,13 +465,21 @@ describe('queueBackupRun', () => {
     addConnection({ id: 'conn2' })
     setPlatformEnv()
     addRun({ status: 'running' })
-    await expect(queueBackupRun({ kind: 'destination', connectionId: 'conn2' }, 'manual')).resolves.toHaveProperty('runId')
-    await expect(queueBackupRun({ kind: 'platform', organizationId: ORG }, 'manual')).resolves.toHaveProperty('runId')
-    await expect(queueBackupRun({ kind: 'platform', organizationId: ORG }, 'manual')).rejects.toBeInstanceOf(BackupBusyError)
+    await expect(
+      queueBackupRun({ kind: 'destination', connectionId: 'conn2' }, 'manual')
+    ).resolves.toHaveProperty('runId')
+    await expect(
+      queueBackupRun({ kind: 'platform', organizationId: ORG }, 'manual')
+    ).resolves.toHaveProperty('runId')
+    await expect(
+      queueBackupRun({ kind: 'platform', organizationId: ORG }, 'manual')
+    ).rejects.toBeInstanceOf(BackupBusyError)
   })
 
   it('makes a platform run with no connection, and refuses one when platform backups are off', async () => {
-    await expect(queueBackupRun({ kind: 'platform', organizationId: ORG }, 'scheduled')).rejects.toThrow(/not configured/)
+    await expect(
+      queueBackupRun({ kind: 'platform', organizationId: ORG }, 'scheduled')
+    ).rejects.toThrow(/not configured/)
     setPlatformEnv()
     const { runId } = await queueBackupRun({ kind: 'platform', organizationId: ORG }, 'scheduled', {
       reason: 'support check',
@@ -579,7 +591,7 @@ describe('runBackup, happy path', () => {
     expect(backup.argv.slice(backup.argv.indexOf('--') + 1)).toEqual([stagingDirFor(ORG)])
   })
 
-  it('runs init, unlock, backup, forget, the safety copies\' forget, prune, check and stats in that order', async () => {
+  it("runs init, unlock, backup, forget, the safety copies' forget, prune, check and stats in that order", async () => {
     addConnection()
     await runBackup(addRun())
     expect(calls().map((c) => c.sub)).toEqual([
@@ -938,7 +950,7 @@ describe('runBackup, lock', () => {
     await vi.waitFor(() => expect(backupLockHolder()).toBeNull())
   })
 
-  it('a run that finds another holder\'s lock stays queued and the holder keeps the lock', async () => {
+  it("a run that finds another holder's lock stays queued and the holder keeps the lock", async () => {
     addConnection()
     ;(globalThis as Row).__torqvoiceBackupLock = { runId: 'other', since: Date.now() }
     const runId = addRun()
@@ -1012,7 +1024,7 @@ describe('drainBackupQueue', () => {
 })
 
 describe('openPlatform', () => {
-  it('opens the workshop\'s own repository in the platform bucket, with the platform keys only', async () => {
+  it("opens the workshop's own repository in the platform bucket, with the platform keys only", async () => {
     setPlatformEnv()
     const target = await openPlatform(ORG)
 
@@ -1114,12 +1126,83 @@ describe('runBackup, platform', () => {
     setPlatformEnv()
     failRestic('backup')
     const before = Date.now()
-    const view = await runBackup(addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' }))
+    const view = await runBackup(
+      addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' })
+    )
     expect(view.status).toBe('failed')
     const retryAt = (h.platform.get(ORG) as Row).retryAt as Date
     expect(retryAt.getTime()).toBeGreaterThanOrEqual(before + 30 * 60 * 1000)
     expect(notify).not.toHaveBeenCalled()
     expect(sendOrgMail).not.toHaveBeenCalled()
+  })
+})
+
+describe('takeSafetySnapshot', () => {
+  it('keeps the uploads folder in the safety copy even when the destination leaves files out', async () => {
+    addConnection({ settings: { frequency: 'daily', contents: 'data', includeFiles: false } })
+    const target = await openTarget({ kind: 'destination', connectionId: CONN })
+    expect(target.includeFiles).toBe(false)
+
+    const safety = await takeSafetySnapshot(ORG, target)
+
+    expect(safety).toEqual({ snapshotId: SNAPSHOT_ID, kind: 'destination' })
+    const [backup] = callsOf('backup')
+    expect(backup.argv).toEqual(expect.arrayContaining(['--tag', 'pre-restore']))
+    expect(backup.argv.slice(backup.argv.indexOf('--') + 1)).toEqual([
+      stagingDirFor(ORG),
+      uploadsDir,
+    ])
+    // The destination's own choice about secrets still holds.
+    expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: false })
+    // A destination keeps no restore point list of ours.
+    expect(callsOf('snapshots')).toEqual([])
+  })
+
+  it('lists the platform safety copy as a restore point right away', async () => {
+    setPlatformEnv()
+    const target = await openPlatform(ORG)
+
+    const safety = await takeSafetySnapshot(ORG, target)
+
+    expect(safety).toEqual({ snapshotId: SNAPSHOT_ID, kind: 'platform' })
+    expect(calls().map((c) => c.sub)).toEqual(['init', 'unlock', 'backup', 'snapshots'])
+    const [listing] = callsOf('snapshots')
+    expect(listing.argv).toEqual(
+      expect.arrayContaining(['--host', `torqvoice-${ORG}`, '--tag', `org:${ORG}`])
+    )
+    const { db } = await import('@/lib/db')
+    const update = vi
+      .mocked(db.platformBackup.update)
+      .mock.calls.map((c) => c[0] as Row)
+      .find((c) => Array.isArray(c.data.snapshots))
+    expect(update?.where).toEqual({ organizationId: ORG })
+    // Only the list changes: no good run is recorded for a safety copy.
+    expect(Object.keys(update?.data ?? {})).toEqual(['snapshots'])
+    const row = h.platform.get(ORG) as Row
+    expect(row.snapshots).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: SNAPSHOT_ID })])
+    )
+    expect(row.lastGoodAt).toBeUndefined()
+  })
+
+  it('a failed listing is logged and the platform safety copy still succeeds', async () => {
+    setPlatformEnv()
+    failRestic('snapshots')
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      const target = await openPlatform(ORG)
+      const safety = await takeSafetySnapshot(ORG, target)
+
+      expect(safety).toEqual({ snapshotId: SNAPSHOT_ID, kind: 'platform' })
+      expect(callsOf('snapshots')).toHaveLength(1)
+      expect(errors).toHaveBeenCalledWith(
+        expect.stringContaining('Could not list the restore points'),
+        expect.objectContaining({ error: expect.any(String) })
+      )
+      expect((h.platform.get(ORG) as Row).snapshots).toBeUndefined()
+    } finally {
+      errors.mockRestore()
+    }
   })
 })
 

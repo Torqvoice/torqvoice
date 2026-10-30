@@ -49,8 +49,8 @@ const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string; under?: s
     under: 'restoreDirFor(',
   },
   'src/lib/backup/explore.ts': {
-    targets: /\brm\((?:point\.dir|dir)\b/,
-    why: 'the folder a restore point is opened into, under restore-explore in the data root',
+    targets: /\brm\((?:point\.dir|dir|dataFile)\b/,
+    why: 'the folder a restore point is opened into (and the data file pulled into it, once parsed), under restore-explore in the data root',
     under: 'exploreDirFor(',
   },
   'src/lib/backup/restic.ts': {

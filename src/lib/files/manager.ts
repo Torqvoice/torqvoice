@@ -16,6 +16,7 @@ import {
 import path from 'node:path'
 import { UPLOAD_CATEGORIES } from '@/lib/upload-url'
 import { uploadsRoot, uploadsRoots } from '@/lib/upload-root'
+import { isRestoring } from '@/lib/backup/freeze'
 import {
   allReferencedSuffixes,
   existingOrganizationIds,
@@ -473,7 +474,8 @@ export async function sweepOrphanFiles({
       .map((dir) => dir.name)
     const known = await existingOrganizationIds(ids)
 
-    for (const organizationId of ids.filter((id) => known.has(id))) {
+    // A workshop being restored is left out: its rows are being replaced, so its files would look unused.
+    for (const organizationId of ids.filter((id) => known.has(id) && !isRestoring(id))) {
       const tally = perWorkshop.get(organizationId) ?? { checked: 0, unused: [] }
       perWorkshop.set(organizationId, tally)
       for (const folder of FOLDERS) {

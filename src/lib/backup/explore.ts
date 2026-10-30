@@ -1,4 +1,4 @@
-import { mkdir, rm, stat } from 'node:fs/promises'
+import { mkdir, readdir, rm, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
 import { dataRoot } from '@/lib/upload-root'
@@ -12,7 +12,9 @@ import { readJsonFile } from './zip-file'
  *
  * A snapshot holds one `data.json` (every row of the workshop, megabytes)
  * and the uploads folder. Opening a restore point pulls only the data file
- * out of the repository and keeps it, parsed, for a quarter of an hour; from
+ * out of the repository, parses it and removes it from disk at once (it can
+ * hold secret keys), and keeps the parsed rows in memory for a quarter of an
+ * hour; from
  * there the explorer lists customers, vehicles, work orders, quotes and parts
  * as they were, and searches them. A photo or document is pulled out one at
  * a time when it is opened. Nothing here writes to the workshop.
@@ -22,7 +24,7 @@ import { readJsonFile } from './zip-file'
  * is only looked for under that workshop's uploads folder in the snapshot.
  */
 
-/** Parsed restore points are dropped after this, and the data file with them. */
+/** Parsed restore points are dropped after this, and their folder with them. */
 const KEEP_OPEN_MS = 15 * 60 * 1000
 /** How many restore points one server keeps parsed at a time. */
 const MAX_OPEN = 4
@@ -77,11 +79,17 @@ function opening(): Map<string, Promise<RestorePointSummary>> {
   return g.__torqvoiceExploreOpening
 }
 
+const ORGANIZATION_ID = /^[a-z0-9]+$/i
+
+function exploreRoot(): string {
+  return path.join(dataRoot(), 'restore-explore')
+}
+
 export function exploreDirFor(organizationId: string, snapshotId: string): string {
-  if (!/^[a-z0-9]+$/i.test(organizationId) || !SNAPSHOT_ID.test(snapshotId)) {
+  if (!ORGANIZATION_ID.test(organizationId) || !SNAPSHOT_ID.test(snapshotId)) {
     throw new Error('Unexpected id')
   }
-  return path.join(dataRoot(), 'restore-explore', organizationId, snapshotId)
+  return path.join(exploreRoot(), organizationId, snapshotId)
 }
 
 function keyOf(organizationId: string, snapshotId: string) {
@@ -95,16 +103,42 @@ async function forget(point: OpenPoint): Promise<void> {
 
 /**
  * Drops restore points open too long and, when one more is about to be
- * added, the oldest beyond the cap.
+ * added, the oldest beyond the cap. Then removes every folder on disk that
+ * no open restore point owns: the registry lives in this process only, so
+ * after a restart the folders of the points open before it are found here.
  */
 async function sweep(makingRoom: boolean, now = Date.now()): Promise<void> {
   const points = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
   for (const p of points) if (now - p.openedAt > KEEP_OPEN_MS) await forget(p)
-  if (!makingRoom) return
-  const left = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
-  while (left.length >= MAX_OPEN) {
-    const oldest = left.shift()
-    if (oldest) await forget(oldest)
+  if (makingRoom) {
+    const left = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
+    while (left.length >= MAX_OPEN) {
+      const oldest = left.shift()
+      if (oldest) await forget(oldest)
+    }
+  }
+  await sweepOrphans()
+}
+
+/**
+ * Removes the `<orgId>/<snapshotId>` folders under the explore root that no
+ * open restore point owns and no open in flight is filling. Only names that
+ * `exploreDirFor` accepts are touched, so nothing outside the root is.
+ */
+async function sweepOrphans(): Promise<void> {
+  const orgs = await readdir(exploreRoot(), { withFileTypes: true }).catch(() => [])
+  for (const org of orgs) {
+    if (!org.isDirectory() || !ORGANIZATION_ID.test(org.name)) continue
+    const snaps = await readdir(path.join(exploreRoot(), org.name), {
+      withFileTypes: true,
+    }).catch(() => [])
+    for (const snap of snaps) {
+      if (!snap.isDirectory() || !SNAPSHOT_ID.test(snap.name)) continue
+      const key = keyOf(org.name, snap.name)
+      if (open().has(key) || opening().has(key)) continue
+      const dir = exploreDirFor(org.name, snap.name)
+      await rm(dir, { recursive: true, force: true }).catch(() => undefined)
+    }
   }
 }
 
@@ -199,17 +233,23 @@ async function pull(
     ?.path
   if (!dataPath) throw new Error('This restore point holds no data file')
   const dataFile = path.join(dir, 'data.json')
-  await resticDumpToFile(opened.base, {
-    snapshotId,
-    path: dataPath,
-    target: dataFile,
-    maxBytes: MAX_DATA_BYTES,
-  })
   let raw: unknown
   try {
-    raw = await readJsonFile<unknown>(dataFile)
-  } catch {
-    throw new Error('The data file in this restore point could not be read')
+    await resticDumpToFile(opened.base, {
+      snapshotId,
+      path: dataPath,
+      target: dataFile,
+      maxBytes: MAX_DATA_BYTES,
+    })
+    try {
+      raw = await readJsonFile<unknown>(dataFile)
+    } catch {
+      throw new Error('The data file in this restore point could not be read')
+    }
+  } finally {
+    // Every row of the workshop, and for a platform backup the secret keys:
+    // kept parsed in memory only, never left on disk.
+    await rm(dataFile, { force: true })
   }
   const parsed = backupShape.safeParse(raw)
   if (!parsed.success) throw new Error('The data file in this restore point could not be read')

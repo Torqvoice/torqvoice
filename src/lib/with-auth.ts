@@ -116,6 +116,11 @@ export async function withAuth<T>(
 
     // While a restore replaces the workshop's rows, only reads go through:
     // an action that declares read permissions alone, or one that says so.
+    // READ is a heuristic: a few actions write under it (marking an inbox
+    // thread read in messaging/Actions/inboxActions.ts, the AI vehicle history
+    // summary), and what they write is a flag or a cached text, nothing a
+    // restore has to protect. An action that writes real rows must declare an
+    // UPDATE, CREATE or DELETE permission.
     if (isRestoring(ctx.organizationId)) {
       const readOnly =
         (options.requiredPermissions?.length ?? 0) > 0 &&

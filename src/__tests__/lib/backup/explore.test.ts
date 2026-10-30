@@ -1,5 +1,13 @@
 // @vitest-environment node
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  utimesSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -214,7 +222,22 @@ describe('openRestorePoint', () => {
     expect(h.dumps[0].snapshotId).toBe(SNAP)
     expect(h.dumps[0].target).toBe(path.join(exploreDirFor(ORG, SNAP), 'data.json'))
     expect(h.dumps[0].target.startsWith(path.join(h.root, 'restore-explore', ORG, SNAP))).toBe(true)
-    expect(existsSync(h.dumps[0].target)).toBe(true)
+  })
+
+  it('removes the data file from disk once it is parsed, keeping the rows in memory', async () => {
+    stage()
+    await openRestorePoint(TARGET, SNAP)
+    expect(existsSync(h.dumps[0].target)).toBe(false)
+    expect(listRestorePointRows(ORG, SNAP, 'customers', '', 1).total).toBe(2)
+    // The folder stays for the uploads pulled out later.
+    expect(existsSync(exploreDirFor(ORG, SNAP))).toBe(true)
+  })
+
+  it('removes the data file from disk when it cannot be read', async () => {
+    h.found['data.json'] = [STAGED]
+    h.files[STAGED] = '{"not json'
+    await expect(openRestorePoint(TARGET, SNAP)).rejects.toThrow('could not be read')
+    expect(existsSync(h.dumps[0].target)).toBe(false)
   })
 
   it('returns exportedAt as null when the file has none', async () => {
@@ -628,6 +651,57 @@ describe('closing restore points', () => {
     await openRestorePoint(TARGET, SNAP2)
     expect(listRestorePointRows(ORG, SNAP, 'customers', '', 1).total).toBe(2)
     expect(existsSync(exploreDirFor(ORG, SNAP))).toBe(true)
+  })
+
+  it('removes folders left on disk by an earlier process on the next open', async () => {
+    // What a restart leaves: folders on disk, nothing in this process's registry.
+    const stale = exploreDirFor(ORG, SNAP2)
+    const otherOrg = exploreDirFor('org2', 'bbbbbbb1')
+    for (const dir of [stale, otherOrg]) {
+      mkdirSync(path.join(dir, 'files', 'services'), { recursive: true })
+      writeFileSync(path.join(dir, 'data.json'), JSON.stringify(DATA))
+      writeFileSync(path.join(dir, 'files', 'services', 'photo.jpg'), 'jpeg bytes')
+      const old = new Date(Date.now() - 60 * MIN)
+      utimesSync(dir, old, old)
+    }
+    // Something under the data root that is not a restore point folder is left alone.
+    const stray = path.join(h.root, 'restore-explore', 'not-an-org!')
+    mkdirSync(stray, { recursive: true })
+    const outside = path.join(h.root, 'uploads', ORG)
+    mkdirSync(outside, { recursive: true })
+
+    stage()
+    await openRestorePoint(TARGET, SNAP)
+
+    expect(existsSync(stale)).toBe(false)
+    expect(existsSync(otherOrg)).toBe(false)
+    expect(existsSync(exploreDirFor(ORG, SNAP))).toBe(true)
+    expect(existsSync(stray)).toBe(true)
+    expect(existsSync(outside)).toBe(true)
+  })
+
+  it('opens fine when the restore-explore folder does not exist yet', async () => {
+    rmSync(path.join(h.root, 'restore-explore'), { recursive: true, force: true })
+    stage()
+    await expect(openRestorePoint(TARGET, SNAP)).resolves.toMatchObject({ snapshotId: SNAP })
+  })
+
+  it('keeps the folder of a point that is still open when another one is opened', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    const start = Date.parse('2026-10-30T10:00:00Z')
+    vi.setSystemTime(new Date(start))
+    stage()
+    await openRestorePoint(TARGET, SNAP)
+    h.found['photo.jpg'] = ['/srv/torqvoice/data/uploads/org1/services/photo.jpg']
+    h.files['/srv/torqvoice/data/uploads/org1/services/photo.jpg'] = 'jpeg bytes'
+    const { file } = await extractRestorePointFile(ORG, SNAP, 'services', 'photo.jpg')
+
+    vi.setSystemTime(new Date(start + 5 * MIN))
+    await openRestorePoint(TARGET, SNAP2)
+
+    expect(existsSync(exploreDirFor(ORG, SNAP))).toBe(true)
+    expect(readFileSync(file, 'utf8')).toBe('jpeg bytes')
+    expect(listRestorePointRows(ORG, SNAP, 'customers', '', 1).total).toBe(2)
   })
 
   it('keeps at most four open, closing the oldest', async () => {
