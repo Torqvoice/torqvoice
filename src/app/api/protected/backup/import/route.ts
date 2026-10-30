@@ -3,7 +3,7 @@ import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { isDemoMode } from '@/lib/demo'
-import { isCloudMode } from '@/lib/features'
+import { canRestoreBackups } from '@/features/integrations/Lib/backup'
 import { backupLockHolder } from '@/lib/backup/engine'
 import { RestoreRefusedError, restoreLockHolder } from '@/lib/backup/tenancy'
 import {
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
   // On the cloud, where workshops share a database, the owner's alone.
-  if (isCloudMode() && ctx.role !== 'owner') {
+  if (!(await canRestoreBackups(ctx))) {
     return NextResponse.json(
       { error: 'Only the workshop owner can restore a backup here', code: 'owner_only' },
       { status: 403 }

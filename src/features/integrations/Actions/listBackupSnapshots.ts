@@ -23,10 +23,12 @@ export interface BackupSnapshotList {
  */
 export async function listBackupSnapshots(connectorId: string) {
   return withAuth(
-    async ({ organizationId, isAdmin, role }): Promise<BackupSnapshotList> => {
+    async ({ organizationId, userId, isAdmin }): Promise<BackupSnapshotList> => {
       if (!isAdmin) throw new Error('Only an owner or administrator can restore a backup')
       // On the cloud, where workshops share a database, the owner's alone.
-      if (!canRestoreBackups(role)) throw new Error('restoreOwnerOnly')
+      if (!(await canRestoreBackups({ userId, organizationId, isAdmin }))) {
+        throw new Error('restoreOwnerOnly')
+      }
       const manifest = getManifest(connectorId)
       if (!manifest?.capabilities.includes(BACKUP_CAPABILITY)) {
         throw new Error('This integration is not a backup destination')

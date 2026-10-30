@@ -30,11 +30,13 @@ export type RestoreBackupSnapshotInput = z.infer<typeof restoreSchema>
  */
 export async function restoreBackupSnapshot(input: RestoreBackupSnapshotInput) {
   return withAuth(
-    async ({ organizationId, userId, isAdmin, role }): Promise<{ runId: string }> => {
+    async ({ organizationId, userId, isAdmin }): Promise<{ runId: string }> => {
       demoGuard()
       if (!isAdmin) throw new Error('Only an owner or administrator can restore a backup')
       // On the cloud, where workshops share a database, the owner's alone.
-      if (!canRestoreBackups(role)) throw new Error('restoreOwnerOnly')
+      if (!(await canRestoreBackups({ userId, organizationId, isAdmin }))) {
+        throw new Error('restoreOwnerOnly')
+      }
       const { connectorId, snapshotId, confirmName } = restoreSchema.parse(input)
       const manifest = getManifest(connectorId)
       if (!manifest?.capabilities.includes(BACKUP_CAPABILITY)) {

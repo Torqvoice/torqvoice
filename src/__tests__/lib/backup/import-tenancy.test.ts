@@ -41,7 +41,13 @@ vi.mock('@/lib/db', () => {
         ),
     }
   )
-  return { db: { $transaction: async (fn: (t: unknown) => unknown) => fn(tx) } }
+  return {
+    db: {
+      $transaction: async (fn: (t: unknown) => unknown) => fn(tx),
+      // The cloud check reads the membership itself, not the session's role.
+      organizationMember: { findFirst: async () => ({ role: state.role }) },
+    },
+  }
 })
 vi.mock('@/lib/rate-limit', () => ({ rateLimit: vi.fn(() => null) }))
 vi.mock('@/lib/get-auth-context', () => ({
@@ -182,6 +188,9 @@ describe('one restore at a time', () => {
 describe('on the cloud', () => {
   it('sends an administrator to the owner, and lets the owner through', async () => {
     state.cloud = true
+    // The session says super_admin for a platform administrator; the
+    // membership is what decides.
+    state.role = 'admin'
     const refused = await importJson(file())
     expect(refused.status).toBe(403)
     expect((await refused.json()).code).toBe('owner_only')

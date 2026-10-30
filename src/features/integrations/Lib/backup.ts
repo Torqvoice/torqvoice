@@ -122,11 +122,20 @@ export const BACKUP_SETTINGS: SettingField[] = [
 /**
  * Who may put a backup back. Self-hosted: an owner or administrator, as for
  * the upload under Settings, Data. On the cloud, where hundreds of workshops
- * share one database, the owner alone.
+ * share one database, the owner alone, read from the membership itself: a
+ * platform administrator's rights say nothing about who owns the workshop.
  */
-export function canRestoreBackups(role: string): boolean {
-  if (role === 'owner') return true
-  return !isCloudMode() && (role === 'admin' || role === 'super_admin')
+export async function canRestoreBackups(ctx: {
+  userId: string
+  organizationId: string
+  isAdmin: boolean
+}): Promise<boolean> {
+  if (!isCloudMode()) return ctx.isAdmin
+  const member = await db.organizationMember.findFirst({
+    where: { userId: ctx.userId, organizationId: ctx.organizationId },
+    select: { role: true },
+  })
+  return member?.role === 'owner'
 }
 
 /** The host restic files this workshop's snapshots under, and the tag on each. */
