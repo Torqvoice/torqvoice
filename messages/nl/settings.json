@@ -1399,6 +1399,11 @@
     "importComplete": "Import voltooid",
     "importCompleteMessage": "Alle gegevens zijn hersteld uit het back-upbestand.",
     "importFailed": "Import mislukt",
+    "restoreRefused": {
+      "busy": "Er loopt al een back-up of herstel op deze server. Probeer het opnieuw als dat klaar is.",
+      "ownerOnly": "In Torqvoice Cloud kan alleen de eigenaar van de werkplaats een back-up terugzetten.",
+      "foreignIds": "Het bestand verwijst naar records die bij een andere werkplaats horen, dus er is niets teruggezet."
+    },
     "importFromOther": "Importeren van andere diensten",
     "importFromOtherDescription": "Migreer uw gegevens van een ander platform. Selecteer een dienst om te beginnen.",
     "lubelogTitle": "Importeren van LubeLog",

@@ -179,7 +179,7 @@ describe('backup manifest', () => {
 
 describe('the routes implement the manifest', () => {
   const exportRoute = fs.readFileSync('src/lib/backup/build-data.ts', 'utf-8')
-  const importRoute = fs.readFileSync('src/app/api/protected/backup/import/route.ts', 'utf-8')
+  const importRoute = fs.readFileSync('src/lib/backup/import.ts', 'utf-8')
 
   it('restores every nested entity on the way back in', () => {
     // The two tests below only cover top-level keys, because a nested entity

@@ -15,10 +15,7 @@ import { readPrismaSchema } from '@/__tests__/stubs/prisma-schema'
 
 const ROOT = process.cwd()
 const exportSource = fs.readFileSync(path.join(ROOT, 'src/lib/backup/build-data.ts'), 'utf-8')
-const importSource = fs.readFileSync(
-  path.join(ROOT, 'src/app/api/protected/backup/import/route.ts'),
-  'utf-8'
-)
+const importSource = fs.readFileSync(path.join(ROOT, 'src/lib/backup/import.ts'), 'utf-8')
 const schema = readPrismaSchema(ROOT)
 
 /** Every tire hotel model the schema declares. */

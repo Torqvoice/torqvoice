@@ -238,7 +238,13 @@ export function DataSettings({
 
       if (!res.ok) {
         const body = await res.json()
-        throw new Error(body.error || 'Import failed')
+        // A refusal names its reason; the sentence for it is in the workshop's language.
+        const code = typeof body.code === 'string' ? body.code : ''
+        throw new Error(
+          code && t.has(`data.restoreRefused.${code}`)
+            ? t(`data.restoreRefused.${code}`)
+            : body.error || 'Import failed'
+        )
       }
 
       setSelectedFile(null)

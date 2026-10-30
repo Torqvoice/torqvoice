@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Harmonogram",
-        "manual": "Ręcznie"
+        "manual": "Ręcznie",
+        "restore": "Przywracanie"
       },
       "status": {
         "queued": "W kolejce",
@@ -206,7 +207,35 @@
         "failed": "Nieudane",
         "skipped": "Pominięte"
       },
-      "restoreHint": "Aby przywrócić kopię, otwórz ją w restic i wgraj jej data.json z powrotem w Ustawienia, Dane. Dokumentacja pokazuje każdy krok."
+      "restoring": "Przywracanie",
+      "restoringHint": "Trwa przywracanie: dane warsztatu są zastępowane kopią zapasową. Ta strona odświeża się sama, dopóki się nie zakończy. Do tego czasu nie pracuj w warsztacie.",
+      "restore": {
+        "title": "Przywracanie",
+        "description": "Przywróć warsztat do stanu z jednej z tych kopii zapasowych. Wszystko, co ma teraz, zostanie zastąpione.",
+        "show": "Pokaż kopie zapasowe",
+        "refresh": "Odśwież",
+        "loading": "Odczytywanie kopii zapasowych w miejscu docelowym",
+        "loadFailed": "Nie udało się wyświetlić listy kopii zapasowych",
+        "empty": "W tym miejscu docelowym nie ma jeszcze kopii zapasowych.",
+        "columns": {
+          "taken": "Utworzono",
+          "trigger": "Uruchomione przez",
+          "files": "Zdjęcia i pliki",
+          "size": "Rozmiar"
+        },
+        "filesIncluded": "Dołączone",
+        "filesNotIncluded": "Niedołączone",
+        "earlierInstall": "Wcześniejsza instalacja",
+        "action": "Przywróć",
+        "dialogTitle": "Przywrócić kopię zapasową z {time}?",
+        "warning": "Przywrócenie <bold>zastępuje wszystko, co ten warsztat ma teraz</bold>: klientów, pojazdy, zlecenia, faktury, ustawienia oraz, jeśli kopia je zawiera, zdjęcia i pliki. Wszystko, co dodano od utworzenia kopii, przepadnie. Tej operacji nie można cofnąć.",
+        "secretsNote": "Klucze tajne, które kopia pominęła, zachowują wartości, jakie ta instalacja ma teraz. Konta użytkowników i hasła pozostają nienaruszone.",
+        "confirmPrompt": "Wpisz nazwę warsztatu, <bold>{name}</bold>, aby potwierdzić.",
+        "whileRunning": "Przywracanie działa w tle, a przy wielu zdjęciach trwa kilka minut. Strona odświeża się sama, dopóki się nie zakończy.",
+        "cancel": "Anuluj",
+        "confirm": "Przywróć tę kopię zapasową",
+        "started": "Rozpoczęto przywracanie"
+      }
     },
     "lockedBackups": "Zaplanowane, szyfrowane kopie zapasowe warsztatu do własnej przestrzeni dyskowej.",
     "searchOrType": "Szukaj lub wpisz nazwę",
@@ -261,7 +290,9 @@
     "state": "To logowanie wygasło lub należy do innej sesji. Zacznij od nowa.",
     "exchange": "Dostawca odrzucił logowanie. Sprawdź dane aplikacji i spróbuj ponownie.",
     "identify": "Połączono, ale nie udało się odczytać konta. Spróbuj połączyć ponownie.",
-    "backupRunning": "Kopia zapasowa jest już tworzona."
+    "backupRunning": "Kopia zapasowa jest już tworzona.",
+    "restoreOwnerOnly": "W Torqvoice Cloud kopię zapasową może przywrócić tylko właściciel warsztatu.",
+    "restoreBusy": "Na tym serwerze trwa już tworzenie kopii zapasowej lub przywracanie. Spróbuj ponownie, gdy się zakończy."
   },
   "meeting": {
     "join": "Dołącz do rozmowy wideo",

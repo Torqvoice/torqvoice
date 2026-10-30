@@ -525,6 +525,7 @@ export interface ResticSnapshot {
   id: string
   shortId: string
   time: string
+  hostname: string
   tags: string[]
   paths: string[]
   summary?: {
@@ -543,9 +544,10 @@ export interface ResticSnapshot {
  */
 export async function resticSnapshots(
   opts: ResticBaseOptions,
-  input: { host: string; tags: string[] }
+  input: { host?: string; tags: string[] }
 ): Promise<ResticSnapshot[]> {
-  const args = ['snapshots', '--host', input.host]
+  const args = ['snapshots']
+  if (input.host) args.push('--host', input.host)
   if (input.tags.length) args.push('--tag', input.tags.join(','))
   const result = await runRestic(withArgs(opts, args))
   const list = (result.json.find(Array.isArray) ?? []) as Record<string, unknown>[]
@@ -555,6 +557,7 @@ export async function resticSnapshots(
       id: String(s.id ?? ''),
       shortId: String(s.short_id ?? ''),
       time: String(s.time ?? ''),
+      hostname: String(s.hostname ?? ''),
       tags: Array.isArray(s.tags) ? s.tags.map(String) : [],
       paths: Array.isArray(s.paths) ? s.paths.map(String) : [],
       ...(summary
@@ -650,4 +653,31 @@ export async function resticVersion(timeoutMs = 30_000): Promise<string> {
   if (typeof message?.version === 'string') return message.version
   const plain = /restic (\S+)/.exec(result.stdout)
   return plain ? plain[1] : result.stdout.trim()
+}
+
+export interface ResticRestoreSummary {
+  filesRestored: number
+  bytesRestored: number
+}
+
+/**
+ * `restore <id> --target <dir>`. Every path the snapshot holds is written
+ * under the target with its full original path, so `/srv/data/uploads/org1`
+ * lands at `<target>/srv/data/uploads/org1`. The last stdout line is
+ * `{"message_type":"summary","total_files":12,"files_restored":12,"total_bytes":19,"bytes_restored":19}`,
+ * preceded by `status` lines while it runs.
+ */
+export async function resticRestore(
+  opts: ResticBaseOptions,
+  input: { snapshotId: string; target: string }
+): Promise<ResticRestoreSummary> {
+  if (!/^[0-9a-f]{8,64}$/.test(input.snapshotId)) throw new Error('Invalid snapshot id')
+  const result = await runRestic(
+    withArgs(opts, ['restore', '--target', input.target, '--', input.snapshotId])
+  )
+  const summary = (result.json.find((m) => messageType(m) === 'summary') ?? {}) as Record<
+    string,
+    unknown
+  >
+  return { filesRestored: num(summary.files_restored), bytesRestored: num(summary.bytes_restored) }
 }

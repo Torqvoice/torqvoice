@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Programación",
-        "manual": "Manual"
+        "manual": "Manual",
+        "restore": "Restauración"
       },
       "status": {
         "queued": "En cola",
@@ -206,7 +207,35 @@
         "failed": "Fallida",
         "skipped": "Omitida"
       },
-      "restoreHint": "Para restaurar, abre una copia con restic y vuelve a importar su data.json en Configuración, Datos. La documentación muestra cada paso."
+      "restoring": "Restaurando",
+      "restoringHint": "Se está restaurando una copia: los datos del taller se están sustituyendo por los de la copia de seguridad. Esta página se actualiza sola hasta que termine. No trabaje en el taller hasta entonces.",
+      "restore": {
+        "title": "Restaurar",
+        "description": "Devuelva el taller al estado en que estaba en una de estas copias. Todo lo que contiene ahora se sustituye.",
+        "show": "Mostrar copias",
+        "refresh": "Actualizar",
+        "loading": "Leyendo las copias del destino",
+        "loadFailed": "No se pudieron listar las copias",
+        "empty": "Todavía no hay copias en este destino.",
+        "columns": {
+          "taken": "Realizada",
+          "trigger": "Iniciada por",
+          "files": "Fotos y archivos",
+          "size": "Tamaño"
+        },
+        "filesIncluded": "Incluidos",
+        "filesNotIncluded": "No incluidos",
+        "earlierInstall": "Instalación anterior",
+        "action": "Restaurar",
+        "dialogTitle": "¿Restaurar la copia de seguridad de {time}?",
+        "warning": "Restaurar <bold>sustituye todo lo que tiene ahora este taller</bold>: clientes, vehículos, trabajos, facturas, configuración y, cuando la copia los incluye, fotos y archivos. Todo lo añadido desde que se hizo la copia se pierde. Esto no se puede deshacer.",
+        "secretsNote": "Las claves secretas que la copia dejó fuera conservan los valores que tiene ahora esta instalación. Las cuentas de usuario y las contraseñas no se tocan.",
+        "confirmPrompt": "Escriba el nombre del taller, <bold>{name}</bold>, para confirmar.",
+        "whileRunning": "La restauración se ejecuta en segundo plano y tarda unos minutos cuando hay muchas fotos. La página se actualiza sola hasta que termine.",
+        "cancel": "Cancelar",
+        "confirm": "Restaurar esta copia",
+        "started": "Restauración iniciada"
+      }
     },
     "lockedBackups": "Copias de seguridad cifradas y programadas de su taller en un almacenamiento propio.",
     "searchOrType": "Buscar o escribir un nombre",
@@ -261,7 +290,9 @@
     "state": "Este inicio de sesión ha caducado o pertenece a otra sesión. Empiece de nuevo.",
     "exchange": "El proveedor rechazó el inicio de sesión. Compruebe las credenciales de la aplicación e inténtelo de nuevo.",
     "identify": "Conectado, pero no se pudo leer la cuenta. Intente volver a conectar.",
-    "backupRunning": "Ya hay una copia de seguridad en curso."
+    "backupRunning": "Ya hay una copia de seguridad en curso.",
+    "restoreOwnerOnly": "En Torqvoice Cloud solo el propietario del taller puede restaurar una copia de seguridad.",
+    "restoreBusy": "Ya hay una copia de seguridad o una restauración en curso en este servidor. Inténtelo de nuevo cuando termine."
   },
   "meeting": {
     "join": "Unirse a la videollamada",

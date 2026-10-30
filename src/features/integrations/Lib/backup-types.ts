@@ -29,7 +29,8 @@ export interface BackupSettings {
 }
 
 export type BackupRunStatus = 'queued' | 'running' | 'done' | 'failed' | 'skipped'
-export type BackupTrigger = 'scheduled' | 'manual'
+/** What started the run: the schedule, a person, or a person putting a snapshot back. */
+export type BackupTrigger = 'scheduled' | 'manual' | 'restore'
 
 export interface BackupRunView {
   id: string
@@ -49,11 +50,34 @@ export interface BackupOverview {
   lastGood: BackupRunView | null
   lastRun: BackupRunView | null
   nextRunAt: string | null
-  /** A run is in progress right now for this connection. */
+  /** A run is in progress right now for this connection, a backup or a restore. */
   running: boolean
+  /** The run in progress is a restore: the workshop's data is being replaced. */
+  restoring: boolean
   recent: BackupRunView[]
   /** Repository size in bytes from the last stats call, when known. */
   repositorySize: number | null
+  /** Whether the person looking may restore a snapshot: owners and administrators. */
+  canRestore: boolean
+}
+
+/** One backup at the destination, as the Restore section lists it. */
+export interface BackupSnapshotView {
+  id: string
+  shortId: string
+  /** When it was taken, ISO 8601. */
+  time: string
+  /** Bytes the backup covered, when restic recorded a summary. */
+  bytes: number | null
+  /** Whether photos and files were included. */
+  files: boolean
+  /** What started it, when the tags say. */
+  trigger: 'scheduled' | 'manual' | null
+  /**
+   * Taken by this workshop. A repository connected again from a new server
+   * holds the old workshop's snapshots under its id, and those restore too.
+   */
+  thisWorkshop: boolean
 }
 
 /**

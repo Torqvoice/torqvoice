@@ -1,0 +1,478 @@
+// @vitest-environment node
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+/**
+ * Restoring a snapshot from a backup destination, with restic and the
+ * import mocked: restic "writes" the snapshot into the target folder the
+ * engine asks for, and the import records what it was given. What is
+ * checked is the glue: the run row, the lock, where the folder goes, how
+ * the data file and the uploads folder are found, and that the folder is
+ * removed however the run ends.
+ */
+
+type Row = Record<string, any>
+
+const h = vi.hoisted(() => ({
+  runs: new Map<string, Row>(),
+  connections: new Map<string, Row>(),
+  seq: 0,
+  /** What the fake restic restore writes under the target, as relative paths. */
+  restoredTree: {} as Record<string, string>,
+  /** The folder restic was asked to restore into, kept to look at later. */
+  restoreTarget: null as string | null,
+  /** Whether the restored files still existed when the import ran. */
+  seenAtImport: null as { dataFile: boolean; filesDir: boolean | null } | null,
+  importResult: { redactedSettings: ['ai.apiKey'] } as Row,
+  importError: null as Error | null,
+  log: vi.fn(async () => undefined),
+}))
+
+function merge(row: Row, data: Row): Row {
+  const out = { ...row }
+  for (const [k, v] of Object.entries(data)) if (v !== undefined) out[k] = v
+  return out
+}
+
+vi.mock('@/lib/db', () => ({
+  db: {
+    backupRun: {
+      create: vi.fn(async ({ data }: { data: Row }) => {
+        const id = `run${++h.seq}`
+        h.runs.set(id, {
+          id,
+          startedAt: null,
+          finishedAt: null,
+          snapshotId: null,
+          filesNew: null,
+          bytesAdded: null,
+          totalBytes: null,
+          error: null,
+          createdAt: new Date(),
+          ...data,
+        })
+        return { id }
+      }),
+      update: vi.fn(async ({ where, data }: { where: { id: string }; data: Row }) => {
+        const row = merge(h.runs.get(where.id) ?? {}, data)
+        h.runs.set(where.id, row)
+        return row
+      }),
+      findUnique: vi.fn(
+        async ({ where }: { where: { id: string } }) => h.runs.get(where.id) ?? null
+      ),
+      findFirst: vi.fn(
+        async ({ where }: { where: { connectionId: string; status: { in: string[] } } }) =>
+          [...h.runs.values()].find(
+            (r) => r.connectionId === where.connectionId && where.status.in.includes(r.status)
+          ) ?? null
+      ),
+    },
+    integrationConnection: {
+      findUnique: vi.fn(async ({ where }: { where: { id: string } }) => {
+        const row = h.connections.get(where.id)
+        return row ? { ...row } : null
+      }),
+    },
+  },
+}))
+
+vi.mock('@/features/integrations/Lib/connections', () => ({
+  loadConnection: vi.fn(async (id: string) => {
+    const row = h.connections.get(id)
+    if (!row) throw new Error('Integration connection not found')
+    return {
+      ctx: {
+        connection: {
+          id,
+          organizationId: row.organizationId,
+          connectorId: row.connectorId,
+          settings: {},
+          state: {},
+        },
+        credentials: { password: 'correct horse battery' },
+        log: h.log,
+        saveState: vi.fn(async () => undefined),
+      },
+      server: {
+        backupTarget: { repository: async () => ({ repository: '/repo', env: {} }) },
+      },
+      status: row.status,
+    }
+  }),
+  setConnectionStatus: vi.fn(async () => undefined),
+}))
+
+vi.mock('@/integrations/registry', () => ({
+  getManifest: (id: string) => ({ id, name: 'Test storage', capabilities: ['backup.target'] }),
+  listManifests: () => [],
+}))
+
+vi.mock('@/lib/audit', () => ({ logAudit: vi.fn(async () => undefined) }))
+
+vi.mock('@/lib/backup/restic', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/backup/restic')>()
+  return {
+    ...actual,
+    resticSnapshots: vi.fn(async () => []),
+    resticRestore: vi.fn(async (_opts: unknown, input: { snapshotId: string; target: string }) => {
+      h.restoreTarget = input.target
+      let bytes = 0
+      for (const [rel, body] of Object.entries(h.restoredTree)) {
+        const file = path.join(input.target, rel)
+        mkdirSync(path.dirname(file), { recursive: true })
+        writeFileSync(file, body)
+        bytes += body.length
+      }
+      return { filesRestored: Object.keys(h.restoredTree).length, bytesRestored: bytes }
+    }),
+  }
+})
+
+vi.mock('@/lib/backup/import', () => ({
+  restoreFromDisk: vi.fn(
+    async (_actor: unknown, input: { dataFile: string; filesDir: string | null }) => {
+      h.seenAtImport = {
+        dataFile: existsSync(input.dataFile),
+        filesDir: input.filesDir === null ? null : existsSync(input.filesDir),
+      }
+      if (h.importError) throw h.importError
+      return h.importResult
+    }
+  ),
+}))
+
+import { logAudit } from '@/lib/audit'
+import { BackupBusyError } from '@/lib/backup/engine'
+import { restoreFromDisk } from '@/lib/backup/import'
+import { resticRestore, resticSnapshots } from '@/lib/backup/restic'
+import {
+  listSnapshots,
+  locateRestored,
+  queueRestore,
+  restoreDirFor,
+  runRestore,
+} from '@/lib/backup/restore'
+
+const ORG = 'org1'
+const CONN = 'conn1'
+const SNAPSHOT = '28891c8f448a3c36c2271f6dc4e03b08052265e671b6a8c438c9358a8a1e602b'
+const OLDER = '9d6cb16e448a3c36c2271f6dc4e03b08052265e671b6a8c438c9358a8a1e602b'
+
+const root = mkdtempSync(path.join(tmpdir(), 'backup-restore-test-'))
+const dataDir = path.join(root, 'data')
+const savedEnv = { ...process.env }
+
+/** A snapshot of the staged data file and the uploads folder, as the engine takes them. */
+const FULL_TREE = {
+  'tmp/torqvoice-backup-staging/org1/data.json': '{"version":2,"data":{}}',
+  'srv/old-server/data/uploads/org1/logos/logo.png': 'png bytes',
+  'srv/old-server/data/uploads/org1/service-files/a.pdf': 'pdf bytes',
+}
+
+function addConnection(): void {
+  h.connections.set(CONN, {
+    id: CONN,
+    organizationId: ORG,
+    connectorId: 'local-folder',
+    status: 'active',
+  })
+}
+
+function addRun(over: Row = {}): string {
+  const id = `run${++h.seq}`
+  h.runs.set(id, {
+    id,
+    organizationId: ORG,
+    connectionId: CONN,
+    trigger: 'restore',
+    status: 'queued',
+    startedAt: null,
+    finishedAt: null,
+    snapshotId: SNAPSHOT,
+    filesNew: null,
+    bytesAdded: null,
+    totalBytes: null,
+    error: null,
+    createdAt: new Date(),
+    ...over,
+  })
+  return id
+}
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  h.runs.clear()
+  h.connections.clear()
+  h.seq = 0
+  h.restoredTree = { ...FULL_TREE }
+  h.restoreTarget = null
+  h.seenAtImport = null
+  h.importResult = { redactedSettings: ['ai.apiKey'] }
+  h.importError = null
+  rmSync(dataDir, { recursive: true, force: true })
+  mkdirSync(dataDir, { recursive: true })
+  process.env.DATA_ROOT = dataDir
+  ;(globalThis as Row).__torqvoiceBackupLock = null
+  addConnection()
+})
+
+afterEach(() => {
+  for (const key of Object.keys(process.env)) {
+    if (!(key in savedEnv)) delete process.env[key]
+  }
+  Object.assign(process.env, savedEnv)
+})
+
+afterAll(() => {
+  rmSync(root, { recursive: true, force: true })
+})
+
+describe('listSnapshots', () => {
+  it('lists the snapshots newest first, with size and whether files were included', async () => {
+    vi.mocked(resticSnapshots).mockResolvedValueOnce([
+      {
+        id: OLDER,
+        shortId: '9d6cb16e',
+        time: '2026-10-28T02:00:00+01:00',
+        hostname: 'torqvoice-oldorg',
+        tags: ['org:oldorg', 'scheduled'],
+        paths: ['/tmp/torqvoice-backup-staging/oldorg'],
+      },
+      {
+        id: 'probe000',
+        shortId: 'probe000',
+        time: '2026-10-30T00:00:00+01:00',
+        hostname: 'torqvoice-probe-org1',
+        tags: ['torqvoice-probe'],
+        paths: ['/tmp/torqvoice-backup-probe-x'],
+      },
+      {
+        id: SNAPSHOT,
+        shortId: '28891c8f',
+        time: '2026-10-29T09:09:10.44+01:00',
+        hostname: 'torqvoice-org1',
+        tags: ['org:org1', 'manual'],
+        paths: ['/tmp/torqvoice-backup-staging/org1', '/srv/data/uploads/org1'],
+        summary: {
+          filesNew: 2,
+          filesChanged: 0,
+          dataAdded: 3851,
+          totalFilesProcessed: 2,
+          totalBytesProcessed: 4096,
+        },
+      },
+    ])
+
+    const list = await listSnapshots(CONN)
+
+    expect(list).toEqual([
+      {
+        id: SNAPSHOT,
+        shortId: '28891c8f',
+        time: '2026-10-29T09:09:10.44+01:00',
+        bytes: 4096,
+        files: true,
+        trigger: 'manual',
+        thisWorkshop: true,
+      },
+      // An earlier install's snapshot in the same repository restores too;
+      // the connection check's probe does not show.
+      {
+        id: OLDER,
+        shortId: '9d6cb16e',
+        time: '2026-10-28T02:00:00+01:00',
+        bytes: null,
+        files: false,
+        trigger: 'scheduled',
+        thisWorkshop: false,
+      },
+    ])
+    expect(vi.mocked(resticSnapshots).mock.calls[0][1]).toEqual({ tags: [] })
+  })
+})
+
+describe('queueRestore', () => {
+  it('makes a restore run that names the snapshot', async () => {
+    const { runId } = await queueRestore(CONN, SNAPSHOT)
+    expect(h.runs.get(runId)).toMatchObject({
+      organizationId: ORG,
+      connectionId: CONN,
+      trigger: 'restore',
+      status: 'queued',
+      snapshotId: SNAPSHOT,
+    })
+  })
+
+  it('refuses while a backup or restore is queued or running, and refuses a bad id', async () => {
+    addRun({ trigger: 'manual', status: 'running' })
+    await expect(queueRestore(CONN, SNAPSHOT)).rejects.toBeInstanceOf(BackupBusyError)
+    await expect(queueRestore(CONN, 'latest')).rejects.toThrow(/snapshot id/)
+  })
+})
+
+describe('runRestore', () => {
+  it('restores into a folder under the data root, imports from it, and removes it', async () => {
+    const runId = addRun()
+
+    const view = await runRestore(runId, { userId: 'user1' })
+
+    expect(view.status).toBe('done')
+    expect(view.snapshotId).toBe(SNAPSHOT)
+    expect(view.filesNew).toBe(3)
+    expect(view.bytesAdded).toBe(
+      Object.values(FULL_TREE).reduce((sum, body) => sum + body.length, 0)
+    )
+    expect(view.error).toBeNull()
+
+    // Where restic was pointed: a folder of this run's own under the data root.
+    expect(h.restoreTarget).toBe(restoreDirFor(ORG, runId))
+    expect(h.restoreTarget?.startsWith(path.join(dataDir, 'restore-tmp'))).toBe(true)
+    expect(vi.mocked(resticRestore).mock.calls[0][1]).toEqual({
+      snapshotId: SNAPSHOT,
+      target: h.restoreTarget,
+    })
+
+    // The data file and the uploads folder, found wherever the old server kept them.
+    const target = h.restoreTarget as string
+    expect(vi.mocked(restoreFromDisk).mock.calls[0][0]).toEqual({
+      organizationId: ORG,
+      userId: 'user1',
+    })
+    expect(vi.mocked(restoreFromDisk).mock.calls[0][1]).toEqual({
+      dataFile: path.join(target, 'tmp/torqvoice-backup-staging/org1/data.json'),
+      filesDir: path.join(target, 'srv/old-server/data/uploads/org1'),
+    })
+    expect(h.seenAtImport).toEqual({ dataFile: true, filesDir: true })
+
+    // Gone afterwards, and the lock is free again.
+    expect(existsSync(target)).toBe(false)
+    expect((globalThis as Row).__torqvoiceBackupLock).toBeNull()
+
+    // The audit row is written after the import, which replaced the old log.
+    expect(logAudit).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(logAudit).mock.calls[0][0]).toEqual({ userId: 'user1', organizationId: ORG })
+    expect(vi.mocked(logAudit).mock.calls[0][1]).toMatchObject({
+      action: 'integration.backup_restore',
+      entity: 'BackupRun',
+      entityId: runId,
+      details: { key: 'backup_restored', params: { name: 'Test storage', snapshot: '28891c8f' } },
+      metadata: { redactedSettings: ['ai.apiKey'] },
+    })
+    expect(h.log).toHaveBeenCalledWith('info', 'Backup restored', expect.any(Object))
+  })
+
+  it('restores a data-only snapshot with no uploads folder', async () => {
+    h.restoredTree = {
+      'tmp/torqvoice-backup-staging/org1/data.json': '{"version":2,"data":{}}',
+    }
+    const runId = addRun()
+
+    const view = await runRestore(runId, { userId: 'user1' })
+
+    expect(view.status).toBe('done')
+    expect(vi.mocked(restoreFromDisk).mock.calls[0][1].filesDir).toBeNull()
+  })
+
+  it('fails the run, keeps the message and removes the folder when the import throws', async () => {
+    h.importError = new Error('Could not restore customers: boom')
+    const runId = addRun()
+
+    const view = await runRestore(runId, { userId: 'user1' })
+
+    expect(view.status).toBe('failed')
+    expect(view.error).toBe('Could not restore customers: boom')
+    expect(existsSync(h.restoreTarget as string)).toBe(false)
+    expect((globalThis as Row).__torqvoiceBackupLock).toBeNull()
+    expect(logAudit).not.toHaveBeenCalled()
+  })
+
+  it('fails when the snapshot holds no data.json', async () => {
+    h.restoredTree = { 'srv/data/uploads/org1/logos/logo.png': 'png' }
+    const runId = addRun()
+
+    const view = await runRestore(runId, { userId: 'user1' })
+
+    expect(view.status).toBe('failed')
+    expect(view.error).toBe('The snapshot holds no data.json')
+    expect(restoreFromDisk).not.toHaveBeenCalled()
+    expect(existsSync(h.restoreTarget as string)).toBe(false)
+  })
+
+  it('says why when restic refuses', async () => {
+    const { ResticError } = await import('@/lib/backup/restic')
+    vi.mocked(resticRestore).mockRejectedValueOnce(
+      new ResticError({
+        message: 'Fatal: wrong password or no key found',
+        code: 12,
+        stderr: '',
+        command: 'restic restore',
+        reason: 'wrong_password',
+      })
+    )
+    const runId = addRun()
+
+    const view = await runRestore(runId, { userId: 'user1' })
+
+    expect(view.status).toBe('failed')
+    expect(view.error).toMatch(/different password/)
+    expect(restoreFromDisk).not.toHaveBeenCalled()
+  })
+
+  it('does not start while a backup holds the lock', async () => {
+    ;(globalThis as Row).__torqvoiceBackupLock = { runId: 'other', since: Date.now() }
+    const runId = addRun()
+
+    const view = await runRestore(runId, { userId: 'user1' })
+
+    expect(view.status).toBe('failed')
+    expect(view.error).toMatch(/backup is running/)
+    expect(resticRestore).not.toHaveBeenCalled()
+    // Somebody else's lock is left alone.
+    expect((globalThis as Row).__torqvoiceBackupLock).toEqual({
+      runId: 'other',
+      since: expect.any(Number),
+    })
+  })
+
+  it('refuses a run that is not a restore, and leaves a finished one alone', async () => {
+    const backup = addRun({ trigger: 'manual', snapshotId: null })
+    expect((await runRestore(backup, { userId: 'user1' })).status).toBe('failed')
+    const done = addRun({ status: 'done' })
+    expect((await runRestore(done, { userId: 'user1' })).status).toBe('done')
+    expect(resticRestore).not.toHaveBeenCalled()
+  })
+})
+
+describe('locateRestored', () => {
+  it('finds data.json and the uploads folder named after the workshop', async () => {
+    const dir = path.join(root, 'locate')
+    rmSync(dir, { recursive: true, force: true })
+    for (const [rel, body] of Object.entries(FULL_TREE)) {
+      mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true })
+      writeFileSync(path.join(dir, rel), body)
+    }
+    // Another workshop's folder on the same old server is not ours.
+    mkdirSync(path.join(dir, 'srv/old-server/data/uploads/org2/logos'), { recursive: true })
+
+    expect(await locateRestored(dir, ORG)).toEqual({
+      dataFile: path.join(dir, 'tmp/torqvoice-backup-staging/org1/data.json'),
+      filesDir: path.join(dir, 'srv/old-server/data/uploads/org1'),
+    })
+    // A snapshot an earlier install took has its uploads under the old id.
+    expect(await locateRestored(dir, 'org3')).toEqual({
+      dataFile: path.join(dir, 'tmp/torqvoice-backup-staging/org1/data.json'),
+      filesDir: path.join(dir, 'srv/old-server/data/uploads/org1'),
+    })
+    expect(
+      readFileSync(path.join(dir, 'tmp/torqvoice-backup-staging/org1/data.json'), 'utf8')
+    ).toBe('{"version":2,"data":{}}')
+  })
+
+  it('names the restore folder after the workshop and the run, under the data root', () => {
+    expect(restoreDirFor(ORG, 'run1')).toBe(path.join(dataDir, 'restore-tmp', 'org1-run1'))
+    expect(() => restoreDirFor('../x', 'run1')).toThrow()
+  })
+})

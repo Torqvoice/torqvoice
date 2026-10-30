@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Planification",
-        "manual": "Manuel"
+        "manual": "Manuel",
+        "restore": "Restauration"
       },
       "status": {
         "queued": "En file d'attente",
@@ -206,7 +207,35 @@
         "failed": "Échouée",
         "skipped": "Ignorée"
       },
-      "restoreHint": "Pour restaurer, ouvrez une sauvegarde avec restic et réimportez son data.json sous Paramètres, Données. La documentation détaille chaque étape."
+      "restoring": "Restauration en cours",
+      "restoringHint": "Une restauration est en cours : les données de l'atelier sont remplacées par la sauvegarde. Cette page se met à jour toute seule jusqu'à la fin. Ne travaillez pas dans l'atelier d'ici là.",
+      "restore": {
+        "title": "Restaurer",
+        "description": "Remettez l'atelier dans l'état où il était lors de l'une de ces sauvegardes. Tout ce qu'il contient aujourd'hui est remplacé.",
+        "show": "Afficher les sauvegardes",
+        "refresh": "Actualiser",
+        "loading": "Lecture des sauvegardes à la destination",
+        "loadFailed": "Impossible de lister les sauvegardes",
+        "empty": "Aucune sauvegarde à cette destination pour l'instant.",
+        "columns": {
+          "taken": "Effectuée",
+          "trigger": "Lancée par",
+          "files": "Photos et fichiers",
+          "size": "Taille"
+        },
+        "filesIncluded": "Inclus",
+        "filesNotIncluded": "Non inclus",
+        "earlierInstall": "Installation précédente",
+        "action": "Restaurer",
+        "dialogTitle": "Restaurer la sauvegarde du {time} ?",
+        "warning": "La restauration <bold>remplace tout ce que cet atelier contient aujourd'hui</bold> : clients, véhicules, ordres de réparation, factures, paramètres et, quand la sauvegarde les inclut, photos et fichiers. Tout ce qui a été ajouté depuis la sauvegarde est perdu. Cette action est irréversible.",
+        "secretsNote": "Les clés secrètes que la sauvegarde a laissées de côté conservent les valeurs que cette installation possède aujourd'hui. Les comptes utilisateurs et les mots de passe ne sont pas modifiés.",
+        "confirmPrompt": "Saisissez le nom de l'atelier, <bold>{name}</bold>, pour confirmer.",
+        "whileRunning": "La restauration s'exécute en arrière-plan et prend quelques minutes quand il y a beaucoup de photos. La page se met à jour toute seule jusqu'à la fin.",
+        "cancel": "Annuler",
+        "confirm": "Restaurer cette sauvegarde",
+        "started": "Restauration lancée"
+      }
     },
     "lockedBackups": "Des sauvegardes chiffrées et planifiées de votre atelier vers un stockage qui vous appartient.",
     "searchOrType": "Rechercher ou saisir un nom",
@@ -261,7 +290,9 @@
     "state": "Cette connexion a expiré ou appartient à une autre session. Recommencez.",
     "exchange": "Le fournisseur a refusé la connexion. Vérifiez les identifiants de l'application et réessayez.",
     "identify": "Connecté, mais le compte n'a pas pu être lu. Essayez de vous reconnecter.",
-    "backupRunning": "Une sauvegarde est déjà en cours."
+    "backupRunning": "Une sauvegarde est déjà en cours.",
+    "restoreOwnerOnly": "Sur Torqvoice Cloud, seul le propriétaire de l'atelier peut restaurer une sauvegarde.",
+    "restoreBusy": "Une sauvegarde ou une restauration est déjà en cours sur ce serveur. Réessayez quand elle sera terminée."
   },
   "meeting": {
     "join": "Rejoindre l'appel vidéo",

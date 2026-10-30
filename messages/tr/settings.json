@@ -1399,6 +1399,11 @@
     "importComplete": "İçe Aktarma Tamamlandı",
     "importCompleteMessage": "Tüm veriler yedek dosyasından geri yüklendi.",
     "importFailed": "İçe Aktarma Başarısız",
+    "restoreRefused": {
+      "busy": "Bu sunucuda zaten bir yedekleme veya geri yükleme çalışıyor. İşlem bitince yeniden deneyin.",
+      "ownerOnly": "Torqvoice Cloud'da bir yedeği yalnızca atölyenin sahibi geri yükleyebilir.",
+      "foreignIds": "Dosya başka bir atölyeye ait kayıtlara atıfta bulunuyor, bu yüzden hiçbir şey geri yüklenmedi."
+    },
     "importFromOther": "Diğer Hizmetlerden İçe Aktar",
     "importFromOtherDescription": "Verilerinizi başka bir platformdan taşıyın. Başlamak için bir hizmet seçin.",
     "lubelogTitle": "LubeLog'dan İçe Aktar",

@@ -3,7 +3,6 @@
 import { type ReactNode, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useNow, useTranslations } from 'next-intl'
-import { DocsLink } from '@/components/docs-link'
 import { DatabaseBackup, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
@@ -19,25 +18,13 @@ import {
 } from '@/components/ui/table'
 import { handleGated } from '@/components/upgrade-gate'
 import { runBackupNow } from '@/features/integrations/Actions/backupActions'
+import { BackupRestoreSection } from '@/features/integrations/Components/BackupRestoreSection'
+import { formatBytes } from '@/features/integrations/Lib/format-bytes'
 import type {
   BackupOverview,
   BackupRunStatus,
   BackupRunView,
 } from '@/features/integrations/Lib/backup-types'
-
-const UNITS = ['KB', 'MB', 'GB'] as const
-
-/** Bytes as B, KB, MB or GB with one decimal; GB is the largest unit. */
-export function formatBytes(bytes: number): string {
-  if (!Number.isFinite(bytes) || bytes < 1024) return `${Math.max(0, Math.round(bytes || 0))} B`
-  let value = bytes / 1024
-  let unit = 0
-  while (value >= 1024 && unit < UNITS.length - 1) {
-    value /= 1024
-    unit++
-  }
-  return `${value.toFixed(1)} ${UNITS[unit]}`
-}
 
 function statusClass(status: BackupRunStatus): string {
   if (status === 'failed') return 'border-destructive/30 text-destructive'
@@ -48,8 +35,9 @@ function statusClass(status: BackupRunStatus): string {
 
 /**
  * Backups for one destination: when the last good one ran, when the next is
- * due, what the repository holds, and the last ten runs. While a run is in
- * progress the page refreshes itself every ten seconds.
+ * due, what the repository holds, the last ten runs and, for owners and
+ * administrators, the backups that can be put back. While a backup or a
+ * restore is in progress the page refreshes itself every ten seconds.
  */
 export function BackupCard({
   connectorId,
@@ -124,7 +112,7 @@ export function BackupCard({
           ) : (
             <DatabaseBackup className="mr-1 h-3.5 w-3.5" />
           )}
-          {backup.running ? t('running') : t('runNow')}
+          {backup.restoring ? t('restoring') : backup.running ? t('running') : t('runNow')}
         </Button>
       }
       contentClassName="space-y-4"
@@ -161,7 +149,13 @@ export function BackupCard({
         </div>
       </div>
 
-      {backup.running && <p className="text-xs text-muted-foreground">{t('runningHint')}</p>}
+      {backup.restoring ? (
+        <p className="rounded-md bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+          {t('restoringHint')}
+        </p>
+      ) : (
+        backup.running && <p className="text-xs text-muted-foreground">{t('runningHint')}</p>
+      )}
 
       <div className="space-y-2">
         <p className="text-sm font-medium">{t('recentTitle')}</p>
@@ -225,13 +219,11 @@ export function BackupCard({
             </div>
           </>
         )}
-        {/* The way back sits with the backups, so nobody has to go looking
-            for it on the day it matters. */}
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-          <span>{t('restoreHint')}</span>
-          <DocsLink href={docs} variant="inline" />
-        </p>
       </div>
+
+      {backup.canRestore && (
+        <BackupRestoreSection connectorId={connectorId} busy={backup.running} docs={docs} />
+      )}
     </AppCard>
   )
 }

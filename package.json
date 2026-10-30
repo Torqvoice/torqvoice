@@ -15,6 +15,7 @@
     "prepare": "next-ws patch --yes && node scripts/patch-next-ws-first-upgrade.mjs",
     "test": "vitest run",
     "test:coverage": "vitest --coverage",
+    "test:db": "vitest run --config vitest.db.config.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "seed:demo": "npx tsx prisma/seed_dummy_data.ts"

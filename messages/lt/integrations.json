@@ -197,7 +197,8 @@
       },
       "trigger": {
         "scheduled": "Pagal grafiką",
-        "manual": "Rankiniu būdu"
+        "manual": "Rankiniu būdu",
+        "restore": "Atkūrimas"
       },
       "status": {
         "queued": "Eilėje",
@@ -206,7 +207,35 @@
         "failed": "Nepavyko",
         "skipped": "Praleista"
       },
-      "restoreHint": "Norėdami atkurti, atidarykite atsarginę kopiją su restic ir įkelkite jos data.json atgal skiltyje Nustatymai, Duomenys. Dokumentacijoje parodytas kiekvienas žingsnis."
+      "restoring": "Atkuriama",
+      "restoringHint": "Vykdomas atkūrimas: dirbtuvės duomenys keičiami atsarginės kopijos duomenimis. Šis puslapis atsinaujina pats, kol jis bus baigtas. Iki tol nieko nekeiskite dirbtuvėje.",
+      "restore": {
+        "title": "Atkūrimas",
+        "description": "Grąžinkite dirbtuvę į būseną, kokia ji buvo vienos iš šių atsarginių kopijų metu. Viskas, ką ji turi dabar, pakeičiama.",
+        "show": "Rodyti atsargines kopijas",
+        "refresh": "Atnaujinti",
+        "loading": "Skaitomos atsarginės kopijos paskirties vietoje",
+        "loadFailed": "Nepavyko gauti atsarginių kopijų sąrašo",
+        "empty": "Šioje paskirties vietoje dar nėra atsarginių kopijų.",
+        "columns": {
+          "taken": "Sukurta",
+          "trigger": "Kas pradėjo",
+          "files": "Nuotraukos ir failai",
+          "size": "Dydis"
+        },
+        "filesIncluded": "Įtraukta",
+        "filesNotIncluded": "Neįtraukta",
+        "earlierInstall": "Ankstesnis diegimas",
+        "action": "Atkurti",
+        "dialogTitle": "Atkurti atsarginę kopiją, sukurtą {time}?",
+        "warning": "Atkūrimas <bold>pakeičia viską, ką ši dirbtuvė turi dabar</bold>: klientus, transporto priemones, darbus, sąskaitas, nustatymus ir, jei atsarginėje kopijoje jų yra, nuotraukas bei failus. Viskas, kas pridėta po atsarginės kopijos sukūrimo, dings. Šio veiksmo atšaukti negalima.",
+        "secretsNote": "Slaptieji raktai, kurių atsarginė kopija neapėmė, išlaiko reikšmes, kurias šis diegimas turi dabar. Naudotojų paskyros ir slaptažodžiai nekeičiami.",
+        "confirmPrompt": "Norėdami patvirtinti, įveskite dirbtuvės pavadinimą <bold>{name}</bold>.",
+        "whileRunning": "Atkūrimas vykdomas fone ir, kai nuotraukų daug, užtrunka kelias minutes. Puslapis atsinaujina pats, kol jis bus baigtas.",
+        "cancel": "Atšaukti",
+        "confirm": "Atkurti šią atsarginę kopiją",
+        "started": "Atkūrimas pradėtas"
+      }
     },
     "lockedBackups": "Suplanuotos, šifruotos jūsų dirbtuvės atsarginės kopijos į jums priklausančią saugyklą.",
     "searchOrType": "Ieškoti arba įvesti pavadinimą",
@@ -261,7 +290,9 @@
     "state": "Šis prisijungimas baigė galioti arba priklauso kitai sesijai. Pradėkite iš naujo.",
     "exchange": "Tiekėjas atmetė prisijungimą. Patikrinkite programos prisijungimo duomenis ir bandykite dar kartą.",
     "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo.",
-    "backupRunning": "Atsarginė kopija jau kuriama."
+    "backupRunning": "Atsarginė kopija jau kuriama.",
+    "restoreOwnerOnly": "Torqvoice Cloud atsarginę kopiją atkurti gali tik dirbtuvės savininkas.",
+    "restoreBusy": "Šiame serveryje jau vykdomas atsarginės kopijos kūrimas arba atkūrimas. Bandykite dar kartą, kai jis bus baigtas."
   },
   "meeting": {
     "join": "Prisijungti prie vaizdo skambučio",

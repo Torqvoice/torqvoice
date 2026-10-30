@@ -25,10 +25,7 @@ import { describe, expect, it } from 'vitest'
 import { readPrismaSchema } from '@/__tests__/stubs/prisma-schema'
 
 const ROOT = process.cwd()
-const source = fs.readFileSync(
-  path.join(ROOT, 'src/app/api/protected/backup/import/route.ts'),
-  'utf-8'
-)
+const source = fs.readFileSync(path.join(ROOT, 'src/lib/backup/import.ts'), 'utf-8')
 const schema = readPrismaSchema(ROOT)
 
 /** The arguments of one call, split at top level so nested objects survive. */

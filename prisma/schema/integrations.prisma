@@ -167,13 +167,13 @@ model BackupRun {
   organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   connectionId   String
   connection     IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-  /// scheduled | manual
+  /// scheduled | manual | restore
   trigger        String
   /// queued | running | done | failed | skipped
   status         String                @default("queued")
   startedAt      DateTime?
   finishedAt     DateTime?
-  /// restic snapshot id, on a run that finished.
+  /// restic snapshot id: the one a backup made, or the one a restore put back.
   snapshotId     String?
   filesNew       Int?
   bytesAdded     BigInt?

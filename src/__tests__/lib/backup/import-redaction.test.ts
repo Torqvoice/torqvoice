@@ -22,6 +22,8 @@ vi.mock('@/lib/db', () => {
           {
             get: (_t, method: string) => async (args: any) => {
               state.calls.push({ model, method, args })
+              // The tenancy check asks for rows by id; this install has none of them.
+              if (method === 'findMany' && args?.where?.id?.in) return []
               if (method === 'findMany') return state.current[model] ?? []
               if (method === 'findFirst' || method === 'findUnique') return null
               return { count: 0 }
@@ -86,7 +88,9 @@ describe('restoring a backup without secret keys', () => {
     expect(order.indexOf('appSetting.findMany')).toBeLessThan(
       order.indexOf('appSetting.deleteMany')
     )
-    const lookup = state.calls.find((c) => c.model === 'appSetting' && c.method === 'findMany')
+    const lookup = state.calls.find(
+      (c) => c.model === 'appSetting' && c.method === 'findMany' && c.args?.where?.key
+    )
     expect(lookup?.args.where).toEqual({
       organizationId: 'org-1',
       key: { in: ['payment.stripe.secretKey', 'ai.apiKey'] },
