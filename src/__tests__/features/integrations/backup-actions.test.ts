@@ -10,9 +10,9 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock('@/lib/with-auth', () => ({
-  withAuth: async (fn: (ctx: { organizationId: string }) => Promise<unknown>) => {
+  withAuth: async (fn: (ctx: { organizationId: string; userId: string }) => Promise<unknown>) => {
     try {
-      return { success: true, data: await fn({ organizationId: 'org1' }) }
+      return { success: true, data: await fn({ organizationId: 'org1', userId: 'user1' }) }
     } catch (error) {
       return { success: false, error: (error as Error).message, name: (error as Error).name }
     }
@@ -74,12 +74,13 @@ vi.mock('@/lib/backup/engine', () => {
   return {
     BackupBusyError,
     queueBackupRun: vi.fn(async () => ({ runId: 'run1' })),
-    runBackup: vi.fn(() => new Promise(() => undefined)),
+    // A first backup can take an hour: the drain never settles here.
+    drainBackupQueue: vi.fn(() => new Promise(() => undefined)),
   }
 })
 
 import { listBackupDestinations, runBackupNow } from '@/features/integrations/Actions/backupActions'
-import { BackupBusyError, queueBackupRun, runBackup } from '@/lib/backup/engine'
+import { BackupBusyError, drainBackupQueue, queueBackupRun } from '@/lib/backup/engine'
 
 const S3 = { id: 's3', name: 'S3 storage', capabilities: ['backup.target'], plan: 'backups' }
 const LOCAL = {
@@ -156,12 +157,19 @@ describe('runBackupNow', () => {
     expect(await runBackupNow('s3')).toMatchObject({ success: true, data: { runId: 'run1' } })
   })
 
-  it('returns the run id without waiting for the run', async () => {
-    // runBackup never settles; the action must still return.
+  it('queues the run in the member\'s name and returns its id without waiting for it', async () => {
+    // The drain never settles; the action must still return.
     const result = await runBackupNow('s3')
     expect(result).toEqual({ success: true, data: { runId: 'run1' } })
-    expect(queueBackupRun).toHaveBeenCalledWith('conn-s3', 'manual')
-    expect(runBackup).toHaveBeenCalledWith('run1')
+    expect(queueBackupRun).toHaveBeenCalledWith(
+      { kind: 'destination', connectionId: 'conn-s3' },
+      'manual',
+      { requestedBy: 'user1' }
+    )
+    expect(drainBackupQueue).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(queueBackupRun).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(drainBackupQueue).mock.invocationCallOrder[0]
+    )
   })
 
   it('says a backup is already running when one is queued', async () => {
@@ -170,7 +178,7 @@ describe('runBackupNow', () => {
       success: false,
       error: 'A backup is already running.',
     })
-    expect(runBackup).not.toHaveBeenCalled()
+    expect(drainBackupQueue).not.toHaveBeenCalled()
   })
 })
 

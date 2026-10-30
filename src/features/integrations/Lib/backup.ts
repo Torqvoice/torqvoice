@@ -154,11 +154,14 @@ export function backupOffsetMinutes(organizationId: string): number {
 
 type RunRow = {
   id: string
+  kind?: string
   trigger: string
   status: string
   startedAt: Date | null
   finishedAt: Date | null
   snapshotId: string | null
+  safetySnapshotId?: string | null
+  reason?: string | null
   filesNew: number | null
   bytesAdded: bigint | null
   totalBytes: bigint | null
@@ -168,11 +171,14 @@ type RunRow = {
 export function runView(row: RunRow): BackupRunView {
   return {
     id: row.id,
+    kind: row.kind === 'platform' ? 'platform' : 'destination',
     trigger: row.trigger as BackupRunView['trigger'],
     status: row.status as BackupRunView['status'],
     startedAt: row.startedAt?.toISOString() ?? null,
     finishedAt: row.finishedAt?.toISOString() ?? null,
     snapshotId: row.snapshotId,
+    safetySnapshotId: row.safetySnapshotId ?? null,
+    reason: row.reason ?? null,
     filesNew: row.filesNew,
     bytesAdded: row.bytesAdded === null ? null : Number(row.bytesAdded),
     totalBytes: row.totalBytes === null ? null : Number(row.totalBytes),

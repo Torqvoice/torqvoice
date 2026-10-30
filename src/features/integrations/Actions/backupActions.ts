@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { BACKUP_CAPABILITY, BACKUP_STATE, nextScheduledRun } from '../Lib/backup'
 import { connectorAllowed } from '../Lib/plan'
 import { getManifest } from '@/integrations/registry'
-import { BackupBusyError, queueBackupRun, runBackup } from '@/lib/backup/engine'
+import { BackupBusyError, drainBackupQueue, queueBackupRun } from '@/lib/backup/engine'
 import { readBackupSettings } from '@/lib/backup/schedule'
 import { db } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
@@ -34,7 +34,7 @@ export interface BackupDestinationSummary {
  */
 export async function runBackupNow(connectorId: string) {
   return withAuth(
-    async ({ organizationId }): Promise<{ runId: string }> => {
+    async ({ organizationId, userId }): Promise<{ runId: string }> => {
       demoGuard()
       const manifest = getManifest(connectorId)
       if (!manifest?.capabilities.includes(BACKUP_CAPABILITY)) {
@@ -55,14 +55,19 @@ export async function runBackupNow(connectorId: string) {
       }
       let runId: string
       try {
-        runId = (await queueBackupRun(row.id, 'manual')).runId
+        runId = (
+          await queueBackupRun({ kind: 'destination', connectionId: row.id }, 'manual', {
+            requestedBy: userId,
+          })
+        ).runId
       } catch (err) {
         if (err instanceof BackupBusyError) throw new Error('A backup is already running.')
         throw err
       }
       // Not awaited: a first backup can take an hour. The row is what the
       // page watches; a failure is recorded on it and reported by the engine.
-      void runBackup(runId).catch((err) => console.error('[backup] manual run failed:', err))
+      // Behind another run it waits its turn in the queue.
+      void drainBackupQueue().catch((err) => console.error('[backup] manual run failed:', err))
       revalidatePath(`/settings/integrations/${connectorId}`)
       return { runId }
     },
@@ -116,6 +121,6 @@ export async function listBackupDestinations() {
       }
       return out
     },
-    { requiredPermissions: READ_PERMISSION }
+    { requiredPermissions: READ_PERMISSION, allowDuringRestore: true }
   )
 }

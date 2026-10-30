@@ -164,6 +164,7 @@
       "nothingDue": "Plakası olan tüm araçlar yakın zamanda kontrol edildi, şimdilik sorgulanacak bir şey yok."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
+    "platformHandlesBackups": "Torqvoice bu atölyeyi zaten her saat yedekliyor ve geri yükleme noktalarını 30 gün saklıyor. Torqvoice olmadan da okunabilen, size ait bir kopya da istiyorsanız bir bucket bağlayın.",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
     "advanced": "Gelişmiş",
     "generate": "Oluştur",
@@ -209,6 +210,7 @@
       },
       "restoring": "Geri yükleniyor",
       "restoringHint": "Bir geri yükleme çalışıyor: atölyenin verileri yedektekilerle değiştiriliyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir. O zamana kadar atölyede çalışmayın.",
+      "explore": "İncele",
       "restore": {
         "showAll": "Tüm yedekleri göster",
         "refresh": "Yenile",
@@ -878,6 +880,14 @@
     "overdueSince": "{time} tarihinden bu yana {name} için hiçbir yedekleme tamamlanmadı.",
     "overdueNever": "{name} için henüz hiçbir yedekleme tamamlanmadı.",
     "overdueSubject": "{name} için yedekleme gecikti",
-    "openToSee": "Neyin ters gittiğini görmek için Ayarlar, Entegrasyonlar, {name} bölümünü açın."
+    "openToSee": "Neyin ters gittiğini görmek için Ayarlar, Entegrasyonlar, {name} bölümünü açın.",
+    "platformName": "Torqvoice yedekleri",
+    "restoredTitle": "Atölye geri yüklendi",
+    "restoredSubject": "Atölyeniz bir yedekten geri yüklendi",
+    "restoredIntro": "{name}: atölye {time} tarihinde {snapshot} geri yükleme noktasına döndürüldü. O noktadan sonra girilen her şey artık atölyede yok.",
+    "restoredByMember": "Bu geri yüklemeyi atölyenizin bir üyesi istedi.",
+    "restoredBySupport": "Bunu Torqvoice destek ekibi sizin isteğiniz üzerine yaptı. Belirtilen neden: {reason}",
+    "noReason": "belirtilmedi",
+    "restoredUndo": "Önce atölyenin geri yüklemeden hemen önceki hâlinin bir güvenlik kopyası alındı ve 90 gün saklanıyor. Ona geri dönmek için destek ekibiyle iletişime geçin."
   }
 }

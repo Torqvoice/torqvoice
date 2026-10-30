@@ -535,8 +535,19 @@ export const TENANCY_SCHEMA: SchemaGraph = {
       },
       connectionId: {
         target: 'IntegrationConnection',
-        required: true,
+        required: false,
         relation: 'connection',
+      },
+    },
+    ownerPaths: [],
+  },
+  PlatformBackup: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
       },
     },
     ownerPaths: [],

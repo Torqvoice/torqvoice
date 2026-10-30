@@ -49,6 +49,8 @@ import { signOut } from '@/lib/auth-client'
 import { resetAnalytics } from '@/lib/analytics'
 import type { ReauthRequirement } from '@/lib/reauth'
 import type { BackupDestinationSummary } from '@/features/integrations/Actions/backupActions'
+import { PlatformBackupsCard } from '@/features/integrations/Components/PlatformBackupsCard'
+import type { PlatformBackupOverview } from '@/features/integrations/Lib/backup-types'
 import { ReauthField } from './reauth-field'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -133,6 +135,7 @@ export function DataSettings({
   hasSampleData = false,
   reauth = 'password',
   backupDestinations = [],
+  platformBackup = null,
 }: {
   contentCounts: ContentCounts
   lastBackupAt?: string | null
@@ -143,6 +146,8 @@ export function DataSettings({
   reauth?: ReauthRequirement
   /** Backup destinations connected under Integrations, with their last and next runs. */
   backupDestinations?: BackupDestinationSummary[]
+  /** Backups by Torqvoice; null on a server without them, where the card is not shown. */
+  platformBackup?: PlatformBackupOverview | null
 }) {
   const t = useTranslations('settings')
   const format = useFormatter()
@@ -583,7 +588,15 @@ export function DataSettings({
 
         <ImportHistoryCard refreshKey={importRuns} />
 
-        <ScheduledBackupsCard destinations={backupDestinations} now={now} />
+        {platformBackup && (
+          <PlatformBackupsCard overview={platformBackup} reauth={reauth} now={now} />
+        )}
+
+        <ScheduledBackupsCard
+          destinations={backupDestinations}
+          now={now}
+          extraCopy={platformBackup?.active === true}
+        />
 
         {/* Export */}
         <AppCard
@@ -1288,9 +1301,12 @@ function ImportSourceRow({
 function ScheduledBackupsCard({
   destinations,
   now,
+  extraCopy = false,
 }: {
   destinations: BackupDestinationSummary[]
   now: Date
+  /** Torqvoice backs the workshop up already, so this is the copy the workshop owns. */
+  extraCopy?: boolean
 }) {
   const t = useTranslations('settings.data.scheduledBackups')
   const format = useFormatter()
@@ -1298,7 +1314,7 @@ function ScheduledBackupsCard({
     <AppCard
       icon={DatabaseBackup}
       title={t('title')}
-      description={t('description')}
+      description={extraCopy ? t('extraCopy') : t('description')}
       contentClassName={destinations.length > 0 ? 'p-0' : undefined}
     >
       {destinations.length === 0 ? (

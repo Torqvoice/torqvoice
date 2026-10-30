@@ -1,6 +1,7 @@
 'use client'
 
 import { type ReactNode, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useNow, useTranslations } from 'next-intl'
 import { DatabaseBackup, History, Loader2, RefreshCw } from 'lucide-react'
@@ -180,15 +181,25 @@ export function BackupCard({
   const mayRestore = backup.canRestore && !backup.running
   const restoreButton = (row: BackupRow) =>
     row.restore && (
-      <Button
-        variant="outline"
-        size="sm"
-        className="text-destructive hover:text-destructive"
-        onClick={() => setTarget(row.restore)}
-        disabled={!mayRestore}
-      >
-        {t('restore.action')}
-      </Button>
+      <div className="flex gap-2 md:justify-end">
+        {/* Open to look inside; the page refuses anyone but an admin. */}
+        <Button variant="outline" size="sm" asChild>
+          <Link
+            href={`/settings/data/restore-points/${row.restore.snapshotId}?source=${encodeURIComponent(connectorId)}`}
+          >
+            {t('explore')}
+          </Link>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-destructive hover:text-destructive"
+          onClick={() => setTarget(row.restore)}
+          disabled={!mayRestore}
+        >
+          {t('restore.action')}
+        </Button>
+      </div>
     )
 
   return (

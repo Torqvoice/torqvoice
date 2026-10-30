@@ -164,6 +164,7 @@
       "nothingDue": "Tous les véhicules qui ont une plaque ont été vérifiés récemment, il n'y a encore rien à rechercher."
     },
     "supersedes": "Connecter {next} déconnecte {current}. Un seul peut être actif à la fois : {current} cesse d'être utilisé dès que {next} est en service.",
+    "platformHandlesBackups": "Torqvoice sauvegarde déjà cet atelier toutes les heures et conserve des points de restauration pendant 30 jours. Connectez un bucket si vous voulez aussi une copie qui vous appartient, lisible sans Torqvoice.",
     "batchRetried": "{count, plural, =0 {Rien à réessayer} one {# tâche remise en file} other {# tâches remises en file}}",
     "advanced": "Avancé",
     "generate": "Générer",
@@ -209,6 +210,7 @@
       },
       "restoring": "Restauration en cours",
       "restoringHint": "Une restauration est en cours : les données de l'atelier sont remplacées par la sauvegarde. Cette page se met à jour toute seule jusqu'à la fin. Ne travaillez pas dans l'atelier d'ici là.",
+      "explore": "Explorer",
       "restore": {
         "showAll": "Afficher toutes les sauvegardes",
         "refresh": "Actualiser",
@@ -878,6 +880,14 @@
     "overdueSince": "Aucune sauvegarde vers {name} n'a abouti depuis {time}.",
     "overdueNever": "Aucune sauvegarde vers {name} n'a encore abouti.",
     "overdueSubject": "La sauvegarde vers {name} est en retard",
-    "openToSee": "Ouvrez Paramètres, Intégrations, {name} pour voir ce qui n'a pas fonctionné."
+    "openToSee": "Ouvrez Paramètres, Intégrations, {name} pour voir ce qui n'a pas fonctionné.",
+    "platformName": "Sauvegardes par Torqvoice",
+    "restoredTitle": "Atelier restauré",
+    "restoredSubject": "Votre atelier a été restauré à partir d'une sauvegarde",
+    "restoredIntro": "{name} : l'atelier a été ramené au point de restauration {snapshot} le {time}. Tout ce qui a été saisi après ce point ne figure plus dans l'atelier.",
+    "restoredByMember": "Un membre de votre atelier a demandé cette restauration.",
+    "restoredBySupport": "L'assistance Torqvoice l'a fait à votre demande. Motif indiqué : {reason}",
+    "noReason": "aucun",
+    "restoredUndo": "Une copie de sécurité de l'atelier tel qu'il était juste avant la restauration a d'abord été réalisée et est conservée pendant 90 jours. Contactez l'assistance pour y revenir."
   }
 }

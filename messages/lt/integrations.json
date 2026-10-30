@@ -164,6 +164,7 @@
       "nothingDue": "Visos transporto priemonės su numeriu neseniai patikrintos, todėl kol kas nėra ką tikrinti."
     },
     "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
+    "platformHandlesBackups": "Torqvoice jau kas valandą kuria šios dirbtuvės atsargines kopijas ir 30 dienų saugo atkūrimo taškus. Prijunkite talpyklą, jei taip pat norite jums priklausančios kopijos, kurią galima perskaityti be Torqvoice.",
     "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}",
     "advanced": "Išplėstiniai",
     "generate": "Generuoti",
@@ -209,6 +210,7 @@
       },
       "restoring": "Atkuriama",
       "restoringHint": "Vykdomas atkūrimas: dirbtuvės duomenys keičiami atsarginės kopijos duomenimis. Šis puslapis atsinaujina pats, kol jis bus baigtas. Iki tol nieko nekeiskite dirbtuvėje.",
+      "explore": "Peržiūrėti",
       "restore": {
         "showAll": "Rodyti visas atsargines kopijas",
         "refresh": "Atnaujinti",
@@ -878,6 +880,14 @@
     "overdueSince": "Nuo {time} nebaigta nė viena atsarginė kopija į {name}.",
     "overdueNever": "Dar nebaigta nė viena atsarginė kopija į {name}.",
     "overdueSubject": "Atsarginė kopija į {name} vėluoja",
-    "openToSee": "Atidarykite Nustatymai, Integracijos, {name}, kad pamatytumėte, kas nepavyko."
+    "openToSee": "Atidarykite Nustatymai, Integracijos, {name}, kad pamatytumėte, kas nepavyko.",
+    "platformName": "Torqvoice atsarginės kopijos",
+    "restoredTitle": "Dirbtuvė atkurta",
+    "restoredSubject": "Jūsų dirbtuvė atkurta iš atsarginės kopijos",
+    "restoredIntro": "{name}: {time} dirbtuvė grąžinta į atkūrimo tašką {snapshot}. Viso, kas įvesta po šio taško, dirbtuvėje nebėra.",
+    "restoredByMember": "Šio atkūrimo paprašė jūsų dirbtuvės narys.",
+    "restoredBySupport": "Torqvoice pagalbos komanda tai atliko jūsų prašymu. Nurodyta priežastis: {reason}",
+    "noReason": "nenurodyta",
+    "restoredUndo": "Prieš atkuriant buvo sukurta dirbtuvės apsauginė kopija, kokia ji buvo prieš pat atkūrimą; ji saugoma 90 dienų. Norėdami prie jos grįžti, susisiekite su pagalbos komanda."
   }
 }

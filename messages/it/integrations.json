@@ -164,6 +164,7 @@
       "nothingDue": "Tutti i veicoli con targa sono stati controllati di recente, quindi non c'è ancora niente da cercare."
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
+    "platformHandlesBackups": "Torqvoice esegue già un backup di questa officina ogni ora e conserva i punti di ripristino per 30 giorni. Collega un bucket se vuoi anche una copia tua, leggibile senza Torqvoice.",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
     "advanced": "Avanzate",
     "generate": "Genera",
@@ -209,6 +210,7 @@
       },
       "restoring": "Ripristino in corso",
       "restoringHint": "È in corso un ripristino: i dati dell'officina vengono sostituiti con il backup. Questa pagina si aggiorna da sola finché non è terminato. Fino ad allora non lavorare nell'officina.",
+      "explore": "Esplora",
       "restore": {
         "showAll": "Mostra tutti i backup",
         "refresh": "Aggiorna",
@@ -878,6 +880,14 @@
     "overdueSince": "Nessun backup su {name} è stato completato dal {time}.",
     "overdueNever": "Nessun backup su {name} è stato ancora completato.",
     "overdueSubject": "Il backup su {name} è in ritardo",
-    "openToSee": "Apri Impostazioni, Integrazioni, {name} per vedere cosa è andato storto."
+    "openToSee": "Apri Impostazioni, Integrazioni, {name} per vedere cosa è andato storto.",
+    "platformName": "Backup di Torqvoice",
+    "restoredTitle": "Officina ripristinata",
+    "restoredSubject": "La tua officina è stata ripristinata da un backup",
+    "restoredIntro": "{name}: l'officina è stata riportata al punto di ripristino {snapshot} il {time}. Tutto ciò che è stato inserito dopo quel punto non è più presente nell'officina.",
+    "restoredByMember": "Un membro della tua officina ha richiesto questo ripristino.",
+    "restoredBySupport": "L'assistenza Torqvoice lo ha fatto su tua richiesta. Motivo indicato: {reason}",
+    "noReason": "nessuno",
+    "restoredUndo": "Prima è stata creata una copia di sicurezza dell'officina com'era subito prima del ripristino, che viene conservata per 90 giorni. Contatta l'assistenza per tornarci."
   }
 }

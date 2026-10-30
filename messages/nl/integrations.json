@@ -164,6 +164,7 @@
       "nothingDue": "Alle voertuigen met een kenteken zijn onlangs gecontroleerd, er valt nog niets op te zoeken."
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
+    "platformHandlesBackups": "Torqvoice maakt al elk uur een back-up van deze werkplaats en bewaart herstelpunten 30 dagen. Koppel een bucket als u ook een kopie wilt die van u is en zonder Torqvoice te lezen is.",
     "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
     "advanced": "Geavanceerd",
     "generate": "Genereren",
@@ -209,6 +210,7 @@
       },
       "restoring": "Terugzetten bezig",
       "restoringHint": "Er wordt een back-up teruggezet: de gegevens van de werkplaats worden vervangen door de back-up. Deze pagina werkt zichzelf bij tot het klaar is. Werk tot die tijd niet in de werkplaats.",
+      "explore": "Bekijken",
       "restore": {
         "showAll": "Alle back-ups tonen",
         "refresh": "Vernieuwen",
@@ -878,6 +880,14 @@
     "overdueSince": "Sinds {time} is er geen back-up naar {name} voltooid.",
     "overdueNever": "Er is nog geen back-up naar {name} voltooid.",
     "overdueSubject": "Back-up naar {name} is te laat",
-    "openToSee": "Open Instellingen, Integraties, {name} om te zien wat er misging."
+    "openToSee": "Open Instellingen, Integraties, {name} om te zien wat er misging.",
+    "platformName": "Back-ups door Torqvoice",
+    "restoredTitle": "Werkplaats teruggezet",
+    "restoredSubject": "Uw werkplaats is teruggezet vanuit een back-up",
+    "restoredIntro": "{name}: de werkplaats is op {time} teruggezet naar herstelpunt {snapshot}. Alles wat na dat punt is ingevoerd, staat niet meer in de werkplaats.",
+    "restoredByMember": "Een lid van uw werkplaats heeft om dit terugzetten gevraagd.",
+    "restoredBySupport": "Torqvoice-support heeft dit op uw verzoek gedaan. Opgegeven reden: {reason}",
+    "noReason": "geen opgegeven",
+    "restoredUndo": "Eerst is een veiligheidskopie gemaakt van de werkplaats zoals die vlak voor het terugzetten was; die wordt 90 dagen bewaard. Neem contact op met support om ernaar terug te gaan."
   }
 }

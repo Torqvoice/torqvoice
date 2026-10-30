@@ -164,6 +164,7 @@
       "nothingDue": "Wszystkie pojazdy z tablicą zostały niedawno sprawdzone, więc na razie nie ma czego sprawdzać."
     },
     "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
+    "platformHandlesBackups": "Torqvoice już co godzinę tworzy kopię zapasową tego warsztatu i przechowuje punkty przywracania przez 30 dni. Połącz bucket, jeśli chcesz mieć także własną kopię, którą można odczytać bez Torqvoice.",
     "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}",
     "advanced": "Zaawansowane",
     "generate": "Wygeneruj",
@@ -209,6 +210,7 @@
       },
       "restoring": "Przywracanie",
       "restoringHint": "Trwa przywracanie: dane warsztatu są zastępowane kopią zapasową. Ta strona odświeża się sama, dopóki się nie zakończy. Do tego czasu nie pracuj w warsztacie.",
+      "explore": "Przeglądaj",
       "restore": {
         "showAll": "Pokaż wszystkie kopie zapasowe",
         "refresh": "Odśwież",
@@ -878,6 +880,14 @@
     "overdueSince": "Od {time} nie ukończono żadnej kopii zapasowej do {name}.",
     "overdueNever": "Nie ukończono jeszcze żadnej kopii zapasowej do {name}.",
     "overdueSubject": "Kopia zapasowa do {name} jest zaległa",
-    "openToSee": "Otwórz Ustawienia, Integracje, {name}, aby zobaczyć, co poszło nie tak."
+    "openToSee": "Otwórz Ustawienia, Integracje, {name}, aby zobaczyć, co poszło nie tak.",
+    "platformName": "Kopie zapasowe Torqvoice",
+    "restoredTitle": "Warsztat przywrócony",
+    "restoredSubject": "Twój warsztat został przywrócony z kopii zapasowej",
+    "restoredIntro": "{name}: warsztat został przywrócony do punktu przywracania {snapshot} ({time}). Wszystkiego, co wprowadzono po tym punkcie, nie ma już w warsztacie.",
+    "restoredByMember": "O to przywrócenie poprosił członek Twojego warsztatu.",
+    "restoredBySupport": "Zespół pomocy Torqvoice zrobił to na Twoją prośbę. Podany powód: {reason}",
+    "noReason": "nie podano",
+    "restoredUndo": "Najpierw utworzono kopię bezpieczeństwa warsztatu w stanie sprzed przywrócenia, która jest przechowywana przez 90 dni. Skontaktuj się z zespołem pomocy, aby do niej wrócić."
   }
 }

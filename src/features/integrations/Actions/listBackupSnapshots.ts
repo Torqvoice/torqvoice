@@ -44,6 +44,7 @@ export async function listBackupSnapshots(connectorId: string) {
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+      allowDuringRestore: true,
     }
   )
 }

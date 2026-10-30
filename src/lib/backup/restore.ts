@@ -2,26 +2,46 @@ import { mkdir, readdir, rm, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { backupHost, backupTag, runView } from '@/features/integrations/Lib/backup'
 import type { BackupRunView, BackupSnapshotView } from '@/features/integrations/Lib/backup-types'
-import { loadConnection } from '@/features/integrations/Lib/connections'
+import { organizationTranslator } from '@/i18n/organization-translator'
 import { getManifest } from '@/integrations/registry'
 import { logAudit } from '@/lib/audit'
 import { db } from '@/lib/db'
+import { notify } from '@/lib/notify'
 import { dataRoot } from '@/lib/upload-root'
-import { acquireBackupLock, finishRun, queueBackupRun, releaseBackupLock } from './engine'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import {
+  acquireBackupLock,
+  drainBackupQueue,
+  escapeHtml,
+  finishRun,
+  mailAdmins,
+  type OpenedTarget,
+  openTarget,
+  queueBackupRun,
+  releaseBackupLock,
+  type RunTarget,
+  takeSafetySnapshot,
+} from './engine'
+import { closeRestorePoints } from './explore'
+import { freezeOrganization, unfreezeOrganization } from './freeze'
 import { restoreFromDisk } from './import'
 import { ResticError, resticRestore, resticSnapshots } from './restic'
-import { connectMessage, ensureCacheDir, repositoryPassword, sanitizeRepository } from './target'
+import { connectMessage } from './target'
 
 /**
- * Putting a snapshot from a backup destination back into the workshop.
+ * Putting a snapshot back into the workshop, from a destination it connected
+ * or from the platform repository Torqvoice keeps for it.
  *
- * `listSnapshots` is what the Restore section shows. `queueRestore` makes
- * the run row, with the same refusals as a backup, and `runRestore` does the
- * work: restic writes the snapshot to a temporary folder under the data
- * root, the restored `data.json` and uploads folder go through the same
- * import the uploaded zip uses, and the folder is removed whichever way it
- * ends. The server-wide lock is the backup's, so a backup never reads rows
- * a restore is replacing.
+ * `listSnapshots` is what the Restore section of a destination shows (the
+ * platform repository's restore points are stored after each run instead).
+ * `queueRestore` makes the run row, with the same refusals as a backup, and
+ * `runRestore` does the work, in this order: the workshop is put in its
+ * read-only state, a safety copy of it as it is now is taken, restic writes
+ * the snapshot to a temporary folder under the data root, the restored
+ * `data.json` and uploads folder go through the same import the uploaded zip
+ * uses, and the folder is removed whichever way it ends. Should the safety
+ * copy fail, nothing is replaced. The server-wide lock is the backup's, so a
+ * backup never reads rows a restore is replacing.
  */
 
 /** How deep under the restore folder the backup's paths are looked for. */
@@ -35,16 +55,6 @@ export function restoreDirFor(organizationId: string, runId: string): string {
   return path.join(dataRoot(), 'restore-tmp', `${organizationId}-${runId}`)
 }
 
-async function openTarget(connectionId: string) {
-  const { ctx, server } = await loadConnection(connectionId)
-  if (!server.backupTarget) throw new Error('This integration is not a backup destination')
-  const organizationId = ctx.connection.organizationId
-  const repo = sanitizeRepository(await server.backupTarget.repository(ctx))
-  const password = repositoryPassword(ctx)
-  const cacheDir = await ensureCacheDir(organizationId)
-  return { ctx, organizationId, base: { repository: repo, password, cacheDir } }
-}
-
 function snapshotTrigger(tags: string[]): BackupSnapshotView['trigger'] {
   if (tags.includes('scheduled')) return 'scheduled'
   if (tags.includes('manual')) return 'manual'
@@ -55,7 +65,7 @@ function snapshotTrigger(tags: string[]): BackupSnapshotView['trigger'] {
 const PROBE_TAG = 'torqvoice-probe'
 
 /**
- * The snapshots at this destination, newest first. A repository holds one
+ * The snapshots at a destination, newest first. A repository holds one
  * workshop's backups, but not always under this workshop's id: a workshop
  * set up again on a new server connects the same storage with the same
  * password, and what the old install wrote is what it wants back. So every
@@ -64,7 +74,7 @@ const PROBE_TAG = 'torqvoice-probe'
  * folder, so a snapshot with two paths is one that carries photos and files.
  */
 export async function listSnapshots(connectionId: string): Promise<BackupSnapshotView[]> {
-  const { organizationId, base } = await openTarget(connectionId)
+  const { organizationId, base } = await openTarget({ kind: 'destination', connectionId })
   const host = backupHost(organizationId)
   const snapshots = await resticSnapshots(base, { tags: [] })
   return snapshots
@@ -85,14 +95,16 @@ export async function listSnapshots(connectionId: string): Promise<BackupSnapsho
 
 /**
  * Queue a restore of one snapshot. Throws BackupBusyError while a backup or
- * restore is queued or running for the connection.
+ * restore is queued or running for the target. `requestedBy` is the member
+ * who asked; null for support acting from torqvoice.com, with its reason.
  */
 export async function queueRestore(
-  connectionId: string,
-  snapshotId: string
+  target: RunTarget | string,
+  snapshotId: string,
+  extra: { requestedBy?: string | null; reason?: string | null } = {}
 ): Promise<{ runId: string }> {
   if (!/^[0-9a-f]{8,64}$/.test(snapshotId)) throw new Error('Invalid snapshot id')
-  return queueBackupRun(connectionId, 'restore', { snapshotId })
+  return queueBackupRun(target, 'restore', { snapshotId, ...extra })
 }
 
 /**
@@ -131,44 +143,75 @@ export async function locateRestored(
 }
 
 /**
- * Run a queued restore. Returns the finished row; never throws for a
- * failed restore. `actor` is the person who asked, for the audit row the
- * restore writes once the workshop's rows (its old audit log among them)
- * have been replaced.
+ * Whose name the restore is written in: the member who asked, or, for a
+ * restore support started, the workshop's owner, whose workshop it is.
  */
-export async function runRestore(runId: string, actor: { userId: string }): Promise<BackupRunView> {
+async function restoreActor(organizationId: string, requestedBy: string | null): Promise<string> {
+  if (requestedBy) return requestedBy
+  const owner = await db.organizationMember.findFirst({
+    where: { organizationId, role: 'owner' },
+    select: { userId: true },
+    orderBy: { id: 'asc' },
+  })
+  if (!owner) throw new Error('The workshop has no owner to restore on behalf of')
+  return owner.userId
+}
+
+/**
+ * Run a queued restore. Returns the row; never throws for a failed restore.
+ * While another run holds the lock the row stays queued and comes back as
+ * it is, for the queue to start later. The audit row is written once the
+ * workshop's rows (its old audit log among them) have been replaced.
+ */
+export async function runRestore(runId: string): Promise<BackupRunView> {
   const run = await db.backupRun.findUnique({ where: { id: runId } })
   if (!run) throw new Error('Backup run not found')
   if (run.status !== 'queued') return runView(run)
   if (run.trigger !== 'restore' || !run.snapshotId) {
     return finishRun(runId, { status: 'failed', error: 'This run is not a restore' })
   }
-
-  if (!acquireBackupLock(runId)) {
-    return finishRun(runId, {
-      status: 'failed',
-      error: 'A backup is running on this server; try again when it is done',
-    })
-  }
+  if (!acquireBackupLock(runId)) return runView(run)
 
   const organizationId = run.organizationId
-  let target: string | null = null
+  const snapshotId = run.snapshotId
+  let folder: string | null = null
+  let safetySnapshotId: string | null = null
+  let frozen = false
+  // Where the run got to, so a failure says what it means for the workshop.
+  let phase: 'preparing' | 'safety' | 'restoring' = 'preparing'
   try {
     await db.backupRun.update({
       where: { id: runId },
       data: { status: 'running', startedAt: new Date() },
     })
-    const { ctx, base } = await openTarget(run.connectionId)
-    if (ctx.connection.organizationId !== organizationId) {
-      throw new Error('The destination belongs to another workshop')
+    const userId = await restoreActor(organizationId, run.requestedBy)
+    const target: OpenedTarget = await openTarget(
+      run.kind === 'platform'
+        ? { kind: 'platform', organizationId }
+        : { kind: 'destination', connectionId: run.connectionId ?? '' }
+    )
+    if (target.organizationId !== organizationId) {
+      throw new Error('The repository belongs to another workshop')
     }
 
-    target = restoreDirFor(organizationId, runId)
-    await rm(target, { recursive: true, force: true })
-    await mkdir(target, { recursive: true, mode: 0o700 })
-    const written = await resticRestore(base, { snapshotId: run.snapshotId, target })
+    // From here on nothing in the workshop changes but through this restore.
+    freezeOrganization(organizationId)
+    frozen = true
+    await closeRestorePoints(organizationId)
 
-    const found = await locateRestored(target, organizationId)
+    // The way back: the workshop as it is right now, kept ninety days.
+    phase = 'safety'
+    const safety = await takeSafetySnapshot(organizationId, target)
+    safetySnapshotId = safety.snapshotId
+    await db.backupRun.update({ where: { id: runId }, data: { safetySnapshotId } })
+    phase = 'restoring'
+
+    folder = restoreDirFor(organizationId, runId)
+    await rm(folder, { recursive: true, force: true })
+    await mkdir(folder, { recursive: true, mode: 0o700 })
+    const written = await resticRestore(target.base, { snapshotId, target: folder })
+
+    const found = await locateRestored(folder, organizationId)
     if (!found.dataFile) throw new Error('The snapshot holds no data.json')
     const filesDir =
       found.filesDir &&
@@ -179,54 +222,123 @@ export async function runRestore(runId: string, actor: { userId: string }): Prom
         : null
 
     const result = await restoreFromDisk(
-      { organizationId, userId: actor.userId },
-      {
-        dataFile: found.dataFile,
-        filesDir,
-      }
+      { organizationId, userId },
+      { dataFile: found.dataFile, filesDir }
     )
 
-    await ctx.log('info', 'Backup restored', {
-      snapshot: run.snapshotId,
+    await target.log('info', 'Backup restored', {
+      snapshot: snapshotId,
+      safetySnapshot: safetySnapshotId,
       filesRestored: written.filesRestored,
       redactedSettings: result.redactedSettings,
     })
-    const manifest = getManifest(ctx.connection.connectorId)
+    const name = await repositoryName(target)
     await logAudit(
-      { userId: actor.userId, organizationId },
+      { userId, organizationId },
       {
         action: 'integration.backup_restore',
         entity: 'BackupRun',
         entityId: runId,
         details: {
           key: 'backup_restored',
-          params: {
-            name: manifest?.name ?? ctx.connection.connectorId,
-            snapshot: run.snapshotId.slice(0, 8),
-          },
+          params: { name, snapshot: snapshotId.slice(0, 8) },
         },
-        metadata: { redactedSettings: result.redactedSettings },
+        metadata: {
+          redactedSettings: result.redactedSettings,
+          safetySnapshotId,
+          bySupport: run.requestedBy === null,
+          reason: run.reason,
+        },
       }
     ).catch((err) => console.error('[restore] could not write the audit row:', err))
+    await tellWorkshop(organizationId, {
+      name,
+      snapshotId,
+      bySupport: run.requestedBy === null,
+      reason: run.reason,
+    }).catch((err) => console.error('[restore] could not tell the workshop:', err))
 
     return await finishRun(runId, {
       status: 'done',
-      snapshotId: run.snapshotId,
+      snapshotId,
+      safetySnapshotId,
       filesNew: written.filesRestored,
       bytesAdded: BigInt(Math.round(written.bytesRestored)),
     })
   } catch (err) {
     const message = err instanceof ResticError ? connectMessage(err) : describe(err)
-    console.error(`[restore] run ${runId} failed:`, message)
-    return await finishRun(runId, { status: 'failed', error: message })
+    console.error(`[restore] run ${runId} failed (${phase}):`, message)
+    const error =
+      phase === 'safety'
+        ? `Could not take a safety copy of the workshop first; nothing was changed. ${message}`
+        : phase === 'preparing'
+          ? `${message} Nothing in the workshop was changed.`
+          : message
+    return await finishRun(runId, { status: 'failed', error, safetySnapshotId })
   } finally {
-    if (target) {
-      await rm(target, { recursive: true, force: true }).catch((err) =>
+    if (frozen) unfreezeOrganization(organizationId)
+    if (folder) {
+      await rm(folder, { recursive: true, force: true }).catch((err) =>
         console.warn('[restore] could not remove the restore folder:', err)
       )
     }
     releaseBackupLock(runId)
+    void drainBackupQueue().catch((err) => console.error('[restore] drain failed:', err))
   }
+}
+
+async function repositoryName(target: OpenedTarget): Promise<string> {
+  if (target.kind === 'platform') {
+    const t = await organizationTranslator(target.organizationId, 'integrations')
+    return t('backupAlerts.platformName')
+  }
+  const connection = target.connectionId
+    ? await db.integrationConnection.findUnique({
+        where: { id: target.connectionId },
+        select: { connectorId: true },
+      })
+    : null
+  return (connection && getManifest(connection.connectorId)?.name) ?? 'backup destination'
+}
+
+/**
+ * Every owner and administrator hears that the workshop was put back to a
+ * point in time, who asked (a member, or support with its reason), and that
+ * the safety copy can undo it.
+ */
+async function tellWorkshop(
+  organizationId: string,
+  input: { name: string; snapshotId: string; bySupport: boolean; reason: string | null }
+): Promise<void> {
+  const t = await organizationTranslator(organizationId, 'integrations')
+  const when = new Intl.DateTimeFormat(t.locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: await workshopTimeZone(organizationId),
+  }).format(new Date())
+  const intro = t('backupAlerts.restoredIntro', {
+    name: input.name,
+    snapshot: input.snapshotId.slice(0, 8),
+    time: when,
+  })
+  const by = input.bySupport
+    ? t('backupAlerts.restoredBySupport', { reason: input.reason || t('backupAlerts.noReason') })
+    : t('backupAlerts.restoredByMember')
+  const undo = t('backupAlerts.restoredUndo')
+  await notify({
+    organizationId,
+    type: 'backup_restored',
+    title: t('backupAlerts.restoredTitle'),
+    message: `${intro} ${by}`,
+    entityType: 'PlatformBackup',
+    entityId: organizationId,
+    entityUrl: '/settings/data',
+  })
+  await mailAdmins(
+    organizationId,
+    t('backupAlerts.restoredSubject'),
+    `<p>${escapeHtml(intro)}</p><p>${escapeHtml(by)}</p><p>${escapeHtml(undo)}</p>`
+  )
 }
 
 function describe(err: unknown): string {

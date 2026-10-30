@@ -164,6 +164,7 @@
       "nothingDue": "Todos los vehículos con matrícula se comprobaron hace poco, así que aún no hay nada que consultar."
     },
     "supersedes": "Conectar {next} desconecta {current}. Solo uno puede estar activo a la vez, así que {current} deja de usarse en cuanto {next} entra en servicio.",
+    "platformHandlesBackups": "Torqvoice ya hace una copia de seguridad de este taller cada hora y conserva los puntos de restauración durante 30 días. Conecte un bucket si además quiere una copia de su propiedad que se pueda leer sin Torqvoice.",
     "batchRetried": "{count, plural, =0 {Nada que reintentar} one {# tarea vuelta a la cola} other {# tareas vueltas a la cola}}",
     "advanced": "Avanzado",
     "generate": "Generar",
@@ -209,6 +210,7 @@
       },
       "restoring": "Restaurando",
       "restoringHint": "Se está restaurando una copia: los datos del taller se están sustituyendo por los de la copia de seguridad. Esta página se actualiza sola hasta que termine. No trabaje en el taller hasta entonces.",
+      "explore": "Explorar",
       "restore": {
         "showAll": "Mostrar todas las copias",
         "refresh": "Actualizar",
@@ -878,6 +880,14 @@
     "overdueSince": "Ninguna copia de seguridad en {name} ha terminado desde {time}.",
     "overdueNever": "Todavía no ha terminado ninguna copia de seguridad en {name}.",
     "overdueSubject": "La copia de seguridad en {name} está atrasada",
-    "openToSee": "Abra Configuración, Integraciones, {name} para ver qué salió mal."
+    "openToSee": "Abra Configuración, Integraciones, {name} para ver qué salió mal.",
+    "platformName": "Copias de seguridad de Torqvoice",
+    "restoredTitle": "Taller restaurado",
+    "restoredSubject": "Su taller se ha restaurado a partir de una copia de seguridad",
+    "restoredIntro": "{name}: el taller se devolvió al punto de restauración {snapshot} el {time}. Todo lo introducido después de ese punto ya no está en el taller.",
+    "restoredByMember": "Un miembro de su taller solicitó esta restauración.",
+    "restoredBySupport": "El soporte de Torqvoice lo hizo a petición suya. Motivo indicado: {reason}",
+    "noReason": "no se indicó ninguno",
+    "restoredUndo": "Antes se hizo una copia de protección del taller tal como estaba justo antes de la restauración, que se conserva durante 90 días. Contacte con el soporte para volver a ella."
   }
 }

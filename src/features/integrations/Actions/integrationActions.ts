@@ -395,7 +395,7 @@ export async function getIntegrationConnection(connectorId: string) {
             : null,
       }
     },
-    { requiredPermissions: READ_PERMISSION }
+    { requiredPermissions: READ_PERMISSION, allowDuringRestore: true }
   )
 }
 

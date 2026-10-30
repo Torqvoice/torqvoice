@@ -26,6 +26,10 @@ const h = vi.hoisted(() => ({
   runs: new Map<string, Row>(),
   connections: new Map<string, Row>(),
   members: [] as Row[],
+  /** PlatformBackup rows by organisation id. */
+  platform: new Map<string, Row>(),
+  cloud: false,
+  features: { platformBackups: false } as Record<string, boolean>,
   seq: 0,
   server: null as any,
   password: 'correct horse battery',
@@ -65,12 +69,37 @@ vi.mock('@/lib/db', () => ({
       findUnique: vi.fn(
         async ({ where }: { where: { id: string } }) => h.runs.get(where.id) ?? null
       ),
-      findFirst: vi.fn(
-        async ({ where }: { where: { connectionId: string; status: { in: string[] } } }) =>
-          [...h.runs.values()].find(
-            (r) => r.connectionId === where.connectionId && where.status.in.includes(r.status)
-          ) ?? null
-      ),
+      // Both reads: the busy check (organisation, kind, connection, open
+      // statuses) and the queue's next run (status 'queued', oldest first).
+      findFirst: vi.fn(async ({ where, orderBy }: { where: Row; orderBy?: Row }) => {
+        const statuses: string[] =
+          typeof where.status === 'string' ? [where.status] : where.status.in
+        const rows = [...h.runs.values()].filter(
+          (r) =>
+            statuses.includes(r.status) &&
+            (where.organizationId === undefined || r.organizationId === where.organizationId) &&
+            (where.kind === undefined || r.kind === where.kind) &&
+            (where.connectionId === undefined || r.connectionId === where.connectionId)
+        )
+        if (orderBy) rows.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        return rows[0] ?? null
+      }),
+    },
+    platformBackup: {
+      upsert: vi.fn(async ({ where, create }: { where: { organizationId: string }; create: Row }) => {
+        const row = h.platform.get(where.organizationId) ?? {
+          lastPruneAt: null,
+          lastCheckAt: null,
+          ...create,
+        }
+        h.platform.set(where.organizationId, row)
+        return row
+      }),
+      update: vi.fn(async ({ where, data }: { where: { organizationId: string }; data: Row }) => {
+        const row = merge(h.platform.get(where.organizationId) ?? {}, data)
+        h.platform.set(where.organizationId, row)
+        return row
+      }),
     },
     integrationConnection: {
       findUnique: vi.fn(async ({ where }: { where: { id: string } }) => {
@@ -150,18 +179,24 @@ vi.mock('@/integrations/registry', () => ({
   listManifests: () => [],
 }))
 
-vi.mock('@/lib/features', () => ({ isCloudMode: () => false }))
+vi.mock('@/lib/features', () => ({
+  isCloudMode: () => h.cloud,
+  getFeatures: vi.fn(async () => h.features),
+}))
 
 import { writeBackupData } from '@/lib/backup/build-data'
 import {
   BackupBusyError,
   backupLockHolder,
+  drainBackupQueue,
+  openPlatform,
   queueBackupRun,
   runBackup,
   stagingDirFor,
 } from '@/lib/backup/engine'
+import { platformRepositoryPassword } from '@/lib/backup/platform'
 import { resticSnapshots } from '@/lib/backup/restic'
-import { setConnectionStatus } from '@/features/integrations/Lib/connections'
+import { loadConnection, setConnectionStatus } from '@/features/integrations/Lib/connections'
 import { sendOrgMail } from '@/lib/email'
 import { notify } from '@/lib/notify'
 import { connector as localFolder } from '@/integrations/local-folder/server'
@@ -178,6 +213,8 @@ const FORGET_LINE =
   '[{"tags":["org:org1"],"host":"torqvoice-org1","paths":null,"keep":[{"id":"9284","short_id":"92846caf"}],"remove":null,"reasons":[]}]'
 const CHECK_LINE =
   '{"message_type":"summary","num_errors":0,"broken_packs":null,"suggest_repair_index":false,"suggest_prune":false}'
+const SAFETY_ID = '9d6cb16e448a3c36c2271f6dc4e03b08052265e671b6a8c438c9358a8a1e602b'
+const SNAPSHOTS_LINE = `[{"time":"2026-10-29T09:09:10.44+01:00","tree":"ab12","paths":["/tmp/torqvoice-backup-staging/org1"],"hostname":"torqvoice-org1","tags":["org:org1","scheduled","platform"],"id":"${SNAPSHOT_ID}","short_id":"28891c8f"},{"time":"2026-10-28T09:00:00+01:00","tree":"cd34","paths":["/tmp/torqvoice-backup-staging/org1"],"hostname":"torqvoice-org1","tags":["org:org1","pre-restore","platform"],"id":"${SAFETY_ID}","short_id":"9d6cb16e"}]`
 const BUCKET_GONE =
   '{"message_type":"exit_error","code":1,"message":"Fatal: unable to save snapshot: bucket gone"}'
 
@@ -240,6 +277,9 @@ case "$sub" in
     ;;
   stats)
     ${heredoc(STATS_LINE)}
+    ;;
+  snapshots)
+    ${heredoc(SNAPSHOTS_LINE)}
     ;;
   *) ;;
 esac
@@ -306,6 +346,7 @@ function addRun(over: Row = {}): string {
   h.runs.set(id, {
     id,
     organizationId: ORG,
+    kind: 'destination',
     connectionId: CONN,
     trigger: 'manual',
     status: 'queued',
@@ -322,6 +363,21 @@ function addRun(over: Row = {}): string {
   return id
 }
 
+const PLATFORM_ENV = {
+  PLATFORM_BACKUP_S3_ENDPOINT: 'https://acc.r2.cloudflarestorage.com',
+  PLATFORM_BACKUP_S3_BUCKET: 'torqvoice-workshop-backups',
+  PLATFORM_BACKUP_S3_ACCESS_KEY: 'platform-key-id',
+  PLATFORM_BACKUP_S3_SECRET_KEY: 'platform-key-secret',
+  PLATFORM_BACKUP_MASTER_KEY: 'k7Qe2Vx9Lm4Rt8Zp1Ws6Yd3Hn5Jc0Bf7Gu2Ia9Oq',
+}
+
+/** The cloud instance with platform backups configured. */
+function setPlatformEnv(): void {
+  h.cloud = true
+  h.features = { platformBackups: true }
+  Object.assign(process.env, PLATFORM_ENV)
+}
+
 function failRestic(sub: string, stderr = BUCKET_GONE): void {
   writeFileSync(path.join(rec, `fail-${sub}`), `${stderr}\n`)
 }
@@ -334,6 +390,9 @@ beforeEach(() => {
   vi.clearAllMocks()
   h.runs.clear()
   h.connections.clear()
+  h.platform.clear()
+  h.cloud = false
+  h.features = { platformBackups: false }
   h.seq = 0
   h.members = [
     { user: { email: 'owner@workshop.test' } },
@@ -356,6 +415,7 @@ beforeEach(() => {
   process.env.RESTIC_BIN = fake
   delete process.env.BACKUP_LOCAL_ROOT
   ;(globalThis as Row).__torqvoiceBackupLock = null
+  ;(globalThis as Row).__torqvoiceBackupDraining = false
 })
 
 afterEach(() => {
@@ -372,12 +432,53 @@ afterAll(() => {
 describe('queueBackupRun', () => {
   it('creates a queued run for a backup destination', async () => {
     addConnection()
-    const { runId } = await queueBackupRun(CONN, 'manual')
+    const { runId } = await queueBackupRun({ kind: 'destination', connectionId: CONN }, 'manual', {
+      requestedBy: 'user1',
+    })
     expect(h.runs.get(runId)).toMatchObject({
       organizationId: ORG,
+      kind: 'destination',
       connectionId: CONN,
       trigger: 'manual',
       status: 'queued',
+      requestedBy: 'user1',
+      reason: null,
+    })
+  })
+
+  it('still accepts a plain connection id', async () => {
+    addConnection()
+    const { runId } = await queueBackupRun(CONN, 'scheduled')
+    expect(h.runs.get(runId)).toMatchObject({
+      kind: 'destination',
+      connectionId: CONN,
+      requestedBy: null,
+    })
+  })
+
+  it('a run queued for one destination does not block another destination or the platform', async () => {
+    addConnection()
+    addConnection({ id: 'conn2' })
+    setPlatformEnv()
+    addRun({ status: 'running' })
+    await expect(queueBackupRun({ kind: 'destination', connectionId: 'conn2' }, 'manual')).resolves.toHaveProperty('runId')
+    await expect(queueBackupRun({ kind: 'platform', organizationId: ORG }, 'manual')).resolves.toHaveProperty('runId')
+    await expect(queueBackupRun({ kind: 'platform', organizationId: ORG }, 'manual')).rejects.toBeInstanceOf(BackupBusyError)
+  })
+
+  it('makes a platform run with no connection, and refuses one when platform backups are off', async () => {
+    await expect(queueBackupRun({ kind: 'platform', organizationId: ORG }, 'scheduled')).rejects.toThrow(/not configured/)
+    setPlatformEnv()
+    const { runId } = await queueBackupRun({ kind: 'platform', organizationId: ORG }, 'scheduled', {
+      reason: 'support check',
+    })
+    expect(h.runs.get(runId)).toMatchObject({
+      organizationId: ORG,
+      kind: 'platform',
+      connectionId: null,
+      trigger: 'scheduled',
+      status: 'queued',
+      reason: 'support check',
     })
   })
 
@@ -478,7 +579,7 @@ describe('runBackup, happy path', () => {
     expect(backup.argv.slice(backup.argv.indexOf('--') + 1)).toEqual([stagingDirFor(ORG)])
   })
 
-  it('runs init, unlock, backup, forget, check and stats in that order', async () => {
+  it('runs init, unlock, backup, forget, the safety copies\' forget, prune, check and stats in that order', async () => {
     addConnection()
     await runBackup(addRun())
     expect(calls().map((c) => c.sub)).toEqual([
@@ -486,11 +587,14 @@ describe('runBackup, happy path', () => {
       'unlock',
       'backup',
       'forget',
+      'forget',
+      'forget',
       'check',
       'stats',
     ])
-    const [forget] = callsOf('forget')
-    expect(forget.argv).toEqual(
+    const [retention, safety, prune] = callsOf('forget')
+    // Retention after every run, keeping the safety copies, without a prune.
+    expect(retention.argv).toEqual(
       expect.arrayContaining([
         '--group-by',
         'host',
@@ -498,7 +602,26 @@ describe('runBackup, happy path', () => {
         `torqvoice-${ORG}`,
         '--tag',
         `org:${ORG}`,
+        '--keep-tag',
+        'pre-restore',
       ])
+    )
+    expect(retention.argv).not.toContain('--prune')
+    // The safety copies go after ninety days, whatever the policy says.
+    expect(safety.argv.slice(safety.argv.indexOf('forget'))).toEqual([
+      'forget',
+      '--group-by',
+      'host',
+      '--host',
+      `torqvoice-${ORG}`,
+      '--tag',
+      'pre-restore',
+      '--keep-within',
+      '90d',
+    ])
+    // The first run prunes: the same policy again, with --prune.
+    expect(prune.argv).toEqual(
+      expect.arrayContaining(['--keep-tag', 'pre-restore', '--prune', '--max-unused', '10%'])
     )
   })
 
@@ -511,7 +634,8 @@ describe('runBackup, happy path', () => {
   it('prunes and checks a repository that never had either', async () => {
     addConnection()
     await runBackup(addRun())
-    expect(callsOf('forget')[0].argv).toContain('--prune')
+    expect(callsOf('forget')[0].argv).not.toContain('--prune')
+    expect(callsOf('forget')[2].argv).toContain('--prune')
     expect(callsOf('check')[0].argv).toContain('--read-data-subset=2%')
     const state = h.connections.get(CONN)?.state
     expect(typeof state['backup.lastPruneAt']).toBe('string')
@@ -522,14 +646,17 @@ describe('runBackup, happy path', () => {
     const recent = ago(6 * DAY)
     addConnection({ state: { 'backup.lastPruneAt': recent, 'backup.lastCheckAt': ago(DAY) } })
     await runBackup(addRun())
-    expect(callsOf('forget')[0].argv).not.toContain('--prune')
+    expect(callsOf('forget')).toHaveLength(2)
+    expect(callsOf('forget').some((c) => c.argv.includes('--prune'))).toBe(false)
     expect(h.connections.get(CONN)?.state['backup.lastPruneAt']).toBe(recent)
 
     rmSync(rec, { recursive: true, force: true })
     mkdirSync(rec)
     h.connections.get(CONN)!.state['backup.lastPruneAt'] = ago(8 * DAY)
     await runBackup(addRun())
-    expect(callsOf('forget')[0].argv).toEqual(
+    expect(callsOf('forget')).toHaveLength(3)
+    expect(callsOf('forget')[0].argv).not.toContain('--prune')
+    expect(callsOf('forget')[2].argv).toEqual(
       expect.arrayContaining(['--prune', '--max-unused', '10%'])
     )
     const stamped = new Date(h.connections.get(CONN)?.state['backup.lastPruneAt']).getTime()
@@ -704,6 +831,23 @@ describe('runBackup, failure', () => {
     expect(backupLockHolder()).toBeNull()
   })
 
+  it('a failed scheduled run books one retry 30 minutes later', async () => {
+    addConnection()
+    failRestic('backup')
+    const before = Date.now()
+    await runBackup(addRun({ trigger: 'scheduled' }))
+    const retryAt = new Date(h.connections.get(CONN)?.state['backup.retryAt']).getTime()
+    expect(retryAt).toBeGreaterThanOrEqual(before + 30 * 60 * 1000)
+    expect(retryAt).toBeLessThan(Date.now() + 30 * 60 * 1000 + 1000)
+  })
+
+  it('a failed manual run books no retry', async () => {
+    addConnection()
+    failRestic('backup')
+    await runBackup(addRun({ trigger: 'manual' }))
+    expect(h.connections.get(CONN)?.state['backup.retryAt']).toBeUndefined()
+  })
+
   it('asks owners and admins only', async () => {
     addConnection()
     failRestic('backup')
@@ -774,7 +918,7 @@ describe('runBackup, failure', () => {
 })
 
 describe('runBackup, lock', () => {
-  it('a second run while one is going finishes as skipped', async () => {
+  it('a second run while one is going stays queued and runs once the first is done', async () => {
     addConnection()
     addConnection({ id: 'conn2' })
     const first = addRun()
@@ -783,18 +927,199 @@ describe('runBackup, lock', () => {
     const [a, b] = await Promise.all([runBackup(first), runBackup(second)])
 
     expect(a.status).toBe('done')
-    expect(b.status).toBe('skipped')
-    expect(b.error).toMatch(/Another backup was running/)
-    expect(callsOf('backup')).toHaveLength(1)
+    expect(b.status).toBe('queued')
+    expect(b.error).toBeNull()
+    // The first run's finish drains the queue, which starts the second.
+    await vi.waitFor(() => expect(h.runs.get(second)?.status).toBe('done'))
+    expect(callsOf('backup')).toHaveLength(2)
+    expect(h.runs.get(second)?.startedAt.getTime()).toBeGreaterThanOrEqual(
+      h.runs.get(first)?.finishedAt.getTime()
+    )
+    await vi.waitFor(() => expect(backupLockHolder()).toBeNull())
+  })
+
+  it('a run that finds another holder\'s lock stays queued and the holder keeps the lock', async () => {
+    addConnection()
+    ;(globalThis as Row).__torqvoiceBackupLock = { runId: 'other', since: Date.now() }
+    const runId = addRun()
+    const view = await runBackup(runId)
+    expect(view.status).toBe('queued')
+    expect(h.runs.get(runId)?.status).toBe('queued')
+    expect(h.runs.get(runId)?.startedAt).toBeNull()
+    expect(calls()).toHaveLength(0)
+    expect(backupLockHolder()?.runId).toBe('other')
+  })
+})
+
+describe('drainBackupQueue', () => {
+  it('works through the queued runs oldest first, one after the other', async () => {
+    addConnection()
+    addConnection({ id: 'conn2' })
+    const started: string[] = []
+    const { db } = await import('@/lib/db')
+    vi.mocked(db.backupRun.update).mockImplementation((async ({ where, data }: Row) => {
+      if (data.status === 'running') {
+        // Nothing else holds the lock or is running while this one starts.
+        expect([...h.runs.values()].filter((r) => r.status === 'running')).toEqual([])
+        started.push(where.id)
+      }
+      const row = merge(h.runs.get(where.id) ?? {}, data)
+      h.runs.set(where.id, row)
+      return row
+    }) as never)
+    // Added first, queued later: the order is by createdAt, not by insertion.
+    const newer = addRun({ createdAt: new Date(Date.now() - 1000) })
+    const older = addRun({ connectionId: 'conn2', createdAt: new Date(Date.now() - 60_000) })
+
+    expect(await drainBackupQueue()).toBe(2)
+
+    expect(started).toEqual([older, newer])
+    expect(h.runs.get(older)?.status).toBe('done')
+    expect(h.runs.get(newer)?.status).toBe('done')
+    expect(h.runs.get(newer)?.startedAt.getTime()).toBeGreaterThanOrEqual(
+      h.runs.get(older)?.finishedAt.getTime()
+    )
+    expect(callsOf('backup')).toHaveLength(2)
     expect(backupLockHolder()).toBeNull()
   })
 
-  it('a run held by another lock holder is skipped and the holder keeps the lock', async () => {
+  it('returns 0 and starts nothing while another run holds the lock', async () => {
     addConnection()
     ;(globalThis as Row).__torqvoiceBackupLock = { runId: 'other', since: Date.now() }
-    const view = await runBackup(addRun())
-    expect(view.status).toBe('skipped')
+    const runId = addRun()
+    expect(await drainBackupQueue()).toBe(0)
+    expect(h.runs.get(runId)?.status).toBe('queued')
+    expect(calls()).toHaveLength(0)
     expect(backupLockHolder()?.runId).toBe('other')
+  })
+
+  it('a second call while one is draining returns 0 at once', async () => {
+    addConnection()
+    const runId = addRun()
+    const draining = drainBackupQueue()
+    expect(await drainBackupQueue()).toBe(0)
+    expect(await draining).toBe(1)
+    expect(h.runs.get(runId)?.status).toBe('done')
+    expect(callsOf('backup')).toHaveLength(1)
+  })
+
+  it('returns 0 when nothing is queued', async () => {
+    addConnection()
+    addRun({ status: 'done' })
+    expect(await drainBackupQueue()).toBe(0)
+    expect(calls()).toHaveLength(0)
+  })
+})
+
+describe('openPlatform', () => {
+  it('opens the workshop\'s own repository in the platform bucket, with the platform keys only', async () => {
+    setPlatformEnv()
+    const target = await openPlatform(ORG)
+
+    expect(target.kind).toBe('platform')
+    expect(target.organizationId).toBe(ORG)
+    expect(target.connectionId).toBeNull()
+    expect(target.base.repository.repository).toBe(
+      `s3:https://acc.r2.cloudflarestorage.com/${PLATFORM_ENV.PLATFORM_BACKUP_S3_BUCKET}/workshops/${ORG}`
+    )
+    expect(target.base.repository.env).toEqual({
+      AWS_ACCESS_KEY_ID: PLATFORM_ENV.PLATFORM_BACKUP_S3_ACCESS_KEY,
+      AWS_SECRET_ACCESS_KEY: PLATFORM_ENV.PLATFORM_BACKUP_S3_SECRET_KEY,
+    })
+    expect(target.base.repository.options).toEqual({ 's3.region': 'auto' })
+    expect(target.base.password).toMatch(/^[0-9a-f]{64}$/)
+    expect(target.base.password).toBe(
+      platformRepositoryPassword(PLATFORM_ENV.PLATFORM_BACKUP_MASTER_KEY, ORG)
+    )
+    expect(target.includeFiles).toBe(true)
+    expect(target.includeSecrets).toBe(true)
+    expect(target.tags('scheduled')).toEqual([`org:${ORG}`, 'scheduled', 'platform'])
+    // The workshop's row is made on first use.
+    expect(h.platform.get(ORG)).toMatchObject({ organizationId: ORG })
+  })
+
+  it('gives every workshop a password of its own', async () => {
+    setPlatformEnv()
+    const a = await openPlatform('org1')
+    const b = await openPlatform('org2')
+    expect(a.base.password).not.toBe(b.base.password)
+    expect(a.base.repository.repository).not.toBe(b.base.repository.repository)
+    expect(b.base.repository.repository.endsWith('/workshops/org2')).toBe(true)
+  })
+
+  it('refuses when platform backups are not configured', async () => {
+    h.cloud = true
+    await expect(openPlatform(ORG)).rejects.toThrow(/not configured/)
+    expect(h.platform.size).toBe(0)
+  })
+})
+
+describe('runBackup, platform', () => {
+  it('backs up into the platform repository and records the restore points on the row', async () => {
+    setPlatformEnv()
+    const runId = addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' })
+
+    const view = await runBackup(runId)
+
+    expect(view.status, view.error ?? '').toBe('done')
+    expect(view.snapshotId).toBe(SNAPSHOT_ID)
+    expect(calls().map((c) => c.sub)).toEqual([
+      'init',
+      'unlock',
+      'backup',
+      'forget',
+      'forget',
+      'forget',
+      'check',
+      'stats',
+      'snapshots',
+    ])
+    const repository = `s3:https://acc.r2.cloudflarestorage.com/${PLATFORM_ENV.PLATFORM_BACKUP_S3_BUCKET}/workshops/${ORG}`
+    for (const call of calls()) {
+      expect(call.env.RESTIC_REPOSITORY, call.sub).toBe(repository)
+      expect(call.env.AWS_ACCESS_KEY_ID, call.sub).toBe(PLATFORM_ENV.PLATFORM_BACKUP_S3_ACCESS_KEY)
+      expect(call.env.RESTIC_PASSWORD, call.sub).toBe(
+        platformRepositoryPassword(PLATFORM_ENV.PLATFORM_BACKUP_MASTER_KEY, ORG)
+      )
+      expect(call.argv.join(' '), call.sub).toContain('-o s3.region=auto')
+    }
+    const [backup] = callsOf('backup')
+    expect(backup.argv).toEqual(
+      expect.arrayContaining(['--tag', `org:${ORG}`, '--tag', 'scheduled', '--tag', 'platform'])
+    )
+    // Secret keys are always in a platform backup.
+    expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: true })
+    // No connection is opened for a platform run.
+    expect(loadConnection).not.toHaveBeenCalled()
+
+    const { db } = await import('@/lib/db')
+    const update = vi
+      .mocked(db.platformBackup.update)
+      .mock.calls.map((c) => c[0] as Row)
+      .find((c) => Array.isArray(c.data.snapshots))
+    expect(update?.where).toEqual({ organizationId: ORG })
+    const row = h.platform.get(ORG) as Row
+    expect(row.snapshots).toEqual([
+      expect.objectContaining({ id: SNAPSHOT_ID, trigger: 'scheduled', preRestore: false }),
+      expect.objectContaining({ id: SAFETY_ID, trigger: null, preRestore: true }),
+    ])
+    expect(row.lastGoodAt).toBeInstanceOf(Date)
+    expect(row.lastPruneAt).toBeInstanceOf(Date)
+    expect(row.lastCheckAt).toBeInstanceOf(Date)
+    expect(row.repositorySize).toBe(BigInt(6928))
+    expect(row.retryAt).toBeNull()
+  })
+
+  it('a failed scheduled platform run books its retry on the platform row and tells nobody', async () => {
+    setPlatformEnv()
+    failRestic('backup')
+    const before = Date.now()
+    const view = await runBackup(addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' }))
+    expect(view.status).toBe('failed')
+    const retryAt = (h.platform.get(ORG) as Row).retryAt as Date
+    expect(retryAt.getTime()).toBeGreaterThanOrEqual(before + 30 * 60 * 1000)
+    expect(notify).not.toHaveBeenCalled()
+    expect(sendOrgMail).not.toHaveBeenCalled()
   })
 })
 

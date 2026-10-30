@@ -164,6 +164,7 @@
       "nothingDue": "Every vehicle with a plate was checked recently, so there is nothing to look up yet."
     },
     "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live.",
+    "platformHandlesBackups": "Torqvoice already backs this workshop up every hour and keeps restore points for 30 days. Connect a bucket if you also want a copy you own, readable without Torqvoice.",
     "batchRetried": "{count, plural, =0 {Nothing to retry} one {# job queued again} other {# jobs queued again}}",
     "advanced": "Advanced",
     "generate": "Generate",
@@ -209,6 +210,7 @@
       },
       "restoring": "Restoring",
       "restoringHint": "A restore is running: the workshop's data is being replaced with the backup. This page updates by itself until it is done. Do not work in the workshop until then.",
+      "explore": "Explore",
       "restore": {
         "showAll": "Show all backups",
         "refresh": "Refresh",
@@ -878,6 +880,14 @@
     "overdueSince": "No backup to {name} has finished since {time}.",
     "overdueNever": "No backup to {name} has finished yet.",
     "overdueSubject": "Backup to {name} is overdue",
-    "openToSee": "Open Settings, Integrations, {name} to see what went wrong."
+    "openToSee": "Open Settings, Integrations, {name} to see what went wrong.",
+    "platformName": "Backups by Torqvoice",
+    "restoredTitle": "Workshop restored",
+    "restoredSubject": "Your workshop was restored from a backup",
+    "restoredIntro": "{name}: the workshop was put back to restore point {snapshot} on {time}. Everything entered after that point is no longer in the workshop.",
+    "restoredByMember": "A member of your workshop asked for this restore.",
+    "restoredBySupport": "Torqvoice support did this at your request. Reason given: {reason}",
+    "noReason": "none given",
+    "restoredUndo": "A safety copy of the workshop as it was right before the restore was taken first and is kept for 90 days. Contact support to go back to it."
   }
 }

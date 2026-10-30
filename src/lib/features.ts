@@ -31,6 +31,12 @@ export type PlanFeatures = {
   tireHotel: boolean
   /** Scheduled backups to the workshop's own storage. */
   backups: boolean
+  /**
+   * Backups Torqvoice runs for the workshop on the cloud instance, with
+   * restore points the owner can go back to. Off on self-hosted by the
+   * missing configuration, whatever this says.
+   */
+  platformBackups: boolean
 }
 
 // The admin on torqvoice.com shows the Pro and Enterprise limits a workshop
@@ -64,6 +70,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     ai: true,
     tireHotel: false,
     backups: false,
+    platformBackups: false,
   },
   pro: {
     // One shop and a small team. A bigger team or several locations is what
@@ -93,6 +100,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     ai: true,
     tireHotel: true,
     backups: true,
+    platformBackups: true,
   },
   enterprise: {
     maxOrganizations: 10,
@@ -118,6 +126,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     ai: true,
     tireHotel: true,
     backups: true,
+    platformBackups: true,
   },
   'white-label': {
     maxOrganizations: 999999,
@@ -143,6 +152,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     ai: true,
     tireHotel: true,
     backups: true,
+    platformBackups: true,
   },
 }
 

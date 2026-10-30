@@ -83,9 +83,12 @@ type Activity = {
 export function ConnectionSettings({
   view,
   activity,
+  platformHandlesBackups = false,
 }: {
   view: ConnectionView
   activity: Activity
+  /** The bucket connector on the cloud instance, where Torqvoice backs the workshop up already. */
+  platformHandlesBackups?: boolean
 }) {
   const t = useTranslations('integrations')
   const tc = useTranslations(`integrations.connectors.${view.manifest.id}`)
@@ -355,6 +358,15 @@ export function ConnectionSettings({
                 next: name,
               })}
             </p>
+          </div>
+        )}
+
+        {/* On the cloud a bucket is an extra copy, not the only one: say so
+            before anyone thinks the workshop has no backups without it. */}
+        {platformHandlesBackups && (
+          <div className="mb-4 flex gap-2 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <p className="text-muted-foreground">{t('connection.platformHandlesBackups')}</p>
           </div>
         )}
 

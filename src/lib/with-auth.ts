@@ -3,13 +3,14 @@ import { headers } from 'next/headers'
 import { getCachedSession, getCachedMembership } from './cached-session'
 import { db } from './db'
 import type { PermissionInput } from './permissions'
-import { hasAllPermissions } from './permissions'
+import { hasAllPermissions, PermissionAction } from './permissions'
 import { logAudit } from '@/lib/audit'
 import type { AuditEvent } from '@/lib/audit'
 import type { FeatureGatedError } from '@/lib/features'
 import { publicErrorMessage } from '@/lib/public-error-message'
 import { runAsActor } from '@/lib/realtime/actor.server'
 import { SCOPED_SESSION_MESSAGE, sessionOrganizationScope } from './session-scope'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 
 /** What the plan refused, and the number it stopped at when there is one. */
 export type GatedFeature = { feature: string; limit?: number }
@@ -47,6 +48,14 @@ type WithAuthOptions<T = unknown> = {
    * workshop can only vouch for the person inside itself.
    */
   accountLevel?: boolean
+  /**
+   * Let the action run while a restore is replacing the workshop's rows
+   * (lib/backup/freeze.ts). Actions whose required permissions are all reads
+   * run anyway; everything else is refused, so nothing is written under the
+   * restore. For a read that declares no permissions, or the action that
+   * follows a restore.
+   */
+  allowDuringRestore?: boolean
   // Optional audit config. If provided, runs after successful action.
   audit?: AuditEvent | AuditBuilder<T>
 }
@@ -103,6 +112,17 @@ export async function withAuth<T>(
       role: isSuperAdmin ? 'super_admin' : (membership?.role ?? 'member'),
       isSuperAdmin,
       isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
+    }
+
+    // While a restore replaces the workshop's rows, only reads go through:
+    // an action that declares read permissions alone, or one that says so.
+    if (isRestoring(ctx.organizationId)) {
+      const readOnly =
+        (options.requiredPermissions?.length ?? 0) > 0 &&
+        options.requiredPermissions?.every((p) => p.action === PermissionAction.READ)
+      if (!options.allowDuringRestore && !readOnly) {
+        return { success: false, error: RESTORE_IN_PROGRESS_MESSAGE }
+      }
     }
 
     // Check permissions if required (super admins bypass all permission checks)

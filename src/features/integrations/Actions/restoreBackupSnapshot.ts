@@ -5,8 +5,8 @@ import { z } from 'zod'
 import { BACKUP_CAPABILITY, canRestoreBackups } from '../Lib/backup'
 import { connectorAllowed } from '../Lib/plan'
 import { getManifest } from '@/integrations/registry'
-import { BackupBusyError } from '@/lib/backup/engine'
-import { queueRestore, runRestore } from '@/lib/backup/restore'
+import { BackupBusyError, drainBackupQueue } from '@/lib/backup/engine'
+import { queueRestore } from '@/lib/backup/restore'
 import { db } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
 import { FeatureGatedError, getFeatures } from '@/lib/features'
@@ -64,7 +64,11 @@ export async function restoreBackupSnapshot(input: RestoreBackupSnapshotInput) {
       }
       let runId: string
       try {
-        runId = (await queueRestore(row.id, snapshotId)).runId
+        runId = (
+          await queueRestore({ kind: 'destination', connectionId: row.id }, snapshotId, {
+            requestedBy: userId,
+          })
+        ).runId
       } catch (err) {
         if (err instanceof BackupBusyError) {
           throw new Error('A backup or restore is already running.')
@@ -72,8 +76,9 @@ export async function restoreBackupSnapshot(input: RestoreBackupSnapshotInput) {
         throw err
       }
       // Not awaited: a restore with years of photos takes minutes. The row
-      // is what the page watches; a failure is recorded on it.
-      void runRestore(runId, { userId }).catch((err) => console.error('[restore] run failed:', err))
+      // is what the page watches; a failure is recorded on it. Behind
+      // another run it waits its turn in the queue.
+      void drainBackupQueue().catch((err) => console.error('[restore] run failed:', err))
       revalidatePath(`/settings/integrations/${connectorId}`)
       return { runId }
     },

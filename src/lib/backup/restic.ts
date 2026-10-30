@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process'
+import path from 'node:path'
+import { createWriteStream } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import type { BackupSettings, ResticRepository } from '@/features/integrations/Lib/backup-types'
 import { retentionFlags } from '@/lib/backup/schedule'
@@ -371,6 +373,158 @@ export async function runRestic(opts: ResticRunOptions): Promise<ResticRunResult
 
 export type ResticBaseOptions = Omit<ResticRunOptions, 'args'>
 
+export interface ResticFindMatch {
+  path: string
+  size: number | null
+  mtime: string | null
+}
+
+/**
+ * `find --snapshot <id> <pattern>`: the files in one snapshot whose name
+ * matches. Prints one array: `[{"matches":[{"path":"/…/data.json","size":12,
+ * "mtime":"…","type":"file"}],"hits":1,"snapshot":"…"}]`. Used to locate the
+ * staged data file and single uploads inside a restore point without
+ * writing the whole snapshot out.
+ */
+export async function resticFind(
+  opts: ResticBaseOptions,
+  input: { snapshotId: string; pattern: string }
+): Promise<ResticFindMatch[]> {
+  if (!/^[0-9a-f]{8,64}$/.test(input.snapshotId)) throw new Error('Invalid snapshot id')
+  const result = await runRestic(
+    withArgs(opts, ['find', '--snapshot', input.snapshotId, '--', input.pattern])
+  )
+  const groups = (result.json.find(Array.isArray) ?? []) as { matches?: unknown[] }[]
+  const out: ResticFindMatch[] = []
+  for (const group of groups) {
+    for (const m of group.matches ?? []) {
+      const match = m as Record<string, unknown>
+      if (match.type && match.type !== 'file') continue
+      if (typeof match.path !== 'string') continue
+      out.push({
+        path: match.path,
+        size: typeof match.size === 'number' ? match.size : null,
+        mtime: typeof match.mtime === 'string' ? match.mtime : null,
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * `dump <id> <path>` written to a file as it streams, for one file out of a
+ * snapshot: the staged data file a restore point is browsed through, or a
+ * single photo. Not `runRestic`: dump prints the file's own bytes, not JSON
+ * lines, and a photo must never be held whole. Errors still come as JSON on
+ * stderr. Refuses more than `maxBytes` so a bad path cannot fill the disk.
+ */
+export async function resticDumpToFile(
+  opts: ResticBaseOptions,
+  input: { snapshotId: string; path: string; target: string; maxBytes: number; timeoutMs?: number }
+): Promise<{ bytes: number }> {
+  if (!/^[0-9a-f]{8,64}$/.test(input.snapshotId)) throw new Error('Invalid snapshot id')
+  if (!input.path.startsWith('/') || input.path.includes('\0')) throw new Error('Invalid path')
+  if (!opts.password) throw new Error('A restic repository password is required')
+  const argv = [
+    '--json',
+    '--repo',
+    opts.repository.repository,
+    ...optionFlags(opts.repository.options),
+    'dump',
+    '--',
+    input.snapshotId,
+    input.path,
+  ]
+  await mkdir(opts.cacheDir, { recursive: true, mode: 0o700 })
+  await mkdir(path.dirname(input.target), { recursive: true, mode: 0o700 })
+  const command = [resticBinary(), ...redactArgv(argv)].join(' ')
+  const env = resticEnv(opts.repository, opts.password, opts.cacheDir)
+  return new Promise((resolve, reject) => {
+    const child = spawn(resticBinary(), argv, {
+      env: env as NodeJS.ProcessEnv,
+      cwd: opts.cacheDir,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
+    const out = createWriteStream(input.target, { mode: 0o600 })
+    let bytes = 0
+    let stderr = ''
+    let stopped: 'timeout' | 'too_large' | null = null
+    const stop = (why: 'timeout' | 'too_large') => {
+      if (stopped) return
+      stopped = why
+      child.kill('SIGTERM')
+      setTimeout(() => child.kill('SIGKILL'), KILL_GRACE_MS).unref()
+    }
+    const timer = setTimeout(() => stop('timeout'), input.timeoutMs ?? DEFAULT_TIMEOUT_MS)
+    child.stdout.on('data', (chunk: Buffer) => {
+      bytes += chunk.length
+      if (bytes > input.maxBytes) {
+        stop('too_large')
+        return
+      }
+      if (!out.write(chunk)) {
+        child.stdout.pause()
+        out.once('drain', () => child.stdout.resume())
+      }
+    })
+    child.stderr.setEncoding('utf8')
+    child.stderr.on('data', (chunk: string) => {
+      stderr = appendCapped(stderr, chunk)
+    })
+    child.on('error', (err: NodeJS.ErrnoException) => {
+      clearTimeout(timer)
+      out.destroy()
+      reject(
+        new ResticError({
+          message:
+            err.code === 'ENOENT'
+              ? 'restic is not installed on this server'
+              : 'restic did not start',
+          code: -1,
+          stderr: '',
+          command,
+          reason: err.code === 'ENOENT' ? 'not_installed' : 'failed',
+        })
+      )
+    })
+    child.on('close', (code) => {
+      clearTimeout(timer)
+      out.end(() => {
+        if (stopped === 'too_large') {
+          reject(new Error(`The file is larger than ${input.maxBytes} bytes`))
+          return
+        }
+        if (stopped === 'timeout') {
+          reject(
+            new ResticError({
+              message: 'restic timed out',
+              code: code ?? -1,
+              stderr,
+              command,
+              reason: 'timeout',
+            })
+          )
+          return
+        }
+        if (code !== 0) {
+          const message = exitErrorMessage(stderr) ?? stderr.trim().split('\n').pop() ?? ''
+          reject(
+            new ResticError({
+              message: message || `restic exited with code ${code}`,
+              code: code ?? -1,
+              stderr,
+              command,
+              reason: reasonFor(code ?? -1, message),
+            })
+          )
+          return
+        }
+        resolve({ bytes })
+      })
+    })
+  })
+}
+
 const withArgs = (opts: ResticBaseOptions, args: string[]): ResticRunOptions => ({ ...opts, args })
 
 /**
@@ -487,7 +641,13 @@ export type RetentionPolicy = Pick<
  */
 export async function resticForget(
   opts: ResticBaseOptions,
-  input: RetentionPolicy & { host: string; tags: string[]; prune: boolean }
+  input: RetentionPolicy & {
+    host: string
+    tags: string[]
+    prune: boolean
+    /** Snapshots carrying any of these tags are kept whatever the policy says. */
+    keepTags?: string[]
+  }
 ): Promise<{ kept: number; removed: number }> {
   const keepFlags = retentionFlags(input)
   if (keepFlags.length === 0) {
@@ -497,6 +657,7 @@ export async function resticForget(
   const args = ['forget', '--group-by', 'host', '--host', input.host]
   if (input.tags.length) args.push('--tag', input.tags.join(','))
   args.push(...keepFlags)
+  for (const tag of input.keepTags ?? []) args.push('--keep-tag', tag)
   if (input.prune) args.push('--prune', '--max-unused', '10%')
 
   const result = await runRestic(withArgs(opts, args))
@@ -510,6 +671,47 @@ export async function resticForget(
     removed += group.remove?.length ?? 0
   }
   return { kept, removed }
+}
+
+/**
+ * `forget --tag <tag> --keep-within <duration>`: drops the snapshots with
+ * this tag that are older than the duration, such as the safety copies a
+ * restore takes, which the retention policy otherwise keeps for good.
+ */
+export async function resticForgetOlderThan(
+  opts: ResticBaseOptions,
+  input: { host: string; tag: string; keepWithin: string }
+): Promise<void> {
+  if (!/^\d+[hdwmy]$/.test(input.keepWithin)) throw new Error('Invalid duration')
+  await runRestic(
+    withArgs(opts, [
+      'forget',
+      '--group-by',
+      'host',
+      '--host',
+      input.host,
+      '--tag',
+      input.tag,
+      '--keep-within',
+      input.keepWithin,
+    ])
+  )
+}
+
+/** `forget <id> <id> …`: drops the given snapshots, then prunes what they held. */
+export async function resticForgetSnapshots(
+  opts: ResticBaseOptions,
+  snapshotIds: string[]
+): Promise<void> {
+  for (const id of snapshotIds) {
+    if (!/^[0-9a-f]{8,64}$/.test(id)) throw new Error('Invalid snapshot id')
+  }
+  if (snapshotIds.length === 0) return
+  // In batches: an argv of a few hundred ids is fine, thousands is not.
+  for (let i = 0; i < snapshotIds.length; i += 200) {
+    await runRestic(withArgs(opts, ['forget', '--', ...snapshotIds.slice(i, i + 200)]))
+  }
+  await runRestic(withArgs(opts, ['prune', '--max-unused', '10%']))
 }
 
 /** `forget <id>`: drops one snapshot, such as the probe a connection check makes. */

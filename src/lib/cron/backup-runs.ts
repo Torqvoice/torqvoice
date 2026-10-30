@@ -4,17 +4,41 @@ import {
   BACKUP_STATE,
   backupOffsetMinutes,
 } from '@/features/integrations/Lib/backup'
+import type { BackupFrequency } from '@/features/integrations/Lib/backup-types'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
+import { SYSTEM_SETTING_KEYS } from '@/features/admin/Schema/systemSettingsSchema'
 import { getManifest } from '@/integrations/registry'
-import { backupLockHolder, queueBackupRun, reportOverdue, runBackup } from '@/lib/backup/engine'
-import { intervalMs, isDue, readBackupSettings } from '@/lib/backup/schedule'
+import {
+  BackupBusyError,
+  backupLockHolder,
+  drainBackupQueue,
+  openPlatform,
+  queueBackupRun,
+  reportOverdue,
+} from '@/lib/backup/engine'
+import {
+  PAUSED_GRACE_MS,
+  platformBackupAllowed,
+  platformBackupConfig,
+  platformHost,
+} from '@/lib/backup/platform'
+import { resticForgetSnapshots, resticSnapshots } from '@/lib/backup/restic'
+import {
+  BACKUP_SETTING_DEFAULTS,
+  intervalMs,
+  isDue,
+  readBackupSettings,
+} from '@/lib/backup/schedule'
 import { db } from '@/lib/db'
+import { sendMail } from '@/lib/email'
 import { getFeatures } from '@/lib/features'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 /**
- * Scheduled backups, every five minutes: start the runs that are due, one
- * after the other, and say so when a destination has had no good backup for
+ * Scheduled backups, every five minutes: queue the runs that are due, for
+ * the destinations workshops connected and for the platform repositories
+ * Torqvoice keeps on the cloud instance, then work through the queue one
+ * run at a time. Also says so when a repository has had no good backup for
  * too long.
  *
  * Not the integration job runner: that one works through jobs one a minute
@@ -23,14 +47,19 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
  */
 
 const STALE_RUN_MS = 8 * 60 * 60 * 1000
-const RETRY_AFTER_MS = 30 * 60 * 1000
+/** A queued run nothing started in a day was queued by a process that is gone. */
+const STALE_QUEUE_MS = 24 * 60 * 60 * 1000
 const OVERDUE_ALERT_EVERY_MS = 24 * 60 * 60 * 1000
 /** Hourly backups are not overdue after a single missed slot. */
 const OVERDUE_MIN_MS = 3 * 60 * 60 * 1000
-/** Run rows older than this go, except the newest KEEP_RUNS of a destination. */
+/** When the platform cycle has not completed for a workshop, we hear about it. */
+const PLATFORM_OVERDUE_MS = 36 * 60 * 60 * 1000
+/** Run rows older than this go, except the newest KEEP_RUNS of a repository. */
 const RUN_HISTORY_MS = 90 * 24 * 60 * 60 * 1000
 const KEEP_RUNS = 100
 const PRUNE_EVERY_MS = 24 * 60 * 60 * 1000
+
+const PLATFORM_FREQUENCIES: BackupFrequency[] = ['hourly', 'every4h', 'daily']
 
 function stateDate(state: Record<string, unknown>, key: string): Date | null {
   const v = state[key]
@@ -39,13 +68,20 @@ function stateDate(state: Record<string, unknown>, key: string): Date | null {
   return Number.isNaN(d.getTime()) ? null : d
 }
 
-/** Runs this process is not working on, yet marked running for hours: a crash. */
+/**
+ * Runs this process is not working on, yet marked running for hours: a
+ * crash. And runs queued a day ago that nothing ever started.
+ */
 export async function failStaleRuns(now = new Date()): Promise<number> {
-  const cutoff = new Date(now.getTime() - STALE_RUN_MS)
   const holder = backupLockHolder()
   const stale = await db.backupRun.findMany({
-    where: { status: 'running', startedAt: { lt: cutoff } },
-    select: { id: true },
+    where: {
+      OR: [
+        { status: 'running', startedAt: { lt: new Date(now.getTime() - STALE_RUN_MS) } },
+        { status: 'queued', createdAt: { lt: new Date(now.getTime() - STALE_QUEUE_MS) } },
+      ],
+    },
+    select: { id: true, status: true },
   })
   let count = 0
   for (const run of stale) {
@@ -55,7 +91,10 @@ export async function failStaleRuns(now = new Date()): Promise<number> {
       data: {
         status: 'failed',
         finishedAt: now,
-        error: 'The run did not finish; the server was probably restarted',
+        error:
+          run.status === 'queued'
+            ? 'The run was never started; the server was probably restarted'
+            : 'The run did not finish; the server was probably restarted',
       },
     })
     count++
@@ -66,22 +105,22 @@ export async function failStaleRuns(now = new Date()): Promise<number> {
 /**
  * Every run leaves a row, and an hourly schedule leaves thousands a year.
  * The card reads the last ten; the rest is history nobody opens. Rows older
- * than ninety days go, except that a destination always keeps its newest
- * hundred, so a destination that fell quiet still shows what happened.
- * A run still queued or running is never touched. Returns how many went.
+ * than ninety days go, except that a repository always keeps its newest
+ * hundred, so one that fell quiet still shows what happened. A run still
+ * queued or running is never touched. Returns how many went.
  */
 export async function pruneOldRuns(now = new Date()): Promise<number> {
   const cutoff = new Date(now.getTime() - RUN_HISTORY_MS)
   const aged = await db.backupRun.findMany({
     where: { createdAt: { lt: cutoff } },
-    distinct: ['connectionId'],
-    select: { connectionId: true },
+    distinct: ['organizationId', 'kind', 'connectionId'],
+    select: { organizationId: true, kind: true, connectionId: true },
   })
   let count = 0
-  for (const { connectionId } of aged) {
+  for (const group of aged) {
     // The row just past the newest hundred: nothing newer than it goes.
     const [edge] = await db.backupRun.findMany({
-      where: { connectionId },
+      where: group,
       orderBy: { createdAt: 'desc' },
       skip: KEEP_RUNS,
       take: 1,
@@ -90,7 +129,7 @@ export async function pruneOldRuns(now = new Date()): Promise<number> {
     if (!edge) continue
     const { count: gone } = await db.backupRun.deleteMany({
       where: {
-        connectionId,
+        ...group,
         createdAt: { lt: cutoff, lte: edge.createdAt },
         status: { in: ['done', 'failed', 'skipped'] },
       },
@@ -111,13 +150,16 @@ async function patchState(connectionId: string, patch: Record<string, unknown>) 
   })
 }
 
-/** One tick: queue and run every due backup. Returns how many ran. */
+/**
+ * One tick for the destinations: queue every due backup. Returns how many
+ * were queued; `drainBackupQueue` runs them.
+ */
 export async function processDueBackups(now = new Date()): Promise<number> {
   const connections = await db.integrationConnection.findMany({
     where: { status: { in: ['active', 'error'] } },
     select: { id: true, organizationId: true, connectorId: true, settings: true, state: true },
   })
-  let ran = 0
+  let queued = 0
   for (const c of connections) {
     const manifest = getManifest(c.connectorId)
     if (!manifest?.capabilities.includes(BACKUP_CAPABILITY)) continue
@@ -138,54 +180,30 @@ export async function processDueBackups(now = new Date()): Promise<number> {
         backupOffsetMinutes(c.organizationId)
       )
       const retryDue = retryAt !== null && retryAt <= now
-      let outcome: string | null = null
       if (slotDue || retryDue) {
         // Stamped before the run, so a failure waits for the next slot (or
-        // the one retry below) instead of running again on every tick. A
-        // retry does not move the slot, so the regular rhythm holds.
+        // the one retry the engine books) instead of queueing again on every
+        // tick. A retry does not move the slot, so the regular rhythm holds.
         const patch: Record<string, unknown> = { [BACKUP_STATE.retryAt]: null }
         if (slotDue) patch[BACKUP_STATE.lastScheduledAt] = now.toISOString()
         if (!stateDate(state, BACKUP_STATE.firstScheduledAt)) {
           patch[BACKUP_STATE.firstScheduledAt] = now.toISOString()
         }
         await patchState(c.id, patch)
-        let runId: string
         try {
-          runId = (await queueBackupRun(c.id, 'scheduled')).runId
-        } catch {
-          continue // one is already queued or running
-        }
-        const result = await runBackup(runId)
-        ran++
-        outcome = result.status
-        // One retry half an hour on, whether the run failed or was skipped
-        // because another workshop's backup held the lock.
-        if ((result.status === 'failed' || result.status === 'skipped') && !retryDue) {
-          await patchState(c.id, {
-            [BACKUP_STATE.retryAt]: new Date(now.getTime() + RETRY_AFTER_MS).toISOString(),
-          })
+          await queueBackupRun({ kind: 'destination', connectionId: c.id }, 'scheduled')
+          queued++
+        } catch (err) {
+          if (!(err instanceof BackupBusyError)) throw err
+          // One is queued or running already; it counts for this slot.
         }
       }
-      // The engine has written to the state by now; read it again rather
-      // than judging the destination on what it looked like before the run.
-      if (outcome !== 'done') {
-        const fresh = await db.integrationConnection.findUnique({
-          where: { id: c.id },
-          select: { state: true },
-        })
-        await alertIfOverdue(
-          c.id,
-          c.organizationId,
-          settings,
-          (fresh?.state as Record<string, unknown>) ?? state,
-          now
-        )
-      }
+      await alertIfOverdue(c.id, c.organizationId, settings, state, now)
     } catch (err) {
       console.error(`[cron] backup for connection ${c.id} failed:`, err)
     }
   }
-  return ran
+  return queued
 }
 
 async function alertIfOverdue(
@@ -208,18 +226,166 @@ async function alertIfOverdue(
   await reportOverdue(connectionId, organizationId, lastGood)
 }
 
+/** How often the platform cycle runs: a system setting, hourly unless changed. */
+export async function platformBackupFrequency(): Promise<BackupFrequency> {
+  const row = await db.systemSetting.findUnique({
+    where: { key: SYSTEM_SETTING_KEYS.PLATFORM_BACKUP_FREQUENCY },
+    select: { value: true },
+  })
+  const value = row?.value as BackupFrequency | undefined
+  return value && PLATFORM_FREQUENCIES.includes(value) ? value : 'hourly'
+}
+
+/**
+ * One tick for the platform repositories, on the cloud instance only. Every
+ * workshop whose plan includes them is queued when its slot is due; one
+ * whose plan stopped including them is paused, and after the grace period
+ * its repository's snapshots are forgotten. Returns how many were queued.
+ */
+export async function processDuePlatformBackups(now = new Date()): Promise<number> {
+  if (!platformBackupConfig()) return 0
+  const frequency = await platformBackupFrequency()
+  const settings = { ...BACKUP_SETTING_DEFAULTS, frequency, time: '02:00' }
+  const organizations = await db.organization.findMany({
+    select: { id: true, platformBackup: true },
+  })
+  let queued = 0
+  for (const org of organizations) {
+    try {
+      const allowed = platformBackupAllowed(await getFeatures(org.id))
+      const row = org.platformBackup
+      if (!allowed) {
+        if (row && !row.pausedAt) {
+          await db.platformBackup.update({
+            where: { organizationId: org.id },
+            data: { pausedAt: now },
+          })
+        } else if (
+          row?.pausedAt &&
+          !row.purgedAt &&
+          now.getTime() - row.pausedAt.getTime() > PAUSED_GRACE_MS
+        ) {
+          await purgeRepository(org.id)
+        }
+        continue
+      }
+      if (row?.pausedAt) {
+        await db.platformBackup.update({
+          where: { organizationId: org.id },
+          data: { pausedAt: null, purgedAt: null },
+        })
+      }
+      const timeZone = await workshopTimeZone(org.id)
+      // A workshop new to the cycle gets its first backup now, not at its
+      // next slot: the restore points start from the day it joined.
+      const slotDue =
+        !row?.lastScheduledAt ||
+        isDue(settings, row.lastScheduledAt, now, timeZone, backupOffsetMinutes(org.id))
+      const retryDue = row?.retryAt !== null && row?.retryAt !== undefined && row.retryAt <= now
+      if (slotDue || retryDue) {
+        await db.platformBackup.upsert({
+          where: { organizationId: org.id },
+          create: { organizationId: org.id, lastScheduledAt: now },
+          update: { retryAt: null, ...(slotDue ? { lastScheduledAt: now } : {}) },
+        })
+        try {
+          await queueBackupRun({ kind: 'platform', organizationId: org.id }, 'scheduled')
+          queued++
+        } catch (err) {
+          if (!(err instanceof BackupBusyError)) throw err
+        }
+      }
+      if (row) await alertIfPlatformOverdue(org.id, row, now)
+    } catch (err) {
+      console.error(`[cron] platform backup for ${org.id} failed:`, err)
+    }
+  }
+  return queued
+}
+
+/**
+ * The repository of a workshop that left the plan more than the grace
+ * period ago: every snapshot forgotten and the data pruned. The row stays,
+ * marked, so the card can say what happened and the scheduler does not do it
+ * again.
+ */
+async function purgeRepository(organizationId: string): Promise<void> {
+  const target = await openPlatform(organizationId)
+  const snapshots = await resticSnapshots(target.base, {
+    host: platformHost(organizationId),
+    tags: [],
+  })
+  await resticForgetSnapshots(
+    target.base,
+    snapshots.map((s) => s.id)
+  )
+  await db.platformBackup.update({
+    where: { organizationId },
+    data: { purgedAt: new Date(), snapshots: [], repositorySize: BigInt(0) },
+  })
+  console.warn(`[cron] platform repository of ${organizationId} purged after the grace period`)
+}
+
+/**
+ * A platform repository with no good backup for a day and a half is our
+ * problem before it is the workshop's: the operator is mailed once a day
+ * (PLATFORM_BACKUP_ALERT_EMAIL), and the workshop's owners hear the same
+ * way a destination's would.
+ */
+async function alertIfPlatformOverdue(
+  organizationId: string,
+  row: {
+    lastScheduledAt: Date | null
+    lastGoodAt: Date | null
+    lastOverdueAlertAt: Date | null
+    createdAt: Date
+  },
+  now: Date
+): Promise<void> {
+  if (!row.lastScheduledAt) return
+  const reference = row.lastGoodAt ?? row.createdAt
+  if (now.getTime() - reference.getTime() < PLATFORM_OVERDUE_MS) return
+  if (
+    row.lastOverdueAlertAt &&
+    now.getTime() - row.lastOverdueAlertAt.getTime() < OVERDUE_ALERT_EVERY_MS
+  ) {
+    return
+  }
+  await db.platformBackup.update({ where: { organizationId }, data: { lastOverdueAlertAt: now } })
+  console.error(
+    `[cron] platform backup of ${organizationId} overdue; last good ${row.lastGoodAt?.toISOString() ?? 'never'}`
+  )
+  const operator = process.env.PLATFORM_BACKUP_ALERT_EMAIL?.trim()
+  if (operator) {
+    try {
+      await sendMail({
+        to: operator,
+        from: process.env.SMTP_FROM_EMAIL || operator,
+        subject: `Platform backup overdue: workshop ${organizationId}`,
+        html: `<p>No platform backup of workshop <code>${organizationId}</code> has succeeded since ${row.lastGoodAt?.toISOString() ?? 'it was first scheduled'}.</p><p>See the Backups page on torqvoice.com admin for the failing runs.</p>`,
+      })
+    } catch (err) {
+      console.error('[cron] could not mail the operator:', err)
+    }
+  }
+  await reportOverdue(null, organizationId, row.lastGoodAt)
+}
+
 export function processBackupRuns() {
   let ticking = false
   let prunedAt = 0
   const job = new CronJob('*/5 * * * *', async () => {
-    // A backup can outlast the five minutes; the next tick waits its turn.
+    // A tick can outlast the five minutes while the queue drains; the next
+    // tick waits its turn.
     if (ticking) return
     ticking = true
     try {
       const stale = await failStaleRuns()
       if (stale > 0) console.warn(`[cron] Marked ${stale} stale backup run(s) as failed`)
-      const ran = await processDueBackups()
-      if (ran > 0) console.warn(`[cron] Scheduled backups run: ${ran}`)
+      const queued = (await processDueBackups()) + (await processDuePlatformBackups())
+      if (queued > 0) console.warn(`[cron] Scheduled backups queued: ${queued}`)
+      const ran = await drainBackupQueue()
+      if (ran > 0) console.warn(`[cron] Backup runs finished: ${ran}`)
       // Old run rows go once a day, after the day's work, not on every tick.
       if (Date.now() - prunedAt > PRUNE_EVERY_MS) {
         prunedAt = Date.now()
@@ -233,5 +399,5 @@ export function processBackupRuns() {
     }
   })
   job.start()
-  console.warn('[cron] Backup scheduler started (every 5 minutes)')
+  return job
 }

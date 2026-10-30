@@ -162,27 +162,71 @@ model VehicleSafetyReport {
 /// restic run, what it produced and how it ended. Kept so the connection page
 /// can show the last good backup and the cron can tell when one is overdue.
 model BackupRun {
-  id             String                @id @default(cuid())
-  organizationId String
-  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  connectionId   String
-  connection     IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  id               String                 @id @default(cuid())
+  organizationId   String
+  organization     Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// destination: the workshop's own bucket or folder (connectionId set).
+  /// platform: the repository Torqvoice keeps for the workshop on the cloud
+  /// instance (no connection).
+  kind             String                 @default("destination")
+  connectionId     String?
+  connection       IntegrationConnection? @relation(fields: [connectionId], references: [id], onDelete: Cascade)
   /// scheduled | manual | restore
-  trigger        String
+  trigger          String
   /// queued | running | done | failed | skipped
-  status         String                @default("queued")
-  startedAt      DateTime?
-  finishedAt     DateTime?
+  status           String                 @default("queued")
+  startedAt        DateTime?
+  finishedAt       DateTime?
   /// restic snapshot id: the one a backup made, or the one a restore put back.
-  snapshotId     String?
-  filesNew       Int?
-  bytesAdded     BigInt?
-  totalBytes     BigInt?
-  error          String?
-  createdAt      DateTime              @default(now())
+  snapshotId       String?
+  /// The snapshot of the workshop as it was taken right before a restore
+  /// replaced it, so a restore can itself be undone.
+  safetySnapshotId String?
+  /// Who asked: a member's user id, or null for a run the schedule or
+  /// support (through torqvoice.com) started.
+  requestedBy      String?
+  /// Why support restored, as typed on torqvoice.com; shown to the workshop.
+  reason           String?
+  filesNew         Int?
+  bytesAdded       BigInt?
+  totalBytes       BigInt?
+  error            String?
+  createdAt        DateTime               @default(now())
 
   @@index([connectionId, createdAt])
-  @@index([organizationId, createdAt])
-  @@index([status])
+  @@index([organizationId, kind, createdAt])
+  @@index([status, createdAt])
   @@map("backup_runs")
+}
+
+/// The backups Torqvoice runs for a workshop on the cloud instance: one
+/// restic repository per workshop in a bucket of ours, hourly, Pro and up.
+/// One row per workshop that has ever been in the cycle; the run rows carry
+/// the history, this row carries where the schedule stands.
+model PlatformBackup {
+  organizationId     String       @id
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lastScheduledAt    DateTime?
+  lastGoodAt         DateTime?
+  lastPruneAt        DateTime?
+  lastCheckAt        DateTime?
+  /// One retry half an hour after a failed or skipped run.
+  retryAt            DateTime?
+  /// Set while the workshop's plan no longer includes platform backups.
+  /// Runs stop; the repository is kept for a grace period, then forgotten.
+  pausedAt           DateTime?
+  /// The repository's snapshots were forgotten after the grace period.
+  purgedAt           DateTime?
+  repositorySize     BigInt?
+  /// The restore points in the repository after the last run, newest first:
+  /// [{ id, shortId, time, bytes, trigger, preRestore }]. What the Backups
+  /// card and torqvoice.com list, so neither has to open the repository.
+  snapshots          Json         @default("[]")
+  lastFailureMailAt  DateTime?
+  lastOverdueAlertAt DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([pausedAt])
+  @@map("platform_backups")
 }

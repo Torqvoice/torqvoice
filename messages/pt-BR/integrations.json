@@ -164,6 +164,7 @@
       "nothingDue": "Todos os veículos com placa foram verificados recentemente, então ainda não há nada para consultar."
     },
     "supersedes": "Conectar a {next} desconecta a {current}. Só uma pode estar ativa por vez, então {current} deixa de ser usada assim que {next} entrar no ar.",
+    "platformHandlesBackups": "O Torqvoice já faz backup desta oficina a cada hora e mantém pontos de restauração por 30 dias. Conecte um bucket se você também quiser uma cópia sua, que possa ser lida sem o Torqvoice.",
     "batchRetried": "{count, plural, =0 {Nada para tentar de novo} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}",
     "advanced": "Avançado",
     "generate": "Gerar",
@@ -209,6 +210,7 @@
       },
       "restoring": "Restaurando",
       "restoringHint": "Uma restauração está em andamento: os dados da oficina estão sendo substituídos pelo backup. Esta página se atualiza sozinha até terminar. Não trabalhe na oficina até lá.",
+      "explore": "Explorar",
       "restore": {
         "showAll": "Mostrar todos os backups",
         "refresh": "Atualizar",
@@ -878,6 +880,14 @@
     "overdueSince": "Nenhum backup para {name} terminou desde {time}.",
     "overdueNever": "Nenhum backup para {name} terminou ainda.",
     "overdueSubject": "O backup para {name} está atrasado",
-    "openToSee": "Abra Configurações, Integrações, {name} para ver o que deu errado."
+    "openToSee": "Abra Configurações, Integrações, {name} para ver o que deu errado.",
+    "platformName": "Backups do Torqvoice",
+    "restoredTitle": "Oficina restaurada",
+    "restoredSubject": "Sua oficina foi restaurada a partir de um backup",
+    "restoredIntro": "{name}: a oficina voltou ao ponto de restauração {snapshot} em {time}. Tudo o que foi registrado depois desse ponto não está mais na oficina.",
+    "restoredByMember": "Um membro da sua oficina pediu esta restauração.",
+    "restoredBySupport": "O suporte da Torqvoice fez isso a seu pedido. Motivo informado: {reason}",
+    "noReason": "nenhum informado",
+    "restoredUndo": "Antes, foi feita uma cópia de proteção da oficina como ela estava logo antes da restauração, que fica guardada por 90 dias. Fale com o suporte para voltar a ela."
   }
 }

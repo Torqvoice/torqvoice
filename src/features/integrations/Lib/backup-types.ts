@@ -31,18 +31,61 @@ export interface BackupSettings {
 export type BackupRunStatus = 'queued' | 'running' | 'done' | 'failed' | 'skipped'
 /** What started the run: the schedule, a person, or a person putting a snapshot back. */
 export type BackupTrigger = 'scheduled' | 'manual' | 'restore'
+/**
+ * Which repository: a destination the workshop connected, or the one
+ * Torqvoice keeps for it on the cloud instance.
+ */
+export type BackupKind = 'destination' | 'platform'
 
 export interface BackupRunView {
   id: string
+  kind: BackupKind
   trigger: BackupTrigger
   status: BackupRunStatus
   startedAt: string | null
   finishedAt: string | null
   snapshotId: string | null
+  /** The safety copy a restore took first, which undoes it. */
+  safetySnapshotId: string | null
+  /** Support's reason for a restore started from torqvoice.com. */
+  reason: string | null
   filesNew: number | null
   bytesAdded: number | null
   totalBytes: number | null
   error: string | null
+}
+
+/** One restore point in a platform repository, as stored after each run. */
+export interface PlatformSnapshotView {
+  id: string
+  shortId: string
+  /** When it was taken, ISO 8601. */
+  time: string
+  bytes: number | null
+  trigger: 'scheduled' | 'manual' | null
+  /** The safety copy a restore took of the workshop right before replacing it. */
+  preRestore: boolean
+}
+
+/** What the Backups card on Settings, Data shows for the platform repository. */
+export interface PlatformBackupOverview {
+  /** The plan includes platform backups and the server runs them. */
+  active: boolean
+  /** Runs stopped because the plan no longer includes them; the repository waits out a grace period. */
+  paused: boolean
+  /** When a paused repository will be forgotten, ISO 8601; null when not paused or already gone. */
+  purgeDueAt: string | null
+  lastGoodAt: string | null
+  nextRunAt: string | null
+  repositorySize: number | null
+  snapshots: PlatformSnapshotView[]
+  recent: BackupRunView[]
+  running: boolean
+  restoring: boolean
+  /** Position of the workshop's queued run, 0 when none is queued. */
+  queuedAhead: number
+  canRestore: boolean
+  workshopName: string
 }
 
 /** What the connection page shows for a backup destination. */

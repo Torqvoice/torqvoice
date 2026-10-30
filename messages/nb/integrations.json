@@ -164,6 +164,7 @@
       "nothingDue": "Alle kjøretøy med skilt er sjekket nylig, så det er ingenting å slå opp ennå."
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
+    "platformHandlesBackups": "Torqvoice tar allerede sikkerhetskopi av dette verkstedet hver time og beholder gjenopprettingspunkter i 30 dager. Koble til en bøtte hvis du også vil ha en kopi du eier selv, som kan leses uten Torqvoice.",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
     "advanced": "Avansert",
     "generate": "Generer",
@@ -209,6 +210,7 @@
       },
       "restoring": "Gjenoppretter",
       "restoringHint": "En gjenoppretting kjører: verkstedets data erstattes med sikkerhetskopien. Siden oppdaterer seg selv til den er ferdig. Ikke arbeid i verkstedet før da.",
+      "explore": "Utforsk",
       "restore": {
         "showAll": "Vis alle sikkerhetskopier",
         "refresh": "Oppdater",
@@ -878,6 +880,14 @@
     "overdueSince": "Ingen sikkerhetskopi til {name} er fullført siden {time}.",
     "overdueNever": "Ingen sikkerhetskopi til {name} er fullført ennå.",
     "overdueSubject": "Sikkerhetskopi til {name} er forsinket",
-    "openToSee": "Åpne Innstillinger, Integrasjoner, {name} for å se hva som gikk galt."
+    "openToSee": "Åpne Innstillinger, Integrasjoner, {name} for å se hva som gikk galt.",
+    "platformName": "Sikkerhetskopier fra Torqvoice",
+    "restoredTitle": "Verkstedet er gjenopprettet",
+    "restoredSubject": "Verkstedet ditt ble gjenopprettet fra en sikkerhetskopi",
+    "restoredIntro": "{name}: verkstedet ble satt tilbake til gjenopprettingspunkt {snapshot} {time}. Alt som ble lagt inn etter det punktet, finnes ikke lenger i verkstedet.",
+    "restoredByMember": "Et medlem av verkstedet ditt ba om denne gjenopprettingen.",
+    "restoredBySupport": "Torqvoice-supporten gjorde dette etter forespørsel fra deg. Oppgitt grunn: {reason}",
+    "noReason": "ingen oppgitt",
+    "restoredUndo": "Først ble det tatt en kopi av verkstedet slik det var rett før gjenopprettingen, og den beholdes i 90 dager. Kontakt supporten for å gå tilbake til den."
   }
 }

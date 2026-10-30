@@ -164,6 +164,7 @@
       "nothingDue": "Alle Fahrzeuge mit Kennzeichen wurden kürzlich geprüft, es gibt noch nichts abzufragen."
     },
     "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
+    "platformHandlesBackups": "Torqvoice sichert diese Werkstatt bereits stündlich und bewahrt Wiederherstellungspunkte 30 Tage lang auf. Verbinden Sie einen Bucket, wenn Sie zusätzlich eine eigene Kopie möchten, die auch ohne Torqvoice lesbar ist.",
     "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}",
     "advanced": "Erweitert",
     "generate": "Erzeugen",
@@ -209,6 +210,7 @@
       },
       "restoring": "Wird wiederhergestellt",
       "restoringHint": "Eine Wiederherstellung läuft: Die Daten der Werkstatt werden durch die Sicherung ersetzt. Diese Seite aktualisiert sich selbst, bis sie fertig ist. Arbeiten Sie bis dahin nicht in der Werkstatt.",
+      "explore": "Ansehen",
       "restore": {
         "showAll": "Alle Sicherungen anzeigen",
         "refresh": "Aktualisieren",
@@ -878,6 +880,14 @@
     "overdueSince": "Seit {time} wurde keine Sicherung nach {name} abgeschlossen.",
     "overdueNever": "Bisher wurde keine Sicherung nach {name} abgeschlossen.",
     "overdueSubject": "Sicherung nach {name} ist überfällig",
-    "openToSee": "Öffnen Sie Einstellungen, Integrationen, {name}, um zu sehen, was schiefgelaufen ist."
+    "openToSee": "Öffnen Sie Einstellungen, Integrationen, {name}, um zu sehen, was schiefgelaufen ist.",
+    "platformName": "Sicherungen von Torqvoice",
+    "restoredTitle": "Werkstatt wiederhergestellt",
+    "restoredSubject": "Ihre Werkstatt wurde aus einer Sicherung wiederhergestellt",
+    "restoredIntro": "{name}: Die Werkstatt wurde am {time} auf den Wiederherstellungspunkt {snapshot} zurückgesetzt. Alles, was nach diesem Punkt eingegeben wurde, ist nicht mehr in der Werkstatt.",
+    "restoredByMember": "Ein Mitglied Ihrer Werkstatt hat diese Wiederherstellung angefordert.",
+    "restoredBySupport": "Der Torqvoice-Support hat dies auf Ihre Anfrage hin durchgeführt. Angegebener Grund: {reason}",
+    "noReason": "keiner angegeben",
+    "restoredUndo": "Vorher wurde eine Sicherheitskopie der Werkstatt im Zustand direkt vor der Wiederherstellung erstellt, die 90 Tage lang aufbewahrt wird. Wenden Sie sich an den Support, um zu ihr zurückzukehren."
   }
 }

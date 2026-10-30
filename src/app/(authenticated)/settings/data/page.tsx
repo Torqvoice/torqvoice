@@ -1,9 +1,11 @@
 import { DataSettings } from './data-settings'
 import { getContentCounts } from '@/features/settings/Actions/deleteContent'
 import { listBackupDestinations } from '@/features/integrations/Actions/backupActions'
+import { platformBackupOverview } from '@/features/integrations/Lib/platform-backup'
 import { getBackupHeartbeat } from '@/lib/backup-heartbeat'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { reauthRequirement } from '@/lib/reauth.server'
 import {
   SAMPLE_DATA_IDS_KEY,
@@ -39,6 +41,18 @@ export default async function DataSettingsPage() {
         }),
       ])
     : [null, null]
+  // Backups by Torqvoice, on the cloud instance only (null elsewhere). A
+  // repository that cannot be read never takes the rest of the page with it.
+  const ctx = await getAuthContext()
+  const platformBackup = ctx
+    ? await platformBackupOverview(ctx.organizationId, {
+        userId: ctx.userId,
+        isAdmin: ctx.isAdmin,
+      }).catch((err) => {
+        console.error('[backup] platform backup overview failed:', err)
+        return null
+      })
+    : null
   const hasSampleData = hasAnySampleIds(parseSampleDataIds(sampleRow?.value))
   const contentCounts =
     countsResult.success && countsResult.data
@@ -66,6 +80,7 @@ export default async function DataSettingsPage() {
       hasSampleData={hasSampleData}
       reauth={reauth}
       backupDestinations={backupDestinations}
+      platformBackup={platformBackup}
     />
   )
 }

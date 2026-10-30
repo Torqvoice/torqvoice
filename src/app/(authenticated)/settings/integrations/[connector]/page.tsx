@@ -9,6 +9,7 @@ import {
 } from '@/features/integrations/Actions/integrationActions'
 import { getManifest } from '@/integrations/registry'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
+import { platformBackupsEnabled } from '@/lib/backup/platform'
 import { FeatureLocked } from '../../feature-locked-message'
 import { ConnectionSettings } from './connection-settings'
 
@@ -38,6 +39,7 @@ export default async function IntegrationConnectionPage({
     <ConnectionSettings
       view={view.data}
       activity={activity.success && activity.data ? activity.data : { items: [], logs: [] }}
+      platformHandlesBackups={manifest.id === 's3' && platformBackupsEnabled()}
     />
   )
 
