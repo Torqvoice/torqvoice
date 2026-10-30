@@ -61,7 +61,7 @@ describe('the backup layout', () => {
     for (const node of Object.values(BACKUP_LAYOUT)) collect(node)
     // Every `name: true` or `name: { include` inside an include block.
     const included = new Set<string>()
-    for (const block of source.matchAll(/include:\s*\{([^]*?)\n\s*\}/g)) {
+    for (const block of source.matchAll(/include:\s*\{([\s\S]*?)\n\s*\}/g)) {
       for (const m of block[1].matchAll(/^\s*(\w+):\s*(true|\{)/gm)) included.add(m[1])
     }
     for (const m of source.matchAll(/^\s*(\w+): true,$/gm)) {

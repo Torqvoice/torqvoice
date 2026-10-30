@@ -63,6 +63,18 @@ jobs:
           INBOUND_MAIL_BUCKET: ${{ secrets.CLOUD_INBOUND_MAIL_BUCKET }}
           INBOUND_MAIL_REGION: ${{ secrets.CLOUD_INBOUND_MAIL_REGION }}
           INBOUND_MAIL_TOPIC_ARN: ${{ secrets.CLOUD_INBOUND_MAIL_TOPIC_ARN }}
+          # Backups by Torqvoice: one restic repository per Pro workshop in a bucket
+          # of ours. All of the first six or none: with any missing the schedule
+          # stays off and the log says so once. The master key derives every
+          # repository password, so it belongs in the disaster recovery vault too.
+          # The alert address is optional and hears about failed runs.
+          PLATFORM_BACKUP_S3_ENDPOINT: ${{ secrets.CLOUD_PLATFORM_BACKUP_S3_ENDPOINT }}
+          PLATFORM_BACKUP_S3_BUCKET: ${{ secrets.CLOUD_PLATFORM_BACKUP_S3_BUCKET }}
+          PLATFORM_BACKUP_S3_REGION: ${{ secrets.CLOUD_PLATFORM_BACKUP_S3_REGION }}
+          PLATFORM_BACKUP_S3_ACCESS_KEY: ${{ secrets.CLOUD_PLATFORM_BACKUP_S3_ACCESS_KEY }}
+          PLATFORM_BACKUP_S3_SECRET_KEY: ${{ secrets.CLOUD_PLATFORM_BACKUP_S3_SECRET_KEY }}
+          PLATFORM_BACKUP_MASTER_KEY: ${{ secrets.CLOUD_PLATFORM_BACKUP_MASTER_KEY }}
+          PLATFORM_BACKUP_ALERT_EMAIL: ${{ secrets.CLOUD_PLATFORM_BACKUP_ALERT_EMAIL }}
           # Optional. Next encrypts what a server action closes over with a key
           # made fresh by every build, so a tab left open across a deploy can
           # no longer be read by the new container. A fixed key keeps those tabs
@@ -124,6 +136,13 @@ jobs:
                 INBOUND_MAIL_BUCKET: ${INBOUND_MAIL_BUCKET}
                 INBOUND_MAIL_REGION: ${INBOUND_MAIL_REGION}
                 INBOUND_MAIL_TOPIC_ARN: ${INBOUND_MAIL_TOPIC_ARN}
+                PLATFORM_BACKUP_S3_ENDPOINT: ${PLATFORM_BACKUP_S3_ENDPOINT}
+                PLATFORM_BACKUP_S3_BUCKET: ${PLATFORM_BACKUP_S3_BUCKET}
+                PLATFORM_BACKUP_S3_REGION: ${PLATFORM_BACKUP_S3_REGION}
+                PLATFORM_BACKUP_S3_ACCESS_KEY: ${PLATFORM_BACKUP_S3_ACCESS_KEY}
+                PLATFORM_BACKUP_S3_SECRET_KEY: ${PLATFORM_BACKUP_S3_SECRET_KEY}
+                PLATFORM_BACKUP_MASTER_KEY: ${PLATFORM_BACKUP_MASTER_KEY}
+                PLATFORM_BACKUP_ALERT_EMAIL: ${PLATFORM_BACKUP_ALERT_EMAIL}
                 NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
                 GOOGLE_INTEGRATION_CLIENT_ID: ${GOOGLE_INTEGRATION_CLIENT_ID}
                 GOOGLE_INTEGRATION_CLIENT_SECRET: ${GOOGLE_INTEGRATION_CLIENT_SECRET}

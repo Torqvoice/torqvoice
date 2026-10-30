@@ -7,7 +7,7 @@
  * their row with them, and an id that already belongs to another workshop
  * refuses the whole file.
  */
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
   acquireRestoreLock,
   assertNoForeignRows,

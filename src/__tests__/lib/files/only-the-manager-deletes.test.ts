@@ -44,9 +44,28 @@ const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string; under?: s
     why: "a probe folder under os.tmpdir(), and restic's own cache folder",
   },
   'src/lib/backup/restore.ts': {
-    targets: /\brm\(target\b/,
+    targets: /\brm\(folder\b/,
     why: 'the folder restic wrote a snapshot into, under restore-tmp in the data root',
     under: 'restoreDirFor(',
+  },
+  'src/lib/backup/explore.ts': {
+    targets: /\brm\((?:point\.dir|dir)\b/,
+    why: 'the folder a restore point is opened into, under restore-explore in the data root',
+    under: 'exploreDirFor(',
+  },
+  'src/lib/backup/restic.ts': {
+    targets: /\brm\(input\.target\b/,
+    why: 'the file it was writing a snapshot entry into when restic failed, so a half file is never served',
+    under: 'createWriteStream(input.target',
+  },
+  'src/lib/backup/zip-file.ts': {
+    targets: /\brm\(dir\b/,
+    why: 'the folder an uploaded zip is spooled into under os.tmpdir()',
+  },
+  'src/integrations/local-folder/server.ts': {
+    targets: /\brm\(probe\b/,
+    why: "its own probe file under the workshop's local backup folder",
+    under: 'localRepositoryPath(',
   },
 }
 

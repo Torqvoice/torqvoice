@@ -152,7 +152,7 @@ describe('the restore core only writes its own workshop', () => {
       .filter((w) =>
         ['delete', 'deleteMany', 'update', 'updateMany', 'upsert'].includes(w.operation)
       )
-      .filter((w) => !/where:\s*\{[^]*?\borganizationId\b/.test(w.args))
+      .filter((w) => !/where:\s*\{[\s\S]*?\borganizationId\b/.test(w.args))
       .map((w) => `${w.model}.${w.operation} at line ${w.line}`)
     expect(offenders).toEqual([])
   })
