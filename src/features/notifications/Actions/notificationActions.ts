@@ -51,3 +51,12 @@ export async function deleteNotification(id: string) {
     return { success: true }
   })
 }
+
+export async function deleteAllNotifications() {
+  return withAuth(async ({ organizationId }) => {
+    await db.notification.deleteMany({
+      where: { organizationId },
+    })
+    return { success: true }
+  })
+}

@@ -14,6 +14,7 @@ import {
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
+  deleteAllNotifications,
 } from '../Actions/notificationActions'
 
 const entityIcons: Record<string, typeof FileText> = {
@@ -55,8 +56,10 @@ export function NotificationPanel() {
     markRead,
     markAllRead,
     removeNotification,
+    clearAll,
   } = useNotificationStore()
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [pendingClearAll, setPendingClearAll] = useState(false)
 
   const handleClickNotification = (id: string, entityUrl: string, read: boolean) => {
     if (pendingDeleteId) {
@@ -101,12 +104,22 @@ export function NotificationPanel() {
     markAllNotificationsRead()
   }
 
+  const handleConfirmClearAll = () => {
+    clearAll()
+    deleteAllNotifications()
+    setPendingClearAll(false)
+    setPendingDeleteId(null)
+  }
+
   return (
     <Sheet
       open={isPanelOpen}
       onOpenChange={(open) => {
         setPanelOpen(open)
-        if (!open) setPendingDeleteId(null)
+        if (!open) {
+          setPendingDeleteId(null)
+          setPendingClearAll(false)
+        }
       }}
     >
       <SheetContent className="w-[380px] p-0 sm:max-w-[380px]">
@@ -120,12 +133,47 @@ export function NotificationPanel() {
                 </Badge>
               )}
             </div>
-            {unreadCount > 0 && (
-              <Button variant="ghost" size="sm" className="text-xs" onClick={handleMarkAllRead}>
-                {t('panel.markAllRead')}
-              </Button>
-            )}
+            <div className="flex items-center gap-1">
+              {unreadCount > 0 && (
+                <Button variant="ghost" size="sm" className="text-xs" onClick={handleMarkAllRead}>
+                  {t('panel.markAllRead')}
+                </Button>
+              )}
+              {notifications.length > 0 && !pendingClearAll && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => setPendingClearAll(true)}
+                >
+                  {t('panel.clearAll')}
+                </Button>
+              )}
+            </div>
           </div>
+          {pendingClearAll && (
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground">{t('panel.confirmClearAll')}</span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={handleConfirmClearAll}
+                >
+                  {t('panel.delete')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setPendingClearAll(false)}
+                >
+                  {t('panel.cancel')}
+                </Button>
+              </div>
+            </div>
+          )}
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-4rem)]">
           {notifications.length === 0 ? (

@@ -2,6 +2,8 @@
   "panel": {
     "title": "Notifiche",
     "markAllRead": "Segna tutto come letto",
+    "clearAll": "Cancella tutto",
+    "confirmClearAll": "Eliminare tutte le notifiche?",
     "empty": "Nessuna notifica ancora",
     "confirmDelete": "Sei sicuro?",
     "delete": "Elimina",

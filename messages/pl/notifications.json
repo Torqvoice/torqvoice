@@ -2,6 +2,8 @@
   "panel": {
     "title": "Powiadomienia",
     "markAllRead": "Oznacz wszystkie jako przeczytane",
+    "clearAll": "Wyczyść wszystko",
+    "confirmClearAll": "Usunąć wszystkie powiadomienia?",
     "empty": "Brak powiadomień",
     "confirmDelete": "Czy na pewno?",
     "delete": "Usuń",
