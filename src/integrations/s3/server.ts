@@ -187,6 +187,28 @@ async function repository(ctx: ConnectorContext): Promise<ResticRepository> {
 }
 
 /**
+ * One client for the vendors above. Path style, which every one of them
+ * accepts, and no SDK checksums: newer SDKs add checksum headers and
+ * trailers to writes that Cloudflare R2 and other S3-compatible services
+ * refuse, so they are sent only where the operation itself requires them.
+ */
+function s3Client(input: {
+  region: string
+  endpoint: string
+  accessKeyId: string
+  secretAccessKey: string
+}): S3Client {
+  return new S3Client({
+    region: input.region,
+    endpoint: input.endpoint,
+    forcePathStyle: true,
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
+    credentials: { accessKeyId: input.accessKeyId, secretAccessKey: input.secretAccessKey },
+  })
+}
+
+/**
  * The buckets the key can see at the chosen provider, for the bucket picker.
  * Anything short of a list is an empty list: a provider without its region
  * yet, a key that may use one bucket but not list them, a vendor that is
@@ -214,11 +236,11 @@ export async function listBuckets(
   } catch {
     return []
   }
-  const client = new S3Client({
+  const client = s3Client({
     region: region || 'us-east-1',
     endpoint: host.startsWith('http://') ? host : `https://${host}`,
-    forcePathStyle: true,
-    credentials: { accessKeyId, secretAccessKey },
+    accessKeyId,
+    secretAccessKey,
   })
   try {
     const out = await client.send(new ListBucketsCommand({}), {
@@ -263,14 +285,11 @@ export async function testAccess(
   const url = new URL(repo.repository.slice('s3:'.length))
   const [bucket, ...rest] = url.pathname.slice(1).split('/')
   const prefix = rest.join('/')
-  const client = new S3Client({
+  const client = s3Client({
     region: repo.options?.['s3.region'] || 'us-east-1',
     endpoint: url.origin,
-    forcePathStyle: true,
-    credentials: {
-      accessKeyId: repo.env.AWS_ACCESS_KEY_ID ?? '',
-      secretAccessKey: repo.env.AWS_SECRET_ACCESS_KEY ?? '',
-    },
+    accessKeyId: repo.env.AWS_ACCESS_KEY_ID ?? '',
+    secretAccessKey: repo.env.AWS_SECRET_ACCESS_KEY ?? '',
   })
   const key = `${prefix}/.torqvoice-test-${randomUUID()}`
   const abortSignal = AbortSignal.timeout(15_000)
