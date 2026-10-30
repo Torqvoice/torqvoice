@@ -211,7 +211,18 @@
     "searchOrType": "Pesquisar ou digitar um nome",
     "useTyped": "Usar \"{value}\"",
     "listNeedsKeys": "Informe as chaves acima para ver a lista",
-    "listEmpty": "A lista está vazia. Digite um nome."
+    "listEmpty": "A lista está vazia. Digite um nome.",
+    "testing": "Testando a conexão",
+    "testOk": "A conexão funciona: um objeto de teste foi gravado e excluído em seguida.",
+    "testFailed": "O teste falhou",
+    "testSteps": {
+      "settings": "Verifique as configurações do provedor",
+      "list": "A chave não consegue listar o bucket",
+      "write": "A chave não consegue gravar no bucket",
+      "delete": "A chave não consegue excluir do bucket",
+      "folder": "Não foi possível criar ou abrir a pasta"
+    },
+    "testHint": "Informe as chaves e o bucket para testá-los antes de conectar. O teste grava um objeto pequeno e o exclui."
   },
   "activity": {
     "title": "Atividade",

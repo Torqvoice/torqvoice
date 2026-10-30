@@ -1,8 +1,16 @@
-import { ListBucketsCommand, S3Client } from '@aws-sdk/client-s3'
+import { randomUUID } from 'node:crypto'
+import {
+  DeleteObjectCommand,
+  ListBucketsCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 import type { ResticRepository } from '@/features/integrations/Lib/backup-types'
 import type {
   ConnectorContext,
   ConnectorServer,
+  PreviewTestResult,
   SettingOption,
 } from '@/features/integrations/Lib/types'
 import { describeRepository, forgetRepositoryCache, testBackupTarget } from '@/lib/backup/target'
@@ -228,6 +236,71 @@ export async function listBuckets(
   }
 }
 
+function failed(step: string, err: unknown): PreviewTestResult {
+  const e = err as { name?: string; message?: string }
+  const reason = [e?.name, e?.message].filter((s) => typeof s === 'string' && s).join(': ')
+  return { ok: false, step, reason: reason || String(err) }
+}
+
+/**
+ * Proves the typed keys can do what a backup needs in the bucket, list,
+ * write and delete, with one test object under the backup folder that is
+ * removed again. It never touches the repository, so it can run before
+ * anything is saved and says which permission is missing when one is.
+ */
+export async function testAccess(
+  credentials: Record<string, unknown>,
+  settings: Record<string, unknown>,
+  cloud: boolean
+): Promise<PreviewTestResult> {
+  let repo: ResticRepository
+  try {
+    repo = repositoryFor(settings, credentials, cloud)
+  } catch (err) {
+    return { ok: false, step: 'settings', reason: err instanceof Error ? err.message : String(err) }
+  }
+  // s3:https://host/bucket/prefix, as repositoryFor builds it.
+  const url = new URL(repo.repository.slice('s3:'.length))
+  const [bucket, ...rest] = url.pathname.slice(1).split('/')
+  const prefix = rest.join('/')
+  const client = new S3Client({
+    region: repo.options?.['s3.region'] || 'us-east-1',
+    endpoint: url.origin,
+    forcePathStyle: true,
+    credentials: {
+      accessKeyId: repo.env.AWS_ACCESS_KEY_ID ?? '',
+      secretAccessKey: repo.env.AWS_SECRET_ACCESS_KEY ?? '',
+    },
+  })
+  const key = `${prefix}/.torqvoice-test-${randomUUID()}`
+  const abortSignal = AbortSignal.timeout(15_000)
+  try {
+    try {
+      await client.send(
+        new ListObjectsV2Command({ Bucket: bucket, Prefix: `${prefix}/`, MaxKeys: 1 }),
+        { abortSignal }
+      )
+    } catch (err) {
+      return failed('list', err)
+    }
+    try {
+      await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: 'torqvoice' }), {
+        abortSignal,
+      })
+    } catch (err) {
+      return failed('write', err)
+    }
+    try {
+      await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }), { abortSignal })
+    } catch (err) {
+      return failed('delete', err)
+    }
+    return { ok: true }
+  } finally {
+    client.destroy()
+  }
+}
+
 export const connector: ConnectorServer = {
   manifest,
   async identify(ctx) {
@@ -251,6 +324,7 @@ export const connector: ConnectorServer = {
   previewOptions: {
     buckets: ({ credentials, settings }) => listBuckets(credentials, settings, isCloudInstance()),
   },
+  previewTest: ({ credentials, settings }) => testAccess(credentials, settings, isCloudInstance()),
   jobs: {},
   backupTarget: { repository },
 }

@@ -211,7 +211,18 @@
     "searchOrType": "Suchen oder Namen eingeben",
     "useTyped": "„{value}“ verwenden",
     "listNeedsKeys": "Geben Sie oben die Schlüssel ein, um die Liste zu sehen",
-    "listEmpty": "Es wurde nichts aufgelistet. Geben Sie stattdessen einen Namen ein."
+    "listEmpty": "Es wurde nichts aufgelistet. Geben Sie stattdessen einen Namen ein.",
+    "testing": "Verbindung wird getestet",
+    "testOk": "Die Verbindung funktioniert: Ein Testobjekt wurde geschrieben und wieder entfernt.",
+    "testFailed": "Der Test ist fehlgeschlagen",
+    "testSteps": {
+      "settings": "Prüfen Sie die Anbietereinstellungen",
+      "list": "Der Schlüssel kann den Bucket nicht auflisten",
+      "write": "Der Schlüssel kann nicht in den Bucket schreiben",
+      "delete": "Der Schlüssel kann nicht aus dem Bucket löschen",
+      "folder": "Der Ordner kann nicht erstellt oder geöffnet werden"
+    },
+    "testHint": "Füllen Sie die Schlüssel und den Bucket aus, um sie vor dem Verbinden zu testen. Der Test schreibt ein kleines Objekt und entfernt es wieder."
   },
   "activity": {
     "title": "Aktivität",

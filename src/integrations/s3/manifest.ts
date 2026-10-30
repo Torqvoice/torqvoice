@@ -25,6 +25,7 @@ export const manifest: ConnectorManifest = {
   // The provider decides the rest of the page: which region list, whether an
   // account id or an endpoint is asked for, which buckets can be listed.
   settingsFirst: true,
+  testBeforeConnect: true,
   auth: {
     type: 'api-key',
     fields: [

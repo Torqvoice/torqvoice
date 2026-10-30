@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
   Copy,
@@ -21,9 +22,11 @@ import {
   Plug,
   RefreshCw,
   RotateCcw,
+  ShieldCheck,
   Trash2,
   Unplug,
   Upload,
+  XCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
@@ -53,6 +56,7 @@ import {
   disconnectIntegration,
   getIntegrationRemoteOptions,
   previewIntegrationRemoteOptions,
+  previewIntegrationTest,
   retryIntegrationBatch,
   retryIntegrationJob,
   runIntegrationJob,
@@ -65,6 +69,7 @@ import type {
   ActivityItem,
   ActivityJob,
   CredentialField,
+  PreviewTestResult,
   SettingField,
   SettingOption,
 } from '@/features/integrations/Lib/types'
@@ -843,6 +848,42 @@ function ConnectForm({
   const trailingSettings = manifest.settingsFirst
     ? visibleSettings.filter((f) => !leading.has(f.key))
     : visibleSettings
+  // The settings listed from the keys, such as the bucket, sit right after
+  // them, and the check of the keys right after that, before the schedule.
+  const keyedSettings = manifest.settingsFirst ? trailingSettings.filter((f) => f.preview) : []
+  const restSettings = manifest.settingsFirst
+    ? trailingSettings.filter((f) => !f.preview)
+    : trailingSettings
+
+  const [test, setTest] = useState<
+    { status: 'idle' } | { status: 'running' } | { status: 'done'; result: PreviewTestResult }
+  >({ status: 'idle' })
+  // A result belongs to the values it was run on: any edit clears it.
+  const formKey = JSON.stringify([values, settings])
+  useEffect(() => {
+    setTest({ status: 'idle' })
+  }, [formKey])
+  // The check needs the keys and what they point at, not a password that
+  // only means something once a repository exists.
+  const canTest =
+    Boolean(manifest.testBeforeConnect) &&
+    !visibleFields.some((f) => f.required && !f.generate && !values[f.key]?.trim()) &&
+    !leadingSettings.some((f) => settingMissing(f, settings)) &&
+    !keyedSettings.some((f) => settingMissing(f, settings))
+  const runTest = async () => {
+    setTest({ status: 'running' })
+    const res = await previewIntegrationTest(manifest.id, values, settings)
+    setTest({
+      status: 'done',
+      result:
+        res.success && res.data ? res.data : { ok: false, step: 'settings', reason: res.error },
+    })
+  }
+  const testResultText = (result: PreviewTestResult) => {
+    const step = result.step && t.has(`connection.testSteps.${result.step}`)
+    const head = step ? t(`connection.testSteps.${result.step}`) : t('connection.testFailed')
+    return result.reason ? `${head}: ${result.reason}` : head
+  }
   const settingsBox = (list: SettingField[]) =>
     list.length > 0 && (
       <div className="rounded-lg border p-3">
@@ -956,7 +997,45 @@ function ConnectForm({
         </details>
       )}
 
-      {settingsBox(trailingSettings)}
+      {settingsBox(keyedSettings)}
+
+      {manifest.testBeforeConnect && (
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={runTest}
+              disabled={!canTest || test.status === 'running' || busy !== null}
+            >
+              {test.status === 'running' ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <ShieldCheck className="mr-1 h-3.5 w-3.5" />
+              )}
+              {test.status === 'running' ? t('connection.testing') : t('connection.test')}
+            </Button>
+            {!canTest && test.status === 'idle' && (
+              <p className="text-xs text-muted-foreground">{t('connection.testHint')}</p>
+            )}
+          </div>
+          {test.status === 'done' &&
+            (test.result.ok ? (
+              <p className="flex items-start gap-1.5 text-xs text-emerald-600">
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                {t('connection.testOk')}
+              </p>
+            ) : (
+              <p className="flex items-start gap-1.5 text-xs text-destructive">
+                <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span className="min-w-0 break-words">{testResultText(test.result)}</span>
+              </p>
+            ))}
+        </div>
+      )}
+
+      {settingsBox(restSettings)}
 
       <div className="flex flex-wrap gap-2">
         {manifest.auth.type === 'oauth2' ? (
@@ -1064,6 +1143,62 @@ function settingMissing(f: SettingField, values: SettingValues): boolean {
   return Boolean(f.required) && (current === '' || current === undefined || current === null)
 }
 
+/**
+ * A setting listed from the vendor. While there is a list, a picker; while
+ * there is none and a typed name is accepted, a plain box, because a picker
+ * with nothing in it reads as "wait" when the answer is "type it". A storage
+ * key allowed one bucket but not to list them lands here every time.
+ */
+function RemoteSettingInput({
+  connectorId,
+  field,
+  value,
+  options,
+  onChange,
+}: {
+  connectorId: string
+  field: SettingField
+  value: string
+  options: SettingOption[] | null | undefined
+  onChange: (value: string) => void
+}) {
+  const t = useTranslations('integrations')
+  const tc = useTranslations(`integrations.connectors.${connectorId}`)
+  const listed = Array.isArray(options) && options.length > 0
+  if (field.allowCustom && options !== undefined && !listed) {
+    return (
+      <div className="space-y-1">
+        <Input
+          type="text"
+          name={`${connectorId}-${field.key}`}
+          className="h-8"
+          autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
+          placeholder={tc(`settings.${field.label}`)}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        {/* The keys were given and the vendor listed nothing: say so once. */}
+        {Array.isArray(options) && (
+          <p className="text-xs text-muted-foreground">{t('connection.listEmpty')}</p>
+        )}
+      </div>
+    )
+  }
+  return (
+    <OptionPicker
+      value={value}
+      options={options}
+      onChange={onChange}
+      required={field.required}
+      allowCustom={field.allowCustom}
+      emptyHint={options === null ? t('connection.listNeedsKeys') : undefined}
+    />
+  )
+}
+
 /** The rows of a settings form, shared by the connect page and the settings card. */
 function SettingFieldList({
   connectorId,
@@ -1125,19 +1260,12 @@ function SettingFieldList({
               />
             )}
             {f.type === 'remote-select' && (
-              <OptionPicker
+              <RemoteSettingInput
+                connectorId={connectorId}
+                field={f}
                 value={String(values[f.key] ?? '')}
                 options={remote[f.source ?? '']}
                 onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
-                required={f.required}
-                allowCustom={f.allowCustom}
-                emptyHint={
-                  remote[f.source ?? ''] === null
-                    ? t('connection.listNeedsKeys')
-                    : f.allowCustom
-                      ? t('connection.listEmpty')
-                      : undefined
-                }
               />
             )}
             {f.type === 'select' && optionsFor(f, values) === undefined && (

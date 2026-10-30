@@ -1,6 +1,12 @@
+import { randomUUID } from 'node:crypto'
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { ResticRepository } from '@/features/integrations/Lib/backup-types'
-import type { ConnectorContext, ConnectorServer } from '@/features/integrations/Lib/types'
+import type {
+  ConnectorContext,
+  ConnectorServer,
+  PreviewTestResult,
+} from '@/features/integrations/Lib/types'
 import { forgetRepositoryCache, testBackupTarget } from '@/lib/backup/target'
 import { dataRoot } from '@/lib/upload-root'
 import { manifest } from './manifest'
@@ -20,6 +26,33 @@ async function repository(ctx: ConnectorContext): Promise<ResticRepository> {
   return { repository: localRepositoryPath(ctx.connection.organizationId), env: {} }
 }
 
+/**
+ * Proves the folder can be made, written to and cleaned up, with one test
+ * file that is removed again. The repository itself is left to Connect.
+ */
+export async function testFolder(organizationId: string): Promise<PreviewTestResult> {
+  const reason = (err: unknown) => (err instanceof Error ? err.message : String(err))
+  let dir: string
+  try {
+    dir = localRepositoryPath(organizationId)
+    await mkdir(dir, { recursive: true })
+  } catch (err) {
+    return { ok: false, step: 'folder', reason: reason(err) }
+  }
+  const probe = path.join(dir, `.torqvoice-test-${randomUUID()}`)
+  try {
+    await writeFile(probe, 'torqvoice')
+  } catch (err) {
+    return { ok: false, step: 'write', reason: reason(err) }
+  }
+  try {
+    await rm(probe)
+  } catch (err) {
+    return { ok: false, step: 'delete', reason: reason(err) }
+  }
+  return { ok: true }
+}
+
 export const connector: ConnectorServer = {
   manifest,
   async identify(ctx) {
@@ -34,6 +67,7 @@ export const connector: ConnectorServer = {
     // every backup the workshop has.
     await forgetRepositoryCache(ctx.connection.organizationId)
   },
+  previewTest: ({ organizationId }) => testFolder(organizationId),
   jobs: {},
   backupTarget: { repository },
 }

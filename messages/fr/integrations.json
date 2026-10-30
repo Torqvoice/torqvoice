@@ -211,7 +211,18 @@
     "searchOrType": "Rechercher ou saisir un nom",
     "useTyped": "Utiliser « {value} »",
     "listNeedsKeys": "Saisissez les clés ci-dessus pour voir la liste",
-    "listEmpty": "Rien n'a été listé. Saisissez plutôt un nom."
+    "listEmpty": "Rien n'a été listé. Saisissez plutôt un nom.",
+    "testing": "Test de la connexion en cours",
+    "testOk": "La connexion fonctionne : un objet de test a été écrit puis supprimé.",
+    "testFailed": "Le test a échoué",
+    "testSteps": {
+      "settings": "Vérifiez les paramètres du fournisseur",
+      "list": "La clé ne peut pas lister le bucket",
+      "write": "La clé ne peut pas écrire dans le bucket",
+      "delete": "La clé ne peut pas supprimer d'objets du bucket",
+      "folder": "Le dossier ne peut être ni créé ni ouvert"
+    },
+    "testHint": "Saisissez les clés et le bucket pour les tester avant de connecter. Le test écrit un petit objet puis le supprime."
   },
   "activity": {
     "title": "Activité",

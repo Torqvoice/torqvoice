@@ -32,6 +32,7 @@ import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import { describeSettingChanges } from '../Lib/setting-changes'
 import type {
+  PreviewTestResult,
   ActivityBatch,
   ActivityItem,
   ActivityJob,
@@ -609,6 +610,33 @@ export async function previewIntegrationRemoteOptions(
       const provider = server.previewOptions?.[source]
       if (!provider) return []
       return provider(picked)
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
+  )
+}
+
+/**
+ * A check of keys and settings typed on the connect page, before anything is
+ * saved: can they reach the destination and write to it. The typed values go
+ * to the vendor and nowhere else, and nothing of them is kept.
+ */
+export async function previewIntegrationTest(
+  connectorId: string,
+  rawCredentials: unknown,
+  rawSettings: unknown
+) {
+  return withAuth(
+    async ({ organizationId }): Promise<PreviewTestResult> => {
+      demoGuard()
+      await requireConnectorPlan(organizationId, connectorId)
+      const manifest = getManifest(connectorId)
+      if (!manifest?.testBeforeConnect) throw new Error('Unknown integration')
+      const credentials = credentialsSchema.parse(rawCredentials)
+      const settings = cleanSettings(manifest, rawSettings)
+      const server = await getConnector(connectorId)
+      if (!server.previewTest)
+        throw new Error('This integration cannot be tested before connecting')
+      return server.previewTest({ credentials, settings, organizationId })
     },
     { requiredPermissions: SETTINGS_PERMISSION }
   )

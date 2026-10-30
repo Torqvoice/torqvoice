@@ -211,7 +211,18 @@
     "searchOrType": "Buscar o escribir un nombre",
     "useTyped": "Usar \"{value}\"",
     "listNeedsKeys": "Introduzca las claves de arriba para ver la lista",
-    "listEmpty": "La lista está vacía. Escriba un nombre."
+    "listEmpty": "La lista está vacía. Escriba un nombre.",
+    "testing": "Probando la conexión",
+    "testOk": "La conexión funciona: se escribió un objeto de prueba y se volvió a eliminar.",
+    "testFailed": "La prueba falló",
+    "testSteps": {
+      "settings": "Revise los ajustes del proveedor",
+      "list": "La clave no puede listar el bucket",
+      "write": "La clave no puede escribir en el bucket",
+      "delete": "La clave no puede eliminar del bucket",
+      "folder": "No se puede crear ni abrir la carpeta"
+    },
+    "testHint": "Introduzca las claves y el bucket para probarlos antes de conectar. La prueba escribe un objeto pequeño y lo elimina."
   },
   "activity": {
     "title": "Actividad",

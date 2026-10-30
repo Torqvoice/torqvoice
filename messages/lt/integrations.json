@@ -211,7 +211,18 @@
     "searchOrType": "Ieškoti arba įvesti pavadinimą",
     "useTyped": "Naudoti „{value}“",
     "listNeedsKeys": "Įveskite raktus aukščiau, kad pamatytumėte sąrašą",
-    "listEmpty": "Sąrašas tuščias. Įveskite pavadinimą ranka."
+    "listEmpty": "Sąrašas tuščias. Įveskite pavadinimą ranka.",
+    "testing": "Tikrinamas ryšys",
+    "testOk": "Ryšys veikia: bandomasis objektas buvo įrašytas ir vėl ištrintas.",
+    "testFailed": "Patikra nepavyko",
+    "testSteps": {
+      "settings": "Patikrinkite teikėjo nustatymus",
+      "list": "Raktas negali išvardyti talpyklos turinio",
+      "write": "Raktas negali rašyti į talpyklą",
+      "delete": "Raktas negali trinti iš talpyklos",
+      "folder": "Nepavyksta sukurti ar atverti aplanko"
+    },
+    "testHint": "Užpildykite raktus ir talpyklą, kad galėtumėte juos patikrinti prieš prijungiant. Patikra įrašo vieną nedidelį objektą ir jį ištrina."
   },
   "activity": {
     "title": "Veikla",

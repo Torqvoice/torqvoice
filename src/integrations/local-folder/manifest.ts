@@ -21,6 +21,7 @@ export const manifest: ConnectorManifest = {
   countries: 'global',
   logo: '/images/integrations/local-folder.svg',
   docs: '/docs/integrations/local-folder',
+  testBeforeConnect: true,
   auth: { type: 'api-key', fields: [BACKUP_PASSWORD_FIELD] },
   capabilities: [BACKUP_CAPABILITY],
   plan: 'backups',

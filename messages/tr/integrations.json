@@ -211,7 +211,18 @@
     "searchOrType": "Ara veya bir ad yaz",
     "useTyped": "\"{value}\" değerini kullan",
     "listNeedsKeys": "Listeyi görmek için önce yukarıdaki anahtarları girin",
-    "listEmpty": "Hiçbir şey listelenmedi. Bunun yerine adı yazın."
+    "listEmpty": "Hiçbir şey listelenmedi. Bunun yerine adı yazın.",
+    "testing": "Bağlantı test ediliyor",
+    "testOk": "Bağlantı çalışıyor: bir test nesnesi yazıldı ve yeniden silindi.",
+    "testFailed": "Test başarısız oldu",
+    "testSteps": {
+      "settings": "Sağlayıcı ayarlarını kontrol edin",
+      "list": "Anahtar bucket'ı listeleyemiyor",
+      "write": "Anahtar bucket'a yazamıyor",
+      "delete": "Anahtar bucket'tan silemiyor",
+      "folder": "Klasör oluşturulamıyor veya açılamıyor"
+    },
+    "testHint": "Bağlanmadan önce test etmek için anahtarları ve bucket'ı doldurun. Test küçük bir nesne yazar ve onu siler."
   },
   "activity": {
     "title": "Aktivite",

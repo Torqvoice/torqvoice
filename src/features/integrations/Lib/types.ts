@@ -116,6 +116,15 @@ export type AuthSpec =
   | { type: 'api-key'; fields: CredentialField[] }
   | { type: 'client-credentials'; tokenUrl: string; fields: CredentialField[] }
 
+/** What a check of typed keys found, worded by the form. */
+export interface PreviewTestResult {
+  ok: boolean
+  /** The step that failed: settings, list, write, delete or folder. */
+  step?: string
+  /** The vendor's or the system's own words for it. */
+  reason?: string
+}
+
 export interface SettingOption {
   value: string
   label: string
@@ -167,6 +176,11 @@ export interface ConnectorManifest {
    * decides which keys and which address are asked for, so it is asked first.
    */
   settingsFirst?: boolean
+  /**
+   * The connect page offers a check of the typed keys before anything is
+   * saved, through the server module's previewTest.
+   */
+  testBeforeConnect?: boolean
   id: string
   /** Vendor's product name, not translated. */
   name: string
@@ -441,6 +455,16 @@ export interface ConnectorServer {
   sendTest?(ctx: ConnectorContext, to: { email: string }): Promise<void>
   /** Providers for remote-select settings, keyed by SettingField.source. */
   remoteOptions?: Record<string, (ctx: ConnectorContext) => Promise<SettingOption[]>>
+  /**
+   * A check of keys and settings typed but not yet saved, for a manifest
+   * with testBeforeConnect. It proves access and leaves nothing behind: a
+   * test object written and removed, never a repository.
+   */
+  previewTest?(input: {
+    credentials: Record<string, unknown>
+    settings: Record<string, unknown>
+    organizationId: string
+  }): Promise<PreviewTestResult>
   /**
    * The same lists from credentials and settings that are typed but not yet
    * saved, for a remote-select with `preview`. Nothing is written; a wrong

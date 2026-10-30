@@ -211,7 +211,18 @@
     "searchOrType": "Szukaj lub wpisz nazwę",
     "useTyped": "Użyj „{value}”",
     "listNeedsKeys": "Wpisz klucze powyżej, aby zobaczyć listę",
-    "listEmpty": "Lista jest pusta. Wpisz nazwę ręcznie."
+    "listEmpty": "Lista jest pusta. Wpisz nazwę ręcznie.",
+    "testing": "Testowanie połączenia",
+    "testOk": "Połączenie działa: obiekt testowy został zapisany i ponownie usunięty.",
+    "testFailed": "Test nie powiódł się",
+    "testSteps": {
+      "settings": "Sprawdź ustawienia dostawcy",
+      "list": "Klucz nie może listować zawartości bucketu",
+      "write": "Klucz nie może zapisywać w buckecie",
+      "delete": "Klucz nie może usuwać z bucketu",
+      "folder": "Nie można utworzyć ani otworzyć folderu"
+    },
+    "testHint": "Wpisz klucze i bucket, aby przetestować je przed połączeniem. Test zapisuje jeden mały obiekt i go usuwa."
   },
   "activity": {
     "title": "Aktywność",

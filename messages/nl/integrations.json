@@ -211,7 +211,18 @@
     "searchOrType": "Zoek of typ een naam",
     "useTyped": "\"{value}\" gebruiken",
     "listNeedsKeys": "Vul hierboven de sleutels in om de lijst te zien",
-    "listEmpty": "Er is niets opgehaald. Typ in plaats daarvan een naam."
+    "listEmpty": "Er is niets opgehaald. Typ in plaats daarvan een naam.",
+    "testing": "Verbinding wordt getest",
+    "testOk": "De verbinding werkt: er is een testobject geschreven en weer verwijderd.",
+    "testFailed": "De test is mislukt",
+    "testSteps": {
+      "settings": "Controleer de instellingen van de aanbieder",
+      "list": "De sleutel kan de bucket niet opsommen",
+      "write": "De sleutel kan niet naar de bucket schrijven",
+      "delete": "De sleutel kan niets uit de bucket verwijderen",
+      "folder": "De map kan niet worden aangemaakt of geopend"
+    },
+    "testHint": "Vul de sleutels en de bucket in om ze te testen voordat u koppelt. De test schrijft één klein object en verwijdert het weer."
   },
   "activity": {
     "title": "Activiteit",

@@ -211,7 +211,18 @@
     "searchOrType": "Search or type a name",
     "useTyped": "Use \"{value}\"",
     "listNeedsKeys": "Enter the keys above to see the list",
-    "listEmpty": "Nothing was listed. Type a name instead."
+    "listEmpty": "Nothing was listed. Type a name instead.",
+    "testing": "Testing the connection",
+    "testOk": "The connection works: a test object was written and removed again.",
+    "testFailed": "The test failed",
+    "testSteps": {
+      "settings": "Check the provider settings",
+      "list": "The key cannot list the bucket",
+      "write": "The key cannot write to the bucket",
+      "delete": "The key cannot delete from the bucket",
+      "folder": "The folder cannot be created or opened"
+    },
+    "testHint": "Fill in the keys and the bucket to test them before connecting. The test writes one small object and removes it."
   },
   "activity": {
     "title": "Activity",

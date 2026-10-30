@@ -211,7 +211,18 @@
     "searchOrType": "Søk eller skriv et navn",
     "useTyped": "Bruk «{value}»",
     "listNeedsKeys": "Skriv inn nøklene ovenfor for å se listen",
-    "listEmpty": "Ingenting ble listet opp. Skriv inn et navn i stedet."
+    "listEmpty": "Ingenting ble listet opp. Skriv inn et navn i stedet.",
+    "testing": "Tester tilkoblingen",
+    "testOk": "Tilkoblingen fungerer: et testobjekt ble skrevet og fjernet igjen.",
+    "testFailed": "Testen feilet",
+    "testSteps": {
+      "settings": "Sjekk innstillingene hos leverandøren",
+      "list": "Nøkkelen kan ikke liste bøtta",
+      "write": "Nøkkelen kan ikke skrive til bøtta",
+      "delete": "Nøkkelen kan ikke slette fra bøtta",
+      "folder": "Mappen kan ikke opprettes eller åpnes"
+    },
+    "testHint": "Fyll inn nøklene og bøtta for å teste dem før du kobler til. Testen skriver ett lite objekt og fjerner det igjen."
   },
   "activity": {
     "title": "Aktivitet",
