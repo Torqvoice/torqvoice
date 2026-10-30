@@ -33,6 +33,7 @@
     "placeholder": "Bir yanıt yazın",
     "subjectPlaceholder": "Konu",
     "send": "Gönder",
+    "sendHint": "Enter gönderir, Shift+Enter yeni satır ekler",
     "sendFailed": "E-posta gönderilemedi",
     "sentDocument": "Gönderildi: {subject}",
     "showQuoted": "Alıntılanan metni göster",

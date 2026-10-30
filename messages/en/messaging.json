@@ -33,6 +33,7 @@
     "placeholder": "Write a reply…",
     "subjectPlaceholder": "Subject",
     "send": "Send",
+    "sendHint": "Enter sends, Shift+Enter starts a new line",
     "sendFailed": "Could not send the email",
     "sentDocument": "Sent: {subject}",
     "showQuoted": "Show quoted text",

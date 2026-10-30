@@ -14,7 +14,6 @@ import {
   ShieldAlert,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { EmailChannelState } from '../Actions/inboxActions'
@@ -227,46 +226,58 @@ export function EmailConversation({
       </div>
 
       {emailState === 'active' && (
-        <div className="shrink-0 space-y-2 border-t bg-background p-4">
+        <div className="shrink-0 border-t bg-background p-3 sm:p-4">
           {!thread.customerId ? (
             <p className="text-sm text-muted-foreground">{t('unknownSender')}</p>
           ) : (
-            <>
-              <Input
-                value={subject}
-                onChange={(event) => setSubjectDraft(event.target.value)}
-                placeholder={t('subjectPlaceholder')}
-                maxLength={200}
-                className="h-9"
-              />
-              <div className="flex items-end gap-2">
-                <Textarea
-                  value={body}
-                  onChange={(event) => setBody(event.target.value)}
-                  placeholder={t('placeholder')}
-                  rows={2}
-                  className="min-h-[44px] flex-1 resize-none"
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                      event.preventDefault()
-                      handleSend()
-                    }
-                  }}
+            // One card shaped like the mail it becomes: the subject line on
+            // top, the body under it, and the send control in a footer, so
+            // the subject is not mistaken for a search box above a chat.
+            <div className="overflow-hidden rounded-xl border bg-card shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+              <label className="flex items-center gap-3 border-b px-3">
+                <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                  {t('subjectPlaceholder')}
+                </span>
+                <input
+                  value={subject}
+                  onChange={(event) => setSubjectDraft(event.target.value)}
+                  maxLength={200}
+                  className="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none"
                 />
+              </label>
+              <Textarea
+                value={body}
+                onChange={(event) => setBody(event.target.value)}
+                placeholder={t('placeholder')}
+                rows={3}
+                className="max-h-60 min-h-[76px] resize-none rounded-none border-0 shadow-none focus-visible:ring-0 dark:bg-transparent"
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault()
+                    handleSend()
+                  }
+                }}
+              />
+              <div className="flex items-center justify-between gap-3 border-t bg-muted/40 px-3 py-2">
+                <span className="hidden truncate text-[11px] text-muted-foreground sm:block">
+                  {t('sendHint')}
+                </span>
                 <Button
                   type="button"
+                  size="sm"
                   onClick={handleSend}
                   disabled={isSending || !body.trim()}
-                  aria-label={t('send')}
+                  className="ml-auto"
                 >
                   {isSending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Send className="h-4 w-4" />
                   )}
+                  {t('send')}
                 </Button>
               </div>
-            </>
+            </div>
           )}
         </div>
       )}

@@ -33,6 +33,7 @@
     "placeholder": "Schrijf een antwoord",
     "subjectPlaceholder": "Onderwerp",
     "send": "Versturen",
+    "sendHint": "Enter verstuurt, Shift+Enter begint een nieuwe regel",
     "sendFailed": "Kon de e-mail niet versturen",
     "sentDocument": "Verstuurd: {subject}",
     "showQuoted": "Geciteerde tekst tonen",
