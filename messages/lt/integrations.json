@@ -814,6 +814,8 @@
         "passwordHelp": "Kiekviena atsarginė kopija šifruojama šiuo slaptažodžiu. Sugalvokite jį arba spustelėkite Generuoti ir laikykite kopiją ne šiame serveryje: be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“. Norėdami vėl prijungti saugyklą, kurioje jau yra „Torqvoice“ atsarginių kopijų, įveskite slaptažodį, kuriuo jos buvo sukurtos."
       },
       "settings": {
+        "folder": "Aplankas",
+        "folderHelp": "Aplankas serverio atsarginių kopijų šakniniame kataloge, kuriame laikomos šios dirbtuvės atsarginės kopijos. Palikite tuščią, kad būtų naudojamas aplankas, pavadintas pagal šią dirbtuvę. Naujame serveryje įveskite ankstesnio diegimo naudoto aplanko pavadinimą, kad atgautumėte jo atsargines kopijas.",
         "frequency": "Kaip dažnai",
         "frequencyHourly": "Kas valandą",
         "frequencyEvery4h": "Kas 4 valandas",

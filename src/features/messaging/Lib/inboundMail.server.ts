@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { type ParsedMail, simpleParser } from 'mailparser'
+import { isRestoring } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { normalizeEmailAddress } from '@/lib/email-address'
 import { notify } from '@/lib/notify'
@@ -55,6 +56,8 @@ export interface ReceiveDeps {
 export type ReceiveOutcome =
   | { outcome: 'filed'; id: string; organizationId: string }
   | { outcome: 'dropped'; reason: string }
+  /** Nothing was filed or stored; the delivery should come back later. */
+  | { outcome: 'retry'; reason: string }
 
 /** The sender's address and display name as the parser read them. */
 function senderOf(parsed: ParsedMail): { address: string | null; name: string | null } {
@@ -83,6 +86,9 @@ export async function receiveSesMail(
   if (!token) return { outcome: 'dropped', reason: 'no reply address among recipients' }
   const organization = await organizationForReplyToken(token)
   if (!organization) return { outcome: 'dropped', reason: 'reply token belongs to no workshop' }
+  // A mail filed now would be lost under the restore; SNS retries after it.
+  if (isRestoring(organization.id))
+    return { outcome: 'retry', reason: 'workshop is being restored' }
 
   if (mail.bucket !== config.bucket) {
     return { outcome: 'dropped', reason: `stored in an unexpected bucket ${mail.bucket}` }

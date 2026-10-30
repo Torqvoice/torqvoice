@@ -162,6 +162,7 @@ function isStagedDataFile(p: string): boolean {
 const backupShape = z.object({
   version: z.number(),
   exportedAt: z.string().optional(),
+  contents: z.enum(['data', 'dataAndSecrets']).optional(),
   data: z.record(z.string(), z.unknown()),
 })
 

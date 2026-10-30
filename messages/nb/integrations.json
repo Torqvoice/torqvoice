@@ -814,6 +814,8 @@
         "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med."
       },
       "settings": {
+        "folder": "Mappe",
+        "folderHelp": "Mappen under serverens sikkerhetskopirot som holder dette verkstedets sikkerhetskopier. La feltet stå tomt for å bruke en mappe oppkalt etter dette verkstedet. På en ny server skriver du inn mappenavnet en tidligere installasjon brukte, for å få tilbake sikkerhetskopiene.",
         "frequency": "Hvor ofte",
         "frequencyHourly": "Hver time",
         "frequencyEvery4h": "Hver 4. time",

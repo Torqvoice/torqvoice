@@ -30,12 +30,14 @@ export function useActionErrorText() {
 /**
  * Every backup in the destination's repository, read only once asked for:
  * listing them is a round trip to the storage, and the recent runs already
- * cover the usual case.
+ * cover the usual case. Cached per workshop as well as per connector: a
+ * switch of workshop keeps the query client, and the other workshop's list
+ * must not be shown for the minute it stays fresh.
  */
-export function useBackupSnapshots(connectorId: string, enabled: boolean) {
+export function useBackupSnapshots(organizationId: string, connectorId: string, enabled: boolean) {
   const errorText = useActionErrorText()
   return useQuery({
-    queryKey: ['backup-snapshots', connectorId],
+    queryKey: ['backup-snapshots', organizationId, connectorId],
     queryFn: async () => {
       const res = await listBackupSnapshots(connectorId)
       if (!res.success) {

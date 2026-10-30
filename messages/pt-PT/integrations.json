@@ -814,6 +814,8 @@
         "passwordHelp": "Cada cópia de segurança é encriptada com esta palavra-passe. Invente uma ou carregue em Gerar, e guarde uma cópia fora deste servidor: sem ela ninguém consegue abrir estas cópias, nem mesmo o Torqvoice. Para voltar a ligar um armazenamento que já contém cópias de segurança do Torqvoice, introduza a palavra-passe com que foram feitas."
       },
       "settings": {
+        "folder": "Pasta",
+        "folderHelp": "A pasta, dentro da raiz de cópias de segurança do servidor, que guarda as cópias desta oficina. Deixe em branco para usar uma pasta com o nome desta oficina. Num servidor novo, escreva o nome da pasta usada por uma instalação anterior para recuperar as respetivas cópias.",
         "frequency": "Frequência",
         "frequencyHourly": "De hora a hora",
         "frequencyEvery4h": "De 4 em 4 horas",

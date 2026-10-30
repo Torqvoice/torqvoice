@@ -17,8 +17,10 @@ function map(): Map<string, number> {
 }
 
 /**
- * Longest a workshop stays frozen if the restore never says it is done: the
- * same eight hours after which the scheduler gives a run up as crashed.
+ * The net for a restore whose process died without unfreezing: a freeze not
+ * renewed for eight hours (the same eight hours after which the scheduler
+ * gives a run up as crashed) lapses on its own. A live restore renews its
+ * freeze every few minutes, so a long one stays frozen to the end.
  */
 const MAX_FREEZE_MS = 8 * 60 * 60 * 1000
 
@@ -40,6 +42,11 @@ export function unfreezeOrganization(organizationId: string): void {
   map().delete(organizationId)
 }
 
+/** Starts the freeze's eight hours over, if the workshop is frozen at all. */
+export function renewFreeze(organizationId: string): void {
+  if (map().has(organizationId)) map().set(organizationId, Date.now())
+}
+
 export function isRestoring(organizationId: string, now = Date.now()): boolean {
   const since = map().get(organizationId)
   if (since === undefined) return false
@@ -53,4 +60,12 @@ export function isRestoring(organizationId: string, now = Date.now()): boolean {
 /** Throws RestoreInProgressError while the workshop is being restored. */
 export function assertNotRestoring(organizationId: string): void {
   if (isRestoring(organizationId)) throw new RestoreInProgressError()
+}
+
+/**
+ * Every workshop frozen right now, for queries that should leave their rows
+ * alone until the restore is done.
+ */
+export function frozenOrganizationIds(now = Date.now()): string[] {
+  return [...map().keys()].filter((id) => isRestoring(id, now))
 }

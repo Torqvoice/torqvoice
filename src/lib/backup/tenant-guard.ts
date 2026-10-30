@@ -37,14 +37,17 @@ function modelName(delegate: string): string {
 /**
  * The operators that can widen a where beyond the rows an organisation id
  * constrains: `{ OR: [{ organizationId }, { id }] }` matches the other row
- * too. `AND` cannot, so it stays allowed.
+ * too, and so do the negated relation filters, `{ customer: { isNot:
+ * { organizationId } } }`, `{ serviceRecords: { none: { organizationId } } }`
+ * and `every`, which a row with no related rows satisfies. `AND`, `is` and
+ * `some` cannot, so they stay allowed.
  */
-const WIDENING_OPERATORS = new Set(['OR', 'NOT', 'XOR'])
+const WIDENING_OPERATORS = new Set(['OR', 'NOT', 'XOR', 'isNot', 'none', 'every'])
 
 /**
  * Every value under an `organizationId` key anywhere inside a where, however
- * nested. Returns null when the where uses OR, NOT or XOR at any depth, where
- * an organisation id no longer limits what matches.
+ * nested. Returns null when the where uses OR, NOT, XOR or a negated relation
+ * filter at any depth, where an organisation id no longer limits what matches.
  */
 function organizationIdsIn(where: unknown, out: unknown[] = []): unknown[] | null {
   if (Array.isArray(where)) {
@@ -80,7 +83,7 @@ export function assertTenantScopedCall(
     const ids = organizationIdsIn(a.where)
     if (ids === null) {
       throw new TenantGuardError(
-        `${describe(model, operation)} may not use OR, NOT or XOR in its where during a restore`
+        `${describe(model, operation)} may not use OR, NOT, XOR, isNot, none or every in its where during a restore`
       )
     }
     if (ids.length === 0) {

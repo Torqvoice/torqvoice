@@ -69,18 +69,22 @@ export function redactWebhookRow<T extends { secret: string }>(row: T): T {
  * Settings rows from a backup with every redacted value replaced by what the
  * install has now. A redacted key the install has no value for is dropped.
  *
- * A file with at least one marker is a "Data only" backup, which says nothing
- * about the secrets it left out. Every secret the install holds that such a
- * file does not carry at all (one entered after the backup was taken) is kept
- * too: `installed` is the install's settings rows, and each secret among them
- * is appended as it stands. Every key kept or dropped this way is listed in
- * `redacted`. A file without a marker carries its secrets in full and is
- * restored as written.
+ * A "Data only" backup says nothing about the secrets it left out. Every
+ * secret the install holds that such a file does not carry at all (one
+ * entered after the backup was taken) is kept too: `installed` is the
+ * install's settings rows, and each secret among them is appended as it
+ * stands. Every key kept or dropped this way is listed in `redacted`.
+ *
+ * Whether the file is "Data only" is `options.dataOnly`, which the caller
+ * reads from the file's header. Without it (a file from before the header
+ * said so) a file with at least one marker counts as "Data only". A file
+ * that is not carries its secrets in full and is restored as written.
  */
 export function keepCurrentSecrets<T extends { key: string; value: unknown }>(
   rows: readonly T[],
   current: ReadonlyMap<string, string>,
-  installed: readonly T[] = []
+  installed: readonly T[] = [],
+  options: { dataOnly?: boolean } = {}
 ): { rows: T[]; redacted: string[] } {
   const kept: T[] = []
   const redacted: string[] = []
@@ -93,7 +97,8 @@ export function keepCurrentSecrets<T extends { key: string; value: unknown }>(
     const value = current.get(row.key)
     if (value !== undefined) kept.push({ ...row, value })
   }
-  if (redacted.length > 0) {
+  const dataOnly = options.dataOnly ?? redacted.length > 0
+  if (dataOnly) {
     const inFile = new Set(rows.map((row) => row.key))
     for (const row of installed) {
       if (!isSecretSettingKey(row.key) || inFile.has(row.key)) continue

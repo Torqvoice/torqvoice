@@ -814,6 +814,8 @@
         "passwordHelp": "Elke back-up wordt versleuteld met dit wachtwoord. Verzin er een of klik op Genereren, en bewaar een kopie buiten deze server: zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet. Om opslag opnieuw te koppelen die al Torqvoice-back-ups bevat, voert u het wachtwoord in waarmee ze zijn gemaakt."
       },
       "settings": {
+        "folder": "Map",
+        "folderHelp": "De map onder de back-uproot van de server waarin de back-ups van deze werkplaats staan. Laat leeg om een map te gebruiken die naar deze werkplaats is genoemd. Typ op een nieuwe server de mapnaam die een eerdere installatie gebruikte om de back-ups terug te krijgen.",
         "frequency": "Hoe vaak",
         "frequencyHourly": "Elk uur",
         "frequencyEvery4h": "Elke 4 uur",

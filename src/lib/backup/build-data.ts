@@ -7,7 +7,10 @@
  * run after run.
  *
  * The output is the shape the import reads:
- * `{"version":2,"exportedAt":"...","data":{"<dataset>":[rows...],...}}`.
+ * `{"version":2,"exportedAt":"...","contents":"data","data":{"<dataset>":[rows...],...}}`.
+ * `contents` is "data" for a "Data only" backup (secrets left out) and
+ * "dataAndSecrets" when they are in it, so a restore knows which it has
+ * even when the workshop had no secret to leave out.
  * Dataset names are part of the file format: add, never rename.
  */
 import { db } from '@/lib/db'
@@ -404,7 +407,9 @@ export async function writeBackupData(
   const datasets: string[] = []
   let rows = 0
 
-  await write(out, `{"version":2,"exportedAt":${JSON.stringify(new Date().toISOString())},"data":{`)
+  const exportedAt = JSON.stringify(new Date().toISOString())
+  const contents = JSON.stringify(options.includeSecrets ? 'dataAndSecrets' : 'data')
+  await write(out, `{"version":2,"exportedAt":${exportedAt},"contents":${contents},"data":{`)
 
   for (const dataset of DATASETS) {
     if (!options[dataset.option]) continue

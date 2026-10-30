@@ -67,6 +67,10 @@ const { cancelBooking, confirmBooking, getBookingPage } = await import(
   '@/features/inspection-reminders/Actions/bookingActions'
 )
 
+const { freezeOrganization, unfreezeOrganization, RESTORE_IN_PROGRESS_MESSAGE } = await import(
+  '@/lib/backup/freeze'
+)
+
 const TOKEN = 'abcdefghijklmnopqrstuvwx'
 const future = new Date(Date.now() + 3 * 86_400_000)
 function send(over: Record<string, unknown> = {}) {
@@ -199,5 +203,32 @@ describe('booking link', () => {
     expect(notify).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'online_booking_cancelled' })
     )
+  })
+
+  it('books and cancels nothing while the workshop is being restored', async () => {
+    freezeOrganization('org-a')
+    try {
+      inspectionReminderSend.findUnique.mockResolvedValue(send())
+      await expect(confirmBooking({ token: TOKEN, start: future.toISOString() })).rejects.toThrow(
+        RESTORE_IN_PROGRESS_MESSAGE
+      )
+      expect(serviceRecord.create).not.toHaveBeenCalled()
+      expect(serviceRequest.create).not.toHaveBeenCalled()
+
+      inspectionReminderSend.findUnique.mockResolvedValue(
+        send({ bookedAt: new Date(), bookedServiceRecordId: 'rec-1' })
+      )
+      serviceRecord.findUnique.mockResolvedValue({
+        startDateTime: future,
+        endDateTime: new Date(future.getTime() + 3_600_000),
+        status: 'scheduled',
+      })
+      await expect(cancelBooking(TOKEN)).rejects.toThrow(RESTORE_IN_PROGRESS_MESSAGE)
+      expect(serviceRecord.deleteMany).not.toHaveBeenCalled()
+      expect(inspectionReminderSend.update).not.toHaveBeenCalled()
+      expect(notify).not.toHaveBeenCalled()
+    } finally {
+      unfreezeOrganization('org-a')
+    }
   })
 })

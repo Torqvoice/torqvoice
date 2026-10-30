@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
+import { restoringResponse } from '@/lib/backup/freeze-response'
+import { isRestoring } from '@/lib/backup/freeze'
 import { paymentProviderFor } from '@/features/integrations/Lib/payments'
 import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
 import { fromStripeAmount } from '@/lib/payment-providers/vendor-amounts'
@@ -84,6 +86,9 @@ export async function POST(request: Request) {
     if (!orgId || !serviceRecordId) {
       return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
     }
+
+    // A payment booked now would be lost under the restore; Stripe retries after it.
+    if (isRestoring(orgId)) return restoringResponse()
 
     // Verify the session is actually paid
     if (session.payment_status !== 'paid') {

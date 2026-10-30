@@ -814,6 +814,8 @@
         "passwordHelp": "Każda kopia zapasowa jest szyfrowana tym hasłem. Wymyśl je lub naciśnij Wygeneruj i przechowuj kopię poza tym serwerem: bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice. Aby ponownie połączyć przestrzeń, w której są już kopie zapasowe Torqvoice, wpisz hasło, którym zostały utworzone."
       },
       "settings": {
+        "folder": "Folder",
+        "folderHelp": "Folder w katalogu głównym kopii zapasowych serwera, w którym są kopie zapasowe tego warsztatu. Pozostaw puste, aby użyć folderu nazwanego od tego warsztatu. Na nowym serwerze wpisz nazwę folderu używanego przez wcześniejszą instalację, aby odzyskać jej kopie zapasowe.",
         "frequency": "Jak często",
         "frequencyHourly": "Co godzinę",
         "frequencyEvery4h": "Co 4 godziny",

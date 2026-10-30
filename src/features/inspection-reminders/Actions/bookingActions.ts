@@ -10,6 +10,7 @@ import { type BookableDay, availabilityFor, claimableResource } from '../Lib/boo
 import { type InspectionReminderSettings, loadInspectionReminderSettings } from '../Lib/settings'
 import { releaseFiles } from '@/lib/files/manager'
 import { serviceRecordFileUrls } from '@/lib/files/collect'
+import { assertNotRestoring } from '@/lib/backup/freeze'
 
 /**
  * The public side of a reminder link. No sign-in: the token was sent to the
@@ -182,6 +183,8 @@ export async function confirmBooking(raw: unknown) {
   guard(input.token)
   const send = await loadSend(input.token)
   if (!send || send.vehicle.isArchived) throw new Error('This link is not valid')
+  // No withAuth on the public link, so the restore freeze is checked here.
+  assertNotRestoring(send.organizationId)
   const now = new Date()
   const existing = await currentBooking(send)
   if (stateOf(send, existing, now) !== 'open') throw new Error('This link can no longer book')
@@ -300,6 +303,7 @@ export async function cancelBooking(rawToken: string) {
   guard(token)
   const send = await loadSend(token)
   if (!send) throw new Error('This link is not valid')
+  assertNotRestoring(send.organizationId)
   const now = new Date()
   const booking = await currentBooking(send)
   if (!booking || booking.start.getTime() <= now.getTime()) {

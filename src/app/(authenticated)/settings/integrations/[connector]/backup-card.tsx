@@ -123,7 +123,7 @@ export function BackupCard({
   const [busy, setBusy] = useState(false)
   const [showAll, setShowAll] = useState(false)
   const [target, setTarget] = useState<RestoreTarget | null>(null)
-  const snapshots = useBackupSnapshots(connectorId, showAll)
+  const snapshots = useBackupSnapshots(backup.organizationId, connectorId, showAll)
 
   useEffect(() => {
     if (!backup.running) return

@@ -5,7 +5,9 @@ import {
   RestoreInProgressError,
   assertNotRestoring,
   freezeOrganization,
+  frozenOrganizationIds,
   isRestoring,
+  renewFreeze,
   unfreezeOrganization,
 } from '@/lib/backup/freeze'
 
@@ -56,6 +58,49 @@ describe('freezeOrganization', () => {
     freezeOrganization('org1')
     expect(isRestoring('org1', Date.now() + HOUR)).toBe(true)
     expect(isRestoring('org1', Date.now() + 8 * HOUR + 1000)).toBe(false)
+  })
+})
+
+describe('renewFreeze', () => {
+  it('keeps a renewed freeze alive past the first eight hours', () => {
+    vi.useFakeTimers()
+    const start = Date.parse('2026-10-29T10:00:00Z')
+    vi.setSystemTime(new Date(start))
+    freezeOrganization('org1')
+
+    vi.setSystemTime(new Date(start + 7 * HOUR))
+    renewFreeze('org1')
+
+    vi.setSystemTime(new Date(start + 12 * HOUR))
+    expect(isRestoring('org1')).toBe(true)
+    // The net still holds once the renewals stop.
+    vi.setSystemTime(new Date(start + 15 * HOUR + 1))
+    expect(isRestoring('org1')).toBe(false)
+  })
+
+  it('does not freeze a workshop that is not frozen', () => {
+    renewFreeze('org1')
+    expect(isRestoring('org1')).toBe(false)
+    expect(frozenOrganizationIds()).toEqual([])
+  })
+})
+
+describe('frozenOrganizationIds', () => {
+  it('lists the frozen workshops and drops the expired ones', () => {
+    vi.useFakeTimers()
+    const start = Date.parse('2026-10-29T10:00:00Z')
+    vi.setSystemTime(new Date(start))
+    freezeOrganization('old')
+    vi.setSystemTime(new Date(start + 6 * HOUR))
+    freezeOrganization('org1')
+    freezeOrganization('org2')
+    unfreezeOrganization('org2')
+
+    expect(frozenOrganizationIds().sort()).toEqual(['old', 'org1'])
+
+    vi.setSystemTime(new Date(start + 8 * HOUR + 1))
+    expect(frozenOrganizationIds()).toEqual(['org1'])
+    expect(isRestoring('old')).toBe(false)
   })
 })
 

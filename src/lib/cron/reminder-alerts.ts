@@ -2,7 +2,7 @@ import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
-import { isRestoring } from '@/lib/backup/freeze'
+import { frozenOrganizationIds, isRestoring } from '@/lib/backup/freeze'
 
 const LOG_PREFIX = '[reminder-alerts]'
 
@@ -104,12 +104,19 @@ async function sendReminderEmail(organizationId: string, reminders: DueReminder[
  * exactly once; rescheduling (changing dueDate) re-arms it.
  */
 export async function processDueReminders(now = new Date()) {
+  // A workshop being restored is left out of the query, so its reminders stay
+  // due for the next run without filling the batch. organizationId is
+  // nullable here, and NOT IN alone would drop the rows without one.
+  const frozen = frozenOrganizationIds()
   const found = (await db.reminder.findMany({
     where: {
       isCompleted: false,
       notifiedAt: null,
       dueDate: { not: null, lte: now },
       OR: [{ notifyInApp: true }, { notifyEmail: true }],
+      ...(frozen.length
+        ? { AND: [{ OR: [{ organizationId: null }, { organizationId: { notIn: frozen } }] }] }
+        : {}),
     },
     select: {
       id: true,
@@ -133,7 +140,7 @@ export async function processDueReminders(now = new Date()) {
     },
     take: 500,
   })) as DueReminder[]
-  // A workshop being restored is left out; its reminders stay due for the next run.
+  // A restore that started after the query: those reminders stay due too.
   const due = found.filter((r) => !r.organizationId || !isRestoring(r.organizationId))
 
   if (due.length === 0) return 0

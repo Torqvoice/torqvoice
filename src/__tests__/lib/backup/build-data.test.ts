@@ -140,6 +140,7 @@ describe('JSON shape', () => {
     expect(json).toEqual({
       version: 2,
       exportedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+      contents: 'data',
       data: {
         customers: [
           { id: 'c1', name: 'Ada', createdAt: '2026-10-01T08:00:00.000Z', organizationId: 'org-1' },
@@ -152,6 +153,25 @@ describe('JSON shape', () => {
       },
     })
     expect(result.rows).toBe(2)
+  })
+
+  it('says in the header whether the secrets are in it, before the data', async () => {
+    const dataOnly = await run(NONE)
+    expect(dataOnly.json.contents).toBe('data')
+    expect(dataOnly.raw).toMatch(/^\{"version":2,"exportedAt":"[^"]+","contents":"data","data":\{/)
+
+    const full = await run({ ...NONE, includeSecrets: true })
+    expect(full.json.contents).toBe('dataAndSecrets')
+    expect(full.raw).toMatch(
+      /^\{"version":2,"exportedAt":"[^"]+","contents":"dataAndSecrets","data":\{/
+    )
+  })
+
+  it('marks a "Data only" file even when there was no secret to leave out', async () => {
+    state.pages.appSetting = [[{ id: 's1', key: 'workshop.name', value: 'Shop' }]]
+    const { json } = await run({ ...NONE, settings: true })
+    expect(json.data.settings).toEqual([{ id: 's1', key: 'workshop.name', value: 'Shop' }])
+    expect(json.contents).toBe('data')
   })
 
   it('writes an empty data object when nothing is selected', async () => {

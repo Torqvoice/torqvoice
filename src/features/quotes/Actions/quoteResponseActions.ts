@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notify } from '@/lib/notify'
+import { assertNotRestoring } from '@/lib/backup/freeze'
 import { z } from 'zod'
 
 const respondToQuoteSchema = z.object({
@@ -34,6 +35,8 @@ export async function respondToQuote(input: unknown) {
   if (!['draft', 'sent'].includes(quote.status)) {
     return { success: false, error: 'This quote can no longer be updated' }
   }
+  // No withAuth on a public action, so the restore freeze is checked here.
+  if (quote.organizationId) assertNotRestoring(quote.organizationId)
 
   await db.quote.update({
     where: { id: data.quoteId },

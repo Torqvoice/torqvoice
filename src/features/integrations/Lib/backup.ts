@@ -235,6 +235,7 @@ export async function backupOverview(
   const next = await nextScheduledRun(connection.organizationId, settings, connection.state)
   const size = connection.state[BACKUP_STATE.repositorySize]
   return {
+    organizationId: connection.organizationId,
     lastGood: lastGoodRow ? runView(lastGoodRow) : null,
     lastRun: recentRows[0] ? runView(recentRows[0]) : null,
     nextRunAt: next.toISOString(),

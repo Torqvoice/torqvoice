@@ -461,18 +461,19 @@ export async function takeSnapshot(
 }
 
 /**
- * The safety copy taken right before a restore replaces the workshop: into
- * the platform repository when this workshop has one, else into the
- * repository the restore reads from (a self-hosted install restoring from its
- * own destination). The uploads folder always goes in, whatever the
- * destination is set to keep, so undoing a restore of an older snapshot that
- * had files gives the photos back too. Into our own repository the secret
- * keys go too, so undoing the restore gives back exactly what was there; into
- * the workshop's own storage only the secrets the workshop chose to keep
- * there. In our own repository the restore points listed on the Backups card
- * are refreshed right after, so the safety copy can be restored at once (a
- * failure to list them is logged and does not stop the restore). Throws when
- * the copy cannot be taken; the restore then does not start.
+ * The safety copy taken right before a restore replaces the workshop: a
+ * one-off copy of the workshop as it is right now, into the platform
+ * repository when this workshop has one (ours, on the cloud), else into the
+ * encrypted repository the restore reads from, which the workshop owns. It
+ * always carries the data, the uploads folder and the secret keys, whatever
+ * the destination is set to keep: undoing a restore of an older snapshot that
+ * overwrote today's photos or keys gives the originals back. The
+ * destination's "Data only" choice governs its scheduled and manual backups,
+ * not this copy. In our own repository the restore points listed on the
+ * Backups card are refreshed right after, so the safety copy can be restored
+ * at once (a failure to list them is logged and does not stop the restore).
+ * Throws when the copy cannot be taken, or when restic could not read some
+ * files so the copy is incomplete; the restore then does not start.
  */
 export async function takeSafetySnapshot(
   organizationId: string,
@@ -484,9 +485,17 @@ export async function takeSafetySnapshot(
     if (platformBackupAllowed(features)) target = await openPlatform(organizationId)
   }
   const result = await takeSnapshot(target, PRE_RESTORE_TAG, {
-    includeSecrets: target.kind === 'platform' ? true : target.includeSecrets,
+    includeSecrets: true,
     includeFiles: true,
   })
+  if (result.partial) {
+    await target.log('error', 'Safety copy is incomplete: some files could not be read', {
+      snapshot: result.snapshotId,
+    })
+    throw new Error(
+      'The safety copy is incomplete: some files could not be read. Nothing was changed.'
+    )
+  }
   await target.log('info', 'Safety copy taken before a restore', { snapshot: result.snapshotId })
   if (target.kind === 'platform' && target.recordSnapshots) {
     try {
@@ -538,6 +547,16 @@ export async function runBackup(runId: string): Promise<BackupRunView> {
     }
 
     const result = await takeSnapshot(target, run.trigger)
+    // Restic exits 3 when it could not read some source files; the snapshot
+    // it wrote is missing them, so the run is a failure, not a good backup.
+    if (result.partial) {
+      await target.log('error', 'Backup is incomplete: some files could not be read', {
+        snapshot: result.snapshotId,
+      })
+      throw new Error(
+        `Some files could not be read, so this backup is incomplete (restic snapshot ${result.snapshotId.slice(0, 8)}). Check the server log and run the backup again.`
+      )
+    }
     await target.log('info', 'Backup finished', {
       snapshot: result.snapshotId,
       filesNew: result.filesNew,

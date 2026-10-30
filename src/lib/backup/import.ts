@@ -58,8 +58,17 @@ const TRANSACTION_TIMEOUT_MS = 60 * 60_000
 
 export interface BackupData {
   version: number
+  exportedAt?: string
+  /**
+   * What the backup was written with: "data" when secret keys were left out
+   * ("Data only"), "dataAndSecrets" when they are in it. Absent in a file
+   * from before the header said so.
+   */
+  contents?: 'data' | 'dataAndSecrets'
   data: Record<string, any>
 }
+
+const BACKUP_CONTENTS: readonly unknown[] = ['data', 'dataAndSecrets']
 
 /** Whose workshop the backup goes into, and who is doing it. */
 export interface RestoreActor {
@@ -85,6 +94,9 @@ export function assertSupportedBackup(backup: unknown): asserts backup is Backup
   const b = backup as Partial<BackupData> | null | undefined
   if (!b?.version || (b.version !== 1 && b.version !== 2)) {
     throw new Error('Unsupported or missing backup version')
+  }
+  if (b.contents !== undefined && !BACKUP_CONTENTS.includes(b.contents)) {
+    throw new Error('Unsupported backup contents')
   }
   if (!b.data) throw new Error('No data found in backup')
 }
@@ -507,24 +519,29 @@ export async function restoreBackup(
         sanitiseForeignIds(data, mergeIds(fileIds, own))
 
         // 0. A redacted secret keeps what the install has now, so read those
-        // before the tables are cleared. A "Data only" file (one with a
-        // marker) also keeps every secret the install has that the file does
-        // not carry at all, such as a key entered after the backup was taken.
+        // before the tables are cleared. A "Data only" file also keeps every
+        // secret the install has that the file does not carry at all, such
+        // as a key entered after the backup was taken. The header says which
+        // kind the file is; a file from before it did counts as "Data only"
+        // when it has a marker.
         if (Array.isArray(data.settings)) {
           const settingRows = data.settings as { key: string; value: unknown }[]
-          const dataOnly = settingRows.some((s) => isRedacted(s.value))
-          const current = dataOnly
-            ? (
-                await tx.appSetting.findMany({
-                  where: { organizationId },
-                  select: { id: true, key: true, value: true },
-                })
-              ).filter((s) => isSecretSettingKey(s.key))
-            : []
+          const marked = settingRows.some((s) => isRedacted(s.value))
+          const dataOnly = backup.contents === 'data' || (backup.contents === undefined && marked)
+          const current =
+            dataOnly || marked
+              ? (
+                  await tx.appSetting.findMany({
+                    where: { organizationId },
+                    select: { id: true, key: true, value: true },
+                  })
+                ).filter((s) => isSecretSettingKey(s.key))
+              : []
           const kept = keepCurrentSecrets(
             settingRows,
             new Map(current.map((s) => [s.key, s.value])),
-            current
+            current,
+            { dataOnly }
           )
           data.settings = kept.rows
           redactedSettings = kept.redacted

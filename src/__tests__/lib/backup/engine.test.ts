@@ -272,6 +272,10 @@ case "$sub" in
       if [ "$a" = "--" ]; then after=1; fi
     done
     ${heredoc(`${STATUS_LINE}\n${SUMMARY_LINE}`)}
+    if [ -f "$REC/partial-backup" ]; then
+      echo '{"message_type":"error","error":{"message":"open /data/x.jpg: permission denied"},"during":"archival","item":"/data/x.jpg"}' >&2
+      exit 3
+    fi
     ;;
   forget)
     ${heredoc(FORGET_LINE)}
@@ -384,6 +388,11 @@ function setPlatformEnv(): void {
 
 function failRestic(sub: string, stderr = BUCKET_GONE): void {
   writeFileSync(path.join(rec, `fail-${sub}`), `${stderr}\n`)
+}
+
+/** Restic writes the next snapshot but exits 3: some files could not be read. */
+function partialBackup(): void {
+  writeFileSync(path.join(rec, 'partial-backup'), '')
 }
 
 function ago(ms: number): string {
@@ -886,6 +895,62 @@ describe('runBackup, failure', () => {
     expect(sendOrgMail).toHaveBeenCalledTimes(2)
   })
 
+  it('a backup restic could not read every file for fails the run, retries and reports it', async () => {
+    addConnection()
+    partialBackup()
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      const before = Date.now()
+      const runId = addRun({ trigger: 'scheduled' })
+
+      const view = await runBackup(runId)
+
+      expect(view.status).toBe('failed')
+      expect(view.error).toBe(
+        'Some files could not be read, so this backup is incomplete (restic snapshot 28891c8f). Check the server log and run the backup again.'
+      )
+      expect(view.snapshotId).toBeNull()
+      expect(callsOf('backup')).toHaveLength(1)
+      // Not a good backup: no retention, no stamp, the connection in error.
+      expect(callsOf('forget')).toHaveLength(0)
+      const conn = h.connections.get(CONN) as Row
+      expect(conn.state['backup.lastGoodAt']).toBeUndefined()
+      expect(setConnectionStatus).not.toHaveBeenCalledWith(CONN, 'active')
+      expect(conn.status).toBe('error')
+      expect(new Date(conn.state['backup.retryAt']).getTime()).toBeGreaterThanOrEqual(
+        before + 30 * 60 * 1000
+      )
+      expect(notify).toHaveBeenCalledTimes(1)
+      expect(sendOrgMail).toHaveBeenCalledTimes(2)
+      expect(backupLockHolder()).toBeNull()
+    } finally {
+      errors.mockRestore()
+    }
+  })
+
+  it('a partial platform backup records no good run and no restore points', async () => {
+    setPlatformEnv()
+    h.features = { platformBackups: true }
+    partialBackup()
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      const view = await runBackup(addRun({ kind: 'platform', connectionId: null }))
+      expect(view.status).toBe('failed')
+      expect(view.error).toMatch(/incomplete/)
+      expect(errors).toHaveBeenCalledWith(
+        expect.stringContaining('Backup is incomplete: some files could not be read'),
+        expect.objectContaining({ snapshot: SNAPSHOT_ID })
+      )
+      expect(callsOf('forget')).toHaveLength(0)
+      expect(callsOf('snapshots')).toHaveLength(0)
+      const row = h.platform.get(ORG) as Row | undefined
+      expect(row?.lastGoodAt ?? undefined).toBeUndefined()
+      expect(row?.snapshots ?? undefined).toBeUndefined()
+    } finally {
+      errors.mockRestore()
+    }
+  })
+
   it('a failed forget fails the run', async () => {
     addConnection()
     failRestic('forget')
@@ -1152,8 +1217,10 @@ describe('takeSafetySnapshot', () => {
       stagingDirFor(ORG),
       uploadsDir,
     ])
-    // The destination's own choice about secrets still holds.
-    expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: false })
+    // A destination set to "Data only" still gets the secret keys in the
+    // safety copy, so undoing the restore gives today's keys back.
+    expect(target.includeSecrets).toBe(false)
+    expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: true })
     // A destination keeps no restore point list of ours.
     expect(callsOf('snapshots')).toEqual([])
   })
@@ -1183,6 +1250,35 @@ describe('takeSafetySnapshot', () => {
       expect.arrayContaining([expect.objectContaining({ id: SNAPSHOT_ID })])
     )
     expect(row.lastGoodAt).toBeUndefined()
+  })
+
+  it('refuses a safety copy restic could not read every file for, and records nothing', async () => {
+    addConnection()
+    partialBackup()
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      const target = await openTarget({ kind: 'destination', connectionId: CONN })
+      await expect(takeSafetySnapshot(ORG, target)).rejects.toThrow(
+        'The safety copy is incomplete: some files could not be read. Nothing was changed.'
+      )
+      expect(callsOf('backup')).toHaveLength(1)
+    } finally {
+      errors.mockRestore()
+    }
+  })
+
+  it('refuses a partial platform safety copy without listing it as a restore point', async () => {
+    setPlatformEnv()
+    partialBackup()
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      const target = await openPlatform(ORG)
+      await expect(takeSafetySnapshot(ORG, target)).rejects.toThrow(/incomplete/)
+      expect(callsOf('snapshots')).toHaveLength(0)
+      expect((h.platform.get(ORG) as Row | undefined)?.snapshots).toBeUndefined()
+    } finally {
+      errors.mockRestore()
+    }
   })
 
   it('a failed listing is logged and the platform safety copy still succeeds', async () => {

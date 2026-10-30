@@ -5,7 +5,7 @@ import {
   nextSendAt,
 } from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { isRestoring } from '@/lib/backup/freeze'
+import { frozenOrganizationIds, isRestoring } from '@/lib/backup/freeze'
 
 const LOG_PREFIX = '[scheduled-messages]'
 
@@ -20,8 +20,15 @@ const MAX_LATENESS_MS = 24 * 60 * 60 * 1000
  * send worked or not, so a single failure doesn't stop the series.
  */
 export async function processDueMessages(now = new Date()): Promise<number> {
+  // A workshop being restored is left out of the query, so its messages
+  // cannot fill the batch; the next tick after the restore sends them.
+  const frozen = frozenOrganizationIds()
   const due = await db.scheduledMessage.findMany({
-    where: { status: 'scheduled', sendAt: { lte: now } },
+    where: {
+      status: 'scheduled',
+      sendAt: { lte: now },
+      ...(frozen.length ? { organizationId: { notIn: frozen } } : {}),
+    },
     select: {
       id: true,
       channel: true,
@@ -45,7 +52,7 @@ export async function processDueMessages(now = new Date()): Promise<number> {
   const zones = new Map<string, string>()
 
   for (const message of due) {
-    // Left as it is while its workshop is being restored; the next tick after the restore sends it.
+    // A restore that started after the query: left as it is for a tick after.
     if (isRestoring(message.organizationId)) continue
     const isStale = now.getTime() - message.sendAt.getTime() > MAX_LATENESS_MS
     let timeZone = zones.get(message.organizationId)

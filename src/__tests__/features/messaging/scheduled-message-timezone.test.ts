@@ -36,6 +36,7 @@ vi.mock('@/lib/workshop-timezone', () => ({
 const frozen = new Set<string>()
 vi.mock('@/lib/backup/freeze', () => ({
   isRestoring: (organizationId: string) => frozen.has(organizationId),
+  frozenOrganizationIds: () => [...frozen],
   RESTORE_IN_PROGRESS_MESSAGE: 'A restore of this workshop is in progress.',
 }))
 
@@ -157,6 +158,22 @@ describe('processDueMessages', () => {
     expect(vi.mocked(notify)).toHaveBeenCalledTimes(1)
     expect(vi.mocked(notify).mock.calls[0][0]).toMatchObject({ organizationId: 'org-oslo' })
     expect(zoneLookups).toEqual(['org-oslo'])
+  })
+
+  it("keeps a frozen workshop's messages out of the batch, so they cannot fill it", async () => {
+    vi.mocked(db.scheduledMessage.findMany).mockResolvedValue([] as any)
+
+    await processDueMessages(new Date('2026-10-24T16:00:30Z'))
+    expect(vi.mocked(db.scheduledMessage.findMany).mock.calls[0][0]?.where).not.toHaveProperty(
+      'organizationId'
+    )
+
+    frozen.add('org-restoring')
+    await processDueMessages(new Date('2026-10-24T16:00:30Z'))
+    expect(vi.mocked(db.scheduledMessage.findMany).mock.calls[1][0]?.where).toMatchObject({
+      status: 'scheduled',
+      organizationId: { notIn: ['org-restoring'] },
+    })
   })
 })
 

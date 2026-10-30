@@ -814,6 +814,8 @@
         "passwordHelp": "Every backup is encrypted with this password. Make one up or press Generate, and keep a copy away from this server: without it nobody can open these backups, not even Torqvoice. To reconnect storage that already holds Torqvoice backups, enter the password they were made with."
       },
       "settings": {
+        "folder": "Folder",
+        "folderHelp": "The folder under the server's backup root that holds this workshop's backups. Leave it empty to use a folder named after this workshop. On a new server, type the folder name an earlier install used to get its backups back.",
         "frequency": "How often",
         "frequencyHourly": "Every hour",
         "frequencyEvery4h": "Every 4 hours",

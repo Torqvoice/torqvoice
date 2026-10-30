@@ -147,6 +147,44 @@ describe('keepCurrentSecrets', () => {
     expect(result.redacted).toEqual(['ai.apiKey', 'telegram.botToken'])
   })
 
+  it('keeps installed secrets for a file the header calls data-only, with no marker in it', () => {
+    // A "Data only" backup of a workshop that had no secret to leave out.
+    const rows = [{ id: 'a', key: 'workshop.phone', value: '123' }]
+    const installed = [
+      { id: 'x1', key: 'ai.apiKey', value: 'sk-ai-now' },
+      { id: 'x2', key: 'workshop.email', value: 'post@x.test' },
+    ]
+    const result = keepCurrentSecrets(rows, new Map(), installed, { dataOnly: true })
+    expect(result.rows).toEqual([
+      { id: 'a', key: 'workshop.phone', value: '123' },
+      { id: 'x1', key: 'ai.apiKey', value: 'sk-ai-now' },
+    ])
+    expect(result.redacted).toEqual(['ai.apiKey'])
+  })
+
+  it('keeps nothing extra for a file the header says carries its secrets, even with a marker', () => {
+    const rows = [
+      { id: 'a', key: 'workshop.phone', value: '123' },
+      { id: 'b', key: 'payment.stripe.secretKey', value: REDACTED },
+    ]
+    const installed = [
+      { id: 'x1', key: 'payment.stripe.secretKey', value: 'sk_now' },
+      { id: 'x2', key: 'ai.apiKey', value: 'sk-ai-now' },
+    ]
+    const result = keepCurrentSecrets(
+      rows,
+      new Map([['payment.stripe.secretKey', 'sk_now']]),
+      installed,
+      { dataOnly: false }
+    )
+    // The marker never reaches the database, but nothing else is added.
+    expect(result.rows).toEqual([
+      { id: 'a', key: 'workshop.phone', value: '123' },
+      { id: 'b', key: 'payment.stripe.secretKey', value: 'sk_now' },
+    ])
+    expect(result.redacted).toEqual(['payment.stripe.secretKey'])
+  })
+
   it('writes a secret the backup carries in full', () => {
     const rows = [{ key: 'ai.apiKey', value: 'sk-from-backup' }]
     const result = keepCurrentSecrets(rows, new Map([['ai.apiKey', 'sk-now']]))

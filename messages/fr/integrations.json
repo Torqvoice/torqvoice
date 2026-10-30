@@ -814,6 +814,8 @@
         "passwordHelp": "Chaque sauvegarde est chiffrée avec ce mot de passe. Inventez-en un ou cliquez sur Générer, et conservez-en une copie ailleurs que sur ce serveur : sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice. Pour reconnecter un stockage qui contient déjà des sauvegardes Torqvoice, saisissez le mot de passe avec lequel elles ont été créées."
       },
       "settings": {
+        "folder": "Dossier",
+        "folderHelp": "Le dossier, sous la racine des sauvegardes du serveur, qui contient les sauvegardes de cet atelier. Laissez vide pour utiliser un dossier nommé d'après cet atelier. Sur un nouveau serveur, saisissez le nom du dossier utilisé par une installation précédente pour récupérer ses sauvegardes.",
         "frequency": "Fréquence",
         "frequencyHourly": "Toutes les heures",
         "frequencyEvery4h": "Toutes les 4 heures",

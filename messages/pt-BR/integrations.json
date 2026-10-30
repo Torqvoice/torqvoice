@@ -814,6 +814,8 @@
         "passwordHelp": "Todo backup é criptografado com esta senha. Invente uma ou clique em Gerar, e guarde uma cópia fora deste servidor: sem ela ninguém consegue abrir estes backups, nem mesmo o Torqvoice. Para reconectar um armazenamento que já tem backups do Torqvoice, digite a senha com que eles foram feitos."
       },
       "settings": {
+        "folder": "Pasta",
+        "folderHelp": "A pasta, dentro da raiz de backups do servidor, que guarda os backups desta oficina. Deixe em branco para usar uma pasta com o nome desta oficina. Em um servidor novo, digite o nome da pasta usada por uma instalação anterior para recuperar os backups dela.",
         "frequency": "Frequência",
         "frequencyHourly": "A cada hora",
         "frequencyEvery4h": "A cada 4 horas",

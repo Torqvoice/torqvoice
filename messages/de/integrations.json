@@ -814,6 +814,8 @@
         "passwordHelp": "Jede Sicherung wird mit diesem Passwort verschlüsselt. Denken Sie sich eines aus oder klicken Sie auf Erzeugen, und bewahren Sie eine Kopie getrennt von diesem Server auf: Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht. Um einen Speicher erneut zu verbinden, der bereits Torqvoice-Sicherungen enthält, geben Sie das Passwort ein, mit dem sie erstellt wurden."
       },
       "settings": {
+        "folder": "Ordner",
+        "folderHelp": "Der Ordner im Backup-Stammverzeichnis des Servers, der die Backups dieser Werkstatt enthält. Leer lassen, um einen nach dieser Werkstatt benannten Ordner zu verwenden. Auf einem neuen Server den Ordnernamen einer früheren Installation eingeben, um deren Backups zurückzuholen.",
         "frequency": "Wie oft",
         "frequencyHourly": "Jede Stunde",
         "frequencyEvery4h": "Alle 4 Stunden",

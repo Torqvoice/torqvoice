@@ -145,10 +145,12 @@ vi.mock('@/integrations/registry', () => ({
 vi.mock('@/lib/audit', () => ({ logAudit: vi.fn(async () => undefined) }))
 
 vi.mock('@/lib/backup/build-data', () => ({
-  writeBackupData: vi.fn(async (organizationId: string, _options: Row, out: NodeJS.WritableStream) => {
-    out.write(JSON.stringify({ organizationId }))
-    return { datasets: ['customers'] }
-  }),
+  writeBackupData: vi.fn(
+    async (organizationId: string, _options: Row, out: NodeJS.WritableStream) => {
+      out.write(JSON.stringify({ organizationId }))
+      return { datasets: ['customers'] }
+    }
+  ),
 }))
 
 vi.mock('@/lib/features', () => ({
@@ -565,9 +567,9 @@ describe('runRestore', () => {
     // The id was on the row before restic restored anything.
     expect(h.safetyAtRestore).toEqual([SAFETY])
     // A snapshot of this workshop into the restore's own repository, with
-    // what the workshop chose to keep there (data only, by default).
+    // the secret keys in it even though the destination keeps data only.
     expect(vi.mocked(writeBackupData).mock.calls[0][0]).toBe(ORG)
-    expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: false })
+    expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: true })
     const [opts, input] = vi.mocked(resticBackup).mock.calls[0]
     expect(opts.repository.repository).toBe(h.repoDir)
     expect(input).toMatchObject({ host: `torqvoice-${ORG}` })
@@ -577,8 +579,8 @@ describe('runRestore', () => {
     })
   })
 
-  it('keeps the secret keys in the safety copy when the destination is set to keep them', async () => {
-    h.settings = { contents: 'dataAndSecrets' }
+  it('keeps the secret keys in the safety copy whatever the destination is set to keep', async () => {
+    h.settings = { contents: 'data' }
     await runRestore(addRun())
     expect(vi.mocked(writeBackupData).mock.calls[0][1]).toMatchObject({ includeSecrets: true })
   })
@@ -616,7 +618,7 @@ describe('runRestore', () => {
     expect(isRestoring(ORG)).toBe(false)
   })
 
-  it('writes a restore support started in the name of the workshop\'s first owner', async () => {
+  it("writes a restore support started in the name of the workshop's first owner", async () => {
     const runId = addRun({ requestedBy: null, reason: 'Customer asked by phone' })
 
     const view = await runRestore(runId)
@@ -640,10 +642,13 @@ describe('runRestore', () => {
     expect(vi.mocked(notify).mock.calls[0][0].message).toContain('backupAlerts.restoredBySupport')
   })
 
-  it('a member\'s restore is written in that member\'s name, without looking up the owner', async () => {
+  it("a member's restore is written in that member's name, without looking up the owner", async () => {
     await runRestore(addRun({ requestedBy: 'user1' }))
     expect(db.organizationMember.findFirst).not.toHaveBeenCalled()
-    expect(vi.mocked(restoreFromDisk).mock.calls[0][0]).toEqual({ organizationId: ORG, userId: 'user1' })
+    expect(vi.mocked(restoreFromDisk).mock.calls[0][0]).toEqual({
+      organizationId: ORG,
+      userId: 'user1',
+    })
   })
 
   it('fails a support restore of a workshop with no owner before anything is changed', async () => {

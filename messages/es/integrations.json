@@ -814,6 +814,8 @@
         "passwordHelp": "Cada copia de seguridad se cifra con esta contraseña. Invente una o pulse Generar, y guarde una copia fuera de este servidor: sin ella nadie puede abrir estas copias, ni siquiera Torqvoice. Para volver a conectar un almacenamiento que ya contiene copias de Torqvoice, introduzca la contraseña con la que se hicieron."
       },
       "settings": {
+        "folder": "Carpeta",
+        "folderHelp": "La carpeta dentro de la raíz de copias de seguridad del servidor que guarda las copias de este taller. Déjala vacía para usar una carpeta con el nombre de este taller. En un servidor nuevo, escribe el nombre de la carpeta que usaba una instalación anterior para recuperar sus copias.",
         "frequency": "Frecuencia",
         "frequencyHourly": "Cada hora",
         "frequencyEvery4h": "Cada 4 horas",

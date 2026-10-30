@@ -814,6 +814,8 @@
         "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati."
       },
       "settings": {
+        "folder": "Cartella",
+        "folderHelp": "La cartella, sotto la radice dei backup del server, che contiene i backup di questa officina. Lasciala vuota per usare una cartella con il nome di questa officina. Su un nuovo server, inserisci il nome della cartella usata da un'installazione precedente per recuperarne i backup.",
         "frequency": "Frequenza",
         "frequencyHourly": "Ogni ora",
         "frequencyEvery4h": "Ogni 4 ore",

@@ -45,12 +45,12 @@ import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/protected/backup/import/route'
 import { REDACTED } from '@/lib/backup/secrets'
 
-function importJson(data: Record<string, unknown>) {
+function importJson(data: Record<string, unknown>, header: Record<string, unknown> = {}) {
   return POST(
     new NextRequest('http://app.test/api/protected/backup/import', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), data }),
+      body: JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), ...header, data }),
     })
   )
 }
@@ -152,6 +152,64 @@ describe('restoring a backup without secret keys', () => {
     })
     expect(await response.json()).toEqual({ success: true, redactedSettings: [] })
     expect(created('appSetting').map((r: any) => r.value)).toEqual(['sk-backup'])
+  })
+
+  it('keeps installed secrets for a "Data only" file that had no secret to leave out', async () => {
+    state.current.appSetting = [
+      { id: 'x1', key: 'ai.apiKey', value: 'sk-ai-now', userId: 'u0' },
+      { id: 'x2', key: 'workshop.email', value: 'now@x.test', userId: 'u0' },
+    ]
+    const response = await importJson(
+      { settings: [{ id: 's1', key: 'workshop.phone', value: '+47 123' }] },
+      { contents: 'data' }
+    )
+    expect(await response.json()).toEqual({ success: true, redactedSettings: ['ai.apiKey'] })
+    expect(created('appSetting').map((r: any) => [r.key, r.value])).toEqual([
+      ['workshop.phone', '+47 123'],
+      ['ai.apiKey', 'sk-ai-now'],
+    ])
+  })
+
+  it('restores a file the header says carries its secrets as written', async () => {
+    state.current.appSetting = [
+      { id: 'x1', key: 'ai.apiKey', value: 'sk-ai-now', userId: 'u0' },
+      { id: 'x2', key: 'telegram.botToken', value: 'tg-now', userId: 'u0' },
+    ]
+    const response = await importJson(
+      {
+        settings: [
+          { id: 's1', key: 'workshop.phone', value: '+47 123' },
+          { id: 's2', key: 'ai.apiKey', value: 'sk-backup' },
+        ],
+      },
+      { contents: 'dataAndSecrets' }
+    )
+    expect(await response.json()).toEqual({ success: true, redactedSettings: [] })
+    expect(created('appSetting').map((r: any) => [r.key, r.value])).toEqual([
+      ['workshop.phone', '+47 123'],
+      ['ai.apiKey', 'sk-backup'],
+    ])
+  })
+
+  it('does not treat a marker as "Data only" when the header says the secrets are in it', async () => {
+    state.current.appSetting = [
+      { id: 'x1', key: 'ai.apiKey', value: 'sk-ai-now', userId: 'u0' },
+      { id: 'x2', key: 'telegram.botToken', value: 'tg-now', userId: 'u0' },
+    ]
+    const response = await importJson(
+      { settings: [{ id: 's1', key: 'ai.apiKey', value: REDACTED }] },
+      { contents: 'dataAndSecrets' }
+    )
+    expect(await response.json()).toEqual({ success: true, redactedSettings: ['ai.apiKey'] })
+    const rows = created('appSetting')
+    expect(rows.map((r: any) => [r.key, r.value])).toEqual([['ai.apiKey', 'sk-ai-now']])
+    expect(JSON.stringify(rows)).not.toContain(REDACTED)
+  })
+
+  it('refuses a file whose header names contents this version does not know', async () => {
+    const response = await importJson({ settings: [] }, { contents: 'everything' })
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({ error: 'Unsupported backup contents' })
   })
 
   it('keeps the current webhook secret, or mints one', async () => {

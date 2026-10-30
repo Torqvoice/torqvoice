@@ -81,7 +81,7 @@ describe('assertTenantScopedCall', () => {
     ).toThrow(/another organisation/)
   })
 
-  it('refuses OR, NOT and XOR anywhere in the where of a write', () => {
+  it('refuses OR, NOT, XOR and the negated relation filters anywhere in the where of a write', () => {
     const refused = [
       // The organisation in one branch, another row in the other.
       ['customer', 'deleteMany', { where: { OR: [{ organizationId: ORG }, { id: 'c-other' }] } }],
@@ -112,12 +112,41 @@ describe('assertTenantScopedCall', () => {
           update: {},
         },
       ],
+      // A negated relation filter matches every row whose relation is NOT
+      // the organisation's: the other workshops' vehicles.
+      ['vehicle', 'deleteMany', { where: { customer: { isNot: { organizationId: ORG } } } }],
+      // `none` is a negation too, and `every` is true of a row with no related rows.
+      ['vehicle', 'deleteMany', { where: { serviceRecords: { none: { organizationId: ORG } } } }],
+      [
+        'vehicle',
+        'updateMany',
+        { where: { serviceRecords: { every: { organizationId: ORG } } }, data: {} },
+      ],
     ] as const
     for (const [delegate, op, args] of refused) {
       expect(() => assertTenantScopedCall(delegate, op, args, ORG), `${delegate}.${op}`).toThrow(
-        /may not use OR, NOT or XOR/
+        /may not use OR, NOT, XOR, isNot, none or every/
       )
     }
+  })
+
+  it('accepts the organisation through a positive relation filter', () => {
+    expect(() =>
+      assertTenantScopedCall(
+        'vehicle',
+        'deleteMany',
+        { where: { customer: { is: { organizationId: ORG } } } },
+        ORG
+      )
+    ).not.toThrow()
+    expect(() =>
+      assertTenantScopedCall(
+        'vehicle',
+        'deleteMany',
+        { where: { serviceRecords: { some: { organizationId: ORG } } } },
+        ORG
+      )
+    ).not.toThrow()
   })
 
   it('accepts the organisation at the top or inside an AND', () => {

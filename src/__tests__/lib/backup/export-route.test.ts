@@ -108,6 +108,7 @@ describe('backup export', () => {
     const redacted = await exportWith({ files: false })
     expect(redacted.data.data.settings).toEqual([{ ...settings[0], value: REDACTED }])
     expect(Object.keys(redacted.zip.files)).toEqual(['data.json'])
+    expect(redacted.data.contents).toBe('data')
 
     state.pages.appSetting = [settings]
     const truthy = await exportWith({ files: false, secrets: 'yes' })
@@ -116,6 +117,7 @@ describe('backup export', () => {
     state.pages.appSetting = [settings]
     const full = await exportWith({ files: false, secrets: true })
     expect(full.data.data.settings).toEqual(settings)
+    expect(full.data.contents).toBe('dataAndSecrets')
     // `secrets` is a request flag, never a dataset.
     expect(Object.keys(full.data.data)).not.toContain('secrets')
   })

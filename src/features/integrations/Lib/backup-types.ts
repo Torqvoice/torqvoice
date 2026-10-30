@@ -90,6 +90,8 @@ export interface PlatformBackupOverview {
 
 /** What the connection page shows for a backup destination. */
 export interface BackupOverview {
+  /** Whose backups these are: the card keys what it caches on it, so a switch of workshop never shows another's list. */
+  organizationId: string
   lastGood: BackupRunView | null
   lastRun: BackupRunView | null
   nextRunAt: string | null

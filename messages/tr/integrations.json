@@ -814,6 +814,8 @@
         "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin."
       },
       "settings": {
+        "folder": "Klasör",
+        "folderHelp": "Sunucunun yedek kök dizini altında bu atölyenin yedeklerini tutan klasör. Bu atölyenin adını taşıyan bir klasör kullanmak için boş bırakın. Yeni bir sunucuda, yedekleri geri almak için önceki kurulumun kullandığı klasör adını yazın.",
         "frequency": "Sıklık",
         "frequencyHourly": "Her saat",
         "frequencyEvery4h": "4 saatte bir",

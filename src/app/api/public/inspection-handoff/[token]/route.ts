@@ -3,6 +3,7 @@ import crypto from 'node:crypto'
 import path from 'node:path'
 import { NextResponse } from 'next/server'
 import { logAudit } from '@/lib/audit'
+import { RESTORE_IN_PROGRESS_MESSAGE, isRestoring } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { discardUnsavedUpload } from '@/lib/files/manager'
 import { compressPhoto } from '@/lib/image-upload.server'
@@ -57,6 +58,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const check = verifyInspectionHandoffToken(token)
   if (!check.ok) return refuse(check.reason === 'expired' ? 410 : 404, check.reason)
   const { organizationId, inspectionId, userId, expiresAt } = check.handoff
+  // No session here, so the restore freeze is checked on the route itself.
+  if (isRestoring(organizationId)) {
+    return NextResponse.json(
+      { code: 'restoring', error: RESTORE_IN_PROGRESS_MESSAGE },
+      { status: 409 }
+    )
+  }
 
   const inspection = await db.inspection.findFirst({
     where: { id: inspectionId, organizationId },

@@ -23,7 +23,7 @@ import {
   takeSafetySnapshot,
 } from './engine'
 import { closeRestorePoints } from './explore'
-import { freezeOrganization, unfreezeOrganization } from './freeze'
+import { freezeOrganization, renewFreeze, unfreezeOrganization } from './freeze'
 import { restoreFromDisk } from './import'
 import { ResticError, resticRestore, resticSnapshots } from './restic'
 import { connectMessage } from './target'
@@ -46,6 +46,9 @@ import { connectMessage } from './target'
 
 /** How deep under the restore folder the backup's paths are looked for. */
 const MAX_DEPTH = 16
+
+/** How often a running restore renews the workshop's freeze. */
+const FREEZE_RENEW_MS = 5 * 60 * 1000
 
 /** Where one restore is written out: a folder of its own under the data root. */
 export function restoreDirFor(organizationId: string, runId: string): string {
@@ -177,6 +180,7 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
   let folder: string | null = null
   let safetySnapshotId: string | null = null
   let frozen = false
+  let renewal: ReturnType<typeof setInterval> | null = null
   // Where the run got to, so a failure says what it means for the workshop.
   let phase: 'preparing' | 'safety' | 'restoring' = 'preparing'
   try {
@@ -197,6 +201,9 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
     // From here on nothing in the workshop changes but through this restore.
     freezeOrganization(organizationId)
     frozen = true
+    // Keep the freeze from lapsing under a restore that runs past its net.
+    renewal = setInterval(() => renewFreeze(organizationId), FREEZE_RENEW_MS)
+    renewal.unref?.()
     await closeRestorePoints(organizationId)
 
     // The way back: the workshop as it is right now, kept ninety days.
@@ -276,6 +283,7 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
           : message
     return await finishRun(runId, { status: 'failed', error, safetySnapshotId })
   } finally {
+    if (renewal) clearInterval(renewal)
     if (frozen) unfreezeOrganization(organizationId)
     if (folder) {
       await rm(folder, { recursive: true, force: true }).catch((err) =>
