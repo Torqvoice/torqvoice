@@ -23,6 +23,7 @@ type NotificationState = {
   markRead: (id: string) => void
   markAllRead: () => void
   removeNotification: (id: string) => void
+  clearAll: () => void
   setConnected: (connected: boolean) => void
   setPanelOpen: (open: boolean) => void
 }
@@ -66,6 +67,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
         unreadCount: Math.max(0, state.unreadCount - (target && !target.read ? 1 : 0)),
       }
     }),
+  clearAll: () => set({ notifications: [], unreadCount: 0 }),
   setConnected: (isConnected) => set({ isConnected }),
   setPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
 }))

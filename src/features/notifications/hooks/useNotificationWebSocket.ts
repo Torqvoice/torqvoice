@@ -5,7 +5,7 @@ import { useRealtime, useRealtimeState } from '@/features/realtime/RealtimeProvi
 import { toast } from 'sonner'
 import { useNotificationStore, type Notification } from '../store/notificationStore'
 import { getNotifications, markNotificationRead } from '../Actions/notificationActions'
-import { getActiveSmsCustomerId } from '@/features/sms/activeSmsView'
+import { isActiveConversation } from '@/features/messaging/activeConversation'
 
 export function useNotificationWebSocket() {
   const realtime = useRealtime()
@@ -49,12 +49,7 @@ export function useNotificationWebSocket() {
       if (!data?.id) return
 
       // Already looking at this conversation: file it read, and stay quiet.
-      const activeSmsCid = getActiveSmsCustomerId()
-      if (
-        activeSmsCid &&
-        data.type === 'sms_inbound' &&
-        data.entityUrl === `/messages?customerId=${activeSmsCid}`
-      ) {
+      if (data.type.endsWith('_inbound') && isActiveConversation(data.entityUrl)) {
         useNotificationStore.getState().addNotification({ ...data, read: true })
         useNotificationStore.setState((s) => ({ unreadCount: Math.max(0, s.unreadCount - 1) }))
         markNotificationRead(data.id)

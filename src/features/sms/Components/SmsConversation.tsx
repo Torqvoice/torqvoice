@@ -19,7 +19,7 @@ import { Loader2, Send, MessageSquare, ChevronUp, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { sendSmsToCustomer, getConversation, deleteSmsMessage } from '../Actions/smsActions'
 import { useNotificationStore } from '@/features/notifications/store/notificationStore'
-import { setActiveSmsCustomerId } from '../activeSmsView'
+import { setActiveConversation } from '@/features/messaging/activeConversation'
 import { toast } from 'sonner'
 import { MessageText } from '@/features/messaging/Components/MessageText'
 
@@ -68,8 +68,8 @@ export function SmsConversation({
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setActiveSmsCustomerId(customerId)
-    return () => setActiveSmsCustomerId(null)
+    setActiveConversation([`/messages?customerId=${customerId}`])
+    return () => setActiveConversation(null)
   }, [customerId])
 
   const initialScrollDone = useRef(false)

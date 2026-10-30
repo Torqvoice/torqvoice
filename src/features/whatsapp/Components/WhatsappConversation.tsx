@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { setActiveConversation } from '@/features/messaging/activeConversation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Clock, ImagePlus, Loader2, Send, X } from 'lucide-react'
@@ -66,6 +67,12 @@ export function WhatsappConversation({
   const atBottom = useRef(true)
 
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if (!thread.customerId) return
+    setActiveConversation([`/messages?tab=whatsapp&customerId=${thread.customerId}`])
+    return () => setActiveConversation(null)
+  }, [thread.customerId])
 
   const load = useCallback(async () => {
     // No customer yet, so the history is filed under the number itself. It is

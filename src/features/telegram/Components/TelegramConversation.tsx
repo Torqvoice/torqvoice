@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { setActiveConversation } from '@/features/messaging/activeConversation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -69,6 +70,11 @@ export function TelegramConversation({
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    setActiveConversation([`/messages?tab=telegram&customerId=${customerId}`])
+    return () => setActiveConversation(null)
+  }, [customerId])
 
   const initialScrollDone = useRef(false)
   useEffect(() => {
