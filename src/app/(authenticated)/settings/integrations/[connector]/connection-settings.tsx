@@ -615,7 +615,9 @@ export function ConnectionSettings({
         )}
       </AppCard>
 
-      {connected && view.backup && <BackupCard connectorId={manifest.id} backup={view.backup} />}
+      {connected && view.backup && (
+        <BackupCard connectorId={manifest.id} backup={view.backup} docs={manifest.docs} />
+      )}
 
       {connected && manifest.settings.length > 0 && (
         <SettingsForm

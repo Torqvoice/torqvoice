@@ -205,7 +205,8 @@
         "done": "Completato",
         "failed": "Non riuscito",
         "skipped": "Saltato"
-      }
+      },
+      "restoreHint": "Per ripristinare, apri un backup con restic e reimporta il suo data.json in Impostazioni, Dati. La documentazione mostra ogni passaggio."
     },
     "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo.",
     "searchOrType": "Cerca o digita un nome",
@@ -765,7 +766,7 @@
         "monthDay": "Giorno del mese",
         "monthDayLast": "Ultimo giorno",
         "contents": "Contenuto",
-        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup.",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup. Un backup contiene i dati dell'officina e, se lo scegli, i suoi file. Account utente e password non ne fanno parte: su un nuovo server accedi, inviti il team e ripristini i dati in quell'officina.",
         "contentsData": "Solo dati",
         "contentsDataAndSecrets": "Dati e chiavi segrete",
         "includeFiles": "Includi foto e file",
@@ -805,7 +806,7 @@
         "monthDay": "Giorno del mese",
         "monthDayLast": "Ultimo giorno",
         "contents": "Contenuto",
-        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup.",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup. Un backup contiene i dati dell'officina e, se lo scegli, i suoi file. Account utente e password non ne fanno parte: su un nuovo server accedi, inviti il team e ripristini i dati in quell'officina.",
         "contentsData": "Solo dati",
         "contentsDataAndSecrets": "Dati e chiavi segrete",
         "includeFiles": "Includi foto e file",

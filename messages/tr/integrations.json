@@ -205,7 +205,8 @@
         "done": "Tamamlandı",
         "failed": "Başarısız",
         "skipped": "Atlandı"
-      }
+      },
+      "restoreHint": "Geri yüklemek için bir yedeği restic ile açın ve içindeki data.json dosyasını Ayarlar, Veri altında geri yükleyin. Belgeler her adımı gösterir."
     },
     "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri.",
     "searchOrType": "Ara veya bir ad yaz",
@@ -765,7 +766,7 @@
         "monthDay": "Ayın günü",
         "monthDayLast": "Son gün",
         "contents": "İçerik",
-        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir.",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir. Bir yedek, atölyenin kayıtlarını ve seçildiğinde dosyalarını içerir. Kullanıcı hesapları ve parolalar yedekte yer almaz: yeni bir sunucuda oturum açar, ekibi davet eder ve verileri o atölyeye geri yüklersiniz.",
         "contentsData": "Yalnızca veriler",
         "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
         "includeFiles": "Fotoğrafları ve dosyaları dahil et",
@@ -805,7 +806,7 @@
         "monthDay": "Ayın günü",
         "monthDayLast": "Son gün",
         "contents": "İçerik",
-        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir.",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir. Bir yedek, atölyenin kayıtlarını ve seçildiğinde dosyalarını içerir. Kullanıcı hesapları ve parolalar yedekte yer almaz: yeni bir sunucuda oturum açar, ekibi davet eder ve verileri o atölyeye geri yüklersiniz.",
         "contentsData": "Yalnızca veriler",
         "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
         "includeFiles": "Fotoğrafları ve dosyaları dahil et",

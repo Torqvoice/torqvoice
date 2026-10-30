@@ -205,7 +205,8 @@
         "done": "Fertig",
         "failed": "Fehlgeschlagen",
         "skipped": "Übersprungen"
-      }
+      },
+      "restoreHint": "Zum Wiederherstellen öffnen Sie eine Sicherung mit restic und spielen deren data.json unter Einstellungen, Daten wieder ein. Die Dokumentation zeigt jeden Schritt."
     },
     "lockedBackups": "Geplante, verschlüsselte Sicherungen Ihrer Werkstatt in Ihren eigenen Speicher.",
     "searchOrType": "Suchen oder Namen eingeben",
@@ -765,7 +766,7 @@
         "monthDay": "Tag im Monat",
         "monthDayLast": "Letzter Tag",
         "contents": "Inhalt",
-        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt.",
+        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt. Eine Sicherung enthält die Datensätze der Werkstatt und, wenn ausgewählt, ihre Dateien. Benutzerkonten und Passwörter sind nicht enthalten: Auf einem neuen Server melden Sie sich an, laden das Team ein und stellen die Daten in dieser Werkstatt wieder her.",
         "contentsData": "Nur Daten",
         "contentsDataAndSecrets": "Daten und geheime Schlüssel",
         "includeFiles": "Fotos und Dateien einschließen",
@@ -805,7 +806,7 @@
         "monthDay": "Tag im Monat",
         "monthDayLast": "Letzter Tag",
         "contents": "Inhalt",
-        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt.",
+        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt. Eine Sicherung enthält die Datensätze der Werkstatt und, wenn ausgewählt, ihre Dateien. Benutzerkonten und Passwörter sind nicht enthalten: Auf einem neuen Server melden Sie sich an, laden das Team ein und stellen die Daten in dieser Werkstatt wieder her.",
         "contentsData": "Nur Daten",
         "contentsDataAndSecrets": "Daten und geheime Schlüssel",
         "includeFiles": "Fotos und Dateien einschließen",

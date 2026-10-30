@@ -205,7 +205,8 @@
         "done": "Klaar",
         "failed": "Mislukt",
         "skipped": "Overgeslagen"
-      }
+      },
+      "restoreHint": "Om te herstellen opent u een back-up met restic en zet u de data.json ervan terug onder Instellingen, Gegevens. De documentatie toont elke stap."
     },
     "lockedBackups": "Geplande, versleutelde back-ups van uw werkplaats naar opslag die van u is.",
     "searchOrType": "Zoek of typ een naam",
@@ -765,7 +766,7 @@
         "monthDay": "Dag van de maand",
         "monthDayLast": "Laatste dag",
         "contents": "Inhoud",
-        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord.",
+        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord. Een back-up bevat de gegevens van de werkplaats en, als u dat kiest, de bestanden. Gebruikersaccounts en wachtwoorden zitten er niet in: op een nieuwe server meldt u zich aan, nodigt u het team uit en zet u de gegevens terug in die werkplaats.",
         "contentsData": "Alleen gegevens",
         "contentsDataAndSecrets": "Gegevens en geheime sleutels",
         "includeFiles": "Foto's en bestanden meenemen",
@@ -805,7 +806,7 @@
         "monthDay": "Dag van de maand",
         "monthDayLast": "Laatste dag",
         "contents": "Inhoud",
-        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord.",
+        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord. Een back-up bevat de gegevens van de werkplaats en, als u dat kiest, de bestanden. Gebruikersaccounts en wachtwoorden zitten er niet in: op een nieuwe server meldt u zich aan, nodigt u het team uit en zet u de gegevens terug in die werkplaats.",
         "contentsData": "Alleen gegevens",
         "contentsDataAndSecrets": "Gegevens en geheime sleutels",
         "includeFiles": "Foto's en bestanden meenemen",

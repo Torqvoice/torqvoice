@@ -205,7 +205,8 @@
         "done": "Completada",
         "failed": "Fallida",
         "skipped": "Omitida"
-      }
+      },
+      "restoreHint": "Para restaurar, abre una copia con restic y vuelve a importar su data.json en Configuración, Datos. La documentación muestra cada paso."
     },
     "lockedBackups": "Copias de seguridad cifradas y programadas de su taller en un almacenamiento propio.",
     "searchOrType": "Buscar o escribir un nombre",
@@ -765,7 +766,7 @@
         "monthDay": "Día del mes",
         "monthDayLast": "Último día",
         "contents": "Contenido",
-        "contentsHelp": "Las claves secretas son las que este taller ha introducido en Torqvoice: claves de pagos, de IA y de webhooks. En cualquier caso, cada copia se cifra con la contraseña de las copias.",
+        "contentsHelp": "Las claves secretas son las que este taller ha introducido en Torqvoice: claves de pagos, de IA y de webhooks. En cualquier caso, cada copia se cifra con la contraseña de las copias. Una copia contiene los registros del taller y, si así lo eliges, sus archivos. Las cuentas de usuario y las contraseñas no van en ella: en un servidor nuevo inicias sesión, invitas al equipo y restauras los datos en ese taller.",
         "contentsData": "Solo datos",
         "contentsDataAndSecrets": "Datos y claves secretas",
         "includeFiles": "Incluir fotos y archivos",
@@ -805,7 +806,7 @@
         "monthDay": "Día del mes",
         "monthDayLast": "Último día",
         "contents": "Contenido",
-        "contentsHelp": "Las claves secretas son las que este taller ha introducido en Torqvoice: claves de pagos, de IA y de webhooks. En cualquier caso, cada copia se cifra con la contraseña de las copias.",
+        "contentsHelp": "Las claves secretas son las que este taller ha introducido en Torqvoice: claves de pagos, de IA y de webhooks. En cualquier caso, cada copia se cifra con la contraseña de las copias. Una copia contiene los registros del taller y, si así lo eliges, sus archivos. Las cuentas de usuario y las contraseñas no van en ella: en un servidor nuevo inicias sesión, invitas al equipo y restauras los datos en ese taller.",
         "contentsData": "Solo datos",
         "contentsDataAndSecrets": "Datos y claves secretas",
         "includeFiles": "Incluir fotos y archivos",

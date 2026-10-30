@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useNow, useTranslations } from 'next-intl'
+import { DocsLink } from '@/components/docs-link'
 import { DatabaseBackup, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
@@ -53,9 +54,12 @@ function statusClass(status: BackupRunStatus): string {
 export function BackupCard({
   connectorId,
   backup,
+  docs,
 }: {
   connectorId: string
   backup: BackupOverview
+  /** The integration's docs page, where restoring is described. */
+  docs: string
 }) {
   const t = useTranslations('integrations.connection.backup')
   const tc = useTranslations('integrations')
@@ -221,6 +225,12 @@ export function BackupCard({
             </div>
           </>
         )}
+        {/* The way back sits with the backups, so nobody has to go looking
+            for it on the day it matters. */}
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          <span>{t('restoreHint')}</span>
+          <DocsLink href={docs} variant="inline" />
+        </p>
       </div>
     </AppCard>
   )

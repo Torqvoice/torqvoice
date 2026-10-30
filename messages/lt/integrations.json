@@ -205,7 +205,8 @@
         "done": "Atlikta",
         "failed": "Nepavyko",
         "skipped": "Praleista"
-      }
+      },
+      "restoreHint": "Norėdami atkurti, atidarykite atsarginę kopiją su restic ir įkelkite jos data.json atgal skiltyje Nustatymai, Duomenys. Dokumentacijoje parodytas kiekvienas žingsnis."
     },
     "lockedBackups": "Suplanuotos, šifruotos jūsų dirbtuvės atsarginės kopijos į jums priklausančią saugyklą.",
     "searchOrType": "Ieškoti arba įvesti pavadinimą",
@@ -765,7 +766,7 @@
         "monthDay": "Mėnesio diena",
         "monthDayLast": "Paskutinė diena",
         "contents": "Turinys",
-        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu.",
+        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu. Atsarginėje kopijoje yra dirbtuvės įrašai ir, jei pasirinkta, jos failai. Naudotojų paskyrų ir slaptažodžių joje nėra: naujame serveryje prisijungiate, pakviečiate komandą ir atkuriate duomenis į tą dirbtuvę.",
         "contentsData": "Tik duomenys",
         "contentsDataAndSecrets": "Duomenys ir slaptieji raktai",
         "includeFiles": "Įtraukti nuotraukas ir failus",
@@ -805,7 +806,7 @@
         "monthDay": "Mėnesio diena",
         "monthDayLast": "Paskutinė diena",
         "contents": "Turinys",
-        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu.",
+        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu. Atsarginėje kopijoje yra dirbtuvės įrašai ir, jei pasirinkta, jos failai. Naudotojų paskyrų ir slaptažodžių joje nėra: naujame serveryje prisijungiate, pakviečiate komandą ir atkuriate duomenis į tą dirbtuvę.",
         "contentsData": "Tik duomenys",
         "contentsDataAndSecrets": "Duomenys ir slaptieji raktai",
         "includeFiles": "Įtraukti nuotraukas ir failus",

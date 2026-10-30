@@ -205,7 +205,8 @@
         "done": "Gotowe",
         "failed": "Nieudane",
         "skipped": "Pominięte"
-      }
+      },
+      "restoreHint": "Aby przywrócić kopię, otwórz ją w restic i wgraj jej data.json z powrotem w Ustawienia, Dane. Dokumentacja pokazuje każdy krok."
     },
     "lockedBackups": "Zaplanowane, szyfrowane kopie zapasowe warsztatu do własnej przestrzeni dyskowej.",
     "searchOrType": "Szukaj lub wpisz nazwę",
@@ -765,7 +766,7 @@
         "monthDay": "Dzień miesiąca",
         "monthDayLast": "Ostatni dzień",
         "contents": "Zawartość",
-        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych.",
+        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych. Kopia zapasowa zawiera dane warsztatu i, jeśli tak wybrano, jego pliki. Nie ma w niej kont użytkowników ani haseł: na nowym serwerze logujesz się, zapraszasz zespół i przywracasz dane do tego warsztatu.",
         "contentsData": "Tylko dane",
         "contentsDataAndSecrets": "Dane i klucze tajne",
         "includeFiles": "Dołącz zdjęcia i pliki",
@@ -805,7 +806,7 @@
         "monthDay": "Dzień miesiąca",
         "monthDayLast": "Ostatni dzień",
         "contents": "Zawartość",
-        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych.",
+        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych. Kopia zapasowa zawiera dane warsztatu i, jeśli tak wybrano, jego pliki. Nie ma w niej kont użytkowników ani haseł: na nowym serwerze logujesz się, zapraszasz zespół i przywracasz dane do tego warsztatu.",
         "contentsData": "Tylko dane",
         "contentsDataAndSecrets": "Dane i klucze tajne",
         "includeFiles": "Dołącz zdjęcia i pliki",

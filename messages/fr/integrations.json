@@ -205,7 +205,8 @@
         "done": "Terminée",
         "failed": "Échouée",
         "skipped": "Ignorée"
-      }
+      },
+      "restoreHint": "Pour restaurer, ouvrez une sauvegarde avec restic et réimportez son data.json sous Paramètres, Données. La documentation détaille chaque étape."
     },
     "lockedBackups": "Des sauvegardes chiffrées et planifiées de votre atelier vers un stockage qui vous appartient.",
     "searchOrType": "Rechercher ou saisir un nom",
@@ -765,7 +766,7 @@
         "monthDay": "Jour du mois",
         "monthDayLast": "Dernier jour",
         "contents": "Contenu",
-        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes.",
+        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes. Une sauvegarde contient les données de l'atelier et, si vous le choisissez, ses fichiers. Les comptes utilisateurs et les mots de passe n'en font pas partie : sur un nouveau serveur, vous vous connectez, invitez l'équipe et restaurez les données dans cet atelier.",
         "contentsData": "Données uniquement",
         "contentsDataAndSecrets": "Données et clés secrètes",
         "includeFiles": "Inclure les photos et les fichiers",
@@ -805,7 +806,7 @@
         "monthDay": "Jour du mois",
         "monthDayLast": "Dernier jour",
         "contents": "Contenu",
-        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes.",
+        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes. Une sauvegarde contient les données de l'atelier et, si vous le choisissez, ses fichiers. Les comptes utilisateurs et les mots de passe n'en font pas partie : sur un nouveau serveur, vous vous connectez, invitez l'équipe et restaurez les données dans cet atelier.",
         "contentsData": "Données uniquement",
         "contentsDataAndSecrets": "Données et clés secrètes",
         "includeFiles": "Inclure les photos et les fichiers",

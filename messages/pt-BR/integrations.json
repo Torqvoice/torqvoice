@@ -205,7 +205,8 @@
         "done": "Concluído",
         "failed": "Falhou",
         "skipped": "Ignorado"
-      }
+      },
+      "restoreHint": "Para restaurar, abra um backup com o restic e importe de novo o data.json dele em Configurações, Dados. A documentação mostra cada passo."
     },
     "lockedBackups": "Backups agendados e criptografados da sua oficina para um armazenamento seu.",
     "searchOrType": "Pesquisar ou digitar um nome",
@@ -765,7 +766,7 @@
         "monthDay": "Dia do mês",
         "monthDayLast": "Último dia",
         "contents": "Conteúdo",
-        "contentsHelp": "Chaves secretas são as que esta oficina digitou no Torqvoice: chaves de pagamento, de IA e de webhook. De qualquer forma, todo backup é criptografado com a senha dos backups.",
+        "contentsHelp": "Chaves secretas são as que esta oficina digitou no Torqvoice: chaves de pagamento, de IA e de webhook. De qualquer forma, todo backup é criptografado com a senha dos backups. Um backup contém os registros da oficina e, se você escolher, os arquivos dela. Contas de usuário e senhas não ficam nele: em um servidor novo, você entra, convida a equipe e restaura os dados nessa oficina.",
         "contentsData": "Somente dados",
         "contentsDataAndSecrets": "Dados e chaves secretas",
         "includeFiles": "Incluir fotos e arquivos",
@@ -805,7 +806,7 @@
         "monthDay": "Dia do mês",
         "monthDayLast": "Último dia",
         "contents": "Conteúdo",
-        "contentsHelp": "Chaves secretas são as que esta oficina digitou no Torqvoice: chaves de pagamento, de IA e de webhook. De qualquer forma, todo backup é criptografado com a senha dos backups.",
+        "contentsHelp": "Chaves secretas são as que esta oficina digitou no Torqvoice: chaves de pagamento, de IA e de webhook. De qualquer forma, todo backup é criptografado com a senha dos backups. Um backup contém os registros da oficina e, se você escolher, os arquivos dela. Contas de usuário e senhas não ficam nele: em um servidor novo, você entra, convida a equipe e restaura os dados nessa oficina.",
         "contentsData": "Somente dados",
         "contentsDataAndSecrets": "Dados e chaves secretas",
         "includeFiles": "Incluir fotos e arquivos",

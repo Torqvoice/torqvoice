@@ -205,7 +205,8 @@
         "done": "Concluída",
         "failed": "Falhou",
         "skipped": "Ignorada"
-      }
+      },
+      "restoreHint": "Para repor, abra uma cópia com o restic e volte a importar o respetivo data.json em Definições, Dados. A documentação mostra todos os passos."
     },
     "lockedBackups": "Cópias de segurança agendadas e encriptadas da sua oficina para um armazenamento seu.",
     "searchOrType": "Pesquisar ou escrever um nome",
@@ -765,7 +766,7 @@
         "monthDay": "Dia do mês",
         "monthDayLast": "Último dia",
         "contents": "Conteúdo",
-        "contentsHelp": "As chaves secretas são as que esta oficina introduziu no Torqvoice: chaves de pagamentos, de IA e de webhooks. Em qualquer caso, cada cópia é encriptada com a palavra-passe das cópias de segurança.",
+        "contentsHelp": "As chaves secretas são as que esta oficina introduziu no Torqvoice: chaves de pagamentos, de IA e de webhooks. Em qualquer caso, cada cópia é encriptada com a palavra-passe das cópias de segurança. Uma cópia contém os registos da oficina e, se o escolher, os respetivos ficheiros. As contas de utilizador e as palavras-passe não estão incluídas: num servidor novo, inicia sessão, convida a equipa e repõe os dados nessa oficina.",
         "contentsData": "Apenas dados",
         "contentsDataAndSecrets": "Dados e chaves secretas",
         "includeFiles": "Incluir fotografias e ficheiros",
@@ -805,7 +806,7 @@
         "monthDay": "Dia do mês",
         "monthDayLast": "Último dia",
         "contents": "Conteúdo",
-        "contentsHelp": "As chaves secretas são as que esta oficina introduziu no Torqvoice: chaves de pagamentos, de IA e de webhooks. Em qualquer caso, cada cópia é encriptada com a palavra-passe das cópias de segurança.",
+        "contentsHelp": "As chaves secretas são as que esta oficina introduziu no Torqvoice: chaves de pagamentos, de IA e de webhooks. Em qualquer caso, cada cópia é encriptada com a palavra-passe das cópias de segurança. Uma cópia contém os registos da oficina e, se o escolher, os respetivos ficheiros. As contas de utilizador e as palavras-passe não estão incluídas: num servidor novo, inicia sessão, convida a equipa e repõe os dados nessa oficina.",
         "contentsData": "Apenas dados",
         "contentsDataAndSecrets": "Dados e chaves secretas",
         "includeFiles": "Incluir fotografias e ficheiros",

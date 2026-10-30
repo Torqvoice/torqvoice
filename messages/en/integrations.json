@@ -205,7 +205,8 @@
         "done": "Done",
         "failed": "Failed",
         "skipped": "Skipped"
-      }
+      },
+      "restoreHint": "To restore, open a backup with restic and put its data.json back under Settings, Data. The documentation shows every step."
     },
     "lockedBackups": "Scheduled, encrypted backups of your workshop to storage you own.",
     "searchOrType": "Search or type a name",
@@ -765,7 +766,7 @@
         "monthDay": "Day of the month",
         "monthDayLast": "Last day",
         "contents": "Contents",
-        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way.",
+        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way. A backup holds the workshop's records and, when chosen, its files. User accounts and passwords are not in it: on a new server you sign in, invite the team and restore the data into that workshop.",
         "contentsData": "Data only",
         "contentsDataAndSecrets": "Data and secret keys",
         "includeFiles": "Include photos and files",
@@ -805,7 +806,7 @@
         "monthDay": "Day of the month",
         "monthDayLast": "Last day",
         "contents": "Contents",
-        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way.",
+        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way. A backup holds the workshop's records and, when chosen, its files. User accounts and passwords are not in it: on a new server you sign in, invite the team and restore the data into that workshop.",
         "contentsData": "Data only",
         "contentsDataAndSecrets": "Data and secret keys",
         "includeFiles": "Include photos and files",

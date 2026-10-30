@@ -205,7 +205,8 @@
         "done": "Ferdig",
         "failed": "Feilet",
         "skipped": "Hoppet over"
-      }
+      },
+      "restoreHint": "For å gjenopprette åpner du en sikkerhetskopi med restic og legger data.json fra den tilbake under Innstillinger, Data. Dokumentasjonen viser hvert steg."
     },
     "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv.",
     "searchOrType": "Søk eller skriv et navn",
@@ -765,7 +766,7 @@
         "monthDay": "Dag i måneden",
         "monthDayLast": "Siste dag",
         "contents": "Innhold",
-        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier.",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier. En sikkerhetskopi inneholder verkstedets data og, hvis du velger det, filene. Brukerkontoer og passord er ikke med: på en ny server logger du inn, inviterer teamet og gjenoppretter dataene i det verkstedet.",
         "contentsData": "Bare data",
         "contentsDataAndSecrets": "Data og hemmelige nøkler",
         "includeFiles": "Ta med bilder og filer",
@@ -805,7 +806,7 @@
         "monthDay": "Dag i måneden",
         "monthDayLast": "Siste dag",
         "contents": "Innhold",
-        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier.",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier. En sikkerhetskopi inneholder verkstedets data og, hvis du velger det, filene. Brukerkontoer og passord er ikke med: på en ny server logger du inn, inviterer teamet og gjenoppretter dataene i det verkstedet.",
         "contentsData": "Bare data",
         "contentsDataAndSecrets": "Data og hemmelige nøkler",
         "includeFiles": "Ta med bilder og filer",
