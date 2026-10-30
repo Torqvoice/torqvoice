@@ -10,20 +10,14 @@ import { FeatureGatedError, getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
 
-export interface BackupSnapshotList {
-  /** The workshop's name, which a restore is confirmed by typing. */
-  workshopName: string
-  snapshots: BackupSnapshotView[]
-}
-
 /**
- * The backups at a destination, for the Restore section. An owner's or
- * administrator's call, like the restore itself: the list says when the
- * workshop was backed up and how much it holds.
+ * Every backup at a destination, for the Backups card's full list. The same
+ * right as the restore itself: the list says when the workshop was backed
+ * up and how much it holds.
  */
 export async function listBackupSnapshots(connectorId: string) {
   return withAuth(
-    async ({ organizationId, userId, isAdmin }): Promise<BackupSnapshotList> => {
+    async ({ organizationId, userId, isAdmin }): Promise<BackupSnapshotView[]> => {
       if (!isAdmin) throw new Error('Only an owner or administrator can restore a backup')
       // On the cloud, where workshops share a database, the owner's alone.
       if (!(await canRestoreBackups({ userId, organizationId, isAdmin }))) {
@@ -39,17 +33,14 @@ export async function listBackupSnapshots(connectorId: string) {
           `${manifest.name} is not included in your plan.`
         )
       }
-      const [row, org] = await Promise.all([
-        db.integrationConnection.findUnique({
-          where: { organizationId_connectorId: { organizationId, connectorId } },
-          select: { id: true, status: true },
-        }),
-        db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
-      ])
+      const row = await db.integrationConnection.findUnique({
+        where: { organizationId_connectorId: { organizationId, connectorId } },
+        select: { id: true, status: true },
+      })
       if (!row || (row.status !== 'active' && row.status !== 'error')) {
         throw new Error('Connect the destination first')
       }
-      return { workshopName: org?.name ?? '', snapshots: await listSnapshots(row.id) }
+      return listSnapshots(row.id)
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],

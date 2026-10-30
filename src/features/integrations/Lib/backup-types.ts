@@ -57,8 +57,12 @@ export interface BackupOverview {
   recent: BackupRunView[]
   /** Repository size in bytes from the last stats call, when known. */
   repositorySize: number | null
-  /** Whether the person looking may restore a snapshot: owners and administrators. */
+  /** Whether the person looking may restore a snapshot. */
   canRestore: boolean
+  /** Who may: the owner alone on the cloud, an owner or administrator self-hosted. */
+  restoreRole: 'owner' | 'admin'
+  /** The workshop's name, which a restore is confirmed by typing. */
+  workshopName: string
 }
 
 /** One backup at the destination, as the Restore section lists it. */
@@ -69,6 +73,9 @@ export interface BackupSnapshotView {
   time: string
   /** Bytes the backup covered, when restic recorded a summary. */
   bytes: number | null
+  /** New files and bytes added by it, as the run row would say, when restic recorded a summary. */
+  filesNew: number | null
+  dataAdded: number | null
   /** Whether photos and files were included. */
   files: boolean
   /** What started it, when the tags say. */

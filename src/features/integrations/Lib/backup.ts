@@ -209,7 +209,7 @@ export async function backupOverview(
   },
   viewer: { canRestore: boolean } = { canRestore: false }
 ): Promise<BackupOverview> {
-  const [recentRows, lastGoodRow] = await Promise.all([
+  const [recentRows, lastGoodRow, organization] = await Promise.all([
     db.backupRun.findMany({
       where: { connectionId: connection.id },
       orderBy: { createdAt: 'desc' },
@@ -219,6 +219,10 @@ export async function backupOverview(
     db.backupRun.findFirst({
       where: { connectionId: connection.id, status: 'done', trigger: { not: 'restore' } },
       orderBy: { createdAt: 'desc' },
+    }),
+    db.organization.findUnique({
+      where: { id: connection.organizationId },
+      select: { name: true },
     }),
   ])
   const settings = readBackupSettings(connection.settings)
@@ -235,5 +239,7 @@ export async function backupOverview(
     recent: recentRows.map(runView),
     repositorySize: typeof size === 'number' ? size : null,
     canRestore: viewer.canRestore,
+    restoreRole: isCloudMode() ? 'owner' : 'admin',
+    workshopName: organization?.name ?? '',
   }
 }

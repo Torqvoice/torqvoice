@@ -74,6 +74,8 @@ export async function listSnapshots(connectionId: string): Promise<BackupSnapsho
       shortId: s.shortId,
       time: s.time,
       bytes: s.summary ? s.summary.totalBytesProcessed : null,
+      filesNew: s.summary ? s.summary.filesNew : null,
+      dataAdded: s.summary ? s.summary.dataAdded : null,
       files: s.paths.length > 1,
       trigger: snapshotTrigger(s.tags),
       thisWorkshop: s.hostname === host || s.tags.includes(backupTag(organizationId)),
