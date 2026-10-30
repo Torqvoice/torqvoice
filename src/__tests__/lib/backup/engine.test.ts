@@ -130,6 +130,11 @@ vi.mock('@/lib/backup/build-data', () => ({
   ),
 }))
 
+vi.mock('@/i18n/organization-translator', () => ({
+  organizationTranslator: async () =>
+    Object.assign((key: string) => key, { has: () => false, locale: 'en' }),
+}))
+vi.mock('@/lib/workshop-timezone', () => ({ workshopTimeZone: async () => 'UTC' }))
 vi.mock('@/lib/notify', () => ({ notify: vi.fn(async () => undefined) }))
 
 vi.mock('@/lib/email', () => ({

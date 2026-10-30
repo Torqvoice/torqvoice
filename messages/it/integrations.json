@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendario Microsoft 365",
       "description": "Inserisci gli ordini di lavoro pianificati in un calendario Outlook, aggiungi un link Microsoft Teams e vedi gli impegni del calendario in Torqvoice.",
       "tenantHelp": "Registra un'applicazione in Microsoft Entra (Registrazioni app), consenti gli account personali e aziendali, aggiungi l'URI di reindirizzamento qui sotto come piattaforma Web, crea un segreto client e incolla entrambi qui.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatibile con OpenAI",
       "description": "Descrizioni di servizio, riepiloghi dello storico, lettura di documenti e assistente, forniti da qualsiasi server che parli l'API chat di OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM e simili. I tuoi dati restano sul tuo hardware.",
       "fields": {
         "baseUrl": "URL di base",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Da voce a testo",
       "description": "La dettatura su un ordine di lavoro viene trascritta da un modello vocale invece che dal browser: molto più precisa, in qualsiasi lingua e conosce le parole dell'officina. È separata dal tuo fornitore di IA, quindi puoi lasciarlo com'è. Usa la tua chiave OpenAI o un tuo server che parli l'API di trascrizione di OpenAI. La registrazione viene inviata per la trascrizione e non viene conservata.",
       "fields": {
         "apiKey": "Chiave API",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Bucket di archiviazione cloud",
       "description": "Backup cifrati di questa officina in un bucket di tua proprietà su Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage o qualsiasi altro storage compatibile S3, con la frequenza che scegli. Dopo la prima esecuzione viene caricato solo ciò che è cambiato, quindi i backup orari restano economici.",
       "fields": {
         "accessKeyId": "ID chiave di accesso",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Cartella locale",
       "description": "Backup cifrati di questa officina in una cartella su questo server: il volume dei backup nel file compose, o un'unità di rete montata lì. Una copia sullo stesso disco del database non è sicura da sola; abbinala a uno spazio di archiviazione altrove.",
       "fields": {
         "password": "Password dei backup",
@@ -824,5 +829,18 @@
       "refresh": "Aggiornamento dei dati sui richiami",
       "vehicle": "Controllo richiami per un nuovo veicolo"
     }
+  },
+  "backupAlerts": {
+    "destination": "destinazione dei backup",
+    "failedTitle": "Backup non riuscito",
+    "failedMessage": "Il backup su {name} non è stato completato: {reason}",
+    "failedSubject": "Backup su {name} non riuscito",
+    "failedEmailIntro": "Il backup programmato della tua officina su {name} non è stato completato.",
+    "openToRetry": "Apri Impostazioni, Integrazioni, {name} per vedere l'esecuzione e riprovare.",
+    "overdueTitle": "Backup in ritardo",
+    "overdueSince": "Nessun backup su {name} è stato completato dal {time}.",
+    "overdueNever": "Nessun backup su {name} è stato ancora completato.",
+    "overdueSubject": "Il backup su {name} è in ritardo",
+    "openToSee": "Apri Impostazioni, Integrazioni, {name} per vedere cosa è andato storto."
   }
 }

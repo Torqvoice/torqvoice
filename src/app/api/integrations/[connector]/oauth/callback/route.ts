@@ -131,7 +131,10 @@ export async function GET(
       action: 'integration.connect',
       entity: 'IntegrationConnection',
       entityId: connection.id,
-      details: { key: 'integration_connect', params: { name: manifest.name } },
+      details: {
+        key: 'integration_connect',
+        params: { name: manifest.name, connectorId: manifest.id },
+      },
     }
   )
 

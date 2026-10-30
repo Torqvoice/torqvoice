@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -189,6 +191,7 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
       const vehicleLabel = (v: { year: number; make: string; model: string } | null) =>
         v ? `${v.year} ${v.make} ${v.model}` : ''
 
+      const ti = await getTranslations('integrations')
       const externalEvents: CalendarEvent[] = []
       for (const e of external) {
         // One entry per day the event covers, capped so a year-long block
@@ -196,7 +199,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
         // falls on, so an event ending at midnight stops the day before.
         const firstKey = zonedDayKey(e.startAt, timeZone)
         const lastKey = zonedDayKey(new Date(e.endAt.getTime() - 1), timeZone)
-        const source = getManifest(e.connection.connectorId)?.name ?? null
+        const sourceManifest = getManifest(e.connection.connectorId)
+        const source = sourceManifest ? connectorName(ti, sourceManifest) : null
         let day = e.startAt
         for (let n = 0; n < 31; n++) {
           const key = zonedDayKey(day, timeZone)

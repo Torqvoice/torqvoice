@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendario de Microsoft 365",
       "description": "Añada las órdenes de trabajo programadas a un calendario de Outlook, incluya un enlace de Microsoft Teams y vea el tiempo ocupado del calendario en Torqvoice.",
       "tenantHelp": "Registre una aplicación en Microsoft Entra (Registros de aplicaciones), permita cuentas personales y profesionales, añada la URI de redirección que aparece abajo como plataforma Web, cree un secreto de cliente y pegue ambos aquí.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatible con OpenAI",
       "description": "Descripciones de servicio, resúmenes de historial, lectura de documentos y el asistente, respondidos por cualquier servidor que hable la API de chat de OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM y similares. Sus datos se quedan en su propio hardware.",
       "fields": {
         "baseUrl": "URL base",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Voz a texto",
       "description": "El dictado en una orden de trabajo lo transcribe un modelo de voz en lugar del navegador: mucho más preciso, en cualquier idioma y conoce las palabras de un taller. Es independiente de tu proveedor de IA, así que puedes dejar ese como está. Usa tu propia clave de OpenAI o un servidor propio que hable la API de transcripción de OpenAI. La grabación se envía para transcribirla y no se guarda.",
       "fields": {
         "apiKey": "Clave de API",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Bucket de almacenamiento en la nube",
       "description": "Copias de seguridad cifradas de este taller en un bucket de su propiedad en Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage o cualquier otro almacenamiento compatible con S3, con la frecuencia que usted elija. Tras la primera ejecución solo se sube lo que ha cambiado, así que las copias cada hora salen baratas.",
       "fields": {
         "accessKeyId": "ID de clave de acceso",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Carpeta local",
       "description": "Copias de seguridad cifradas de este taller en una carpeta de este servidor: el volumen de copias del archivo compose o una unidad de red montada allí. Una copia en el mismo disco que la base de datos no es segura por sí sola; combínela con un almacenamiento en otro lugar.",
       "fields": {
         "password": "Contraseña de las copias",
@@ -824,5 +829,18 @@
       "refresh": "Actualización de datos de llamadas a revisión",
       "vehicle": "Comprobación de llamadas a revisión para un vehículo nuevo"
     }
+  },
+  "backupAlerts": {
+    "destination": "destino de copias de seguridad",
+    "failedTitle": "Error en la copia de seguridad",
+    "failedMessage": "La copia de seguridad en {name} no terminó: {reason}",
+    "failedSubject": "Error en la copia de seguridad en {name}",
+    "failedEmailIntro": "La copia de seguridad programada de su taller en {name} no terminó.",
+    "openToRetry": "Abra Configuración, Integraciones, {name} para ver la ejecución y volver a intentarlo.",
+    "overdueTitle": "Copia de seguridad atrasada",
+    "overdueSince": "Ninguna copia de seguridad en {name} ha terminado desde {time}.",
+    "overdueNever": "Todavía no ha terminado ninguna copia de seguridad en {name}.",
+    "overdueSubject": "La copia de seguridad en {name} está atrasada",
+    "openToSee": "Abra Configuración, Integraciones, {name} para ver qué salió mal."
   }
 }

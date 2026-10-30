@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 Takvimi",
       "description": "Planlanmış iş emirlerini bir Outlook takvimine ekleyin, Microsoft Teams bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
       "tenantHelp": "Microsoft Entra'da (App registrations) bir uygulama kaydedin, kişisel ve iş hesaplarına izin verin, aşağıdaki yönlendirme URI'sini Web platformu olarak ekleyin, bir istemci gizli anahtarı oluşturun ve her ikisini buraya yapıştırın.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI uyumlu",
       "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan, OpenAI sohbet API'sini konuşan herhangi bir sunucu tarafından yanıtlanır: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ve benzerleri. Verileriniz kendi donanımınızda kalır.",
       "fields": {
         "baseUrl": "Temel URL",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Konuşmadan metne",
       "description": "İş emrindeki dikte, tarayıcı yerine bir konuşma modeli tarafından yazıya dökülür: çok daha doğrudur, her dilde çalışır ve atölye terimlerini bilir. Yapay zekâ sağlayıcınızdan ayrıdır, o yüzden onu olduğu gibi bırakabilirsiniz. Kendi OpenAI anahtarınızı ya da OpenAI'nin transkripsiyon API'siyle çalışan kendi sunucunuzu kullanır. Kayıt yazıya dökülmek üzere gönderilir ve saklanmaz.",
       "fields": {
         "apiKey": "API anahtarı",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Bulut depolama bucket'ı",
       "description": "Bu atölyenin Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage veya başka bir S3 uyumlu depolamadaki size ait bir bucket'a, seçtiğiniz zamanlamayla şifreli yedekleri. İlk çalıştırmadan sonra yalnızca değişenler yüklenir, bu yüzden saatlik yedekler ucuz kalır.",
       "fields": {
         "accessKeyId": "Erişim anahtarı kimliği",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Yerel klasör",
       "description": "Bu atölyenin, bu sunucudaki bir klasöre şifreli yedekleri: compose dosyasındaki yedek birimi veya oraya bağlanmış bir ağ sürücüsü. Veritabanıyla aynı diskteki bir kopya tek başına güvenli değildir; başka bir yerdeki depolamayla birlikte kullanın.",
       "fields": {
         "password": "Yedekleme parolası",
@@ -824,5 +829,18 @@
       "refresh": "Geri çağırma verisi yenileme",
       "vehicle": "Yeni araç için geri çağırma kontrolü"
     }
+  },
+  "backupAlerts": {
+    "destination": "yedekleme hedefi",
+    "failedTitle": "Yedekleme başarısız oldu",
+    "failedMessage": "{name} için yedekleme tamamlanmadı: {reason}",
+    "failedSubject": "{name} için yedekleme başarısız oldu",
+    "failedEmailIntro": "Atölyenizin {name} için zamanlanmış yedeklemesi tamamlanmadı.",
+    "openToRetry": "Çalıştırmayı görmek ve yeniden denemek için Ayarlar, Entegrasyonlar, {name} bölümünü açın.",
+    "overdueTitle": "Yedekleme gecikti",
+    "overdueSince": "{time} tarihinden bu yana {name} için hiçbir yedekleme tamamlanmadı.",
+    "overdueNever": "{name} için henüz hiçbir yedekleme tamamlanmadı.",
+    "overdueSubject": "{name} için yedekleme gecikti",
+    "openToSee": "Neyin ters gittiğini görmek için Ayarlar, Entegrasyonlar, {name} bölümünü açın."
   }
 }

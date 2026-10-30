@@ -1,5 +1,6 @@
 'use client'
 
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -79,7 +80,7 @@ export function IntegrationsCatalog({
         m.id,
         normalize(
           [
-            m.name,
+            connectorName(t, m),
             m.id,
             t(`connectors.${m.id}.description`),
             t(`categories.${m.category}`),
@@ -163,7 +164,7 @@ export function IntegrationsCatalog({
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium">{m.name}</span>
+                        <span className="font-medium">{connectorName(t, m)}</span>
                         <StatusBadge entry={entry} />
                       </div>
                       <p className="truncate text-xs text-muted-foreground">
@@ -270,7 +271,7 @@ export function IntegrationsCatalog({
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium">{m.name}</span>
+                        <span className="font-medium">{connectorName(t, m)}</span>
                         {!entry.enabled && (
                           <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
                             {tSettings('nav.pro')}

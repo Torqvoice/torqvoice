@@ -12,11 +12,14 @@ import {
 } from '@/features/integrations/Lib/backup'
 import type { BackupRunView, BackupTrigger } from '@/features/integrations/Lib/backup-types'
 import { loadConnection, setConnectionStatus } from '@/features/integrations/Lib/connections'
+import { connectorName } from '@/features/integrations/Lib/display-name'
+import { organizationTranslator } from '@/i18n/organization-translator'
 import { getManifest } from '@/integrations/registry'
 import { db } from '@/lib/db'
 import { getOrgFromAddress, sendOrgMail } from '@/lib/email'
 import { notify } from '@/lib/notify'
 import { orgUploadDir } from '@/lib/upload-root'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { writeBackupData } from './build-data'
 import { readBackupSettings } from './schedule'
 import {
@@ -283,6 +286,17 @@ function describeFailure(err: unknown): string {
 }
 
 /**
+ * The words an alert is written in: the workshop's language, and the
+ * destination's name in it.
+ */
+async function alertWords(organizationId: string, connectorId: string) {
+  const t = await organizationTranslator(organizationId, 'integrations')
+  const manifest = getManifest(connectorId)
+  const name = manifest ? connectorName(t, manifest) : t('backupAlerts.destination')
+  return { t, name }
+}
+
+/**
  * A failed backup is told to the people who can fix it: an in-app
  * notification every time, an email at most once a day per destination.
  */
@@ -296,13 +310,13 @@ async function reportFailure(
     select: { connectorId: true, state: true },
   })
   if (!connection) return
-  const name = getManifest(connection.connectorId)?.name ?? 'backup destination'
+  const { t, name } = await alertWords(organizationId, connection.connectorId)
   await setConnectionStatus(connectionId, 'error', message)
   await notify({
     organizationId,
     type: 'backup_failed',
-    title: 'Backup failed',
-    message: `The backup to ${name} did not finish: ${message}`,
+    title: t('backupAlerts.failedTitle'),
+    message: t('backupAlerts.failedMessage', { name, reason: message }),
     entityType: 'IntegrationConnection',
     entityId: connectionId,
     entityUrl: `/settings/integrations/${connection.connectorId}`,
@@ -317,8 +331,8 @@ async function reportFailure(
   })
   await mailAdmins(
     organizationId,
-    `Backup to ${name} failed`,
-    `<p>The scheduled backup of your workshop to ${name} did not finish.</p><p>${escapeHtml(message)}</p><p>Open Settings, Integrations, ${name} to see the run and try again.</p>`
+    t('backupAlerts.failedSubject', { name }),
+    `<p>${escapeHtml(t('backupAlerts.failedEmailIntro', { name }))}</p><p>${escapeHtml(message)}</p><p>${escapeHtml(t('backupAlerts.openToRetry', { name }))}</p>`
   )
 }
 
@@ -333,23 +347,31 @@ export async function reportOverdue(
     select: { connectorId: true },
   })
   if (!connection) return
-  const name = getManifest(connection.connectorId)?.name ?? 'backup destination'
-  const since = lastGoodAt
-    ? `since ${lastGoodAt.toISOString().slice(0, 16).replace('T', ' ')} UTC`
-    : 'yet'
+  const { t, name } = await alertWords(organizationId, connection.connectorId)
+  // The last good time on the workshop's clock, in its language.
+  const sentence = lastGoodAt
+    ? t('backupAlerts.overdueSince', {
+        name,
+        time: new Intl.DateTimeFormat(t.locale, {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+          timeZone: await workshopTimeZone(organizationId),
+        }).format(lastGoodAt),
+      })
+    : t('backupAlerts.overdueNever', { name })
   await notify({
     organizationId,
     type: 'backup_overdue',
-    title: 'Backup overdue',
-    message: `No backup to ${name} has finished ${since}.`,
+    title: t('backupAlerts.overdueTitle'),
+    message: sentence,
     entityType: 'IntegrationConnection',
     entityId: connectionId,
     entityUrl: `/settings/integrations/${connection.connectorId}`,
   })
   await mailAdmins(
     organizationId,
-    `Backup to ${name} is overdue`,
-    `<p>No backup of your workshop to ${name} has finished ${since}.</p><p>Open Settings, Integrations, ${name} to see what went wrong.</p>`
+    t('backupAlerts.overdueSubject', { name }),
+    `<p>${escapeHtml(sentence)}</p><p>${escapeHtml(t('backupAlerts.openToSee', { name }))}</p>`
   )
 }
 

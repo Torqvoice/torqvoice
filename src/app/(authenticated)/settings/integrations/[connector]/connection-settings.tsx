@@ -34,6 +34,7 @@ import { DateInput } from '@/components/ui/date-input'
 import { BackupCard } from './backup-card'
 import { OptionPicker } from './option-picker'
 import { conditionMet } from '@/features/integrations/Lib/conditions'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -88,6 +89,7 @@ export function ConnectionSettings({
   const search = useSearchParams()
   const confirm = useConfirm()
   const { manifest, connection } = view
+  const name = connectorName(t, manifest)
   const [busy, setBusy] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
@@ -95,7 +97,7 @@ export function ConnectionSettings({
   useEffect(() => {
     const error = search.get('error')
     const connected = search.get('connected')
-    if (connected) toast.success(t('connection.connected', { name: manifest.name }))
+    if (connected) toast.success(t('connection.connected', { name }))
     if (error) toast.error(t.has(`errors.${error}`) ? t(`errors.${error}`) : t('errors.vendor'))
     if (error || connected) router.replace(`/settings/integrations/${manifest.id}`)
   }, [search, router, t, manifest])
@@ -154,7 +156,7 @@ export function ConnectionSettings({
 
   const disconnect = async () => {
     const ok = await confirm({
-      title: t('connection.disconnectTitle', { name: manifest.name }),
+      title: t('connection.disconnectTitle', { name }),
       // What a disconnect leaves behind differs by kind of service, and the
       // dialog is the one place people read before pressing it.
       description: t(
@@ -165,7 +167,7 @@ export function ConnectionSettings({
             : manifest.category === 'accounting'
               ? 'connection.disconnectDescriptionAccounting'
               : 'connection.disconnectDescription',
-        { name: manifest.name }
+        { name }
       ),
       confirmLabel: t('connection.disconnect'),
       destructive: true,
@@ -186,8 +188,8 @@ export function ConnectionSettings({
   // that was never actually connected.
   const removeSetup = async () => {
     const ok = await confirm({
-      title: t('connection.removeSetupTitle', { name: manifest.name }),
-      description: t('connection.removeSetupDescription', { name: manifest.name }),
+      title: t('connection.removeSetupTitle', { name }),
+      description: t('connection.removeSetupDescription', { name }),
       confirmLabel: t('connection.removeSetup'),
       destructive: true,
     })
@@ -195,7 +197,7 @@ export function ConnectionSettings({
     const done = await run(
       'disconnect',
       () => disconnectIntegration(manifest.id),
-      t('connection.removeSetupDone', { name: manifest.name })
+      t('connection.removeSetupDone', { name })
     )
     if (done) router.push('/settings/integrations')
   }
@@ -222,7 +224,7 @@ export function ConnectionSettings({
         description: t('connection.inspectionSync.confirmDescription', {
           count: sync.dueForCheck,
           total: sync.vehiclesWithPlate,
-          name: manifest.name,
+          name: name,
         }),
         confirmLabel: t('connection.inspectionSync.confirmLabel', { count: sync.dueForCheck }),
       })
@@ -262,7 +264,7 @@ export function ConnectionSettings({
               className="h-7 w-7 rounded"
               unoptimized
             />
-            {manifest.name}
+            {name}
             {connection && <StatusBadge status={setupMissing ? 'needsSetup' : connection.status} />}
           </span>
         }
@@ -345,7 +347,7 @@ export function ConnectionSettings({
             <p className="text-muted-foreground">
               {t('connection.supersedes', {
                 current: view.supersedes.name,
-                next: manifest.name,
+                next: name,
               })}
             </p>
           </div>
@@ -697,6 +699,7 @@ function ConnectForm({
 }) {
   const t = useTranslations('integrations')
   const tc = useTranslations(`integrations.connectors.${manifest.id}`)
+  const name = connectorName(t, manifest)
   const fields: CredentialField[] =
     manifest.auth.type === 'oauth2'
       ? needsTenantApp
@@ -968,13 +971,13 @@ function ConnectForm({
               ) : (
                 <Plug className="mr-2 h-4 w-4" />
               )}
-              {t('connection.connectWith', { name: manifest.name })}
+              {t('connection.connectWith', { name })}
             </Button>
           ) : (
             <Button asChild>
               <a href={oauthStartUrl}>
                 <Plug className="mr-2 h-4 w-4" />
-                {t('connection.connectWith', { name: manifest.name })}
+                {t('connection.connectWith', { name })}
               </a>
             </Button>
           )

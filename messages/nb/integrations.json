@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-kalender",
       "description": "Legg planlagte arbeidsordre i en Outlook-kalender, legg til en Microsoft Teams-lenke og se kalenderens opptatte tid i Torqvoice.",
       "tenantHelp": "Registrer en applikasjon i Microsoft Entra (App registrations), tillat både personlige kontoer og jobbkontoer, legg til omdirigerings-URI-en nedenfor som en Web-plattform, opprett en klienthemmelighet og lim inn begge her.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-kompatibel",
       "description": "Servicebeskrivelser, historikksammendrag, dokumentlesing og assistenten, besvart av en hvilken som helst server som snakker OpenAIs chat-API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM og lignende. Dataene dine blir på din egen maskinvare.",
       "fields": {
         "baseUrl": "Base-URL",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Tale til tekst",
       "description": "Diktering på en arbeidsordre, skrevet ned av en talemodell i stedet for nettleseren: langt mer nøyaktig, alle språk, og den kan verkstedets ord. Atskilt fra AI-leverandøren din, så den kan du beholde som den er. Bruker din egen OpenAI-nøkkel, eller en egen server som snakker OpenAIs API for transkribering. Opptaket sendes for å skrives ned og lagres ikke.",
       "fields": {
         "apiKey": "API-nøkkel",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Bucket i skyen",
       "description": "Krypterte sikkerhetskopier av dette verkstedet til en bøtte du eier hos Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage eller annen S3-kompatibel lagring, etter en tidsplan du velger. Etter første kjøring lastes bare det som er endret opp, så sikkerhetskopier hver time forblir billige.",
       "fields": {
         "accessKeyId": "Tilgangsnøkkel-ID",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Lokal mappe",
       "description": "Krypterte sikkerhetskopier av dette verkstedet til en mappe på denne serveren: volumet for sikkerhetskopier i compose-filen, eller en nettverksdisk montert der. En kopi på samme disk som databasen er ikke trygg alene; kombiner den med lagring et annet sted.",
       "fields": {
         "password": "Passord for sikkerhetskopier",
@@ -824,5 +829,18 @@
       "refresh": "Oppdatering av tilbakekallingsdata",
       "vehicle": "Tilbakekallingssjekk for nytt kjøretøy"
     }
+  },
+  "backupAlerts": {
+    "destination": "mål for sikkerhetskopier",
+    "failedTitle": "Sikkerhetskopiering mislyktes",
+    "failedMessage": "Sikkerhetskopien til {name} ble ikke fullført: {reason}",
+    "failedSubject": "Sikkerhetskopiering til {name} mislyktes",
+    "failedEmailIntro": "Den planlagte sikkerhetskopien av verkstedet ditt til {name} ble ikke fullført.",
+    "openToRetry": "Åpne Innstillinger, Integrasjoner, {name} for å se kjøringen og prøve igjen.",
+    "overdueTitle": "Sikkerhetskopi forsinket",
+    "overdueSince": "Ingen sikkerhetskopi til {name} er fullført siden {time}.",
+    "overdueNever": "Ingen sikkerhetskopi til {name} er fullført ennå.",
+    "overdueSubject": "Sikkerhetskopi til {name} er forsinket",
+    "openToSee": "Åpne Innstillinger, Integrasjoner, {name} for å se hva som gikk galt."
   }
 }

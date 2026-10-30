@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { revalidatePath } from 'next/cache'
 import { BACKUP_CAPABILITY, BACKUP_STATE, nextScheduledRun } from '../Lib/backup'
 import { connectorAllowed } from '../Lib/plan'
@@ -72,7 +74,7 @@ export async function runBackupNow(connectorId: string) {
         entityId: result.runId,
         details: {
           key: 'backup_run_started',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -94,6 +96,7 @@ export async function listBackupDestinations() {
           lastError: true,
         },
       })
+      const ti = await getTranslations('integrations')
       const out: BackupDestinationSummary[] = []
       for (const row of rows) {
         const manifest = getManifest(row.connectorId)
@@ -104,7 +107,7 @@ export async function listBackupDestinations() {
         const next = await nextScheduledRun(organizationId, settings, state)
         out.push({
           connectorId: row.connectorId,
-          name: manifest.name,
+          name: connectorName(ti, manifest),
           status: row.status,
           lastGood: typeof lastGood === 'string' ? lastGood : null,
           nextRunAt: next.toISOString(),

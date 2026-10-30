@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { NoAccess } from './no-access'
 import { AppSidebar } from '@/components/app-sidebar'
 import { FeatureHintProvider } from '@/components/feature-hint'
@@ -241,15 +243,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // settings pages exist on this install, and the connectors the catalog
   // offers, trimmed to a name and a logo.
   const cloudLinked = await isCloudLinked()
+  const ti = await getTranslations('integrations')
   const searchConnectors = listManifests().map((m) => ({
     id: m.id,
-    name: m.name,
+    name: connectorName(ti, m),
     category: m.category,
     logo: m.logo,
   }))
-  const plateLookupRegistry = lookupConnection
-    ? (getManifest(lookupConnection.connectorId)?.name ?? null)
-    : null
+  const plateLookupManifest = lookupConnection ? getManifest(lookupConnection.connectorId) : null
+  const plateLookupRegistry = plateLookupManifest ? connectorName(ti, plateLookupManifest) : null
 
   // Licence notices for admins and owners. Both clocks come off the signed
   // token: the term itself, and how long since torqvoice.com last confirmed

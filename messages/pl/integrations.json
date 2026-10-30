@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Kalendarz Microsoft 365",
       "description": "Dodawaj zaplanowane zlecenia do kalendarza Outlook, dołączaj link Microsoft Teams i zobacz zajęty czas z kalendarza w Torqvoice.",
       "tenantHelp": "Zarejestruj aplikację w Microsoft Entra (App registrations), zezwól na konta osobiste i służbowe, dodaj poniższy adres przekierowania jako platformę Web, utwórz sekret klienta i wklej oba tutaj.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Zgodny z OpenAI",
       "description": "Opisy usług, podsumowania historii, odczyt dokumentów i asystent, obsługiwane przez dowolny serwer mówiący API czatu OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM i podobne. Twoje dane zostają na Twoim sprzęcie.",
       "fields": {
         "baseUrl": "Adres bazowy",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Mowa na tekst",
       "description": "Dyktowanie w zleceniu zapisywane przez model mowy zamiast przeglądarki: znacznie dokładniej, w każdym języku i ze znajomością słownictwa warsztatowego. Działa niezależnie od Twojego dostawcy AI, więc możesz go zostawić bez zmian. Używa Twojego własnego klucza OpenAI albo własnego serwera obsługującego API transkrypcji OpenAI. Nagranie jest wysyłane do zapisania i nie jest przechowywane.",
       "fields": {
         "apiKey": "Klucz API",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Zasobnik w chmurze",
       "description": "Szyfrowane kopie zapasowe tego warsztatu do własnego bucketu w Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage lub innej przestrzeni zgodnej z S3, według wybranego harmonogramu. Po pierwszym uruchomieniu wysyłane są tylko zmiany, więc kopie co godzinę pozostają tanie.",
       "fields": {
         "accessKeyId": "Identyfikator klucza dostępu",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Folder lokalny",
       "description": "Szyfrowane kopie zapasowe tego warsztatu do folderu na tym serwerze: wolumenu kopii zapasowych z pliku compose lub zamontowanego tam dysku sieciowego. Kopia na tym samym dysku co baza danych sama w sobie nie jest bezpieczna; połącz ją z przestrzenią w innym miejscu.",
       "fields": {
         "password": "Hasło kopii zapasowych",
@@ -824,5 +829,18 @@
       "refresh": "Odświeżanie danych o akcjach serwisowych",
       "vehicle": "Sprawdzenie akcji serwisowych dla nowego pojazdu"
     }
+  },
+  "backupAlerts": {
+    "destination": "miejsce docelowe kopii zapasowych",
+    "failedTitle": "Kopia zapasowa nie powiodła się",
+    "failedMessage": "Kopia zapasowa do {name} nie została ukończona: {reason}",
+    "failedSubject": "Kopia zapasowa do {name} nie powiodła się",
+    "failedEmailIntro": "Zaplanowana kopia zapasowa Twojego warsztatu do {name} nie została ukończona.",
+    "openToRetry": "Otwórz Ustawienia, Integracje, {name}, aby zobaczyć szczegóły uruchomienia i spróbować ponownie.",
+    "overdueTitle": "Zaległa kopia zapasowa",
+    "overdueSince": "Od {time} nie ukończono żadnej kopii zapasowej do {name}.",
+    "overdueNever": "Nie ukończono jeszcze żadnej kopii zapasowej do {name}.",
+    "overdueSubject": "Kopia zapasowa do {name} jest zaległa",
+    "openToSee": "Otwórz Ustawienia, Integracje, {name}, aby zobaczyć, co poszło nie tak."
   }
 }

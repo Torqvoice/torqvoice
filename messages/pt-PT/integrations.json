@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendário do Microsoft 365",
       "description": "Coloque as ordens de serviço marcadas num calendário do Outlook, adicione um link do Microsoft Teams e veja os horários ocupados do calendário no Torqvoice.",
       "tenantHelp": "Registe uma aplicação no Microsoft Entra (Registos de aplicações), permita contas pessoais e empresariais, adicione o URI de redirecionamento abaixo como plataforma Web, crie um segredo do cliente e cole ambos aqui.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatível com OpenAI",
       "description": "Descrições de serviço, resumos de histórico, leitura de documentos e o assistente, respondidos por qualquer servidor que fale a API de chat da OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM e semelhantes. Os seus dados ficam no seu próprio hardware.",
       "fields": {
         "baseUrl": "URL base",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Voz para texto",
       "description": "Ditado na ordem de serviço, transcrito por um modelo de voz em vez do navegador: muito mais preciso, em qualquer idioma, e conhece o vocabulário de oficina. É independente do seu fornecedor de IA, por isso pode manter esse como está. Usa a sua própria chave da OpenAI ou um servidor seu que fale a API de transcrição da OpenAI. A gravação é enviada para ser transcrita e não é guardada.",
       "fields": {
         "apiKey": "Chave de API",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Bucket de armazenamento na nuvem",
       "description": "Cópias de segurança encriptadas desta oficina para um bucket seu no Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ou em qualquer outro armazenamento compatível com S3, com a frequência que escolher. Depois da primeira execução, só é enviado o que mudou, por isso as cópias de hora a hora continuam baratas.",
       "fields": {
         "accessKeyId": "ID da chave de acesso",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Pasta local",
       "description": "Cópias de segurança encriptadas desta oficina para uma pasta neste servidor: o volume de cópias de segurança no ficheiro compose ou uma unidade de rede montada aí. Uma cópia no mesmo disco da base de dados não é segura por si só; combine-a com um armazenamento noutro local.",
       "fields": {
         "password": "Palavra-passe das cópias de segurança",
@@ -824,5 +829,18 @@
       "refresh": "Atualização dos dados de recall",
       "vehicle": "Verificação de recall para uma viatura nova"
     }
+  },
+  "backupAlerts": {
+    "destination": "destino das cópias de segurança",
+    "failedTitle": "A cópia de segurança falhou",
+    "failedMessage": "A cópia de segurança para {name} não terminou: {reason}",
+    "failedSubject": "A cópia de segurança para {name} falhou",
+    "failedEmailIntro": "A cópia de segurança agendada da sua oficina para {name} não terminou.",
+    "openToRetry": "Abra Definições, Integrações, {name} para ver a execução e tentar novamente.",
+    "overdueTitle": "Cópia de segurança em atraso",
+    "overdueSince": "Nenhuma cópia de segurança para {name} terminou desde {time}.",
+    "overdueNever": "Ainda não terminou nenhuma cópia de segurança para {name}.",
+    "overdueSubject": "A cópia de segurança para {name} está em atraso",
+    "openToSee": "Abra Definições, Integrações, {name} para ver o que correu mal."
   }
 }

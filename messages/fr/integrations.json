@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendrier Microsoft 365",
       "description": "Ajoutez les ordres de travail planifiés à un calendrier Outlook, joignez un lien Microsoft Teams et consultez les plages occupées du calendrier dans Torqvoice.",
       "tenantHelp": "Enregistrez une application dans Microsoft Entra (Inscriptions d'applications), autorisez les comptes personnels et professionnels, ajoutez l'URI de redirection ci-dessous comme plateforme Web, créez un secret client, puis collez les deux ici.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatible OpenAI",
       "description": "Descriptions de service, résumés d'historique, lecture de documents et assistant, fournis par tout serveur parlant l'API de chat d'OpenAI : Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM et consorts. Vos données restent sur votre propre matériel.",
       "fields": {
         "baseUrl": "URL de base",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Transcription vocale",
       "description": "La dictée sur un ordre de travail, transcrite par un modèle vocal plutôt que par le navigateur : bien plus précise, dans toutes les langues, et elle connaît le vocabulaire de l'atelier. Indépendant de votre fournisseur d'IA, que vous pouvez garder tel quel. Utilise votre propre clé OpenAI, ou votre propre serveur compatible avec l'API de transcription d'OpenAI. L'enregistrement est envoyé pour être transcrit et n'est pas conservé.",
       "fields": {
         "apiKey": "Clé API",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Bucket de stockage cloud",
       "description": "Des sauvegardes chiffrées de cet atelier vers un bucket qui vous appartient chez Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ou tout autre stockage compatible S3, selon le calendrier de votre choix. Après la première exécution, seules les modifications sont envoyées, si bien que les sauvegardes horaires restent bon marché.",
       "fields": {
         "accessKeyId": "ID de clé d'accès",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Dossier local",
       "description": "Des sauvegardes chiffrées de cet atelier vers un dossier de ce serveur : le volume de sauvegardes du fichier compose, ou un lecteur réseau monté à cet endroit. Une copie sur le même disque que la base de données n'est pas sûre à elle seule ; associez-la à un stockage situé ailleurs.",
       "fields": {
         "password": "Mot de passe des sauvegardes",
@@ -824,5 +829,18 @@
       "refresh": "Actualisation des données de rappel",
       "vehicle": "Vérification des rappels pour un nouveau véhicule"
     }
+  },
+  "backupAlerts": {
+    "destination": "destination de sauvegarde",
+    "failedTitle": "Échec de la sauvegarde",
+    "failedMessage": "La sauvegarde vers {name} n'a pas abouti : {reason}",
+    "failedSubject": "Échec de la sauvegarde vers {name}",
+    "failedEmailIntro": "La sauvegarde planifiée de votre atelier vers {name} n'a pas abouti.",
+    "openToRetry": "Ouvrez Paramètres, Intégrations, {name} pour consulter l'exécution et réessayer.",
+    "overdueTitle": "Sauvegarde en retard",
+    "overdueSince": "Aucune sauvegarde vers {name} n'a abouti depuis {time}.",
+    "overdueNever": "Aucune sauvegarde vers {name} n'a encore abouti.",
+    "overdueSubject": "La sauvegarde vers {name} est en retard",
+    "openToSee": "Ouvrez Paramètres, Intégrations, {name} pour voir ce qui n'a pas fonctionné."
   }
 }

@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 Calendar",
       "description": "Put scheduled work orders on an Outlook calendar, add a Microsoft Teams link, and see the calendar's busy time in Torqvoice.",
       "tenantHelp": "Register an application in Microsoft Entra (App registrations), allow personal and work accounts, add the redirect URI below as a Web platform, create a client secret, and paste both here.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-compatible",
       "description": "Service descriptions, history summaries, document scanning and the assistant, answered by any server that speaks OpenAI's chat API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM and the like. Your data stays on your own hardware.",
       "fields": {
         "baseUrl": "Base URL",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Speech to text",
       "description": "Dictation on a work order, written down by a speech model instead of the browser: far more accurate, any language, and it knows a workshop's words. Separate from your AI provider, so you can keep that one as it is. Uses your own OpenAI key, or a server of your own that speaks OpenAI's transcription API. The recording is sent to be written down and is not kept.",
       "fields": {
         "apiKey": "API key",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Cloud storage bucket",
       "description": "Encrypted backups of this workshop to a bucket you own at Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage or any other S3-compatible storage, on a schedule you choose. After the first run only what changed is uploaded, so hourly backups stay cheap.",
       "fields": {
         "accessKeyId": "Access key ID",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Local folder",
       "description": "Encrypted backups of this workshop to a folder on this server: the backups volume in the compose file, or a network drive mounted there. A copy on the same disk as the database is not safe on its own; pair it with storage elsewhere.",
       "fields": {
         "password": "Backup password",
@@ -824,5 +829,18 @@
       "refresh": "Recall data refresh",
       "vehicle": "Recall check for a new vehicle"
     }
+  },
+  "backupAlerts": {
+    "destination": "backup destination",
+    "failedTitle": "Backup failed",
+    "failedMessage": "The backup to {name} did not finish: {reason}",
+    "failedSubject": "Backup to {name} failed",
+    "failedEmailIntro": "The scheduled backup of your workshop to {name} did not finish.",
+    "openToRetry": "Open Settings, Integrations, {name} to see the run and try again.",
+    "overdueTitle": "Backup overdue",
+    "overdueSince": "No backup to {name} has finished since {time}.",
+    "overdueNever": "No backup to {name} has finished yet.",
+    "overdueSubject": "Backup to {name} is overdue",
+    "openToSee": "Open Settings, Integrations, {name} to see what went wrong."
   }
 }

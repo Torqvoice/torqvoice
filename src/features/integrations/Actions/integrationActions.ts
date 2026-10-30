@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -308,9 +310,10 @@ async function supersededVendor(
     orderBy: { updatedAt: 'desc' },
     select: { connectorId: true },
   })
+  const ti = await getTranslations('integrations')
   for (const row of rows) {
     const manifest = getManifest(row.connectorId)
-    if (manifest) return { connectorId: manifest.id, name: manifest.name }
+    if (manifest) return { connectorId: manifest.id, name: connectorName(ti, manifest) }
   }
   return null
 }
@@ -517,7 +520,7 @@ export async function saveIntegrationCredentials(
         entityId: result.id,
         details: {
           key: 'integration_connect',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -841,7 +844,7 @@ export async function disconnectIntegration(connectorId: string) {
         entityId: result.id,
         details: {
           key: 'integration_disconnect',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -1112,12 +1115,17 @@ export async function getServiceVideoCall(serviceRecordId: string) {
         }
         break
       }
+      const ti = await getTranslations('integrations')
       const providers = connections
         .map((c) => getManifest(c.connectorId))
         .filter((m): m is ConnectorManifest & { meetingProvider: string } =>
           Boolean(m?.meetingProvider)
         )
-        .map((m) => ({ connectorId: m.id, name: m.name, provider: m.meetingProvider }))
+        .map((m) => ({
+          connectorId: m.id,
+          name: connectorName(ti, m),
+          provider: m.meetingProvider,
+        }))
       return { link, providers }
     },
     { requiredPermissions: SERVICE_READ_PERMISSION }

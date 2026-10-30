@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { getTranslations } from 'next-intl/server'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
@@ -44,6 +45,7 @@ export default async function IntegrationConnectionPage({
   // gated by its own plan feature, and calendars and video calls are not what
   // the workshop is being asked to pay for there.
   const t = await getTranslations('integrations.connection')
+  const ti = await getTranslations('integrations')
   const lockedDescription =
     manifest.plan === 'payments'
       ? t('lockedPayments')
@@ -55,7 +57,7 @@ export default async function IntegrationConnectionPage({
 
   return locked ? (
     <FeatureLocked
-      feature={manifest.plan ? manifest.name : 'Integrations'}
+      feature={manifest.plan ? connectorName(ti, manifest) : 'Integrations'}
       description={lockedDescription}
       isCloud={isCloudMode()}
     >

@@ -62,6 +62,11 @@ vi.mock('@/lib/features', async () => {
   }
 })
 
+// The names and sentences come out as their keys here; what is under test
+// is who gets told, not the wording.
+vi.mock('next-intl/server', () => ({
+  getTranslations: async () => Object.assign((key: string) => key, { has: () => false }),
+}))
 vi.mock('@/lib/workshop-timezone', () => ({ workshopTimeZone: vi.fn(async () => 'UTC') }))
 
 vi.mock('@/lib/backup/engine', () => {

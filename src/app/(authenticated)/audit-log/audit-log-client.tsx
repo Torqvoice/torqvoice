@@ -96,6 +96,7 @@ export function AuditLogClient({
   const [selectedLog, setSelectedLog] = useState<AuditLogData['logs'][number] | null>(null)
   const { formatDateTime } = useFormatDate()
   const t = useTranslations('audit')
+  const ti = useTranslations('integrations')
 
   const getActionLabel = (action: string) => {
     // next-intl returns a placeholder for a missing message rather than
@@ -119,7 +120,14 @@ export function AuditLogClient({
       | undefined
     if (details?.key) {
       const key = `summary.${details.key}`
-      if (t.has(key)) return t(key, details.params)
+      // An integration named by id gets the reader's name for it; the
+      // English name the row was written with stands in for the vendors.
+      const params = { ...details.params }
+      const connectorId = params.connectorId
+      if (typeof connectorId === 'string' && ti.has(`connectors.${connectorId}.name`)) {
+        params.name = ti(`connectors.${connectorId}.name`)
+      }
+      if (t.has(key)) return t(key, params)
     }
     return log.message
   }

@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-agenda",
       "description": "Zet geplande werkorders in een Outlook-agenda, voeg een Microsoft Teams-link toe en bekijk de bezette tijd van de agenda in Torqvoice.",
       "tenantHelp": "Registreer een toepassing in Microsoft Entra (App registrations), sta persoonlijke en werkaccounts toe, voeg de onderstaande redirect-URI toe als Web-platform, maak een clientgeheim aan en plak beide hier.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-compatibel",
       "description": "Servicebeschrijvingen, historieksamenvattingen, documentherkenning en de assistent, beantwoord door elke server die de chat-API van OpenAI spreekt: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM en dergelijke. Uw gegevens blijven op uw eigen hardware.",
       "fields": {
         "baseUrl": "Basis-URL",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Spraak naar tekst",
       "description": "Dicteren op een werkorder, uitgeschreven door een spraakmodel in plaats van door de browser: veel nauwkeuriger, in elke taal, en het kent de woorden van een werkplaats. Los van uw AI-provider, dus die kunt u laten zoals hij is. Gebruikt uw eigen OpenAI-sleutel, of een eigen server die de transcriptie-API van OpenAI spreekt. De opname wordt alleen verstuurd om uit te schrijven en wordt niet bewaard.",
       "fields": {
         "apiKey": "API-sleutel",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Cloudopslag-bucket",
       "description": "Versleutelde back-ups van deze werkplaats naar een bucket die van u is, bij Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage of andere S3-compatibele opslag, volgens een schema dat u kiest. Na de eerste run wordt alleen geüpload wat er veranderd is, dus back-ups elk uur blijven goedkoop.",
       "fields": {
         "accessKeyId": "Toegangssleutel-ID",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Lokale map",
       "description": "Versleutelde back-ups van deze werkplaats naar een map op deze server: het back-upvolume in het compose-bestand, of een netwerkschijf die daar is gekoppeld. Een kopie op dezelfde schijf als de database is op zichzelf niet veilig; combineer die met opslag elders.",
       "fields": {
         "password": "Back-upwachtwoord",
@@ -824,5 +829,18 @@
       "refresh": "Vernieuwing van terugroepgegevens",
       "vehicle": "Terugroepcontrole voor een nieuw voertuig"
     }
+  },
+  "backupAlerts": {
+    "destination": "back-upbestemming",
+    "failedTitle": "Back-up mislukt",
+    "failedMessage": "De back-up naar {name} is niet voltooid: {reason}",
+    "failedSubject": "Back-up naar {name} mislukt",
+    "failedEmailIntro": "De geplande back-up van uw werkplaats naar {name} is niet voltooid.",
+    "openToRetry": "Open Instellingen, Integraties, {name} om de run te bekijken en het opnieuw te proberen.",
+    "overdueTitle": "Back-up te laat",
+    "overdueSince": "Sinds {time} is er geen back-up naar {name} voltooid.",
+    "overdueNever": "Er is nog geen back-up naar {name} voltooid.",
+    "overdueSubject": "Back-up naar {name} is te laat",
+    "openToSee": "Open Instellingen, Integraties, {name} om te zien wat er misging."
   }
 }

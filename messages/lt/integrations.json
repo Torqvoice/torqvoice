@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 kalendorius",
       "description": "Įtraukite suplanuotus darbo užsakymus į Outlook kalendorių, pridėkite Microsoft Teams nuorodą ir matykite kalendoriaus užimtą laiką Torqvoice.",
       "tenantHelp": "Užregistruokite programą Microsoft Entra (App registrations), leiskite asmenines ir darbo paskyras, pridėkite žemiau nurodytą nukreipimo URI kaip Web platformą, sukurkite kliento slaptažodį ir įklijuokite abu čia.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Suderinamas su OpenAI",
       "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas, kuriuos atsako bet kuris serveris, kalbantis OpenAI pokalbių API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ir panašūs. Jūsų duomenys lieka jūsų pačių įrangoje.",
       "fields": {
         "baseUrl": "Bazinis URL",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Kalba į tekstą",
       "description": "Diktavimas darbo užsakyme, kurį užrašo kalbos modelis, o ne naršyklė: daug tiksliau, bet kuria kalba, ir jis žino dirbtuvių žodžius. Atskirta nuo jūsų DI paslaugų teikėjo, todėl jį galite palikti tokį, koks yra. Naudojamas jūsų pačių OpenAI raktas arba jūsų serveris, kalbantis OpenAI transkripcijos API. Įrašas siunčiamas užrašyti ir nesaugomas.",
       "fields": {
         "apiKey": "API raktas",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Debesų saugyklos bucket'as",
       "description": "Šifruotos šios dirbtuvės atsarginės kopijos į jums priklausančią talpyklą (bucket) Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ar bet kurioje kitoje su S3 suderinamoje saugykloje pagal jūsų pasirinktą grafiką. Po pirmojo vykdymo įkeliama tik tai, kas pasikeitė, todėl kas valandą daromos kopijos išlieka pigios.",
       "fields": {
         "accessKeyId": "Prieigos rakto ID",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Vietinis aplankas",
       "description": "Šifruotos šios dirbtuvės atsarginės kopijos į aplanką šiame serveryje: atsarginių kopijų tomą compose faile arba ten prijungtą tinklo diską. Kopija tame pačiame diske kaip duomenų bazė viena pati nėra saugi; derinkite ją su saugykla kitoje vietoje.",
       "fields": {
         "password": "Atsarginių kopijų slaptažodis",
@@ -824,5 +829,18 @@
       "refresh": "Atšaukimų duomenų atnaujinimas",
       "vehicle": "Naujos transporto priemonės atšaukimų patikra"
     }
+  },
+  "backupAlerts": {
+    "destination": "atsarginių kopijų paskirties vieta",
+    "failedTitle": "Atsarginė kopija nepavyko",
+    "failedMessage": "Atsarginė kopija į {name} nebaigta: {reason}",
+    "failedSubject": "Atsarginė kopija į {name} nepavyko",
+    "failedEmailIntro": "Suplanuota jūsų dirbtuvės atsarginė kopija į {name} nebuvo baigta.",
+    "openToRetry": "Atidarykite Nustatymai, Integracijos, {name}, kad pamatytumėte vykdymą ir bandytumėte dar kartą.",
+    "overdueTitle": "Atsarginė kopija vėluoja",
+    "overdueSince": "Nuo {time} nebaigta nė viena atsarginė kopija į {name}.",
+    "overdueNever": "Dar nebaigta nė viena atsarginė kopija į {name}.",
+    "overdueSubject": "Atsarginė kopija į {name} vėluoja",
+    "openToSee": "Atidarykite Nustatymai, Integracijos, {name}, kad pamatytumėte, kas nepavyko."
   }
 }

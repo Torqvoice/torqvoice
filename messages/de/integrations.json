@@ -280,6 +280,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-Kalender",
       "description": "Geplante Aufträge in einen Outlook-Kalender eintragen, einen Microsoft Teams-Link hinzufügen und die belegten Zeiten des Kalenders in Torqvoice sehen.",
       "tenantHelp": "Registrieren Sie eine Anwendung in Microsoft Entra (App-Registrierungen), erlauben Sie persönliche und Geschäftskonten, fügen Sie die untenstehende Redirect-URI als Web-Plattform hinzu, erstellen Sie ein Client-Secret und tragen Sie beides hier ein.",
       "fields": {
@@ -549,6 +550,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-kompatibel",
       "description": "Servicebeschreibungen, Verlaufszusammenfassungen, Dokumentenerkennung und der Assistent, beantwortet von jedem Server, der die Chat-API von OpenAI spricht: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM und ähnliche. Ihre Daten bleiben auf Ihrer eigenen Hardware.",
       "fields": {
         "baseUrl": "Basis-URL",
@@ -688,6 +690,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Sprache zu Text",
       "description": "Diktat auf einem Arbeitsauftrag, aufgeschrieben von einem Sprachmodell statt vom Browser: viel genauer, in jeder Sprache, und es kennt die Wörter einer Werkstatt. Getrennt von Ihrem KI-Anbieter, den Sie also so lassen können, wie er ist. Nutzt Ihren eigenen OpenAI-Schlüssel oder einen eigenen Server, der die Transkriptions-API von OpenAI spricht. Die Aufnahme wird nur zum Aufschreiben gesendet und nicht aufbewahrt.",
       "fields": {
         "apiKey": "API-Schlüssel",
@@ -705,6 +708,7 @@
       }
     },
     "s3": {
+      "name": "Cloud-Speicher-Bucket",
       "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Bucket, der Ihnen gehört, bei Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage oder jedem anderen S3-kompatiblen Speicher, nach einem Zeitplan Ihrer Wahl. Nach dem ersten Lauf wird nur hochgeladen, was sich geändert hat, daher bleiben stündliche Sicherungen günstig.",
       "fields": {
         "accessKeyId": "Zugriffsschlüssel-ID",
@@ -764,6 +768,7 @@
       }
     },
     "local-folder": {
+      "name": "Lokaler Ordner",
       "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Ordner auf diesem Server: das Sicherungs-Volume in der Compose-Datei oder ein dort eingebundenes Netzlaufwerk. Eine Kopie auf derselben Festplatte wie die Datenbank ist allein nicht sicher; kombinieren Sie sie mit Speicher an einem anderen Ort.",
       "fields": {
         "password": "Sicherungspasswort",
@@ -824,5 +829,18 @@
       "refresh": "Aktualisierung der Rückrufdaten",
       "vehicle": "Rückrufprüfung für ein neues Fahrzeug"
     }
+  },
+  "backupAlerts": {
+    "destination": "Sicherungsziel",
+    "failedTitle": "Sicherung fehlgeschlagen",
+    "failedMessage": "Die Sicherung nach {name} wurde nicht abgeschlossen: {reason}",
+    "failedSubject": "Sicherung nach {name} fehlgeschlagen",
+    "failedEmailIntro": "Die geplante Sicherung Ihrer Werkstatt nach {name} wurde nicht abgeschlossen.",
+    "openToRetry": "Öffnen Sie Einstellungen, Integrationen, {name}, um den Lauf zu sehen und es erneut zu versuchen.",
+    "overdueTitle": "Sicherung überfällig",
+    "overdueSince": "Seit {time} wurde keine Sicherung nach {name} abgeschlossen.",
+    "overdueNever": "Bisher wurde keine Sicherung nach {name} abgeschlossen.",
+    "overdueSubject": "Sicherung nach {name} ist überfällig",
+    "openToSee": "Öffnen Sie Einstellungen, Integrationen, {name}, um zu sehen, was schiefgelaufen ist."
   }
 }
