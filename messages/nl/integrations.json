@@ -70,6 +70,9 @@
       "invoices": "Facturen naar de boekhouding",
       "customers": "Klanten naar de boekhouding",
       "payments": "Betalingen in beide richtingen"
+    },
+    "backup": {
+      "target": "Back-upbestemming"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
     "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
-    "advanced": "Geavanceerd"
+    "advanced": "Geavanceerd",
+    "generate": "Genereren",
+    "show": "Tonen",
+    "hide": "Verbergen",
+    "generatedPasswordWarning": "Bewaar een kopie van dit wachtwoord op een veilige plek, niet op deze server. Zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet.",
+    "backup": {
+      "title": "Back-ups",
+      "description": "Wanneer deze bestemming voor het laatst een geslaagde back-up kreeg, wanneer de volgende draait en de laatste runs.",
+      "lastGood": "Laatste geslaagde back-up",
+      "added": "{size} toegevoegd",
+      "never": "Nog geen",
+      "nextRun": "Volgende run",
+      "notScheduled": "Niet gepland",
+      "repositorySize": "Opgeslagen op de bestemming",
+      "runNow": "Nu back-up maken",
+      "running": "Back-up bezig",
+      "runningHint": "Er loopt een back-up. Deze pagina werkt zichzelf bij tot hij klaar is.",
+      "started": "Back-up gestart",
+      "recentTitle": "Recente runs",
+      "noRuns": "Er zijn nog geen back-ups gemaakt.",
+      "notStarted": "Niet gestart",
+      "filesNewCount": "{count, plural, one {# nieuw bestand} other {# nieuwe bestanden}}",
+      "columns": {
+        "status": "Status",
+        "started": "Gestart",
+        "trigger": "Gestart door",
+        "duration": "Duur",
+        "filesNew": "Nieuwe bestanden",
+        "bytesAdded": "Toegevoegd"
+      },
+      "trigger": {
+        "scheduled": "Schema",
+        "manual": "Handmatig"
+      },
+      "status": {
+        "queued": "In de wachtrij",
+        "running": "Bezig",
+        "done": "Klaar",
+        "failed": "Mislukt",
+        "skipped": "Overgeslagen"
+      }
+    },
+    "lockedBackups": "Geplande, versleutelde back-ups van uw werkplaats naar opslag die van u is."
   },
   "activity": {
     "title": "Activiteit",
@@ -199,7 +244,8 @@
     "invalid": "Het antwoord van de provider was onvolledig. Probeer het opnieuw.",
     "state": "Deze aanmelding is verlopen of hoort bij een andere sessie. Begin opnieuw.",
     "exchange": "De provider heeft de aanmelding geweigerd. Controleer de app-gegevens en probeer het opnieuw.",
-    "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen."
+    "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen.",
+    "backupRunning": "Er loopt al een back-up."
   },
   "meeting": {
     "join": "Deelnemen aan videogesprek",
@@ -652,6 +698,103 @@
         "modeHelp": "De browser schrijft mee terwijl u spreekt, maar is zwakker, vooral in kleinere talen. Het spraakmodel schrijft zodra u stopt.",
         "modeAi": "Altijd het spraakmodel",
         "modeChoice": "Ieder kiest zelf: spraakmodel of browser"
+      }
+    },
+    "s3": {
+      "description": "Versleutelde back-ups van deze werkplaats naar een bucket die van u is, volgens een schema dat u kiest. Werkt met Amazon S3, Cloudflare R2, Backblaze B2, Wasabi en Hetzner Object Storage. Na de eerste run wordt alleen geüpload wat er veranderd is, dus back-ups elk uur blijven goedkoop.",
+      "fields": {
+        "accessKeyId": "Toegangssleutel-ID",
+        "accessKeyIdHelp": "Een sleutel van uw opslagaanbieder met toestemming om objecten in de bucket op te sommen, te lezen, te schrijven en te verwijderen. Maak een sleutel alleen voor Torqvoice, zodat u die los kunt intrekken.",
+        "secretAccessKey": "Geheime toegangssleutel",
+        "password": "Back-upwachtwoord",
+        "passwordHelp": "Elke back-up wordt versleuteld met dit wachtwoord. Verzin er een of klik op Genereren, en bewaar een kopie buiten deze server: zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet. Om opslag opnieuw te koppelen die al Torqvoice-back-ups bevat, voert u het wachtwoord in waarmee ze zijn gemaakt.",
+        "endpoint": "Eigen endpoint",
+        "endpointHelp": "Alleen voor de optie Andere S3-compatibele opslag: het S3-adres van uw eigen opslag, zoals een MinIO-server, als hostnaam met eventueel een poort."
+      },
+      "settings": {
+        "provider": "Aanbieder",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Andere S3-compatibele opslag",
+        "region": "Regio",
+        "regionHelp": "Zoals de aanbieder hem noemt, bijvoorbeeld eu-central-1 bij Amazon, us-west-004 bij Backblaze of fsn1 bij Hetzner. Niet gebruikt door Cloudflare R2.",
+        "accountId": "Cloudflare-account-ID",
+        "accountIdHelp": "De ID van 32 tekens op de R2-overzichtspagina van uw Cloudflare-dashboard.",
+        "bucket": "Bucket",
+        "prefix": "Map in de bucket",
+        "prefixHelp": "De back-ups staan in deze map. Gebruik een andere map voor elke werkplaats die de bucket deelt.",
+        "frequency": "Hoe vaak",
+        "frequencyHourly": "Elk uur",
+        "frequencyEvery4h": "Elke 4 uur",
+        "frequencyDaily": "Elke dag",
+        "frequencyWeekly": "Elke week",
+        "frequencyMonthly": "Elke maand",
+        "time": "Tijdstip",
+        "timeHelp": "Volgens de klok van de werkplaats, als HH:MM. Gebruikt voor dagelijkse, wekelijkse en maandelijkse back-ups.",
+        "weekday": "Dag van de week",
+        "sunday": "Zondag",
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "monthDay": "Dag van de maand",
+        "monthDayLast": "Laatste dag",
+        "contents": "Inhoud",
+        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord.",
+        "contentsData": "Alleen gegevens",
+        "contentsDataAndSecrets": "Gegevens en geheime sleutels",
+        "includeFiles": "Foto's en bestanden meenemen",
+        "includeFilesHelp": "Elk bestand wordt één keer geüpload en door latere back-ups hergebruikt, dus dit kost weinig na de eerste run.",
+        "keepHourly": "Uurlijkse back-ups bewaren",
+        "keepHourlyHelp": "Hoeveel van de recentste uurlijkse back-ups bewaard blijven. Alleen van belang bij een schema van elk uur of elke 4 uur.",
+        "keepDaily": "Dagelijkse back-ups bewaren",
+        "keepWeekly": "Wekelijkse back-ups bewaren",
+        "keepMonthly": "Maandelijkse back-ups bewaren",
+        "keepMonthlyHelp": "Oudere back-ups worden na elke run verwijderd, waarbij de nieuwste van elk soort blijven. Zet een aantal op 0 om van dat soort niets te bewaren."
+      }
+    },
+    "local-folder": {
+      "description": "Versleutelde back-ups van deze werkplaats naar een map op deze server: het back-upvolume in het compose-bestand, of een netwerkschijf die daar is gekoppeld. Een kopie op dezelfde schijf als de database is op zichzelf niet veilig; combineer die met opslag elders.",
+      "fields": {
+        "password": "Back-upwachtwoord",
+        "passwordHelp": "Elke back-up wordt versleuteld met dit wachtwoord. Verzin er een of klik op Genereren, en bewaar een kopie buiten deze server: zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet. Om opslag opnieuw te koppelen die al Torqvoice-back-ups bevat, voert u het wachtwoord in waarmee ze zijn gemaakt."
+      },
+      "settings": {
+        "frequency": "Hoe vaak",
+        "frequencyHourly": "Elk uur",
+        "frequencyEvery4h": "Elke 4 uur",
+        "frequencyDaily": "Elke dag",
+        "frequencyWeekly": "Elke week",
+        "frequencyMonthly": "Elke maand",
+        "time": "Tijdstip",
+        "timeHelp": "Volgens de klok van de werkplaats, als HH:MM. Gebruikt voor dagelijkse, wekelijkse en maandelijkse back-ups.",
+        "weekday": "Dag van de week",
+        "sunday": "Zondag",
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "monthDay": "Dag van de maand",
+        "monthDayLast": "Laatste dag",
+        "contents": "Inhoud",
+        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord.",
+        "contentsData": "Alleen gegevens",
+        "contentsDataAndSecrets": "Gegevens en geheime sleutels",
+        "includeFiles": "Foto's en bestanden meenemen",
+        "includeFilesHelp": "Elk bestand wordt één keer geüpload en door latere back-ups hergebruikt, dus dit kost weinig na de eerste run.",
+        "keepHourly": "Uurlijkse back-ups bewaren",
+        "keepHourlyHelp": "Hoeveel van de recentste uurlijkse back-ups bewaard blijven. Alleen van belang bij een schema van elk uur of elke 4 uur.",
+        "keepDaily": "Dagelijkse back-ups bewaren",
+        "keepWeekly": "Wekelijkse back-ups bewaren",
+        "keepMonthly": "Maandelijkse back-ups bewaren",
+        "keepMonthlyHelp": "Oudere back-ups worden na elke run verwijderd, waarbij de nieuwste van elk soort blijven. Zet een aantal op 0 om van dat soort niets te bewaren."
       }
     }
   },

@@ -1450,7 +1450,20 @@
     "sourceBackup": "Torqvoice-back-up",
     "sourceBackupDesc": "Een .zip- of .json-bestand dat u op deze pagina hebt gedownload. Terugzetten vervangt alles in deze werkplaats.",
     "restore": "Terugzetten",
-    "restoreTitle": "Een back-up terugzetten"
+    "restoreTitle": "Een back-up terugzetten",
+    "includeSecrets": "Geheime sleutels meenemen",
+    "includeSecretsHelp": "Geheime sleutels, zoals betaal- en AI-sleutels, worden weggelaten tenzij u dit aanvinkt. Bij terugzetten blijven dan de sleutels behouden die deze installatie al heeft.",
+    "scheduledBackups": {
+      "title": "Geplande back-ups",
+      "description": "Automatische back-ups naar opslag die van u is, volgens een schema dat u kiest.",
+      "empty": "Er is nog geen back-upbestemming gekoppeld.",
+      "setUp": "Een back-upbestemming instellen",
+      "lastGood": "Laatste geslaagde back-up: {when}",
+      "noGoodBackup": "Nog geen geslaagde back-up",
+      "nextRun": "volgende run: {when}",
+      "notScheduled": "niet gepland",
+      "lastError": "Laatste fout: {error}"
+    }
   },
   "license": {
     "title": "White-label licentie",

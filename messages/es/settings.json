@@ -1450,7 +1450,20 @@
     "sourceBackup": "Copia de seguridad de Torqvoice",
     "sourceBackupDesc": "Un archivo .zip o .json descargado desde esta página. Restaurar reemplaza todo en este taller.",
     "restore": "Restaurar",
-    "restoreTitle": "Restaurar una copia de seguridad"
+    "restoreTitle": "Restaurar una copia de seguridad",
+    "includeSecrets": "Incluir claves secretas",
+    "includeSecretsHelp": "Las claves secretas, como las de pagos y de IA, se omiten a menos que marque esta opción. Una restauración conserva entonces las claves que ya tiene esta instalación.",
+    "scheduledBackups": {
+      "title": "Copias de seguridad programadas",
+      "description": "Copias de seguridad automáticas en un almacenamiento propio, con la frecuencia que usted elija.",
+      "empty": "Todavía no hay ningún destino de copias de seguridad conectado.",
+      "setUp": "Configurar un destino de copias de seguridad",
+      "lastGood": "Última copia correcta: {when}",
+      "noGoodBackup": "Todavía no hay ninguna copia correcta",
+      "nextRun": "próxima ejecución: {when}",
+      "notScheduled": "sin programar",
+      "lastError": "Último error: {error}"
+    }
   },
   "license": {
     "title": "Licencia marca blanca",

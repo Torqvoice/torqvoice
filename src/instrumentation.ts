@@ -32,6 +32,7 @@ export async function register() {
       processScheduledMessages,
       processIntegrationJobs,
       cleanupIntegrationLogs,
+      processBackupRuns,
     } = await import('./cronTasks')
     const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
     warnAboutAppUrl()
@@ -50,5 +51,6 @@ export async function register() {
     processScheduledMessages()
     processIntegrationJobs()
     cleanupIntegrationLogs()
+    processBackupRuns()
   }
 }

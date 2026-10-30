@@ -1450,7 +1450,20 @@
     "sourceBackup": "Torqvoice-sikkerhetskopi",
     "sourceBackupDesc": "En .zip- eller .json-fil lastet ned fra denne siden. Gjenoppretting erstatter alt i dette verkstedet.",
     "restore": "Gjenopprett",
-    "restoreTitle": "Gjenopprett en sikkerhetskopi"
+    "restoreTitle": "Gjenopprett en sikkerhetskopi",
+    "includeSecrets": "Ta med hemmelige nøkler",
+    "includeSecretsHelp": "Hemmelige nøkler, som betalings- og AI-nøkler, utelates med mindre du krysser av her. En gjenoppretting beholder da nøklene denne installasjonen allerede har.",
+    "scheduledBackups": {
+      "title": "Planlagte sikkerhetskopier",
+      "description": "Automatiske sikkerhetskopier til lagring du eier selv, etter en tidsplan du velger.",
+      "empty": "Ingen mål for sikkerhetskopier er koblet til ennå.",
+      "setUp": "Sett opp et mål for sikkerhetskopier",
+      "lastGood": "Siste vellykkede sikkerhetskopi: {when}",
+      "noGoodBackup": "Ingen vellykket sikkerhetskopi ennå",
+      "nextRun": "neste kjøring: {when}",
+      "notScheduled": "ikke planlagt",
+      "lastError": "Siste feil: {error}"
+    }
   },
   "license": {
     "title": "White-label-lisens",

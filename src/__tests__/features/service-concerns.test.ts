@@ -60,7 +60,7 @@ describe('service concerns', () => {
     expect(entity, 'ServiceConcern must be in the backup manifest').toBeDefined()
     expect(entity?.nestedUnder).toBe('ServiceRecord')
 
-    const exportRoute = read('src/app/api/protected/backup/export/route.ts')
+    const exportRoute = read('src/lib/backup/build-data.ts')
     // Both paths: vehicle-linked jobs and counter sales.
     expect(exportRoute.match(/concerns: true/g)?.length).toBe(2)
 

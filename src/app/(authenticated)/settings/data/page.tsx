@@ -1,5 +1,6 @@
 import { DataSettings } from './data-settings'
 import { getContentCounts } from '@/features/settings/Actions/deleteContent'
+import { listBackupDestinations } from '@/features/integrations/Actions/backupActions'
 import { getBackupHeartbeat } from '@/lib/backup-heartbeat'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
@@ -13,6 +14,9 @@ import {
 export default async function DataSettingsPage() {
   const heartbeat = await getBackupHeartbeat()
   const countsResult = await getContentCounts()
+  const destinationsResult = await listBackupDestinations().catch(() => null)
+  const backupDestinations =
+    destinationsResult?.success && destinationsResult.data ? destinationsResult.data : []
 
   // Owner check + workshop name for the delete-workshop confirmation.
   const session = await getCachedSession()
@@ -61,6 +65,7 @@ export default async function DataSettingsPage() {
       isOwner={isOwner}
       hasSampleData={hasSampleData}
       reauth={reauth}
+      backupDestinations={backupDestinations}
     />
   )
 }

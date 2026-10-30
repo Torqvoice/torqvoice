@@ -36,6 +36,8 @@ import type {
   ConnectorManifest,
   SettingOption,
 } from '../Lib/types'
+import type { BackupOverview } from '../Lib/backup-types'
+import { BACKUP_CAPABILITY, backupOverview } from '../Lib/backup'
 import { messagingProvider, providersForChannel } from '@/integrations/messaging/catalog'
 import {
   type InboundWebhook,
@@ -254,6 +256,8 @@ export interface ConnectionView {
   webhookUrl: string | null
   /** For registries that can keep inspection dates fresh: what a pass covers. Null otherwise. */
   inspectionSync: InspectionSyncOverview | null
+  /** For backup destinations: last and next runs. Null for every other connector. */
+  backup: BackupOverview | null
   /**
    * Where a messaging vendor must deliver inbound messages, built from the
    * connection's own secret. Null for vendors that register it themselves
@@ -368,6 +372,18 @@ export async function getIntegrationConnection(connectorId: string) {
                 organizationId,
                 (row.state as Record<string, unknown>) ?? {}
               )
+            : null,
+        backup:
+          row && manifest.capabilities.includes(BACKUP_CAPABILITY)
+            ? await backupOverview({
+                id: row.id,
+                organizationId,
+                settings: effectiveSettings(
+                  connectorId,
+                  (row.settings as Record<string, unknown>) ?? {}
+                ),
+                state: (row.state as Record<string, unknown>) ?? {},
+              })
             : null,
       }
     },

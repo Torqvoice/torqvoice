@@ -19,6 +19,8 @@ import { warrantyFromUntyped } from '@/lib/warranty'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { generateWebhookSecret } from '@/features/webhooks/Lib/sign'
+import { isRedacted, keepCurrentSecrets, keepCurrentWebhookSecrets } from '@/lib/backup/secrets'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
 import { mkdir, writeFile } from 'fs/promises'
@@ -457,9 +459,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No data found in backup' }, { status: 400 })
   }
 
+  // Secret keys a "Data only" backup left out, which the workshop re-enters.
+  let redactedSettings: string[] = []
+
   try {
     await db.$transaction(async (tx) => {
       const organizationId = ctx.organizationId
+
+      // 0. A redacted secret keeps what the install has now, so read those
+      // before the tables are cleared.
+      if (Array.isArray(data.settings)) {
+        const settingRows = data.settings as { key: string; value: unknown }[]
+        const redactedKeys = settingRows.filter((s) => isRedacted(s.value)).map((s) => s.key)
+        const current = redactedKeys.length
+          ? await tx.appSetting.findMany({
+              where: { organizationId, key: { in: redactedKeys } },
+              select: { key: true, value: true },
+            })
+          : []
+        const kept = keepCurrentSecrets(settingRows, new Map(current.map((s) => [s.key, s.value])))
+        data.settings = kept.rows
+        redactedSettings = kept.redacted
+      }
+      if (Array.isArray(data.webhooks)) {
+        const webhookRows = data.webhooks as Record<string, unknown>[]
+        const current = webhookRows.some((w) => isRedacted(w.secret))
+          ? await tx.webhook.findMany({
+              where: { organizationId },
+              select: { id: true, url: true, secret: true },
+            })
+          : []
+        data.webhooks = keepCurrentWebhookSecrets(webhookRows, current, generateWebhookSecret).rows
+      }
 
       // 1. Clear what this backup can put back, and nothing else.
       //
@@ -1951,7 +1982,7 @@ export async function POST(request: NextRequest) {
       await restoreFiles(zipFiles, ctx.organizationId)
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, redactedSettings })
   } catch (error) {
     console.error('[backup/import] Error:', error)
     // The detail stays in the log; a Prisma or parser message is not for the browser.

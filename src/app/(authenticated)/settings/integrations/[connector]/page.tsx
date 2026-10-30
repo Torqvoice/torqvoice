@@ -49,7 +49,9 @@ export default async function IntegrationConnectionPage({
       ? t('lockedPayments')
       : manifest.plan === 'ai'
         ? t('lockedAi')
-        : t('lockedIntegrations')
+        : manifest.plan === 'backups'
+          ? t('lockedBackups')
+          : t('lockedIntegrations')
 
   return locked ? (
     <FeatureLocked

@@ -70,6 +70,9 @@
       "invoices": "Rechnungen ins Buchhaltungssystem",
       "customers": "Kunden ins Buchhaltungssystem",
       "payments": "Zahlungen in beide Richtungen"
+    },
+    "backup": {
+      "target": "Sicherungsziel"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
     "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}",
-    "advanced": "Erweitert"
+    "advanced": "Erweitert",
+    "generate": "Erzeugen",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "generatedPasswordWarning": "Bewahren Sie eine Kopie dieses Passworts an einem sicheren Ort auf, getrennt von diesem Server. Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht.",
+    "backup": {
+      "title": "Sicherungen",
+      "description": "Wann dieses Ziel zuletzt eine erfolgreiche Sicherung erhalten hat, wann die nächste läuft, und die letzten Läufe.",
+      "lastGood": "Letzte erfolgreiche Sicherung",
+      "added": "{size} hinzugefügt",
+      "never": "Noch keine",
+      "nextRun": "Nächster Lauf",
+      "notScheduled": "Nicht geplant",
+      "repositorySize": "Am Ziel gespeichert",
+      "runNow": "Jetzt sichern",
+      "running": "Sicherung läuft",
+      "runningHint": "Eine Sicherung läuft. Diese Seite aktualisiert sich selbst, bis sie fertig ist.",
+      "started": "Sicherung gestartet",
+      "recentTitle": "Letzte Läufe",
+      "noRuns": "Es wurden noch keine Sicherungen ausgeführt.",
+      "notStarted": "Nicht gestartet",
+      "filesNewCount": "{count, plural, one {# neue Datei} other {# neue Dateien}}",
+      "columns": {
+        "status": "Status",
+        "started": "Gestartet",
+        "trigger": "Gestartet von",
+        "duration": "Dauer",
+        "filesNew": "Neue Dateien",
+        "bytesAdded": "Hinzugefügt"
+      },
+      "trigger": {
+        "scheduled": "Zeitplan",
+        "manual": "Manuell"
+      },
+      "status": {
+        "queued": "In der Warteschlange",
+        "running": "Läuft",
+        "done": "Fertig",
+        "failed": "Fehlgeschlagen",
+        "skipped": "Übersprungen"
+      }
+    },
+    "lockedBackups": "Geplante, verschlüsselte Sicherungen Ihrer Werkstatt in Ihren eigenen Speicher."
   },
   "activity": {
     "title": "Aktivität",
@@ -199,7 +244,8 @@
     "invalid": "Die Antwort des Anbieters war unvollständig. Versuchen Sie es erneut.",
     "state": "Diese Anmeldung ist abgelaufen oder gehört zu einer anderen Sitzung. Beginnen Sie erneut.",
     "exchange": "Der Anbieter hat die Anmeldung abgelehnt. Prüfen Sie die App-Zugangsdaten und versuchen Sie es erneut.",
-    "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen."
+    "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen.",
+    "backupRunning": "Es läuft bereits eine Sicherung."
   },
   "meeting": {
     "join": "Videoanruf beitreten",
@@ -652,6 +698,103 @@
         "modeHelp": "Der Browser schreibt mit, während Sie sprechen, ist aber schwächer, vor allem bei kleineren Sprachen. Das Sprachmodell schreibt, sobald Sie aufhören.",
         "modeAi": "Immer das Sprachmodell",
         "modeChoice": "Jede Person wählt: Sprachmodell oder Browser"
+      }
+    },
+    "s3": {
+      "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Bucket, der Ihnen gehört, nach einem Zeitplan Ihrer Wahl. Funktioniert mit Amazon S3, Cloudflare R2, Backblaze B2, Wasabi und Hetzner Object Storage. Nach dem ersten Lauf wird nur hochgeladen, was sich geändert hat, daher bleiben stündliche Sicherungen günstig.",
+      "fields": {
+        "accessKeyId": "Zugriffsschlüssel-ID",
+        "accessKeyIdHelp": "Ein Schlüssel Ihres Speicheranbieters mit der Berechtigung, Objekte im Bucket aufzulisten, zu lesen, zu schreiben und zu löschen. Erstellen Sie einen eigenen Schlüssel nur für Torqvoice, damit er sich einzeln widerrufen lässt.",
+        "secretAccessKey": "Geheimer Zugriffsschlüssel",
+        "password": "Sicherungspasswort",
+        "passwordHelp": "Jede Sicherung wird mit diesem Passwort verschlüsselt. Denken Sie sich eines aus oder klicken Sie auf Erzeugen, und bewahren Sie eine Kopie getrennt von diesem Server auf: Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht. Um einen Speicher erneut zu verbinden, der bereits Torqvoice-Sicherungen enthält, geben Sie das Passwort ein, mit dem sie erstellt wurden.",
+        "endpoint": "Eigener Endpunkt",
+        "endpointHelp": "Nur für die Option Anderer S3-kompatibler Speicher: die S3-Adresse Ihres eigenen Speichers, etwa eines MinIO-Servers, als Hostname, bei Bedarf mit Port."
+      },
+      "settings": {
+        "provider": "Anbieter",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Anderer S3-kompatibler Speicher",
+        "region": "Region",
+        "regionHelp": "So, wie der Anbieter sie nennt, zum Beispiel eu-central-1 bei Amazon, us-west-004 bei Backblaze oder fsn1 bei Hetzner. Wird von Cloudflare R2 nicht verwendet.",
+        "accountId": "Cloudflare-Konto-ID",
+        "accountIdHelp": "Die 32-stellige ID auf der R2-Übersichtsseite Ihres Cloudflare-Dashboards.",
+        "bucket": "Bucket",
+        "prefix": "Ordner im Bucket",
+        "prefixHelp": "Die Sicherungen liegen in diesem Ordner. Verwenden Sie für jede Werkstatt, die den Bucket mitbenutzt, einen eigenen Ordner.",
+        "frequency": "Wie oft",
+        "frequencyHourly": "Jede Stunde",
+        "frequencyEvery4h": "Alle 4 Stunden",
+        "frequencyDaily": "Jeden Tag",
+        "frequencyWeekly": "Jede Woche",
+        "frequencyMonthly": "Jeden Monat",
+        "time": "Uhrzeit",
+        "timeHelp": "Nach der Uhr der Werkstatt, im Format HH:MM. Gilt für tägliche, wöchentliche und monatliche Sicherungen.",
+        "weekday": "Wochentag",
+        "sunday": "Sonntag",
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "monthDay": "Tag im Monat",
+        "monthDayLast": "Letzter Tag",
+        "contents": "Inhalt",
+        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt.",
+        "contentsData": "Nur Daten",
+        "contentsDataAndSecrets": "Daten und geheime Schlüssel",
+        "includeFiles": "Fotos und Dateien einschließen",
+        "includeFilesHelp": "Jede Datei wird einmal hochgeladen und von späteren Sicherungen wiederverwendet, daher kostet das nach dem ersten Lauf wenig.",
+        "keepHourly": "Stündliche Sicherungen behalten",
+        "keepHourlyHelp": "Wie viele der neuesten stündlichen Sicherungen behalten werden. Nur relevant bei stündlichem oder vierstündlichem Zeitplan.",
+        "keepDaily": "Tägliche Sicherungen behalten",
+        "keepWeekly": "Wöchentliche Sicherungen behalten",
+        "keepMonthly": "Monatliche Sicherungen behalten",
+        "keepMonthlyHelp": "Ältere Sicherungen werden nach jedem Lauf entfernt, wobei jeweils die neuesten jeder Art erhalten bleiben. Setzen Sie eine Zahl auf 0, um von dieser Art keine zu behalten."
+      }
+    },
+    "local-folder": {
+      "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Ordner auf diesem Server: das Sicherungs-Volume in der Compose-Datei oder ein dort eingebundenes Netzlaufwerk. Eine Kopie auf derselben Festplatte wie die Datenbank ist allein nicht sicher; kombinieren Sie sie mit Speicher an einem anderen Ort.",
+      "fields": {
+        "password": "Sicherungspasswort",
+        "passwordHelp": "Jede Sicherung wird mit diesem Passwort verschlüsselt. Denken Sie sich eines aus oder klicken Sie auf Erzeugen, und bewahren Sie eine Kopie getrennt von diesem Server auf: Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht. Um einen Speicher erneut zu verbinden, der bereits Torqvoice-Sicherungen enthält, geben Sie das Passwort ein, mit dem sie erstellt wurden."
+      },
+      "settings": {
+        "frequency": "Wie oft",
+        "frequencyHourly": "Jede Stunde",
+        "frequencyEvery4h": "Alle 4 Stunden",
+        "frequencyDaily": "Jeden Tag",
+        "frequencyWeekly": "Jede Woche",
+        "frequencyMonthly": "Jeden Monat",
+        "time": "Uhrzeit",
+        "timeHelp": "Nach der Uhr der Werkstatt, im Format HH:MM. Gilt für tägliche, wöchentliche und monatliche Sicherungen.",
+        "weekday": "Wochentag",
+        "sunday": "Sonntag",
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "monthDay": "Tag im Monat",
+        "monthDayLast": "Letzter Tag",
+        "contents": "Inhalt",
+        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt.",
+        "contentsData": "Nur Daten",
+        "contentsDataAndSecrets": "Daten und geheime Schlüssel",
+        "includeFiles": "Fotos und Dateien einschließen",
+        "includeFilesHelp": "Jede Datei wird einmal hochgeladen und von späteren Sicherungen wiederverwendet, daher kostet das nach dem ersten Lauf wenig.",
+        "keepHourly": "Stündliche Sicherungen behalten",
+        "keepHourlyHelp": "Wie viele der neuesten stündlichen Sicherungen behalten werden. Nur relevant bei stündlichem oder vierstündlichem Zeitplan.",
+        "keepDaily": "Tägliche Sicherungen behalten",
+        "keepWeekly": "Wöchentliche Sicherungen behalten",
+        "keepMonthly": "Monatliche Sicherungen behalten",
+        "keepMonthlyHelp": "Ältere Sicherungen werden nach jedem Lauf entfernt, wobei jeweils die neuesten jeder Art erhalten bleiben. Setzen Sie eine Zahl auf 0, um von dieser Art keine zu behalten."
       }
     }
   },

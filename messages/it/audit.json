@@ -193,7 +193,8 @@
     "settings_markType_create": "Tipo di segno aggiunto",
     "settings_markType_update": "Tipo di segno modificato",
     "settings_markType_remove": "Tipo di segno rimosso",
-    "settings_markType_reorder": "Tipi di segno riordinati"
+    "settings_markType_reorder": "Tipi di segno riordinati",
+    "integration_backup_run": "Backup avviato"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -346,6 +347,7 @@
     "condition_mark_remove": "Ha rimosso un segno dalla mappa dello stato",
     "condition_mark_carry": "Ha confermato {count, plural, one {# segno precedente come ancora presente} other {# segni precedenti come ancora presenti}} sulla mappa dello stato",
     "condition_map_on_invoice_on": "Ha messo la mappa dello stato sulla fattura",
-    "condition_map_on_invoice_off": "Ha tolto la mappa dello stato dalla fattura"
+    "condition_map_on_invoice_off": "Ha tolto la mappa dello stato dalla fattura",
+    "backup_run_started": "Ha avviato un backup su {name}"
   }
 }

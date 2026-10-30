@@ -1450,7 +1450,20 @@
     "sourceBackup": "Torqvoice-Sicherung",
     "sourceBackupDesc": "Eine auf dieser Seite heruntergeladene .zip- oder .json-Datei. Die Wiederherstellung ersetzt alles in dieser Werkstatt.",
     "restore": "Wiederherstellen",
-    "restoreTitle": "Sicherung wiederherstellen"
+    "restoreTitle": "Sicherung wiederherstellen",
+    "includeSecrets": "Geheime Schlüssel einschließen",
+    "includeSecretsHelp": "Geheime Schlüssel, etwa für Zahlungen und KI, werden weggelassen, sofern Sie dies nicht ankreuzen. Eine Wiederherstellung behält dann die Schlüssel, die diese Installation bereits hat.",
+    "scheduledBackups": {
+      "title": "Geplante Sicherungen",
+      "description": "Automatische Sicherungen in Ihren eigenen Speicher, nach einem Zeitplan Ihrer Wahl.",
+      "empty": "Es ist noch kein Sicherungsziel verbunden.",
+      "setUp": "Sicherungsziel einrichten",
+      "lastGood": "Letzte erfolgreiche Sicherung: {when}",
+      "noGoodBackup": "Noch keine erfolgreiche Sicherung",
+      "nextRun": "nächster Lauf: {when}",
+      "notScheduled": "nicht geplant",
+      "lastError": "Letzter Fehler: {error}"
+    }
   },
   "license": {
     "title": "White-Label-Lizenz",

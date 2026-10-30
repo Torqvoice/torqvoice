@@ -193,7 +193,8 @@
     "settings_markType_create": "Markeringstype toegevoegd",
     "settings_markType_update": "Markeringstype gewijzigd",
     "settings_markType_remove": "Markeringstype verwijderd",
-    "settings_markType_reorder": "Markeringstypen herschikt"
+    "settings_markType_reorder": "Markeringstypen herschikt",
+    "integration_backup_run": "Back-up gestart"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -346,6 +347,7 @@
     "condition_mark_remove": "Markering van de staatkaart verwijderd",
     "condition_mark_carry": "{count, plural, one {# eerdere markering} other {# eerdere markeringen}} op de staatkaart bevestigd als nog aanwezig",
     "condition_map_on_invoice_on": "Staatkaart op de factuur gezet",
-    "condition_map_on_invoice_off": "Staatkaart van de factuur gehaald"
+    "condition_map_on_invoice_off": "Staatkaart van de factuur gehaald",
+    "backup_run_started": "Back-up naar {name} gestart"
   }
 }

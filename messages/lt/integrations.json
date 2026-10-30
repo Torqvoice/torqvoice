@@ -70,6 +70,9 @@
       "invoices": "Sąskaitos į apskaitą",
       "customers": "Klientai į apskaitą",
       "payments": "Mokėjimai abiem kryptimis"
+    },
+    "backup": {
+      "target": "Atsarginių kopijų paskirties vieta"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
     "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}",
-    "advanced": "Išplėstiniai"
+    "advanced": "Išplėstiniai",
+    "generate": "Generuoti",
+    "show": "Rodyti",
+    "hide": "Slėpti",
+    "generatedPasswordWarning": "Laikykite šio slaptažodžio kopiją saugioje vietoje, ne šiame serveryje. Be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“.",
+    "backup": {
+      "title": "Atsarginės kopijos",
+      "description": "Kada ši paskirties vieta paskutinį kartą gavo sėkmingą atsarginę kopiją, kada vyks kita ir paskutiniai vykdymai.",
+      "lastGood": "Paskutinė sėkminga atsarginė kopija",
+      "added": "Pridėta {size}",
+      "never": "Kol kas nėra",
+      "nextRun": "Kitas vykdymas",
+      "notScheduled": "Nesuplanuota",
+      "repositorySize": "Saugoma paskirties vietoje",
+      "runNow": "Kurti atsarginę kopiją dabar",
+      "running": "Kuriama atsarginė kopija",
+      "runningHint": "Kuriama atsarginė kopija. Šis puslapis atsinaujina pats, kol ji bus baigta.",
+      "started": "Atsarginės kopijos kūrimas pradėtas",
+      "recentTitle": "Paskutiniai vykdymai",
+      "noRuns": "Atsarginės kopijos dar nebuvo kuriamos.",
+      "notStarted": "Nepradėta",
+      "filesNewCount": "{count, plural, one {# naujas failas} few {# nauji failai} many {# naujo failo} other {# naujų failų}}",
+      "columns": {
+        "status": "Būsena",
+        "started": "Pradėta",
+        "trigger": "Kas pradėjo",
+        "duration": "Trukmė",
+        "filesNew": "Nauji failai",
+        "bytesAdded": "Pridėta"
+      },
+      "trigger": {
+        "scheduled": "Pagal grafiką",
+        "manual": "Rankiniu būdu"
+      },
+      "status": {
+        "queued": "Eilėje",
+        "running": "Vykdoma",
+        "done": "Atlikta",
+        "failed": "Nepavyko",
+        "skipped": "Praleista"
+      }
+    },
+    "lockedBackups": "Suplanuotos, šifruotos jūsų dirbtuvės atsarginės kopijos į jums priklausančią saugyklą."
   },
   "activity": {
     "title": "Veikla",
@@ -199,7 +244,8 @@
     "invalid": "Tiekėjo atsakymas buvo neišsamus. Bandykite dar kartą.",
     "state": "Šis prisijungimas baigė galioti arba priklauso kitai sesijai. Pradėkite iš naujo.",
     "exchange": "Tiekėjas atmetė prisijungimą. Patikrinkite programos prisijungimo duomenis ir bandykite dar kartą.",
-    "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo."
+    "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo.",
+    "backupRunning": "Atsarginė kopija jau kuriama."
   },
   "meeting": {
     "join": "Prisijungti prie vaizdo skambučio",
@@ -652,6 +698,103 @@
         "modeHelp": "Naršyklė rašo jums kalbant, bet veikia prasčiau, ypač mažesnėmis kalbomis. Kalbos modelis rašo, kai baigiate kalbėti.",
         "modeAi": "Visada kalbos modelis",
         "modeChoice": "Kiekvienas renkasi: kalbos modelis ar naršyklė"
+      }
+    },
+    "s3": {
+      "description": "Šifruotos šios dirbtuvės atsarginės kopijos į jums priklausančią talpyklą (bucket) pagal jūsų pasirinktą grafiką. Veikia su Amazon S3, Cloudflare R2, Backblaze B2, Wasabi ir Hetzner Object Storage. Po pirmojo vykdymo įkeliama tik tai, kas pasikeitė, todėl kas valandą daromos kopijos išlieka pigios.",
+      "fields": {
+        "accessKeyId": "Prieigos rakto ID",
+        "accessKeyIdHelp": "Jūsų saugyklos teikėjo raktas su leidimu išvardyti, skaityti, rašyti ir trinti objektus talpykloje. Sukurkite atskirą raktą tik „Torqvoice“, kad jį būtų galima atšaukti atskirai.",
+        "secretAccessKey": "Slaptasis prieigos raktas",
+        "password": "Atsarginių kopijų slaptažodis",
+        "passwordHelp": "Kiekviena atsarginė kopija šifruojama šiuo slaptažodžiu. Sugalvokite jį arba spustelėkite Generuoti ir laikykite kopiją ne šiame serveryje: be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“. Norėdami vėl prijungti saugyklą, kurioje jau yra „Torqvoice“ atsarginių kopijų, įveskite slaptažodį, kuriuo jos buvo sukurtos.",
+        "endpoint": "Pasirinktinis galinis taškas",
+        "endpointHelp": "Tik parinkčiai Kita su S3 suderinama saugykla: jūsų pačių saugyklos S3 adresas, pavyzdžiui, MinIO serverio, kaip pagrindinio kompiuterio vardas, jei reikia, su prievadu."
+      },
+      "settings": {
+        "provider": "Teikėjas",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Kita su S3 suderinama saugykla",
+        "region": "Regionas",
+        "regionHelp": "Taip, kaip jį vadina teikėjas, pavyzdžiui, eu-central-1 Amazon, us-west-004 Backblaze arba fsn1 Hetzner. Cloudflare R2 jo nenaudoja.",
+        "accountId": "Cloudflare paskyros ID",
+        "accountIdHelp": "32 simbolių ID, rodomas jūsų Cloudflare valdymo skydelio R2 apžvalgos puslapyje.",
+        "bucket": "Talpykla (bucket)",
+        "prefix": "Aplankas talpykloje",
+        "prefixHelp": "Atsarginės kopijos laikomos šiame aplanke. Kiekvienai dirbtuvei, kuri naudoja tą pačią talpyklą, naudokite atskirą aplanką.",
+        "frequency": "Kaip dažnai",
+        "frequencyHourly": "Kas valandą",
+        "frequencyEvery4h": "Kas 4 valandas",
+        "frequencyDaily": "Kasdien",
+        "frequencyWeekly": "Kas savaitę",
+        "frequencyMonthly": "Kas mėnesį",
+        "time": "Paros laikas",
+        "timeHelp": "Pagal dirbtuvės laikrodį, formatu HH:MM. Naudojama kasdienėms, savaitinėms ir mėnesinėms atsarginėms kopijoms.",
+        "weekday": "Savaitės diena",
+        "sunday": "Sekmadienis",
+        "monday": "Pirmadienis",
+        "tuesday": "Antradienis",
+        "wednesday": "Trečiadienis",
+        "thursday": "Ketvirtadienis",
+        "friday": "Penktadienis",
+        "saturday": "Šeštadienis",
+        "monthDay": "Mėnesio diena",
+        "monthDayLast": "Paskutinė diena",
+        "contents": "Turinys",
+        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu.",
+        "contentsData": "Tik duomenys",
+        "contentsDataAndSecrets": "Duomenys ir slaptieji raktai",
+        "includeFiles": "Įtraukti nuotraukas ir failus",
+        "includeFilesHelp": "Kiekvienas failas įkeliamas vieną kartą ir pakartotinai naudojamas vėlesnėse atsarginėse kopijose, todėl po pirmojo vykdymo tai kainuoja nedaug.",
+        "keepHourly": "Laikyti valandines atsargines kopijas",
+        "keepHourlyHelp": "Kiek naujausių valandinių atsarginių kopijų laikyti. Svarbu tik kas valandą ir kas 4 valandas vykdomiems grafikams.",
+        "keepDaily": "Laikyti dienines atsargines kopijas",
+        "keepWeekly": "Laikyti savaitines atsargines kopijas",
+        "keepMonthly": "Laikyti mėnesines atsargines kopijas",
+        "keepMonthlyHelp": "Po kiekvieno vykdymo senesnės atsarginės kopijos pašalinamos, paliekant naujausias kiekvienos rūšies. Nustatykite skaičių 0, kad tos rūšies nebūtų laikoma nė vienos."
+      }
+    },
+    "local-folder": {
+      "description": "Šifruotos šios dirbtuvės atsarginės kopijos į aplanką šiame serveryje: atsarginių kopijų tomą compose faile arba ten prijungtą tinklo diską. Kopija tame pačiame diske kaip duomenų bazė viena pati nėra saugi; derinkite ją su saugykla kitoje vietoje.",
+      "fields": {
+        "password": "Atsarginių kopijų slaptažodis",
+        "passwordHelp": "Kiekviena atsarginė kopija šifruojama šiuo slaptažodžiu. Sugalvokite jį arba spustelėkite Generuoti ir laikykite kopiją ne šiame serveryje: be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“. Norėdami vėl prijungti saugyklą, kurioje jau yra „Torqvoice“ atsarginių kopijų, įveskite slaptažodį, kuriuo jos buvo sukurtos."
+      },
+      "settings": {
+        "frequency": "Kaip dažnai",
+        "frequencyHourly": "Kas valandą",
+        "frequencyEvery4h": "Kas 4 valandas",
+        "frequencyDaily": "Kasdien",
+        "frequencyWeekly": "Kas savaitę",
+        "frequencyMonthly": "Kas mėnesį",
+        "time": "Paros laikas",
+        "timeHelp": "Pagal dirbtuvės laikrodį, formatu HH:MM. Naudojama kasdienėms, savaitinėms ir mėnesinėms atsarginėms kopijoms.",
+        "weekday": "Savaitės diena",
+        "sunday": "Sekmadienis",
+        "monday": "Pirmadienis",
+        "tuesday": "Antradienis",
+        "wednesday": "Trečiadienis",
+        "thursday": "Ketvirtadienis",
+        "friday": "Penktadienis",
+        "saturday": "Šeštadienis",
+        "monthDay": "Mėnesio diena",
+        "monthDayLast": "Paskutinė diena",
+        "contents": "Turinys",
+        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu.",
+        "contentsData": "Tik duomenys",
+        "contentsDataAndSecrets": "Duomenys ir slaptieji raktai",
+        "includeFiles": "Įtraukti nuotraukas ir failus",
+        "includeFilesHelp": "Kiekvienas failas įkeliamas vieną kartą ir pakartotinai naudojamas vėlesnėse atsarginėse kopijose, todėl po pirmojo vykdymo tai kainuoja nedaug.",
+        "keepHourly": "Laikyti valandines atsargines kopijas",
+        "keepHourlyHelp": "Kiek naujausių valandinių atsarginių kopijų laikyti. Svarbu tik kas valandą ir kas 4 valandas vykdomiems grafikams.",
+        "keepDaily": "Laikyti dienines atsargines kopijas",
+        "keepWeekly": "Laikyti savaitines atsargines kopijas",
+        "keepMonthly": "Laikyti mėnesines atsargines kopijas",
+        "keepMonthlyHelp": "Po kiekvieno vykdymo senesnės atsarginės kopijos pašalinamos, paliekant naujausias kiekvienos rūšies. Nustatykite skaičių 0, kad tos rūšies nebūtų laikoma nė vienos."
       }
     }
   },

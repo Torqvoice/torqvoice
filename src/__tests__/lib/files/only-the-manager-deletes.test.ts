@@ -34,6 +34,14 @@ const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string }> = {
     targets: /\brm\(tmpDir\b/,
     why: 'its own extract folder under os.tmpdir()',
   },
+  'src/lib/backup/engine.ts': {
+    targets: /\brm\(dataFile\b/,
+    why: 'the data.json it staged for restic, under its own backup-staging folder',
+  },
+  'src/lib/backup/target.ts': {
+    targets: /\brm\((?:probe\b|cacheDirFor\()/,
+    why: "a probe folder under os.tmpdir(), and restic's own cache folder",
+  },
 }
 
 const DELETE_CALL = /\b(?:unlink|unlinkSync|rm|rmSync|rmdir|rmdirSync)\s*\(/

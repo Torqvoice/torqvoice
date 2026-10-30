@@ -4,6 +4,7 @@ import { AppCard } from '@/components/app-card'
 import { useRef, useState } from 'react'
 import { useFormatter, useNow, useTranslations } from 'next-intl'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -19,6 +20,8 @@ import { Input } from '@/components/ui/input'
 import { useGlassModal } from '@/components/glass-modal'
 import {
   AlertTriangle,
+  ChevronRight,
+  DatabaseBackup,
   Download,
   FileArchive,
   FileSpreadsheet,
@@ -45,6 +48,7 @@ import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
 import { signOut } from '@/lib/auth-client'
 import { resetAnalytics } from '@/lib/analytics'
 import type { ReauthRequirement } from '@/lib/reauth'
+import type { BackupDestinationSummary } from '@/features/integrations/Actions/backupActions'
 import { ReauthField } from './reauth-field'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -128,6 +132,7 @@ export function DataSettings({
   isOwner = false,
   hasSampleData = false,
   reauth = 'password',
+  backupDestinations = [],
 }: {
   contentCounts: ContentCounts
   lastBackupAt?: string | null
@@ -136,6 +141,8 @@ export function DataSettings({
   hasSampleData?: boolean
   /** What the delete dialogs must ask for before the server will delete. */
   reauth?: ReauthRequirement
+  /** Backup destinations connected under Integrations, with their last and next runs. */
+  backupDestinations?: BackupDestinationSummary[]
 }) {
   const t = useTranslations('settings')
   const format = useFormatter()
@@ -152,6 +159,8 @@ export function DataSettings({
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [restoreOpen, setRestoreOpen] = useState(false)
   const [options, setOptions] = useState<ExportOptions>({ ...ALL_TRUE })
+  // Kept apart from the data options so "Select all" never ticks it.
+  const [includeSecrets, setIncludeSecrets] = useState(false)
 
   const allChecked = Object.values(options).every(Boolean)
   const noneChecked = Object.values(options).every((v) => !v)
@@ -178,7 +187,7 @@ export function DataSettings({
       const res = await fetch('/api/protected/backup/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ include: options }),
+        body: JSON.stringify({ include: { ...options, secrets: includeSecrets } }),
       })
       if (!res.ok) {
         throw new Error('Export failed')
@@ -568,6 +577,8 @@ export function DataSettings({
 
         <ImportHistoryCard refreshKey={importRuns} />
 
+        <ScheduledBackupsCard destinations={backupDestinations} now={now} />
+
         {/* Export */}
         <AppCard
           id="data-export"
@@ -616,6 +627,18 @@ export function DataSettings({
                 {t('data.filesWarning')}
               </p>
             )}
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-md border p-2 hover:bg-muted/50">
+              <Checkbox
+                checked={includeSecrets}
+                onCheckedChange={(v) => setIncludeSecrets(v === true)}
+                className="mt-0.5"
+              />
+              <div className="space-y-0.5">
+                <div className="text-sm font-medium leading-none">{t('data.includeSecrets')}</div>
+                <div className="text-xs text-muted-foreground">{t('data.includeSecretsHelp')}</div>
+              </div>
+            </label>
           </div>
 
           <Button onClick={handleExport} disabled={exporting || noneChecked}>
@@ -1248,5 +1271,76 @@ function ImportSourceRow({
       </div>
       <div className="flex flex-wrap gap-2 sm:justify-end">{children}</div>
     </li>
+  )
+}
+
+/**
+ * Scheduled backups to the workshop's own storage. The destinations are set
+ * up under Integrations; this card says whether they are working and links
+ * to each one.
+ */
+function ScheduledBackupsCard({
+  destinations,
+  now,
+}: {
+  destinations: BackupDestinationSummary[]
+  now: Date
+}) {
+  const t = useTranslations('settings.data.scheduledBackups')
+  const format = useFormatter()
+  return (
+    <AppCard
+      icon={DatabaseBackup}
+      title={t('title')}
+      description={t('description')}
+      contentClassName={destinations.length > 0 ? 'p-0' : undefined}
+    >
+      {destinations.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {t('empty')}{' '}
+          <Link
+            href="/settings/integrations?category=storage"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            {t('setUp')}
+          </Link>
+        </p>
+      ) : (
+        <ul className="divide-y">
+          {destinations.map((d) => (
+            <li key={d.connectorId}>
+              <Link
+                href={`/settings/integrations/${d.connectorId}`}
+                className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-muted/40"
+              >
+                <div className="min-w-0 flex-1 space-y-0.5">
+                  <p className="font-medium">{d.name}</p>
+                  <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                    {d.lastGood
+                      ? t('lastGood', { when: format.relativeTime(new Date(d.lastGood), now) })
+                      : t('noGoodBackup')}
+                    {' · '}
+                    {d.nextRunAt
+                      ? t('nextRun', {
+                          when: format.dateTime(new Date(d.nextRunAt), {
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
+                          }),
+                        })
+                      : t('notScheduled')}
+                  </p>
+                  {d.lastError && (
+                    <p className="break-words text-xs text-destructive">
+                      {t('lastError', { error: d.lastError })}
+                    </p>
+                  )}
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </AppCard>
   )
 }

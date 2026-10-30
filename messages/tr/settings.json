@@ -1450,7 +1450,20 @@
     "sourceBackup": "Torqvoice yedeği",
     "sourceBackupDesc": "Bu sayfadan indirilmiş bir .zip veya .json dosyası. Geri yükleme bu atölyedeki her şeyi değiştirir.",
     "restore": "Geri yükle",
-    "restoreTitle": "Bir yedeği geri yükle"
+    "restoreTitle": "Bir yedeği geri yükle",
+    "includeSecrets": "Gizli anahtarları dahil et",
+    "includeSecretsHelp": "Ödeme ve yapay zeka anahtarları gibi gizli anahtarlar, bunu işaretlemediğiniz sürece dışarıda bırakılır. Geri yükleme bu durumda bu kurulumda zaten bulunan anahtarları korur.",
+    "scheduledBackups": {
+      "title": "Zamanlanmış yedeklemeler",
+      "description": "Size ait depolamaya, seçtiğiniz zamanlamayla otomatik yedeklemeler.",
+      "empty": "Henüz bağlı bir yedekleme hedefi yok.",
+      "setUp": "Bir yedekleme hedefi kurun",
+      "lastGood": "Son başarılı yedek: {when}",
+      "noGoodBackup": "Henüz başarılı yedek yok",
+      "nextRun": "sonraki çalıştırma: {when}",
+      "notScheduled": "planlanmadı",
+      "lastError": "Son hata: {error}"
+    }
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",

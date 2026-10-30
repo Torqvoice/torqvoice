@@ -70,6 +70,9 @@
       "invoices": "Fakturaer til regnskapet",
       "customers": "Kunder til regnskapet",
       "payments": "Betalinger begge veier"
+    },
+    "backup": {
+      "target": "Mål for sikkerhetskopier"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
-    "advanced": "Avansert"
+    "advanced": "Avansert",
+    "generate": "Generer",
+    "show": "Vis",
+    "hide": "Skjul",
+    "generatedPasswordWarning": "Ta vare på en kopi av dette passordet et trygt sted, utenfor denne serveren. Uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice.",
+    "backup": {
+      "title": "Sikkerhetskopier",
+      "description": "Når dette målet sist fikk en vellykket sikkerhetskopi, når neste kjører, og de siste kjøringene.",
+      "lastGood": "Siste vellykkede sikkerhetskopi",
+      "added": "{size} lagt til",
+      "never": "Ingen ennå",
+      "nextRun": "Neste kjøring",
+      "notScheduled": "Ikke planlagt",
+      "repositorySize": "Lagret på målet",
+      "runNow": "Ta sikkerhetskopi nå",
+      "running": "Tar sikkerhetskopi",
+      "runningHint": "En sikkerhetskopi kjører. Siden oppdaterer seg selv til den er ferdig.",
+      "started": "Sikkerhetskopiering startet",
+      "recentTitle": "Siste kjøringer",
+      "noRuns": "Ingen sikkerhetskopier har kjørt ennå.",
+      "notStarted": "Ikke startet",
+      "filesNewCount": "{count, plural, one {# ny fil} other {# nye filer}}",
+      "columns": {
+        "status": "Status",
+        "started": "Startet",
+        "trigger": "Startet av",
+        "duration": "Varighet",
+        "filesNew": "Nye filer",
+        "bytesAdded": "Lagt til"
+      },
+      "trigger": {
+        "scheduled": "Tidsplan",
+        "manual": "Manuelt"
+      },
+      "status": {
+        "queued": "I kø",
+        "running": "Kjører",
+        "done": "Ferdig",
+        "failed": "Feilet",
+        "skipped": "Hoppet over"
+      }
+    },
+    "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv."
   },
   "activity": {
     "title": "Aktivitet",
@@ -199,7 +244,8 @@
     "invalid": "Svaret fra leverandøren var ufullstendig. Prøv igjen.",
     "state": "Denne påloggingen har utløpt eller tilhører en annen økt. Start på nytt.",
     "exchange": "Leverandøren avviste påloggingen. Sjekk app-legitimasjonen og prøv igjen.",
-    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt."
+    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt.",
+    "backupRunning": "En sikkerhetskopi kjører allerede."
   },
   "meeting": {
     "join": "Bli med i videosamtale",
@@ -652,6 +698,103 @@
         "modeHelp": "Nettleseren skriver mens du snakker, men er svakere, særlig på mindre språk. Talemodellen skriver når du stopper.",
         "modeAi": "Alltid talemodellen",
         "modeChoice": "Hver person velger: talemodell eller nettleser"
+      }
+    },
+    "s3": {
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en bøtte du eier, etter en tidsplan du velger. Fungerer med Amazon S3, Cloudflare R2, Backblaze B2, Wasabi og Hetzner Object Storage. Etter første kjøring lastes bare det som er endret opp, så sikkerhetskopier hver time forblir billige.",
+      "fields": {
+        "accessKeyId": "Tilgangsnøkkel-ID",
+        "accessKeyIdHelp": "En nøkkel fra lagringsleverandøren din med tillatelse til å liste, lese, skrive og slette objekter i bøtta. Lag en egen nøkkel bare for Torqvoice, så den kan trekkes tilbake for seg selv.",
+        "secretAccessKey": "Hemmelig tilgangsnøkkel",
+        "password": "Passord for sikkerhetskopier",
+        "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med.",
+        "endpoint": "Egendefinert endepunkt",
+        "endpointHelp": "Bare for valget Annen S3-kompatibel lagring: S3-adressen til din egen lagring, for eksempel en MinIO-server, som vertsnavn med port om nødvendig."
+      },
+      "settings": {
+        "provider": "Leverandør",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Annen S3-kompatibel lagring",
+        "region": "Region",
+        "regionHelp": "Slik leverandøren kaller den, for eksempel eu-central-1 hos Amazon, us-west-004 hos Backblaze eller fsn1 hos Hetzner. Brukes ikke av Cloudflare R2.",
+        "accountId": "Cloudflare-konto-ID",
+        "accountIdHelp": "ID-en på 32 tegn som vises på R2-oversiktssiden i Cloudflare-dashbordet ditt.",
+        "bucket": "Bøtte",
+        "prefix": "Mappe i bøtta",
+        "prefixHelp": "Sikkerhetskopiene ligger under denne mappen. Bruk en egen mappe for hvert verksted som deler bøtta.",
+        "frequency": "Hvor ofte",
+        "frequencyHourly": "Hver time",
+        "frequencyEvery4h": "Hver 4. time",
+        "frequencyDaily": "Hver dag",
+        "frequencyWeekly": "Hver uke",
+        "frequencyMonthly": "Hver måned",
+        "time": "Klokkeslett",
+        "timeHelp": "Etter verkstedets klokke, som HH:MM. Brukes av daglige, ukentlige og månedlige sikkerhetskopier.",
+        "weekday": "Ukedag",
+        "sunday": "Søndag",
+        "monday": "Mandag",
+        "tuesday": "Tirsdag",
+        "wednesday": "Onsdag",
+        "thursday": "Torsdag",
+        "friday": "Fredag",
+        "saturday": "Lørdag",
+        "monthDay": "Dag i måneden",
+        "monthDayLast": "Siste dag",
+        "contents": "Innhold",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier.",
+        "contentsData": "Bare data",
+        "contentsDataAndSecrets": "Data og hemmelige nøkler",
+        "includeFiles": "Ta med bilder og filer",
+        "includeFilesHelp": "Hver fil lastes opp én gang og gjenbrukes av senere sikkerhetskopier, så dette koster lite etter første kjøring.",
+        "keepHourly": "Behold timesvise sikkerhetskopier",
+        "keepHourlyHelp": "Hvor mange av de nyeste timesvise sikkerhetskopiene som beholdes. Gjelder bare for tidsplanene hver time og hver 4. time.",
+        "keepDaily": "Behold daglige sikkerhetskopier",
+        "keepWeekly": "Behold ukentlige sikkerhetskopier",
+        "keepMonthly": "Behold månedlige sikkerhetskopier",
+        "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
+      }
+    },
+    "local-folder": {
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en mappe på denne serveren: volumet for sikkerhetskopier i compose-filen, eller en nettverksdisk montert der. En kopi på samme disk som databasen er ikke trygg alene; kombiner den med lagring et annet sted.",
+      "fields": {
+        "password": "Passord for sikkerhetskopier",
+        "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med."
+      },
+      "settings": {
+        "frequency": "Hvor ofte",
+        "frequencyHourly": "Hver time",
+        "frequencyEvery4h": "Hver 4. time",
+        "frequencyDaily": "Hver dag",
+        "frequencyWeekly": "Hver uke",
+        "frequencyMonthly": "Hver måned",
+        "time": "Klokkeslett",
+        "timeHelp": "Etter verkstedets klokke, som HH:MM. Brukes av daglige, ukentlige og månedlige sikkerhetskopier.",
+        "weekday": "Ukedag",
+        "sunday": "Søndag",
+        "monday": "Mandag",
+        "tuesday": "Tirsdag",
+        "wednesday": "Onsdag",
+        "thursday": "Torsdag",
+        "friday": "Fredag",
+        "saturday": "Lørdag",
+        "monthDay": "Dag i måneden",
+        "monthDayLast": "Siste dag",
+        "contents": "Innhold",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier.",
+        "contentsData": "Bare data",
+        "contentsDataAndSecrets": "Data og hemmelige nøkler",
+        "includeFiles": "Ta med bilder og filer",
+        "includeFilesHelp": "Hver fil lastes opp én gang og gjenbrukes av senere sikkerhetskopier, så dette koster lite etter første kjøring.",
+        "keepHourly": "Behold timesvise sikkerhetskopier",
+        "keepHourlyHelp": "Hvor mange av de nyeste timesvise sikkerhetskopiene som beholdes. Gjelder bare for tidsplanene hver time og hver 4. time.",
+        "keepDaily": "Behold daglige sikkerhetskopier",
+        "keepWeekly": "Behold ukentlige sikkerhetskopier",
+        "keepMonthly": "Behold månedlige sikkerhetskopier",
+        "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
       }
     }
   },

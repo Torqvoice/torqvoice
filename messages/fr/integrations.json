@@ -70,6 +70,9 @@
       "invoices": "Factures vers la comptabilité",
       "customers": "Clients vers la comptabilité",
       "payments": "Paiements dans les deux sens"
+    },
+    "backup": {
+      "target": "Destination de sauvegarde"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Connecter {next} déconnecte {current}. Un seul peut être actif à la fois : {current} cesse d'être utilisé dès que {next} est en service.",
     "batchRetried": "{count, plural, =0 {Rien à réessayer} one {# tâche remise en file} other {# tâches remises en file}}",
-    "advanced": "Avancé"
+    "advanced": "Avancé",
+    "generate": "Générer",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "generatedPasswordWarning": "Conservez une copie de ce mot de passe en lieu sûr, ailleurs que sur ce serveur. Sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice.",
+    "backup": {
+      "title": "Sauvegardes",
+      "description": "La dernière sauvegarde réussie vers cette destination, la prochaine exécution et les exécutions les plus récentes.",
+      "lastGood": "Dernière sauvegarde réussie",
+      "added": "{size} ajoutés",
+      "never": "Aucune pour l'instant",
+      "nextRun": "Prochaine exécution",
+      "notScheduled": "Non planifiée",
+      "repositorySize": "Stocké à la destination",
+      "runNow": "Sauvegarder maintenant",
+      "running": "Sauvegarde en cours",
+      "runningHint": "Une sauvegarde est en cours. Cette page se met à jour toute seule jusqu'à la fin.",
+      "started": "Sauvegarde lancée",
+      "recentTitle": "Exécutions récentes",
+      "noRuns": "Aucune sauvegarde n'a encore été effectuée.",
+      "notStarted": "Non démarrée",
+      "filesNewCount": "{count, plural, one {# nouveau fichier} other {# nouveaux fichiers}}",
+      "columns": {
+        "status": "Statut",
+        "started": "Démarrée",
+        "trigger": "Lancée par",
+        "duration": "Durée",
+        "filesNew": "Nouveaux fichiers",
+        "bytesAdded": "Ajouté"
+      },
+      "trigger": {
+        "scheduled": "Planification",
+        "manual": "Manuel"
+      },
+      "status": {
+        "queued": "En file d'attente",
+        "running": "En cours",
+        "done": "Terminée",
+        "failed": "Échouée",
+        "skipped": "Ignorée"
+      }
+    },
+    "lockedBackups": "Des sauvegardes chiffrées et planifiées de votre atelier vers un stockage qui vous appartient."
   },
   "activity": {
     "title": "Activité",
@@ -199,7 +244,8 @@
     "invalid": "La réponse du fournisseur était incomplète. Réessayez.",
     "state": "Cette connexion a expiré ou appartient à une autre session. Recommencez.",
     "exchange": "Le fournisseur a refusé la connexion. Vérifiez les identifiants de l'application et réessayez.",
-    "identify": "Connecté, mais le compte n'a pas pu être lu. Essayez de vous reconnecter."
+    "identify": "Connecté, mais le compte n'a pas pu être lu. Essayez de vous reconnecter.",
+    "backupRunning": "Une sauvegarde est déjà en cours."
   },
   "meeting": {
     "join": "Rejoindre l'appel vidéo",
@@ -652,6 +698,103 @@
         "modeHelp": "Le navigateur écrit pendant que vous parlez mais il est moins bon, surtout dans les langues moins répandues. Le modèle vocal écrit quand vous vous arrêtez.",
         "modeAi": "Toujours le modèle vocal",
         "modeChoice": "Chacun choisit : modèle vocal ou navigateur"
+      }
+    },
+    "s3": {
+      "description": "Des sauvegardes chiffrées de cet atelier vers un bucket qui vous appartient, selon le calendrier de votre choix. Compatible avec Amazon S3, Cloudflare R2, Backblaze B2, Wasabi et Hetzner Object Storage. Après la première exécution, seules les modifications sont envoyées, si bien que les sauvegardes horaires restent bon marché.",
+      "fields": {
+        "accessKeyId": "ID de clé d'accès",
+        "accessKeyIdHelp": "Une clé de votre fournisseur de stockage autorisée à lister, lire, écrire et supprimer des objets dans le bucket. Créez une clé réservée à Torqvoice, pour pouvoir la révoquer séparément.",
+        "secretAccessKey": "Clé d'accès secrète",
+        "password": "Mot de passe des sauvegardes",
+        "passwordHelp": "Chaque sauvegarde est chiffrée avec ce mot de passe. Inventez-en un ou cliquez sur Générer, et conservez-en une copie ailleurs que sur ce serveur : sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice. Pour reconnecter un stockage qui contient déjà des sauvegardes Torqvoice, saisissez le mot de passe avec lequel elles ont été créées.",
+        "endpoint": "Point de terminaison personnalisé",
+        "endpointHelp": "Uniquement pour l'option Autre stockage compatible S3 : l'adresse S3 de votre propre stockage, comme un serveur MinIO, sous forme de nom d'hôte, avec un port si nécessaire."
+      },
+      "settings": {
+        "provider": "Fournisseur",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Autre stockage compatible S3",
+        "region": "Région",
+        "regionHelp": "Telle que le fournisseur la nomme, par exemple eu-central-1 chez Amazon, us-west-004 chez Backblaze ou fsn1 chez Hetzner. Non utilisée par Cloudflare R2.",
+        "accountId": "ID de compte Cloudflare",
+        "accountIdHelp": "L'identifiant de 32 caractères affiché sur la page de présentation R2 de votre tableau de bord Cloudflare.",
+        "bucket": "Bucket",
+        "prefix": "Dossier dans le bucket",
+        "prefixHelp": "Les sauvegardes sont rangées dans ce dossier. Utilisez un dossier différent pour chaque atelier qui partage le bucket.",
+        "frequency": "Fréquence",
+        "frequencyHourly": "Toutes les heures",
+        "frequencyEvery4h": "Toutes les 4 heures",
+        "frequencyDaily": "Tous les jours",
+        "frequencyWeekly": "Toutes les semaines",
+        "frequencyMonthly": "Tous les mois",
+        "time": "Heure",
+        "timeHelp": "Selon l'horloge de l'atelier, au format HH:MM. Utilisée pour les sauvegardes quotidiennes, hebdomadaires et mensuelles.",
+        "weekday": "Jour de la semaine",
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "monthDay": "Jour du mois",
+        "monthDayLast": "Dernier jour",
+        "contents": "Contenu",
+        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes.",
+        "contentsData": "Données uniquement",
+        "contentsDataAndSecrets": "Données et clés secrètes",
+        "includeFiles": "Inclure les photos et les fichiers",
+        "includeFilesHelp": "Chaque fichier est envoyé une seule fois puis réutilisé par les sauvegardes suivantes, ce qui coûte peu après la première exécution.",
+        "keepHourly": "Sauvegardes horaires à conserver",
+        "keepHourlyHelp": "Combien des sauvegardes horaires les plus récentes conserver. Ne compte que pour les calendriers toutes les heures et toutes les 4 heures.",
+        "keepDaily": "Sauvegardes quotidiennes à conserver",
+        "keepWeekly": "Sauvegardes hebdomadaires à conserver",
+        "keepMonthly": "Sauvegardes mensuelles à conserver",
+        "keepMonthlyHelp": "Les sauvegardes plus anciennes sont supprimées après chaque exécution, en gardant les plus récentes de chaque type. Mettez un nombre à 0 pour n'en garder aucune de ce type."
+      }
+    },
+    "local-folder": {
+      "description": "Des sauvegardes chiffrées de cet atelier vers un dossier de ce serveur : le volume de sauvegardes du fichier compose, ou un lecteur réseau monté à cet endroit. Une copie sur le même disque que la base de données n'est pas sûre à elle seule ; associez-la à un stockage situé ailleurs.",
+      "fields": {
+        "password": "Mot de passe des sauvegardes",
+        "passwordHelp": "Chaque sauvegarde est chiffrée avec ce mot de passe. Inventez-en un ou cliquez sur Générer, et conservez-en une copie ailleurs que sur ce serveur : sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice. Pour reconnecter un stockage qui contient déjà des sauvegardes Torqvoice, saisissez le mot de passe avec lequel elles ont été créées."
+      },
+      "settings": {
+        "frequency": "Fréquence",
+        "frequencyHourly": "Toutes les heures",
+        "frequencyEvery4h": "Toutes les 4 heures",
+        "frequencyDaily": "Tous les jours",
+        "frequencyWeekly": "Toutes les semaines",
+        "frequencyMonthly": "Tous les mois",
+        "time": "Heure",
+        "timeHelp": "Selon l'horloge de l'atelier, au format HH:MM. Utilisée pour les sauvegardes quotidiennes, hebdomadaires et mensuelles.",
+        "weekday": "Jour de la semaine",
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "monthDay": "Jour du mois",
+        "monthDayLast": "Dernier jour",
+        "contents": "Contenu",
+        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes.",
+        "contentsData": "Données uniquement",
+        "contentsDataAndSecrets": "Données et clés secrètes",
+        "includeFiles": "Inclure les photos et les fichiers",
+        "includeFilesHelp": "Chaque fichier est envoyé une seule fois puis réutilisé par les sauvegardes suivantes, ce qui coûte peu après la première exécution.",
+        "keepHourly": "Sauvegardes horaires à conserver",
+        "keepHourlyHelp": "Combien des sauvegardes horaires les plus récentes conserver. Ne compte que pour les calendriers toutes les heures et toutes les 4 heures.",
+        "keepDaily": "Sauvegardes quotidiennes à conserver",
+        "keepWeekly": "Sauvegardes hebdomadaires à conserver",
+        "keepMonthly": "Sauvegardes mensuelles à conserver",
+        "keepMonthlyHelp": "Les sauvegardes plus anciennes sont supprimées après chaque exécution, en gardant les plus récentes de chaque type. Mettez un nombre à 0 pour n'en garder aucune de ce type."
       }
     }
   },

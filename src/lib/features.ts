@@ -29,6 +29,8 @@ export type PlanFeatures = {
   customerPortal: boolean
   ai: boolean
   tireHotel: boolean
+  /** Scheduled backups to the workshop's own storage. */
+  backups: boolean
 }
 
 // The admin on torqvoice.com shows the Pro and Enterprise limits a workshop
@@ -61,6 +63,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: false,
     ai: true,
     tireHotel: false,
+    backups: false,
   },
   pro: {
     // One shop and a small team. A bigger team or several locations is what
@@ -89,6 +92,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: true,
     ai: true,
     tireHotel: true,
+    backups: true,
   },
   enterprise: {
     maxOrganizations: 10,
@@ -113,6 +117,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: true,
     ai: true,
     tireHotel: true,
+    backups: true,
   },
   'white-label': {
     maxOrganizations: 999999,
@@ -137,6 +142,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: true,
     ai: true,
     tireHotel: true,
+    backups: true,
   },
 }
 

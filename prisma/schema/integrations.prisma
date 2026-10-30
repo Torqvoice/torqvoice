@@ -31,6 +31,7 @@ model IntegrationConnection {
   jobs           IntegrationJob[]
   logs           IntegrationLog[]
   externalEvents ExternalCalendarEvent[]
+  backupRuns     BackupRun[]
 
   @@unique([organizationId, connectorId])
   @@index([organizationId])
@@ -155,4 +156,33 @@ model VehicleSafetyReport {
   @@unique([source, make, model, year])
   @@index([fetchedAt])
   @@map("vehicle_safety_reports")
+}
+
+/// One backup of one workshop to one destination: a scheduled or manual
+/// restic run, what it produced and how it ended. Kept so the connection page
+/// can show the last good backup and the cron can tell when one is overdue.
+model BackupRun {
+  id             String                @id @default(cuid())
+  organizationId String
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  connectionId   String
+  connection     IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  /// scheduled | manual
+  trigger        String
+  /// queued | running | done | failed | skipped
+  status         String                @default("queued")
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  /// restic snapshot id, on a run that finished.
+  snapshotId     String?
+  filesNew       Int?
+  bytesAdded     BigInt?
+  totalBytes     BigInt?
+  error          String?
+  createdAt      DateTime              @default(now())
+
+  @@index([connectionId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([status])
+  @@map("backup_runs")
 }

@@ -193,7 +193,8 @@
     "settings_markType_create": "Tipo de marca añadido",
     "settings_markType_update": "Tipo de marca modificado",
     "settings_markType_remove": "Tipo de marca eliminado",
-    "settings_markType_reorder": "Tipos de marca reordenados"
+    "settings_markType_reorder": "Tipos de marca reordenados",
+    "integration_backup_run": "Copia de seguridad iniciada"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -346,6 +347,7 @@
     "condition_mark_remove": "Eliminó una marca del mapa de estado",
     "condition_mark_carry": "Confirmó que {count, plural, one {# marca anterior sigue} other {# marcas anteriores siguen}} ahí en el mapa de estado",
     "condition_map_on_invoice_on": "Puso el mapa de estado en la factura",
-    "condition_map_on_invoice_off": "Quitó el mapa de estado de la factura"
+    "condition_map_on_invoice_off": "Quitó el mapa de estado de la factura",
+    "backup_run_started": "Inició una copia de seguridad en {name}"
   }
 }

@@ -1450,7 +1450,20 @@
     "sourceBackup": "Kopia zapasowa Torqvoice",
     "sourceBackupDesc": "Plik .zip lub .json pobrany z tej strony. Przywrócenie zastępuje wszystko w tym warsztacie.",
     "restore": "Przywróć",
-    "restoreTitle": "Przywróć kopię zapasową"
+    "restoreTitle": "Przywróć kopię zapasową",
+    "includeSecrets": "Dołącz klucze tajne",
+    "includeSecretsHelp": "Klucze tajne, takie jak klucze płatności i AI, są pomijane, chyba że zaznaczysz tę opcję. Przywracanie zachowuje wtedy klucze, które ta instalacja już ma.",
+    "scheduledBackups": {
+      "title": "Zaplanowane kopie zapasowe",
+      "description": "Automatyczne kopie zapasowe do własnej przestrzeni dyskowej, według wybranego harmonogramu.",
+      "empty": "Nie połączono jeszcze żadnego miejsca docelowego kopii zapasowych.",
+      "setUp": "Skonfiguruj miejsce docelowe kopii zapasowych",
+      "lastGood": "Ostatnia udana kopia zapasowa: {when}",
+      "noGoodBackup": "Brak udanej kopii zapasowej",
+      "nextRun": "następne uruchomienie: {when}",
+      "notScheduled": "nie zaplanowano",
+      "lastError": "Ostatni błąd: {error}"
+    }
   },
   "license": {
     "title": "Licencja white-label",

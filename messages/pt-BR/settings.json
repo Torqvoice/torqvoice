@@ -1450,7 +1450,20 @@
     "sourceBackup": "Backup do Torqvoice",
     "sourceBackupDesc": "Um arquivo .zip ou .json baixado nesta página. Restaurar substitui tudo nesta oficina.",
     "restore": "Restaurar",
-    "restoreTitle": "Restaurar um backup"
+    "restoreTitle": "Restaurar um backup",
+    "includeSecrets": "Incluir chaves secretas",
+    "includeSecretsHelp": "As chaves secretas, como as de pagamento e de IA, ficam de fora, a menos que você marque esta opção. Uma restauração mantém então as chaves que esta instalação já tem.",
+    "scheduledBackups": {
+      "title": "Backups agendados",
+      "description": "Backups automáticos para um armazenamento seu, na frequência que você escolher.",
+      "empty": "Nenhum destino de backup conectado ainda.",
+      "setUp": "Configurar um destino de backup",
+      "lastGood": "Último backup bem-sucedido: {when}",
+      "noGoodBackup": "Nenhum backup bem-sucedido ainda",
+      "nextRun": "próxima execução: {when}",
+      "notScheduled": "não agendado",
+      "lastError": "Último erro: {error}"
+    }
   },
   "license": {
     "title": "Licença marca branca",

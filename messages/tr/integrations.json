@@ -70,6 +70,9 @@
       "invoices": "Faturalar muhasebeye",
       "customers": "Müşteriler muhasebeye",
       "payments": "Ödemeler iki yönlü"
+    },
+    "backup": {
+      "target": "Yedekleme hedefi"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
-    "advanced": "Gelişmiş"
+    "advanced": "Gelişmiş",
+    "generate": "Oluştur",
+    "show": "Göster",
+    "hide": "Gizle",
+    "generatedPasswordWarning": "Bu parolanın bir kopyasını bu sunucudan uzakta, güvenli bir yerde saklayın. Parola olmadan bu yedekleri kimse açamaz, Torqvoice bile.",
+    "backup": {
+      "title": "Yedekler",
+      "description": "Bu hedefe son başarılı yedeğin ne zaman alındığı, bir sonrakinin ne zaman çalışacağı ve son çalıştırmalar.",
+      "lastGood": "Son başarılı yedek",
+      "added": "{size} eklendi",
+      "never": "Henüz yok",
+      "nextRun": "Sonraki çalıştırma",
+      "notScheduled": "Planlanmadı",
+      "repositorySize": "Hedefte depolanan",
+      "runNow": "Şimdi yedekle",
+      "running": "Yedekleniyor",
+      "runningHint": "Bir yedekleme çalışıyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir.",
+      "started": "Yedekleme başlatıldı",
+      "recentTitle": "Son çalıştırmalar",
+      "noRuns": "Henüz hiç yedekleme çalışmadı.",
+      "notStarted": "Başlamadı",
+      "filesNewCount": "{count, plural, one {# yeni dosya} other {# yeni dosya}}",
+      "columns": {
+        "status": "Durum",
+        "started": "Başlangıç",
+        "trigger": "Başlatan",
+        "duration": "Süre",
+        "filesNew": "Yeni dosyalar",
+        "bytesAdded": "Eklenen"
+      },
+      "trigger": {
+        "scheduled": "Zamanlama",
+        "manual": "Elle"
+      },
+      "status": {
+        "queued": "Kuyrukta",
+        "running": "Çalışıyor",
+        "done": "Tamamlandı",
+        "failed": "Başarısız",
+        "skipped": "Atlandı"
+      }
+    },
+    "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri."
   },
   "activity": {
     "title": "Aktivite",
@@ -199,7 +244,8 @@
     "invalid": "Sağlayıcının yanıtı eksikti. Yeniden deneyin.",
     "state": "Bu oturum açma işleminin süresi doldu veya başka bir oturuma ait. Yeniden başlayın.",
     "exchange": "Sağlayıcı oturum açmayı reddetti. Uygulama kimlik bilgilerini kontrol edip yeniden deneyin.",
-    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin."
+    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin.",
+    "backupRunning": "Zaten çalışan bir yedekleme var."
   },
   "meeting": {
     "join": "Görüntülü görüşmeye katıl",
@@ -652,6 +698,103 @@
         "modeHelp": "Tarayıcı siz konuşurken yazar ama daha zayıftır, özellikle az konuşulan dillerde. Konuşma modeli siz durduğunuzda yazar.",
         "modeAi": "Her zaman konuşma modeli",
         "modeChoice": "Herkes kendisi seçer: konuşma modeli veya tarayıcı"
+      }
+    },
+    "s3": {
+      "description": "Bu atölyenin, size ait bir bucket'a, seçtiğiniz zamanlamayla şifreli yedekleri. Amazon S3, Cloudflare R2, Backblaze B2, Wasabi ve Hetzner Object Storage ile çalışır. İlk çalıştırmadan sonra yalnızca değişenler yüklenir, bu yüzden saatlik yedekler ucuz kalır.",
+      "fields": {
+        "accessKeyId": "Erişim anahtarı kimliği",
+        "accessKeyIdHelp": "Depolama sağlayıcınızdan, bucket'taki nesneleri listeleme, okuma, yazma ve silme izni olan bir anahtar. Tek başına iptal edilebilmesi için yalnızca Torqvoice'a özel bir anahtar oluşturun.",
+        "secretAccessKey": "Gizli erişim anahtarı",
+        "password": "Yedekleme parolası",
+        "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin.",
+        "endpoint": "Özel uç nokta",
+        "endpointHelp": "Yalnızca Diğer S3 uyumlu depolama seçeneği için: kendi depolamanızın S3 adresi, örneğin bir MinIO sunucusu, ana bilgisayar adı olarak ve gerekirse bağlantı noktasıyla."
+      },
+      "settings": {
+        "provider": "Sağlayıcı",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Diğer S3 uyumlu depolama",
+        "region": "Bölge",
+        "regionHelp": "Sağlayıcının verdiği adla, örneğin Amazon'da eu-central-1, Backblaze'de us-west-004 veya Hetzner'de fsn1. Cloudflare R2 tarafından kullanılmaz.",
+        "accountId": "Cloudflare hesap kimliği",
+        "accountIdHelp": "Cloudflare panonuzun R2 genel bakış sayfasında gösterilen 32 karakterlik kimlik.",
+        "bucket": "Bucket",
+        "prefix": "Bucket içindeki klasör",
+        "prefixHelp": "Yedekler bu klasörün altında tutulur. Bucket'ı paylaşan her atölye için ayrı bir klasör kullanın.",
+        "frequency": "Sıklık",
+        "frequencyHourly": "Her saat",
+        "frequencyEvery4h": "4 saatte bir",
+        "frequencyDaily": "Her gün",
+        "frequencyWeekly": "Her hafta",
+        "frequencyMonthly": "Her ay",
+        "time": "Saat",
+        "timeHelp": "Atölye saatine göre, HH:MM biçiminde. Günlük, haftalık ve aylık yedeklerde kullanılır.",
+        "weekday": "Haftanın günü",
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi",
+        "monthDay": "Ayın günü",
+        "monthDayLast": "Son gün",
+        "contents": "İçerik",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir.",
+        "contentsData": "Yalnızca veriler",
+        "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
+        "includeFiles": "Fotoğrafları ve dosyaları dahil et",
+        "includeFilesHelp": "Her dosya bir kez yüklenir ve sonraki yedeklerde yeniden kullanılır, bu yüzden ilk çalıştırmadan sonra maliyeti azdır.",
+        "keepHourly": "Saatlik yedekleri sakla",
+        "keepHourlyHelp": "En yeni saatlik yedeklerden kaç tanesinin saklanacağı. Yalnızca her saat ve 4 saatte bir zamanlamalarında önemlidir.",
+        "keepDaily": "Günlük yedekleri sakla",
+        "keepWeekly": "Haftalık yedekleri sakla",
+        "keepMonthly": "Aylık yedekleri sakla",
+        "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
+      }
+    },
+    "local-folder": {
+      "description": "Bu atölyenin, bu sunucudaki bir klasöre şifreli yedekleri: compose dosyasındaki yedek birimi veya oraya bağlanmış bir ağ sürücüsü. Veritabanıyla aynı diskteki bir kopya tek başına güvenli değildir; başka bir yerdeki depolamayla birlikte kullanın.",
+      "fields": {
+        "password": "Yedekleme parolası",
+        "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin."
+      },
+      "settings": {
+        "frequency": "Sıklık",
+        "frequencyHourly": "Her saat",
+        "frequencyEvery4h": "4 saatte bir",
+        "frequencyDaily": "Her gün",
+        "frequencyWeekly": "Her hafta",
+        "frequencyMonthly": "Her ay",
+        "time": "Saat",
+        "timeHelp": "Atölye saatine göre, HH:MM biçiminde. Günlük, haftalık ve aylık yedeklerde kullanılır.",
+        "weekday": "Haftanın günü",
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi",
+        "monthDay": "Ayın günü",
+        "monthDayLast": "Son gün",
+        "contents": "İçerik",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir.",
+        "contentsData": "Yalnızca veriler",
+        "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
+        "includeFiles": "Fotoğrafları ve dosyaları dahil et",
+        "includeFilesHelp": "Her dosya bir kez yüklenir ve sonraki yedeklerde yeniden kullanılır, bu yüzden ilk çalıştırmadan sonra maliyeti azdır.",
+        "keepHourly": "Saatlik yedekleri sakla",
+        "keepHourlyHelp": "En yeni saatlik yedeklerden kaç tanesinin saklanacağı. Yalnızca her saat ve 4 saatte bir zamanlamalarında önemlidir.",
+        "keepDaily": "Günlük yedekleri sakla",
+        "keepWeekly": "Haftalık yedekleri sakla",
+        "keepMonthly": "Aylık yedekleri sakla",
+        "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
       }
     }
   },

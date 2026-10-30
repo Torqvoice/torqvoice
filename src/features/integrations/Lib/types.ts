@@ -10,6 +10,7 @@
  */
 
 import type { PlanFeatures } from '@/lib/features'
+import type { ResticRepository } from './backup-types'
 
 export type IntegrationCategory =
   | 'ai'
@@ -49,6 +50,12 @@ export interface CredentialField {
    * an address would be a way to reach whatever runs next to it.
    */
   selfHostedOnly?: boolean
+  /**
+   * The connect page offers to fill the field with a random value, for a
+   * secret the workshop makes up rather than copies from a vendor, such as
+   * the password a backup repository is encrypted with.
+   */
+  generate?: 'password'
 }
 
 /**
@@ -97,6 +104,12 @@ export type AuthSpec =
 export interface SettingOption {
   value: string
   label: string
+  /**
+   * Only offered on a self-hosted install. The registry drops the option
+   * from the manifest on the cloud instance, so it is neither drawn nor
+   * accepted there. For a choice that lets the workshop type an address.
+   */
+  selfHostedOnly?: boolean
 }
 
 export interface SettingField {
@@ -421,6 +434,14 @@ export interface ConnectorServer {
   onConnect?(ctx: ConnectorContext): Promise<{ settings?: Record<string, unknown> } | void>
   /** Clean up remote state when the workshop disconnects. */
   onDisconnect?(ctx: ConnectorContext): Promise<void>
+  /**
+   * For connectors with the 'backup.target' capability: where restic keeps
+   * this workshop's repository and how it authenticates there. Throws when
+   * the saved settings cannot be turned into a safe address.
+   */
+  backupTarget?: {
+    repository(ctx: ConnectorContext): Promise<ResticRepository>
+  }
 }
 
 /** Stored, sealed, in IntegrationConnection.credentials. */

@@ -13,6 +13,7 @@ services:
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-}
     volumes:
       - uploads:/app/data/uploads
+      - backups:/app/data/backups
     depends_on:
       db:
         condition: service_healthy
@@ -38,3 +39,4 @@ services:
 volumes:
   postgres-data:
   uploads:
+  backups:

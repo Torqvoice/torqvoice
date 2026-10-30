@@ -1450,7 +1450,20 @@
     "sourceBackup": "Backup Torqvoice",
     "sourceBackupDesc": "Un file .zip o .json scaricato da questa pagina. Il ripristino sostituisce tutto in questa officina.",
     "restore": "Ripristina",
-    "restoreTitle": "Ripristina un backup"
+    "restoreTitle": "Ripristina un backup",
+    "includeSecrets": "Includi le chiavi segrete",
+    "includeSecretsHelp": "Le chiavi segrete, come quelle per i pagamenti e l'IA, vengono escluse a meno che tu non selezioni questa opzione. Un ripristino mantiene quindi le chiavi già presenti in questa installazione.",
+    "scheduledBackups": {
+      "title": "Backup pianificati",
+      "description": "Backup automatici su uno spazio di archiviazione tuo, con la frequenza che scegli.",
+      "empty": "Nessuna destinazione di backup è ancora collegata.",
+      "setUp": "Configura una destinazione di backup",
+      "lastGood": "Ultimo backup riuscito: {when}",
+      "noGoodBackup": "Ancora nessun backup riuscito",
+      "nextRun": "prossima esecuzione: {when}",
+      "notScheduled": "non pianificato",
+      "lastError": "Ultimo errore: {error}"
+    }
   },
   "license": {
     "title": "Licenza White-Label",

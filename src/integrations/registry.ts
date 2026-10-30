@@ -14,6 +14,7 @@ import { manifest as anthropic } from './anthropic/manifest'
 import { manifest as fiken } from './fiken/manifest'
 import { manifest as checkCarDetails } from './checkcardetails/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
+import { manifest as localFolder } from './local-folder/manifest'
 import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
 import { manifest as nhtsa } from './nhtsa/manifest'
@@ -26,6 +27,7 @@ import { manifest as quickbooks } from './quickbooks/manifest'
 import { manifest as rdw } from './rdw/manifest'
 import { manifest as regcheck } from './regcheck/manifest'
 import { manifest as resend } from './resend/manifest'
+import { manifest as s3 } from './s3/manifest'
 import { manifest as sendgrid } from './sendgrid/manifest'
 import { manifest as smtp } from './smtp/manifest'
 import { manifest as speechToText } from './speech-to-text/manifest'
@@ -76,6 +78,8 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: paypal, load: () => import('./paypal/server') },
   { manifest: quickbooks, load: () => import('./quickbooks/server') },
   { manifest: fiken, load: () => import('./fiken/server') },
+  { manifest: s3, load: () => import('./s3/server') },
+  { manifest: localFolder, load: () => import('./local-folder/server') },
 ]
 
 /**
@@ -97,12 +101,25 @@ const IS_CLOUD = isCloudInstance()
  * connect action does not accept it.
  */
 function forThisInstall(manifest: ConnectorManifest): ConnectorManifest {
-  if (!IS_CLOUD || manifest.auth.type !== 'api-key') return manifest
-  if (!manifest.auth.fields.some((f) => f.selfHostedOnly)) return manifest
-  return {
-    ...manifest,
-    auth: { ...manifest.auth, fields: manifest.auth.fields.filter((f) => !f.selfHostedOnly) },
+  if (!IS_CLOUD) return manifest
+  let out = manifest
+  if (out.auth.type === 'api-key' && out.auth.fields.some((f) => f.selfHostedOnly)) {
+    out = {
+      ...out,
+      auth: { ...out.auth, fields: out.auth.fields.filter((f) => !f.selfHostedOnly) },
+    }
   }
+  // The same for a choice inside a setting: an option that would let the
+  // workshop type an address of its own is not offered here.
+  if (out.settings.some((s) => s.options?.some((o) => o.selfHostedOnly))) {
+    out = {
+      ...out,
+      settings: out.settings.map((s) =>
+        s.options ? { ...s, options: s.options.filter((o) => !o.selfHostedOnly) } : s
+      ),
+    }
+  }
+  return out
 }
 
 const ENTRIES: readonly RegistryEntry[] = ALL_ENTRIES.filter(

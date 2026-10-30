@@ -1450,7 +1450,20 @@
     "sourceBackup": "„Torqvoice“ atsarginė kopija",
     "sourceBackupDesc": ".zip arba .json failas, atsisiųstas iš šio puslapio. Atkūrimas pakeičia viską šiose dirbtuvėse.",
     "restore": "Atkurti",
-    "restoreTitle": "Atkurti atsarginę kopiją"
+    "restoreTitle": "Atkurti atsarginę kopiją",
+    "includeSecrets": "Įtraukti slaptuosius raktus",
+    "includeSecretsHelp": "Slaptieji raktai, pavyzdžiui, mokėjimų ir DI raktai, neįtraukiami, nebent pažymėsite šią parinktį. Tada atkuriant išlaikomi raktai, kuriuos ši įdiegtis jau turi.",
+    "scheduledBackups": {
+      "title": "Suplanuotos atsarginės kopijos",
+      "description": "Automatinės atsarginės kopijos į jums priklausančią saugyklą pagal jūsų pasirinktą grafiką.",
+      "empty": "Dar neprijungta jokia atsarginių kopijų paskirties vieta.",
+      "setUp": "Nustatyti atsarginių kopijų paskirties vietą",
+      "lastGood": "Paskutinė sėkminga atsarginė kopija: {when}",
+      "noGoodBackup": "Dar nėra sėkmingos atsarginės kopijos",
+      "nextRun": "kitas vykdymas: {when}",
+      "notScheduled": "nesuplanuota",
+      "lastError": "Paskutinė klaida: {error}"
+    }
   },
   "license": {
     "title": "\"White-Label\" licencija",

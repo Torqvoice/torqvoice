@@ -70,6 +70,9 @@
       "invoices": "Faktury do księgowości",
       "customers": "Klienci do księgowości",
       "payments": "Płatności w obie strony"
+    },
+    "backup": {
+      "target": "Miejsce docelowe kopii zapasowych"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
     "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}",
-    "advanced": "Zaawansowane"
+    "advanced": "Zaawansowane",
+    "generate": "Wygeneruj",
+    "show": "Pokaż",
+    "hide": "Ukryj",
+    "generatedPasswordWarning": "Przechowuj kopię tego hasła w bezpiecznym miejscu, poza tym serwerem. Bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice.",
+    "backup": {
+      "title": "Kopie zapasowe",
+      "description": "Kiedy to miejsce docelowe ostatnio otrzymało udaną kopię zapasową, kiedy będzie następna i ostatnie uruchomienia.",
+      "lastGood": "Ostatnia udana kopia zapasowa",
+      "added": "Dodano {size}",
+      "never": "Jeszcze brak",
+      "nextRun": "Następne uruchomienie",
+      "notScheduled": "Nie zaplanowano",
+      "repositorySize": "Zapisane w miejscu docelowym",
+      "runNow": "Utwórz kopię teraz",
+      "running": "Tworzenie kopii",
+      "runningHint": "Trwa tworzenie kopii zapasowej. Ta strona odświeża się sama, dopóki się nie zakończy.",
+      "started": "Rozpoczęto tworzenie kopii zapasowej",
+      "recentTitle": "Ostatnie uruchomienia",
+      "noRuns": "Nie utworzono jeszcze żadnej kopii zapasowej.",
+      "notStarted": "Nie rozpoczęto",
+      "filesNewCount": "{count, plural, one {# nowy plik} few {# nowe pliki} many {# nowych plików} other {# nowego pliku}}",
+      "columns": {
+        "status": "Status",
+        "started": "Rozpoczęto",
+        "trigger": "Uruchomione przez",
+        "duration": "Czas trwania",
+        "filesNew": "Nowe pliki",
+        "bytesAdded": "Dodano"
+      },
+      "trigger": {
+        "scheduled": "Harmonogram",
+        "manual": "Ręcznie"
+      },
+      "status": {
+        "queued": "W kolejce",
+        "running": "W toku",
+        "done": "Gotowe",
+        "failed": "Nieudane",
+        "skipped": "Pominięte"
+      }
+    },
+    "lockedBackups": "Zaplanowane, szyfrowane kopie zapasowe warsztatu do własnej przestrzeni dyskowej."
   },
   "activity": {
     "title": "Aktywność",
@@ -199,7 +244,8 @@
     "invalid": "Odpowiedź dostawcy była niekompletna. Spróbuj ponownie.",
     "state": "To logowanie wygasło lub należy do innej sesji. Zacznij od nowa.",
     "exchange": "Dostawca odrzucił logowanie. Sprawdź dane aplikacji i spróbuj ponownie.",
-    "identify": "Połączono, ale nie udało się odczytać konta. Spróbuj połączyć ponownie."
+    "identify": "Połączono, ale nie udało się odczytać konta. Spróbuj połączyć ponownie.",
+    "backupRunning": "Kopia zapasowa jest już tworzona."
   },
   "meeting": {
     "join": "Dołącz do rozmowy wideo",
@@ -652,6 +698,103 @@
         "modeHelp": "Przeglądarka pisze na bieżąco, ale gorzej, zwłaszcza w mniejszych językach. Model mowy pisze, gdy skończysz mówić.",
         "modeAi": "Zawsze model mowy",
         "modeChoice": "Każdy wybiera sam: model mowy lub przeglądarka"
+      }
+    },
+    "s3": {
+      "description": "Szyfrowane kopie zapasowe tego warsztatu do własnego bucketu, według wybranego harmonogramu. Działa z Amazon S3, Cloudflare R2, Backblaze B2, Wasabi i Hetzner Object Storage. Po pierwszym uruchomieniu wysyłane są tylko zmiany, więc kopie co godzinę pozostają tanie.",
+      "fields": {
+        "accessKeyId": "Identyfikator klucza dostępu",
+        "accessKeyIdHelp": "Klucz od dostawcy przestrzeni z uprawnieniami do listowania, odczytu, zapisu i usuwania obiektów w buckecie. Utwórz osobny klucz tylko dla Torqvoice, aby można go było unieważnić niezależnie.",
+        "secretAccessKey": "Tajny klucz dostępu",
+        "password": "Hasło kopii zapasowych",
+        "passwordHelp": "Każda kopia zapasowa jest szyfrowana tym hasłem. Wymyśl je lub naciśnij Wygeneruj i przechowuj kopię poza tym serwerem: bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice. Aby ponownie połączyć przestrzeń, w której są już kopie zapasowe Torqvoice, wpisz hasło, którym zostały utworzone.",
+        "endpoint": "Własny punkt końcowy",
+        "endpointHelp": "Tylko dla opcji Inna przestrzeń zgodna z S3: adres S3 własnej przestrzeni, na przykład serwera MinIO, jako nazwa hosta, w razie potrzeby z portem."
+      },
+      "settings": {
+        "provider": "Dostawca",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Inna przestrzeń zgodna z S3",
+        "region": "Region",
+        "regionHelp": "Tak jak nazywa go dostawca, na przykład eu-central-1 w Amazon, us-west-004 w Backblaze lub fsn1 w Hetzner. Nieużywany przez Cloudflare R2.",
+        "accountId": "Identyfikator konta Cloudflare",
+        "accountIdHelp": "32-znakowy identyfikator widoczny na stronie przeglądu R2 w panelu Cloudflare.",
+        "bucket": "Bucket",
+        "prefix": "Folder w buckecie",
+        "prefixHelp": "Kopie zapasowe są przechowywane w tym folderze. Użyj innego folderu dla każdego warsztatu, który korzysta z tego samego bucketu.",
+        "frequency": "Jak często",
+        "frequencyHourly": "Co godzinę",
+        "frequencyEvery4h": "Co 4 godziny",
+        "frequencyDaily": "Codziennie",
+        "frequencyWeekly": "Co tydzień",
+        "frequencyMonthly": "Co miesiąc",
+        "time": "Godzina",
+        "timeHelp": "Według zegara warsztatu, w formacie HH:MM. Używana przez kopie codzienne, cotygodniowe i comiesięczne.",
+        "weekday": "Dzień tygodnia",
+        "sunday": "Niedziela",
+        "monday": "Poniedziałek",
+        "tuesday": "Wtorek",
+        "wednesday": "Środa",
+        "thursday": "Czwartek",
+        "friday": "Piątek",
+        "saturday": "Sobota",
+        "monthDay": "Dzień miesiąca",
+        "monthDayLast": "Ostatni dzień",
+        "contents": "Zawartość",
+        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych.",
+        "contentsData": "Tylko dane",
+        "contentsDataAndSecrets": "Dane i klucze tajne",
+        "includeFiles": "Dołącz zdjęcia i pliki",
+        "includeFilesHelp": "Każdy plik jest wysyłany raz i używany ponownie przez kolejne kopie, więc po pierwszym uruchomieniu kosztuje to niewiele.",
+        "keepHourly": "Zachowaj kopie godzinowe",
+        "keepHourlyHelp": "Ile najnowszych kopii godzinowych zachować. Ma znaczenie tylko przy harmonogramie co godzinę i co 4 godziny.",
+        "keepDaily": "Zachowaj kopie dzienne",
+        "keepWeekly": "Zachowaj kopie tygodniowe",
+        "keepMonthly": "Zachowaj kopie miesięczne",
+        "keepMonthlyHelp": "Starsze kopie są usuwane po każdym uruchomieniu, a najnowsze każdego rodzaju zostają. Ustaw liczbę na 0, aby nie zachowywać żadnej kopii danego rodzaju."
+      }
+    },
+    "local-folder": {
+      "description": "Szyfrowane kopie zapasowe tego warsztatu do folderu na tym serwerze: wolumenu kopii zapasowych z pliku compose lub zamontowanego tam dysku sieciowego. Kopia na tym samym dysku co baza danych sama w sobie nie jest bezpieczna; połącz ją z przestrzenią w innym miejscu.",
+      "fields": {
+        "password": "Hasło kopii zapasowych",
+        "passwordHelp": "Każda kopia zapasowa jest szyfrowana tym hasłem. Wymyśl je lub naciśnij Wygeneruj i przechowuj kopię poza tym serwerem: bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice. Aby ponownie połączyć przestrzeń, w której są już kopie zapasowe Torqvoice, wpisz hasło, którym zostały utworzone."
+      },
+      "settings": {
+        "frequency": "Jak często",
+        "frequencyHourly": "Co godzinę",
+        "frequencyEvery4h": "Co 4 godziny",
+        "frequencyDaily": "Codziennie",
+        "frequencyWeekly": "Co tydzień",
+        "frequencyMonthly": "Co miesiąc",
+        "time": "Godzina",
+        "timeHelp": "Według zegara warsztatu, w formacie HH:MM. Używana przez kopie codzienne, cotygodniowe i comiesięczne.",
+        "weekday": "Dzień tygodnia",
+        "sunday": "Niedziela",
+        "monday": "Poniedziałek",
+        "tuesday": "Wtorek",
+        "wednesday": "Środa",
+        "thursday": "Czwartek",
+        "friday": "Piątek",
+        "saturday": "Sobota",
+        "monthDay": "Dzień miesiąca",
+        "monthDayLast": "Ostatni dzień",
+        "contents": "Zawartość",
+        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych.",
+        "contentsData": "Tylko dane",
+        "contentsDataAndSecrets": "Dane i klucze tajne",
+        "includeFiles": "Dołącz zdjęcia i pliki",
+        "includeFilesHelp": "Każdy plik jest wysyłany raz i używany ponownie przez kolejne kopie, więc po pierwszym uruchomieniu kosztuje to niewiele.",
+        "keepHourly": "Zachowaj kopie godzinowe",
+        "keepHourlyHelp": "Ile najnowszych kopii godzinowych zachować. Ma znaczenie tylko przy harmonogramie co godzinę i co 4 godziny.",
+        "keepDaily": "Zachowaj kopie dzienne",
+        "keepWeekly": "Zachowaj kopie tygodniowe",
+        "keepMonthly": "Zachowaj kopie miesięczne",
+        "keepMonthlyHelp": "Starsze kopie są usuwane po każdym uruchomieniu, a najnowsze każdego rodzaju zostają. Ustaw liczbę na 0, aby nie zachowywać żadnej kopii danego rodzaju."
       }
     }
   },

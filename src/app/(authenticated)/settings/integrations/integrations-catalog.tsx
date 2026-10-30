@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import { AlertTriangle, ArrowRight, Check, Lightbulb, Plug, Search, Settings2 } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
@@ -55,7 +56,14 @@ export function IntegrationsCatalog({
 }) {
   const t = useTranslations('integrations')
   const tSettings = useTranslations('settings')
-  const [category, setCategory] = useState<IntegrationCategory | 'all'>('all')
+  // A link can open the catalog on one category, such as the backup
+  // destinations from Settings, Data.
+  const wanted = useSearchParams()?.get('category')
+  const [category, setCategory] = useState<IntegrationCategory | 'all'>(
+    wanted && CATEGORY_ORDER.includes(wanted as IntegrationCategory)
+      ? (wanted as IntegrationCategory)
+      : 'all'
+  )
   const [query, setQuery] = useState('')
 
   /**

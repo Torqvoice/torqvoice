@@ -1450,7 +1450,20 @@
     "sourceBackup": "Torqvoice backup",
     "sourceBackupDesc": "A .zip or .json file downloaded from this page. Restoring replaces everything in this workshop.",
     "restore": "Restore",
-    "restoreTitle": "Restore a backup"
+    "restoreTitle": "Restore a backup",
+    "includeSecrets": "Include secret keys",
+    "includeSecretsHelp": "Secret keys, such as payment and AI keys, are left out unless you tick this. A restore then keeps the keys this install already has.",
+    "scheduledBackups": {
+      "title": "Scheduled backups",
+      "description": "Automatic backups to storage you own, on a schedule you choose.",
+      "empty": "No backup destination is connected yet.",
+      "setUp": "Set up a backup destination",
+      "lastGood": "Last good backup {when}",
+      "noGoodBackup": "No good backup yet",
+      "nextRun": "next run {when}",
+      "notScheduled": "not scheduled",
+      "lastError": "Last error: {error}"
+    }
   },
   "license": {
     "title": "White-Label License",

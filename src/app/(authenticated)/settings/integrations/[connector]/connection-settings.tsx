@@ -12,6 +12,9 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
+  Eye,
+  EyeOff,
+  KeyRound,
   Loader2,
   Mail,
   Play,
@@ -28,6 +31,7 @@ import { DocsLink } from '@/components/docs-link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DateInput } from '@/components/ui/date-input'
+import { BackupCard } from './backup-card'
 import { OptionPicker } from './option-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -602,6 +606,8 @@ export function ConnectionSettings({
         )}
       </AppCard>
 
+      {connected && view.backup && <BackupCard connectorId={manifest.id} backup={view.backup} />}
+
       {connected && manifest.settings.length > 0 && (
         <SettingsForm
           // A list can hang on a choice above it, the way a company's
@@ -715,6 +721,11 @@ function ConnectForm({
   const visibleSettings = visibleSettingFields(settingFields, settings)
   const settingsMissing = visibleSettings.some((f) => f.required && !settings[f.key])
   const tenantReady = Boolean(tenantClientId)
+  // A made-up secret, such as a backup password, is shown once it is
+  // generated so it can be copied somewhere safe.
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({})
+  const [generated, setGenerated] = useState<Record<string, boolean>>({})
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
   const tenantComplete = Boolean(values.clientId) && (Boolean(values.clientSecret) || tenantReady)
   const tenantDirty = values.clientId !== (tenantClientId ?? '') || Boolean(values.clientSecret)
 
@@ -735,6 +746,18 @@ function ConnectForm({
     return <p className="text-sm text-muted-foreground">{t('connection.planLocked')}</p>
   }
 
+  const generate = (key: string) => {
+    setValues((v) => ({ ...v, [key]: generatePassword() }))
+    setRevealed((r) => ({ ...r, [key]: true }))
+    setGenerated((g) => ({ ...g, [key]: true }))
+  }
+
+  const copyValue = (key: string) => {
+    navigator.clipboard.writeText(values[key] ?? '')
+    setCopiedKey(key)
+    setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 2000)
+  }
+
   const usualFields = fields.filter((f) => !f.advanced)
   const advancedFields = fields.filter((f) => f.advanced)
 
@@ -746,18 +769,58 @@ function ConnectForm({
           with the username into the field before it, so the secrets
           ask for a "new password" instead, which nothing has saved,
           and the password managers are told to stay out. */}
-      <Input
-        type={f.type === 'password' ? 'password' : 'text'}
-        name={`${manifest.id}-${f.key}`}
-        value={values[f.key] ?? ''}
-        placeholder={f.key === 'clientSecret' && tenantReady ? '••••••••' : f.placeholder}
-        onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-        autoComplete={f.type === 'password' ? 'new-password' : 'off'}
-        data-1p-ignore
-        data-lpignore="true"
-        data-bwignore
-        data-form-type="other"
-      />
+      <div className="flex gap-2">
+        <Input
+          type={f.type === 'password' && !revealed[f.key] ? 'password' : 'text'}
+          name={`${manifest.id}-${f.key}`}
+          value={values[f.key] ?? ''}
+          placeholder={f.key === 'clientSecret' && tenantReady ? '••••••••' : f.placeholder}
+          onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+          autoComplete={f.type === 'password' ? 'new-password' : 'off'}
+          className={f.generate ? 'min-w-0 flex-1 font-mono' : undefined}
+          data-1p-ignore
+          data-lpignore="true"
+          data-bwignore
+          data-form-type="other"
+        />
+        {f.generate && f.type === 'password' && (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="shrink-0"
+            onClick={() => setRevealed((r) => ({ ...r, [f.key]: !r[f.key] }))}
+            aria-label={revealed[f.key] ? t('connection.hide') : t('connection.show')}
+            title={revealed[f.key] ? t('connection.hide') : t('connection.show')}
+          >
+            {revealed[f.key] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </Button>
+        )}
+      </div>
+      {f.generate && (
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={() => generate(f.key)}>
+            <KeyRound className="mr-1 h-3.5 w-3.5" />
+            {t('connection.generate')}
+          </Button>
+          {values[f.key] && (
+            <Button type="button" variant="outline" size="sm" onClick={() => copyValue(f.key)}>
+              {copiedKey === f.key ? (
+                <Check className="mr-1 h-3.5 w-3.5" />
+              ) : (
+                <Copy className="mr-1 h-3.5 w-3.5" />
+              )}
+              {copiedKey === f.key ? t('connection.copied') : t('connection.copy')}
+            </Button>
+          )}
+        </div>
+      )}
+      {f.generate && generated[f.key] && (
+        <p className="flex items-start gap-1.5 text-xs text-amber-600">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          {t('connection.generatedPasswordWarning')}
+        </p>
+      )}
       {f.help && <p className="text-xs text-muted-foreground">{tc(`fields.${f.help}`)}</p>}
     </div>
   )
@@ -848,6 +911,25 @@ function ConnectForm({
 }
 
 type SettingValues = Record<string, string | number | boolean>
+
+const PASSWORD_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+/**
+ * 32 letters and digits from the browser's secure random source. Bytes at or
+ * above the largest multiple of 62 are thrown away so every character is
+ * equally likely.
+ */
+function generatePassword(length = 32): string {
+  const limit = 256 - (256 % PASSWORD_ALPHABET.length)
+  let out = ''
+  while (out.length < length) {
+    const bytes = crypto.getRandomValues(new Uint8Array(length * 2))
+    for (const b of bytes) {
+      if (b < limit && out.length < length) out += PASSWORD_ALPHABET[b % PASSWORD_ALPHABET.length]
+    }
+  }
+  return out
+}
 
 /** Saved values under the manifest defaults, with an empty value for the rest. */
 function initialSettingValues(

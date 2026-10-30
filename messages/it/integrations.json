@@ -70,6 +70,9 @@
       "invoices": "Fatture in contabilità",
       "customers": "Clienti in contabilità",
       "payments": "Pagamenti in entrambe le direzioni"
+    },
+    "backup": {
+      "target": "Destinazione dei backup"
     }
   },
   "statuses": {
@@ -162,7 +165,49 @@
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
-    "advanced": "Avanzate"
+    "advanced": "Avanzate",
+    "generate": "Genera",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "generatedPasswordWarning": "Conserva una copia di questa password in un posto sicuro, lontano da questo server. Senza di essa nessuno può aprire questi backup, nemmeno Torqvoice.",
+    "backup": {
+      "title": "Backup",
+      "description": "Quando questa destinazione ha ricevuto l'ultimo backup riuscito, quando parte il prossimo e le esecuzioni più recenti.",
+      "lastGood": "Ultimo backup riuscito",
+      "added": "{size} aggiunti",
+      "never": "Ancora nessuno",
+      "nextRun": "Prossima esecuzione",
+      "notScheduled": "Non pianificato",
+      "repositorySize": "Archiviato nella destinazione",
+      "runNow": "Esegui backup ora",
+      "running": "Backup in corso",
+      "runningHint": "È in corso un backup. Questa pagina si aggiorna da sola finché non è terminato.",
+      "started": "Backup avviato",
+      "recentTitle": "Esecuzioni recenti",
+      "noRuns": "Non è ancora stato eseguito nessun backup.",
+      "notStarted": "Non avviato",
+      "filesNewCount": "{count, plural, one {# nuovo file} other {# nuovi file}}",
+      "columns": {
+        "status": "Stato",
+        "started": "Avviato",
+        "trigger": "Avviato da",
+        "duration": "Durata",
+        "filesNew": "Nuovi file",
+        "bytesAdded": "Aggiunti"
+      },
+      "trigger": {
+        "scheduled": "Pianificazione",
+        "manual": "Manuale"
+      },
+      "status": {
+        "queued": "In coda",
+        "running": "In corso",
+        "done": "Completato",
+        "failed": "Non riuscito",
+        "skipped": "Saltato"
+      }
+    },
+    "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo."
   },
   "activity": {
     "title": "Attività",
@@ -199,7 +244,8 @@
     "invalid": "La risposta del provider era incompleta. Riprova.",
     "state": "Questo accesso è scaduto o appartiene a un'altra sessione. Ricomincia da capo.",
     "exchange": "Il provider ha rifiutato l'accesso. Controlla le credenziali dell'app e riprova.",
-    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo."
+    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo.",
+    "backupRunning": "È già in corso un backup."
   },
   "meeting": {
     "join": "Partecipa alla videochiamata",
@@ -652,6 +698,103 @@
         "modeHelp": "Il browser scrive mentre parli ma è meno preciso, soprattutto nelle lingue meno diffuse. Il modello vocale scrive quando ti fermi.",
         "modeAi": "Sempre il modello vocale",
         "modeChoice": "Sceglie ciascuno: modello vocale o browser"
+      }
+    },
+    "s3": {
+      "description": "Backup cifrati di questa officina in un bucket di tua proprietà, con la frequenza che scegli. Funziona con Amazon S3, Cloudflare R2, Backblaze B2, Wasabi e Hetzner Object Storage. Dopo la prima esecuzione viene caricato solo ciò che è cambiato, quindi i backup orari restano economici.",
+      "fields": {
+        "accessKeyId": "ID chiave di accesso",
+        "accessKeyIdHelp": "Una chiave del tuo fornitore di archiviazione con il permesso di elencare, leggere, scrivere ed eliminare gli oggetti nel bucket. Crea una chiave solo per Torqvoice, così puoi revocarla separatamente.",
+        "secretAccessKey": "Chiave di accesso segreta",
+        "password": "Password dei backup",
+        "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati.",
+        "endpoint": "Endpoint personalizzato",
+        "endpointHelp": "Solo per l'opzione Altro storage compatibile S3: l'indirizzo S3 del tuo storage, ad esempio un server MinIO, come nome host con la porta se serve."
+      },
+      "settings": {
+        "provider": "Fornitore",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Altro storage compatibile S3",
+        "region": "Regione",
+        "regionHelp": "Come la chiama il fornitore, ad esempio eu-central-1 su Amazon, us-west-004 su Backblaze o fsn1 su Hetzner. Non usata da Cloudflare R2.",
+        "accountId": "ID account Cloudflare",
+        "accountIdHelp": "L'ID di 32 caratteri mostrato nella pagina di panoramica di R2 nella dashboard di Cloudflare.",
+        "bucket": "Bucket",
+        "prefix": "Cartella nel bucket",
+        "prefixHelp": "I backup vengono salvati in questa cartella. Usa una cartella diversa per ogni officina che condivide il bucket.",
+        "frequency": "Frequenza",
+        "frequencyHourly": "Ogni ora",
+        "frequencyEvery4h": "Ogni 4 ore",
+        "frequencyDaily": "Ogni giorno",
+        "frequencyWeekly": "Ogni settimana",
+        "frequencyMonthly": "Ogni mese",
+        "time": "Ora del giorno",
+        "timeHelp": "Secondo l'orologio dell'officina, nel formato HH:MM. Usata dai backup giornalieri, settimanali e mensili.",
+        "weekday": "Giorno della settimana",
+        "sunday": "Domenica",
+        "monday": "Lunedì",
+        "tuesday": "Martedì",
+        "wednesday": "Mercoledì",
+        "thursday": "Giovedì",
+        "friday": "Venerdì",
+        "saturday": "Sabato",
+        "monthDay": "Giorno del mese",
+        "monthDayLast": "Ultimo giorno",
+        "contents": "Contenuto",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup.",
+        "contentsData": "Solo dati",
+        "contentsDataAndSecrets": "Dati e chiavi segrete",
+        "includeFiles": "Includi foto e file",
+        "includeFilesHelp": "Ogni file viene caricato una sola volta e riutilizzato dai backup successivi, quindi dopo la prima esecuzione costa poco.",
+        "keepHourly": "Backup orari da conservare",
+        "keepHourlyHelp": "Quanti dei backup orari più recenti conservare. Conta solo con le pianificazioni ogni ora e ogni 4 ore.",
+        "keepDaily": "Backup giornalieri da conservare",
+        "keepWeekly": "Backup settimanali da conservare",
+        "keepMonthly": "Backup mensili da conservare",
+        "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
+      }
+    },
+    "local-folder": {
+      "description": "Backup cifrati di questa officina in una cartella su questo server: il volume dei backup nel file compose, o un'unità di rete montata lì. Una copia sullo stesso disco del database non è sicura da sola; abbinala a uno spazio di archiviazione altrove.",
+      "fields": {
+        "password": "Password dei backup",
+        "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati."
+      },
+      "settings": {
+        "frequency": "Frequenza",
+        "frequencyHourly": "Ogni ora",
+        "frequencyEvery4h": "Ogni 4 ore",
+        "frequencyDaily": "Ogni giorno",
+        "frequencyWeekly": "Ogni settimana",
+        "frequencyMonthly": "Ogni mese",
+        "time": "Ora del giorno",
+        "timeHelp": "Secondo l'orologio dell'officina, nel formato HH:MM. Usata dai backup giornalieri, settimanali e mensili.",
+        "weekday": "Giorno della settimana",
+        "sunday": "Domenica",
+        "monday": "Lunedì",
+        "tuesday": "Martedì",
+        "wednesday": "Mercoledì",
+        "thursday": "Giovedì",
+        "friday": "Venerdì",
+        "saturday": "Sabato",
+        "monthDay": "Giorno del mese",
+        "monthDayLast": "Ultimo giorno",
+        "contents": "Contenuto",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup.",
+        "contentsData": "Solo dati",
+        "contentsDataAndSecrets": "Dati e chiavi segrete",
+        "includeFiles": "Includi foto e file",
+        "includeFilesHelp": "Ogni file viene caricato una sola volta e riutilizzato dai backup successivi, quindi dopo la prima esecuzione costa poco.",
+        "keepHourly": "Backup orari da conservare",
+        "keepHourlyHelp": "Quanti dei backup orari più recenti conservare. Conta solo con le pianificazioni ogni ora e ogni 4 ore.",
+        "keepDaily": "Backup giornalieri da conservare",
+        "keepWeekly": "Backup settimanali da conservare",
+        "keepMonthly": "Backup mensili da conservare",
+        "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
       }
     }
   },
