@@ -27,6 +27,10 @@ const RETRY_AFTER_MS = 30 * 60 * 1000
 const OVERDUE_ALERT_EVERY_MS = 24 * 60 * 60 * 1000
 /** Hourly backups are not overdue after a single missed slot. */
 const OVERDUE_MIN_MS = 3 * 60 * 60 * 1000
+/** Run rows older than this go, except the newest KEEP_RUNS of a destination. */
+const RUN_HISTORY_MS = 90 * 24 * 60 * 60 * 1000
+const KEEP_RUNS = 100
+const PRUNE_EVERY_MS = 24 * 60 * 60 * 1000
 
 function stateDate(state: Record<string, unknown>, key: string): Date | null {
   const v = state[key]
@@ -55,6 +59,43 @@ export async function failStaleRuns(now = new Date()): Promise<number> {
       },
     })
     count++
+  }
+  return count
+}
+
+/**
+ * Every run leaves a row, and an hourly schedule leaves thousands a year.
+ * The card reads the last ten; the rest is history nobody opens. Rows older
+ * than ninety days go, except that a destination always keeps its newest
+ * hundred, so a destination that fell quiet still shows what happened.
+ * A run still queued or running is never touched. Returns how many went.
+ */
+export async function pruneOldRuns(now = new Date()): Promise<number> {
+  const cutoff = new Date(now.getTime() - RUN_HISTORY_MS)
+  const aged = await db.backupRun.findMany({
+    where: { createdAt: { lt: cutoff } },
+    distinct: ['connectionId'],
+    select: { connectionId: true },
+  })
+  let count = 0
+  for (const { connectionId } of aged) {
+    // The row just past the newest hundred: nothing newer than it goes.
+    const [edge] = await db.backupRun.findMany({
+      where: { connectionId },
+      orderBy: { createdAt: 'desc' },
+      skip: KEEP_RUNS,
+      take: 1,
+      select: { createdAt: true },
+    })
+    if (!edge) continue
+    const { count: gone } = await db.backupRun.deleteMany({
+      where: {
+        connectionId,
+        createdAt: { lt: cutoff, lte: edge.createdAt },
+        status: { in: ['done', 'failed', 'skipped'] },
+      },
+    })
+    count += gone
   }
   return count
 }
@@ -169,6 +210,7 @@ async function alertIfOverdue(
 
 export function processBackupRuns() {
   let ticking = false
+  let prunedAt = 0
   const job = new CronJob('*/5 * * * *', async () => {
     // A backup can outlast the five minutes; the next tick waits its turn.
     if (ticking) return
@@ -178,6 +220,12 @@ export function processBackupRuns() {
       if (stale > 0) console.warn(`[cron] Marked ${stale} stale backup run(s) as failed`)
       const ran = await processDueBackups()
       if (ran > 0) console.warn(`[cron] Scheduled backups run: ${ran}`)
+      // Old run rows go once a day, after the day's work, not on every tick.
+      if (Date.now() - prunedAt > PRUNE_EVERY_MS) {
+        prunedAt = Date.now()
+        const pruned = await pruneOldRuns()
+        if (pruned > 0) console.warn(`[cron] Pruned ${pruned} old backup run row(s)`)
+      }
     } catch (err) {
       console.error('[cron] Backup scheduler failed:', err)
     } finally {

@@ -23,11 +23,38 @@ const h = vi.hoisted(() => ({
 vi.mock('@/lib/db', () => ({
   db: {
     backupRun: {
-      findMany: vi.fn(async ({ where }: { where: Row }) =>
-        h.runs
+      findMany: vi.fn(async (args: Row) => {
+        const { where } = args
+        // The prune's two reads: connections with aged rows, and the row
+        // past a connection's newest hundred.
+        if (args.distinct) {
+          const ids = new Set(
+            h.runs.filter((r) => r.createdAt < where.createdAt.lt).map((r) => r.connectionId)
+          )
+          return [...ids].map((connectionId) => ({ connectionId }))
+        }
+        if (args.orderBy) {
+          return h.runs
+            .filter((r) => r.connectionId === where.connectionId)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice(args.skip ?? 0, (args.skip ?? 0) + (args.take ?? h.runs.length))
+            .map((r) => ({ createdAt: r.createdAt }))
+        }
+        return h.runs
           .filter((r) => r.status === where.status && r.startedAt < where.startedAt.lt)
           .map((r) => ({ id: r.id }))
-      ),
+      }),
+      deleteMany: vi.fn(async ({ where }: { where: Row }) => {
+        const gone = h.runs.filter(
+          (r) =>
+            r.connectionId === where.connectionId &&
+            r.createdAt < where.createdAt.lt &&
+            r.createdAt <= where.createdAt.lte &&
+            where.status.in.includes(r.status)
+        )
+        h.runs = h.runs.filter((r) => !gone.includes(r))
+        return { count: gone.length }
+      }),
       update: vi.fn(async ({ where, data }: { where: { id: string }; data: Row }) => {
         const row = h.runs.find((r) => r.id === where.id) as Row
         Object.assign(row, data)
@@ -83,7 +110,7 @@ vi.mock('@/lib/features', () => ({
 
 vi.mock('@/lib/workshop-timezone', () => ({ workshopTimeZone: vi.fn(async () => 'UTC') }))
 
-import { failStaleRuns, processDueBackups } from '@/lib/cron/backup-runs'
+import { failStaleRuns, processDueBackups, pruneOldRuns } from '@/lib/cron/backup-runs'
 import { queueBackupRun, reportOverdue, runBackup } from '@/lib/backup/engine'
 import { getFeatures } from '@/lib/features'
 
@@ -389,5 +416,43 @@ describe('processDueBackups, overdue alert', () => {
     }
     expect(vi.mocked(runBackup).mock.calls.length).toBeGreaterThan(5)
     expect(reportOverdue).toHaveBeenCalled()
+  })
+})
+
+describe('pruneOldRuns', () => {
+  const DAY = 24 * HOUR
+  const now = t('2026-10-30T12:00:00Z')
+  const addRuns = (connectionId: string, n: number, ageDays: number, status = 'done') => {
+    for (let i = 0; i < n; i++) {
+      h.runs.push({
+        id: `${connectionId}-${ageDays}-${i}`,
+        connectionId,
+        status,
+        startedAt: new Date(now.getTime() - ageDays * DAY - i * 1000),
+        createdAt: new Date(now.getTime() - ageDays * DAY - i * 1000),
+      })
+    }
+  }
+
+  it('drops rows older than ninety days past the newest hundred, and never a running one', async () => {
+    addRuns('c1', 120, 100) // all old: the newest hundred of them stay
+    addRuns('c1', 1, 200, 'running')
+    const gone = await pruneOldRuns(now)
+    expect(gone).toBe(20)
+    expect(h.runs.filter((r) => r.connectionId === 'c1').length).toBe(101)
+    expect(h.runs.some((r) => r.status === 'running')).toBe(true)
+  })
+
+  it('keeps every row of the last ninety days, however many', async () => {
+    addRuns('c2', 150, 10)
+    addRuns('c2', 5, 100)
+    expect(await pruneOldRuns(now)).toBe(5)
+    expect(h.runs.length).toBe(150)
+  })
+
+  it('leaves a destination with nothing old alone', async () => {
+    addRuns('c3', 30, 1)
+    expect(await pruneOldRuns(now)).toBe(0)
+    expect(h.runs.length).toBe(30)
   })
 })
