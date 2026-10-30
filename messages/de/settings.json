@@ -1472,7 +1472,14 @@
     "unreachable": "torqvoice.com war nicht erreichbar. Die auf diesem Server gespeicherte Lizenz bleibt unverändert.",
     "unverifiedHint": "Dieser Server konnte die Lizenz seit {days} Tagen nicht bei torqvoice.com bestätigen. Nach {max} Tagen ohne erfolgreiche Prüfung kehrt das Torqvoice-Branding zurück.",
     "rejected": "torqvoice.com hat diesen Schlüssel nicht akzeptiert: {reason}",
-    "signedHint": "Die Validierung wird von torqvoice.com signiert und täglich erneuert, daher braucht der Server ausgehenden Zugriff auf torqvoice.com."
+    "signedHint": "Die Validierung wird von torqvoice.com signiert und täglich erneuert, daher braucht der Server ausgehenden Zugriff auf torqvoice.com.",
+    "makeItYours": "Eigene Marke zeigen",
+    "makeItYoursHint": "Das Torqvoice-Zeichen ist weg. Zwei Schritte noch, dann sieht die App nach dem eigenen Betrieb aus.",
+    "linkAppName": "App-Namen festlegen",
+    "linkAppIcon": "Eigenes Favicon und App-Symbol hinzufügen",
+    "adminOnlyHint": "Nur ein Super-Admin kann App-Namen und App-Symbol ändern. Wenden Sie sich an die Person, die diese Installation betreibt.",
+    "makeItYoursLocked": "Eine White-Label-Lizenz schaltet App-Namen und App-Symbol frei.",
+    "needsLicense": "Lizenz erforderlich"
   },
   "about": {
     "title": "Uber Torqvoice",

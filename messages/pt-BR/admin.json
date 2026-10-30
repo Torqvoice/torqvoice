@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Obtenha sua chave de API em resend.com",
     "postmarkApiKeyHint": "Obtenha seu Server Token em postmarkapp.com",
     "mailgunApiKeyHint": "Obtenha sua chave de API em app.mailgun.com",
-    "sendgridApiKeyHint": "Obtenha sua chave de API em app.sendgrid.com"
+    "sendgridApiKeyHint": "Obtenha sua chave de API em app.sendgrid.com",
+    "branding": {
+      "title": "Marca do aplicativo",
+      "description": "Altera o título da aba do navegador, o favicon e o nome e o ícone do aplicativo instalado nesta instalação. Os documentos e o restante do aplicativo não mudam. Deixe um campo vazio para usar o padrão.",
+      "nameLabel": "Nome do aplicativo",
+      "nameHint": "Aparece na aba do navegador e como nome do aplicativo instalado.",
+      "save": "Salvar nome",
+      "saved": "Nome do aplicativo salvo",
+      "saveFailed": "Não foi possível salvar o nome do aplicativo",
+      "iconLabel": "Ícone do aplicativo",
+      "iconHint": "Uma imagem quadrada de pelo menos 512 × 512 pixels. PNG funciona melhor.",
+      "iconAlt": "Ícone atual do aplicativo",
+      "upload": "Enviar",
+      "replace": "Substituir",
+      "remove": "Remover",
+      "uploaded": "Ícone do aplicativo atualizado",
+      "uploadFailed": "Não foi possível enviar o ícone",
+      "removed": "Ícone do aplicativo removido",
+      "removeFailed": "Não foi possível remover o ícone",
+      "lockedBadge": "Precisa de licença",
+      "lockedHint": "Uma licença white-label libera o nome e o ícone do aplicativo.",
+      "lockedLink": "Abrir a página de licença"
+    }
   },
   "common": {
     "openMenu": "Abrir menu"

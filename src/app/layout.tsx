@@ -27,6 +27,7 @@ import { DemoBanner } from '@/components/demo-banner'
 import { BroadcastBanner } from '@/components/broadcast-banner'
 import { BannerSlotProvider } from '@/components/banner-slot'
 import { getBroadcast, isCustomerFacingPath } from '@/lib/broadcast'
+import { DEFAULT_APP_NAME, getAppBranding } from '@/lib/branding'
 import { headers } from 'next/headers'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -111,7 +112,9 @@ const atkinsonMono = Atkinson_Hyperlegible_Mono({
   fallback: ['ui-monospace', 'monospace'],
 })
 
-export const metadata: Metadata = {
+// What every page says about itself when the install carries no branding of
+// its own. Link previews (openGraph, twitter) stay TorqVoice even when it does.
+const defaultMetadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   appleWebApp: {
     capable: true,
@@ -164,6 +167,30 @@ export const metadata: Metadata = {
   },
 }
 
+// The favicon lives in public/ rather than as app/favicon.ico: Next always
+// emits a file-convention favicon first, ahead of any icon set here, and the
+// browser would keep picking our 16px icon over a workshop's own.
+const DEFAULT_ICONS: Metadata['icons'] = {
+  icon: [{ url: '/favicon.ico', sizes: '16x16', type: 'image/x-icon' }],
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const branding = await getAppBranding()
+  if (!branding.custom) return { ...defaultMetadata, icons: DEFAULT_ICONS }
+
+  const { name, iconUrl } = branding
+  const metadata: Metadata = {
+    ...defaultMetadata,
+    icons: iconUrl ? { icon: iconUrl, apple: iconUrl, shortcut: iconUrl } : DEFAULT_ICONS,
+  }
+  // An icon on its own keeps the default titles.
+  if (name !== DEFAULT_APP_NAME) {
+    metadata.title = { default: name, template: `%s | ${name}` }
+    metadata.appleWebApp = { capable: true, statusBarStyle: 'black-translucent', title: name }
+  }
+  return metadata
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -178,13 +205,15 @@ export default async function RootLayout({
   // would be both off-brand and none of the customer's business.
   const pathname = (await headers()).get('x-pathname')
   const broadcast = isCustomerFacingPath(pathname) ? null : await getBroadcast()
+  // A custom icon is declared through generateMetadata, apple icon included.
+  const branding = await getAppBranding()
 
   return (
     <html lang={locale} translate="no" suppressHydrationWarning>
       <head>
         <meta name="google" content="notranslate" />
         <meta name="theme-color" content="#09090b" />
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        {!branding.iconUrl && <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var c=document.documentElement.classList;var p=location.pathname;if(p.indexOf('/share/')===0||p.indexOf('/portal')===0){c.add('light');return}var M={light:'light',dark:'dark',graphite:'light',ocean:'light',forest:'light',midnight:'dark',carbon:'dark'};var t=localStorage.getItem('torqvoice-theme')||'dark';if(t==='system'){t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}var m=M[t];if(!m){t='dark';m='dark'}c.add(m);if(t!==m){c.add('theme-'+t)}var f=localStorage.getItem('torqvoice-font');if(f==='workshop'||f==='precise'||f==='legible'){c.add('font-set-'+f)}}catch(e){}})()`,

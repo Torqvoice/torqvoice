@@ -1472,7 +1472,14 @@
     "unreachable": "Impossibile raggiungere torqvoice.com. La licenza salvata su questo server resta invariata.",
     "unverifiedHint": "Questo server non riesce a confermare la licenza con torqvoice.com da {days} giorni. Il marchio Torqvoice torna dopo {max} giorni senza una verifica riuscita.",
     "rejected": "torqvoice.com non ha accettato questa chiave: {reason}",
-    "signedHint": "La convalida è firmata da torqvoice.com e ripetuta ogni giorno, quindi il server deve poter raggiungere torqvoice.com."
+    "signedHint": "La convalida è firmata da torqvoice.com e ripetuta ogni giorno, quindi il server deve poter raggiungere torqvoice.com.",
+    "makeItYours": "Rendilo tuo",
+    "makeItYoursHint": "Il marchio Torqvoice non c'è più. Altri due passaggi e l'app avrà il tuo aspetto.",
+    "linkAppName": "Imposta il nome dell'app",
+    "linkAppIcon": "Aggiungi la tua favicon e l'icona dell'app",
+    "adminOnlyHint": "Solo un super amministratore può cambiare nome e icona dell'app. Rivolgiti a chi gestisce questa installazione.",
+    "makeItYoursLocked": "Una licenza white-label sblocca nome e icona dell'app.",
+    "needsLicense": "Richiede una licenza"
   },
   "about": {
     "title": "Informazioni su Torqvoice",

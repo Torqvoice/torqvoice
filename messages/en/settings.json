@@ -1472,7 +1472,14 @@
     "unreachable": "torqvoice.com could not be reached. The licence stored on this server is unchanged.",
     "unverifiedHint": "This server has not been able to confirm the licence with torqvoice.com for {days} days. Torqvoice branding returns after {max} days without a successful check.",
     "rejected": "torqvoice.com did not accept this key: {reason}",
-    "signedHint": "Validation is signed by torqvoice.com and re-checked daily, so the server needs outbound access to torqvoice.com."
+    "signedHint": "Validation is signed by torqvoice.com and re-checked daily, so the server needs outbound access to torqvoice.com.",
+    "makeItYours": "Make it yours",
+    "makeItYoursHint": "The Torqvoice mark is gone. Two more steps make the app look like yours.",
+    "linkAppName": "Set your app name",
+    "linkAppIcon": "Add your own favicon and app icon",
+    "adminOnlyHint": "Only a super admin can change the app name and icon. Ask the person who runs this installation.",
+    "makeItYoursLocked": "A white-label licence unlocks the app name and icon.",
+    "needsLicense": "Needs a licence"
   },
   "about": {
     "title": "About Torqvoice",

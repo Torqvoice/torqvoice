@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Obtenez votre clé API sur resend.com",
     "postmarkApiKeyHint": "Obtenez votre Server Token sur postmarkapp.com",
     "mailgunApiKeyHint": "Obtenez votre clé API sur app.mailgun.com",
-    "sendgridApiKeyHint": "Obtenez votre clé API sur app.sendgrid.com"
+    "sendgridApiKeyHint": "Obtenez votre clé API sur app.sendgrid.com",
+    "branding": {
+      "title": "Image de marque de l'application",
+      "description": "Modifie le titre de l'onglet du navigateur, le favicon ainsi que le nom et l'icône de l'application installée sur cette installation. Les documents et le reste de l'application ne changent pas. Laissez un champ vide pour garder la valeur par défaut.",
+      "nameLabel": "Nom de l'application",
+      "nameHint": "Affiché dans l'onglet du navigateur et comme nom de l'application installée.",
+      "save": "Enregistrer le nom",
+      "saved": "Nom de l'application enregistré",
+      "saveFailed": "Impossible d'enregistrer le nom de l'application",
+      "iconLabel": "Icône de l'application",
+      "iconHint": "Une image carrée d’au moins 512 × 512 pixels. Le PNG donne le meilleur résultat.",
+      "iconAlt": "Icône actuelle de l'application",
+      "upload": "Téléverser",
+      "replace": "Remplacer",
+      "remove": "Supprimer",
+      "uploaded": "Icône de l'application mise à jour",
+      "uploadFailed": "Impossible de téléverser l'icône",
+      "removed": "Icône de l'application supprimée",
+      "removeFailed": "Impossible de supprimer l'icône",
+      "lockedBadge": "Licence requise",
+      "lockedHint": "Une licence white-label débloque le nom et l'icône de l'application.",
+      "lockedLink": "Ouvrir la page Licence"
+    }
   },
   "common": {
     "openMenu": "Ouvrir le menu"

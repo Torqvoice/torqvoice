@@ -23,6 +23,7 @@ import { UpdateWatcher } from '@/components/update-watcher'
 import { buildVersion } from '@/lib/build-version.server'
 import { redirectToSignIn } from '@/lib/sign-in-redirect.server'
 import { InstallBanner } from '@/components/pwa-install-prompt'
+import { getAppBranding } from '@/lib/branding'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
@@ -77,6 +78,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   const features = await getFeatures(data.organizationId)
+  const appBranding = await getAppBranding()
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved && !isDemoMode
   // Cloud only, and off until a platform admin turns it on. Resolved here so
   // the widget's code never reaches a self-hosted install's page.
@@ -392,7 +394,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                               {isOwnerOrAdmin && <NotificationInitializer />}
                               <OnlineTracker />
                               <UpdateWatcher version={buildVersion()} />
-                              <InstallBanner />
+                              <InstallBanner
+                                appName={appBranding.name}
+                                iconUrl={appBranding.iconUrl}
+                              />
                             </TimeClockProvider>
                           </RealtimeProvider>
                         </FeatureHintProvider>

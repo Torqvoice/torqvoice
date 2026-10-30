@@ -128,9 +128,23 @@ export function useInstallPrompt() {
   }
 }
 
-export function InstallBanner() {
+const DEFAULT_APP_NAME = 'TorqVoice'
+
+interface InstallBannerProps {
+  /** The install's own name on a licensed self-hosted install. */
+  appName?: string
+  iconUrl?: string | null
+}
+
+export function InstallBanner({ appName = DEFAULT_APP_NAME, iconUrl = null }: InstallBannerProps) {
   const t = useTranslations('common.shared')
   const { canInstall, dismissed, isIOS, install, dismiss } = useInstallPrompt()
+  // The brand word is spelled the same in every locale's installTorqvoice, so
+  // swapping it keeps the translated verb around the workshop's own name.
+  const title =
+    appName === DEFAULT_APP_NAME
+      ? t('installTorqvoice')
+      : t('installTorqvoice').replace(/Torq[Vv]oice/g, () => appName)
 
   // The banner is noise while developing; the settings page still works there.
   if (process.env.NODE_ENV === 'development') return null
@@ -141,14 +155,17 @@ export function InstallBanner() {
       <div className="border-t bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex max-w-xl items-center gap-3 px-4 py-3">
           <Image
-            src="/icons/icon-192.png"
-            alt="TorqVoice"
+            src={iconUrl ?? '/icons/icon-192.png'}
+            alt={appName}
             width={40}
             height={40}
             className="shrink-0 rounded-lg"
+            // Served by our own route with its own cache headers; the image
+            // optimiser would only cache it again under the old icon.
+            unoptimized={iconUrl !== null}
           />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">{t('installTorqvoice')}</p>
+            <p className="text-sm font-medium">{title}</p>
             <p className="truncate text-xs text-muted-foreground">
               {isIOS ? t('iosInstallHint') : t('installDescription')}
             </p>

@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Obtenha a sua chave de API em resend.com",
     "postmarkApiKeyHint": "Obtenha o seu Server Token em postmarkapp.com",
     "mailgunApiKeyHint": "Obtenha a sua chave de API em app.mailgun.com",
-    "sendgridApiKeyHint": "Obtenha a sua chave de API em app.sendgrid.com"
+    "sendgridApiKeyHint": "Obtenha a sua chave de API em app.sendgrid.com",
+    "branding": {
+      "title": "Marca da aplicação",
+      "description": "Altera o título do separador do navegador, o favicon e o nome e o ícone da aplicação instalada nesta instalação. Os documentos e o resto da aplicação não são afetados. Deixe um campo vazio para usar o valor predefinido.",
+      "nameLabel": "Nome da aplicação",
+      "nameHint": "Aparece no separador do navegador e como nome da aplicação instalada.",
+      "save": "Guardar nome",
+      "saved": "Nome da aplicação guardado",
+      "saveFailed": "Não foi possível guardar o nome da aplicação",
+      "iconLabel": "Ícone da aplicação",
+      "iconHint": "Uma imagem quadrada com pelo menos 512 × 512 píxeis. De preferência em PNG.",
+      "iconAlt": "Ícone atual da aplicação",
+      "upload": "Carregar",
+      "replace": "Substituir",
+      "remove": "Remover",
+      "uploaded": "Ícone da aplicação atualizado",
+      "uploadFailed": "Não foi possível carregar o ícone",
+      "removed": "Ícone da aplicação removido",
+      "removeFailed": "Não foi possível remover o ícone",
+      "lockedBadge": "Requer licença",
+      "lockedHint": "Uma licença white-label desbloqueia o nome e o ícone da aplicação.",
+      "lockedLink": "Abrir a página da licença"
+    }
   },
   "common": {
     "openMenu": "Abrir menu"

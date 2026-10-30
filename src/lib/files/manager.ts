@@ -326,6 +326,27 @@ export async function removeOrganizationFiles(
 }
 
 /**
+ * A file the install itself owns, under `<uploads>/system/<folder>` and
+ * outside every workshop's folder: today only the app icon a white-label
+ * install sets. No workshop row points at it and no export carries it, so
+ * there is nothing to count; a replaced or removed one still goes to the
+ * trash like any other release, filed under `system` where a workshop id
+ * would be, and purgeTrash expires it with the rest.
+ */
+export async function releaseInstallFile(
+  folder: string,
+  name: string,
+  { now = Date.now() }: { now?: number } = {}
+): Promise<boolean> {
+  if (!FILE_NAME.test(name) || name.includes('..')) return false
+  const file: StoredFile = { organizationId: 'system', folder, name, suffix: `/${folder}/${name}` }
+  const root = uploadsRoot()
+  const target = pathUnder(root, file)
+  if (!target) return false
+  return trashFile(root, target, file, now)
+}
+
+/**
  * After a backup has written its files into one of the workshop's folders:
  * the files there that the backup did not bring back go through the same
  * release as any other, so one that a row still uses (uploaded after the

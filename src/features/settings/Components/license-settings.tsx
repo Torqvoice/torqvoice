@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -9,7 +10,17 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { AppCard } from '@/components/app-card'
-import { ExternalLink, Key, Loader2 } from 'lucide-react'
+import {
+  ArrowRight,
+  ExternalLink,
+  ImageIcon,
+  Info,
+  Key,
+  Loader2,
+  Lock,
+  type LucideIcon,
+  Type,
+} from 'lucide-react'
 import { validateLicense } from '../Actions/validateLicense'
 import {
   LICENSE_TOKEN_MAX_AGE_DAYS,
@@ -19,12 +30,72 @@ import {
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
+/**
+ * One line of the "make it yours" list. The list is always shown, so a
+ * workshop sees what the licence unlocks before buying one: a locked row
+ * says so, a row without a destination is for a member who is not the
+ * install's administrator, and the rest are links.
+ */
+function NextStep({
+  href,
+  icon: Icon,
+  label,
+  lockedLabel,
+}: {
+  href: string | null
+  icon: LucideIcon
+  label: string
+  /** shown instead of the arrow while the licence is missing */
+  lockedLabel?: string
+}) {
+  const content = (
+    <span className="flex items-center gap-3">
+      <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <span>{label}</span>
+    </span>
+  )
+  if (lockedLabel) {
+    return (
+      <div
+        aria-disabled="true"
+        className="flex items-center justify-between gap-4 px-4 py-3 text-sm text-muted-foreground/70"
+      >
+        {content}
+        <span className="flex shrink-0 items-center gap-1.5 text-xs">
+          <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+          {lockedLabel}
+        </span>
+      </div>
+    )
+  }
+  if (!href) {
+    return (
+      <div className="flex items-center justify-between gap-4 px-4 py-3 text-sm text-muted-foreground">
+        {content}
+      </div>
+    )
+  }
+  return (
+    <Link
+      href={href}
+      className="group flex items-center justify-between gap-4 px-4 py-3 text-sm transition-colors hover:bg-muted/60"
+    >
+      {content}
+      <ArrowRight
+        className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Link>
+  )
+}
+
 export function LicenseSettings({
   initialKey,
   initialStatus,
   initialExpiresAt,
   initialIssuedAt,
   initialCheckedAt,
+  brandingHref,
   demoMode = false,
 }: {
   initialKey: string
@@ -35,6 +106,8 @@ export function LicenseSettings({
   initialIssuedAt: string
   /** when this server last tried, reachable or not */
   initialCheckedAt: string
+  /** the admin page that names the install in the browser; null for anyone who may not open it */
+  brandingHref: string | null
   demoMode?: boolean
 }) {
   const router = useRouter()
@@ -155,6 +228,34 @@ export function LicenseSettings({
         </div>
         <p className="text-xs text-muted-foreground">{t('license.keyHint')}</p>
         <p className="text-xs text-muted-foreground">{t('license.signedHint')}</p>
+        <div id="license-next-steps" className="space-y-3 pt-2">
+          <div className="space-y-1">
+            <p className="text-sm font-medium">{t('license.makeItYours')}</p>
+            <p className="text-xs text-muted-foreground">
+              {licenseValid ? t('license.makeItYoursHint') : t('license.makeItYoursLocked')}
+            </p>
+          </div>
+          <div className="divide-y overflow-hidden rounded-lg border bg-muted/20">
+            <NextStep
+              href={brandingHref}
+              icon={Type}
+              label={t('license.linkAppName')}
+              lockedLabel={licenseValid ? undefined : t('license.needsLicense')}
+            />
+            <NextStep
+              href={brandingHref}
+              icon={ImageIcon}
+              label={t('license.linkAppIcon')}
+              lockedLabel={licenseValid ? undefined : t('license.needsLicense')}
+            />
+          </div>
+          {brandingHref === null && (
+            <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span>{t('license.adminOnlyHint')}</span>
+            </p>
+          )}
+        </div>
       </AppCard>
     </div>
   )

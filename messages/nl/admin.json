@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Haal uw API-sleutel op via resend.com",
     "postmarkApiKeyHint": "Haal uw Server Token op via postmarkapp.com",
     "mailgunApiKeyHint": "Haal uw API-sleutel op via app.mailgun.com",
-    "sendgridApiKeyHint": "Haal uw API-sleutel op via app.sendgrid.com"
+    "sendgridApiKeyHint": "Haal uw API-sleutel op via app.sendgrid.com",
+    "branding": {
+      "title": "App-huisstijl",
+      "description": "Wijzigt de titel van het browsertabblad, het favicon en de naam en het pictogram van de geïnstalleerde app op deze installatie. Documenten en de rest van de app veranderen niet. Laat een veld leeg om de standaard te gebruiken.",
+      "nameLabel": "Appnaam",
+      "nameHint": "Te zien in het browsertabblad en als naam van de geïnstalleerde app.",
+      "save": "Naam opslaan",
+      "saved": "Appnaam opgeslagen",
+      "saveFailed": "De appnaam kon niet worden opgeslagen",
+      "iconLabel": "App-pictogram",
+      "iconHint": "Een vierkante afbeelding van minstens 512 × 512 pixels. PNG werkt het best.",
+      "iconAlt": "Huidig app-pictogram",
+      "upload": "Uploaden",
+      "replace": "Vervangen",
+      "remove": "Verwijderen",
+      "uploaded": "App-pictogram bijgewerkt",
+      "uploadFailed": "Het pictogram kon niet worden geüpload",
+      "removed": "App-pictogram verwijderd",
+      "removeFailed": "Het pictogram kon niet worden verwijderd",
+      "lockedBadge": "Licentie nodig",
+      "lockedHint": "Een white-label-licentie ontgrendelt de appnaam en het app-pictogram.",
+      "lockedLink": "Licentiepagina openen"
+    }
   },
   "common": {
     "openMenu": "Menu openen"

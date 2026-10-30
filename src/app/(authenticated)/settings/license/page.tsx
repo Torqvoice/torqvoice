@@ -39,6 +39,9 @@ export default async function LicensePage() {
       initialExpiresAt={verification.payload?.expiresAt ?? ''}
       initialIssuedAt={verification.payload?.issuedAt ?? ''}
       initialCheckedAt={map.get(SETTING_KEYS.LICENSE_CHECKED_AT) || ''}
+      // The app name and icon live on the super-admin page; anyone else is
+      // told who to ask instead of being sent to a redirect.
+      brandingHref={authContext.role === 'super_admin' ? '/admin/settings#app-branding' : null}
       demoMode={isDemoMode}
     />
   )

@@ -1472,7 +1472,14 @@
     "unreachable": "Não foi possível contactar torqvoice.com. A licença guardada neste servidor mantém-se inalterada.",
     "unverifiedHint": "Este servidor não consegue confirmar a licença com torqvoice.com há {days} dias. A marca Torqvoice volta a aparecer após {max} dias sem uma verificação bem-sucedida.",
     "rejected": "torqvoice.com não aceitou esta chave: {reason}",
-    "signedHint": "A validação é assinada por torqvoice.com e repetida diariamente, por isso o servidor precisa de acesso de saída a torqvoice.com."
+    "signedHint": "A validação é assinada por torqvoice.com e repetida diariamente, por isso o servidor precisa de acesso de saída a torqvoice.com.",
+    "makeItYours": "Torne-a sua",
+    "makeItYoursHint": "A marca Torqvoice desapareceu. Mais dois passos e a aplicação fica com o seu aspeto.",
+    "linkAppName": "Definir o nome da aplicação",
+    "linkAppIcon": "Adicionar o seu próprio favicon e ícone da aplicação",
+    "adminOnlyHint": "Só um superadministrador pode alterar o nome e o ícone da aplicação. Fale com quem gere esta instalação.",
+    "makeItYoursLocked": "Uma licença white-label desbloqueia o nome e o ícone da aplicação.",
+    "needsLicense": "Requer licença"
   },
   "about": {
     "title": "Sobre o Torqvoice",
