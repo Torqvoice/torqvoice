@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { setActiveConversation } from '@/features/messaging/activeConversation'
+import { useNotificationStore } from '@/features/notifications/store/notificationStore'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Clock, ImagePlus, Loader2, Send, X } from 'lucide-react'
@@ -67,6 +69,12 @@ export function WhatsappConversation({
 
   useEffect(() => setMounted(true), [])
 
+  useEffect(() => {
+    if (!thread.customerId) return
+    setActiveConversation([`/messages?tab=whatsapp&customerId=${thread.customerId}`])
+    return () => setActiveConversation(null)
+  }, [thread.customerId])
+
   const load = useCallback(async () => {
     // No customer yet, so the history is filed under the number itself. It is
     // still readable: only replying needs a customer to reply to.
@@ -101,6 +109,23 @@ export function WhatsappConversation({
     setLoading(true)
     load()
   }, [load])
+
+  // A message from this customer arriving while the thread is open: the
+  // feed is quiet about it (the registration above), so the thread itself
+  // has to show it.
+  useEffect(() => {
+    if (!thread.customerId) return
+    const link = `/messages?tab=whatsapp&customerId=${thread.customerId}`
+    let lastCount = useNotificationStore.getState().notifications.length
+    return useNotificationStore.subscribe((state) => {
+      const { notifications } = state
+      const grew = notifications.length > lastCount
+      lastCount = notifications.length
+      if (!grew) return
+      const latest = notifications[0]
+      if (latest?.type === 'whatsapp_inbound' && latest.entityUrl === link) void load()
+    })
+  }, [thread.customerId, load])
 
   // Opening a thread should land on the newest message. Scrolling once on
   // mount ran before the messages had loaded, so it scrolled an empty list and

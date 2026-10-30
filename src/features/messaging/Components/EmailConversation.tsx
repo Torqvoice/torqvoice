@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { EmailChannelState } from '../Actions/inboxActions'
 import { getEmailConversation, sendEmailMessage } from '../Actions/emailThreadActions'
+import { setActiveConversation } from '../activeConversation'
 import { replySubject, splitQuotedReply } from '../Lib/inboundMail'
 import { MessageText } from './MessageText'
 
@@ -80,6 +81,16 @@ export function EmailConversation({
   const atBottom = useRef(true)
 
   useEffect(() => setMounted(true), [])
+
+  // A reply to this thread is shown here, not announced. A mail from the
+  // customer is filed under them, one from an address nobody has under the
+  // address, so both links name this thread.
+  useEffect(() => {
+    const links = [`/messages?channel=email&contact=${encodeURIComponent(address)}`]
+    if (thread.customerId) links.push(`/messages?channel=email&customerId=${thread.customerId}`)
+    setActiveConversation(links)
+    return () => setActiveConversation(null)
+  }, [thread.customerId, address])
 
   const load = useCallback(async () => {
     const result = await getEmailConversation({
