@@ -343,7 +343,15 @@ export async function releaseInstallFile(
   const root = uploadsRoot()
   const target = pathUnder(root, file)
   if (!target) return false
-  return trashFile(root, target, file, now)
+  // The caller has already saved the change this file belonged to, so a
+  // trash that cannot be written is logged and leaves the file behind for
+  // the sweep, never an error for a setting that is already in place.
+  try {
+    return await trashFile(root, target, file, now)
+  } catch (err) {
+    console.error(`[files] could not release install file ${file.suffix}:`, err)
+    return false
+  }
 }
 
 /**

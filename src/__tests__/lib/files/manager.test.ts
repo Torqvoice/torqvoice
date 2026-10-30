@@ -70,6 +70,7 @@ import {
   purgeTrash,
   releaseFiles,
   releaseFilesNotRestored,
+  releaseInstallFile,
   removeOrganizationFiles,
   sweepOrphanFiles,
 } from '@/lib/files/manager'
@@ -598,5 +599,41 @@ describe('purgeTrash', () => {
     expect(existsSync(old)).toBe(false)
     expect(existsSync(recent)).toBe(true)
     expect(existsSync(stray)).toBe(true)
+  })
+})
+
+describe('releaseInstallFile', () => {
+  const NAME = 'icon.png'
+  async function plantInstallFile() {
+    const dir = path.join(roots.current, 'system', 'branding')
+    await mkdir(dir, { recursive: true })
+    const target = path.join(dir, NAME)
+    await writeFile(target, 'png')
+    return target
+  }
+
+  it('moves an install-owned file into the trash under system/', async () => {
+    const target = await plantInstallFile()
+    const now = Date.UTC(2026, 9, 30)
+    expect(await releaseInstallFile('branding', NAME, { now })).toBe(true)
+    expect(existsSync(target)).toBe(false)
+    expect(
+      existsSync(path.join(roots.current, '.trash', '2026-10-30', 'system', 'branding', NAME))
+    ).toBe(true)
+  })
+
+  it('refuses a name that could leave the folder', async () => {
+    await plantInstallFile()
+    expect(await releaseInstallFile('branding', '../secret.png')).toBe(false)
+  })
+
+  it('answers false and leaves the file when the trash cannot be written', async () => {
+    // The setting that pointed at the file is already saved by the time the
+    // caller gets here, so a failed move must not turn into an error.
+    const target = await plantInstallFile()
+    vi.mocked(rename).mockRejectedValueOnce(Object.assign(new Error('denied'), { code: 'EACCES' }))
+    await expect(releaseInstallFile('branding', NAME)).resolves.toBe(false)
+    expect(existsSync(target)).toBe(true)
+    expect(console.error).toHaveBeenCalled()
   })
 })
