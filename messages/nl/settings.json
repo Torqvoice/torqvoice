@@ -1472,7 +1472,14 @@
     "unreachable": "torqvoice.com was niet bereikbaar. De licentie op deze server is ongewijzigd.",
     "unverifiedHint": "Deze server kan de licentie al {days} dagen niet bevestigen bij torqvoice.com. Na {max} dagen zonder geslaagde controle keert de Torqvoice-branding terug.",
     "rejected": "torqvoice.com heeft deze sleutel niet geaccepteerd: {reason}",
-    "signedHint": "De validatie wordt door torqvoice.com ondertekend en dagelijks herhaald, dus de server heeft uitgaande toegang tot torqvoice.com nodig."
+    "signedHint": "De validatie wordt door torqvoice.com ondertekend en dagelijks herhaald, dus de server heeft uitgaande toegang tot torqvoice.com nodig.",
+    "makeItYours": "Maak het van jou",
+    "makeItYoursHint": "Het Torqvoice-merk is weg. Nog twee stappen en de app ziet eruit als die van jou.",
+    "linkAppName": "Appnaam instellen",
+    "linkAppIcon": "Eigen favicon en app-pictogram toevoegen",
+    "adminOnlyHint": "Alleen een superbeheerder kan de appnaam en het app-pictogram wijzigen. Vraag het aan degene die deze installatie beheert.",
+    "makeItYoursLocked": "Een white-label-licentie ontgrendelt de appnaam en het app-pictogram.",
+    "needsLicense": "Licentie nodig"
   },
   "about": {
     "title": "Over Torqvoice",

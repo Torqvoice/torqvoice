@@ -14,15 +14,22 @@ import { SYSTEM_SETTING_KEYS, type BroadcastLevel } from '../Schema/systemSettin
 import type { SystemSettingsMap } from '../Schema/systemSettingsSchema'
 import { setSystemSettings } from '../Actions/setSystemSettings'
 import { BroadcastCard } from './broadcast-card'
+import { BrandingCard } from './branding-card'
 import { testEmailConnection } from '../Actions/testEmailConnection'
 
 type EmailProviderType = 'smtp' | 'resend' | 'postmark' | 'mailgun' | 'sendgrid' | 'ses'
 
 export function AdminSettings({
   initial,
+  mode,
+  brandingAvailable,
+  brandingIconUrl,
 }: {
   initial: SystemSettingsMap
   mode: 'cloud' | 'self-hosted'
+  /** Whether the install holds a white-label licence; without one the branding card is locked. */
+  brandingAvailable: boolean
+  brandingIconUrl: string | null
 }) {
   const router = useRouter()
   const t = useTranslations('admin')
@@ -207,6 +214,17 @@ export function AdminSettings({
           (initial[SYSTEM_SETTING_KEYS.BROADCAST_LEVEL] as BroadcastLevel | undefined) ?? 'info'
         }
       />
+
+      {/* Shown on every self-hosted install so the operator can see what the
+          licence unlocks; the fields only work once it holds one. Cloud never
+          brands the browser, so the card is absent there. */}
+      {mode === 'self-hosted' && (
+        <BrandingCard
+          locked={!brandingAvailable}
+          initialName={initial[SYSTEM_SETTING_KEYS.BRANDING_APP_NAME] ?? ''}
+          initialIconUrl={brandingIconUrl}
+        />
+      )}
 
       {/* Platform Settings */}
       <AppCard

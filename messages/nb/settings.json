@@ -1472,7 +1472,14 @@
     "unreachable": "torqvoice.com kunne ikke nås. Lisensen som er lagret på denne serveren er uendret.",
     "unverifiedHint": "Denne serveren har ikke kunnet bekrefte lisensen hos torqvoice.com på {days} dager. Torqvoice-merkingen kommer tilbake etter {max} dager uten en vellykket sjekk.",
     "rejected": "torqvoice.com godtok ikke denne nøkkelen: {reason}",
-    "signedHint": "Valideringen signeres av torqvoice.com og gjentas daglig, så serveren trenger utgående tilgang til torqvoice.com."
+    "signedHint": "Valideringen signeres av torqvoice.com og gjentas daglig, så serveren trenger utgående tilgang til torqvoice.com.",
+    "makeItYours": "Gjør den til din",
+    "makeItYoursHint": "Torqvoice-merket er borte. To steg til, så ser appen ut som din.",
+    "linkAppName": "Velg appnavn",
+    "linkAppIcon": "Legg til eget favikon og appikon",
+    "adminOnlyHint": "Bare en superadministrator kan endre appnavn og appikon. Spør den som drifter denne installasjonen.",
+    "makeItYoursLocked": "En white-label-lisens låser opp appnavn og appikon.",
+    "needsLicense": "Krever lisens"
   },
   "about": {
     "title": "Om Torqvoice",

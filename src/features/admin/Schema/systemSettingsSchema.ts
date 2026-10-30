@@ -67,7 +67,19 @@ export const SYSTEM_SETTING_KEYS = {
   // platform decision, not one the workshop makes for itself.
   SUPPORT_ENABLED: 'support.enabled',
   SUPPORT_RECIPIENT_EMAIL: 'support.recipientEmail',
+
+  // What the browser calls this install: the tab title, favicon, and the
+  // name and icon of the installed app. Install-wide, because a white-label
+  // licence can run several workshops and the tab can only say one thing.
+  // Honoured only on a licensed self-hosted install; everywhere else the
+  // app stays TorqVoice. The icon value is the stored file name, served
+  // from /api/public/app-icon.
+  BRANDING_APP_NAME: 'branding.appName',
+  BRANDING_APP_ICON: 'branding.appIcon',
 } as const
+
+/** Long enough for a workshop name, short enough for a browser tab. */
+export const BRANDING_APP_NAME_MAX_LENGTH = 40
 
 export type SystemSettingKey = (typeof SYSTEM_SETTING_KEYS)[keyof typeof SYSTEM_SETTING_KEYS]
 

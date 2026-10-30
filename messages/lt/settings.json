@@ -1472,7 +1472,14 @@
     "unreachable": "Nepavyko pasiekti torqvoice.com. Šiame serveryje saugoma licencija nepakito.",
     "unverifiedHint": "Šis serveris jau {days} d. negali patvirtinti licencijos su torqvoice.com. Po {max} d. be sėkmingo patikrinimo Torqvoice prekės ženklas grįžta.",
     "rejected": "torqvoice.com nepriėmė šio rakto: {reason}",
-    "signedHint": "Patikrinimą pasirašo torqvoice.com ir jis kartojamas kasdien, todėl serveriui reikia išeinančio ryšio su torqvoice.com."
+    "signedHint": "Patikrinimą pasirašo torqvoice.com ir jis kartojamas kasdien, todėl serveriui reikia išeinančio ryšio su torqvoice.com.",
+    "makeItYours": "Padarykite savo",
+    "makeItYoursHint": "Torqvoice ženklo nebėra. Dar du žingsniai, ir programa atrodys kaip jūsų.",
+    "linkAppName": "Nustatyti programos pavadinimą",
+    "linkAppIcon": "Pridėti savo favicon ir programos piktogramą",
+    "adminOnlyHint": "Programos pavadinimą ir piktogramą gali keisti tik super administratorius. Kreipkitės į šios instaliacijos valdytoją.",
+    "makeItYoursLocked": "White-label licencija atrakina programos pavadinimą ir piktogramą.",
+    "needsLicense": "Reikia licencijos"
   },
   "about": {
     "title": "Apie Torqvoice",

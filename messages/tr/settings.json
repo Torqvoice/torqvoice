@@ -1472,7 +1472,14 @@
     "unreachable": "torqvoice.com'a ulaşılamadı. Bu sunucuda kayıtlı lisans değişmedi.",
     "unverifiedHint": "Bu sunucu {days} gündür lisansı torqvoice.com ile doğrulayamıyor. Başarılı bir kontrol olmadan {max} gün sonra Torqvoice markası geri döner.",
     "rejected": "torqvoice.com bu anahtarı kabul etmedi: {reason}",
-    "signedHint": "Doğrulama torqvoice.com tarafından imzalanır ve her gün yenilenir, bu nedenle sunucunun torqvoice.com'a giden erişimi olmalıdır."
+    "signedHint": "Doğrulama torqvoice.com tarafından imzalanır ve her gün yenilenir, bu nedenle sunucunun torqvoice.com'a giden erişimi olmalıdır.",
+    "makeItYours": "Kendinize göre uyarlayın",
+    "makeItYoursHint": "Torqvoice işareti kaldırıldı. İki adım daha ve uygulama sizin görünümünüze kavuşur.",
+    "linkAppName": "Uygulama adını belirleyin",
+    "linkAppIcon": "Kendi favicon ve uygulama simgenizi ekleyin",
+    "adminOnlyHint": "Uygulama adını ve simgesini yalnızca bir süper yönetici değiştirebilir. Bu kurulumu yöneten kişiye başvurun.",
+    "makeItYoursLocked": "White-label lisansı uygulama adını ve simgesini açar.",
+    "needsLicense": "Lisans gerekir"
   },
   "about": {
     "title": "Torqvoice Hakkında",

@@ -8,10 +8,13 @@ import {
   SYSTEM_SETTING_KEYS,
   BROADCAST_LEVELS,
   BROADCAST_MAX_LENGTH,
+  BRANDING_APP_NAME_MAX_LENGTH,
   type BroadcastLevel,
 } from '../Schema/systemSettingsSchema'
 import { demoGuard } from '@/lib/demo'
 import { notificationBus } from '@/lib/notification-bus'
+import { installHasLicense, isCloudMode } from '@/lib/features'
+import { invalidateAppBranding } from '@/lib/branding'
 
 export async function setSystemSettings(input: Record<string, string>) {
   return withSuperAdmin(async () => {
@@ -24,6 +27,21 @@ export async function setSystemSettings(input: Record<string, string>) {
       if (key.startsWith('license.')) return false
       return true
     })
+
+    const touchesBranding = entries.some(([key]) => key.startsWith('branding.'))
+    if (touchesBranding) {
+      // The card is hidden without a licence, but a client can post the key
+      // anyway, so the licence is checked again here where it counts.
+      if (isCloudMode() || !(await installHasLicense())) {
+        throw new Error('Custom app branding needs a white-label licence on a self-hosted install')
+      }
+      const appName = entries.find(([key]) => key === SYSTEM_SETTING_KEYS.BRANDING_APP_NAME)
+      if (appName) {
+        // Capped here because this is the only door, and the name lands in
+        // every browser tab on the install.
+        appName[1] = appName[1].trim().slice(0, BRANDING_APP_NAME_MAX_LENGTH)
+      }
+    }
 
     const broadcast = entries.find(([key]) => key === SYSTEM_SETTING_KEYS.BROADCAST_MESSAGE)
     if (broadcast) {
@@ -53,6 +71,10 @@ export async function setSystemSettings(input: Record<string, string>) {
         })
       )
     )
+
+    // The layout caches the branding for a minute; drop it so the admin sees
+    // the new name on the next render rather than after the cache runs out.
+    if (touchesBranding) invalidateAppBranding()
 
     // Pushed to everyone already looking at a screen. A notice about an
     // outage that only appears on the next navigation reaches people slowest
