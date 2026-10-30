@@ -237,16 +237,16 @@ describe('isDue', () => {
 })
 
 describe('spreadOffsetMinutes', () => {
-  it('is stable and between 0 and 9', () => {
+  it('is stable and between 0 and 59', () => {
     const values = new Set<number>()
     for (let i = 0; i < 200; i++) {
       const id = `org_${i.toString(36)}_cm${i * 7919}`
       const v = spreadOffsetMinutes(id)
       expect(v).toBe(spreadOffsetMinutes(id))
-      expect(Number.isInteger(v) && v >= 0 && v <= 9).toBe(true)
+      expect(Number.isInteger(v) && v >= 0 && v <= 59).toBe(true)
       values.add(v)
     }
-    expect(values.size).toBeGreaterThanOrEqual(8)
+    expect(values.size).toBeGreaterThanOrEqual(40)
   })
 })
 

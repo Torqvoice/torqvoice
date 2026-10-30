@@ -236,7 +236,13 @@ export function isDue(
   return nextRunAfter(settings, from, timeZone, offsetMinutes).getTime() <= now.getTime()
 }
 
-/** A stable 0..9 minute offset per organisation, so workshops do not all start at :00. */
+/**
+ * A stable 0..59 minute offset per organisation, so the workshops that chose
+ * the same hour do not all come due at once. The runs are serialised by the
+ * server-wide lock either way; the spread keeps a busy hour from piling up
+ * forty queued runs behind the first, and keeps the first ones from
+ * starting while the hour's traffic is still high.
+ */
 export function spreadOffsetMinutes(organizationId: string): number {
   // FNV-1a, 32 bit.
   let hash = 0x811c9dc5
@@ -244,7 +250,7 @@ export function spreadOffsetMinutes(organizationId: string): number {
     hash ^= organizationId.charCodeAt(i)
     hash = Math.imul(hash, 0x01000193) >>> 0
   }
-  return hash % 10
+  return hash % 60
 }
 
 /** The `--keep-*` flags for `restic forget`, in order, skipping zeros. */
