@@ -44,8 +44,4 @@ You agree to notify Torqvoice of any facts or circumstances of which You become 
 
 ## 9. Acceptance
 
-You accept this Agreement by posting the following comment on your pull request in the Torqvoice repository on GitHub, when asked to by the CLA Assistant bot:
-
-> I have read the CLA Document and I hereby sign the CLA
-
-Your GitHub username, the date and the pull request are recorded as your signature. The acceptance applies to all Your Contributions, past and future, to the Project.
+You accept this Agreement by stating "I agree to the CLA" in the description of a pull request You open in the Torqvoice repository on GitHub. Your GitHub username, the pull request and its date are the record of Your acceptance, which applies to all Your Contributions, past and future, to the Project.
