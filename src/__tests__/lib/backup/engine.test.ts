@@ -180,6 +180,8 @@ vi.mock('@/lib/notify', () => ({ notify: vi.fn(async () => undefined) }))
 vi.mock('@/lib/email', () => ({
   getOrgFromAddress: vi.fn(async () => 'Workshop <post@workshop.test>'),
   sendOrgMail: vi.fn(async () => undefined),
+  getFromAddress: vi.fn(async () => 'Torqvoice <noreply@torqvoice.test>'),
+  sendMail: vi.fn(async () => undefined),
 }))
 
 vi.mock('@/integrations/registry', () => ({
@@ -210,7 +212,7 @@ import {
 import { platformRepositoryPassword } from '@/lib/backup/platform'
 import { resticSnapshots } from '@/lib/backup/restic'
 import { loadConnection, setConnectionStatus } from '@/features/integrations/Lib/connections'
-import { sendOrgMail } from '@/lib/email'
+import { sendMail, sendOrgMail } from '@/lib/email'
 import { notify } from '@/lib/notify'
 import { connector as localFolder } from '@/integrations/local-folder/server'
 
@@ -1034,6 +1036,46 @@ describe('runBackup, lock', () => {
     expect(h.runs.get(runId)?.startedAt).toBeNull()
     expect(calls()).toHaveLength(0)
     expect(backupLockHolder()?.runId).toBe('other')
+  })
+})
+
+describe('mailAdmins', () => {
+  it("sends from the platform's address when the workshop's own vendor refuses", async () => {
+    const { mailAdmins } = await import('@/lib/backup/engine')
+    vi.mocked(sendOrgMail).mockRejectedValue(
+      new Error('Email provider smtp is not fully configured. Check its integration.')
+    )
+    try {
+      await mailAdmins(ORG, 'Backup restored', '<p>done</p>')
+    } finally {
+      vi.mocked(sendOrgMail).mockReset()
+      vi.mocked(sendOrgMail).mockResolvedValue(undefined)
+    }
+    expect(sendMail).toHaveBeenCalledTimes(2)
+    expect(
+      vi
+        .mocked(sendMail)
+        .mock.calls.map((c) => [c[0].to, c[0].from])
+        .sort()
+    ).toEqual([
+      ['admin@workshop.test', 'Torqvoice <noreply@torqvoice.test>'],
+      ['owner@workshop.test', 'Torqvoice <noreply@torqvoice.test>'],
+    ])
+  })
+
+  it("leaves it at the log when the platform's mail fails too", async () => {
+    const { mailAdmins } = await import('@/lib/backup/engine')
+    vi.mocked(sendOrgMail).mockRejectedValue(new Error('refused'))
+    vi.mocked(sendMail).mockRejectedValue(new Error('down'))
+    try {
+      await expect(mailAdmins(ORG, 'Backup restored', '<p>done</p>')).resolves.toBeUndefined()
+      expect(sendMail).toHaveBeenCalledTimes(2)
+    } finally {
+      vi.mocked(sendOrgMail).mockReset()
+      vi.mocked(sendOrgMail).mockResolvedValue(undefined)
+      vi.mocked(sendMail).mockReset()
+      vi.mocked(sendMail).mockResolvedValue(undefined)
+    }
   })
 })
 

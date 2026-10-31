@@ -21,7 +21,7 @@ import { connectorName } from '@/features/integrations/Lib/display-name'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import { getManifest } from '@/integrations/registry'
 import { db } from '@/lib/db'
-import { getOrgFromAddress, sendOrgMail } from '@/lib/email'
+import { getFromAddress, getOrgFromAddress, sendMail, sendOrgMail } from '@/lib/email'
 import { getFeatures } from '@/lib/features'
 import { notify } from '@/lib/notify'
 import { orgUploadDir } from '@/lib/upload-root'
@@ -867,7 +867,14 @@ export async function reportOverdue(
   )
 }
 
-/** The owners and administrators of a workshop, mailed about its backups. */
+/**
+ * The owners and administrators of a workshop, mailed about its backups:
+ * through the workshop's own mail vendor when it has one, else from the
+ * platform's address. A vendor the workshop named but never finished setting
+ * up makes sendOrgMail refuse rather than send from the platform's address,
+ * which is right for mail to customers; this mail goes to the workshop's
+ * own people, so the platform's address is the right fallback.
+ */
 export async function mailAdmins(
   organizationId: string,
   subject: string,
@@ -879,17 +886,18 @@ export async function mailAdmins(
   })
   const recipients = members.map((m) => m.user?.email).filter((e): e is string => Boolean(e))
   if (recipients.length === 0) return
-  let from: string
-  try {
-    from = await getOrgFromAddress(organizationId)
-  } catch {
-    return
-  }
+  const from = await getOrgFromAddress(organizationId).catch(() => null)
   for (const to of recipients) {
     try {
+      if (!from) throw new Error('The workshop has no sending address')
       await sendOrgMail(organizationId, { to, from, subject, html })
     } catch (err) {
-      console.error('[backup] alert email failed:', err)
+      // The platform's own mail, from the address its global provider sends as.
+      try {
+        await sendMail({ to, from: await getFromAddress(), subject, html })
+      } catch (fallbackErr) {
+        console.error('[backup] alert email failed:', err, fallbackErr)
+      }
     }
   }
 }

@@ -175,6 +175,8 @@ vi.mock('@/lib/notify', () => ({ notify: vi.fn(async () => undefined) }))
 vi.mock('@/lib/email', () => ({
   getOrgFromAddress: vi.fn(async () => 'Workshop <post@workshop.test>'),
   sendOrgMail: vi.fn(async () => undefined),
+  getFromAddress: vi.fn(async () => 'Torqvoice <noreply@torqvoice.test>'),
+  sendMail: vi.fn(async () => undefined),
 }))
 
 vi.mock('@/lib/backup/restic', async (importOriginal) => {
