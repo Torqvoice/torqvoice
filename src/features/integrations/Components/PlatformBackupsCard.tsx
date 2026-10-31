@@ -130,7 +130,12 @@ export function PlatformBackupsCard({
 
   if (!overview.active) {
     return (
-      <AppCard icon={DatabaseBackup} title={t('title')} description={t('description')}>
+      <AppCard
+        id="platform-backups"
+        icon={DatabaseBackup}
+        title={t('title')}
+        description={t('description')}
+      >
         <p className="text-sm text-muted-foreground">
           {overview.paused
             ? t('paused', {
@@ -162,6 +167,7 @@ export function PlatformBackupsCard({
 
   return (
     <AppCard
+      id="platform-backups"
       icon={DatabaseBackup}
       title={t('title')}
       description={t('description')}

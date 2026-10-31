@@ -165,6 +165,7 @@
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
     "platformHandlesBackups": "Torqvoice tar allerede sikkerhetskopi av dette verkstedet hver time og beholder gjenopprettingspunkter i 30 dager. Koble til en bøtte hvis du også vil ha en kopi du eier selv, som kan leses uten Torqvoice.",
+    "platformHandlesBackupsLink": "Se gjenopprettingspunktene",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
     "advanced": "Avansert",
     "generate": "Generer",

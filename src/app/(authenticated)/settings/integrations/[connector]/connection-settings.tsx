@@ -370,7 +370,15 @@ export function ConnectionSettings({
         {platformHandlesBackups && (
           <div className="mb-4 flex gap-2 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <p className="text-muted-foreground">{t('connection.platformHandlesBackups')}</p>
+            <p className="text-muted-foreground">
+              {t('connection.platformHandlesBackups')}{' '}
+              <Link
+                href="/settings/data#platform-backups"
+                className="font-medium text-foreground underline underline-offset-2"
+              >
+                {t('connection.platformHandlesBackupsLink')}
+              </Link>
+            </p>
           </div>
         )}
 

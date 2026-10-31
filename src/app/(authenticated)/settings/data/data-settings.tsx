@@ -464,7 +464,10 @@ export function DataSettings({
         <p className="text-sm text-muted-foreground">{t('data.description')}</p>
       </div>
 
+      {/* The whole-platform heartbeat, for a workshop without restore points of
+          its own; one with them reads the same and more on its Backups card. */}
       {lastBackupAt &&
+        platformBackup?.active !== true &&
         (() => {
           const ageHours = (now.getTime() - new Date(lastBackupAt).getTime()) / 3_600_000
           // Hourly schedule: green while fresh, amber once a couple of runs were
@@ -509,6 +512,18 @@ export function DataSettings({
         })()}
 
       <ReadOnlyWrapper>
+        {/* What keeps the data safe comes before the tools that move it: the
+            restore points Torqvoice keeps, then the workshop's own destinations. */}
+        {platformBackup && (
+          <PlatformBackupsCard overview={platformBackup} reauth={reauth} now={now} />
+        )}
+
+        <ScheduledBackupsCard
+          destinations={backupDestinations}
+          now={now}
+          extraCopy={platformBackup?.active === true}
+        />
+
         {/* Bring data in: one card, one row per source */}
         <AppCard
           id="data-import"
@@ -587,16 +602,6 @@ export function DataSettings({
         </AppCard>
 
         <ImportHistoryCard refreshKey={importRuns} />
-
-        {platformBackup && (
-          <PlatformBackupsCard overview={platformBackup} reauth={reauth} now={now} />
-        )}
-
-        <ScheduledBackupsCard
-          destinations={backupDestinations}
-          now={now}
-          extraCopy={platformBackup?.active === true}
-        />
 
         {/* Export */}
         <AppCard

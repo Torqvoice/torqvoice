@@ -165,6 +165,7 @@
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
     "platformHandlesBackups": "Torqvoice bu atölyeyi zaten her saat yedekliyor ve geri yükleme noktalarını 30 gün saklıyor. Torqvoice olmadan da okunabilen, size ait bir kopya da istiyorsanız bir bucket bağlayın.",
+    "platformHandlesBackupsLink": "Geri yükleme noktalarını görün",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
     "advanced": "Gelişmiş",
     "generate": "Oluştur",
