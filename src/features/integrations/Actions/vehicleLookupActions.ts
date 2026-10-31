@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
+import { lookupAppliesTo } from '@/features/vehicles/Lib/registryLookup'
 import { recordRegistryAnswer } from '../Lib/inspection-sync'
 import type { VehicleLookupKey, VehicleLookupResult } from '../Lib/types'
 import {
@@ -52,9 +53,11 @@ export async function isVehicleLookupAvailable() {
 
 /**
  * One lookup for the form, by plate or by VIN, sent to a registry that
- * answers to it. When the vehicle already exists and is this organisation's,
- * what the registry said is also recorded on it, so the inspection date
- * lands without waiting for the next scheduled pass.
+ * answers to it. When the vehicle already exists, is this organisation's,
+ * and the plate or VIN asked about is its own, what the registry said is
+ * also recorded on it, so the inspection date lands without waiting for the
+ * next scheduled pass. An answer about some other plate typed into its form
+ * is left to the save, which records it only if that plate is kept.
  */
 export async function lookupVehicle(query: {
   by: VehicleLookupKey
@@ -89,9 +92,9 @@ export async function lookupVehicle(query: {
       if (query.vehicleId && lookupKeys(target.connectorId).includes('plate')) {
         const owned = await db.vehicle.findFirst({
           where: { id: query.vehicleId, organizationId },
-          select: { id: true },
+          select: { id: true, licensePlate: true, vin: true },
         })
-        if (owned) {
+        if (owned && lookupAppliesTo({ by, value }, owned)) {
           await recordRegistryAnswer({
             organizationId,
             vehicleId: owned.id,

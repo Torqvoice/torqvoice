@@ -65,8 +65,14 @@ describe('inspection refresh job', () => {
     expect(where.isArchived).toBe(false)
     expect(where.licensePlate).toEqual({ not: null })
     expect(where).not.toHaveProperty('customerId')
-    // Never checked, no date yet, monthly, and weekly near the deadline.
-    expect(where.OR).toHaveLength(5)
+    // Never checked, no date yet, monthly, weekly near the deadline, and failed a month ago.
+    expect(where.OR).toHaveLength(6)
+    expect(where.OR[5]).toEqual({
+      inspectionStatus: {
+        lastError: { not: null },
+        checkedAt: { lt: new Date('2026-08-04T08:00:00Z') },
+      },
+    })
     expect(where.OR[3]).toEqual({
       inspectionStatus: { checkedAt: { lt: new Date('2026-08-04T08:00:00Z') } },
     })
@@ -87,11 +93,12 @@ describe('inspection refresh job', () => {
     })
     const where = vehicle.findMany.mock.calls[0][0].where
     expect(where.customerId).toEqual({ not: null })
-    // No cadence rule: never checked, no date yet, and near the deadline.
-    expect(where.OR).toHaveLength(4)
+    // No cadence rule: never checked, no date yet, near the deadline, and failed a month ago.
+    expect(where.OR).toHaveLength(5)
     expect(where.OR[3].inspectionStatus.dueAt).toEqual({
       lt: new Date('2026-10-03T08:00:00Z'),
     })
+    expect(where.OR[4].inspectionStatus.lastError).toEqual({ not: null })
   })
 
   it('reads the cadence off the connection settings, falling back to the defaults', () => {

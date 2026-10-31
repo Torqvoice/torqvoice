@@ -17,8 +17,12 @@ interface VehicleLookupButtonProps {
   by: 'plate' | 'vin'
   /** The plate or VIN as typed right now; read when the button is pressed. */
   getValue: () => string
-  /** Called with what the registry knows, for the form to apply. */
-  onFound: (data: VehicleLookup) => void
+  /**
+   * Called with what the registry knows, for the form to apply, and the
+   * plate or VIN it was asked about: read when the button was pressed, not
+   * when the answer came, in case the field was retyped meanwhile.
+   */
+  onFound: (data: VehicleLookup, asked: string) => void
   /** Set when editing, so the answer is also recorded on the vehicle. */
   vehicleId?: string
 }
@@ -33,7 +37,12 @@ interface VehicleLookupButtonProps {
  * registry, so a workshop learns one can be connected; the VIN button only
  * appears once something that decodes VINs is.
  */
-export function VehicleLookupButton({ by, getValue, onFound, vehicleId }: VehicleLookupButtonProps) {
+export function VehicleLookupButton({
+  by,
+  getValue,
+  onFound,
+  vehicleId,
+}: VehicleLookupButtonProps) {
   const t = useTranslations('vehicles.form')
   const [busy, setBusy] = useState(false)
   /** null while the availability check is still in flight. */
@@ -69,7 +78,7 @@ export function VehicleLookupButton({ by, getValue, onFound, vehicleId }: Vehicl
         toast.error(t(by === 'vin' ? 'lookupVinNotFound' : 'lookupNotFound'), { id: toastId })
         return
       }
-      onFound(result.data)
+      onFound(result.data, value)
       toast.success(t('lookupSuccess', { source: result.data.source }), { id: toastId })
     } catch {
       toast.error(t(by === 'vin' ? 'lookupVinFailed' : 'lookupFailed'), { id: toastId })

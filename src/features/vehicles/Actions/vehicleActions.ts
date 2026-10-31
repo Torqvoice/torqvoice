@@ -1,6 +1,9 @@
 'use server'
 
-import { INSPECTION_CAPABILITY } from '@/features/integrations/Lib/inspection-sync'
+import {
+  INSPECTION_CAPABILITY,
+  recordRegistryAnswer,
+} from '@/features/integrations/Lib/inspection-sync'
 import { getManifest } from '@/integrations/registry'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { assertOwnUploads } from '@/lib/upload-url'
@@ -10,6 +13,7 @@ import { assertOwnedCustomer } from '@/lib/owned-records'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchema'
+import { holdsRegistryDate, lookupAppliesTo, type RegistryLookup } from '../Lib/registryLookup'
 import { revalidatePath } from 'next/cache'
 import { releaseFiles } from '@/lib/files/manager'
 import { vehicleFileUrls } from '@/lib/files/collect'
@@ -210,12 +214,6 @@ export async function getVehiclesPaginated(params: {
   )
 }
 
-/**
- * A date typed on the vehicle form. Kept beside the registry's answer with
- * its own source, so a workshop in a country without a registry, or one
- * that knows better than the register, can still drive reminders. A
- * registry answer with a date takes over again on the next sync.
- */
 /** A connector id that is a registry able to keep inspection dates, or null for anything else. */
 function inspectionRegistry(source: string | undefined): string | null {
   if (!source) return null
@@ -224,17 +222,41 @@ function inspectionRegistry(source: string | undefined): string | null {
 }
 
 /**
- * The form's inspection date. Typed by hand, it is saved as manual. Filled
- * by a registry lookup and left alone, it is saved as that registry's
- * answer with the time of the check, so the hourly sync treats the vehicle
- * as freshly checked instead of spending a second lookup on it.
+ * The form's inspection date and the registry lookup behind it.
+ *
+ * A lookup made on the form is recorded whole, the way the hourly sync
+ * records its own, with the registry's day read as a UTC day and the time of
+ * the check, so the sync treats the vehicle as freshly checked instead of
+ * spending a second lookup on it. Only when it was about this vehicle: a
+ * plate retyped after the lookup gets no answer that was never about it.
+ *
+ * The date field is then saved by hand only when the workshop typed
+ * something other than what the registry said; a date the lookup wrote and
+ * nobody touched is never saved as typed, not even when the plate was retyped
+ * underneath it. A typed date is kept beside
+ * the registry's answer with its own source, so a workshop in a country
+ * without a registry, or one that knows better than the register, can still
+ * drive reminders; a registry date takes over again on the next sync.
  */
 async function saveInspectionDate(
   organizationId: string,
   vehicleId: string,
   value: string | undefined,
-  source?: string
+  lookup: RegistryLookup | undefined,
+  saved: { licensePlate?: string | null; vin?: string | null }
 ): Promise<void> {
+  if (lookup) {
+    const registry = lookupAppliesTo(lookup, saved) ? inspectionRegistry(lookup.connectorId) : null
+    if (registry) {
+      await recordRegistryAnswer({
+        organizationId,
+        vehicleId,
+        source: registry,
+        result: lookup.result,
+      })
+    }
+    if (holdsRegistryDate(value, lookup.result)) return
+  }
   if (value === undefined) return
   const trimmed = value.trim()
   if (!trimmed) {
@@ -247,16 +269,6 @@ async function saveInspectionDate(
   }
   const dueAt = toSafeWorkshopDate(trimmed, await workshopTimeZone(organizationId))
   if (!dueAt) throw new Error('Invalid inspection date')
-  const registry = inspectionRegistry(source)
-  if (registry) {
-    const now = new Date()
-    await db.vehicleInspectionStatus.upsert({
-      where: { vehicleId },
-      create: { organizationId, vehicleId, dueAt, source: registry, checkedAt: now, found: true },
-      update: { dueAt, source: registry, checkedAt: now, found: true, lastError: null },
-    })
-    return
-  }
   await db.vehicleInspectionStatus.upsert({
     where: { vehicleId },
     create: { organizationId, vehicleId, dueAt, source: 'manual', found: true },
@@ -267,7 +279,7 @@ async function saveInspectionDate(
 export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const { inspectionDueAt, inspectionDueSource, ...data } = createVehicleSchema.parse(input)
+      const { inspectionDueAt, registryLookup, ...data } = createVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
       // The owner the vehicle is filed under must be one of our customers.
       await assertOwnedCustomer(data.customerId, organizationId)
@@ -283,7 +295,7 @@ export async function createVehicle(input: unknown) {
           organizationId,
         },
       })
-      await saveInspectionDate(organizationId, vehicle.id, inspectionDueAt, inspectionDueSource)
+      await saveInspectionDate(organizationId, vehicle.id, inspectionDueAt, registryLookup, vehicle)
       revalidatePath('/')
       revalidatePath('/vehicles')
       return vehicle
@@ -309,13 +321,20 @@ export async function createVehicle(input: unknown) {
 export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      const { id, inspectionDueAt, inspectionDueSource, ...data } = updateVehicleSchema.parse(input)
+      const { id, inspectionDueAt, registryLookup, ...data } = updateVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
 
       // Fetch current record for display/diff, and the image it had
       const before = await db.vehicle.findFirst({
         where: { id, organizationId },
-        select: { year: true, make: true, model: true, licensePlate: true, imageUrl: true },
+        select: {
+          year: true,
+          make: true,
+          model: true,
+          licensePlate: true,
+          vin: true,
+          imageUrl: true,
+        },
       })
       if (!before) throw new Error('Vehicle not found')
       await assertOwnedCustomer(data.customerId, organizationId)
@@ -346,7 +365,10 @@ export async function updateVehicle(input: unknown) {
       if (data.imageUrl !== undefined && before.imageUrl && before.imageUrl !== data.imageUrl) {
         await releaseFiles([before.imageUrl], { organizationId, reason: 'vehicle image replaced' })
       }
-      await saveInspectionDate(organizationId, id, inspectionDueAt, inspectionDueSource)
+      await saveInspectionDate(organizationId, id, inspectionDueAt, registryLookup, {
+        licensePlate: data.licensePlate !== undefined ? data.licensePlate : before.licensePlate,
+        vin: data.vin !== undefined ? data.vin : before.vin,
+      })
       const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
       const changedKeys = Object.keys(data).filter(
         (k) => (data as Record<string, unknown>)[k] !== undefined

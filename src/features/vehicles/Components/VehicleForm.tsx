@@ -38,6 +38,7 @@ import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useDateSettings } from '@/components/date-settings-context'
 import { inspectionDueInput } from '../Lib/inspectionDueInput'
+import type { RegistryLookup } from '../Lib/registryLookup'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
@@ -132,10 +133,16 @@ export function VehicleForm({
   const [transmission, setTransmission] = useState(defaultTransmission)
   /** What the registry said about the plate, kept under the field until the dialog closes. */
   const [lookupNote, setLookupNote] = useState<VehicleLookup | null>(null)
-  // The inspection date a lookup wrote into the form, and which registry
-  // said so. Sent with the save while the field still holds that value, so
-  // the date is stored as the registry's answer and not looked up again.
-  const lookupDateRef = useRef<{ value: string; connectorId: string } | null>(null)
+  // The registry lookup made on this form, sent with the save so the answer
+  // is stored as the registry's, checked now, and not looked up again. The
+  // server keeps it only while the plate or VIN it was about is still the one saved.
+  const lookupRef = useRef<RegistryLookup | null>(null)
+  /** The inspection date the form opened with; a field still holding it was not edited. */
+  const openedInspectionDue = vehicle?.inspectionStatus?.dueAt
+    ? inspectionDueInput(vehicle.inspectionStatus.dueAt, vehicle.inspectionStatus.source, timezone)
+    : ''
+  const fieldValue = (name: string) =>
+    (formRef.current?.elements.namedItem(name) as HTMLInputElement | null)?.value ?? ''
   /** Keeper read off a scanned document, until it is tied to a customer. */
   const [scannedOwner, setScannedOwner] = useState<{ name?: string; address?: string } | null>(null)
   const [ownerMatches, setOwnerMatches] = useState<OwnerMatch[]>([])
@@ -268,7 +275,7 @@ export function VehicleForm({
    * gearbox and engine code, which papers rarely state. The select only moves while it still
    * holds the value the form opened with.
    */
-  const applyLookup = (data: VehicleLookup) => {
+  const applyLookup = (data: VehicleLookup, asked: { by: 'plate' | 'vin'; value: string }) => {
     applyScan(data)
     const engineCode = formRef.current?.elements.namedItem('engineCode') as HTMLInputElement | null
     if (data.engineCode && engineCode && !engineCode.value) engineCode.value = data.engineCode
@@ -276,10 +283,22 @@ export function VehicleForm({
       const input = formRef.current?.elements.namedItem(
         'inspectionDueAt'
       ) as HTMLInputElement | null
-      if (input && !input.value) {
+      // The registry's fresh date replaces an empty field, the date the form
+      // opened with, or the date an earlier lookup wrote; a date the user
+      // typed since stays.
+      const earlier = lookupRef.current?.result.inspectionDue?.slice(0, 10)
+      if (
+        input &&
+        (!input.value || input.value === openedInspectionDue || input.value === earlier)
+      ) {
         input.value = data.inspectionDue.slice(0, 10)
-        lookupDateRef.current = { value: input.value, connectorId: data.connectorId }
       }
+    }
+    lookupRef.current = {
+      connectorId: data.connectorId,
+      by: asked.by,
+      value: asked.value,
+      result: data,
     }
     if (data.transmission && transmission === defaultTransmission) {
       setTransmission(data.transmission)
@@ -294,7 +313,9 @@ export function VehicleForm({
     if (!open || vehicle || !initialLookup) return
     if (appliedLookupRef.current === initialLookup) return
     appliedLookupRef.current = initialLookup
-    const frame = requestAnimationFrame(() => applyLookup(initialLookup))
+    const frame = requestAnimationFrame(() =>
+      applyLookup(initialLookup, { by: 'plate', value: initialLookup.licensePlate ?? '' })
+    )
     return () => cancelAnimationFrame(frame)
     // applyLookup reads the current form and selects; running it again on
     // their change would overwrite what the user has since typed.
@@ -303,7 +324,7 @@ export function VehicleForm({
   useEffect(() => {
     if (!open) {
       appliedLookupRef.current = null
-      lookupDateRef.current = null
+      lookupRef.current = null
     }
   }, [open])
 
@@ -365,6 +386,7 @@ export function VehicleForm({
       // touched" and would bring the old value back. On create, leaving an
       // empty field out is the same thing as clearing it.
       const optional = (name: string) => clearableInput(formData.get(name), Boolean(vehicle))
+      const inspectionDue = (formData.get('inspectionDueAt') as string | null) ?? ''
       const withUnit = <T,>(value: T) =>
         typeof value === 'string' && !isMarine
           ? engineSizeToSave(value, vehicle?.engineSize)
@@ -384,12 +406,12 @@ export function VehicleForm({
         engineCode: optional('engineCode'),
         hsn: showTypeKey ? optional('hsn') : undefined,
         tsn: showTypeKey ? optional('tsn') : undefined,
-        // Sent as-is: an empty string clears a hand-typed date, undefined leaves it alone.
-        inspectionDueAt: isMarine ? undefined : ((formData.get('inspectionDueAt') as string) ?? ''),
-        inspectionDueSource:
-          !isMarine && lookupDateRef.current?.value === formData.get('inspectionDueAt')
-            ? lookupDateRef.current.connectorId
-            : undefined,
+        // An empty string clears a hand-typed date; undefined leaves the stored
+        // date alone, so saving another field, or a lookup that brought no
+        // date, does not turn a registry's date into one typed by hand.
+        inspectionDueAt:
+          isMarine || inspectionDue === openedInspectionDue ? undefined : inspectionDue,
+        registryLookup: isMarine ? undefined : (lookupRef.current ?? undefined),
         customerId,
       }
 
@@ -666,14 +688,8 @@ export function VehicleForm({
                     {!isMarine && (
                       <VehicleLookupButton
                         by="plate"
-                        getValue={() =>
-                          (
-                            formRef.current?.elements.namedItem(
-                              'licensePlate'
-                            ) as HTMLInputElement | null
-                          )?.value ?? ''
-                        }
-                        onFound={applyLookup}
+                        getValue={() => fieldValue('licensePlate')}
+                        onFound={(data, asked) => applyLookup(data, { by: 'plate', value: asked })}
                         vehicleId={vehicle?.id}
                       />
                     )}
@@ -692,11 +708,8 @@ export function VehicleForm({
                     {!isMarine && (
                       <VehicleLookupButton
                         by="vin"
-                        getValue={() =>
-                          (formRef.current?.elements.namedItem('vin') as HTMLInputElement | null)
-                            ?.value ?? ''
-                        }
-                        onFound={applyLookup}
+                        getValue={() => fieldValue('vin')}
+                        onFound={(data, asked) => applyLookup(data, { by: 'vin', value: asked })}
                         vehicleId={vehicle?.id}
                       />
                     )}
@@ -844,15 +857,7 @@ export function VehicleForm({
                     id="inspectionDueAt"
                     name="inspectionDueAt"
                     type="date"
-                    defaultValue={
-                      vehicle?.inspectionStatus?.dueAt
-                        ? inspectionDueInput(
-                            vehicle.inspectionStatus.dueAt,
-                            vehicle.inspectionStatus.source,
-                            timezone
-                          )
-                        : ''
-                    }
+                    defaultValue={openedInspectionDue}
                   />
                   <p className="text-xs text-muted-foreground">
                     {vehicle?.inspectionStatus?.source &&
