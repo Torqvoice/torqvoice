@@ -70,6 +70,9 @@
       "invoices": "Fatture in contabilità",
       "customers": "Clienti in contabilità",
       "payments": "Pagamenti in entrambe le direzioni"
+    },
+    "backup": {
+      "target": "Destinazione dei backup"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Tutti i veicoli con targa sono stati controllati di recente, quindi non c'è ancora niente da cercare."
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
+    "platformHandlesBackups": "Torqvoice esegue già un backup di questa officina ogni ora e conserva i punti di ripristino per 30 giorni. Collega un bucket se vuoi anche una copia tua, leggibile senza Torqvoice.",
+    "platformHandlesBackupsLink": "Vedi i tuoi punti di ripristino",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
-    "advanced": "Avanzate"
+    "advanced": "Avanzate",
+    "generate": "Genera",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "generatedPasswordWarning": "Conserva una copia di questa password in un posto sicuro, lontano da questo server. Senza di essa nessuno può aprire questi backup, nemmeno Torqvoice.",
+    "backup": {
+      "title": "Backup",
+      "description": "Quando questa destinazione ha ricevuto l'ultimo backup riuscito, quando parte il prossimo e le esecuzioni più recenti.",
+      "lastGood": "Ultimo backup riuscito",
+      "added": "{size} aggiunti",
+      "never": "Ancora nessuno",
+      "nextRun": "Prossima esecuzione",
+      "notScheduled": "Non pianificato",
+      "repositorySize": "Archiviato nella destinazione",
+      "runNow": "Esegui backup ora",
+      "running": "Backup in corso",
+      "runningHint": "È in corso un backup. Questa pagina si aggiorna da sola finché non è terminato.",
+      "started": "Backup avviato",
+      "recentTitle": "Esecuzioni recenti",
+      "noRuns": "Non è ancora stato eseguito nessun backup.",
+      "addedNote": "La prima esecuzione carica tutto. Ognuna delle successive aggiunge solo le parti cambiate da allora, per questo è piccola. Ogni backup resta comunque completo e può essere ripristinato o esplorato da solo.",
+      "notStarted": "Non avviato",
+      "filesNewCount": "{count, plural, one {# nuovo file} other {# nuovi file}}",
+      "columns": {
+        "status": "Stato",
+        "started": "Avviato",
+        "trigger": "Avviato da",
+        "duration": "Durata",
+        "filesNew": "Nuovi file",
+        "bytesAdded": "Aggiunti"
+      },
+      "trigger": {
+        "scheduled": "Pianificazione",
+        "manual": "Manuale",
+        "restore": "Ripristino"
+      },
+      "status": {
+        "queued": "In coda",
+        "running": "In corso",
+        "done": "Completato",
+        "failed": "Non riuscito",
+        "skipped": "Saltato"
+      },
+      "restoring": "Ripristino in corso",
+      "restoringHint": "È in corso un ripristino: i dati dell'officina vengono sostituiti con il backup. Questa pagina si aggiorna da sola finché non è terminato. Fino ad allora non lavorare nell'officina.",
+      "explore": "Esplora",
+      "restore": {
+        "showAll": "Mostra tutti i backup",
+        "refresh": "Aggiorna",
+        "loading": "Lettura dei backup nella destinazione",
+        "loadFailed": "Non è stato possibile elencare i backup",
+        "empty": "Ancora nessun backup in questa destinazione.",
+        "needsOwner": "Qui solo il proprietario dell'officina può ripristinare un backup.",
+        "needsAdmin": "Solo un proprietario o un amministratore può ripristinare un backup.",
+        "filesIncluded": "Foto e file inclusi",
+        "filesNotIncluded": "Foto e file non inclusi",
+        "earlierInstall": "Installazione precedente",
+        "action": "Ripristina",
+        "dialogTitle": "Ripristinare il backup del {time}?",
+        "warning": "Il ripristino <bold>sostituisce tutto ciò che questa officina contiene ora</bold>: clienti, veicoli, lavori, fatture, impostazioni e, quando il backup li include, foto e file. Tutto ciò che è stato aggiunto dopo il backup va perso. L'operazione non è reversibile.",
+        "secretsNote": "Le chiavi segrete lasciate fuori dal backup mantengono i valori che questa installazione ha ora. Account utente e password non vengono toccati.",
+        "confirmPrompt": "Digita il nome dell'officina, <bold>{name}</bold>, per confermare.",
+        "whileRunning": "Il ripristino avviene in background e richiede qualche minuto quando ci sono molte foto. La pagina si aggiorna da sola finché non è terminato.",
+        "cancel": "Annulla",
+        "confirm": "Ripristina questo backup",
+        "started": "Ripristino avviato"
+      }
+    },
+    "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo.",
+    "searchOrType": "Cerca o digita un nome",
+    "useTyped": "Usa \"{value}\"",
+    "listNeedsKeys": "Inserisci le chiavi qui sopra per vedere l'elenco",
+    "listEmpty": "L'elenco è vuoto. Digita un nome.",
+    "testing": "Prova della connessione in corso",
+    "testOk": "La connessione funziona: un oggetto di prova è stato scritto e poi eliminato.",
+    "testFailed": "La prova non è riuscita",
+    "testSteps": {
+      "settings": "Controlla le impostazioni del fornitore",
+      "list": "La chiave non può elencare il bucket",
+      "write": "La chiave non può scrivere nel bucket",
+      "delete": "La chiave non può eliminare dal bucket",
+      "folder": "Impossibile creare o aprire la cartella"
+    },
+    "testHint": "Inserisci le chiavi e il bucket per provarli prima di collegare. La prova scrive un piccolo oggetto e lo elimina."
   },
   "activity": {
     "title": "Attività",
@@ -199,7 +287,10 @@
     "invalid": "La risposta del provider era incompleta. Riprova.",
     "state": "Questo accesso è scaduto o appartiene a un'altra sessione. Ricomincia da capo.",
     "exchange": "Il provider ha rifiutato l'accesso. Controlla le credenziali dell'app e riprova.",
-    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo."
+    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo.",
+    "backupRunning": "È già in corso un backup.",
+    "restoreOwnerOnly": "Su Torqvoice Cloud solo il proprietario dell'officina può ripristinare un backup.",
+    "restoreBusy": "Su questo server è già in corso un backup o un ripristino. Riprova quando è terminato."
   },
   "meeting": {
     "join": "Partecipa alla videochiamata",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendario Microsoft 365",
       "description": "Inserisci gli ordini di lavoro pianificati in un calendario Outlook, aggiungi un link Microsoft Teams e vedi gli impegni del calendario in Torqvoice.",
       "tenantHelp": "Registra un'applicazione in Microsoft Entra (Registrazioni app), consenti gli account personali e aziendali, aggiungi l'URI di reindirizzamento qui sotto come piattaforma Web, crea un segreto client e incolla entrambi qui.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatibile con OpenAI",
       "description": "Descrizioni di servizio, riepiloghi dello storico, lettura di documenti e assistente, forniti da qualsiasi server che parli l'API chat di OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM e simili. I tuoi dati restano sul tuo hardware.",
       "fields": {
         "baseUrl": "URL di base",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Da voce a testo",
       "description": "La dettatura su un ordine di lavoro viene trascritta da un modello vocale invece che dal browser: molto più precisa, in qualsiasi lingua e conosce le parole dell'officina. È separata dal tuo fornitore di IA, quindi puoi lasciarlo com'è. Usa la tua chiave OpenAI o un tuo server che parli l'API di trascrizione di OpenAI. La registrazione viene inviata per la trascrizione e non viene conservata.",
       "fields": {
         "apiKey": "Chiave API",
@@ -652,6 +746,108 @@
         "modeHelp": "Il browser scrive mentre parli ma è meno preciso, soprattutto nelle lingue meno diffuse. Il modello vocale scrive quando ti fermi.",
         "modeAi": "Sempre il modello vocale",
         "modeChoice": "Sceglie ciascuno: modello vocale o browser"
+      }
+    },
+    "s3": {
+      "name": "Bucket di archiviazione cloud",
+      "description": "Backup cifrati di questa officina in un bucket di tua proprietà su Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage o qualsiasi altro storage compatibile S3, con la frequenza che scegli. Dopo la prima esecuzione viene caricato solo ciò che è cambiato, quindi i backup orari restano economici.",
+      "fields": {
+        "accessKeyId": "ID chiave di accesso",
+        "accessKeyIdHelp": "Una chiave del tuo fornitore di archiviazione con il permesso di elencare, leggere, scrivere ed eliminare gli oggetti nel bucket. Crea una chiave solo per Torqvoice, così puoi revocarla separatamente.",
+        "secretAccessKey": "Chiave di accesso segreta",
+        "password": "Password dei backup",
+        "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati.",
+        "endpoint": "Endpoint personalizzato",
+        "endpointHelp": "Solo per l'opzione Altro storage compatibile S3: l'indirizzo S3 del tuo storage, ad esempio un server MinIO, come nome host con la porta se serve."
+      },
+      "settings": {
+        "provider": "Fornitore",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Altro storage compatibile S3",
+        "region": "Regione",
+        "regionHelp": "Dove si trova il bucket. Sceglila dall'elenco del fornitore; per un altro storage, digita quella che richiede, se ne richiede una. Non usata da Cloudflare R2.",
+        "accountId": "ID account Cloudflare",
+        "accountIdHelp": "L'ID di 32 caratteri mostrato nella pagina di panoramica di R2 nella dashboard di Cloudflare.",
+        "bucket": "Bucket",
+        "bucketHelp": "I bucket vengono elencati con la chiave appena la inserisci. Se la chiave può usare un bucket ma non elencarli, digita il nome.",
+        "prefix": "Cartella nel bucket",
+        "prefixHelp": "I backup vengono salvati in questa cartella. Usa una cartella diversa per ogni officina che condivide il bucket.",
+        "frequency": "Frequenza",
+        "frequencyHourly": "Ogni ora",
+        "frequencyEvery4h": "Ogni 4 ore",
+        "frequencyDaily": "Ogni giorno",
+        "frequencyWeekly": "Ogni settimana",
+        "frequencyMonthly": "Ogni mese",
+        "time": "Ora del giorno",
+        "timeHelp": "Secondo l'orologio dell'officina, nel formato HH:MM. Usata dai backup giornalieri, settimanali e mensili.",
+        "weekday": "Giorno della settimana",
+        "sunday": "Domenica",
+        "monday": "Lunedì",
+        "tuesday": "Martedì",
+        "wednesday": "Mercoledì",
+        "thursday": "Giovedì",
+        "friday": "Venerdì",
+        "saturday": "Sabato",
+        "monthDay": "Giorno del mese",
+        "monthDayLast": "Ultimo giorno",
+        "contents": "Contenuto",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup. Un backup contiene i dati dell'officina e, se lo scegli, i suoi file. Account utente e password non ne fanno parte: su un nuovo server accedi, inviti il team e ripristini i dati in quell'officina.",
+        "contentsData": "Solo dati",
+        "contentsDataAndSecrets": "Dati e chiavi segrete",
+        "includeFiles": "Includi foto e file",
+        "includeFilesHelp": "Ogni file viene caricato una sola volta e riutilizzato dai backup successivi, quindi dopo la prima esecuzione costa poco.",
+        "keepHourly": "Backup orari da conservare",
+        "keepHourlyHelp": "Quanti dei backup orari più recenti conservare. Conta solo con le pianificazioni ogni ora e ogni 4 ore.",
+        "keepDaily": "Backup giornalieri da conservare",
+        "keepWeekly": "Backup settimanali da conservare",
+        "keepMonthly": "Backup mensili da conservare",
+        "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
+      }
+    },
+    "local-folder": {
+      "name": "Cartella locale",
+      "description": "Backup cifrati di questa officina in una cartella su questo server: il volume dei backup nel file compose, o un'unità di rete montata lì. Una copia sullo stesso disco del database non è sicura da sola; abbinala a uno spazio di archiviazione altrove.",
+      "fields": {
+        "password": "Password dei backup",
+        "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati."
+      },
+      "settings": {
+        "folder": "Cartella",
+        "folderHelp": "La cartella, sotto la radice dei backup del server, che contiene i backup di questa officina. Lasciala vuota per usare una cartella con il nome di questa officina. Su un nuovo server, inserisci il nome della cartella usata da un'installazione precedente per recuperarne i backup.",
+        "frequency": "Frequenza",
+        "frequencyHourly": "Ogni ora",
+        "frequencyEvery4h": "Ogni 4 ore",
+        "frequencyDaily": "Ogni giorno",
+        "frequencyWeekly": "Ogni settimana",
+        "frequencyMonthly": "Ogni mese",
+        "time": "Ora del giorno",
+        "timeHelp": "Secondo l'orologio dell'officina, nel formato HH:MM. Usata dai backup giornalieri, settimanali e mensili.",
+        "weekday": "Giorno della settimana",
+        "sunday": "Domenica",
+        "monday": "Lunedì",
+        "tuesday": "Martedì",
+        "wednesday": "Mercoledì",
+        "thursday": "Giovedì",
+        "friday": "Venerdì",
+        "saturday": "Sabato",
+        "monthDay": "Giorno del mese",
+        "monthDayLast": "Ultimo giorno",
+        "contents": "Contenuto",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup. Un backup contiene i dati dell'officina e, se lo scegli, i suoi file. Account utente e password non ne fanno parte: su un nuovo server accedi, inviti il team e ripristini i dati in quell'officina.",
+        "contentsData": "Solo dati",
+        "contentsDataAndSecrets": "Dati e chiavi segrete",
+        "includeFiles": "Includi foto e file",
+        "includeFilesHelp": "Ogni file viene caricato una sola volta e riutilizzato dai backup successivi, quindi dopo la prima esecuzione costa poco.",
+        "keepHourly": "Backup orari da conservare",
+        "keepHourlyHelp": "Quanti dei backup orari più recenti conservare. Conta solo con le pianificazioni ogni ora e ogni 4 ore.",
+        "keepDaily": "Backup giornalieri da conservare",
+        "keepWeekly": "Backup settimanali da conservare",
+        "keepMonthly": "Backup mensili da conservare",
+        "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Aggiornamento dei dati sui richiami",
       "vehicle": "Controllo richiami per un nuovo veicolo"
     }
+  },
+  "backupAlerts": {
+    "destination": "destinazione dei backup",
+    "failedTitle": "Backup non riuscito",
+    "failedMessage": "Il backup su {name} non è stato completato: {reason}",
+    "failedSubject": "Backup su {name} non riuscito",
+    "failedEmailIntro": "Il backup programmato della tua officina su {name} non è stato completato.",
+    "openToRetry": "Apri Impostazioni, Integrazioni, {name} per vedere l'esecuzione e riprovare.",
+    "overdueTitle": "Backup in ritardo",
+    "overdueSince": "Nessun backup su {name} è stato completato dal {time}.",
+    "overdueNever": "Nessun backup su {name} è stato ancora completato.",
+    "overdueSubject": "Il backup su {name} è in ritardo",
+    "openToSee": "Apri Impostazioni, Integrazioni, {name} per vedere cosa è andato storto.",
+    "platformName": "Backup di Torqvoice",
+    "restoredTitle": "Officina ripristinata",
+    "restoredSubject": "La tua officina è stata ripristinata da un backup",
+    "restoredIntro": "{name}: l'officina è stata riportata al punto di ripristino {snapshot} il {time}. Tutto ciò che è stato inserito dopo quel punto non è più presente nell'officina.",
+    "restoredByMember": "Un membro della tua officina ha richiesto questo ripristino.",
+    "restoredBySupport": "L'assistenza Torqvoice lo ha fatto su tua richiesta. Motivo indicato: {reason}",
+    "noReason": "nessuno",
+    "restoredUndo": "Prima è stata creata una copia di sicurezza dell'officina com'era subito prima del ripristino, che viene conservata per 90 giorni. Contatta l'assistenza per tornarci."
   }
 }

@@ -70,6 +70,9 @@
       "invoices": "Factures vers la comptabilité",
       "customers": "Clients vers la comptabilité",
       "payments": "Paiements dans les deux sens"
+    },
+    "backup": {
+      "target": "Destination de sauvegarde"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Tous les véhicules qui ont une plaque ont été vérifiés récemment, il n'y a encore rien à rechercher."
     },
     "supersedes": "Connecter {next} déconnecte {current}. Un seul peut être actif à la fois : {current} cesse d'être utilisé dès que {next} est en service.",
+    "platformHandlesBackups": "Torqvoice sauvegarde déjà cet atelier toutes les heures et conserve des points de restauration pendant 30 jours. Connectez un bucket si vous voulez aussi une copie qui vous appartient, lisible sans Torqvoice.",
+    "platformHandlesBackupsLink": "Voir vos points de restauration",
     "batchRetried": "{count, plural, =0 {Rien à réessayer} one {# tâche remise en file} other {# tâches remises en file}}",
-    "advanced": "Avancé"
+    "advanced": "Avancé",
+    "generate": "Générer",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "generatedPasswordWarning": "Conservez une copie de ce mot de passe en lieu sûr, ailleurs que sur ce serveur. Sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice.",
+    "backup": {
+      "title": "Sauvegardes",
+      "description": "La dernière sauvegarde réussie vers cette destination, la prochaine exécution et les exécutions les plus récentes.",
+      "lastGood": "Dernière sauvegarde réussie",
+      "added": "{size} ajoutés",
+      "never": "Aucune pour l'instant",
+      "nextRun": "Prochaine exécution",
+      "notScheduled": "Non planifiée",
+      "repositorySize": "Stocké à la destination",
+      "runNow": "Sauvegarder maintenant",
+      "running": "Sauvegarde en cours",
+      "runningHint": "Une sauvegarde est en cours. Cette page se met à jour toute seule jusqu'à la fin.",
+      "started": "Sauvegarde lancée",
+      "recentTitle": "Exécutions récentes",
+      "noRuns": "Aucune sauvegarde n'a encore été effectuée.",
+      "addedNote": "La première exécution envoie tout. Chacune des suivantes n’ajoute que les éléments modifiés depuis, c’est pourquoi elle est petite. Chaque sauvegarde reste complète et peut être restaurée ou explorée seule.",
+      "notStarted": "Non démarrée",
+      "filesNewCount": "{count, plural, one {# nouveau fichier} other {# nouveaux fichiers}}",
+      "columns": {
+        "status": "Statut",
+        "started": "Démarrée",
+        "trigger": "Lancée par",
+        "duration": "Durée",
+        "filesNew": "Nouveaux fichiers",
+        "bytesAdded": "Ajouté"
+      },
+      "trigger": {
+        "scheduled": "Planification",
+        "manual": "Manuel",
+        "restore": "Restauration"
+      },
+      "status": {
+        "queued": "En file d'attente",
+        "running": "En cours",
+        "done": "Terminée",
+        "failed": "Échouée",
+        "skipped": "Ignorée"
+      },
+      "restoring": "Restauration en cours",
+      "restoringHint": "Une restauration est en cours : les données de l'atelier sont remplacées par la sauvegarde. Cette page se met à jour toute seule jusqu'à la fin. Ne travaillez pas dans l'atelier d'ici là.",
+      "explore": "Explorer",
+      "restore": {
+        "showAll": "Afficher toutes les sauvegardes",
+        "refresh": "Actualiser",
+        "loading": "Lecture des sauvegardes à la destination",
+        "loadFailed": "Impossible de lister les sauvegardes",
+        "empty": "Aucune sauvegarde à cette destination pour l'instant.",
+        "needsOwner": "Seul le propriétaire de l'atelier peut restaurer une sauvegarde ici.",
+        "needsAdmin": "Seul un propriétaire ou un administrateur peut restaurer une sauvegarde.",
+        "filesIncluded": "Photos et fichiers inclus",
+        "filesNotIncluded": "Photos et fichiers non inclus",
+        "earlierInstall": "Installation précédente",
+        "action": "Restaurer",
+        "dialogTitle": "Restaurer la sauvegarde du {time} ?",
+        "warning": "La restauration <bold>remplace tout ce que cet atelier contient aujourd'hui</bold> : clients, véhicules, ordres de réparation, factures, paramètres et, quand la sauvegarde les inclut, photos et fichiers. Tout ce qui a été ajouté depuis la sauvegarde est perdu. Cette action est irréversible.",
+        "secretsNote": "Les clés secrètes que la sauvegarde a laissées de côté conservent les valeurs que cette installation possède aujourd'hui. Les comptes utilisateurs et les mots de passe ne sont pas modifiés.",
+        "confirmPrompt": "Saisissez le nom de l'atelier, <bold>{name}</bold>, pour confirmer.",
+        "whileRunning": "La restauration s'exécute en arrière-plan et prend quelques minutes quand il y a beaucoup de photos. La page se met à jour toute seule jusqu'à la fin.",
+        "cancel": "Annuler",
+        "confirm": "Restaurer cette sauvegarde",
+        "started": "Restauration lancée"
+      }
+    },
+    "lockedBackups": "Des sauvegardes chiffrées et planifiées de votre atelier vers un stockage qui vous appartient.",
+    "searchOrType": "Rechercher ou saisir un nom",
+    "useTyped": "Utiliser « {value} »",
+    "listNeedsKeys": "Saisissez les clés ci-dessus pour voir la liste",
+    "listEmpty": "Rien n'a été listé. Saisissez plutôt un nom.",
+    "testing": "Test de la connexion en cours",
+    "testOk": "La connexion fonctionne : un objet de test a été écrit puis supprimé.",
+    "testFailed": "Le test a échoué",
+    "testSteps": {
+      "settings": "Vérifiez les paramètres du fournisseur",
+      "list": "La clé ne peut pas lister le bucket",
+      "write": "La clé ne peut pas écrire dans le bucket",
+      "delete": "La clé ne peut pas supprimer d'objets du bucket",
+      "folder": "Le dossier ne peut être ni créé ni ouvert"
+    },
+    "testHint": "Saisissez les clés et le bucket pour les tester avant de connecter. Le test écrit un petit objet puis le supprime."
   },
   "activity": {
     "title": "Activité",
@@ -199,7 +287,10 @@
     "invalid": "La réponse du fournisseur était incomplète. Réessayez.",
     "state": "Cette connexion a expiré ou appartient à une autre session. Recommencez.",
     "exchange": "Le fournisseur a refusé la connexion. Vérifiez les identifiants de l'application et réessayez.",
-    "identify": "Connecté, mais le compte n'a pas pu être lu. Essayez de vous reconnecter."
+    "identify": "Connecté, mais le compte n'a pas pu être lu. Essayez de vous reconnecter.",
+    "backupRunning": "Une sauvegarde est déjà en cours.",
+    "restoreOwnerOnly": "Sur Torqvoice Cloud, seul le propriétaire de l'atelier peut restaurer une sauvegarde.",
+    "restoreBusy": "Une sauvegarde ou une restauration est déjà en cours sur ce serveur. Réessayez quand elle sera terminée."
   },
   "meeting": {
     "join": "Rejoindre l'appel vidéo",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendrier Microsoft 365",
       "description": "Ajoutez les ordres de travail planifiés à un calendrier Outlook, joignez un lien Microsoft Teams et consultez les plages occupées du calendrier dans Torqvoice.",
       "tenantHelp": "Enregistrez une application dans Microsoft Entra (Inscriptions d'applications), autorisez les comptes personnels et professionnels, ajoutez l'URI de redirection ci-dessous comme plateforme Web, créez un secret client, puis collez les deux ici.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatible OpenAI",
       "description": "Descriptions de service, résumés d'historique, lecture de documents et assistant, fournis par tout serveur parlant l'API de chat d'OpenAI : Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM et consorts. Vos données restent sur votre propre matériel.",
       "fields": {
         "baseUrl": "URL de base",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Transcription vocale",
       "description": "La dictée sur un ordre de travail, transcrite par un modèle vocal plutôt que par le navigateur : bien plus précise, dans toutes les langues, et elle connaît le vocabulaire de l'atelier. Indépendant de votre fournisseur d'IA, que vous pouvez garder tel quel. Utilise votre propre clé OpenAI, ou votre propre serveur compatible avec l'API de transcription d'OpenAI. L'enregistrement est envoyé pour être transcrit et n'est pas conservé.",
       "fields": {
         "apiKey": "Clé API",
@@ -652,6 +746,108 @@
         "modeHelp": "Le navigateur écrit pendant que vous parlez mais il est moins bon, surtout dans les langues moins répandues. Le modèle vocal écrit quand vous vous arrêtez.",
         "modeAi": "Toujours le modèle vocal",
         "modeChoice": "Chacun choisit : modèle vocal ou navigateur"
+      }
+    },
+    "s3": {
+      "name": "Bucket de stockage cloud",
+      "description": "Des sauvegardes chiffrées de cet atelier vers un bucket qui vous appartient chez Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ou tout autre stockage compatible S3, selon le calendrier de votre choix. Après la première exécution, seules les modifications sont envoyées, si bien que les sauvegardes horaires restent bon marché.",
+      "fields": {
+        "accessKeyId": "ID de clé d'accès",
+        "accessKeyIdHelp": "Une clé de votre fournisseur de stockage autorisée à lister, lire, écrire et supprimer des objets dans le bucket. Créez une clé réservée à Torqvoice, pour pouvoir la révoquer séparément.",
+        "secretAccessKey": "Clé d'accès secrète",
+        "password": "Mot de passe des sauvegardes",
+        "passwordHelp": "Chaque sauvegarde est chiffrée avec ce mot de passe. Inventez-en un ou cliquez sur Générer, et conservez-en une copie ailleurs que sur ce serveur : sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice. Pour reconnecter un stockage qui contient déjà des sauvegardes Torqvoice, saisissez le mot de passe avec lequel elles ont été créées.",
+        "endpoint": "Point de terminaison personnalisé",
+        "endpointHelp": "Uniquement pour l'option Autre stockage compatible S3 : l'adresse S3 de votre propre stockage, comme un serveur MinIO, sous forme de nom d'hôte, avec un port si nécessaire."
+      },
+      "settings": {
+        "provider": "Fournisseur",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Autre stockage compatible S3",
+        "region": "Région",
+        "regionHelp": "L'emplacement du bucket. Choisissez la région dans la liste du fournisseur ; pour un autre stockage, saisissez ce qu'il attend, s'il en demande une. Non utilisée par Cloudflare R2.",
+        "accountId": "ID de compte Cloudflare",
+        "accountIdHelp": "L'identifiant de 32 caractères affiché sur la page de présentation R2 de votre tableau de bord Cloudflare.",
+        "bucket": "Bucket",
+        "bucketHelp": "La liste vient de la clé dès qu'elle est saisie. Si la clé peut utiliser un bucket sans pouvoir les lister, saisissez son nom.",
+        "prefix": "Dossier dans le bucket",
+        "prefixHelp": "Les sauvegardes sont rangées dans ce dossier. Utilisez un dossier différent pour chaque atelier qui partage le bucket.",
+        "frequency": "Fréquence",
+        "frequencyHourly": "Toutes les heures",
+        "frequencyEvery4h": "Toutes les 4 heures",
+        "frequencyDaily": "Tous les jours",
+        "frequencyWeekly": "Toutes les semaines",
+        "frequencyMonthly": "Tous les mois",
+        "time": "Heure",
+        "timeHelp": "Selon l'horloge de l'atelier, au format HH:MM. Utilisée pour les sauvegardes quotidiennes, hebdomadaires et mensuelles.",
+        "weekday": "Jour de la semaine",
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "monthDay": "Jour du mois",
+        "monthDayLast": "Dernier jour",
+        "contents": "Contenu",
+        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes. Une sauvegarde contient les données de l'atelier et, si vous le choisissez, ses fichiers. Les comptes utilisateurs et les mots de passe n'en font pas partie : sur un nouveau serveur, vous vous connectez, invitez l'équipe et restaurez les données dans cet atelier.",
+        "contentsData": "Données uniquement",
+        "contentsDataAndSecrets": "Données et clés secrètes",
+        "includeFiles": "Inclure les photos et les fichiers",
+        "includeFilesHelp": "Chaque fichier est envoyé une seule fois puis réutilisé par les sauvegardes suivantes, ce qui coûte peu après la première exécution.",
+        "keepHourly": "Sauvegardes horaires à conserver",
+        "keepHourlyHelp": "Combien des sauvegardes horaires les plus récentes conserver. Ne compte que pour les calendriers toutes les heures et toutes les 4 heures.",
+        "keepDaily": "Sauvegardes quotidiennes à conserver",
+        "keepWeekly": "Sauvegardes hebdomadaires à conserver",
+        "keepMonthly": "Sauvegardes mensuelles à conserver",
+        "keepMonthlyHelp": "Les sauvegardes plus anciennes sont supprimées après chaque exécution, en gardant les plus récentes de chaque type. Mettez un nombre à 0 pour n'en garder aucune de ce type."
+      }
+    },
+    "local-folder": {
+      "name": "Dossier local",
+      "description": "Des sauvegardes chiffrées de cet atelier vers un dossier de ce serveur : le volume de sauvegardes du fichier compose, ou un lecteur réseau monté à cet endroit. Une copie sur le même disque que la base de données n'est pas sûre à elle seule ; associez-la à un stockage situé ailleurs.",
+      "fields": {
+        "password": "Mot de passe des sauvegardes",
+        "passwordHelp": "Chaque sauvegarde est chiffrée avec ce mot de passe. Inventez-en un ou cliquez sur Générer, et conservez-en une copie ailleurs que sur ce serveur : sans lui, personne ne peut ouvrir ces sauvegardes, pas même Torqvoice. Pour reconnecter un stockage qui contient déjà des sauvegardes Torqvoice, saisissez le mot de passe avec lequel elles ont été créées."
+      },
+      "settings": {
+        "folder": "Dossier",
+        "folderHelp": "Le dossier, sous la racine des sauvegardes du serveur, qui contient les sauvegardes de cet atelier. Laissez vide pour utiliser un dossier nommé d'après cet atelier. Sur un nouveau serveur, saisissez le nom du dossier utilisé par une installation précédente pour récupérer ses sauvegardes.",
+        "frequency": "Fréquence",
+        "frequencyHourly": "Toutes les heures",
+        "frequencyEvery4h": "Toutes les 4 heures",
+        "frequencyDaily": "Tous les jours",
+        "frequencyWeekly": "Toutes les semaines",
+        "frequencyMonthly": "Tous les mois",
+        "time": "Heure",
+        "timeHelp": "Selon l'horloge de l'atelier, au format HH:MM. Utilisée pour les sauvegardes quotidiennes, hebdomadaires et mensuelles.",
+        "weekday": "Jour de la semaine",
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "monthDay": "Jour du mois",
+        "monthDayLast": "Dernier jour",
+        "contents": "Contenu",
+        "contentsHelp": "Les clés secrètes sont celles que cet atelier a saisies dans Torqvoice : clés de paiement, d'IA et de webhook. Dans tous les cas, chaque sauvegarde est chiffrée avec le mot de passe des sauvegardes. Une sauvegarde contient les données de l'atelier et, si vous le choisissez, ses fichiers. Les comptes utilisateurs et les mots de passe n'en font pas partie : sur un nouveau serveur, vous vous connectez, invitez l'équipe et restaurez les données dans cet atelier.",
+        "contentsData": "Données uniquement",
+        "contentsDataAndSecrets": "Données et clés secrètes",
+        "includeFiles": "Inclure les photos et les fichiers",
+        "includeFilesHelp": "Chaque fichier est envoyé une seule fois puis réutilisé par les sauvegardes suivantes, ce qui coûte peu après la première exécution.",
+        "keepHourly": "Sauvegardes horaires à conserver",
+        "keepHourlyHelp": "Combien des sauvegardes horaires les plus récentes conserver. Ne compte que pour les calendriers toutes les heures et toutes les 4 heures.",
+        "keepDaily": "Sauvegardes quotidiennes à conserver",
+        "keepWeekly": "Sauvegardes hebdomadaires à conserver",
+        "keepMonthly": "Sauvegardes mensuelles à conserver",
+        "keepMonthlyHelp": "Les sauvegardes plus anciennes sont supprimées après chaque exécution, en gardant les plus récentes de chaque type. Mettez un nombre à 0 pour n'en garder aucune de ce type."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Actualisation des données de rappel",
       "vehicle": "Vérification des rappels pour un nouveau véhicule"
     }
+  },
+  "backupAlerts": {
+    "destination": "destination de sauvegarde",
+    "failedTitle": "Échec de la sauvegarde",
+    "failedMessage": "La sauvegarde vers {name} n'a pas abouti : {reason}",
+    "failedSubject": "Échec de la sauvegarde vers {name}",
+    "failedEmailIntro": "La sauvegarde planifiée de votre atelier vers {name} n'a pas abouti.",
+    "openToRetry": "Ouvrez Paramètres, Intégrations, {name} pour consulter l'exécution et réessayer.",
+    "overdueTitle": "Sauvegarde en retard",
+    "overdueSince": "Aucune sauvegarde vers {name} n'a abouti depuis {time}.",
+    "overdueNever": "Aucune sauvegarde vers {name} n'a encore abouti.",
+    "overdueSubject": "La sauvegarde vers {name} est en retard",
+    "openToSee": "Ouvrez Paramètres, Intégrations, {name} pour voir ce qui n'a pas fonctionné.",
+    "platformName": "Sauvegardes par Torqvoice",
+    "restoredTitle": "Atelier restauré",
+    "restoredSubject": "Votre atelier a été restauré à partir d'une sauvegarde",
+    "restoredIntro": "{name} : l'atelier a été ramené au point de restauration {snapshot} le {time}. Tout ce qui a été saisi après ce point ne figure plus dans l'atelier.",
+    "restoredByMember": "Un membre de votre atelier a demandé cette restauration.",
+    "restoredBySupport": "L'assistance Torqvoice l'a fait à votre demande. Motif indiqué : {reason}",
+    "noReason": "aucun",
+    "restoredUndo": "Une copie de sécurité de l'atelier tel qu'il était juste avant la restauration a d'abord été réalisée et est conservée pendant 90 jours. Contactez l'assistance pour y revenir."
   }
 }

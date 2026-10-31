@@ -70,6 +70,9 @@
       "invoices": "Rechnungen ins Buchhaltungssystem",
       "customers": "Kunden ins Buchhaltungssystem",
       "payments": "Zahlungen in beide Richtungen"
+    },
+    "backup": {
+      "target": "Sicherungsziel"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Alle Fahrzeuge mit Kennzeichen wurden kürzlich geprüft, es gibt noch nichts abzufragen."
     },
     "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
+    "platformHandlesBackups": "Torqvoice sichert diese Werkstatt bereits stündlich und bewahrt Wiederherstellungspunkte 30 Tage lang auf. Verbinden Sie einen Bucket, wenn Sie zusätzlich eine eigene Kopie möchten, die auch ohne Torqvoice lesbar ist.",
+    "platformHandlesBackupsLink": "Wiederherstellungspunkte ansehen",
     "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}",
-    "advanced": "Erweitert"
+    "advanced": "Erweitert",
+    "generate": "Erzeugen",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "generatedPasswordWarning": "Bewahren Sie eine Kopie dieses Passworts an einem sicheren Ort auf, getrennt von diesem Server. Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht.",
+    "backup": {
+      "title": "Sicherungen",
+      "description": "Wann dieses Ziel zuletzt eine erfolgreiche Sicherung erhalten hat, wann die nächste läuft, und die letzten Läufe.",
+      "lastGood": "Letzte erfolgreiche Sicherung",
+      "added": "{size} hinzugefügt",
+      "never": "Noch keine",
+      "nextRun": "Nächster Lauf",
+      "notScheduled": "Nicht geplant",
+      "repositorySize": "Am Ziel gespeichert",
+      "runNow": "Jetzt sichern",
+      "running": "Sicherung läuft",
+      "runningHint": "Eine Sicherung läuft. Diese Seite aktualisiert sich selbst, bis sie fertig ist.",
+      "started": "Sicherung gestartet",
+      "recentTitle": "Letzte Läufe",
+      "noRuns": "Es wurden noch keine Sicherungen ausgeführt.",
+      "addedNote": "Der erste Lauf lädt alles hoch. Jeder weitere fügt nur die Teile hinzu, die sich seitdem geändert haben, und ist deshalb klein. Jedes Backup ist trotzdem vollständig und kann für sich wiederhergestellt oder angesehen werden.",
+      "notStarted": "Nicht gestartet",
+      "filesNewCount": "{count, plural, one {# neue Datei} other {# neue Dateien}}",
+      "columns": {
+        "status": "Status",
+        "started": "Gestartet",
+        "trigger": "Gestartet von",
+        "duration": "Dauer",
+        "filesNew": "Neue Dateien",
+        "bytesAdded": "Hinzugefügt"
+      },
+      "trigger": {
+        "scheduled": "Zeitplan",
+        "manual": "Manuell",
+        "restore": "Wiederherstellung"
+      },
+      "status": {
+        "queued": "In der Warteschlange",
+        "running": "Läuft",
+        "done": "Fertig",
+        "failed": "Fehlgeschlagen",
+        "skipped": "Übersprungen"
+      },
+      "restoring": "Wird wiederhergestellt",
+      "restoringHint": "Eine Wiederherstellung läuft: Die Daten der Werkstatt werden durch die Sicherung ersetzt. Diese Seite aktualisiert sich selbst, bis sie fertig ist. Arbeiten Sie bis dahin nicht in der Werkstatt.",
+      "explore": "Ansehen",
+      "restore": {
+        "showAll": "Alle Sicherungen anzeigen",
+        "refresh": "Aktualisieren",
+        "loading": "Die Sicherungen am Ziel werden gelesen",
+        "loadFailed": "Die Sicherungen konnten nicht aufgelistet werden",
+        "empty": "An diesem Ziel gibt es noch keine Sicherungen.",
+        "needsOwner": "Nur der Inhaber der Werkstatt kann hier eine Sicherung wiederherstellen.",
+        "needsAdmin": "Nur ein Inhaber oder Administrator kann eine Sicherung wiederherstellen.",
+        "filesIncluded": "Fotos und Dateien eingeschlossen",
+        "filesNotIncluded": "Fotos und Dateien nicht eingeschlossen",
+        "earlierInstall": "Frühere Installation",
+        "action": "Wiederherstellen",
+        "dialogTitle": "Die Sicherung vom {time} wiederherstellen?",
+        "warning": "Eine Wiederherstellung <bold>ersetzt alles, was diese Werkstatt jetzt enthält</bold>: Kunden, Fahrzeuge, Arbeitsaufträge, Rechnungen, Einstellungen und, wenn die Sicherung sie enthält, Fotos und Dateien. Alles, was seit der Sicherung hinzugekommen ist, ist weg. Das lässt sich nicht rückgängig machen.",
+        "secretsNote": "Geheime Schlüssel, die die Sicherung ausgelassen hat, behalten die Werte, die diese Installation jetzt hat. Benutzerkonten und Passwörter bleiben unberührt.",
+        "confirmPrompt": "Geben Sie zur Bestätigung den Namen der Werkstatt ein, <bold>{name}</bold>.",
+        "whileRunning": "Die Wiederherstellung läuft im Hintergrund und dauert bei vielen Fotos einige Minuten. Die Seite aktualisiert sich selbst, bis sie fertig ist.",
+        "cancel": "Abbrechen",
+        "confirm": "Diese Sicherung wiederherstellen",
+        "started": "Wiederherstellung gestartet"
+      }
+    },
+    "lockedBackups": "Geplante, verschlüsselte Sicherungen Ihrer Werkstatt in Ihren eigenen Speicher.",
+    "searchOrType": "Suchen oder Namen eingeben",
+    "useTyped": "„{value}“ verwenden",
+    "listNeedsKeys": "Geben Sie oben die Schlüssel ein, um die Liste zu sehen",
+    "listEmpty": "Es wurde nichts aufgelistet. Geben Sie stattdessen einen Namen ein.",
+    "testing": "Verbindung wird getestet",
+    "testOk": "Die Verbindung funktioniert: Ein Testobjekt wurde geschrieben und wieder entfernt.",
+    "testFailed": "Der Test ist fehlgeschlagen",
+    "testSteps": {
+      "settings": "Prüfen Sie die Anbietereinstellungen",
+      "list": "Der Schlüssel kann den Bucket nicht auflisten",
+      "write": "Der Schlüssel kann nicht in den Bucket schreiben",
+      "delete": "Der Schlüssel kann nicht aus dem Bucket löschen",
+      "folder": "Der Ordner kann nicht erstellt oder geöffnet werden"
+    },
+    "testHint": "Füllen Sie die Schlüssel und den Bucket aus, um sie vor dem Verbinden zu testen. Der Test schreibt ein kleines Objekt und entfernt es wieder."
   },
   "activity": {
     "title": "Aktivität",
@@ -199,7 +287,10 @@
     "invalid": "Die Antwort des Anbieters war unvollständig. Versuchen Sie es erneut.",
     "state": "Diese Anmeldung ist abgelaufen oder gehört zu einer anderen Sitzung. Beginnen Sie erneut.",
     "exchange": "Der Anbieter hat die Anmeldung abgelehnt. Prüfen Sie die App-Zugangsdaten und versuchen Sie es erneut.",
-    "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen."
+    "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen.",
+    "backupRunning": "Es läuft bereits eine Sicherung.",
+    "restoreOwnerOnly": "In der Torqvoice Cloud kann nur der Inhaber der Werkstatt eine Sicherung wiederherstellen.",
+    "restoreBusy": "Auf diesem Server läuft bereits eine Sicherung oder Wiederherstellung. Versuchen Sie es erneut, wenn sie fertig ist."
   },
   "meeting": {
     "join": "Videoanruf beitreten",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-Kalender",
       "description": "Geplante Aufträge in einen Outlook-Kalender eintragen, einen Microsoft Teams-Link hinzufügen und die belegten Zeiten des Kalenders in Torqvoice sehen.",
       "tenantHelp": "Registrieren Sie eine Anwendung in Microsoft Entra (App-Registrierungen), erlauben Sie persönliche und Geschäftskonten, fügen Sie die untenstehende Redirect-URI als Web-Plattform hinzu, erstellen Sie ein Client-Secret und tragen Sie beides hier ein.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-kompatibel",
       "description": "Servicebeschreibungen, Verlaufszusammenfassungen, Dokumentenerkennung und der Assistent, beantwortet von jedem Server, der die Chat-API von OpenAI spricht: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM und ähnliche. Ihre Daten bleiben auf Ihrer eigenen Hardware.",
       "fields": {
         "baseUrl": "Basis-URL",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Sprache zu Text",
       "description": "Diktat auf einem Arbeitsauftrag, aufgeschrieben von einem Sprachmodell statt vom Browser: viel genauer, in jeder Sprache, und es kennt die Wörter einer Werkstatt. Getrennt von Ihrem KI-Anbieter, den Sie also so lassen können, wie er ist. Nutzt Ihren eigenen OpenAI-Schlüssel oder einen eigenen Server, der die Transkriptions-API von OpenAI spricht. Die Aufnahme wird nur zum Aufschreiben gesendet und nicht aufbewahrt.",
       "fields": {
         "apiKey": "API-Schlüssel",
@@ -652,6 +746,108 @@
         "modeHelp": "Der Browser schreibt mit, während Sie sprechen, ist aber schwächer, vor allem bei kleineren Sprachen. Das Sprachmodell schreibt, sobald Sie aufhören.",
         "modeAi": "Immer das Sprachmodell",
         "modeChoice": "Jede Person wählt: Sprachmodell oder Browser"
+      }
+    },
+    "s3": {
+      "name": "Cloud-Speicher-Bucket",
+      "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Bucket, der Ihnen gehört, bei Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage oder jedem anderen S3-kompatiblen Speicher, nach einem Zeitplan Ihrer Wahl. Nach dem ersten Lauf wird nur hochgeladen, was sich geändert hat, daher bleiben stündliche Sicherungen günstig.",
+      "fields": {
+        "accessKeyId": "Zugriffsschlüssel-ID",
+        "accessKeyIdHelp": "Ein Schlüssel Ihres Speicheranbieters mit der Berechtigung, Objekte im Bucket aufzulisten, zu lesen, zu schreiben und zu löschen. Erstellen Sie einen eigenen Schlüssel nur für Torqvoice, damit er sich einzeln widerrufen lässt.",
+        "secretAccessKey": "Geheimer Zugriffsschlüssel",
+        "password": "Sicherungspasswort",
+        "passwordHelp": "Jede Sicherung wird mit diesem Passwort verschlüsselt. Denken Sie sich eines aus oder klicken Sie auf Erzeugen, und bewahren Sie eine Kopie getrennt von diesem Server auf: Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht. Um einen Speicher erneut zu verbinden, der bereits Torqvoice-Sicherungen enthält, geben Sie das Passwort ein, mit dem sie erstellt wurden.",
+        "endpoint": "Eigener Endpunkt",
+        "endpointHelp": "Nur für die Option Anderer S3-kompatibler Speicher: die S3-Adresse Ihres eigenen Speichers, etwa eines MinIO-Servers, als Hostname, bei Bedarf mit Port."
+      },
+      "settings": {
+        "provider": "Anbieter",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Anderer S3-kompatibler Speicher",
+        "region": "Region",
+        "regionHelp": "Wo der Bucket liegt. Wählen Sie die Region aus der Liste des Anbieters; bei anderem Speicher geben Sie ein, was dieser erwartet, falls er eine Region braucht. Wird von Cloudflare R2 nicht verwendet.",
+        "accountId": "Cloudflare-Konto-ID",
+        "accountIdHelp": "Die 32-stellige ID auf der R2-Übersichtsseite Ihres Cloudflare-Dashboards.",
+        "bucket": "Bucket",
+        "bucketHelp": "Die Liste kommt vom Schlüssel, sobald er eingegeben ist. Darf der Schlüssel einen Bucket nutzen, aber nicht auflisten, geben Sie den Namen selbst ein.",
+        "prefix": "Ordner im Bucket",
+        "prefixHelp": "Die Sicherungen liegen in diesem Ordner. Verwenden Sie für jede Werkstatt, die den Bucket mitbenutzt, einen eigenen Ordner.",
+        "frequency": "Wie oft",
+        "frequencyHourly": "Jede Stunde",
+        "frequencyEvery4h": "Alle 4 Stunden",
+        "frequencyDaily": "Jeden Tag",
+        "frequencyWeekly": "Jede Woche",
+        "frequencyMonthly": "Jeden Monat",
+        "time": "Uhrzeit",
+        "timeHelp": "Nach der Uhr der Werkstatt, im Format HH:MM. Gilt für tägliche, wöchentliche und monatliche Sicherungen.",
+        "weekday": "Wochentag",
+        "sunday": "Sonntag",
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "monthDay": "Tag im Monat",
+        "monthDayLast": "Letzter Tag",
+        "contents": "Inhalt",
+        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt. Eine Sicherung enthält die Datensätze der Werkstatt und, wenn ausgewählt, ihre Dateien. Benutzerkonten und Passwörter sind nicht enthalten: Auf einem neuen Server melden Sie sich an, laden das Team ein und stellen die Daten in dieser Werkstatt wieder her.",
+        "contentsData": "Nur Daten",
+        "contentsDataAndSecrets": "Daten und geheime Schlüssel",
+        "includeFiles": "Fotos und Dateien einschließen",
+        "includeFilesHelp": "Jede Datei wird einmal hochgeladen und von späteren Sicherungen wiederverwendet, daher kostet das nach dem ersten Lauf wenig.",
+        "keepHourly": "Stündliche Sicherungen behalten",
+        "keepHourlyHelp": "Wie viele der neuesten stündlichen Sicherungen behalten werden. Nur relevant bei stündlichem oder vierstündlichem Zeitplan.",
+        "keepDaily": "Tägliche Sicherungen behalten",
+        "keepWeekly": "Wöchentliche Sicherungen behalten",
+        "keepMonthly": "Monatliche Sicherungen behalten",
+        "keepMonthlyHelp": "Ältere Sicherungen werden nach jedem Lauf entfernt, wobei jeweils die neuesten jeder Art erhalten bleiben. Setzen Sie eine Zahl auf 0, um von dieser Art keine zu behalten."
+      }
+    },
+    "local-folder": {
+      "name": "Lokaler Ordner",
+      "description": "Verschlüsselte Sicherungen dieser Werkstatt in einen Ordner auf diesem Server: das Sicherungs-Volume in der Compose-Datei oder ein dort eingebundenes Netzlaufwerk. Eine Kopie auf derselben Festplatte wie die Datenbank ist allein nicht sicher; kombinieren Sie sie mit Speicher an einem anderen Ort.",
+      "fields": {
+        "password": "Sicherungspasswort",
+        "passwordHelp": "Jede Sicherung wird mit diesem Passwort verschlüsselt. Denken Sie sich eines aus oder klicken Sie auf Erzeugen, und bewahren Sie eine Kopie getrennt von diesem Server auf: Ohne das Passwort kann niemand diese Sicherungen öffnen, auch Torqvoice nicht. Um einen Speicher erneut zu verbinden, der bereits Torqvoice-Sicherungen enthält, geben Sie das Passwort ein, mit dem sie erstellt wurden."
+      },
+      "settings": {
+        "folder": "Ordner",
+        "folderHelp": "Der Ordner im Backup-Stammverzeichnis des Servers, der die Backups dieser Werkstatt enthält. Leer lassen, um einen nach dieser Werkstatt benannten Ordner zu verwenden. Auf einem neuen Server den Ordnernamen einer früheren Installation eingeben, um deren Backups zurückzuholen.",
+        "frequency": "Wie oft",
+        "frequencyHourly": "Jede Stunde",
+        "frequencyEvery4h": "Alle 4 Stunden",
+        "frequencyDaily": "Jeden Tag",
+        "frequencyWeekly": "Jede Woche",
+        "frequencyMonthly": "Jeden Monat",
+        "time": "Uhrzeit",
+        "timeHelp": "Nach der Uhr der Werkstatt, im Format HH:MM. Gilt für tägliche, wöchentliche und monatliche Sicherungen.",
+        "weekday": "Wochentag",
+        "sunday": "Sonntag",
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "monthDay": "Tag im Monat",
+        "monthDayLast": "Letzter Tag",
+        "contents": "Inhalt",
+        "contentsHelp": "Geheime Schlüssel sind die, die diese Werkstatt in Torqvoice eingegeben hat: Zahlungs-, KI- und Webhook-Schlüssel. Jede Sicherung wird in jedem Fall mit dem Sicherungspasswort verschlüsselt. Eine Sicherung enthält die Datensätze der Werkstatt und, wenn ausgewählt, ihre Dateien. Benutzerkonten und Passwörter sind nicht enthalten: Auf einem neuen Server melden Sie sich an, laden das Team ein und stellen die Daten in dieser Werkstatt wieder her.",
+        "contentsData": "Nur Daten",
+        "contentsDataAndSecrets": "Daten und geheime Schlüssel",
+        "includeFiles": "Fotos und Dateien einschließen",
+        "includeFilesHelp": "Jede Datei wird einmal hochgeladen und von späteren Sicherungen wiederverwendet, daher kostet das nach dem ersten Lauf wenig.",
+        "keepHourly": "Stündliche Sicherungen behalten",
+        "keepHourlyHelp": "Wie viele der neuesten stündlichen Sicherungen behalten werden. Nur relevant bei stündlichem oder vierstündlichem Zeitplan.",
+        "keepDaily": "Tägliche Sicherungen behalten",
+        "keepWeekly": "Wöchentliche Sicherungen behalten",
+        "keepMonthly": "Monatliche Sicherungen behalten",
+        "keepMonthlyHelp": "Ältere Sicherungen werden nach jedem Lauf entfernt, wobei jeweils die neuesten jeder Art erhalten bleiben. Setzen Sie eine Zahl auf 0, um von dieser Art keine zu behalten."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Aktualisierung der Rückrufdaten",
       "vehicle": "Rückrufprüfung für ein neues Fahrzeug"
     }
+  },
+  "backupAlerts": {
+    "destination": "Sicherungsziel",
+    "failedTitle": "Sicherung fehlgeschlagen",
+    "failedMessage": "Die Sicherung nach {name} wurde nicht abgeschlossen: {reason}",
+    "failedSubject": "Sicherung nach {name} fehlgeschlagen",
+    "failedEmailIntro": "Die geplante Sicherung Ihrer Werkstatt nach {name} wurde nicht abgeschlossen.",
+    "openToRetry": "Öffnen Sie Einstellungen, Integrationen, {name}, um den Lauf zu sehen und es erneut zu versuchen.",
+    "overdueTitle": "Sicherung überfällig",
+    "overdueSince": "Seit {time} wurde keine Sicherung nach {name} abgeschlossen.",
+    "overdueNever": "Bisher wurde keine Sicherung nach {name} abgeschlossen.",
+    "overdueSubject": "Sicherung nach {name} ist überfällig",
+    "openToSee": "Öffnen Sie Einstellungen, Integrationen, {name}, um zu sehen, was schiefgelaufen ist.",
+    "platformName": "Sicherungen von Torqvoice",
+    "restoredTitle": "Werkstatt wiederhergestellt",
+    "restoredSubject": "Ihre Werkstatt wurde aus einer Sicherung wiederhergestellt",
+    "restoredIntro": "{name}: Die Werkstatt wurde am {time} auf den Wiederherstellungspunkt {snapshot} zurückgesetzt. Alles, was nach diesem Punkt eingegeben wurde, ist nicht mehr in der Werkstatt.",
+    "restoredByMember": "Ein Mitglied Ihrer Werkstatt hat diese Wiederherstellung angefordert.",
+    "restoredBySupport": "Der Torqvoice-Support hat dies auf Ihre Anfrage hin durchgeführt. Angegebener Grund: {reason}",
+    "noReason": "keiner angegeben",
+    "restoredUndo": "Vorher wurde eine Sicherheitskopie der Werkstatt im Zustand direkt vor der Wiederherstellung erstellt, die 90 Tage lang aufbewahrt wird. Wenden Sie sich an den Support, um zu ihr zurückzukehren."
   }
 }

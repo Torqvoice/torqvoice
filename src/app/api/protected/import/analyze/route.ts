@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { canImportAnything } from '@/features/import/Lib/importAccess.server'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { isDemoMode } from '@/lib/demo'
 import { db } from '@/lib/db'
 import { getAiConfig } from '@/lib/ai'
@@ -35,6 +36,10 @@ export async function POST(request: NextRequest) {
   }
   const ctx = await getAuthContext()
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // The staged rows would be imported into a workshop a restore is replacing.
+  if (isRestoring(ctx.organizationId)) {
+    return NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
+  }
   if (!(await canImportAnything(ctx))) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }

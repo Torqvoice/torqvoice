@@ -76,6 +76,11 @@ export const SYSTEM_SETTING_KEYS = {
   // from /api/public/app-icon.
   BRANDING_APP_NAME: 'branding.appName',
   BRANDING_APP_ICON: 'branding.appIcon',
+
+  // How often the cloud instance backs up each Pro workshop into the
+  // platform repository: hourly | every4h | daily. Hourly unless set; the
+  // scheduler reads it every tick, so a change needs no restart.
+  PLATFORM_BACKUP_FREQUENCY: 'platformBackup.frequency',
 } as const
 
 /** Long enough for a workshop name, short enough for a browser tab. */

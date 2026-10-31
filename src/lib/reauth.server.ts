@@ -92,7 +92,7 @@ export function resetReauthFailures() {
 export async function verifyReauth(
   userId: string,
   input: unknown,
-  purpose: 'account' | 'workshop',
+  purpose: 'account' | 'workshop' | 'restore',
   now: number = Date.now()
 ): Promise<void> {
   const { password, totpCode } = reauthInputSchema.parse(input ?? {})
@@ -131,7 +131,11 @@ export async function verifyReauth(
   const age = createdAt ? now - new Date(createdAt).getTime() : Number.POSITIVE_INFINITY
   if (!(age <= REAUTH_FRESH_SESSION_MINUTES * 60_000)) {
     throw new Error(
-      purpose === 'account' ? REAUTH_ERRORS.signInAgainAccount : REAUTH_ERRORS.signInAgainWorkshop
+      purpose === 'account'
+        ? REAUTH_ERRORS.signInAgainAccount
+        : purpose === 'restore'
+          ? REAUTH_ERRORS.signInAgainRestore
+          : REAUTH_ERRORS.signInAgainWorkshop
     )
   }
 }

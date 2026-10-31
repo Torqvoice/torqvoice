@@ -1,9 +1,11 @@
 'use client'
 
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import { AlertTriangle, ArrowRight, Check, Lightbulb, Plug, Search, Settings2 } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
@@ -55,7 +57,14 @@ export function IntegrationsCatalog({
 }) {
   const t = useTranslations('integrations')
   const tSettings = useTranslations('settings')
-  const [category, setCategory] = useState<IntegrationCategory | 'all'>('all')
+  // A link can open the catalog on one category, such as the backup
+  // destinations from Settings, Data.
+  const wanted = useSearchParams()?.get('category')
+  const [category, setCategory] = useState<IntegrationCategory | 'all'>(
+    wanted && CATEGORY_ORDER.includes(wanted as IntegrationCategory)
+      ? (wanted as IntegrationCategory)
+      : 'all'
+  )
   const [query, setQuery] = useState('')
 
   /**
@@ -71,7 +80,7 @@ export function IntegrationsCatalog({
         m.id,
         normalize(
           [
-            m.name,
+            connectorName(t, m),
             m.id,
             t(`connectors.${m.id}.description`),
             t(`categories.${m.category}`),
@@ -155,7 +164,7 @@ export function IntegrationsCatalog({
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium">{m.name}</span>
+                        <span className="font-medium">{connectorName(t, m)}</span>
                         <StatusBadge entry={entry} />
                       </div>
                       <p className="truncate text-xs text-muted-foreground">
@@ -262,14 +271,14 @@ export function IntegrationsCatalog({
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium">{m.name}</span>
+                        <span className="font-medium">{connectorName(t, m)}</span>
                         {!entry.enabled && (
                           <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
                             {tSettings('nav.pro')}
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {t(`connectors.${m.id}.description`)}
                       </p>
                     </div>

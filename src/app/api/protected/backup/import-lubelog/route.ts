@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
@@ -12,7 +13,7 @@ import { readFileSync } from 'fs'
 import path from 'path'
 import os from 'os'
 import { BSON } from 'bson'
-import JSZip from 'jszip'
+import { extractEntry, openZip, spoolUpload, type SpooledUpload } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
 
@@ -173,29 +174,29 @@ async function resolveBackupDir(inputPath: string): Promise<string> {
 }
 
 /**
- * Extract a zip buffer to a temporary directory on disk.
+ * Extract a zip on disk to a temporary directory, one entry at a time.
  */
-async function extractZipToTempDir(zipBuffer: Buffer): Promise<string> {
+async function extractZipToTempDir(zipPath: string): Promise<string> {
   const tmpDir = path.join(os.tmpdir(), `lubelog-import-${Date.now()}`)
   await mkdir(tmpDir, { recursive: true })
 
-  const zip = await JSZip.loadAsync(zipBuffer)
-  assertZipWithinLimits(zip.files)
-
-  for (const [relativePath, entry] of Object.entries(zip.files)) {
-    // Guard against zip-slip: skip any entry whose path escapes tmpDir.
-    const targetPath = resolveWithinDir(tmpDir, relativePath)
-    if (!targetPath) {
-      console.warn(`[import-lubelog] Skipping unsafe zip entry: ${relativePath}`)
-      continue
+  const zip = await openZip(zipPath)
+  try {
+    for (const entry of zip.entries) {
+      // Guard against zip-slip: skip any entry whose path escapes tmpDir.
+      const targetPath = resolveWithinDir(tmpDir, entry.name)
+      if (!targetPath) {
+        console.warn(`[import-lubelog] Skipping unsafe zip entry: ${entry.name}`)
+        continue
+      }
+      if (entry.dir) {
+        await mkdir(targetPath, { recursive: true })
+      } else {
+        await extractEntry(zip, entry, targetPath)
+      }
     }
-    if (entry.dir) {
-      await mkdir(targetPath, { recursive: true })
-    } else {
-      await mkdir(path.dirname(targetPath), { recursive: true })
-      const content = await entry.async('nodebuffer')
-      await writeFile(targetPath, content)
-    }
+  } finally {
+    zip.close()
   }
 
   return tmpDir
@@ -214,6 +215,10 @@ export async function POST(request: NextRequest) {
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  // While a restore replaces this workshop's rows and files, nothing is written here.
+  if (isRestoring(ctx.organizationId)) {
+    return NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
+  }
   // Reading or replacing the whole workshop is an owner's or admin's call.
   if (!ctx.isAdmin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -222,22 +227,24 @@ export async function POST(request: NextRequest) {
   const { organizationId, userId } = ctx
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
+  let upload: SpooledUpload | null = null
 
   try {
-    // Accept the zip as raw binary body
+    // The zip comes as the raw body and goes to disk as it arrives
     assertContentLength(request, 200 * 1024 * 1024)
-    const arrayBuffer = await request.arrayBuffer()
-    const zipBuffer = Buffer.from(arrayBuffer)
+    upload = await spoolUpload(request, 200 * 1024 * 1024, 'lubelog-upload')
 
-    if (zipBuffer.length < 100) {
+    if (upload.size < 100) {
       return NextResponse.json(
         { error: 'Uploaded file is too small to be a valid backup' },
         { status: 400 }
       )
     }
 
-    // Extract zip to temp directory
-    tmpDir = await extractZipToTempDir(zipBuffer)
+    // Extract zip to temp directory, then the upload itself is done with
+    tmpDir = await extractZipToTempDir(upload.path)
+    await upload.remove()
+    upload = null
 
     // Resolve and validate the backup directory
     let backupDir: string
@@ -451,5 +458,9 @@ export async function POST(request: NextRequest) {
         /* ignore cleanup errors */
       })
     }
+    // The upload is still there when the request failed before it was extracted.
+    upload?.remove().catch(() => {
+      /* ignore cleanup errors */
+    })
   }
 }

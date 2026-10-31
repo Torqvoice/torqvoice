@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { restoringResponse } from '@/lib/backup/freeze-response'
+import { isRestoring } from '@/lib/backup/freeze'
 import { channelSetup, organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { notify } from '@/lib/notify'
@@ -52,6 +54,9 @@ export async function POST(request: Request) {
         `[webhook/sms/telnyx] Connection ${setup?.connectionId ?? '(none)'} of organization ${organizationId} has no webhook public key; inbound SMS is accepted on the URL secret alone`
       )
     }
+
+    // A message filed now would be lost under the restore; Telnyx retries after it.
+    if (isRestoring(organizationId)) return restoringResponse()
 
     // Telnyx sends JSON with a data wrapper
     const payload = JSON.parse(raw) as {

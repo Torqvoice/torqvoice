@@ -32,7 +32,9 @@ const { db, notify, store } = vi.hoisted(() => ({
 }))
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/lib/notify', () => ({ notify }))
+vi.mock('@/lib/backup/freeze', () => ({ isRestoring: vi.fn(() => false) }))
 
+import { isRestoring } from '@/lib/backup/freeze'
 import { type ReceiveOutcome, receiveSesMail } from '@/features/messaging/Lib/inboundMail.server'
 import type { SesReceivedMail } from '@/features/messaging/Lib/inboundMail'
 
@@ -111,6 +113,7 @@ function deps(buffer: Buffer, size?: number) {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(isRestoring).mockReturnValue(false)
   db.organization.findUnique.mockResolvedValue({ id: 'org_1', name: 'EF Moto' })
   db.emailMessage.findUnique.mockResolvedValue(null)
   db.emailMessage.findMany.mockResolvedValue([
@@ -277,5 +280,17 @@ describe('receiveSesMail', () => {
     const { data } = db.emailMessage.create.mock.calls[0][0]
     expect(data.body).toBe('Thanks!')
     expect(data.attachments).toBeUndefined()
+  })
+
+  it('asks for a retry, reading and filing nothing, while the workshop is being restored', async () => {
+    vi.mocked(isRestoring).mockReturnValue(true)
+    const d = deps(raw({}))
+    const result = await receiveSesMail(mail, d)
+    expect(result).toEqual({ outcome: 'retry', reason: 'workshop is being restored' })
+    expect(isRestoring).toHaveBeenCalledWith('org_1')
+    expect(d.fetchObject).not.toHaveBeenCalled()
+    expect(store).not.toHaveBeenCalled()
+    expect(db.emailMessage.create).not.toHaveBeenCalled()
+    expect(notify).not.toHaveBeenCalled()
   })
 })

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { restoringResponse } from '@/lib/backup/freeze-response'
+import { isRestoring } from '@/lib/backup/freeze'
 import { channelSetup, organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { notify } from '@/lib/notify'
@@ -53,6 +55,9 @@ export async function POST(request: Request) {
         `[webhook/sms/twilio] Connection ${setup?.connectionId ?? '(none)'} of organization ${organizationId} has no Twilio auth token; inbound SMS is accepted on the URL secret alone`
       )
     }
+
+    // A message filed now would be lost under the restore; Twilio retries it when the webhook URL asks for retries.
+    if (isRestoring(organizationId)) return restoringResponse()
 
     const from = formData.get('From') ?? ''
     const to = formData.get('To') ?? ''

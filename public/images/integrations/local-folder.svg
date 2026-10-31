@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Local folder">
+  <title>Local folder</title>
+  <rect width="48" height="48" rx="11" fill="#475569"/>
+  <path d="M11 16.5a2.5 2.5 0 0 1 2.5-2.5h7.2l3 3H34.5a2.5 2.5 0 0 1 2.5 2.5v12a2.5 2.5 0 0 1-2.5 2.5h-21A2.5 2.5 0 0 1 11 31.5v-15z" fill="#ffffff" opacity="0.95"/>
+  <path d="M11 21h26v10.5a2.5 2.5 0 0 1-2.5 2.5h-21A2.5 2.5 0 0 1 11 31.5V21z" fill="#cbd5e1"/>
+  <rect x="26" y="26" width="8" height="5" rx="1" fill="#475569"/>
+</svg>

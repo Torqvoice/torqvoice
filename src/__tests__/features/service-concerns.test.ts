@@ -60,16 +60,16 @@ describe('service concerns', () => {
     expect(entity, 'ServiceConcern must be in the backup manifest').toBeDefined()
     expect(entity?.nestedUnder).toBe('ServiceRecord')
 
-    const exportRoute = read('src/app/api/protected/backup/export/route.ts')
+    const exportRoute = read('src/lib/backup/build-data.ts')
     // Both paths: vehicle-linked jobs and counter sales.
     expect(exportRoute.match(/concerns: true/g)?.length).toBe(2)
 
-    const importRoute = read('src/app/api/protected/backup/import/route.ts')
+    const importRoute = read('src/lib/backup/import.ts')
     expect(importRoute).toContain('serviceConcern.createMany')
   })
 
   it('restores concerns before the findings that point at them', () => {
-    const importRoute = read('src/app/api/protected/backup/import/route.ts')
+    const importRoute = read('src/lib/backup/import.ts')
     const concerns = importRoute.indexOf('serviceConcern.createMany')
     const findings = importRoute.indexOf('vehicleFinding.createMany')
     expect(concerns).toBeGreaterThan(-1)

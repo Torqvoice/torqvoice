@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { RESTORE_IN_PROGRESS_MESSAGE, isRestoring } from '@/lib/backup/freeze'
+
+/** A view stamp written under a restore would be lost with it; the page does not wait for it. */
+function restoring(organizationId: string | null) {
+  return organizationId && isRestoring(organizationId)
+    ? NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
+    : null
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,11 +21,13 @@ export async function POST(request: NextRequest) {
     if (type === 'quote') {
       const quote = await db.quote.findFirst({
         where: { publicToken: token },
-        select: { id: true },
+        select: { id: true, organizationId: true },
       })
       if (!quote) {
         return NextResponse.json({ error: 'Not found' }, { status: 404 })
       }
+      const refused = restoring(quote.organizationId)
+      if (refused) return refused
       await db.quote.update({
         where: { id: quote.id },
         data: {
@@ -28,11 +38,13 @@ export async function POST(request: NextRequest) {
     } else {
       const record = await db.serviceRecord.findFirst({
         where: { publicToken: token },
-        select: { id: true },
+        select: { id: true, organizationId: true },
       })
       if (!record) {
         return NextResponse.json({ error: 'Not found' }, { status: 404 })
       }
+      const refused = restoring(record.organizationId)
+      if (refused) return refused
       await db.serviceRecord.update({
         where: { id: record.id },
         data: {

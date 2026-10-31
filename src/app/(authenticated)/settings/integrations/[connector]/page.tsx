@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { getTranslations } from 'next-intl/server'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
@@ -8,6 +9,8 @@ import {
 } from '@/features/integrations/Actions/integrationActions'
 import { getManifest } from '@/integrations/registry'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
+import { platformBackupsEnabled } from '@/lib/backup/platform'
+import { reauthRequirement } from '@/lib/reauth.server'
 import { FeatureLocked } from '../../feature-locked-message'
 import { ConnectionSettings } from './connection-settings'
 
@@ -27,9 +30,11 @@ export default async function IntegrationConnectionPage({
   const features = await getFeatures(data.organizationId)
   const locked = !connectorAllowed(manifest, features)
 
-  const [view, activity] = await Promise.all([
+  const [view, activity, reauth] = await Promise.all([
     getIntegrationConnection(connector),
     getIntegrationActivity(connector),
+    // What a restore from a backup destination asks this person for.
+    reauthRequirement(data.userId),
   ])
   if (!view.success || !view.data) notFound()
 
@@ -37,6 +42,8 @@ export default async function IntegrationConnectionPage({
     <ConnectionSettings
       view={view.data}
       activity={activity.success && activity.data ? activity.data : { items: [], logs: [] }}
+      platformHandlesBackups={manifest.id === 's3' && platformBackupsEnabled()}
+      reauth={reauth}
     />
   )
 
@@ -44,16 +51,19 @@ export default async function IntegrationConnectionPage({
   // gated by its own plan feature, and calendars and video calls are not what
   // the workshop is being asked to pay for there.
   const t = await getTranslations('integrations.connection')
+  const ti = await getTranslations('integrations')
   const lockedDescription =
     manifest.plan === 'payments'
       ? t('lockedPayments')
       : manifest.plan === 'ai'
         ? t('lockedAi')
-        : t('lockedIntegrations')
+        : manifest.plan === 'backups'
+          ? t('lockedBackups')
+          : t('lockedIntegrations')
 
   return locked ? (
     <FeatureLocked
-      feature={manifest.plan ? manifest.name : 'Integrations'}
+      feature={manifest.plan ? connectorName(ti, manifest) : 'Integrations'}
       description={lockedDescription}
       isCloud={isCloudMode()}
     >

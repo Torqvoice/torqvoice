@@ -70,6 +70,9 @@
       "invoices": "Facturas al libro contable",
       "customers": "Clientes al libro contable",
       "payments": "Pagos en ambos sentidos"
+    },
+    "backup": {
+      "target": "Destino de copias de seguridad"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Todos los vehículos con matrícula se comprobaron hace poco, así que aún no hay nada que consultar."
     },
     "supersedes": "Conectar {next} desconecta {current}. Solo uno puede estar activo a la vez, así que {current} deja de usarse en cuanto {next} entra en servicio.",
+    "platformHandlesBackups": "Torqvoice ya hace una copia de seguridad de este taller cada hora y conserva los puntos de restauración durante 30 días. Conecte un bucket si además quiere una copia de su propiedad que se pueda leer sin Torqvoice.",
+    "platformHandlesBackupsLink": "Ver tus puntos de restauración",
     "batchRetried": "{count, plural, =0 {Nada que reintentar} one {# tarea vuelta a la cola} other {# tareas vueltas a la cola}}",
-    "advanced": "Avanzado"
+    "advanced": "Avanzado",
+    "generate": "Generar",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "generatedPasswordWarning": "Guarde una copia de esta contraseña en un lugar seguro, fuera de este servidor. Sin ella nadie puede abrir estas copias de seguridad, ni siquiera Torqvoice.",
+    "backup": {
+      "title": "Copias de seguridad",
+      "description": "Cuándo recibió este destino la última copia correcta, cuándo se ejecuta la siguiente y las ejecuciones más recientes.",
+      "lastGood": "Última copia correcta",
+      "added": "{size} añadidos",
+      "never": "Ninguna todavía",
+      "nextRun": "Próxima ejecución",
+      "notScheduled": "Sin programar",
+      "repositorySize": "Almacenado en el destino",
+      "runNow": "Hacer copia ahora",
+      "running": "Haciendo copia",
+      "runningHint": "Se está haciendo una copia de seguridad. Esta página se actualiza sola hasta que termine.",
+      "started": "Copia de seguridad iniciada",
+      "recentTitle": "Ejecuciones recientes",
+      "noRuns": "Todavía no se ha hecho ninguna copia de seguridad.",
+      "addedNote": "La primera ejecución sube todo. Cada una de las siguientes añade solo las piezas que cambiaron desde entonces, por eso es pequeña. Cada copia sigue estando completa y puede restaurarse o explorarse por sí sola.",
+      "notStarted": "Sin iniciar",
+      "filesNewCount": "{count, plural, one {# archivo nuevo} other {# archivos nuevos}}",
+      "columns": {
+        "status": "Estado",
+        "started": "Inicio",
+        "trigger": "Iniciada por",
+        "duration": "Duración",
+        "filesNew": "Archivos nuevos",
+        "bytesAdded": "Añadido"
+      },
+      "trigger": {
+        "scheduled": "Programación",
+        "manual": "Manual",
+        "restore": "Restauración"
+      },
+      "status": {
+        "queued": "En cola",
+        "running": "En curso",
+        "done": "Completada",
+        "failed": "Fallida",
+        "skipped": "Omitida"
+      },
+      "restoring": "Restaurando",
+      "restoringHint": "Se está restaurando una copia: los datos del taller se están sustituyendo por los de la copia de seguridad. Esta página se actualiza sola hasta que termine. No trabaje en el taller hasta entonces.",
+      "explore": "Explorar",
+      "restore": {
+        "showAll": "Mostrar todas las copias",
+        "refresh": "Actualizar",
+        "loading": "Leyendo las copias del destino",
+        "loadFailed": "No se pudieron listar las copias",
+        "empty": "Todavía no hay copias en este destino.",
+        "needsOwner": "Solo el propietario del taller puede restaurar una copia aquí.",
+        "needsAdmin": "Solo un propietario o un administrador puede restaurar una copia.",
+        "filesIncluded": "Incluye fotos y archivos",
+        "filesNotIncluded": "No incluye fotos ni archivos",
+        "earlierInstall": "Instalación anterior",
+        "action": "Restaurar",
+        "dialogTitle": "¿Restaurar la copia de seguridad de {time}?",
+        "warning": "Restaurar <bold>sustituye todo lo que tiene ahora este taller</bold>: clientes, vehículos, trabajos, facturas, configuración y, cuando la copia los incluye, fotos y archivos. Todo lo añadido desde que se hizo la copia se pierde. Esto no se puede deshacer.",
+        "secretsNote": "Las claves secretas que la copia dejó fuera conservan los valores que tiene ahora esta instalación. Las cuentas de usuario y las contraseñas no se tocan.",
+        "confirmPrompt": "Escriba el nombre del taller, <bold>{name}</bold>, para confirmar.",
+        "whileRunning": "La restauración se ejecuta en segundo plano y tarda unos minutos cuando hay muchas fotos. La página se actualiza sola hasta que termine.",
+        "cancel": "Cancelar",
+        "confirm": "Restaurar esta copia",
+        "started": "Restauración iniciada"
+      }
+    },
+    "lockedBackups": "Copias de seguridad cifradas y programadas de su taller en un almacenamiento propio.",
+    "searchOrType": "Buscar o escribir un nombre",
+    "useTyped": "Usar \"{value}\"",
+    "listNeedsKeys": "Introduzca las claves de arriba para ver la lista",
+    "listEmpty": "La lista está vacía. Escriba un nombre.",
+    "testing": "Probando la conexión",
+    "testOk": "La conexión funciona: se escribió un objeto de prueba y se volvió a eliminar.",
+    "testFailed": "La prueba falló",
+    "testSteps": {
+      "settings": "Revise los ajustes del proveedor",
+      "list": "La clave no puede listar el bucket",
+      "write": "La clave no puede escribir en el bucket",
+      "delete": "La clave no puede eliminar del bucket",
+      "folder": "No se puede crear ni abrir la carpeta"
+    },
+    "testHint": "Introduzca las claves y el bucket para probarlos antes de conectar. La prueba escribe un objeto pequeño y lo elimina."
   },
   "activity": {
     "title": "Actividad",
@@ -199,7 +287,10 @@
     "invalid": "La respuesta del proveedor fue incompleta. Inténtelo de nuevo.",
     "state": "Este inicio de sesión ha caducado o pertenece a otra sesión. Empiece de nuevo.",
     "exchange": "El proveedor rechazó el inicio de sesión. Compruebe las credenciales de la aplicación e inténtelo de nuevo.",
-    "identify": "Conectado, pero no se pudo leer la cuenta. Intente volver a conectar."
+    "identify": "Conectado, pero no se pudo leer la cuenta. Intente volver a conectar.",
+    "backupRunning": "Ya hay una copia de seguridad en curso.",
+    "restoreOwnerOnly": "En Torqvoice Cloud solo el propietario del taller puede restaurar una copia de seguridad.",
+    "restoreBusy": "Ya hay una copia de seguridad o una restauración en curso en este servidor. Inténtelo de nuevo cuando termine."
   },
   "meeting": {
     "join": "Unirse a la videollamada",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendario de Microsoft 365",
       "description": "Añada las órdenes de trabajo programadas a un calendario de Outlook, incluya un enlace de Microsoft Teams y vea el tiempo ocupado del calendario en Torqvoice.",
       "tenantHelp": "Registre una aplicación en Microsoft Entra (Registros de aplicaciones), permita cuentas personales y profesionales, añada la URI de redirección que aparece abajo como plataforma Web, cree un secreto de cliente y pegue ambos aquí.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatible con OpenAI",
       "description": "Descripciones de servicio, resúmenes de historial, lectura de documentos y el asistente, respondidos por cualquier servidor que hable la API de chat de OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM y similares. Sus datos se quedan en su propio hardware.",
       "fields": {
         "baseUrl": "URL base",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Voz a texto",
       "description": "El dictado en una orden de trabajo lo transcribe un modelo de voz en lugar del navegador: mucho más preciso, en cualquier idioma y conoce las palabras de un taller. Es independiente de tu proveedor de IA, así que puedes dejar ese como está. Usa tu propia clave de OpenAI o un servidor propio que hable la API de transcripción de OpenAI. La grabación se envía para transcribirla y no se guarda.",
       "fields": {
         "apiKey": "Clave de API",
@@ -652,6 +746,108 @@
         "modeHelp": "El navegador escribe mientras hablas, pero es más flojo, sobre todo en idiomas pequeños. El modelo de voz escribe cuando paras.",
         "modeAi": "Siempre el modelo de voz",
         "modeChoice": "Cada persona elige: modelo de voz o navegador"
+      }
+    },
+    "s3": {
+      "name": "Bucket de almacenamiento en la nube",
+      "description": "Copias de seguridad cifradas de este taller en un bucket de su propiedad en Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage o cualquier otro almacenamiento compatible con S3, con la frecuencia que usted elija. Tras la primera ejecución solo se sube lo que ha cambiado, así que las copias cada hora salen baratas.",
+      "fields": {
+        "accessKeyId": "ID de clave de acceso",
+        "accessKeyIdHelp": "Una clave de su proveedor de almacenamiento con permiso para listar, leer, escribir y eliminar objetos del bucket. Cree una clave solo para Torqvoice, para poder revocarla por separado.",
+        "secretAccessKey": "Clave de acceso secreta",
+        "password": "Contraseña de las copias",
+        "passwordHelp": "Cada copia de seguridad se cifra con esta contraseña. Invente una o pulse Generar, y guarde una copia fuera de este servidor: sin ella nadie puede abrir estas copias, ni siquiera Torqvoice. Para volver a conectar un almacenamiento que ya contiene copias de Torqvoice, introduzca la contraseña con la que se hicieron.",
+        "endpoint": "Endpoint personalizado",
+        "endpointHelp": "Solo para la opción Otro almacenamiento compatible con S3: la dirección S3 de su propio almacenamiento, como un servidor MinIO, como nombre de host con puerto si hace falta."
+      },
+      "settings": {
+        "provider": "Proveedor",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Otro almacenamiento compatible con S3",
+        "region": "Región",
+        "regionHelp": "Dónde está el bucket. Elíjala de la lista del proveedor; para otro almacenamiento, escriba la que este pida, si pide alguna. Cloudflare R2 no la usa.",
+        "accountId": "ID de cuenta de Cloudflare",
+        "accountIdHelp": "El ID de 32 caracteres que aparece en la página de resumen de R2 de su panel de Cloudflare.",
+        "bucket": "Bucket",
+        "bucketHelp": "Los buckets se listan con la clave en cuanto se introduce. Si la clave puede usar un bucket pero no listarlos, escriba el nombre.",
+        "prefix": "Carpeta en el bucket",
+        "prefixHelp": "Las copias se guardan en esta carpeta. Use una carpeta distinta para cada taller que comparta el bucket.",
+        "frequency": "Frecuencia",
+        "frequencyHourly": "Cada hora",
+        "frequencyEvery4h": "Cada 4 horas",
+        "frequencyDaily": "Cada día",
+        "frequencyWeekly": "Cada semana",
+        "frequencyMonthly": "Cada mes",
+        "time": "Hora del día",
+        "timeHelp": "Según el reloj del taller, en formato HH:MM. Se usa en las copias diarias, semanales y mensuales.",
+        "weekday": "Día de la semana",
+        "sunday": "Domingo",
+        "monday": "Lunes",
+        "tuesday": "Martes",
+        "wednesday": "Miércoles",
+        "thursday": "Jueves",
+        "friday": "Viernes",
+        "saturday": "Sábado",
+        "monthDay": "Día del mes",
+        "monthDayLast": "Último día",
+        "contents": "Contenido",
+        "contentsHelp": "Las claves secretas son las que este taller ha introducido en Torqvoice: claves de pagos, de IA y de webhooks. En cualquier caso, cada copia se cifra con la contraseña de las copias. Una copia contiene los registros del taller y, si así lo eliges, sus archivos. Las cuentas de usuario y las contraseñas no van en ella: en un servidor nuevo inicias sesión, invitas al equipo y restauras los datos en ese taller.",
+        "contentsData": "Solo datos",
+        "contentsDataAndSecrets": "Datos y claves secretas",
+        "includeFiles": "Incluir fotos y archivos",
+        "includeFilesHelp": "Cada archivo se sube una vez y las copias posteriores lo reutilizan, así que esto cuesta poco después de la primera ejecución.",
+        "keepHourly": "Conservar copias horarias",
+        "keepHourlyHelp": "Cuántas de las copias horarias más recientes se conservan. Solo importa con las frecuencias de cada hora y cada 4 horas.",
+        "keepDaily": "Conservar copias diarias",
+        "keepWeekly": "Conservar copias semanales",
+        "keepMonthly": "Conservar copias mensuales",
+        "keepMonthlyHelp": "Las copias más antiguas se eliminan después de cada ejecución y se conservan las más recientes de cada tipo. Ponga un número a 0 para no conservar ninguna de ese tipo."
+      }
+    },
+    "local-folder": {
+      "name": "Carpeta local",
+      "description": "Copias de seguridad cifradas de este taller en una carpeta de este servidor: el volumen de copias del archivo compose o una unidad de red montada allí. Una copia en el mismo disco que la base de datos no es segura por sí sola; combínela con un almacenamiento en otro lugar.",
+      "fields": {
+        "password": "Contraseña de las copias",
+        "passwordHelp": "Cada copia de seguridad se cifra con esta contraseña. Invente una o pulse Generar, y guarde una copia fuera de este servidor: sin ella nadie puede abrir estas copias, ni siquiera Torqvoice. Para volver a conectar un almacenamiento que ya contiene copias de Torqvoice, introduzca la contraseña con la que se hicieron."
+      },
+      "settings": {
+        "folder": "Carpeta",
+        "folderHelp": "La carpeta dentro de la raíz de copias de seguridad del servidor que guarda las copias de este taller. Déjala vacía para usar una carpeta con el nombre de este taller. En un servidor nuevo, escribe el nombre de la carpeta que usaba una instalación anterior para recuperar sus copias.",
+        "frequency": "Frecuencia",
+        "frequencyHourly": "Cada hora",
+        "frequencyEvery4h": "Cada 4 horas",
+        "frequencyDaily": "Cada día",
+        "frequencyWeekly": "Cada semana",
+        "frequencyMonthly": "Cada mes",
+        "time": "Hora del día",
+        "timeHelp": "Según el reloj del taller, en formato HH:MM. Se usa en las copias diarias, semanales y mensuales.",
+        "weekday": "Día de la semana",
+        "sunday": "Domingo",
+        "monday": "Lunes",
+        "tuesday": "Martes",
+        "wednesday": "Miércoles",
+        "thursday": "Jueves",
+        "friday": "Viernes",
+        "saturday": "Sábado",
+        "monthDay": "Día del mes",
+        "monthDayLast": "Último día",
+        "contents": "Contenido",
+        "contentsHelp": "Las claves secretas son las que este taller ha introducido en Torqvoice: claves de pagos, de IA y de webhooks. En cualquier caso, cada copia se cifra con la contraseña de las copias. Una copia contiene los registros del taller y, si así lo eliges, sus archivos. Las cuentas de usuario y las contraseñas no van en ella: en un servidor nuevo inicias sesión, invitas al equipo y restauras los datos en ese taller.",
+        "contentsData": "Solo datos",
+        "contentsDataAndSecrets": "Datos y claves secretas",
+        "includeFiles": "Incluir fotos y archivos",
+        "includeFilesHelp": "Cada archivo se sube una vez y las copias posteriores lo reutilizan, así que esto cuesta poco después de la primera ejecución.",
+        "keepHourly": "Conservar copias horarias",
+        "keepHourlyHelp": "Cuántas de las copias horarias más recientes se conservan. Solo importa con las frecuencias de cada hora y cada 4 horas.",
+        "keepDaily": "Conservar copias diarias",
+        "keepWeekly": "Conservar copias semanales",
+        "keepMonthly": "Conservar copias mensuales",
+        "keepMonthlyHelp": "Las copias más antiguas se eliminan después de cada ejecución y se conservan las más recientes de cada tipo. Ponga un número a 0 para no conservar ninguna de ese tipo."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Actualización de datos de llamadas a revisión",
       "vehicle": "Comprobación de llamadas a revisión para un vehículo nuevo"
     }
+  },
+  "backupAlerts": {
+    "destination": "destino de copias de seguridad",
+    "failedTitle": "Error en la copia de seguridad",
+    "failedMessage": "La copia de seguridad en {name} no terminó: {reason}",
+    "failedSubject": "Error en la copia de seguridad en {name}",
+    "failedEmailIntro": "La copia de seguridad programada de su taller en {name} no terminó.",
+    "openToRetry": "Abra Configuración, Integraciones, {name} para ver la ejecución y volver a intentarlo.",
+    "overdueTitle": "Copia de seguridad atrasada",
+    "overdueSince": "Ninguna copia de seguridad en {name} ha terminado desde {time}.",
+    "overdueNever": "Todavía no ha terminado ninguna copia de seguridad en {name}.",
+    "overdueSubject": "La copia de seguridad en {name} está atrasada",
+    "openToSee": "Abra Configuración, Integraciones, {name} para ver qué salió mal.",
+    "platformName": "Copias de seguridad de Torqvoice",
+    "restoredTitle": "Taller restaurado",
+    "restoredSubject": "Su taller se ha restaurado a partir de una copia de seguridad",
+    "restoredIntro": "{name}: el taller se devolvió al punto de restauración {snapshot} el {time}. Todo lo introducido después de ese punto ya no está en el taller.",
+    "restoredByMember": "Un miembro de su taller solicitó esta restauración.",
+    "restoredBySupport": "El soporte de Torqvoice lo hizo a petición suya. Motivo indicado: {reason}",
+    "noReason": "no se indicó ninguno",
+    "restoredUndo": "Antes se hizo una copia de protección del taller tal como estaba justo antes de la restauración, que se conserva durante 90 días. Contacte con el soporte para volver a ella."
   }
 }

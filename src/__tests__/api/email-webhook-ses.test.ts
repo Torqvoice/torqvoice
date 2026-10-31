@@ -41,6 +41,7 @@ vi.mock('@aws-sdk/client-s3', () => ({
 }))
 
 import { POST } from '@/app/api/webhooks/email/ses/route'
+import { RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { snsStringToSign, type SnsEnvelope } from '@/lib/sns-signature'
 
 const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
@@ -190,6 +191,14 @@ describe('POST /api/webhooks/email/ses', () => {
 
     receive.mockRejectedValue(new Error('database down'))
     expect((await post(envelope())).status).toBe(500)
+  })
+
+  it('answers 503 with Retry-After while the workshop is being restored', async () => {
+    receive.mockResolvedValue({ outcome: 'retry', reason: 'workshop is being restored' })
+    const response = await post(envelope())
+    expect(response.status).toBe(503)
+    expect(response.headers.get('Retry-After')).toBe('300')
+    expect(await response.json()).toEqual({ error: RESTORE_IN_PROGRESS_MESSAGE })
   })
 
   it('ignores a notification that is not a stored mail', async () => {

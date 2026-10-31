@@ -70,6 +70,9 @@
       "invoices": "Faturalar muhasebeye",
       "customers": "Müşteriler muhasebeye",
       "payments": "Ödemeler iki yönlü"
+    },
+    "backup": {
+      "target": "Yedekleme hedefi"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Plakası olan tüm araçlar yakın zamanda kontrol edildi, şimdilik sorgulanacak bir şey yok."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
+    "platformHandlesBackups": "Torqvoice bu atölyeyi zaten her saat yedekliyor ve geri yükleme noktalarını 30 gün saklıyor. Torqvoice olmadan da okunabilen, size ait bir kopya da istiyorsanız bir bucket bağlayın.",
+    "platformHandlesBackupsLink": "Geri yükleme noktalarını görün",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
-    "advanced": "Gelişmiş"
+    "advanced": "Gelişmiş",
+    "generate": "Oluştur",
+    "show": "Göster",
+    "hide": "Gizle",
+    "generatedPasswordWarning": "Bu parolanın bir kopyasını bu sunucudan uzakta, güvenli bir yerde saklayın. Parola olmadan bu yedekleri kimse açamaz, Torqvoice bile.",
+    "backup": {
+      "title": "Yedekler",
+      "description": "Bu hedefe son başarılı yedeğin ne zaman alındığı, bir sonrakinin ne zaman çalışacağı ve son çalıştırmalar.",
+      "lastGood": "Son başarılı yedek",
+      "added": "{size} eklendi",
+      "never": "Henüz yok",
+      "nextRun": "Sonraki çalıştırma",
+      "notScheduled": "Planlanmadı",
+      "repositorySize": "Hedefte depolanan",
+      "runNow": "Şimdi yedekle",
+      "running": "Yedekleniyor",
+      "runningHint": "Bir yedekleme çalışıyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir.",
+      "started": "Yedekleme başlatıldı",
+      "recentTitle": "Son çalıştırmalar",
+      "noRuns": "Henüz hiç yedekleme çalışmadı.",
+      "addedNote": "İlk çalıştırma her şeyi yükler. Sonraki her çalıştırma yalnızca o zamandan beri değişen parçaları ekler, bu yüzden küçüktür. Yine de her yedek eksiksizdir ve tek başına geri yüklenebilir ya da incelenebilir.",
+      "notStarted": "Başlamadı",
+      "filesNewCount": "{count, plural, one {# yeni dosya} other {# yeni dosya}}",
+      "columns": {
+        "status": "Durum",
+        "started": "Başlangıç",
+        "trigger": "Başlatan",
+        "duration": "Süre",
+        "filesNew": "Yeni dosyalar",
+        "bytesAdded": "Eklenen"
+      },
+      "trigger": {
+        "scheduled": "Zamanlama",
+        "manual": "Elle",
+        "restore": "Geri yükleme"
+      },
+      "status": {
+        "queued": "Kuyrukta",
+        "running": "Çalışıyor",
+        "done": "Tamamlandı",
+        "failed": "Başarısız",
+        "skipped": "Atlandı"
+      },
+      "restoring": "Geri yükleniyor",
+      "restoringHint": "Bir geri yükleme çalışıyor: atölyenin verileri yedektekilerle değiştiriliyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir. O zamana kadar atölyede çalışmayın.",
+      "explore": "İncele",
+      "restore": {
+        "showAll": "Tüm yedekleri göster",
+        "refresh": "Yenile",
+        "loading": "Hedefteki yedekler okunuyor",
+        "loadFailed": "Yedekler listelenemedi",
+        "empty": "Bu hedefte henüz yedek yok.",
+        "needsOwner": "Burada bir yedeği yalnızca atölyenin sahibi geri yükleyebilir.",
+        "needsAdmin": "Bir yedeği yalnızca bir sahip veya yönetici geri yükleyebilir.",
+        "filesIncluded": "Fotoğraflar ve dosyalar dahil",
+        "filesNotIncluded": "Fotoğraflar ve dosyalar dahil değil",
+        "earlierInstall": "Önceki kurulum",
+        "action": "Geri yükle",
+        "dialogTitle": "{time} tarihli yedek geri yüklensin mi?",
+        "warning": "Geri yükleme <bold>bu atölyede şu anda bulunan her şeyin yerini alır</bold>: müşteriler, araçlar, iş emirleri, faturalar, ayarlar ve yedek içeriyorsa fotoğraflar ile dosyalar. Yedek alındıktan sonra eklenen her şey kaybolur. Bu işlem geri alınamaz.",
+        "secretsNote": "Yedeğin dışarıda bıraktığı gizli anahtarlar, bu kurulumda şu anda bulunan değerlerini korur. Kullanıcı hesaplarına ve parolalara dokunulmaz.",
+        "confirmPrompt": "Onaylamak için atölyenin adını yazın: <bold>{name}</bold>.",
+        "whileRunning": "Geri yükleme arka planda çalışır ve çok sayıda fotoğraf olduğunda birkaç dakika sürer. Sayfa, işlem bitene kadar kendiliğinden güncellenir.",
+        "cancel": "İptal",
+        "confirm": "Bu yedeği geri yükle",
+        "started": "Geri yükleme başlatıldı"
+      }
+    },
+    "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri.",
+    "searchOrType": "Ara veya bir ad yaz",
+    "useTyped": "\"{value}\" değerini kullan",
+    "listNeedsKeys": "Listeyi görmek için önce yukarıdaki anahtarları girin",
+    "listEmpty": "Hiçbir şey listelenmedi. Bunun yerine adı yazın.",
+    "testing": "Bağlantı test ediliyor",
+    "testOk": "Bağlantı çalışıyor: bir test nesnesi yazıldı ve yeniden silindi.",
+    "testFailed": "Test başarısız oldu",
+    "testSteps": {
+      "settings": "Sağlayıcı ayarlarını kontrol edin",
+      "list": "Anahtar bucket'ı listeleyemiyor",
+      "write": "Anahtar bucket'a yazamıyor",
+      "delete": "Anahtar bucket'tan silemiyor",
+      "folder": "Klasör oluşturulamıyor veya açılamıyor"
+    },
+    "testHint": "Bağlanmadan önce test etmek için anahtarları ve bucket'ı doldurun. Test küçük bir nesne yazar ve onu siler."
   },
   "activity": {
     "title": "Aktivite",
@@ -199,7 +287,10 @@
     "invalid": "Sağlayıcının yanıtı eksikti. Yeniden deneyin.",
     "state": "Bu oturum açma işleminin süresi doldu veya başka bir oturuma ait. Yeniden başlayın.",
     "exchange": "Sağlayıcı oturum açmayı reddetti. Uygulama kimlik bilgilerini kontrol edip yeniden deneyin.",
-    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin."
+    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin.",
+    "backupRunning": "Zaten çalışan bir yedekleme var.",
+    "restoreOwnerOnly": "Torqvoice Cloud'da bir yedeği yalnızca atölyenin sahibi geri yükleyebilir.",
+    "restoreBusy": "Bu sunucuda zaten bir yedekleme veya geri yükleme çalışıyor. İşlem bitince yeniden deneyin."
   },
   "meeting": {
     "join": "Görüntülü görüşmeye katıl",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 Takvimi",
       "description": "Planlanmış iş emirlerini bir Outlook takvimine ekleyin, Microsoft Teams bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
       "tenantHelp": "Microsoft Entra'da (App registrations) bir uygulama kaydedin, kişisel ve iş hesaplarına izin verin, aşağıdaki yönlendirme URI'sini Web platformu olarak ekleyin, bir istemci gizli anahtarı oluşturun ve her ikisini buraya yapıştırın.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI uyumlu",
       "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan, OpenAI sohbet API'sini konuşan herhangi bir sunucu tarafından yanıtlanır: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ve benzerleri. Verileriniz kendi donanımınızda kalır.",
       "fields": {
         "baseUrl": "Temel URL",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Konuşmadan metne",
       "description": "İş emrindeki dikte, tarayıcı yerine bir konuşma modeli tarafından yazıya dökülür: çok daha doğrudur, her dilde çalışır ve atölye terimlerini bilir. Yapay zekâ sağlayıcınızdan ayrıdır, o yüzden onu olduğu gibi bırakabilirsiniz. Kendi OpenAI anahtarınızı ya da OpenAI'nin transkripsiyon API'siyle çalışan kendi sunucunuzu kullanır. Kayıt yazıya dökülmek üzere gönderilir ve saklanmaz.",
       "fields": {
         "apiKey": "API anahtarı",
@@ -652,6 +746,108 @@
         "modeHelp": "Tarayıcı siz konuşurken yazar ama daha zayıftır, özellikle az konuşulan dillerde. Konuşma modeli siz durduğunuzda yazar.",
         "modeAi": "Her zaman konuşma modeli",
         "modeChoice": "Herkes kendisi seçer: konuşma modeli veya tarayıcı"
+      }
+    },
+    "s3": {
+      "name": "Bulut depolama bucket'ı",
+      "description": "Bu atölyenin Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage veya başka bir S3 uyumlu depolamadaki size ait bir bucket'a, seçtiğiniz zamanlamayla şifreli yedekleri. İlk çalıştırmadan sonra yalnızca değişenler yüklenir, bu yüzden saatlik yedekler ucuz kalır.",
+      "fields": {
+        "accessKeyId": "Erişim anahtarı kimliği",
+        "accessKeyIdHelp": "Depolama sağlayıcınızdan, bucket'taki nesneleri listeleme, okuma, yazma ve silme izni olan bir anahtar. Tek başına iptal edilebilmesi için yalnızca Torqvoice'a özel bir anahtar oluşturun.",
+        "secretAccessKey": "Gizli erişim anahtarı",
+        "password": "Yedekleme parolası",
+        "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin.",
+        "endpoint": "Özel uç nokta",
+        "endpointHelp": "Yalnızca Diğer S3 uyumlu depolama seçeneği için: kendi depolamanızın S3 adresi, örneğin bir MinIO sunucusu, ana bilgisayar adı olarak ve gerekirse bağlantı noktasıyla."
+      },
+      "settings": {
+        "provider": "Sağlayıcı",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Diğer S3 uyumlu depolama",
+        "region": "Bölge",
+        "regionHelp": "Bucket'ın bulunduğu yer. Sağlayıcının listesinden seçin; başka bir depolama için, bir değer bekliyorsa onu yazın. Cloudflare R2 tarafından kullanılmaz.",
+        "accountId": "Cloudflare hesap kimliği",
+        "accountIdHelp": "Cloudflare panonuzun R2 genel bakış sayfasında gösterilen 32 karakterlik kimlik.",
+        "bucket": "Bucket",
+        "bucketHelp": "Anahtar girilir girilmez anahtarın görebildiği bucket'lar listelenir. Anahtar bir bucket'ı kullanabiliyor ama bucket'ları listeleyemiyorsa adını yazın.",
+        "prefix": "Bucket içindeki klasör",
+        "prefixHelp": "Yedekler bu klasörün altında tutulur. Bucket'ı paylaşan her atölye için ayrı bir klasör kullanın.",
+        "frequency": "Sıklık",
+        "frequencyHourly": "Her saat",
+        "frequencyEvery4h": "4 saatte bir",
+        "frequencyDaily": "Her gün",
+        "frequencyWeekly": "Her hafta",
+        "frequencyMonthly": "Her ay",
+        "time": "Saat",
+        "timeHelp": "Atölye saatine göre, HH:MM biçiminde. Günlük, haftalık ve aylık yedeklerde kullanılır.",
+        "weekday": "Haftanın günü",
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi",
+        "monthDay": "Ayın günü",
+        "monthDayLast": "Son gün",
+        "contents": "İçerik",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir. Bir yedek, atölyenin kayıtlarını ve seçildiğinde dosyalarını içerir. Kullanıcı hesapları ve parolalar yedekte yer almaz: yeni bir sunucuda oturum açar, ekibi davet eder ve verileri o atölyeye geri yüklersiniz.",
+        "contentsData": "Yalnızca veriler",
+        "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
+        "includeFiles": "Fotoğrafları ve dosyaları dahil et",
+        "includeFilesHelp": "Her dosya bir kez yüklenir ve sonraki yedeklerde yeniden kullanılır, bu yüzden ilk çalıştırmadan sonra maliyeti azdır.",
+        "keepHourly": "Saatlik yedekleri sakla",
+        "keepHourlyHelp": "En yeni saatlik yedeklerden kaç tanesinin saklanacağı. Yalnızca her saat ve 4 saatte bir zamanlamalarında önemlidir.",
+        "keepDaily": "Günlük yedekleri sakla",
+        "keepWeekly": "Haftalık yedekleri sakla",
+        "keepMonthly": "Aylık yedekleri sakla",
+        "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
+      }
+    },
+    "local-folder": {
+      "name": "Yerel klasör",
+      "description": "Bu atölyenin, bu sunucudaki bir klasöre şifreli yedekleri: compose dosyasındaki yedek birimi veya oraya bağlanmış bir ağ sürücüsü. Veritabanıyla aynı diskteki bir kopya tek başına güvenli değildir; başka bir yerdeki depolamayla birlikte kullanın.",
+      "fields": {
+        "password": "Yedekleme parolası",
+        "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin."
+      },
+      "settings": {
+        "folder": "Klasör",
+        "folderHelp": "Sunucunun yedek kök dizini altında bu atölyenin yedeklerini tutan klasör. Bu atölyenin adını taşıyan bir klasör kullanmak için boş bırakın. Yeni bir sunucuda, yedekleri geri almak için önceki kurulumun kullandığı klasör adını yazın.",
+        "frequency": "Sıklık",
+        "frequencyHourly": "Her saat",
+        "frequencyEvery4h": "4 saatte bir",
+        "frequencyDaily": "Her gün",
+        "frequencyWeekly": "Her hafta",
+        "frequencyMonthly": "Her ay",
+        "time": "Saat",
+        "timeHelp": "Atölye saatine göre, HH:MM biçiminde. Günlük, haftalık ve aylık yedeklerde kullanılır.",
+        "weekday": "Haftanın günü",
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi",
+        "monthDay": "Ayın günü",
+        "monthDayLast": "Son gün",
+        "contents": "İçerik",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir. Bir yedek, atölyenin kayıtlarını ve seçildiğinde dosyalarını içerir. Kullanıcı hesapları ve parolalar yedekte yer almaz: yeni bir sunucuda oturum açar, ekibi davet eder ve verileri o atölyeye geri yüklersiniz.",
+        "contentsData": "Yalnızca veriler",
+        "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
+        "includeFiles": "Fotoğrafları ve dosyaları dahil et",
+        "includeFilesHelp": "Her dosya bir kez yüklenir ve sonraki yedeklerde yeniden kullanılır, bu yüzden ilk çalıştırmadan sonra maliyeti azdır.",
+        "keepHourly": "Saatlik yedekleri sakla",
+        "keepHourlyHelp": "En yeni saatlik yedeklerden kaç tanesinin saklanacağı. Yalnızca her saat ve 4 saatte bir zamanlamalarında önemlidir.",
+        "keepDaily": "Günlük yedekleri sakla",
+        "keepWeekly": "Haftalık yedekleri sakla",
+        "keepMonthly": "Aylık yedekleri sakla",
+        "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Geri çağırma verisi yenileme",
       "vehicle": "Yeni araç için geri çağırma kontrolü"
     }
+  },
+  "backupAlerts": {
+    "destination": "yedekleme hedefi",
+    "failedTitle": "Yedekleme başarısız oldu",
+    "failedMessage": "{name} için yedekleme tamamlanmadı: {reason}",
+    "failedSubject": "{name} için yedekleme başarısız oldu",
+    "failedEmailIntro": "Atölyenizin {name} için zamanlanmış yedeklemesi tamamlanmadı.",
+    "openToRetry": "Çalıştırmayı görmek ve yeniden denemek için Ayarlar, Entegrasyonlar, {name} bölümünü açın.",
+    "overdueTitle": "Yedekleme gecikti",
+    "overdueSince": "{time} tarihinden bu yana {name} için hiçbir yedekleme tamamlanmadı.",
+    "overdueNever": "{name} için henüz hiçbir yedekleme tamamlanmadı.",
+    "overdueSubject": "{name} için yedekleme gecikti",
+    "openToSee": "Neyin ters gittiğini görmek için Ayarlar, Entegrasyonlar, {name} bölümünü açın.",
+    "platformName": "Torqvoice yedekleri",
+    "restoredTitle": "Atölye geri yüklendi",
+    "restoredSubject": "Atölyeniz bir yedekten geri yüklendi",
+    "restoredIntro": "{name}: atölye {time} tarihinde {snapshot} geri yükleme noktasına döndürüldü. O noktadan sonra girilen her şey artık atölyede yok.",
+    "restoredByMember": "Bu geri yüklemeyi atölyenizin bir üyesi istedi.",
+    "restoredBySupport": "Bunu Torqvoice destek ekibi sizin isteğiniz üzerine yaptı. Belirtilen neden: {reason}",
+    "noReason": "belirtilmedi",
+    "restoredUndo": "Önce atölyenin geri yüklemeden hemen önceki hâlinin bir güvenlik kopyası alındı ve 90 gün saklanıyor. Ona geri dönmek için destek ekibiyle iletişime geçin."
   }
 }

@@ -193,7 +193,9 @@
     "settings_markType_create": "Markierungsart hinzugefügt",
     "settings_markType_update": "Markierungsart geändert",
     "settings_markType_remove": "Markierungsart entfernt",
-    "settings_markType_reorder": "Markierungsarten neu geordnet"
+    "settings_markType_reorder": "Markierungsarten neu geordnet",
+    "integration_backup_run": "Sicherung gestartet",
+    "integration_backup_restore": "Sicherung wiederhergestellt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -346,6 +348,9 @@
     "condition_mark_remove": "Markierung von der Zustandskarte entfernt",
     "condition_mark_carry": "{count, plural, one {# frühere Markierung} other {# frühere Markierungen}} auf der Zustandskarte als noch vorhanden bestätigt",
     "condition_map_on_invoice_on": "Zustandskarte auf die Rechnung gesetzt",
-    "condition_map_on_invoice_off": "Zustandskarte von der Rechnung genommen"
+    "condition_map_on_invoice_off": "Zustandskarte von der Rechnung genommen",
+    "backup_run_started": "Sicherung nach {name} gestartet",
+    "backup_restore_started": "Wiederherstellung der Sicherung {snapshot} von {name} gestartet",
+    "backup_restored": "Sicherung {snapshot} von {name} wiederhergestellt"
   }
 }

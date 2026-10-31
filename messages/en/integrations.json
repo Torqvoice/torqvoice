@@ -70,6 +70,9 @@
       "invoices": "Invoices to the ledger",
       "customers": "Customers to the ledger",
       "payments": "Payments both ways"
+    },
+    "backup": {
+      "target": "Backup destination"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Every vehicle with a plate was checked recently, so there is nothing to look up yet."
     },
     "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live.",
+    "platformHandlesBackups": "Torqvoice already backs this workshop up every hour and keeps restore points for 30 days. Connect a bucket if you also want a copy you own, readable without Torqvoice.",
+    "platformHandlesBackupsLink": "See your restore points",
     "batchRetried": "{count, plural, =0 {Nothing to retry} one {# job queued again} other {# jobs queued again}}",
-    "advanced": "Advanced"
+    "advanced": "Advanced",
+    "generate": "Generate",
+    "show": "Show",
+    "hide": "Hide",
+    "generatedPasswordWarning": "Keep a copy of this password somewhere safe, away from this server. Without it nobody can open these backups, not even Torqvoice.",
+    "backup": {
+      "title": "Backups",
+      "description": "When this destination last got a good backup, when the next one runs, and the latest runs.",
+      "lastGood": "Last good backup",
+      "added": "{size} added",
+      "never": "None yet",
+      "nextRun": "Next run",
+      "notScheduled": "Not scheduled",
+      "repositorySize": "Stored at the destination",
+      "runNow": "Back up now",
+      "running": "Backing up",
+      "runningHint": "A backup is running. This page updates by itself until it is done.",
+      "started": "Backup started",
+      "recentTitle": "Recent runs",
+      "noRuns": "No backups have run yet.",
+      "addedNote": "The first run uploads everything. Each run after it adds only the pieces that changed since, which is why it is small. Every backup is still complete and can be restored or explored on its own.",
+      "notStarted": "Not started",
+      "filesNewCount": "{count, plural, one {# new file} other {# new files}}",
+      "columns": {
+        "status": "Status",
+        "started": "Started",
+        "trigger": "Started by",
+        "duration": "Duration",
+        "filesNew": "New files",
+        "bytesAdded": "Added"
+      },
+      "trigger": {
+        "scheduled": "Schedule",
+        "manual": "Manual",
+        "restore": "Restore"
+      },
+      "status": {
+        "queued": "Queued",
+        "running": "Running",
+        "done": "Done",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "restoring": "Restoring",
+      "restoringHint": "A restore is running: the workshop's data is being replaced with the backup. This page updates by itself until it is done. Do not work in the workshop until then.",
+      "explore": "Explore",
+      "restore": {
+        "showAll": "Show all backups",
+        "refresh": "Refresh",
+        "loading": "Reading the backups at the destination",
+        "loadFailed": "The backups could not be listed",
+        "empty": "No backups at this destination yet.",
+        "needsOwner": "Only the workshop's owner can restore a backup here.",
+        "needsAdmin": "Only an owner or administrator can restore a backup.",
+        "filesIncluded": "Photos and files included",
+        "filesNotIncluded": "Photos and files not included",
+        "earlierInstall": "Earlier install",
+        "action": "Restore",
+        "dialogTitle": "Restore the backup from {time}?",
+        "warning": "Restoring <bold>replaces everything this workshop has now</bold>: customers, vehicles, jobs, invoices, settings and, when the backup includes them, photos and files. Anything added since the backup was taken is gone. This cannot be undone.",
+        "secretsNote": "Secret keys the backup left out keep the values this install has now. User accounts and passwords are not touched.",
+        "confirmPrompt": "Type the workshop's name, <bold>{name}</bold>, to confirm.",
+        "whileRunning": "The restore runs in the background and takes a few minutes when there are many photos. The page updates by itself until it is done.",
+        "cancel": "Cancel",
+        "confirm": "Restore this backup",
+        "started": "Restore started"
+      }
+    },
+    "lockedBackups": "Scheduled, encrypted backups of your workshop to storage you own.",
+    "searchOrType": "Search or type a name",
+    "useTyped": "Use \"{value}\"",
+    "listNeedsKeys": "Enter the keys above to see the list",
+    "listEmpty": "Nothing was listed. Type a name instead.",
+    "testing": "Testing the connection",
+    "testOk": "The connection works: a test object was written and removed again.",
+    "testFailed": "The test failed",
+    "testSteps": {
+      "settings": "Check the provider settings",
+      "list": "The key cannot list the bucket",
+      "write": "The key cannot write to the bucket",
+      "delete": "The key cannot delete from the bucket",
+      "folder": "The folder cannot be created or opened"
+    },
+    "testHint": "Fill in the keys and the bucket to test them before connecting. The test writes one small object and removes it."
   },
   "activity": {
     "title": "Activity",
@@ -199,7 +287,10 @@
     "invalid": "The provider's response was incomplete. Try again.",
     "state": "This sign-in has expired or belongs to another session. Start again.",
     "exchange": "The provider refused the sign-in. Check the app credentials and try again.",
-    "identify": "Connected, but the account could not be read. Try reconnecting."
+    "identify": "Connected, but the account could not be read. Try reconnecting.",
+    "backupRunning": "A backup is already running.",
+    "restoreOwnerOnly": "On Torqvoice Cloud only the workshop's owner can restore a backup.",
+    "restoreBusy": "A backup or restore is already running on this server. Try again when it is done."
   },
   "meeting": {
     "join": "Join video call",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 Calendar",
       "description": "Put scheduled work orders on an Outlook calendar, add a Microsoft Teams link, and see the calendar's busy time in Torqvoice.",
       "tenantHelp": "Register an application in Microsoft Entra (App registrations), allow personal and work accounts, add the redirect URI below as a Web platform, create a client secret, and paste both here.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-compatible",
       "description": "Service descriptions, history summaries, document scanning and the assistant, answered by any server that speaks OpenAI's chat API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM and the like. Your data stays on your own hardware.",
       "fields": {
         "baseUrl": "Base URL",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Speech to text",
       "description": "Dictation on a work order, written down by a speech model instead of the browser: far more accurate, any language, and it knows a workshop's words. Separate from your AI provider, so you can keep that one as it is. Uses your own OpenAI key, or a server of your own that speaks OpenAI's transcription API. The recording is sent to be written down and is not kept.",
       "fields": {
         "apiKey": "API key",
@@ -652,6 +746,108 @@
         "modeHelp": "The browser writes as you speak but is weaker, above all in smaller languages. The speech model writes when you stop.",
         "modeAi": "Always the speech model",
         "modeChoice": "Each person chooses: speech model or browser"
+      }
+    },
+    "s3": {
+      "name": "Cloud storage bucket",
+      "description": "Encrypted backups of this workshop to a bucket you own at Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage or any other S3-compatible storage, on a schedule you choose. After the first run only what changed is uploaded, so hourly backups stay cheap.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "accessKeyIdHelp": "A key from your storage provider with permission to list, read, write and delete objects in the bucket. Make a key for Torqvoice alone, so it can be revoked on its own.",
+        "secretAccessKey": "Secret access key",
+        "password": "Backup password",
+        "passwordHelp": "Every backup is encrypted with this password. Make one up or press Generate, and keep a copy away from this server: without it nobody can open these backups, not even Torqvoice. To reconnect storage that already holds Torqvoice backups, enter the password they were made with.",
+        "endpoint": "Custom endpoint",
+        "endpointHelp": "Only for the Other provider: the S3 address of your own storage, such as a MinIO server, as a host name with a port if needed."
+      },
+      "settings": {
+        "provider": "Provider",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Other S3-compatible storage",
+        "region": "Region",
+        "regionHelp": "Where the bucket lives. Pick it from the provider's list; for other storage, type what it expects, if anything. Not used by Cloudflare R2.",
+        "accountId": "Cloudflare account ID",
+        "accountIdHelp": "The 32-character id shown on the R2 overview page of your Cloudflare dashboard.",
+        "bucket": "Bucket",
+        "bucketHelp": "Listed from the key as soon as it is entered. A key that may use one bucket but not list them takes the name typed in.",
+        "prefix": "Folder in the bucket",
+        "prefixHelp": "The backups live under this folder. Use a different folder for each workshop that shares the bucket.",
+        "frequency": "How often",
+        "frequencyHourly": "Every hour",
+        "frequencyEvery4h": "Every 4 hours",
+        "frequencyDaily": "Every day",
+        "frequencyWeekly": "Every week",
+        "frequencyMonthly": "Every month",
+        "time": "Time of day",
+        "timeHelp": "On the workshop clock, as HH:MM. Used by daily, weekly and monthly backups.",
+        "weekday": "Day of the week",
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "monthDay": "Day of the month",
+        "monthDayLast": "Last day",
+        "contents": "Contents",
+        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way. A backup holds the workshop's records and, when chosen, its files. User accounts and passwords are not in it: on a new server you sign in, invite the team and restore the data into that workshop.",
+        "contentsData": "Data only",
+        "contentsDataAndSecrets": "Data and secret keys",
+        "includeFiles": "Include photos and files",
+        "includeFilesHelp": "Every file is uploaded once and reused by later backups, so this costs little after the first run.",
+        "keepHourly": "Keep hourly backups",
+        "keepHourlyHelp": "How many of the most recent hourly backups to keep. Only matters for hourly and 4-hourly schedules.",
+        "keepDaily": "Keep daily backups",
+        "keepWeekly": "Keep weekly backups",
+        "keepMonthly": "Keep monthly backups",
+        "keepMonthlyHelp": "Older backups are removed after each run, keeping the newest of each kind. Set a number to 0 to keep none of that kind."
+      }
+    },
+    "local-folder": {
+      "name": "Local folder",
+      "description": "Encrypted backups of this workshop to a folder on this server: the backups volume in the compose file, or a network drive mounted there. A copy on the same disk as the database is not safe on its own; pair it with storage elsewhere.",
+      "fields": {
+        "password": "Backup password",
+        "passwordHelp": "Every backup is encrypted with this password. Make one up or press Generate, and keep a copy away from this server: without it nobody can open these backups, not even Torqvoice. To reconnect storage that already holds Torqvoice backups, enter the password they were made with."
+      },
+      "settings": {
+        "folder": "Folder",
+        "folderHelp": "The folder under the server's backup root that holds this workshop's backups. Leave it empty to use a folder named after this workshop. On a new server, type the folder name an earlier install used to get its backups back.",
+        "frequency": "How often",
+        "frequencyHourly": "Every hour",
+        "frequencyEvery4h": "Every 4 hours",
+        "frequencyDaily": "Every day",
+        "frequencyWeekly": "Every week",
+        "frequencyMonthly": "Every month",
+        "time": "Time of day",
+        "timeHelp": "On the workshop clock, as HH:MM. Used by daily, weekly and monthly backups.",
+        "weekday": "Day of the week",
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "monthDay": "Day of the month",
+        "monthDayLast": "Last day",
+        "contents": "Contents",
+        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way. A backup holds the workshop's records and, when chosen, its files. User accounts and passwords are not in it: on a new server you sign in, invite the team and restore the data into that workshop.",
+        "contentsData": "Data only",
+        "contentsDataAndSecrets": "Data and secret keys",
+        "includeFiles": "Include photos and files",
+        "includeFilesHelp": "Every file is uploaded once and reused by later backups, so this costs little after the first run.",
+        "keepHourly": "Keep hourly backups",
+        "keepHourlyHelp": "How many of the most recent hourly backups to keep. Only matters for hourly and 4-hourly schedules.",
+        "keepDaily": "Keep daily backups",
+        "keepWeekly": "Keep weekly backups",
+        "keepMonthly": "Keep monthly backups",
+        "keepMonthlyHelp": "Older backups are removed after each run, keeping the newest of each kind. Set a number to 0 to keep none of that kind."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Recall data refresh",
       "vehicle": "Recall check for a new vehicle"
     }
+  },
+  "backupAlerts": {
+    "destination": "backup destination",
+    "failedTitle": "Backup failed",
+    "failedMessage": "The backup to {name} did not finish: {reason}",
+    "failedSubject": "Backup to {name} failed",
+    "failedEmailIntro": "The scheduled backup of your workshop to {name} did not finish.",
+    "openToRetry": "Open Settings, Integrations, {name} to see the run and try again.",
+    "overdueTitle": "Backup overdue",
+    "overdueSince": "No backup to {name} has finished since {time}.",
+    "overdueNever": "No backup to {name} has finished yet.",
+    "overdueSubject": "Backup to {name} is overdue",
+    "openToSee": "Open Settings, Integrations, {name} to see what went wrong.",
+    "platformName": "Backups by Torqvoice",
+    "restoredTitle": "Workshop restored",
+    "restoredSubject": "Your workshop was restored from a backup",
+    "restoredIntro": "{name}: the workshop was put back to restore point {snapshot} on {time}. Everything entered after that point is no longer in the workshop.",
+    "restoredByMember": "A member of your workshop asked for this restore.",
+    "restoredBySupport": "Torqvoice support did this at your request. Reason given: {reason}",
+    "noReason": "none given",
+    "restoredUndo": "A safety copy of the workshop as it was right before the restore was taken first and is kept for 90 days. Contact support to go back to it."
   }
 }

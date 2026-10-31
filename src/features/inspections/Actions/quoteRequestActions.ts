@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notify } from '@/lib/notify'
+import { assertNotRestoring } from '@/lib/backup/freeze'
 import { z } from 'zod'
 
 const createQuoteRequestSchema = z.object({
@@ -35,6 +36,8 @@ export async function createQuoteRequest(input: unknown) {
   if (!inspection) {
     return { success: false, error: 'Inspection not found' }
   }
+  // No withAuth on a public action, so the restore freeze is checked here.
+  assertNotRestoring(inspection.organizationId)
 
   // Check for existing pending request
   const existing = await db.inspectionQuoteRequest.findFirst({
@@ -90,6 +93,7 @@ export async function cancelQuoteRequest(input: { inspectionId: string; publicTo
   if (!inspection) {
     return { success: false, error: 'Inspection not found' }
   }
+  assertNotRestoring(inspection.organizationId)
 
   // Find the pending request
   const existing = await db.inspectionQuoteRequest.findFirst({

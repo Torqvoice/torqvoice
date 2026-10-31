@@ -38,6 +38,25 @@ WORKDIR /tools
 RUN npm install --no-save --no-audit --no-fund \
       prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
 
+# restic, for the scheduled backups a workshop sends to its own storage. The
+# release binary is fetched for the platform being built and checked against a
+# pinned SHA-256, so a changed or tampered download fails the build instead of
+# ending up in the image. Bumping the version means bumping both sums with it.
+FROM base AS restic
+ARG TARGETARCH
+ARG RESTIC_VERSION=0.19.1
+RUN set -e; \
+    case "$TARGETARCH" in \
+      amd64) sum=f415415624dcc452f2a02b8c33641791a8c6d6d3b65bbb3543fcf9a25151585c ;; \
+      arm64) sum=a5f64aaab53d51e311fa3829124c5b703f2d14cf187d8640b6be3b2b49376465 ;; \
+      *) echo "no pinned restic checksum for TARGETARCH '${TARGETARCH}'"; exit 1 ;; \
+    esac; \
+    wget -q -O /restic.bz2 \
+      "https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_linux_${TARGETARCH}.bz2"; \
+    echo "$sum  /restic.bz2" | sha256sum -c -; \
+    bunzip2 /restic.bz2; \
+    chmod 755 /restic
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
@@ -95,8 +114,16 @@ RUN node -e "require('sharp'); console.log('sharp loads')"
 COPY --chown=nextjs:nodejs init-db.sh ./init-db.sh
 RUN chmod +x ./init-db.sh
 
-# Create uploads directories
-RUN mkdir -p /app/data/uploads && chown -R nextjs:nodejs /app/data
+# restic runs as a child of the server for scheduled backups. Run it once here
+# so a binary that cannot start on this platform fails the build, not the
+# first backup a workshop relies on.
+COPY --from=restic /restic /usr/local/bin/restic
+RUN restic version
+
+# Create the data directories: uploads, the local backup repositories (the
+# compose file mounts a volume there) and restic's cache
+RUN mkdir -p /app/data/uploads /app/data/backups /app/data/restic-cache \
+      && chown -R nextjs:nodejs /app/data
 
 USER nextjs
 

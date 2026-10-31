@@ -1,0 +1,69 @@
+name: Restore tenancy
+
+# The differential test of the backup restore against a real PostgreSQL:
+# two workshops, a restore into one of them, and a row-by-row comparison
+# that the other was never touched. It runs when the restore or the schema
+# changes, since that is when it could start being wrong.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/lib/backup/**'
+      - 'src/app/api/protected/backup/**'
+      - 'src/__tests__/db/**'
+      - 'prisma/**'
+      - 'vitest.db.config.ts'
+      - '.github/workflows/restore-tenancy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: restore-tenancy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  restore-tenancy:
+    name: Restore never touches another workshop
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: torqvoice
+          POSTGRES_PASSWORD: torqvoice
+          # The name carries "test": the suite refuses a database that does not.
+          POSTGRES_DB: torqvoice_restore_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U torqvoice -d torqvoice_restore_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      E2E_DATABASE_URL: postgresql://torqvoice:torqvoice@127.0.0.1:5432/torqvoice_restore_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate the Prisma client
+        run: npx prisma generate
+
+      - name: Apply every migration to the empty database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ env.E2E_DATABASE_URL }}
+
+      - name: Run the differential restore test
+        run: npm run test:db

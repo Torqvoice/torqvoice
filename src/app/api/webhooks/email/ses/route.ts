@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { SYSTEM_SETTING_KEYS } from '@/features/admin/Schema/systemSettingsSchema'
 import { parseSesReceivedNotification } from '@/features/messaging/Lib/inboundMail'
 import { receiveSesMail, type StoredObject } from '@/features/messaging/Lib/inboundMail.server'
+import { restoringResponse } from '@/lib/backup/freeze-response'
 import { db } from '@/lib/db'
 import { inboundMailConfig, type InboundMailConfig } from '@/lib/reply-mail'
 import {
@@ -184,6 +185,8 @@ export async function POST(request: Request) {
     if (result.outcome === 'dropped') {
       console.warn(`[webhook/email/ses] Dropped ${mail.messageId}: ${result.reason}`)
     }
+    // The workshop is being restored; SNS retries after it.
+    if (result.outcome === 'retry') return restoringResponse()
     return new Response(null, { status: 200 })
   } catch (error) {
     console.error(`[webhook/email/ses] Failed to file ${mail.messageId}:`, error)

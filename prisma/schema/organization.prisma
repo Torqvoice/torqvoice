@@ -92,6 +92,8 @@ model Organization {
   documentDesigns             DocumentDesign[]
   documentDesignSnapshots     DocumentDesignSnapshot[]
   documentAssetSnapshots      DocumentAssetSnapshot[]
+  backupRuns                  BackupRun[]
+  platformBackup              PlatformBackup?
 
   @@map("organizations")
 }

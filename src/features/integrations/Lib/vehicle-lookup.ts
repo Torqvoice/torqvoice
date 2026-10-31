@@ -1,4 +1,6 @@
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { getManifest } from '@/integrations/registry'
 import { db } from '@/lib/db'
 import { type EngineSizeUnit, engineSizeUnitOf, formatEngineSize } from '@/lib/engine-size'
@@ -139,7 +141,8 @@ export async function askRegistry(
     const unit = await engineSizeUnitFor(ctx.connection.organizationId)
     result.engineSize = formatEngineSize(result.engineCc, unit) ?? result.engineSize
   }
-  return { result, source: server.manifest.name, connectorId: server.manifest.id }
+  const ti = await getTranslations('integrations')
+  return { result, source: connectorName(ti, server.manifest), connectorId: server.manifest.id }
 }
 
 /** The unit this workshop writes engine size in, from Settings → Workshop → Units. */

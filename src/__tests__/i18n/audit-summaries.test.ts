@@ -128,6 +128,7 @@ describe('audit summaries', () => {
       technician: 'Kari',
       job: 'Brakes',
       minutes: 45,
+      snapshot: '28891c8f',
     }
     for (const locale of LOCALES) {
       const messages = summary(locale)

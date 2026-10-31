@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { withAuth } from '@/lib/with-auth'
 import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -42,9 +44,11 @@ export async function getVehicleSafety(vehicleId: string, options: { refresh?: b
       const cached = await vehicleSafetyReport(organizationId, vehicleId, options)
       if (!cached) return null
       const { getManifest } = await import('@/integrations/registry')
+      const ti = await getTranslations('integrations')
+      const sourceManifest = getManifest(cached.report.source)
       return {
         report: cached.report,
-        source: getManifest(cached.report.source)?.name ?? cached.report.source,
+        source: sourceManifest ? connectorName(ti, sourceManifest) : cached.report.source,
         fetchedAt: cached.fetchedAt.toISOString(),
         stale: cached.stale,
       }

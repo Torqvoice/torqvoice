@@ -70,6 +70,9 @@
       "invoices": "Fakturaer til regnskapet",
       "customers": "Kunder til regnskapet",
       "payments": "Betalinger begge veier"
+    },
+    "backup": {
+      "target": "Mål for sikkerhetskopier"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Alle kjøretøy med skilt er sjekket nylig, så det er ingenting å slå opp ennå."
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
+    "platformHandlesBackups": "Torqvoice tar allerede sikkerhetskopi av dette verkstedet hver time og beholder gjenopprettingspunkter i 30 dager. Koble til en bøtte hvis du også vil ha en kopi du eier selv, som kan leses uten Torqvoice.",
+    "platformHandlesBackupsLink": "Se gjenopprettingspunktene",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
-    "advanced": "Avansert"
+    "advanced": "Avansert",
+    "generate": "Generer",
+    "show": "Vis",
+    "hide": "Skjul",
+    "generatedPasswordWarning": "Ta vare på en kopi av dette passordet et trygt sted, utenfor denne serveren. Uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice.",
+    "backup": {
+      "title": "Sikkerhetskopier",
+      "description": "Når dette målet sist fikk en vellykket sikkerhetskopi, når neste kjører, og de siste kjøringene.",
+      "lastGood": "Siste vellykkede sikkerhetskopi",
+      "added": "{size} lagt til",
+      "never": "Ingen ennå",
+      "nextRun": "Neste kjøring",
+      "notScheduled": "Ikke planlagt",
+      "repositorySize": "Lagret på målet",
+      "runNow": "Ta sikkerhetskopi nå",
+      "running": "Tar sikkerhetskopi",
+      "runningHint": "En sikkerhetskopi kjører. Siden oppdaterer seg selv til den er ferdig.",
+      "started": "Sikkerhetskopiering startet",
+      "recentTitle": "Siste kjøringer",
+      "noRuns": "Ingen sikkerhetskopier har kjørt ennå.",
+      "addedNote": "Den første kjøringen laster opp alt. Hver kjøring etterpå legger bare til delene som er endret siden, og er derfor liten. Hver sikkerhetskopi er likevel komplett og kan gjenopprettes eller utforskes for seg.",
+      "notStarted": "Ikke startet",
+      "filesNewCount": "{count, plural, one {# ny fil} other {# nye filer}}",
+      "columns": {
+        "status": "Status",
+        "started": "Startet",
+        "trigger": "Startet av",
+        "duration": "Varighet",
+        "filesNew": "Nye filer",
+        "bytesAdded": "Lagt til"
+      },
+      "trigger": {
+        "scheduled": "Tidsplan",
+        "manual": "Manuelt",
+        "restore": "Gjenoppretting"
+      },
+      "status": {
+        "queued": "I kø",
+        "running": "Kjører",
+        "done": "Ferdig",
+        "failed": "Feilet",
+        "skipped": "Hoppet over"
+      },
+      "restoring": "Gjenoppretter",
+      "restoringHint": "En gjenoppretting kjører: verkstedets data erstattes med sikkerhetskopien. Siden oppdaterer seg selv til den er ferdig. Ikke arbeid i verkstedet før da.",
+      "explore": "Utforsk",
+      "restore": {
+        "showAll": "Vis alle sikkerhetskopier",
+        "refresh": "Oppdater",
+        "loading": "Leser sikkerhetskopiene på målet",
+        "loadFailed": "Sikkerhetskopiene kunne ikke listes opp",
+        "empty": "Ingen sikkerhetskopier på dette målet ennå.",
+        "needsOwner": "Bare verkstedets eier kan gjenopprette en sikkerhetskopi her.",
+        "needsAdmin": "Bare en eier eller administrator kan gjenopprette en sikkerhetskopi.",
+        "filesIncluded": "Bilder og filer er tatt med",
+        "filesNotIncluded": "Bilder og filer er ikke tatt med",
+        "earlierInstall": "Tidligere installasjon",
+        "action": "Gjenopprett",
+        "dialogTitle": "Gjenopprette sikkerhetskopien fra {time}?",
+        "warning": "Gjenoppretting <bold>erstatter alt dette verkstedet har nå</bold>: kunder, kjøretøy, arbeidsordrer, fakturaer, innstillinger og, når sikkerhetskopien inneholder dem, bilder og filer. Alt som er lagt til etter at sikkerhetskopien ble tatt, forsvinner. Dette kan ikke angres.",
+        "secretsNote": "Hemmelige nøkler som sikkerhetskopien utelot, beholder verdiene denne installasjonen har nå. Brukerkontoer og passord røres ikke.",
+        "confirmPrompt": "Skriv inn verkstedets navn, <bold>{name}</bold>, for å bekrefte.",
+        "whileRunning": "Gjenopprettingen kjører i bakgrunnen og tar noen minutter når det er mange bilder. Siden oppdaterer seg selv til den er ferdig.",
+        "cancel": "Avbryt",
+        "confirm": "Gjenopprett denne sikkerhetskopien",
+        "started": "Gjenoppretting startet"
+      }
+    },
+    "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv.",
+    "searchOrType": "Søk eller skriv et navn",
+    "useTyped": "Bruk «{value}»",
+    "listNeedsKeys": "Skriv inn nøklene ovenfor for å se listen",
+    "listEmpty": "Ingenting ble listet opp. Skriv inn et navn i stedet.",
+    "testing": "Tester tilkoblingen",
+    "testOk": "Tilkoblingen fungerer: et testobjekt ble skrevet og fjernet igjen.",
+    "testFailed": "Testen feilet",
+    "testSteps": {
+      "settings": "Sjekk innstillingene hos leverandøren",
+      "list": "Nøkkelen kan ikke liste bøtta",
+      "write": "Nøkkelen kan ikke skrive til bøtta",
+      "delete": "Nøkkelen kan ikke slette fra bøtta",
+      "folder": "Mappen kan ikke opprettes eller åpnes"
+    },
+    "testHint": "Fyll inn nøklene og bøtta for å teste dem før du kobler til. Testen skriver ett lite objekt og fjerner det igjen."
   },
   "activity": {
     "title": "Aktivitet",
@@ -199,7 +287,10 @@
     "invalid": "Svaret fra leverandøren var ufullstendig. Prøv igjen.",
     "state": "Denne påloggingen har utløpt eller tilhører en annen økt. Start på nytt.",
     "exchange": "Leverandøren avviste påloggingen. Sjekk app-legitimasjonen og prøv igjen.",
-    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt."
+    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt.",
+    "backupRunning": "En sikkerhetskopi kjører allerede.",
+    "restoreOwnerOnly": "På Torqvoice Cloud kan bare verkstedets eier gjenopprette en sikkerhetskopi.",
+    "restoreBusy": "En sikkerhetskopi eller gjenoppretting kjører allerede på denne serveren. Prøv igjen når den er ferdig."
   },
   "meeting": {
     "join": "Bli med i videosamtale",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-kalender",
       "description": "Legg planlagte arbeidsordre i en Outlook-kalender, legg til en Microsoft Teams-lenke og se kalenderens opptatte tid i Torqvoice.",
       "tenantHelp": "Registrer en applikasjon i Microsoft Entra (App registrations), tillat både personlige kontoer og jobbkontoer, legg til omdirigerings-URI-en nedenfor som en Web-plattform, opprett en klienthemmelighet og lim inn begge her.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-kompatibel",
       "description": "Servicebeskrivelser, historikksammendrag, dokumentlesing og assistenten, besvart av en hvilken som helst server som snakker OpenAIs chat-API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM og lignende. Dataene dine blir på din egen maskinvare.",
       "fields": {
         "baseUrl": "Base-URL",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Tale til tekst",
       "description": "Diktering på en arbeidsordre, skrevet ned av en talemodell i stedet for nettleseren: langt mer nøyaktig, alle språk, og den kan verkstedets ord. Atskilt fra AI-leverandøren din, så den kan du beholde som den er. Bruker din egen OpenAI-nøkkel, eller en egen server som snakker OpenAIs API for transkribering. Opptaket sendes for å skrives ned og lagres ikke.",
       "fields": {
         "apiKey": "API-nøkkel",
@@ -652,6 +746,108 @@
         "modeHelp": "Nettleseren skriver mens du snakker, men er svakere, særlig på mindre språk. Talemodellen skriver når du stopper.",
         "modeAi": "Alltid talemodellen",
         "modeChoice": "Hver person velger: talemodell eller nettleser"
+      }
+    },
+    "s3": {
+      "name": "Bucket i skyen",
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en bøtte du eier hos Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage eller annen S3-kompatibel lagring, etter en tidsplan du velger. Etter første kjøring lastes bare det som er endret opp, så sikkerhetskopier hver time forblir billige.",
+      "fields": {
+        "accessKeyId": "Tilgangsnøkkel-ID",
+        "accessKeyIdHelp": "En nøkkel fra lagringsleverandøren din med tillatelse til å liste, lese, skrive og slette objekter i bøtta. Lag en egen nøkkel bare for Torqvoice, så den kan trekkes tilbake for seg selv.",
+        "secretAccessKey": "Hemmelig tilgangsnøkkel",
+        "password": "Passord for sikkerhetskopier",
+        "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med.",
+        "endpoint": "Egendefinert endepunkt",
+        "endpointHelp": "Bare for valget Annen S3-kompatibel lagring: S3-adressen til din egen lagring, for eksempel en MinIO-server, som vertsnavn med port om nødvendig."
+      },
+      "settings": {
+        "provider": "Leverandør",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Annen S3-kompatibel lagring",
+        "region": "Region",
+        "regionHelp": "Hvor bøtta ligger. Velg den fra leverandørens liste; for annen lagring skriver du inn det lagringen forventer, hvis den trenger en region. Brukes ikke av Cloudflare R2.",
+        "accountId": "Cloudflare-konto-ID",
+        "accountIdHelp": "ID-en på 32 tegn som vises på R2-oversiktssiden i Cloudflare-dashbordet ditt.",
+        "bucket": "Bøtte",
+        "bucketHelp": "Listen hentes med nøkkelen så snart den er skrevet inn. Kan nøkkelen bruke én bøtte, men ikke liste dem, skriver du inn navnet selv.",
+        "prefix": "Mappe i bøtta",
+        "prefixHelp": "Sikkerhetskopiene ligger under denne mappen. Bruk en egen mappe for hvert verksted som deler bøtta.",
+        "frequency": "Hvor ofte",
+        "frequencyHourly": "Hver time",
+        "frequencyEvery4h": "Hver 4. time",
+        "frequencyDaily": "Hver dag",
+        "frequencyWeekly": "Hver uke",
+        "frequencyMonthly": "Hver måned",
+        "time": "Klokkeslett",
+        "timeHelp": "Etter verkstedets klokke, som HH:MM. Brukes av daglige, ukentlige og månedlige sikkerhetskopier.",
+        "weekday": "Ukedag",
+        "sunday": "Søndag",
+        "monday": "Mandag",
+        "tuesday": "Tirsdag",
+        "wednesday": "Onsdag",
+        "thursday": "Torsdag",
+        "friday": "Fredag",
+        "saturday": "Lørdag",
+        "monthDay": "Dag i måneden",
+        "monthDayLast": "Siste dag",
+        "contents": "Innhold",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier. En sikkerhetskopi inneholder verkstedets data og, hvis du velger det, filene. Brukerkontoer og passord er ikke med: på en ny server logger du inn, inviterer teamet og gjenoppretter dataene i det verkstedet.",
+        "contentsData": "Bare data",
+        "contentsDataAndSecrets": "Data og hemmelige nøkler",
+        "includeFiles": "Ta med bilder og filer",
+        "includeFilesHelp": "Hver fil lastes opp én gang og gjenbrukes av senere sikkerhetskopier, så dette koster lite etter første kjøring.",
+        "keepHourly": "Behold timesvise sikkerhetskopier",
+        "keepHourlyHelp": "Hvor mange av de nyeste timesvise sikkerhetskopiene som beholdes. Gjelder bare for tidsplanene hver time og hver 4. time.",
+        "keepDaily": "Behold daglige sikkerhetskopier",
+        "keepWeekly": "Behold ukentlige sikkerhetskopier",
+        "keepMonthly": "Behold månedlige sikkerhetskopier",
+        "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
+      }
+    },
+    "local-folder": {
+      "name": "Lokal mappe",
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en mappe på denne serveren: volumet for sikkerhetskopier i compose-filen, eller en nettverksdisk montert der. En kopi på samme disk som databasen er ikke trygg alene; kombiner den med lagring et annet sted.",
+      "fields": {
+        "password": "Passord for sikkerhetskopier",
+        "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med."
+      },
+      "settings": {
+        "folder": "Mappe",
+        "folderHelp": "Mappen under serverens sikkerhetskopirot som holder dette verkstedets sikkerhetskopier. La feltet stå tomt for å bruke en mappe oppkalt etter dette verkstedet. På en ny server skriver du inn mappenavnet en tidligere installasjon brukte, for å få tilbake sikkerhetskopiene.",
+        "frequency": "Hvor ofte",
+        "frequencyHourly": "Hver time",
+        "frequencyEvery4h": "Hver 4. time",
+        "frequencyDaily": "Hver dag",
+        "frequencyWeekly": "Hver uke",
+        "frequencyMonthly": "Hver måned",
+        "time": "Klokkeslett",
+        "timeHelp": "Etter verkstedets klokke, som HH:MM. Brukes av daglige, ukentlige og månedlige sikkerhetskopier.",
+        "weekday": "Ukedag",
+        "sunday": "Søndag",
+        "monday": "Mandag",
+        "tuesday": "Tirsdag",
+        "wednesday": "Onsdag",
+        "thursday": "Torsdag",
+        "friday": "Fredag",
+        "saturday": "Lørdag",
+        "monthDay": "Dag i måneden",
+        "monthDayLast": "Siste dag",
+        "contents": "Innhold",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier. En sikkerhetskopi inneholder verkstedets data og, hvis du velger det, filene. Brukerkontoer og passord er ikke med: på en ny server logger du inn, inviterer teamet og gjenoppretter dataene i det verkstedet.",
+        "contentsData": "Bare data",
+        "contentsDataAndSecrets": "Data og hemmelige nøkler",
+        "includeFiles": "Ta med bilder og filer",
+        "includeFilesHelp": "Hver fil lastes opp én gang og gjenbrukes av senere sikkerhetskopier, så dette koster lite etter første kjøring.",
+        "keepHourly": "Behold timesvise sikkerhetskopier",
+        "keepHourlyHelp": "Hvor mange av de nyeste timesvise sikkerhetskopiene som beholdes. Gjelder bare for tidsplanene hver time og hver 4. time.",
+        "keepDaily": "Behold daglige sikkerhetskopier",
+        "keepWeekly": "Behold ukentlige sikkerhetskopier",
+        "keepMonthly": "Behold månedlige sikkerhetskopier",
+        "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Oppdatering av tilbakekallingsdata",
       "vehicle": "Tilbakekallingssjekk for nytt kjøretøy"
     }
+  },
+  "backupAlerts": {
+    "destination": "mål for sikkerhetskopier",
+    "failedTitle": "Sikkerhetskopiering mislyktes",
+    "failedMessage": "Sikkerhetskopien til {name} ble ikke fullført: {reason}",
+    "failedSubject": "Sikkerhetskopiering til {name} mislyktes",
+    "failedEmailIntro": "Den planlagte sikkerhetskopien av verkstedet ditt til {name} ble ikke fullført.",
+    "openToRetry": "Åpne Innstillinger, Integrasjoner, {name} for å se kjøringen og prøve igjen.",
+    "overdueTitle": "Sikkerhetskopi forsinket",
+    "overdueSince": "Ingen sikkerhetskopi til {name} er fullført siden {time}.",
+    "overdueNever": "Ingen sikkerhetskopi til {name} er fullført ennå.",
+    "overdueSubject": "Sikkerhetskopi til {name} er forsinket",
+    "openToSee": "Åpne Innstillinger, Integrasjoner, {name} for å se hva som gikk galt.",
+    "platformName": "Sikkerhetskopier fra Torqvoice",
+    "restoredTitle": "Verkstedet er gjenopprettet",
+    "restoredSubject": "Verkstedet ditt ble gjenopprettet fra en sikkerhetskopi",
+    "restoredIntro": "{name}: verkstedet ble satt tilbake til gjenopprettingspunkt {snapshot} {time}. Alt som ble lagt inn etter det punktet, finnes ikke lenger i verkstedet.",
+    "restoredByMember": "Et medlem av verkstedet ditt ba om denne gjenopprettingen.",
+    "restoredBySupport": "Torqvoice-supporten gjorde dette etter forespørsel fra deg. Oppgitt grunn: {reason}",
+    "noReason": "ingen oppgitt",
+    "restoredUndo": "Først ble det tatt en kopi av verkstedet slik det var rett før gjenopprettingen, og den beholdes i 90 dager. Kontakt supporten for å gå tilbake til den."
   }
 }

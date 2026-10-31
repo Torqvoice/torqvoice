@@ -36,6 +36,8 @@ const NOT_FILES: Record<string, string> = {
   'IntegrationLog.details': 'history',
   'InventoryPart.supplierUrl': "the supplier's website",
   'Notification.entityUrl': 'an in-app link to a page',
+  'PlatformBackup.snapshots':
+    'restore points by id, time and size; the files are inside the restic repository',
   'Quote.taxComponents': 'tax lines',
   'RecurringInvoice.taxComponents': 'tax lines',
   'ServiceRecord.taxComponents': 'tax lines',

@@ -10,6 +10,7 @@
  */
 
 import type { PlanFeatures } from '@/lib/features'
+import type { ResticRepository } from './backup-types'
 
 export type IntegrationCategory =
   | 'ai'
@@ -25,6 +26,15 @@ export type IntegrationCategory =
 
 export type ConnectionStatus = 'pending' | 'active' | 'error' | 'disconnected'
 
+/**
+ * A field or setting that is only asked for while another setting has one
+ * of the given values: a region for the vendors that have one, an account id
+ * for the one that uses it instead.
+ */
+export type SettingCondition =
+  | { key: string; equals: string | number | boolean }
+  | { key: string; in: readonly (string | number | boolean)[] }
+
 export interface CredentialField {
   key: string
   /** i18n key under integrations.connectors.<id>.fields */
@@ -36,6 +46,12 @@ export interface CredentialField {
   default?: string
   /** i18n key with guidance on where the value comes from */
   help?: string
+  /**
+   * Only asked for while a setting on the connect page has this value: the
+   * address of a custom endpoint belongs to one provider choice and would be
+   * a puzzle under the others.
+   */
+  showWhen?: SettingCondition
   /**
    * A field almost nobody fills in. The connect page keeps it behind an
    * "Advanced" fold, shut unless it already holds a value, so the usual case
@@ -49,6 +65,12 @@ export interface CredentialField {
    * an address would be a way to reach whatever runs next to it.
    */
   selfHostedOnly?: boolean
+  /**
+   * The connect page offers to fill the field with a random value, for a
+   * secret the workshop makes up rather than copies from a vendor, such as
+   * the password a backup repository is encrypted with.
+   */
+  generate?: 'password'
 }
 
 /**
@@ -94,9 +116,24 @@ export type AuthSpec =
   | { type: 'api-key'; fields: CredentialField[] }
   | { type: 'client-credentials'; tokenUrl: string; fields: CredentialField[] }
 
+/** What a check of typed keys found, worded by the form. */
+export interface PreviewTestResult {
+  ok: boolean
+  /** The step that failed: settings, list, write, delete or folder. */
+  step?: string
+  /** The vendor's or the system's own words for it. */
+  reason?: string
+}
+
 export interface SettingOption {
   value: string
   label: string
+  /**
+   * Only offered on a self-hosted install. The registry drops the option
+   * from the manifest on the cloud instance, so it is neither drawn nor
+   * accepted there. For a choice that lets the workshop type an address.
+   */
+  selfHostedOnly?: boolean
 }
 
 export interface SettingField {
@@ -108,14 +145,42 @@ export interface SettingField {
   help?: string
   default?: string | number | boolean
   options?: SettingOption[]
+  /**
+   * For select: a list that depends on another setting, such as the regions
+   * of the chosen provider. A value of that setting with no list here gets a
+   * plain text box instead, for the choice that takes anything.
+   */
+  optionsBy?: { key: string; options: Record<string, readonly SettingOption[]> }
   /** For remote-select: the key in the server module's remoteOptions map. */
   source?: string
+  /**
+   * For remote-select: the list can be read with what is typed on the connect
+   * page, before anything is saved, from these credential fields and
+   * settings. It is read once every required credential among them has a
+   * value, and again whenever one of them changes.
+   */
+  preview?: { credentials: readonly string[]; settings: readonly string[] }
+  /**
+   * For remote-select: a name that is not in the list can be typed in, for a
+   * key that is allowed to use one bucket but not to list them.
+   */
+  allowCustom?: boolean
   /** Only shown while another setting has this value. */
-  showWhen?: { key: string; equals: string | number | boolean }
+  showWhen?: SettingCondition
   required?: boolean
 }
 
 export interface ConnectorManifest {
+  /**
+   * On the connect page the settings come before the keys: a provider choice
+   * decides which keys and which address are asked for, so it is asked first.
+   */
+  settingsFirst?: boolean
+  /**
+   * The connect page offers a check of the typed keys before anything is
+   * saved, through the server module's previewTest.
+   */
+  testBeforeConnect?: boolean
   id: string
   /** Vendor's product name, not translated. */
   name: string
@@ -391,6 +456,28 @@ export interface ConnectorServer {
   /** Providers for remote-select settings, keyed by SettingField.source. */
   remoteOptions?: Record<string, (ctx: ConnectorContext) => Promise<SettingOption[]>>
   /**
+   * A check of keys and settings typed but not yet saved, for a manifest
+   * with testBeforeConnect. It proves access and leaves nothing behind: a
+   * test object written and removed, never a repository.
+   */
+  previewTest?(input: {
+    credentials: Record<string, unknown>
+    settings: Record<string, unknown>
+    organizationId: string
+  }): Promise<PreviewTestResult>
+  /**
+   * The same lists from credentials and settings that are typed but not yet
+   * saved, for a remote-select with `preview`. Nothing is written; a wrong
+   * key gives an empty list, never an error the form has to explain.
+   */
+  previewOptions?: Record<
+    string,
+    (input: {
+      credentials: Record<string, unknown>
+      settings: Record<string, unknown>
+    }) => Promise<SettingOption[]>
+  >
+  /**
    * Ask a vehicle registry about one vehicle, for connectors with the
    * 'vehicle.lookup' capability. Synchronous because a form is waiting on it.
    * Returns null when the registry has no such vehicle.
@@ -421,6 +508,14 @@ export interface ConnectorServer {
   onConnect?(ctx: ConnectorContext): Promise<{ settings?: Record<string, unknown> } | void>
   /** Clean up remote state when the workshop disconnects. */
   onDisconnect?(ctx: ConnectorContext): Promise<void>
+  /**
+   * For connectors with the 'backup.target' capability: where restic keeps
+   * this workshop's repository and how it authenticates there. Throws when
+   * the saved settings cannot be turned into a safe address.
+   */
+  backupTarget?: {
+    repository(ctx: ConnectorContext): Promise<ResticRepository>
+  }
 }
 
 /** Stored, sealed, in IntegrationConnection.credentials. */

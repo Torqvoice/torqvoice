@@ -193,7 +193,9 @@
     "settings_markType_create": "İşaret türü eklendi",
     "settings_markType_update": "İşaret türü değiştirildi",
     "settings_markType_remove": "İşaret türü kaldırıldı",
-    "settings_markType_reorder": "İşaret türleri yeniden sıralandı"
+    "settings_markType_reorder": "İşaret türleri yeniden sıralandı",
+    "integration_backup_run": "Yedekleme başlatıldı",
+    "integration_backup_restore": "Yedek geri yüklendi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -346,6 +348,9 @@
     "condition_mark_remove": "Durum haritasından işaret kaldırdı",
     "condition_mark_carry": "Durum haritasındaki {count, plural, one {# önceki işaretin} other {# önceki işaretin}} hâlâ durduğunu onayladı",
     "condition_map_on_invoice_on": "Durum haritasını faturaya ekledi",
-    "condition_map_on_invoice_off": "Durum haritasını faturadan kaldırdı"
+    "condition_map_on_invoice_off": "Durum haritasını faturadan kaldırdı",
+    "backup_run_started": "{name} hedefine yedekleme başlattı",
+    "backup_restore_started": "{name} hedefinden {snapshot} yedeğini geri yüklemeye başladı",
+    "backup_restored": "{name} hedefinden {snapshot} yedeğini geri yükledi"
   }
 }

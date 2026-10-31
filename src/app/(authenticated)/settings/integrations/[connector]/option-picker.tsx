@@ -21,6 +21,8 @@ import type { SettingOption } from '@/features/integrations/Lib/types'
  * company can have hundreds, so it searches as you type. An optional setting
  * gets a first entry that leaves it empty; a required one, such as which
  * calendar to write to, does not offer that, since nothing works without it.
+ * With allowCustom, what is typed into the search can be taken as the value
+ * itself, for a bucket the key may use but not list.
  */
 export function OptionPicker({
   value,
@@ -28,19 +30,29 @@ export function OptionPicker({
   onChange,
   disabled,
   required = false,
+  allowCustom = false,
+  emptyHint,
 }: {
   value: string
-  /** undefined while the list is still loading. */
+  /** undefined while the list is still loading; null when it cannot be read yet. */
   options: SettingOption[] | null | undefined
   onChange: (value: string) => void
   disabled?: boolean
   /** Whether the setting must have a value; hides the entry that clears it. */
   required?: boolean
+  /** Whether a typed name outside the list is accepted. */
+  allowCustom?: boolean
+  /** What to say instead of "no match" while the list is empty or not read yet. */
+  emptyHint?: string
 }) {
   const t = useTranslations('integrations')
   const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const loading = options === undefined
   const chosen = options?.find((o) => o.value === value) ?? null
+  const typed = query.trim()
+  const typedIsNew = allowCustom && typed.length > 0 && !options?.some((o) => o.value === typed)
+  const listEmpty = !options || options.length === 0
   // A value the list no longer has (a deleted item, a code from another
   // company) still shows, so the workshop sees something is set.
   const label = chosen?.label ?? (value ? value : null)
@@ -73,10 +85,37 @@ export function OptionPicker({
         align="end"
       >
         <Command>
-          <CommandInput placeholder={t('connection.search')} />
+          <CommandInput
+            placeholder={allowCustom ? t('connection.searchOrType') : t('connection.search')}
+            value={query}
+            onValueChange={setQuery}
+          />
           <CommandList>
-            <CommandEmpty>{t('connection.noMatch')}</CommandEmpty>
+            {/* With a typed name on offer below, "no match" would contradict it. */}
+            {!typedIsNew && (
+              <CommandEmpty>
+                {listEmpty && emptyHint ? emptyHint : t('connection.noMatch')}
+              </CommandEmpty>
+            )}
             <CommandGroup>
+              {typedIsNew && (
+                <CommandItem
+                  // cmdk filters on this; the typed text always matches itself.
+                  value={typed}
+                  onSelect={() => {
+                    onChange(typed)
+                    setQuery('')
+                    setOpen(false)
+                  }}
+                >
+                  <Check
+                    className={cn('mr-2 h-4 w-4', typed === value ? 'opacity-100' : 'opacity-0')}
+                  />
+                  <span className="min-w-0 break-words">
+                    {t('connection.useTyped', { value: typed })}
+                  </span>
+                </CommandItem>
+              )}
               {!required && (
                 <CommandItem
                   value="__none__"

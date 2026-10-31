@@ -193,7 +193,9 @@
     "settings_markType_create": "La til en merketype",
     "settings_markType_update": "Endret en merketype",
     "settings_markType_remove": "Fjernet en merketype",
-    "settings_markType_reorder": "Endret rekkefølgen på merketypene"
+    "settings_markType_reorder": "Endret rekkefølgen på merketypene",
+    "integration_backup_run": "Startet sikkerhetskopiering",
+    "integration_backup_restore": "Gjenopprettet sikkerhetskopi"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -346,6 +348,9 @@
     "condition_mark_remove": "Fjernet et merke fra tilstandskartet",
     "condition_mark_carry": "Bekreftet at {count, plural, one {# tidligere merke} other {# tidligere merker}} fortsatt er der på tilstandskartet",
     "condition_map_on_invoice_on": "Satte tilstandskartet på fakturaen",
-    "condition_map_on_invoice_off": "Tok tilstandskartet av fakturaen"
+    "condition_map_on_invoice_off": "Tok tilstandskartet av fakturaen",
+    "backup_run_started": "Startet en sikkerhetskopi til {name}",
+    "backup_restore_started": "Startet gjenoppretting av sikkerhetskopi {snapshot} fra {name}",
+    "backup_restored": "Gjenopprettet sikkerhetskopi {snapshot} fra {name}"
   }
 }

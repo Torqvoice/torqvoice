@@ -70,6 +70,9 @@
       "invoices": "Faturas para a contabilidade",
       "customers": "Clientes para a contabilidade",
       "payments": "Pagamentos nos dois sentidos"
+    },
+    "backup": {
+      "target": "Destino das cópias de segurança"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Todas as viaturas com matrícula foram verificadas recentemente, por isso ainda não há nada para consultar."
     },
     "supersedes": "Ligar {next} desliga {current}. Só pode estar uma ativa de cada vez, por isso {current} deixa de ser utilizada assim que {next} entrar em funcionamento.",
+    "platformHandlesBackups": "O Torqvoice já faz uma cópia de segurança desta oficina a cada hora e guarda pontos de restauro durante 30 dias. Ligue um bucket se também quiser uma cópia sua, legível sem o Torqvoice.",
+    "platformHandlesBackupsLink": "Ver os seus pontos de reposição",
     "batchRetried": "{count, plural, =0 {Nada para tentar novamente} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}",
-    "advanced": "Avançado"
+    "advanced": "Avançado",
+    "generate": "Gerar",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "generatedPasswordWarning": "Guarde uma cópia desta palavra-passe num local seguro, fora deste servidor. Sem ela ninguém consegue abrir estas cópias de segurança, nem mesmo o Torqvoice.",
+    "backup": {
+      "title": "Cópias de segurança",
+      "description": "Quando este destino recebeu a última cópia de segurança bem-sucedida, quando será a próxima e as execuções mais recentes.",
+      "lastGood": "Última cópia bem-sucedida",
+      "added": "{size} adicionados",
+      "never": "Nenhuma ainda",
+      "nextRun": "Próxima execução",
+      "notScheduled": "Não agendada",
+      "repositorySize": "Guardado no destino",
+      "runNow": "Fazer cópia agora",
+      "running": "A fazer cópia",
+      "runningHint": "Está a decorrer uma cópia de segurança. Esta página atualiza-se sozinha até terminar.",
+      "started": "Cópia de segurança iniciada",
+      "recentTitle": "Execuções recentes",
+      "noRuns": "Ainda não foi feita nenhuma cópia de segurança.",
+      "addedNote": "A primeira execução envia tudo. Cada uma a seguir acrescenta só as partes que mudaram desde então, por isso é pequena. Cada cópia continua completa e pode ser restaurada ou explorada por si só.",
+      "notStarted": "Não iniciada",
+      "filesNewCount": "{count, plural, one {# ficheiro novo} other {# ficheiros novos}}",
+      "columns": {
+        "status": "Estado",
+        "started": "Início",
+        "trigger": "Iniciada por",
+        "duration": "Duração",
+        "filesNew": "Ficheiros novos",
+        "bytesAdded": "Adicionado"
+      },
+      "trigger": {
+        "scheduled": "Agendamento",
+        "manual": "Manual",
+        "restore": "Reposição"
+      },
+      "status": {
+        "queued": "Na fila",
+        "running": "Em curso",
+        "done": "Concluída",
+        "failed": "Falhou",
+        "skipped": "Ignorada"
+      },
+      "restoring": "A repor",
+      "restoringHint": "Está a decorrer uma reposição: os dados da oficina estão a ser substituídos pela cópia de segurança. Esta página atualiza-se sozinha até terminar. Não trabalhe na oficina até lá.",
+      "explore": "Explorar",
+      "restore": {
+        "showAll": "Mostrar todas as cópias de segurança",
+        "refresh": "Atualizar",
+        "loading": "A ler as cópias de segurança no destino",
+        "loadFailed": "Não foi possível listar as cópias de segurança",
+        "empty": "Ainda não há cópias de segurança neste destino.",
+        "needsOwner": "Só o proprietário da oficina pode repor aqui uma cópia de segurança.",
+        "needsAdmin": "Só um proprietário ou administrador pode repor uma cópia de segurança.",
+        "filesIncluded": "Fotografias e ficheiros incluídos",
+        "filesNotIncluded": "Fotografias e ficheiros não incluídos",
+        "earlierInstall": "Instalação anterior",
+        "action": "Repor",
+        "dialogTitle": "Repor a cópia de segurança de {time}?",
+        "warning": "Repor <bold>substitui tudo o que esta oficina tem agora</bold>: clientes, viaturas, ordens de reparação, faturas, definições e, quando a cópia os inclui, fotografias e ficheiros. Tudo o que foi acrescentado depois de a cópia ser feita perde-se. Não é possível anular.",
+        "secretsNote": "As chaves secretas que a cópia deixou de fora mantêm os valores que esta instalação tem agora. As contas de utilizador e as palavras-passe não são alteradas.",
+        "confirmPrompt": "Escreva o nome da oficina, <bold>{name}</bold>, para confirmar.",
+        "whileRunning": "A reposição decorre em segundo plano e demora alguns minutos quando há muitas fotografias. A página atualiza-se sozinha até terminar.",
+        "cancel": "Cancelar",
+        "confirm": "Repor esta cópia de segurança",
+        "started": "Reposição iniciada"
+      }
+    },
+    "lockedBackups": "Cópias de segurança agendadas e encriptadas da sua oficina para um armazenamento seu.",
+    "searchOrType": "Pesquisar ou escrever um nome",
+    "useTyped": "Usar \"{value}\"",
+    "listNeedsKeys": "Introduza as chaves acima para ver a lista",
+    "listEmpty": "A lista está vazia. Escreva um nome.",
+    "testing": "A testar a ligação",
+    "testOk": "A ligação funciona: foi escrito um objeto de teste, que foi depois eliminado.",
+    "testFailed": "O teste falhou",
+    "testSteps": {
+      "settings": "Verifique as definições do fornecedor",
+      "list": "A chave não consegue listar o bucket",
+      "write": "A chave não consegue escrever no bucket",
+      "delete": "A chave não consegue eliminar do bucket",
+      "folder": "Não foi possível criar ou abrir a pasta"
+    },
+    "testHint": "Introduza as chaves e o bucket para os testar antes de ligar. O teste escreve um objeto pequeno e elimina-o."
   },
   "activity": {
     "title": "Atividade",
@@ -199,7 +287,10 @@
     "invalid": "A resposta do fornecedor estava incompleta. Tente novamente.",
     "state": "Este início de sessão expirou ou pertence a outra sessão. Comece de novo.",
     "exchange": "O fornecedor recusou o início de sessão. Verifique as credenciais da aplicação e tente novamente.",
-    "identify": "Ligado, mas não foi possível ler a conta. Tente voltar a ligar."
+    "identify": "Ligado, mas não foi possível ler a conta. Tente voltar a ligar.",
+    "backupRunning": "Já está a decorrer uma cópia de segurança.",
+    "restoreOwnerOnly": "No Torqvoice Cloud, só o proprietário da oficina pode repor uma cópia de segurança.",
+    "restoreBusy": "Já está a decorrer uma cópia de segurança ou uma reposição neste servidor. Tente novamente quando terminar."
   },
   "meeting": {
     "join": "Entrar na videochamada",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendário do Microsoft 365",
       "description": "Coloque as ordens de serviço marcadas num calendário do Outlook, adicione um link do Microsoft Teams e veja os horários ocupados do calendário no Torqvoice.",
       "tenantHelp": "Registe uma aplicação no Microsoft Entra (Registos de aplicações), permita contas pessoais e empresariais, adicione o URI de redirecionamento abaixo como plataforma Web, crie um segredo do cliente e cole ambos aqui.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatível com OpenAI",
       "description": "Descrições de serviço, resumos de histórico, leitura de documentos e o assistente, respondidos por qualquer servidor que fale a API de chat da OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM e semelhantes. Os seus dados ficam no seu próprio hardware.",
       "fields": {
         "baseUrl": "URL base",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Voz para texto",
       "description": "Ditado na ordem de serviço, transcrito por um modelo de voz em vez do navegador: muito mais preciso, em qualquer idioma, e conhece o vocabulário de oficina. É independente do seu fornecedor de IA, por isso pode manter esse como está. Usa a sua própria chave da OpenAI ou um servidor seu que fale a API de transcrição da OpenAI. A gravação é enviada para ser transcrita e não é guardada.",
       "fields": {
         "apiKey": "Chave de API",
@@ -652,6 +746,108 @@
         "modeHelp": "O navegador escreve enquanto fala, mas é mais fraco, sobretudo em idiomas menos falados. O modelo de voz escreve quando para.",
         "modeAi": "Sempre o modelo de voz",
         "modeChoice": "Cada pessoa escolhe: modelo de voz ou navegador"
+      }
+    },
+    "s3": {
+      "name": "Bucket de armazenamento na nuvem",
+      "description": "Cópias de segurança encriptadas desta oficina para um bucket seu no Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ou em qualquer outro armazenamento compatível com S3, com a frequência que escolher. Depois da primeira execução, só é enviado o que mudou, por isso as cópias de hora a hora continuam baratas.",
+      "fields": {
+        "accessKeyId": "ID da chave de acesso",
+        "accessKeyIdHelp": "Uma chave do seu fornecedor de armazenamento com permissão para listar, ler, escrever e eliminar objetos no bucket. Crie uma chave só para o Torqvoice, para que possa ser revogada separadamente.",
+        "secretAccessKey": "Chave de acesso secreta",
+        "password": "Palavra-passe das cópias de segurança",
+        "passwordHelp": "Cada cópia de segurança é encriptada com esta palavra-passe. Invente uma ou carregue em Gerar, e guarde uma cópia fora deste servidor: sem ela ninguém consegue abrir estas cópias, nem mesmo o Torqvoice. Para voltar a ligar um armazenamento que já contém cópias de segurança do Torqvoice, introduza a palavra-passe com que foram feitas.",
+        "endpoint": "Endpoint personalizado",
+        "endpointHelp": "Só para a opção Outro armazenamento compatível com S3: o endereço S3 do seu próprio armazenamento, como um servidor MinIO, como nome de anfitrião, com porta se necessário."
+      },
+      "settings": {
+        "provider": "Fornecedor",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Outro armazenamento compatível com S3",
+        "region": "Região",
+        "regionHelp": "Onde está o bucket. Escolha-a na lista do fornecedor; noutro armazenamento, escreva a que este pedir, se pedir alguma. Não é usada pelo Cloudflare R2.",
+        "accountId": "ID da conta Cloudflare",
+        "accountIdHelp": "O ID de 32 caracteres apresentado na página de visão geral do R2 no painel da Cloudflare.",
+        "bucket": "Bucket",
+        "bucketHelp": "Os buckets são listados com a chave assim que esta é introduzida. Se a chave puder usar um bucket, mas não os listar, escreva o nome.",
+        "prefix": "Pasta no bucket",
+        "prefixHelp": "As cópias de segurança ficam nesta pasta. Use uma pasta diferente para cada oficina que partilha o bucket.",
+        "frequency": "Frequência",
+        "frequencyHourly": "De hora a hora",
+        "frequencyEvery4h": "De 4 em 4 horas",
+        "frequencyDaily": "Todos os dias",
+        "frequencyWeekly": "Todas as semanas",
+        "frequencyMonthly": "Todos os meses",
+        "time": "Hora do dia",
+        "timeHelp": "No relógio da oficina, no formato HH:MM. Usada pelas cópias diárias, semanais e mensais.",
+        "weekday": "Dia da semana",
+        "sunday": "Domingo",
+        "monday": "Segunda-feira",
+        "tuesday": "Terça-feira",
+        "wednesday": "Quarta-feira",
+        "thursday": "Quinta-feira",
+        "friday": "Sexta-feira",
+        "saturday": "Sábado",
+        "monthDay": "Dia do mês",
+        "monthDayLast": "Último dia",
+        "contents": "Conteúdo",
+        "contentsHelp": "As chaves secretas são as que esta oficina introduziu no Torqvoice: chaves de pagamentos, de IA e de webhooks. Em qualquer caso, cada cópia é encriptada com a palavra-passe das cópias de segurança. Uma cópia contém os registos da oficina e, se o escolher, os respetivos ficheiros. As contas de utilizador e as palavras-passe não estão incluídas: num servidor novo, inicia sessão, convida a equipa e repõe os dados nessa oficina.",
+        "contentsData": "Apenas dados",
+        "contentsDataAndSecrets": "Dados e chaves secretas",
+        "includeFiles": "Incluir fotografias e ficheiros",
+        "includeFilesHelp": "Cada ficheiro é enviado uma vez e reutilizado pelas cópias seguintes, por isso custa pouco depois da primeira execução.",
+        "keepHourly": "Manter cópias horárias",
+        "keepHourlyHelp": "Quantas das cópias horárias mais recentes manter. Só conta nos agendamentos de hora a hora e de 4 em 4 horas.",
+        "keepDaily": "Manter cópias diárias",
+        "keepWeekly": "Manter cópias semanais",
+        "keepMonthly": "Manter cópias mensais",
+        "keepMonthlyHelp": "As cópias mais antigas são removidas após cada execução, mantendo as mais recentes de cada tipo. Defina um número como 0 para não manter nenhuma desse tipo."
+      }
+    },
+    "local-folder": {
+      "name": "Pasta local",
+      "description": "Cópias de segurança encriptadas desta oficina para uma pasta neste servidor: o volume de cópias de segurança no ficheiro compose ou uma unidade de rede montada aí. Uma cópia no mesmo disco da base de dados não é segura por si só; combine-a com um armazenamento noutro local.",
+      "fields": {
+        "password": "Palavra-passe das cópias de segurança",
+        "passwordHelp": "Cada cópia de segurança é encriptada com esta palavra-passe. Invente uma ou carregue em Gerar, e guarde uma cópia fora deste servidor: sem ela ninguém consegue abrir estas cópias, nem mesmo o Torqvoice. Para voltar a ligar um armazenamento que já contém cópias de segurança do Torqvoice, introduza a palavra-passe com que foram feitas."
+      },
+      "settings": {
+        "folder": "Pasta",
+        "folderHelp": "A pasta, dentro da raiz de cópias de segurança do servidor, que guarda as cópias desta oficina. Deixe em branco para usar uma pasta com o nome desta oficina. Num servidor novo, escreva o nome da pasta usada por uma instalação anterior para recuperar as respetivas cópias.",
+        "frequency": "Frequência",
+        "frequencyHourly": "De hora a hora",
+        "frequencyEvery4h": "De 4 em 4 horas",
+        "frequencyDaily": "Todos os dias",
+        "frequencyWeekly": "Todas as semanas",
+        "frequencyMonthly": "Todos os meses",
+        "time": "Hora do dia",
+        "timeHelp": "No relógio da oficina, no formato HH:MM. Usada pelas cópias diárias, semanais e mensais.",
+        "weekday": "Dia da semana",
+        "sunday": "Domingo",
+        "monday": "Segunda-feira",
+        "tuesday": "Terça-feira",
+        "wednesday": "Quarta-feira",
+        "thursday": "Quinta-feira",
+        "friday": "Sexta-feira",
+        "saturday": "Sábado",
+        "monthDay": "Dia do mês",
+        "monthDayLast": "Último dia",
+        "contents": "Conteúdo",
+        "contentsHelp": "As chaves secretas são as que esta oficina introduziu no Torqvoice: chaves de pagamentos, de IA e de webhooks. Em qualquer caso, cada cópia é encriptada com a palavra-passe das cópias de segurança. Uma cópia contém os registos da oficina e, se o escolher, os respetivos ficheiros. As contas de utilizador e as palavras-passe não estão incluídas: num servidor novo, inicia sessão, convida a equipa e repõe os dados nessa oficina.",
+        "contentsData": "Apenas dados",
+        "contentsDataAndSecrets": "Dados e chaves secretas",
+        "includeFiles": "Incluir fotografias e ficheiros",
+        "includeFilesHelp": "Cada ficheiro é enviado uma vez e reutilizado pelas cópias seguintes, por isso custa pouco depois da primeira execução.",
+        "keepHourly": "Manter cópias horárias",
+        "keepHourlyHelp": "Quantas das cópias horárias mais recentes manter. Só conta nos agendamentos de hora a hora e de 4 em 4 horas.",
+        "keepDaily": "Manter cópias diárias",
+        "keepWeekly": "Manter cópias semanais",
+        "keepMonthly": "Manter cópias mensais",
+        "keepMonthlyHelp": "As cópias mais antigas são removidas após cada execução, mantendo as mais recentes de cada tipo. Defina um número como 0 para não manter nenhuma desse tipo."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Atualização dos dados de recall",
       "vehicle": "Verificação de recall para uma viatura nova"
     }
+  },
+  "backupAlerts": {
+    "destination": "destino das cópias de segurança",
+    "failedTitle": "A cópia de segurança falhou",
+    "failedMessage": "A cópia de segurança para {name} não terminou: {reason}",
+    "failedSubject": "A cópia de segurança para {name} falhou",
+    "failedEmailIntro": "A cópia de segurança agendada da sua oficina para {name} não terminou.",
+    "openToRetry": "Abra Definições, Integrações, {name} para ver a execução e tentar novamente.",
+    "overdueTitle": "Cópia de segurança em atraso",
+    "overdueSince": "Nenhuma cópia de segurança para {name} terminou desde {time}.",
+    "overdueNever": "Ainda não terminou nenhuma cópia de segurança para {name}.",
+    "overdueSubject": "A cópia de segurança para {name} está em atraso",
+    "openToSee": "Abra Definições, Integrações, {name} para ver o que correu mal.",
+    "platformName": "Cópias de segurança do Torqvoice",
+    "restoredTitle": "Oficina reposta",
+    "restoredSubject": "A sua oficina foi reposta a partir de uma cópia de segurança",
+    "restoredIntro": "{name}: a oficina foi reposta no ponto de restauro {snapshot} em {time}. Tudo o que foi introduzido depois desse ponto já não está na oficina.",
+    "restoredByMember": "Um membro da sua oficina pediu esta reposição.",
+    "restoredBySupport": "O suporte do Torqvoice fez isto a seu pedido. Motivo indicado: {reason}",
+    "noReason": "nenhum indicado",
+    "restoredUndo": "Antes, foi feita uma cópia de proteção da oficina tal como estava imediatamente antes da reposição, que é guardada durante 90 dias. Contacte o suporte para voltar a ela."
   }
 }

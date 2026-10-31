@@ -11,8 +11,12 @@ services:
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       - RESEND_API_KEY=${RESEND_API_KEY:-}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-}
+      # Optional, see .env.example: the largest backup data file a restore reads
+      # into memory, in MiB (128 unless set).
+      - BACKUP_MAX_DATA_FILE_MB=${BACKUP_MAX_DATA_FILE_MB:-}
     volumes:
       - uploads:/app/data/uploads
+      - backups:/app/data/backups
     depends_on:
       db:
         condition: service_healthy
@@ -38,3 +42,4 @@ services:
 volumes:
   postgres-data:
   uploads:
+  backups:

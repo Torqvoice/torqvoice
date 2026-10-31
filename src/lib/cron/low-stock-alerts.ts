@@ -2,6 +2,7 @@ import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { isRestoring } from '@/lib/backup/freeze'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   buildAlertSummary,
@@ -273,6 +274,8 @@ export function checkLowStock() {
       let alerted = 0
       for (const row of enabled) {
         if (!row.organizationId) continue
+        // Skipped while the workshop is being restored; the next hourly scan covers it.
+        if (isRestoring(row.organizationId)) continue
         try {
           const result = await processOrgLowStock(row.organizationId)
           if (!result.skipped) alerted += result.alerted

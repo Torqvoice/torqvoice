@@ -70,6 +70,9 @@
       "invoices": "Faktury do księgowości",
       "customers": "Klienci do księgowości",
       "payments": "Płatności w obie strony"
+    },
+    "backup": {
+      "target": "Miejsce docelowe kopii zapasowych"
     }
   },
   "statuses": {
@@ -161,8 +164,93 @@
       "nothingDue": "Wszystkie pojazdy z tablicą zostały niedawno sprawdzone, więc na razie nie ma czego sprawdzać."
     },
     "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
+    "platformHandlesBackups": "Torqvoice już co godzinę tworzy kopię zapasową tego warsztatu i przechowuje punkty przywracania przez 30 dni. Połącz bucket, jeśli chcesz mieć także własną kopię, którą można odczytać bez Torqvoice.",
+    "platformHandlesBackupsLink": "Zobacz punkty przywracania",
     "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}",
-    "advanced": "Zaawansowane"
+    "advanced": "Zaawansowane",
+    "generate": "Wygeneruj",
+    "show": "Pokaż",
+    "hide": "Ukryj",
+    "generatedPasswordWarning": "Przechowuj kopię tego hasła w bezpiecznym miejscu, poza tym serwerem. Bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice.",
+    "backup": {
+      "title": "Kopie zapasowe",
+      "description": "Kiedy to miejsce docelowe ostatnio otrzymało udaną kopię zapasową, kiedy będzie następna i ostatnie uruchomienia.",
+      "lastGood": "Ostatnia udana kopia zapasowa",
+      "added": "Dodano {size}",
+      "never": "Jeszcze brak",
+      "nextRun": "Następne uruchomienie",
+      "notScheduled": "Nie zaplanowano",
+      "repositorySize": "Zapisane w miejscu docelowym",
+      "runNow": "Utwórz kopię teraz",
+      "running": "Tworzenie kopii",
+      "runningHint": "Trwa tworzenie kopii zapasowej. Ta strona odświeża się sama, dopóki się nie zakończy.",
+      "started": "Rozpoczęto tworzenie kopii zapasowej",
+      "recentTitle": "Ostatnie uruchomienia",
+      "noRuns": "Nie utworzono jeszcze żadnej kopii zapasowej.",
+      "addedNote": "Pierwsze uruchomienie wysyła wszystko. Każde kolejne dodaje tylko fragmenty zmienione od tamtej pory, dlatego jest małe. Każda kopia jest mimo to kompletna i można ją osobno przywrócić lub przejrzeć.",
+      "notStarted": "Nie rozpoczęto",
+      "filesNewCount": "{count, plural, one {# nowy plik} few {# nowe pliki} many {# nowych plików} other {# nowego pliku}}",
+      "columns": {
+        "status": "Status",
+        "started": "Rozpoczęto",
+        "trigger": "Uruchomione przez",
+        "duration": "Czas trwania",
+        "filesNew": "Nowe pliki",
+        "bytesAdded": "Dodano"
+      },
+      "trigger": {
+        "scheduled": "Harmonogram",
+        "manual": "Ręcznie",
+        "restore": "Przywracanie"
+      },
+      "status": {
+        "queued": "W kolejce",
+        "running": "W toku",
+        "done": "Gotowe",
+        "failed": "Nieudane",
+        "skipped": "Pominięte"
+      },
+      "restoring": "Przywracanie",
+      "restoringHint": "Trwa przywracanie: dane warsztatu są zastępowane kopią zapasową. Ta strona odświeża się sama, dopóki się nie zakończy. Do tego czasu nie pracuj w warsztacie.",
+      "explore": "Przeglądaj",
+      "restore": {
+        "showAll": "Pokaż wszystkie kopie zapasowe",
+        "refresh": "Odśwież",
+        "loading": "Odczytywanie kopii zapasowych w miejscu docelowym",
+        "loadFailed": "Nie udało się wyświetlić listy kopii zapasowych",
+        "empty": "W tym miejscu docelowym nie ma jeszcze kopii zapasowych.",
+        "needsOwner": "Tutaj kopię zapasową może przywrócić tylko właściciel warsztatu.",
+        "needsAdmin": "Kopię zapasową może przywrócić tylko właściciel lub administrator.",
+        "filesIncluded": "Dołączono zdjęcia i pliki",
+        "filesNotIncluded": "Nie dołączono zdjęć ani plików",
+        "earlierInstall": "Wcześniejsza instalacja",
+        "action": "Przywróć",
+        "dialogTitle": "Przywrócić kopię zapasową z {time}?",
+        "warning": "Przywrócenie <bold>zastępuje wszystko, co ten warsztat ma teraz</bold>: klientów, pojazdy, zlecenia, faktury, ustawienia oraz, jeśli kopia je zawiera, zdjęcia i pliki. Wszystko, co dodano od utworzenia kopii, przepadnie. Tej operacji nie można cofnąć.",
+        "secretsNote": "Klucze tajne, które kopia pominęła, zachowują wartości, jakie ta instalacja ma teraz. Konta użytkowników i hasła pozostają nienaruszone.",
+        "confirmPrompt": "Wpisz nazwę warsztatu, <bold>{name}</bold>, aby potwierdzić.",
+        "whileRunning": "Przywracanie działa w tle, a przy wielu zdjęciach trwa kilka minut. Strona odświeża się sama, dopóki się nie zakończy.",
+        "cancel": "Anuluj",
+        "confirm": "Przywróć tę kopię zapasową",
+        "started": "Rozpoczęto przywracanie"
+      }
+    },
+    "lockedBackups": "Zaplanowane, szyfrowane kopie zapasowe warsztatu do własnej przestrzeni dyskowej.",
+    "searchOrType": "Szukaj lub wpisz nazwę",
+    "useTyped": "Użyj „{value}”",
+    "listNeedsKeys": "Wpisz klucze powyżej, aby zobaczyć listę",
+    "listEmpty": "Lista jest pusta. Wpisz nazwę ręcznie.",
+    "testing": "Testowanie połączenia",
+    "testOk": "Połączenie działa: obiekt testowy został zapisany i ponownie usunięty.",
+    "testFailed": "Test nie powiódł się",
+    "testSteps": {
+      "settings": "Sprawdź ustawienia dostawcy",
+      "list": "Klucz nie może listować zawartości bucketu",
+      "write": "Klucz nie może zapisywać w buckecie",
+      "delete": "Klucz nie może usuwać z bucketu",
+      "folder": "Nie można utworzyć ani otworzyć folderu"
+    },
+    "testHint": "Wpisz klucze i bucket, aby przetestować je przed połączeniem. Test zapisuje jeden mały obiekt i go usuwa."
   },
   "activity": {
     "title": "Aktywność",
@@ -199,7 +287,10 @@
     "invalid": "Odpowiedź dostawcy była niekompletna. Spróbuj ponownie.",
     "state": "To logowanie wygasło lub należy do innej sesji. Zacznij od nowa.",
     "exchange": "Dostawca odrzucił logowanie. Sprawdź dane aplikacji i spróbuj ponownie.",
-    "identify": "Połączono, ale nie udało się odczytać konta. Spróbuj połączyć ponownie."
+    "identify": "Połączono, ale nie udało się odczytać konta. Spróbuj połączyć ponownie.",
+    "backupRunning": "Kopia zapasowa jest już tworzona.",
+    "restoreOwnerOnly": "W Torqvoice Cloud kopię zapasową może przywrócić tylko właściciel warsztatu.",
+    "restoreBusy": "Na tym serwerze trwa już tworzenie kopii zapasowej lub przywracanie. Spróbuj ponownie, gdy się zakończy."
   },
   "meeting": {
     "join": "Dołącz do rozmowy wideo",
@@ -230,6 +321,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Kalendarz Microsoft 365",
       "description": "Dodawaj zaplanowane zlecenia do kalendarza Outlook, dołączaj link Microsoft Teams i zobacz zajęty czas z kalendarza w Torqvoice.",
       "tenantHelp": "Zarejestruj aplikację w Microsoft Entra (App registrations), zezwól na konta osobiste i służbowe, dodaj poniższy adres przekierowania jako platformę Web, utwórz sekret klienta i wklej oba tutaj.",
       "fields": {
@@ -499,6 +591,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Zgodny z OpenAI",
       "description": "Opisy usług, podsumowania historii, odczyt dokumentów i asystent, obsługiwane przez dowolny serwer mówiący API czatu OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM i podobne. Twoje dane zostają na Twoim sprzęcie.",
       "fields": {
         "baseUrl": "Adres bazowy",
@@ -638,6 +731,7 @@
       }
     },
     "speech-to-text": {
+      "name": "Mowa na tekst",
       "description": "Dyktowanie w zleceniu zapisywane przez model mowy zamiast przeglądarki: znacznie dokładniej, w każdym języku i ze znajomością słownictwa warsztatowego. Działa niezależnie od Twojego dostawcy AI, więc możesz go zostawić bez zmian. Używa Twojego własnego klucza OpenAI albo własnego serwera obsługującego API transkrypcji OpenAI. Nagranie jest wysyłane do zapisania i nie jest przechowywane.",
       "fields": {
         "apiKey": "Klucz API",
@@ -652,6 +746,108 @@
         "modeHelp": "Przeglądarka pisze na bieżąco, ale gorzej, zwłaszcza w mniejszych językach. Model mowy pisze, gdy skończysz mówić.",
         "modeAi": "Zawsze model mowy",
         "modeChoice": "Każdy wybiera sam: model mowy lub przeglądarka"
+      }
+    },
+    "s3": {
+      "name": "Zasobnik w chmurze",
+      "description": "Szyfrowane kopie zapasowe tego warsztatu do własnego bucketu w Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage lub innej przestrzeni zgodnej z S3, według wybranego harmonogramu. Po pierwszym uruchomieniu wysyłane są tylko zmiany, więc kopie co godzinę pozostają tanie.",
+      "fields": {
+        "accessKeyId": "Identyfikator klucza dostępu",
+        "accessKeyIdHelp": "Klucz od dostawcy przestrzeni z uprawnieniami do listowania, odczytu, zapisu i usuwania obiektów w buckecie. Utwórz osobny klucz tylko dla Torqvoice, aby można go było unieważnić niezależnie.",
+        "secretAccessKey": "Tajny klucz dostępu",
+        "password": "Hasło kopii zapasowych",
+        "passwordHelp": "Każda kopia zapasowa jest szyfrowana tym hasłem. Wymyśl je lub naciśnij Wygeneruj i przechowuj kopię poza tym serwerem: bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice. Aby ponownie połączyć przestrzeń, w której są już kopie zapasowe Torqvoice, wpisz hasło, którym zostały utworzone.",
+        "endpoint": "Własny punkt końcowy",
+        "endpointHelp": "Tylko dla opcji Inna przestrzeń zgodna z S3: adres S3 własnej przestrzeni, na przykład serwera MinIO, jako nazwa hosta, w razie potrzeby z portem."
+      },
+      "settings": {
+        "provider": "Dostawca",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Inna przestrzeń zgodna z S3",
+        "region": "Region",
+        "regionHelp": "Gdzie znajduje się bucket. Wybierz go z listy dostawcy; w przypadku innej przestrzeni wpisz wartość, jakiej oczekuje, o ile jej potrzebuje. Nieużywany przez Cloudflare R2.",
+        "accountId": "Identyfikator konta Cloudflare",
+        "accountIdHelp": "32-znakowy identyfikator widoczny na stronie przeglądu R2 w panelu Cloudflare.",
+        "bucket": "Bucket",
+        "bucketHelp": "Lista bucketów pojawia się zaraz po wpisaniu klucza. Jeśli klucz ma dostęp do jednego bucketu, ale nie może wyświetlić ich listy, wpisz jego nazwę.",
+        "prefix": "Folder w buckecie",
+        "prefixHelp": "Kopie zapasowe są przechowywane w tym folderze. Użyj innego folderu dla każdego warsztatu, który korzysta z tego samego bucketu.",
+        "frequency": "Jak często",
+        "frequencyHourly": "Co godzinę",
+        "frequencyEvery4h": "Co 4 godziny",
+        "frequencyDaily": "Codziennie",
+        "frequencyWeekly": "Co tydzień",
+        "frequencyMonthly": "Co miesiąc",
+        "time": "Godzina",
+        "timeHelp": "Według zegara warsztatu, w formacie HH:MM. Używana przez kopie codzienne, cotygodniowe i comiesięczne.",
+        "weekday": "Dzień tygodnia",
+        "sunday": "Niedziela",
+        "monday": "Poniedziałek",
+        "tuesday": "Wtorek",
+        "wednesday": "Środa",
+        "thursday": "Czwartek",
+        "friday": "Piątek",
+        "saturday": "Sobota",
+        "monthDay": "Dzień miesiąca",
+        "monthDayLast": "Ostatni dzień",
+        "contents": "Zawartość",
+        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych. Kopia zapasowa zawiera dane warsztatu i, jeśli tak wybrano, jego pliki. Nie ma w niej kont użytkowników ani haseł: na nowym serwerze logujesz się, zapraszasz zespół i przywracasz dane do tego warsztatu.",
+        "contentsData": "Tylko dane",
+        "contentsDataAndSecrets": "Dane i klucze tajne",
+        "includeFiles": "Dołącz zdjęcia i pliki",
+        "includeFilesHelp": "Każdy plik jest wysyłany raz i używany ponownie przez kolejne kopie, więc po pierwszym uruchomieniu kosztuje to niewiele.",
+        "keepHourly": "Zachowaj kopie godzinowe",
+        "keepHourlyHelp": "Ile najnowszych kopii godzinowych zachować. Ma znaczenie tylko przy harmonogramie co godzinę i co 4 godziny.",
+        "keepDaily": "Zachowaj kopie dzienne",
+        "keepWeekly": "Zachowaj kopie tygodniowe",
+        "keepMonthly": "Zachowaj kopie miesięczne",
+        "keepMonthlyHelp": "Starsze kopie są usuwane po każdym uruchomieniu, a najnowsze każdego rodzaju zostają. Ustaw liczbę na 0, aby nie zachowywać żadnej kopii danego rodzaju."
+      }
+    },
+    "local-folder": {
+      "name": "Folder lokalny",
+      "description": "Szyfrowane kopie zapasowe tego warsztatu do folderu na tym serwerze: wolumenu kopii zapasowych z pliku compose lub zamontowanego tam dysku sieciowego. Kopia na tym samym dysku co baza danych sama w sobie nie jest bezpieczna; połącz ją z przestrzenią w innym miejscu.",
+      "fields": {
+        "password": "Hasło kopii zapasowych",
+        "passwordHelp": "Każda kopia zapasowa jest szyfrowana tym hasłem. Wymyśl je lub naciśnij Wygeneruj i przechowuj kopię poza tym serwerem: bez niego nikt nie otworzy tych kopii zapasowych, nawet Torqvoice. Aby ponownie połączyć przestrzeń, w której są już kopie zapasowe Torqvoice, wpisz hasło, którym zostały utworzone."
+      },
+      "settings": {
+        "folder": "Folder",
+        "folderHelp": "Folder w katalogu głównym kopii zapasowych serwera, w którym są kopie zapasowe tego warsztatu. Pozostaw puste, aby użyć folderu nazwanego od tego warsztatu. Na nowym serwerze wpisz nazwę folderu używanego przez wcześniejszą instalację, aby odzyskać jej kopie zapasowe.",
+        "frequency": "Jak często",
+        "frequencyHourly": "Co godzinę",
+        "frequencyEvery4h": "Co 4 godziny",
+        "frequencyDaily": "Codziennie",
+        "frequencyWeekly": "Co tydzień",
+        "frequencyMonthly": "Co miesiąc",
+        "time": "Godzina",
+        "timeHelp": "Według zegara warsztatu, w formacie HH:MM. Używana przez kopie codzienne, cotygodniowe i comiesięczne.",
+        "weekday": "Dzień tygodnia",
+        "sunday": "Niedziela",
+        "monday": "Poniedziałek",
+        "tuesday": "Wtorek",
+        "wednesday": "Środa",
+        "thursday": "Czwartek",
+        "friday": "Piątek",
+        "saturday": "Sobota",
+        "monthDay": "Dzień miesiąca",
+        "monthDayLast": "Ostatni dzień",
+        "contents": "Zawartość",
+        "contentsHelp": "Klucze tajne to te, które ten warsztat wpisał do Torqvoice: klucze płatności, AI i webhooków. Każda kopia zapasowa i tak jest szyfrowana hasłem kopii zapasowych. Kopia zapasowa zawiera dane warsztatu i, jeśli tak wybrano, jego pliki. Nie ma w niej kont użytkowników ani haseł: na nowym serwerze logujesz się, zapraszasz zespół i przywracasz dane do tego warsztatu.",
+        "contentsData": "Tylko dane",
+        "contentsDataAndSecrets": "Dane i klucze tajne",
+        "includeFiles": "Dołącz zdjęcia i pliki",
+        "includeFilesHelp": "Każdy plik jest wysyłany raz i używany ponownie przez kolejne kopie, więc po pierwszym uruchomieniu kosztuje to niewiele.",
+        "keepHourly": "Zachowaj kopie godzinowe",
+        "keepHourlyHelp": "Ile najnowszych kopii godzinowych zachować. Ma znaczenie tylko przy harmonogramie co godzinę i co 4 godziny.",
+        "keepDaily": "Zachowaj kopie dzienne",
+        "keepWeekly": "Zachowaj kopie tygodniowe",
+        "keepMonthly": "Zachowaj kopie miesięczne",
+        "keepMonthlyHelp": "Starsze kopie są usuwane po każdym uruchomieniu, a najnowsze każdego rodzaju zostają. Ustaw liczbę na 0, aby nie zachowywać żadnej kopii danego rodzaju."
       }
     }
   },
@@ -676,5 +872,26 @@
       "refresh": "Odświeżanie danych o akcjach serwisowych",
       "vehicle": "Sprawdzenie akcji serwisowych dla nowego pojazdu"
     }
+  },
+  "backupAlerts": {
+    "destination": "miejsce docelowe kopii zapasowych",
+    "failedTitle": "Kopia zapasowa nie powiodła się",
+    "failedMessage": "Kopia zapasowa do {name} nie została ukończona: {reason}",
+    "failedSubject": "Kopia zapasowa do {name} nie powiodła się",
+    "failedEmailIntro": "Zaplanowana kopia zapasowa Twojego warsztatu do {name} nie została ukończona.",
+    "openToRetry": "Otwórz Ustawienia, Integracje, {name}, aby zobaczyć szczegóły uruchomienia i spróbować ponownie.",
+    "overdueTitle": "Zaległa kopia zapasowa",
+    "overdueSince": "Od {time} nie ukończono żadnej kopii zapasowej do {name}.",
+    "overdueNever": "Nie ukończono jeszcze żadnej kopii zapasowej do {name}.",
+    "overdueSubject": "Kopia zapasowa do {name} jest zaległa",
+    "openToSee": "Otwórz Ustawienia, Integracje, {name}, aby zobaczyć, co poszło nie tak.",
+    "platformName": "Kopie zapasowe Torqvoice",
+    "restoredTitle": "Warsztat przywrócony",
+    "restoredSubject": "Twój warsztat został przywrócony z kopii zapasowej",
+    "restoredIntro": "{name}: warsztat został przywrócony do punktu przywracania {snapshot} ({time}). Wszystkiego, co wprowadzono po tym punkcie, nie ma już w warsztacie.",
+    "restoredByMember": "O to przywrócenie poprosił członek Twojego warsztatu.",
+    "restoredBySupport": "Zespół pomocy Torqvoice zrobił to na Twoją prośbę. Podany powód: {reason}",
+    "noReason": "nie podano",
+    "restoredUndo": "Najpierw utworzono kopię bezpieczeństwa warsztatu w stanie sprzed przywrócenia, która jest przechowywana przez 90 dni. Skontaktuj się z zespołem pomocy, aby do niej wrócić."
   }
 }

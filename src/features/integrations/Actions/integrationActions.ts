@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -9,7 +11,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures, isCloudMode } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getManifest, listManifests } from '@/integrations/registry'
+import { getConnector, getManifest, listManifests } from '@/integrations/registry'
+import { conditionMet } from '../Lib/conditions'
 import { invoicesForBackfill } from '../Lib/accounting-sync'
 import { clearPulledEvents } from '../Lib/calendar-sync'
 import {
@@ -29,6 +32,7 @@ import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import { describeSettingChanges } from '../Lib/setting-changes'
 import type {
+  PreviewTestResult,
   ActivityBatch,
   ActivityItem,
   ActivityJob,
@@ -36,6 +40,8 @@ import type {
   ConnectorManifest,
   SettingOption,
 } from '../Lib/types'
+import type { BackupOverview } from '../Lib/backup-types'
+import { BACKUP_CAPABILITY, backupOverview, canRestoreBackups } from '../Lib/backup'
 import { messagingProvider, providersForChannel } from '@/integrations/messaging/catalog'
 import {
   type InboundWebhook,
@@ -254,6 +260,8 @@ export interface ConnectionView {
   webhookUrl: string | null
   /** For registries that can keep inspection dates fresh: what a pass covers. Null otherwise. */
   inspectionSync: InspectionSyncOverview | null
+  /** For backup destinations: last and next runs. Null for every other connector. */
+  backup: BackupOverview | null
   /**
    * Where a messaging vendor must deliver inbound messages, built from the
    * connection's own secret. Null for vendors that register it themselves
@@ -303,16 +311,17 @@ async function supersededVendor(
     orderBy: { updatedAt: 'desc' },
     select: { connectorId: true },
   })
+  const ti = await getTranslations('integrations')
   for (const row of rows) {
     const manifest = getManifest(row.connectorId)
-    if (manifest) return { connectorId: manifest.id, name: manifest.name }
+    if (manifest) return { connectorId: manifest.id, name: connectorName(ti, manifest) }
   }
   return null
 }
 
 export async function getIntegrationConnection(connectorId: string) {
   return withAuth(
-    async ({ organizationId }): Promise<ConnectionView> => {
+    async ({ organizationId, userId, isAdmin }): Promise<ConnectionView> => {
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
       // Opening a vendor's page directly, without passing the catalog, still
@@ -369,9 +378,24 @@ export async function getIntegrationConnection(connectorId: string) {
                 (row.state as Record<string, unknown>) ?? {}
               )
             : null,
+        backup:
+          row && manifest.capabilities.includes(BACKUP_CAPABILITY)
+            ? await backupOverview(
+                {
+                  id: row.id,
+                  organizationId,
+                  settings: effectiveSettings(
+                    connectorId,
+                    (row.settings as Record<string, unknown>) ?? {}
+                  ),
+                  state: (row.state as Record<string, unknown>) ?? {},
+                },
+                { canRestore: await canRestoreBackups({ userId, organizationId, isAdmin }) }
+              )
+            : null,
       }
     },
-    { requiredPermissions: READ_PERMISSION }
+    { requiredPermissions: READ_PERMISSION, allowDuringRestore: true }
   )
 }
 
@@ -406,8 +430,12 @@ export async function saveIntegrationCredentials(
 
       const fields =
         manifest.auth.type === 'oauth2' ? (manifest.auth.tenantFields ?? []) : manifest.auth.fields
+      // A key that is only asked for under one provider choice is only
+      // required there; the choice is in the settings typed on the same page.
+      const chosen = { ...(rawSettings === undefined ? {} : settings) }
       for (const f of fields) {
-        if (f.required && !input[f.key]?.trim()) throw new Error(`${f.key} is required`)
+        if (f.required && conditionMet(f.showWhen, chosen) && !input[f.key]?.trim())
+          throw new Error(`${f.key} is required`)
       }
       const allowed = new Set(fields.map((f) => f.key))
       const clean: Record<string, string> = {}
@@ -496,7 +524,7 @@ export async function saveIntegrationCredentials(
         entityId: result.id,
         details: {
           key: 'integration_connect',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -548,6 +576,72 @@ export async function getIntegrationRemoteOptions(connectorId: string, source: s
       return provider(ctx)
     },
     { requiredPermissions: READ_PERMISSION }
+  )
+}
+
+/**
+ * A remote-select's list from keys and settings typed on the connect page,
+ * before anything is saved: the buckets a storage key can see, for instance.
+ * The typed values go to the vendor and nowhere else; a key that cannot list
+ * gives an empty list, and the form takes a typed name instead.
+ */
+export async function previewIntegrationRemoteOptions(
+  connectorId: string,
+  source: string,
+  rawCredentials: unknown,
+  rawSettings: unknown
+) {
+  return withAuth(
+    async ({ organizationId }): Promise<SettingOption[]> => {
+      await requireConnectorPlan(organizationId, connectorId)
+      const manifest = getManifest(connectorId)
+      if (!manifest) throw new Error('Unknown integration')
+      const field = manifest.settings.find(
+        (f) => f.type === 'remote-select' && f.source === source && f.preview
+      )
+      if (!field?.preview) return []
+      const credentials = credentialsSchema.parse(rawCredentials)
+      const settings = cleanSettings(manifest, rawSettings)
+      // Only what the field says it depends on goes to the vendor.
+      const picked = {
+        credentials: Object.fromEntries(
+          field.preview.credentials.map((k) => [k, credentials[k] ?? ''])
+        ),
+        settings: Object.fromEntries(field.preview.settings.map((k) => [k, settings[k] ?? ''])),
+      }
+      const server = await getConnector(connectorId)
+      const provider = server.previewOptions?.[source]
+      if (!provider) return []
+      return provider(picked)
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
+  )
+}
+
+/**
+ * A check of keys and settings typed on the connect page, before anything is
+ * saved: can they reach the destination and write to it. The typed values go
+ * to the vendor and nowhere else, and nothing of them is kept.
+ */
+export async function previewIntegrationTest(
+  connectorId: string,
+  rawCredentials: unknown,
+  rawSettings: unknown
+) {
+  return withAuth(
+    async ({ organizationId }): Promise<PreviewTestResult> => {
+      demoGuard()
+      await requireConnectorPlan(organizationId, connectorId)
+      const manifest = getManifest(connectorId)
+      if (!manifest?.testBeforeConnect) throw new Error('Unknown integration')
+      const credentials = credentialsSchema.parse(rawCredentials)
+      const settings = cleanSettings(manifest, rawSettings)
+      const server = await getConnector(connectorId)
+      if (!server.previewTest)
+        throw new Error('This integration cannot be tested before connecting')
+      return server.previewTest({ credentials, settings, organizationId })
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
   )
 }
 
@@ -781,7 +875,7 @@ export async function disconnectIntegration(connectorId: string) {
         entityId: result.id,
         details: {
           key: 'integration_disconnect',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -1052,12 +1146,17 @@ export async function getServiceVideoCall(serviceRecordId: string) {
         }
         break
       }
+      const ti = await getTranslations('integrations')
       const providers = connections
         .map((c) => getManifest(c.connectorId))
         .filter((m): m is ConnectorManifest & { meetingProvider: string } =>
           Boolean(m?.meetingProvider)
         )
-        .map((m) => ({ connectorId: m.id, name: m.name, provider: m.meetingProvider }))
+        .map((m) => ({
+          connectorId: m.id,
+          name: connectorName(ti, m),
+          provider: m.meetingProvider,
+        }))
       return { link, providers }
     },
     { requiredPermissions: SERVICE_READ_PERMISSION }

@@ -20,6 +20,7 @@ export const REAUTH_ERRORS = {
   tooManyAttempts: 'Too many attempts. Wait a few minutes and try again.',
   signInAgainAccount: 'Sign in again before deleting your account.',
   signInAgainWorkshop: 'Sign in again before deleting the workshop.',
+  signInAgainRestore: 'Sign in again before restoring the workshop.',
 } as const
 
 export type ReauthError = keyof typeof REAUTH_ERRORS

@@ -48,6 +48,11 @@ next-env.d.ts
 /data/uploads/*
 !/data/uploads/.gitkeep
 
+# restic's index cache and the Restore Explorer's working files, per workshop
+/data/restic-cache
+/data/restore-explore
+/data/restore-tmp
+
 # end-to-end tests
 /e2e/.auth
 /e2e/.data

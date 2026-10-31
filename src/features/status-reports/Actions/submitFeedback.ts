@@ -2,6 +2,7 @@
 
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
+import { assertNotRestoring } from '@/lib/backup/freeze'
 import { submitFeedbackSchema } from '../Schema/statusReportSchema'
 
 export async function submitStatusReportFeedback(input: unknown) {
@@ -47,6 +48,8 @@ export async function submitStatusReportFeedback(input: unknown) {
   if (report.expiresAt && report.expiresAt < new Date())
     throw new Error('This status report has expired')
   if (report.customerFeedback) throw new Error('Feedback has already been submitted')
+  // No withAuth on the public report, so the restore freeze is checked here.
+  assertNotRestoring(report.organizationId)
 
   await db.statusReport.update({
     where: { id: report.id },

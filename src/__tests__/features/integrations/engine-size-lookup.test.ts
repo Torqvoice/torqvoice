@@ -7,6 +7,11 @@ vi.mock('@/features/integrations/Lib/connections', () => ({
     server: { manifest: { id: 'checkcardetails', name: 'Check Car Details' }, lookupVehicle },
   })),
 }))
+// The names and sentences come out as their keys here; what is under test
+// is who gets told, not the wording.
+vi.mock('next-intl/server', () => ({
+  getTranslations: async () => Object.assign((key: string) => key, { has: () => false }),
+}))
 vi.mock('@/lib/db', () => ({
   db: { appSetting: { findUnique: vi.fn() } },
 }))
