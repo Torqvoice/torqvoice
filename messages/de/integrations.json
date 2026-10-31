@@ -186,6 +186,7 @@
       "started": "Sicherung gestartet",
       "recentTitle": "Letzte Läufe",
       "noRuns": "Es wurden noch keine Sicherungen ausgeführt.",
+      "addedNote": "Der erste Lauf lädt alles hoch. Jeder weitere fügt nur die Teile hinzu, die sich seitdem geändert haben, und ist deshalb klein. Jedes Backup ist trotzdem vollständig und kann für sich wiederhergestellt oder angesehen werden.",
       "notStarted": "Nicht gestartet",
       "filesNewCount": "{count, plural, one {# neue Datei} other {# neue Dateien}}",
       "columns": {

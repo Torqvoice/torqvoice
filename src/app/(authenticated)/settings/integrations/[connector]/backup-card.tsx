@@ -329,6 +329,8 @@ export function BackupCard({
           </>
         )}
 
+        {rows.length > 0 && <p className="text-xs text-muted-foreground">{t('addedNote')}</p>}
+
         {/* The way back sits with the runs: every finished backup can be put
             back from its row, and the repository's older ones join the list
             on request. */}

@@ -5,6 +5,9 @@ import { dataRoot } from '@/lib/upload-root'
 import { type OpenedTarget, openTarget, type RunTarget } from './engine'
 import { UPLOAD_CATEGORIES } from './manifest'
 import { resticDumpToFile, resticFind } from './restic'
+import type { ExploreStage } from '@/features/integrations/Lib/backup-types'
+
+export type { ExploreStage }
 import { readJsonFile } from './zip-file'
 
 /**
@@ -68,6 +71,7 @@ interface OpenPoint {
 const g = globalThis as unknown as {
   __torqvoiceExplore?: Map<string, OpenPoint>
   __torqvoiceExploreOpening?: Map<string, Promise<RestorePointSummary>>
+  __torqvoiceExploreStage?: Map<string, ExploreStage>
 }
 function open(): Map<string, OpenPoint> {
   if (!g.__torqvoiceExplore) g.__torqvoiceExplore = new Map()
@@ -77,6 +81,19 @@ function open(): Map<string, OpenPoint> {
 function opening(): Map<string, Promise<RestorePointSummary>> {
   if (!g.__torqvoiceExploreOpening) g.__torqvoiceExploreOpening = new Map()
   return g.__torqvoiceExploreOpening
+}
+/** The stage each open in flight has reached, for the page to show. */
+function stages(): Map<string, ExploreStage> {
+  if (!g.__torqvoiceExploreStage) g.__torqvoiceExploreStage = new Map()
+  return g.__torqvoiceExploreStage
+}
+
+/**
+ * The stage an open of this workshop's restore point has reached, or null
+ * when none is in flight (not started, or already open).
+ */
+export function openingStage(organizationId: string, snapshotId: string): ExploreStage | null {
+  return stages().get(keyOf(organizationId, snapshotId)) ?? null
 }
 
 const ORGANIZATION_ID = /^[a-z0-9]+$/i
@@ -217,6 +234,7 @@ export async function openRestorePoint(
     return await promise
   } finally {
     opening().delete(key)
+    stages().delete(key)
   }
 }
 
@@ -228,6 +246,7 @@ async function pull(
   key: string,
   dir: string
 ): Promise<RestorePointSummary> {
+  stages().set(key, 'locating')
   const matches = await resticFind(opened.base, { snapshotId, pattern: 'data.json' })
   const staged = matches.filter((m) => isStagedDataFile(m.path))
   const dataPath = (staged.find((m) => m.path.split('/').at(-2) === organizationId) ?? staged[0])
@@ -236,12 +255,14 @@ async function pull(
   const dataFile = path.join(dir, 'data.json')
   let raw: unknown
   try {
+    stages().set(key, 'pulling')
     await resticDumpToFile(opened.base, {
       snapshotId,
       path: dataPath,
       target: dataFile,
       maxBytes: MAX_DATA_BYTES,
     })
+    stages().set(key, 'reading')
     try {
       raw = await readJsonFile<unknown>(dataFile)
     } catch {
@@ -254,6 +275,7 @@ async function pull(
   }
   const parsed = backupShape.safeParse(raw)
   if (!parsed.success) throw new Error('The data file in this restore point could not be read')
+  stages().set(key, 'indexing')
   const data = parsed.data.data
   const vehicles = rowsOf(data.vehicles)
   // Work orders live inside their vehicle in the file (and counter sales on

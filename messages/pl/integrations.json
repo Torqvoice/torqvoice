@@ -186,6 +186,7 @@
       "started": "Rozpoczęto tworzenie kopii zapasowej",
       "recentTitle": "Ostatnie uruchomienia",
       "noRuns": "Nie utworzono jeszcze żadnej kopii zapasowej.",
+      "addedNote": "Pierwsze uruchomienie wysyła wszystko. Każde kolejne dodaje tylko fragmenty zmienione od tamtej pory, dlatego jest małe. Każda kopia jest mimo to kompletna i można ją osobno przywrócić lub przejrzeć.",
       "notStarted": "Nie rozpoczęto",
       "filesNewCount": "{count, plural, one {# nowy plik} few {# nowe pliki} many {# nowych plików} other {# nowego pliku}}",
       "columns": {

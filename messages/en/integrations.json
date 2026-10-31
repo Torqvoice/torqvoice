@@ -186,6 +186,7 @@
       "started": "Backup started",
       "recentTitle": "Recent runs",
       "noRuns": "No backups have run yet.",
+      "addedNote": "The first run uploads everything. Each run after it adds only the pieces that changed since, which is why it is small. Every backup is still complete and can be restored or explored on its own.",
       "notStarted": "Not started",
       "filesNewCount": "{count, plural, one {# new file} other {# new files}}",
       "columns": {

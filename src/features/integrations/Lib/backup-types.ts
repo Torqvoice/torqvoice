@@ -144,3 +144,11 @@ export interface ResticRepository {
   /** Extra restic options passed as `-o key=value`, such as s3.region. */
   options?: Record<string, string>
 }
+
+/**
+ * Where an open of a restore point has got to, in order: the data file is
+ * looked up in the snapshot, pulled out and decrypted, read, then indexed by
+ * dataset. `connecting` is what the page shows before the first step is reached.
+ */
+export const EXPLORE_STAGES = ['connecting', 'locating', 'pulling', 'reading', 'indexing'] as const
+export type ExploreStage = (typeof EXPLORE_STAGES)[number]

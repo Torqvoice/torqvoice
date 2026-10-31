@@ -280,6 +280,7 @@ export function PlatformBackupsCard({
             </Table>
           </div>
         )}
+        {points.length > 0 && <p className="text-xs text-muted-foreground">{t('sizeNote')}</p>}
         {(points.length > POINTS_SHOWN || !overview.canRestore) && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             {points.length > POINTS_SHOWN && (

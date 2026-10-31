@@ -186,6 +186,7 @@
       "started": "Yedekleme başlatıldı",
       "recentTitle": "Son çalıştırmalar",
       "noRuns": "Henüz hiç yedekleme çalışmadı.",
+      "addedNote": "İlk çalıştırma her şeyi yükler. Sonraki her çalıştırma yalnızca o zamandan beri değişen parçaları ekler, bu yüzden küçüktür. Yine de her yedek eksiksizdir ve tek başına geri yüklenebilir ya da incelenebilir.",
       "notStarted": "Başlamadı",
       "filesNewCount": "{count, plural, one {# yeni dosya} other {# yeni dosya}}",
       "columns": {

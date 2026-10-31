@@ -186,6 +186,7 @@
       "started": "Cópia de segurança iniciada",
       "recentTitle": "Execuções recentes",
       "noRuns": "Ainda não foi feita nenhuma cópia de segurança.",
+      "addedNote": "A primeira execução envia tudo. Cada uma a seguir acrescenta só as partes que mudaram desde então, por isso é pequena. Cada cópia continua completa e pode ser restaurada ou explorada por si só.",
       "notStarted": "Não iniciada",
       "filesNewCount": "{count, plural, one {# ficheiro novo} other {# ficheiros novos}}",
       "columns": {

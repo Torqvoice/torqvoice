@@ -186,6 +186,7 @@
       "started": "Sikkerhetskopiering startet",
       "recentTitle": "Siste kjøringer",
       "noRuns": "Ingen sikkerhetskopier har kjørt ennå.",
+      "addedNote": "Den første kjøringen laster opp alt. Hver kjøring etterpå legger bare til delene som er endret siden, og er derfor liten. Hver sikkerhetskopi er likevel komplett og kan gjenopprettes eller utforskes for seg.",
       "notStarted": "Ikke startet",
       "filesNewCount": "{count, plural, one {# ny fil} other {# nye filer}}",
       "columns": {

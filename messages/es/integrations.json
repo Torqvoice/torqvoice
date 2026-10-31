@@ -186,6 +186,7 @@
       "started": "Copia de seguridad iniciada",
       "recentTitle": "Ejecuciones recientes",
       "noRuns": "Todavía no se ha hecho ninguna copia de seguridad.",
+      "addedNote": "La primera ejecución sube todo. Cada una de las siguientes añade solo las piezas que cambiaron desde entonces, por eso es pequeña. Cada copia sigue estando completa y puede restaurarse o explorarse por sí sola.",
       "notStarted": "Sin iniciar",
       "filesNewCount": "{count, plural, one {# archivo nuevo} other {# archivos nuevos}}",
       "columns": {

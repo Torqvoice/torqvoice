@@ -186,6 +186,7 @@
       "started": "Backup iniciado",
       "recentTitle": "Execuções recentes",
       "noRuns": "Nenhum backup foi feito ainda.",
+      "addedNote": "A primeira execução envia tudo. Cada uma depois dela adiciona só as partes que mudaram desde então, por isso é pequena. Cada backup continua completo e pode ser restaurado ou explorado sozinho.",
       "notStarted": "Não iniciado",
       "filesNewCount": "{count, plural, one {# arquivo novo} other {# arquivos novos}}",
       "columns": {

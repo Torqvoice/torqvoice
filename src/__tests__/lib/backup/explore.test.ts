@@ -70,9 +70,11 @@ import {
   extractRestorePointFile,
   getRestorePointRow,
   listRestorePointRows,
+  openingStage,
   openRestorePoint,
   RestorePointClosedError,
 } from '@/lib/backup/explore'
+import { resticDumpToFile, resticFind } from '@/lib/backup/restic'
 import type { RunTarget } from '@/lib/backup/engine'
 
 h.root = mkdtempSync(path.join(tmpdir(), 'backup-explore-test-'))
@@ -321,6 +323,55 @@ describe('openRestorePoint', () => {
     expect(() => listRestorePointRows(ORG, SNAP, 'customers', '', 1)).toThrow(
       RestorePointClosedError
     )
+  })
+})
+
+describe('openingStage', () => {
+  /** Has the next find and dump write down the stage they see, then do what they always do. */
+  function watchStages(look: () => string | null): { find: unknown[]; dump: unknown[] } {
+    const seen = { find: [] as unknown[], dump: [] as unknown[] }
+    const find = vi.mocked(resticFind).getMockImplementation()
+    const dump = vi.mocked(resticDumpToFile).getMockImplementation()
+    if (!find || !dump) throw new Error('restic mocks have no implementation')
+    vi.mocked(resticFind).mockImplementationOnce(async (...args) => {
+      seen.find.push(look())
+      return find(...args)
+    })
+    vi.mocked(resticDumpToFile).mockImplementationOnce(async (...args) => {
+      seen.dump.push(look())
+      return dump(...args)
+    })
+    return seen
+  }
+
+  it('reports locating while the data file is looked for and pulling while it is pulled', async () => {
+    stage()
+    const seen = watchStages(() => openingStage(ORG, SNAP))
+    await openRestorePoint(TARGET, SNAP)
+    expect(seen).toEqual({ find: ['locating'], dump: ['pulling'] })
+  })
+
+  it('is null before anything was opened and once the restore point is open', async () => {
+    expect(openingStage(ORG, SNAP)).toBeNull()
+    stage()
+    await openRestorePoint(TARGET, SNAP)
+    expect(openingStage(ORG, SNAP)).toBeNull()
+  })
+
+  it('is null after an open that failed', async () => {
+    h.found['data.json'] = [STAGED]
+    // No file behind the path, so the dump throws.
+    const seen = watchStages(() => openingStage(ORG, SNAP))
+    await expect(openRestorePoint(TARGET, SNAP)).rejects.toThrow('no such file')
+    expect(seen.dump).toEqual(['pulling'])
+    expect(openingStage(ORG, SNAP)).toBeNull()
+  })
+
+  it('reports only the workshop’s own open', async () => {
+    stage()
+    const seen = watchStages(() => `${openingStage(ORG, SNAP)}/${openingStage('otherorg', SNAP)}`)
+    await openRestorePoint(TARGET, SNAP)
+    expect(seen).toEqual({ find: ['locating/null'], dump: ['pulling/null'] })
   })
 })
 

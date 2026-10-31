@@ -186,6 +186,7 @@
       "started": "Atsarginės kopijos kūrimas pradėtas",
       "recentTitle": "Paskutiniai vykdymai",
       "noRuns": "Atsarginės kopijos dar nebuvo kuriamos.",
+      "addedNote": "Pirmasis paleidimas įkelia viską. Kiekvienas vėlesnis prideda tik nuo to laiko pasikeitusias dalis, todėl yra mažas. Kiekviena atsarginė kopija vis tiek yra pilna ir gali būti atkurta ar peržiūrėta atskirai.",
       "notStarted": "Nepradėta",
       "filesNewCount": "{count, plural, one {# naujas failas} few {# nauji failai} many {# naujo failo} other {# naujų failų}}",
       "columns": {

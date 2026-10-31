@@ -186,6 +186,7 @@
       "started": "Sauvegarde lancée",
       "recentTitle": "Exécutions récentes",
       "noRuns": "Aucune sauvegarde n'a encore été effectuée.",
+      "addedNote": "La première exécution envoie tout. Chacune des suivantes n’ajoute que les éléments modifiés depuis, c’est pourquoi elle est petite. Chaque sauvegarde reste complète et peut être restaurée ou explorée seule.",
       "notStarted": "Non démarrée",
       "filesNewCount": "{count, plural, one {# nouveau fichier} other {# nouveaux fichiers}}",
       "columns": {

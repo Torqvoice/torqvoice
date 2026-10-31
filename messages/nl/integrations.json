@@ -186,6 +186,7 @@
       "started": "Back-up gestart",
       "recentTitle": "Recente runs",
       "noRuns": "Er zijn nog geen back-ups gemaakt.",
+      "addedNote": "De eerste run uploadt alles. Elke run daarna voegt alleen de stukken toe die sindsdien zijn veranderd, en is daarom klein. Elke back-up is toch compleet en kan op zichzelf worden hersteld of bekeken.",
       "notStarted": "Niet gestart",
       "filesNewCount": "{count, plural, one {# nieuw bestand} other {# nieuwe bestanden}}",
       "columns": {
