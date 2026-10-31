@@ -99,9 +99,11 @@ export async function sweepAbandonedRestoreDirs(): Promise<number> {
   let removed = 0
   for (const entry of entries) {
     if (!entry.isDirectory()) continue
-    const named = /^[a-z0-9]+-([a-z0-9]+)$/i.exec(entry.name)
-    if (!named || (live !== null && named[1] === live)) continue
-    await rm(path.join(root, entry.name), { recursive: true, force: true }).catch(() => undefined)
+    const named = /^([a-z0-9]+)-([a-z0-9]+)$/i.exec(entry.name)
+    if (!named || (live !== null && named[2] === live)) continue
+    // Through restoreDirFor, so only a folder a restore would have made is touched.
+    const folder = restoreDirFor(named[1], named[2])
+    await rm(folder, { recursive: true, force: true }).catch(() => undefined)
     removed++
   }
   return removed

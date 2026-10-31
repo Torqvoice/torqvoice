@@ -45,7 +45,7 @@ const TEMP_FOLDER_ONLY: Record<string, { targets: RegExp; why: string; under?: s
   },
   'src/lib/backup/restore.ts': {
     targets: /\brm\(folder\b/,
-    why: 'the folder restic wrote a snapshot into, under restore-tmp in the data root',
+    why: 'the folder restic wrote a snapshot into, and the ones a run that died left behind, under restore-tmp in the data root',
     under: 'restoreDirFor(',
   },
   'src/lib/backup/explore.ts': {
