@@ -57,6 +57,9 @@ jobs:
           PLATFORM_BACKUP_S3_SECRET_KEY: ${{ secrets.STAGING_PLATFORM_BACKUP_S3_SECRET_KEY }}
           PLATFORM_BACKUP_MASTER_KEY: ${{ secrets.STAGING_PLATFORM_BACKUP_MASTER_KEY }}
           PLATFORM_BACKUP_ALERT_EMAIL: ${{ secrets.STAGING_PLATFORM_BACKUP_ALERT_EMAIL }}
+          # Optional, a repository variable rather than a secret: the largest backup data
+          # file a restore reads into memory, in MiB (128 unless set, see .env.example).
+          BACKUP_MAX_DATA_FILE_MB: ${{ vars.STAGING_BACKUP_MAX_DATA_FILE_MB }}
           # Optional. Next encrypts what a server action closes over with a key
           # made fresh by every build, so a tab left open across a deploy can
           # no longer be read by the new container. A fixed key keeps those tabs
@@ -122,6 +125,7 @@ jobs:
                 PLATFORM_BACKUP_S3_SECRET_KEY: ${PLATFORM_BACKUP_S3_SECRET_KEY}
                 PLATFORM_BACKUP_MASTER_KEY: ${PLATFORM_BACKUP_MASTER_KEY}
                 PLATFORM_BACKUP_ALERT_EMAIL: ${PLATFORM_BACKUP_ALERT_EMAIL}
+                BACKUP_MAX_DATA_FILE_MB: ${BACKUP_MAX_DATA_FILE_MB}
                 NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
                 GOOGLE_INTEGRATION_CLIENT_ID: ${GOOGLE_INTEGRATION_CLIENT_ID}
                 GOOGLE_INTEGRATION_CLIENT_SECRET: ${GOOGLE_INTEGRATION_CLIENT_SECRET}
