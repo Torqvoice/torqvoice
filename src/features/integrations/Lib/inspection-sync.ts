@@ -152,6 +152,8 @@ export class RegistryQuotaError extends Error {
 export const RECHECK_SOON_DAYS = 7
 /** A vehicle the register knows but has given no date yet is rechecked this often, whatever the cadence. */
 export const RECHECK_NO_DATE_DAYS = 30
+/** A lookup that failed is tried again this often, whatever the cadence, so an outage does not hold a date for a quarter. */
+export const RETRY_FAILED_DAYS = 30
 /** Lookups per job run; the job reschedules itself while more remain. */
 export const BATCH_SIZE = 25
 const BATCH_PAUSE_SECONDS = 5
@@ -254,10 +256,10 @@ function askableVehicles(organizationId: string, options: InspectionSyncOptions)
 }
 
 /**
- * The subset of those due a check now. Always: never checked, or known to
- * the register without a date and not asked for a month. On the chosen
- * cadence: every vehicle whose last check is older than it. And near the
- * deadline: weekly, whatever the cadence.
+ * The subset of those due a check now. Always: never checked, known to the
+ * register without a date and not asked for a month, or failed last time and
+ * not retried for a month. On the chosen cadence: every vehicle whose last
+ * check is older than it. And near the deadline: weekly, whatever the cadence.
  */
 function dueForCheckWhere(organizationId: string, now: Date, options: InspectionSyncOptions) {
   const ago = (days: number) => new Date(now.getTime() - days * DAY_MS)
@@ -273,6 +275,9 @@ function dueForCheckWhere(organizationId: string, now: Date, options: Inspection
         : [{ inspectionStatus: { checkedAt: { lt: ago(options.recheckDays) } } }]),
       {
         inspectionStatus: { dueAt: { lt: soonCutoff }, checkedAt: { lt: ago(RECHECK_SOON_DAYS) } },
+      },
+      {
+        inspectionStatus: { lastError: { not: null }, checkedAt: { lt: ago(RETRY_FAILED_DAYS) } },
       },
     ],
   }

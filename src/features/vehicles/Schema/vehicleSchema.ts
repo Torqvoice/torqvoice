@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { optionalUploadUrlSchema } from '@/lib/upload-url'
+import { registryLookupSchema } from '../Lib/registryLookup'
 import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
 
 // An empty string passes: on an update it is how a cleared field says so.
@@ -33,14 +34,18 @@ export const createVehicleSchema = z.object({
   purchasePrice: z.coerce.number().optional(),
   imageUrl: optionalUploadUrlSchema.optional(),
   customerId: z.string().optional(),
-  /** Next periodic inspection, YYYY-MM-DD, set by hand. Empty clears a manual date. */
+  /**
+   * Next periodic inspection, YYYY-MM-DD, as the form's field holds it. Empty
+   * clears a manual date; undefined leaves the stored date alone.
+   */
   inspectionDueAt: z.string().optional(),
   /**
-   * The registry connector whose lookup filled inspectionDueAt, left as it
-   * was. The date is then saved as that registry's answer, checked now, and
-   * not as a hand-typed date the sync would look up again straight away.
+   * The registry lookup made on this form, when there was one. Saved as that
+   * registry's answer, checked now, so the sync does not look the vehicle up
+   * again straight away; a date typed over the registry's is saved by hand
+   * on top of it.
    */
-  inspectionDueSource: z.string().max(60).optional(),
+  registryLookup: registryLookupSchema.optional(),
 })
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({
