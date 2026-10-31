@@ -9,7 +9,12 @@
  */
 
 import { db } from '@/lib/db'
-import { nextRunAfter, readBackupSettings, spreadOffsetMinutes } from '@/lib/backup/schedule'
+import {
+  clampDestinationFrequency,
+  nextRunAfter,
+  readBackupSettings,
+  spreadOffsetMinutes,
+} from '@/lib/backup/schedule'
 import { isCloudMode } from '@/lib/features'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import type { BackupOverview, BackupRunView, BackupSettings } from './backup-types'
@@ -62,8 +67,10 @@ export const BACKUP_SETTINGS: SettingField[] = [
     default: 'daily',
     required: true,
     options: [
-      { value: 'hourly', label: 'frequencyHourly' },
-      { value: 'every4h', label: 'frequencyEvery4h' },
+      // On the cloud a destination runs once a day at most; the hourly
+      // restore points there are the platform's (schedule.ts says why).
+      { value: 'hourly', label: 'frequencyHourly', selfHostedOnly: true },
+      { value: 'every4h', label: 'frequencyEvery4h', selfHostedOnly: true },
       { value: 'daily', label: 'frequencyDaily' },
       { value: 'weekly', label: 'frequencyWeekly' },
       { value: 'monthly', label: 'frequencyMonthly' },
@@ -136,6 +143,14 @@ export async function canRestoreBackups(ctx: {
     select: { role: true },
   })
   return member?.role === 'owner'
+}
+
+/**
+ * A destination's saved settings as the schedule runs them: validated, with
+ * defaults, and on the cloud no more often than daily.
+ */
+export function destinationSettings(raw: Record<string, unknown>): BackupSettings {
+  return clampDestinationFrequency(readBackupSettings(raw), isCloudMode())
 }
 
 /** The host restic files this workshop's snapshots under, and the tag on each. */
@@ -231,7 +246,7 @@ export async function backupOverview(
       select: { name: true },
     }),
   ])
-  const settings = readBackupSettings(connection.settings)
+  const settings = destinationSettings(connection.settings)
   const next = await nextScheduledRun(connection.organizationId, settings, connection.state)
   const size = connection.state[BACKUP_STATE.repositorySize]
   return {

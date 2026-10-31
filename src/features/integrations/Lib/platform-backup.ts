@@ -62,8 +62,18 @@ export async function platformBackupOverview(
   const open = recentRows.find((r) => r.status === 'queued' || r.status === 'running')
   let queuedAhead = 0
   if (open?.status === 'queued') {
+    // Restores and manual runs go ahead of scheduled ones (engine.ts), so
+    // one of those waits only for the running run and the waited-on runs
+    // queued before it; a scheduled run waits for everything older.
+    const waitedOn = open.trigger === 'restore' || open.trigger === 'manual'
     queuedAhead = await db.backupRun.count({
-      where: { status: { in: ['queued', 'running'] }, createdAt: { lt: open.createdAt } },
+      where: {
+        createdAt: { lt: open.createdAt },
+        OR: [
+          { status: 'running' },
+          { status: 'queued', ...(waitedOn ? { trigger: { in: ['restore', 'manual'] } } : {}) },
+        ],
+      },
     })
   }
   let nextRunAt: string | null = null

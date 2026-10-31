@@ -79,7 +79,11 @@ vi.mock('@/lib/db', () => {
             statuses.includes(r.status) &&
             (where.organizationId === undefined || r.organizationId === where.organizationId) &&
             (where.kind === undefined || r.kind === where.kind) &&
-            (where.connectionId === undefined || r.connectionId === where.connectionId)
+            (where.connectionId === undefined || r.connectionId === where.connectionId) &&
+            (where.trigger === undefined ||
+              (typeof where.trigger === 'string'
+                ? r.trigger === where.trigger
+                : where.trigger.in.includes(r.trigger)))
         )
         if (orderBy) rows.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         return rows[0] ?? null
@@ -1034,6 +1038,38 @@ describe('runBackup, lock', () => {
 })
 
 describe('drainBackupQueue', () => {
+  it('starts restores and manual runs before scheduled ones, however old those are', async () => {
+    addConnection()
+    addConnection({ id: 'conn2' })
+    addConnection({ id: 'conn3' })
+    const started: string[] = []
+    const { db } = await import('@/lib/db')
+    vi.mocked(db.backupRun.update).mockImplementation((async ({ where, data }: Row) => {
+      if (data.status === 'running') started.push(where.id)
+      const row = merge(h.runs.get(where.id) ?? {}, data)
+      h.runs.set(where.id, row)
+      return row
+    }) as never)
+    const oldScheduled = addRun({
+      trigger: 'scheduled',
+      createdAt: new Date(Date.now() - 60_000),
+    })
+    const manual = addRun({
+      connectionId: 'conn2',
+      trigger: 'manual',
+      createdAt: new Date(Date.now() - 1000),
+    })
+    const newScheduled = addRun({
+      connectionId: 'conn3',
+      trigger: 'scheduled',
+      createdAt: new Date(Date.now() - 500),
+    })
+
+    expect(await drainBackupQueue()).toBe(3)
+
+    expect(started).toEqual([manual, oldScheduled, newScheduled])
+  })
+
   it('works through the queued runs oldest first, one after the other', async () => {
     addConnection()
     addConnection({ id: 'conn2' })

@@ -92,7 +92,11 @@ vi.mock('@/lib/db', () => {
             statuses.includes(r.status) &&
             (where.organizationId === undefined || r.organizationId === where.organizationId) &&
             (where.kind === undefined || r.kind === where.kind) &&
-            (where.connectionId === undefined || r.connectionId === where.connectionId)
+            (where.connectionId === undefined || r.connectionId === where.connectionId) &&
+            (where.trigger === undefined ||
+              (typeof where.trigger === 'string'
+                ? r.trigger === where.trigger
+                : where.trigger.in.includes(r.trigger)))
         )
         if (orderBy) rows.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         return rows[0] ?? null

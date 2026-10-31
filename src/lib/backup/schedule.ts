@@ -26,6 +26,30 @@ export const BACKUP_SETTING_DEFAULTS: BackupSettings = {
 }
 
 const FREQUENCIES: readonly BackupFrequency[] = ['hourly', 'every4h', 'daily', 'weekly', 'monthly']
+
+/** The frequencies a destination may run at on the cloud instance: once a day at most. */
+export const CLOUD_DESTINATION_FREQUENCIES: readonly BackupFrequency[] = [
+  'daily',
+  'weekly',
+  'monthly',
+]
+
+/**
+ * The settings as the schedule runs them. On the cloud a destination runs
+ * once a day at most: the hourly restore points there are the platform's,
+ * and hourly uploads from every workshop would fill the queue a restore then
+ * waits in. The hourly choices are not offered there (the registry drops
+ * them from the form); one saved before that, or sent past the form, runs
+ * daily. Self-hosted, where the destination may be the only backup, keeps
+ * every choice.
+ */
+export function clampDestinationFrequency(
+  settings: BackupSettings,
+  cloud: boolean
+): BackupSettings {
+  if (!cloud || CLOUD_DESTINATION_FREQUENCIES.includes(settings.frequency)) return settings
+  return { ...settings, frequency: 'daily' }
+}
 const CONTENTS: readonly BackupContents[] = ['data', 'dataAndSecrets']
 const MINUTE = 60_000
 const HOUR = 60 * MINUTE

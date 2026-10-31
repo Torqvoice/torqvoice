@@ -710,10 +710,16 @@ async function bookRetry(
   })
 }
 
+/** The runs somebody is waiting on; they go ahead of the scheduled ones. */
+const WAITED_ON: BackupTrigger[] = ['restore', 'manual']
+
 /**
- * Work through the queued runs, oldest first, one at a time, until none is
- * left or another run holds the lock (its own finish drains again). Safe to
- * call from anywhere: a second caller while one is draining returns at once.
+ * Work through the queued runs one at a time until none is left or another
+ * run holds the lock (its own finish drains again): restores and manual
+ * runs first, oldest first among them, since a person is waiting on those
+ * and nobody is waiting on an hourly tick; then the scheduled runs, oldest
+ * first. Safe to call from anywhere: a second caller while one is draining
+ * returns at once.
  */
 export async function drainBackupQueue(): Promise<number> {
   if (g.__torqvoiceBackupDraining) return 0
@@ -722,11 +728,17 @@ export async function drainBackupQueue(): Promise<number> {
   try {
     for (;;) {
       if (backupLockHolder()) break
-      const next = await db.backupRun.findFirst({
-        where: { status: 'queued' },
-        orderBy: { createdAt: 'asc' },
-        select: { id: true, trigger: true },
-      })
+      const next =
+        (await db.backupRun.findFirst({
+          where: { status: 'queued', trigger: { in: WAITED_ON } },
+          orderBy: { createdAt: 'asc' },
+          select: { id: true, trigger: true },
+        })) ??
+        (await db.backupRun.findFirst({
+          where: { status: 'queued' },
+          orderBy: { createdAt: 'asc' },
+          select: { id: true, trigger: true },
+        }))
       if (!next) break
       let view: BackupRunView
       if (next.trigger === 'restore') {

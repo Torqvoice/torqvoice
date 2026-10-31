@@ -3,6 +3,7 @@ import {
   BACKUP_CAPABILITY,
   BACKUP_STATE,
   backupOffsetMinutes,
+  destinationSettings,
 } from '@/features/integrations/Lib/backup'
 import type { BackupFrequency } from '@/features/integrations/Lib/backup-types'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
@@ -25,12 +26,7 @@ import {
 import { sweepRestorePoints } from '@/lib/backup/explore'
 import { sweepAbandonedRestoreDirs } from '@/lib/backup/restore'
 import { resticForgetSnapshots, resticSnapshots } from '@/lib/backup/restic'
-import {
-  BACKUP_SETTING_DEFAULTS,
-  intervalMs,
-  isDue,
-  readBackupSettings,
-} from '@/lib/backup/schedule'
+import { BACKUP_SETTING_DEFAULTS, intervalMs, isDue } from '@/lib/backup/schedule'
 import { db } from '@/lib/db'
 import { sendMail } from '@/lib/email'
 import { getFeatures } from '@/lib/features'
@@ -169,7 +165,7 @@ export async function processDueBackups(now = new Date()): Promise<number> {
       // A destination connected on Pro stops when the plan no longer
       // includes it; nothing in the workshop's bucket is touched.
       if (!connectorAllowed(manifest, await getFeatures(c.organizationId))) continue
-      const settings = readBackupSettings((c.settings as Record<string, unknown>) ?? {})
+      const settings = destinationSettings((c.settings as Record<string, unknown>) ?? {})
       const state = (c.state as Record<string, unknown>) ?? {}
       const timeZone = await workshopTimeZone(c.organizationId)
       const lastScheduled = stateDate(state, BACKUP_STATE.lastScheduledAt)
@@ -211,7 +207,7 @@ export async function processDueBackups(now = new Date()): Promise<number> {
 async function alertIfOverdue(
   connectionId: string,
   organizationId: string,
-  settings: ReturnType<typeof readBackupSettings>,
+  settings: ReturnType<typeof destinationSettings>,
   state: Record<string, unknown>,
   now: Date
 ) {

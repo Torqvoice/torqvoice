@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { BackupSettings } from '@/features/integrations/Lib/backup-types'
 import {
   BACKUP_SETTING_DEFAULTS,
+  clampDestinationFrequency,
   intervalMs,
   isDue,
   nextRunAfter,
@@ -36,6 +37,27 @@ function runsBetween(
     out.push(t.toISOString())
   }
 }
+
+describe('clampDestinationFrequency', () => {
+  const base = { ...BACKUP_SETTING_DEFAULTS }
+
+  it('runs an hourly or four-hourly destination daily on the cloud, and leaves the rest', () => {
+    expect(clampDestinationFrequency({ ...base, frequency: 'hourly' }, true).frequency).toBe(
+      'daily'
+    )
+    expect(clampDestinationFrequency({ ...base, frequency: 'every4h' }, true).frequency).toBe(
+      'daily'
+    )
+    for (const frequency of ['daily', 'weekly', 'monthly'] as const) {
+      expect(clampDestinationFrequency({ ...base, frequency }, true).frequency).toBe(frequency)
+    }
+  })
+
+  it('changes nothing self-hosted', () => {
+    const hourly = { ...base, frequency: 'hourly' as const }
+    expect(clampDestinationFrequency(hourly, false)).toBe(hourly)
+  })
+})
 
 describe('nextRunAfter: frequencies', () => {
   it('hourly runs at :00 on the workshop clock', () => {

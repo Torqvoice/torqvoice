@@ -3,11 +3,15 @@
 import { getTranslations } from 'next-intl/server'
 import { connectorName } from '@/features/integrations/Lib/display-name'
 import { revalidatePath } from 'next/cache'
-import { BACKUP_CAPABILITY, BACKUP_STATE, nextScheduledRun } from '../Lib/backup'
+import {
+  BACKUP_CAPABILITY,
+  BACKUP_STATE,
+  destinationSettings,
+  nextScheduledRun,
+} from '../Lib/backup'
 import { connectorAllowed } from '../Lib/plan'
 import { getManifest } from '@/integrations/registry'
 import { BackupBusyError, drainBackupQueue, queueBackupRun } from '@/lib/backup/engine'
-import { readBackupSettings } from '@/lib/backup/schedule'
 import { db } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
 import { FeatureGatedError, getFeatures } from '@/lib/features'
@@ -107,7 +111,7 @@ export async function listBackupDestinations() {
         const manifest = getManifest(row.connectorId)
         if (!manifest?.capabilities.includes(BACKUP_CAPABILITY)) continue
         const state = (row.state as Record<string, unknown>) ?? {}
-        const settings = readBackupSettings((row.settings as Record<string, unknown>) ?? {})
+        const settings = destinationSettings((row.settings as Record<string, unknown>) ?? {})
         const lastGood = state[BACKUP_STATE.lastGoodAt]
         const next = await nextScheduledRun(organizationId, settings, state)
         out.push({
