@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių apžiūros terminus",
-        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+        "syncInspectionsHelp": "Kartą per valandą tikrintinos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data; kaip dažnai transporto priemonė tikrinama iš naujo, nustatoma žemiau. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės.",
+        "inspectionRecheck": "Iš naujo tikrinti transporto priemones, kurios jau turi datą",
+        "inspectionRecheckHelp": "Data keičiasi tik tada, kai apžiūra praeinama. Kas mėnesį greičiausiai pastebi anksčiau atliktą apžiūrą; tik artėjant terminui kainuoja mažiausiai. Artėjant terminui kiekviena transporto priemonė tikrinama kas savaitę, nepriklausomai nuo šio pasirinkimo.",
+        "recheckMonthly": "Kas mėnesį",
+        "recheckQuarterly": "Kas tris mėnesius",
+        "recheckNearDeadline": "Tik artėjant terminui",
+        "inspectionSoonDays": "Artėjant terminui reiškia per",
+        "inspectionSoonDaysHelp": "Šiame lange transporto priemonė tikrinama kas savaitę, todėl praeita apžiūra per kelias dienas pašalina ją iš priminimų sąrašo. Trumpesnis langas reiškia mažiau užklausų.",
+        "soon30": "30 dienų",
+        "soon60": "60 dienų",
+        "soon90": "90 dienų",
+        "inspectionOnlyWithCustomer": "Tik transporto priemonės su klientu",
+        "inspectionOnlyWithCustomerHelp": "Praleisti transporto priemones be įrašyto kliento. Niekam negalima apie jas priminti, todėl jų paieška kainuoja be reikalo."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Atnaujinti MOT datas visoms šių dirbtuvių transporto priemonėms",
-        "syncInspectionsHelp": "Kai tai įjungta, kiekviena dirbtuvių transporto priemonė su numeriu patikrinama vieną kartą ir išsaugoma jos MOT termino data. Vėliau kiekviena transporto priemonė tikrinama kas mėnesį, o kai MOT terminas arčiau nei du mėnesiai, kas savaitę. Kiekviena rasta transporto priemonė apmokestinama kaip viena Vehicle Registration paieška, todėl pirmas perėjimas kainuoja daugiausia; registrui nežinomi numeriai nemokami. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės."
+        "syncInspectionsHelp": "Kai tai įjungta, kiekviena transporto priemonė su numeriu ieškoma vieną kartą ir išsaugoma jos MOT data. Vėliau transporto priemonės tikrinamos iš naujo taip, kaip nustatyta žemiau. Už kiekvieną rastą transporto priemonę mokama kaip už vieną Vehicle Registration užklausą; registrui nežinomi numeriai nemokami. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės.",
+        "inspectionRecheck": "Iš naujo tikrinti transporto priemones, kurios jau turi datą",
+        "inspectionRecheckHelp": "Data keičiasi tik tada, kai apžiūra praeinama. Kas mėnesį greičiausiai pastebi anksčiau atliktą apžiūrą; tik artėjant terminui kainuoja mažiausiai. Artėjant terminui kiekviena transporto priemonė tikrinama kas savaitę, nepriklausomai nuo šio pasirinkimo.",
+        "recheckMonthly": "Kas mėnesį",
+        "recheckQuarterly": "Kas tris mėnesius",
+        "recheckNearDeadline": "Tik artėjant terminui",
+        "inspectionSoonDays": "Artėjant terminui reiškia per",
+        "inspectionSoonDaysHelp": "Šiame lange transporto priemonė tikrinama kas savaitę, todėl praeita apžiūra per kelias dienas pašalina ją iš priminimų sąrašo. Trumpesnis langas reiškia mažiau užklausų.",
+        "soon30": "30 dienų",
+        "soon60": "60 dienų",
+        "soon90": "90 dienų",
+        "inspectionOnlyWithCustomer": "Tik transporto priemonės su klientu",
+        "inspectionOnlyWithCustomerHelp": "Praleisti transporto priemones be įrašyto kliento. Niekam negalima apie jas priminti, todėl jų paieška kainuoja be reikalo."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių APK datas",
-        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+        "syncInspectionsHelp": "Kartą per valandą tikrintinos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data; kaip dažnai transporto priemonė tikrinama iš naujo, nustatoma žemiau. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės.",
+        "inspectionRecheck": "Iš naujo tikrinti transporto priemones, kurios jau turi datą",
+        "inspectionRecheckHelp": "Data keičiasi tik tada, kai apžiūra praeinama. Kas mėnesį greičiausiai pastebi anksčiau atliktą apžiūrą; tik artėjant terminui kainuoja mažiausiai. Artėjant terminui kiekviena transporto priemonė tikrinama kas savaitę, nepriklausomai nuo šio pasirinkimo.",
+        "recheckMonthly": "Kas mėnesį",
+        "recheckQuarterly": "Kas tris mėnesius",
+        "recheckNearDeadline": "Tik artėjant terminui",
+        "inspectionSoonDays": "Artėjant terminui reiškia per",
+        "inspectionSoonDaysHelp": "Šiame lange transporto priemonė tikrinama kas savaitę, todėl praeita apžiūra per kelias dienas pašalina ją iš priminimų sąrašo. Trumpesnis langas reiškia mažiau užklausų.",
+        "soon30": "30 dienų",
+        "soon60": "60 dienų",
+        "soon90": "90 dienų",
+        "inspectionOnlyWithCustomer": "Tik transporto priemonės su klientu",
+        "inspectionOnlyWithCustomerHelp": "Praleisti transporto priemones be įrašyto kliento. Niekam negalima apie jas priminti, todėl jų paieška kainuoja be reikalo."
       }
     },
     "regcheck": {

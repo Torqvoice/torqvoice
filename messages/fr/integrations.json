@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Tenir à jour les dates de contrôle de tous les véhicules de cet atelier",
-        "syncInspectionsHelp": "Une fois par heure, les véhicules non vérifiés récemment sont recherchés par plaque et la date du prochain EU-kontroll est enregistrée. Seuls les véhicules de cet atelier sont envoyés. Un véhicule est revérifié chaque mois, et chaque semaine lorsque l'échéance est à moins de deux mois."
+        "syncInspectionsHelp": "Une fois par heure, les véhicules à vérifier sont recherchés par plaque et leur prochaine date de EU-kontroll est enregistrée ; la fréquence de revérification se règle ci-dessous. Seuls les véhicules enregistrés dans cet atelier sont envoyés.",
+        "inspectionRecheck": "Revérifier les véhicules qui ont déjà une date",
+        "inspectionRecheckHelp": "Une date ne change que lorsqu'un contrôle est passé. Mensuel remarque le plus tôt un contrôle anticipé ; seulement près de l'échéance coûte le moins. Près de l'échéance, chaque véhicule est revérifié chaque semaine, quel que soit ce choix.",
+        "recheckMonthly": "Chaque mois",
+        "recheckQuarterly": "Tous les trois mois",
+        "recheckNearDeadline": "Seulement près de l'échéance",
+        "inspectionSoonDays": "Près de l'échéance signifie à moins de",
+        "inspectionSoonDaysHelp": "Dans cette fenêtre, un véhicule est revérifié chaque semaine, si bien qu'un contrôle réussi le retire de la liste de rappels en quelques jours. Une fenêtre plus courte signifie moins de recherches.",
+        "soon30": "30 jours",
+        "soon60": "60 jours",
+        "soon90": "90 jours",
+        "inspectionOnlyWithCustomer": "Seulement les véhicules avec un client",
+        "inspectionOnlyWithCustomerHelp": "Ignorer les véhicules sans client enregistré. Personne ne peut recevoir de rappel à leur sujet, la recherche coûterait donc pour rien."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Tenir à jour les dates de MOT de tous les véhicules de cet atelier",
-        "syncInspectionsHelp": "Une fois activé, chaque véhicule de l'atelier qui a une plaque est recherché une fois, et la date de son prochain MOT est enregistrée. Ensuite, chaque véhicule est revérifié chaque mois, et chaque semaine lorsque son MOT arrive à échéance dans moins de deux mois. Chaque véhicule trouvé est facturé comme une recherche Vehicle Registration, le premier passage est donc le plus coûteux ; les plaques inconnues du registre sont gratuites. Seuls les véhicules de cet atelier sont envoyés."
+        "syncInspectionsHelp": "Quand c'est activé, chaque véhicule avec une plaque est recherché une fois et sa date de MOT enregistrée. Ensuite, les véhicules sont revérifiés selon le réglage ci-dessous. Chaque véhicule trouvé est facturé comme une recherche Vehicle Registration ; les plaques inconnues du registre sont gratuites. Seuls les véhicules enregistrés dans cet atelier sont envoyés.",
+        "inspectionRecheck": "Revérifier les véhicules qui ont déjà une date",
+        "inspectionRecheckHelp": "Une date ne change que lorsqu'un contrôle est passé. Mensuel remarque le plus tôt un contrôle anticipé ; seulement près de l'échéance coûte le moins. Près de l'échéance, chaque véhicule est revérifié chaque semaine, quel que soit ce choix.",
+        "recheckMonthly": "Chaque mois",
+        "recheckQuarterly": "Tous les trois mois",
+        "recheckNearDeadline": "Seulement près de l'échéance",
+        "inspectionSoonDays": "Près de l'échéance signifie à moins de",
+        "inspectionSoonDaysHelp": "Dans cette fenêtre, un véhicule est revérifié chaque semaine, si bien qu'un contrôle réussi le retire de la liste de rappels en quelques jours. Une fenêtre plus courte signifie moins de recherches.",
+        "soon30": "30 jours",
+        "soon60": "60 jours",
+        "soon90": "90 jours",
+        "inspectionOnlyWithCustomer": "Seulement les véhicules avec un client",
+        "inspectionOnlyWithCustomerHelp": "Ignorer les véhicules sans client enregistré. Personne ne peut recevoir de rappel à leur sujet, la recherche coûterait donc pour rien."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Tenir à jour les dates d'APK de tous les véhicules de cet atelier",
-        "syncInspectionsHelp": "Une fois par heure, les véhicules non vérifiés récemment sont recherchés par plaque et la date du prochain APK est enregistrée. Seuls les véhicules de cet atelier sont envoyés. Un véhicule est revérifié chaque mois, et chaque semaine lorsque l'échéance est à moins de deux mois."
+        "syncInspectionsHelp": "Une fois par heure, les véhicules à vérifier sont recherchés par plaque et leur prochaine date de APK est enregistrée ; la fréquence de revérification se règle ci-dessous. Seuls les véhicules enregistrés dans cet atelier sont envoyés.",
+        "inspectionRecheck": "Revérifier les véhicules qui ont déjà une date",
+        "inspectionRecheckHelp": "Une date ne change que lorsqu'un contrôle est passé. Mensuel remarque le plus tôt un contrôle anticipé ; seulement près de l'échéance coûte le moins. Près de l'échéance, chaque véhicule est revérifié chaque semaine, quel que soit ce choix.",
+        "recheckMonthly": "Chaque mois",
+        "recheckQuarterly": "Tous les trois mois",
+        "recheckNearDeadline": "Seulement près de l'échéance",
+        "inspectionSoonDays": "Près de l'échéance signifie à moins de",
+        "inspectionSoonDaysHelp": "Dans cette fenêtre, un véhicule est revérifié chaque semaine, si bien qu'un contrôle réussi le retire de la liste de rappels en quelques jours. Une fenêtre plus courte signifie moins de recherches.",
+        "soon30": "30 jours",
+        "soon60": "60 jours",
+        "soon90": "90 jours",
+        "inspectionOnlyWithCustomer": "Seulement les véhicules avec un client",
+        "inspectionOnlyWithCustomerHelp": "Ignorer les véhicules sans client enregistré. Personne ne peut recevoir de rappel à leur sujet, la recherche coûterait donc pour rien."
       }
     },
     "regcheck": {

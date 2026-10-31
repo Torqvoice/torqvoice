@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "HU-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
-        "syncInspectionsHelp": "Einmal pro Stunde werden Fahrzeuge, die länger nicht geprüft wurden, per Kennzeichen abgefragt und der nächste EU-kontroll-Termin gespeichert. Es werden nur Fahrzeuge dieser Werkstatt gesendet. Ein Fahrzeug wird monatlich geprüft, wöchentlich sobald die Frist unter zwei Monaten liegt."
+        "syncInspectionsHelp": "Einmal pro Stunde werden fällige Fahrzeuge per Kennzeichen abgefragt und ihr nächster EU-kontroll-Termin gespeichert; wie oft ein Fahrzeug erneut geprüft wird, legen Sie unten fest. Es werden nur Fahrzeuge dieser Werkstatt gesendet.",
+        "inspectionRecheck": "Fahrzeuge mit Termin erneut prüfen",
+        "inspectionRecheckHelp": "Ein Termin ändert sich nur, wenn eine Prüfung bestanden wird. Monatlich bemerkt eine vorgezogene Prüfung am schnellsten; nur nahe dem Termin kostet am wenigsten. Nahe dem Termin wird jedes Fahrzeug wöchentlich geprüft, unabhängig von dieser Wahl.",
+        "recheckMonthly": "Jeden Monat",
+        "recheckQuarterly": "Alle drei Monate",
+        "recheckNearDeadline": "Nur nahe dem Termin",
+        "inspectionSoonDays": "Nahe dem Termin heißt innerhalb von",
+        "inspectionSoonDaysHelp": "In diesem Zeitfenster wird ein Fahrzeug wöchentlich geprüft, sodass eine bestandene Prüfung es innerhalb von Tagen von der Erinnerungsliste nimmt. Ein kürzeres Fenster bedeutet weniger Abfragen.",
+        "soon30": "30 Tage",
+        "soon60": "60 Tage",
+        "soon90": "90 Tage",
+        "inspectionOnlyWithCustomer": "Nur Fahrzeuge mit Kunde",
+        "inspectionOnlyWithCustomerHelp": "Fahrzeuge ohne hinterlegten Kunden überspringen. Niemand kann an sie erinnert werden, die Abfrage kostet also umsonst."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "MOT-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
-        "syncInspectionsHelp": "Ist dies aktiv, wird jedes Fahrzeug der Werkstatt mit Kennzeichen einmal abgefragt und sein MOT-Termin gespeichert. Danach wird jedes Fahrzeug monatlich erneut geprüft, wöchentlich sobald der MOT in weniger als zwei Monaten fällig ist. Jedes gefundene Fahrzeug wird als eine Vehicle-Registration-Abfrage berechnet, daher kostet der erste Durchlauf am meisten; Kennzeichen, die das Register nicht kennt, sind kostenlos. Es werden nur Fahrzeuge dieser Werkstatt gesendet."
+        "syncInspectionsHelp": "Ist dies aktiv, wird jedes Fahrzeug mit Kennzeichen einmal abgefragt und sein MOT-Termin gespeichert. Danach werden Fahrzeuge so erneut geprüft, wie unten festgelegt. Jedes gefundene Fahrzeug wird als eine Vehicle-Registration-Abfrage berechnet; Kennzeichen, die das Register nicht kennt, sind kostenlos. Es werden nur Fahrzeuge dieser Werkstatt gesendet.",
+        "inspectionRecheck": "Fahrzeuge mit Termin erneut prüfen",
+        "inspectionRecheckHelp": "Ein Termin ändert sich nur, wenn eine Prüfung bestanden wird. Monatlich bemerkt eine vorgezogene Prüfung am schnellsten; nur nahe dem Termin kostet am wenigsten. Nahe dem Termin wird jedes Fahrzeug wöchentlich geprüft, unabhängig von dieser Wahl.",
+        "recheckMonthly": "Jeden Monat",
+        "recheckQuarterly": "Alle drei Monate",
+        "recheckNearDeadline": "Nur nahe dem Termin",
+        "inspectionSoonDays": "Nahe dem Termin heißt innerhalb von",
+        "inspectionSoonDaysHelp": "In diesem Zeitfenster wird ein Fahrzeug wöchentlich geprüft, sodass eine bestandene Prüfung es innerhalb von Tagen von der Erinnerungsliste nimmt. Ein kürzeres Fenster bedeutet weniger Abfragen.",
+        "soon30": "30 Tage",
+        "soon60": "60 Tage",
+        "soon90": "90 Tage",
+        "inspectionOnlyWithCustomer": "Nur Fahrzeuge mit Kunde",
+        "inspectionOnlyWithCustomerHelp": "Fahrzeuge ohne hinterlegten Kunden überspringen. Niemand kann an sie erinnert werden, die Abfrage kostet also umsonst."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "APK-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
-        "syncInspectionsHelp": "Einmal pro Stunde werden Fahrzeuge, die länger nicht geprüft wurden, per Kennzeichen abgefragt und der nächste APK-Termin gespeichert. Es werden nur Fahrzeuge dieser Werkstatt gesendet. Ein Fahrzeug wird monatlich geprüft, wöchentlich sobald die Frist unter zwei Monaten liegt."
+        "syncInspectionsHelp": "Einmal pro Stunde werden fällige Fahrzeuge per Kennzeichen abgefragt und ihr nächster APK-Termin gespeichert; wie oft ein Fahrzeug erneut geprüft wird, legen Sie unten fest. Es werden nur Fahrzeuge dieser Werkstatt gesendet.",
+        "inspectionRecheck": "Fahrzeuge mit Termin erneut prüfen",
+        "inspectionRecheckHelp": "Ein Termin ändert sich nur, wenn eine Prüfung bestanden wird. Monatlich bemerkt eine vorgezogene Prüfung am schnellsten; nur nahe dem Termin kostet am wenigsten. Nahe dem Termin wird jedes Fahrzeug wöchentlich geprüft, unabhängig von dieser Wahl.",
+        "recheckMonthly": "Jeden Monat",
+        "recheckQuarterly": "Alle drei Monate",
+        "recheckNearDeadline": "Nur nahe dem Termin",
+        "inspectionSoonDays": "Nahe dem Termin heißt innerhalb von",
+        "inspectionSoonDaysHelp": "In diesem Zeitfenster wird ein Fahrzeug wöchentlich geprüft, sodass eine bestandene Prüfung es innerhalb von Tagen von der Erinnerungsliste nimmt. Ein kürzeres Fenster bedeutet weniger Abfragen.",
+        "soon30": "30 Tage",
+        "soon60": "60 Tage",
+        "soon90": "90 Tage",
+        "inspectionOnlyWithCustomer": "Nur Fahrzeuge mit Kunde",
+        "inspectionOnlyWithCustomerHelp": "Fahrzeuge ohne hinterlegten Kunden überspringen. Niemand kann an sie erinnert werden, die Abfrage kostet also umsonst."
       }
     },
     "regcheck": {

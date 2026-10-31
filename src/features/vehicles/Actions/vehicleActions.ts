@@ -1,5 +1,7 @@
 'use server'
 
+import { INSPECTION_CAPABILITY } from '@/features/integrations/Lib/inspection-sync'
+import { getManifest } from '@/integrations/registry'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
@@ -214,10 +216,24 @@ export async function getVehiclesPaginated(params: {
  * that knows better than the register, can still drive reminders. A
  * registry answer with a date takes over again on the next sync.
  */
-async function saveManualInspectionDate(
+/** A connector id that is a registry able to keep inspection dates, or null for anything else. */
+function inspectionRegistry(source: string | undefined): string | null {
+  if (!source) return null
+  const manifest = getManifest(source)
+  return manifest?.capabilities.includes(INSPECTION_CAPABILITY) ? manifest.id : null
+}
+
+/**
+ * The form's inspection date. Typed by hand, it is saved as manual. Filled
+ * by a registry lookup and left alone, it is saved as that registry's
+ * answer with the time of the check, so the hourly sync treats the vehicle
+ * as freshly checked instead of spending a second lookup on it.
+ */
+async function saveInspectionDate(
   organizationId: string,
   vehicleId: string,
-  value: string | undefined
+  value: string | undefined,
+  source?: string
 ): Promise<void> {
   if (value === undefined) return
   const trimmed = value.trim()
@@ -231,6 +247,16 @@ async function saveManualInspectionDate(
   }
   const dueAt = toSafeWorkshopDate(trimmed, await workshopTimeZone(organizationId))
   if (!dueAt) throw new Error('Invalid inspection date')
+  const registry = inspectionRegistry(source)
+  if (registry) {
+    const now = new Date()
+    await db.vehicleInspectionStatus.upsert({
+      where: { vehicleId },
+      create: { organizationId, vehicleId, dueAt, source: registry, checkedAt: now, found: true },
+      update: { dueAt, source: registry, checkedAt: now, found: true, lastError: null },
+    })
+    return
+  }
   await db.vehicleInspectionStatus.upsert({
     where: { vehicleId },
     create: { organizationId, vehicleId, dueAt, source: 'manual', found: true },
@@ -241,7 +267,7 @@ async function saveManualInspectionDate(
 export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const { inspectionDueAt, ...data } = createVehicleSchema.parse(input)
+      const { inspectionDueAt, inspectionDueSource, ...data } = createVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
       // The owner the vehicle is filed under must be one of our customers.
       await assertOwnedCustomer(data.customerId, organizationId)
@@ -257,7 +283,7 @@ export async function createVehicle(input: unknown) {
           organizationId,
         },
       })
-      await saveManualInspectionDate(organizationId, vehicle.id, inspectionDueAt)
+      await saveInspectionDate(organizationId, vehicle.id, inspectionDueAt, inspectionDueSource)
       revalidatePath('/')
       revalidatePath('/vehicles')
       return vehicle
@@ -283,7 +309,7 @@ export async function createVehicle(input: unknown) {
 export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      const { id, inspectionDueAt, ...data } = updateVehicleSchema.parse(input)
+      const { id, inspectionDueAt, inspectionDueSource, ...data } = updateVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
 
       // Fetch current record for display/diff, and the image it had
@@ -320,7 +346,7 @@ export async function updateVehicle(input: unknown) {
       if (data.imageUrl !== undefined && before.imageUrl && before.imageUrl !== data.imageUrl) {
         await releaseFiles([before.imageUrl], { organizationId, reason: 'vehicle image replaced' })
       }
-      await saveManualInspectionDate(organizationId, id, inspectionDueAt)
+      await saveInspectionDate(organizationId, id, inspectionDueAt, inspectionDueSource)
       const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
       const changedKeys = Object.keys(data).filter(
         (k) => (data as Record<string, unknown>)[k] !== undefined

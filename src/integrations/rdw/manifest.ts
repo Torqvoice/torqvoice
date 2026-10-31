@@ -23,6 +23,6 @@ export const manifest: ConnectorManifest = {
     fields: [{ key: 'appToken', label: 'appToken', type: 'password', help: 'appTokenHelp' }],
   },
   capabilities: ['vehicle.lookup', INSPECTION_MANIFEST.capability],
-  settings: [INSPECTION_MANIFEST.setting],
+  settings: INSPECTION_MANIFEST.settings,
   schedules: [INSPECTION_MANIFEST.schedule],
 }

@@ -23,6 +23,12 @@ const READ_VEHICLES = [{ action: PermissionAction.READ, subject: PermissionSubje
 export interface VehicleLookup extends VehicleLookupResult {
   /** Registry name for the attribution line, such as "Statens vegvesen". */
   source: string
+  /**
+   * The connector that answered. A vehicle created from this answer saves
+   * the inspection date under it, as checked now, so the sync does not look
+   * the same plate up again within the hour.
+   */
+  connectorId: string
 }
 
 /**
@@ -95,7 +101,7 @@ export async function lookupVehicle(query: {
         }
       }
       if (!answer.result) return null
-      return { ...answer.result, source: answer.source }
+      return { ...answer.result, source: answer.source, connectorId: answer.connectorId }
     },
     { requiredPermissions: READ_VEHICLES }
   )

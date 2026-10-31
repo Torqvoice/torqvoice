@@ -27,6 +27,6 @@ export const manifest: ConnectorManifest = {
   },
   capabilities: ['vehicle.lookup', INSPECTION_MANIFEST.capability],
   lookupBy: ['plate', 'vin'],
-  settings: [INSPECTION_MANIFEST.setting],
+  settings: INSPECTION_MANIFEST.settings,
   schedules: [INSPECTION_MANIFEST.schedule],
 }

@@ -18,32 +18,113 @@ import type {
  * other's, by construction rather than by filter.
  *
  * Dates change only when an inspection happens, so this is not a daily sweep
- * of everything. A vehicle is rechecked monthly, weekly once its deadline is
- * within two months, and at once when it has never been checked. A 500-car
- * shop makes a few dozen calls a day against a quota of tens of thousands.
+ * of everything. A vehicle that has never been checked is looked up at once.
+ * One that has a date is rechecked on the cadence the workshop chose: every
+ * month or every three months, or not at all until its deadline is near;
+ * and near the deadline, weekly, so a passed inspection drops the vehicle
+ * off the reminder list within days. A paid registry bills each vehicle
+ * found, so the settings exist to let a workshop trade freshness for cost.
  */
 
 export const INSPECTION_CAPABILITY = 'vehicle.inspection'
 export const INSPECTION_SETTING = 'syncInspections'
+/** How often a vehicle that already has a date is rechecked: '30', '90' or 'deadline'. */
+export const INSPECTION_RECHECK_SETTING = 'inspectionRecheck'
+/** How many days before the deadline a vehicle counts as near it: '30', '60' or '90'. */
+export const INSPECTION_SOON_SETTING = 'inspectionSoonDays'
+/** Skip vehicles with no customer on file, since nobody can be reminded about them. */
+export const INSPECTION_CUSTOMER_SETTING = 'inspectionOnlyWithCustomer'
 export const INSPECTION_JOB = 'inspection.refresh'
+
+const RECHECK_VALUES = ['30', '90', 'deadline'] as const
+const SOON_VALUES = ['30', '60', '90'] as const
 
 /**
  * What a registry connector puts in its manifest to take part: the
- * capability, the opt-in setting and the hourly tick. Spread these into
- * the manifest so every registry, Norwegian or German, offers the same
- * switch with the same wording and the same cadence.
+ * capability, the opt-in switch with its cadence settings, and the hourly
+ * tick. Spread these into the manifest so every registry, Norwegian or
+ * British, offers the same settings with the same wording.
  */
 export const INSPECTION_MANIFEST = {
   capability: INSPECTION_CAPABILITY,
-  setting: {
-    key: INSPECTION_SETTING,
-    type: 'boolean' as const,
-    label: INSPECTION_SETTING,
-    help: `${INSPECTION_SETTING}Help`,
-    default: false,
-  },
+  settings: [
+    {
+      key: INSPECTION_SETTING,
+      type: 'boolean' as const,
+      label: INSPECTION_SETTING,
+      help: `${INSPECTION_SETTING}Help`,
+      default: false,
+    },
+    {
+      key: INSPECTION_RECHECK_SETTING,
+      type: 'select' as const,
+      label: INSPECTION_RECHECK_SETTING,
+      help: `${INSPECTION_RECHECK_SETTING}Help`,
+      default: '30',
+      options: [
+        { value: '30', label: 'recheckMonthly' },
+        { value: '90', label: 'recheckQuarterly' },
+        { value: 'deadline', label: 'recheckNearDeadline' },
+      ],
+      showWhen: { key: INSPECTION_SETTING, equals: true },
+    },
+    {
+      key: INSPECTION_SOON_SETTING,
+      type: 'select' as const,
+      label: INSPECTION_SOON_SETTING,
+      help: `${INSPECTION_SOON_SETTING}Help`,
+      default: '60',
+      options: [
+        { value: '30', label: 'soon30' },
+        { value: '60', label: 'soon60' },
+        { value: '90', label: 'soon90' },
+      ],
+      showWhen: { key: INSPECTION_SETTING, equals: true },
+    },
+    {
+      key: INSPECTION_CUSTOMER_SETTING,
+      type: 'boolean' as const,
+      label: INSPECTION_CUSTOMER_SETTING,
+      help: `${INSPECTION_CUSTOMER_SETTING}Help`,
+      default: false,
+      showWhen: { key: INSPECTION_SETTING, equals: true },
+    },
+  ],
   // The job decides what actually needs a lookup; the tick itself is cheap.
   schedule: { job: INSPECTION_JOB, everyMinutes: 60 },
+}
+
+/** The cadence settings, read off a connection with the defaults filled in. */
+export interface InspectionSyncOptions {
+  /** Days between rechecks of a vehicle that has a date, or null for "only near the deadline". */
+  recheckDays: 30 | 90 | null
+  /** A deadline closer than this many days is near, and rechecked weekly. */
+  soonDays: 30 | 60 | 90
+  /** Leave out vehicles with no customer on file. */
+  onlyWithCustomer: boolean
+}
+
+export const DEFAULT_SYNC_OPTIONS: InspectionSyncOptions = {
+  recheckDays: 30,
+  soonDays: 60,
+  onlyWithCustomer: false,
+}
+
+/** The options a connection's saved settings describe; anything unknown falls back to the default. */
+export function inspectionSyncOptions(settings: Record<string, unknown>): InspectionSyncOptions {
+  const recheck = String(settings[INSPECTION_RECHECK_SETTING] ?? '')
+  const soon = String(settings[INSPECTION_SOON_SETTING] ?? '')
+  return {
+    recheckDays: (RECHECK_VALUES as readonly string[]).includes(recheck)
+      ? recheck === 'deadline'
+        ? null
+        : (Number(recheck) as 30 | 90)
+      : DEFAULT_SYNC_OPTIONS.recheckDays,
+    soonDays: (SOON_VALUES as readonly string[]).includes(soon)
+      ? (Number(soon) as 30 | 60 | 90)
+      : DEFAULT_SYNC_OPTIONS.soonDays,
+    onlyWithCustomer: settings[INSPECTION_CUSTOMER_SETTING] === true,
+  }
 }
 
 /**
@@ -67,10 +148,10 @@ export class RegistryQuotaError extends Error {
   }
 }
 
-/** Deadlines closer than this are "soon" and rechecked more often. */
-export const SOON_DAYS = 60
+/** Inside the "near the deadline" window a vehicle is rechecked this often. */
 export const RECHECK_SOON_DAYS = 7
-export const RECHECK_DAYS = 30
+/** A vehicle the register knows but has given no date yet is rechecked this often, whatever the cadence. */
+export const RECHECK_NO_DATE_DAYS = 30
 /** Lookups per job run; the job reschedules itself while more remain. */
 export const BATCH_SIZE = 25
 const BATCH_PAUSE_SECONDS = 5
@@ -158,23 +239,41 @@ async function recordFailure(input: {
   })
 }
 
-/** Prisma filter for the vehicles a registry can be asked about: this organisation's, live, with a plate. */
-function askableVehicles(organizationId: string) {
-  return { organizationId, isArchived: false, licensePlate: { not: null } }
+/**
+ * Prisma filter for the vehicles a registry can be asked about: this
+ * organisation's, live, with a plate, and with a customer when the workshop
+ * asked for that.
+ */
+function askableVehicles(organizationId: string, options: InspectionSyncOptions) {
+  return {
+    organizationId,
+    isArchived: false,
+    licensePlate: { not: null },
+    ...(options.onlyWithCustomer && { customerId: { not: null } }),
+  }
 }
 
-/** The subset of those whose last check is old enough to repeat, or that were never checked. */
-function dueForCheckWhere(organizationId: string, now: Date) {
-  const soonCutoff = new Date(now.getTime() + SOON_DAYS * DAY_MS)
-  const staleSoon = new Date(now.getTime() - RECHECK_SOON_DAYS * DAY_MS)
-  const stale = new Date(now.getTime() - RECHECK_DAYS * DAY_MS)
+/**
+ * The subset of those due a check now. Always: never checked, or known to
+ * the register without a date and not asked for a month. On the chosen
+ * cadence: every vehicle whose last check is older than it. And near the
+ * deadline: weekly, whatever the cadence.
+ */
+function dueForCheckWhere(organizationId: string, now: Date, options: InspectionSyncOptions) {
+  const ago = (days: number) => new Date(now.getTime() - days * DAY_MS)
+  const soonCutoff = new Date(now.getTime() + options.soonDays * DAY_MS)
   return {
-    ...askableVehicles(organizationId),
+    ...askableVehicles(organizationId, options),
     OR: [
       { inspectionStatus: null },
       { inspectionStatus: { checkedAt: null } },
-      { inspectionStatus: { checkedAt: { lt: stale } } },
-      { inspectionStatus: { dueAt: { lt: soonCutoff }, checkedAt: { lt: staleSoon } } },
+      { inspectionStatus: { dueAt: null, checkedAt: { lt: ago(RECHECK_NO_DATE_DAYS) } } },
+      ...(options.recheckDays === null
+        ? []
+        : [{ inspectionStatus: { checkedAt: { lt: ago(options.recheckDays) } } }]),
+      {
+        inspectionStatus: { dueAt: { lt: soonCutoff }, checkedAt: { lt: ago(RECHECK_SOON_DAYS) } },
+      },
     ],
   }
 }
@@ -187,10 +286,11 @@ function dueForCheckWhere(organizationId: string, now: Date) {
 export async function vehiclesDueForCheck(
   organizationId: string,
   now: Date,
+  options: InspectionSyncOptions = DEFAULT_SYNC_OPTIONS,
   take = BATCH_SIZE
 ): Promise<{ id: string; licensePlate: string }[]> {
   const rows = await db.vehicle.findMany({
-    where: dueForCheckWhere(organizationId, now),
+    where: dueForCheckWhere(organizationId, now, options),
     select: { id: true, licensePlate: true },
     orderBy: { updatedAt: 'asc' },
     take,
@@ -211,15 +311,21 @@ export interface InspectionSyncOverview {
   inProgress: boolean
 }
 
-/** What the settings page shows beside the toggle: how much a pass covers and when it last ran. */
+/**
+ * What the settings page shows beside the toggle: how much a pass covers
+ * and when it last ran, under the settings as saved, so a change shows in
+ * "would be looked up on the next run" as soon as it is saved.
+ */
 export async function inspectionSyncOverview(
   organizationId: string,
   state: Record<string, unknown>,
+  settings: Record<string, unknown> = {},
   now = new Date()
 ): Promise<InspectionSyncOverview> {
+  const options = inspectionSyncOptions(settings)
   const [vehiclesWithPlate, dueForCheck, withDate] = await Promise.all([
-    db.vehicle.count({ where: askableVehicles(organizationId) }),
-    db.vehicle.count({ where: dueForCheckWhere(organizationId, now) }),
+    db.vehicle.count({ where: askableVehicles(organizationId, options) }),
+    db.vehicle.count({ where: dueForCheckWhere(organizationId, now, options) }),
     db.vehicleInspectionStatus.count({
       where: { organizationId, dueAt: { not: null }, vehicle: { isArchived: false } },
     }),
@@ -263,7 +369,11 @@ export async function refreshInspections(
     failed: 0,
   }
 
-  const batch = await vehiclesDueForCheck(organizationId, now)
+  const batch = await vehiclesDueForCheck(
+    organizationId,
+    now,
+    inspectionSyncOptions(ctx.connection.settings)
+  )
   for (const vehicle of batch) {
     tally.checked += 1
     try {
