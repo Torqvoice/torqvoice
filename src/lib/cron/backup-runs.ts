@@ -22,6 +22,7 @@ import {
   platformBackupConfig,
   platformHost,
 } from '@/lib/backup/platform'
+import { sweepRestorePoints } from '@/lib/backup/explore'
 import { resticForgetSnapshots, resticSnapshots } from '@/lib/backup/restic'
 import {
   BACKUP_SETTING_DEFAULTS,
@@ -379,6 +380,11 @@ export function processBackupRuns() {
     // tick waits its turn.
     if (ticking) return
     ticking = true
+    // Restore points nobody looks at any more leave the disk now, not when the
+    // next one is opened. On its own so a bad folder never holds up a backup.
+    await sweepRestorePoints().catch((err) =>
+      console.error('[cron] Restore point sweep failed:', err)
+    )
     try {
       const stale = await failStaleRuns()
       if (stale > 0) console.warn(`[cron] Marked ${stale} stale backup run(s) as failed`)

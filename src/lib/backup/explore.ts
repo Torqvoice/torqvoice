@@ -165,6 +165,16 @@ export async function closeRestorePoints(organizationId: string): Promise<void> 
 }
 
 /**
+ * Closes restore points open longer than a quarter of an hour and removes
+ * their folders, plus any folder no open point owns. The same sweep runs
+ * whenever a restore point is opened; the backup cron calls this one so the
+ * files of the last viewer do not wait for the next.
+ */
+export async function sweepRestorePoints(now = Date.now()): Promise<void> {
+  await sweep(false, now)
+}
+
+/**
  * The staged data file inside the snapshot: `…/torqvoice-backup-staging/<orgId>/data.json`
  * as it was on the server that took it. Never a `data.json` someone uploaded.
  * The repository is this workshop's own, so the id in the path may be the

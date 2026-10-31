@@ -125,7 +125,15 @@ vi.mock('@/lib/db', () => ({
         return row
       }),
       upsert: vi.fn(
-        async ({ where, create, update }: { where: { organizationId: string }; create: Row; update: Row }) => {
+        async ({
+          where,
+          create,
+          update,
+        }: {
+          where: { organizationId: string }
+          create: Row
+          update: Row
+        }) => {
           const existing = h.platform.get(where.organizationId)
           const row = existing
             ? Object.assign(existing, update)
@@ -183,6 +191,7 @@ vi.mock('@/lib/backup/restic', () => ({
   resticForgetSnapshots: vi.fn(async () => undefined),
 }))
 
+vi.mock('@/lib/backup/explore', () => ({ sweepRestorePoints: vi.fn(async () => undefined) }))
 vi.mock('@/lib/email', () => ({ sendMail: vi.fn(async () => undefined) }))
 
 vi.mock('@/integrations/registry', () => ({
@@ -412,10 +421,7 @@ describe('processDueBackups, what is queued', () => {
     expect(await processDueBackups(now)).toBe(1)
 
     expect(queuedConnections()).toEqual(['c1', 'c2'])
-    expect(error).toHaveBeenCalledWith(
-      expect.stringContaining('connection c1'),
-      expect.any(Error)
-    )
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('connection c1'), expect.any(Error))
     error.mockRestore()
   })
 })
@@ -441,7 +447,7 @@ describe('processDueBackups, retry', () => {
     expect(queueBackupRun).toHaveBeenCalledTimes(1)
   })
 
-  it('never books a retry itself; that is the engine\'s, after a failed scheduled run', async () => {
+  it("never books a retry itself; that is the engine's, after a failed scheduled run", async () => {
     addConnection('c1', { state: { 'backup.lastScheduledAt': '2026-10-28T02:00:30.000Z' } })
     await processDueBackups(t('2026-10-29T02:01:00Z'))
     expect(state('c1')['backup.retryAt']).toBeNull()
@@ -599,7 +605,10 @@ describe('processDuePlatformBackups', () => {
 
     expect(await processDuePlatformBackups(now)).toBe(1)
 
-    expect(queueBackupRun).toHaveBeenCalledWith({ kind: 'platform', organizationId: 'orga' }, 'scheduled')
+    expect(queueBackupRun).toHaveBeenCalledWith(
+      { kind: 'platform', organizationId: 'orga' },
+      'scheduled'
+    )
     expect(h.platform.get('orga')).toMatchObject({ organizationId: 'orga', lastScheduledAt: now })
     expect(h.events.indexOf('platform-upsert orga')).toBeLessThan(
       h.events.indexOf('queue platform orga scheduled')
@@ -648,7 +657,10 @@ describe('processDuePlatformBackups', () => {
     expect(await processDuePlatformBackups(now)).toBe(0)
 
     expect(openPlatform).toHaveBeenCalledWith('orgb')
-    expect(vi.mocked(resticSnapshots).mock.calls[0][1]).toEqual({ host: 'torqvoice-orgb', tags: [] })
+    expect(vi.mocked(resticSnapshots).mock.calls[0][1]).toEqual({
+      host: 'torqvoice-orgb',
+      tags: [],
+    })
     expect(vi.mocked(resticForgetSnapshots).mock.calls[0][1]).toEqual([
       'aaaaaaaa11111111',
       'bbbbbbbb22222222',
@@ -678,7 +690,10 @@ describe('processDuePlatformBackups', () => {
     const row = h.platform.get('orgb') as Row
     expect(row.pausedAt).toBeNull()
     expect(row.purgedAt).toBeNull()
-    expect(queueBackupRun).toHaveBeenCalledWith({ kind: 'platform', organizationId: 'orgb' }, 'scheduled')
+    expect(queueBackupRun).toHaveBeenCalledWith(
+      { kind: 'platform', organizationId: 'orgb' },
+      'scheduled'
+    )
   })
 
   it('goes on with the next workshop when one is already queued', async () => {
@@ -721,7 +736,11 @@ describe('pruneOldRuns', () => {
     kind: 'destination',
     connectionId,
   })
-  const platform = (organizationId: string) => ({ organizationId, kind: 'platform', connectionId: null })
+  const platform = (organizationId: string) => ({
+    organizationId,
+    kind: 'platform',
+    connectionId: null,
+  })
 
   it('drops rows older than ninety days past the newest hundred, and never a running one', async () => {
     addRuns(dest('c1'), 120, 100) // all old: the newest hundred of them stay
@@ -745,7 +764,7 @@ describe('pruneOldRuns', () => {
     expect(h.runs.length).toBe(30)
   })
 
-  it('counts the newest hundred per repository: each workshop\'s platform runs apart from its destinations', async () => {
+  it("counts the newest hundred per repository: each workshop's platform runs apart from its destinations", async () => {
     addRuns(platform('org1'), 60, 100)
     addRuns(platform('org2'), 60, 100)
     addRuns(dest('c1', 'org1'), 60, 100)
@@ -755,7 +774,9 @@ describe('pruneOldRuns', () => {
 
     addRuns(platform('org1'), 50, 120)
     expect(await pruneOldRuns(now)).toBe(10)
-    expect(h.runs.filter((r) => r.kind === 'platform' && r.organizationId === 'org1').length).toBe(100)
+    expect(h.runs.filter((r) => r.kind === 'platform' && r.organizationId === 'org1').length).toBe(
+      100
+    )
     expect(h.runs.filter((r) => r.organizationId === 'org2').length).toBe(60)
     expect(h.runs.filter((r) => r.kind === 'destination').length).toBe(60)
   })

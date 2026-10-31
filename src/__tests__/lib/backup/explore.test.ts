@@ -73,6 +73,7 @@ import {
   openingStage,
   openRestorePoint,
   RestorePointClosedError,
+  sweepRestorePoints,
 } from '@/lib/backup/explore'
 import { resticDumpToFile, resticFind } from '@/lib/backup/restic'
 import type { RunTarget } from '@/lib/backup/engine'
@@ -773,5 +774,49 @@ describe('closing restore points', () => {
       expect(listRestorePointRows(ORG, snap, 'customers', '', 1).total).toBe(2)
       expect(existsSync(exploreDirFor(ORG, snap))).toBe(true)
     }
+  })
+})
+
+describe('sweepRestorePoints', () => {
+  const MIN = 60 * 1000
+
+  it('closes a point open longer than 15 minutes and removes its folder', async () => {
+    stage()
+    await openRestorePoint(TARGET, SNAP)
+    const dir = exploreDirFor(ORG, SNAP)
+    expect(existsSync(dir)).toBe(true)
+
+    await sweepRestorePoints(Date.now() + 16 * MIN)
+
+    expect(existsSync(dir)).toBe(false)
+    expect(() => listRestorePointRows(ORG, SNAP, 'customers', '', 1)).toThrow(
+      RestorePointClosedError
+    )
+    expect(() => getRestorePointRow(ORG, SNAP, 'customers', 'c1')).toThrow(RestorePointClosedError)
+  })
+
+  it('keeps a point opened just now, with its folder and rows', async () => {
+    stage()
+    await openRestorePoint(TARGET, SNAP)
+
+    await sweepRestorePoints()
+
+    expect(existsSync(exploreDirFor(ORG, SNAP))).toBe(true)
+    expect(listRestorePointRows(ORG, SNAP, 'customers', '', 1).total).toBe(2)
+  })
+
+  it('removes a folder no open point owns and leaves names that are not ids alone', async () => {
+    const orphan = path.join(h.root, 'restore-explore', 'org9', 'a'.repeat(64))
+    mkdirSync(path.join(orphan, 'files', 'services'), { recursive: true })
+    writeFileSync(path.join(orphan, 'files', 'services', 'photo.jpg'), 'jpeg bytes')
+    const badOrg = path.join(h.root, 'restore-explore', 'not valid', 'x')
+    const badSnap = path.join(h.root, 'restore-explore', 'org9', 'not-a-snapshot')
+    for (const dir of [badOrg, badSnap]) mkdirSync(dir, { recursive: true })
+
+    await sweepRestorePoints()
+
+    expect(existsSync(orphan)).toBe(false)
+    expect(existsSync(badOrg)).toBe(true)
+    expect(existsSync(badSnap)).toBe(true)
   })
 })
