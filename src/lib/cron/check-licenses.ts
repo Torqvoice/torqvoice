@@ -177,10 +177,14 @@ export async function refreshLicensesMissingTokens() {
       select: { organizationId: true, value: true },
     })
     const tokenByOrg = new Map(tokens.map((t) => [t.organizationId, t.value]))
-    const needing = orgs.filter(
-      (o) =>
-        verifyLicenseToken(tokenByOrg.get(o.organizationId), o.organizationId).status !== 'valid'
-    )
+    const needing = orgs.filter((o) => {
+      const verification = verifyLicenseToken(tokenByOrg.get(o.organizationId), o.organizationId)
+      // A perpetual token has nothing to fetch, and refreshing a leftover key
+      // would put a subscription token over it. Storing one drops the key, so
+      // this only guards a database edited by hand.
+      if (verification.kind === 'perpetual') return false
+      return verification.status !== 'valid'
+    })
     if (needing.length === 0) return
     await revalidateAll(needing)
   } catch (error) {

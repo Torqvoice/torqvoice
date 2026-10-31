@@ -53,6 +53,23 @@ import {
   sendExpiryWarning,
 } from '@/lib/cron/check-licenses'
 
+function verified(
+  status: LicenseTokenVerification['status'],
+  extra: Partial<LicenseTokenVerification> = {}
+): LicenseTokenVerification {
+  return {
+    status,
+    kind: status === 'missing' || status === 'invalid' ? null : 'subscription',
+    payload: null,
+    ageDays: null,
+    daysUntilExpiry: null,
+    expiresAt: null,
+    maxOrganizations: null,
+    licensee: null,
+    ...extra,
+  }
+}
+
 const ORG_ID = 'org-test-1'
 const USER_ID = 'user-test-1'
 const LICENSE_KEY = 'test-license-key'
@@ -214,13 +231,11 @@ describe('revalidateOrganizationLicense', () => {
         expiresAt: '',
         token: 'tvl1.x.y',
       },
-      verification: {
-        status: 'valid',
-        payload: null,
+      verification: verified(verification.status ?? 'valid', {
         ageDays: 0,
         daysUntilExpiry: 100,
         ...verification,
-      },
+      }),
     })
   }
 
@@ -332,21 +347,31 @@ describe('refreshLicensesMissingTokens', () => {
         { organizationId: null, value: 'KEY-C' },
       ] as any)
       .mockResolvedValueOnce([{ organizationId: 'org-fresh', value: 'tvl1.good' }] as any)
-    vi.mocked(verifyLicenseToken).mockImplementation((token) => ({
-      status: token === 'tvl1.good' ? 'valid' : 'missing',
-      payload: null,
-      ageDays: null,
-      daysUntilExpiry: null,
-    }))
+    vi.mocked(verifyLicenseToken).mockImplementation((token) =>
+      verified(token === 'tvl1.good' ? 'valid' : 'missing')
+    )
     vi.mocked(revalidateLicense).mockResolvedValue({
       remote: { reachable: true, valid: true, plan: 'white-label', expiresAt: '', token: 't' },
-      verification: { status: 'valid', payload: null, ageDays: 0, daysUntilExpiry: 100 },
+      verification: verified('valid', { ageDays: 0, daysUntilExpiry: 100 }),
     })
 
     await refreshLicensesMissingTokens()
 
     expect(revalidateLicense).toHaveBeenCalledTimes(1)
     expect(revalidateLicense).toHaveBeenCalledWith('org-legacy', 'KEY-B')
+  })
+
+  it('leaves a perpetual token alone even beside a leftover key', async () => {
+    vi.mocked(db.appSetting.findMany)
+      .mockResolvedValueOnce([{ organizationId: 'org-perpetual', value: 'KEY-P' }] as any)
+      .mockResolvedValueOnce([{ organizationId: 'org-perpetual', value: 'tvp1.x.y' }] as any)
+    // No registration number reaches this check, so a perpetual token reads
+    // as a mismatch here. It must still not be refreshed over.
+    vi.mocked(verifyLicenseToken).mockReturnValue(verified('mismatch', { kind: 'perpetual' }))
+
+    await refreshLicensesMissingTokens()
+
+    expect(revalidateLicense).not.toHaveBeenCalled()
   })
 
   it('never throws', async () => {

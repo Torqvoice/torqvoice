@@ -28,10 +28,12 @@ import { db } from '@/lib/db'
 import {
   getFeatures,
   getMaxOrganizations,
+  installHasLicense,
+  installLicenseMaxOrganizations,
   organizationAllowance,
   PLAN_FEATURES,
 } from '@/lib/features'
-import { verifyLicenseToken } from '@/lib/license/token'
+import { type LicenseTokenVerification, verifyLicenseToken } from '@/lib/license/token'
 import { scheduleLicenseSelfHeal } from '@/lib/license/revalidate'
 
 const mockFindUnique = vi.mocked(db.subscription.findUnique)
@@ -40,8 +42,31 @@ const mockLimitOverrides = vi.mocked(db.systemSetting.findMany)
 const mockVerify = vi.mocked(verifyLicenseToken)
 const mockSelfHeal = vi.mocked(scheduleLicenseSelfHeal)
 
-function verification(status: 'missing' | 'invalid' | 'expired' | 'stale' | 'valid') {
-  return { status, payload: null, ageDays: null, daysUntilExpiry: null }
+function verification(
+  status: LicenseTokenVerification['status'],
+  extra: Partial<LicenseTokenVerification> = {}
+): LicenseTokenVerification {
+  return {
+    status,
+    kind: status === 'missing' || status === 'invalid' ? null : 'subscription',
+    payload: null,
+    ageDays: null,
+    daysUntilExpiry: null,
+    expiresAt: null,
+    maxOrganizations: null,
+    licensee: null,
+    ...extra,
+  }
+}
+
+const LICENSEE = {
+  name: 'Example Workshop AS',
+  registrationNumber: 'NO 123 456 789 MVA',
+  country: 'NO',
+}
+
+function perpetual(status: 'valid' | 'mismatch', maxOrganizations = 3) {
+  return verification(status, { kind: 'perpetual', maxOrganizations, licensee: LICENSEE })
 }
 
 beforeEach(() => {
@@ -217,7 +242,9 @@ describe('getFeatures — self-hosted mode', () => {
     ] as any)
     mockVerify.mockReturnValue(verification('valid'))
     const features = await getFeatures('org-1')
-    expect(mockVerify).toHaveBeenCalledWith('tvl1.x.y', 'org-1')
+    expect(mockVerify).toHaveBeenCalledWith('tvl1.x.y', 'org-1', {
+      registrationNumber: undefined,
+    })
     expect(features.brandingRemoved).toBe(true)
     expect(features.customPlatformName).toBe(true)
     expect(mockSelfHeal).not.toHaveBeenCalled()
@@ -265,6 +292,48 @@ describe('getFeatures — self-hosted mode', () => {
     await getFeatures('org-1')
     expect(mockSelfHeal).not.toHaveBeenCalled()
   })
+
+  it('removes branding on a perpetual token that matches the registration number', async () => {
+    mockFindMany.mockResolvedValue([
+      { key: 'license.token', value: 'tvp1.x.y' },
+      { key: 'invoice.orgNumber', value: 'NO 123456789 MVA' },
+    ] as any)
+    mockVerify.mockReturnValue(perpetual('valid', 3))
+    const features = await getFeatures('org-1')
+    // The workshop's own number goes to the verifier, which does the compare.
+    expect(mockVerify).toHaveBeenCalledWith('tvp1.x.y', 'org-1', {
+      registrationNumber: 'NO 123456789 MVA',
+    })
+    const where = mockFindMany.mock.calls[0][0]?.where as { key: { in: string[] } }
+    expect(where.key.in).toContain('invoice.orgNumber')
+    expect(features.brandingRemoved).toBe(true)
+    expect(features.customPlatformName).toBe(true)
+    // A perpetual licence says how many workshops it covers.
+    expect(features.maxOrganizations).toBe(3)
+  })
+
+  it('keeps branding and one workshop when the registration number does not match', async () => {
+    mockFindMany.mockResolvedValue([
+      // A leftover key must not send a perpetual install to torqvoice.com.
+      { key: 'license.key', value: 'KEY' },
+      { key: 'license.token', value: 'tvp1.x.y' },
+      { key: 'invoice.orgNumber', value: '999 999 999' },
+    ] as any)
+    mockVerify.mockReturnValue(perpetual('mismatch', 3))
+    const features = await getFeatures('org-1')
+    expect(features.brandingRemoved).toBe(false)
+    expect(features.customPlatformName).toBe(false)
+    expect(features.maxOrganizations).toBe(1)
+    expect(mockSelfHeal).not.toHaveBeenCalled()
+  })
+
+  it('gives a valid subscription token the white-label number of workshops', async () => {
+    mockFindMany.mockResolvedValue([{ key: 'license.token', value: 'tvl1.x.y' }] as any)
+    mockVerify.mockReturnValue(verification('valid'))
+    expect((await getFeatures('org-1')).maxOrganizations).toBe(
+      PLAN_FEATURES['white-label'].maxOrganizations
+    )
+  })
 })
 
 describe('the workshop limit on a self-hosted install', () => {
@@ -290,8 +359,8 @@ describe('the workshop limit on a self-hosted install', () => {
 
   it('is lifted by a valid licence token on any organization', async () => {
     mockFindMany.mockResolvedValue([
-      { organizationId: 'org-1', value: 'tvl1.stale' },
-      { organizationId: 'org-2', value: 'tvl1.good' },
+      { organizationId: 'org-1', key: 'license.token', value: 'tvl1.stale' },
+      { organizationId: 'org-2', key: 'license.token', value: 'tvl1.good' },
     ] as never)
     mockVerify.mockImplementation((token) =>
       verification(token === 'tvl1.good' ? 'valid' : 'stale')
@@ -302,9 +371,63 @@ describe('the workshop limit on a self-hosted install', () => {
   })
 
   it('does not count a token that fails to verify', async () => {
-    mockFindMany.mockResolvedValue([{ organizationId: 'org-1', value: 'tvl1.forged' }] as never)
+    mockFindMany.mockResolvedValue([
+      { organizationId: 'org-1', key: 'license.token', value: 'tvl1.forged' },
+    ] as never)
     mockVerify.mockReturnValue(verification('invalid'))
     expect(await getMaxOrganizations('user-1')).toBe(1)
+  })
+
+  it('is what a perpetual licence allows, checked against its own workshop number', async () => {
+    mockFindMany.mockResolvedValue([
+      { organizationId: 'org-1', key: 'license.token', value: 'tvp1.one' },
+      { organizationId: 'org-1', key: 'invoice.orgNumber', value: 'NO 123 456 789 MVA' },
+      { organizationId: 'org-2', key: 'invoice.orgNumber', value: 'SE 556677-8899' },
+    ] as never)
+    mockVerify.mockReturnValue(perpetual('valid', 2))
+    expect(await getMaxOrganizations('user-1')).toBe(2)
+    expect(await installHasLicense()).toBe(true)
+    expect(mockVerify).toHaveBeenCalledWith('tvp1.one', 'org-1', {
+      registrationNumber: 'NO 123 456 789 MVA',
+    })
+    // Each check reads tokens and numbers in one query, not one per workshop.
+    expect(mockFindMany).toHaveBeenCalledTimes(2)
+  })
+
+  it('takes the highest number among the valid licences on the install', async () => {
+    mockFindMany.mockResolvedValue([
+      { organizationId: 'org-1', key: 'license.token', value: 'tvp1.two' },
+      { organizationId: 'org-2', key: 'license.token', value: 'tvp1.five' },
+      { organizationId: 'org-3', key: 'license.token', value: 'tvp1.mismatch' },
+    ] as never)
+    mockVerify.mockImplementation((token) => {
+      if (token === 'tvp1.two') return perpetual('valid', 2)
+      if (token === 'tvp1.five') return perpetual('valid', 5)
+      return perpetual('mismatch', 50)
+    })
+    expect(await installLicenseMaxOrganizations()).toBe(5)
+  })
+
+  it('lets a subscription licence beside a perpetual one bring the plan number', async () => {
+    mockFindMany.mockResolvedValue([
+      { organizationId: 'org-1', key: 'license.token', value: 'tvp1.two' },
+      { organizationId: 'org-2', key: 'license.token', value: 'tvl1.good' },
+    ] as never)
+    mockVerify.mockImplementation((token) =>
+      token === 'tvp1.two' ? perpetual('valid', 2) : verification('valid')
+    )
+    expect(await installLicenseMaxOrganizations()).toBe(
+      PLAN_FEATURES['white-label'].maxOrganizations
+    )
+  })
+
+  it('is one with no valid licence, and a mismatched perpetual one does not count', async () => {
+    mockFindMany.mockResolvedValue([
+      { organizationId: 'org-1', key: 'license.token', value: 'tvp1.x' },
+    ] as never)
+    mockVerify.mockReturnValue(perpetual('mismatch', 4))
+    expect(await installLicenseMaxOrganizations()).toBe(1)
+    expect(await installHasLicense()).toBe(false)
   })
 
   it('plan features say one workshop without a licence and many with one', async () => {

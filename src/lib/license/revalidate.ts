@@ -11,6 +11,7 @@ import { torqvoiceComUrl } from '@/lib/torqvoice-com'
  * `getFeatures`. Only the signed token matters for entitlements; the plain
  * rows (`license.valid`, `license.plan`, `license.expiresAt`) are kept as a
  * display cache for the licence page and mean nothing to the feature gate.
+ * A perpetual token is stored here too, but never talks to torqvoice.com.
  */
 
 export type RemoteLicenseResult = {
@@ -123,6 +124,59 @@ export async function revalidateLicense(
     select: { value: true },
   })
   return { remote, verification: verifyLicenseToken(stored?.value, organizationId) }
+}
+
+/**
+ * Stores a pasted perpetual token. Nothing goes over the network: the token
+ * verifies on its own against the workshop's registration number.
+ *
+ * A token whose signature holds but whose licensee does not match the
+ * workshop's `invoice.orgNumber` is stored anyway. The License page can then
+ * tell the owner which number the licence names, and the gate opens on its
+ * own once Company settings are corrected, without pasting the token again.
+ * Only a token that does not verify at all is refused.
+ *
+ * The licence key and its term are dropped: a perpetual licence replaces a
+ * subscription, and a leftover key would have the cron fetch a subscription
+ * token over the top of it.
+ */
+export async function storePerpetualLicense(
+  organizationId: string,
+  token: string,
+  userId?: string
+): Promise<LicenseTokenVerification> {
+  const orgNumber = await db.appSetting.findUnique({
+    where: { organizationId_key: { organizationId, key: SETTING_KEYS.INVOICE_ORG_NUMBER } },
+    select: { value: true },
+  })
+  const verification = verifyLicenseToken(token, organizationId, {
+    registrationNumber: orgNumber?.value,
+  })
+  if (verification.status !== 'valid' && verification.status !== 'mismatch') {
+    return verification
+  }
+
+  const uid = userId ?? (await settingUserId(organizationId))
+  if (!uid) return verification
+
+  await db.$transaction([
+    upsert(organizationId, uid, SETTING_KEYS.LICENSE_TOKEN, token),
+    db.appSetting.deleteMany({
+      where: {
+        organizationId,
+        key: { in: [SETTING_KEYS.LICENSE_KEY, SETTING_KEYS.LICENSE_EXPIRES_AT] },
+      },
+    }),
+    upsert(
+      organizationId,
+      uid,
+      SETTING_KEYS.LICENSE_VALID,
+      String(verification.status === 'valid')
+    ),
+    upsert(organizationId, uid, SETTING_KEYS.LICENSE_PLAN, verification.payload?.plan ?? 'free'),
+    upsert(organizationId, uid, SETTING_KEYS.LICENSE_CHECKED_AT, new Date().toISOString()),
+  ])
+  return verification
 }
 
 // One attempt per org per hour from the request path. The cron does the real
