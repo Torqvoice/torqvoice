@@ -231,7 +231,9 @@ function inspectionRegistry(source: string | undefined): string | null {
  * plate retyped after the lookup gets no answer that was never about it.
  *
  * The date field is then saved by hand only when the workshop typed
- * something other than what the registry said. A typed date is kept beside
+ * something other than what the registry said; a date the lookup wrote and
+ * nobody touched is never saved as typed, not even when the plate was retyped
+ * underneath it. A typed date is kept beside
  * the registry's answer with its own source, so a workshop in a country
  * without a registry, or one that knows better than the register, can still
  * drive reminders; a registry date takes over again on the next sync.
@@ -243,15 +245,16 @@ async function saveInspectionDate(
   lookup: RegistryLookup | undefined,
   saved: { licensePlate?: string | null; vin?: string | null }
 ): Promise<void> {
-  const registry =
-    lookup && lookupAppliesTo(lookup, saved) ? inspectionRegistry(lookup.connectorId) : null
-  if (lookup && registry) {
-    await recordRegistryAnswer({
-      organizationId,
-      vehicleId,
-      source: registry,
-      result: lookup.result,
-    })
+  if (lookup) {
+    const registry = lookupAppliesTo(lookup, saved) ? inspectionRegistry(lookup.connectorId) : null
+    if (registry) {
+      await recordRegistryAnswer({
+        organizationId,
+        vehicleId,
+        source: registry,
+        result: lookup.result,
+      })
+    }
     if (holdsRegistryDate(value, lookup.result)) return
   }
   if (value === undefined) return

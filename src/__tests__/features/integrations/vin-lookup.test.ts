@@ -180,9 +180,14 @@ describe('lookupVehicle by VIN', () => {
     expect(recordRegistryAnswer).not.toHaveBeenCalled()
   })
 
-  it('still records what a registry says when it was asked by VIN', async () => {
+  it('still records what a registry says when it was asked by the vehicle’s own VIN', async () => {
     country('+47')
     connected('vegvesen')
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({
+      id: 'v1',
+      licensePlate: 'AB12345',
+      vin: VIN.toLowerCase(),
+    } as never)
     vi.mocked(askRegistry).mockResolvedValue({
       result: { make: 'Toyota', vin: VIN, inspectionDue: '2027-04-26' },
       source: 'Statens vegvesen',
@@ -191,6 +196,24 @@ describe('lookupVehicle by VIN', () => {
     await lookupVehicle({ by: 'vin', value: VIN, vehicleId: 'v1' })
     expect(askRegistry).toHaveBeenCalledWith('conn-vegvesen', { vin: VIN })
     expect(recordRegistryAnswer).toHaveBeenCalledTimes(1)
+  })
+
+  it('leaves an answer about some other VIN to the save, which checks the VIN kept', async () => {
+    country('+47')
+    connected('vegvesen')
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({
+      id: 'v1',
+      licensePlate: 'AB12345',
+      vin: 'WVWZZZ1JZXW000001',
+    } as never)
+    vi.mocked(askRegistry).mockResolvedValue({
+      result: { make: 'Toyota', vin: VIN, inspectionDue: '2027-04-26' },
+      source: 'Statens vegvesen',
+      connectorId: 'vegvesen',
+    })
+    const res = await lookupVehicle({ by: 'vin', value: VIN, vehicleId: 'v1' })
+    expect(res).toMatchObject({ success: true, data: { make: 'Toyota' } })
+    expect(recordRegistryAnswer).not.toHaveBeenCalled()
   })
 
   it('says so when nothing connected decodes VINs', async () => {

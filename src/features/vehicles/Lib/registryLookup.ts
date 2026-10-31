@@ -59,13 +59,14 @@ export function lookupAppliesTo(
 
 /**
  * Whether the form's date field still says what the registry said: left
- * alone, or holding the registry's day. Anything else is a date the
- * workshop typed over it.
+ * alone, or holding the day the registry gave. Anything else, a cleared
+ * field included, is the workshop's own doing.
  */
 export function holdsRegistryDate(
   value: string | undefined,
   result: Pick<RegistryLookup['result'], 'inspectionDue'>
 ): boolean {
   if (value === undefined) return true
-  return value.trim() === (result.inspectionDue?.slice(0, 10) ?? '')
+  const registryDay = result.inspectionDue?.slice(0, 10)
+  return Boolean(registryDay) && value.trim() === registryDay
 }

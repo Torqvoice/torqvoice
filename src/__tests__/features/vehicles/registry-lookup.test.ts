@@ -33,8 +33,9 @@ describe('registry lookup saved with the vehicle form', () => {
     expect(holdsRegistryDate('2027-03-31', result)).toBe(true)
     expect(holdsRegistryDate('2027-04-15', result)).toBe(false)
     expect(holdsRegistryDate('', result)).toBe(false)
-    // No date from the registry and none typed: still the registry's answer.
-    expect(holdsRegistryDate('', {})).toBe(true)
+    // A registry without a date gave nothing the field could still hold.
+    expect(holdsRegistryDate(undefined, {})).toBe(true)
+    expect(holdsRegistryDate('', {})).toBe(false)
     expect(holdsRegistryDate('2027-04-15', {})).toBe(false)
   })
 

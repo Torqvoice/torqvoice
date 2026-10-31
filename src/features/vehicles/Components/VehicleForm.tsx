@@ -283,9 +283,14 @@ export function VehicleForm({
       const input = formRef.current?.elements.namedItem(
         'inspectionDueAt'
       ) as HTMLInputElement | null
-      // The registry's fresh date replaces an empty field or the date the form
-      // opened with; a date the user typed since stays.
-      if (input && (!input.value || input.value === openedInspectionDue)) {
+      // The registry's fresh date replaces an empty field, the date the form
+      // opened with, or the date an earlier lookup wrote; a date the user
+      // typed since stays.
+      const earlier = lookupRef.current?.result.inspectionDue?.slice(0, 10)
+      if (
+        input &&
+        (!input.value || input.value === openedInspectionDue || input.value === earlier)
+      ) {
         input.value = data.inspectionDue.slice(0, 10)
       }
     }
@@ -402,12 +407,10 @@ export function VehicleForm({
         hsn: showTypeKey ? optional('hsn') : undefined,
         tsn: showTypeKey ? optional('tsn') : undefined,
         // An empty string clears a hand-typed date; undefined leaves the stored
-        // date alone, so saving another field does not turn a registry's date
-        // into one typed by hand. With a lookup to save it is sent as it stands.
+        // date alone, so saving another field, or a lookup that brought no
+        // date, does not turn a registry's date into one typed by hand.
         inspectionDueAt:
-          isMarine || (inspectionDue === openedInspectionDue && !lookupRef.current)
-            ? undefined
-            : inspectionDue,
+          isMarine || inspectionDue === openedInspectionDue ? undefined : inspectionDue,
         registryLookup: isMarine ? undefined : (lookupRef.current ?? undefined),
         customerId,
       }
@@ -686,9 +689,7 @@ export function VehicleForm({
                       <VehicleLookupButton
                         by="plate"
                         getValue={() => fieldValue('licensePlate')}
-                        onFound={(data) =>
-                          applyLookup(data, { by: 'plate', value: fieldValue('licensePlate') })
-                        }
+                        onFound={(data, asked) => applyLookup(data, { by: 'plate', value: asked })}
                         vehicleId={vehicle?.id}
                       />
                     )}
@@ -708,9 +709,7 @@ export function VehicleForm({
                       <VehicleLookupButton
                         by="vin"
                         getValue={() => fieldValue('vin')}
-                        onFound={(data) =>
-                          applyLookup(data, { by: 'vin', value: fieldValue('vin') })
-                        }
+                        onFound={(data, asked) => applyLookup(data, { by: 'vin', value: asked })}
                         vehicleId={vehicle?.id}
                       />
                     )}
