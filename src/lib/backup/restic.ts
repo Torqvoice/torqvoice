@@ -805,6 +805,24 @@ export async function resticStats(
 }
 
 /**
+ * `stats --mode restore-size <id>`: the bytes writing one snapshot out
+ * takes, known before a byte of it is written. Prints
+ * `{"total_size":…,"total_file_count":…,"snapshots_count":1}`.
+ */
+export async function resticRestoreSize(
+  opts: ResticBaseOptions,
+  snapshotId: string
+): Promise<number> {
+  if (!/^[0-9a-f]{8,64}$/.test(snapshotId)) throw new Error('Invalid snapshot id')
+  const result = await runRestic(
+    withArgs(opts, ['stats', '--mode', 'restore-size', '--', snapshotId])
+  )
+  const stats = (result.json.find((m) => m && typeof m === 'object' && !Array.isArray(m)) ??
+    {}) as Record<string, unknown>
+  return num(stats.total_size)
+}
+
+/**
  * `check`. Prints
  * `{"message_type":"summary","num_errors":0,"broken_packs":null,"suggest_repair_index":false,"suggest_prune":false}`.
  */

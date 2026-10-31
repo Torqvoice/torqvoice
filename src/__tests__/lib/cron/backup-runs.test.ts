@@ -36,8 +36,8 @@ function sameGroup(r: Row, where: Row): boolean {
   )
 }
 
-vi.mock('@/lib/db', () => ({
-  db: {
+vi.mock('@/lib/db', () => {
+  const db: Record<string, any> = {
     backupRun: {
       findMany: vi.fn(async (args: Row) => {
         const { where } = args
@@ -149,8 +149,13 @@ vi.mock('@/lib/db', () => ({
         where.key in h.systemSettings ? { value: h.systemSettings[where.key] } : null
       ),
     },
-  },
-}))
+  }
+  // The queue's transaction: the advisory lock is a no-op here, and the
+  // transaction client is the same fake.
+  db.$transaction = async (fn: (tx: Record<string, any>) => unknown) => fn(db)
+  db.$executeRaw = vi.fn(async () => 0)
+  return { db }
+})
 
 vi.mock('@/lib/backup/engine', () => {
   class BackupBusyError extends Error {

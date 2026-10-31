@@ -3,6 +3,10 @@ import path from 'node:path'
 import { z } from 'zod'
 import { dataRoot } from '@/lib/upload-root'
 import { type OpenedTarget, openTarget, type RunTarget } from './engine'
+import {
+  MAX_DATA_FILE_BYTES as MAX_DATA_BYTES,
+  MAX_OPEN_RESTORE_POINTS as MAX_OPEN,
+} from './limits'
 import { UPLOAD_CATEGORIES } from './manifest'
 import { resticDumpToFile, resticFind } from './restic'
 import type { ExploreStage } from '@/features/integrations/Lib/backup-types'
@@ -17,7 +21,8 @@ import { readJsonFile } from './zip-file'
  * and the uploads folder. Opening a restore point pulls only the data file
  * out of the repository, parses it and removes it from disk at once (it can
  * hold secret keys), and keeps the parsed rows in memory for a quarter of an
- * hour; from
+ * hour (two restore points at most, and a data file no larger than
+ * lib/backup/limits.ts allows: the whole of it is parsed at once); from
  * there the explorer lists customers, vehicles, work orders, quotes and parts
  * as they were, and searches them. A photo or document is pulled out one at
  * a time when it is opened. Nothing here writes to the workshop.
@@ -29,10 +34,6 @@ import { readJsonFile } from './zip-file'
 
 /** Parsed restore points are dropped after this, and their folder with them. */
 const KEEP_OPEN_MS = 15 * 60 * 1000
-/** How many restore points one server keeps parsed at a time. */
-const MAX_OPEN = 4
-/** A data file larger than this is not a workshop's data file. */
-const MAX_DATA_BYTES = 512 * 1024 * 1024
 /** A single upload pulled out of a snapshot. */
 const MAX_FILE_BYTES = 200 * 1024 * 1024
 const SNAPSHOT_ID = /^[0-9a-f]{8,64}$/

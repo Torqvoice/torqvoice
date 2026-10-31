@@ -42,8 +42,8 @@ function merge(row: Row, data: Row): Row {
   return out
 }
 
-vi.mock('@/lib/db', () => ({
-  db: {
+vi.mock('@/lib/db', () => {
+  const db: Record<string, any> = {
     backupRun: {
       create: vi.fn(async ({ data }: { data: Row }) => {
         const id = `run${++h.seq}`
@@ -115,8 +115,13 @@ vi.mock('@/lib/db', () => ({
       }),
     },
     organizationMember: { findMany: vi.fn(async () => h.members) },
-  },
-}))
+  }
+  // The queue's transaction: the advisory lock is a no-op here, and the
+  // transaction client is the same fake.
+  db.$transaction = async (fn: (tx: Record<string, any>) => unknown) => fn(db)
+  db.$executeRaw = vi.fn(async () => 0)
+  return { db }
+})
 
 vi.mock('@/features/integrations/Lib/connections', () => ({
   loadConnection: vi.fn(async (id: string) => {

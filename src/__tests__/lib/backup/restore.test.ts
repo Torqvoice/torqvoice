@@ -55,8 +55,8 @@ function merge(row: Row, data: Row): Row {
   return out
 }
 
-vi.mock('@/lib/db', () => ({
-  db: {
+vi.mock('@/lib/db', () => {
+  const db: Record<string, any> = {
     backupRun: {
       create: vi.fn(async ({ data }: { data: Row }) => {
         const id = `run${++h.seq}`
@@ -108,8 +108,13 @@ vi.mock('@/lib/db', () => ({
       findFirst: vi.fn(async () => h.owner),
       findMany: vi.fn(async () => [{ user: { email: 'owner@workshop.test' } }]),
     },
-  },
-}))
+  }
+  // The queue's transaction: the advisory lock is a no-op here, and the
+  // transaction client is the same fake.
+  db.$transaction = async (fn: (tx: Record<string, any>) => unknown) => fn(db)
+  db.$executeRaw = vi.fn(async () => 0)
+  return { db }
+})
 
 vi.mock('@/features/integrations/Lib/connections', () => ({
   loadConnection: vi.fn(async (id: string) => {
@@ -188,6 +193,7 @@ vi.mock('@/lib/backup/restic', async (importOriginal) => {
       }
     }),
     resticSnapshots: vi.fn(async () => []),
+    resticRestoreSize: vi.fn(async () => 0),
     resticRestore: vi.fn(async (_opts: unknown, input: { snapshotId: string; target: string }) => {
       h.events.push('restore')
       h.safetyAtRestore = [...h.runs.values()].map((r) => r.safetySnapshotId ?? null)
@@ -203,6 +209,13 @@ vi.mock('@/lib/backup/restic', async (importOriginal) => {
     }),
   }
 })
+
+// A data file the server would hold is tiny here, so the cap can be tripped
+// without writing a hundred megabytes.
+vi.mock('@/lib/backup/limits', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/backup/limits')>()),
+  MAX_DATA_FILE_BYTES: 1000,
+}))
 
 vi.mock('@/lib/backup/import', () => ({
   restoreFromDisk: vi.fn(
@@ -225,7 +238,12 @@ import { writeBackupData } from '@/lib/backup/build-data'
 import { BackupBusyError } from '@/lib/backup/engine'
 import { isRestoring } from '@/lib/backup/freeze'
 import { restoreFromDisk } from '@/lib/backup/import'
-import { resticBackup, resticRestore, resticSnapshots } from '@/lib/backup/restic'
+import {
+  resticBackup,
+  resticRestore,
+  resticRestoreSize,
+  resticSnapshots,
+} from '@/lib/backup/restic'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 import {
@@ -511,9 +529,39 @@ describe('runRestore', () => {
     const view = await runRestore(runId)
 
     expect(view.status).toBe('failed')
-    expect(view.error).toBe('The snapshot holds no data.json')
+    expect(view.error).toBe('The snapshot holds no data.json Nothing in the workshop was changed.')
     expect(restoreFromDisk).not.toHaveBeenCalled()
     expect(existsSync(h.restoreTarget as string)).toBe(false)
+  })
+
+  it('refuses a snapshot the data disk cannot take, before restic writes a byte of it', async () => {
+    vi.mocked(resticRestoreSize).mockResolvedValueOnce(Number.MAX_SAFE_INTEGER)
+    const runId = addRun()
+
+    const view = await runRestore(runId)
+
+    expect(view.status).toBe('failed')
+    expect(view.error).toMatch(/free; a restore keeps/)
+    expect(view.error).toMatch(/Nothing in the workshop was changed\.$/)
+    expect(vi.mocked(resticRestoreSize).mock.calls[0][1]).toBe(SNAPSHOT)
+    expect(resticRestore).not.toHaveBeenCalled()
+    expect(restoreFromDisk).not.toHaveBeenCalled()
+    expect(isRestoring(ORG)).toBe(false)
+  })
+
+  it('refuses a data file larger than the server reads into memory, and removes the folder', async () => {
+    h.restoredTree['tmp/torqvoice-backup-staging/org1/data.json'] =
+      `{"version":2,"padding":"${'x'.repeat(1200)}","data":{}}`
+    const runId = addRun()
+
+    const view = await runRestore(runId)
+
+    expect(view.status).toBe('failed')
+    expect(view.error).toMatch(/more than this server reads into memory/)
+    expect(view.error).toMatch(/Nothing in the workshop was changed\.$/)
+    expect(restoreFromDisk).not.toHaveBeenCalled()
+    expect(existsSync(h.restoreTarget as string)).toBe(false)
+    expect(isRestoring(ORG)).toBe(false)
   })
 
   it('says why when restic refuses', async () => {

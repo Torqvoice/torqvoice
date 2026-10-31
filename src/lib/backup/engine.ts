@@ -290,6 +290,9 @@ export function snapshotViews(snapshots: ResticSnapshot[]): PlatformSnapshotView
 /**
  * Queue a run. Refuses when one is queued or running for the same target
  * already, so a double click or an overlapping cron tick cannot start two.
+ * The check and the insert happen under a transaction-scoped advisory lock
+ * on the workshop, which torqvoice.com takes too when it queues a run from
+ * the admin, so two writers cannot both see an empty queue and both insert.
  * The caller then calls `drainBackupQueue` (or lets the next tick do it). A
  * restore names the snapshot it will put back and who asked for it.
  */
@@ -319,30 +322,34 @@ export async function queueBackupRun(
       throw new Error('Platform backups are not configured on this server')
     organizationId = t.organizationId
   }
-  const open = await db.backupRun.findFirst({
-    where: {
-      organizationId,
-      kind: t.kind,
-      ...(connectionId ? { connectionId } : {}),
-      status: { in: ['queued', 'running'] },
-    },
-    select: { id: true },
+  return db.$transaction(async (tx) => {
+    // The same two keys torqvoice.com uses (src/lib/app-backups/platform.ts).
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('backup_runs'), hashtext(${organizationId}))`
+    const open = await tx.backupRun.findFirst({
+      where: {
+        organizationId,
+        kind: t.kind,
+        ...(connectionId ? { connectionId } : {}),
+        status: { in: ['queued', 'running'] },
+      },
+      select: { id: true },
+    })
+    if (open) throw new BackupBusyError()
+    const run = await tx.backupRun.create({
+      data: {
+        organizationId,
+        kind: t.kind,
+        connectionId,
+        trigger,
+        status: 'queued',
+        snapshotId: extra.snapshotId ?? null,
+        requestedBy: extra.requestedBy ?? null,
+        reason: extra.reason?.slice(0, 500) ?? null,
+      },
+      select: { id: true },
+    })
+    return { runId: run.id }
   })
-  if (open) throw new BackupBusyError()
-  const run = await db.backupRun.create({
-    data: {
-      organizationId,
-      kind: t.kind,
-      connectionId,
-      trigger,
-      status: 'queued',
-      snapshotId: extra.snapshotId ?? null,
-      requestedBy: extra.requestedBy ?? null,
-      reason: extra.reason?.slice(0, 500) ?? null,
-    },
-    select: { id: true },
-  })
-  return { runId: run.id }
 }
 
 /** Records how a run ended, and returns the row as the page shows it. */

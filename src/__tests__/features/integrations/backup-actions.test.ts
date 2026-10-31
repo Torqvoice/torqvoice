@@ -21,8 +21,8 @@ vi.mock('@/lib/with-auth', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('@/lib/demo', () => ({ demoGuard: vi.fn() }))
 
-vi.mock('@/lib/db', () => ({
-  db: {
+vi.mock('@/lib/db', () => {
+  const db: Record<string, any> = {
     integrationConnection: {
       findUnique: vi.fn(
         async ({ where }: { where: { organizationId_connectorId: Row } }) =>
@@ -38,8 +38,13 @@ vi.mock('@/lib/db', () => ({
         )
       ),
     },
-  },
-}))
+  }
+  // The queue's transaction: the advisory lock is a no-op here, and the
+  // transaction client is the same fake.
+  db.$transaction = async (fn: (tx: Record<string, any>) => unknown) => fn(db)
+  db.$executeRaw = vi.fn(async () => 0)
+  return { db }
+})
 
 vi.mock('@/integrations/registry', () => ({
   getManifest: (id: string) => h.manifests[id],

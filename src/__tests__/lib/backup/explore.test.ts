@@ -756,10 +756,10 @@ describe('closing restore points', () => {
     expect(listRestorePointRows(ORG, SNAP, 'customers', '', 1).total).toBe(2)
   })
 
-  it('keeps at most four open, closing the oldest', async () => {
+  it('keeps at most two open, closing the oldest', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     const start = Date.parse('2026-10-30T10:00:00Z')
-    const snaps = ['aaaaaaa1', 'aaaaaaa2', 'aaaaaaa3', 'aaaaaaa4', 'aaaaaaa5']
+    const snaps = ['aaaaaaa1', 'aaaaaaa2', 'aaaaaaa3']
     stage()
     for (const [i, snap] of snaps.entries()) {
       vi.setSystemTime(new Date(start + i * 1000))

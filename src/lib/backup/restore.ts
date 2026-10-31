@@ -1,7 +1,8 @@
-import { mkdir, readdir, rm, stat } from 'node:fs/promises'
+import { mkdir, readdir, rm, stat, statfs } from 'node:fs/promises'
 import path from 'node:path'
 import { backupHost, backupTag, runView } from '@/features/integrations/Lib/backup'
 import type { BackupRunView, BackupSnapshotView } from '@/features/integrations/Lib/backup-types'
+import { formatBytes } from '@/features/integrations/Lib/format-bytes'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import { getManifest } from '@/integrations/registry'
 import { logAudit } from '@/lib/audit'
@@ -25,7 +26,8 @@ import {
 import { closeRestorePoints } from './explore'
 import { freezeOrganization, renewFreeze, unfreezeOrganization } from './freeze'
 import { restoreFromDisk } from './import'
-import { ResticError, resticRestore, resticSnapshots } from './restic'
+import { MAX_DATA_FILE_BYTES, RESTORE_DISK_HEADROOM_BYTES } from './limits'
+import { ResticError, resticRestore, resticRestoreSize, resticSnapshots } from './restic'
 import { connectMessage } from './target'
 
 /**
@@ -42,6 +44,12 @@ import { connectMessage } from './target'
  * uses, and the folder is removed whichever way it ends. Should the safety
  * copy fail, nothing is replaced. The server-wide lock is the backup's, so a
  * backup never reads rows a restore is replacing.
+ *
+ * A destination's repository is the workshop's own, so a snapshot in it is
+ * as trusted as an uploaded file: its size is asked for before it is written
+ * out and refused when the data disk would run short, and its data file is
+ * refused when larger than this server reads into memory (lib/backup/limits.ts).
+ * Both refusals come before anything in the workshop is touched.
  */
 
 /** How deep under the restore folder the backup's paths are looked for. */
@@ -49,6 +57,31 @@ const MAX_DEPTH = 16
 
 /** How often a running restore renews the workshop's freeze. */
 const FREEZE_RENEW_MS = 5 * 60 * 1000
+
+/**
+ * Refuses a snapshot the data disk cannot take with room to spare, before
+ * restic writes a byte of it. The restored files are moved into the uploads
+ * folder on the same disk, so the snapshot's size is what the restore needs.
+ */
+export async function assertRoomForRestore(bytes: number, root = dataRoot()): Promise<void> {
+  const disk = await statfs(root)
+  const free = disk.bavail * disk.bsize
+  if (bytes + RESTORE_DISK_HEADROOM_BYTES > free) {
+    throw new Error(
+      `The restore point is ${formatBytes(bytes)} and the server has ${formatBytes(free)} free; a restore keeps ${formatBytes(RESTORE_DISK_HEADROOM_BYTES)} to spare.`
+    )
+  }
+}
+
+/** Refuses a data file larger than this server reads into memory. */
+export async function assertDataFileWithinLimit(file: string): Promise<void> {
+  const { size } = await stat(file)
+  if (size > MAX_DATA_FILE_BYTES) {
+    throw new Error(
+      `The data file in this restore point is ${formatBytes(size)}, more than this server reads into memory (${formatBytes(MAX_DATA_FILE_BYTES)}).`
+    )
+  }
+}
 
 /** Where one restore is written out: a folder of its own under the data root. */
 export function restoreDirFor(organizationId: string, runId: string): string {
@@ -182,7 +215,9 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
   let frozen = false
   let renewal: ReturnType<typeof setInterval> | null = null
   // Where the run got to, so a failure says what it means for the workshop.
-  let phase: 'preparing' | 'safety' | 'restoring' = 'preparing'
+  // Up to and including 'checking' nothing in the workshop has changed: the
+  // snapshot is only being measured and written to its own folder.
+  let phase: 'preparing' | 'safety' | 'checking' | 'restoring' = 'preparing'
   try {
     await db.backupRun.update({
       where: { id: runId },
@@ -211,7 +246,8 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
     const safety = await takeSafetySnapshot(organizationId, target)
     safetySnapshotId = safety.snapshotId
     await db.backupRun.update({ where: { id: runId }, data: { safetySnapshotId } })
-    phase = 'restoring'
+    phase = 'checking'
+    await assertRoomForRestore(await resticRestoreSize(target.base, snapshotId))
 
     folder = restoreDirFor(organizationId, runId)
     await rm(folder, { recursive: true, force: true })
@@ -220,6 +256,7 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
 
     const found = await locateRestored(folder, organizationId)
     if (!found.dataFile) throw new Error('The snapshot holds no data.json')
+    await assertDataFileWithinLimit(found.dataFile)
     const filesDir =
       found.filesDir &&
       (await stat(found.filesDir)
@@ -227,6 +264,7 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
         .catch(() => false))
         ? found.filesDir
         : null
+    phase = 'restoring'
 
     const result = await restoreFromDisk(
       { organizationId, userId },
@@ -278,7 +316,7 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
     const error =
       phase === 'safety'
         ? `Could not take a safety copy of the workshop first; nothing was changed. ${message}`
-        : phase === 'preparing'
+        : phase === 'preparing' || phase === 'checking'
           ? `${message} Nothing in the workshop was changed.`
           : message
     return await finishRun(runId, { status: 'failed', error, safetySnapshotId })
