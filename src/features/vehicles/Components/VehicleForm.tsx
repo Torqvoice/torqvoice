@@ -132,6 +132,10 @@ export function VehicleForm({
   const [transmission, setTransmission] = useState(defaultTransmission)
   /** What the registry said about the plate, kept under the field until the dialog closes. */
   const [lookupNote, setLookupNote] = useState<VehicleLookup | null>(null)
+  // The inspection date a lookup wrote into the form, and which registry
+  // said so. Sent with the save while the field still holds that value, so
+  // the date is stored as the registry's answer and not looked up again.
+  const lookupDateRef = useRef<{ value: string; connectorId: string } | null>(null)
   /** Keeper read off a scanned document, until it is tied to a customer. */
   const [scannedOwner, setScannedOwner] = useState<{ name?: string; address?: string } | null>(null)
   const [ownerMatches, setOwnerMatches] = useState<OwnerMatch[]>([])
@@ -272,7 +276,10 @@ export function VehicleForm({
       const input = formRef.current?.elements.namedItem(
         'inspectionDueAt'
       ) as HTMLInputElement | null
-      if (input && !input.value) input.value = data.inspectionDue.slice(0, 10)
+      if (input && !input.value) {
+        input.value = data.inspectionDue.slice(0, 10)
+        lookupDateRef.current = { value: input.value, connectorId: data.connectorId }
+      }
     }
     if (data.transmission && transmission === defaultTransmission) {
       setTransmission(data.transmission)
@@ -294,7 +301,10 @@ export function VehicleForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, vehicle, initialLookup])
   useEffect(() => {
-    if (!open) appliedLookupRef.current = null
+    if (!open) {
+      appliedLookupRef.current = null
+      lookupDateRef.current = null
+    }
   }, [open])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -376,6 +386,10 @@ export function VehicleForm({
         tsn: showTypeKey ? optional('tsn') : undefined,
         // Sent as-is: an empty string clears a hand-typed date, undefined leaves it alone.
         inspectionDueAt: isMarine ? undefined : ((formData.get('inspectionDueAt') as string) ?? ''),
+        inspectionDueSource:
+          !isMarine && lookupDateRef.current?.value === formData.get('inspectionDueAt')
+            ? lookupDateRef.current.connectorId
+            : undefined,
         customerId,
       }
 

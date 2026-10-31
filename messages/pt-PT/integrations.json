@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Manter atualizadas as datas de inspeção de todas as viaturas desta oficina",
-        "syncInspectionsHelp": "Uma vez por hora, as viaturas que não foram verificadas recentemente são consultadas pela matrícula e a data do próximo EU-kontroll é guardada. Só são enviadas viaturas desta oficina. Cada viatura é verificada mensalmente, e semanalmente quando faltam menos de dois meses para o prazo."
+        "syncInspectionsHelp": "Uma vez por hora, os veículos a verificar são consultados pela matrícula e a próxima data de EU-kontroll é guardada; com que frequência um veículo é verificado de novo define-se abaixo. Só veículos guardados nesta oficina são enviados.",
+        "inspectionRecheck": "Verificar de novo veículos que já têm data",
+        "inspectionRecheckHelp": "Uma data só muda quando uma inspeção é aprovada. Mensal repara numa inspeção antecipada mais cedo; só perto do prazo custa menos. Perto do prazo, cada veículo é verificado semanalmente, seja qual for a escolha aqui.",
+        "recheckMonthly": "Todos os meses",
+        "recheckQuarterly": "A cada três meses",
+        "recheckNearDeadline": "Só perto do prazo",
+        "inspectionSoonDays": "Perto do prazo significa dentro de",
+        "inspectionSoonDaysHelp": "Nesta janela um veículo é verificado semanalmente, pelo que uma inspeção aprovada o tira da lista de lembretes em dias. Uma janela mais curta significa menos consultas.",
+        "soon30": "30 dias",
+        "soon60": "60 dias",
+        "soon90": "90 dias",
+        "inspectionOnlyWithCustomer": "Só veículos com cliente",
+        "inspectionOnlyWithCustomerHelp": "Saltar veículos sem cliente registado. Ninguém pode ser lembrado sobre eles, por isso consultá-los custa para nada."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Manter as datas de MOT atualizadas para todos os veículos desta oficina",
-        "syncInspectionsHelp": "Com isto ativado, cada viatura da oficina que tem matrícula é consultada uma vez e a data do próximo MOT é guardada. Depois, cada viatura é verificada de novo todos os meses, e todas as semanas quando o MOT vence em menos de dois meses. Cada viatura encontrada é cobrada como uma consulta Vehicle Registration, por isso a primeira passagem é a mais cara; as matrículas que o registo não conhece são gratuitas. Só são enviadas viaturas guardadas nesta oficina."
+        "syncInspectionsHelp": "Com isto ativo, cada veículo com matrícula é consultado uma vez e a data do MOT é guardada. Depois, os veículos são verificados de novo conforme definido abaixo. Cada veículo encontrado é cobrado como uma consulta Vehicle Registration; matrículas que o registo não conhece são gratuitas. Só veículos guardados nesta oficina são enviados.",
+        "inspectionRecheck": "Verificar de novo veículos que já têm data",
+        "inspectionRecheckHelp": "Uma data só muda quando uma inspeção é aprovada. Mensal repara numa inspeção antecipada mais cedo; só perto do prazo custa menos. Perto do prazo, cada veículo é verificado semanalmente, seja qual for a escolha aqui.",
+        "recheckMonthly": "Todos os meses",
+        "recheckQuarterly": "A cada três meses",
+        "recheckNearDeadline": "Só perto do prazo",
+        "inspectionSoonDays": "Perto do prazo significa dentro de",
+        "inspectionSoonDaysHelp": "Nesta janela um veículo é verificado semanalmente, pelo que uma inspeção aprovada o tira da lista de lembretes em dias. Uma janela mais curta significa menos consultas.",
+        "soon30": "30 dias",
+        "soon60": "60 dias",
+        "soon90": "90 dias",
+        "inspectionOnlyWithCustomer": "Só veículos com cliente",
+        "inspectionOnlyWithCustomerHelp": "Saltar veículos sem cliente registado. Ninguém pode ser lembrado sobre eles, por isso consultá-los custa para nada."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Manter atualizadas as datas de APK de todas as viaturas desta oficina",
-        "syncInspectionsHelp": "Uma vez por hora, as viaturas que não foram verificadas recentemente são consultadas pela matrícula e a próxima data de APK é guardada. Só são enviadas viaturas desta oficina. Cada viatura é verificada mensalmente, e semanalmente quando faltam menos de dois meses para o prazo."
+        "syncInspectionsHelp": "Uma vez por hora, os veículos a verificar são consultados pela matrícula e a próxima data de APK é guardada; com que frequência um veículo é verificado de novo define-se abaixo. Só veículos guardados nesta oficina são enviados.",
+        "inspectionRecheck": "Verificar de novo veículos que já têm data",
+        "inspectionRecheckHelp": "Uma data só muda quando uma inspeção é aprovada. Mensal repara numa inspeção antecipada mais cedo; só perto do prazo custa menos. Perto do prazo, cada veículo é verificado semanalmente, seja qual for a escolha aqui.",
+        "recheckMonthly": "Todos os meses",
+        "recheckQuarterly": "A cada três meses",
+        "recheckNearDeadline": "Só perto do prazo",
+        "inspectionSoonDays": "Perto do prazo significa dentro de",
+        "inspectionSoonDaysHelp": "Nesta janela um veículo é verificado semanalmente, pelo que uma inspeção aprovada o tira da lista de lembretes em dias. Uma janela mais curta significa menos consultas.",
+        "soon30": "30 dias",
+        "soon60": "60 dias",
+        "soon90": "90 dias",
+        "inspectionOnlyWithCustomer": "Só veículos com cliente",
+        "inspectionOnlyWithCustomerHelp": "Saltar veículos sem cliente registado. Ninguém pode ser lembrado sobre eles, por isso consultá-los custa para nada."
       }
     },
     "regcheck": {

@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Hold EU-kontrollfristen oppdatert for alle kjøretøy i dette verkstedet",
-        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste EU-kontroll lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som skal sjekkes opp på skiltnummer, og neste EU-kontroll-frist lagres; hvor ofte et kjøretøy sjekkes på nytt, velger du under. Bare kjøretøy lagret i dette verkstedet sendes.",
+        "inspectionRecheck": "Sjekk kjøretøy som allerede har en frist på nytt",
+        "inspectionRecheckHelp": "En frist endres bare når en kontroll er godkjent. Månedlig fanger opp en tidlig kontroll raskest; bare nær fristen koster minst. Nær fristen sjekkes hvert kjøretøy ukentlig, uansett hva du velger her.",
+        "recheckMonthly": "Hver måned",
+        "recheckQuarterly": "Hver tredje måned",
+        "recheckNearDeadline": "Bare nær fristen",
+        "inspectionSoonDays": "Nær fristen betyr innen",
+        "inspectionSoonDaysHelp": "Innenfor dette vinduet sjekkes et kjøretøy ukentlig, så en godkjent kontroll tar det ut av purrelisten innen få dager. Et kortere vindu gir færre oppslag.",
+        "soon30": "30 dager",
+        "soon60": "60 dager",
+        "soon90": "90 dager",
+        "inspectionOnlyWithCustomer": "Bare kjøretøy med kunde",
+        "inspectionOnlyWithCustomerHelp": "Hopp over kjøretøy uten registrert kunde. Ingen kan purres på dem, så oppslaget koster til ingen nytte."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Hold MOT-fristen oppdatert for alle kjøretøy i dette verkstedet",
-        "syncInspectionsHelp": "Når dette er på, slås hvert kjøretøy i verkstedet som har skilt opp én gang, og MOT-fristen lagres. Etter det sjekkes hvert kjøretøy på nytt hver måned, og hver uke når MOT-fristen er under to måneder unna. Hvert kjøretøy som blir funnet faktureres som ett Vehicle Registration-oppslag, så første gjennomgang koster mest; skilt registeret ikke kjenner er gratis. Bare kjøretøy lagret i dette verkstedet sendes."
+        "syncInspectionsHelp": "Når dette er på, slås hvert kjøretøy med skiltnummer opp én gang, og MOT-fristen lagres. Deretter sjekkes kjøretøy på nytt slik det er valgt under. Hvert kjøretøy som blir funnet, faktureres som ett Vehicle Registration-oppslag; skilt registeret ikke kjenner, er gratis. Bare kjøretøy lagret i dette verkstedet sendes.",
+        "inspectionRecheck": "Sjekk kjøretøy som allerede har en frist på nytt",
+        "inspectionRecheckHelp": "En frist endres bare når en kontroll er godkjent. Månedlig fanger opp en tidlig kontroll raskest; bare nær fristen koster minst. Nær fristen sjekkes hvert kjøretøy ukentlig, uansett hva du velger her.",
+        "recheckMonthly": "Hver måned",
+        "recheckQuarterly": "Hver tredje måned",
+        "recheckNearDeadline": "Bare nær fristen",
+        "inspectionSoonDays": "Nær fristen betyr innen",
+        "inspectionSoonDaysHelp": "Innenfor dette vinduet sjekkes et kjøretøy ukentlig, så en godkjent kontroll tar det ut av purrelisten innen få dager. Et kortere vindu gir færre oppslag.",
+        "soon30": "30 dager",
+        "soon60": "60 dager",
+        "soon90": "90 dager",
+        "inspectionOnlyWithCustomer": "Bare kjøretøy med kunde",
+        "inspectionOnlyWithCustomerHelp": "Hopp over kjøretøy uten registrert kunde. Ingen kan purres på dem, så oppslaget koster til ingen nytte."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Hold APK-fristen oppdatert for alle kjøretøy i dette verkstedet",
-        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste APK lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som skal sjekkes opp på skiltnummer, og neste APK-frist lagres; hvor ofte et kjøretøy sjekkes på nytt, velger du under. Bare kjøretøy lagret i dette verkstedet sendes.",
+        "inspectionRecheck": "Sjekk kjøretøy som allerede har en frist på nytt",
+        "inspectionRecheckHelp": "En frist endres bare når en kontroll er godkjent. Månedlig fanger opp en tidlig kontroll raskest; bare nær fristen koster minst. Nær fristen sjekkes hvert kjøretøy ukentlig, uansett hva du velger her.",
+        "recheckMonthly": "Hver måned",
+        "recheckQuarterly": "Hver tredje måned",
+        "recheckNearDeadline": "Bare nær fristen",
+        "inspectionSoonDays": "Nær fristen betyr innen",
+        "inspectionSoonDaysHelp": "Innenfor dette vinduet sjekkes et kjøretøy ukentlig, så en godkjent kontroll tar det ut av purrelisten innen få dager. Et kortere vindu gir færre oppslag.",
+        "soon30": "30 dager",
+        "soon60": "60 dager",
+        "soon90": "90 dager",
+        "inspectionOnlyWithCustomer": "Bare kjøretøy med kunde",
+        "inspectionOnlyWithCustomerHelp": "Hopp over kjøretøy uten registrert kunde. Ingen kan purres på dem, så oppslaget koster til ingen nytte."
       }
     },
     "regcheck": {

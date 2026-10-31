@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Keep inspection dates up to date for every vehicle in this workshop",
-        "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next EU-kontroll date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
+        "syncInspectionsHelp": "Once an hour, vehicles due a check are looked up by plate and their next EU-kontroll date is saved; how often a vehicle is rechecked is set below. Only vehicles stored in this workshop are ever sent.",
+        "inspectionRecheck": "Recheck vehicles that already have a date",
+        "inspectionRecheckHelp": "A date only changes when an inspection is passed. Monthly notices an early test soonest; only near the deadline costs the least. Near the deadline, every vehicle is rechecked weekly whatever you choose here.",
+        "recheckMonthly": "Every month",
+        "recheckQuarterly": "Every three months",
+        "recheckNearDeadline": "Only near the deadline",
+        "inspectionSoonDays": "Near the deadline means within",
+        "inspectionSoonDaysHelp": "Inside this window a vehicle is rechecked weekly, so a passed inspection drops it off the reminder list within days. A shorter window means fewer lookups.",
+        "soon30": "30 days",
+        "soon60": "60 days",
+        "soon90": "90 days",
+        "inspectionOnlyWithCustomer": "Only vehicles with a customer",
+        "inspectionOnlyWithCustomerHelp": "Skip vehicles with no customer on file. Nobody can be reminded about them, so looking them up costs for nothing."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Keep MOT dates up to date for every vehicle in this workshop",
-        "syncInspectionsHelp": "When this is on, every vehicle in the workshop that has a plate is looked up once, and its MOT due date is saved. After that, each vehicle is checked again monthly, and weekly once its MOT is due within two months. Every vehicle found is billed as one Vehicle Registration lookup, so the first pass costs the most; plates the register does not know are free. Only vehicles stored in this workshop are sent."
+        "syncInspectionsHelp": "When this is on, every vehicle with a plate is looked up once and its MOT due date saved. After that, vehicles are rechecked as set below. Each vehicle found is billed as one Vehicle Registration lookup; plates the register does not know are free. Only vehicles stored in this workshop are sent.",
+        "inspectionRecheck": "Recheck vehicles that already have a date",
+        "inspectionRecheckHelp": "A date only changes when an inspection is passed. Monthly notices an early test soonest; only near the deadline costs the least. Near the deadline, every vehicle is rechecked weekly whatever you choose here.",
+        "recheckMonthly": "Every month",
+        "recheckQuarterly": "Every three months",
+        "recheckNearDeadline": "Only near the deadline",
+        "inspectionSoonDays": "Near the deadline means within",
+        "inspectionSoonDaysHelp": "Inside this window a vehicle is rechecked weekly, so a passed inspection drops it off the reminder list within days. A shorter window means fewer lookups.",
+        "soon30": "30 days",
+        "soon60": "60 days",
+        "soon90": "90 days",
+        "inspectionOnlyWithCustomer": "Only vehicles with a customer",
+        "inspectionOnlyWithCustomerHelp": "Skip vehicles with no customer on file. Nobody can be reminded about them, so looking them up costs for nothing."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Keep APK dates up to date for every vehicle in this workshop",
-        "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next APK date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
+        "syncInspectionsHelp": "Once an hour, vehicles due a check are looked up by plate and their next APK date is saved; how often a vehicle is rechecked is set below. Only vehicles stored in this workshop are ever sent.",
+        "inspectionRecheck": "Recheck vehicles that already have a date",
+        "inspectionRecheckHelp": "A date only changes when an inspection is passed. Monthly notices an early test soonest; only near the deadline costs the least. Near the deadline, every vehicle is rechecked weekly whatever you choose here.",
+        "recheckMonthly": "Every month",
+        "recheckQuarterly": "Every three months",
+        "recheckNearDeadline": "Only near the deadline",
+        "inspectionSoonDays": "Near the deadline means within",
+        "inspectionSoonDaysHelp": "Inside this window a vehicle is rechecked weekly, so a passed inspection drops it off the reminder list within days. A shorter window means fewer lookups.",
+        "soon30": "30 days",
+        "soon60": "60 days",
+        "soon90": "90 days",
+        "inspectionOnlyWithCustomer": "Only vehicles with a customer",
+        "inspectionOnlyWithCustomerHelp": "Skip vehicles with no customer on file. Nobody can be reminded about them, so looking them up costs for nothing."
       }
     },
     "regcheck": {

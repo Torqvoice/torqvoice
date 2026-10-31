@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Aktualizuj terminy przeglądów wszystkich pojazdów w tym warsztacie",
-        "syncInspectionsHelp": "Raz na godzinę pojazdy, które nie były ostatnio sprawdzane, są wyszukiwane po tablicy, a termin następnego EU-kontroll jest zapisywany. Wysyłane są tylko pojazdy tego warsztatu. Pojazd jest sprawdzany co miesiąc, a co tydzień, gdy do terminu zostały mniej niż dwa miesiące."
+        "syncInspectionsHelp": "Raz na godzinę pojazdy wymagające sprawdzenia są wyszukiwane po numerze rejestracyjnym i zapisywany jest następny termin EU-kontroll; jak często pojazd jest sprawdzany ponownie, ustawia się poniżej. Wysyłane są tylko pojazdy zapisane w tym warsztacie.",
+        "inspectionRecheck": "Ponownie sprawdzaj pojazdy, które już mają termin",
+        "inspectionRecheckHelp": "Termin zmienia się tylko po zaliczonym przeglądzie. Co miesiąc najszybciej zauważa wcześniejszy przegląd; tylko blisko terminu kosztuje najmniej. Blisko terminu każdy pojazd jest sprawdzany co tydzień, niezależnie od tego wyboru.",
+        "recheckMonthly": "Co miesiąc",
+        "recheckQuarterly": "Co trzy miesiące",
+        "recheckNearDeadline": "Tylko blisko terminu",
+        "inspectionSoonDays": "Blisko terminu oznacza w ciągu",
+        "inspectionSoonDaysHelp": "W tym oknie pojazd jest sprawdzany co tydzień, więc zaliczony przegląd usuwa go z listy przypomnień w ciągu kilku dni. Krótsze okno oznacza mniej zapytań.",
+        "soon30": "30 dni",
+        "soon60": "60 dni",
+        "soon90": "90 dni",
+        "inspectionOnlyWithCustomer": "Tylko pojazdy z klientem",
+        "inspectionOnlyWithCustomerHelp": "Pomijaj pojazdy bez przypisanego klienta. Nikomu nie można o nich przypomnieć, więc ich wyszukiwanie kosztuje na nic."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Aktualizuj terminy MOT wszystkich pojazdów w tym warsztacie",
-        "syncInspectionsHelp": "Gdy to jest włączone, każdy pojazd w warsztacie z tablicą rejestracyjną jest raz wyszukiwany i zapisywany jest jego termin MOT. Potem każdy pojazd jest sprawdzany co miesiąc, a co tydzień, gdy MOT upływa za mniej niż dwa miesiące. Każdy znaleziony pojazd jest rozliczany jako jedno wyszukanie Vehicle Registration, więc pierwszy przebieg kosztuje najwięcej; tablice nieznane rejestrowi są bezpłatne. Wysyłane są tylko pojazdy zapisane w tym warsztacie."
+        "syncInspectionsHelp": "Gdy to jest włączone, każdy pojazd z numerem rejestracyjnym jest wyszukiwany raz i zapisywany jest jego termin MOT. Potem pojazdy są sprawdzane ponownie zgodnie z ustawieniem poniżej. Każdy znaleziony pojazd jest rozliczany jako jedno zapytanie Vehicle Registration; numery nieznane rejestrowi są bezpłatne. Wysyłane są tylko pojazdy zapisane w tym warsztacie.",
+        "inspectionRecheck": "Ponownie sprawdzaj pojazdy, które już mają termin",
+        "inspectionRecheckHelp": "Termin zmienia się tylko po zaliczonym przeglądzie. Co miesiąc najszybciej zauważa wcześniejszy przegląd; tylko blisko terminu kosztuje najmniej. Blisko terminu każdy pojazd jest sprawdzany co tydzień, niezależnie od tego wyboru.",
+        "recheckMonthly": "Co miesiąc",
+        "recheckQuarterly": "Co trzy miesiące",
+        "recheckNearDeadline": "Tylko blisko terminu",
+        "inspectionSoonDays": "Blisko terminu oznacza w ciągu",
+        "inspectionSoonDaysHelp": "W tym oknie pojazd jest sprawdzany co tydzień, więc zaliczony przegląd usuwa go z listy przypomnień w ciągu kilku dni. Krótsze okno oznacza mniej zapytań.",
+        "soon30": "30 dni",
+        "soon60": "60 dni",
+        "soon90": "90 dni",
+        "inspectionOnlyWithCustomer": "Tylko pojazdy z klientem",
+        "inspectionOnlyWithCustomerHelp": "Pomijaj pojazdy bez przypisanego klienta. Nikomu nie można o nich przypomnieć, więc ich wyszukiwanie kosztuje na nic."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Aktualizuj terminy APK wszystkich pojazdów w tym warsztacie",
-        "syncInspectionsHelp": "Raz na godzinę pojazdy, które nie były ostatnio sprawdzane, są wyszukiwane po tablicy, a termin następnego APK jest zapisywany. Wysyłane są tylko pojazdy tego warsztatu. Pojazd jest sprawdzany co miesiąc, a co tydzień, gdy do terminu zostały mniej niż dwa miesiące."
+        "syncInspectionsHelp": "Raz na godzinę pojazdy wymagające sprawdzenia są wyszukiwane po numerze rejestracyjnym i zapisywany jest następny termin APK; jak często pojazd jest sprawdzany ponownie, ustawia się poniżej. Wysyłane są tylko pojazdy zapisane w tym warsztacie.",
+        "inspectionRecheck": "Ponownie sprawdzaj pojazdy, które już mają termin",
+        "inspectionRecheckHelp": "Termin zmienia się tylko po zaliczonym przeglądzie. Co miesiąc najszybciej zauważa wcześniejszy przegląd; tylko blisko terminu kosztuje najmniej. Blisko terminu każdy pojazd jest sprawdzany co tydzień, niezależnie od tego wyboru.",
+        "recheckMonthly": "Co miesiąc",
+        "recheckQuarterly": "Co trzy miesiące",
+        "recheckNearDeadline": "Tylko blisko terminu",
+        "inspectionSoonDays": "Blisko terminu oznacza w ciągu",
+        "inspectionSoonDaysHelp": "W tym oknie pojazd jest sprawdzany co tydzień, więc zaliczony przegląd usuwa go z listy przypomnień w ciągu kilku dni. Krótsze okno oznacza mniej zapytań.",
+        "soon30": "30 dni",
+        "soon60": "60 dni",
+        "soon90": "90 dni",
+        "inspectionOnlyWithCustomer": "Tylko pojazdy z klientem",
+        "inspectionOnlyWithCustomerHelp": "Pomijaj pojazdy bez przypisanego klienta. Nikomu nie można o nich przypomnieć, więc ich wyszukiwanie kosztuje na nic."
       }
     },
     "regcheck": {

@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Tieni aggiornate le scadenze di revisione di tutti i veicoli di questa officina",
-        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data della prossima EU-kontroll viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+        "syncInspectionsHelp": "Una volta all'ora i veicoli da controllare vengono cercati per targa e la prossima data di EU-kontroll viene salvata; la frequenza dei ricontrolli si imposta qui sotto. Vengono inviati solo i veicoli salvati in questa officina.",
+        "inspectionRecheck": "Ricontrolla i veicoli che hanno già una data",
+        "inspectionRecheckHelp": "Una data cambia solo quando una revisione viene superata. Mensile nota prima una revisione anticipata; solo vicino alla scadenza costa meno. Vicino alla scadenza ogni veicolo è ricontrollato ogni settimana, qualunque sia la scelta.",
+        "recheckMonthly": "Ogni mese",
+        "recheckQuarterly": "Ogni tre mesi",
+        "recheckNearDeadline": "Solo vicino alla scadenza",
+        "inspectionSoonDays": "Vicino alla scadenza significa entro",
+        "inspectionSoonDaysHelp": "In questa finestra un veicolo è ricontrollato ogni settimana, così una revisione superata lo toglie dalla lista dei promemoria in pochi giorni. Una finestra più corta significa meno ricerche.",
+        "soon30": "30 giorni",
+        "soon60": "60 giorni",
+        "soon90": "90 giorni",
+        "inspectionOnlyWithCustomer": "Solo veicoli con un cliente",
+        "inspectionOnlyWithCustomerHelp": "Salta i veicoli senza cliente registrato. Nessuno può ricevere un promemoria su di loro, quindi cercarli costa per niente."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Mantieni aggiornate le scadenze MOT di tutti i veicoli di questa officina",
-        "syncInspectionsHelp": "Quando è attivo, ogni veicolo dell'officina con una targa viene cercato una volta e viene salvata la scadenza della MOT. Poi ogni veicolo viene ricontrollato ogni mese, e ogni settimana quando la MOT scade entro due mesi. Ogni veicolo trovato è addebitato come una ricerca Vehicle Registration, quindi il primo passaggio è il più costoso; le targhe che il registro non conosce sono gratuite. Vengono inviati solo i veicoli salvati in questa officina."
+        "syncInspectionsHelp": "Quando è attivo, ogni veicolo con targa viene cercato una volta e la sua scadenza MOT salvata. Poi i veicoli vengono ricontrollati come impostato qui sotto. Ogni veicolo trovato è fatturato come una ricerca Vehicle Registration; le targhe sconosciute al registro sono gratuite. Vengono inviati solo i veicoli salvati in questa officina.",
+        "inspectionRecheck": "Ricontrolla i veicoli che hanno già una data",
+        "inspectionRecheckHelp": "Una data cambia solo quando una revisione viene superata. Mensile nota prima una revisione anticipata; solo vicino alla scadenza costa meno. Vicino alla scadenza ogni veicolo è ricontrollato ogni settimana, qualunque sia la scelta.",
+        "recheckMonthly": "Ogni mese",
+        "recheckQuarterly": "Ogni tre mesi",
+        "recheckNearDeadline": "Solo vicino alla scadenza",
+        "inspectionSoonDays": "Vicino alla scadenza significa entro",
+        "inspectionSoonDaysHelp": "In questa finestra un veicolo è ricontrollato ogni settimana, così una revisione superata lo toglie dalla lista dei promemoria in pochi giorni. Una finestra più corta significa meno ricerche.",
+        "soon30": "30 giorni",
+        "soon60": "60 giorni",
+        "soon90": "90 giorni",
+        "inspectionOnlyWithCustomer": "Solo veicoli con un cliente",
+        "inspectionOnlyWithCustomerHelp": "Salta i veicoli senza cliente registrato. Nessuno può ricevere un promemoria su di loro, quindi cercarli costa per niente."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Tieni aggiornate le date APK di tutti i veicoli di questa officina",
-        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data del prossimo APK viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+        "syncInspectionsHelp": "Una volta all'ora i veicoli da controllare vengono cercati per targa e la prossima data di APK viene salvata; la frequenza dei ricontrolli si imposta qui sotto. Vengono inviati solo i veicoli salvati in questa officina.",
+        "inspectionRecheck": "Ricontrolla i veicoli che hanno già una data",
+        "inspectionRecheckHelp": "Una data cambia solo quando una revisione viene superata. Mensile nota prima una revisione anticipata; solo vicino alla scadenza costa meno. Vicino alla scadenza ogni veicolo è ricontrollato ogni settimana, qualunque sia la scelta.",
+        "recheckMonthly": "Ogni mese",
+        "recheckQuarterly": "Ogni tre mesi",
+        "recheckNearDeadline": "Solo vicino alla scadenza",
+        "inspectionSoonDays": "Vicino alla scadenza significa entro",
+        "inspectionSoonDaysHelp": "In questa finestra un veicolo è ricontrollato ogni settimana, così una revisione superata lo toglie dalla lista dei promemoria in pochi giorni. Una finestra più corta significa meno ricerche.",
+        "soon30": "30 giorni",
+        "soon60": "60 giorni",
+        "soon90": "90 giorni",
+        "inspectionOnlyWithCustomer": "Solo veicoli con un cliente",
+        "inspectionOnlyWithCustomerHelp": "Salta i veicoli senza cliente registrato. Nessuno può ricevere un promemoria su di loro, quindi cercarli costa per niente."
       }
     },
     "regcheck": {

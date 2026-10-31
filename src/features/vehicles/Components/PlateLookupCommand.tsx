@@ -176,7 +176,7 @@ export function PlateLookupCommand() {
     setFormLookup(
       registry
         ? { ...registry, licensePlate: registry.licensePlate ?? result.plate }
-        : { licensePlate: result.plate, source: '' }
+        : { licensePlate: result.plate, source: '', connectorId: '' }
     )
     const list = await getCustomersList()
     setCustomers(list.success && list.data ? list.data : [])

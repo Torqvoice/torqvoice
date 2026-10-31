@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Mantener actualizadas las fechas de inspección de todos los vehículos de este taller",
-        "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos que no se han comprobado hace poco y se guarda la próxima fecha de EU-kontroll. Solo se envían vehículos almacenados en este taller. Un vehículo se revisa cada mes, y cada semana cuando faltan menos de dos meses."
+        "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos pendientes de comprobar y se guarda su próxima fecha de EU-kontroll; abajo se elige con qué frecuencia se vuelve a comprobar un vehículo. Solo se envían vehículos guardados en este taller.",
+        "inspectionRecheck": "Volver a comprobar vehículos que ya tienen fecha",
+        "inspectionRecheckHelp": "Una fecha solo cambia cuando se pasa una inspección. Mensual detecta antes una inspección adelantada; solo cerca del vencimiento es lo que menos cuesta. Cerca del vencimiento, cada vehículo se comprueba semanalmente, sea cual sea la opción elegida.",
+        "recheckMonthly": "Cada mes",
+        "recheckQuarterly": "Cada tres meses",
+        "recheckNearDeadline": "Solo cerca del vencimiento",
+        "inspectionSoonDays": "Cerca del vencimiento significa dentro de",
+        "inspectionSoonDaysHelp": "Dentro de este plazo un vehículo se comprueba semanalmente, así que una inspección superada lo quita de la lista de recordatorios en días. Un plazo más corto supone menos consultas.",
+        "soon30": "30 días",
+        "soon60": "60 días",
+        "soon90": "90 días",
+        "inspectionOnlyWithCustomer": "Solo vehículos con cliente",
+        "inspectionOnlyWithCustomerHelp": "Omitir vehículos sin cliente registrado. Nadie puede recibir un recordatorio sobre ellos, así que consultarlos cuesta para nada."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Mantener al día las fechas de MOT de todos los vehículos de este taller",
-        "syncInspectionsHelp": "Con esto activado, cada vehículo del taller que tenga matrícula se consulta una vez y se guarda la fecha de su próxima MOT. Después, cada vehículo se vuelve a comprobar cada mes, y cada semana cuando su MOT vence en menos de dos meses. Cada vehículo encontrado se cobra como una consulta de Vehicle Registration, así que la primera pasada es la más cara; las matrículas que el registro no conoce son gratis. Solo se envían vehículos guardados en este taller."
+        "syncInspectionsHelp": "Con esto activado, cada vehículo con matrícula se consulta una vez y se guarda su fecha de MOT. Después, los vehículos se vuelven a comprobar según lo elegido abajo. Cada vehículo encontrado se factura como una consulta Vehicle Registration; las matrículas que el registro no conoce son gratis. Solo se envían vehículos guardados en este taller.",
+        "inspectionRecheck": "Volver a comprobar vehículos que ya tienen fecha",
+        "inspectionRecheckHelp": "Una fecha solo cambia cuando se pasa una inspección. Mensual detecta antes una inspección adelantada; solo cerca del vencimiento es lo que menos cuesta. Cerca del vencimiento, cada vehículo se comprueba semanalmente, sea cual sea la opción elegida.",
+        "recheckMonthly": "Cada mes",
+        "recheckQuarterly": "Cada tres meses",
+        "recheckNearDeadline": "Solo cerca del vencimiento",
+        "inspectionSoonDays": "Cerca del vencimiento significa dentro de",
+        "inspectionSoonDaysHelp": "Dentro de este plazo un vehículo se comprueba semanalmente, así que una inspección superada lo quita de la lista de recordatorios en días. Un plazo más corto supone menos consultas.",
+        "soon30": "30 días",
+        "soon60": "60 días",
+        "soon90": "90 días",
+        "inspectionOnlyWithCustomer": "Solo vehículos con cliente",
+        "inspectionOnlyWithCustomerHelp": "Omitir vehículos sin cliente registrado. Nadie puede recibir un recordatorio sobre ellos, así que consultarlos cuesta para nada."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Mantener actualizadas las fechas de APK de todos los vehículos de este taller",
-        "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos que no se han comprobado hace poco y se guarda la próxima fecha de APK. Solo se envían vehículos almacenados en este taller. Un vehículo se revisa cada mes, y cada semana cuando faltan menos de dos meses."
+        "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos pendientes de comprobar y se guarda su próxima fecha de APK; abajo se elige con qué frecuencia se vuelve a comprobar un vehículo. Solo se envían vehículos guardados en este taller.",
+        "inspectionRecheck": "Volver a comprobar vehículos que ya tienen fecha",
+        "inspectionRecheckHelp": "Una fecha solo cambia cuando se pasa una inspección. Mensual detecta antes una inspección adelantada; solo cerca del vencimiento es lo que menos cuesta. Cerca del vencimiento, cada vehículo se comprueba semanalmente, sea cual sea la opción elegida.",
+        "recheckMonthly": "Cada mes",
+        "recheckQuarterly": "Cada tres meses",
+        "recheckNearDeadline": "Solo cerca del vencimiento",
+        "inspectionSoonDays": "Cerca del vencimiento significa dentro de",
+        "inspectionSoonDaysHelp": "Dentro de este plazo un vehículo se comprueba semanalmente, así que una inspección superada lo quita de la lista de recordatorios en días. Un plazo más corto supone menos consultas.",
+        "soon30": "30 días",
+        "soon60": "60 días",
+        "soon90": "90 días",
+        "inspectionOnlyWithCustomer": "Solo vehículos con cliente",
+        "inspectionOnlyWithCustomerHelp": "Omitir vehículos sin cliente registrado. Nadie puede recibir un recordatorio sobre ellos, así que consultarlos cuesta para nada."
       }
     },
     "regcheck": {

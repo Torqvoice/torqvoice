@@ -46,7 +46,7 @@ export interface PlateLookup {
   /** The workshop's own vehicle with this plate (or the registry's VIN), when there is one. */
   vehicle: WorkshopVehicle | null
   /** What the registry said, null when it has no such vehicle. */
-  registry: (VehicleLookupResult & { source: string }) | null
+  registry: (VehicleLookupResult & { source: string; connectorId: string }) | null
   /** Set when the registry could not be asked; the workshop half still stands. */
   registryError: string | null
   /** Registry name, for the empty state's attribution. */
@@ -148,7 +148,12 @@ export async function lookupPlate(input: { plate: string }) {
           try {
             const answer = await askRegistry(target.id, { plate })
             source = answer.source
-            if (answer.result) registry = { ...answer.result, source: answer.source }
+            if (answer.result)
+              registry = {
+                ...answer.result,
+                source: answer.source,
+                connectorId: answer.connectorId,
+              }
             if (!vehicle && answer.result?.vin) {
               vehicle = await findByVin(organizationId, answer.result.vin)
             }

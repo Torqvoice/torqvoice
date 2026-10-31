@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Keuringsdatums van alle voertuigen in deze werkplaats bijhouden",
-        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+        "syncInspectionsHelp": "Eens per uur worden voertuigen die aan een controle toe zijn op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen; hoe vaak een voertuig opnieuw wordt gecontroleerd, stelt u hieronder in. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verzonden.",
+        "inspectionRecheck": "Voertuigen die al een datum hebben opnieuw controleren",
+        "inspectionRecheckHelp": "Een datum verandert alleen als een keuring is gehaald. Maandelijks merkt een vervroegde keuring het snelst; alleen vlak voor de vervaldatum kost het minst. Vlak voor de vervaldatum wordt elk voertuig wekelijks gecontroleerd, wat u hier ook kiest.",
+        "recheckMonthly": "Elke maand",
+        "recheckQuarterly": "Elke drie maanden",
+        "recheckNearDeadline": "Alleen vlak voor de vervaldatum",
+        "inspectionSoonDays": "Vlak voor de vervaldatum betekent binnen",
+        "inspectionSoonDaysHelp": "Binnen dit venster wordt een voertuig wekelijks gecontroleerd, zodat een gehaalde keuring het binnen dagen van de herinneringslijst haalt. Een korter venster betekent minder opzoekingen.",
+        "soon30": "30 dagen",
+        "soon60": "60 dagen",
+        "soon90": "90 dagen",
+        "inspectionOnlyWithCustomer": "Alleen voertuigen met een klant",
+        "inspectionOnlyWithCustomerHelp": "Sla voertuigen zonder vastgelegde klant over. Niemand kan eraan herinnerd worden, dus opzoeken kost voor niets."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "MOT-datums van alle voertuigen in deze werkplaats actueel houden",
-        "syncInspectionsHelp": "Staat dit aan, dan wordt elk voertuig in de werkplaats met een kenteken één keer opgezocht en wordt de MOT-vervaldatum opgeslagen. Daarna wordt elk voertuig maandelijks opnieuw gecontroleerd, en wekelijks zodra de MOT binnen twee maanden vervalt. Elk gevonden voertuig wordt gefactureerd als één Vehicle Registration-opzoeking, dus de eerste ronde kost het meest; kentekens die het register niet kent zijn gratis. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verstuurd."
+        "syncInspectionsHelp": "Als dit aanstaat, wordt elk voertuig met een kenteken één keer opgezocht en wordt de MOT-datum opgeslagen. Daarna worden voertuigen opnieuw gecontroleerd zoals hieronder ingesteld. Elk gevonden voertuig wordt gefactureerd als één Vehicle Registration-opzoeking; kentekens die het register niet kent zijn gratis. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verzonden.",
+        "inspectionRecheck": "Voertuigen die al een datum hebben opnieuw controleren",
+        "inspectionRecheckHelp": "Een datum verandert alleen als een keuring is gehaald. Maandelijks merkt een vervroegde keuring het snelst; alleen vlak voor de vervaldatum kost het minst. Vlak voor de vervaldatum wordt elk voertuig wekelijks gecontroleerd, wat u hier ook kiest.",
+        "recheckMonthly": "Elke maand",
+        "recheckQuarterly": "Elke drie maanden",
+        "recheckNearDeadline": "Alleen vlak voor de vervaldatum",
+        "inspectionSoonDays": "Vlak voor de vervaldatum betekent binnen",
+        "inspectionSoonDaysHelp": "Binnen dit venster wordt een voertuig wekelijks gecontroleerd, zodat een gehaalde keuring het binnen dagen van de herinneringslijst haalt. Een korter venster betekent minder opzoekingen.",
+        "soon30": "30 dagen",
+        "soon60": "60 dagen",
+        "soon90": "90 dagen",
+        "inspectionOnlyWithCustomer": "Alleen voertuigen met een klant",
+        "inspectionOnlyWithCustomerHelp": "Sla voertuigen zonder vastgelegde klant over. Niemand kan eraan herinnerd worden, dus opzoeken kost voor niets."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "APK-vervaldatums van alle voertuigen in deze werkplaats bijhouden",
-        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende APK-vervaldatum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+        "syncInspectionsHelp": "Eens per uur worden voertuigen die aan een controle toe zijn op kenteken opgezocht en wordt de volgende APK-datum opgeslagen; hoe vaak een voertuig opnieuw wordt gecontroleerd, stelt u hieronder in. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verzonden.",
+        "inspectionRecheck": "Voertuigen die al een datum hebben opnieuw controleren",
+        "inspectionRecheckHelp": "Een datum verandert alleen als een keuring is gehaald. Maandelijks merkt een vervroegde keuring het snelst; alleen vlak voor de vervaldatum kost het minst. Vlak voor de vervaldatum wordt elk voertuig wekelijks gecontroleerd, wat u hier ook kiest.",
+        "recheckMonthly": "Elke maand",
+        "recheckQuarterly": "Elke drie maanden",
+        "recheckNearDeadline": "Alleen vlak voor de vervaldatum",
+        "inspectionSoonDays": "Vlak voor de vervaldatum betekent binnen",
+        "inspectionSoonDaysHelp": "Binnen dit venster wordt een voertuig wekelijks gecontroleerd, zodat een gehaalde keuring het binnen dagen van de herinneringslijst haalt. Een korter venster betekent minder opzoekingen.",
+        "soon30": "30 dagen",
+        "soon60": "60 dagen",
+        "soon90": "90 dagen",
+        "inspectionOnlyWithCustomer": "Alleen voertuigen met een klant",
+        "inspectionOnlyWithCustomerHelp": "Sla voertuigen zonder vastgelegde klant over. Niemand kan eraan herinnerd worden, dus opzoeken kost voor niets."
       }
     },
     "regcheck": {

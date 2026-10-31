@@ -375,7 +375,8 @@ export async function getIntegrationConnection(connectorId: string) {
           row && manifest.capabilities.includes(INSPECTION_CAPABILITY)
             ? await inspectionSyncOverview(
                 organizationId,
-                (row.state as Record<string, unknown>) ?? {}
+                (row.state as Record<string, unknown>) ?? {},
+                effectiveSettings(connectorId, (row.settings as Record<string, unknown>) ?? {})
               )
             : null,
         backup:

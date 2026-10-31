@@ -35,6 +35,12 @@ export const createVehicleSchema = z.object({
   customerId: z.string().optional(),
   /** Next periodic inspection, YYYY-MM-DD, set by hand. Empty clears a manual date. */
   inspectionDueAt: z.string().optional(),
+  /**
+   * The registry connector whose lookup filled inspectionDueAt, left as it
+   * was. The date is then saved as that registry's answer, checked now, and
+   * not as a hand-typed date the sync would look up again straight away.
+   */
+  inspectionDueSource: z.string().max(60).optional(),
 })
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({

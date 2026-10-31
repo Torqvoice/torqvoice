@@ -513,7 +513,19 @@
       },
       "settings": {
         "syncInspections": "Bu atölyedeki tüm araçların muayene tarihlerini güncel tut",
-        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki EU-kontroll tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+        "syncInspectionsHelp": "Saatte bir, kontrolü gelen araçlar plakadan sorgulanır ve sonraki EU-kontroll tarihi kaydedilir; bir aracın ne sıklıkla yeniden kontrol edileceği aşağıda ayarlanır. Yalnızca bu atölyede kayıtlı araçlar gönderilir.",
+        "inspectionRecheck": "Zaten tarihi olan araçları yeniden kontrol et",
+        "inspectionRecheckHelp": "Bir tarih yalnızca muayene geçildiğinde değişir. Aylık, erken yapılan bir muayeneyi en çabuk fark eder; yalnızca son tarihe yakın en az maliyetlidir. Son tarihe yakınken her araç, buradaki seçimden bağımsız olarak haftalık kontrol edilir.",
+        "recheckMonthly": "Her ay",
+        "recheckQuarterly": "Üç ayda bir",
+        "recheckNearDeadline": "Yalnızca son tarihe yakın",
+        "inspectionSoonDays": "Son tarihe yakın demek şu süre içinde",
+        "inspectionSoonDaysHelp": "Bu pencerede bir araç haftalık kontrol edilir, böylece geçilen bir muayene aracı günler içinde hatırlatma listesinden çıkarır. Daha kısa pencere daha az sorgu demektir.",
+        "soon30": "30 gün",
+        "soon60": "60 gün",
+        "soon90": "90 gün",
+        "inspectionOnlyWithCustomer": "Yalnızca müşterisi olan araçlar",
+        "inspectionOnlyWithCustomerHelp": "Kayıtlı müşterisi olmayan araçları atla. Onlar için kimseye hatırlatma gönderilemez, bu yüzden sorgulamak boşa maliyet olur."
       }
     },
     "openapi-automotive": {
@@ -539,7 +551,19 @@
       },
       "settings": {
         "syncInspections": "Bu atölyedeki tüm araçların MOT tarihlerini güncel tut",
-        "syncInspectionsHelp": "Bu açıkken atölyedeki plakası olan her araç bir kez sorgulanır ve MOT bitiş tarihi kaydedilir. Ardından her araç ayda bir, MOT'una iki aydan az kaldığında ise haftada bir yeniden kontrol edilir. Bulunan her araç bir Vehicle Registration sorgusu olarak faturalanır, bu yüzden ilk tarama en pahalısıdır; sicilin tanımadığı plakalar ücretsizdir. Yalnızca bu atölyede kayıtlı araçlar gönderilir."
+        "syncInspectionsHelp": "Bu açıkken plakası olan her araç bir kez sorgulanır ve MOT tarihi kaydedilir. Sonrasında araçlar aşağıda ayarlandığı gibi yeniden kontrol edilir. Bulunan her araç bir Vehicle Registration sorgusu olarak ücretlendirilir; kayıtta olmayan plakalar ücretsizdir. Yalnızca bu atölyede kayıtlı araçlar gönderilir.",
+        "inspectionRecheck": "Zaten tarihi olan araçları yeniden kontrol et",
+        "inspectionRecheckHelp": "Bir tarih yalnızca muayene geçildiğinde değişir. Aylık, erken yapılan bir muayeneyi en çabuk fark eder; yalnızca son tarihe yakın en az maliyetlidir. Son tarihe yakınken her araç, buradaki seçimden bağımsız olarak haftalık kontrol edilir.",
+        "recheckMonthly": "Her ay",
+        "recheckQuarterly": "Üç ayda bir",
+        "recheckNearDeadline": "Yalnızca son tarihe yakın",
+        "inspectionSoonDays": "Son tarihe yakın demek şu süre içinde",
+        "inspectionSoonDaysHelp": "Bu pencerede bir araç haftalık kontrol edilir, böylece geçilen bir muayene aracı günler içinde hatırlatma listesinden çıkarır. Daha kısa pencere daha az sorgu demektir.",
+        "soon30": "30 gün",
+        "soon60": "60 gün",
+        "soon90": "90 gün",
+        "inspectionOnlyWithCustomer": "Yalnızca müşterisi olan araçlar",
+        "inspectionOnlyWithCustomerHelp": "Kayıtlı müşterisi olmayan araçları atla. Onlar için kimseye hatırlatma gönderilemez, bu yüzden sorgulamak boşa maliyet olur."
       }
     },
     "rdw": {
@@ -550,7 +574,19 @@
       },
       "settings": {
         "syncInspections": "Bu atölyedeki tüm araçların APK tarihlerini güncel tut",
-        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki APK tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+        "syncInspectionsHelp": "Saatte bir, kontrolü gelen araçlar plakadan sorgulanır ve sonraki APK tarihi kaydedilir; bir aracın ne sıklıkla yeniden kontrol edileceği aşağıda ayarlanır. Yalnızca bu atölyede kayıtlı araçlar gönderilir.",
+        "inspectionRecheck": "Zaten tarihi olan araçları yeniden kontrol et",
+        "inspectionRecheckHelp": "Bir tarih yalnızca muayene geçildiğinde değişir. Aylık, erken yapılan bir muayeneyi en çabuk fark eder; yalnızca son tarihe yakın en az maliyetlidir. Son tarihe yakınken her araç, buradaki seçimden bağımsız olarak haftalık kontrol edilir.",
+        "recheckMonthly": "Her ay",
+        "recheckQuarterly": "Üç ayda bir",
+        "recheckNearDeadline": "Yalnızca son tarihe yakın",
+        "inspectionSoonDays": "Son tarihe yakın demek şu süre içinde",
+        "inspectionSoonDaysHelp": "Bu pencerede bir araç haftalık kontrol edilir, böylece geçilen bir muayene aracı günler içinde hatırlatma listesinden çıkarır. Daha kısa pencere daha az sorgu demektir.",
+        "soon30": "30 gün",
+        "soon60": "60 gün",
+        "soon90": "90 gün",
+        "inspectionOnlyWithCustomer": "Yalnızca müşterisi olan araçlar",
+        "inspectionOnlyWithCustomerHelp": "Kayıtlı müşterisi olmayan araçları atla. Onlar için kimseye hatırlatma gönderilemez, bu yüzden sorgulamak boşa maliyet olur."
       }
     },
     "regcheck": {
