@@ -33,6 +33,8 @@ const h = vi.hoisted(() => ({
   files: {} as Record<string, string>,
   finds: [] as { snapshotId: string; pattern: string }[],
   dumps: [] as { snapshotId: string; path: string; target: string }[],
+  /** Set, holds every pull until released: for opens that must stay in flight. */
+  gate: null as Promise<void> | null,
 }))
 
 vi.mock('@/lib/upload-root', () => ({ dataRoot: () => h.root }))
@@ -54,6 +56,7 @@ vi.mock('@/lib/backup/restic', () => ({
   resticDumpToFile: vi.fn(
     async (_opts: unknown, input: { snapshotId: string; path: string; target: string }) => {
       h.dumps.push(input)
+      if (h.gate) await h.gate
       const body = h.files[input.path]
       if (body === undefined) throw new Error(`no such file in the fake snapshot: ${input.path}`)
       mkdirSync(path.dirname(input.target), { recursive: true })
@@ -72,6 +75,7 @@ import {
   listRestorePointRows,
   openingStage,
   openRestorePoint,
+  RESTORE_POINTS_BUSY,
   RestorePointClosedError,
   sweepRestorePoints,
 } from '@/lib/backup/explore'
@@ -195,6 +199,7 @@ beforeEach(() => {
   h.files = {}
   h.finds = []
   h.dumps = []
+  h.gate = null
   vi.mocked(openTarget).mockClear()
 })
 
@@ -631,6 +636,34 @@ describe('extractRestorePointFile', () => {
     expect(h.dumps).toEqual([])
   })
 
+  it('serves a file under the id the snapshot was taken with, for a repository an earlier install wrote', async () => {
+    await closeRestorePoints(ORG)
+    stage(DATA, [STAGED_OLD])
+    await openRestorePoint(TARGET, SNAP)
+    const OLD_OWN = '/srv/torqvoice/data/uploads/cmoldinstall1/services/photo.jpg'
+    h.found['photo.jpg'] = [OLD_OWN]
+    h.files[OLD_OWN] = 'old bytes'
+
+    const out = await extractRestorePointFile(ORG, SNAP, 'services', 'photo.jpg')
+    expect(h.dumps.map((d) => d.path)).toEqual([STAGED_OLD, OLD_OWN])
+    expect(readFileSync(out.file, 'utf8')).toBe('old bytes')
+  })
+
+  it('still prefers the workshop’s own uploads folder when both ids are in the snapshot', async () => {
+    await closeRestorePoints(ORG)
+    stage(DATA, [STAGED_OLD])
+    await openRestorePoint(TARGET, SNAP)
+    const OLD_OWN = '/srv/torqvoice/data/uploads/cmoldinstall1/services/photo.jpg'
+    const NOW_OWN = '/srv/torqvoice/data/uploads/org1/services/photo.jpg'
+    h.found['photo.jpg'] = [OLD_OWN, NOW_OWN]
+    h.files[OLD_OWN] = 'old bytes'
+    h.files[NOW_OWN] = 'new bytes'
+
+    const out = await extractRestorePointFile(ORG, SNAP, 'services', 'photo.jpg')
+    expect(h.dumps.at(-1)?.path).toBe(NOW_OWN)
+    expect(readFileSync(out.file, 'utf8')).toBe('new bytes')
+  })
+
   it('keeps the file it pulled out, so a second request does not ask restic again', async () => {
     h.found['photo.jpg'] = [OWN]
     h.files[OWN] = 'jpeg bytes'
@@ -774,6 +807,42 @@ describe('closing restore points', () => {
       expect(listRestorePointRows(ORG, snap, 'customers', '', 1).total).toBe(2)
       expect(existsSync(exploreDirFor(ORG, snap))).toBe(true)
     }
+  })
+})
+
+describe('opens in flight', () => {
+  it('count against the cap in the order they came, so a third is refused while two are pulling', async () => {
+    stage()
+    let release!: () => void
+    h.gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const first = openRestorePoint(TARGET, 'aaaaaaa1')
+    const second = openRestorePoint(TARGET, 'aaaaaaa2')
+    const third = openRestorePoint(TARGET, 'aaaaaaa3')
+
+    await expect(third).rejects.toThrow(RESTORE_POINTS_BUSY)
+    expect(existsSync(exploreDirFor(ORG, 'aaaaaaa3'))).toBe(false)
+
+    release()
+    await expect(first).resolves.toMatchObject({ snapshotId: 'aaaaaaa1' })
+    await expect(second).resolves.toMatchObject({ snapshotId: 'aaaaaaa2' })
+    expect(listRestorePointRows(ORG, 'aaaaaaa1', 'customers', '', 1).total).toBe(2)
+    expect(listRestorePointRows(ORG, 'aaaaaaa2', 'customers', '', 1).total).toBe(2)
+  })
+
+  it('a second request for the snapshot being pulled joins it rather than counting twice', async () => {
+    stage()
+    let release!: () => void
+    h.gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const first = openRestorePoint(TARGET, 'aaaaaaa1')
+    const again = openRestorePoint(TARGET, 'aaaaaaa1')
+    const second = openRestorePoint(TARGET, 'aaaaaaa2')
+    release()
+    await expect(Promise.all([first, again, second])).resolves.toHaveLength(3)
+    expect(h.dumps.filter((d) => d.snapshotId === 'aaaaaaa1')).toHaveLength(1)
   })
 })
 

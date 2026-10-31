@@ -32,7 +32,10 @@ const PROVIDERS: readonly S3Provider[] = ['aws', 'r2', 'b2', 'wasabi', 'hetzner'
 
 const REGION = /^[a-z0-9]+(-[a-z0-9]+)*$/
 const R2_ACCOUNT = /^[a-f0-9]{32}$/
-const BUCKET = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/
+// Lowercase letters, digits, dots and dashes, as every vendor above allows;
+// no dot pair, so a bucket can never read as a step up the path. Path-style
+// addressing keeps a dot in the name out of the TLS host.
+const BUCKET = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/
 const PREFIX = /^[A-Za-z0-9](?:[A-Za-z0-9._-]*\/?)*[A-Za-z0-9]$|^[A-Za-z0-9]$/
 
 export const PROVIDER_NAMES: Record<S3Provider, string> = {
@@ -141,10 +144,10 @@ export function repositoryFor(
   if (!PROVIDERS.includes(provider))
     throw new S3SettingsError('provider', 'Choose a storage provider.')
   const bucket = text(settings, 'bucket').toLowerCase()
-  if (!BUCKET.test(bucket) || bucket.includes('--')) {
+  if (!BUCKET.test(bucket) || bucket.includes('..')) {
     throw new S3SettingsError(
       'bucket',
-      'The bucket name can only contain lowercase letters, digits and single dashes.'
+      'The bucket name can only contain lowercase letters, digits, dots and dashes.'
     )
   }
   const prefix = text(settings, 'prefix') || 'torqvoice'

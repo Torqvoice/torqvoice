@@ -13,8 +13,19 @@
  * other upload and refused before it can fill the disk or the heap.
  */
 
-/** The largest data.json read into memory, by a restore or the explorer. */
-export const MAX_DATA_FILE_BYTES = 128 * 1024 * 1024
+const DEFAULT_MAX_DATA_FILE_MB = 128
+
+/**
+ * The largest data.json read into memory, by a restore or the explorer:
+ * 128 MiB unless BACKUP_MAX_DATA_FILE_MB says otherwise. A server with the
+ * memory for it raises the number; a backup run whose data file is over it
+ * says so in its log, so the operator hears before a restore is needed.
+ */
+export function maxDataFileBytes(): number {
+  const mb = Number(process.env.BACKUP_MAX_DATA_FILE_MB)
+  const chosen = Number.isFinite(mb) && mb >= 16 ? Math.floor(mb) : DEFAULT_MAX_DATA_FILE_MB
+  return chosen * 1024 * 1024
+}
 
 /** What must stay free on the data disk once a snapshot has been written out. */
 export const RESTORE_DISK_HEADROOM_BYTES = 1024 * 1024 * 1024

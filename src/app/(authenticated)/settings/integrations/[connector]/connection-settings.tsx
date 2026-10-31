@@ -35,6 +35,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DateInput } from '@/components/ui/date-input'
 import { BackupCard } from './backup-card'
+import type { ReauthRequirement } from '@/lib/reauth'
 import { OptionPicker } from './option-picker'
 import { conditionMet } from '@/features/integrations/Lib/conditions'
 import { connectorName } from '@/features/integrations/Lib/display-name'
@@ -84,11 +85,14 @@ export function ConnectionSettings({
   view,
   activity,
   platformHandlesBackups = false,
+  reauth = 'none',
 }: {
   view: ConnectionView
   activity: Activity
   /** The bucket connector on the cloud instance, where Torqvoice backs the workshop up already. */
   platformHandlesBackups?: boolean
+  /** What a restore from this destination asks the person for, lib/reauth.server.ts. */
+  reauth?: ReauthRequirement
 }) {
   const t = useTranslations('integrations')
   const tc = useTranslations(`integrations.connectors.${view.manifest.id}`)
@@ -628,7 +632,12 @@ export function ConnectionSettings({
       </AppCard>
 
       {connected && view.backup && (
-        <BackupCard connectorId={manifest.id} backup={view.backup} docs={manifest.docs} />
+        <BackupCard
+          connectorId={manifest.id}
+          backup={view.backup}
+          docs={manifest.docs}
+          reauth={reauth}
+        />
       )}
 
       {connected && manifest.settings.length > 0 && (

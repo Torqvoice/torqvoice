@@ -2059,8 +2059,19 @@ export async function restoreBackup(
     releaseRestoreLock(lock)
   }
 
-  // Restore files after successful DB transaction
-  if (files) await restoreFiles(files, ctx.organizationId)
+  // The rows are committed by now. A failure here (a full disk, a folder
+  // that cannot be written) leaves records from the backup beside files that
+  // are only partly from it, and the message has to say so.
+  if (files) {
+    try {
+      await restoreFiles(files, ctx.organizationId)
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err)
+      throw new Error(
+        `The records were put back, but copying the files failed: ${reason}. The workshop's records are now from the backup while its files are only partly from it; fix the cause and restore again.`
+      )
+    }
+  }
 
   return { redactedSettings }
 }

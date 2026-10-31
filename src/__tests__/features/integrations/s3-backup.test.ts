@@ -37,6 +37,17 @@ describe('s3 repository address', () => {
     )
   })
 
+  it('takes the bucket names AWS allows that are safe in a path: a dot, two dashes in a row', () => {
+    for (const bucket of ['shop.other', 'shop--x']) {
+      const repo = repositoryFor(
+        { provider: 'aws', region: 'eu-west-1', bucket, prefix: 'tv' },
+        creds,
+        false
+      )
+      expect(repo.repository).toBe(`s3:https://s3.eu-west-1.amazonaws.com/${bucket}/tv`)
+    }
+  })
+
   it('refuses a region, account id, bucket or prefix that could change the host or path', () => {
     const bad = (settings: Record<string, unknown>, field: string) => {
       try {
@@ -58,8 +69,8 @@ describe('s3 repository address', () => {
     bad({ region: '' }, 'region')
     bad({ bucket: 'a' }, 'bucket')
     bad({ bucket: 'shop/other' }, 'bucket')
-    bad({ bucket: 'shop.other' }, 'bucket')
-    bad({ bucket: 'shop--x' }, 'bucket')
+    bad({ bucket: 'shop..other' }, 'bucket')
+    bad({ bucket: 'shop_x' }, 'bucket')
     bad({ prefix: '../other' }, 'prefix')
     bad({ prefix: 'a//b' }, 'prefix')
     bad({ prefix: '/abs' }, 'prefix')

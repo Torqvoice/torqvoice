@@ -23,6 +23,7 @@ import {
   platformHost,
 } from '@/lib/backup/platform'
 import { sweepRestorePoints } from '@/lib/backup/explore'
+import { sweepAbandonedRestoreDirs } from '@/lib/backup/restore'
 import { resticForgetSnapshots, resticSnapshots } from '@/lib/backup/restic'
 import {
   BACKUP_SETTING_DEFAULTS,
@@ -385,6 +386,12 @@ export function processBackupRuns() {
     await sweepRestorePoints().catch((err) =>
       console.error('[cron] Restore point sweep failed:', err)
     )
+    // And the folder a restore that died mid-way left, for the same reason.
+    await sweepAbandonedRestoreDirs()
+      .then((n) => {
+        if (n > 0) console.warn(`[cron] Removed ${n} abandoned restore folder(s)`)
+      })
+      .catch((err) => console.error('[cron] Restore folder sweep failed:', err))
     try {
       const stale = await failStaleRuns()
       if (stale > 0) console.warn(`[cron] Marked ${stale} stale backup run(s) as failed`)

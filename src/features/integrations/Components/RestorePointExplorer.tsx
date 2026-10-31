@@ -206,10 +206,13 @@ function sectionId(name: string) {
  * once, quietly; after that the page asks.
  */
 export function RestorePointExplorer({
+  organizationId,
   snapshotId,
   source,
   backHref,
 }: {
+  /** The workshop whose restore point this is: part of every query key, so a switch of workshop never reads another's cached rows. */
+  organizationId: string
   snapshotId: string
   source: ExploreSource
   backHref: string
@@ -229,7 +232,7 @@ export function RestorePointExplorer({
   const advanceWhenLoaded = useRef(false)
 
   const sourceKey = source.kind === 'platform' ? 'platform' : source.connectorId
-  const baseKey = ['restore-point', snapshotId, sourceKey] as const
+  const baseKey = ['restore-point', organizationId, snapshotId, sourceKey] as const
   const openKey = [...baseKey, 'open'] as const
 
   // The owner-only refusal says "restore"; here nothing is restored.

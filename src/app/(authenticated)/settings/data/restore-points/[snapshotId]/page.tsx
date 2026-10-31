@@ -33,5 +33,12 @@ export default async function RestorePointPage({
   const backHref =
     source.kind === 'platform' ? '/settings/data' : `/settings/integrations/${source.connectorId}`
 
-  return <RestorePointExplorer snapshotId={snapshotId} source={source} backHref={backHref} />
+  return (
+    <RestorePointExplorer
+      organizationId={ctx.organizationId}
+      snapshotId={snapshotId}
+      source={source}
+      backHref={backHref}
+    />
+  )
 }

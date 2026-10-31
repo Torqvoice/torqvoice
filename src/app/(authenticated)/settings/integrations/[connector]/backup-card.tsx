@@ -24,6 +24,7 @@ import {
   RestoreBackupDialog,
   type RestoreTarget,
 } from '@/features/integrations/Components/RestoreBackupDialog'
+import type { ReauthRequirement } from '@/lib/reauth'
 import {
   type BackupSnapshot,
   useBackupSnapshots,
@@ -109,11 +110,14 @@ export function BackupCard({
   connectorId,
   backup,
   docs,
+  reauth,
 }: {
   connectorId: string
   backup: BackupOverview
   /** The integration's docs page, where restoring is described. */
   docs: string
+  /** What the restore dialog asks the person for, lib/reauth.server.ts. */
+  reauth: ReauthRequirement
 }) {
   const t = useTranslations('integrations.connection.backup')
   const tc = useTranslations('integrations')
@@ -383,6 +387,7 @@ export function BackupCard({
       <RestoreBackupDialog
         connectorId={connectorId}
         workshopName={backup.workshopName}
+        reauth={reauth}
         target={target}
         onClose={() => setTarget(null)}
       />

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
 import { AlertTriangle, History, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { ReauthField } from '@/app/(authenticated)/settings/data/reauth-field'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { handleGated } from '@/components/upgrade-gate'
 import { restoreBackupSnapshot } from '@/features/integrations/Actions/restoreBackupSnapshot'
 import { useActionErrorText } from '@/features/integrations/Hooks/useBackupSnapshots'
+import { type ReauthRequirement, reauthErrorMessageKey } from '@/lib/reauth'
 
 /** The backup a row of the Backups card offers to put back. */
 export interface RestoreTarget {
@@ -28,18 +30,21 @@ export interface RestoreTarget {
 }
 
 /**
- * Puts one backup back, after the warning and the workshop's name typed in
- * full, the way the upload under Settings, Data is confirmed. The restore
+ * Puts one backup back, after the warning, the workshop's name typed in
+ * full, and the password or two-factor code the account has, the way the
+ * platform restore and deleting the workshop are confirmed. The restore
  * itself runs in the background; the card follows the run row.
  */
 export function RestoreBackupDialog({
   connectorId,
   workshopName,
+  reauth,
   target,
   onClose,
 }: {
   connectorId: string
   workshopName: string
+  reauth: ReauthRequirement
   /** The backup to restore; null keeps the dialog closed. */
   target: RestoreTarget | null
   onClose: () => void
@@ -49,26 +54,39 @@ export function RestoreBackupDialog({
   const router = useRouter()
   const errorText = useActionErrorText()
   const [confirmName, setConfirmName] = useState('')
+  const [reauthValue, setReauthValue] = useState('')
+  const [reauthError, setReauthError] = useState<string | null>(null)
   const [starting, setStarting] = useState(false)
 
   const confirmed = workshopName.trim().length > 0 && confirmName.trim() === workshopName.trim()
+  const reauthReady = reauth === 'none' || reauthValue.trim() !== ''
 
   const close = () => {
     setConfirmName('')
+    setReauthValue('')
+    setReauthError(null)
     onClose()
   }
 
   const restore = async () => {
-    if (!target || !confirmed) return
+    if (!target || !confirmed || !reauthReady) return
     setStarting(true)
+    setReauthError(null)
     try {
       const res = await restoreBackupSnapshot({
         connectorId,
         snapshotId: target.snapshotId,
         confirmName,
+        ...(reauth === 'password'
+          ? { password: reauthValue }
+          : reauth === 'totp'
+            ? { totpCode: reauthValue }
+            : {}),
       })
       if (!res.success) {
-        if (!handleGated(res)) toast.error(errorText(res.error))
+        // A refused password or code belongs next to the field it is about.
+        if (reauthErrorMessageKey(res.error)) setReauthError(res.error ?? null)
+        else if (!handleGated(res)) toast.error(errorText(res.error))
         return
       }
       toast.success(t('started'))
@@ -124,12 +142,24 @@ export function RestoreBackupDialog({
               if (e.key === 'Enter') void restore()
             }}
           />
+          <ReauthField
+            id="restore-backup-reauth"
+            requirement={reauth}
+            value={reauthValue}
+            onChange={setReauthValue}
+            onSubmit={() => void restore()}
+            error={reauthError}
+          />
           <p className="text-xs text-muted-foreground">{t('whileRunning')}</p>
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="ghost" onClick={close} disabled={starting}>
               {t('cancel')}
             </Button>
-            <Button variant="destructive" onClick={restore} disabled={!confirmed || starting}>
+            <Button
+              variant="destructive"
+              onClick={restore}
+              disabled={!confirmed || !reauthReady || starting}
+            >
               {starting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('confirm')}
             </Button>

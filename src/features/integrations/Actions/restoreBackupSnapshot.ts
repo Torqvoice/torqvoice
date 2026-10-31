@@ -11,9 +11,10 @@ import { db } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
 import { FeatureGatedError, getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { reauthInputSchema, verifyReauth } from '@/lib/reauth.server'
 import { withAuth } from '@/lib/with-auth'
 
-const restoreSchema = z.object({
+const restoreSchema = reauthInputSchema.extend({
   connectorId: z.string().min(1),
   snapshotId: z.string().regex(/^[0-9a-f]{8,64}$/),
   /** The workshop's name, typed to confirm. */
@@ -27,6 +28,9 @@ export type RestoreBackupSnapshotInput = z.infer<typeof restoreSchema>
  * run goes on in the background and the page follows it; refused while a
  * backup or restore is queued or running, and refused to anyone but an
  * owner or administrator, since it replaces everything the workshop has.
+ * Like the platform restore, the person proves who they are again
+ * (password, two-factor code or a fresh sign-in, see lib/reauth.server.ts):
+ * a session left open or stolen must not be enough to replace the workshop.
  */
 export async function restoreBackupSnapshot(input: RestoreBackupSnapshotInput) {
   return withAuth(
@@ -37,7 +41,8 @@ export async function restoreBackupSnapshot(input: RestoreBackupSnapshotInput) {
       if (!(await canRestoreBackups({ userId, organizationId, isAdmin }))) {
         throw new Error('restoreOwnerOnly')
       }
-      const { connectorId, snapshotId, confirmName } = restoreSchema.parse(input)
+      const { connectorId, snapshotId, confirmName, password, totpCode } =
+        restoreSchema.parse(input)
       const manifest = getManifest(connectorId)
       if (!manifest?.capabilities.includes(BACKUP_CAPABILITY)) {
         throw new Error('This integration is not a backup destination')
@@ -55,6 +60,7 @@ export async function restoreBackupSnapshot(input: RestoreBackupSnapshotInput) {
       if (!org || confirmName.trim() !== org.name.trim()) {
         throw new Error('Type the workshop name exactly as it is written to confirm')
       }
+      await verifyReauth(userId, { password, totpCode }, 'restore')
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true, status: true },

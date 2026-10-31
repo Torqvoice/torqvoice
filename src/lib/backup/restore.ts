@@ -12,6 +12,7 @@ import { dataRoot } from '@/lib/upload-root'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import {
   acquireBackupLock,
+  backupLockHolder,
   drainBackupQueue,
   escapeHtml,
   finishRun,
@@ -26,7 +27,7 @@ import {
 import { closeRestorePoints } from './explore'
 import { freezeOrganization, renewFreeze, unfreezeOrganization } from './freeze'
 import { restoreFromDisk } from './import'
-import { MAX_DATA_FILE_BYTES, RESTORE_DISK_HEADROOM_BYTES } from './limits'
+import { RESTORE_DISK_HEADROOM_BYTES, maxDataFileBytes } from './limits'
 import { ResticError, resticRestore, resticRestoreSize, resticSnapshots } from './restic'
 import { connectMessage } from './target'
 
@@ -76,11 +77,34 @@ export async function assertRoomForRestore(bytes: number, root = dataRoot()): Pr
 /** Refuses a data file larger than this server reads into memory. */
 export async function assertDataFileWithinLimit(file: string): Promise<void> {
   const { size } = await stat(file)
-  if (size > MAX_DATA_FILE_BYTES) {
+  const limit = maxDataFileBytes()
+  if (size > limit) {
     throw new Error(
-      `The data file in this restore point is ${formatBytes(size)}, more than this server reads into memory (${formatBytes(MAX_DATA_FILE_BYTES)}).`
+      `The data file in this restore point is ${formatBytes(size)}, more than this server reads into memory (${formatBytes(limit)}; BACKUP_MAX_DATA_FILE_MB raises it on a server with the memory for it).`
     )
   }
+}
+
+/**
+ * Removes the restore folders a run that died left behind. A deploy or a
+ * crash in the middle of a restore leaves a whole decrypted workshop under
+ * restore-tmp with nobody to remove it; the run that holds the backup lock
+ * right now keeps its folder, every other folder there goes. The backup
+ * cron calls this every tick. Returns how many went.
+ */
+export async function sweepAbandonedRestoreDirs(): Promise<number> {
+  const root = path.join(dataRoot(), 'restore-tmp')
+  const entries = await readdir(root, { withFileTypes: true }).catch(() => [])
+  const live = backupLockHolder()?.runId ?? null
+  let removed = 0
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue
+    const named = /^[a-z0-9]+-([a-z0-9]+)$/i.exec(entry.name)
+    if (!named || (live !== null && named[1] === live)) continue
+    await rm(path.join(root, entry.name), { recursive: true, force: true }).catch(() => undefined)
+    removed++
+  }
+  return removed
 }
 
 /** Where one restore is written out: a folder of its own under the data root. */
@@ -318,7 +342,9 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
         ? `Could not take a safety copy of the workshop first; nothing was changed. ${message}`
         : phase === 'preparing' || phase === 'checking'
           ? `${message} Nothing in the workshop was changed.`
-          : message
+          : safetySnapshotId
+            ? `${message} The safety copy taken first (${safetySnapshotId.slice(0, 8)}) is among the restore points; restore it to undo.`
+            : message
     return await finishRun(runId, { status: 'failed', error, safetySnapshotId })
   } finally {
     if (renewal) clearInterval(renewal)

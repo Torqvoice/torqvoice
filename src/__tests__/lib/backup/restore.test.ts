@@ -214,7 +214,7 @@ vi.mock('@/lib/backup/restic', async (importOriginal) => {
 // without writing a hundred megabytes.
 vi.mock('@/lib/backup/limits', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/backup/limits')>()),
-  MAX_DATA_FILE_BYTES: 1000,
+  maxDataFileBytes: () => 1000,
 }))
 
 vi.mock('@/lib/backup/import', () => ({
@@ -252,6 +252,7 @@ import {
   queueRestore,
   restoreDirFor,
   runRestore,
+  sweepAbandonedRestoreDirs,
 } from '@/lib/backup/restore'
 
 const ORG = 'org1'
@@ -446,6 +447,26 @@ describe('queueRestore', () => {
   })
 })
 
+describe('sweepAbandonedRestoreDirs', () => {
+  it('removes the folders no running restore owns, and keeps the one holding the lock', async () => {
+    const live = restoreDirFor(ORG, 'runlive')
+    const dead = restoreDirFor(ORG, 'rundead')
+    const stranger = path.join(dataDir, 'restore-tmp', 'not a run')
+    for (const dir of [live, dead, stranger]) mkdirSync(dir, { recursive: true })
+    ;(globalThis as Row).__torqvoiceBackupLock = { runId: 'runlive', since: Date.now() }
+
+    await expect(sweepAbandonedRestoreDirs()).resolves.toBe(1)
+
+    expect(existsSync(live)).toBe(true)
+    expect(existsSync(dead)).toBe(false)
+    expect(existsSync(stranger)).toBe(true)
+  })
+
+  it('is quiet when the folder does not exist yet', async () => {
+    await expect(sweepAbandonedRestoreDirs()).resolves.toBe(0)
+  })
+})
+
 describe('runRestore', () => {
   it('restores into a folder under the data root, imports from it, and removes it', async () => {
     const runId = addRun()
@@ -516,7 +537,9 @@ describe('runRestore', () => {
     const view = await runRestore(runId)
 
     expect(view.status).toBe('failed')
-    expect(view.error).toBe('Could not restore customers: boom')
+    expect(view.error).toBe(
+      `Could not restore customers: boom The safety copy taken first (${SAFETY.slice(0, 8)}) is among the restore points; restore it to undo.`
+    )
     expect(existsSync(h.restoreTarget as string)).toBe(false)
     expect((globalThis as Row).__torqvoiceBackupLock).toBeNull()
     expect(logAudit).not.toHaveBeenCalled()

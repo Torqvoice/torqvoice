@@ -3,12 +3,9 @@ import path from 'node:path'
 import { z } from 'zod'
 import { dataRoot } from '@/lib/upload-root'
 import { type OpenedTarget, openTarget, type RunTarget } from './engine'
-import {
-  MAX_DATA_FILE_BYTES as MAX_DATA_BYTES,
-  MAX_OPEN_RESTORE_POINTS as MAX_OPEN,
-} from './limits'
+import { MAX_OPEN_RESTORE_POINTS as MAX_OPEN, maxDataFileBytes } from './limits'
 import { UPLOAD_CATEGORIES } from './manifest'
-import { resticDumpToFile, resticFind } from './restic'
+import { type ResticFindMatch, resticDumpToFile, resticFind } from './restic'
 import type { ExploreStage } from '@/features/integrations/Lib/backup-types'
 
 export type { ExploreStage }
@@ -58,6 +55,12 @@ type Row = Record<string, unknown>
 interface OpenPoint {
   key: string
   organizationId: string
+  /**
+   * The workshop id the snapshot was taken under: this one, or the id an
+   * earlier install of the workshop had (a destination connected again from
+   * a new server). Its uploads in the snapshot sit under that id.
+   */
+  sourceOrganizationId: string
   target: RunTarget
   snapshotId: string
   openedAt: number
@@ -120,23 +123,29 @@ async function forget(point: OpenPoint): Promise<void> {
 }
 
 /**
- * Drops restore points open too long and, when one more is about to be
- * added, the oldest beyond the cap. Then removes every folder on disk that
- * no open restore point owns: the registry lives in this process only, so
- * after a restart the folders of the points open before it are found here.
+ * Drops restore points open too long and, with `reserve` above zero, makes
+ * room for that many opens by closing the oldest parsed points beyond the
+ * cap. An open in flight holds a parsed file before it is listed as open, so
+ * a caller reserves its own place and those of the opens registered ahead of
+ * it. Then removes every folder on disk that no open restore point owns: the
+ * registry lives in this process only, so after a restart the folders of the
+ * points open before it are found here.
  */
-async function sweep(makingRoom: boolean, now = Date.now()): Promise<void> {
+async function sweep(reserve: number, now = Date.now()): Promise<void> {
   const points = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
   for (const p of points) if (now - p.openedAt > KEEP_OPEN_MS) await forget(p)
-  if (makingRoom) {
+  if (reserve > 0) {
     const left = [...open().values()].sort((a, b) => a.openedAt - b.openedAt)
-    while (left.length >= MAX_OPEN) {
+    while (left.length > 0 && left.length + reserve > MAX_OPEN) {
       const oldest = left.shift()
       if (oldest) await forget(oldest)
     }
   }
   await sweepOrphans()
 }
+
+export const RESTORE_POINTS_BUSY =
+  'Other restore points are being opened on this server right now; try again in a moment.'
 
 /**
  * Removes the `<orgId>/<snapshotId>` folders under the explore root that no
@@ -172,7 +181,7 @@ export async function closeRestorePoints(organizationId: string): Promise<void> 
  * files of the last viewer do not wait for the next.
  */
 export async function sweepRestorePoints(now = Date.now()): Promise<void> {
-  await sweep(false, now)
+  await sweep(0, now)
 }
 
 /**
@@ -222,14 +231,26 @@ export async function openRestorePoint(
   const existing = open().get(key)
   if (existing) {
     existing.openedAt = Date.now()
-    await sweep(false)
+    await sweep(0)
     return summaryOf(existing)
   }
   const inFlight = opening().get(key)
   if (inFlight) return inFlight
 
-  const promise = (async () => {
-    await sweep(true)
+  // Listed as in flight before any work starts, so a second request for the
+  // same snapshot joins this one and the cap sees this open from the start.
+  let settle!: { resolve: (v: RestorePointSummary) => void; reject: (e: unknown) => void }
+  const promise = new Promise<RestorePointSummary>((resolve, reject) => {
+    settle = { resolve, reject }
+  })
+  opening().set(key, promise)
+  ;(async () => {
+    // This open and the ones registered before it that are still in flight:
+    // the map keeps insertion order, so the place in it is the place in line.
+    const reserve = [...opening().keys()].indexOf(key) + 1
+    await sweep(reserve)
+    // Nothing left to close and still over the cap: the rest are in flight.
+    if (open().size + reserve > MAX_OPEN) throw new Error(RESTORE_POINTS_BUSY)
     const dir = exploreDirFor(organizationId, snapshotId)
     await rm(dir, { recursive: true, force: true })
     await mkdir(dir, { recursive: true, mode: 0o700 })
@@ -239,8 +260,7 @@ export async function openRestorePoint(
       await rm(dir, { recursive: true, force: true }).catch(() => undefined)
       throw err
     }
-  })()
-  opening().set(key, promise)
+  })().then(settle.resolve, settle.reject)
   try {
     return await promise
   } finally {
@@ -263,6 +283,8 @@ async function pull(
   const dataPath = (staged.find((m) => m.path.split('/').at(-2) === organizationId) ?? staged[0])
     ?.path
   if (!dataPath) throw new Error('This restore point holds no data file')
+  const stagedUnder = dataPath.split('/').at(-2) ?? ''
+  const sourceOrganizationId = ORGANIZATION_ID.test(stagedUnder) ? stagedUnder : organizationId
   const dataFile = path.join(dir, 'data.json')
   let raw: unknown
   try {
@@ -271,7 +293,7 @@ async function pull(
       snapshotId,
       path: dataPath,
       target: dataFile,
-      maxBytes: MAX_DATA_BYTES,
+      maxBytes: maxDataFileBytes(),
     })
     stages().set(key, 'reading')
     try {
@@ -308,6 +330,7 @@ async function pull(
   const point: OpenPoint = {
     key,
     organizationId,
+    sourceOrganizationId,
     target,
     snapshotId,
     openedAt: Date.now(),
@@ -511,7 +534,9 @@ export function getRestorePointRow(
 /**
  * One upload out of the restore point, written to a file under the restore
  * point's folder and returned for streaming. Looked for only under this
- * workshop's uploads folder in the snapshot, in a known category.
+ * workshop's uploads folder in the snapshot, in a known category; this
+ * workshop's own id first, then the id the snapshot was taken under, for a
+ * repository an earlier install of the workshop wrote.
  */
 export async function extractRestorePointFile(
   organizationId: string,
@@ -527,15 +552,17 @@ export async function extractRestorePointFile(
   if (have?.isFile()) return { file, bytes: have.size }
   const opened = await openTarget(point.target)
   const found = await resticFind(opened.base, { snapshotId, pattern: name })
-  const inUploads = found.find((m) => {
+  const under = (owner: string) => (m: ResticFindMatch) => {
     const parts = m.path.split('/')
     return (
       parts.at(-1) === name &&
       parts.at(-2) === category &&
-      parts.at(-3) === organizationId &&
+      parts.at(-3) === owner &&
       parts.at(-4) === 'uploads'
     )
-  })
+  }
+  const inUploads =
+    found.find(under(organizationId)) ?? found.find(under(point.sourceOrganizationId))
   if (!inUploads) throw new Error('That file is not in this restore point')
   const { bytes } = await resticDumpToFile(opened.base, {
     snapshotId,

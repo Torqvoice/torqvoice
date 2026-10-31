@@ -52,6 +52,7 @@ import {
   resticUnlock,
 } from './restic'
 import type { RetentionPolicy } from './restic'
+import { maxDataFileBytes } from './limits'
 import { connectMessage, ensureCacheDir, repositoryPassword, sanitizeRepository } from './target'
 
 /**
@@ -453,6 +454,18 @@ export async function takeSnapshot(
     options.includeSecrets ?? target.includeSecrets
   )
   try {
+    // The snapshot is taken either way: a backup nobody can restore here is
+    // still better than none, and a bigger server restores it. But it is
+    // said every run, so the operator hears before a restore is needed.
+    const { size } = await stat(dataFile)
+    const limit = maxDataFileBytes()
+    if (size > limit) {
+      await target.log(
+        'error',
+        'The data file is larger than this server reads back into memory, so this snapshot cannot be restored here as things stand; raise BACKUP_MAX_DATA_FILE_MB on a server with the memory for it',
+        { bytes: size, limit }
+      )
+    }
     const paths = await snapshotPaths(
       target.organizationId,
       staging,
