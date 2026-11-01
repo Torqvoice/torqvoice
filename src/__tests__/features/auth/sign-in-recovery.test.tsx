@@ -101,6 +101,8 @@ describe('SignInForm after failed attempts', () => {
     const signUp = screen.getByRole('link', { name: /Create an account/ })
     expect(signUp).toHaveAttribute('href', '/auth/sign-up')
     expect(signUp).toHaveTextContent('No account with sam@example.com yet? Create one.')
+    // The address is in the row's text, which analytics would otherwise record.
+    expect(signUp).toHaveClass('ph-no-capture')
     expect(screen.queryByRole('link', { name: 'Reset it here' })).not.toBeInTheDocument()
   })
 

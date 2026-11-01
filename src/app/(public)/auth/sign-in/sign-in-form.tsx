@@ -16,6 +16,7 @@ import { AuthCard, AuthShell } from '@/components/auth/auth-shell'
 import { GoogleMark } from '@/components/auth/google-mark'
 import { TERMS_URL } from '@/lib/marketing-urls'
 import { handOnEmail } from '@/lib/auth-email-handoff'
+import { cn } from '@/lib/utils'
 
 const DEMO_EMAIL = 'demo@torqvoice.com'
 const DEMO_PASSWORD = 'demo'
@@ -24,6 +25,8 @@ const DEMO_PASSWORD = 'demo'
  * Refused this many times for a wrong email or password, and the two ways
  * out are shown plainly: the password may be forgotten, or there may never
  * have been an account (many arrive here from the marketing site's Login).
+ * Counted over the visit, not only back to back: a "too many attempts" in
+ * between makes the help more needed, not less.
  */
 const RECOVERY_AFTER = 2
 
@@ -239,6 +242,10 @@ function SignInFormInner({
                   : t('recovery.signUpHint')
               }
               onClick={() => handOnEmail(email)}
+              // The row carries the address typed; analytics records the text
+              // of what is clicked and replays what is on screen, so neither
+              // gets this one.
+              noCapture
             />
           )}
         </div>
@@ -385,18 +392,24 @@ function RecoveryLink({
   title,
   hint,
   onClick,
+  noCapture = false,
 }: {
   href: string
   icon: React.ComponentType<{ className?: string }>
   title: string
   hint: string
   onClick: () => void
+  /** Kept out of PostHog's click capture and session replay. */
+  noCapture?: boolean
 }) {
   return (
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-background"
+      className={cn(
+        'flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-background',
+        noCapture && 'ph-no-capture'
+      )}
     >
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
         <Icon className="h-4 w-4" />
