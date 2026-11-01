@@ -148,6 +148,10 @@
     "copied": "Copié",
     "updateKeys": "Mettre à jour les clés",
     "updateKeysHint": "La dernière vérification a échoué. Saisissez à nouveau les clés pour réessayer.",
+    "awaitingKeys": "Connecté, mais il manque encore : {keys}.",
+    "awaitingKeysHint": "Le webhook répond déjà au fournisseur, enregistrez-le dès maintenant. Rien ne peut être envoyé tant que ces valeurs manquent ; ajoutez-les ici une fois qu'elles vous ont été délivrées.",
+    "saveKeys": "Enregistrer les clés",
+    "keysSaved": "Clés enregistrées",
     "inspectionSync": {
       "title": "Synchronisation des contrôles",
       "vehicles": "{count} véhicules avec plaque dans cet atelier",
@@ -394,7 +398,10 @@
         "verifyToken": "Jeton de vérification du webhook",
         "appSecret": "Secret de l'application",
         "apiVersion": "Version de la Graph API",
-        "appSecretHelp": "Meta signe chaque envoi avec ce secret. Tant qu'il n'est pas saisi, les messages envoyés au webhook sont refusés, car sinon toute personne connaissant l'URL pourrait se faire passer pour vos clients."
+        "appSecretHelp": "Meta signe chaque envoi avec ce secret. Tant qu'il n'est pas saisi, les messages envoyés au webhook sont refusés, car sinon toute personne connaissant l'URL pourrait se faire passer pour vos clients.",
+        "phoneNumberIdHelp": "Dans WhatsApp Manager, sur le numéro depuis lequel vous envoyez ; ce n'est pas le numéro de téléphone lui-même. Meta ne le délivre qu'après vérification du webhook : laissez le champ vide, connectez, enregistrez le webhook, puis revenez l'ajouter.",
+        "accessTokenHelp": "Un jeton permanent d'utilisateur système. Celui que Meta affiche pendant la configuration expire sous 24 heures. Ajoutez-le avec l'ID du numéro de téléphone une fois le webhook vérifié.",
+        "verifyTokenHelp": "Une phrase de votre choix. Collez la même dans Meta lors de l'enregistrement du webhook."
       },
       "settings": {
         "enabled": "Envoyer des messages sur ce canal",

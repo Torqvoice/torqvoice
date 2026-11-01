@@ -148,6 +148,10 @@
     "copied": "Skopiowano",
     "updateKeys": "Zaktualizuj klucze",
     "updateKeysHint": "Ostatnie sprawdzenie nie powiodło się. Wpisz klucze ponownie, aby spróbować jeszcze raz.",
+    "awaitingKeys": "Połączono, ale wciąż brakuje: {keys}.",
+    "awaitingKeysHint": "Webhook już odpowiada dostawcy, więc zarejestruj go teraz. Dopóki te wartości nie zostaną wpisane, nic nie można wysłać; dodaj je tutaj, gdy zostaną wydane.",
+    "saveKeys": "Zapisz klucze",
+    "keysSaved": "Klucze zapisane",
     "inspectionSync": {
       "title": "Synchronizacja przeglądów",
       "vehicles": "{count} pojazdów z tablicą w tym warsztacie",
@@ -394,7 +398,10 @@
         "verifyToken": "Token weryfikacji webhooka",
         "appSecret": "Sekret aplikacji",
         "apiVersion": "Wersja Graph API",
-        "appSecretHelp": "Meta podpisuje nim każde dostarczenie. Dopóki nie zostanie wpisany, wiadomości wysłane do webhooka są odrzucane, bo inaczej każdy, kto pozna adres URL, mógłby pisać w imieniu Twoich klientów."
+        "appSecretHelp": "Meta podpisuje nim każde dostarczenie. Dopóki nie zostanie wpisany, wiadomości wysłane do webhooka są odrzucane, bo inaczej każdy, kto pozna adres URL, mógłby pisać w imieniu Twoich klientów.",
+        "phoneNumberIdHelp": "Z WhatsApp Managera, przy numerze, z którego wysyłasz; to nie jest sam numer telefonu. Meta wydaje go dopiero po zweryfikowaniu webhooka, więc zostaw pole puste, połącz, zarejestruj webhook i wróć, aby go dodać.",
+        "accessTokenHelp": "Stały token użytkownika systemowego. Ten pokazywany przez Metę podczas konfiguracji wygasa w ciągu 24 godzin. Dodaj go razem z identyfikatorem numeru telefonu po zweryfikowaniu webhooka.",
+        "verifyTokenHelp": "Dowolna fraza, którą wybierzesz. Wklej tę samą w Meta podczas rejestrowania webhooka."
       },
       "settings": {
         "enabled": "Wysyłaj wiadomości tym kanałem",

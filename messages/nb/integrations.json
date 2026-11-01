@@ -148,6 +148,10 @@
     "copied": "Kopiert",
     "updateKeys": "Oppdater nøklene",
     "updateKeysHint": "Siste sjekk mislyktes. Skriv inn nøklene på nytt for å prøve igjen.",
+    "awaitingKeys": "Tilkoblet, men venter fortsatt på {keys}.",
+    "awaitingKeysHint": "Webhooken svarer leverandøren allerede, så registrer den nå. Ingenting kan sendes før disse er lagt inn; legg dem inn her når de er utstedt.",
+    "saveKeys": "Lagre nøkler",
+    "keysSaved": "Nøklene er lagret",
     "inspectionSync": {
       "title": "Synkronisering av EU-kontroll",
       "vehicles": "{count} kjøretøy med skilt i dette verkstedet",
@@ -394,7 +398,10 @@
         "verifyToken": "Verifiseringstoken for webhook",
         "appSecret": "Apphemmelighet",
         "apiVersion": "Graph API-versjon",
-        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn."
+        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn.",
+        "phoneNumberIdHelp": "Fra WhatsApp Manager, på nummeret du sender fra; ikke selve telefonnummeret. Meta utsteder den først etter at webhooken er verifisert, så la feltet stå tomt, koble til, registrer webhooken, og kom tilbake og legg den inn.",
+        "accessTokenHelp": "Et permanent systembruker-token. Det Meta viser under oppsettet utløper innen 24 timer. Legg det inn sammen med telefonnummer-ID-en når webhooken er verifisert.",
+        "verifyTokenHelp": "En setning du velger selv. Lim inn den samme hos Meta når du registrerer webhooken."
       },
       "settings": {
         "enabled": "Send meldinger på denne kanalen",

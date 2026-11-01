@@ -148,6 +148,10 @@
     "copied": "Kopyalandı",
     "updateKeys": "Anahtarları güncelle",
     "updateKeysHint": "Son kontrol başarısız oldu. Yeniden denemek için anahtarları tekrar girin.",
+    "awaitingKeys": "Bağlandı, ancak hâlâ eksik: {keys}.",
+    "awaitingKeysHint": "Webhook sağlayıcıya zaten yanıt veriyor, bu yüzden şimdi kaydedin. Bu değerler girilene kadar hiçbir şey gönderilemez; verildiklerinde buraya ekleyin.",
+    "saveKeys": "Anahtarları kaydet",
+    "keysSaved": "Anahtarlar kaydedildi",
     "inspectionSync": {
       "title": "Muayene eşitleme",
       "vehicles": "Bu atölyede plakalı {count} araç",
@@ -394,7 +398,10 @@
         "verifyToken": "Webhook doğrulama tokeni",
         "appSecret": "Uygulama sırrı",
         "apiVersion": "Graph API sürümü",
-        "appSecretHelp": "Meta her teslimatı bununla imzalar. Girilene kadar webhook'a gönderilen mesajlar reddedilir; aksi halde URL'yi öğrenen herkes müşterileriniz adına mesaj gönderebilir."
+        "appSecretHelp": "Meta her teslimatı bununla imzalar. Girilene kadar webhook'a gönderilen mesajlar reddedilir; aksi halde URL'yi öğrenen herkes müşterileriniz adına mesaj gönderebilir.",
+        "phoneNumberIdHelp": "WhatsApp Manager'da, gönderim yaptığınız numaranın yanında; telefon numarasının kendisi değildir. Meta bunu yalnızca webhook doğrulandıktan sonra verir; bu yüzden boş bırakın, bağlanın, webhook'u kaydedin ve sonra geri dönüp ekleyin.",
+        "accessTokenHelp": "Kalıcı bir sistem kullanıcısı jetonu. Meta'nın kurulum sırasında gösterdiği jeton 24 saat içinde sona erer. Webhook doğrulandıktan sonra telefon numarası kimliğiyle birlikte ekleyin.",
+        "verifyTokenHelp": "Seçtiğiniz herhangi bir ifade. Webhook'u kaydederken aynısını Meta'ya yapıştırın."
       },
       "settings": {
         "enabled": "Bu kanaldan mesaj gönder",

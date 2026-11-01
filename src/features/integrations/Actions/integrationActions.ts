@@ -85,6 +85,23 @@ function inboundFor(
   }
 }
 
+/**
+ * The keys a connection still waits for: the ones its manifest lets wait
+ * until the vendor issues them, with nothing stored under them yet. A row
+ * whose credentials cannot be opened waits for nothing it can be told about.
+ */
+function awaitingKeysFor(manifest: ConnectorManifest, sealed: string | null): string[] {
+  if (manifest.auth.type === 'oauth2') return []
+  const later = manifest.auth.fields.filter((f) => f.deferrable)
+  if (later.length === 0) return []
+  try {
+    const stored = openCredentials(sealed)
+    return later.filter((f) => !String(stored[f.key] ?? '').trim()).map((f) => f.key)
+  } catch {
+    return []
+  }
+}
+
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
 
 const settingsSchema = z.record(
@@ -269,6 +286,12 @@ export interface ConnectionView {
    */
   inbound: InboundWebhook | null
   /**
+   * Keys the vendor issues only after the connection is live, still not
+   * entered. The connection stands, the webhook answers, and nothing can be
+   * sent until these are in; the page says so and asks for them.
+   */
+  awaitingKeys: string[]
+  /**
    * The vendor connecting this one would stand down, when only one at a time
    * is allowed: the other AI provider, or the vendor already sending on this
    * messaging channel. Null when connecting takes nothing away.
@@ -343,6 +366,7 @@ export async function getIntegrationConnection(connectorId: string) {
         const creds = openCredentials(row.credentials)
         tenantClientId = typeof creds.clientId === 'string' ? creds.clientId : null
       }
+      const awaitingKeys = row ? awaitingKeysFor(manifest, row.credentials) : []
       const appUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')
       return {
         manifest: manifestForClient(manifest),
@@ -369,6 +393,7 @@ export async function getIntegrationConnection(connectorId: string) {
         webhookUrl:
           row && appUrl ? `${appUrl}/api/integrations/${connectorId}/${row.id}/webhook` : null,
         inbound: row ? inboundFor(row, configuredAppUrl()) : null,
+        awaitingKeys,
         supersedes,
         redirectUri: redirectUriFor(configuredAppUrl(), connectorId),
         inspectionSync:
@@ -431,12 +456,20 @@ export async function saveIntegrationCredentials(
 
       const fields =
         manifest.auth.type === 'oauth2' ? (manifest.auth.tenantFields ?? []) : manifest.auth.fields
+      const existing = await db.integrationConnection.findUnique({
+        where: { organizationId_connectorId: { organizationId, connectorId } },
+      })
+      const previous = openCredentials(existing?.credentials)
       // A key that is only asked for under one provider choice is only
       // required there; the choice is in the settings typed on the same page.
       const chosen = { ...(rawSettings === undefined ? {} : settings) }
       for (const f of fields) {
-        if (f.required && conditionMet(f.showWhen, chosen) && !input[f.key]?.trim())
-          throw new Error(`${f.key} is required`)
+        if (!f.required || !conditionMet(f.showWhen, chosen)) continue
+        if (input[f.key]?.trim()) continue
+        // A form that adds the keys a vendor issued late sends only those;
+        // the ones already stored and left out of it stay as they are.
+        if (!(f.key in input) && previous[f.key]) continue
+        throw new Error(`${f.key} is required`)
       }
       const allowed = new Set(fields.map((f) => f.key))
       const clean: Record<string, string> = {}
@@ -447,11 +480,6 @@ export async function saveIntegrationCredentials(
         if (v.trim()) clean[k] = v.trim()
         else cleared.add(k)
       }
-
-      const existing = await db.integrationConnection.findUnique({
-        where: { organizationId_connectorId: { organizationId, connectorId } },
-      })
-      const previous = openCredentials(existing?.credentials)
       for (const k of cleared) delete previous[k]
       // Nothing is live until the keys have been checked: the row keeps the
       // status it had, and a brand-new one starts pending, so a send that

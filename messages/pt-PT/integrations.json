@@ -148,6 +148,10 @@
     "copied": "Copiado",
     "updateKeys": "Atualizar chaves",
     "updateKeysHint": "A última verificação falhou. Introduza novamente as chaves para tentar outra vez.",
+    "awaitingKeys": "Ligado, mas ainda falta: {keys}.",
+    "awaitingKeysHint": "O webhook já responde ao fornecedor, por isso registe-o agora. Nada pode ser enviado até estes valores serem introduzidos; adicione-os aqui assim que forem emitidos.",
+    "saveKeys": "Guardar chaves",
+    "keysSaved": "Chaves guardadas",
     "inspectionSync": {
       "title": "Sincronização de inspeções",
       "vehicles": "{count} viaturas com matrícula nesta oficina",
@@ -394,7 +398,10 @@
         "verifyToken": "Token de verificação do webhook",
         "appSecret": "Segredo da aplicação",
         "apiVersion": "Versão da Graph API",
-        "appSecretHelp": "A Meta assina cada entrega com ele. Enquanto não for introduzido, as mensagens enviadas para o webhook são recusadas, porque qualquer pessoa que conheça o URL poderia fazer-se passar pelos seus clientes."
+        "appSecretHelp": "A Meta assina cada entrega com ele. Enquanto não for introduzido, as mensagens enviadas para o webhook são recusadas, porque qualquer pessoa que conheça o URL poderia fazer-se passar pelos seus clientes.",
+        "phoneNumberIdHelp": "Do WhatsApp Manager, no número a partir do qual envia; não é o próprio número de telefone. A Meta só o emite depois de verificar o webhook, por isso deixe-o vazio, ligue, registe o webhook e volte para o adicionar.",
+        "accessTokenHelp": "Um token permanente de utilizador de sistema. O que a Meta mostra durante a configuração expira em 24 horas. Adicione-o juntamente com o ID do número de telefone assim que o webhook estiver verificado.",
+        "verifyTokenHelp": "Qualquer frase à sua escolha. Cole a mesma na Meta ao registar o webhook."
       },
       "settings": {
         "enabled": "Enviar mensagens por este canal",

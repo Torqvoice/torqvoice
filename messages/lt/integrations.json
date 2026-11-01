@@ -148,6 +148,10 @@
     "copied": "Nukopijuota",
     "updateKeys": "Atnaujinti raktus",
     "updateKeysHint": "Paskutinė patikra nepavyko. Įveskite raktus dar kartą ir bandykite iš naujo.",
+    "awaitingKeys": "Prijungta, bet dar trūksta: {keys}.",
+    "awaitingKeysHint": "Webhook jau atsako tiekėjui, todėl užregistruokite jį dabar. Kol šios reikšmės neįvestos, nieko išsiųsti negalima; įveskite jas čia, kai tik jos bus išduotos.",
+    "saveKeys": "Išsaugoti raktus",
+    "keysSaved": "Raktai išsaugoti",
     "inspectionSync": {
       "title": "Apžiūrų sinchronizavimas",
       "vehicles": "{count} transporto priemonės su numeriu šiose dirbtuvėse",
@@ -394,7 +398,10 @@
         "verifyToken": "Webhook patvirtinimo žetonas",
         "appSecret": "Programos paslaptis",
         "apiVersion": "Graph API versija",
-        "appSecretHelp": "Meta ja pasirašo kiekvieną pristatymą. Kol ji neįvesta, į webhook siunčiamos žinutės atmetamos, nes kitaip bet kas, sužinojęs URL, galėtų rašyti jūsų klientų vardu."
+        "appSecretHelp": "Meta ja pasirašo kiekvieną pristatymą. Kol ji neįvesta, į webhook siunčiamos žinutės atmetamos, nes kitaip bet kas, sužinojęs URL, galėtų rašyti jūsų klientų vardu.",
+        "phoneNumberIdHelp": "Iš WhatsApp Manager, prie numerio, iš kurio siunčiate; tai ne pats telefono numeris. Meta jį išduoda tik patikrinusi webhook, todėl palikite lauką tuščią, prijunkite, užregistruokite webhook ir grįžę jį įveskite.",
+        "accessTokenHelp": "Nuolatinis sistemos naudotojo prieigos raktas. Tas, kurį Meta rodo sąrankos metu, nustoja galioti per 24 valandas. Įveskite jį kartu su telefono numerio ID, kai webhook bus patikrintas.",
+        "verifyTokenHelp": "Bet kokia jūsų pasirinkta frazė. Įklijuokite tą pačią Meta sistemoje registruodami webhook."
       },
       "settings": {
         "enabled": "Siųsti žinutes šiuo kanalu",

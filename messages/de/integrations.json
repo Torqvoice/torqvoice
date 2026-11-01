@@ -148,6 +148,10 @@
     "copied": "Kopiert",
     "updateKeys": "Schlüssel aktualisieren",
     "updateKeysHint": "Die letzte Prüfung ist fehlgeschlagen. Geben Sie die Schlüssel erneut ein, um es noch einmal zu versuchen.",
+    "awaitingKeys": "Verbunden, aber es fehlt noch: {keys}.",
+    "awaitingKeysHint": "Der Webhook antwortet dem Anbieter bereits, registrieren Sie ihn also jetzt. Solange diese Werte fehlen, kann nichts gesendet werden; tragen Sie sie hier ein, sobald sie ausgestellt wurden.",
+    "saveKeys": "Schlüssel speichern",
+    "keysSaved": "Schlüssel gespeichert",
     "inspectionSync": {
       "title": "HU-Abgleich",
       "vehicles": "{count} Fahrzeuge mit Kennzeichen in dieser Werkstatt",
@@ -394,7 +398,10 @@
         "verifyToken": "Webhook-Verifizierungstoken",
         "appSecret": "App-Secret",
         "apiVersion": "Graph-API-Version",
-        "appSecretHelp": "Meta signiert damit jede Zustellung. Solange es nicht eingetragen ist, werden an den Webhook gesendete Nachrichten abgewiesen, da sonst jeder, der die URL kennt, im Namen Ihrer Kunden schreiben könnte."
+        "appSecretHelp": "Meta signiert damit jede Zustellung. Solange es nicht eingetragen ist, werden an den Webhook gesendete Nachrichten abgewiesen, da sonst jeder, der die URL kennt, im Namen Ihrer Kunden schreiben könnte.",
+        "phoneNumberIdHelp": "Aus dem WhatsApp Manager, bei der Nummer, von der Sie senden; nicht die Telefonnummer selbst. Meta vergibt sie erst, nachdem der Webhook verifiziert wurde. Lassen Sie das Feld also leer, verbinden Sie, registrieren Sie den Webhook und tragen Sie sie danach hier ein.",
+        "accessTokenHelp": "Ein dauerhaftes Systembenutzer-Token. Das Token, das Meta bei der Einrichtung anzeigt, läuft innerhalb von 24 Stunden ab. Tragen Sie es zusammen mit der Telefonnummer-ID ein, sobald der Webhook verifiziert ist.",
+        "verifyTokenHelp": "Eine beliebige Phrase Ihrer Wahl. Fügen Sie dieselbe bei Meta ein, wenn Sie den Webhook registrieren."
       },
       "settings": {
         "enabled": "Nachrichten über diesen Kanal senden",

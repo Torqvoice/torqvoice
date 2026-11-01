@@ -148,6 +148,10 @@
     "copied": "Gekopieerd",
     "updateKeys": "Sleutels bijwerken",
     "updateKeysHint": "De laatste controle is mislukt. Vul de sleutels opnieuw in om het nog eens te proberen.",
+    "awaitingKeys": "Verbonden, maar wacht nog op {keys}.",
+    "awaitingKeysHint": "De webhook antwoordt de leverancier al, dus registreer hem nu. Er kan niets worden verzonden totdat deze zijn ingevuld; voeg ze hier toe zodra ze zijn uitgegeven.",
+    "saveKeys": "Sleutels opslaan",
+    "keysSaved": "Sleutels opgeslagen",
     "inspectionSync": {
       "title": "Keuringssynchronisatie",
       "vehicles": "{count} voertuigen met kenteken in deze werkplaats",
@@ -394,7 +398,10 @@
         "verifyToken": "Verificatietoken voor webhook",
         "appSecret": "App-geheim",
         "apiVersion": "Graph API-versie",
-        "appSecretHelp": "Meta ondertekent er elke levering mee. Zolang het niet is ingevuld, worden berichten die naar de webhook worden gestuurd geweigerd, omdat iedereen die de URL kent anders namens uw klanten berichten zou kunnen plaatsen."
+        "appSecretHelp": "Meta ondertekent er elke levering mee. Zolang het niet is ingevuld, worden berichten die naar de webhook worden gestuurd geweigerd, omdat iedereen die de URL kent anders namens uw klanten berichten zou kunnen plaatsen.",
+        "phoneNumberIdHelp": "Uit WhatsApp Manager, bij het nummer waarvandaan u verzendt; niet het telefoonnummer zelf. Meta geeft het pas uit nadat de webhook is geverifieerd, dus laat het leeg, verbind, registreer de webhook en kom daarna terug om het toe te voegen.",
+        "accessTokenHelp": "Een permanent systeemgebruikerstoken. Het token dat Meta tijdens de installatie toont, verloopt binnen 24 uur. Voeg het samen met de telefoonnummer-ID toe zodra de webhook is geverifieerd.",
+        "verifyTokenHelp": "Een zin naar keuze. Plak dezelfde in Meta bij het registreren van de webhook."
       },
       "settings": {
         "enabled": "Berichten via dit kanaal versturen",

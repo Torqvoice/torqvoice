@@ -128,6 +128,8 @@ export function ConnectionSettings({
   }, [pending, router])
 
   const isOAuth = manifest.auth.type === 'oauth2'
+  // The typed keys, for naming the ones a vendor issues late.
+  const keyFields: CredentialField[] = manifest.auth.type === 'oauth2' ? [] : manifest.auth.fields
   // A connected service with a required setting still empty is not working,
   // whatever the vendor's status says; the calendar to write to is the usual
   // case. The page says so up top rather than leaving it to the job log.
@@ -386,7 +388,7 @@ export function ConnectionSettings({
           <div className={`grid gap-4 text-sm ${hasSync ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
             <div>
               <p className="text-xs text-muted-foreground">{t('connection.account')}</p>
-              <p className="font-medium">{connection.externalAccountName ?? '-'}</p>
+              <p className="font-medium">{connection.externalAccountName || '-'}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t('connection.lastHealth')}</p>
@@ -484,6 +486,52 @@ export function ConnectionSettings({
             </div>
           </div>
         )}
+
+        {/* A vendor that issues some keys only after the connection is live,
+            such as Meta with the WhatsApp phone number ID, leaves the
+            connection standing but unable to send. Those keys are asked for
+            here, on their own, so the ones already stored stay put. */}
+        {connected &&
+          connection.status === 'active' &&
+          !isOAuth &&
+          view.awaitingKeys.length > 0 && (
+            <div className="mt-4 rounded-lg border border-amber-500/30 p-3">
+              <div className="mb-3 flex gap-2 text-sm">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <p>
+                  <span className="font-medium">
+                    {t('connection.awaitingKeys', {
+                      keys: view.awaitingKeys
+                        .map((key) => {
+                          const field = keyFields.find((f) => f.key === key)
+                          return tc(`fields.${field?.label ?? key}`)
+                        })
+                        .join(', '),
+                    })}
+                  </span>{' '}
+                  <span className="text-muted-foreground">{t('connection.awaitingKeysHint')}</span>
+                </p>
+              </div>
+              <ConnectForm
+                manifest={manifest}
+                tenantClientId={null}
+                needsTenantApp={false}
+                redirectUri={view.redirectUri}
+                oauthStartUrl={oauthStartUrl}
+                enabled={view.enabled}
+                busy={busy}
+                only={view.awaitingKeys}
+                submitLabel={t('connection.saveKeys')}
+                onSave={(values) =>
+                  run(
+                    'credentials',
+                    () => saveIntegrationCredentials(manifest.id, values),
+                    t('connection.keysSaved')
+                  )
+                }
+              />
+            </div>
+          )}
 
         {/* Keys that failed their check can be entered again without
             disconnecting first, which would also throw the settings away. */}
@@ -720,6 +768,8 @@ function ConnectForm({
   enabled,
   busy,
   initialSettings,
+  only,
+  submitLabel,
   onSave,
 }: {
   manifest: ConnectionView['manifest']
@@ -731,6 +781,14 @@ function ConnectForm({
   busy: string | null
   /** Settings already on the connection, when keys are being entered again. */
   initialSettings?: Record<string, unknown>
+  /**
+   * Just these keys, for a live connection adding the ones its vendor issued
+   * late. The settings are left alone and all of them must be filled, since
+   * the vendor hands them out together.
+   */
+  only?: string[]
+  /** What the button says instead of Connect. */
+  submitLabel?: string
   onSave: (values: Record<string, string>, settings?: SettingValues) => Promise<boolean>
 }) {
   const t = useTranslations('integrations')
@@ -741,7 +799,9 @@ function ConnectForm({
       ? needsTenantApp
         ? (manifest.auth.tenantFields ?? [])
         : []
-      : manifest.auth.fields
+      : only
+        ? manifest.auth.fields.filter((f) => only.includes(f.key))
+        : manifest.auth.fields
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
     for (const f of fields) if (f.default) initial[f.key] = f.default
@@ -756,10 +816,10 @@ function ConnectForm({
   // buckets) is the exception, read as the keys are typed.
   const settingFields: SettingField[] = useMemo(
     () =>
-      manifest.auth.type === 'oauth2'
+      manifest.auth.type === 'oauth2' || only
         ? []
         : manifest.settings.filter((f) => f.type !== 'remote-select' || f.preview),
-    [manifest]
+    [manifest, only]
   )
   const [settings, setSettings] = useState<SettingValues>(() =>
     initialSettingValues(settingFields, initialSettings ?? {})
@@ -1093,15 +1153,15 @@ function ConnectForm({
           )
         ) : (
           <Button
-            onClick={() => onSave(values, settings)}
+            onClick={() => (only ? onSave(values) : onSave(values, settings))}
             disabled={
               busy !== null ||
               settingsMissing ||
-              visibleFields.some((f) => f.required && !values[f.key])
+              visibleFields.some((f) => (f.required || only) && !values[f.key]?.trim())
             }
           >
             {busy === 'credentials' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('connection.connect')}
+            {submitLabel ?? t('connection.connect')}
           </Button>
         )}
       </div>
