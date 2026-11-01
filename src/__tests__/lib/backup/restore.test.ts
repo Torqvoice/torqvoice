@@ -270,6 +270,13 @@ const SAFETY_FAILED = 'Could not take a safety copy of the workshop first; nothi
 
 const root = mkdtempSync(path.join(tmpdir(), 'backup-restore-test-'))
 const dataDir = path.join(root, 'data')
+// The engine stages each workshop's data file at a fixed path under
+// os.tmpdir() and deletes it after the run. engine.test.ts stages the same
+// workshop, and Vitest runs the two files at the same time, so each points
+// os.tmpdir() at its own folder; with a shared one, a run in one file deletes
+// the data file the other is about to read.
+const outerTmpdir = process.env.TMPDIR
+process.env.TMPDIR = root
 const savedEnv = { ...process.env }
 
 /** A snapshot of the staged data file and the uploads folder, as the engine takes them. */
@@ -346,6 +353,8 @@ afterEach(() => {
 })
 
 afterAll(() => {
+  if (outerTmpdir === undefined) delete process.env.TMPDIR
+  else process.env.TMPDIR = outerTmpdir
   rmSync(root, { recursive: true, force: true })
 })
 

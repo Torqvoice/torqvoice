@@ -243,6 +243,13 @@ const dataDir = path.join(root, 'data')
 const repoDir = path.join(root, 'repo')
 const uploadsDir = path.join(dataDir, 'uploads', ORG)
 const fake = path.join(root, 'restic.sh')
+// The engine stages each workshop's data file at a fixed path under
+// os.tmpdir() and deletes it after the run. restore.test.ts stages the same
+// workshop, and Vitest runs the two files at the same time, so each points
+// os.tmpdir() at its own folder; with a shared one, a run in one file deletes
+// the data file the other is about to read.
+const outerTmpdir = process.env.TMPDIR
+process.env.TMPDIR = root
 const savedEnv = { ...process.env }
 
 function heredoc(line: string): string {
@@ -450,6 +457,8 @@ afterEach(() => {
 })
 
 afterAll(() => {
+  if (outerTmpdir === undefined) delete process.env.TMPDIR
+  else process.env.TMPDIR = outerTmpdir
   rmSync(root, { recursive: true, force: true })
 })
 
