@@ -52,8 +52,11 @@ type BackupEntry =
 
 /**
  * Every restore point and the runs worth seeing beside them, newest first.
- * A backup run that finished is its restore point, so it is not listed twice;
- * one whose point the retention has since let go is left out with it.
+ * A backup run that finished is its restore point, so it is not listed twice.
+ * The stored points are refreshed after each backup: a finished run newer
+ * than the newest point is one whose refresh failed, and shows as a run until
+ * the next backup lists it; an older one missing from the points was let go
+ * by the retention, and is left out with it.
  */
 function backupEntries(overview: PlatformBackupOverview): BackupEntry[] {
   const entries: BackupEntry[] = overview.snapshots.map((point) => ({
@@ -62,11 +65,18 @@ function backupEntries(overview: PlatformBackupOverview): BackupEntry[] {
     time: point.time,
     point,
   }))
+  const listed = new Set(overview.snapshots.map((p) => p.id))
+  const newestPoint = Math.max(...overview.snapshots.map((p) => Date.parse(p.time)))
   for (const run of overview.recent) {
-    const backupDone = run.trigger !== 'restore' && run.status === 'done'
-    if (!backupDone) entries.push({ type: 'run', key: `run:${run.id}`, time: run.startedAt, run })
+    // A run the server gave up on before it started has only its finish.
+    const time = run.startedAt ?? run.finishedAt
+    if (run.trigger !== 'restore' && run.status === 'done') {
+      const unlisted = !(run.snapshotId && listed.has(run.snapshotId))
+      if (!unlisted || !time || Date.parse(time) <= newestPoint) continue
+    }
+    entries.push({ type: 'run', key: `run:${run.id}`, time, run })
   }
-  // A queued run has no start yet; it is the newest thing there is.
+  // A queued run has no time yet; it is the newest thing there is.
   const at = (e: BackupEntry) => (e.time ? Date.parse(e.time) : Number.POSITIVE_INFINITY)
   return entries.sort((a, b) => at(b) - at(a))
 }
@@ -588,8 +598,9 @@ function PointRow({
 
 /**
  * A run that left no restore point of its own: one queued or running, a
- * backup that failed or was skipped, or a restore, with the point it went
- * back to and the reason support gave for it.
+ * backup that failed or was skipped, a backup the stored points do not list
+ * yet, or a restore, with the point it went back to and the reason support
+ * gave for it.
  */
 function RunRow({
   run,
@@ -603,6 +614,7 @@ function RunRow({
   const t = useTranslations('settings.data.platformBackups')
   const format = useFormatter()
   const isRestore = run.trigger === 'restore'
+  const at = run.startedAt ?? run.finishedAt
 
   // What a restore went back to, by its time when the point is still kept.
   const restoredTo = (() => {
@@ -633,7 +645,9 @@ function RunRow({
           ? { icon: XCircle, tone: 'bad' }
           : run.status === 'skipped'
             ? { icon: MinusCircle, tone: 'muted' }
-            : { icon: History, tone: 'active' }
+            : isRestore
+              ? { icon: History, tone: 'active' }
+              : { icon: CheckCircle2, tone: 'good' }
 
   const title = isRestore
     ? t(`runTitle.restore.${run.status}`, { time: restoredTo })
@@ -644,9 +658,9 @@ function RunRow({
       <Chip icon={look.icon} tone={look.tone} spin={look.spin} />
       <div className="min-w-0 flex-1 pt-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          {run.startedAt && (
+          {at && (
             <span className="text-sm font-medium tabular-nums">
-              {format.dateTime(new Date(run.startedAt), { timeStyle: 'short' })}
+              {format.dateTime(new Date(at), { timeStyle: 'short' })}
             </span>
           )}
           <span
