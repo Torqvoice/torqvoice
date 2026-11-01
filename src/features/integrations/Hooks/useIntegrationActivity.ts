@@ -1,6 +1,7 @@
 'use client'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { type InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { z } from 'zod'
 import { getIntegrationActivity } from '@/features/integrations/Actions/integrationActions'
 import type { ActivityCursor, ActivityPage } from '@/features/integrations/Lib/types'
@@ -59,13 +60,22 @@ export function integrationActivityKey(organizationId: string, connectorId: stri
  * scrolled. A refetch fetches every loaded page again from the top, each one
  * starting where the fresh page before it ended, so lines that new jobs push
  * down are neither lost nor shown twice.
+ *
+ * initialData only seeds an empty cache, so each later server render of the
+ * page (a router.refresh(), or coming back to it while the cache still holds
+ * the last visit) takes over here. With only the first page loaded it simply
+ * replaces it. With older pages open, every page is fetched again instead,
+ * since a new first page above the old older ones would drop or repeat the
+ * lines between them. That refetch leaves a request already running alone
+ * rather than starting it over, so a slow one still gets to finish.
  */
 export function useIntegrationActivity(
   organizationId: string,
   connectorId: string,
   initial: ActivityPage
 ) {
-  return useInfiniteQuery({
+  const queryClient = useQueryClient()
+  const query = useInfiniteQuery({
     queryKey: integrationActivityKey(organizationId, connectorId),
     queryFn: async ({ pageParam }) => {
       const res = await getIntegrationActivity(connectorId, pageParam)
@@ -76,4 +86,19 @@ export function useIntegrationActivity(
     getNextPageParam: (last) => last.nextCursor,
     initialData: { pages: [initial], pageParams: [null] },
   })
+
+  useEffect(() => {
+    const queryKey = integrationActivityKey(organizationId, connectorId)
+    const cached =
+      queryClient.getQueryData<InfiniteData<ActivityPage, ActivityCursor | null>>(queryKey)
+    if (cached?.pages[0] === initial) return
+    const busy = queryClient.isFetching({ queryKey, exact: true }) > 0
+    if (!busy && (cached?.pages.length ?? 0) <= 1) {
+      queryClient.setQueryData(queryKey, { pages: [initial], pageParams: [null] })
+    } else {
+      void queryClient.refetchQueries({ queryKey, exact: true }, { cancelRefetch: false })
+    }
+  }, [queryClient, organizationId, connectorId, initial])
+
+  return query
 }

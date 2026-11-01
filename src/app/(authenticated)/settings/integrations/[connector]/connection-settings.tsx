@@ -5,7 +5,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
-import { useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -78,10 +77,7 @@ import type {
   SettingField,
   SettingOption,
 } from '@/features/integrations/Lib/types'
-import {
-  integrationActivityKey,
-  useIntegrationActivity,
-} from '@/features/integrations/Hooks/useIntegrationActivity'
+import { useIntegrationActivity } from '@/features/integrations/Hooks/useIntegrationActivity'
 import { handleGated } from '@/components/upgrade-gate'
 
 export function ConnectionSettings({
@@ -120,9 +116,8 @@ export function ConnectionSettings({
     if (error || connected) router.replace(`/settings/integrations/${manifest.id}`)
   }, [search, router, t, manifest])
 
-  const queryClient = useQueryClient()
   const activityQuery = useIntegrationActivity(organizationId, manifest.id, activity)
-  const { refetch: refetchActivity, fetchNextPage: loadOlderActivity } = activityQuery
+  const { fetchNextPage: loadOlderActivity } = activityQuery
   const activityPages = activityQuery.data.pages
   const activityItems = useMemo(() => activityPages.flatMap((p) => p.items), [activityPages])
   const activityLogs = activityPages[0]?.logs ?? []
@@ -130,6 +125,7 @@ export function ConnectionSettings({
   // A backfill runs fifty jobs a minute in the background; while any are
   // still pending the counts on the activity card follow along, and so do
   // the page's own figures, such as the vehicles a registry pass has left.
+  // The refresh brings the activity list with it, see useIntegrationActivity.
   const pending = activityItems.some((i) =>
     i.type === 'batch'
       ? i.counts.queued + i.counts.running > 0
@@ -137,12 +133,9 @@ export function ConnectionSettings({
   )
   useEffect(() => {
     if (!pending) return
-    const id = setInterval(() => {
-      router.refresh()
-      void refetchActivity()
-    }, 10_000)
+    const id = setInterval(() => router.refresh(), 10_000)
     return () => clearInterval(id)
-  }, [pending, router, refetchActivity])
+  }, [pending, router])
 
   const isOAuth = manifest.auth.type === 'oauth2'
   // The typed keys, for naming the ones a vendor issues late.
@@ -176,17 +169,15 @@ export function ConnectionSettings({
           return false
         }
         if (done) toast.success(typeof done === 'function' ? done(res?.data) : done)
+        // A queued sync or a retry shows on the activity list straight away,
+        // since the refresh brings the list with it.
         router.refresh()
-        // A queued sync or a retry shows on the activity list straight away.
-        void queryClient.invalidateQueries({
-          queryKey: integrationActivityKey(organizationId, manifest.id),
-        })
         return true
       } finally {
         setBusy(null)
       }
     },
-    [router, t, queryClient, organizationId, manifest.id]
+    [router, t]
   )
 
   const disconnect = async () => {
@@ -1564,9 +1555,14 @@ function ActivityCard({
   return (
     <AppCard title={t('title')} description={t('description')}>
       {items.length > 0 && (
+        // Focusable, so the list scrolls from the keyboard even when none of
+        // its rows has a button to tab to.
         <div
           ref={scrollRef}
-          className="mb-4 max-h-80 overflow-y-auto overscroll-contain rounded-lg border"
+          role="region"
+          aria-label={t('title')}
+          tabIndex={0}
+          className="mb-4 max-h-80 overflow-y-auto overscroll-contain rounded-lg border outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
           <div className="divide-y">
             {items.map((item) =>
