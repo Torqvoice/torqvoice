@@ -1478,41 +1478,38 @@
       "paused": "Jūsų plane nebėra Torqvoice atsarginių kopijų. Vykdymai sustabdyti; atkūrimo taškai saugomi iki {date}, o tada ištrinami.",
       "upsell": "Prieinama su Pro planu: Torqvoice kas valandą kuriamos atsarginės kopijos su atkūrimo taškais, į kuriuos galite grįžti.",
       "planLink": "Peržiūrėti planus",
-      "pointsTitle": "Atkūrimo taškai",
       "pointsEmpty": "Pirmoji atsarginė kopija dar nesukurta.",
-      "showAll": "Rodyti visus ({count})",
-      "showFewer": "Rodyti mažiau",
       "needsOwner": "Atkurti gali tik dirbtuvės savininkas.",
-      "sizeNote": "Kiekvienas atkūrimo taškas yra pilnas pats savaime; jo dydis – viskas, ką jis apima. Saugykla kiekvieną dalį laiko tik kartą, o vėlesni paleidimai prideda tik tai, kas pasikeitė, todėl „Saugo Torqvoice“ lieka gerokai mažesnis už dydžių sumą.",
-      "recentTitle": "Paskutiniai vykdymai",
-      "noRuns": "Atsarginės kopijos dar nebuvo kuriamos.",
-      "notStarted": "Nepradėta",
-      "supportReason": "Atkūrė Torqvoice pagalbos komanda: {reason}",
-      "columns": {
-        "when": "Kada",
-        "kind": "Tipas",
-        "size": "Dydis",
-        "status": "Būsena",
-        "trigger": "Kas pradėjo",
-        "duration": "Trukmė"
+      "listTitle": "Atsarginės kopijos",
+      "today": "Šiandien",
+      "yesterday": "Vakar",
+      "dayCount": "{count, plural, one {# kopija} few {# kopijos} many {# kopijos} other {# kopijų}}",
+      "latest": "Naujausia",
+      "loadingMore": "Įkeliama daugiau kopijų…",
+      "endOfList": "{count, plural, one {Iš viso # kopija} few {Iš viso # kopijos} many {Iš viso # kopijos} other {Iš viso # kopijų}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Atsarginė kopija eilėje",
+          "running": "Kuriama atsarginė kopija",
+          "done": "Atsarginė kopija sukurta",
+          "failed": "Nepavyko sukurti atsarginės kopijos",
+          "skipped": "Atsarginė kopija praleista"
+        },
+        "restore": {
+          "queued": "Atkūrimas į būseną {time} eilėje",
+          "running": "Atkuriama į būseną {time}",
+          "done": "Atkurta į būseną {time}",
+          "failed": "Nepavyko atkurti į būseną {time}",
+          "skipped": "Atkūrimas į būseną {time} praleistas"
+        }
       },
+      "sizeNote": "Kiekvienas atkūrimo taškas yra pilnas pats savaime; jo dydis – viskas, ką jis apima. Saugykla kiekvieną dalį laiko tik kartą, o vėlesni paleidimai prideda tik tai, kas pasikeitė, todėl „Saugo Torqvoice“ lieka gerokai mažesnis už dydžių sumą.",
+      "supportReason": "Atkūrė Torqvoice pagalbos komanda: {reason}",
       "kind": {
         "scheduled": "Suplanuota",
         "manual": "Rankinė",
         "safety": "Apsauginė kopija",
         "safetyHint": "Sukurta prieš pat atkūrimą, kad jį būtų galima atšaukti"
-      },
-      "trigger": {
-        "scheduled": "Pagal grafiką",
-        "manual": "Rankiniu būdu",
-        "restore": "Atkūrimas"
-      },
-      "status": {
-        "queued": "Eilėje",
-        "running": "Vykdoma",
-        "done": "Atlikta",
-        "failed": "Nepavyko",
-        "skipped": "Praleista"
       },
       "explore": "Peržiūrėti",
       "restore": {

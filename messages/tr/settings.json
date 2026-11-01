@@ -1478,41 +1478,38 @@
       "paused": "Planınız artık Torqvoice yedeklerini içermiyor. Çalıştırmalar durduruldu; geri yükleme noktaları {date} tarihine kadar saklanır ve ardından silinir.",
       "upsell": "Pro'da mevcut: Torqvoice tarafından alınan saatlik yedekler ve geri dönebileceğiniz geri yükleme noktaları.",
       "planLink": "Planları görün",
-      "pointsTitle": "Geri yükleme noktaları",
       "pointsEmpty": "İlk yedekleme henüz çalışmadı.",
-      "showAll": "Tümünü göster ({count})",
-      "showFewer": "Daha az göster",
       "needsOwner": "Yalnızca atölyenin sahibi geri yükleyebilir.",
-      "sizeNote": "Her geri yükleme noktası kendi başına eksiksizdir; boyutu kapsadığı her şeydir. Depo her parçayı yalnızca bir kez saklar ve sonraki çalıştırmalar yalnızca değişenleri ekler; bu yüzden “Torqvoice tarafından depolanan” boyutların toplamının çok altında kalır.",
-      "recentTitle": "Son çalıştırmalar",
-      "noRuns": "Henüz hiç yedekleme çalışmadı.",
-      "notStarted": "Başlamadı",
-      "supportReason": "Torqvoice destek ekibi tarafından geri yüklendi: {reason}",
-      "columns": {
-        "when": "Zaman",
-        "kind": "Tür",
-        "size": "Boyut",
-        "status": "Durum",
-        "trigger": "Başlatan",
-        "duration": "Süre"
+      "listTitle": "Yedekler",
+      "today": "Bugün",
+      "yesterday": "Dün",
+      "dayCount": "{count, plural, one {# yedek} other {# yedek}}",
+      "latest": "En yeni",
+      "loadingMore": "Daha fazla yedek yükleniyor…",
+      "endOfList": "{count, plural, one {Toplam # yedek} other {Toplam # yedek}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Yedekleme kuyrukta",
+          "running": "Yedekleniyor",
+          "done": "Yedeklendi",
+          "failed": "Yedekleme başarısız",
+          "skipped": "Yedekleme atlandı"
+        },
+        "restore": {
+          "queued": "{time} noktasına geri yükleme kuyrukta",
+          "running": "{time} noktasına geri yükleniyor",
+          "done": "{time} noktasına geri yüklendi",
+          "failed": "{time} noktasına geri yükleme başarısız",
+          "skipped": "{time} noktasına geri yükleme atlandı"
+        }
       },
+      "sizeNote": "Her geri yükleme noktası kendi başına eksiksizdir; boyutu kapsadığı her şeydir. Depo her parçayı yalnızca bir kez saklar ve sonraki çalıştırmalar yalnızca değişenleri ekler; bu yüzden “Torqvoice tarafından depolanan” boyutların toplamının çok altında kalır.",
+      "supportReason": "Torqvoice destek ekibi tarafından geri yüklendi: {reason}",
       "kind": {
         "scheduled": "Zamanlanmış",
         "manual": "Elle",
         "safety": "Güvenlik kopyası",
         "safetyHint": "Geri alınabilmesi için bir geri yüklemeden hemen önce alındı"
-      },
-      "trigger": {
-        "scheduled": "Zamanlanmış",
-        "manual": "Elle",
-        "restore": "Geri yükleme"
-      },
-      "status": {
-        "queued": "Kuyrukta",
-        "running": "Çalışıyor",
-        "done": "Tamamlandı",
-        "failed": "Başarısız",
-        "skipped": "Atlandı"
       },
       "explore": "İncele",
       "restore": {

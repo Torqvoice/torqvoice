@@ -1478,41 +1478,38 @@
       "paused": "Uw abonnement bevat geen back-ups door Torqvoice meer. De runs zijn gestopt; de herstelpunten worden bewaard tot {date} en daarna verwijderd.",
       "upsell": "Beschikbaar met Pro: back-ups elk uur door Torqvoice, met herstelpunten waarnaar u terug kunt gaan.",
       "planLink": "Abonnementen bekijken",
-      "pointsTitle": "Herstelpunten",
       "pointsEmpty": "De eerste back-up is nog niet gemaakt.",
-      "showAll": "Alle {count} tonen",
-      "showFewer": "Minder tonen",
       "needsOwner": "Alleen de eigenaar van de werkplaats kan terugzetten.",
-      "sizeNote": "Elk herstelpunt is op zichzelf compleet; de grootte is alles wat het omvat. De opslag bewaart elk stuk één keer en latere runs voegen alleen toe wat is veranderd, daarom blijft ‘Opgeslagen door Torqvoice’ ver onder de som van de groottes.",
-      "recentTitle": "Recente runs",
-      "noRuns": "Er zijn nog geen back-ups gemaakt.",
-      "notStarted": "Niet gestart",
-      "supportReason": "Teruggezet door Torqvoice-support: {reason}",
-      "columns": {
-        "when": "Wanneer",
-        "kind": "Soort",
-        "size": "Grootte",
-        "status": "Status",
-        "trigger": "Gestart door",
-        "duration": "Duur"
+      "listTitle": "Back-ups",
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "dayCount": "{count, plural, one {# back-up} other {# back-ups}}",
+      "latest": "Nieuwste",
+      "loadingMore": "Meer back-ups laden…",
+      "endOfList": "{count, plural, one {# back-up in totaal} other {# back-ups in totaal}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Back-up in de wachtrij",
+          "running": "Back-up bezig",
+          "done": "Back-up gemaakt",
+          "failed": "Back-up mislukt",
+          "skipped": "Back-up overgeslagen"
+        },
+        "restore": {
+          "queued": "Terugzetten naar {time} in de wachtrij",
+          "running": "Bezig met terugzetten naar {time}",
+          "done": "Teruggezet naar {time}",
+          "failed": "Terugzetten naar {time} mislukt",
+          "skipped": "Terugzetten naar {time} overgeslagen"
+        }
       },
+      "sizeNote": "Elk herstelpunt is op zichzelf compleet; de grootte is alles wat het omvat. De opslag bewaart elk stuk één keer en latere runs voegen alleen toe wat is veranderd, daarom blijft ‘Opgeslagen door Torqvoice’ ver onder de som van de groottes.",
+      "supportReason": "Teruggezet door Torqvoice-support: {reason}",
       "kind": {
         "scheduled": "Gepland",
         "manual": "Handmatig",
         "safety": "Veiligheidskopie",
         "safetyHint": "Vlak voor een terugzetting gemaakt, zodat die ongedaan kan worden gemaakt"
-      },
-      "trigger": {
-        "scheduled": "Gepland",
-        "manual": "Handmatig",
-        "restore": "Terugzetten"
-      },
-      "status": {
-        "queued": "In de wachtrij",
-        "running": "Bezig",
-        "done": "Klaar",
-        "failed": "Mislukt",
-        "skipped": "Overgeslagen"
       },
       "explore": "Bekijken",
       "restore": {

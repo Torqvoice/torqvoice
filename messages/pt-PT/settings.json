@@ -1478,41 +1478,38 @@
       "paused": "O seu plano já não inclui as cópias de segurança do Torqvoice. As execuções pararam; os pontos de restauro são guardados até {date} e depois eliminados.",
       "upsell": "Disponível no Pro: cópias de segurança de hora a hora feitas pelo Torqvoice, com pontos de restauro aos quais pode voltar.",
       "planLink": "Ver planos",
-      "pointsTitle": "Pontos de restauro",
       "pointsEmpty": "A primeira cópia de segurança ainda não foi feita.",
-      "showAll": "Mostrar todos os {count}",
-      "showFewer": "Mostrar menos",
       "needsOwner": "Só o proprietário da oficina pode repor.",
-      "sizeNote": "Cada ponto de restauro está completo por si só; o seu tamanho é tudo o que abrange. O repositório guarda cada parte uma única vez e as execuções seguintes acrescentam só o que mudou, por isso «Guardado pelo Torqvoice» fica muito abaixo da soma dos tamanhos.",
-      "recentTitle": "Execuções recentes",
-      "noRuns": "Ainda não foi feita nenhuma cópia de segurança.",
-      "notStarted": "Não iniciada",
-      "supportReason": "Reposta pelo suporte do Torqvoice: {reason}",
-      "columns": {
-        "when": "Quando",
-        "kind": "Tipo",
-        "size": "Tamanho",
-        "status": "Estado",
-        "trigger": "Iniciada por",
-        "duration": "Duração"
+      "listTitle": "Cópias de segurança",
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "dayCount": "{count, plural, one {# cópia} other {# cópias}}",
+      "latest": "Mais recente",
+      "loadingMore": "A carregar mais cópias…",
+      "endOfList": "{count, plural, one {# cópia no total} other {# cópias no total}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Cópia na fila",
+          "running": "A fazer cópia de segurança",
+          "done": "Cópia feita",
+          "failed": "A cópia falhou",
+          "skipped": "Cópia ignorada"
+        },
+        "restore": {
+          "queued": "Reposição para {time} na fila",
+          "running": "A repor para {time}",
+          "done": "Reposto para {time}",
+          "failed": "A reposição para {time} falhou",
+          "skipped": "Reposição para {time} ignorada"
+        }
       },
+      "sizeNote": "Cada ponto de restauro está completo por si só; o seu tamanho é tudo o que abrange. O repositório guarda cada parte uma única vez e as execuções seguintes acrescentam só o que mudou, por isso «Guardado pelo Torqvoice» fica muito abaixo da soma dos tamanhos.",
+      "supportReason": "Reposta pelo suporte do Torqvoice: {reason}",
       "kind": {
         "scheduled": "Agendada",
         "manual": "Manual",
         "safety": "Cópia de proteção",
         "safetyHint": "Feita imediatamente antes de uma reposição, para que possa ser anulada"
-      },
-      "trigger": {
-        "scheduled": "Agendada",
-        "manual": "Manual",
-        "restore": "Reposição"
-      },
-      "status": {
-        "queued": "Na fila",
-        "running": "Em curso",
-        "done": "Concluída",
-        "failed": "Falhou",
-        "skipped": "Ignorada"
       },
       "explore": "Explorar",
       "restore": {

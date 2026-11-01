@@ -1478,41 +1478,38 @@
       "paused": "Ihr Tarif enthält keine Sicherungen von Torqvoice mehr. Die Läufe wurden gestoppt; die Wiederherstellungspunkte werden bis {date} aufbewahrt und danach gelöscht.",
       "upsell": "Verfügbar mit Pro: stündliche Sicherungen durch Torqvoice mit Wiederherstellungspunkten, zu denen Sie zurückkehren können.",
       "planLink": "Tarife ansehen",
-      "pointsTitle": "Wiederherstellungspunkte",
       "pointsEmpty": "Die erste Sicherung ist noch nicht gelaufen.",
-      "showAll": "Alle {count} anzeigen",
-      "showFewer": "Weniger anzeigen",
       "needsOwner": "Nur der Inhaber der Werkstatt kann wiederherstellen.",
-      "sizeNote": "Jeder Wiederherstellungspunkt ist für sich vollständig; seine Größe ist alles, was er umfasst. Das Repository speichert jedes Teil nur einmal, und spätere Läufe fügen nur hinzu, was sich geändert hat. Deshalb bleibt „Bei Torqvoice gespeichert“ weit unter der Summe der Größen.",
-      "recentTitle": "Letzte Läufe",
-      "noRuns": "Es wurden noch keine Sicherungen ausgeführt.",
-      "notStarted": "Nicht gestartet",
-      "supportReason": "Vom Torqvoice-Support wiederhergestellt: {reason}",
-      "columns": {
-        "when": "Zeitpunkt",
-        "kind": "Art",
-        "size": "Größe",
-        "status": "Status",
-        "trigger": "Gestartet von",
-        "duration": "Dauer"
+      "listTitle": "Sicherungen",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "dayCount": "{count, plural, one {# Sicherung} other {# Sicherungen}}",
+      "latest": "Neueste",
+      "loadingMore": "Weitere Sicherungen werden geladen …",
+      "endOfList": "{count, plural, one {# Sicherung insgesamt} other {# Sicherungen insgesamt}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Sicherung in der Warteschlange",
+          "running": "Sicherung läuft",
+          "done": "Gesichert",
+          "failed": "Sicherung fehlgeschlagen",
+          "skipped": "Sicherung übersprungen"
+        },
+        "restore": {
+          "queued": "Wiederherstellung auf {time} in der Warteschlange",
+          "running": "Wird auf {time} wiederhergestellt",
+          "done": "Auf {time} wiederhergestellt",
+          "failed": "Wiederherstellung auf {time} fehlgeschlagen",
+          "skipped": "Wiederherstellung auf {time} übersprungen"
+        }
       },
+      "sizeNote": "Jeder Wiederherstellungspunkt ist für sich vollständig; seine Größe ist alles, was er umfasst. Das Repository speichert jedes Teil nur einmal, und spätere Läufe fügen nur hinzu, was sich geändert hat. Deshalb bleibt „Bei Torqvoice gespeichert“ weit unter der Summe der Größen.",
+      "supportReason": "Vom Torqvoice-Support wiederhergestellt: {reason}",
       "kind": {
         "scheduled": "Geplant",
         "manual": "Manuell",
         "safety": "Sicherheitskopie",
         "safetyHint": "Direkt vor einer Wiederherstellung erstellt, damit sie rückgängig gemacht werden kann"
-      },
-      "trigger": {
-        "scheduled": "Geplant",
-        "manual": "Manuell",
-        "restore": "Wiederherstellung"
-      },
-      "status": {
-        "queued": "In der Warteschlange",
-        "running": "Läuft",
-        "done": "Fertig",
-        "failed": "Fehlgeschlagen",
-        "skipped": "Übersprungen"
       },
       "explore": "Ansehen",
       "restore": {

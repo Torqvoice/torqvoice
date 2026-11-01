@@ -1478,41 +1478,38 @@
       "paused": "Twój plan nie obejmuje już kopii zapasowych Torqvoice. Uruchomienia zostały wstrzymane; punkty przywracania są przechowywane do {date}, a potem zostaną usunięte.",
       "upsell": "Dostępne w planie Pro: cogodzinne kopie zapasowe wykonywane przez Torqvoice z punktami przywracania, do których możesz wrócić.",
       "planLink": "Zobacz plany",
-      "pointsTitle": "Punkty przywracania",
       "pointsEmpty": "Pierwsza kopia zapasowa nie została jeszcze utworzona.",
-      "showAll": "Pokaż wszystkie ({count})",
-      "showFewer": "Pokaż mniej",
       "needsOwner": "Tylko właściciel warsztatu może przywracać.",
-      "sizeNote": "Każdy punkt przywracania jest kompletny sam w sobie; jego rozmiar to wszystko, co obejmuje. Repozytorium przechowuje każdy fragment tylko raz, a kolejne uruchomienia dodają tylko to, co się zmieniło, dlatego „Przechowywane przez Torqvoice” pozostaje znacznie poniżej sumy rozmiarów.",
-      "recentTitle": "Ostatnie uruchomienia",
-      "noRuns": "Nie utworzono jeszcze żadnej kopii zapasowej.",
-      "notStarted": "Nie rozpoczęto",
-      "supportReason": "Przywrócone przez zespół pomocy Torqvoice: {reason}",
-      "columns": {
-        "when": "Kiedy",
-        "kind": "Rodzaj",
-        "size": "Rozmiar",
-        "status": "Status",
-        "trigger": "Uruchomione przez",
-        "duration": "Czas trwania"
+      "listTitle": "Kopie zapasowe",
+      "today": "Dzisiaj",
+      "yesterday": "Wczoraj",
+      "dayCount": "{count, plural, one {# kopia} few {# kopie} many {# kopii} other {# kopii}}",
+      "latest": "Najnowsza",
+      "loadingMore": "Wczytywanie kolejnych kopii…",
+      "endOfList": "{count, plural, one {Łącznie # kopia} few {Łącznie # kopie} many {Łącznie # kopii} other {Łącznie # kopii}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Kopia w kolejce",
+          "running": "Tworzenie kopii",
+          "done": "Kopia utworzona",
+          "failed": "Kopia nieudana",
+          "skipped": "Kopia pominięta"
+        },
+        "restore": {
+          "queued": "Przywracanie do {time} w kolejce",
+          "running": "Przywracanie do {time}",
+          "done": "Przywrócono do {time}",
+          "failed": "Nie udało się przywrócić do {time}",
+          "skipped": "Przywracanie do {time} pominięte"
+        }
       },
+      "sizeNote": "Każdy punkt przywracania jest kompletny sam w sobie; jego rozmiar to wszystko, co obejmuje. Repozytorium przechowuje każdy fragment tylko raz, a kolejne uruchomienia dodają tylko to, co się zmieniło, dlatego „Przechowywane przez Torqvoice” pozostaje znacznie poniżej sumy rozmiarów.",
+      "supportReason": "Przywrócone przez zespół pomocy Torqvoice: {reason}",
       "kind": {
         "scheduled": "Zaplanowana",
         "manual": "Ręczna",
         "safety": "Kopia bezpieczeństwa",
         "safetyHint": "Utworzona tuż przed przywróceniem, aby można je było cofnąć"
-      },
-      "trigger": {
-        "scheduled": "Harmonogram",
-        "manual": "Ręcznie",
-        "restore": "Przywracanie"
-      },
-      "status": {
-        "queued": "W kolejce",
-        "running": "W toku",
-        "done": "Gotowe",
-        "failed": "Nieudane",
-        "skipped": "Pominięte"
       },
       "explore": "Przeglądaj",
       "restore": {
