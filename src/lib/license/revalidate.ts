@@ -1,4 +1,3 @@
-import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { verifyLicenseToken, type LicenseTokenVerification } from './token'
