@@ -40,8 +40,13 @@ export default async function IntegrationConnectionPage({
 
   const content = (
     <ConnectionSettings
+      organizationId={data.organizationId}
       view={view.data}
-      activity={activity.success && activity.data ? activity.data : { items: [], logs: [] }}
+      activity={
+        activity.success && activity.data
+          ? activity.data
+          : { items: [], logs: [], nextCursor: null }
+      }
       platformHandlesBackups={manifest.id === 's3' && platformBackupsEnabled()}
       reauth={reauth}
     />

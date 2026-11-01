@@ -168,6 +168,7 @@
       "nothingDue": "Todas as viaturas com matrícula foram verificadas recentemente, por isso ainda não há nada para consultar."
     },
     "supersedes": "Ligar {next} desliga {current}. Só pode estar uma ativa de cada vez, por isso {current} deixa de ser utilizada assim que {next} entrar em funcionamento.",
+    "platformHandlesBackupsTitle": "As cópias de segurança já estão incluídas",
     "platformHandlesBackups": "O Torqvoice já faz uma cópia de segurança desta oficina a cada hora e guarda pontos de restauro durante 30 dias. Ligue um bucket se também quiser uma cópia sua, legível sem o Torqvoice.",
     "platformHandlesBackupsLink": "Ver os seus pontos de reposição",
     "batchRetried": "{count, plural, =0 {Nada para tentar novamente} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Nada falhou.",
     "retryFailed": "Tentar novamente as que falharam",
-    "details": "Mostrar detalhes"
+    "details": "Mostrar detalhes",
+    "loadingMore": "A carregar tarefas anteriores",
+    "loadFailed": "Não foi possível carregar as tarefas anteriores.",
+    "cleared": "As tarefas concluídas são apagadas ao fim de 7 dias."
   },
   "errors": {
     "generic": "Algo correu mal",

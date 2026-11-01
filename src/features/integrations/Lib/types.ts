@@ -563,3 +563,30 @@ export interface ActivityBatch {
 }
 
 export type ActivityItem = ({ type: 'job' } & ActivityJob) | ({ type: 'batch' } & ActivityBatch)
+
+/** Where the next page of the activity list starts: the oldest line already shown. */
+export interface ActivityCursor {
+  /** When that line's first job was queued, ISO. */
+  at: string
+  /** Its batch id, or the job's own id. */
+  key: string
+}
+
+/** One log line on the activity card. */
+export interface ActivityLog {
+  id: string
+  level: string
+  message: string
+  details?: unknown
+  createdAt: string
+}
+
+/**
+ * One page of the activity list. The newest page also carries the latest log
+ * lines; older pages leave them empty.
+ */
+export interface ActivityPage {
+  items: ActivityItem[]
+  logs: ActivityLog[]
+  nextCursor: ActivityCursor | null
+}

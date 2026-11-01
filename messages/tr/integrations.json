@@ -168,6 +168,7 @@
       "nothingDue": "Plakası olan tüm araçlar yakın zamanda kontrol edildi, şimdilik sorgulanacak bir şey yok."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
+    "platformHandlesBackupsTitle": "Yedekleme zaten dahil",
     "platformHandlesBackups": "Torqvoice bu atölyeyi zaten her saat yedekliyor ve geri yükleme noktalarını 30 gün saklıyor. Torqvoice olmadan da okunabilen, size ait bir kopya da istiyorsanız bir bucket bağlayın.",
     "platformHandlesBackupsLink": "Geri yükleme noktalarını görün",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Hiçbiri başarısız olmadı.",
     "retryFailed": "Başarısızları yeniden dene",
-    "details": "Ayrıntıları göster"
+    "details": "Ayrıntıları göster",
+    "loadingMore": "Daha eski işler yükleniyor",
+    "loadFailed": "Daha eski işler yüklenemedi.",
+    "cleared": "Tamamlanan işler 7 gün sonra silinir."
   },
   "errors": {
     "generic": "Bir şeyler ters gitti",

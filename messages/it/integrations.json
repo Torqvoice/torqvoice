@@ -168,6 +168,7 @@
       "nothingDue": "Tutti i veicoli con targa sono stati controllati di recente, quindi non c'è ancora niente da cercare."
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
+    "platformHandlesBackupsTitle": "I backup sono già inclusi",
     "platformHandlesBackups": "Torqvoice esegue già un backup di questa officina ogni ora e conserva i punti di ripristino per 30 giorni. Collega un bucket se vuoi anche una copia tua, leggibile senza Torqvoice.",
     "platformHandlesBackupsLink": "Vedi i tuoi punti di ripristino",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Nessun errore.",
     "retryFailed": "Riprova quelle non riuscite",
-    "details": "Mostra dettagli"
+    "details": "Mostra dettagli",
+    "loadingMore": "Caricamento delle attività precedenti",
+    "loadFailed": "Impossibile caricare le attività precedenti.",
+    "cleared": "Le attività completate vengono eliminate dopo 7 giorni."
   },
   "errors": {
     "generic": "Qualcosa è andato storto",

@@ -168,6 +168,7 @@
       "nothingDue": "Wszystkie pojazdy z tablicą zostały niedawno sprawdzone, więc na razie nie ma czego sprawdzać."
     },
     "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
+    "platformHandlesBackupsTitle": "Kopie zapasowe są już w cenie",
     "platformHandlesBackups": "Torqvoice już co godzinę tworzy kopię zapasową tego warsztatu i przechowuje punkty przywracania przez 30 dni. Połącz bucket, jeśli chcesz mieć także własną kopię, którą można odczytać bez Torqvoice.",
     "platformHandlesBackupsLink": "Zobacz punkty przywracania",
     "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Nic nie zawiodło.",
     "retryFailed": "Ponów nieudane",
-    "details": "Pokaż szczegóły"
+    "details": "Pokaż szczegóły",
+    "loadingMore": "Wczytywanie starszych zadań",
+    "loadFailed": "Nie udało się wczytać starszych zadań.",
+    "cleared": "Zakończone zadania są usuwane po 7 dniach."
   },
   "errors": {
     "generic": "Coś poszło nie tak",
