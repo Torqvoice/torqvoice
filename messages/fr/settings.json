@@ -1624,6 +1624,7 @@
     "validate": "Valider",
     "validated": "Licence validee avec succès",
     "invalid": "Cle de licence invalide",
+    "offlineInvalid": "Ce n'est pas un jeton de licence hors ligne valide pour cet atelier. La licence enregistrée sur ce serveur est inchangée.",
     "failedValidate": "Échec de la validation de la licence",
     "keyHint": "Chaque clé de licence ou jeton de licence hors ligne est lié à cette organisation et ne peut pas être partagé entre plusieurs organisations.",
     "expired": "Expirée",

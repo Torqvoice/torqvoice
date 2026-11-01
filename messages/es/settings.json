@@ -1624,6 +1624,7 @@
     "validate": "Validar",
     "validated": "Licencia validada exitosamente",
     "invalid": "Clave de licencia invalida",
+    "offlineInvalid": "Este no es un token de licencia sin conexión válido para este taller. La licencia guardada en este servidor no ha cambiado.",
     "failedValidate": "Error al validar la licencia",
     "keyHint": "Cada clave de licencia o token de licencia offline está vinculado a esta organización y no se puede compartir entre varias organizaciones.",
     "expired": "Expirada",

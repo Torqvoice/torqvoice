@@ -1624,6 +1624,7 @@
     "validate": "Patvirtinti",
     "validated": "Licencija sėkmingai patvirtinta",
     "invalid": "Neteisingas licencijos raktas",
+    "offlineInvalid": "Tai nėra galiojantis šių dirbtuvių licencijos neprisijungus žetonas. Šiame serveryje išsaugota licencija nepakeista.",
     "failedValidate": "Nepavyko patvirtinti licencijos",
     "keyHint": "Kiekvienas licencijos raktas ar neprisijungusios licencijos žetonas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose.",
     "expired": "Pasibaigusi",

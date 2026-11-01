@@ -24,13 +24,18 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('@/lib/demo', () => ({ demoGuard: vi.fn() }))
 vi.mock('@/lib/license/revalidate', () => ({
   revalidateLicense: vi.fn(),
+  storedLicenseVerification: vi.fn(),
   storePerpetualLicense: vi.fn(),
 }))
 
 import { validateLicense } from '@/features/settings/Actions/validateLicense'
 import { demoGuard } from '@/lib/demo'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { revalidateLicense, storePerpetualLicense } from '@/lib/license/revalidate'
+import {
+  revalidateLicense,
+  storedLicenseVerification,
+  storePerpetualLicense,
+} from '@/lib/license/revalidate'
 import type { LicenseTokenVerification } from '@/lib/license/token'
 
 const LICENSEE = {
@@ -92,10 +97,42 @@ describe('validateLicense', () => {
         status: 'valid',
         valid: true,
         plan: 'white-label',
-        reachable: true,
         kind: 'perpetual',
         licensee: LICENSEE,
+        attempted: 'perpetual',
+        accepted: true,
+        reachable: true,
       },
+    })
+  })
+
+  it('keeps the stored licence on screen when a pasted token does not verify', async () => {
+    vi.mocked(storePerpetualLicense).mockResolvedValue(
+      verification({ status: 'invalid', kind: null })
+    )
+    vi.mocked(storedLicenseVerification).mockResolvedValue(
+      verification({
+        status: 'valid',
+        kind: 'perpetual',
+        payload: perpetualPayload,
+        maxOrganizations: 1,
+        licensee: LICENSEE,
+      })
+    )
+    const result = await validateLicense('tvp1.garbage.sig')
+
+    expect(storedLicenseVerification).toHaveBeenCalledWith('org-1')
+    // Nothing changed, so the banner dismissal and the cache stay as they were.
+    expect(deleteMany).not.toHaveBeenCalled()
+    expect(result.data).toEqual({
+      status: 'valid',
+      valid: true,
+      plan: 'white-label',
+      kind: 'perpetual',
+      licensee: LICENSEE,
+      attempted: 'perpetual',
+      accepted: false,
+      reachable: true,
     })
   })
 
@@ -115,6 +152,8 @@ describe('validateLicense', () => {
       valid: false,
       kind: 'perpetual',
       licensee: LICENSEE,
+      attempted: 'perpetual',
+      accepted: true,
     })
   })
 
@@ -125,7 +164,9 @@ describe('validateLicense', () => {
     })
     const result = await validateLicense('TQV-ABCD-1234')
 
-    expect(revalidateLicense).toHaveBeenCalledWith('org-1', 'TQV-ABCD-1234', 'u-1')
+    expect(revalidateLicense).toHaveBeenCalledWith('org-1', 'TQV-ABCD-1234', 'u-1', {
+      replacePerpetual: true,
+    })
     expect(storePerpetualLicense).not.toHaveBeenCalled()
     expect(result.data).toMatchObject({
       status: 'valid',
@@ -134,6 +175,57 @@ describe('validateLicense', () => {
       reachable: true,
       kind: 'subscription',
       licensee: null,
+      attempted: 'subscription',
+      accepted: true,
+    })
+  })
+
+  it('reports a rejected key without touching the offline licence that stays on disk', async () => {
+    vi.mocked(revalidateLicense).mockResolvedValue({
+      remote: {
+        reachable: true,
+        valid: false,
+        plan: 'free',
+        expiresAt: '',
+        token: null,
+        error: 'License not found',
+      },
+      verification: verification({
+        status: 'valid',
+        kind: 'perpetual',
+        payload: perpetualPayload,
+        licensee: LICENSEE,
+      }),
+    })
+    const result = await validateLicense('TQV-WRONG')
+
+    expect(deleteMany).not.toHaveBeenCalled()
+    expect(result.data).toEqual({
+      status: 'valid',
+      valid: true,
+      plan: 'white-label',
+      kind: 'perpetual',
+      licensee: LICENSEE,
+      attempted: 'subscription',
+      accepted: false,
+      reachable: true,
+      reason: 'License not found',
+    })
+  })
+
+  it('says torqvoice.com was unreachable and reports the licence still on disk', async () => {
+    vi.mocked(revalidateLicense).mockResolvedValue({
+      remote: { reachable: false, valid: false, plan: 'free', expiresAt: '', token: null },
+      verification: verification({ status: 'stale', kind: 'subscription' }),
+    })
+    const result = await validateLicense('TQV-ABCD-1234')
+    expect(result.data).toMatchObject({
+      status: 'stale',
+      valid: false,
+      kind: 'subscription',
+      attempted: 'subscription',
+      accepted: false,
+      reachable: false,
     })
   })
 

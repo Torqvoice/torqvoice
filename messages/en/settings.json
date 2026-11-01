@@ -1624,6 +1624,7 @@
     "validate": "Validate",
     "validated": "License validated successfully",
     "invalid": "Invalid license key",
+    "offlineInvalid": "This is not a valid offline licence token for this workshop. The licence stored on this server is unchanged.",
     "failedValidate": "Failed to validate license",
     "keyHint": "Each licence key or offline licence token is tied to this organization and cannot be shared across multiple organizations.",
     "expired": "Expired",

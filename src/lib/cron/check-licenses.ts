@@ -19,6 +19,9 @@ const EXPIRY_WARNING_DAYS = 14
 export async function revalidateOrganizationLicense(organizationId: string, licenseKey: string) {
   const { verification } = await revalidateLicense(organizationId, licenseKey)
   const { status, daysUntilExpiry, ageDays } = verification
+  // A perpetual token was not refreshed (revalidateLicense leaves it alone)
+  // and has no clock to warn about: no term, and its age means nothing.
+  if (verification.kind === 'perpetual') return
 
   if (
     status === 'valid' &&

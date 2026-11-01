@@ -1624,6 +1624,7 @@
     "validate": "Validieren",
     "validated": "Lizenz erfolgreich validiert",
     "invalid": "Ungültiger Lizenzschlüssel",
+    "offlineInvalid": "Dies ist kein gültiges Offline-Lizenz-Token für diese Werkstatt. Die auf diesem Server gespeicherte Lizenz ist unverändert.",
     "failedValidate": "Lizenz konnte nicht validiert werden",
     "keyHint": "Jeder Lizenzschlüssel und jedes Offline-Lizenztoken ist an diese Organisation gebunden und kann nicht für mehrere Organisationen verwendet werden.",
     "expired": "Abgelaufen",

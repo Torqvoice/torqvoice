@@ -290,6 +290,21 @@ describe('revalidateOrganizationLicense', () => {
     )
   })
 
+  it('never warns about a perpetual token, whose age means nothing', async () => {
+    vi.mocked(revalidateLicense).mockResolvedValue({
+      remote: null,
+      verification: {
+        ...verified('valid', { ageDays: 400, daysUntilExpiry: null }),
+        kind: 'perpetual',
+      },
+    })
+
+    await revalidateOrganizationLicense(ORG_ID, LICENSE_KEY)
+
+    expect(notify).not.toHaveBeenCalled()
+    expect(sendOrgMail).not.toHaveBeenCalled()
+  })
+
   it('warns when the token has not been refreshed for a week', async () => {
     mockRemote({ ageDays: LICENSE_TOKEN_WARN_AGE_DAYS })
 

@@ -1624,6 +1624,7 @@
     "validate": "Zweryfikuj",
     "validated": "Licencja zweryfikowana pomyślnie",
     "invalid": "Nieprawidlowy klucz licencji",
+    "offlineInvalid": "To nie jest ważny token licencji offline dla tego warsztatu. Licencja zapisana na tym serwerze pozostaje bez zmian.",
     "failedValidate": "Nie udało się zweryfikować licencji",
     "keyHint": "Każdy klucz licencyjny lub token licencji offline jest powiązany z tą organizacją i nie może być współdzielony między wieloma organizacjami.",
     "expired": "Wygasła",

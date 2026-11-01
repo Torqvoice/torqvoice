@@ -1624,6 +1624,7 @@
     "validate": "Valideren",
     "validated": "Licentie succesvol gevalideerd",
     "invalid": "Ongeldige licentiesleutel",
+    "offlineInvalid": "Dit is geen geldig offlinelicentietoken voor deze werkplaats. De licentie die op deze server is opgeslagen is ongewijzigd.",
     "failedValidate": "Licentie valideren mislukt",
     "keyHint": "Elke licentiesleutel of offline licentietoken is gekoppeld aan deze organisatie en kan niet tussen meerdere organisaties worden gedeeld.",
     "expired": "Verlopen",

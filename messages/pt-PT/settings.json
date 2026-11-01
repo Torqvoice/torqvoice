@@ -1624,6 +1624,7 @@
     "validate": "Validar",
     "validated": "Licença validada com sucesso",
     "invalid": "Chave de licença inválida",
+    "offlineInvalid": "Este não é um token de licença offline válido para esta oficina. A licença guardada neste servidor mantém-se inalterada.",
     "failedValidate": "Não foi possível validar a licença",
     "keyHint": "Cada chave de licença ou token de licença offline está associado a esta organização e não pode ser partilhado entre várias organizações.",
     "expired": "Expirada",

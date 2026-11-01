@@ -260,6 +260,8 @@ describe('LicenseSettings offline licence', () => {
         reachable: true,
         kind: 'perpetual',
         licensee: LICENSEE,
+        attempted: 'perpetual',
+        accepted: true,
       },
     } as Awaited<ReturnType<typeof validateLicense>>)
     renderSettings()
@@ -287,6 +289,8 @@ describe('LicenseSettings offline licence', () => {
         reachable: true,
         kind: 'perpetual',
         licensee: { ...LICENSEE, registrationNumber: '555666777' },
+        attempted: 'perpetual',
+        accepted: true,
       },
     } as Awaited<ReturnType<typeof validateLicense>>)
     renderSettings()
@@ -301,5 +305,37 @@ describe('LicenseSettings offline licence', () => {
         "This licence was issued to organization number 555666777, but this workshop's organization number is 987654321."
       )
     )
+  })
+  it('keeps the active licence on screen when a pasted token is rejected', async () => {
+    vi.mocked(validateLicense).mockResolvedValue({
+      success: true,
+      data: {
+        // What is still on disk: the valid offline licence.
+        status: 'valid',
+        valid: true,
+        plan: 'white-label',
+        reachable: true,
+        kind: 'perpetual',
+        licensee: LICENSEE,
+        attempted: 'perpetual',
+        accepted: false,
+      },
+    } as Awaited<ReturnType<typeof validateLicense>>)
+    renderSettings({ initialStatus: 'valid', initialKind: 'perpetual', initialLicensee: LICENSEE })
+
+    fireEvent.change(screen.getByPlaceholderText(/licence key or an offline licence token/i), {
+      target: { value: 'tvp1.garbage.sig' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'This is not a valid offline licence token for this workshop. The licence stored on this server is unchanged.'
+      )
+    )
+    expect(toast.success).not.toHaveBeenCalled()
+    expect(screen.getByText('Active')).toBeInTheDocument()
+    expect(screen.getByText('Perpetual')).toBeInTheDocument()
+    expect(screen.queryByText('Inactive')).not.toBeInTheDocument()
   })
 })

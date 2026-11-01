@@ -69,61 +69,126 @@ function upsert(organizationId: string, userId: string, key: string, value: stri
 }
 
 /**
+ * The licence on disk, verified the way the feature gate verifies it: the
+ * stored token against the workshop's own registration number.
+ */
+export async function storedLicenseVerification(
+  organizationId: string
+): Promise<LicenseTokenVerification> {
+  const rows = await db.appSetting.findMany({
+    where: {
+      organizationId,
+      key: { in: [SETTING_KEYS.LICENSE_TOKEN, SETTING_KEYS.INVOICE_ORG_NUMBER] },
+    },
+    select: { key: true, value: true },
+  })
+  const token = rows.find((r) => r.key === SETTING_KEYS.LICENSE_TOKEN)?.value
+  const registrationNumber = rows.find((r) => r.key === SETTING_KEYS.INVOICE_ORG_NUMBER)?.value
+  return verifyLicenseToken(token, organizationId, { registrationNumber })
+}
+
+export type RemoteStoreOptions = {
+  /**
+   * From the Validate button only. A key torqvoice.com accepts may then
+   * replace a perpetual token, because the owner typed it in on purpose. The
+   * cron and the self-heal never pass it, so no refresh can touch an offline
+   * licence.
+   */
+  replacePerpetual?: boolean
+}
+
+/**
  * Stores a validate response. A reachable answer is authoritative, including
  * "not valid": the token is dropped. An unreachable torqvoice.com changes
  * nothing except `license.checkedAt`, so the existing token keeps working
  * until it ages out on its own.
+ *
+ * Except over a perpetual token. One on disk is read inside the same
+ * transaction as the writes, so a refresh that was already in flight when the
+ * token was pasted cannot land on top of it, and a mistyped key, a rejected
+ * key or an unreachable torqvoice.com never costs a paid offline licence.
+ * Only a key torqvoice.com accepts, typed in by the owner, replaces it.
+ *
+ * Returns whether anything was written.
  */
 export async function storeRemoteLicense(
   organizationId: string,
   licenseKey: string,
   result: RemoteLicenseResult,
-  userId?: string
-): Promise<void> {
+  userId?: string,
+  options: RemoteStoreOptions = {}
+): Promise<boolean> {
   const uid = userId ?? (await settingUserId(organizationId))
-  if (!uid) return
+  if (!uid) return false
 
   const now = new Date().toISOString()
-  const writes: Prisma.PrismaPromise<unknown>[] = [
-    upsert(organizationId, uid, SETTING_KEYS.LICENSE_KEY, licenseKey),
-    upsert(organizationId, uid, SETTING_KEYS.LICENSE_CHECKED_AT, now),
-  ]
+  const accepted = result.reachable && result.valid && Boolean(result.token)
 
-  if (result.reachable) {
-    writes.push(
-      upsert(organizationId, uid, SETTING_KEYS.LICENSE_VALID, String(result.valid)),
-      upsert(organizationId, uid, SETTING_KEYS.LICENSE_PLAN, result.plan)
-    )
-    if (result.expiresAt) {
-      writes.push(upsert(organizationId, uid, SETTING_KEYS.LICENSE_EXPIRES_AT, result.expiresAt))
+  return db.$transaction(async (tx) => {
+    const current = await tx.appSetting.findUnique({
+      where: { organizationId_key: { organizationId, key: SETTING_KEYS.LICENSE_TOKEN } },
+      select: { value: true },
+    })
+    const onDisk = verifyLicenseToken(current?.value, organizationId)
+    if (onDisk.kind === 'perpetual' && !(options.replacePerpetual && accepted)) {
+      return false
     }
-    if (result.token) {
-      writes.push(upsert(organizationId, uid, SETTING_KEYS.LICENSE_TOKEN, result.token))
-    } else {
+
+    const put = (key: string, value: string) =>
+      tx.appSetting.upsert({
+        where: { organizationId_key: { organizationId, key } },
+        update: { value },
+        create: { userId: uid, organizationId, key, value },
+      })
+
+    const writes: Promise<unknown>[] = [
+      put(SETTING_KEYS.LICENSE_KEY, licenseKey),
+      put(SETTING_KEYS.LICENSE_CHECKED_AT, now),
+    ]
+
+    if (result.reachable) {
       writes.push(
-        db.appSetting.deleteMany({
-          where: { organizationId, key: SETTING_KEYS.LICENSE_TOKEN },
-        })
+        put(SETTING_KEYS.LICENSE_VALID, String(result.valid)),
+        put(SETTING_KEYS.LICENSE_PLAN, result.plan)
       )
+      if (result.expiresAt) {
+        writes.push(put(SETTING_KEYS.LICENSE_EXPIRES_AT, result.expiresAt))
+      }
+      if (result.token) {
+        writes.push(put(SETTING_KEYS.LICENSE_TOKEN, result.token))
+      } else {
+        writes.push(
+          tx.appSetting.deleteMany({
+            where: { organizationId, key: SETTING_KEYS.LICENSE_TOKEN },
+          })
+        )
+      }
     }
-  }
 
-  await db.$transaction(writes)
+    await Promise.all(writes)
+    return true
+  })
 }
 
-/** Fetches and stores in one go. Returns the verification of what is now on disk. */
+/**
+ * Fetches and stores in one go. Returns the verification of what is now on
+ * disk. `remote` is null when nothing was fetched: a refresh (no
+ * `replacePerpetual`) finds a perpetual token on disk and has nothing to do,
+ * since that licence never checks in.
+ */
 export async function revalidateLicense(
   organizationId: string,
   licenseKey: string,
-  userId?: string
-): Promise<{ remote: RemoteLicenseResult; verification: LicenseTokenVerification }> {
+  userId?: string,
+  options: RemoteStoreOptions = {}
+): Promise<{ remote: RemoteLicenseResult | null; verification: LicenseTokenVerification }> {
+  if (!options.replacePerpetual) {
+    const before = await storedLicenseVerification(organizationId)
+    if (before.kind === 'perpetual') return { remote: null, verification: before }
+  }
   const remote = await fetchRemoteLicense(licenseKey, organizationId)
-  await storeRemoteLicense(organizationId, licenseKey, remote, userId)
-  const stored = await db.appSetting.findUnique({
-    where: { organizationId_key: { organizationId, key: SETTING_KEYS.LICENSE_TOKEN } },
-    select: { value: true },
-  })
-  return { remote, verification: verifyLicenseToken(stored?.value, organizationId) }
+  await storeRemoteLicense(organizationId, licenseKey, remote, userId, options)
+  return { remote, verification: await storedLicenseVerification(organizationId) }
 }
 
 /**

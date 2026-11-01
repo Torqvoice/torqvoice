@@ -204,22 +204,27 @@ export function LicenseSettings({
       const result = await validateLicense(licenseKey)
       if (result.success && result.data) {
         const data = result.data
+        // What is on disk now. A rejected key or token leaves the existing
+        // licence in place, and the page keeps showing it.
         setStatus(data.status)
         setKind(data.kind)
         setLicensee(data.licensee)
-        if (data.status === 'mismatch') {
+        if (!data.accepted) {
+          if (data.attempted === 'perpetual') {
+            toast.error(t('license.offlineInvalid'))
+          } else if (!data.reachable) {
+            toast.error(t('license.unreachable'))
+          } else if (data.reason) {
+            toast.error(t('license.rejected', { reason: data.reason }))
+          } else {
+            toast.error(t('license.invalid'))
+          }
+        } else if (data.status === 'mismatch') {
           toast.error(mismatchMessage(data.licensee?.registrationNumber ?? ''))
-        } else if (data.kind === 'perpetual' && data.valid) {
+        } else if (data.attempted === 'perpetual') {
           toast.success(t('license.offlineActivated'))
-        } else if (data.kind !== 'perpetual' && !data.reachable) {
-          // Only a subscription key goes to torqvoice.com.
-          toast.error(t('license.unreachable'))
-        } else if (data.valid) {
-          toast.success(t('license.validated'))
-        } else if (data.reason) {
-          toast.error(t('license.rejected', { reason: data.reason }))
         } else {
-          toast.error(t('license.invalid'))
+          toast.success(t('license.validated'))
         }
         router.refresh()
       } else {

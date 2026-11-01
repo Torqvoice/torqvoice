@@ -1624,6 +1624,7 @@
     "validate": "Doğrula",
     "validated": "Lisans başarıyla doğrulandı",
     "invalid": "Geçersiz lisans anahtarı",
+    "offlineInvalid": "Bu, bu atölye için geçerli bir çevrimdışı lisans belirteci değil. Bu sunucuda kayıtlı lisans değişmedi.",
     "failedValidate": "Lisans doğrulanamadı",
     "keyHint": "Her lisans anahtarı veya çevrimdışı lisans belirteci bu kuruluşa bağlıdır ve birden fazla kuruluş arasında paylaşılamaz.",
     "expired": "Süresi doldu",

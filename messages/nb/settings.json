@@ -1624,6 +1624,7 @@
     "validate": "Valider",
     "validated": "Lisens validert",
     "invalid": "Ugyldig lisensnøkkel",
+    "offlineInvalid": "Dette er ikke et gyldig offline-lisenstoken for dette verkstedet. Lisensen som er lagret på denne serveren er uendret.",
     "failedValidate": "Kunne ikke validere lisens",
     "keyHint": "Hver lisensnøkkel og hvert offline-lisenstoken er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner.",
     "expired": "Utløpt",
