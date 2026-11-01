@@ -25,6 +25,9 @@ jobs:
           days-before-issue-close: 3
           days-before-pr-stale: -1
           days-before-pr-close: -1
+          # Without this a pull request someone labelled stale by hand would
+          # still have the label taken off when it is updated.
+          remove-pr-stale-when-updated: false
           stale-issue-label: stale
           exempt-issue-labels: pinned,help wanted,good first issue
           exempt-all-issue-milestones: true
