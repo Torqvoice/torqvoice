@@ -460,6 +460,27 @@ export async function saveIntegrationCredentials(
         where: { organizationId_connectorId: { organizationId, connectorId } },
       })
       const previous = openCredentials(existing?.credentials)
+      // A live connection keeps its working keys when new ones fail their
+      // check: the row is put back as it was, sealed credentials and
+      // settings alike, and stays active, so a mistyped late key never takes
+      // a running webhook down with it. Anything not live goes to error as
+      // before, which is what the page's "Update keys" path reads.
+      const live =
+        existing?.status === 'active'
+          ? { id: existing.id, credentials: existing.credentials, settings: existing.settings }
+          : null
+      const refuse = async (connectionId: string, message: string): Promise<never> => {
+        if (live) {
+          await db.integrationConnection.update({
+            where: { id: live.id },
+            data: { credentials: live.credentials, settings: (live.settings ?? {}) as object },
+          })
+          await writeLog(live.id, 'warn', `New keys refused, the stored ones stay: ${message}`)
+        } else {
+          await setConnectionStatus(connectionId, 'error', message)
+        }
+        throw new Error(message)
+      }
       // A key that is only asked for under one provider choice is only
       // required there; the choice is in the settings typed on the same page.
       const chosen = { ...(rawSettings === undefined ? {} : settings) }
@@ -504,14 +525,7 @@ export async function saveIntegrationCredentials(
       if (manifest.auth.type !== 'oauth2') {
         const { ctx, server } = await loadConnection(connection.id)
         const result = await server.test(ctx)
-        if (!result.ok) {
-          await setConnectionStatus(
-            connection.id,
-            'error',
-            result.message ?? 'Connection test failed'
-          )
-          throw new Error(result.message ?? 'Connection test failed')
-        }
+        if (!result.ok) await refuse(connection.id, result.message ?? 'Connection test failed')
         // Who the account is, when the vendor will say. Not being able to
         // ask is no reason to refuse keys that just passed their check.
         if (server.identify) {
@@ -535,9 +549,10 @@ export async function saveIntegrationCredentials(
             const outcome = await server.onConnect(ctx)
             if (outcome?.settings) await mergeSettings(connection.id, outcome.settings)
           } catch (err) {
-            const message = err instanceof Error ? err.message : 'Connection setup failed'
-            await setConnectionStatus(connection.id, 'error', message)
-            throw new Error(message)
+            await refuse(
+              connection.id,
+              err instanceof Error ? err.message : 'Connection setup failed'
+            )
           }
         }
         await activateConnection(connection.id, organizationId, connectorId, userId)
