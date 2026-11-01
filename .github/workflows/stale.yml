@@ -1,0 +1,39 @@
+name: Stale issues
+
+# Marks an issue stale after 60 days without activity and closes it 14 days
+# later unless someone comments. Pull requests are left alone. An issue that
+# is assigned, in a milestone, or labelled pinned, help wanted or good first
+# issue is never marked.
+
+on:
+  schedule:
+    - cron: '30 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v11
+        with:
+          days-before-issue-stale: 60
+          days-before-issue-close: 14
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          stale-issue-label: stale
+          exempt-issue-labels: pinned,help wanted,good first issue
+          exempt-all-issue-milestones: true
+          exempt-all-issue-assignees: true
+          stale-issue-message: >
+            This issue has had no activity for 60 days, so it is marked stale.
+            It will be closed in 14 days unless there is new activity. Comment
+            if it still matters and it stays open.
+          close-issue-message: >
+            Closed after 14 more days without activity. Reopen it, or open a
+            new issue, if it still matters.
+          close-issue-reason: not_planned
