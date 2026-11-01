@@ -76,6 +76,26 @@
     "enterManually": "Skriv inn manuelt",
     "enterBarcode": "Skriv inn strekkode…",
     "scanHint": "Rett kameraet mot en strekkode, eller skriv den inn manuelt",
+    "submitBarcode": "OK",
+    "camera": {
+      "tryAgain": "Prøv igjen",
+      "denied": {
+        "title": "Tilgang til kameraet er blokkert",
+        "body": "Tillat kameraet for dette nettstedet i nettleseren, fra kamera- eller hengelåsikonet i adressefeltet, og trykk deretter Prøv igjen. Eller skriv inn koden nedenfor."
+      },
+      "insecure": {
+        "title": "Kameraet krever HTTPS",
+        "body": "Nettlesere tillater bare kameraet over en sikker tilkobling, og denne siden er på HTTP ({host}). Åpne Torqvoice over HTTPS for å skanne, eller skriv inn koden nedenfor."
+      },
+      "notFound": {
+        "title": "Fant ikke noe kamera",
+        "body": "Koble til et kamera og trykk Prøv igjen, eller skriv inn koden nedenfor."
+      },
+      "failed": {
+        "title": "Kameraet kunne ikke starte",
+        "body": "Kanskje en annen app bruker det. Lukk den appen og trykk Prøv igjen, eller skriv inn koden nedenfor."
+      }
+    },
     "iosInstallHint": "Trykk Del > Legg til på Hjem-skjerm",
     "installDescription": "Legg den til på hjem-skjermen for rask tilgang",
     "enterFullscreen": "Fullskjerm",

@@ -76,6 +76,26 @@
     "enterManually": "Elle gir",
     "enterBarcode": "Barkod girin…",
     "scanHint": "Kamerayı bir barkoda doğrultun ya da elle girin",
+    "submitBarcode": "Git",
+    "camera": {
+      "tryAgain": "Tekrar dene",
+      "denied": {
+        "title": "Kamera erişimi engellendi",
+        "body": "Tarayıcınızda bu site için kameraya izin verin (adres çubuğundaki kamera ya da kilit simgesinden), ardından Tekrar dene'ye basın. Ya da kodu aşağıya yazın."
+      },
+      "insecure": {
+        "title": "Kamera HTTPS gerektirir",
+        "body": "Tarayıcılar kameraya yalnızca güvenli bağlantıda izin verir ve bu sayfa HTTP ({host}) üzerinde. Taramak için Torqvoice'u HTTPS ile açın ya da kodu aşağıya yazın."
+      },
+      "notFound": {
+        "title": "Kamera bulunamadı",
+        "body": "Bir kamera bağlayıp Tekrar dene'ye basın ya da kodu aşağıya yazın."
+      },
+      "failed": {
+        "title": "Kamera başlatılamadı",
+        "body": "Kamerayı başka bir uygulama kullanıyor olabilir. O uygulamayı kapatıp Tekrar dene'ye basın ya da kodu aşağıya yazın."
+      }
+    },
     "iosInstallHint": "Paylaş > Ana Ekrana Ekle'ye dokunun",
     "installDescription": "Hızlı erişim için ana ekranınıza ekleyin",
     "enterFullscreen": "Tam ekran",

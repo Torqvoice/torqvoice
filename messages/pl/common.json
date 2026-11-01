@@ -76,6 +76,26 @@
     "enterManually": "Wprowadź ręcznie",
     "enterBarcode": "Wprowadź kod kreskowy…",
     "scanHint": "Skieruj aparat na kod kreskowy albo wprowadź go ręcznie",
+    "submitBarcode": "OK",
+    "camera": {
+      "tryAgain": "Spróbuj ponownie",
+      "denied": {
+        "title": "Dostęp do aparatu jest zablokowany",
+        "body": "Zezwól tej stronie na użycie aparatu w przeglądarce, ikoną aparatu lub kłódki na pasku adresu, a potem kliknij Spróbuj ponownie. Albo wpisz kod poniżej."
+      },
+      "insecure": {
+        "title": "Aparat wymaga HTTPS",
+        "body": "Przeglądarki pozwalają używać aparatu tylko przy bezpiecznym połączeniu, a ta strona działa przez HTTP ({host}). Otwórz Torqvoice przez HTTPS, żeby skanować, albo wpisz kod poniżej."
+      },
+      "notFound": {
+        "title": "Nie znaleziono aparatu",
+        "body": "Podłącz aparat i kliknij Spróbuj ponownie albo wpisz kod poniżej."
+      },
+      "failed": {
+        "title": "Nie udało się uruchomić aparatu",
+        "body": "Być może używa go inna aplikacja. Zamknij ją i kliknij Spróbuj ponownie albo wpisz kod poniżej."
+      }
+    },
     "iosInstallHint": "Dotknij Udostępnij > Do ekranu początkowego",
     "installDescription": "Dodaj do ekranu głównego, aby mieć szybki dostęp",
     "enterFullscreen": "Pełny ekran",

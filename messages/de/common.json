@@ -76,6 +76,26 @@
     "enterManually": "Manuell eingeben",
     "enterBarcode": "Barcode eingeben…",
     "scanHint": "Richten Sie die Kamera auf einen Barcode oder geben Sie ihn manuell ein",
+    "submitBarcode": "Los",
+    "camera": {
+      "tryAgain": "Erneut versuchen",
+      "denied": {
+        "title": "Kamerazugriff ist blockiert",
+        "body": "Erlauben Sie die Kamera für diese Seite in Ihrem Browser, über das Kamera- oder Schlosssymbol in der Adressleiste, und klicken Sie dann auf Erneut versuchen. Oder geben Sie den Code unten ein."
+      },
+      "insecure": {
+        "title": "Die Kamera braucht HTTPS",
+        "body": "Browser erlauben die Kamera nur über eine sichere Verbindung, und diese Seite läuft über HTTP ({host}). Öffnen Sie Torqvoice über HTTPS, um zu scannen, oder geben Sie den Code unten ein."
+      },
+      "notFound": {
+        "title": "Keine Kamera gefunden",
+        "body": "Schließen Sie eine Kamera an und klicken Sie auf Erneut versuchen, oder geben Sie den Code unten ein."
+      },
+      "failed": {
+        "title": "Die Kamera konnte nicht starten",
+        "body": "Vielleicht verwendet eine andere App sie. Schließen Sie diese App und klicken Sie auf Erneut versuchen, oder geben Sie den Code unten ein."
+      }
+    },
     "iosInstallHint": "Auf Teilen > Zum Home-Bildschirm tippen",
     "installDescription": "Zum Home-Bildschirm hinzufügen für schnellen Zugriff",
     "enterFullscreen": "Vollbild",

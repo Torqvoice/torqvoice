@@ -76,6 +76,26 @@
     "enterManually": "Saisir manuellement",
     "enterBarcode": "Saisir un code-barres…",
     "scanHint": "Pointez la caméra vers un code-barres ou saisissez-le manuellement",
+    "submitBarcode": "OK",
+    "camera": {
+      "tryAgain": "Réessayer",
+      "denied": {
+        "title": "L'accès à la caméra est bloqué",
+        "body": "Autorisez la caméra pour ce site dans votre navigateur, depuis l'icône de caméra ou de cadenas dans la barre d'adresse, puis cliquez sur Réessayer. Ou saisissez le code ci-dessous."
+      },
+      "insecure": {
+        "title": "La caméra nécessite HTTPS",
+        "body": "Les navigateurs n'autorisent la caméra que sur une connexion sécurisée, et cette page est en HTTP ({host}). Ouvrez Torqvoice en HTTPS pour scanner, ou saisissez le code ci-dessous."
+      },
+      "notFound": {
+        "title": "Aucune caméra trouvée",
+        "body": "Branchez une caméra et cliquez sur Réessayer, ou saisissez le code ci-dessous."
+      },
+      "failed": {
+        "title": "La caméra n'a pas pu démarrer",
+        "body": "Une autre application l'utilise peut-être. Fermez-la et cliquez sur Réessayer, ou saisissez le code ci-dessous."
+      }
+    },
     "iosInstallHint": "Touchez Partager > Sur l'écran d'accueil",
     "installDescription": "Ajoutez-la à votre écran d'accueil pour un accès rapide",
     "enterFullscreen": "Plein écran",
