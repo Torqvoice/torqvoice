@@ -168,6 +168,7 @@
       "nothingDue": "Alle voertuigen met een kenteken zijn onlangs gecontroleerd, er valt nog niets op te zoeken."
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
+    "platformHandlesBackupsTitle": "Back-ups zijn al inbegrepen",
     "platformHandlesBackups": "Torqvoice maakt al elk uur een back-up van deze werkplaats en bewaart herstelpunten 30 dagen. Koppel een bucket als u ook een kopie wilt die van u is en zonder Torqvoice te lezen is.",
     "platformHandlesBackupsLink": "Bekijk uw herstelpunten",
     "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Niets is mislukt.",
     "retryFailed": "Mislukte opnieuw proberen",
-    "details": "Details tonen"
+    "details": "Details tonen",
+    "loadingMore": "Oudere taken laden",
+    "loadFailed": "Oudere taken konden niet worden geladen.",
+    "cleared": "Voltooide taken worden na 7 dagen verwijderd."
   },
   "errors": {
     "generic": "Er is iets misgegaan",

@@ -168,6 +168,7 @@
       "nothingDue": "Visos transporto priemonės su numeriu neseniai patikrintos, todėl kol kas nėra ką tikrinti."
     },
     "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
+    "platformHandlesBackupsTitle": "Atsarginės kopijos jau įtrauktos",
     "platformHandlesBackups": "Torqvoice jau kas valandą kuria šios dirbtuvės atsargines kopijas ir 30 dienų saugo atkūrimo taškus. Prijunkite talpyklą, jei taip pat norite jums priklausančios kopijos, kurią galima perskaityti be Torqvoice.",
     "platformHandlesBackupsLink": "Peržiūrėti atkūrimo taškus",
     "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Niekas nenutrūko.",
     "retryFailed": "Kartoti nepavykusias",
-    "details": "Rodyti detales"
+    "details": "Rodyti detales",
+    "loadingMore": "Įkeliamos senesnės užduotys",
+    "loadFailed": "Nepavyko įkelti senesnių užduočių.",
+    "cleared": "Baigtos užduotys ištrinamos po 7 dienų."
   },
   "errors": {
     "generic": "Kažkas nepavyko",

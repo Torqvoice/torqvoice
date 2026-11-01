@@ -31,11 +31,14 @@ import {
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import { describeSettingChanges } from '../Lib/setting-changes'
+import { Prisma } from '@/generated/prisma/client'
 import type {
   PreviewTestResult,
   ActivityBatch,
+  ActivityCursor,
   ActivityItem,
   ActivityJob,
+  ActivityPage,
   ConnectionStatus,
   ConnectorManifest,
   SettingOption,
@@ -970,21 +973,39 @@ interface JobGroup {
   dead: number
 }
 
+const ACTIVITY_PAGE_SIZE = 20
+
+const activityCursorSchema = z
+  .object({ at: z.string().datetime(), key: z.string().min(1).max(200) })
+  .nullable()
+
 /**
- * The last twenty things that happened on a connection, where a backfill
+ * Twenty things that happened on a connection, newest first, where a backfill
  * counts as one thing however many jobs it queued. Each batch carries its
  * counts by status and the jobs that failed, since those are the ones with
- * a Retry button.
+ * a Retry button. Without a cursor it is the newest twenty and the latest log
+ * lines; with one, the twenty before the line the cursor names, which is how
+ * the card loads more as it is scrolled.
  */
-export async function getIntegrationActivity(connectorId: string) {
+export async function getIntegrationActivity(
+  connectorId: string,
+  rawBefore: ActivityCursor | null = null
+) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId }): Promise<ActivityPage> => {
+      const before = activityCursorSchema.parse(rawBefore)
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true },
       })
-      if (!row) return { items: [] as ActivityItem[], logs: [] }
-      const [groups, logs] = await Promise.all([
+      if (!row) return { items: [], logs: [], nextCursor: null }
+      // createdAt is a timestamp without a zone that holds UTC. Casting the
+      // cursor's ISO string drops its Z, so both compare as UTC wall clock.
+      const older = before
+        ? Prisma.sql`HAVING (min("createdAt"), coalesce(payload->>'batchId', id))
+                       < (${before.at}::timestamp(3), ${before.key}::text)`
+        : Prisma.empty
+      const [rows, logs] = await Promise.all([
         db.$queryRaw<JobGroup[]>`
           SELECT coalesce(payload->>'batchId', id) AS "groupKey",
                  payload->>'batchId' AS "batchId",
@@ -998,15 +1019,25 @@ export async function getIntegrationActivity(connectorId: string) {
           FROM "public"."integration_jobs"
           WHERE "connectionId" = ${row.id}
           GROUP BY 1, 2, 3
-          ORDER BY 4 DESC
-          LIMIT 20`,
-        db.integrationLog.findMany({
-          where: { connectionId: row.id },
-          orderBy: { createdAt: 'desc' },
-          take: 50,
-          select: { id: true, level: true, message: true, details: true, createdAt: true },
-        }),
+          ${older}
+          ORDER BY 4 DESC, 1 DESC
+          LIMIT ${ACTIVITY_PAGE_SIZE + 1}`,
+        before
+          ? []
+          : db.integrationLog.findMany({
+              where: { connectionId: row.id },
+              orderBy: { createdAt: 'desc' },
+              take: 50,
+              select: { id: true, level: true, message: true, details: true, createdAt: true },
+            }),
       ])
+      // One past the page says whether there is anything older.
+      const groups = rows.slice(0, ACTIVITY_PAGE_SIZE)
+      const last = groups.at(-1)
+      const nextCursor =
+        rows.length > ACTIVITY_PAGE_SIZE && last
+          ? { at: last.createdAt.toISOString(), key: last.groupKey }
+          : null
       const singleIds = groups.filter((g) => !g.batchId).map((g) => g.groupKey)
       const batchIds = groups.flatMap((g) => (g.batchId ? [g.batchId] : []))
       const [singles, failures] = await Promise.all([
@@ -1062,6 +1093,7 @@ export async function getIntegrationActivity(connectorId: string) {
       return {
         items,
         logs: logs.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })),
+        nextCursor,
       }
     },
     { requiredPermissions: READ_PERMISSION }

@@ -168,6 +168,7 @@
       "nothingDue": "Alle Fahrzeuge mit Kennzeichen wurden kürzlich geprüft, es gibt noch nichts abzufragen."
     },
     "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
+    "platformHandlesBackupsTitle": "Backups sind bereits inklusive",
     "platformHandlesBackups": "Torqvoice sichert diese Werkstatt bereits stündlich und bewahrt Wiederherstellungspunkte 30 Tage lang auf. Verbinden Sie einen Bucket, wenn Sie zusätzlich eine eigene Kopie möchten, die auch ohne Torqvoice lesbar ist.",
     "platformHandlesBackupsLink": "Wiederherstellungspunkte ansehen",
     "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}",
@@ -277,7 +278,10 @@
     },
     "noFailures": "Nichts ist fehlgeschlagen.",
     "retryFailed": "Fehlgeschlagene wiederholen",
-    "details": "Details anzeigen"
+    "details": "Details anzeigen",
+    "loadingMore": "Ältere Aufträge werden geladen",
+    "loadFailed": "Ältere Aufträge konnten nicht geladen werden.",
+    "cleared": "Abgeschlossene Aufträge werden nach 7 Tagen gelöscht."
   },
   "errors": {
     "generic": "Etwas ist schiefgelaufen",

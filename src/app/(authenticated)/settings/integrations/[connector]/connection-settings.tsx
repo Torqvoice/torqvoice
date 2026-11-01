@@ -5,9 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -69,26 +71,30 @@ import {
 import type {
   ActivityItem,
   ActivityJob,
+  ActivityLog,
+  ActivityPage,
   CredentialField,
   PreviewTestResult,
   SettingField,
   SettingOption,
 } from '@/features/integrations/Lib/types'
+import {
+  integrationActivityKey,
+  useIntegrationActivity,
+} from '@/features/integrations/Hooks/useIntegrationActivity'
 import { handleGated } from '@/components/upgrade-gate'
 
-type Activity = {
-  items: ActivityItem[]
-  logs: { id: string; level: string; message: string; createdAt: string; details?: unknown }[]
-}
-
 export function ConnectionSettings({
+  organizationId,
   view,
   activity,
   platformHandlesBackups = false,
   reauth = 'none',
 }: {
+  organizationId: string
   view: ConnectionView
-  activity: Activity
+  /** The newest page of the activity list; older pages load as it is scrolled. */
+  activity: ActivityPage
   /** The bucket connector on the cloud instance, where Torqvoice backs the workshop up already. */
   platformHandlesBackups?: boolean
   /** What a restore from this destination asks the person for, lib/reauth.server.ts. */
@@ -114,18 +120,29 @@ export function ConnectionSettings({
     if (error || connected) router.replace(`/settings/integrations/${manifest.id}`)
   }, [search, router, t, manifest])
 
+  const queryClient = useQueryClient()
+  const activityQuery = useIntegrationActivity(organizationId, manifest.id, activity)
+  const { refetch: refetchActivity, fetchNextPage: loadOlderActivity } = activityQuery
+  const activityPages = activityQuery.data.pages
+  const activityItems = useMemo(() => activityPages.flatMap((p) => p.items), [activityPages])
+  const activityLogs = activityPages[0]?.logs ?? []
+
   // A backfill runs fifty jobs a minute in the background; while any are
-  // still pending the counts on the activity card follow along.
-  const pending = activity.items.some((i) =>
+  // still pending the counts on the activity card follow along, and so do
+  // the page's own figures, such as the vehicles a registry pass has left.
+  const pending = activityItems.some((i) =>
     i.type === 'batch'
       ? i.counts.queued + i.counts.running > 0
       : i.status === 'queued' || i.status === 'running'
   )
   useEffect(() => {
     if (!pending) return
-    const id = setInterval(() => router.refresh(), 10_000)
+    const id = setInterval(() => {
+      router.refresh()
+      void refetchActivity()
+    }, 10_000)
     return () => clearInterval(id)
-  }, [pending, router])
+  }, [pending, router, refetchActivity])
 
   const isOAuth = manifest.auth.type === 'oauth2'
   // The typed keys, for naming the ones a vendor issues late.
@@ -160,12 +177,16 @@ export function ConnectionSettings({
         }
         if (done) toast.success(typeof done === 'function' ? done(res?.data) : done)
         router.refresh()
+        // A queued sync or a retry shows on the activity list straight away.
+        void queryClient.invalidateQueries({
+          queryKey: integrationActivityKey(organizationId, manifest.id),
+        })
         return true
       } finally {
         setBusy(null)
       }
     },
-    [router, t]
+    [router, t, queryClient, organizationId, manifest.id]
   )
 
   const disconnect = async () => {
@@ -370,17 +391,23 @@ export function ConnectionSettings({
         {/* On the cloud a bucket is an extra copy, not the only one: say so
             before anyone thinks the workshop has no backups without it. */}
         {platformHandlesBackups && (
-          <div className="mb-4 flex gap-2 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <p className="text-muted-foreground">
-              {t('connection.platformHandlesBackups')}{' '}
+          <div className="mb-4 flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 space-y-1">
+              <p className="font-semibold text-foreground">
+                {t('connection.platformHandlesBackupsTitle')}
+              </p>
+              <p className="text-muted-foreground">{t('connection.platformHandlesBackups')}</p>
               <Link
                 href="/settings/data#platform-backups"
-                className="font-medium text-foreground underline underline-offset-2"
+                className="inline-flex items-center gap-1 font-medium text-primary underline-offset-2 hover:underline"
               >
                 {t('connection.platformHandlesBackupsLink')}
+                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
-            </p>
+            </div>
           </div>
         )}
 
@@ -719,9 +746,15 @@ export function ConnectionSettings({
         />
       )}
 
-      {connection && (activity.items.length > 0 || activity.logs.length > 0) && (
+      {connection && (activityItems.length > 0 || activityLogs.length > 0) && (
         <ActivityCard
-          activity={activity}
+          items={activityItems}
+          logs={activityLogs}
+          hasMore={activityQuery.hasNextPage}
+          loadingMore={activityQuery.isFetchingNextPage}
+          loadFailed={activityQuery.isFetchNextPageError}
+          showCleared={activityPages.length > 1}
+          onLoadMore={loadOlderActivity}
           onRetry={(id) =>
             run(`retry:${id}`, () => retryIntegrationJob(id), t('connection.retryQueued'))
           }
@@ -1478,41 +1511,115 @@ function describeDetails(details: Record<string, unknown>): string {
     .join(' ')
 }
 
+/**
+ * The jobs scroll inside their own frame, about eight lines tall, so an
+ * hourly job does not stretch the page; the next twenty load as the end of
+ * the frame comes into view. Finished jobs are cleared after a week, which
+ * bounds how far back it goes.
+ */
 function ActivityCard({
-  activity,
+  items,
+  logs,
+  hasMore,
+  loadingMore,
+  loadFailed,
+  showCleared,
+  onLoadMore,
   onRetry,
   onRetryBatch,
   busy,
 }: {
-  activity: Activity
+  items: ActivityItem[]
+  logs: ActivityLog[]
+  hasMore: boolean
+  loadingMore: boolean
+  loadFailed: boolean
+  /** Older pages were loaded and the list has reached its end. */
+  showCleared: boolean
+  onLoadMore: () => unknown
   onRetry: (jobId: string) => void
   onRetryBatch: (batchId: string) => void
   busy: string | null
 }) {
   const t = useTranslations('integrations.activity')
   const when = useWhen()
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+
+  // Not after a failed page, or the observer would ask again at once and
+  // keep asking; the Retry button takes over then.
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel || !hasMore || loadingMore || loadFailed) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) void onLoadMore()
+      },
+      { root: scrollRef.current, rootMargin: '120px' }
+    )
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [hasMore, loadingMore, loadFailed, onLoadMore])
+
   return (
     <AppCard title={t('title')} description={t('description')}>
-      {activity.items.length > 0 && (
-        <div className="mb-4 divide-y rounded-lg border">
-          {activity.items.map((item) =>
-            item.type === 'batch' ? (
-              <BatchRow
-                key={item.batchId}
-                batch={item}
-                onRetry={onRetry}
-                onRetryBatch={onRetryBatch}
-                busy={busy}
-              />
-            ) : (
-              <JobRow key={item.id} job={item} onRetry={onRetry} busy={busy} />
+      {items.length > 0 && (
+        <div
+          ref={scrollRef}
+          className="mb-4 max-h-80 overflow-y-auto overscroll-contain rounded-lg border"
+        >
+          <div className="divide-y">
+            {items.map((item) =>
+              item.type === 'batch' ? (
+                <BatchRow
+                  key={item.batchId}
+                  batch={item}
+                  onRetry={onRetry}
+                  onRetryBatch={onRetryBatch}
+                  busy={busy}
+                />
+              ) : (
+                <JobRow key={item.id} job={item} onRetry={onRetry} busy={busy} />
+              )
+            )}
+          </div>
+          {hasMore ? (
+            <div
+              ref={sentinelRef}
+              className="flex items-center justify-center gap-2 border-t px-3 py-2 text-xs text-muted-foreground"
+            >
+              {loadFailed ? (
+                <>
+                  {t('loadFailed')}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => void onLoadMore()}
+                  >
+                    <RotateCcw className="mr-1 h-3 w-3" />
+                    {t('retry')}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  {t('loadingMore')}
+                </>
+              )}
+            </div>
+          ) : (
+            showCleared && (
+              <p className="border-t px-3 py-2 text-center text-xs text-muted-foreground">
+                {t('cleared')}
+              </p>
             )
           )}
         </div>
       )}
-      {activity.logs.length > 0 && (
+      {logs.length > 0 && (
         <div className="max-h-72 overflow-auto rounded-lg border p-2 font-mono text-xs">
-          {activity.logs.map((l) => (
+          {logs.map((l) => (
             <div
               key={l.id}
               className={
