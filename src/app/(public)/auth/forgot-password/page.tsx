@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowLeft } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
+import { takeHandedEmail } from '@/lib/auth-email-handoff'
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('auth.forgotPassword')
@@ -16,6 +17,12 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
+
+  // The address typed on sign-in, when that is where they came from.
+  useEffect(() => {
+    const handed = takeHandedEmail()
+    if (handed) setEmail((current) => current || handed)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

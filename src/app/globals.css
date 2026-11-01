@@ -333,7 +333,7 @@
 
    The theme's font utilities are inlined, so `font-sans` compiles straight to
    var(--font-geist-sans) and there is no --font-sans left to override. The
-   swap is therefore made one level down: next/font declares Geist under
+   swap is therefore made one level down: fonts.css declares Geist under
    --font-geist-sans-base, and --font-geist-sans, the name everything uses, is
    pointed at it here or at another face by a set. Every `font-sans` and
    `font-mono` in the app follows, and the picker can still draw the default
