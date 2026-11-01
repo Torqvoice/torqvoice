@@ -1478,41 +1478,38 @@
       "paused": "Your plan no longer includes backups by Torqvoice. Runs have stopped; the restore points are kept until {date} and then deleted.",
       "upsell": "Available on Pro: hourly backups run by Torqvoice with restore points you can go back to.",
       "planLink": "See plans",
-      "pointsTitle": "Restore points",
       "pointsEmpty": "The first backup has not run yet.",
-      "showAll": "Show all {count}",
-      "showFewer": "Show fewer",
       "needsOwner": "Only the workshop owner can restore.",
-      "sizeNote": "Each restore point is complete on its own; its size is everything it covers. The repository stores every piece once and later runs add only what changed, so “Stored by Torqvoice” stays far below the sizes added together.",
-      "recentTitle": "Recent runs",
-      "noRuns": "No backups have run yet.",
-      "notStarted": "Not started",
-      "supportReason": "Restored by Torqvoice support: {reason}",
-      "columns": {
-        "when": "When",
-        "kind": "Kind",
-        "size": "Size",
-        "status": "Status",
-        "trigger": "Started by",
-        "duration": "Duration"
+      "listTitle": "Backups",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "dayCount": "{count, plural, one {# backup} other {# backups}}",
+      "latest": "Latest",
+      "loadingMore": "Loading more backups…",
+      "endOfList": "{count, plural, one {# backup in total} other {# backups in total}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Backup queued",
+          "running": "Backing up",
+          "done": "Backed up",
+          "failed": "Backup failed",
+          "skipped": "Backup skipped"
+        },
+        "restore": {
+          "queued": "Restore to {time} queued",
+          "running": "Restoring to {time}",
+          "done": "Restored to {time}",
+          "failed": "Restore to {time} failed",
+          "skipped": "Restore to {time} skipped"
+        }
       },
+      "sizeNote": "Each restore point is complete on its own; its size is everything it covers. The repository stores every piece once and later runs add only what changed, so “Stored by Torqvoice” stays far below the sizes added together.",
+      "supportReason": "Restored by Torqvoice support: {reason}",
       "kind": {
         "scheduled": "Scheduled",
         "manual": "Manual",
         "safety": "Safety copy",
         "safetyHint": "Taken right before a restore, so it can be undone"
-      },
-      "trigger": {
-        "scheduled": "Scheduled",
-        "manual": "Manual",
-        "restore": "Restore"
-      },
-      "status": {
-        "queued": "Queued",
-        "running": "Running",
-        "done": "Done",
-        "failed": "Failed",
-        "skipped": "Skipped"
       },
       "explore": "Explore",
       "restore": {

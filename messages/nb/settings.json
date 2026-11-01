@@ -1478,41 +1478,38 @@
       "paused": "Planen din inkluderer ikke lenger sikkerhetskopier fra Torqvoice. Kjøringene er stoppet; gjenopprettingspunktene beholdes til {date} og slettes deretter.",
       "upsell": "Tilgjengelig med Pro: sikkerhetskopier hver time fra Torqvoice, med gjenopprettingspunkter du kan gå tilbake til.",
       "planLink": "Se planer",
-      "pointsTitle": "Gjenopprettingspunkter",
       "pointsEmpty": "Den første sikkerhetskopien har ikke kjørt ennå.",
-      "showAll": "Vis alle {count}",
-      "showFewer": "Vis færre",
       "needsOwner": "Bare verkstedets eier kan gjenopprette.",
-      "sizeNote": "Hvert gjenopprettingspunkt er komplett i seg selv; størrelsen er alt det omfatter. Arkivet lagrer hver del bare én gang, og senere kjøringer legger bare til det som er endret. Derfor holder «Lagret hos Torqvoice» seg langt under summen av størrelsene.",
-      "recentTitle": "Siste kjøringer",
-      "noRuns": "Ingen sikkerhetskopier har kjørt ennå.",
-      "notStarted": "Ikke startet",
-      "supportReason": "Gjenopprettet av Torqvoice-supporten: {reason}",
-      "columns": {
-        "when": "Når",
-        "kind": "Type",
-        "size": "Størrelse",
-        "status": "Status",
-        "trigger": "Startet av",
-        "duration": "Varighet"
+      "listTitle": "Sikkerhetskopier",
+      "today": "I dag",
+      "yesterday": "I går",
+      "dayCount": "{count, plural, one {# sikkerhetskopi} other {# sikkerhetskopier}}",
+      "latest": "Nyeste",
+      "loadingMore": "Henter flere sikkerhetskopier …",
+      "endOfList": "{count, plural, one {# sikkerhetskopi totalt} other {# sikkerhetskopier totalt}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Sikkerhetskopi i kø",
+          "running": "Tar sikkerhetskopi",
+          "done": "Sikkerhetskopi tatt",
+          "failed": "Sikkerhetskopien feilet",
+          "skipped": "Sikkerhetskopien ble hoppet over"
+        },
+        "restore": {
+          "queued": "Gjenoppretting til {time} i kø",
+          "running": "Gjenoppretter til {time}",
+          "done": "Gjenopprettet til {time}",
+          "failed": "Gjenoppretting til {time} feilet",
+          "skipped": "Gjenoppretting til {time} ble hoppet over"
+        }
       },
+      "sizeNote": "Hvert gjenopprettingspunkt er komplett i seg selv; størrelsen er alt det omfatter. Arkivet lagrer hver del bare én gang, og senere kjøringer legger bare til det som er endret. Derfor holder «Lagret hos Torqvoice» seg langt under summen av størrelsene.",
+      "supportReason": "Gjenopprettet av Torqvoice-supporten: {reason}",
       "kind": {
         "scheduled": "Planlagt",
         "manual": "Manuell",
         "safety": "Kopi før gjenoppretting",
         "safetyHint": "Tatt rett før en gjenoppretting, så den kan angres"
-      },
-      "trigger": {
-        "scheduled": "Planlagt",
-        "manual": "Manuelt",
-        "restore": "Gjenoppretting"
-      },
-      "status": {
-        "queued": "I kø",
-        "running": "Kjører",
-        "done": "Ferdig",
-        "failed": "Feilet",
-        "skipped": "Hoppet over"
       },
       "explore": "Utforsk",
       "restore": {

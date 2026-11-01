@@ -1478,41 +1478,38 @@
       "paused": "Votre offre n'inclut plus les sauvegardes par Torqvoice. Les exécutions sont arrêtées ; les points de restauration sont conservés jusqu'au {date}, puis supprimés.",
       "upsell": "Disponible avec Pro : des sauvegardes horaires effectuées par Torqvoice, avec des points de restauration auxquels revenir.",
       "planLink": "Voir les offres",
-      "pointsTitle": "Points de restauration",
       "pointsEmpty": "La première sauvegarde n'a pas encore eu lieu.",
-      "showAll": "Afficher les {count}",
-      "showFewer": "Afficher moins",
       "needsOwner": "Seul le propriétaire de l'atelier peut restaurer.",
-      "sizeNote": "Chaque point de restauration est complet à lui seul ; sa taille correspond à tout ce qu’il couvre. Le dépôt ne stocke chaque élément qu’une fois et les exécutions suivantes n’ajoutent que ce qui a changé, c’est pourquoi « Stocké par Torqvoice » reste bien en dessous de la somme des tailles.",
-      "recentTitle": "Exécutions récentes",
-      "noRuns": "Aucune sauvegarde n'a encore été effectuée.",
-      "notStarted": "Non démarrée",
-      "supportReason": "Restauré par l'assistance Torqvoice : {reason}",
-      "columns": {
-        "when": "Date",
-        "kind": "Type",
-        "size": "Taille",
-        "status": "Statut",
-        "trigger": "Lancée par",
-        "duration": "Durée"
+      "listTitle": "Sauvegardes",
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "dayCount": "{count, plural, one {# sauvegarde} other {# sauvegardes}}",
+      "latest": "La plus récente",
+      "loadingMore": "Chargement d'autres sauvegardes…",
+      "endOfList": "{count, plural, one {# sauvegarde au total} other {# sauvegardes au total}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Sauvegarde en file d'attente",
+          "running": "Sauvegarde en cours",
+          "done": "Sauvegardée",
+          "failed": "Échec de la sauvegarde",
+          "skipped": "Sauvegarde ignorée"
+        },
+        "restore": {
+          "queued": "Restauration à l'état du {time} en file d'attente",
+          "running": "Restauration à l'état du {time}",
+          "done": "Restauré à l'état du {time}",
+          "failed": "Échec de la restauration à l'état du {time}",
+          "skipped": "Restauration à l'état du {time} ignorée"
+        }
       },
+      "sizeNote": "Chaque point de restauration est complet à lui seul ; sa taille correspond à tout ce qu’il couvre. Le dépôt ne stocke chaque élément qu’une fois et les exécutions suivantes n’ajoutent que ce qui a changé, c’est pourquoi « Stocké par Torqvoice » reste bien en dessous de la somme des tailles.",
+      "supportReason": "Restauré par l'assistance Torqvoice : {reason}",
       "kind": {
         "scheduled": "Planifiée",
         "manual": "Manuelle",
         "safety": "Copie de sécurité",
         "safetyHint": "Réalisée juste avant une restauration, pour pouvoir l'annuler"
-      },
-      "trigger": {
-        "scheduled": "Planifiée",
-        "manual": "Manuelle",
-        "restore": "Restauration"
-      },
-      "status": {
-        "queued": "En file d'attente",
-        "running": "En cours",
-        "done": "Terminée",
-        "failed": "Échouée",
-        "skipped": "Ignorée"
       },
       "explore": "Explorer",
       "restore": {

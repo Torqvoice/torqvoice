@@ -1478,41 +1478,38 @@
       "paused": "Su plan ya no incluye las copias de seguridad de Torqvoice. Las ejecuciones se han detenido; los puntos de restauración se conservan hasta el {date} y después se eliminan.",
       "upsell": "Disponible en Pro: copias de seguridad cada hora hechas por Torqvoice, con puntos de restauración a los que puede volver.",
       "planLink": "Ver planes",
-      "pointsTitle": "Puntos de restauración",
       "pointsEmpty": "La primera copia de seguridad aún no se ha hecho.",
-      "showAll": "Mostrar los {count}",
-      "showFewer": "Mostrar menos",
       "needsOwner": "Solo el propietario del taller puede restaurar.",
-      "sizeNote": "Cada punto de restauración está completo por sí solo; su tamaño es todo lo que abarca. El repositorio guarda cada pieza una sola vez y las ejecuciones posteriores añaden solo lo que cambió, por eso «Almacenado por Torqvoice» queda muy por debajo de la suma de los tamaños.",
-      "recentTitle": "Ejecuciones recientes",
-      "noRuns": "Todavía no se ha hecho ninguna copia de seguridad.",
-      "notStarted": "Sin iniciar",
-      "supportReason": "Restaurado por el soporte de Torqvoice: {reason}",
-      "columns": {
-        "when": "Cuándo",
-        "kind": "Tipo",
-        "size": "Tamaño",
-        "status": "Estado",
-        "trigger": "Iniciada por",
-        "duration": "Duración"
+      "listTitle": "Copias de seguridad",
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "dayCount": "{count, plural, one {# copia} other {# copias}}",
+      "latest": "Más reciente",
+      "loadingMore": "Cargando más copias…",
+      "endOfList": "{count, plural, one {# copia en total} other {# copias en total}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Copia en cola",
+          "running": "Copia en curso",
+          "done": "Copia hecha",
+          "failed": "La copia falló",
+          "skipped": "Copia omitida"
+        },
+        "restore": {
+          "queued": "Restauración a {time} en cola",
+          "running": "Restaurando a {time}",
+          "done": "Restaurado a {time}",
+          "failed": "La restauración a {time} falló",
+          "skipped": "Restauración a {time} omitida"
+        }
       },
+      "sizeNote": "Cada punto de restauración está completo por sí solo; su tamaño es todo lo que abarca. El repositorio guarda cada pieza una sola vez y las ejecuciones posteriores añaden solo lo que cambió, por eso «Almacenado por Torqvoice» queda muy por debajo de la suma de los tamaños.",
+      "supportReason": "Restaurado por el soporte de Torqvoice: {reason}",
       "kind": {
         "scheduled": "Programada",
         "manual": "Manual",
         "safety": "Copia de protección",
         "safetyHint": "Hecha justo antes de una restauración, para poder deshacerla"
-      },
-      "trigger": {
-        "scheduled": "Programada",
-        "manual": "Manual",
-        "restore": "Restauración"
-      },
-      "status": {
-        "queued": "En cola",
-        "running": "En curso",
-        "done": "Completada",
-        "failed": "Fallida",
-        "skipped": "Omitida"
       },
       "explore": "Explorar",
       "restore": {

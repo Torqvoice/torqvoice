@@ -1478,41 +1478,38 @@
       "paused": "Il tuo piano non include più i backup di Torqvoice. Le esecuzioni si sono fermate; i punti di ripristino vengono conservati fino al {date} e poi eliminati.",
       "upsell": "Disponibile con Pro: backup orari eseguiti da Torqvoice, con punti di ripristino a cui puoi tornare.",
       "planLink": "Vedi i piani",
-      "pointsTitle": "Punti di ripristino",
       "pointsEmpty": "Il primo backup non è ancora stato eseguito.",
-      "showAll": "Mostra tutti i {count}",
-      "showFewer": "Mostra meno",
       "needsOwner": "Solo il proprietario dell'officina può eseguire il ripristino.",
-      "sizeNote": "Ogni punto di ripristino è completo di per sé; la sua dimensione è tutto ciò che copre. Il repository conserva ogni parte una sola volta e le esecuzioni successive aggiungono solo ciò che è cambiato, perciò «Archiviato da Torqvoice» resta molto al di sotto della somma delle dimensioni.",
-      "recentTitle": "Esecuzioni recenti",
-      "noRuns": "Non è ancora stato eseguito nessun backup.",
-      "notStarted": "Non avviato",
-      "supportReason": "Ripristinato dall'assistenza Torqvoice: {reason}",
-      "columns": {
-        "when": "Quando",
-        "kind": "Tipo",
-        "size": "Dimensione",
-        "status": "Stato",
-        "trigger": "Avviato da",
-        "duration": "Durata"
+      "listTitle": "Backup",
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "dayCount": "{count, plural, one {# backup} other {# backup}}",
+      "latest": "Più recente",
+      "loadingMore": "Caricamento di altri backup…",
+      "endOfList": "{count, plural, one {# backup in totale} other {# backup in totale}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Backup in coda",
+          "running": "Backup in corso",
+          "done": "Backup completato",
+          "failed": "Backup non riuscito",
+          "skipped": "Backup saltato"
+        },
+        "restore": {
+          "queued": "Ripristino al {time} in coda",
+          "running": "Ripristino al {time} in corso",
+          "done": "Ripristinato al {time}",
+          "failed": "Ripristino al {time} non riuscito",
+          "skipped": "Ripristino al {time} saltato"
+        }
       },
+      "sizeNote": "Ogni punto di ripristino è completo di per sé; la sua dimensione è tutto ciò che copre. Il repository conserva ogni parte una sola volta e le esecuzioni successive aggiungono solo ciò che è cambiato, perciò «Archiviato da Torqvoice» resta molto al di sotto della somma delle dimensioni.",
+      "supportReason": "Ripristinato dall'assistenza Torqvoice: {reason}",
       "kind": {
         "scheduled": "Pianificato",
         "manual": "Manuale",
         "safety": "Copia di sicurezza",
         "safetyHint": "Creata subito prima di un ripristino, per poterlo annullare"
-      },
-      "trigger": {
-        "scheduled": "Pianificato",
-        "manual": "Manuale",
-        "restore": "Ripristino"
-      },
-      "status": {
-        "queued": "In coda",
-        "running": "In corso",
-        "done": "Completato",
-        "failed": "Non riuscito",
-        "skipped": "Saltato"
       },
       "explore": "Esplora",
       "restore": {
