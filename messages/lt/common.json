@@ -76,6 +76,26 @@
     "enterManually": "Įvesti ranka",
     "enterBarcode": "Įveskite brūkšninį kodą…",
     "scanHint": "Nukreipkite kamerą į brūkšninį kodą arba įveskite jį ranka",
+    "submitBarcode": "Gerai",
+    "camera": {
+      "tryAgain": "Bandyti dar kartą",
+      "denied": {
+        "title": "Prieiga prie kameros užblokuota",
+        "body": "Leiskite naudoti kamerą šiai svetainei naršyklėje, paspaudę kameros arba spynos piktogramą adreso juostoje, tada spauskite Bandyti dar kartą. Arba įveskite kodą žemiau."
+      },
+      "insecure": {
+        "title": "Kamerai reikia HTTPS",
+        "body": "Naršyklės leidžia naudoti kamerą tik saugiu ryšiu, o šis puslapis atidarytas per HTTP ({host}). Atidarykite Torqvoice per HTTPS, kad galėtumėte skenuoti, arba įveskite kodą žemiau."
+      },
+      "notFound": {
+        "title": "Kamera nerasta",
+        "body": "Prijunkite kamerą ir spauskite Bandyti dar kartą arba įveskite kodą žemiau."
+      },
+      "failed": {
+        "title": "Nepavyko įjungti kameros",
+        "body": "Galbūt ją naudoja kita programa. Uždarykite ją ir spauskite Bandyti dar kartą arba įveskite kodą žemiau."
+      }
+    },
     "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną",
     "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau",
     "enterFullscreen": "Visas ekranas",

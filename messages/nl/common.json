@@ -76,6 +76,26 @@
     "enterManually": "Handmatig invoeren",
     "enterBarcode": "Barcode invoeren…",
     "scanHint": "Richt uw camera op een barcode of voer hem handmatig in",
+    "submitBarcode": "Ga",
+    "camera": {
+      "tryAgain": "Opnieuw proberen",
+      "denied": {
+        "title": "Toegang tot de camera is geblokkeerd",
+        "body": "Sta de camera toe voor deze site in uw browser, via het camera- of slotpictogram in de adresbalk, en klik daarna op Opnieuw proberen. Of typ de code hieronder."
+      },
+      "insecure": {
+        "title": "De camera heeft HTTPS nodig",
+        "body": "Browsers staan de camera alleen toe via een beveiligde verbinding, en deze pagina draait op HTTP ({host}). Open Torqvoice via HTTPS om te scannen, of typ de code hieronder."
+      },
+      "notFound": {
+        "title": "Geen camera gevonden",
+        "body": "Sluit een camera aan en klik op Opnieuw proberen, of typ de code hieronder."
+      },
+      "failed": {
+        "title": "De camera kon niet starten",
+        "body": "Misschien gebruikt een andere app hem. Sluit die app en klik op Opnieuw proberen, of typ de code hieronder."
+      }
+    },
     "iosInstallHint": "Tik op Deel > Zet op beginscherm",
     "installDescription": "Zet de app op je beginscherm voor snelle toegang",
     "enterFullscreen": "Volledig scherm",

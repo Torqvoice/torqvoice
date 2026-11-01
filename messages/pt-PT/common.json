@@ -76,6 +76,26 @@
     "enterManually": "Introduzir manualmente",
     "enterBarcode": "Introduzir código de barras…",
     "scanHint": "Aponte a câmara para um código de barras ou introduza-o manualmente",
+    "submitBarcode": "Ir",
+    "camera": {
+      "tryAgain": "Tentar novamente",
+      "denied": {
+        "title": "O acesso à câmara está bloqueado",
+        "body": "Permita a câmara para este site no navegador, através do ícone da câmara ou do cadeado na barra de endereço, e toque em Tentar novamente. Ou introduza o código abaixo."
+      },
+      "insecure": {
+        "title": "A câmara precisa de HTTPS",
+        "body": "Os navegadores só permitem a câmara numa ligação segura, e esta página está em HTTP ({host}). Abra o Torqvoice por HTTPS para digitalizar, ou introduza o código abaixo."
+      },
+      "notFound": {
+        "title": "Nenhuma câmara encontrada",
+        "body": "Ligue uma câmara e toque em Tentar novamente, ou introduza o código abaixo."
+      },
+      "failed": {
+        "title": "Não foi possível iniciar a câmara",
+        "body": "Talvez outra aplicação a esteja a usar. Feche essa aplicação e toque em Tentar novamente, ou introduza o código abaixo."
+      }
+    },
     "iosInstallHint": "Toque em Partilhar > Adicionar ao ecrã principal",
     "installDescription": "Adicione ao ecrã principal para um acesso rápido",
     "enterFullscreen": "Ecrã inteiro",

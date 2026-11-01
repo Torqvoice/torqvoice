@@ -76,6 +76,26 @@
     "enterManually": "Enter manually",
     "enterBarcode": "Enter barcode...",
     "scanHint": "Point your camera at a barcode or enter it manually",
+    "submitBarcode": "Go",
+    "camera": {
+      "tryAgain": "Try again",
+      "denied": {
+        "title": "Camera access is blocked",
+        "body": "Allow the camera for this site in your browser, from the camera or lock icon in the address bar, then press Try again. Or type the code below."
+      },
+      "insecure": {
+        "title": "The camera needs HTTPS",
+        "body": "Browsers only allow the camera on a secure connection, and this page is on HTTP ({host}). Open Torqvoice over HTTPS to scan, or type the code below."
+      },
+      "notFound": {
+        "title": "No camera found",
+        "body": "Connect a camera and press Try again, or type the code below."
+      },
+      "failed": {
+        "title": "The camera could not start",
+        "body": "Another app may be using it. Close that app and press Try again, or type the code below."
+      }
+    },
     "iosInstallHint": "Tap Share > Add to Home Screen",
     "installDescription": "Add to your home screen for quick access",
     "enterFullscreen": "Fullscreen",
