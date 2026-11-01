@@ -71,6 +71,14 @@ export interface CredentialField {
    * the password a backup repository is encrypted with.
    */
   generate?: 'password'
+  /**
+   * Needed to use the service but not to connect it, because the vendor
+   * only hands the value out once the connection's webhook is live: Meta
+   * issues a WhatsApp phone number ID after it has verified the callback.
+   * The connect page lets it stay empty, the connection goes live without
+   * it, and the page says what is still missing until it is entered.
+   */
+  deferrable?: boolean
 }
 
 /**

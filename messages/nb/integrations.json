@@ -141,13 +141,17 @@
     "inboundUrl": "Webhook-URL for innkommende meldinger",
     "inboundHintSecret": "Lim inn denne URL-en i leverandørens innstillinger for innkommende meldinger. Den inneholder en hemmelighet som identifiserer verkstedet ditt, så hold den for deg selv.",
     "inboundHintMeta": "Lim inn denne URL-en som callback-URL i Meta-appen din, sammen med verifiseringstokenet du la inn ovenfor, og abonner på messages.",
-    "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet under Developers, Webhooks, abonnert på checkout.session.completed. Lim deretter signeringshemmeligheten Stripe viser inn i feltet for webhook-hemmelighet her, slik at varslene kan verifiseres.",
+    "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet: åpne Workbench, deretter Webhooks, velg Create an event destination og abonner på checkout.session.completed. Stripe viser så en signeringshemmelighet for endepunktet; lim den inn i feltet for signeringshemmelighet her, slik at hvert varsel kontrolleres mot signaturen sin. Inntil da bekrefter Torqvoice hvert varsel ved å spørre Stripe om selve betalingen.",
     "inboundHintVipps": "Legg inn denne URL-en som callback-URL i Vipps MobilePay-portalen. Vipps krever også publiserte salgsvilkår, som settes under Innstillinger, Betaling.",
     "inboundHintPaypal": "Legg inn denne URL-en i PayPal-utviklerdashbordet under Webhooks, abonnert på PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Kopier",
     "copied": "Kopiert",
     "updateKeys": "Oppdater nøklene",
     "updateKeysHint": "Siste sjekk mislyktes. Skriv inn nøklene på nytt for å prøve igjen.",
+    "awaitingKeys": "Tilkoblet, men venter fortsatt på {keys}.",
+    "awaitingKeysHint": "Webhooken svarer leverandøren allerede, så registrer den nå. Legg inn disse verdiene her når leverandøren har utstedt dem.",
+    "saveKeys": "Lagre nøkler",
+    "keysSaved": "Nøklene er lagret",
     "inspectionSync": {
       "title": "Synkronisering av EU-kontroll",
       "vehicles": "{count} kjøretøy med skilt i dette verkstedet",
@@ -394,7 +398,10 @@
         "verifyToken": "Verifiseringstoken for webhook",
         "appSecret": "Apphemmelighet",
         "apiVersion": "Graph API-versjon",
-        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn."
+        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn.",
+        "phoneNumberIdHelp": "Fra WhatsApp Manager, på nummeret du sender fra; ikke selve telefonnummeret. Meta utsteder den først etter at webhooken er verifisert, så la feltet stå tomt, koble til, registrer webhooken, og kom tilbake og legg den inn.",
+        "accessTokenHelp": "Et permanent systembruker-token. Det Meta viser under oppsettet utløper innen 24 timer. Legg det inn sammen med telefonnummer-ID-en når webhooken er verifisert.",
+        "verifyTokenHelp": "En setning du velger selv. Lim inn den samme hos Meta når du registrerer webhooken."
       },
       "settings": {
         "enabled": "Send meldinger på denne kanalen",
@@ -647,7 +654,7 @@
         "secretKeyHelp": "Fra Stripe-dashbordet under Developers, API keys. Testnøkler behandler ingenting ekte, så prøv en betaling med dem først og bytt til live-nøkler etterpå.",
         "publishableKey": "Publiserbar nøkkel",
         "webhookSecret": "Signeringshemmelighet for webhook",
-        "webhookSecretHelp": "Vises av Stripe når du legger inn varslings-URL-en fra denne siden som webhook. Med den verifiseres hvert varsel før en betaling registreres."
+        "webhookSecretHelp": "Valgfri, og kan legges inn etter tilkobling. Stripe viser den under Reveal secret når varslings-URL-en fra denne siden er lagt inn som endepunkt. Med den verifiseres hvert varsel mot signaturen sin; uten den spør Torqvoice Stripe om betalingen før den registreres."
       },
       "settings": {
         "enabled": "Tilby på fakturalenker",

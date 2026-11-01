@@ -141,13 +141,17 @@
     "inboundUrl": "URL do webhook de entrada",
     "inboundHintSecret": "Cole esta URL nas configurações de mensagens recebidas do provedor. Ela contém um segredo que identifica sua oficina, então mantenha-a em sigilo.",
     "inboundHintMeta": "Cole esta URL como URL de callback no seu app da Meta, com o token de verificação que você informou acima, e inscreva-se em mensagens.",
-    "inboundHintStripe": "Adicione esta URL no painel do Stripe em Developers, Webhooks, inscrita em checkout.session.completed. Depois cole o segredo de assinatura que o Stripe mostra no campo de segredo do webhook aqui, para que as notificações possam ser verificadas.",
+    "inboundHintStripe": "Adicione esta URL no painel do Stripe: abra Workbench, depois Webhooks, escolha Create an event destination e inscreva-a em checkout.session.completed. O Stripe então mostra um segredo de assinatura para o endpoint; cole-o aqui no campo do segredo de assinatura para que cada notificação seja conferida pela assinatura. Até lá, o Torqvoice confirma cada notificação consultando o checkout no Stripe.",
     "inboundHintVipps": "Informe esta URL como URL de callback no portal do Vipps MobilePay. O Vipps também exige termos de venda publicados, definidos em Configurações, Pagamento.",
     "inboundHintPaypal": "Adicione esta URL no painel de desenvolvedor do PayPal em Webhooks, inscrita em PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copiar",
     "copied": "Copiado",
     "updateKeys": "Atualizar chaves",
     "updateKeysHint": "A última verificação falhou. Informe as chaves novamente para tentar outra vez.",
+    "awaitingKeys": "Conectado, mas ainda falta: {keys}.",
+    "awaitingKeysHint": "O webhook já responde ao fornecedor, então registre-o agora. Informe esses valores aqui assim que o fornecedor os emitir.",
+    "saveKeys": "Salvar chaves",
+    "keysSaved": "Chaves salvas",
     "inspectionSync": {
       "title": "Sincronização de inspeções",
       "vehicles": "{count} veículos com placa nesta oficina",
@@ -394,7 +398,10 @@
         "verifyToken": "Token de verificação do webhook",
         "appSecret": "Segredo do app",
         "apiVersion": "Versão da Graph API",
-        "appSecretHelp": "A Meta assina cada entrega com ele. Até ele ser informado, as mensagens enviadas ao webhook são recusadas, já que qualquer pessoa que descobrisse a URL poderia se passar pelos seus clientes."
+        "appSecretHelp": "A Meta assina cada entrega com ele. Até ele ser informado, as mensagens enviadas ao webhook são recusadas, já que qualquer pessoa que descobrisse a URL poderia se passar pelos seus clientes.",
+        "phoneNumberIdHelp": "Do WhatsApp Manager, no número do qual você envia; não é o número de telefone em si. A Meta só o emite depois de verificar o webhook, então deixe em branco, conecte, registre o webhook e volte para adicioná-lo.",
+        "accessTokenHelp": "Um token permanente de usuário do sistema. O que a Meta mostra durante a configuração expira em 24 horas. Adicione-o junto com o ID do número de telefone depois que o webhook for verificado.",
+        "verifyTokenHelp": "Qualquer frase que você escolher. Cole a mesma na Meta ao registrar o webhook."
       },
       "settings": {
         "enabled": "Enviar mensagens por este canal",
@@ -647,7 +654,7 @@
         "secretKeyHelp": "Do painel do Stripe em Developers, API keys. Chaves de teste não processam nada real, então teste um pagamento com elas primeiro e troque pelas chaves reais depois.",
         "publishableKey": "Chave publicável",
         "webhookSecret": "Segredo de assinatura do webhook",
-        "webhookSecretHelp": "Mostrado pelo Stripe quando você adiciona a URL de notificação desta página como webhook. Com ele, cada notificação é verificada antes de registrar um pagamento."
+        "webhookSecretHelp": "Opcional, e pode ser adicionado depois de conectar. O Stripe o mostra em Reveal secret assim que a URL de notificação desta página é adicionada como endpoint. Com ele, cada notificação é verificada pela assinatura; sem ele, o Torqvoice consulta o checkout no Stripe antes de registrar um pagamento."
       },
       "settings": {
         "enabled": "Oferecer nos links de fatura",

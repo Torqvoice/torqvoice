@@ -141,13 +141,17 @@
     "inboundUrl": "Inkomende webhook-URL",
     "inboundHintSecret": "Plak deze URL in de instellingen voor inkomende berichten bij de dienst. Er zit een geheim in dat uw werkplaats identificeert, dus houd hem privé.",
     "inboundHintMeta": "Plak deze URL als callback-URL in uw Meta-app, samen met het verificatietoken dat u hierboven hebt ingevuld, en abonneer u op messages.",
-    "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard onder Developers, Webhooks, geabonneerd op checkout.session.completed. Plak daarna het ondertekeningsgeheim dat Stripe toont in het veld webhookgeheim hier, zodat meldingen geverifieerd kunnen worden.",
+    "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard: open Workbench, dan Webhooks, kies Create an event destination en abonneer op checkout.session.completed. Stripe toont daarna een ondertekeningsgeheim voor het endpoint; plak het hier in het veld voor het ondertekeningsgeheim, zodat elke melding op zijn handtekening wordt gecontroleerd. Tot die tijd bevestigt Torqvoice elke melding door de checkout bij Stripe op te vragen.",
     "inboundHintVipps": "Vul deze URL in als callback-URL in het Vipps MobilePay-portaal. Vipps vereist ook gepubliceerde verkoopvoorwaarden, die staan onder Instellingen, Betaling.",
     "inboundHintPaypal": "Voeg deze URL toe in het PayPal-ontwikkelaarsdashboard onder Webhooks, geabonneerd op PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Kopiëren",
     "copied": "Gekopieerd",
     "updateKeys": "Sleutels bijwerken",
     "updateKeysHint": "De laatste controle is mislukt. Vul de sleutels opnieuw in om het nog eens te proberen.",
+    "awaitingKeys": "Verbonden, maar wacht nog op {keys}.",
+    "awaitingKeysHint": "De webhook antwoordt de leverancier al, dus registreer hem nu. Vul deze waarden hier in zodra de leverancier ze heeft uitgegeven.",
+    "saveKeys": "Sleutels opslaan",
+    "keysSaved": "Sleutels opgeslagen",
     "inspectionSync": {
       "title": "Keuringssynchronisatie",
       "vehicles": "{count} voertuigen met kenteken in deze werkplaats",
@@ -394,7 +398,10 @@
         "verifyToken": "Verificatietoken voor webhook",
         "appSecret": "App-geheim",
         "apiVersion": "Graph API-versie",
-        "appSecretHelp": "Meta ondertekent er elke levering mee. Zolang het niet is ingevuld, worden berichten die naar de webhook worden gestuurd geweigerd, omdat iedereen die de URL kent anders namens uw klanten berichten zou kunnen plaatsen."
+        "appSecretHelp": "Meta ondertekent er elke levering mee. Zolang het niet is ingevuld, worden berichten die naar de webhook worden gestuurd geweigerd, omdat iedereen die de URL kent anders namens uw klanten berichten zou kunnen plaatsen.",
+        "phoneNumberIdHelp": "Uit WhatsApp Manager, bij het nummer waarvandaan u verzendt; niet het telefoonnummer zelf. Meta geeft het pas uit nadat de webhook is geverifieerd, dus laat het leeg, verbind, registreer de webhook en kom daarna terug om het toe te voegen.",
+        "accessTokenHelp": "Een permanent systeemgebruikerstoken. Het token dat Meta tijdens de installatie toont, verloopt binnen 24 uur. Voeg het samen met de telefoonnummer-ID toe zodra de webhook is geverifieerd.",
+        "verifyTokenHelp": "Een zin naar keuze. Plak dezelfde in Meta bij het registreren van de webhook."
       },
       "settings": {
         "enabled": "Berichten via dit kanaal versturen",
@@ -647,7 +654,7 @@
         "secretKeyHelp": "Uit het Stripe-dashboard onder Developers, API keys. Testsleutels verwerken niets echts, dus probeer er eerst een betaling mee en wissel daarna naar live-sleutels.",
         "publishableKey": "Publiceerbare sleutel",
         "webhookSecret": "Ondertekeningsgeheim van webhook",
-        "webhookSecretHelp": "Stripe toont dit zodra je de meldings-URL van deze pagina als webhook toevoegt. Hiermee wordt elke melding geverifieerd voordat een betaling wordt vastgelegd."
+        "webhookSecretHelp": "Optioneel, en ook na het verbinden toe te voegen. Stripe toont het onder Reveal secret zodra de meldings-URL van deze pagina als endpoint is toegevoegd. Hiermee wordt elke melding op zijn handtekening geverifieerd; zonder vraagt Torqvoice de checkout bij Stripe op voordat een betaling wordt geregistreerd."
       },
       "settings": {
         "enabled": "Aanbieden op factuurlinks",
