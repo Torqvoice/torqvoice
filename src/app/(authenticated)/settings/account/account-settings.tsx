@@ -96,13 +96,21 @@ export function AccountSettings({
     }
     setEnabling2FA(true)
     try {
-      const result = await authClient.twoFactor.enable({ password: twoFactorPassword })
+      // An authenticator app (TOTP). Better Auth 1.7 also enrols one-time
+      // codes by email, and only the TOTP answer carries the QR code and the
+      // backup codes.
+      const result = await authClient.twoFactor.enable({
+        password: twoFactorPassword,
+        method: 'totp',
+      })
       if (result.error) {
         toast.error(result.error.message || t('account.failedEnable2FA'))
-      } else {
-        setTotpURI(result.data?.totpURI || '')
-        setBackupCodes(result.data?.backupCodes || [])
+      } else if (result.data?.method === 'totp') {
+        setTotpURI(result.data.totpURI)
+        setBackupCodes(result.data.backupCodes)
         setSetupStep('qr')
+      } else {
+        toast.error(t('account.failedEnable2FA'))
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('account.failedEnable2FA'))

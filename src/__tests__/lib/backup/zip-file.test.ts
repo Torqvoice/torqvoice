@@ -1,15 +1,27 @@
 /**
+ * @vitest-environment node
+ *
  * The streamed zip reader: the upload lands on disk, the table of contents is
  * checked before anything is inflated, data is parsed straight from the
  * archive, and an entry that tries to leave the archive fails it.
+ *
+ * Server code, so Node's environment: under jsdom a Buffer is not an instance
+ * of the test realm's Uint8Array, and the JSON parser refuses it.
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createWriteStream } from 'fs'
+import { Readable } from 'stream'
 import { mkdtemp, readFile, rm, stat } from 'fs/promises'
 import os from 'os'
 import path from 'path'
 import { ZipArchive } from 'archiver'
-import { extractEntry, openZip, readEntryJson, spoolUpload } from '@/lib/backup/zip-file'
+import {
+  extractEntry,
+  openZip,
+  parseJsonStream,
+  readEntryJson,
+  spoolUpload,
+} from '@/lib/backup/zip-file'
 
 let sandbox: string
 
@@ -204,5 +216,23 @@ describe('openZip', () => {
     const { writeFile } = await import('fs/promises')
     await writeFile(file, 'this is not an archive at all, just text')
     await expect(openZip(file)).rejects.toThrow()
+  })
+})
+
+describe('parseJsonStream', () => {
+  it('reads JSON split across chunks', async () => {
+    const data = await parseJsonStream(Readable.from(['{"customers":[{"na', 'me":"Ada"}],"n":2}']))
+    expect(data).toEqual({ customers: [{ name: 'Ada' }], n: 2 })
+  })
+
+  it('keeps a __proto__ key as data, the way JSON.parse does', async () => {
+    // A backup is a file someone uploads. A __proto__ key in it must not
+    // reach the prototype of the objects the restore builds.
+    const data = await parseJsonStream<Record<string, unknown>>(
+      Readable.from(['{"__proto__":{"polluted":true},"customers":[]}'])
+    )
+    expect(Object.hasOwn(data, '__proto__')).toBe(true)
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+    expect((data as { polluted?: unknown }).polluted).toBeUndefined()
   })
 })
