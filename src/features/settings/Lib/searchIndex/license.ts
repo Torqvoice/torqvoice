@@ -1,6 +1,6 @@
 import type { SettingsEntry } from './types'
 
-/** License (self-hosted only): the white-label card and its key field. */
+/** License (self-hosted only): the white-label card and its key field, and the offline licence card. */
 export const licenseEntries: SettingsEntry[] = [
   {
     id: 'license.whiteLabel',
@@ -39,5 +39,22 @@ export const licenseEntries: SettingsEntry[] = [
     title: 'license.purchaseWhiteLabel',
     anchor: 'license-purchase',
     keywords: ['buy license', 'purchase license', 'white label price', 'upgrade'],
+  },
+  {
+    id: 'license.offline',
+    page: 'license',
+    title: 'license.offlineTitle',
+    description: 'license.offlineDescription',
+    anchor: 'license-offline',
+    keywords: [
+      'offline license',
+      'offline licence',
+      'perpetual license',
+      'lifetime license',
+      'one-time purchase',
+      'license request code',
+      'no check-in',
+      'air gapped',
+    ],
   },
 ]

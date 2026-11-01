@@ -253,26 +253,33 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
   // Self-hosted mode — all features unlocked, license only controls branding.
   //
   // The gate trusts one thing: a token signed by torqvoice.com, bound to this
-  // organization, refreshed within the last two weeks. The operator owns this
-  // database, so `license.valid` and friends are display cache only; editing
-  // them changes nothing here. See src/lib/license/token.ts.
+  // organization. A subscription token must have been refreshed within the
+  // last two weeks; a perpetual one must name the registration number this
+  // workshop prints on its invoices, so `invoice.orgNumber` is read alongside
+  // it. The operator owns this database, so `license.valid` and friends are
+  // display cache only; editing them changes nothing here. See
+  // src/lib/license/token.ts.
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
-      key: { in: ['license.token', 'license.key'] },
+      key: { in: ['license.token', 'license.key', 'invoice.orgNumber'] },
     },
   })
 
   const map = new Map(settings.map((s) => [s.key, s.value]))
-  const verification = verifyLicenseToken(map.get('license.token'), organizationId)
+  const verification = verifyLicenseToken(map.get('license.token'), organizationId, {
+    registrationNumber: map.get('invoice.orgNumber'),
+  })
   const hasLicense = verification.status === 'valid'
 
   // A key with no usable token is an install that has not talked to
   // torqvoice.com recently, or one that upgraded from the release that stored
   // plain booleans. Refresh in the background; the cron would get there within
-  // a day anyway, this just makes the upgrade invisible.
+  // a day anyway, this just makes the upgrade invisible. A perpetual token is
+  // never refreshed: torqvoice.com has nothing newer to say about it, and a
+  // mismatch is fixed in Company settings, not over the network.
   const key = map.get('license.key')
-  if (key && !hasLicense) {
+  if (key && !hasLicense && verification.kind !== 'perpetual') {
     scheduleLicenseSelfHeal(organizationId, key)
   }
 
@@ -281,10 +288,42 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     brandingRemoved: hasLicense,
     customPlatformName: hasLicense,
     // One workshop per install without a licence. A self-hosting workshop
-    // needs one; running many is what the white-label licence is for.
-    maxOrganizations: hasLicense ? PLAN_FEATURES['white-label'].maxOrganizations : 1,
+    // needs one; running many is what the white-label licence is for. A
+    // perpetual licence says how many it covers.
+    maxOrganizations: hasLicense
+      ? (verification.maxOrganizations ?? PLAN_FEATURES['white-label'].maxOrganizations)
+      : 1,
   }
 })
+
+/**
+ * The workshops each valid licence token on this install allows, one entry
+ * per token that verifies. A perpetual token is checked against its own
+ * workshop's registration number, so both are loaded together.
+ */
+async function validInstallLicenseLimits(): Promise<number[]> {
+  const rows = await db.appSetting.findMany({
+    where: { key: { in: ['license.token', 'invoice.orgNumber'] }, organizationId: { not: null } },
+    select: { organizationId: true, key: true, value: true },
+  })
+  const orgNumbers = new Map<string, string>()
+  for (const row of rows) {
+    if (row.key === 'invoice.orgNumber' && row.organizationId) {
+      orgNumbers.set(row.organizationId, row.value)
+    }
+  }
+
+  const limits: number[] = []
+  for (const row of rows) {
+    if (row.key !== 'license.token' || !row.organizationId) continue
+    const verification = verifyLicenseToken(row.value, row.organizationId, {
+      registrationNumber: orgNumbers.get(row.organizationId),
+    })
+    if (verification.status !== 'valid') continue
+    limits.push(verification.maxOrganizations ?? PLAN_FEATURES['white-label'].maxOrganizations)
+  }
+  return limits
+}
 
 /**
  * Whether any organization on this install holds a valid licence token.
@@ -292,15 +331,16 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
  * one, so it is checked across the install, not per person.
  */
 export async function installHasLicense(): Promise<boolean> {
-  const tokens = await db.appSetting.findMany({
-    where: { key: 'license.token', organizationId: { not: null } },
-    select: { organizationId: true, value: true },
-  })
-  return tokens.some(
-    (row) =>
-      row.organizationId !== null &&
-      verifyLicenseToken(row.value, row.organizationId).status === 'valid'
-  )
+  return (await validInstallLicenseLimits()).length > 0
+}
+
+/**
+ * How many workshops this install may run: the most any valid licence on it
+ * allows. A subscription licence brings the white-label plan's number, a
+ * perpetual one the number it was sold with. One without any.
+ */
+export async function installLicenseMaxOrganizations(): Promise<number> {
+  return Math.max(1, ...(await validInstallLicenseLimits()))
 }
 
 /**
@@ -310,7 +350,7 @@ export async function installHasLicense(): Promise<boolean> {
  */
 export async function getMaxOrganizations(userId: string): Promise<number> {
   if (!isCloudMode()) {
-    return (await installHasLicense()) ? PLAN_FEATURES['white-label'].maxOrganizations : 1
+    return installLicenseMaxOrganizations()
   }
 
   const ownedOrgs = await db.organizationMember.findMany({

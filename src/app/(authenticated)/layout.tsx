@@ -263,22 +263,31 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const licenceSettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,
-        key: { in: ['license.token', 'license.key', 'license.expiryDismissed'] },
+        key: {
+          in: ['license.token', 'license.key', 'license.expiryDismissed', 'invoice.orgNumber'],
+        },
       },
       select: { key: true, value: true },
     })
     const licenceMap = new Map(licenceSettings.map((s) => [s.key, s.value]))
     licenseExpiryDismissed = licenceMap.get('license.expiryDismissed') === 'true'
-    const verification = verifyLicenseToken(licenceMap.get('license.token'), data.organizationId)
-    if (verification.status === 'valid') {
-      daysUntilExpiry = verification.daysUntilExpiry
-      if (verification.ageDays !== null && verification.ageDays >= LICENSE_TOKEN_WARN_AGE_DAYS) {
-        unverifiedDaysLeft = Math.max(0, LICENSE_TOKEN_MAX_AGE_DAYS - verification.ageDays)
+    const verification = verifyLicenseToken(licenceMap.get('license.token'), data.organizationId, {
+      registrationNumber: licenceMap.get('invoice.orgNumber'),
+    })
+    // A perpetual licence has no term and no refresh, so neither notice
+    // applies to it. A registration number mismatch is explained on the
+    // License page, where the number can be compared and fixed.
+    if (verification.kind !== 'perpetual') {
+      if (verification.status === 'valid') {
+        daysUntilExpiry = verification.daysUntilExpiry
+        if (verification.ageDays !== null && verification.ageDays >= LICENSE_TOKEN_WARN_AGE_DAYS) {
+          unverifiedDaysLeft = Math.max(0, LICENSE_TOKEN_MAX_AGE_DAYS - verification.ageDays)
+        }
+      } else if (verification.status === 'stale') {
+        unverifiedDaysLeft = 0
+      } else if (verification.status === 'expired') {
+        daysUntilExpiry = verification.daysUntilExpiry
       }
-    } else if (verification.status === 'stale') {
-      unverifiedDaysLeft = 0
-    } else if (verification.status === 'expired') {
-      daysUntilExpiry = verification.daysUntilExpiry
     }
   }
 
