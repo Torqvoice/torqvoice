@@ -1,16 +1,4 @@
 import type { Metadata } from 'next'
-import {
-  Atkinson_Hyperlegible_Mono,
-  Atkinson_Hyperlegible_Next,
-  Barlow_Condensed,
-  Geist,
-  Geist_Mono,
-  IBM_Plex_Mono,
-  IBM_Plex_Sans,
-  Inter,
-  Inter_Tight,
-  JetBrains_Mono,
-} from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Toaster } from '@/components/ui/sonner'
@@ -31,86 +19,24 @@ import { DEFAULT_APP_NAME, getAppBranding } from '@/lib/branding'
 import { headers } from 'next/headers'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
+// The typefaces ship with npm rather than from Google at build time; the
+// variables the app reads are declared in fonts.css.
+import '@fontsource-variable/geist'
+import '@fontsource-variable/geist-mono'
+import '@fontsource-variable/ibm-plex-sans'
+import '@fontsource/ibm-plex-mono/400.css'
+import '@fontsource/ibm-plex-mono/500.css'
+import '@fontsource/ibm-plex-mono/600.css'
+import '@fontsource/barlow-condensed/500.css'
+import '@fontsource/barlow-condensed/600.css'
+import '@fontsource/barlow-condensed/700.css'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/inter-tight'
+import '@fontsource-variable/jetbrains-mono'
+import '@fontsource-variable/atkinson-hyperlegible-next'
+import '@fontsource-variable/atkinson-hyperlegible-mono'
+import './fonts.css'
 import './globals.css'
-
-// Declared under *-base: globals.css points --font-geist-sans at it, or at
-// another face when a font set is chosen (see src/lib/font-sets.ts).
-const geistSans = Geist({
-  variable: '--font-geist-sans-base',
-  subsets: ['latin', 'latin-ext'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono-base',
-  subsets: ['latin', 'latin-ext'],
-})
-
-// The "workshop" font set (Settings → Appearance). Not preloaded: a browser
-// fetches a font file only when some text is actually set in it, so whoever
-// stays on the default never downloads these.
-const plexSans = IBM_Plex_Sans({
-  variable: '--font-plex-sans',
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  preload: false,
-})
-
-const plexMono = IBM_Plex_Mono({
-  variable: '--font-plex-mono',
-  weight: ['400', '500', '600'],
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  preload: false,
-})
-
-const barlowCondensed = Barlow_Condensed({
-  variable: '--font-barlow-condensed',
-  weight: ['500', '600', '700'],
-  subsets: ['latin', 'latin-ext'],
-  preload: false,
-})
-
-// The "precise" set. Variable fonts, so one file covers every weight.
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  preload: false,
-})
-
-const interTight = Inter_Tight({
-  variable: '--font-inter-tight',
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  preload: false,
-})
-
-const jetBrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  preload: false,
-})
-
-// The "legible" set. Latin only: the family has no Cyrillic.
-//
-// adjustFontFallback is off for these two. next/font sizes a stand-in system
-// font to match each face while it loads, from a table of font metrics shipped
-// with Next, and these families are newer than that table: it found nothing,
-// skipped the stand-in anyway, and said so on every compile. The fallback is
-// named here instead, so the text is still set in something sensible for the
-// moment before the font arrives.
-const atkinson = Atkinson_Hyperlegible_Next({
-  variable: '--font-atkinson',
-  subsets: ['latin', 'latin-ext'],
-  preload: false,
-  adjustFontFallback: false,
-  fallback: ['system-ui', 'sans-serif'],
-})
-
-const atkinsonMono = Atkinson_Hyperlegible_Mono({
-  variable: '--font-atkinson-mono',
-  subsets: ['latin', 'latin-ext'],
-  preload: false,
-  adjustFontFallback: false,
-  fallback: ['ui-monospace', 'monospace'],
-})
 
 // What every page says about itself when the install carries no branding of
 // its own. Link previews (openGraph, twitter) stay TorqVoice even when it does.
@@ -220,9 +146,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${plexSans.variable} ${plexMono.variable} ${barlowCondensed.variable} ${inter.variable} ${interTight.variable} ${jetBrainsMono.variable} ${atkinson.variable} ${atkinsonMono.variable} font-sans antialiased`}
-      >
+      <body className="font-sans antialiased">
         <PostHogProvider
           enabled={isCloudMode() || isDemoMode}
           posthogKey={process.env.POSTHOG_KEY}
