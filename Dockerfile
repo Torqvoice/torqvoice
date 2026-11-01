@@ -8,10 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./prisma.config.ts
-# npm ci runs the prepare script, which patches next-ws and then applies our
-# own follow-up patch from scripts/. The source tree is not copied until the
-# builder stage, so that one file has to come along here.
-COPY scripts/patch-next-ws-first-upgrade.mjs ./scripts/
+# npm ci runs the prepare script, which patches next for next-ws.
 RUN npm ci
 
 # Rebuild the source code only when needed
@@ -83,8 +80,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
 # The server runs on the node_modules Next traced for it. That is exactly what
-# the build ran with: next carrying the next-ws patch and the first-upgrade fix
-# the prepare script applied in the deps stage, and sharp with the binary for
+# the build ran with: next carrying the next-ws patch the prepare script
+# applied in the deps stage, and sharp with the binary for
 # this image's platform. Nothing is installed over it, so none of that has to
 # be patched or resolved a second time here.
 #
@@ -104,10 +101,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./tools/src/generat
 # patch, with next-ws waiting for the lazily loaded route module; a native
 # module that cannot be loaded throws while its route is being evaluated,
 # which reaches the browser as an empty HTTP 500 with nothing to explain it.
-COPY --from=builder --chown=nextjs:nodejs /app/scripts/patch-next-ws-first-upgrade.mjs ./scripts/patch-next-ws-first-upgrade.mjs
 RUN grep -qs "next-ws" node_modules/next/dist/server/next-server.js \
       || { echo "the traced next is missing the next-ws patch"; exit 1; }
-RUN node scripts/patch-next-ws-first-upgrade.mjs
+# next-ws 2.2.19 waits for the route module itself (ensureUserland); before
+# that, scripts/ carried a patch for it, and an older next-ws must not slip back in.
+RUN grep -qs "ensureUserland" node_modules/next-ws/dist/server/index.cjs \
+      || { echo "the traced next-ws does not wait for the lazily loaded route module"; exit 1; }
 RUN node -e "require('sharp'); console.log('sharp loads')"
 
 # Copy init script

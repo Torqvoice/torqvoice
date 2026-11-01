@@ -19,8 +19,8 @@ import { Readable, Transform } from 'stream'
 import type { ReadableStream as WebReadableStream } from 'stream/web'
 import { pipeline } from 'stream/promises'
 import yauzl from 'yauzl'
-import { parser } from 'stream-json'
-import Assembler from 'stream-json/Assembler'
+import parserStream from 'stream-json'
+import Assembler from 'stream-json/assembler.js'
 import { BACKUP_ZIP_LIMITS, assertZipWithinLimits, type ZipLimits } from './zip-guard'
 
 /** The first bytes of a zip file. */
@@ -164,15 +164,19 @@ export async function extractEntry(zip: OpenedZip, entry: ZipEntry, target: stri
   await pipeline(await zip.open(entry), createWriteStream(target))
 }
 
+/** One token of stream-json's parser, as its Assembler takes it. */
+type JsonToken = Parameters<Assembler['consume']>[0]
+
 /**
  * Parses JSON from a stream without first making it a string. The parser
  * is slower than JSON.parse, by a few seconds on a hundred megabytes, and
  * needs memory for the result alone instead of result, text and bytes.
  */
 export async function parseJsonStream<T = unknown>(source: Readable): Promise<T> {
-  const tokens = parser()
-  const assembler = Assembler.connectTo(tokens)
-  await pipeline(source, tokens)
+  const assembler = new Assembler<T>()
+  await pipeline(source, parserStream(), async (tokens: AsyncIterable<JsonToken>) => {
+    for await (const token of tokens) assembler.consume(token)
+  })
   return assembler.current as T
 }
 
