@@ -52,6 +52,7 @@ next-env.d.ts
 /data/restic-cache
 /data/restore-explore
 /data/restore-tmp
+/data/backup
 
 # end-to-end tests
 /e2e/.auth
