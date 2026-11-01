@@ -1,6 +1,6 @@
 name: Stale issues
 
-# Marks an issue stale after 60 days without activity and closes it 14 days
+# Marks an issue stale after 30 days without activity and closes it 14 days
 # later unless someone comments. Pull requests are left alone. An issue that
 # is assigned, in a milestone, or labelled pinned, help wanted or good first
 # issue is never marked.
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/stale@v11
         with:
-          days-before-issue-stale: 60
+          days-before-issue-stale: 30
           days-before-issue-close: 14
           days-before-pr-stale: -1
           days-before-pr-close: -1
@@ -30,7 +30,7 @@ jobs:
           exempt-all-issue-milestones: true
           exempt-all-issue-assignees: true
           stale-issue-message: >
-            This issue has had no activity for 60 days, so it is marked stale.
+            This issue has had no activity for 30 days, so it is marked stale.
             It will be closed in 14 days unless there is new activity. Comment
             if it still matters and it stays open.
           close-issue-message: >
