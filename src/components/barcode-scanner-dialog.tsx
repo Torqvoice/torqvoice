@@ -53,6 +53,8 @@ export function BarcodeScannerDialog({
   const [showManual, setShowManual] = useState(false)
   const [manualValue, setManualValue] = useState('')
   const hasScannedRef = useRef(false)
+  // The one restart the dialog makes by itself each time it opens; see below.
+  const autoRetriedRef = useRef(false)
 
   const scanBufferRef = useRef<string[]>([])
   const REQUIRED_CONSISTENT_READS = 3
@@ -96,6 +98,7 @@ export function BarcodeScannerDialog({
   useEffect(() => {
     if (!open || showManual) {
       hasScannedRef.current = false
+      if (!open) autoRetriedRef.current = false
       return
     }
 
@@ -199,27 +202,34 @@ export function BarcodeScannerDialog({
   }, [open, showManual, handleScan])
 
   // Allowing the camera in the browser while the dialog is open starts it,
-  // where the browser says so (the Permissions API is not everywhere).
+  // where the browser says so (the Permissions API is not everywhere). Allowed
+  // already by the time the answer comes counts as well. Once per opening: the
+  // browser can allow a camera the system still refuses (macOS privacy
+  // settings), and restarting on every refusal would go round in circles.
+  // Try again is always there for a second go.
   useEffect(() => {
     if (!open || problem !== 'denied' || !navigator.permissions?.query) return
     let status: PermissionStatus | null = null
     let cancelled = false
-    const onChange = () => {
-      if (status?.state === 'granted') retryCamera()
+    const restartIfAllowed = () => {
+      if (cancelled || status?.state !== 'granted' || autoRetriedRef.current) return
+      autoRetriedRef.current = true
+      retryCamera()
     }
     navigator.permissions
       .query({ name: 'camera' as PermissionName })
       .then((s) => {
         if (cancelled) return
         status = s
-        s.addEventListener('change', onChange)
+        s.addEventListener('change', restartIfAllowed)
+        restartIfAllowed()
       })
       .catch(() => {
         /* this browser cannot be asked about the camera */
       })
     return () => {
       cancelled = true
-      status?.removeEventListener('change', onChange)
+      status?.removeEventListener('change', restartIfAllowed)
     }
   }, [open, problem, retryCamera])
 

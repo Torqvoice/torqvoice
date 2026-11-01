@@ -7,8 +7,8 @@
  * allowed, without asking the browser a second time after a refusal.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 const start = vi.fn()
@@ -50,10 +50,34 @@ function renderDialog() {
   return { onScan, onOpenChange }
 }
 
+/** A browser that answers the Permissions API with this camera state. */
+function setCameraPermission(state: PermissionState) {
+  const listeners = new Set<() => void>()
+  const status = {
+    state,
+    addEventListener: (_: string, fn: () => void) => listeners.add(fn),
+    removeEventListener: (_: string, fn: () => void) => listeners.delete(fn),
+  }
+  Object.defineProperty(navigator, 'permissions', {
+    value: { query: vi.fn().mockResolvedValue(status) },
+    configurable: true,
+  })
+  return {
+    change(next: PermissionState) {
+      status.state = next
+      for (const fn of [...listeners]) fn()
+    },
+  }
+}
+
 beforeEach(() => {
   start.mockReset()
   getCameras.mockReset()
   setSecure(true)
+})
+
+afterEach(() => {
+  Object.defineProperty(navigator, 'permissions', { value: undefined, configurable: true })
 })
 
 describe('BarcodeScannerDialog', () => {
@@ -90,6 +114,30 @@ describe('BarcodeScannerDialog', () => {
 
     await vi.waitFor(() => expect(start).toHaveBeenCalledTimes(2))
     expect(screen.queryByText('Camera access is blocked')).not.toBeInTheDocument()
+  })
+
+  it('starts the camera by itself once the browser allows it', async () => {
+    const permission = setCameraPermission('denied')
+    start.mockRejectedValueOnce(DENIED).mockResolvedValue(null)
+    renderDialog()
+    await screen.findByText('Camera access is blocked')
+
+    act(() => permission.change('granted'))
+
+    await vi.waitFor(() => expect(start).toHaveBeenCalledTimes(2))
+  })
+
+  it('restarts once, not in circles, when the browser allows what the system refuses', async () => {
+    // Allowed in the browser, refused by the operating system: every start
+    // fails the same way while the permission reads granted.
+    setCameraPermission('granted')
+    start.mockRejectedValue(DENIED)
+    renderDialog()
+
+    await vi.waitFor(() => expect(start).toHaveBeenCalledTimes(2))
+    expect(await screen.findByText('Camera access is blocked')).toBeInTheDocument()
+    await new Promise((r) => setTimeout(r, 300))
+    expect(start).toHaveBeenCalledTimes(2)
   })
 
   it('falls back to any camera when the rear one fails for another reason', async () => {
