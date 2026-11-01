@@ -19,7 +19,7 @@ export type ServiceFormProblem =
   | 'negative'
   /** A part priced or numbered but never named. */
   | 'partName'
-  /** Labour with hours or a rate but nothing said about it. */
+  /** Labour with hours, or a priced service, but nothing said about it. */
   | 'laborDescription'
   /** A cause, correction or confirmation written against no condition. */
   | 'concernCondition'
@@ -37,6 +37,8 @@ export interface ServiceFormLabor {
   description: string
   hours: number | string
   rate: number | string
+  /** Hourly when absent; a service or the shop fee is priced per unit. */
+  pricingType?: string | null
 }
 
 export interface ServiceFormConcern {
@@ -69,7 +71,13 @@ export function partRowHasContent(part: ServiceFormPart): boolean {
 }
 
 export function laborRowHasContent(labor: ServiceFormLabor): boolean {
-  return num(labor.hours) > 0 || num(labor.rate) > 0
+  // A new hourly line arrives with the workshop's rate and no hours, and a
+  // new service line with a quantity of one and no price. Counting those
+  // marked every line wrong the moment it was added, and a ready line left
+  // untouched blocked the save. Hours on an hourly line say it was meant, and
+  // a price on a line priced per unit.
+  if (labor.pricingType && labor.pricingType !== 'hourly') return num(labor.rate) > 0
+  return num(labor.hours) > 0
 }
 
 /**
