@@ -75,22 +75,36 @@ describe('what a work order must have before it saves', () => {
 
   it('leaves the blank row the editor keeps ready alone', () => {
     // Every list ends in an empty row waiting to be typed into. It is not a
-    // mistake, and it is dropped on save without a word.
+    // mistake, and it is dropped on save without a word. A new labour line
+    // comes with the workshop's rate already in it, and a new service line
+    // with a quantity of one: still nobody has said anything with them.
     expect(
       findServiceFormProblem({
         ...empty,
         partItems: [part(), part({ name: '', unitPrice: 0, quantity: 1 })],
-        laborItems: [labor(), labor({ description: '', hours: 0, rate: 0 })],
+        laborItems: [
+          labor(),
+          labor({ description: '', hours: 0, rate: 0 }),
+          labor({ description: '', hours: 0, rate: 800 }),
+          labor({ description: '', hours: 1, rate: 0, pricingType: 'service' }),
+        ],
       })
     ).toBeNull()
   })
 
-  it('refuses labour with hours or a rate but nothing said about it', () => {
+  it('refuses labour with hours, or a priced service, but nothing said about it', () => {
     expect(findServiceFormProblem({ ...empty, laborItems: [labor({ description: '' })] })).toBe(
       'laborDescription'
     )
+    // Hours with no rate yet are still time somebody recorded.
     expect(
-      findServiceFormProblem({ ...empty, laborItems: [labor({ description: '', hours: 0 })] })
+      findServiceFormProblem({ ...empty, laborItems: [labor({ description: '', rate: 0 })] })
+    ).toBe('laborDescription')
+    expect(
+      findServiceFormProblem({
+        ...empty,
+        laborItems: [labor({ description: '', hours: 1, rate: 450, pricingType: 'service' })],
+      })
     ).toBe('laborDescription')
   })
 
