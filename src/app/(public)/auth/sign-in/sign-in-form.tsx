@@ -10,14 +10,22 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Fingerprint, Loader2, PlayCircle, XCircle } from 'lucide-react'
+import { Fingerprint, KeyRound, Loader2, PlayCircle, UserPlus, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
 import { AuthCard, AuthShell } from '@/components/auth/auth-shell'
 import { GoogleMark } from '@/components/auth/google-mark'
 import { TERMS_URL } from '@/lib/marketing-urls'
+import { handOnEmail } from '@/lib/auth-email-handoff'
 
 const DEMO_EMAIL = 'demo@torqvoice.com'
 const DEMO_PASSWORD = 'demo'
+
+/**
+ * Refused this many times for a wrong email or password, and the two ways
+ * out are shown plainly: the password may be forgotten, or there may never
+ * have been an account (many arrive here from the marketing site's Login).
+ */
+const RECOVERY_AFTER = 2
 
 function SignInFormInner({
   registrationDisabled,
@@ -45,10 +53,13 @@ function SignInFormInner({
     if (!code) return ''
     return code === 'account_not_linked' ? tSocial('notLinked') : tSocial('failed')
   })
+  const [failures, setFailures] = useState(0)
   const [loading, setLoading] = useState(false)
   const [passkeyLoading, setPasskeyLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const passwordRef = useRef<HTMLInputElement>(null)
+
+  const showRecovery = failures >= RECOVERY_AFTER
 
   const redirectParam = searchParams.get('redirect')
   const signUpHref = `/auth/sign-up${
@@ -71,6 +82,10 @@ function SignInFormInner({
           setError(
             t('errors.invalidOrigin', { origin: refusal.origin, configured: refusal.configured })
           )
+        } else if (refusal.code === 'INVALID_EMAIL_OR_PASSWORD') {
+          // Better Auth's own sentence is English; this one is the visitor's.
+          setError(t('errors.invalidCredentials'))
+          setFailures((n) => n + 1)
         } else {
           setError(result.error.message || t('errors.invalidCredentials'))
         }
@@ -187,13 +202,45 @@ function SignInFormInner({
           <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <div className="flex-1">
             <p>{error}</p>
-            <p className="mt-1 text-xs">
-              {t('forgotPassword')}{' '}
-              <Link href="/auth/forgot-password" className="font-medium underline">
-                {t('resetPasswordCta')}
-              </Link>
-            </p>
+            {!showRecovery && (
+              <p className="mt-1 text-xs">
+                {t('forgotPassword')}{' '}
+                <Link
+                  href="/auth/forgot-password"
+                  onClick={() => handOnEmail(email)}
+                  className="font-medium underline"
+                >
+                  {t('resetPasswordCta')}
+                </Link>
+              </p>
+            )}
           </div>
+        </div>
+      )}
+
+      {showRecovery && (
+        <div className="mb-4 rounded-lg border bg-muted/40 p-1.5">
+          <p className="px-2 pb-1 pt-1.5 text-sm font-medium">{t('recovery.title')}</p>
+          <RecoveryLink
+            href="/auth/forgot-password"
+            icon={KeyRound}
+            title={t('recovery.resetTitle')}
+            hint={t('recovery.resetHint')}
+            onClick={() => handOnEmail(email)}
+          />
+          {!registrationDisabled && (
+            <RecoveryLink
+              href={signUpHref}
+              icon={UserPlus}
+              title={t('recovery.signUpTitle')}
+              hint={
+                email.trim()
+                  ? t('recovery.signUpHintEmail', { email: email.trim() })
+                  : t('recovery.signUpHint')
+              }
+              onClick={() => handOnEmail(email)}
+            />
+          )}
         </div>
       )}
 
@@ -328,6 +375,37 @@ function SignInFormInner({
         </a>
       </p>
     </AuthCard>
+  )
+}
+
+/** One way out of a sign-in that keeps failing, as a row in the help box. */
+function RecoveryLink({
+  href,
+  icon: Icon,
+  title,
+  hint,
+  onClick,
+}: {
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  title: string
+  hint: string
+  onClick: () => void
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-background"
+    >
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-sm font-medium text-primary">{title}</span>
+        <span className="block break-words text-xs text-muted-foreground">{hint}</span>
+      </span>
+    </Link>
   )
 }
 

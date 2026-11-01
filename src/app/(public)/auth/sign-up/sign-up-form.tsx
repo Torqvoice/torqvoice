@@ -1,7 +1,7 @@
 'use client'
 
 import { safeRedirectPath } from '@/lib/safe-redirect'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator'
 import { TERMS_URL } from '@/lib/marketing-urls'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 import { track } from '@/lib/analytics'
+import { takeHandedEmail } from '@/lib/auth-email-handoff'
 
 export function SignUpForm({
   inviteToken,
@@ -53,6 +54,12 @@ export function SignUpForm({
   const [loading, setLoading] = useState(false)
   const termsRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+
+  // The address a failed sign-in was tried with, when that is where they came from.
+  useEffect(() => {
+    const handed = takeHandedEmail()
+    if (handed) setEmail((current) => current || handed)
+  }, [])
 
   // The pitch sits beside the form for a fresh cloud sign-up. An invited
   // colleague is joining a workshop that already chose Torqvoice, so they
