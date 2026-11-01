@@ -141,7 +141,7 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
-    "inboundHintStripe": "Add this URL in your Stripe dashboard under Developers, Webhooks, subscribed to checkout.session.completed. Then paste the signing secret Stripe shows into the webhook secret field here, so notifications can be verified.",
+    "inboundHintStripe": "Add this URL in the Stripe dashboard: open Workbench, then Webhooks, choose Create an event destination, and subscribe it to checkout.session.completed. Stripe then shows a signing secret for the endpoint; paste it into the signing secret field here so every notification is checked by its signature. Until it is in, Torqvoice confirms each notification by asking Stripe for the checkout itself.",
     "inboundHintVipps": "Enter this URL as the callback URL in the Vipps MobilePay portal. Vipps also requires published terms of sale, which are set under Settings, Payment.",
     "inboundHintPaypal": "Add this URL in the PayPal developer dashboard under Webhooks, subscribed to PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
@@ -149,7 +149,7 @@
     "updateKeys": "Update keys",
     "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
     "awaitingKeys": "Connected, but still waiting for {keys}.",
-    "awaitingKeysHint": "The webhook already answers the vendor, so register it now. Nothing can be sent until these are entered; add them here once they have been issued.",
+    "awaitingKeysHint": "The webhook already answers the vendor, so register it now. Add these here once the vendor has issued them.",
     "saveKeys": "Save keys",
     "keysSaved": "Keys saved",
     "inspectionSync": {
@@ -654,7 +654,7 @@
         "secretKeyHelp": "From the Stripe dashboard under Developers, API keys. Test keys process nothing real, so try a payment on them first and swap to live keys after.",
         "publishableKey": "Publishable key",
         "webhookSecret": "Webhook signing secret",
-        "webhookSecretHelp": "Shown by Stripe once you add the notification URL from this page as a webhook. With it, every notification is verified before a payment is recorded."
+        "webhookSecretHelp": "Optional, and can be added after connecting. Stripe shows it under Reveal secret once the notification URL from this page is added as an endpoint. With it, every notification is verified by its signature; without it, Torqvoice asks Stripe for the checkout before recording a payment."
       },
       "settings": {
         "enabled": "Offer on invoice links",

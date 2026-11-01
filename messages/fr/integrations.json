@@ -141,7 +141,7 @@
     "inboundUrl": "URL du webhook entrant",
     "inboundHintSecret": "Collez cette URL dans les réglages des messages entrants du fournisseur. Elle contient un secret qui identifie votre atelier : gardez-la privée.",
     "inboundHintMeta": "Collez cette URL comme URL de rappel dans votre application Meta, avec le jeton de vérification saisi ci-dessus, et abonnez-vous aux messages.",
-    "inboundHintStripe": "Ajoutez cette URL dans le tableau de bord Stripe sous Developers, Webhooks, abonnée à checkout.session.completed. Collez ensuite le secret de signature affiché par Stripe dans le champ secret du webhook ici, pour que les notifications puissent être vérifiées.",
+    "inboundHintStripe": "Ajoutez cette URL dans le tableau de bord Stripe : ouvrez Workbench, puis Webhooks, choisissez Create an event destination et abonnez-la à checkout.session.completed. Stripe affiche ensuite un secret de signature pour ce point de terminaison ; collez-le ici dans le champ du secret de signature pour que chaque notification soit vérifiée par sa signature. En attendant, Torqvoice confirme chaque notification en demandant le checkout à Stripe.",
     "inboundHintVipps": "Saisissez cette URL comme URL de rappel dans le portail Vipps MobilePay. Vipps exige aussi des conditions de vente publiées, à renseigner sous Paramètres, Paiement.",
     "inboundHintPaypal": "Ajoutez cette URL dans le tableau de bord développeur PayPal sous Webhooks, abonnée à PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copier",
@@ -149,7 +149,7 @@
     "updateKeys": "Mettre à jour les clés",
     "updateKeysHint": "La dernière vérification a échoué. Saisissez à nouveau les clés pour réessayer.",
     "awaitingKeys": "Connecté, mais il manque encore : {keys}.",
-    "awaitingKeysHint": "Le webhook répond déjà au fournisseur, enregistrez-le dès maintenant. Rien ne peut être envoyé tant que ces valeurs manquent ; ajoutez-les ici une fois qu'elles vous ont été délivrées.",
+    "awaitingKeysHint": "Le webhook répond déjà au fournisseur, enregistrez-le dès maintenant. Ajoutez ces valeurs ici une fois que le fournisseur vous les a délivrées.",
     "saveKeys": "Enregistrer les clés",
     "keysSaved": "Clés enregistrées",
     "inspectionSync": {
@@ -654,7 +654,7 @@
         "secretKeyHelp": "Depuis le tableau de bord Stripe sous Developers, API keys. Les clés de test ne traitent rien de réel : essayez d'abord un paiement avec elles, puis passez aux clés réelles.",
         "publishableKey": "Clé publiable",
         "webhookSecret": "Secret de signature du webhook",
-        "webhookSecretHelp": "Affiché par Stripe une fois l'URL de notification de cette page ajoutée comme webhook. Avec lui, chaque notification est vérifiée avant qu'un paiement soit enregistré."
+        "webhookSecretHelp": "Facultatif, et peut être ajouté après la connexion. Stripe l'affiche sous Reveal secret une fois l'URL de notification de cette page ajoutée comme point de terminaison. Avec lui, chaque notification est vérifiée par sa signature ; sans lui, Torqvoice demande le checkout à Stripe avant d'enregistrer un paiement."
       },
       "settings": {
         "enabled": "Proposer sur les liens de facture",

@@ -141,7 +141,7 @@
     "inboundUrl": "Gelen webhook URL'si",
     "inboundHintSecret": "Bu URL'yi sağlayıcının gelen mesaj ayarlarına yapıştırın. Atölyenizi tanımlayan bir sır içerdiği için gizli tutun.",
     "inboundHintMeta": "Bu URL'yi, yukarıda girdiğiniz doğrulama tokeniyle birlikte Meta uygulamanızda geri çağırma URL'si olarak yapıştırın ve mesajlara abone olun.",
-    "inboundHintStripe": "Bu URL'yi Stripe panelinde Developers, Webhooks altında checkout.session.completed olayına abone olarak ekleyin. Ardından Stripe'ın gösterdiği imza sırrını buradaki webhook sırrı alanına yapıştırın ki bildirimler doğrulanabilsin.",
+    "inboundHintStripe": "Bu URL'yi Stripe panelinde ekleyin: Workbench'i, ardından Webhooks'u açın, Create an event destination'ı seçin ve checkout.session.completed olayına abone olun. Stripe daha sonra bu uç nokta için bir imza sırrı gösterir; her bildirimin imzasıyla doğrulanması için onu buradaki imza sırrı alanına yapıştırın. O zamana kadar Torqvoice her bildirimi, ödemeyi Stripe'a sorarak doğrular.",
     "inboundHintVipps": "Bu URL'yi Vipps MobilePay portalında geri çağırma URL'si olarak girin. Vipps ayrıca yayımlanmış satış koşulları ister; bunlar Ayarlar, Ödeme altında ayarlanır.",
     "inboundHintPaypal": "Bu URL'yi PayPal geliştirici panelinde Webhooks altında PAYMENT.CAPTURE.COMPLETED olayına abone olarak ekleyin.",
     "copy": "Kopyala",
@@ -149,7 +149,7 @@
     "updateKeys": "Anahtarları güncelle",
     "updateKeysHint": "Son kontrol başarısız oldu. Yeniden denemek için anahtarları tekrar girin.",
     "awaitingKeys": "Bağlandı, ancak hâlâ eksik: {keys}.",
-    "awaitingKeysHint": "Webhook sağlayıcıya zaten yanıt veriyor, bu yüzden şimdi kaydedin. Bu değerler girilene kadar hiçbir şey gönderilemez; verildiklerinde buraya ekleyin.",
+    "awaitingKeysHint": "Webhook sağlayıcıya zaten yanıt veriyor, bu yüzden şimdi kaydedin. Sağlayıcı bu değerleri verdiğinde buraya ekleyin.",
     "saveKeys": "Anahtarları kaydet",
     "keysSaved": "Anahtarlar kaydedildi",
     "inspectionSync": {
@@ -654,7 +654,7 @@
         "secretKeyHelp": "Stripe panelinde Developers, API keys altından. Test anahtarları gerçek hiçbir şeyi işlemez; önce onlarla bir ödeme deneyin, sonra canlı anahtarlara geçin.",
         "publishableKey": "Yayımlanabilir anahtar",
         "webhookSecret": "Webhook imza sırrı",
-        "webhookSecretHelp": "Bu sayfadaki bildirim URL'sini webhook olarak eklediğinizde Stripe gösterir. Onunla her bildirim, ödeme kaydedilmeden önce doğrulanır."
+        "webhookSecretHelp": "İsteğe bağlıdır ve bağlandıktan sonra da eklenebilir. Bu sayfadaki bildirim URL'si uç nokta olarak eklendiğinde Stripe bunu Reveal secret altında gösterir. Onunla her bildirim imzasıyla doğrulanır; onsuz Torqvoice bir ödemeyi kaydetmeden önce Stripe'a ödemeyi sorar."
       },
       "settings": {
         "enabled": "Fatura bağlantılarında sun",

@@ -87,6 +87,9 @@ export const PAYMENT_VENDORS: readonly PaymentVendor[] = [
         type: 'password',
         placeholder: 'whsec_...',
         help: 'webhookSecretHelp',
+        // Stripe only shows the signing secret once the inbound URL from the
+        // connected page has been added as an endpoint, so it is saved after.
+        deferrable: true,
         legacy: SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET,
       },
     ],
