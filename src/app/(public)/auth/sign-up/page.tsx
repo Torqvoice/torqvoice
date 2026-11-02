@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
 import { safeRedirectPath } from '@/lib/safe-redirect'
-import { headers } from 'next/headers'
 import { db } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { getCachedSession } from '@/lib/cached-session'
 import { SignUpForm } from './sign-up-form'
 import { isDemoMode } from '@/lib/demo'
 import { isCloudMode } from '@/lib/features'
@@ -24,7 +23,7 @@ export default async function SignUpPage({
   // The three lookups do not depend on each other. This is the first page a
   // new visitor sees, so it should not pay for three round-trips in a row.
   const [session, regSetting, verificationSetting] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getCachedSession(),
     inviteToken || isDemoMode
       ? null
       : db.systemSetting.findUnique({
