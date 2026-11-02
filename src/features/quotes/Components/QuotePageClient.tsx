@@ -69,6 +69,7 @@ import { QuoteRightColumn } from './QuoteRightColumn'
 import { QuoteCustomerResponse } from './QuoteCustomerResponse'
 import { VehicleCombobox } from './VehicleCombobox'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import type { LaborGuideJob } from '@/features/vehicles/Components/labor-guide/LaborGuideDialog'
 import type { WarrantyTexts } from '@/lib/warranty'
 
 const LG_BREAKPOINT = 1024
@@ -212,6 +213,23 @@ export function QuotePageClient({
     [defaultLaborRate, state]
   )
 
+  // A job from the labor guide: its name and book hours at the workshop's rate.
+  const handleAddGuideJob = useCallback(
+    (job: LaborGuideJob) => {
+      state.addLaborBulk([
+        {
+          description: job.description,
+          hours: job.hours,
+          rate: defaultLaborRate,
+          total: job.hours * defaultLaborRate,
+          pricingType: 'hourly',
+          excluded: false,
+        },
+      ])
+    },
+    [defaultLaborRate, state]
+  )
+
   const handleDescriptionChange = useCallback(
     (v: string) => {
       state.setDescription(v)
@@ -265,6 +283,8 @@ export function QuotePageClient({
         onAddService={state.addService}
         hasPresets={laborPresets.length > 0}
         onOpenPresets={() => setShowPresetPicker(true)}
+        vehicleId={state.vehicleId || null}
+        onAddGuideJob={handleAddGuideJob}
         t={t}
       />
       <QuoteNotesEditor

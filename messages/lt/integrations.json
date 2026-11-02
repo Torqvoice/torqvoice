@@ -30,6 +30,7 @@
     "automation": "Automatizavimas",
     "storage": "Failai",
     "registry": "Transporto priemonių registras",
+    "repair": "Remonto duomenys",
     "other": "Kita",
     "ai": "DI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Atsarginių kopijų paskirties vieta"
+    },
+    "repair": {
+      "labor": "Darbo laiko normos užsakymuose ir pasiūlymuose",
+      "fluids": "Skysčių tipai ir talpos"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Nuolat atnaujinti atšaukimų ir skundų duomenis visoms šių dirbtuvių transporto priemonėms",
         "refreshFleetHelp": "Kartą per dieną modeliai, neatnaujinti per pastarąją savaitę, užklausiami iš naujo, kad transporto priemonės puslapiui niekada nereikėtų laukti, o naujas atšaukimas pasirodytų per savaitę. Siunčiami tik markė, modelis ir metai."
       }
+    },
+    "openlaborproject": {
+      "description": "Peržiūrėkite darbo laiko normas ir skysčių talpas transporto priemonei darbo užsakyme ar pasiūlyme ir vienu paspaudimu pridėkite darbo valandas kaip darbo eilutę. Apima JAV rinkos transporto priemones. Prie kiekvienos reikšmės nurodyta, kiek Open Labor Project ja tikras, ir daug jų yra DI sugeneruoti įverčiai, nepatikrinti pagal gamintojo duomenis, todėl patikrinkite juos prieš teikdami pasiūlymą klientui. Užklausos naudoja paties serviso API raktą.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Raktą užsisakykite openlaborproject.com skiltyje Developers; jis atsiunčiamas el. paštu. Nemokamas raktas turi 10 užklausų per dieną ir rodo valandas po vieną darbą. Nuo Builder plano limitas didesnis, o visų darbų valandos rodomos iš karto."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Kalba į tekstą",

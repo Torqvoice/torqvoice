@@ -1,0 +1,17 @@
+{
+  "data": null,
+  "meta": {
+    "timestamp": "2026-11-02T20:15:35.532Z"
+  },
+  "error": {
+    "code": "MODEL_OR_VARIANT_NOT_FOUND",
+    "message": "No labor times matched. Check the model slug — valid slugs for this make are in error.availableModels. Resolve slugs programmatically via /api/v1/vehicles.",
+    "availableModels": [
+      "aerostar",
+      "aspire",
+      "bronco",
+      "bronco-ii",
+      "bronco-sport"
+    ]
+  }
+}

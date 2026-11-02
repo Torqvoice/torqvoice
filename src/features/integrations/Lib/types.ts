@@ -22,6 +22,7 @@ export type IntegrationCategory =
   | 'automation'
   | 'storage'
   | 'registry'
+  | 'repair'
   | 'other'
 
 export type ConnectionStatus = 'pending' | 'active' | 'error' | 'disconnected'
@@ -449,6 +450,81 @@ export interface VehicleSafetyReport {
   url: string
 }
 
+/**
+ * One engine and drivetrain of a model, as a repair data source tells them
+ * apart. Engine and drivetrain are the guide's own ids, passed back to ask
+ * about that variant alone.
+ */
+export interface RepairDataVariantRef {
+  engineId: string
+  drivetrain: string | null
+  /** The guide's id for this exact variant, when it has one. */
+  vehicleId: string | null
+}
+
+/**
+ * What a repair data source is asked about: the model, and the VIN when the
+ * vehicle has one. `variant` narrows to one engine and drivetrain, `item` to
+ * one job or fluid system, for a key that unlocks values one at a time.
+ */
+export interface RepairDataQuery {
+  make: string
+  model: string
+  year: number
+  vin?: string
+  variant?: RepairDataVariantRef
+  item?: string
+}
+
+/** How sure the source is of a value: checked against the maker's data, verified, likely, or a guess. */
+export type RepairDataConfidence = 'oem' | 'high' | 'medium' | 'estimated'
+
+/** A job's book time. */
+export interface LaborTime {
+  /** The source's id for the job, to ask for it alone. */
+  id: string
+  name: string
+  category: string
+  /** Book hours; null while the key does not unlock this job. */
+  hours: number | null
+  low: number | null
+  high: number | null
+  confidence: RepairDataConfidence | null
+  /** The key lists the job but not its hours; ask for it alone to get them. */
+  locked: boolean
+}
+
+/** What one system takes, and how much. */
+export interface FluidSpec {
+  /** The source's id for the system, to ask for it alone. */
+  id: string
+  system: string
+  fluid: string | null
+  spec: string | null
+  capacityLiters: number | null
+  capacityQuarts: number | null
+  drainRefillLiters: number | null
+  drainRefillQuarts: number | null
+  intervalKm: number | null
+  intervalMiles: number | null
+  notes: string | null
+  confidence: RepairDataConfidence | null
+  locked: boolean
+}
+
+export interface RepairDataVariant<T> extends RepairDataVariantRef {
+  /** The engine as the source names it, such as "5.0L V8 Coyote". */
+  engine: string
+  items: T[]
+}
+
+/** What a source lists for one model year, per engine and drivetrain. */
+export interface RepairDataAnswer<T> {
+  make: string
+  model: string
+  variants: RepairDataVariant<T>[]
+}
+
 export interface ConnectorServer {
   manifest: ConnectorManifest
   /** After connecting: who the account is, shown on the connection page. */
@@ -500,6 +576,20 @@ export interface ConnectorServer {
    * the authority has no record of the model.
    */
   vehicleSafety?(ctx: ConnectorContext, query: VehicleSafetyQuery): Promise<VehicleSafetyReport>
+  /**
+   * Book times for a model year, for connectors with the 'repair.labor'
+   * capability. Synchronous because a dialog is waiting on it. Null when the
+   * source has no such vehicle.
+   */
+  laborTimes?(
+    ctx: ConnectorContext,
+    query: RepairDataQuery
+  ): Promise<RepairDataAnswer<LaborTime> | null>
+  /** Fluid types and capacities, for connectors with the 'repair.fluids' capability. */
+  fluidSpecs?(
+    ctx: ConnectorContext,
+    query: RepairDataQuery
+  ): Promise<RepairDataAnswer<FluidSpec> | null>
   jobs: Record<string, JobHandler>
   /** Inbound webhook handling, where the vendor pushes. */
   webhook?: {

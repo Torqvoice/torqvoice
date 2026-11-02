@@ -21,6 +21,7 @@ import { manifest as nhtsa } from './nhtsa/manifest'
 import { manifest as openai } from './openai/manifest'
 import { manifest as openaiCompatible } from './openai-compatible/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
+import { manifest as openLaborProject } from './openlaborproject/manifest'
 import { manifest as paypal } from './paypal/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as quickbooks } from './quickbooks/manifest'
@@ -61,6 +62,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: rdw, load: () => import('./rdw/server') },
   { manifest: regcheck, load: () => import('./regcheck/server') },
   { manifest: nhtsa, load: () => import('./nhtsa/server') },
+  { manifest: openLaborProject, load: () => import('./openlaborproject/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },

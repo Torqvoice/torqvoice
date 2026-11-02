@@ -1,0 +1,253 @@
+{
+  "data": {
+    "make": "Honda",
+    "model": "Civic",
+    "engines": [
+      {
+        "engine": "1.5L I4 Turbo",
+        "engineSlug": "1.5l-i4-turbo",
+        "drivetrain": "fwd",
+        "yearRange": "2020-2020",
+        "fluidSpecs": [
+          {
+            "system": "A/C Refrigerant",
+            "systemType": "ac_refrigerant",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Brake Fluid",
+            "systemType": "brake",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Coolant",
+            "systemType": "coolant",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Engine Oil",
+            "systemType": "engine_oil",
+            "fluidType": "0W-20 full synthetic",
+            "viscosityOptions": [
+              "0W-20"
+            ],
+            "fluidSpec": "API SN or higher",
+            "capacityQuarts": 3.7,
+            "capacityLiters": 3.5,
+            "drainRefillQuarts": 3.7,
+            "drainRefillLiters": 3.5,
+            "changeIntervalMiles": 5000,
+            "changeIntervalKm": 8045,
+            "notes": "Capacity includes oil filter replacement",
+            "confidence": "estimated"
+          },
+          {
+            "system": "Power Steering",
+            "systemType": "power_steering",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Automatic Transmission",
+            "systemType": "transmission_auto",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Washer Fluid",
+            "systemType": "washer",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          }
+        ]
+      },
+      {
+        "engine": "2.0L I4",
+        "engineSlug": "2.0l-i4",
+        "drivetrain": "fwd",
+        "yearRange": "2020-2020",
+        "fluidSpecs": [
+          {
+            "system": "A/C Refrigerant",
+            "systemType": "ac_refrigerant",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Brake Fluid",
+            "systemType": "brake",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Coolant",
+            "systemType": "coolant",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Engine Oil",
+            "systemType": "engine_oil",
+            "fluidType": null,
+            "viscosityOptions": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Power Steering",
+            "systemType": "power_steering",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Automatic Transmission",
+            "systemType": "transmission_auto",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "system": "Washer Fluid",
+            "systemType": "washer",
+            "fluidType": null,
+            "fluidSpec": null,
+            "capacityQuarts": null,
+            "capacityLiters": null,
+            "drainRefillQuarts": null,
+            "drainRefillLiters": null,
+            "changeIntervalMiles": null,
+            "changeIntervalKm": null,
+            "notes": null,
+            "confidence": null,
+            "locked": true
+          }
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "engineCount": 2,
+    "totalSpecs": 14,
+    "region": "US",
+    "confidenceCounts": {
+      "high": 2,
+      "estimated": 12
+    },
+    "dataQualityNote": "12 of 14 fluid specs served are unverified (AI-derived from the platform and not yet checked against factory data for this exact vehicle). Check each row's confidence, or pass min_confidence=high to receive only verified data.",
+    "timestamp": "2026-11-02T20:10:39.515Z",
+    "freeTier": {
+      "locked": 13,
+      "vehicle": "2020 Honda Civic"
+    }
+  },
+  "error": null
+}

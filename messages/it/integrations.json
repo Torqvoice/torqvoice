@@ -30,6 +30,7 @@
     "automation": "Automazione",
     "storage": "File",
     "registry": "Registro veicoli",
+    "repair": "Dati di riparazione",
     "other": "Altro",
     "ai": "IA"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Destinazione dei backup"
+    },
+    "repair": {
+      "labor": "Tempi di manodopera su ordini di lavoro e preventivi",
+      "fluids": "Tipi e capacità dei fluidi"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Tieni aggiornati i dati su richiami e reclami per ogni veicolo di questa officina",
         "refreshFleetHelp": "Una volta al giorno i modelli non aggiornati nell'ultima settimana vengono richiesti di nuovo, così la pagina del veicolo non attende mai e un nuovo richiamo compare entro una settimana. Vengono inviati solo marca, modello e anno."
       }
+    },
+    "openlaborproject": {
+      "description": "Consulta i tempi di manodopera e le capacità dei fluidi del veicolo da un ordine di lavoro o da un preventivo, e aggiungi le ore di un lavoro come riga di manodopera con un clic. Copre i veicoli del mercato statunitense. Ogni valore indica quanto Open Labor Project ne è sicuro, e molti sono stime generate dall'IA non verificate con i dati del costruttore, quindi controllale prima di fare un preventivo a un cliente. Le ricerche usano la chiave API dell'officina.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Richiedi una chiave su openlaborproject.com alla voce Developers; arriva via email. Una chiave gratuita ha 10 chiamate al giorno e mostra le ore un lavoro alla volta. Dal piano Builder in su il limite sale e le ore di tutti i lavori compaiono insieme."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Da voce a testo",

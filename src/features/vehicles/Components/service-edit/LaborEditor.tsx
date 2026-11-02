@@ -27,6 +27,8 @@ import { useFormatCurrency, useCurrencySettings } from '@/components/currency-se
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import { makeEmptyLabor, makeEmptyService } from './form-types'
+import { LaborGuideButton } from '../labor-guide/LaborGuideButton'
+import type { LaborGuideJob } from '../labor-guide/LaborGuideDialog'
 import {
   DndContext,
   closestCenter,
@@ -57,6 +59,10 @@ interface LaborEditorProps {
   onAddFinding?: () => void
   openObservationsCount?: number
   onShowExistingObservations?: () => void
+  /** The job's vehicle, for the labor guide. Counter sales have none and get no guide. */
+  vehicleId?: string | null
+  /** "2018 Ford F-150", shown in the labor guide. */
+  vehicleLabel?: string
 }
 
 function SortableLaborRow({
@@ -213,6 +219,8 @@ export function LaborEditor({
   onAddFinding,
   openObservationsCount = 0,
   onShowExistingObservations,
+  vehicleId,
+  vehicleLabel,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
   const modern = useModernWorkOrder()
@@ -268,6 +276,25 @@ export function LaborEditor({
     setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])
   }, [setLaborItems, defaultLaborRate])
 
+  // A job from the labor guide: its name and book hours at the workshop's
+  // rate, on top like every other line added from the toolbar.
+  const addGuideJob = useCallback(
+    (job: LaborGuideJob) => {
+      const key = `labor-${keyCounterRef.current++}`
+      keysRef.current = [key, ...keysRef.current]
+      setLaborItems((prev) => [
+        {
+          ...makeEmptyLabor(defaultLaborRate),
+          description: job.description,
+          hours: job.hours,
+          total: job.hours * defaultLaborRate,
+        },
+        ...prev,
+      ])
+    },
+    [setLaborItems, defaultLaborRate]
+  )
+
   const addServiceAtEnd = useCallback(() => {
     const key = `labor-${keyCounterRef.current++}`
     keysRef.current = [...keysRef.current, key]
@@ -300,6 +327,9 @@ export function LaborEditor({
     <div className="flex flex-wrap gap-1.5">
       {hasPresets && onOpenPresets && (
         <IconActionButton label={t('fromPresets')} icon={Layers} onClick={onOpenPresets} />
+      )}
+      {vehicleId && (
+        <LaborGuideButton vehicleId={vehicleId} vehicleLabel={vehicleLabel} onAdd={addGuideJob} />
       )}
       <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
       <IconActionButton label={t('addService')} icon={Wrench} onClick={addServiceAtStart} />

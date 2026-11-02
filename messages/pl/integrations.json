@@ -30,6 +30,7 @@
     "automation": "Automatyzacja",
     "storage": "Pliki",
     "registry": "Rejestr pojazdów",
+    "repair": "Dane naprawcze",
     "other": "Inne",
     "ai": "SI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Miejsce docelowe kopii zapasowych"
+    },
+    "repair": {
+      "labor": "Normy czasowe w zleceniach i wycenach",
+      "fluids": "Rodzaje i pojemności płynów"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Utrzymuj aktualne dane o akcjach serwisowych i skargach dla każdego pojazdu w tym warsztacie",
         "refreshFleetHelp": "Raz dziennie modele nieodświeżone w ostatnim tygodniu są pobierane ponownie, aby strona pojazdu nigdy nie czekała, a nowa akcja serwisowa pojawiła się w ciągu tygodnia. Wysyłane są tylko marka, model i rocznik."
       }
+    },
+    "openlaborproject": {
+      "description": "Sprawdzaj normy czasowe i pojemności płynów dla pojazdu w zleceniu lub wycenie i jednym kliknięciem dodawaj godziny czynności jako pozycję robocizny. Obejmuje pojazdy z rynku amerykańskiego. Przy każdej wartości widać, jak pewny jest jej Open Labor Project, a wiele z nich to szacunki wygenerowane przez AI i niesprawdzone z danymi producenta, więc sprawdź je przed przygotowaniem wyceny dla klienta. Zapytania korzystają z własnego klucza API warsztatu.",
+      "fields": {
+        "apiKey": "Klucz API",
+        "apiKeyHelp": "Poproś o klucz na openlaborproject.com w sekcji Developers; przyjdzie e-mailem. Darmowy klucz ma 10 zapytań dziennie i pokazuje godziny jednej czynności naraz. Plan Builder i wyższe podnoszą limit i pokazują godziny wszystkich czynności od razu."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Mowa na tekst",

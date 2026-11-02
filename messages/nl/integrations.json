@@ -30,6 +30,7 @@
     "automation": "Automatisering",
     "storage": "Bestanden",
     "registry": "Voertuigregister",
+    "repair": "Reparatiegegevens",
     "other": "Overig",
     "ai": "AI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Back-upbestemming"
+    },
+    "repair": {
+      "labor": "Arbeidstijden op werkorders en offertes",
+      "fluids": "Vloeistofsoorten en inhoud"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Terugroep- en klachtgegevens actueel houden voor elk voertuig in deze werkplaats",
         "refreshFleetHelp": "Eén keer per dag worden modellen die de afgelopen week niet zijn vernieuwd opnieuw opgehaald, zodat de voertuigpagina nooit wacht en een nieuwe terugroepactie binnen een week zichtbaar is. Alleen merk, model en bouwjaar worden verstuurd."
       }
+    },
+    "openlaborproject": {
+      "description": "Zoek standaardtijden en vloeistofinhoud op voor het voertuig op een werkorder of offerte, en voeg de uren van een klus met één klik toe als arbeidsregel. Dekt voertuigen voor de Amerikaanse markt. Bij elke waarde staat hoe zeker Open Labor Project ervan is, en veel zijn door AI gemaakte schattingen die niet zijn gecontroleerd aan de gegevens van de fabrikant. Controleer ze dus voordat u een klant een offerte geeft. Opzoekingen gebruiken de eigen API-sleutel van de werkplaats.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Vraag een sleutel aan op openlaborproject.com onder Developers; u krijgt hem per e-mail. Een gratis sleutel heeft 10 aanroepen per dag en toont de uren van één klus tegelijk. Vanaf het Builder-abonnement is de limiet hoger en ziet u alle uren in één keer."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Spraak naar tekst",

@@ -30,6 +30,7 @@
     "automation": "Automatisering",
     "storage": "Filer",
     "registry": "Kjøretøyregister",
+    "repair": "Verkstedsdata",
     "other": "Annet",
     "ai": "KI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Mål for sikkerhetskopier"
+    },
+    "repair": {
+      "labor": "Normtider på arbeidsordrer og tilbud",
+      "fluids": "Væsketyper og mengder"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Hold tilbakekallings- og klagedata oppdatert for alle kjøretøy i dette verkstedet",
         "refreshFleetHelp": "En gang om dagen hentes modeller som ikke er oppdatert siste uke på nytt, så kjøretøysiden aldri venter og en ny tilbakekalling vises innen en uke. Bare merke, modell og år sendes."
       }
+    },
+    "openlaborproject": {
+      "description": "Slå opp normtider og væskemengder for kjøretøyet på en arbeidsordre eller et tilbud, og legg til timene for en jobb som arbeidslinje med ett klikk. Dekker kjøretøy for det amerikanske markedet. Hver verdi viser hvor sikker Open Labor Project er, og mange er anslag laget med KI som ikke er sjekket mot produsentens data, så sjekk dem før du gir kunden et tilbud. Oppslagene bruker verkstedets egen API-nøkkel.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Be om en nøkkel på openlaborproject.com under Developers; den kommer på e-post. En gratis nøkkel har 10 kall per dag og viser timer for én jobb om gangen. Builder-abonnementet og oppover gir høyere grense og viser timene for alle jobber på en gang."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Tale til tekst",

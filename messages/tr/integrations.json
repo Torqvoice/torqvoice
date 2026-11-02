@@ -30,6 +30,7 @@
     "automation": "Otomasyon",
     "storage": "Dosyalar",
     "registry": "Araç kayıt sistemi",
+    "repair": "Onarım verileri",
     "other": "Diğer",
     "ai": "Yapay zekâ"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Yedekleme hedefi"
+    },
+    "repair": {
+      "labor": "İş emirlerinde ve tekliflerde işçilik süreleri",
+      "fluids": "Sıvı türleri ve kapasiteleri"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Bu atölyedeki her araç için geri çağırma ve şikâyet verilerini güncel tut",
         "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
       }
+    },
+    "openlaborproject": {
+      "description": "İş emri veya teklifteki araç için işçilik sürelerine ve sıvı kapasitelerine bakın, bir işin saatlerini tek tıkla işçilik satırı olarak ekleyin. ABD pazarı araçlarını kapsar. Her değer Open Labor Project'in ondan ne kadar emin olduğunu gösterir ve birçoğu yapay zekâ ile üretilmiş, üretici verileriyle karşılaştırılmamış tahminlerdir; bu yüzden müşteriye fiyat vermeden önce kontrol edin. Sorgular atölyenin kendi API anahtarını kullanır.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "openlaborproject.com adresinde Developers bölümünden anahtar isteyin; e-postayla gelir. Ücretsiz anahtarın günde 10 sorgu hakkı vardır ve saatleri her seferinde tek bir iş için gösterir. Builder planı ve üstü limiti artırır ve tüm işlerin saatlerini bir kerede gösterir."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Konuşmadan metne",

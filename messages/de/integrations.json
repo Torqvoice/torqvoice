@@ -30,6 +30,7 @@
     "automation": "Automatisierung",
     "storage": "Dateien",
     "registry": "Fahrzeugregister",
+    "repair": "Reparaturdaten",
     "other": "Sonstiges",
     "ai": "KI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Sicherungsziel"
+    },
+    "repair": {
+      "labor": "Arbeitszeiten in Aufträgen und Angeboten",
+      "fluids": "Flüssigkeiten und Füllmengen"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Rückruf- und Beschwerdedaten für jedes Fahrzeug dieser Werkstatt aktuell halten",
         "refreshFleetHelp": "Einmal täglich werden Modelle, die in der letzten Woche nicht aktualisiert wurden, erneut abgerufen, damit die Fahrzeugseite nie wartet und ein neuer Rückruf innerhalb einer Woche nach Einreichung erscheint. Nur Marke, Modell und Jahr werden gesendet."
       }
+    },
+    "openlaborproject": {
+      "description": "Schlagen Sie Arbeitswerte und Füllmengen für das Fahrzeug in einem Auftrag oder Angebot nach und übernehmen Sie die Stunden einer Arbeit mit einem Klick als Arbeitsposition. Deckt Fahrzeuge für den US-Markt ab. Jeder Wert zeigt, wie sicher sich Open Labor Project ist, und viele sind KI-generierte Schätzungen, die nicht mit Herstellerangaben abgeglichen sind. Prüfen Sie sie daher, bevor Sie einem Kunden ein Angebot machen. Abfragen laufen über den eigenen API-Schlüssel der Werkstatt.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Beantragen Sie einen Schlüssel auf openlaborproject.com unter Developers; er kommt per E-Mail. Ein kostenloser Schlüssel hat 10 Abrufe pro Tag und zeigt die Stunden jeweils einer Arbeit. Ab dem Builder-Tarif steigt das Limit, und die Stunden aller Arbeiten werden auf einmal angezeigt."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Sprache zu Text",

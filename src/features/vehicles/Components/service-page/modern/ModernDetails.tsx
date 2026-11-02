@@ -365,6 +365,12 @@ export function ModernDetails(props: ModernDetailsProps) {
                     onAddFinding={props.onAddFinding}
                     openObservationsCount={props.openObservationsCount}
                     onShowExistingObservations={props.onShowExistingObservations}
+                    vehicleId={record.vehicle?.id ?? null}
+                    vehicleLabel={
+                      record.vehicle
+                        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+                        : undefined
+                    }
                   />
 
                   <PartsEditor

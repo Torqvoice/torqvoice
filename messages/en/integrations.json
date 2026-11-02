@@ -30,6 +30,7 @@
     "automation": "Automation",
     "storage": "Files",
     "registry": "Vehicle registry",
+    "repair": "Repair data",
     "other": "Other",
     "ai": "AI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Backup destination"
+    },
+    "repair": {
+      "labor": "Labor times on work orders and quotes",
+      "fluids": "Fluid types and capacities"
     }
   },
   "statuses": {
@@ -776,6 +781,14 @@
         "refreshFleet": "Keep recall and complaint data fresh for every vehicle in this workshop",
         "refreshFleetHelp": "Once a day, models not refreshed in the last week are fetched again, so the vehicle page never waits and a new recall shows within a week of being filed. Only make, model and year are sent."
       }
+    },
+    "openlaborproject": {
+      "description": "Look up book labor times and fluid capacities for the vehicle on a work order or quote, and add a job's hours as a labor line in one click. Covers US-market vehicles. Each value shows how sure Open Labor Project is of it, and many are AI-derived estimates that are not checked against a maker's guide, so check them before you quote a customer. Lookups use the workshop's own API key.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Request a key on openlaborproject.com under Developers; it arrives by email. A free key has 10 calls a day and shows hours one job at a time. The Builder plan and up raise the limit and show every job's hours at once."
+      },
+      "settings": {}
     },
     "speech-to-text": {
       "name": "Speech to text",

@@ -27,6 +27,7 @@ const CATEGORY_ORDER: IntegrationCategory[] = [
   'automation',
   'storage',
   'registry',
+  'repair',
   'other',
 ]
 

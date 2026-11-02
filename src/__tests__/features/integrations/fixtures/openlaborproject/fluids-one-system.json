@@ -1,0 +1,39 @@
+{
+  "data": {
+    "vehicle": {
+      "make": "Honda",
+      "model": "Civic",
+      "yearRange": "2020-2020",
+      "engine": "2.0L I4",
+      "fuelType": "gas",
+      "drivetrain": "fwd"
+    },
+    "fluidSpecs": [
+      {
+        "system": "Coolant",
+        "systemType": "coolant",
+        "fluidType": "Honda Type 2 coolant (blue) pre-diluted",
+        "fluidSpec": "Honda Type 2",
+        "capacityQuarts": 5.9,
+        "capacityLiters": 5.58,
+        "drainRefillQuarts": 5.3,
+        "drainRefillLiters": 5.01,
+        "changeIntervalMiles": 120000,
+        "changeIntervalKm": 193080,
+        "notes": "First change at 120k miles, then every 60k miles. Use only Honda Type 2 coolant",
+        "confidence": "estimated"
+      }
+    ]
+  },
+  "meta": {
+    "count": 1,
+    "region": "US",
+    "confidenceCounts": {
+      "estimated": 1
+    },
+    "dataQualityNote": "1 of 1 fluid specs served are unverified (AI-derived from the platform and not yet checked against factory data for this exact vehicle). Check each row's confidence, or pass min_confidence=high to receive only verified data.",
+    "systemQuery": "coolant",
+    "timestamp": "2026-11-02T20:15:35.789Z"
+  },
+  "error": null
+}

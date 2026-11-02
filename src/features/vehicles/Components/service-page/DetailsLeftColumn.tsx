@@ -169,6 +169,12 @@ export function DetailsLeftColumn({
         onAddFinding={onAddFinding}
         openObservationsCount={openObservationsCount}
         onShowExistingObservations={onShowExistingObservations}
+        vehicleId={record.vehicle?.id ?? null}
+        vehicleLabel={
+          record.vehicle
+            ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+            : undefined
+        }
       />
       <JobClockSection
         serviceRecordId={record.id}
