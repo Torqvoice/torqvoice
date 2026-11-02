@@ -1,7 +1,6 @@
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { safeRedirectPath } from '@/lib/safe-redirect'
-import { auth } from '@/lib/auth'
+import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { SetupWizard } from '@/features/onboarding/Components/setup/SetupWizard'
 import { SingleWorkshopNotice } from '@/features/onboarding/Components/SingleWorkshopNotice'
@@ -14,7 +13,7 @@ export default async function OnboardingPage({
 }) {
   const params = await searchParams
   const redirectTo = params.redirect ? safeRedirectPath(params.redirect) : undefined
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getCachedSession()
 
   if (!session?.user?.id) {
     redirect('/auth/sign-in')

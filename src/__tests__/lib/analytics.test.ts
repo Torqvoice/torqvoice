@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const posthog = vi.hoisted(() => ({
   capture: vi.fn(),
+  captureException: vi.fn(),
   register: vi.fn(),
   identify: vi.fn(),
   group: vi.fn(),
@@ -72,6 +73,25 @@ describe('analytics', () => {
     // Were it ever to start, the backlog is capped rather than a hundred views.
     analyticsStarted()
     expect(posthog.capture).toHaveBeenCalledTimes(20)
+  })
+
+  it('holds an error a page reports before PostHog starts, then sends it with its details', async () => {
+    const { reportError, analyticsStarted } = await freshAnalytics()
+    const error = new Error('Cannot read properties of undefined')
+    reportError(error, { error_page: 'page', digest: null })
+    expect(posthog.captureException).not.toHaveBeenCalled()
+
+    analyticsStarted()
+    expect(posthog.captureException).toHaveBeenCalledWith(error, {
+      error_page: 'page',
+      digest: null,
+    })
+
+    reportError(error, { error_page: 'root', digest: '123' })
+    expect(posthog.captureException).toHaveBeenLastCalledWith(error, {
+      error_page: 'root',
+      digest: '123',
+    })
   })
 
   it('ties the browser to the account and workshop, held like any event', async () => {

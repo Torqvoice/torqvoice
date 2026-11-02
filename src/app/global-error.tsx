@@ -1,16 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
+import { reportError } from '@/lib/analytics'
 
-export default function GlobalError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string }
-  reset: () => void
-}) {
+export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
   useEffect(() => {
     console.error(error)
+    // Sent only if PostHog started before the root layout broke
+    reportError(error, { error_page: 'root', digest: error.digest ?? null })
   }, [error])
 
   return (
@@ -69,7 +66,9 @@ export default function GlobalError({
             The application encountered a fatal error. Please try refreshing the page.
           </p>
           <button
-            onClick={reset}
+            // A full reload: the root layout itself broke, and reset() would
+            // only draw it again from the same state
+            onClick={() => window.location.reload()}
             style={{
               padding: '10px 24px',
               fontSize: 14,

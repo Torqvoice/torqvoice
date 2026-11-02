@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { db } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { getCachedSession } from '@/lib/cached-session'
 import { SignInForm } from './sign-in-form'
 import { isDemoMode } from '@/lib/demo'
 import { isCloudMode } from '@/lib/features'
@@ -19,7 +18,7 @@ export default async function SignInPage({
   const redirectTo = params.redirect ? safeRedirectPath(params.redirect) : undefined
 
   const [session, regSetting] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getCachedSession(),
     isDemoMode
       ? null
       : db.systemSetting.findUnique({

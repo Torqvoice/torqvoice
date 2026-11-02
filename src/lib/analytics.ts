@@ -61,6 +61,7 @@ type Properties = Record<string, string | number | boolean | null>
 
 type Pending =
   | { kind: 'capture'; event: AnalyticsEvent; properties?: Properties }
+  | { kind: 'exception'; error: unknown; properties?: Properties }
   | { kind: 'register'; properties: Properties }
   | { kind: 'unregister'; names: string[] }
   | { kind: 'identify'; userId: string; organizationId: string }
@@ -80,6 +81,19 @@ function hold(item: Pending) {
 export function track(event: AnalyticsEvent, properties?: Properties): void {
   if (ready) posthog.capture(event, properties)
   else hold({ kind: 'capture', event, properties })
+}
+
+/**
+ * Sends an error a person was shown, with its stack, or holds it until
+ * PostHog has started.
+ *
+ * For errors the app catches itself, the error pages above all. PostHog's own
+ * exception capture listens for uncaught errors, and an error page is React
+ * catching one, so without this nobody learns which page broke or why.
+ */
+export function reportError(error: unknown, properties?: Properties): void {
+  if (ready) posthog.captureException(error, properties)
+  else hold({ kind: 'exception', error, properties })
 }
 
 /**
@@ -132,6 +146,7 @@ export function analyticsStarted(): void {
     else if (item.kind === 'unregister') for (const name of item.names) posthog.unregister(name)
     else if (item.kind === 'identify') sendIdentify(item.userId, item.organizationId)
     else if (item.kind === 'reset') posthog.reset()
+    else if (item.kind === 'exception') posthog.captureException(item.error, item.properties)
     else posthog.capture(item.event, item.properties)
   }
 }

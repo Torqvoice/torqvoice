@@ -4,8 +4,20 @@ import { auth } from './auth'
 import { db } from './db'
 import { SCOPED_SESSION_MESSAGE, sessionOrganizationScope } from './session-scope'
 
+/**
+ * The session, read without extending it.
+ *
+ * Once a session is a day old, better-auth extends it on the next read: a new
+ * expiry in the database and a new cookie. A page render cannot set cookies,
+ * so a read here saved the new expiry and quietly lost the cookie. Every later
+ * read then found the session already extended, and the cookie still ran out
+ * a week after sign-in: someone using the app every day was signed out once a
+ * week. Extending is left to requests that can set the cookie, the open tab's
+ * ping (/api/protected/ping, on load and every minute) and the session lookup
+ * in the browser.
+ */
 export const getCachedSession = cache(async () => {
-  return auth.api.getSession({ headers: await headers() })
+  return auth.api.getSession({ headers: await headers(), query: { disableRefresh: true } })
 })
 
 export const getCachedMembership = cache(async (userId: string) => {
