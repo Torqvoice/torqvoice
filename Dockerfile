@@ -29,6 +29,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Optional: without the secret the build makes its own key, as before. Next
 # writes the key into the build output, so it is not secret once built; never
 # reuse the key a deployment sets at run time (NEXT_SERVER_ACTIONS_ENCRYPTION_KEY).
+#
+# A secret is left out of the build cache, so a new key on unchanged source
+# would reuse the last build and keep its old IDs. The image workflows pass a
+# fingerprint of the key here, and a new fingerprint means a fresh build.
+ARG NEXT_ACTIONS_FINGERPRINT=none
 RUN --mount=type=secret,id=next_actions_key \
     if [ -s /run/secrets/next_actions_key ]; then \
       export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$(cat /run/secrets/next_actions_key)"; \
