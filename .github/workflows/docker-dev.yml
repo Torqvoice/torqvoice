@@ -40,6 +40,14 @@ jobs:
           tags: |
             type=raw,value=dev-${{ steps.sha.outputs.short }}
 
+      # A short hash of the server action key, so a new key rebuilds Next
+      # instead of reusing a cached build (see the Dockerfile).
+      - name: Fingerprint the server action key
+        id: actions_key
+        env:
+          KEY: ${{ secrets.NEXT_SERVER_ACTIONS_BUILD_KEY }}
+        run: echo "id=$(printf '%s' "$KEY" | sha256sum | cut -c1-12)" >> "$GITHUB_OUTPUT"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -49,5 +57,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APP_VERSION=dev-${{ steps.sha.outputs.short }}
+            NEXT_ACTIONS_FINGERPRINT=${{ steps.actions_key.outputs.id }}
+          # Keeps server action IDs the same from build to build (see the Dockerfile).
+          secrets: |
+            next_actions_key=${{ secrets.NEXT_SERVER_ACTIONS_BUILD_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
