@@ -1,12 +1,27 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ConnectorContext, FluidSpec, LaborTime } from '@/features/integrations/Lib/types'
+
+const { deleteMany } = vi.hoisted(() => ({ deleteMany: vi.fn(async () => ({ count: 0 })) }))
+vi.mock('@/lib/db', () => ({ db: { repairDataCache: { deleteMany } } }))
+vi.mock('next-intl/server', () => ({ getTranslations: vi.fn(async () => (k: string) => k) }))
+
+import { CHECK_PLAN_JOB } from '@/features/integrations/Lib/repair-data-contract'
+import {
+  type ConnectorContext,
+  type FluidSpec,
+  type LaborTime,
+  RepairDataKeyRejected,
+} from '@/features/integrations/Lib/types'
+import { SERVER_KEY_ENV } from '@/integrations/openlaborproject/manifest'
 import {
   confidenceOf,
   connector,
+  keepAllowed,
   mapFluidSpec,
   mapLaborTime,
+  modelSlug,
+  resolveModel,
   slug,
   toAnswer,
 } from '@/integrations/openlaborproject/server'
@@ -60,11 +75,11 @@ function ctx(): ConnectorContext {
   } as unknown as ConnectorContext
 }
 
-function reply(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  })
+/** A reply as the service sends it; `tier` is the plan it names in x-ratelimit-tier. */
+function reply(status: number, body: unknown, tier: string | null = 'hobbyist'): Response {
+  const headers: Record<string, string> = { 'content-type': 'application/json' }
+  if (tier) headers['x-ratelimit-tier'] = tier
+  return new Response(JSON.stringify(body), { status, headers })
 }
 
 const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>()
@@ -80,6 +95,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  vi.unstubAllEnvs()
 })
 
 describe('mapping', () => {
@@ -209,8 +225,9 @@ describe('labor times', () => {
 
   it('asks by make, model and year with the key in a header', async () => {
     fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-model')))
-    const answer = await connector.laborTimes?.(ctx(), query)
-    expect(answer?.variants).toHaveLength(3)
+    const res = await connector.laborTimes?.(ctx(), query)
+    expect(res?.answer?.variants).toHaveLength(3)
+    expect(res?.answer).toMatchObject({ matchedBy: 'model', region: 'US' })
     const url = urlOf(0)
     expect(url.pathname).toBe('/api/v1/labor-times')
     expect(Object.fromEntries(url.searchParams)).toEqual({
@@ -228,8 +245,9 @@ describe('labor times', () => {
       .mockResolvedValueOnce(reply(404, fixture('not-found')))
       .mockResolvedValueOnce(reply(200, fixture('labor-one-job')))
     const c = ctx()
-    const answer = await connector.laborTimes?.(c, { ...query, model: 'F150', vin: VIN })
-    expect(answer?.variants).toHaveLength(1)
+    const res = await connector.laborTimes?.(c, { ...query, model: 'F150', vin: VIN })
+    expect(res?.answer?.variants).toHaveLength(1)
+    expect(res?.answer?.matchedBy).toBe('vin')
     expect(urlOf(0).searchParams.get('model')).toBe('f150')
     expect(Object.fromEntries(urlOf(1).searchParams)).toEqual({ vin: VIN })
     // The VIN identifies one vehicle; the log has make, model and year only.
@@ -238,13 +256,16 @@ describe('labor times', () => {
 
   it('has no answer for a model it does not know and no VIN to fall back on', async () => {
     fetchMock.mockResolvedValueOnce(reply(404, fixture('not-found')))
-    expect(await connector.laborTimes?.(ctx(), { ...query, model: 'Nonexistent' })).toBeNull()
+    expect(await connector.laborTimes?.(ctx(), { ...query, model: 'Nonexistent' })).toEqual({
+      answer: null,
+      keep: false,
+    })
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
   it('leaves out a VIN that cannot be one', async () => {
     fetchMock.mockResolvedValueOnce(reply(404, fixture('not-found')))
-    expect(await connector.laborTimes?.(ctx(), { ...query, vin: 'NOT-A-VIN' })).toBeNull()
+    expect((await connector.laborTimes?.(ctx(), { ...query, vin: 'NOT-A-VIN' }))?.answer).toBeNull()
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
@@ -266,11 +287,11 @@ describe('labor times', () => {
     })
   })
 
-  it('says so when the key is refused', async () => {
-    fetchMock.mockResolvedValueOnce(reply(401, BAD_KEY))
-    await expect(connector.laborTimes?.(ctx(), query)).rejects.toThrow(
-      'Open Labor Project rejected the API key'
-    )
+  it('says so when the key is refused, as the error the stored answers are deleted on', async () => {
+    fetchMock.mockResolvedValueOnce(reply(401, BAD_KEY, null))
+    const err = await connector.laborTimes?.(ctx(), query).catch((e: unknown) => e)
+    expect(err).toBeInstanceOf(RepairDataKeyRejected)
+    expect((err as Error).message).toBe('Open Labor Project rejected the API key')
   })
 
   it("passes on the service's own words when the key has used its calls", async () => {
@@ -294,7 +315,7 @@ describe('labor times', () => {
 describe('fluids', () => {
   it('asks for one system with q', async () => {
     fetchMock.mockResolvedValueOnce(reply(200, fixture('fluids-one-system')))
-    const answer = await connector.fluidSpecs?.(ctx(), {
+    const res = await connector.fluidSpecs?.(ctx(), {
       make: 'Honda',
       model: 'Civic',
       year: 2020,
@@ -309,22 +330,128 @@ describe('fluids', () => {
       engine: '2.0l-i4',
       q: 'coolant',
     })
-    expect(answer?.variants[0].items[0]).toMatchObject({ id: 'coolant', locked: false })
+    expect(res?.answer?.variants[0].items[0]).toMatchObject({ id: 'coolant', locked: false })
+  })
+})
+
+describe('whether an answer may be kept', () => {
+  const query = { make: 'Ford', model: 'F-150', year: 2018 }
+
+  it('keeps what a paid plan fetched, as the service allows while it stays subscribed', async () => {
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'builder'))
+    expect((await connector.laborTimes?.(ctx(), query))?.keep).toBe(true)
+  })
+
+  it('keeps nothing a free key fetched', async () => {
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'hobbyist'))
+    expect((await connector.laborTimes?.(ctx(), query))?.keep).toBe(false)
+  })
+
+  it('reads the free tier from the body too, and keeps nothing a reply does not name a plan for', () => {
+    const paid = new Headers({ 'x-ratelimit-tier': 'Business' })
+    expect(keepAllowed(paid, {})).toBe(true)
+    // The recorded whole-model reply carries meta.freeTier.
+    expect(keepAllowed(paid, fixture('labor-model'))).toBe(false)
+    expect(keepAllowed(new Headers(), {})).toBe(false)
+    expect(keepAllowed(new Headers({ 'x-ratelimit-tier': 'free' }), {})).toBe(false)
+  })
+})
+
+describe('the daily plan check', () => {
+  it('asks once with the cheap lookup and reads the plan off the reply', async () => {
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'builder'))
+    expect(await connector.repairDataPlan?.(ctx())).toEqual({ keep: true })
+    expect(urlOf(0).searchParams.get('job')).toBe('water-pump')
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'hobbyist'))
+    expect(await connector.repairDataPlan?.(ctx())).toEqual({ keep: false })
+  })
+
+  it('says nothing either way when the reply names no plan', async () => {
+    fetchMock.mockResolvedValueOnce(reply(429, { data: null }, null))
+    expect(await connector.repairDataPlan?.(ctx())).toEqual({ keep: null })
+  })
+
+  it('throws the refused-key error for a key that no longer works', async () => {
+    fetchMock.mockResolvedValueOnce(reply(401, BAD_KEY, null))
+    await expect(connector.repairDataPlan?.(ctx())).rejects.toBeInstanceOf(RepairDataKeyRejected)
+  })
+
+  it('is scheduled with a handler behind it', () => {
+    expect(connector.manifest.schedules).toContainEqual({
+      job: CHECK_PLAN_JOB,
+      everyMinutes: 1440,
+    })
+    expect(connector.jobs[CHECK_PLAN_JOB]).toBeTypeOf('function')
+  })
+})
+
+describe('the key the server holds', () => {
+  it("is used when the workshop's own key is empty", async () => {
+    vi.stubEnv(SERVER_KEY_ENV, 'server-key')
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'business'))
+    const c = ctx()
+    c.credentials = {}
+    await connector.laborTimes?.(c, { make: 'Ford', model: 'F-150', year: 2018 })
+    const headers = fetchMock.mock.calls[0][1]?.headers as Record<string, string>
+    expect(headers['x-api-key']).toBe('server-key')
+  })
+
+  it("never replaces a workshop's own key", async () => {
+    vi.stubEnv(SERVER_KEY_ENV, 'server-key')
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job')))
+    await connector.laborTimes?.(ctx(), { make: 'Ford', model: 'F-150', year: 2018 })
+    const headers = fetchMock.mock.calls[0][1]?.headers as Record<string, string>
+    expect(headers['x-api-key']).toBe('test-key')
   })
 })
 
 describe('connection test', () => {
-  it('takes "what is missing" as proof the key is good', async () => {
-    fetchMock.mockResolvedValueOnce(reply(400, MISSING_PARAMS))
+  it('asks for one job on one listed vehicle, never a call with no vehicle', async () => {
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job')))
+    expect(await connector.test(ctx())).toEqual({ ok: true })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(urlOf(0).pathname).toBe('/api/v1/labor-times')
+    expect(Object.fromEntries(urlOf(0).searchParams)).toEqual({
+      make: 'ford',
+      model: 'f-150',
+      year: '2018',
+      engine: '5.0l-v8-coyote',
+      job: 'water-pump',
+    })
+  })
+
+  it('passes a good key that has used its calls for the day', async () => {
+    fetchMock.mockResolvedValueOnce(
+      reply(429, { data: null, meta: {}, error: { code: 'RATE_LIMITED', message: 'Daily limit' } })
+    )
     expect(await connector.test(ctx())).toEqual({ ok: true })
   })
 
-  it('fails on a refused key', async () => {
-    fetchMock.mockResolvedValueOnce(reply(401, BAD_KEY))
+  it('fails when the service turns the call away for another reason', async () => {
+    fetchMock.mockResolvedValueOnce(reply(400, MISSING_PARAMS))
+    expect(await connector.test(ctx())).toEqual({
+      ok: false,
+      message: 'Open Labor Project answered HTTP 400',
+    })
+  })
+
+  it('fails on a refused key, and deletes what that key stored', async () => {
+    fetchMock.mockResolvedValueOnce(reply(401, BAD_KEY, null))
     expect(await connector.test(ctx())).toEqual({
       ok: false,
       message: 'Open Labor Project rejected the API key',
     })
+    expect(deleteMany).toHaveBeenCalledWith({ where: { source: 'openlaborproject', owner: 'c1' } })
+  })
+
+  it("deletes what was stored once the key's plan is free, and keeps it on a paid one", async () => {
+    deleteMany.mockClear()
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'business'))
+    await connector.test(ctx())
+    expect(deleteMany).not.toHaveBeenCalled()
+    fetchMock.mockResolvedValueOnce(reply(200, fixture('labor-one-job'), 'hobbyist'))
+    await connector.test(ctx())
+    expect(deleteMany).toHaveBeenCalledTimes(1)
   })
 
   it('fails without a key, before calling out', async () => {
@@ -332,5 +459,106 @@ describe('connection test', () => {
     c.credentials = {}
     expect((await connector.test(c)).ok).toBe(false)
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('finding the model', () => {
+  const notFound = (availableModels: string[]) => ({
+    data: null,
+    meta: {},
+    error: {
+      code: 'MODEL_OR_VARIANT_NOT_FOUND',
+      message: 'No labor times matched.',
+      availableModels,
+    },
+  })
+  const BMW = ['1-series', '3-series', '5-series', 'x5']
+
+  it('asks under the name the service likely uses, not the one a European shop writes', () => {
+    expect(modelSlug('3-Serie (E9*)')).toBe('3-series')
+    expect(modelSlug('5-Serie F11')).toBe('5-series-f11')
+    expect(modelSlug('C-Klasse')).toBe('c-class')
+    expect(modelSlug('3er')).toBe('3-series')
+    expect(modelSlug('F-150')).toBe('f-150')
+    expect(modelSlug('Kuga')).toBe('kuga')
+  })
+
+  it("picks the service's own slug from the list a not-found reply carries", () => {
+    expect(resolveModel('5-Serie F11', BMW)).toBe('5-series')
+    expect(resolveModel('X5 E70', BMW)).toBe('x5')
+    expect(resolveModel('F150', ['f-150', 'f-250'])).toBe('f-150')
+    expect(resolveModel('Kuga', ['escape', 'focus'])).toBeNull()
+  })
+
+  it('asks once more under the matching slug instead of trying the VIN', async () => {
+    fetchMock
+      .mockResolvedValueOnce(reply(404, notFound(BMW)))
+      .mockResolvedValueOnce(reply(200, fixture('labor-one-job')))
+    const res = await connector.laborTimes?.(ctx(), {
+      make: 'BMW',
+      model: '5-Serie F11',
+      year: 2011,
+      vin: 'WBAFW11010C123456',
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(urlOf(0).searchParams.get('model')).toBe('5-series-f11')
+    expect(urlOf(1).searchParams.get('model')).toBe('5-series')
+    expect(urlOf(1).searchParams.has('vin')).toBe(false)
+    expect(res?.answer).toMatchObject({ matchedBy: 'model', modelId: '5-series' })
+  })
+
+  it('stops when the service knows the model but has nothing for it', async () => {
+    fetchMock.mockResolvedValueOnce(reply(404, notFound(['kuga', 'focus'])))
+    const res = await connector.fluidSpecs?.(ctx(), {
+      make: 'Ford',
+      model: 'Kuga',
+      year: 2014,
+      vin: VIN,
+    })
+    expect(res?.answer).toBeNull()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks under a name an earlier lookup found, and does not fall back to the VIN', async () => {
+    fetchMock.mockResolvedValueOnce(reply(404, notFound([])))
+    const res = await connector.fluidSpecs?.(ctx(), {
+      make: 'Ford',
+      model: 'Kuga',
+      year: 2014,
+      vin: VIN,
+      modelId: 'kuga',
+    })
+    expect(res?.answer).toBeNull()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(urlOf(0).searchParams.get('model')).toBe('kuga')
+  })
+
+  it('reads a VIN the service decodes but cannot place as not found, not as a failure', async () => {
+    fetchMock.mockResolvedValueOnce(reply(404, notFound(['escape']))).mockResolvedValueOnce(
+      reply(400, {
+        data: null,
+        meta: {},
+        error: {
+          code: 'MISSING_PARAMS',
+          message:
+            'VIN decoded to bmw 3 Series but that vehicle is not in our catalog (see vinDecode).',
+        },
+      })
+    )
+    const res = await connector.laborTimes?.(ctx(), {
+      make: 'BMW',
+      model: 'E30',
+      year: 1988,
+      vin: 'WBAAD11000AB12345',
+    })
+    expect(res?.answer).toBeNull()
+    expect(Object.fromEntries(urlOf(1).searchParams)).toEqual({ vin: 'WBAAD11000AB12345' })
+  })
+
+  it('still fails a call with no vehicle the service turns away for another reason', async () => {
+    fetchMock.mockResolvedValueOnce(reply(400, MISSING_PARAMS))
+    await expect(
+      connector.laborTimes?.(ctx(), { make: 'Ford', model: 'F-150', year: 2018 })
+    ).rejects.toThrow('Open Labor Project: Required')
   })
 })

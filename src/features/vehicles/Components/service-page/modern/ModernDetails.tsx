@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ComponentProps, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Receipt } from 'lucide-react'
@@ -24,6 +24,7 @@ import { paymentStatusColors, paymentStatusLabels } from '../../service-detail/t
 import { ConcernsSection } from '../../service-edit/ConcernsSection'
 import { InvoiceDetailsSection } from '../../service-edit/InvoiceDetailsSection'
 import { LaborEditor } from '../../service-edit/LaborEditor'
+import { servicePartFromFluid } from '../../labor-guide/guide-lines'
 import { NotesSection } from '../../service-edit/NotesSection'
 import { PartsEditor } from '../../service-edit/PartsEditor'
 import { ScheduleTimesSection } from '../../service-edit/ScheduleTimesSection'
@@ -133,6 +134,12 @@ export function ModernDetails(props: ModernDetailsProps) {
   } = props
   const t = useTranslations('service')
   const tClock = useTranslations('timeTracking.job')
+  // What the labor guide matches a fluid against, priced the way a pick from stock is here.
+  const { inventoryParts, defaultMarkupPercent, markupAppliesToInventory } = props
+  const guideStock = useMemo(
+    () => ({ parts: inventoryParts, pricing: { defaultMarkupPercent, markupAppliesToInventory } }),
+    [inventoryParts, defaultMarkupPercent, markupAppliesToInventory]
+  )
   const tConcerns = useTranslations('service.concerns')
   const router = useRouter()
 
@@ -370,6 +377,10 @@ export function ModernDetails(props: ModernDetailsProps) {
                       record.vehicle
                         ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
                         : undefined
+                    }
+                    guideStock={guideStock}
+                    onAddGuidePart={(line) =>
+                      formState.dirtySetPartItems((prev) => [servicePartFromFluid(line), ...prev])
                     }
                   />
 

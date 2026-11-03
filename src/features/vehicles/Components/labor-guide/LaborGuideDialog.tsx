@@ -1,19 +1,22 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useFormatter, useTranslations } from 'next-intl'
-import { Check, Loader2, Lock, Plus, Search } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import Image from 'next/image'
+import Link from 'next/link'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+  AlertCircle,
+  BookOpen,
+  CarFront,
+  Droplets,
+  Info,
+  Loader2,
+  RotateCw,
+  Settings2,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -21,29 +24,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   getRepairData,
-  type RepairDataView,
   unlockRepairDataItem,
 } from '@/features/integrations/Actions/repairDataActions'
-import type {
-  FluidSpec,
-  LaborTime,
-  RepairDataConfidence,
-  RepairDataVariantRef,
-} from '@/features/integrations/Lib/types'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
+import type { FluidSpec, LaborTime, RepairDataVariantRef } from '@/features/integrations/Lib/types'
 import { cn } from '@/lib/utils'
+import type { LaborGuideStock } from './FluidPartButton'
+import { type FluidsView, FluidSpecsPanel } from './FluidSpecsPanel'
+import { ConfidenceLegend, GuideMessage, useRegionName } from './guide-parts'
+import { type LaborView, LaborTimesPanel } from './LaborTimesPanel'
 
 type Kind = 'labor' | 'fluids'
 
-type Load<T> =
-  | { status: 'idle' }
+type Load<V> =
   | { status: 'loading' }
   | { status: 'none' }
   | { status: 'failed'; message: string }
-  | { status: 'found'; view: Omit<RepairDataView<Kind>, 'items'> & { items: T[] } }
+  | { status: 'found'; view: V }
 
 export interface LaborGuideJob {
   description: string
@@ -58,17 +60,17 @@ interface LaborGuideDialogProps {
   vehicleLabel?: string
   available: Record<Kind, boolean>
   onAdd: (job: LaborGuideJob) => void
-}
-
-/** "fuel-system" as "Fuel system", "hvac" as "HVAC". The source's own words, in English. */
-function categoryLabel(category: string): string {
-  if (category.length <= 4 && !category.includes('-')) return category.toUpperCase()
-  const words = category.replace(/[-_]+/g, ' ')
-  return words.charAt(0).toUpperCase() + words.slice(1)
+  /** Adds a fluid as a part line. Without it the fluid cards are for reading only. */
+  onAddPart?: (line: FluidPartLine) => void
+  /** The workshop's stock, offered when it carries a fluid's grade or spec. */
+  stock?: LaborGuideStock
 }
 
 /** The list with one item replaced by its unlocked value. */
-function withItem<T extends { id: string }>(state: Load<T>, value: T): Load<T> {
+function withItem<V extends { items: { id: string }[] }, T extends { id: string }>(
+  state: Load<V>,
+  value: T
+): Load<V> {
   if (state.status !== 'found') return state
   return {
     status: 'found',
@@ -76,31 +78,89 @@ function withItem<T extends { id: string }>(state: Load<T>, value: T): Load<T> {
   }
 }
 
-const CONFIDENCE_CLASS: Record<RepairDataConfidence, string> = {
-  oem: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
-  high: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
-  medium: 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-400',
-  estimated: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400',
-}
+/** How long a lookup runs before the dialog says it is still at it. */
+const SLOW_AFTER_MS = 6000
 
-function ConfidenceBadge({ confidence }: { confidence: RepairDataConfidence | null }) {
-  const t = useTranslations('service.laborGuide.confidence')
-  if (!confidence) return null
+/**
+ * The shape of the list while it loads, so nothing jumps when it arrives.
+ * A vehicle the source has little data for can take it half a minute to
+ * answer, so after a few seconds a line says the lookup is still going.
+ */
+function LoadingState({
+  kind,
+  label,
+  slowLabel,
+}: {
+  kind: Kind
+  label: string
+  slowLabel: string
+}) {
+  const rows = [68, 52, 74, 46, 60, 70, 40, 56, 64]
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    const timer = setTimeout(() => setSlow(true), SLOW_AFTER_MS)
+    return () => clearTimeout(timer)
+  }, [])
   return (
-    <Badge
-      variant="outline"
-      className={CONFIDENCE_CLASS[confidence]}
-      title={t(`${confidence}Help`)}
-    >
-      {t(confidence)}
-    </Badge>
+    <div className="flex h-full min-h-0 flex-col" aria-busy>
+      <span className="sr-only" role="status">
+        {slow ? slowLabel : label}
+      </span>
+      {slow && (
+        <div className="flex items-center gap-2 border-b bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground sm:px-6">
+          <Loader2 className="size-3.5 shrink-0 animate-spin" />
+          {slowLabel}
+        </div>
+      )}
+      <div className="grid min-h-0 flex-1 md:grid-cols-[13.5rem_minmax(0,1fr)]">
+        {kind === 'labor' && (
+          <div className="hidden space-y-2 border-r bg-muted/20 p-3 md:block">
+            {[80, 64, 72, 56, 68, 60, 76, 52].map((w, i) => (
+              <Skeleton key={i} className="h-6" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+        )}
+        <div className={cn('min-h-0', kind === 'fluids' && 'md:col-span-2')}>
+          {kind === 'labor' ? (
+            <>
+              <div className="border-b px-4 py-3 sm:px-5">
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="divide-y">
+                {rows.map((w, i) => (
+                  <div key={i} className="flex items-center gap-4 px-4 py-3 sm:px-5">
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton className="h-3.5" style={{ width: `${w}%` }} />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                    <Skeleton className="h-4 w-12" />
+                    <Skeleton className="size-8 rounded-full" />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="space-y-3 rounded-xl border p-4">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-7 w-24" />
+                  <Skeleton className="h-5 w-40" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 
 /**
  * The labor guide for one vehicle: book times to add as labor lines, and
- * fluid capacities to read. A key that lists everything but unlocks values
- * one at a time gets a button per row that asks for that one value.
+ * fluid capacities to read, for the engine the guide picks or the person
+ * chooses. A key that lists everything but unlocks values one at a time gets
+ * a button per row that asks for that one value.
  */
 export function LaborGuideDialog({
   open,
@@ -109,28 +169,22 @@ export function LaborGuideDialog({
   vehicleLabel,
   available,
   onAdd,
+  onAddPart,
+  stock,
 }: LaborGuideDialogProps) {
   const t = useTranslations('service.laborGuide')
-  const format = useFormatter()
+  const both = available.labor && available.fluids
   const [tab, setTab] = useState<Kind>(available.labor ? 'labor' : 'fluids')
-  const [labor, setLabor] = useState<Load<LaborTime>>({ status: 'idle' })
-  const [fluids, setFluids] = useState<Load<FluidSpec>>({ status: 'idle' })
-  const [search, setSearch] = useState('')
-  const [category, setCategory] = useState('all')
-  const [hideEstimates, setHideEstimates] = useState(false)
+  const [labor, setLabor] = useState<Load<LaborView>>({ status: 'loading' })
+  const [fluids, setFluids] = useState<Load<FluidsView>>({ status: 'loading' })
   const [unlocking, setUnlocking] = useState<Set<string>>(new Set())
   const [unlockError, setUnlockError] = useState<string | null>(null)
   const [added, setAdded] = useState<Set<string>>(new Set())
-
-  const setterFor = useCallback(
-    (kind: Kind) =>
-      (kind === 'labor' ? setLabor : setFluids) as (next: Load<LaborTime | FluidSpec>) => void,
-    []
-  )
+  const [addedParts, setAddedParts] = useState<Set<string>>(new Set())
 
   const load = useCallback(
     async (kind: Kind, variant?: RepairDataVariantRef) => {
-      const set = setterFor(kind)
+      const set = (kind === 'labor' ? setLabor : setFluids) as (next: Load<unknown>) => void
       set({ status: 'loading' })
       const res = await getRepairData({ vehicleId, kind, variant })
       if (!res.success || !res.data) {
@@ -142,30 +196,18 @@ export function LaborGuideDialog({
       else if (outcome.status === 'none') set({ status: 'none' })
       else set({ status: 'failed', message: outcome.message })
     },
-    [vehicleId, setterFor, t]
+    [vehicleId, t]
   )
 
   // Each tab asks once, the first time it is shown. Remembered in a ref, not
   // read from state, so a second run of the effect (React's development
-  // check) cannot spend another of a free key's ten daily calls.
+  // check) cannot spend another call.
   const asked = useRef(new Set<Kind>())
   useEffect(() => {
     if (!open || asked.current.has(tab)) return
     asked.current.add(tab)
     void load(tab)
   }, [open, tab, load])
-
-  const pickVariant = (kind: Kind, ref: RepairDataVariantRef) => {
-    if (kind === 'labor') setAdded(new Set())
-    void load(kind, ref)
-  }
-
-  const reset = () => {
-    setSearch('')
-    setCategory('all')
-    setUnlockError(null)
-    setAdded(new Set())
-  }
 
   const unlock = async (kind: Kind, variant: RepairDataVariantRef, item: string) => {
     setUnlocking((prev) => new Set(prev).add(`${kind}:${item}`))
@@ -189,309 +231,260 @@ export function LaborGuideDialog({
     else setFluids((prev) => withItem(prev, value as FluidSpec))
   }
 
-  const laborView = labor.status === 'found' ? labor.view : null
-  const categories = useMemo(
-    () => (laborView ? [...new Set(laborView.items.map((i) => i.category))].sort() : []),
-    [laborView]
-  )
-  const jobs = useMemo(() => {
-    if (!laborView) return []
-    const q = search.trim().toLowerCase()
-    return laborView.items
-      .filter((j) => category === 'all' || j.category === category)
-      .filter((j) => !q || j.name.toLowerCase().includes(q) || j.category.includes(q))
-      .filter((j) => !hideEstimates || j.confidence !== 'estimated')
-      .sort((a, b) => a.name.localeCompare(b.name))
-  }, [laborView, search, category, hideEstimates])
+  const current = tab === 'labor' ? labor : fluids
+  const view = current.status === 'found' ? current.view : null
+  const anyView =
+    (labor.status === 'found' && labor.view) || (fluids.status === 'found' && fluids.view) || null
+  const region = useRegionName(anyView?.region ?? null)
+  const settingsHref = `/settings/integrations/${anyView?.connector ?? ''}`
+  const anyLocked =
+    (labor.status === 'found' && labor.view.items.some((i) => i.locked)) ||
+    (fluids.status === 'found' && fluids.view.items.some((i) => i.locked))
 
-  const hours = (n: number) => format.number(n, { maximumFractionDigits: 2 })
-
-  const addJob = (job: LaborTime) => {
-    if (job.hours === null) return
-    onAdd({ description: job.name, hours: job.hours })
-    setAdded((prev) => new Set(prev).add(job.id))
-  }
-
-  const variantPicker = (kind: Kind, state: Load<LaborTime | FluidSpec>) => {
-    if (state.status !== 'found' || state.view.variants.length < 2) return null
-    const { view } = state
-    return (
-      <div className="flex items-center gap-2">
-        <Label className="shrink-0 text-xs text-muted-foreground">{t('engine')}</Label>
-        <Select
-          value={String(view.selected)}
-          onValueChange={(v) => pickVariant(kind, view.variants[Number(v)].ref)}
-        >
-          <SelectTrigger className="h-8 w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {view.variants.map((v, i) => (
-              <SelectItem key={`${v.ref.engineId}-${v.ref.drivetrain}-${i}`} value={String(i)}>
-                {v.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+  const unlockingOf = (kind: Kind) =>
+    new Set(
+      [...unlocking].filter((k) => k.startsWith(`${kind}:`)).map((k) => k.slice(kind.length + 1))
     )
-  }
 
-  const status = (state: Load<unknown>) => {
-    if (state.status === 'loading' || state.status === 'idle')
-      return (
-        <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin" />
-          {t('loading')}
-        </div>
-      )
+  const body = (kind: Kind) => {
+    const state = kind === 'labor' ? labor : fluids
+    if (state.status === 'loading')
+      return <LoadingState kind={kind} label={t('loading')} slowLabel={t('stillLooking')} />
     if (state.status === 'none')
-      return <p className="py-10 text-center text-sm text-muted-foreground">{t('notFound')}</p>
+      return kind === 'labor' ? (
+        <GuideMessage icon={CarFront} title={t('notFoundTitle')}>
+          {t('notFound')}
+        </GuideMessage>
+      ) : (
+        <GuideMessage icon={Droplets} title={t('fluidsNotFoundTitle')}>
+          {t('fluidsNotFound')}
+        </GuideMessage>
+      )
     if (state.status === 'failed')
       return (
-        <div className="space-y-3 py-8 text-center">
-          <p className="text-sm text-destructive">{state.message}</p>
-          <Button type="button" size="sm" variant="outline" onClick={() => void load(tab)}>
-            {t('retry')}
-          </Button>
-        </div>
+        <GuideMessage
+          icon={AlertCircle}
+          tone="destructive"
+          title={t('failedTitle')}
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (kind === 'labor') setAdded(new Set())
+                void load(kind)
+              }}
+            >
+              <RotateCw className="size-3.5" />
+              {t('retry')}
+            </Button>
+          }
+        >
+          {state.message}
+        </GuideMessage>
+      )
+    if (kind === 'labor' && labor.status === 'found')
+      return (
+        <LaborTimesPanel
+          view={labor.view}
+          settingsHref={settingsHref}
+          added={added}
+          unlocking={unlockingOf('labor')}
+          onAdd={(job, hours) => {
+            onAdd({ description: job.name, hours })
+            setAdded((prev) => new Set(prev).add(job.id))
+          }}
+          onUnlock={(job) =>
+            void unlock('labor', labor.view.variants[labor.view.selected].ref, job.id)
+          }
+        />
+      )
+    if (kind === 'fluids' && fluids.status === 'found')
+      return (
+        <FluidSpecsPanel
+          view={fluids.view}
+          settingsHref={settingsHref}
+          unlocking={unlockingOf('fluids')}
+          onUnlock={(spec) =>
+            void unlock('fluids', fluids.view.variants[fluids.view.selected].ref, spec.id)
+          }
+          stock={stock}
+          addedParts={addedParts}
+          onAddPart={
+            onAddPart
+              ? (spec, line) => {
+                  onAddPart(line)
+                  setAddedParts((prev) => new Set(prev).add(spec.id))
+                }
+              : undefined
+          }
+        />
       )
     return null
   }
 
-  const source = laborView?.source ?? (fluids.status === 'found' ? fluids.view.source : null)
-  const anyLocked =
-    (laborView?.items.some((i) => i.locked) ?? false) ||
-    (fluids.status === 'found' && fluids.view.items.some((i) => i.locked))
-
-  const laborTab = (
-    <div className="space-y-3">
-      {status(labor)}
-      {laborView && (
-        <>
-          {variantPicker('labor', labor)}
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t('search')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="sm:w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('allCategories')}</SelectItem>
-                {categories.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {categoryLabel(c)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Switch checked={hideEstimates} onCheckedChange={setHideEstimates} />
-            {t('hideEstimates')}
-          </label>
-          <div className="max-h-[50vh] space-y-0.5 overflow-y-auto">
-            {jobs.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">{t('noMatch')}</p>
-            )}
-            {jobs.map((job) => {
-              const busy = unlocking.has(`labor:${job.id}`)
-              const isAdded = added.has(job.id)
-              const variant = laborView.variants[laborView.selected].ref
-              return (
-                <div
-                  key={job.id}
-                  className="flex items-center gap-3 rounded-md px-2.5 py-2 hover:bg-accent"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium">{job.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {categoryLabel(job.category)}
-                    </div>
-                  </div>
-                  {job.locked ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={busy}
-                      onClick={() => void unlock('labor', variant, job.id)}
-                    >
-                      {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Lock />}
-                      {t('showHours')}
-                    </Button>
-                  ) : (
-                    <>
-                      <ConfidenceBadge confidence={job.confidence} />
-                      <div className="w-20 shrink-0 text-right">
-                        <div className="text-sm font-medium tabular-nums">
-                          {t('hours', { hours: hours(job.hours ?? 0) })}
-                        </div>
-                        {job.low !== null && job.high !== null && job.low !== job.high && (
-                          <div className="text-xs tabular-nums text-muted-foreground">
-                            {t('range', { low: hours(job.low), high: hours(job.high) })}
-                          </div>
-                        )}
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={isAdded ? 'ghost' : 'outline'}
-                        onClick={() => addJob(job)}
-                        aria-label={t('addJob', { job: job.name })}
-                      >
-                        {isAdded ? <Check /> : <Plus />}
-                        {isAdded ? t('added') : t('add')}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  )
-
-  const fluidsView = fluids.status === 'found' ? fluids.view : null
-  const volume = (liters: number | null, quarts: number | null) => {
-    const parts = []
-    if (liters !== null) parts.push(t('liters', { value: hours(liters) }))
-    if (quarts !== null) parts.push(t('quarts', { value: hours(quarts) }))
-    return parts.join(' / ')
-  }
-  const fluidsTab = (
-    <div className="space-y-3">
-      {status(fluids)}
-      {fluidsView && (
-        <>
-          {variantPicker('fluids', fluids)}
-          <div className="max-h-[50vh] space-y-1 overflow-y-auto">
-            {fluidsView.items.map((f) => {
-              const busy = unlocking.has(`fluids:${f.id}`)
-              const variant = fluidsView.variants[fluidsView.selected].ref
-              const capacity = volume(f.capacityLiters, f.capacityQuarts)
-              const drain = volume(f.drainRefillLiters, f.drainRefillQuarts)
-              return (
-                <div key={f.id} className="rounded-md border px-3 py-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-medium">{f.system}</span>
-                    {f.locked ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        disabled={busy}
-                        onClick={() => void unlock('fluids', variant, f.id)}
-                      >
-                        {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Lock />}
-                        {t('show')}
-                      </Button>
-                    ) : (
-                      <ConfidenceBadge confidence={f.confidence} />
-                    )}
-                  </div>
-                  {!f.locked && (
-                    <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
-                      {(f.fluid || f.spec) && (
-                        <>
-                          <dt className="text-muted-foreground">{t('fluid')}</dt>
-                          <dd>{[f.fluid, f.spec].filter(Boolean).join(', ')}</dd>
-                        </>
-                      )}
-                      {capacity && (
-                        <>
-                          <dt className="text-muted-foreground">{t('capacity')}</dt>
-                          <dd className="tabular-nums">{capacity}</dd>
-                        </>
-                      )}
-                      {drain && drain !== capacity && (
-                        <>
-                          <dt className="text-muted-foreground">{t('drainRefill')}</dt>
-                          <dd className="tabular-nums">{drain}</dd>
-                        </>
-                      )}
-                      {(f.intervalKm !== null || f.intervalMiles !== null) && (
-                        <>
-                          <dt className="text-muted-foreground">{t('interval')}</dt>
-                          <dd className="tabular-nums">
-                            {[
-                              f.intervalKm !== null
-                                ? t('km', { value: hours(f.intervalKm) })
-                                : null,
-                              f.intervalMiles !== null
-                                ? t('miles', { value: hours(f.intervalMiles) })
-                                : null,
-                            ]
-                              .filter(Boolean)
-                              .join(' / ')}
-                          </dd>
-                        </>
-                      )}
-                      {f.notes && (
-                        <>
-                          <dt className="text-muted-foreground">{t('notes')}</dt>
-                          <dd>{f.notes}</dd>
-                        </>
-                      )}
-                    </dl>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  )
+  const count = (state: Load<{ items: unknown[] }>) =>
+    state.status === 'found' ? (
+      <span className="ml-1.5 rounded-full bg-muted px-1.5 py-px text-[10px] font-medium tabular-nums text-muted-foreground group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary">
+        {state.view.items.length}
+      </span>
+    ) : null
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        onOpenChange(v)
-        if (!v) reset()
-      }}
-    >
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{vehicleLabel || t('description')}</DialogDescription>
-        </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex h-[min(46rem,92dvh)] max-h-[92dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
+        <Tabs
+          value={tab}
+          onValueChange={(v) => setTab(v as Kind)}
+          className="flex min-h-0 flex-1 flex-col gap-0"
+        >
+          <div className="border-b px-4 pt-5 pb-4 sm:px-6">
+            <div className="flex items-center gap-3 pr-8">
+              {anyView?.logo ? (
+                <Image
+                  src={anyView.logo}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="size-10 shrink-0 rounded-xl"
+                  unoptimized
+                />
+              ) : (
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border bg-muted/40">
+                  <BookOpen className="size-5 text-muted-foreground" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <DialogTitle className="text-base leading-tight">{t('title')}</DialogTitle>
+                <DialogDescription className="mt-0.5 truncate">
+                  {vehicleLabel || t('description')}
+                </DialogDescription>
+              </div>
+            </div>
 
-        {available.labor && available.fluids ? (
-          <Tabs value={tab} onValueChange={(v) => setTab(v as Kind)}>
-            <TabsList>
-              <TabsTrigger value="labor">{t('tabLabor')}</TabsTrigger>
-              <TabsTrigger value="fluids">{t('tabFluids')}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="labor">{laborTab}</TabsContent>
-            <TabsContent value="fluids">{fluidsTab}</TabsContent>
-          </Tabs>
-        ) : available.labor ? (
-          laborTab
-        ) : (
-          fluidsTab
-        )}
-
-        {unlockError && <p className="text-xs text-destructive">{unlockError}</p>}
-
-        {source && (
-          <div className={cn('space-y-1 border-t pt-3 text-xs text-muted-foreground')}>
-            <p>{t('attribution', { source })}</p>
-            <p>{t('estimateNote')}</p>
-            {anyLocked && <p>{t('lockedNote')}</p>}
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {both ? (
+                <TabsList>
+                  <TabsTrigger value="labor" className="group px-3">
+                    {t('tabLabor')}
+                    {count(labor)}
+                  </TabsTrigger>
+                  <TabsTrigger value="fluids" className="group px-3">
+                    {t('tabFluids')}
+                    {count(fluids)}
+                  </TabsTrigger>
+                </TabsList>
+              ) : (
+                <span />
+              )}
+              {view && view.variants.length > 1 && (
+                <Select
+                  value={String(view.selected)}
+                  onValueChange={(v) => {
+                    if (tab === 'labor') setAdded(new Set())
+                    else setAddedParts(new Set())
+                    void load(tab, view.variants[Number(v)].ref)
+                  }}
+                >
+                  <SelectTrigger
+                    aria-label={t('engine')}
+                    className="h-9 w-full gap-2 sm:w-auto sm:min-w-64 sm:max-w-80"
+                  >
+                    <span className="shrink-0 text-xs text-muted-foreground">{t('engine')}</span>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {view.variants.map((v, i) => (
+                      <SelectItem
+                        key={`${v.ref.engineId}-${v.ref.drivetrain}-${i}`}
+                        value={String(i)}
+                      >
+                        {v.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
           </div>
+
+          {/* Both stay mounted, so a search or category survives a look at the other tab. */}
+          <TabsContent value="labor" forceMount className="min-h-0 flex-1">
+            {available.labor && (tab === 'labor' || labor.status !== 'loading') && body('labor')}
+          </TabsContent>
+          <TabsContent value="fluids" forceMount className="min-h-0 flex-1">
+            {available.fluids &&
+              (tab === 'fluids' || fluids.status !== 'loading') &&
+              body('fluids')}
+          </TabsContent>
+        </Tabs>
+
+        {unlockError && (
+          <p
+            role="alert"
+            className="border-t bg-destructive/5 px-4 py-2 text-xs text-destructive sm:px-6"
+          >
+            {unlockError}
+          </p>
         )}
+
+        <footer className="flex flex-col gap-3 border-t bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {anyView && (
+              <span className="truncate">
+                {t('attribution', { source: anyView.source })}
+                {region && <> · {t('market', { region })}</>}
+              </span>
+            )}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 font-medium text-foreground/80 underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  <Info className="size-3.5" />
+                  {t('about')}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-80 space-y-3">
+                <p className="text-sm font-medium">{t('aboutTitle')}</p>
+                <ConfidenceLegend />
+                <p className="border-t pt-3 text-xs text-muted-foreground">{t('estimateNote')}</p>
+                {anyLocked && <p className="text-xs text-muted-foreground">{t('lockedNote')}</p>}
+              </PopoverContent>
+            </Popover>
+            {anyView && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={settingsHref}
+                    aria-label={t('settings')}
+                    className="inline-flex size-6 items-center justify-center rounded-md hover:bg-muted hover:text-foreground"
+                  >
+                    <Settings2 className="size-3.5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>{t('settings')}</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+          <div className="flex items-center justify-end gap-3">
+            {(added.size > 0 || addedParts.size > 0) && (
+              <span className="text-xs text-muted-foreground" aria-live="polite">
+                {[
+                  added.size > 0 ? t('addedCount', { count: added.size }) : null,
+                  addedParts.size > 0 ? t('partsAddedCount', { count: addedParts.size }) : null,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </span>
+            )}
+            <Button type="button" size="sm" onClick={() => onOpenChange(false)}>
+              {t('done')}
+            </Button>
+          </div>
+        </footer>
       </DialogContent>
     </Dialog>
   )

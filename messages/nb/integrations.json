@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Slå opp normtider og væskemengder for kjøretøyet på en arbeidsordre eller et tilbud, og legg til timene for en jobb som arbeidslinje med ett klikk. Dekker kjøretøy for det amerikanske markedet. Hver verdi viser hvor sikker Open Labor Project er, og mange er anslag laget med KI som ikke er sjekket mot produsentens data, så sjekk dem før du gir kunden et tilbud. Oppslagene bruker verkstedets egen API-nøkkel.",
+      "description": "Slå opp normtider og væskemengder for kjøretøyet på en arbeidsordre eller et tilbud, og legg til en jobbs timer som en arbeidslinje med ett klikk. Det meste av dataene gjelder kjøretøy for det amerikanske markedet, og guiden viser hvilket marked hvert oppslag gjelder. Hver verdi viser hvor sikker Open Labor Project er, og mange er anslag laget med KI, så sjekk dem før du gir kunden et tilbud. Oppslag bruker verkstedets egen API-nøkkel. Med et betalt abonnement hos Open Labor Project lagres et kjøretøy som er slått opp så lenge abonnementet varer, så et nytt oppslag koster ikke et kall.",
       "fields": {
         "apiKey": "API-nøkkel",
-        "apiKeyHelp": "Be om en nøkkel på openlaborproject.com under Developers; den kommer på e-post. En gratis nøkkel har 10 kall per dag og viser timer for én jobb om gangen. Builder-abonnementet og oppover gir høyere grense og viser timene for alle jobber på en gang."
+        "apiKeyHelp": "Be om en nøkkel på openlaborproject.com under Developers; den kommer på e-post. En gratis nøkkel har 10 kall per dag og viser timer for én jobb om gangen. Builder-abonnementet og oppover gir høyere grense og viser timene for alle jobber på en gang.",
+        "apiKeyServerHelp": "La feltet stå tomt for å bruke nøkkelen denne serveren har, eller lim inn din egen nøkkel fra openlaborproject.com for å bruke ditt eget abonnement."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Vis normtider fra",
+        "minConfidenceHelp": "Utelat tider kilden er mindre sikker på. Mange tider for europeiske merker er anslag laget med KI, så et strengt valg kan gi få jobber.",
+        "confidenceAll": "Alle sikkerhetsnivåer",
+        "confidenceMedium": "Middels og høyere",
+        "confidenceHigh": "Bekreftet og høyere",
+        "confidenceOem": "Bare OEM",
+        "hoursFrom": "Timer som legges til",
+        "hoursFromHelp": "Hvilket tall som havner på arbeidsordren: normtiden, eller toppen av intervallet Open Labor Project oppgir (for eksempel 1,6 t i stedet for 1,2 t). Toppen av intervallet gir rom for jobber som tar lengre tid.",
+        "hoursBook": "Normtid",
+        "hoursHigh": "Toppen av intervallet",
+        "adjustPercent": "Juster tidene med (%)",
+        "adjustPercentHelp": "En prosent som legges til hver tid før den havner på arbeidsordren: 10 gjør 1,2 t til 1,32 t, -10 gjør den til 1,08 t. Fra -50 til 200.",
+        "rounding": "Rund timer opp til",
+        "roundingHelp": "Runder hver jobbs timer opp etter en eventuell justering: med 0,25 blir 1,32 t til 1,5 t. En tid som allerede ligger på et steg, blir stående.",
+        "roundNone": "Ikke rund av",
+        "roundTenth": "0,1 time",
+        "roundQuarter": "0,25 time",
+        "roundHalf": "0,5 time",
+        "fluids": "Vis væskespesifikasjoner",
+        "fluidsHelp": "Legger til en Væsker-fane med mengder, spesifikasjoner og byttintervaller. Å åpne den bruker et eget kall.",
+        "units": "Enheter for væsker",
+        "unitsHelp": "Enhetene mengder og byttintervaller vises i.",
+        "unitsBoth": "Begge",
+        "unitsMetric": "Metrisk (L, km)",
+        "unitsUs": "Amerikansk (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Tale til tekst",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Oppdatering av tilbakekallingsdata",
       "vehicle": "Tilbakekallingssjekk for nytt kjøretøy"
+    },
+    "repair": {
+      "checkPlan": "Sjekk at lagrede oppslag kan beholdes"
     }
   },
   "backupAlerts": {

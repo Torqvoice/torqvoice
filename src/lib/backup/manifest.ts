@@ -391,6 +391,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   IntegrationLink:
     'Remote ids in a connected system, only valid for the connection that created them.',
   IntegrationLog: 'Connector activity log, rewritten every time a job runs.',
+  RepairDataCache:
+    "Labor times and fluid specs kept from a repair data source while the workshop's key is on a paid plan. They belong to the connection, which a backup does not carry, and may only be kept while that plan lasts; the guide fetches them again when needed.",
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
   PlatformMailUsage:
     "Today's count of mail sent through the platform address, for the daily cap; it starts again every day.",

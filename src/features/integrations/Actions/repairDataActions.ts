@@ -10,11 +10,13 @@ import {
   askRepairData,
   askRepairDataItem,
   findRepairDataConnection,
-  pickVariant,
+  matchVariant,
   type RepairDataItem,
   type RepairDataKind,
   sameVariant,
+  type VariantMatch,
 } from '../Lib/repair-data'
+import { meetsConfidence, type RepairDataPrefs, readPrefs } from '../Lib/repair-prefs'
 import type { RepairDataVariantRef } from '../Lib/types'
 import { withinLookupBudget } from '../Lib/vehicle-lookup'
 
@@ -48,12 +50,26 @@ export interface RepairDataVariantOption {
 }
 
 export interface RepairDataView<K extends RepairDataKind> {
+  /** The connector that answered, such as "openlaborproject", for the link to its settings. */
+  connector: string
   /** Source name for the attribution line. */
   source: string
+  /** The source's logo under /public. */
+  logo: string | null
+  /** The market the values are for, as an ISO country code, such as "US". */
+  region: string | null
   variants: RepairDataVariantOption[]
   /** Index into variants of the one whose items are below. */
   selected: number
+  /**
+   * How well the selected engine fits the vehicle on file, or "chosen" when
+   * the person picked it in the dialog.
+   */
+  match: VariantMatch | 'chosen'
   items: RepairDataItem<K>[]
+  /** Values left out because they are below the workshop's minimum confidence. */
+  hidden: number
+  prefs: RepairDataPrefs
 }
 
 /**
@@ -80,7 +96,10 @@ export async function isRepairDataAvailable() {
         findRepairDataConnection(organizationId, 'labor'),
         findRepairDataConnection(organizationId, 'fluids'),
       ])
-      return { labor: labor !== null, fluids: fluids !== null }
+      return {
+        labor: labor !== null,
+        fluids: fluids !== null && readPrefs(fluids.settings).fluids,
+      }
     },
     { requiredPermissions: READ_VEHICLES }
   )
@@ -91,6 +110,8 @@ async function prepare(organizationId: string, vehicleId: string, kind: RepairDa
   if (!features.integrations) throw new Error('Integrations are not included in your plan')
   const connection = await findRepairDataConnection(organizationId, kind)
   if (!connection) throw new Error('No labor guide is connected')
+  if (kind === 'fluids' && !readPrefs(connection.settings).fluids)
+    throw new Error('Fluid specs are turned off in the integration settings')
   const vehicle = await db.vehicle.findFirst({
     where: { id: vehicleId, organizationId },
     select: { make: true, model: true, year: true, vin: true, engineSize: true, fuelType: true },
@@ -140,23 +161,33 @@ export async function getRepairData(input: {
       } catch (err) {
         return failed(err)
       }
-      const { answer, source } = looked
+      const { answer, connector, source, logo, prefs } = looked
       if (!answer) return { status: 'none' }
       const asked = parsed.variant
         ? answer.variants.findIndex((v) => sameVariant(v, parsed.variant as RepairDataVariantRef))
         : -1
-      const selected = asked >= 0 ? asked : pickVariant(answer.variants, vehicle)
-      const chosen = answer.variants[selected]
+      const fit = matchVariant(answer.variants, vehicle)
+      const selected = asked >= 0 ? asked : fit.index
+      const all = answer.variants[selected].items
+      // The minimum confidence is for labor times, the figure that is billed.
+      const items =
+        parsed.kind === 'labor' ? all.filter((i) => meetsConfidence(i, prefs.minConfidence)) : all
       return {
         status: 'found',
         value: {
+          connector,
           source,
+          logo,
+          region: answer.region ?? null,
           variants: answer.variants.map((v) => ({
             ref: { engineId: v.engineId, drivetrain: v.drivetrain, vehicleId: v.vehicleId },
             label: labelOf(v.engine, v.drivetrain),
           })),
           selected,
-          items: chosen.items,
+          match: asked >= 0 ? 'chosen' : fit.match,
+          items,
+          hidden: all.length - items.length,
+          prefs,
         },
       }
     },

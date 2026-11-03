@@ -58,9 +58,7 @@
             "system": "Engine Oil",
             "systemType": "engine_oil",
             "fluidType": "0W-20 full synthetic",
-            "viscosityOptions": [
-              "0W-20"
-            ],
+            "viscosityOptions": ["0W-20"],
             "fluidSpec": "API SN or higher",
             "capacityQuarts": 3.7,
             "capacityLiters": 3.5,

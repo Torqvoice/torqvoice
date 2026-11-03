@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Zoek standaardtijden en vloeistofinhoud op voor het voertuig op een werkorder of offerte, en voeg de uren van een klus met één klik toe als arbeidsregel. Dekt voertuigen voor de Amerikaanse markt. Bij elke waarde staat hoe zeker Open Labor Project ervan is, en veel zijn door AI gemaakte schattingen die niet zijn gecontroleerd aan de gegevens van de fabrikant. Controleer ze dus voordat u een klant een offerte geeft. Opzoekingen gebruiken de eigen API-sleutel van de werkplaats.",
+      "description": "Zoek arbeidstijden en vloeistofinhouden op voor het voertuig van een werkorder of offerte, en voeg de uren van een werkzaamheid met één klik toe als arbeidsregel. De meeste gegevens gelden voor voertuigen voor de Amerikaanse markt, en de gids toont voor welke markt elke opzoeking geldt. Elke waarde toont hoe zeker Open Labor Project ervan is, en veel zijn door AI gemaakte schattingen, dus controleer ze voordat u een klant een offerte geeft. Opzoekingen gebruiken de eigen API-sleutel van de werkplaats. Met een betaald abonnement bij Open Labor Project blijft een eenmaal opgezocht voertuig bewaard zolang het abonnement loopt, zodat opnieuw opzoeken geen aanroep kost.",
       "fields": {
         "apiKey": "API-sleutel",
-        "apiKeyHelp": "Vraag een sleutel aan op openlaborproject.com onder Developers; u krijgt hem per e-mail. Een gratis sleutel heeft 10 aanroepen per dag en toont de uren van één klus tegelijk. Vanaf het Builder-abonnement is de limiet hoger en ziet u alle uren in één keer."
+        "apiKeyHelp": "Vraag een sleutel aan op openlaborproject.com onder Developers; u krijgt hem per e-mail. Een gratis sleutel heeft 10 aanroepen per dag en toont de uren van één klus tegelijk. Vanaf het Builder-abonnement is de limiet hoger en ziet u alle uren in één keer.",
+        "apiKeyServerHelp": "Laat dit leeg om de sleutel van deze server te gebruiken, of plak uw eigen sleutel van openlaborproject.com om uw eigen abonnement te gebruiken."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Arbeidstijden tonen vanaf",
+        "minConfidenceHelp": "Laat tijden weg waarvan de bron minder zeker is. Veel tijden voor Europese merken zijn AI-schattingen, dus een strenge keuze kan weinig werkzaamheden overlaten.",
+        "confidenceAll": "Elk zekerheidsniveau",
+        "confidenceMedium": "Gemiddeld en hoger",
+        "confidenceHigh": "Geverifieerd en hoger",
+        "confidenceOem": "Alleen OEM",
+        "hoursFrom": "Uren om toe te voegen",
+        "hoursFromHelp": "Welk getal op de werkorder komt: de normtijd, of de bovenkant van het bereik dat Open Labor Project geeft (bijvoorbeeld 1,6 u in plaats van 1,2 u). De bovenkant laat ruimte voor werkzaamheden die uitlopen.",
+        "hoursBook": "Normtijd",
+        "hoursHigh": "Bovenkant van het bereik",
+        "adjustPercent": "Tijden aanpassen met (%)",
+        "adjustPercentHelp": "Een percentage dat bij elke tijd wordt opgeteld voordat die op de werkorder komt: 10 maakt van 1,2 u 1,32 u, -10 maakt er 1,08 u van. Van -50 tot 200.",
+        "rounding": "Uren naar boven afronden op",
+        "roundingHelp": "Rondt de uren van elke werkzaamheid naar boven af, na een eventuele aanpassing: met 0,25 wordt 1,32 u 1,5 u. Een tijd die al op een stap ligt, blijft zoals hij is.",
+        "roundNone": "Niet afronden",
+        "roundTenth": "0,1 uur",
+        "roundQuarter": "0,25 uur",
+        "roundHalf": "0,5 uur",
+        "fluids": "Vloeistofgegevens tonen",
+        "fluidsHelp": "Voegt een tabblad Vloeistoffen toe met inhouden, specificaties en vervangingsintervallen. Openen kost een eigen aanroep.",
+        "units": "Eenheden voor vloeistoffen",
+        "unitsHelp": "De eenheden waarin inhouden en vervangingsintervallen worden getoond.",
+        "unitsBoth": "Beide",
+        "unitsMetric": "Metrisch (L, km)",
+        "unitsUs": "VS (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Spraak naar tekst",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Vernieuwing van terugroepgegevens",
       "vehicle": "Terugroepcontrole voor een nieuw voertuig"
+    },
+    "repair": {
+      "checkPlan": "Controleren of bewaarde opzoekingen mogen blijven"
     }
   },
   "backupAlerts": {

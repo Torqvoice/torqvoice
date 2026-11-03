@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Look up book labor times and fluid capacities for the vehicle on a work order or quote, and add a job's hours as a labor line in one click. Covers US-market vehicles. Each value shows how sure Open Labor Project is of it, and many are AI-derived estimates that are not checked against a maker's guide, so check them before you quote a customer. Lookups use the workshop's own API key.",
+      "description": "Look up book labor times and fluid capacities for the vehicle on a work order or quote, and add a job's hours as a labor line in one click. Most of the data is for US-market vehicles, and the guide says which market each lookup is for. Each value shows how sure Open Labor Project is of it, and many are AI-derived estimates, so check them before you quote a customer. Lookups use the workshop's own API key. On a paid Open Labor Project plan, a vehicle looked up once is kept for as long as the plan lasts, so looking it up again costs no call.",
       "fields": {
         "apiKey": "API key",
-        "apiKeyHelp": "Request a key on openlaborproject.com under Developers; it arrives by email. A free key has 10 calls a day and shows hours one job at a time. The Builder plan and up raise the limit and show every job's hours at once."
+        "apiKeyHelp": "Request a key on openlaborproject.com under Developers; it arrives by email. A free key has 10 calls a day and shows hours one job at a time. The Builder plan and up raise the limit and show every job's hours at once.",
+        "apiKeyServerHelp": "Leave this empty to use the key this server provides, or paste your own key from openlaborproject.com to use your own plan."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Show labor times from",
+        "minConfidenceHelp": "Leave out times the source is less sure of. Many times for European makes are AI estimates, so a strict choice can leave few jobs.",
+        "confidenceAll": "Every confidence level",
+        "confidenceMedium": "Medium and up",
+        "confidenceHigh": "Verified and up",
+        "confidenceOem": "OEM only",
+        "hoursFrom": "Hours to add",
+        "hoursFromHelp": "Which figure goes on the work order: the book time, or the top of the range Open Labor Project gives (1.6 h instead of 1.2 h, say). The top of the range leaves room for jobs that run long.",
+        "hoursBook": "Book time",
+        "hoursHigh": "Top of the range",
+        "adjustPercent": "Adjust times by (%)",
+        "adjustPercentHelp": "A percentage added to every time before it goes on the work order: 10 turns 1.2 h into 1.32 h, -10 turns it into 1.08 h. From -50 to 200.",
+        "rounding": "Round hours up to",
+        "roundingHelp": "Rounds each job's hours up, after any adjustment: with 0.25, 1.32 h becomes 1.5 h. A time already on a step stays as it is.",
+        "roundNone": "Do not round",
+        "roundTenth": "0.1 hour",
+        "roundQuarter": "0.25 hour",
+        "roundHalf": "0.5 hour",
+        "fluids": "Show fluid specs",
+        "fluidsHelp": "Adds a Fluids tab with capacities, specs and change intervals. Opening it uses a call of its own.",
+        "units": "Fluid units",
+        "unitsHelp": "The units capacities and change intervals are shown in.",
+        "unitsBoth": "Both",
+        "unitsMetric": "Metric (L, km)",
+        "unitsUs": "US (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Speech to text",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Recall data refresh",
       "vehicle": "Recall check for a new vehicle"
+    },
+    "repair": {
+      "checkPlan": "Check that stored lookups may be kept"
     }
   },
   "backupAlerts": {

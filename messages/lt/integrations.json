@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Peržiūrėkite darbo laiko normas ir skysčių talpas transporto priemonei darbo užsakyme ar pasiūlyme ir vienu paspaudimu pridėkite darbo valandas kaip darbo eilutę. Apima JAV rinkos transporto priemones. Prie kiekvienos reikšmės nurodyta, kiek Open Labor Project ja tikras, ir daug jų yra DI sugeneruoti įverčiai, nepatikrinti pagal gamintojo duomenis, todėl patikrinkite juos prieš teikdami pasiūlymą klientui. Užklausos naudoja paties serviso API raktą.",
+      "description": "Peržiūrėkite darbo laiko normas ir skysčių talpas užsakymo ar pasiūlymo transporto priemonei ir vienu paspaudimu pridėkite darbo valandas kaip darbo eilutę. Dauguma duomenų skirti JAV rinkos transporto priemonėms, o normos rodo, kuriai rinkai taikoma kiekviena užklausa. Kiekviena reikšmė rodo, kiek Open Labor Project ja tikras, o daugelis yra DI įverčiai, todėl patikrinkite juos prieš pateikdami pasiūlymą klientui. Užklausoms naudojamas paties serviso API raktas. Turint mokamą Open Labor Project planą, kartą surasta transporto priemonė saugoma tol, kol galioja planas, todėl pakartotinė paieška nekainuoja užklausos.",
       "fields": {
         "apiKey": "API raktas",
-        "apiKeyHelp": "Raktą užsisakykite openlaborproject.com skiltyje Developers; jis atsiunčiamas el. paštu. Nemokamas raktas turi 10 užklausų per dieną ir rodo valandas po vieną darbą. Nuo Builder plano limitas didesnis, o visų darbų valandos rodomos iš karto."
+        "apiKeyHelp": "Raktą užsisakykite openlaborproject.com skiltyje Developers; jis atsiunčiamas el. paštu. Nemokamas raktas turi 10 užklausų per dieną ir rodo valandas po vieną darbą. Nuo Builder plano limitas didesnis, o visų darbų valandos rodomos iš karto.",
+        "apiKeyServerHelp": "Palikite tuščią, kad naudotumėte šio serverio suteikiamą raktą, arba įklijuokite savo raktą iš openlaborproject.com, kad naudotumėte savo planą."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Rodyti normas nuo",
+        "minConfidenceHelp": "Praleidžia laikus, kuriais šaltinis mažiau tikras. Daugelis Europos markių laikų yra DI įverčiai, todėl griežtas pasirinkimas gali palikti mažai darbų.",
+        "confidenceAll": "Bet koks patikimumas",
+        "confidenceMedium": "Vidutinis ir aukštesnis",
+        "confidenceHigh": "Patikrinta ir aukštesnis",
+        "confidenceOem": "Tik OEM",
+        "hoursFrom": "Pridedamos valandos",
+        "hoursFromHelp": "Kuri reikšmė patenka į užsakymą: normos laikas ar viršutinė Open Labor Project nurodyto intervalo riba (pavyzdžiui, 1,6 val. vietoj 1,2 val.). Viršutinė riba palieka atsargą darbams, kurie užtrunka ilgiau.",
+        "hoursBook": "Normos laikas",
+        "hoursHigh": "Viršutinė intervalo riba",
+        "adjustPercent": "Koreguoti laikus (%)",
+        "adjustPercentHelp": "Procentas, pridedamas prie kiekvieno laiko prieš jam patenkant į užsakymą: 10 paverčia 1,2 val. į 1,32 val., -10 į 1,08 val. Nuo -50 iki 200.",
+        "rounding": "Apvalinti valandas aukštyn iki",
+        "roundingHelp": "Po korekcijos apvalina kiekvieno darbo valandas aukštyn: su 0,25 iš 1,32 val. gaunama 1,5 val. Laikas, kuris jau yra ant žingsnio, nesikeičia.",
+        "roundNone": "Neapvalinti",
+        "roundTenth": "0,1 val.",
+        "roundQuarter": "0,25 val.",
+        "roundHalf": "0,5 val.",
+        "fluids": "Rodyti skysčių duomenis",
+        "fluidsHelp": "Prideda skirtuką Skysčiai su talpomis, specifikacijomis ir keitimo intervalais. Jo atidarymas naudoja atskirą užklausą.",
+        "units": "Skysčių vienetai",
+        "unitsHelp": "Vienetai, kuriais rodomos talpos ir keitimo intervalai.",
+        "unitsBoth": "Abu",
+        "unitsMetric": "Metriniai (L, km)",
+        "unitsUs": "JAV (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Kalba į tekstą",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Atšaukimų duomenų atnaujinimas",
       "vehicle": "Naujos transporto priemonės atšaukimų patikra"
+    },
+    "repair": {
+      "checkPlan": "Patikrinti, ar išsaugotas užklausas galima laikyti"
     }
   },
   "backupAlerts": {

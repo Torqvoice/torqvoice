@@ -80,6 +80,16 @@ export interface CredentialField {
    * it, and the page says what is still missing until it is entered.
    */
   deferrable?: boolean
+  /**
+   * The name of an environment variable that can hold a key the server uses
+   * for every workshop, for a service Torqvoice pays for on the workshop's
+   * behalf. While it is set, the registry makes the field optional and
+   * swaps in `serverKeyHelp`: a workshop that leaves the field empty uses
+   * the server's key, one that fills it in uses its own.
+   */
+  serverKeyEnv?: string
+  /** i18n key with the help shown instead of `help` while the server holds a key. */
+  serverKeyHelp?: string
 }
 
 /**
@@ -472,6 +482,11 @@ export interface RepairDataQuery {
   model: string
   year: number
   vin?: string
+  /**
+   * The source's own id for the model, from an earlier answer for this
+   * vehicle, so it is asked under the name that worked and not guessed again.
+   */
+  modelId?: string
   variant?: RepairDataVariantRef
   item?: string
 }
@@ -523,7 +538,30 @@ export interface RepairDataAnswer<T> {
   make: string
   model: string
   variants: RepairDataVariant<T>[]
+  /**
+   * Whether the model name found it, or only the VIN did. A model-name
+   * answer serves every vehicle of that model year; a VIN answer is kept
+   * for that one vehicle.
+   */
+  matchedBy?: 'model' | 'vin'
+  /** The source's own id for the model, passed back to ask about the vehicle again. */
+  modelId?: string
+  /** The market the values are for, as an ISO country code, such as "US". */
+  region?: string
 }
+
+/**
+ * A source's answer, and whether the account's plan lets it keep what it
+ * fetched. Open Labor Project lets a paid plan keep its answers for as long
+ * as it stays subscribed; a free key may only show them.
+ */
+export interface RepairDataReply<T> {
+  answer: RepairDataAnswer<T> | null
+  keep: boolean
+}
+
+/** The key was refused: revoked, mistyped, or its subscription has ended. */
+export class RepairDataKeyRejected extends Error {}
 
 export interface ConnectorServer {
   manifest: ConnectorManifest
@@ -578,18 +616,20 @@ export interface ConnectorServer {
   vehicleSafety?(ctx: ConnectorContext, query: VehicleSafetyQuery): Promise<VehicleSafetyReport>
   /**
    * Book times for a model year, for connectors with the 'repair.labor'
-   * capability. Synchronous because a dialog is waiting on it. Null when the
-   * source has no such vehicle.
+   * capability. Synchronous because a dialog is waiting on it. The answer is
+   * null when the source has no such vehicle. Throws RepairDataKeyRejected
+   * when the key is refused.
    */
-  laborTimes?(
-    ctx: ConnectorContext,
-    query: RepairDataQuery
-  ): Promise<RepairDataAnswer<LaborTime> | null>
+  laborTimes?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<LaborTime>>
   /** Fluid types and capacities, for connectors with the 'repair.fluids' capability. */
-  fluidSpecs?(
-    ctx: ConnectorContext,
-    query: RepairDataQuery
-  ): Promise<RepairDataAnswer<FluidSpec> | null>
+  fluidSpecs?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<FluidSpec>>
+  /**
+   * Whether the key's plan still lets the account keep what it fetched, for
+   * the daily check on stored answers. Null when the source would not say,
+   * such as a key that has used its calls for the day. Throws
+   * RepairDataKeyRejected when the key is refused.
+   */
+  repairDataPlan?(ctx: ConnectorContext): Promise<{ keep: boolean | null }>
   jobs: Record<string, JobHandler>
   /** Inbound webhook handling, where the vendor pushes. */
   webhook?: {

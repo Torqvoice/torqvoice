@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Sprawdzaj normy czasowe i pojemności płynów dla pojazdu w zleceniu lub wycenie i jednym kliknięciem dodawaj godziny czynności jako pozycję robocizny. Obejmuje pojazdy z rynku amerykańskiego. Przy każdej wartości widać, jak pewny jest jej Open Labor Project, a wiele z nich to szacunki wygenerowane przez AI i niesprawdzone z danymi producenta, więc sprawdź je przed przygotowaniem wyceny dla klienta. Zapytania korzystają z własnego klucza API warsztatu.",
+      "description": "Sprawdzaj normy czasowe i pojemności płynów dla pojazdu ze zlecenia lub oferty i dodawaj godziny czynności jako pozycję robocizny jednym kliknięciem. Większość danych dotyczy pojazdów z rynku amerykańskiego, a katalog pokazuje, którego rynku dotyczy każde wyszukiwanie. Każda wartość pokazuje, na ile Open Labor Project jest jej pewien, a wiele to szacunki AI, więc sprawdź je, zanim przedstawisz ofertę klientowi. Wyszukiwania korzystają z własnego klucza API warsztatu. W płatnym planie Open Labor Project raz wyszukany pojazd jest przechowywany tak długo, jak trwa plan, więc ponowne wyszukanie nie kosztuje wywołania.",
       "fields": {
         "apiKey": "Klucz API",
-        "apiKeyHelp": "Poproś o klucz na openlaborproject.com w sekcji Developers; przyjdzie e-mailem. Darmowy klucz ma 10 zapytań dziennie i pokazuje godziny jednej czynności naraz. Plan Builder i wyższe podnoszą limit i pokazują godziny wszystkich czynności od razu."
+        "apiKeyHelp": "Poproś o klucz na openlaborproject.com w sekcji Developers; przyjdzie e-mailem. Darmowy klucz ma 10 zapytań dziennie i pokazuje godziny jednej czynności naraz. Plan Builder i wyższe podnoszą limit i pokazują godziny wszystkich czynności od razu.",
+        "apiKeyServerHelp": "Zostaw puste, aby użyć klucza udostępnianego przez ten serwer, albo wklej własny klucz z openlaborproject.com, aby korzystać z własnego planu."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Pokazuj normy od",
+        "minConfidenceHelp": "Pomija czasy, których źródło jest mniej pewne. Wiele czasów dla marek europejskich to szacunki AI, więc surowy wybór może zostawić niewiele czynności.",
+        "confidenceAll": "Każdy poziom pewności",
+        "confidenceMedium": "Średnia i wyżej",
+        "confidenceHigh": "Zweryfikowane i wyżej",
+        "confidenceOem": "Tylko OEM",
+        "hoursFrom": "Dodawane godziny",
+        "hoursFromHelp": "Która wartość trafia do zlecenia: czas z katalogu albo górna granica zakresu podanego przez Open Labor Project (na przykład 1,6 h zamiast 1,2 h). Górna granica zostawia zapas na czynności, które się przeciągają.",
+        "hoursBook": "Czas z katalogu",
+        "hoursHigh": "Górna granica zakresu",
+        "adjustPercent": "Koryguj czasy o (%)",
+        "adjustPercentHelp": "Procent dodawany do każdego czasu, zanim trafi do zlecenia: 10 zmienia 1,2 h w 1,32 h, a -10 w 1,08 h. Od -50 do 200.",
+        "rounding": "Zaokrąglaj godziny w górę do",
+        "roundingHelp": "Zaokrągla w górę godziny każdej czynności, po ewentualnej korekcie: przy 0,25 z 1,32 h robi się 1,5 h. Czas, który już wypada na kroku, zostaje bez zmian.",
+        "roundNone": "Nie zaokrąglaj",
+        "roundTenth": "0,1 godziny",
+        "roundQuarter": "0,25 godziny",
+        "roundHalf": "0,5 godziny",
+        "fluids": "Pokazuj dane płynów",
+        "fluidsHelp": "Dodaje kartę Płyny z pojemnościami, specyfikacjami i okresami wymiany. Otwarcie jej zużywa osobne wywołanie.",
+        "units": "Jednostki płynów",
+        "unitsHelp": "Jednostki, w których pokazywane są pojemności i okresy wymiany.",
+        "unitsBoth": "Obie",
+        "unitsMetric": "Metryczne (L, km)",
+        "unitsUs": "USA (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Mowa na tekst",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Odświeżanie danych o akcjach serwisowych",
       "vehicle": "Sprawdzenie akcji serwisowych dla nowego pojazdu"
+    },
+    "repair": {
+      "checkPlan": "Sprawdzenie, czy zapisane wyszukiwania mogą zostać"
     }
   },
   "backupAlerts": {

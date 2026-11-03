@@ -21,6 +21,7 @@ import { allReferencedSuffixes, FILE_REFERENCES, referencedSuffixes } from '@/li
 const NOT_FILES: Record<string, string> = {
   'AuditLog.metadata': 'history of what happened; never a live use of a file',
   'DashboardWidget.config': 'widget settings',
+  'RepairDataCache.data': 'labor times and fluid specs from a repair data source',
   'DocumentDesign.documentType': 'invoice or quote',
   'DocumentDesign.layout': 'section order and switches; the logo is in `template`',
   'DocumentDesignSnapshot.layout': 'the same, frozen',

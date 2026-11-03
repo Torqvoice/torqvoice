@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Consultez les temps de main-d'œuvre et les capacités de fluides du véhicule depuis un ordre de travail ou un devis, et ajoutez les heures d'une opération comme ligne de main-d'œuvre en un clic. Couvre les véhicules du marché américain. Chaque valeur indique le degré de certitude d'Open Labor Project, et beaucoup sont des estimations générées par IA, non vérifiées par rapport aux données du constructeur : vérifiez-les avant de faire un devis à un client. Les recherches utilisent la propre clé API de l'atelier.",
+      "description": "Consultez les temps de main-d’œuvre et les capacités de fluides du véhicule d’un ordre de réparation ou d’un devis, et ajoutez les heures d’une opération comme ligne de main-d’œuvre en un clic. La plupart des données concernent des véhicules du marché américain, et le barème indique à quel marché correspond chaque recherche. Chaque valeur indique la fiabilité estimée par Open Labor Project, et beaucoup sont des estimations générées par IA : vérifiez-les avant de faire un devis au client. Les recherches utilisent la propre clé API de l’atelier. Avec une offre payante d’Open Labor Project, un véhicule consulté une fois est conservé tant que l’offre est active, si bien qu’une nouvelle recherche ne coûte aucun appel.",
       "fields": {
         "apiKey": "Clé API",
-        "apiKeyHelp": "Demandez une clé sur openlaborproject.com, rubrique Developers ; elle arrive par e-mail. Une clé gratuite donne 10 appels par jour et affiche les heures une opération à la fois. L'offre Builder et au-delà relèvent la limite et affichent toutes les heures d'un coup."
+        "apiKeyHelp": "Demandez une clé sur openlaborproject.com, rubrique Developers ; elle arrive par e-mail. Une clé gratuite donne 10 appels par jour et affiche les heures une opération à la fois. L'offre Builder et au-delà relèvent la limite et affichent toutes les heures d'un coup.",
+        "apiKeyServerHelp": "Laissez ce champ vide pour utiliser la clé fournie par ce serveur, ou collez votre propre clé d’openlaborproject.com pour utiliser votre propre offre."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Afficher les temps à partir de",
+        "minConfidenceHelp": "Écarte les temps dont la source est moins sûre. Beaucoup de temps pour les marques européennes sont des estimations par IA : un choix strict peut laisser peu d’opérations.",
+        "confidenceAll": "Tous les niveaux de confiance",
+        "confidenceMedium": "Moyenne et plus",
+        "confidenceHigh": "Vérifié et plus",
+        "confidenceOem": "OEM uniquement",
+        "hoursFrom": "Heures à ajouter",
+        "hoursFromHelp": "Le chiffre qui va sur l’ordre de réparation : le temps barème, ou le haut de la fourchette donnée par Open Labor Project (par exemple 1,6 h au lieu de 1,2 h). Le haut de la fourchette laisse de la marge pour les opérations qui durent plus longtemps.",
+        "hoursBook": "Temps barème",
+        "hoursHigh": "Haut de la fourchette",
+        "adjustPercent": "Ajuster les temps de (%)",
+        "adjustPercentHelp": "Un pourcentage ajouté à chaque temps avant qu’il n’aille sur l’ordre de réparation : 10 fait passer 1,2 h à 1,32 h, -10 le fait passer à 1,08 h. De -50 à 200.",
+        "rounding": "Arrondir les heures au supérieur à",
+        "roundingHelp": "Arrondit au supérieur les heures de chaque opération, après un éventuel ajustement : avec 0,25, 1,32 h devient 1,5 h. Un temps déjà sur un pas reste tel quel.",
+        "roundNone": "Ne pas arrondir",
+        "roundTenth": "0,1 heure",
+        "roundQuarter": "0,25 heure",
+        "roundHalf": "0,5 heure",
+        "fluids": "Afficher les fluides",
+        "fluidsHelp": "Ajoute un onglet Fluides avec capacités, spécifications et intervalles de remplacement. L’ouvrir utilise un appel à part.",
+        "units": "Unités des fluides",
+        "unitsHelp": "Les unités dans lesquelles s’affichent capacités et intervalles.",
+        "unitsBoth": "Les deux",
+        "unitsMetric": "Métrique (L, km)",
+        "unitsUs": "US (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Transcription vocale",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Actualisation des données de rappel",
       "vehicle": "Vérification des rappels pour un nouveau véhicule"
+    },
+    "repair": {
+      "checkPlan": "Vérifier que les recherches enregistrées peuvent être conservées"
     }
   },
   "backupAlerts": {

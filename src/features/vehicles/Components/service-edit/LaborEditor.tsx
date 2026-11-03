@@ -27,6 +27,8 @@ import { useFormatCurrency, useCurrencySettings } from '@/components/currency-se
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import { makeEmptyLabor, makeEmptyService } from './form-types'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
+import type { LaborGuideStock } from '../labor-guide/FluidPartButton'
 import { LaborGuideButton } from '../labor-guide/LaborGuideButton'
 import type { LaborGuideJob } from '../labor-guide/LaborGuideDialog'
 import {
@@ -63,6 +65,10 @@ interface LaborEditorProps {
   vehicleId?: string | null
   /** "2018 Ford F-150", shown in the labor guide. */
   vehicleLabel?: string
+  /** Adds a fluid from the labor guide to the job's parts. */
+  onAddGuidePart?: (line: FluidPartLine) => void
+  /** The workshop's stock, for the labor guide to match fluids against. */
+  guideStock?: LaborGuideStock
 }
 
 function SortableLaborRow({
@@ -221,6 +227,8 @@ export function LaborEditor({
   onShowExistingObservations,
   vehicleId,
   vehicleLabel,
+  onAddGuidePart,
+  guideStock,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
   const modern = useModernWorkOrder()
@@ -329,7 +337,13 @@ export function LaborEditor({
         <IconActionButton label={t('fromPresets')} icon={Layers} onClick={onOpenPresets} />
       )}
       {vehicleId && (
-        <LaborGuideButton vehicleId={vehicleId} vehicleLabel={vehicleLabel} onAdd={addGuideJob} />
+        <LaborGuideButton
+          vehicleId={vehicleId}
+          vehicleLabel={vehicleLabel}
+          onAdd={addGuideJob}
+          onAddPart={onAddGuidePart}
+          stock={guideStock}
+        />
       )}
       <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
       <IconActionButton label={t('addService')} icon={Wrench} onClick={addServiceAtStart} />

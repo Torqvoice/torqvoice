@@ -57,9 +57,11 @@ vi.mock('next-intl', () => ({
     const file = parts[0]
     const sub = parts.slice(1).join('.')
 
+    // A namespace can reach any depth, such as "service.laborGuide.confidence".
     let messages: unknown = allMessages[file]
-    if (sub && messages && typeof messages === 'object') {
-      messages = (messages as Record<string, unknown>)[sub]
+    for (const seg of sub ? sub.split('.') : []) {
+      if (!messages || typeof messages !== 'object') break
+      messages = (messages as Record<string, unknown>)[seg]
     }
 
     const t = (key: string, values?: Record<string, unknown>) => {
@@ -79,6 +81,12 @@ vi.mock('next-intl', () => ({
     return t
   },
   useLocale: () => 'en',
+  useFormatter: () => ({
+    number: (value: number, options?: Intl.NumberFormatOptions) =>
+      new Intl.NumberFormat('en', options).format(value),
+    dateTime: (value: Date | number, options?: Intl.DateTimeFormatOptions) =>
+      new Intl.DateTimeFormat('en', options).format(value),
+  }),
   useMessages: () => ({}),
   NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
 }))

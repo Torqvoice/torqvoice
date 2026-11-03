@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Consulte tempos de mão de obra e capacidades de fluidos do veículo numa ordem de trabalho ou num orçamento, e adicione as horas de um trabalho como linha de mão de obra com um clique. Abrange veículos do mercado norte-americano. Cada valor mostra o grau de certeza do Open Labor Project, e muitos são estimativas geradas por IA que não foram verificadas com os dados do fabricante, por isso verifique-as antes de orçamentar a um cliente. As consultas usam a chave de API da própria oficina.",
+      "description": "Consulte os tempos de mão de obra e as capacidades de fluidos do veículo de uma ordem de reparação ou orçamento, e adicione as horas de um trabalho como linha de mão de obra com um clique. A maior parte dos dados é de veículos do mercado norte-americano, e a tabela indica a que mercado cada pesquisa se refere. Cada valor indica a confiança da Open Labor Project, e muitos são estimativas geradas por IA, por isso verifique-os antes de apresentar um orçamento ao cliente. As pesquisas usam a chave de API da própria oficina. Com um plano pago da Open Labor Project, um veículo pesquisado uma vez fica guardado enquanto o plano durar, por isso voltar a pesquisá-lo não gasta nenhuma chamada.",
       "fields": {
         "apiKey": "Chave de API",
-        "apiKeyHelp": "Peça uma chave em openlaborproject.com, em Developers; chega por e-mail. Uma chave gratuita tem 10 pedidos por dia e mostra as horas de um trabalho de cada vez. O plano Builder e superiores aumentam o limite e mostram as horas de todos os trabalhos de uma vez."
+        "apiKeyHelp": "Peça uma chave em openlaborproject.com, em Developers; chega por e-mail. Uma chave gratuita tem 10 pedidos por dia e mostra as horas de um trabalho de cada vez. O plano Builder e superiores aumentam o limite e mostram as horas de todos os trabalhos de uma vez.",
+        "apiKeyServerHelp": "Deixe em branco para usar a chave fornecida por este servidor, ou cole a sua própria chave de openlaborproject.com para usar o seu próprio plano."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Mostrar tempos a partir de",
+        "minConfidenceHelp": "Exclui os tempos de que a fonte tem menos certeza. Muitos tempos de marcas europeias são estimativas por IA, por isso uma escolha rigorosa pode deixar poucos trabalhos.",
+        "confidenceAll": "Qualquer nível de confiança",
+        "confidenceMedium": "Média ou superior",
+        "confidenceHigh": "Verificado ou superior",
+        "confidenceOem": "Apenas OEM",
+        "hoursFrom": "Horas a adicionar",
+        "hoursFromHelp": "Que valor vai para a ordem de reparação: o tempo de tabela, ou o topo do intervalo indicado pela Open Labor Project (por exemplo, 1,6 h em vez de 1,2 h). O topo do intervalo deixa margem para trabalhos que demoram mais.",
+        "hoursBook": "Tempo de tabela",
+        "hoursHigh": "Topo do intervalo",
+        "adjustPercent": "Ajustar tempos em (%)",
+        "adjustPercentHelp": "Uma percentagem somada a cada tempo antes de passar para a ordem de reparação: 10 transforma 1,2 h em 1,32 h, e -10 em 1,08 h. De -50 a 200.",
+        "rounding": "Arredondar horas por excesso a",
+        "roundingHelp": "Arredonda por excesso as horas de cada trabalho, depois de qualquer ajuste: com 0,25, 1,32 h passa a 1,5 h. Um tempo que já está num passo fica como está.",
+        "roundNone": "Não arredondar",
+        "roundTenth": "0,1 hora",
+        "roundQuarter": "0,25 hora",
+        "roundHalf": "0,5 hora",
+        "fluids": "Mostrar especificações de fluidos",
+        "fluidsHelp": "Acrescenta um separador Fluidos com capacidades, especificações e intervalos de substituição. Abri-lo usa uma chamada própria.",
+        "units": "Unidades de fluidos",
+        "unitsHelp": "As unidades em que se apresentam capacidades e intervalos de substituição.",
+        "unitsBoth": "Ambas",
+        "unitsMetric": "Métricas (L, km)",
+        "unitsUs": "EUA (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Voz para texto",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Atualização dos dados de recall",
       "vehicle": "Verificação de recall para uma viatura nova"
+    },
+    "repair": {
+      "checkPlan": "Verificar se as pesquisas guardadas podem ser mantidas"
     }
   },
   "backupAlerts": {

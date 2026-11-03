@@ -1,14 +1,17 @@
-import type {
-  ConnectorContext,
-  ConnectorServer,
-  FluidSpec,
-  LaborTime,
-  RepairDataAnswer,
-  RepairDataConfidence,
-  RepairDataQuery,
-  RepairDataVariant,
+import { repairDataJobs, settleKeyCheck } from '@/features/integrations/Lib/repair-data'
+import {
+  type ConnectorContext,
+  type ConnectorServer,
+  type FluidSpec,
+  type LaborTime,
+  type RepairDataAnswer,
+  type RepairDataConfidence,
+  RepairDataKeyRejected,
+  type RepairDataQuery,
+  type RepairDataReply,
+  type RepairDataVariant,
 } from '@/features/integrations/Lib/types'
-import { manifest } from './manifest'
+import { manifest, SERVER_KEY_ENV } from './manifest'
 
 /**
  * Open Labor Project: GET /api/v1/labor-times and /api/v1/fluid-specs with
@@ -30,7 +33,12 @@ import { manifest } from './manifest'
  *   or estimated, which the service says is AI-derived and not checked
  *   against a maker's guide.
  * - Replies say cache-control: private, no-store, and a free key has ten
- *   calls a day.
+ *   calls a day. Chris at Open Labor Project confirmed on 3 November 2026
+ *   that every paid plan may keep what it fetched for as long as it stays
+ *   subscribed.
+ * - Every reply names the key's plan in x-ratelimit-tier: "hobbyist" for a
+ *   free key. A whole-model reply on a free key also carries meta.freeTier.
+ *   That is what decides whether an answer may be stored.
  *
  * Requests go out with plain fetch, not the platform's retrying client: a
  * person is waiting on the dialog, and a key that has used its day's calls
@@ -39,10 +47,34 @@ import { manifest } from './manifest'
 const BASE_URL = 'https://openlaborproject.com/api/v1'
 const TIMEOUT_MS = 20_000
 
+/** The connection test's lookup: one job on a vehicle the service has listed since launch. */
+const TEST_QUERY = new URLSearchParams({
+  make: 'ford',
+  model: 'f-150',
+  year: '2018',
+  engine: '5.0l-v8-coyote',
+  job: 'water-pump',
+}).toString()
+
 interface Envelope {
   data?: unknown
   meta?: Record<string, unknown>
-  error?: { code?: string; message?: string } | null
+  /** A model it does not know comes with the slugs it does know for that make. */
+  error?: { code?: string; message?: string; availableModels?: unknown } | null
+}
+
+/** Plan names Open Labor Project gives a free key. */
+const FREE_TIERS = new Set(['hobbyist', 'free'])
+
+/**
+ * Whether the key's plan lets the answer be kept: a paid tier named in the
+ * header, and no sign of the free tier in the body. A reply that names no
+ * plan is not kept.
+ */
+export function keepAllowed(headers: Headers, body: Envelope): boolean {
+  const tier = headers.get('x-ratelimit-tier')?.trim().toLowerCase()
+  if (!tier || FREE_TIERS.has(tier)) return false
+  return !(body.meta && 'freeTier' in body.meta)
 }
 
 /** One engine and drivetrain as the service describes it. */
@@ -90,6 +122,55 @@ export function slug(value: string): string {
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+/**
+ * Words other languages use where the service's slugs say "series" or
+ * "class": a Norwegian or Dutch shop writes BMW "3-Serie", a German one
+ * "3er" or Mercedes "C-Klasse".
+ */
+const MODEL_WORDS: [RegExp, string][] = [
+  [/\b(\d)er\b/g, '$1 series'],
+  [/\bseri(?:e|en)\b/g, 'series'],
+  [/\breihe\b/g, 'series'],
+  [/\bklasse?\b/g, 'class'],
+  [/\bclasse\b/g, 'class'],
+  [/\bclase\b/g, 'class'],
+]
+
+/**
+ * The model the way the service likely spells it: a chassis code in
+ * brackets left out and the local word for "series" or "class" in English.
+ * "3-Serie (E9*)" is 3-series, "C-Klasse" is c-class.
+ */
+export function modelSlug(model: string): string {
+  let s = model
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\([^)]*\)/g, ' ')
+  for (const [pattern, to] of MODEL_WORDS) s = s.replace(pattern, to)
+  return slug(s)
+}
+
+/**
+ * The service's own slug for a model the workshop wrote its own way, picked
+ * from the slugs a "not found" reply lists: the one that reads the same
+ * once punctuation is set aside, else the longest one the name starts with
+ * ("5-Serie F11" is 5-series). Null when none fits.
+ */
+export function resolveModel(model: string, available: readonly string[]): string | null {
+  const own = modelSlug(model).replace(/-/g, '')
+  if (!own) return null
+  let best: string | null = null
+  for (const candidate of available) {
+    const key = modelSlug(candidate).replace(/-/g, '')
+    if (!key) continue
+    if (key === own) return candidate
+    const longer = !best || key.length > modelSlug(best).replace(/-/g, '').length
+    if (key.length >= 2 && own.startsWith(key) && longer) best = candidate
+  }
+  return best
 }
 
 export function confidenceOf(value: unknown): RepairDataConfidence | null {
@@ -210,22 +291,46 @@ export function toAnswer<T>(
   return null
 }
 
+/** The workshop's own key, else the one the server holds for every workshop, when it holds one. */
 function apiKey(ctx: ConnectorContext): string {
-  return typeof ctx.credentials.apiKey === 'string' ? ctx.credentials.apiKey.trim() : ''
+  const own = typeof ctx.credentials.apiKey === 'string' ? ctx.credentials.apiKey.trim() : ''
+  return own || process.env[SERVER_KEY_ENV]?.trim() || ''
 }
 
-class NotFound extends Error {}
+/** The model, or the variant asked for, is not in the service's list. */
+class NotFound extends Error {
+  constructor(
+    code: string,
+    /** The slugs the service does know for the make. */
+    readonly availableModels: string[]
+  ) {
+    super(code)
+  }
+}
 
 /**
- * One call. A model the service does not know throws NotFound for the
- * caller to try the VIN; every other refusal is put in words the person at
- * the dialog can act on.
+ * Any other refusal of what was asked, such as a VIN the service decodes
+ * but has no data for (400 MISSING_PARAMS). Kept apart so a VIN attempt
+ * that ends here reads as "not in the guide" rather than as a failure.
+ */
+class Refused extends Error {}
+
+function availableModelsOf(body: Envelope): string[] {
+  const list = body.error?.availableModels
+  return Array.isArray(list) ? list.filter((m): m is string => typeof m === 'string') : []
+}
+
+/**
+ * One call, and whether its answer may be kept. A model the service does
+ * not know throws NotFound for the caller to try the VIN, a refused key
+ * throws RepairDataKeyRejected, and every other refusal is put in words the
+ * person at the dialog can act on.
  */
 async function call(
   ctx: ConnectorContext,
   path: string,
   params: URLSearchParams
-): Promise<Envelope> {
+): Promise<{ body: Envelope; keep: boolean }> {
   let res: Response
   try {
     res = await fetch(`${BASE_URL}/${path}?${params}`, {
@@ -241,13 +346,13 @@ async function call(
     throw new Error('Open Labor Project could not be reached, try again in a moment')
   }
   const body = (await res.json().catch(() => ({}))) as Envelope
-  if (res.ok) return body
+  if (res.ok) return { body, keep: keepAllowed(res.headers, body) }
   const code = body.error?.code ?? ''
   const message = body.error?.message?.trim() ?? ''
-  if (res.status === 404) throw new NotFound(code || 'not found')
+  if (res.status === 404) throw new NotFound(code || 'not found', availableModelsOf(body))
   if (res.status === 401 || code === 'INVALID_API_KEY') {
     await ctx.log('error', 'Open Labor Project rejected the API key', { path })
-    throw new Error('Open Labor Project rejected the API key')
+    throw new RepairDataKeyRejected('Open Labor Project rejected the API key')
   }
   if (res.status === 429) {
     await ctx.log('warn', 'Open Labor Project: call limit reached', { path, code })
@@ -257,20 +362,27 @@ async function call(
         : 'Open Labor Project: this key has used all its calls for now, try again later'
     )
   }
+  const words = message
+    ? `Open Labor Project: ${message}`
+    : `Open Labor Project answered HTTP ${res.status}`
+  if (res.status === 400 || res.status === 422) throw new Refused(words)
   await ctx.log('error', 'Open Labor Project lookup failed', { path, status: res.status, code })
-  throw new Error(
-    message ? `Open Labor Project: ${message}` : `Open Labor Project answered HTTP ${res.status}`
-  )
+  throw new Error(words)
 }
 
 /** The query string: the vehicle, then the variant and the one item when asked for. */
-function paramsFor(query: RepairDataQuery, by: 'model' | 'vin', itemParam: 'job' | 'q') {
+function paramsFor(
+  query: RepairDataQuery,
+  by: 'model' | 'vin',
+  itemParam: 'job' | 'q',
+  modelId?: string
+) {
   const params = new URLSearchParams()
   if (by === 'vin' && query.vin) {
     params.set('vin', query.vin)
   } else {
     params.set('make', slug(query.make))
-    params.set('model', slug(query.model))
+    params.set('model', modelId ?? modelSlug(query.model))
     params.set('year', String(query.year))
   }
   if (query.variant) {
@@ -288,9 +400,14 @@ function vinOf(query: RepairDataQuery): string | null {
 }
 
 /**
- * By model name first, so one call answers for every engine. A model the
- * service spells differently ("F150" for its "f-150") is found from the VIN
- * instead, when the vehicle has one.
+ * By model name first, so one call answers for every engine, under the
+ * name another lookup already found when there is one. A name the service
+ * does not know is matched against the slugs its "not found" reply lists
+ * and asked once more. Only a model it knows under no name we can find is
+ * tried by VIN, and a VIN it cannot place is "not found", not a failure.
+ * Every attempt costs a call and an unknown vehicle can take the service
+ * half a minute to answer, so nothing is asked that cannot change the
+ * answer.
  */
 async function lookup<T>(
   ctx: ConnectorContext,
@@ -299,43 +416,104 @@ async function lookup<T>(
   listKey: 'laborTimes' | 'fluidSpecs',
   itemParam: 'job' | 'q',
   map: (row: never) => T | null
-): Promise<RepairDataAnswer<T> | null> {
+): Promise<RepairDataReply<T>> {
   const vin = vinOf(query)
-  const attempts: ('model' | 'vin')[] = vin ? ['model', 'vin'] : ['model']
-  for (const by of attempts) {
-    try {
-      const body = await call(
-        ctx,
-        path,
-        paramsFor({ ...query, vin: vin ?? undefined }, by, itemParam)
-      )
-      const answer = toAnswer(body.data, listKey, map, query.variant?.engineId)
-      const locked = answer?.variants.reduce(
-        (n, v) => n + v.items.filter((i) => (i as { locked?: boolean }).locked).length,
-        0
-      )
-      // Make, model and year only: the VIN identifies one vehicle and stays out of the log.
-      await ctx.log('info', answer ? `${path}: match` : `${path}: no match`, {
-        by,
-        make: query.make,
-        model: query.model,
-        year: query.year,
-        variants: answer?.variants.length ?? 0,
-        locked: locked ?? 0,
-        item: query.item ?? null,
-      })
-      if (answer) return answer
-    } catch (err) {
-      if (!(err instanceof NotFound)) throw err
-      await ctx.log('info', `${path}: not found`, {
-        by,
-        make: query.make,
-        model: query.model,
-        year: query.year,
-      })
+  // A model nobody knows says nothing about the plan, so it is not kept.
+  let keep = false
+  const where = { make: query.make, model: query.model, year: query.year }
+
+  const ask = async (
+    by: 'model' | 'vin',
+    modelId?: string
+  ): Promise<RepairDataAnswer<T> | null> => {
+    const reply = await call(
+      ctx,
+      path,
+      paramsFor({ ...query, vin: vin ?? undefined }, by, itemParam, modelId)
+    )
+    keep = reply.keep
+    const body = reply.body
+    const found = toAnswer(body.data, listKey, map, query.variant?.engineId)
+    const region = str(body.meta?.region)
+    const answer: RepairDataAnswer<T> | null = found
+      ? {
+          ...found,
+          matchedBy: by,
+          modelId: by === 'model' ? modelId : found.model ? modelSlug(found.model) : undefined,
+          ...(region ? { region } : {}),
+        }
+      : null
+    const locked = answer?.variants.reduce(
+      (n, v) => n + v.items.filter((i) => (i as { locked?: boolean }).locked).length,
+      0
+    )
+    // Make, model and year only: the VIN identifies one vehicle and stays out of the log.
+    await ctx.log('info', answer ? `${path}: match` : `${path}: no match`, {
+      by,
+      ...where,
+      modelId: by === 'model' ? modelId : null,
+      variants: answer?.variants.length ?? 0,
+      locked: locked ?? 0,
+      item: query.item ?? null,
+      kept: keep,
+    })
+    return answer
+  }
+  const notFound = (by: 'model' | 'vin', modelId?: string) =>
+    ctx.log('info', `${path}: not found`, { by, ...where, modelId: modelId ?? null })
+  const none = (): RepairDataReply<T> => ({ answer: null, keep })
+
+  const first = query.modelId ?? modelSlug(query.model)
+  try {
+    const answer = await ask('model', first)
+    return answer ? { answer, keep } : none()
+  } catch (err) {
+    if (!(err instanceof NotFound)) throw err
+    await notFound('model', first)
+    // Found under this name before, or a name the service lists: it knows
+    // the model and has nothing for this year or engine. A VIN cannot help.
+    if (query.modelId || err.availableModels.includes(first)) return none()
+    const other = resolveModel(query.model, err.availableModels)
+    if (other && other !== first) {
+      try {
+        const answer = await ask('model', other)
+        return answer ? { answer, keep } : none()
+      } catch (again) {
+        if (!(again instanceof NotFound)) throw again
+        await notFound('model', other)
+        return none()
+      }
     }
   }
-  return null
+
+  if (!vin) return none()
+  try {
+    const answer = await ask('vin')
+    return answer ? { answer, keep } : none()
+  } catch (err) {
+    if (!(err instanceof NotFound || err instanceof Refused)) throw err
+    await notFound('vin')
+    return none()
+  }
+}
+
+/**
+ * Whether the key is still on a plan that may keep its answers, from one
+ * cheap call. Null when the reply does not say, such as when the key has
+ * used its calls for the day.
+ */
+async function plan(ctx: ConnectorContext): Promise<{ keep: boolean | null }> {
+  const res = await fetch(`${BASE_URL}/labor-times?${TEST_QUERY}`, {
+    headers: { 'x-api-key': apiKey(ctx), Accept: 'application/json' },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: 'no-store',
+  })
+  const body = (await res.json().catch(() => ({}))) as Envelope
+  if (res.status === 401 || body.error?.code === 'INVALID_API_KEY') {
+    throw new RepairDataKeyRejected('Open Labor Project rejected the API key')
+  }
+  if (!res.headers.get('x-ratelimit-tier')) return { keep: null }
+  return { keep: keepAllowed(res.headers, res.ok ? body : {}) }
 }
 
 export const connector: ConnectorServer = {
@@ -343,17 +521,32 @@ export const connector: ConnectorServer = {
 
   async test(ctx) {
     if (!apiKey(ctx)) return { ok: false, message: 'Open Labor Project: an API key is required' }
-    // A call with no vehicle is the cheapest proof there is: a good key is
-    // told what is missing, a bad one is turned away before that.
+    // One job on one vehicle the service lists: a single call, and one it
+    // can answer. A call with no vehicle shows up as an error on their side.
+    // A key that has used its calls for the day is still a good key, and a
+    // vehicle gone from their list says nothing about the key either.
     try {
-      const res = await fetch(`${BASE_URL}/labor-times`, {
+      const res = await fetch(`${BASE_URL}/labor-times?${TEST_QUERY}`, {
         headers: { 'x-api-key': apiKey(ctx), Accept: 'application/json' },
         signal: AbortSignal.timeout(TIMEOUT_MS),
         cache: 'no-store',
       })
-      if (res.ok || res.status === 400) return { ok: true }
-      if (res.status === 401)
+      if (res.status === 401) {
+        await settleKeyCheck(ctx, manifest, 'rejected')
         return { ok: false, message: 'Open Labor Project rejected the API key' }
+      }
+      if (res.ok || res.status === 404 || res.status === 429) {
+        // A reply that names the plan settles what may stay stored.
+        if (res.headers.get('x-ratelimit-tier')) {
+          const body = (await res.json().catch(() => ({}))) as Envelope
+          await settleKeyCheck(
+            ctx,
+            manifest,
+            keepAllowed(res.headers, res.ok ? body : {}) ? 'paid' : 'free'
+          )
+        }
+        return { ok: true }
+      }
       return { ok: false, message: `Open Labor Project answered HTTP ${res.status}` }
     } catch {
       return { ok: false, message: 'Open Labor Project could not be reached' }
@@ -368,5 +561,7 @@ export const connector: ConnectorServer = {
   fluidSpecs: (ctx, query) =>
     lookup(ctx, query, 'fluid-specs', 'fluidSpecs', 'q', (row: RawFluidSpec) => mapFluidSpec(row)),
 
-  jobs: {},
+  repairDataPlan: plan,
+
+  jobs: repairDataJobs(manifest, plan),
 }

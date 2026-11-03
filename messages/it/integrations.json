@@ -783,12 +783,39 @@
       }
     },
     "openlaborproject": {
-      "description": "Consulta i tempi di manodopera e le capacità dei fluidi del veicolo da un ordine di lavoro o da un preventivo, e aggiungi le ore di un lavoro come riga di manodopera con un clic. Copre i veicoli del mercato statunitense. Ogni valore indica quanto Open Labor Project ne è sicuro, e molti sono stime generate dall'IA non verificate con i dati del costruttore, quindi controllale prima di fare un preventivo a un cliente. Le ricerche usano la chiave API dell'officina.",
+      "description": "Consulta i tempi di manodopera e le capacità dei fluidi del veicolo di un ordine di lavoro o di un preventivo, e aggiungi le ore di un lavoro come riga di manodopera con un clic. La maggior parte dei dati riguarda veicoli del mercato statunitense, e il tempario indica a quale mercato si riferisce ogni ricerca. Ogni valore mostra quanto Open Labor Project ne è sicuro, e molti sono stime generate dall’IA, quindi verificali prima di fare un preventivo al cliente. Le ricerche usano la chiave API dell’officina. Con un piano a pagamento di Open Labor Project, un veicolo cercato una volta resta salvato finché il piano è attivo, quindi cercarlo di nuovo non costa alcuna chiamata.",
       "fields": {
         "apiKey": "Chiave API",
-        "apiKeyHelp": "Richiedi una chiave su openlaborproject.com alla voce Developers; arriva via email. Una chiave gratuita ha 10 chiamate al giorno e mostra le ore un lavoro alla volta. Dal piano Builder in su il limite sale e le ore di tutti i lavori compaiono insieme."
+        "apiKeyHelp": "Richiedi una chiave su openlaborproject.com alla voce Developers; arriva via email. Una chiave gratuita ha 10 chiamate al giorno e mostra le ore un lavoro alla volta. Dal piano Builder in su il limite sale e le ore di tutti i lavori compaiono insieme.",
+        "apiKeyServerHelp": "Lascia vuoto per usare la chiave fornita da questo server, oppure incolla la tua chiave di openlaborproject.com per usare il tuo piano."
       },
-      "settings": {}
+      "settings": {
+        "minConfidence": "Mostra i tempi da",
+        "minConfidenceHelp": "Esclude i tempi di cui la fonte è meno sicura. Molti tempi per le marche europee sono stime dell’IA, quindi una scelta rigida può lasciare pochi lavori.",
+        "confidenceAll": "Ogni livello di affidabilità",
+        "confidenceMedium": "Media e oltre",
+        "confidenceHigh": "Verificato e oltre",
+        "confidenceOem": "Solo OEM",
+        "hoursFrom": "Ore da aggiungere",
+        "hoursFromHelp": "Quale valore va sull’ordine di lavoro: il tempo del tempario, o il massimo dell’intervallo indicato da Open Labor Project (ad esempio 1,6 h invece di 1,2 h). Il massimo lascia margine per i lavori che si allungano.",
+        "hoursBook": "Tempo del tempario",
+        "hoursHigh": "Massimo dell’intervallo",
+        "adjustPercent": "Regola i tempi del (%)",
+        "adjustPercentHelp": "Una percentuale aggiunta a ogni tempo prima che vada sull’ordine di lavoro: 10 trasforma 1,2 h in 1,32 h, -10 in 1,08 h. Da -50 a 200.",
+        "rounding": "Arrotonda le ore per eccesso a",
+        "roundingHelp": "Arrotonda per eccesso le ore di ogni lavoro, dopo l’eventuale regolazione: con 0,25, 1,32 h diventa 1,5 h. Un tempo che è già su un passo resta com’è.",
+        "roundNone": "Non arrotondare",
+        "roundTenth": "0,1 ora",
+        "roundQuarter": "0,25 ore",
+        "roundHalf": "0,5 ore",
+        "fluids": "Mostra le specifiche dei fluidi",
+        "fluidsHelp": "Aggiunge una scheda Fluidi con capacità, specifiche e intervalli di sostituzione. Aprirla usa una chiamata a parte.",
+        "units": "Unità dei fluidi",
+        "unitsHelp": "Le unità in cui sono mostrati capacità e intervalli di sostituzione.",
+        "unitsBoth": "Entrambe",
+        "unitsMetric": "Metriche (L, km)",
+        "unitsUs": "USA (qt, mi)"
+      }
     },
     "speech-to-text": {
       "name": "Da voce a testo",
@@ -931,6 +958,9 @@
     "safety": {
       "refresh": "Aggiornamento dei dati sui richiami",
       "vehicle": "Controllo richiami per un nuovo veicolo"
+    },
+    "repair": {
+      "checkPlan": "Verifica che le ricerche salvate possano restare"
     }
   },
   "backupAlerts": {

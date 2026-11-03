@@ -1,6 +1,7 @@
-import type { ReactNode } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
+import { servicePartFromFluid } from '../labor-guide/guide-lines'
 import { ConcernsSection } from '../service-edit/ConcernsSection'
 import { NotesSection } from '../service-edit/NotesSection'
 import { PaymentsSection } from '../service-detail/PaymentsSection'
@@ -91,6 +92,11 @@ export function DetailsLeftColumn({
   payCode = null,
 }: DetailsLeftColumnProps) {
   const tClock = useTranslations('timeTracking.job')
+  // What the labor guide matches a fluid against, priced the way a pick from stock is here.
+  const guideStock = useMemo(
+    () => ({ parts: inventoryParts, pricing: { defaultMarkupPercent, markupAppliesToInventory } }),
+    [inventoryParts, defaultMarkupPercent, markupAppliesToInventory]
+  )
   // Which concerns somebody has actually looked at. Counted here rather than
   // queried, because the findings are already loaded for the section below.
   const answeredCounts = findings.reduce<Record<string, number>>((counts, finding) => {
@@ -174,6 +180,10 @@ export function DetailsLeftColumn({
           record.vehicle
             ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
             : undefined
+        }
+        guideStock={guideStock}
+        onAddGuidePart={(line) =>
+          formState.dirtySetPartItems((prev) => [servicePartFromFluid(line), ...prev])
         }
       />
       <JobClockSection

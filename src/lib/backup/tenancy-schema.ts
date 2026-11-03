@@ -525,6 +525,17 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     foreignKeys: {},
     ownerPaths: [],
   },
+  RepairDataCache: {
+    organizationId: false,
+    foreignKeys: {
+      connectionId: {
+        target: 'IntegrationConnection',
+        required: false,
+        relation: 'connection',
+      },
+    },
+    ownerPaths: [['connection']],
+  },
   BackupRun: {
     organizationId: true,
     foreignKeys: {

@@ -6,6 +6,8 @@ import { BookOpen } from 'lucide-react'
 import { IconActionButton } from '@/components/icon-action-button'
 import { Button } from '@/components/ui/button'
 import { isRepairDataAvailable } from '@/features/integrations/Actions/repairDataActions'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
+import type { LaborGuideStock } from './FluidPartButton'
 import { type LaborGuideJob, LaborGuideDialog } from './LaborGuideDialog'
 
 interface LaborGuideButtonProps {
@@ -14,6 +16,10 @@ interface LaborGuideButtonProps {
   vehicleLabel?: string
   /** Adds a job from the guide as a labor line. */
   onAdd: (job: LaborGuideJob) => void
+  /** Adds a fluid from the guide as a part line. */
+  onAddPart?: (line: FluidPartLine) => void
+  /** The workshop's stock, matched against each fluid's grade and spec. */
+  stock?: LaborGuideStock
   /** A labelled button, for toolbars whose other buttons carry their names. */
   labelled?: boolean
 }
@@ -30,6 +36,8 @@ export function LaborGuideButton({
   vehicleId,
   vehicleLabel,
   onAdd,
+  onAddPart,
+  stock,
   labelled = false,
 }: LaborGuideButtonProps) {
   const t = useTranslations('service.laborGuide')
@@ -67,6 +75,8 @@ export function LaborGuideButton({
           vehicleLabel={vehicleLabel}
           available={available}
           onAdd={onAdd}
+          onAddPart={onAddPart}
+          stock={stock}
         />
       )}
     </>
