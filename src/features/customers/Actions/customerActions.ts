@@ -506,23 +506,6 @@ export async function createWorkOrderFromRequest(requestId: string) {
   )
 }
 
-export async function getCustomersList() {
-  return withAuth(
-    async ({ userId, organizationId }) => {
-      return db.customer.findMany({
-        where: { organizationId },
-        select: { id: true, name: true, company: true },
-        orderBy: { name: 'asc' },
-      })
-    },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
-      ],
-    }
-  )
-}
-
 export async function searchCustomers(search?: string, limit = 20, offset = 0) {
   return withAuth(
     async ({ organizationId }) => {

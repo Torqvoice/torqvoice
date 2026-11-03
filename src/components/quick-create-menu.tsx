@@ -25,24 +25,7 @@ import {
 } from 'lucide-react'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
-
-interface VehicleOption {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
-}
-
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
 
 interface TemplateOption {
   id: string
@@ -56,34 +39,11 @@ export function QuickCreateMenu() {
   const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false)
   const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [vehicles, setVehicles] = useState<VehicleOption[]>([])
-  const [customers, setCustomers] = useState<CustomerOption[]>([])
   const [templates, setTemplates] = useState<TemplateOption[]>([])
 
-  const handleNewWorkOrder = async () => {
-    setLoading(true)
-    try {
-      const [vehiclesResult, customersResult] = await Promise.all([
-        getVehicles(),
-        getCustomersList(),
-      ])
-      setVehicles(
-        vehiclesResult.success && vehiclesResult.data
-          ? vehiclesResult.data.map((v) => ({
-              id: v.id,
-              make: v.make,
-              model: v.model,
-              year: v.year,
-              licensePlate: v.licensePlate,
-              customer: v.customer,
-            }))
-          : []
-      )
-      setCustomers(customersResult.success && customersResult.data ? customersResult.data : [])
-      setVehicleDialogOpen(true)
-    } finally {
-      setLoading(false)
-    }
+  // The picker searches vehicles itself, so there is nothing to load first.
+  const handleNewWorkOrder = () => {
+    setVehicleDialogOpen(true)
   }
 
   const handleNewInspection = async () => {
@@ -157,12 +117,7 @@ export function QuickCreateMenu() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <VehiclePickerDialog
-        open={vehicleDialogOpen}
-        onOpenChange={setVehicleDialogOpen}
-        vehicles={vehicles}
-        customers={customers}
-      />
+      <VehiclePickerDialog open={vehicleDialogOpen} onOpenChange={setVehicleDialogOpen} />
       <NewInspectionDialog
         open={inspectionDialogOpen}
         onOpenChange={setInspectionDialogOpen}

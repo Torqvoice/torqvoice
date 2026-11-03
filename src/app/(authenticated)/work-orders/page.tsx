@@ -6,8 +6,6 @@ import { getTranslations } from 'next-intl/server'
 import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
@@ -35,7 +33,7 @@ export default async function WorkOrdersPage({
     sortOrder: 'desc',
   })
   const columns = await resolveListColumns('workOrders', WORK_ORDER_COLUMNS)
-  const [result, settingsResult, vehiclesResult, customersResult, authCtx] = await Promise.all([
+  const [result, settingsResult, authCtx] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -46,8 +44,6 @@ export default async function WorkOrdersPage({
       due: params.due,
     }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
-    getVehicles(),
-    getCustomersList(),
     getAuthContext(),
   ])
 
@@ -69,18 +65,6 @@ export default async function WorkOrdersPage({
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data.map((v) => ({
-          id: v.id,
-          make: v.make,
-          model: v.model,
-          year: v.year,
-          licensePlate: v.licensePlate,
-          customer: v.customer,
-        }))
-      : []
-  const customers = customersResult.success && customersResult.data ? customersResult.data : []
 
   return (
     <>
@@ -88,8 +72,6 @@ export default async function WorkOrdersPage({
       <ListPage>
         <WorkOrdersClient
           data={result.data}
-          vehicles={vehicles}
-          customers={customers}
           currencyCode={currencyCode}
           search={params.search || ''}
           statusFilter={params.status || 'all'}

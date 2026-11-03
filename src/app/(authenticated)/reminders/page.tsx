@@ -1,15 +1,13 @@
 import { getTranslations } from 'next-intl/server'
 import { getAllReminders } from '@/features/vehicles/Actions/reminderActions'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { RemindersPageClient } from '@/features/vehicles/Components/RemindersPageClient'
 import { PageHeader } from '@/components/page-header'
 
 export default async function RemindersPage() {
-  const [remindersResult, vehiclesResult, settingsResult] = await Promise.all([
+  const [remindersResult, settingsResult] = await Promise.all([
     getAllReminders(),
-    getVehicles(),
     getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
   ])
 
@@ -27,28 +25,12 @@ export default async function RemindersPage() {
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const unitSystem = (settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial') as 'metric' | 'imperial'
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data.map((v) => ({
-          id: v.id,
-          make: v.make,
-          model: v.model,
-          year: v.year,
-          licensePlate: v.licensePlate,
-          customerName: v.customer?.name ?? null,
-          customerId: v.customer?.id ?? null,
-        }))
-      : []
 
   return (
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <RemindersPageClient
-          reminders={remindersResult.data}
-          vehicles={vehicles}
-          unitSystem={unitSystem}
-        />
+        <RemindersPageClient reminders={remindersResult.data} unitSystem={unitSystem} />
       </div>
     </>
   )

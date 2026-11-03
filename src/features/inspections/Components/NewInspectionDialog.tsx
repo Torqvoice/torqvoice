@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect, useRef, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -31,7 +31,7 @@ import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
 import { createInspection } from '../Actions/inspectionActions'
 import { getTemplates } from '../Actions/templateActions'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
 
 interface TemplateOption {
   id: string
@@ -47,18 +47,25 @@ interface VehicleOption {
   licensePlate: string | null
 }
 
+/** How many vehicles the selector shows at once; typing narrows it on the server. */
+const VEHICLE_PAGE_SIZE = 50
+
+function vehicleLabel(v: VehicleOption) {
+  return `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
+}
+
 export function NewInspectionDialog({
   open,
   onOpenChange,
   templates: givenTemplates,
-  preselectedVehicleId,
+  preselectedVehicle,
   serviceRecordId,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** The workshop's templates; fetched here when the opener has none to hand. */
   templates?: TemplateOption[]
-  preselectedVehicleId?: string
+  preselectedVehicle?: VehicleOption
   /** The booked job this inspection is started from; it is linked to the inspection. */
   serviceRecordId?: string
 }) {
@@ -66,8 +73,15 @@ export function NewInspectionDialog({
   const router = useRouter()
   const serviceType = useServiceType()
   const [isPending, startTransition] = useTransition()
-  const [vehicles, setVehicles] = useState<VehicleOption[]>([])
+  // Vehicles are searched on the server: a workshop can have tens of
+  // thousands, and loading them all made this dialog slow to open.
+  const [vehicleOptions, setVehicleOptions] = useState<VehicleOption[]>([])
+  const [vehicleSearch, setVehicleSearch] = useState('')
   const [loadingVehicles, setLoadingVehicles] = useState(false)
+  const vehicleRequestRef = useRef(0)
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleOption | null>(
+    preselectedVehicle ?? null
+  )
   const [fetchedTemplates, setFetchedTemplates] = useState<TemplateOption[]>([])
   const templates = givenTemplates ?? fetchedTemplates
 
@@ -87,38 +101,45 @@ export function NewInspectionDialog({
   }, [open, givenTemplates])
 
   const defaultTemplate = templates.find((t) => t.isDefault)
-  const [vehicleId, setVehicleId] = useState(preselectedVehicleId || '')
+  const [vehicleId, setVehicleId] = useState(preselectedVehicle?.id || '')
   const [templateId, setTemplateId] = useState(defaultTemplate?.id || '')
   const [mileage, setMileage] = useState('')
   const [vehiclePopoverOpen, setVehiclePopoverOpen] = useState(false)
 
+  // Search as the user types, the most recently touched first when the box is empty
   useEffect(() => {
-    if (open && vehicles.length === 0) {
-      setLoadingVehicles(true)
-      getVehicles().then((result) => {
-        if (result.success && result.data) {
-          setVehicles(
-            result.data.map((v) => ({
-              id: v.id,
-              make: v.make,
-              model: v.model,
-              year: v.year,
-              licensePlate: v.licensePlate,
-            }))
-          )
+    if (!vehiclePopoverOpen) return
+    const query = vehicleSearch.trim()
+    const request = ++vehicleRequestRef.current
+    setLoadingVehicles(true)
+    const timer = setTimeout(
+      async () => {
+        try {
+          const result = await searchVehicles(query || undefined, VEHICLE_PAGE_SIZE)
+          if (request !== vehicleRequestRef.current) return
+          setVehicleOptions(result.success && result.data ? result.data : [])
+        } catch {
+          if (request === vehicleRequestRef.current) setVehicleOptions([])
+        } finally {
+          if (request === vehicleRequestRef.current) setLoadingVehicles(false)
         }
-        setLoadingVehicles(false)
-      })
-    }
-  }, [open, vehicles.length])
+      },
+      query ? 300 : 0
+    )
+    return () => clearTimeout(timer)
+  }, [vehiclePopoverOpen, vehicleSearch])
 
   useEffect(() => {
     if (open) {
-      setVehicleId(preselectedVehicleId || '')
+      setVehicleId(preselectedVehicle?.id || '')
+      setSelectedVehicle(preselectedVehicle ?? null)
       setTemplateId(defaultTemplate?.id || '')
       setMileage('')
     }
-  }, [open, preselectedVehicleId, defaultTemplate?.id])
+    // Keyed on the id: an opener that rebuilds the vehicle object each render
+    // would otherwise reset the choice while the dialog is open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, preselectedVehicle?.id, defaultTemplate?.id])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -150,67 +171,67 @@ export function NewInspectionDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>{t('vehicle')}</Label>
-            {loadingVehicles ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {t('loadingVehicles')}
-              </div>
-            ) : (
-              <Popover open={vehiclePopoverOpen} onOpenChange={setVehiclePopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={vehiclePopoverOpen}
-                    className="w-full justify-between font-normal"
-                  >
-                    {vehicleId
-                      ? (() => {
-                          const v = vehicles.find((v) => v.id === vehicleId)
-                          return v
-                            ? `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
-                            : 'Select vehicle'
-                        })()
-                      : 'Select vehicle'}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-(--radix-popover-trigger-width) min-w-64 p-0"
-                  align="start"
+            <Popover open={vehiclePopoverOpen} onOpenChange={setVehiclePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={vehiclePopoverOpen}
+                  className="w-full justify-between font-normal"
                 >
-                  <Command>
-                    <CommandInput placeholder={t('searchVehicles')} />
-                    <CommandList>
+                  {vehicleId && selectedVehicle?.id === vehicleId
+                    ? vehicleLabel(selectedVehicle)
+                    : 'Select vehicle'}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-(--radix-popover-trigger-width) min-w-64 p-0"
+                align="start"
+              >
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder={t('searchVehicles')}
+                    value={vehicleSearch}
+                    onValueChange={setVehicleSearch}
+                  />
+                  <CommandList>
+                    {loadingVehicles && vehicleOptions.length === 0 ? (
+                      <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {t('loadingVehicles')}
+                      </div>
+                    ) : (
                       <CommandEmpty>{t('noVehicles')}</CommandEmpty>
-                      <CommandGroup>
-                        {vehicles.map((v) => {
-                          const label = `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
-                          return (
-                            <CommandItem
-                              key={v.id}
-                              value={label}
-                              onSelect={() => {
-                                setVehicleId(v.id)
-                                setVehiclePopoverOpen(false)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  vehicleId === v.id ? 'opacity-100' : 'opacity-0'
-                                )}
-                              />
-                              {label}
-                            </CommandItem>
-                          )
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            )}
+                    )}
+                    <CommandGroup>
+                      {vehicleOptions.map((v) => {
+                        const label = vehicleLabel(v)
+                        return (
+                          <CommandItem
+                            key={v.id}
+                            value={v.id}
+                            onSelect={() => {
+                              setVehicleId(v.id)
+                              setSelectedVehicle(v)
+                              setVehiclePopoverOpen(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                vehicleId === v.id ? 'opacity-100' : 'opacity-0'
+                              )}
+                            />
+                            {label}
+                          </CommandItem>
+                        )
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">

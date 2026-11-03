@@ -108,21 +108,6 @@ interface WorkOrder {
   } | null
 }
 
-interface VehicleOption {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
-}
-
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
-
 interface PaginatedData {
   records: WorkOrder[]
   total: number
@@ -171,8 +156,6 @@ const statusTransitions: Record<string, { actionKey: string; target: string }[]>
 
 export function WorkOrdersClient({
   data,
-  vehicles = [],
-  customers = [],
   currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
@@ -184,8 +167,6 @@ export function WorkOrdersClient({
   emailEnabled = false,
 }: {
   data: PaginatedData
-  vehicles?: VehicleOption[]
-  customers?: CustomerOption[]
   currencyCode?: string
   search: string
   statusFilter: string
@@ -790,8 +771,6 @@ export function WorkOrdersClient({
       <VehiclePickerDialog
         open={showPicker}
         onOpenChange={setShowPicker}
-        vehicles={vehicles}
-        customers={customers}
         title={t('selectVehicle')}
       />
 

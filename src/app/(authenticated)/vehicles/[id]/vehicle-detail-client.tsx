@@ -107,12 +107,6 @@ import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
-
 interface PaginatedServices {
   records: {
     id: string
@@ -289,7 +283,6 @@ function InspectionProgress({
 
 export function VehicleDetailClient({
   vehicle,
-  customers,
   paginatedServices,
   paginatedNotes,
   serviceSearch,
@@ -306,7 +299,6 @@ export function VehicleDetailClient({
   tireSets = [],
 }: {
   vehicle: VehicleDetail
-  customers: CustomerOption[]
   paginatedServices: PaginatedServices
   paginatedNotes: PaginatedNotes
   paginatedFindings: PaginatedFindings
@@ -1758,12 +1750,7 @@ export function VehicleDetailClient({
         </TabsContent>
       </Tabs>
 
-      <VehicleForm
-        open={showEditForm}
-        onOpenChange={setShowEditForm}
-        vehicle={vehicle}
-        customers={customers}
-      />
+      <VehicleForm open={showEditForm} onOpenChange={setShowEditForm} vehicle={vehicle} />
       <NoteForm
         vehicleId={vehicle.id}
         open={showNoteForm}
@@ -1824,7 +1811,7 @@ export function VehicleDetailClient({
         open={showNewInspection}
         onOpenChange={setShowNewInspection}
         templates={inspectionTemplates || []}
-        preselectedVehicleId={vehicle.id}
+        preselectedVehicle={vehicle}
       />
       <ArchiveVehicleDialog
         open={showArchiveDialog}

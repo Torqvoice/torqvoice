@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
 import { zonedDateInput, zonedTimeInput } from '@/lib/timezone'
@@ -28,6 +28,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useGlassModal } from '@/components/glass-modal'
 import { createReminder, updateReminder } from '../Actions/reminderActions'
+import { searchVehicles } from '../Actions/vehicleActions'
 import { clearableInput } from '@/lib/clearable'
 
 export interface ReminderFormVehicle {
@@ -51,13 +52,22 @@ export interface ReminderFormValues {
   notifyInApp: boolean
   notifyEmail: boolean
   customer: { id: string; name: string } | null
-  vehicle: { id: string } | null
+  /** The details name the vehicle in the selector without loading every vehicle */
+  vehicle: {
+    id: string
+    make?: string
+    model?: string
+    year?: number
+    licensePlate?: string | null
+  } | null
 }
+
+/** How many vehicles the selector shows at once; typing narrows it on the server. */
+const VEHICLE_PAGE_SIZE = 50
 
 interface ReminderFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  vehicles: ReminderFormVehicle[]
   /** Set to edit an existing reminder; left out, the dialog creates a new one */
   reminder?: ReminderFormValues
   /** Seeds the due date of a new reminder, e.g. the calendar day that was right-clicked */
@@ -84,7 +94,6 @@ function toLocalDateStr(d: Date): string {
 export function ReminderFormDialog({
   open,
   onOpenChange,
-  vehicles,
   reminder,
   defaultDueDate,
   defaultDueTime,
@@ -113,6 +122,13 @@ export function ReminderFormDialog({
   } | null>(null)
   const [formLoading, setFormLoading] = useState(false)
   const [vehicleOpen, setVehicleOpen] = useState(false)
+  // Vehicles are searched on the server: a workshop can have tens of
+  // thousands, and loading them all slowed every page that offers this form.
+  const [selectedVehicle, setSelectedVehicle] = useState<ReminderFormVehicle | null>(null)
+  const [vehicleSearch, setVehicleSearch] = useState('')
+  const [vehicleOptions, setVehicleOptions] = useState<ReminderFormVehicle[]>([])
+  const [vehiclesLoading, setVehiclesLoading] = useState(false)
+  const vehicleRequestRef = useRef(0)
   const [calendarOpen, setCalendarOpen] = useState(false)
 
   const isEdit = !!reminder
@@ -122,6 +138,19 @@ export function ReminderFormDialog({
     if (!open) return
     if (reminder) {
       setFormVehicleId(reminder.vehicle?.id ?? '')
+      setSelectedVehicle(
+        reminder.vehicle
+          ? {
+              id: reminder.vehicle.id,
+              make: reminder.vehicle.make ?? '',
+              model: reminder.vehicle.model ?? '',
+              year: reminder.vehicle.year ?? 0,
+              licensePlate: reminder.vehicle.licensePlate ?? null,
+              customerName: reminder.customer?.name ?? null,
+              customerId: reminder.customer?.id ?? null,
+            }
+          : null
+      )
       setFormTitle(reminder.title)
       setFormDescription(reminder.description || '')
       // The workshop's day and clock, because that is how these two fields
@@ -139,6 +168,7 @@ export function ReminderFormDialog({
       setFormCustomer(reminder.customer ? { ...reminder.customer, company: null } : null)
     } else {
       setFormVehicleId('')
+      setSelectedVehicle(null)
       setFormTitle('')
       setFormDescription('')
       setFormDueDate(defaultDueDate)
@@ -151,7 +181,45 @@ export function ReminderFormDialog({
     }
   }, [open, reminder, defaultDueDate, defaultDueTime, timezone])
 
-  const selectedVehicle = vehicles.find((v) => v.id === formVehicleId)
+  // Search as the user types, within the chosen customer's vehicles if there is one
+  useEffect(() => {
+    if (!vehicleOpen) return
+    const query = vehicleSearch.trim()
+    const request = ++vehicleRequestRef.current
+    setVehiclesLoading(true)
+    const timer = setTimeout(
+      async () => {
+        try {
+          const result = await searchVehicles(
+            query || undefined,
+            VEHICLE_PAGE_SIZE,
+            0,
+            formCustomerId || undefined
+          )
+          if (request !== vehicleRequestRef.current) return
+          setVehicleOptions(
+            result.success && result.data
+              ? result.data.map((v) => ({
+                  id: v.id,
+                  make: v.make,
+                  model: v.model,
+                  year: v.year,
+                  licensePlate: v.licensePlate,
+                  customerName: v.customer?.name ?? null,
+                  customerId: v.customerId,
+                }))
+              : []
+          )
+        } catch {
+          if (request === vehicleRequestRef.current) setVehicleOptions([])
+        } finally {
+          if (request === vehicleRequestRef.current) setVehiclesLoading(false)
+        }
+      },
+      query ? 300 : 0
+    )
+    return () => clearTimeout(timer)
+  }, [vehicleOpen, vehicleSearch, formCustomerId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -210,9 +278,10 @@ export function ReminderFormDialog({
               onChange={(id) => {
                 setFormCustomerId(id)
                 // A vehicle belonging to another customer no longer fits
-                const current = vehicles.find((v) => v.id === formVehicleId)
+                const current = selectedVehicle?.id === formVehicleId ? selectedVehicle : null
                 if (id && current && current.customerId !== id) {
                   setFormVehicleId('')
+                  setSelectedVehicle(null)
                 }
               }}
             />
@@ -226,22 +295,33 @@ export function ReminderFormDialog({
                   aria-expanded={vehicleOpen}
                   className="w-full justify-between font-normal"
                 >
-                  {selectedVehicle
+                  {selectedVehicle && formVehicleId
                     ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.licensePlate ? ` · ${selectedVehicle.licensePlate}` : ''}`
                     : t('selectVehicle')}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder={t('searchVehicle')} />
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder={t('searchVehicle')}
+                    value={vehicleSearch}
+                    onValueChange={setVehicleSearch}
+                  />
                   <CommandList>
-                    <CommandEmpty>{t('noVehicle')}</CommandEmpty>
+                    {vehiclesLoading && vehicleOptions.length === 0 ? (
+                      <div className="flex items-center justify-center py-6">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : (
+                      <CommandEmpty>{t('noVehicle')}</CommandEmpty>
+                    )}
                     <CommandGroup>
                       <CommandItem
                         value="__none__"
                         onSelect={() => {
                           setFormVehicleId('')
+                          setSelectedVehicle(null)
                           setVehicleOpen(false)
                         }}
                       >
@@ -253,47 +333,46 @@ export function ReminderFormDialog({
                         />
                         {t('noneOption')}
                       </CommandItem>
-                      {vehicles
-                        .filter((v) => !formCustomerId || v.customerId === formCustomerId)
-                        .map((v) => (
-                          <CommandItem
-                            key={v.id}
-                            value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ''} ${v.customerName || ''}`}
-                            onSelect={() => {
-                              setFormVehicleId(v.id)
-                              // The vehicle's customer follows automatically
-                              if (v.customerId) {
-                                setFormCustomerId(v.customerId)
-                                setFormCustomer({
-                                  id: v.customerId,
-                                  name: v.customerName || '',
-                                  company: null,
-                                })
-                              }
-                              setVehicleOpen(false)
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                'mr-2 h-4 w-4',
-                                formVehicleId === v.id ? 'opacity-100' : 'opacity-0'
+                      {vehicleOptions.map((v) => (
+                        <CommandItem
+                          key={v.id}
+                          value={v.id}
+                          onSelect={() => {
+                            setFormVehicleId(v.id)
+                            setSelectedVehicle(v)
+                            // The vehicle's customer follows automatically
+                            if (v.customerId) {
+                              setFormCustomerId(v.customerId)
+                              setFormCustomer({
+                                id: v.customerId,
+                                name: v.customerName || '',
+                                company: null,
+                              })
+                            }
+                            setVehicleOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              formVehicleId === v.id ? 'opacity-100' : 'opacity-0'
+                            )}
+                          />
+                          <div>
+                            <p className="text-sm">
+                              {v.year} {v.make} {v.model}
+                              {v.licensePlate && (
+                                <span className="ml-1.5 text-muted-foreground">
+                                  · {v.licensePlate}
+                                </span>
                               )}
-                            />
-                            <div>
-                              <p className="text-sm">
-                                {v.year} {v.make} {v.model}
-                                {v.licensePlate && (
-                                  <span className="ml-1.5 text-muted-foreground">
-                                    · {v.licensePlate}
-                                  </span>
-                                )}
-                              </p>
-                              {v.customerName && (
-                                <p className="text-xs text-muted-foreground">{v.customerName}</p>
-                              )}
-                            </div>
-                          </CommandItem>
-                        ))}
+                            </p>
+                            {v.customerName && (
+                              <p className="text-xs text-muted-foreground">{v.customerName}</p>
+                            )}
+                          </div>
+                        </CommandItem>
+                      ))}
                     </CommandGroup>
                   </CommandList>
                 </Command>

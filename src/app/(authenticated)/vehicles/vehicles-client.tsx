@@ -94,12 +94,6 @@ interface Vehicle {
   _count: { serviceRecords: number }
 }
 
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
-
 interface PaginatedData {
   vehicles: Vehicle[]
   total: number
@@ -130,7 +124,6 @@ const INSPECTION_TONE_CLASS: Record<ReturnType<typeof inspectionTone>, string> =
 
 export function VehiclesClient({
   data,
-  customers,
   search,
   sortBy = '',
   sortOrder = 'desc',
@@ -141,7 +134,6 @@ export function VehiclesClient({
   hasInspectionData = false,
 }: {
   data: PaginatedData
-  customers: CustomerOption[]
   search: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
@@ -988,7 +980,6 @@ export function VehiclesClient({
           }
         }}
         vehicle={editVehicle ?? undefined}
-        customers={customers}
         defaultCustomerId={createCustomerId}
       />
 

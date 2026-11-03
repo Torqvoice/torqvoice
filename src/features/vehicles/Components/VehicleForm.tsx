@@ -44,11 +44,15 @@ import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
 import { VehicleLookupButton } from './VehicleLookupButton'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
-import { nameSimilarity } from '@/lib/name-similarity'
+import { nameSimilarity, normalizeName } from '@/lib/name-similarity'
 import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
-import { createCustomer } from '@/features/customers/Actions/customerActions'
+import {
+  createCustomer,
+  getCustomer,
+  searchCustomers,
+} from '@/features/customers/Actions/customerActions'
 import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
@@ -63,9 +67,38 @@ import { handleGated } from '@/components/upgrade-gate'
  */
 const OWNER_MATCH_THRESHOLD = 0.9
 
+interface CustomerOption {
+  id: string
+  name: string
+  company: string | null
+}
+
 interface OwnerMatch {
-  customer: { id: string; name: string; company: string | null }
+  customer: CustomerOption
   score: number
+}
+
+/** How many customers the selector shows at once; typing narrows it on the server. */
+const CUSTOMER_PAGE_SIZE = 50
+
+/**
+ * Customers whose name or company could be the keeper read off a scanned
+ * document. The workshop's customers are not all in the browser, so each word
+ * of the name is searched on the server and the fuzzy comparison is run on what
+ * comes back: a customer saved as "Manuel Lücking" is still found for papers
+ * that say "Lucking, Manuel", through the word they share.
+ */
+async function findOwnerCandidates(ownerName: string): Promise<CustomerOption[]> {
+  const words = normalizeName(ownerName)
+    .split(' ')
+    .filter((word) => word.length >= 3)
+    .slice(0, 4)
+  const results = await Promise.all(words.map((word) => searchCustomers(word, CUSTOMER_PAGE_SIZE)))
+  const byId = new Map<string, CustomerOption>()
+  for (const result of results) {
+    for (const c of result.success && result.data ? result.data : []) byId.set(c.id, c)
+  }
+  return [...byId.values()]
 }
 
 interface VehicleFormProps {
@@ -88,11 +121,14 @@ interface VehicleFormProps {
     tsn?: string | null
     imageUrl?: string | null
     customerId?: string | null
+    /** The owner, so the selector can name them without loading every customer */
+    customer?: CustomerOption | null
     inspectionStatus?: { dueAt: Date | string | null; source?: string } | null
   }
-  customers?: { id: string; name: string; company: string | null }[]
   /** Preselects the customer when creating a new vehicle (ignored when editing) */
   defaultCustomerId?: string
+  /** The preselected customer itself, when the caller has it, to name it without a lookup */
+  defaultCustomer?: CustomerOption | null
   /**
    * What a registry already said about the plate, for a form opened from the
    * plate lookup: filled in as if the search button had been pressed.
@@ -104,8 +140,8 @@ export function VehicleForm({
   open,
   onOpenChange,
   vehicle,
-  customers,
   defaultCustomerId,
+  defaultCustomer,
   initialLookup,
 }: VehicleFormProps) {
   const serviceType = useServiceType()
@@ -127,7 +163,17 @@ export function VehicleForm({
   )
   const [customerOpen, setCustomerOpen] = useState(false)
   const [showCustomerForm, setShowCustomerForm] = useState(false)
-  const [localCustomers, setLocalCustomers] = useState(customers || [])
+  // The customer list is searched on the server: a workshop can have tens of
+  // thousands, and loading them all slowed every page that offers this form.
+  const initialCustomer =
+    vehicle?.customer ??
+    (!vehicle && defaultCustomer?.id === defaultCustomerId ? defaultCustomer : null) ??
+    null
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerOption | null>(initialCustomer)
+  const [customerSearch, setCustomerSearch] = useState('')
+  const [customerOptions, setCustomerOptions] = useState<CustomerOption[]>([])
+  const [customersLoading, setCustomersLoading] = useState(false)
+  const customerRequestRef = useRef(0)
   const [fuelType, setFuelType] = useState(vehicle?.fuelType ?? 'gasoline')
   const defaultTransmission = vehicle?.transmission ?? (isMarine ? 'outboard' : 'automatic')
   const [transmission, setTransmission] = useState(defaultTransmission)
@@ -155,6 +201,11 @@ export function VehicleForm({
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
   useEffect(() => {
     setSelectedCustomerId(vehicle?.customerId || defaultCustomerId || 'none')
+    setSelectedCustomer(
+      vehicle?.customer ??
+        (!vehicle && defaultCustomer?.id === defaultCustomerId ? defaultCustomer : null) ??
+        null
+    )
     setPreview(vehicle?.imageUrl ?? null)
     setImageFile(null)
     setFuelType(vehicle?.fuelType ?? 'gasoline')
@@ -171,14 +222,54 @@ export function VehicleForm({
     vehicle?.transmission,
     isMarine,
     defaultCustomerId,
+    defaultCustomer?.id,
+    vehicle?.customer?.id,
   ])
+
+  // Search as the user types, the most recently named first when the box is empty
+  useEffect(() => {
+    if (!customerOpen) return
+    const query = customerSearch.trim()
+    const request = ++customerRequestRef.current
+    setCustomersLoading(true)
+    const timer = setTimeout(
+      async () => {
+        try {
+          const result = await searchCustomers(query || undefined, CUSTOMER_PAGE_SIZE)
+          if (request !== customerRequestRef.current) return
+          setCustomerOptions(result.success && result.data ? result.data : [])
+        } catch {
+          if (request === customerRequestRef.current) setCustomerOptions([])
+        } finally {
+          if (request === customerRequestRef.current) setCustomersLoading(false)
+        }
+      },
+      query ? 300 : 0
+    )
+    return () => clearTimeout(timer)
+  }, [customerOpen, customerSearch])
+
+  // A customer preselected by id alone (a link with ?customerId=) still needs a name
+  useEffect(() => {
+    if (!open || selectedCustomerId === 'none' || selectedCustomer?.id === selectedCustomerId)
+      return
+    let cancelled = false
+    getCustomer(selectedCustomerId).then((result) => {
+      if (cancelled || !result.success || !result.data) return
+      const { id, name, company } = result.data
+      setSelectedCustomer({ id, name, company })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, selectedCustomerId, selectedCustomer?.id])
 
   const selectedCustomerLabel = useMemo(() => {
     if (!selectedCustomerId || selectedCustomerId === 'none') return t('noCustomer')
-    const c = localCustomers.find((c) => c.id === selectedCustomerId)
-    if (!c) return t('noCustomer')
+    const c = selectedCustomer?.id === selectedCustomerId ? selectedCustomer : null
+    if (!c) return '…'
     return c.name + (c.company ? ` (${c.company})` : '')
-  }, [selectedCustomerId, localCustomers, t])
+  }, [selectedCustomerId, selectedCustomer, t])
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -252,22 +343,24 @@ export function VehicleForm({
     // Near-identical names are still a judgement call: two brothers at one
     // address differ by a first name. Offer the close ones and let the user say.
     const ownerName = data.owner.name
-    const candidates = localCustomers
-      .map((c) => ({
-        customer: c,
-        // Papers naming a business may match the company field rather than the
-        // contact saved as the customer's name.
-        score: Math.max(
-          nameSimilarity(ownerName, c.name),
-          c.company ? nameSimilarity(ownerName, c.company) : 0
-        ),
-      }))
-      .filter((m) => m.score >= OWNER_MATCH_THRESHOLD)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
+    void findOwnerCandidates(ownerName).then((found) => {
+      const candidates = found
+        .map((c) => ({
+          customer: c,
+          // Papers naming a business may match the company field rather than the
+          // contact saved as the customer's name.
+          score: Math.max(
+            nameSimilarity(ownerName, c.name),
+            c.company ? nameSimilarity(ownerName, c.company) : 0
+          ),
+        }))
+        .filter((m) => m.score >= OWNER_MATCH_THRESHOLD)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
 
-    setOwnerMatches(candidates)
-    if (candidates.length > 0) setShowOwnerMatch(true)
+      setOwnerMatches(candidates)
+      if (candidates.length > 0) setShowOwnerMatch(true)
+    })
   }
 
   /**
@@ -526,10 +619,20 @@ export function VehicleForm({
                     className="w-(--radix-popover-trigger-width) min-w-64 p-0"
                     align="start"
                   >
-                    <Command>
-                      <CommandInput placeholder={t('searchCustomers')} />
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder={t('searchCustomers')}
+                        value={customerSearch}
+                        onValueChange={setCustomerSearch}
+                      />
                       <CommandList className="max-h-60 overflow-y-auto">
-                        <CommandEmpty>{t('noCustomerFound')}</CommandEmpty>
+                        {customersLoading && customerOptions.length === 0 ? (
+                          <div className="flex items-center justify-center py-6">
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                          </div>
+                        ) : (
+                          <CommandEmpty>{t('noCustomerFound')}</CommandEmpty>
+                        )}
                         <CommandGroup>
                           <CommandItem
                             value="no-customer"
@@ -543,14 +646,15 @@ export function VehicleForm({
                             />
                             {t('noCustomer')}
                           </CommandItem>
-                          {localCustomers.map((c) => {
+                          {customerOptions.map((c) => {
                             const label = c.name + (c.company ? ` (${c.company})` : '')
                             return (
                               <CommandItem
                                 key={c.id}
-                                value={label}
+                                value={c.id}
                                 onSelect={() => {
                                   setSelectedCustomerId(c.id)
+                                  setSelectedCustomer(c)
                                   setCustomerOpen(false)
                                 }}
                               >
@@ -900,6 +1004,7 @@ export function VehicleForm({
                 className="flex w-full items-center justify-between gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-accent"
                 onClick={() => {
                   setSelectedCustomerId(customer.id)
+                  setSelectedCustomer(customer)
                   setScannedOwner(null)
                   setShowOwnerMatch(false)
                 }}
@@ -942,7 +1047,7 @@ export function VehicleForm({
         onOpenChange={setShowCustomerForm}
         defaults={scannedOwner ?? undefined}
         onCreated={(created) => {
-          setLocalCustomers((prev) => [...prev, created])
+          setSelectedCustomer(created)
           setSelectedCustomerId(created.id)
           setScannedOwner(null)
         }}

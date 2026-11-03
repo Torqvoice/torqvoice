@@ -42,21 +42,6 @@ import { TimeGridView } from './TimeGridView'
 import { useCalendarPreferences } from './useCalendarPreferences'
 import { YearView } from './YearView'
 
-interface Vehicle {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
-}
-
-interface Customer {
-  id: string
-  name: string
-  company: string | null
-}
-
 interface CalendarClientProps {
   initialEvents: CalendarEvent[]
   /** The days `initialEvents` covers, as YYYY-MM-DD. */
@@ -65,8 +50,6 @@ interface CalendarClientProps {
   /** YYYY-MM-DD the calendar opens on. */
   initialDate: string
   todayStr: string // YYYY-MM-DD computed on server to avoid hydration mismatch
-  vehicles: Vehicle[]
-  customers: Customer[]
   currencyCode: string
   /** Channels the workshop can actually send on, resolved on the server */
   messageChannels: MessageChannel[]
@@ -98,8 +81,6 @@ export default function CalendarClient({
   initialView,
   initialDate,
   todayStr,
-  vehicles,
-  customers,
   currencyCode,
   messageChannels,
 }: CalendarClientProps) {
@@ -397,21 +378,6 @@ export default function CalendarClient({
     [menuDateStr]
   )
 
-  // The reminder dialog picks vehicles from a flat list with the customer inlined
-  const reminderVehicles = useMemo(
-    () =>
-      vehicles.map((v) => ({
-        id: v.id,
-        make: v.make,
-        model: v.model,
-        year: v.year,
-        licensePlate: v.licensePlate,
-        customerName: v.customer?.name ?? null,
-        customerId: v.customer?.id ?? null,
-      })),
-    [vehicles]
-  )
-
   const monthDays = useMemo(
     () => getMonthGridDays(date.getFullYear(), date.getMonth(), weekStartDay),
     [date, weekStartDay]
@@ -597,7 +563,6 @@ export default function CalendarClient({
       <ReminderFormDialog
         open={showReminderDialog}
         onOpenChange={setShowReminderDialog}
-        vehicles={reminderVehicles}
         defaultDueDate={menuDate}
         defaultDueTime={menuTime}
         onSaved={refresh}
@@ -621,8 +586,6 @@ export default function CalendarClient({
       <VehiclePickerDialog
         open={showPicker}
         onOpenChange={setShowPicker}
-        vehicles={vehicles}
-        customers={customers}
         title={t('selectVehicle')}
         redirectQuery={workOrderQuery}
       />
