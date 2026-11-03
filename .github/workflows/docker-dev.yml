@@ -49,5 +49,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APP_VERSION=dev-${{ steps.sha.outputs.short }}
+          # Keeps server action IDs the same from build to build (see the Dockerfile).
+          secrets: |
+            next_actions_key=${{ secrets.NEXT_SERVER_ACTIONS_BUILD_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
