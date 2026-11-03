@@ -21,6 +21,7 @@ import { manifest as nhtsa } from './nhtsa/manifest'
 import { manifest as openai } from './openai/manifest'
 import { manifest as openaiCompatible } from './openai-compatible/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
+import { manifest as openLaborProject } from './openlaborproject/manifest'
 import { manifest as paypal } from './paypal/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as quickbooks } from './quickbooks/manifest'
@@ -61,6 +62,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: rdw, load: () => import('./rdw/server') },
   { manifest: regcheck, load: () => import('./regcheck/server') },
   { manifest: nhtsa, load: () => import('./nhtsa/server') },
+  { manifest: openLaborProject, load: () => import('./openlaborproject/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },
@@ -122,9 +124,33 @@ function forThisInstall(manifest: ConnectorManifest): ConnectorManifest {
   return out
 }
 
+/**
+ * A key the server holds for every workshop, for a service Torqvoice pays
+ * for on their behalf. While its variable is set the workshop's own key is
+ * optional: left empty, the server's is used.
+ */
+export function withServerKeys(
+  manifest: ConnectorManifest,
+  env: Record<string, string | undefined> = process.env
+): ConnectorManifest {
+  if (manifest.auth.type !== 'api-key') return manifest
+  const held = (f: { serverKeyEnv?: string }) =>
+    Boolean(f.serverKeyEnv && env[f.serverKeyEnv]?.trim())
+  if (!manifest.auth.fields.some(held)) return manifest
+  return {
+    ...manifest,
+    auth: {
+      ...manifest.auth,
+      fields: manifest.auth.fields.map((f) =>
+        held(f) ? { ...f, required: false, help: f.serverKeyHelp ?? f.help } : f
+      ),
+    },
+  }
+}
+
 const ENTRIES: readonly RegistryEntry[] = ALL_ENTRIES.filter(
   (e) => !(IS_CLOUD && e.manifest.selfHostedOnly)
-).map((e) => ({ ...e, manifest: forThisInstall(e.manifest) }))
+).map((e) => ({ ...e, manifest: withServerKeys(forThisInstall(e.manifest)) }))
 
 const BY_ID = new Map(ENTRIES.map((e) => [e.manifest.id, e]))
 

@@ -30,6 +30,7 @@
     "automation": "Otomasyon",
     "storage": "Dosyalar",
     "registry": "Araç kayıt sistemi",
+    "repair": "Onarım verileri",
     "other": "Diğer",
     "ai": "Yapay zekâ"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Yedekleme hedefi"
+    },
+    "repair": {
+      "labor": "İş emirlerinde ve tekliflerde işçilik süreleri",
+      "fluids": "Sıvı türleri ve kapasiteleri"
     }
   },
   "statuses": {
@@ -777,6 +782,41 @@
         "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
       }
     },
+    "openlaborproject": {
+      "description": "İş emri veya teklifteki aracın işçilik sürelerini ve sıvı kapasitelerini sorgulayın, bir işin saatlerini tek tıkla işçilik satırı olarak ekleyin. Verilerin çoğu ABD pazarı araçları içindir ve rehber her sorgunun hangi pazar için olduğunu gösterir. Her değer Open Labor Project’in ondan ne kadar emin olduğunu gösterir ve birçoğu yapay zekâ tahminidir; müşteriye teklif vermeden önce kontrol edin. Sorgular atölyenin kendi API anahtarını kullanır. Ücretli bir Open Labor Project planında bir kez sorgulanan araç plan sürdükçe saklanır, böylece yeniden sorgulamak çağrı harcamaz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "openlaborproject.com adresinde Developers bölümünden anahtar isteyin; e-postayla gelir. Ücretsiz anahtarın günde 10 sorgu hakkı vardır ve saatleri her seferinde tek bir iş için gösterir. Builder planı ve üstü limiti artırır ve tüm işlerin saatlerini bir kerede gösterir.",
+        "apiKeyServerHelp": "Bu sunucunun sağladığı anahtarı kullanmak için boş bırakın ya da kendi planınızı kullanmak için openlaborproject.com’dan aldığınız anahtarı yapıştırın."
+      },
+      "settings": {
+        "minConfidence": "Gösterilecek süreler",
+        "minConfidenceHelp": "Kaynağın daha az emin olduğu süreleri dışarıda bırakır. Avrupa markaları için birçok süre yapay zekâ tahminidir, bu yüzden katı bir seçim az iş bırakabilir.",
+        "confidenceAll": "Her güven düzeyi",
+        "confidenceMedium": "Orta ve üstü",
+        "confidenceHigh": "Doğrulanmış ve üstü",
+        "confidenceOem": "Yalnızca OEM",
+        "hoursFrom": "Eklenecek saat",
+        "hoursFromHelp": "İş emrine hangi değerin gireceği: rehber süresi ya da Open Labor Project’in verdiği aralığın üst sınırı (örneğin 1,2 sa yerine 1,6 sa). Üst sınır, uzayan işler için pay bırakır.",
+        "hoursBook": "Rehber süresi",
+        "hoursHigh": "Aralığın üst sınırı",
+        "adjustPercent": "Süreleri ayarla (%)",
+        "adjustPercentHelp": "İş emrine girmeden önce her süreye eklenen bir yüzde: 10, 1,2 sa’yi 1,32 sa yapar, -10 ise 1,08 sa yapar. -50 ile 200 arası.",
+        "rounding": "Saatleri yukarı yuvarla",
+        "roundingHelp": "Her işin saatlerini, varsa ayardan sonra yukarı yuvarlar: 0,25 ile 1,32 sa, 1,5 sa olur. Zaten bir adımın üzerindeki süre olduğu gibi kalır.",
+        "roundNone": "Yuvarlama",
+        "roundTenth": "0,1 saat",
+        "roundQuarter": "0,25 saat",
+        "roundHalf": "0,5 saat",
+        "fluids": "Sıvı bilgilerini göster",
+        "fluidsHelp": "Kapasiteler, özellikler ve değişim aralıklarıyla bir Sıvılar sekmesi ekler. Açmak ayrı bir çağrı harcar.",
+        "units": "Sıvı birimleri",
+        "unitsHelp": "Kapasitelerin ve değişim aralıklarının gösterildiği birimler.",
+        "unitsBoth": "İkisi de",
+        "unitsMetric": "Metrik (L, km)",
+        "unitsUs": "ABD (qt, mi)"
+      }
+    },
     "speech-to-text": {
       "name": "Konuşmadan metne",
       "description": "İş emrindeki dikte, tarayıcı yerine bir konuşma modeli tarafından yazıya dökülür: çok daha doğrudur, her dilde çalışır ve atölye terimlerini bilir. Yapay zekâ sağlayıcınızdan ayrıdır, o yüzden onu olduğu gibi bırakabilirsiniz. Kendi OpenAI anahtarınızı ya da OpenAI'nin transkripsiyon API'siyle çalışan kendi sunucunuzu kullanır. Kayıt yazıya dökülmek üzere gönderilir ve saklanmaz.",
@@ -918,6 +958,9 @@
     "safety": {
       "refresh": "Geri çağırma verisi yenileme",
       "vehicle": "Yeni araç için geri çağırma kontrolü"
+    },
+    "repair": {
+      "checkPlan": "Saklanan sorguların tutulabileceğini kontrol et"
     }
   },
   "backupAlerts": {

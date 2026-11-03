@@ -30,6 +30,7 @@
     "automation": "Automatisierung",
     "storage": "Dateien",
     "registry": "Fahrzeugregister",
+    "repair": "Reparaturdaten",
     "other": "Sonstiges",
     "ai": "KI"
   },
@@ -73,6 +74,10 @@
     },
     "backup": {
       "target": "Sicherungsziel"
+    },
+    "repair": {
+      "labor": "Arbeitszeiten in Aufträgen und Angeboten",
+      "fluids": "Flüssigkeiten und Füllmengen"
     }
   },
   "statuses": {
@@ -777,6 +782,41 @@
         "refreshFleetHelp": "Einmal täglich werden Modelle, die in der letzten Woche nicht aktualisiert wurden, erneut abgerufen, damit die Fahrzeugseite nie wartet und ein neuer Rückruf innerhalb einer Woche nach Einreichung erscheint. Nur Marke, Modell und Jahr werden gesendet."
       }
     },
+    "openlaborproject": {
+      "description": "Schlagen Sie Arbeitswerte und Füllmengen für das Fahrzeug eines Auftrags oder Angebots nach und übernehmen Sie die Stunden einer Arbeit mit einem Klick als Arbeitsposition. Die meisten Daten gelten für Fahrzeuge des US-Markts, und der Katalog zeigt, für welchen Markt eine Abfrage gilt. Jeder Wert zeigt, wie sicher Open Labor Project ist, und viele sind KI-Schätzungen. Prüfen Sie sie daher, bevor Sie einem Kunden ein Angebot machen. Abfragen nutzen den eigenen API-Schlüssel der Werkstatt. Mit einem kostenpflichtigen Tarif von Open Labor Project bleibt ein einmal abgefragtes Fahrzeug gespeichert, solange der Tarif läuft, sodass eine erneute Abfrage keinen Abruf kostet.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Beantragen Sie einen Schlüssel auf openlaborproject.com unter Developers; er kommt per E-Mail. Ein kostenloser Schlüssel hat 10 Abrufe pro Tag und zeigt die Stunden jeweils einer Arbeit. Ab dem Builder-Tarif steigt das Limit, und die Stunden aller Arbeiten werden auf einmal angezeigt.",
+        "apiKeyServerHelp": "Lassen Sie das Feld leer, um den Schlüssel dieses Servers zu nutzen, oder fügen Sie Ihren eigenen Schlüssel von openlaborproject.com ein, um Ihren eigenen Tarif zu verwenden."
+      },
+      "settings": {
+        "minConfidence": "Arbeitszeiten anzeigen ab",
+        "minConfidenceHelp": "Lässt Zeiten weg, bei denen die Quelle weniger sicher ist. Viele Zeiten für europäische Marken sind KI-Schätzungen, eine strenge Wahl kann also wenige Arbeiten übrig lassen.",
+        "confidenceAll": "Jede Sicherheitsstufe",
+        "confidenceMedium": "Mittel und höher",
+        "confidenceHigh": "Geprüft und höher",
+        "confidenceOem": "Nur OEM",
+        "hoursFrom": "Zu übernehmende Stunden",
+        "hoursFromHelp": "Welcher Wert in den Auftrag geht: die Richtzeit oder das obere Ende der Spanne von Open Labor Project (zum Beispiel 1,6 Std. statt 1,2 Std.). Das obere Ende lässt Luft für Arbeiten, die länger dauern.",
+        "hoursBook": "Richtzeit",
+        "hoursHigh": "Oberes Ende der Spanne",
+        "adjustPercent": "Zeiten anpassen um (%)",
+        "adjustPercentHelp": "Ein Prozentsatz, der auf jede Zeit aufgeschlagen wird, bevor sie in den Auftrag geht: 10 macht aus 1,2 Std. 1,32 Std., -10 macht daraus 1,08 Std. Von -50 bis 200.",
+        "rounding": "Stunden aufrunden auf",
+        "roundingHelp": "Rundet die Stunden jeder Arbeit nach einer etwaigen Anpassung auf: mit 0,25 werden aus 1,32 Std. 1,5 Std. Eine Zeit, die schon auf einem Schritt liegt, bleibt, wie sie ist.",
+        "roundNone": "Nicht runden",
+        "roundTenth": "0,1 Stunde",
+        "roundQuarter": "0,25 Stunde",
+        "roundHalf": "0,5 Stunde",
+        "fluids": "Flüssigkeitsangaben anzeigen",
+        "fluidsHelp": "Fügt einen Reiter Flüssigkeiten mit Füllmengen, Spezifikationen und Wechselintervallen hinzu. Das Öffnen kostet einen eigenen Abruf.",
+        "units": "Einheiten für Flüssigkeiten",
+        "unitsHelp": "In welchen Einheiten Füllmengen und Wechselintervalle angezeigt werden.",
+        "unitsBoth": "Beide",
+        "unitsMetric": "Metrisch (L, km)",
+        "unitsUs": "US (qt, mi)"
+      }
+    },
     "speech-to-text": {
       "name": "Sprache zu Text",
       "description": "Diktat auf einem Arbeitsauftrag, aufgeschrieben von einem Sprachmodell statt vom Browser: viel genauer, in jeder Sprache, und es kennt die Wörter einer Werkstatt. Getrennt von Ihrem KI-Anbieter, den Sie also so lassen können, wie er ist. Nutzt Ihren eigenen OpenAI-Schlüssel oder einen eigenen Server, der die Transkriptions-API von OpenAI spricht. Die Aufnahme wird nur zum Aufschreiben gesendet und nicht aufbewahrt.",
@@ -918,6 +958,9 @@
     "safety": {
       "refresh": "Aktualisierung der Rückrufdaten",
       "vehicle": "Rückrufprüfung für ein neues Fahrzeug"
+    },
+    "repair": {
+      "checkPlan": "Prüfen, ob gespeicherte Abfragen bleiben dürfen"
     }
   },
   "backupAlerts": {

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Open Labor Project">
+  <title>Open Labor Project</title>
+  <defs>
+    <clipPath id="olp-tile"><rect width="180" height="180" rx="41"/></clipPath>
+  </defs>
+  <g clip-path="url(#olp-tile)">
+    <rect width="180" height="180" fill="#8FC3E8"/>
+    <path d="M112 0h35L67 180H32z" fill="#F37021"/>
+  </g>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linejoin="round">
+    <circle cx="42.75" cy="87" r="25.5"/>
+    <circle cx="42.75" cy="87" r="21.3"/>
+    <circle cx="42.75" cy="87" r="17.1"/>
+    <circle cx="42.75" cy="87" r="12.9"/>
+    <path d="M77 62v50M81.2 62v50M85.4 62v50M89.6 62v50M89.6 101.6h18.9M89.6 106.1h18.9M89.6 110.6h18.9"/>
+    <path d="M115.2 112V63.2h31.3a17.5 17.5 0 0 1 0 35h-18.3"/>
+    <path d="M119.5 112V67.6h27a13.1 13.1 0 0 1 0 26.2h-18.3"/>
+    <path d="M123.9 112V72h22.6a8.7 8.7 0 0 1 0 17.4h-18.3"/>
+    <path d="M128.2 112V76.3h18.3a4.35 4.35 0 0 1 0 8.7h-18.3"/>
+  </g>
+</svg>

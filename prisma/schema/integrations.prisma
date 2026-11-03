@@ -32,6 +32,7 @@ model IntegrationConnection {
   logs           IntegrationLog[]
   externalEvents ExternalCalendarEvent[]
   backupRuns     BackupRun[]
+  repairData     RepairDataCache[]
 
   @@unique([organizationId, connectorId])
   @@index([organizationId])
@@ -156,6 +157,38 @@ model VehicleSafetyReport {
   @@unique([source, make, model, year])
   @@index([fetchedAt])
   @@map("vehicle_safety_reports")
+}
+
+/// Labor times or fluid specs a repair data source answered for one model
+/// year, kept for as long as the key that fetched them is on a plan whose
+/// terms allow it (Open Labor Project's paid plans), so a vehicle looked up
+/// once is not paid for again. Deleted when the key's plan drops to free, the
+/// key is refused, or the workshop disconnects.
+model RepairDataCache {
+  id           String                 @id @default(cuid())
+  /// Connector id, such as "openlaborproject".
+  source       String
+  /// Whose key fetched it: the connection id for a workshop's own key, or
+  /// "platform" for the key the server holds, whose rows serve every
+  /// workshop that uses it.
+  owner        String
+  /// Set for a workshop's own key, so its rows go when it disconnects.
+  connectionId String?
+  connection   IntegrationConnection? @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  /// labor | fluids
+  kind         String
+  /// "make|model|year" as the workshop wrote them, lower-cased, or
+  /// "vin:<sha-256>" when only the VIN found the vehicle. No VIN is stored.
+  lookupKey    String
+  /// Bumped when the stored shape changes; an older row is fetched again.
+  version      Int
+  data         Json
+  fetchedAt    DateTime               @default(now())
+  createdAt    DateTime               @default(now())
+
+  @@unique([source, owner, kind, lookupKey])
+  @@index([connectionId])
+  @@map("repair_data_cache")
 }
 
 /// One backup of one workshop to one destination: a scheduled or manual

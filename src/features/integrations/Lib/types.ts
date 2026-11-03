@@ -22,6 +22,7 @@ export type IntegrationCategory =
   | 'automation'
   | 'storage'
   | 'registry'
+  | 'repair'
   | 'other'
 
 export type ConnectionStatus = 'pending' | 'active' | 'error' | 'disconnected'
@@ -79,6 +80,16 @@ export interface CredentialField {
    * it, and the page says what is still missing until it is entered.
    */
   deferrable?: boolean
+  /**
+   * The name of an environment variable that can hold a key the server uses
+   * for every workshop, for a service Torqvoice pays for on the workshop's
+   * behalf. While it is set, the registry makes the field optional and
+   * swaps in `serverKeyHelp`: a workshop that leaves the field empty uses
+   * the server's key, one that fills it in uses its own.
+   */
+  serverKeyEnv?: string
+  /** i18n key with the help shown instead of `help` while the server holds a key. */
+  serverKeyHelp?: string
 }
 
 /**
@@ -449,6 +460,109 @@ export interface VehicleSafetyReport {
   url: string
 }
 
+/**
+ * One engine and drivetrain of a model, as a repair data source tells them
+ * apart. Engine and drivetrain are the guide's own ids, passed back to ask
+ * about that variant alone.
+ */
+export interface RepairDataVariantRef {
+  engineId: string
+  drivetrain: string | null
+  /** The guide's id for this exact variant, when it has one. */
+  vehicleId: string | null
+}
+
+/**
+ * What a repair data source is asked about: the model, and the VIN when the
+ * vehicle has one. `variant` narrows to one engine and drivetrain, `item` to
+ * one job or fluid system, for a key that unlocks values one at a time.
+ */
+export interface RepairDataQuery {
+  make: string
+  model: string
+  year: number
+  vin?: string
+  /**
+   * The source's own id for the model, from an earlier answer for this
+   * vehicle, so it is asked under the name that worked and not guessed again.
+   */
+  modelId?: string
+  variant?: RepairDataVariantRef
+  item?: string
+}
+
+/** How sure the source is of a value: checked against the maker's data, verified, likely, or a guess. */
+export type RepairDataConfidence = 'oem' | 'high' | 'medium' | 'estimated'
+
+/** A job's book time. */
+export interface LaborTime {
+  /** The source's id for the job, to ask for it alone. */
+  id: string
+  name: string
+  category: string
+  /** Book hours; null while the key does not unlock this job. */
+  hours: number | null
+  low: number | null
+  high: number | null
+  confidence: RepairDataConfidence | null
+  /** The key lists the job but not its hours; ask for it alone to get them. */
+  locked: boolean
+}
+
+/** What one system takes, and how much. */
+export interface FluidSpec {
+  /** The source's id for the system, to ask for it alone. */
+  id: string
+  system: string
+  fluid: string | null
+  spec: string | null
+  capacityLiters: number | null
+  capacityQuarts: number | null
+  drainRefillLiters: number | null
+  drainRefillQuarts: number | null
+  intervalKm: number | null
+  intervalMiles: number | null
+  notes: string | null
+  confidence: RepairDataConfidence | null
+  locked: boolean
+}
+
+export interface RepairDataVariant<T> extends RepairDataVariantRef {
+  /** The engine as the source names it, such as "5.0L V8 Coyote". */
+  engine: string
+  items: T[]
+}
+
+/** What a source lists for one model year, per engine and drivetrain. */
+export interface RepairDataAnswer<T> {
+  make: string
+  model: string
+  variants: RepairDataVariant<T>[]
+  /**
+   * Whether the model name found it, or only the VIN did. A model-name
+   * answer serves every vehicle of that model year; a VIN answer is kept
+   * for that one vehicle.
+   */
+  matchedBy?: 'model' | 'vin'
+  /** The source's own id for the model, passed back to ask about the vehicle again. */
+  modelId?: string
+  /** The market the values are for, as an ISO country code, such as "US". */
+  region?: string
+}
+
+/**
+ * A source's answer, and whether the account's plan lets it keep what it
+ * fetched. Open Labor Project lets a paid plan keep its answers for as long
+ * as it stays subscribed; a free key may only show them.
+ */
+export interface RepairDataReply<T> {
+  answer: RepairDataAnswer<T> | null
+  keep: boolean
+}
+
+/** The key was refused: revoked, mistyped, or its subscription has ended. */
+export class RepairDataKeyRejected extends Error {}
+
 export interface ConnectorServer {
   manifest: ConnectorManifest
   /** After connecting: who the account is, shown on the connection page. */
@@ -500,6 +614,22 @@ export interface ConnectorServer {
    * the authority has no record of the model.
    */
   vehicleSafety?(ctx: ConnectorContext, query: VehicleSafetyQuery): Promise<VehicleSafetyReport>
+  /**
+   * Book times for a model year, for connectors with the 'repair.labor'
+   * capability. Synchronous because a dialog is waiting on it. The answer is
+   * null when the source has no such vehicle. Throws RepairDataKeyRejected
+   * when the key is refused.
+   */
+  laborTimes?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<LaborTime>>
+  /** Fluid types and capacities, for connectors with the 'repair.fluids' capability. */
+  fluidSpecs?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<FluidSpec>>
+  /**
+   * Whether the key's plan still lets the account keep what it fetched, for
+   * the daily check on stored answers. Null when the source would not say,
+   * such as a key that has used its calls for the day. Throws
+   * RepairDataKeyRejected when the key is refused.
+   */
+  repairDataPlan?(ctx: ConnectorContext): Promise<{ keep: boolean | null }>
   jobs: Record<string, JobHandler>
   /** Inbound webhook handling, where the vendor pushes. */
   webhook?: {

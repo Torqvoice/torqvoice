@@ -13,6 +13,10 @@ import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/Sho
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
 import { useLineTax } from '@/features/settings/Components/LineTaxContext'
 import { laborTaxable } from '@/lib/taxable-lines'
+import { LaborGuideButton } from '@/features/vehicles/Components/labor-guide/LaborGuideButton'
+import type { LaborGuideJob } from '@/features/vehicles/Components/labor-guide/LaborGuideDialog'
+import type { LaborGuideStock } from '@/features/vehicles/Components/labor-guide/FluidPartButton'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
 
 const QuoteLaborRow = memo(function QuoteLaborRow({
   labor,
@@ -145,6 +149,13 @@ interface QuoteLaborEditorProps {
   onAddService?: () => void
   hasPresets?: boolean
   onOpenPresets?: () => void
+  /** The quote's vehicle, for the labor guide; none until one is picked. */
+  vehicleId?: string | null
+  onAddGuideJob?: (job: LaborGuideJob) => void
+  /** Adds a fluid from the labor guide to the quote's parts. */
+  onAddGuidePart?: (line: FluidPartLine) => void
+  /** The workshop's stock, for the labor guide to match fluids against. */
+  guideStock?: LaborGuideStock
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }
@@ -160,6 +171,10 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   onAddService,
   hasPresets,
   onOpenPresets,
+  vehicleId,
+  onAddGuideJob,
+  onAddGuidePart,
+  guideStock,
   t,
 }: QuoteLaborEditorProps) {
   const formatCurrency = useFormatCurrency()
@@ -174,6 +189,15 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
                 <Layers className="mr-1 h-3.5 w-3.5" />
                 {t('labor.fromPresets')}
               </Button>
+            )}
+            {vehicleId && onAddGuideJob && (
+              <LaborGuideButton
+                vehicleId={vehicleId}
+                onAdd={onAddGuideJob}
+                onAddPart={onAddGuidePart}
+                stock={guideStock}
+                labelled
+              />
             )}
             <Button type="button" variant="outline" size="sm" onClick={onAdd}>
               <Plus className="mr-1 h-3.5 w-3.5" /> {t('labor.addLabor')}

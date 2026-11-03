@@ -14,7 +14,7 @@ import { TAX_APPLIES_TO_ALL } from '@/lib/taxable-lines'
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setQuoteEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import type { LockState } from '@/lib/document-lock'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -69,6 +69,8 @@ import { QuoteRightColumn } from './QuoteRightColumn'
 import { QuoteCustomerResponse } from './QuoteCustomerResponse'
 import { VehicleCombobox } from './VehicleCombobox'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import type { LaborGuideJob } from '@/features/vehicles/Components/labor-guide/LaborGuideDialog'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
 import type { WarrantyTexts } from '@/lib/warranty'
 
 const LG_BREAKPOINT = 1024
@@ -212,6 +214,33 @@ export function QuotePageClient({
     [defaultLaborRate, state]
   )
 
+  // A job from the labor guide: its name and book hours at the workshop's rate.
+  const handleAddGuideJob = useCallback(
+    (job: LaborGuideJob) => {
+      state.addLaborBulk([
+        {
+          description: job.description,
+          hours: job.hours,
+          rate: defaultLaborRate,
+          total: job.hours * defaultLaborRate,
+          pricingType: 'hourly',
+          excluded: false,
+        },
+      ])
+    },
+    [defaultLaborRate, state]
+  )
+
+  // A fluid from the labor guide: a stocked item at the quote's stock price,
+  // the way a pick from stock is priced here, or a plain line to price.
+  const handleAddGuidePart = useCallback(
+    (line: FluidPartLine) => {
+      state.addPartBulk([{ ...line, excluded: false }])
+    },
+    [state]
+  )
+  const guideStock = useMemo(() => ({ parts: inventoryParts }), [inventoryParts])
+
   const handleDescriptionChange = useCallback(
     (v: string) => {
       state.setDescription(v)
@@ -265,6 +294,10 @@ export function QuotePageClient({
         onAddService={state.addService}
         hasPresets={laborPresets.length > 0}
         onOpenPresets={() => setShowPresetPicker(true)}
+        vehicleId={state.vehicleId || null}
+        onAddGuideJob={handleAddGuideJob}
+        onAddGuidePart={handleAddGuidePart}
+        guideStock={guideStock}
         t={t}
       />
       <QuoteNotesEditor
