@@ -4,7 +4,7 @@ name: Migration check
 # serving, and a rollback runs the previous version against the new schema.
 # Both work only while a migration leaves the old code working, so this fails
 # a pull request whose new migrations drop, rename, retype or tighten
-# something (see .github/scripts/check-migrations.sh). When such a change is
+# something (see .github/scripts/check-migrations.mjs). When such a change is
 # safe anyway, add the allow-breaking-migration label and say why in the
 # description; the label reruns this check.
 
@@ -33,7 +33,7 @@ jobs:
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'allow-breaking-migration') }}
         run: |
           mapfile -t files < <(git diff --name-only --diff-filter=AM HEAD^1 HEAD -- 'prisma/migrations/*/migration.sql')
-          bash .github/scripts/check-migrations.sh "${files[@]}"
+          node .github/scripts/check-migrations.mjs "${files[@]}"
 
       - name: Allowed by label
         if: ${{ contains(github.event.pull_request.labels.*.name, 'allow-breaking-migration') }}

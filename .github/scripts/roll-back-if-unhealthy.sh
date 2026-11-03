@@ -65,7 +65,9 @@ if [ "$(docker image inspect --format '{{.Id}}' "$prev_ref" 2>/dev/null)" != "$p
 fi
 
 echo "::warning title=Rolling back::$new_tag did not get healthy. Putting back $prev_name."
-APP_TAG="$prev_tag" docker compose up -d
+# Never pull: the image was found on this host above, and a pull could bring
+# the failed release back under the same tag (latest, say) instead.
+APP_TAG="$prev_tag" docker compose up -d --pull never
 
 if bash "$here/wait-healthy.sh" "$container"; then
   echo "::error title=Rolled back::$new_tag did not get healthy, so $prev_name is running again. The database was not touched."
