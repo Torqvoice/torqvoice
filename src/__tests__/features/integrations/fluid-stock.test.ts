@@ -85,6 +85,28 @@ describe('matchStock', () => {
     expect(matchStock(brake, stock).map((m) => m.part.id)).toEqual(['dot4'])
   })
 
+  it('keeps the G12 coolants apart, however "plus" is written', () => {
+    const values = (t: string) => fluidTokens(t).map((x) => x.value)
+    expect(values('G12')).toEqual(['g12'])
+    expect(values('G12+')).toEqual(['g12+'])
+    expect(values('G12 plus')).toEqual(['g12+'])
+    expect(values('G12++')).toEqual(['g12++'])
+    expect(values('G 12 plus plus')).toEqual(['g12++'])
+    expect(values('G12 evo')).toEqual(['g12evo'])
+    expect(values('G13')).toEqual(['g13'])
+  })
+
+  it('never offers another G12 generation for the one the car takes', () => {
+    const coolant = { fluid: 'Coolant G12++', spec: 'VW TL 774 G' }
+    const stock = [
+      part('g12', 'Kjølevæske G12'),
+      part('g12plus', 'Kjølevæske G12+'),
+      part('g12pp', 'Kjølevæske G12 plus plus'),
+    ]
+    expect(matchStock(coolant, stock).map((m) => m.part.id)).toEqual(['g12pp'])
+    expect(matchStock({ fluid: 'G12', spec: null }, stock).map((m) => m.part.id)).toEqual(['g12'])
+  })
+
   it('offers nothing for a fluid without a grade or spec', () => {
     expect(matchStock({ fluid: 'Water', spec: null }, [part('a', 'Destillert vann')])).toEqual([])
   })

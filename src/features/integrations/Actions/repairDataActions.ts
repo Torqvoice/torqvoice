@@ -196,6 +196,13 @@ export async function getRepairData(input: {
 }
 
 /**
+ * What unlocking one value came to. "hidden" is a labor time the source
+ * rates below the workshop's minimum confidence: a locked row has no level
+ * to judge until it is shown, so the setting can only apply once it is.
+ */
+export type RepairDataUnlock<T> = RepairDataOutcome<T> | { status: 'hidden' }
+
+/**
  * The value of one locked job or fluid system, for a key that unlocks them
  * one at a time.
  */
@@ -206,7 +213,7 @@ export async function unlockRepairDataItem(input: {
   item: string
 }) {
   return withAuth(
-    async ({ organizationId }): Promise<RepairDataOutcome<RepairDataItem<RepairDataKind>>> => {
+    async ({ organizationId }): Promise<RepairDataUnlock<RepairDataItem<RepairDataKind>>> => {
       const parsed = z
         .object({
           vehicleId: z.string().min(1).max(64),
@@ -222,7 +229,12 @@ export async function unlockRepairDataItem(input: {
           variant: parsed.variant,
           item: parsed.item,
         })
-        return item ? { status: 'found', value: item } : { status: 'none' }
+        if (!item) return { status: 'none' }
+        const { minConfidence } = readPrefs(connection.settings)
+        if (parsed.kind === 'labor' && !meetsConfidence(item, minConfidence)) {
+          return { status: 'hidden' }
+        }
+        return { status: 'found', value: item }
       } catch (err) {
         return failed(err)
       }

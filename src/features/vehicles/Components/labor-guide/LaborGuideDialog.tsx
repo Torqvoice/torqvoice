@@ -78,6 +78,20 @@ function withItem<V extends { items: { id: string }[] }, T extends { id: string 
   }
 }
 
+/**
+ * The list without a value the workshop's minimum confidence leaves out,
+ * counted with the others it hides.
+ */
+function withoutItem<V extends { items: { id: string }[]; hidden: number }>(
+  state: Load<V>,
+  id: string
+): Load<V> {
+  if (state.status !== 'found') return state
+  const items = state.view.items.filter((i) => i.id !== id)
+  if (items.length === state.view.items.length) return state
+  return { status: 'found', view: { ...state.view, items, hidden: state.view.hidden + 1 } }
+}
+
 /** How long a lookup runs before the dialog says it is still at it. */
 const SLOW_AFTER_MS = 6000
 
@@ -219,6 +233,12 @@ export function LaborGuideDialog({
       return next
     })
     const outcome = res.success ? res.data : null
+    // Below the workshop's minimum confidence once shown: the row goes, and
+    // the line above the list counts it with the others the setting hides.
+    if (outcome?.status === 'hidden') {
+      if (kind === 'labor') setLabor((prev) => withoutItem(prev, item))
+      return
+    }
     if (!outcome || outcome.status !== 'found') {
       setUnlockError(
         outcome?.status === 'failed' ? outcome.message : (res.error ?? t('unlockFailed'))

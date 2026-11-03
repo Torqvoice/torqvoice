@@ -51,10 +51,34 @@ export interface FluidPartLine {
  * kind cannot both be right: an oil is 0W-20 or 5W-30, never both, so a
  * stocked item with another value of that kind is not offered at all.
  */
-const PATTERNS: { kind: string; exclusive: boolean; pattern: RegExp }[] = [
+/**
+ * VW's coolant family as one value per generation: G12, G12+, G12++ and
+ * G12 evo are different coolants, and "plus" is written both ways.
+ */
+function coolantValue(raw: string): string {
+  const m = /g\s*-?\s*(1[1-3])\s*(.*)$/.exec(raw)
+  if (!m) return raw.replace(/[\s-]/g, '')
+  const suffix = m[2].replace(/\s+/g, '').replace(/plus/g, '+')
+  return `g${m[1]}${suffix}`
+}
+
+const PATTERNS: {
+  kind: string
+  exclusive: boolean
+  pattern: RegExp
+  /** How a match is written for comparing; spacing, dashes and plus signs dropped unless given. */
+  value?: (raw: string) => string
+}[] = [
   { kind: 'viscosity', exclusive: true, pattern: /\b\d{1,2}\s*w\s*-?\s*\d{2,3}\b/g },
   { kind: 'brake', exclusive: true, pattern: /\bdot\s*[345](?:\.1)?\b/g },
-  { kind: 'coolant', exclusive: true, pattern: /\bg\s*-?\s*1[1-3](?:\s*\+|\s*plus|\s*evo)?\b/g },
+  {
+    kind: 'coolant',
+    exclusive: true,
+    // The longest suffix, then nothing that could carry it on: "g12++" is
+    // never read as g12 or g12+.
+    pattern: /\bg\s*-?\s*1[1-3](?:\s*(?:\+\s*\+|\+|plus\s*plus|plus|evo))?(?=$|[^a-z0-9+])/g,
+    value: coolantValue,
+  },
   { kind: 'spec', exclusive: false, pattern: /\bdexos\s*-?\s*\d?\b/g },
   { kind: 'spec', exclusive: false, pattern: /\bdexron\s*-?\s*(?:vi|v|iii|ii)\b/g },
   { kind: 'spec', exclusive: false, pattern: /\bmercon\s*-?\s*(?:ulv|lv|sp|v)\b/g },
@@ -83,9 +107,9 @@ export function fluidTokens(text: string | null | undefined): Token[] {
   if (!text) return []
   const plain = text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   const out = new Map<string, Token>()
-  for (const { kind, exclusive, pattern } of PATTERNS) {
+  for (const { kind, exclusive, pattern, value: write } of PATTERNS) {
     for (const m of plain.matchAll(pattern)) {
-      const value = m[0].replace(/[\s\-+]/g, '').replace(/plus$/, '')
+      const value = write ? write(m[0]) : m[0].replace(/[\s\-+]/g, '')
       out.set(`${kind}:${value}`, { kind, exclusive, value })
     }
   }

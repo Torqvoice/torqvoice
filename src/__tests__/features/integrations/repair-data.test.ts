@@ -515,6 +515,31 @@ describe('unlockRepairDataItem', () => {
     expect(laborTimes).toHaveBeenCalledTimes(2)
   })
 
+  it("hides a value that comes back below the workshop's minimum confidence", async () => {
+    connected({ minConfidence: 'high' })
+    laborTimes.mockResolvedValueOnce(free())
+    await open()
+    const one = answerOf('labor-one-job') // water pump, rated medium
+    one.variants[0].vehicleId = '92a92bb0-7293-4783-97e9-743c15473972'
+    one.variants[0].drivetrain = '4wd'
+    laborTimes.mockResolvedValueOnce(free(one))
+    const res = await unlockRepairDataItem({
+      vehicleId: 'v1',
+      kind: 'labor',
+      variant: {
+        engineId: '5.0l-v8-coyote',
+        drivetrain: '4wd',
+        vehicleId: '92a92bb0-7293-4783-97e9-743c15473972',
+      },
+      item: 'water-pump',
+    })
+    expect(res.data).toEqual({ status: 'hidden' })
+    // Opened again, the shown value is left out and counted with the rest.
+    const again = await open()
+    expect(again.items.find((i) => i.id === 'water-pump')).toBeUndefined()
+    expect(again.hidden).toBeGreaterThan(0)
+  })
+
   it('says so when the source would not unlock it', async () => {
     laborTimes.mockResolvedValue(free(null))
     const res = await unlockRepairDataItem({
