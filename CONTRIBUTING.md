@@ -46,6 +46,7 @@ npm run dev               # http://localhost:3000
 - Store dates in UTC, render in the workshop's timezone via `src/lib/timezone.ts` and `src/lib/workshop-datetime.ts`. No `setHours`/`getDay` on raw `Date` server-side.
 - Money carries a currency code; countries ISO 3166-1, languages ISO 639-1.
 - Schema changes: `npx prisma migrate dev --name <change>`, migration folder in the PR. Wrap data migrations in `BEGIN`/`COMMIT`.
+- A migration must leave the previous release working: add tables and columns (nullable or with a default), and drop, rename, retype or require them in a later release, once no code uses the old shape. CI flags migrations that do otherwise.
 - Tests assert visible behaviour, under `src/__tests__/**`, `*.test.ts(x)`.
 - No secrets. New env vars go in `.env.example` with a comment.
 - Country-specific features (registries, tax rules, parts marketplaces) ship as connectors or settings, never as defaults everyone sees.

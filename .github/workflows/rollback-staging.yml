@@ -30,6 +30,11 @@ jobs:
     runs-on: [self-hosted, Linux, X64, hetzner]
 
     steps:
+      # Only for .github/scripts; the app itself arrives as an image.
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+
       - name: Show available dumps
         run: ls -lht "${{ secrets.DATA_PATH }}/db-backups/torqvoice-staging" 2>/dev/null | head -20 || echo "No dumps yet."
 
@@ -110,16 +115,10 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting for staging container to be ready..."
-          for i in $(seq 1 12); do
-            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-staging 2>/dev/null || echo "not found")
-            if [ "$STATUS" = "running" ]; then
-              echo "Rolled back to ${{ inputs.tag }}."
-              exit 0
-            fi
-            echo "Status: $STATUS, retrying in 5s..."
-            sleep 5
-          done
-          echo "::error::Container failed to start after rollback"
-          docker logs torqvoice-app-staging --tail 50
+          if bash "$GITHUB_WORKSPACE/.github/scripts/wait-healthy.sh" torqvoice-app-staging; then
+            echo "Rolled back to ${{ inputs.tag }}."
+            exit 0
+          fi
+          echo "::error::Not healthy after rolling back to ${{ inputs.tag }}"
+          docker logs torqvoice-app-staging --tail 80
           exit 1

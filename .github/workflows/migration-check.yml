@@ -1,0 +1,40 @@
+name: Migration check
+
+# A deploy migrates the database while the previous version may still be
+# serving, and a rollback runs the previous version against the new schema.
+# Both work only while a migration leaves the old code working, so this fails
+# a pull request whose new migrations drop, rename, retype or tighten
+# something (see .github/scripts/check-migrations.sh). When such a change is
+# safe anyway, add the allow-breaking-migration label and say why in the
+# description; the label reruns this check.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths: ["prisma/migrations/**"]
+
+concurrency:
+  group: migration-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Migrations keep the running version working
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # The merge commit and its first parent, the base branch as it is now.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check new and changed migrations
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'allow-breaking-migration') }}
+        run: |
+          mapfile -t files < <(git diff --name-only --diff-filter=AM HEAD^1 HEAD -- 'prisma/migrations/*/migration.sql')
+          bash .github/scripts/check-migrations.sh "${files[@]}"
+
+      - name: Allowed by label
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'allow-breaking-migration') }}
+        run: echo "::notice title=Migration check skipped::The allow-breaking-migration label is on this pull request."

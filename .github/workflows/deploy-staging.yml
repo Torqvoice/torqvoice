@@ -15,6 +15,11 @@ jobs:
     runs-on: [self-hosted, Linux, X64, hetzner]
 
     steps:
+      # Only for .github/scripts; the app itself arrives as an image.
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -139,6 +144,17 @@ jobs:
                 QUICKBOOKS_INTEGRATION_CLIENT_SECRET: ${QUICKBOOKS_INTEGRATION_CLIENT_SECRET}
                 FIKEN_INTEGRATION_CLIENT_ID: ${FIKEN_INTEGRATION_CLIENT_ID}
                 FIKEN_INTEGRATION_CLIENT_SECRET: ${FIKEN_INTEGRATION_CLIENT_SECRET}
+              # Healthy once the server answers and reaches the database. The
+              # deploy waits for it and puts the previous version back when it
+              # never comes. Failures in start_period do not count, so a long
+              # migration at start is not taken for a crash. nginx-proxy routes
+              # by container, not by health, so this changes no traffic.
+              healthcheck:
+                test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/v1/health"]
+                interval: 10s
+                timeout: 10s
+                retries: 3
+                start_period: 30m
               networks:
                 - proxy
           COMPOSE
@@ -226,27 +242,34 @@ jobs:
           # folder belong to the backup cron and age out there.
           ls -t "$BACKUP_DIR"/*-pre-*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
 
+      # What to put back if the new version never gets healthy. By image ID,
+      # since staging usually runs latest, and latest moves with the pull.
+      - name: Note the running version
+        id: previous
+        run: |
+          if docker inspect torqvoice-app-staging > /dev/null 2>&1; then
+            echo "image_id=$(docker inspect --format '{{.Image}}' torqvoice-app-staging)" >> "$GITHUB_OUTPUT"
+            echo "image=$(docker inspect --format '{{.Config.Image}}' torqvoice-app-staging)" >> "$GITHUB_OUTPUT"
+            echo "Running now: $(docker inspect --format '{{.Config.Image}}' torqvoice-app-staging)"
+          else
+            echo "Nothing running yet, so there is nothing to roll back to."
+          fi
+
       - name: Deploy staging
         run: |
           cd $HOME/torqvoice-deploy/staging
           TAG=${{ inputs.tag || 'latest' }}
           APP_TAG=$TAG docker compose up -d --pull always
 
-      - name: Health check
+      - name: Health check, rolling back if it fails
         run: |
-          echo "Waiting for staging container to be ready..."
-          for i in $(seq 1 12); do
-            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-staging 2>/dev/null || echo "not found")
-            if [ "$STATUS" = "running" ]; then
-              echo "Container is running!"
-              exit 0
-            fi
-            echo "Status: $STATUS, retrying in 5s..."
-            sleep 5
-          done
-          echo "::error::Container failed to start"
-          docker logs torqvoice-app-staging --tail 50
-          exit 1
+          cd "$HOME/torqvoice-deploy/staging"
+          bash "$GITHUB_WORKSPACE/.github/scripts/roll-back-if-unhealthy.sh" \
+            torqvoice-app-staging \
+            "${{ inputs.tag || 'latest' }}" \
+            "${{ steps.previous.outputs.image_id }}" \
+            "${{ steps.previous.outputs.image }}" \
+            staging
 
       - name: Prune old images and build cache
         run: docker image prune -f && docker builder prune -f

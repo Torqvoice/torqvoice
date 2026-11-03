@@ -10,6 +10,9 @@ if [ -z "$DATABASE_URL" ]; then
   export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 fi
 
+# The cloud deploys follow "PostgreSQL is ready!" and "Migrations applied
+# successfully!" in this log to tell a failed migration from a failed start
+# (.github/scripts/wait-healthy.sh).
 echo "Waiting for PostgreSQL to be ready..."
 until pg_isready -d "$DATABASE_URL" -q; do
   echo "PostgreSQL is unavailable - sleeping 2s..."

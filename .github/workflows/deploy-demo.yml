@@ -55,6 +55,9 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:demo-${{ steps.sha.outputs.short }}
           build-args: |
             APP_VERSION=demo-${{ steps.sha.outputs.short }}
+          # Keeps server action IDs the same from build to build (see the Dockerfile).
+          secrets: |
+            next_actions_key=${{ secrets.NEXT_SERVER_ACTIONS_BUILD_KEY }}
           cache-from: type=gha,scope=demo
           cache-to: type=gha,scope=demo,mode=min
 

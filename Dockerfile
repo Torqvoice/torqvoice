@@ -22,7 +22,18 @@ RUN npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npm run build
+# Server action IDs are hashed from this key, the action's file path and its
+# name. Without one, Next makes a random key for every build, so each release
+# gives every action a new ID and a tab opened before the deploy fails its next
+# save. The same key on every build keeps the IDs, and those tabs keep working.
+# Optional: without the secret the build makes its own key, as before. Next
+# writes the key into the build output, so it is not secret once built; never
+# reuse the key a deployment sets at run time (NEXT_SERVER_ACTIONS_ENCRYPTION_KEY).
+RUN --mount=type=secret,id=next_actions_key \
+    if [ -s /run/secrets/next_actions_key ]; then \
+      export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$(cat /run/secrets/next_actions_key)"; \
+    fi && \
+    npm run build
 
 # What the container runs beside the server: the Prisma CLI for the migrations
 # at start, and tsx with a full Prisma client for the demo seed. Installed in
