@@ -62,20 +62,22 @@ jobs:
       # before it does; both come from playwright.config.ts.
       E2E_DATABASE_URL: postgresql://torqvoice:torqvoice@127.0.0.1:5432/torqvoice_e2e
       E2E_MODE: ${{ matrix.mode }}
-      # The cloud job mints a one-day cloud token from it; without the token the
-      # app ignores TORQVOICE_MODE=cloud. Only the cloud job gets it.
-      TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY: ${{ matrix.mode == 'cloud' && secrets.TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY || '' }}
+      # The cloud token torqvoice.com minted for http://127.0.0.1:3100, the
+      # origin this suite builds for; without it the app ignores
+      # TORQVOICE_MODE=cloud. Only the cloud job gets it. A token and never the
+      # signing key: this env reaches npm ci and every install script with it.
+      E2E_CLOUD_TOKEN: ${{ matrix.mode == 'cloud' && secrets.E2E_CLOUD_TOKEN || '' }}
 
     steps:
-      # A pull request from a fork gets no secrets, so the cloud job has no key
-      # to mint its cloud token with and the app would refuse cloud mode. That
-      # says nothing about the contribution, so the job skips instead of failing.
-      # The self-hosted shards need no key and always run.
-      - name: Check for the cloud signing key
+      # A pull request from a fork gets no secrets, so the cloud job has no
+      # cloud token and the app would refuse cloud mode. That says nothing
+      # about the contribution, so the job skips instead of failing. The
+      # self-hosted shards need no token and always run.
+      - name: Check for the cloud token
         id: gate
         run: |
-          if [ "${{ matrix.mode }}" = "cloud" ] && [ -z "$TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY" ]; then
-            echo "::notice title=Cloud specs skipped::No TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY here (a fork or Dependabot pull request), so the cloud specs cannot run."
+          if [ "${{ matrix.mode }}" = "cloud" ] && [ -z "$E2E_CLOUD_TOKEN" ]; then
+            echo "::notice title=Cloud specs skipped::No E2E_CLOUD_TOKEN here (a fork or Dependabot pull request), so the cloud specs cannot run."
             echo "run=false" >> "$GITHUB_OUTPUT"
           else
             echo "run=true" >> "$GITHUB_OUTPUT"
