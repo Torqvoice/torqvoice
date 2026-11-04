@@ -12,6 +12,8 @@ import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
 import { claimEmailMessagesForCustomer } from '@/features/messaging/Lib/emailClaim.server'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 import { clearedToNull } from '@/lib/clearable'
+import { Prisma } from '@/generated/prisma/client'
+import { NAME_FOLD, foldName, normalizeName } from '@/lib/name-similarity'
 
 /**
  * A design a customer is being pointed at has to be this workshop's and an
@@ -506,23 +508,6 @@ export async function createWorkOrderFromRequest(requestId: string) {
   )
 }
 
-export async function getCustomersList() {
-  return withAuth(
-    async ({ userId, organizationId }) => {
-      return db.customer.findMany({
-        where: { organizationId },
-        select: { id: true, name: true, company: true },
-        orderBy: { name: 'asc' },
-      })
-    },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
-      ],
-    }
-  )
-}
-
 export async function searchCustomers(search?: string, limit = 20, offset = 0) {
   return withAuth(
     async ({ organizationId }) => {
@@ -557,6 +542,69 @@ export async function searchCustomers(search?: string, limit = 20, offset = 0) {
         skip: offset,
         take: limit,
       })
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
+/** One customer's name and company, for a selector that was given only the id. */
+export async function getCustomerOption(customerId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const customer = await db.customer.findFirst({
+        where: { id: customerId, organizationId },
+        select: { id: true, name: true, company: true },
+      })
+      if (!customer) throw new Error('Customer not found')
+      return customer
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
+/** How many possible owners are sent back for the fuzzy comparison. */
+const OWNER_CANDIDATE_LIMIT = 50
+
+/**
+ * Customers who could be the keeper named on a scanned document, for the
+ * vehicle form to compare with `nameSimilarity`.
+ *
+ * Name and company are compared with accents and case folded by `foldName`,
+ * so papers that say "Muller" find "Müller" and the other way round. Every
+ * word of two letters or more is looked for, so "Bo Li" is found, and the
+ * customers matching the most words come first, so the right one is not
+ * pushed past the limit by others sharing a surname.
+ */
+export async function findOwnerCandidates(ownerName: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const allWords = [...new Set(foldName(normalizeName(ownerName)).split(' ').filter(Boolean))]
+      const longer = allWords.filter((word) => word.length >= 2)
+      const words = (longer.length ? longer : allWords).slice(0, 6)
+      if (!words.length) return []
+
+      const folded = Prisma.sql`lower(translate(c.name || ' ' || coalesce(c.company, ''), ${NAME_FOLD.from}, ${NAME_FOLD.to}))`
+      // normalizeName leaves only letters and digits, so no word holds a LIKE wildcard
+      const hits = words.map((word) => Prisma.sql`(${folded} LIKE ${`%${word}%`})`)
+      return db.$queryRaw<{ id: string; name: string; company: string | null }[]>(Prisma.sql`
+        SELECT c.id, c.name, c.company
+        FROM "public"."customers" c
+        WHERE c."organizationId" = ${organizationId}
+          AND (${Prisma.join(hits, ' OR ')})
+        ORDER BY (${Prisma.join(
+          hits.map((hit) => Prisma.sql`${hit}::int`),
+          ' + '
+        )}) DESC, c.name ASC
+        LIMIT ${OWNER_CANDIDATE_LIMIT}
+      `)
     },
     {
       requiredPermissions: [

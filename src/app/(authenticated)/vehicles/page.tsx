@@ -2,7 +2,6 @@ import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
 import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { VehiclesClient } from './vehicles-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
@@ -37,7 +36,7 @@ export default async function VehiclesPage({
   const cookieStore = await cookies()
   const viewCookie = cookieStore.get('torqvoice-vehicles-view')?.value
   const initialView = viewCookie === 'table' ? 'table' : viewCookie === 'grid6' ? 'grid6' : 'grid'
-  const [result, customersResult] = await Promise.all([
+  const [result] = await Promise.all([
     getVehiclesPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -47,7 +46,6 @@ export default async function VehiclesPage({
       sortOrder: sort.sortOrder,
       inspectionDue,
     }),
-    getCustomersList(),
   ])
 
   if (!result.success || !result.data) {
@@ -69,7 +67,6 @@ export default async function VehiclesPage({
       <ListPage>
         <VehiclesClient
           data={result.data}
-          customers={customersResult.data ?? []}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}

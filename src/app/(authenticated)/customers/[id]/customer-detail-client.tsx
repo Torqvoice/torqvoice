@@ -155,7 +155,6 @@ function oneLine(text: string): string {
 
 export function CustomerDetailClient({
   customer,
-  customers = [],
   unitSystem = 'imperial',
   smsEnabled = false,
   smsMessages = [],
@@ -173,7 +172,6 @@ export function CustomerDetailClient({
   aiEnabled = false,
 }: {
   customer: CustomerDetail
-  customers?: { id: string; name: string; company: string | null }[]
   unitSystem?: 'metric' | 'imperial'
   smsEnabled?: boolean
   smsMessages?: SmsMessage[]
@@ -563,8 +561,8 @@ export function CustomerDetailClient({
             <VehicleForm
               open={showVehicleForm}
               onOpenChange={setShowVehicleForm}
-              customers={customers}
               defaultCustomerId={customer.id}
+              defaultCustomer={customer}
             />
             {customer.vehicles.length === 0 ? (
               <Card className="border-dashed">

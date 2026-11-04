@@ -20,7 +20,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { PLATE_LOOKUP_EVENT, usePlateLookupAccess } from '@/components/plate-lookup-context'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { cn } from '@/lib/utils'
 import { type PlateLookup, lookupPlate } from '../Actions/plateLookupActions'
@@ -84,9 +83,6 @@ export function PlateLookupCommand() {
   const [copied, setCopied] = useState(false)
   const [formOpen, setFormOpen] = useState(false)
   const [formLookup, setFormLookup] = useState<VehicleLookup | null>(null)
-  const [customers, setCustomers] = useState<
-    { id: string; name: string; company: string | null }[]
-  >([])
   const inputRef = useRef<HTMLInputElement>(null)
   const requestRef = useRef(0)
 
@@ -178,8 +174,6 @@ export function PlateLookupCommand() {
         ? { ...registry, licensePlate: registry.licensePlate ?? result.plate }
         : { licensePlate: result.plate, source: '', connectorId: '' }
     )
-    const list = await getCustomersList()
-    setCustomers(list.success && list.data ? list.data : [])
     setOpen(false)
     setFormOpen(true)
   }
@@ -627,7 +621,6 @@ export function PlateLookupCommand() {
           setFormOpen(next)
           if (!next) setFormLookup(null)
         }}
-        customers={customers}
         initialLookup={formLookup}
       />
     </>

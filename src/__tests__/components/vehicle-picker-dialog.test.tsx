@@ -8,18 +8,40 @@
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }))
-vi.mock('@/features/vehicles/Actions/vehicleActions', () => ({ createVehicle: vi.fn() }))
+const searchVehicles = vi.hoisted(() => vi.fn())
+vi.mock('@/features/vehicles/Actions/vehicleActions', () => ({
+  createVehicle,
+  searchVehicles,
+}))
 vi.mock('@/features/vehicles/Actions/createDraftServiceRecord', () => ({
   createDraftCounterSale: vi.fn(),
 }))
+const createVehicle = vi.hoisted(() => vi.fn())
 vi.mock('@/features/customers/Actions/customerActions', () => ({ createCustomer: vi.fn() }))
-vi.mock('@/features/quotes/Components/CustomerCombobox', () => ({ CustomerCombobox: () => null }))
+// Stands in for the server search: one button picks a customer, and it names
+// whoever it was handed, which is what a user sees in the real one.
+vi.mock('@/features/quotes/Components/CustomerCombobox', () => ({
+  CustomerCombobox: ({
+    initialCustomer,
+    onChange,
+  }: {
+    initialCustomer?: { name: string } | null
+    onChange: (id: string, c: { id: string; name: string; company: null }) => void
+  }) => (
+    <button
+      type="button"
+      onClick={() => onChange('c1', { id: 'c1', name: 'Ann Berg', company: null })}
+    >
+      {initialCustomer?.name ?? 'Select a customer (optional)'}
+    </button>
+  ),
+}))
 vi.mock('@/components/upgrade-gate', () => ({ handleGated: () => false }))
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
 
@@ -35,25 +57,24 @@ const unregistered = {
 }
 
 function renderPicker(serviceType: string, props: { title?: string; empty?: boolean } = {}) {
+  searchVehicles.mockReset()
+  searchVehicles.mockResolvedValue({
+    success: true,
+    data: props.empty ? [] : [unregistered],
+  })
   return render(
     <ServiceTypeProvider serviceType={serviceType}>
-      <VehiclePickerDialog
-        open
-        onOpenChange={vi.fn()}
-        vehicles={props.empty ? [] : [unregistered]}
-        customers={[]}
-        title={props.title}
-      />
+      <VehiclePickerDialog open onOpenChange={vi.fn()} title={props.title} />
     </ServiceTypeProvider>
   )
 }
 
 describe('VehiclePickerDialog, automotive', () => {
-  it('keeps its vehicle wording on the select step', () => {
+  it('keeps its vehicle wording on the select step', async () => {
     renderPicker('automotive')
     expect(screen.getByRole('dialog', { name: 'Select Vehicle for Work Order' })).toBeVisible()
     expect(screen.getByPlaceholderText('Search vehicles...')).toBeInTheDocument()
-    expect(screen.getByText('No plate')).toBeInTheDocument()
+    expect(await screen.findByText('No plate')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add New Vehicle' })).toBeInTheDocument()
   })
 
@@ -62,9 +83,37 @@ describe('VehiclePickerDialog, automotive', () => {
     expect(screen.getByRole('dialog', { name: 'Select Vehicle' })).toBeVisible()
   })
 
-  it('says no vehicles were found when there are none', () => {
+  it('says no vehicles were found when there are none', async () => {
     renderPicker('automotive', { empty: true })
-    expect(screen.getByText('No vehicles found.')).toBeInTheDocument()
+    expect(await screen.findByText('No vehicles found.')).toBeInTheDocument()
+  })
+
+  it('asks the server for the recent vehicles, then for what was typed', async () => {
+    renderPicker('automotive')
+    await waitFor(() => expect(searchVehicles).toHaveBeenCalledWith(undefined, 30))
+    fireEvent.change(screen.getByPlaceholderText('Search vehicles...'), {
+      target: { value: ' smith ' },
+    })
+    await waitFor(() => expect(searchVehicles).toHaveBeenCalledWith('smith', 30))
+  })
+
+  it('names the customer a new vehicle will be saved to, after going back and forth', async () => {
+    renderPicker('automotive')
+    createVehicle.mockReset()
+    createVehicle.mockResolvedValue({ success: true, data: { id: 'v9' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Parts-Only Sale' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select a customer (optional)' }))
+    fireEvent.click(screen.getAllByRole('button')[0]) // back
+    fireEvent.click(screen.getByRole('button', { name: 'Add New Vehicle' }))
+
+    expect(screen.getByRole('button', { name: 'Ann Berg' })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Make *'), { target: { value: 'Volvo' } })
+    fireEvent.change(screen.getByLabelText('Model *'), { target: { value: 'V70' } })
+    fireEvent.change(screen.getByLabelText('Year *'), { target: { value: '2015' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Create & Continue' }))
+    await waitFor(() =>
+      expect(createVehicle).toHaveBeenCalledWith(expect.objectContaining({ customerId: 'c1' }))
+    )
   })
 
   it('keeps its vehicle wording on the create step', () => {
@@ -78,18 +127,18 @@ describe('VehiclePickerDialog, automotive', () => {
 })
 
 describe('VehiclePickerDialog, marine', () => {
-  it('asks for a vessel on the select step, whatever title the caller passed', () => {
+  it('asks for a vessel on the select step, whatever title the caller passed', async () => {
     renderPicker('marine', { title: 'Select Vehicle' })
     expect(screen.getByRole('dialog', { name: 'Select Vessel for Work Order' })).toBeVisible()
     expect(screen.getByPlaceholderText('Search vessels...')).toBeInTheDocument()
-    expect(screen.getByText('No registration')).toBeInTheDocument()
+    expect(await screen.findByText('No registration')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add New Vessel' })).toBeInTheDocument()
     expect(screen.queryByText(/vehicle/i)).toBeNull()
   })
 
-  it('says no vessels were found when there are none', () => {
+  it('says no vessels were found when there are none', async () => {
     renderPicker('marine', { empty: true })
-    expect(screen.getByText('No vessels found.')).toBeInTheDocument()
+    expect(await screen.findByText('No vessels found.')).toBeInTheDocument()
   })
 
   it('asks for what a boat has on the create step', () => {

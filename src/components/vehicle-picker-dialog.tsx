@@ -1,20 +1,13 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, Plus, Car, Search, ArrowLeft, UserPlus, ShoppingCart, Ship } from 'lucide-react'
-import { createVehicle } from '@/features/vehicles/Actions/vehicleActions'
+import { createVehicle, searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { createDraftCounterSale } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { createCustomer } from '@/features/customers/Actions/customerActions'
@@ -29,20 +22,21 @@ interface Vehicle {
   model: string
   year: number
   licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
+  customer: { id: string; name: string } | null
 }
 
-interface Customer {
+interface CustomerOption {
   id: string
   name: string
   company: string | null
 }
 
+// Enough recent vehicles to pick from at a glance; anything else is a search away.
+const PAGE_SIZE = 30
+
 interface VehiclePickerDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  vehicles: Vehicle[]
-  customers: Customer[]
   title?: string
   redirectQuery?: Record<string, string>
 }
@@ -50,8 +44,6 @@ interface VehiclePickerDialogProps {
 export function VehiclePickerDialog({
   open,
   onOpenChange,
-  vehicles,
-  customers,
   title,
   redirectQuery,
 }: VehiclePickerDialogProps) {
@@ -70,22 +62,43 @@ export function VehiclePickerDialog({
   const [newModel, setNewModel] = useState('')
   const [newYear, setNewYear] = useState('')
   const [newPlate, setNewPlate] = useState('')
-  const [selectedCustomerId, setSelectedCustomerId] = useState('')
+  // Kept as the whole customer, not just its id: the combobox remounts when the
+  // step changes and needs the customer to show who the record will be saved to.
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerOption | null>(null)
+  const selectedCustomerId = selectedCustomer?.id ?? ''
   const [showNewCustomer, setShowNewCustomer] = useState(false)
   const [newCustomerName, setNewCustomerName] = useState('')
   const [newCustomerPhone, setNewCustomerPhone] = useState('')
   const [creating, setCreating] = useState(false)
 
-  const filteredVehicles = useMemo(() => {
-    if (!vehicleSearch.trim()) return vehicles
-    const q = vehicleSearch.toLowerCase()
-    return vehicles.filter(
-      (v) =>
-        `${v.year} ${v.make} ${v.model}`.toLowerCase().includes(q) ||
-        v.licensePlate?.toLowerCase().includes(q) ||
-        v.customer?.name.toLowerCase().includes(q)
+  // The list is searched on the server: a workshop can have tens of thousands
+  // of vehicles, and sending them all to the browser made the picker take
+  // seconds to open and to show each typed letter.
+  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([])
+  const [vehiclesLoading, setVehiclesLoading] = useState(false)
+  const requestRef = useRef(0)
+
+  useEffect(() => {
+    if (!open || pickerStep !== 'select') return
+    const query = vehicleSearch.trim()
+    const request = ++requestRef.current
+    setVehiclesLoading(true)
+    const timer = setTimeout(
+      async () => {
+        try {
+          const result = await searchVehicles(query || undefined, PAGE_SIZE)
+          if (request !== requestRef.current) return
+          setFilteredVehicles(result.success && result.data ? result.data : [])
+        } catch {
+          if (request === requestRef.current) setFilteredVehicles([])
+        } finally {
+          if (request === requestRef.current) setVehiclesLoading(false)
+        }
+      },
+      query ? 300 : 0
     )
-  }, [vehicles, vehicleSearch])
+    return () => clearTimeout(timer)
+  }, [open, pickerStep, vehicleSearch])
 
   const resetState = () => {
     setPickerStep('select')
@@ -94,7 +107,7 @@ export function VehiclePickerDialog({
     setNewModel('')
     setNewYear('')
     setNewPlate('')
-    setSelectedCustomerId('')
+    setSelectedCustomer(null)
     setShowNewCustomer(false)
     setNewCustomerName('')
     setNewCustomerPhone('')
@@ -229,10 +242,14 @@ export function VehiclePickerDialog({
                 />
               </div>
               <div className="max-h-[300px] overflow-y-auto">
-                {filteredVehicles.length === 0 ? (
+                {vehiclesLoading && filteredVehicles.length === 0 ? (
+                  <div className="flex justify-center py-6">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : filteredVehicles.length === 0 ? (
                   <div className="py-6 text-center space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      {vehicles.length === 0
+                      {!vehicleSearch.trim()
                         ? isMarine
                           ? t('emptyMarine')
                           : t('empty')
@@ -312,7 +329,8 @@ export function VehiclePickerDialog({
                       value={selectedCustomerId}
                       placeholder={t('selectCustomer')}
                       noneLabel={t('none')}
-                      onChange={(id) => setSelectedCustomerId(id)}
+                      initialCustomer={selectedCustomer}
+                      onChange={(_id, customer) => setSelectedCustomer(customer)}
                     />
                     <Button
                       variant="ghost"
@@ -320,7 +338,7 @@ export function VehiclePickerDialog({
                       className="h-8 px-2 text-xs text-muted-foreground"
                       onClick={() => {
                         setShowNewCustomer(true)
-                        setSelectedCustomerId('')
+                        setSelectedCustomer(null)
                       }}
                     >
                       <UserPlus className="h-3.5 w-3.5 mr-1" />
@@ -450,35 +468,27 @@ export function VehiclePickerDialog({
               <div className="space-y-1.5">
                 <Label>{t('customer')}</Label>
                 {!showNewCustomer ? (
-                  <Select
-                    value={selectedCustomerId}
-                    onValueChange={(val) => {
-                      if (val === '__new__') {
+                  <>
+                    <CustomerCombobox
+                      value={selectedCustomerId}
+                      placeholder={t('selectCustomer')}
+                      noneLabel={t('none')}
+                      initialCustomer={selectedCustomer}
+                      onChange={(_id, customer) => setSelectedCustomer(customer)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 text-xs text-muted-foreground"
+                      onClick={() => {
                         setShowNewCustomer(true)
-                        setSelectedCustomerId('')
-                      } else {
-                        setSelectedCustomerId(val)
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={t('selectCustomer')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__new__">
-                        <span className="flex items-center gap-1.5">
-                          <UserPlus className="h-3.5 w-3.5" />
-                          {t('createNewCustomer')}
-                        </span>
-                      </SelectItem>
-                      {customers.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.name}
-                          {c.company ? ` (${c.company})` : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        setSelectedCustomer(null)
+                      }}
+                    >
+                      <UserPlus className="h-3.5 w-3.5 mr-1" />
+                      {t('createNewCustomer')}
+                    </Button>
+                  </>
                 ) : (
                   <div className="space-y-3 rounded-md border p-3">
                     <div className="flex items-center justify-between">

@@ -3,7 +3,6 @@ import {
   getCustomer,
   getCustomerInvoices,
   getCustomerQuotes,
-  getCustomersList,
 } from '@/features/customers/Actions/customerActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -19,15 +18,13 @@ import { PageHeader } from '@/components/page-header'
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [result, settingsResult, layoutData, customersResult, invoicesResult, quotesResult] =
-    await Promise.all([
-      getCustomer(id),
-      getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
-      getLayoutData(),
-      getCustomersList(),
-      getCustomerInvoices(id),
-      getCustomerQuotes(id),
-    ])
+  const [result, settingsResult, layoutData, invoicesResult, quotesResult] = await Promise.all([
+    getCustomer(id),
+    getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
+    getLayoutData(),
+    getCustomerInvoices(id),
+    getCustomerQuotes(id),
+  ])
 
   if (!result.success || !result.data) {
     const t = await getTranslations('customers.detail')
@@ -108,7 +105,6 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <CustomerDetailClient
           customer={result.data}
-          customers={customersResult.success && customersResult.data ? customersResult.data : []}
           unitSystem={
             ((settingsResult.success && settingsResult.data?.[SETTING_KEYS.UNIT_SYSTEM]) ||
               'imperial') as 'metric' | 'imperial'
