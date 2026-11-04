@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Darbo užsakymo būsena",
     "back": "Atgal",
-    "backToClassic": "Grįžti į klasikinį išdėstymą",
     "openCustomer": "Atidaryti klientą",
     "serviceHistory": "Paslaugų istorija",
     "changeVehicle": "Keisti transporto priemonę",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {Klientas atidarė nuorodą # kartą} few {Klientas atidarė nuorodą # kartus} many {Klientas atidarė nuorodą # karto} other {Klientas atidarė nuorodą # kartų}}",
       "paymentTaken": "Užregistruotas {amount} mokėjimas",
       "statusSet": "Būsena pakeista į {status}"
-    },
-    "invite": {
-      "title": "Darbo užsakymo puslapis atnaujintas.",
-      "body": "Aiškesnis išdėstymas, tie patys laukai. Grįžti galite bet kada.",
-      "try": "Išbandyti dabar",
-      "dismiss": "Ne dabar",
-      "menu": "Išbandyti naują išdėstymą"
     },
     "promised": "Pažadėta {date}",
     "promisedOverdue": "Pažadėta {date}, vėluoja",

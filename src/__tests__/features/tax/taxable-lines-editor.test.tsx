@@ -14,7 +14,6 @@ import { describe, expect, it, vi } from 'vitest'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { LineTaxProvider } from '@/features/settings/Components/LineTaxContext'
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
-import { InvoiceSummary } from '@/features/vehicles/Components/service-detail/InvoiceSummary'
 import { LaborEditor } from '@/features/vehicles/Components/service-edit/LaborEditor'
 import { PartsEditor } from '@/features/vehicles/Components/service-edit/PartsEditor'
 import { TotalsSection } from '@/features/vehicles/Components/service-edit/TotalsSection'
@@ -340,35 +339,5 @@ describe('the row that says what the tax was charged on', () => {
   it('is not there when every line is taxed', () => {
     totals(null)
     expect(screen.queryByTestId('taxable-amount-row')).toBeNull()
-  })
-
-  it('is on the invoice summary too, and the summary takes tax out of taxed lines only', () => {
-    render(
-      <InvoiceSummary
-        hasPartItems
-        hasLaborItems
-        // Prices entered with tax in them: 216 of taxed parts, 300 of untaxed labor.
-        partsSubtotal={216}
-        laborSubtotal={300}
-        subtotal={516}
-        discountAmount={0}
-        discountType={null}
-        discountValue={0}
-        taxRate={8}
-        taxAmount={16}
-        taxInclusive
-        taxableShare={{ parts: 216, labor: 0, subtotal: 216, taxableAmount: 200 }}
-        displayTotal={516}
-        totalPaid={0}
-        balanceDue={516}
-        hasPayments={false}
-        currencyCode="USD"
-      />
-    )
-    expect(screen.getByTestId('taxable-amount-row')).toHaveTextContent('200.00')
-    // Labor reads 300, not 277.78: there was never any tax in it.
-    expect(screen.getByText('Labor').parentElement).toHaveTextContent('300.00')
-    expect(screen.getByText('Parts').parentElement).toHaveTextContent('200.00')
-    expect(screen.getByText('Subtotal').parentElement).toHaveTextContent('500.00')
   })
 })

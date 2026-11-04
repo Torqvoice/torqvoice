@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Estado de la orden de trabajo",
     "back": "Atrás",
-    "backToClassic": "Volver al diseño clásico",
     "openCustomer": "Abrir cliente",
     "serviceHistory": "Historial de servicio",
     "changeVehicle": "Cambiar vehículo",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {El cliente abrió el enlace} other {El cliente abrió el enlace # veces}}",
       "paymentTaken": "Pago de {amount} registrado",
       "statusSet": "Estado cambiado a {status}"
-    },
-    "invite": {
-      "title": "La página de la orden de trabajo se ha renovado.",
-      "body": "Un diseño más claro con los mismos campos. Puedes volver al anterior cuando quieras.",
-      "try": "Probar ahora",
-      "dismiss": "Ahora no",
-      "menu": "Probar el nuevo diseño"
     },
     "promised": "Prometido el {date}",
     "promisedOverdue": "Prometido el {date}, con retraso",

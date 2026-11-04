@@ -3,7 +3,6 @@ import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import type { LineTaxSettings } from '@/features/settings/Lib/workshopTax'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
 import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
@@ -153,6 +152,7 @@ export interface ServicePageClientProps {
     sentVia: string | null
     sentAt: string | null
   }[]
+  /** A section to open or scroll to, from a link's `?tab=` query (see ServiceTab). */
   initialTab?: string
   /** The workshop's saved invoice designs, for the picker on the invoice. */
   designOptions?: { id: string; name: string }[]
@@ -185,11 +185,6 @@ export interface ServicePageClientProps {
     createdAt: string
     toNumber: string
   }[]
-  /**
-   * The layout this browser asked for, read from its cookie on the server so
-   * the first paint is already the right page. Classic unless somebody opted in.
-   */
-  initialLayout?: WorkOrderLayout
 }
 
 export type {
@@ -200,3 +195,10 @@ export type {
   InventoryPartOption,
   LaborPresetOption,
 }
+
+/**
+ * The sections a link may ask for with `?tab=`. The page has no tabs of its
+ * own any more; `details` is the page as it opens, the rest open or scroll
+ * to the files card. Links in notifications and status reports still send them.
+ */
+export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'

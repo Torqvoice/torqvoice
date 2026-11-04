@@ -28,7 +28,7 @@ interface ModernHeroProps {
   status: string
   paymentStatus: string
   warranty: WarrantyFields
-  /** Save, preview, send and the menu: the same cluster the classic header carries. */
+  /** Save, preview, send and the menu. */
   actions: ReactNode
   /** The title as it stands, unsaved edits included, and how to change it. */
   title: string

@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Status van de werkorder",
     "back": "Terug",
-    "backToClassic": "Terug naar de klassieke indeling",
     "openCustomer": "Klant openen",
     "serviceHistory": "Servicegeschiedenis",
     "changeVehicle": "Voertuig wijzigen",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {Klant heeft de link geopend} other {Klant heeft de link # keer geopend}}",
       "paymentTaken": "Betaling van {amount} geregistreerd",
       "statusSet": "Status gezet op {status}"
-    },
-    "invite": {
-      "title": "De werkorderpagina is vernieuwd.",
-      "body": "Een overzichtelijkere indeling met dezelfde velden. U kunt altijd terugschakelen.",
-      "try": "Nu proberen",
-      "dismiss": "Niet nu",
-      "menu": "Nieuwe indeling proberen"
     },
     "promised": "Toegezegd voor {date}",
     "promisedOverdue": "Toegezegd voor {date}, te laat",

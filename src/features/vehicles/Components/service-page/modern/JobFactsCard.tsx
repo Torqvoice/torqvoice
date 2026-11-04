@@ -147,9 +147,9 @@ function CopyPlate({ plate, label }: { plate: string; label: string }) {
 }
 
 /**
- * Who the job is for and what it is on, the first thing on the overhauled
- * page. It stands in for the classic "Customer & Vehicle" panel and carries
- * the same fields that panel owns: the mileage input, the hidden technician
+ * Who the job is for and what it is on, the first thing on the page. It took
+ * over from the "Customer & Vehicle" panel and carries the fields that panel
+ * owned: the mileage input, the hidden technician
  * name and the vehicle picker, each still in the document exactly once.
  *
  * The customer is read here and edited on the customer's own page; a work
@@ -284,9 +284,8 @@ export function JobFactsCard({
           )}
         </div>
 
-        {/* A counter sale has no vehicle and nothing to pick: the classic page
-            shows the picker regardless, and choosing one there turns the sale
-            into a vehicle job, so the way to do that stays. */}
+        {/* A counter sale has no vehicle and nothing to pick, but choosing one
+            turns the sale into a vehicle job, so the picker stays. */}
         <div className="order-3 space-y-2 border-t border-card-edge px-4 py-3 @xl:order-none @xl:border-t-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-display text-sm font-semibold tracking-tight">

@@ -12,7 +12,7 @@ import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLock
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
 import { PayCodeButton } from './PayCodeButton'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import { useState, useCallback, useMemo, useRef, useEffect, type ComponentProps } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import {
@@ -23,7 +23,6 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { useTranslations } from 'next-intl'
 
-import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
@@ -53,27 +52,21 @@ import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templat
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
-import { ServiceImagesManager } from '../service-images-manager'
-import { ServiceVideoManager } from '../service-video-manager'
-import { ServiceDocumentsManager } from '../service-documents-manager'
 import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
-import { ServiceHeaderActions, UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
+import { ServiceHeaderActions } from './ServiceHeaderActions'
 
 import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
-import { DetailsLeftColumn } from './DetailsLeftColumn'
-import { DetailsRightColumn } from './DetailsRightColumn'
 import { ObservationsManager, type ObservationsControls } from './ObservationsManager'
-import type { ServicePageClientProps } from './service-page-types'
+import type { ServicePageClientProps, ServiceTab } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
-import { rememberWorkOrderLayout, type WorkOrderLayout } from '@/lib/work-order-layout'
-import { registerAnalyticsProperties, track } from '@/lib/analytics'
-import { TryNewLayoutBanner } from './TryNewLayoutBanner'
+import { track } from '@/lib/analytics'
 import { LaborAddedBanner } from './LaborAddedBanner'
 import { useLiveRecord } from '@/features/realtime/hooks'
 import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
 import { ModernDetails } from './modern/ModernDetails'
 import { ModernHero } from './modern/ModernHero'
+import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
@@ -134,7 +127,6 @@ export function ServicePageClient({
   designPinnedAt = null,
   designFollowsRule = null,
   jobClock = { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' },
-  initialLayout = 'modern',
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -148,11 +140,7 @@ export function ServicePageClient({
       ? (initialTab as ServiceTab)
       : 'details'
 
-  const [storedTab, setActiveTab] = useState<ServiceTab>(resolvedInitialTab)
-
-  // Classic until somebody asks for the overhauled page; the server already
-  // read this browser's choice, so the first paint is the right one.
-  const [layout, setLayout] = useState<WorkOrderLayout>(initialLayout)
+  const [requestedTab, setRequestedTab] = useState<ServiceTab>(resolvedInitialTab)
 
   // The overhauled page edits the title in its header, outside the form, so
   // the page holds it and the form carries it as a hidden field. It follows
@@ -161,36 +149,21 @@ export function ServicePageClient({
   useEffect(() => {
     setTitle(record.title)
   }, [record.title])
-  const modern = layout === 'modern'
 
-  // One view per work order opened, in the layout it opened in; a switch on
-  // the page is its own event and does not count as a second view. The
-  // layout is also put on every later event from this browser, so any chart
-  // (autocaptured clicks included) can be split by it.
-  const layoutRef = useRef(layout)
-  layoutRef.current = layout
+  // One view per work order opened.
   useEffect(() => {
-    registerAnalyticsProperties({ work_order_layout: layoutRef.current })
-    track('work_order:page_view', { layout: layoutRef.current })
+    track('work_order:page_view')
   }, [record.id])
-  // The overhauled page has no tabs: photos, video, documents and status
-  // reports are all on the job itself. A link to one of the old tabs lands on
-  // the page with that section open or scrolled to.
-  const isFileTab = storedTab === 'images' || storedTab === 'video' || storedTab === 'documents'
-  const activeTab: ServiceTab = modern ? 'details' : storedTab
+  // The page has no tabs: photos, video, documents and status reports are all
+  // on the job itself. A link with `?tab=` lands on the page with that
+  // section open or scrolled to.
+  const isFileTab =
+    requestedTab === 'images' || requestedTab === 'video' || requestedTab === 'documents'
   // A link to this record with another tab (feedback on a status report, say)
   // changes only the query, so the page is not remounted and has to follow it.
   useEffect(() => {
-    setActiveTab(resolvedInitialTab)
+    setRequestedTab(resolvedInitialTab)
   }, [resolvedInitialTab])
-
-  const handleTabChange = useCallback((tab: ServiceTab) => {
-    setActiveTab(tab)
-    const url = new URL(window.location.href)
-    if (tab === 'details') url.searchParams.delete('tab')
-    else url.searchParams.set('tab', tab)
-    window.history.replaceState(null, '', url.pathname + url.search)
-  }, [])
 
   // Date check dialog state
   const [showDateCheck, setShowDateCheck] = useState(false)
@@ -292,7 +265,7 @@ export function ServicePageClient({
     [formState, t, defaultMarkupPercent, markupAppliesToInventory]
   )
 
-  useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
+  useHardwareScanner({ onScan: handleBarcodeScan })
 
   // Notify customer
   const statusTemplateKeys: Record<string, string> = {
@@ -457,27 +430,6 @@ export function ServicePageClient({
     if (formState.hasUnsavedChanges) return actions.saveNow()
   })
 
-  // Both layouts are the same form, but the plain inputs (title, invoice
-  // number, mileage) are remounted by the switch and would come back showing
-  // the saved value. So what has been typed is saved first.
-  const switchLayout = useCallback(
-    async (next: WorkOrderLayout, source: 'banner' | 'menu' | 'footer') => {
-      // Which way people go, and from where, is what decides when the classic
-      // page can be retired: a switch back is the signal that something is
-      // missing from the new one.
-      track('work_order:layout_switch', {
-        from_layout: next === 'modern' ? 'classic' : 'modern',
-        to_layout: next,
-        source,
-      })
-      registerAnalyticsProperties({ work_order_layout: next })
-      if (formState.hasUnsavedChanges) await actions.saveNow()
-      rememberWorkOrderLayout(next)
-      setLayout(next)
-    },
-    [formState.hasUnsavedChanges, actions]
-  )
-
   const previewInvoice = async () => {
     // No expired-dates prompt here: previewing is just looking, and the
     // check still runs on download, email, and share.
@@ -491,8 +443,7 @@ export function ServicePageClient({
     actions.setShowShareDialog(true)
   }
 
-  // The classic page gives status reports a tab; the overhauled one has no
-  // tabs and draws them as a section under the job. Same list either way.
+  // Status reports are a section under the job, outside the form.
   const statusReportList = (
     <StatusReportList
       serviceRecordId={record.id}
@@ -516,8 +467,7 @@ export function ServicePageClient({
     />
   )
 
-  // What can be done with the job as a whole. The classic header and the
-  // overhauled page's own top carry the same cluster, fed from here.
+  // What can be done with the job as a whole, drawn in the header.
   const headerActionProps = {
     meetingUrl: videoCall.link?.url ?? null,
     downloading: actions.downloading,
@@ -547,16 +497,11 @@ export function ServicePageClient({
     designMenu: canChangeIssuedDesign ? (
       <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
     ) : undefined,
-    layout,
-    onSwitchLayout: () => void switchLayout(modern ? 'classic' : 'modern', 'menu'),
   }
 
-  // One set of props for each column, handed to whichever layout is showing:
-  // the classic two columns take them as they are, the overhauled page takes
-  // both and lays the same sections out its own way.
   // The invoice's link as a code for the customer at the desk. One element,
-  // drawn wherever a payment is taken: beside "Record payment" on both
-  // layouts, and on the overhauled page's money bar.
+  // drawn wherever a payment is taken: beside "Record payment" and on the
+  // money bar.
   const payCode = onlinePayments ? (
     <PayCodeButton
       serviceRecordId={record.id}
@@ -567,7 +512,8 @@ export function ServicePageClient({
     />
   ) : null
 
-  const leftColumnProps: ComponentProps<typeof DetailsLeftColumn> = {
+  // The page's body in two halves: the job itself, and the sidebar beside it.
+  const jobProps: WorkOrderJobProps = {
     formState,
     actions,
     record,
@@ -595,7 +541,7 @@ export function ServicePageClient({
     payCode,
   }
 
-  const rightColumnProps: ComponentProps<typeof DetailsRightColumn> = {
+  const sidebarProps: WorkOrderSidebarProps = {
     videoCall,
     smsEnabled,
     emailEnabled,
@@ -641,59 +587,37 @@ export function ServicePageClient({
       <LineTaxProvider value={{ ...lineTax, untaxedDocument: formState.taxRate <= 0 }}>
         <WorkshopTaxOfferProvider value={taxOfferValue}>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            {modern ? (
-              <ModernHero
-                record={record}
-                status={formState.status}
-                paymentStatus={formState.paymentStatus}
-                warranty={formState.warranty}
-                actions={
-                  <>
-                    <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
-                    <ServiceHeaderActions showSave {...headerActionProps} />
-                  </>
-                }
-                title={title}
-                onTitleChange={(next) => {
-                  setTitle(next)
-                  // Saved the moment the field is left, on its own, not with the
-                  // form's autosave five seconds later: a rename followed by the
-                  // back arrow inside those seconds was lost. Only a refused save
-                  // marks the form dirty, so the ordinary path can try again.
-                  void updateServiceRecordTitle(record.id, next).then((result) => {
-                    if (result.success) {
-                      formState.flashSaved()
-                    } else {
-                      toast.error(result.error || t('page.failedUpdate'))
-                      formState.markDirty()
-                    }
-                  })
-                }}
-                type={record.vehicle ? formState.type : undefined}
-                onTypeChange={formState.dirtySetType}
-                locked={lockState.locked}
-              />
-            ) : (
-              <UnifiedServiceHeader
-                presence={<PresenceChips kind="serviceRecord" id={record.id} />}
-                vehicleId={vehicleId}
-                vehicleName={formState.vehicleName}
-                title={record.title}
-                status={formState.status}
-                paymentStatus={formState.paymentStatus}
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-                tabCounts={{
-                  images: imageAttachmentsForManager.length,
-                  video: videoAttachments.length,
-                  documents: documentAttachments.length,
-                  statusReports: statusReports.length,
-                }}
-                {...headerActionProps}
-              />
-            )}
-
-            {!modern && <TryNewLayoutBanner onTry={() => void switchLayout('modern', 'banner')} />}
+            <ModernHero
+              record={record}
+              status={formState.status}
+              paymentStatus={formState.paymentStatus}
+              warranty={formState.warranty}
+              actions={
+                <>
+                  <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
+                  <ServiceHeaderActions showSave {...headerActionProps} />
+                </>
+              }
+              title={title}
+              onTitleChange={(next) => {
+                setTitle(next)
+                // Saved the moment the field is left, on its own, not with the
+                // form's autosave five seconds later: a rename followed by the
+                // back arrow inside those seconds was lost. Only a refused save
+                // marks the form dirty, so the ordinary path can try again.
+                void updateServiceRecordTitle(record.id, next).then((result) => {
+                  if (result.success) {
+                    formState.flashSaved()
+                  } else {
+                    toast.error(result.error || t('page.failedUpdate'))
+                    formState.markDirty()
+                  }
+                })
+              }}
+              type={record.vehicle ? formState.type : undefined}
+              onTypeChange={formState.dirtySetType}
+              locked={lockState.locked}
+            />
 
             <LaborAddedBanner
               count={formState.laborAddedElsewhere.length}
@@ -711,132 +635,64 @@ export function ServicePageClient({
               </div>
             )}
 
-            {activeTab === 'details' && (
-              <WorkOrderLayoutProvider value={layout}>
-                {modern ? (
-                  <ModernDetails
-                    {...leftColumnProps}
-                    {...rightColumnProps}
-                    workOrderStatuses={workOrderStatuses}
-                    canAddStatus={canAddStatus}
-                    onNotifyForStatus={handleNotifyForStatus}
-                    locked={lockState.locked}
-                    lockedLabel={t('invoice.lockedFieldsetLabel')}
-                    form={{
-                      id: 'service-record-form',
-                      ref: formState.formRef,
-                      onSubmit: actions.handleSubmit,
-                      onInput: formState.markDirty,
-                    }}
-                    files={{
-                      images: imageAttachmentsForManager,
-                      dropoff: dropoffAttachments,
-                      conditionMap,
-                      videos: videoAttachments,
-                      documents: documentAttachments,
-                      maxImages: maxImagesPerService,
-                      maxDiagnostics: maxDiagnosticsPerService,
-                      maxDocuments: maxDocumentsPerService,
-                      // A link to one of the classic tabs opens that tab here.
-                      initialTab:
-                        isFileTab || storedTab === 'statusReports' ? storedTab : undefined,
-                      statusReports: { count: statusReports.length, list: statusReportList },
-                    }}
-                    onPreviewInvoice={previewInvoice}
-                    onSendToCustomer={shareInvoice}
-                    onBackToClassic={() => void switchLayout('classic', 'footer')}
-                    title={title}
-                    aiTranscription={aiTranscription}
-                    dictationMode={dictationMode}
-                    onAddFindingForConcern={(concernId) =>
-                      obsControlsRef.current?.onAddFinding(concernId)
-                    }
-                    scrollToFiles={isFileTab || storedTab === 'statusReports'}
-                  />
-                ) : (
-                  // noValidate, and the rules checked in handleSubmit instead. An
-                  // autosave submits through requestSubmit, which native validation
-                  // stops with no message and no request; and the rules that matter
-                  // most here — a priced part with no name, labour with hours and no
-                  // description — are not ones a `required` attribute can state.
-                  <form
-                    id="service-record-form"
-                    ref={formState.formRef}
-                    onSubmit={actions.handleSubmit}
-                    onInput={formState.markDirty}
-                    className="flex min-h-0 flex-1 flex-col"
-                    noValidate
-                  >
-                    {/* A locked invoice offers no editing at all, rather than letting
-                  someone retype a line and meet the refusal on save. The
-                  fieldset disables every control inside it natively;
-                  display:contents keeps the layout exactly as it was. */}
-                    <fieldset
-                      disabled={lockState.locked}
-                      className="contents"
-                      aria-label={lockState.locked ? t('invoice.lockedFieldsetLabel') : undefined}
-                    >
-                      <ServiceDetailContent
-                        leftColumn={<DetailsLeftColumn {...leftColumnProps} />}
-                        rightColumn={<DetailsRightColumn {...rightColumnProps} />}
-                      />
-                    </fieldset>
-                  </form>
-                )}
-                {vehicleId && (
-                  <ObservationsManager
-                    vehicleId={vehicleId}
-                    serviceRecordId={record.id}
-                    openObservations={openObservations}
-                    onAddObservations={handleAddObservationsToWorkOrder}
-                    addingObservations={addingObservations}
-                    // Saved concerns only: a row still being typed has no id yet, so
-                    // there is nothing a finding could point at.
-                    concerns={formState.concerns.filter(
-                      (c): c is { id: string; description: string; sortOrder: number } =>
-                        Boolean(c.id) && Boolean(c.description.trim())
-                    )}
-                    onControlsReady={(c) => {
-                      obsControlsRef.current = c
-                    }}
-                  />
-                )}
-              </WorkOrderLayoutProvider>
-            )}
-
-            {activeTab === 'images' && (
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-                <ServiceImagesManager
+            <WorkOrderLayoutProvider value={true}>
+              <ModernDetails
+                {...jobProps}
+                {...sidebarProps}
+                workOrderStatuses={workOrderStatuses}
+                canAddStatus={canAddStatus}
+                onNotifyForStatus={handleNotifyForStatus}
+                locked={lockState.locked}
+                lockedLabel={t('invoice.lockedFieldsetLabel')}
+                form={{
+                  id: 'service-record-form',
+                  ref: formState.formRef,
+                  onSubmit: actions.handleSubmit,
+                  onInput: formState.markDirty,
+                }}
+                files={{
+                  images: imageAttachmentsForManager,
+                  dropoff: dropoffAttachments,
+                  conditionMap,
+                  videos: videoAttachments,
+                  documents: documentAttachments,
+                  maxImages: maxImagesPerService,
+                  maxDiagnostics: maxDiagnosticsPerService,
+                  maxDocuments: maxDocumentsPerService,
+                  // A link with `?tab=` opens that tab here.
+                  initialTab:
+                    isFileTab || requestedTab === 'statusReports' ? requestedTab : undefined,
+                  statusReports: { count: statusReports.length, list: statusReportList },
+                }}
+                onPreviewInvoice={previewInvoice}
+                onSendToCustomer={shareInvoice}
+                title={title}
+                aiTranscription={aiTranscription}
+                dictationMode={dictationMode}
+                onAddFindingForConcern={(concernId) =>
+                  obsControlsRef.current?.onAddFinding(concernId)
+                }
+                scrollToFiles={isFileTab || requestedTab === 'statusReports'}
+              />
+              {vehicleId && (
+                <ObservationsManager
+                  vehicleId={vehicleId}
                   serviceRecordId={record.id}
-                  initialImages={imageAttachmentsForManager}
-                  maxImages={maxImagesPerService}
-                  customerId={customer?.id}
+                  openObservations={openObservations}
+                  onAddObservations={handleAddObservationsToWorkOrder}
+                  addingObservations={addingObservations}
+                  // Saved concerns only: a row still being typed has no id yet, so
+                  // there is nothing a finding could point at.
+                  concerns={formState.concerns.filter(
+                    (c): c is { id: string; description: string; sortOrder: number } =>
+                      Boolean(c.id) && Boolean(c.description.trim())
+                  )}
+                  onControlsReady={(c) => {
+                    obsControlsRef.current = c
+                  }}
                 />
-              </div>
-            )}
-
-            {activeTab === 'video' && (
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-                <ServiceVideoManager serviceRecordId={record.id} initialVideos={videoAttachments} />
-              </div>
-            )}
-
-            {activeTab === 'documents' && (
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-                <ServiceDocumentsManager
-                  serviceRecordId={record.id}
-                  initialDocuments={documentAttachments}
-                  maxDiagnostics={maxDiagnosticsPerService}
-                  maxDocuments={maxDocumentsPerService}
-                />
-              </div>
-            )}
-
-            {activeTab === 'statusReports' && (
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-                {statusReportList}
-              </div>
-            )}
+              )}
+            </WorkOrderLayoutProvider>
 
             <InventoryPickerDialog
               open={formState.showInventoryPicker}

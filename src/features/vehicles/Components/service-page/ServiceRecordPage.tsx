@@ -52,7 +52,6 @@ import { PageHeader } from '@/components/page-header'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDayKey } from '@/lib/timezone'
-import { resolveWorkOrderLayout } from '@/lib/work-order-layout.server'
 
 /**
  * Shared server component behind both service-record routes:
@@ -81,7 +80,6 @@ export async function ServiceRecordPage({
     videoCallResult,
     designOptionsResult,
     jobClockResult,
-    initialLayout,
     workOrderStatusesResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
@@ -111,7 +109,6 @@ export async function ServiceRecordPage({
     getServiceVideoCall(serviceId),
     listDesignOptions('invoice'),
     getJobClock(serviceId),
-    resolveWorkOrderLayout(),
     listWorkOrderStatuses(),
   ])
 
@@ -495,7 +492,6 @@ export async function ServiceRecordPage({
             : { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' }
         }
         designPinnedAt={designPinnedAt}
-        initialLayout={initialLayout}
       />
     </div>
   )

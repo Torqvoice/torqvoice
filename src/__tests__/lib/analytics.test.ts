@@ -31,15 +31,15 @@ describe('analytics', () => {
   it('holds events until PostHog has started, then sends them in order', async () => {
     const { track, registerAnalyticsProperties, analyticsStarted } = await freshAnalytics()
 
-    registerAnalyticsProperties({ work_order_layout: 'modern' })
-    track('work_order:page_view', { layout: 'modern' })
+    registerAnalyticsProperties({ setup_step: 'workshop' })
+    track('workshop:setup_start')
     expect(posthog.capture).not.toHaveBeenCalled()
     expect(posthog.register).not.toHaveBeenCalled()
 
     analyticsStarted()
-    expect(posthog.register).toHaveBeenCalledWith({ work_order_layout: 'modern' })
-    expect(posthog.capture).toHaveBeenCalledWith('work_order:page_view', { layout: 'modern' })
-    // The layout is registered before the view is sent, so the view carries it.
+    expect(posthog.register).toHaveBeenCalledWith({ setup_step: 'workshop' })
+    expect(posthog.capture).toHaveBeenCalledWith('workshop:setup_start', undefined)
+    // The step is registered before the event is sent, so the event carries it.
     expect(posthog.register.mock.invocationCallOrder[0]).toBeLessThan(
       posthog.capture.mock.invocationCallOrder[0]
     )
@@ -47,27 +47,20 @@ describe('analytics', () => {
 
   it('sends straight away once PostHog has started, and sends nothing twice', async () => {
     const { track, analyticsStarted } = await freshAnalytics()
-    track('work_order:layout_invite_dismiss')
+    track('customer:create')
     analyticsStarted()
-    track('work_order:layout_switch', {
-      from_layout: 'classic',
-      to_layout: 'modern',
-      source: 'banner',
-    })
+    track('document:email_send', { kind: 'invoice' })
     analyticsStarted()
 
     expect(posthog.capture.mock.calls).toEqual([
-      ['work_order:layout_invite_dismiss', undefined],
-      [
-        'work_order:layout_switch',
-        { from_layout: 'classic', to_layout: 'modern', source: 'banner' },
-      ],
+      ['customer:create', undefined],
+      ['document:email_send', { kind: 'invoice' }],
     ])
   })
 
   it('sends nothing where PostHog never starts, and holds only a few events', async () => {
     const { track, analyticsStarted } = await freshAnalytics()
-    for (let i = 0; i < 100; i++) track('work_order:page_view', { layout: 'classic' })
+    for (let i = 0; i < 100; i++) track('work_order:page_view')
     expect(posthog.capture).not.toHaveBeenCalled()
 
     // Were it ever to start, the backlog is capped rather than a hundred views.

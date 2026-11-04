@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Status zlecenia",
     "back": "Wstecz",
-    "backToClassic": "Wróć do klasycznego układu",
     "openCustomer": "Otwórz klienta",
     "serviceHistory": "Historia serwisowa",
     "changeVehicle": "Zmień pojazd",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, =1 {Klient otworzył link} one {Klient otworzył link # raz} few {Klient otworzył link # razy} many {Klient otworzył link # razy} other {Klient otworzył link # razy}}",
       "paymentTaken": "Zarejestrowano płatność {amount}",
       "statusSet": "Status ustawiony na {status}"
-    },
-    "invite": {
-      "title": "Strona zlecenia została przebudowana.",
-      "body": "Czytelniejszy układ z tymi samymi polami. Możesz wrócić w każdej chwili.",
-      "try": "Wypróbuj teraz",
-      "dismiss": "Nie teraz",
-      "menu": "Wypróbuj nowy układ"
     },
     "promised": "Obiecano na {date}",
     "promisedOverdue": "Obiecano na {date}, po terminie",

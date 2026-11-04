@@ -29,10 +29,9 @@ import { NotesSection } from '../../service-edit/NotesSection'
 import { PartsEditor } from '../../service-edit/PartsEditor'
 import { ScheduleTimesSection } from '../../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../../service-edit/TotalsSection'
-import type { DetailsLeftColumn } from '../DetailsLeftColumn'
-import type { DetailsRightColumn } from '../DetailsRightColumn'
 import { VideoCallSection } from '../VideoCallSection'
 import { WarrantySection } from '../WarrantySection'
+import type { WorkOrderJobProps, WorkOrderSidebarProps } from './details-props'
 import { ActivityCard } from './ActivityCard'
 import { FilesMediaCard } from './FilesMediaCard'
 import { JobFactsCard } from './JobFactsCard'
@@ -40,10 +39,9 @@ import { MoneyBar, MoneyLine } from './MoneyBar'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import { StatusStepper } from './StatusStepper'
 
-type LeftProps = ComponentProps<typeof DetailsLeftColumn>
-type RightProps = ComponentProps<typeof DetailsRightColumn>
-
-export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof LeftProps> {
+export interface ModernDetailsProps
+  extends WorkOrderJobProps,
+    Omit<WorkOrderSidebarProps, keyof WorkOrderJobProps> {
   /** The workshop's own statuses, for the menus on the stepper. */
   workOrderStatuses?: WorkOrderStatusOption[]
   /** The viewer may change settings, so the status menus offer to add a status. */
@@ -65,9 +63,8 @@ export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof Le
   form: Pick<ComponentProps<'form'>, 'id' | 'ref' | 'onSubmit' | 'onInput'>
   /** Sections under the two columns that save on their own, outside the form. */
   belowForm?: ReactNode
-  /** A link that used to open one of the classic tabs lands on the files card, with that tab open. */
+  /** A link with a `?tab=` query lands on the files card, with that tab open. */
   scrollToFiles?: boolean
-  onBackToClassic: () => void
   /** The job's title as the header currently holds it, saved with the form. */
   title: string
   /** The connected AI vendor can transcribe speech, so dictation goes through it. */
@@ -81,10 +78,10 @@ export interface ModernDetailsProps extends LeftProps, Omit<RightProps, keyof Le
 }
 
 /**
- * Disables what is inside it when the invoice is locked, natively, the way
- * the classic page's single fieldset does. There are several on this page
- * because the files card sits between them and must stay usable;
- * display:contents keeps each one out of the layout.
+ * Disables what is inside it when the invoice is locked, natively. There are
+ * several on this page rather than one around it all, because the files card
+ * sits between them and must stay usable; display:contents keeps each one out
+ * of the layout.
  */
 function Lockable({
   locked,
@@ -103,10 +100,10 @@ function Lockable({
 }
 
 /**
- * The details tab of the overhauled work order page.
+ * The body of the work order page.
  *
- * Every section here is the component the classic page uses, told by context
- * to draw the house card instead of its old frame. Nothing about how the job
+ * Every section here is a component the quote page shares, told by context
+ * to draw the house card instead of its own frame. Nothing about how the job
  * is saved lives in this file: the same form wraps it, the same hooks feed
  * it, and each named field is still in the document once. What changes is
  * where things sit: who and what first, then the work in the order it is
@@ -268,7 +265,7 @@ export function ModernDetails(props: ModernDetailsProps) {
 
   return (
     <>
-      {/* One scroller for the whole page, with the classic page's padding. The
+      {/* One scroller for the whole page. The
           width is capped, but only where it starts to hurt: 1440px left empty
           bands on an ordinary desktop monitor, so the cap is 1800px, which a
           1920px screen with the app sidebar open never reaches. The container
@@ -282,8 +279,9 @@ export function ModernDetails(props: ModernDetailsProps) {
             screen; the money bar used to hold the page clear of it, and with
             the bar gone below `lg` the padding does. */}
         <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-3 p-4 pb-[calc(2.5rem+58px+env(safe-area-inset-bottom))] md:pb-10">
-          {/* noValidate, and the rules checked in handleSubmit instead; see the
-            classic form in ServicePageClient. display:contents, so the form's
+          {/* noValidate, and the rules checked in handleSubmit instead: an autosave
+            submits through requestSubmit, which native validation would stop with
+            no message and no request. display:contents, so the form's
             children are laid out by this column as if it were not there. */}
           <form {...form} className="contents" noValidate>
             {/* The title is edited in the header, which is not inside this form,
@@ -597,16 +595,6 @@ export function ModernDetails(props: ModernDetailsProps) {
           </form>
 
           {belowForm}
-
-          {/* The same way back as the menu's, where somebody who has scrolled
-            the whole page looking for the old one will find it. */}
-          <button
-            type="button"
-            onClick={props.onBackToClassic}
-            className="cursor-pointer self-center text-[13px] text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
-          >
-            {t('modern.backToClassic')}
-          </button>
         </div>
       </div>
 
