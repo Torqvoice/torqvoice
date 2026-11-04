@@ -1,4 +1,3 @@
-import { createPrivateKey, sign } from 'node:crypto'
 import { resolve } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 
@@ -60,28 +59,23 @@ const cloud = process.env.E2E_MODE === 'cloud'
 /**
  * Cloud mode needs a token torqvoice.com signed for the app's URL, or the app
  * ignores TORQVOICE_MODE and runs self-hosted (see src/lib/cloud-instance.ts).
- * The run mints its own from the real signing key, in TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY
- * (a repository secret in CI), bound to the base URL and dead after a day, so
- * a copy that leaks out of a run is worth nothing for long. There is no test
- * key the app would accept instead: that would be a second way in.
+ * The run is handed one in E2E_CLOUD_TOKEN (a repository secret in CI), minted
+ * once for http://127.0.0.1:3100 with scripts/mint-cloud-token.mjs on
+ * torqvoice.com. The run used to mint its own from the signing key, which put
+ * the key behind every licence in the environment of npm ci and every
+ * dependency's install script; a token bound to a loopback origin is worth
+ * nothing outside this suite. There is no test key the app would accept
+ * instead: that would be a second way in.
  */
-function mintCloudToken(): string {
-  const raw = process.env.TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY?.trim()
-  if (!raw) {
+function cloudToken(): string {
+  const token = process.env.E2E_CLOUD_TOKEN?.trim()
+  if (!token) {
+    const origin = new URL(baseURL).origin
     throw new Error(
-      'E2E_MODE=cloud needs TORQVOICE_COM_LICENSE_SIGNING_PRIVATE_KEY (the torqvoice.com licence signing key) to mint a cloud token for the run.'
+      `E2E_MODE=cloud needs E2E_CLOUD_TOKEN, a cloud token minted for ${origin} (on torqvoice.com: node --env-file=.env scripts/mint-cloud-token.mjs ${origin}).`
     )
   }
-  const key = createPrivateKey({ key: Buffer.from(raw, 'base64'), format: 'der', type: 'pkcs8' })
-  const now = Date.now()
-  const payload = {
-    v: 1,
-    origin: new URL(baseURL).origin,
-    issuedAt: new Date(now).toISOString(),
-    expiresAt: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
-  }
-  const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url')
-  return `tvc1.${encoded}.${sign(null, Buffer.from(encoded), key).toString('base64url')}`
+  return token
 }
 
 /** Where the Google stand-in listens, for the app's server and for the specs. */
@@ -232,7 +226,7 @@ export default defineConfig({
                   GOOGLE_AUTH_CLIENT_SECRET: 'e2e-google-secret',
                   E2E_GOOGLE_STANDIN_URL: googleStandinUrl,
                   NODE_OPTIONS: `--import=${resolve('e2e/google-standin-preload.mjs')}`,
-                  TORQVOICE_CLOUD_TOKEN: mintCloudToken(),
+                  TORQVOICE_CLOUD_TOKEN: cloudToken(),
                   // Plans are sold on torqvoice.com; the stand-in plays it.
                   // The link check forgets its answer after a second instead of
                   // an hour or two minutes, so a spec can flip the stand-in's answer.
