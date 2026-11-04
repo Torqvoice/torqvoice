@@ -11,8 +11,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -406,7 +408,7 @@ export function InventoryPartForm({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className="max-h-[90vh] sm:max-w-3xl">
         <DialogHeader>
           <div className="flex items-center justify-between gap-4 pr-6">
             <DialogTitle>{part ? t('form.editPart') : t('form.addNewPart')}</DialogTitle>
@@ -428,7 +430,8 @@ export function InventoryPartForm({
           </DialogDescription>
         </DialogHeader>
 
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <DialogBody className="space-y-4">
           {/* Supplier Link */}
           <div className="space-y-2">
             <Label htmlFor="supplierUrl">{t('form.supplierLink')}</Label>
@@ -859,7 +862,9 @@ export function InventoryPartForm({
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          </DialogBody>
+
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               {t('form.cancel')}
             </Button>
@@ -867,7 +872,7 @@ export function InventoryPartForm({
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {part ? t('form.saveChanges') : t('form.addPart')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

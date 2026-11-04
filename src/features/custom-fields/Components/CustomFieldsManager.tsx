@@ -17,7 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DateInput } from '@/components/ui/date-input'
@@ -355,7 +362,7 @@ export function CustomFieldsManager({
           if (!open) resetForm()
         }}
       >
-        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-h-[85vh] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editing ? t('customFields.editField') : t('customFields.newField')}
@@ -366,7 +373,7 @@ export function CustomFieldsManager({
               className="self-start"
             />
           </DialogHeader>
-          <div className="space-y-4">
+          <DialogBody className="space-y-4">
             <div className="space-y-2">
               <Label>{t('customFields.label')}</Label>
               <Input
@@ -573,7 +580,8 @@ export function CustomFieldsManager({
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+          </DialogBody>
+          <DialogFooter>
               <Button
                 variant="ghost"
                 onClick={() => {
@@ -591,8 +599,7 @@ export function CustomFieldsManager({
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {editing ? t('customFields.update') : t('customFields.create')}
               </Button>
-            </div>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

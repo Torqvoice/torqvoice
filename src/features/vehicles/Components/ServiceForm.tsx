@@ -14,7 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useGlassModal } from '@/components/glass-modal'
 import { createServiceRecord } from '../Actions/serviceActions'
 import { Loader2 } from 'lucide-react'
@@ -63,12 +70,13 @@ export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Add Service Record</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <DialogBody className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input id="title" name="title" placeholder="Oil Change" required />
@@ -142,7 +150,9 @@ export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps)
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          </DialogBody>
+
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
@@ -150,7 +160,7 @@ export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps)
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Add Record
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

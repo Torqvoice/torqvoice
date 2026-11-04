@@ -7,7 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { DocsLink } from '@/components/docs-link'
 import {
   Select,
@@ -177,7 +184,7 @@ export function CustomCardDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"
+        className="max-h-[90vh] sm:max-w-2xl"
         aria-describedby={undefined}
       >
         <DialogHeader>
@@ -185,7 +192,7 @@ export function CustomCardDialog({
           <DocsLink href="/docs/features/dashboard" variant="hint" className="self-start" />
         </DialogHeader>
 
-        <div className="space-y-5">
+        <DialogBody className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="card-name">{t('cardName')}</Label>
@@ -303,7 +310,8 @@ export function CustomCardDialog({
             </Select>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+        </DialogBody>
+        <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               {t('cancel')}
             </Button>
@@ -315,8 +323,7 @@ export function CustomCardDialog({
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('save')}
             </Button>
-          </div>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
