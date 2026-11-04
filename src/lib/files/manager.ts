@@ -61,13 +61,19 @@ const FILE_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$/
 const STORED_URL = /^\/api\/(?:protected\/)?files\/([^/]+)\/([^/]+)\/([^/]+)$/
 
 /**
- * Names the upload routes generate: a random UUID and an extension, or a
- * video's `_orig` copy that is only there while it is compressed. The sweep
- * only ever considers these; a file named any other way (an import's, the
- * demo seed's) was put there on purpose by something else.
+ * Names the upload routes and the backup importers generate: a random UUID
+ * and an extension, or a video's `_orig` copy that is only there while it is
+ * compressed. The sweep only ever considers these; a file named any other way
+ * (an older import's, the demo seed's) was put there on purpose by something
+ * else.
  */
 const GENERATED_NAME =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:_orig)?\.[A-Za-z0-9]{1,8}$/
+
+/** Whether the sweep would consider a file of this name. */
+export function isGeneratedName(name: string): boolean {
+  return GENERATED_NAME.test(name)
+}
 
 export interface StoredFile {
   organizationId: string

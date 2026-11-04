@@ -8,7 +8,7 @@ import { isDemoMode } from '@/lib/demo'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
-import { mkdir, writeFile, rm } from 'fs/promises'
+import { mkdir, rm } from 'fs/promises'
 import path from 'path'
 import os from 'os'
 import {
@@ -20,6 +20,8 @@ import {
 } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
+import { prepareImportedFile, writeImportedFile } from '@/lib/backup/import-photo'
+import { releaseFiles } from '@/lib/files/manager'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -197,21 +199,6 @@ function getPaymentMethod(typeId: number): string {
   return methods[typeId] || 'other'
 }
 
-function getMimeType(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  const mimeMap: Record<string, string> = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-    pdf: 'application/pdf',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    csv: 'text/csv',
-    txt: 'text/plain',
-  }
-  return mimeMap[ext || ''] || 'application/octet-stream'
-}
-
 // ── API Route ────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
@@ -238,6 +225,8 @@ export async function POST(request: NextRequest) {
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
   let upload: SpooledUpload | null = null
+  // Every file this import writes, so a run that fails hands them back.
+  const importedFileUrls: string[] = []
 
   try {
     // The zip goes to disk as it arrives; nothing of it is held in memory
@@ -340,6 +329,7 @@ export async function POST(request: NextRequest) {
       documents: 0,
     }
 
+    // As long as the route may run: the photos are re-encoded inside.
     await db.$transaction(
       async (tx) => {
         // ── Create a single placeholder vehicle for all imported invoices ──
@@ -506,21 +496,25 @@ export async function POST(request: NextRequest) {
 
             const targetDir = path.join(uploadsBase, 'services')
             await mkdir(targetDir, { recursive: true })
+            // A photo is fitted and re-encoded on the way, so it lands at
+            // the size an upload through the app would have, and the file is
+            // stored under a generated name like an upload's, so the file
+            // manager keeps track of it.
             const safeName = doc.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-            const filename = `in-${invoice.number}-${safeName}`
-            const targetPath = path.join(targetDir, filename)
-            await writeFile(targetPath, fileData)
+            const prepared = await prepareImportedFile(`in-${invoice.number}-${safeName}`, fileData)
+            const storedName = await writeImportedFile(targetDir, prepared.name, prepared.data)
 
-            const fileUrl = `/api/protected/files/${organizationId}/services/${filename}`
-            const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.name)
+            const fileUrl = `/api/protected/files/${organizationId}/services/${storedName}`
+            importedFileUrls.push(fileUrl)
 
             await tx.serviceAttachment.create({
               data: {
-                fileName: doc.name,
+                // The user's own name, with the extension the stored bytes now have.
+                fileName: prepared.compressed ? doc.name.replace(/\.[^.]+$/, '.jpg') : doc.name,
                 fileUrl,
-                fileType: getMimeType(doc.name),
-                fileSize: fileData.length,
-                category: isImage ? 'image' : 'diagnostic',
+                fileType: prepared.type,
+                fileSize: prepared.data.length,
+                category: prepared.type.startsWith('image/') ? 'image' : 'diagnostic',
                 serviceRecordId: record.id,
               },
             })
@@ -556,7 +550,7 @@ export async function POST(request: NextRequest) {
           }
         }
       },
-      { timeout: 120000 }
+      { timeout: maxDuration * 1000 }
     )
 
     return NextResponse.json({
@@ -566,6 +560,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[import-invoice-ninja] Error:', error)
     console.error('[backup import]', error)
+    // The rows were rolled back, so nothing uses the files this run wrote.
+    await releaseFiles(importedFileUrls, { organizationId, reason: 'import failed' }).catch((err) =>
+      console.error('[backup import] could not release imported files:', err)
+    )
     const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {
