@@ -16,6 +16,7 @@ import { BSON } from 'bson'
 import { extractEntry, openZip, spoolUpload, type SpooledUpload } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
+import { prepareImportedFile } from '@/lib/backup/import-photo'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -121,21 +122,6 @@ function determineFuelType(v: LubeLogVehicle): string {
   if (v.IsElectric) return 'electric'
   if (v.IsDiesel) return 'diesel'
   return 'gasoline'
-}
-
-function getMimeType(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  const mimeMap: Record<string, string> = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-    pdf: 'application/pdf',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    csv: 'text/csv',
-    txt: 'text/plain',
-  }
-  return mimeMap[ext || ''] || 'application/octet-stream'
 }
 
 /**
@@ -304,14 +290,21 @@ export async function POST(request: NextRequest) {
     const uploadsBase = path.join(uploadsRoot(), organizationId)
 
     // ── Copy a file from the backup to the uploads directory ──────────────
+    // A photo is fitted and re-encoded on the way, so it lands at the size an
+    // upload through the app would have; the name it is stored under then
+    // ends in .jpg, whatever the backup called it.
     async function copyFile(
       sourcePath: string,
       category: string,
       filename: string
-    ): Promise<{ fileUrl: string; fileSize: number } | null> {
+    ): Promise<{
+      fileUrl: string
+      fileSize: number
+      fileType: string
+      compressed: boolean
+    } | null> {
       const targetDir = path.join(uploadsBase, category)
       await mkdir(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, filename)
 
       // Normalize source paths: strip leading /
       const normalizedSource = sourcePath.replace(/^\//, '')
@@ -330,113 +323,124 @@ export async function POST(request: NextRequest) {
         return null
       }
 
-      await writeFile(targetPath, fileData)
-      const fileUrl = `/api/protected/files/${organizationId}/${category}/${filename}`
-      return { fileUrl, fileSize: fileData.length }
+      const prepared = await prepareImportedFile(filename, fileData)
+      await writeFile(path.join(targetDir, prepared.name), prepared.data)
+      const fileUrl = `/api/protected/files/${organizationId}/${category}/${prepared.name}`
+      return {
+        fileUrl,
+        fileSize: prepared.data.length,
+        fileType: prepared.type,
+        compressed: prepared.compressed,
+      }
     }
 
     // ── Database transaction ─────────────────────────────────────────────
-    await db.$transaction(async (tx) => {
-      // Create vehicles
-      for (const v of vehicles) {
-        let imageUrl: string | null = null
+    // As long as the route may run: the photos are re-encoded inside.
+    await db.$transaction(
+      async (tx) => {
+        // Create vehicles
+        for (const v of vehicles) {
+          let imageUrl: string | null = null
 
-        if (v.ImageLocation) {
-          const ext = v.ImageLocation.split('.').pop() || 'jpg'
-          const filename = `lubelog-vehicle-${v._id}.${ext}`
-          const result = await copyFile(v.ImageLocation, 'vehicles', filename)
-          if (result) imageUrl = result.fileUrl
+          if (v.ImageLocation) {
+            const ext = v.ImageLocation.split('.').pop() || 'jpg'
+            const filename = `lubelog-vehicle-${v._id}.${ext}`
+            const result = await copyFile(v.ImageLocation, 'vehicles', filename)
+            if (result) imageUrl = result.fileUrl
+          }
+
+          const created = await tx.vehicle.create({
+            data: {
+              make: v.Make,
+              model: v.Model,
+              year: v.Year,
+              licensePlate: v.LicensePlate || null,
+              fuelType: determineFuelType(v),
+              mileage: vehicleMileage.get(v._id) || 0,
+              purchasePrice: parseDecimal(v.PurchasePrice) || null,
+              imageUrl,
+              userId,
+              organizationId,
+            },
+          })
+
+          vehicleIdMap.set(v._id, created.id)
         }
 
-        const created = await tx.vehicle.create({
-          data: {
-            make: v.Make,
-            model: v.Model,
-            year: v.Year,
-            licensePlate: v.LicensePlate || null,
-            fuelType: determineFuelType(v),
-            mileage: vehicleMileage.get(v._id) || 0,
-            purchasePrice: parseDecimal(v.PurchasePrice) || null,
-            imageUrl,
-            userId,
-            organizationId,
-          },
-        })
+        // Create notes (grouped by vehicle)
+        for (const n of notes) {
+          const vehicleId = vehicleIdMap.get(n.VehicleId)
+          if (!vehicleId) continue
 
-        vehicleIdMap.set(v._id, created.id)
-      }
+          await tx.note.create({
+            data: {
+              title: n.Description,
+              content: n.NoteText,
+              isPinned: n.Pinned || false,
+              vehicleId,
+            },
+          })
+        }
 
-      // Create notes (grouped by vehicle)
-      for (const n of notes) {
-        const vehicleId = vehicleIdMap.get(n.VehicleId)
-        if (!vehicleId) continue
+        // Create service records
+        for (const sr of serviceRecords) {
+          const vehicleId = vehicleIdMap.get(sr.VehicleId)
+          if (!vehicleId) continue
 
-        await tx.note.create({
-          data: {
-            title: n.Description,
-            content: n.NoteText,
-            isPinned: n.Pinned || false,
-            vehicleId,
-          },
-        })
-      }
+          const invoiceNumber = `${invoicePrefix}${nextInvoiceNum}`
+          nextInvoiceNum++
 
-      // Create service records
-      for (const sr of serviceRecords) {
-        const vehicleId = vehicleIdMap.get(sr.VehicleId)
-        if (!vehicleId) continue
+          const cost = parseDecimal(sr.Cost)
+          const serviceDate = toSafeWorkshopDate(sr.Date, timeZone) ?? new Date()
 
-        const invoiceNumber = `${invoicePrefix}${nextInvoiceNum}`
-        nextInvoiceNum++
+          const created = await tx.serviceRecord.create({
+            data: {
+              organizationId,
+              title: sr.Description,
+              description: sr.Notes || null,
+              type: 'repair',
+              status: 'completed',
+              cost,
+              mileage: sr.Mileage || null,
+              serviceDate,
+              // Reports and the calendar find a job by when it started; a job
+              // without a start is in none of them.
+              startDateTime: serviceDate,
+              invoiceNumber,
+              subtotal: cost,
+              totalAmount: cost,
+              vehicleId,
+            },
+          })
 
-        const cost = parseDecimal(sr.Cost)
-        const serviceDate = toSafeWorkshopDate(sr.Date, timeZone) ?? new Date()
+          // Copy attached files
+          if (sr.Files && sr.Files.length > 0) {
+            for (const file of sr.Files) {
+              if (!file.Location) continue
 
-        const created = await tx.serviceRecord.create({
-          data: {
-            organizationId,
-            title: sr.Description,
-            description: sr.Notes || null,
-            type: 'repair',
-            status: 'completed',
-            cost,
-            mileage: sr.Mileage || null,
-            serviceDate,
-            // Reports and the calendar find a job by when it started; a job
-            // without a start is in none of them.
-            startDateTime: serviceDate,
-            invoiceNumber,
-            subtotal: cost,
-            totalAmount: cost,
-            vehicleId,
-          },
-        })
+              const safeName = file.Name.replace(/[^a-zA-Z0-9._-]/g, '_')
+              const filename = `lubelog-${sr._id}-${safeName}`
 
-        // Copy attached files
-        if (sr.Files && sr.Files.length > 0) {
-          for (const file of sr.Files) {
-            if (!file.Location) continue
-
-            const safeName = file.Name.replace(/[^a-zA-Z0-9._-]/g, '_')
-            const filename = `lubelog-${sr._id}-${safeName}`
-
-            const result = await copyFile(file.Location, 'services', filename)
-            if (result) {
-              await tx.serviceAttachment.create({
-                data: {
-                  fileName: file.Name,
-                  fileUrl: result.fileUrl,
-                  fileType: getMimeType(file.Name),
-                  fileSize: result.fileSize,
-                  category: file.Name.match(/\.(jpg|jpeg|png|webp)$/i) ? 'image' : 'diagnostic',
-                  serviceRecordId: created.id,
-                },
-              })
+              const result = await copyFile(file.Location, 'services', filename)
+              if (result) {
+                await tx.serviceAttachment.create({
+                  data: {
+                    // The user's own name, with the extension the stored bytes now have.
+                    fileName: result.compressed ? file.Name.replace(/\.[^.]+$/, '.jpg') : file.Name,
+                    fileUrl: result.fileUrl,
+                    fileType: result.fileType,
+                    fileSize: result.fileSize,
+                    category: result.fileType.startsWith('image/') ? 'image' : 'diagnostic',
+                    serviceRecordId: created.id,
+                  },
+                })
+              }
             }
           }
         }
-      }
-    })
+      },
+      { timeout: maxDuration * 1000 }
+    )
 
     return NextResponse.json({
       success: true,

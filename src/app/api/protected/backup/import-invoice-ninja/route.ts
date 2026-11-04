@@ -20,6 +20,7 @@ import {
 } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
+import { prepareImportedFile } from '@/lib/backup/import-photo'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -197,21 +198,6 @@ function getPaymentMethod(typeId: number): string {
   return methods[typeId] || 'other'
 }
 
-function getMimeType(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  const mimeMap: Record<string, string> = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-    pdf: 'application/pdf',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    csv: 'text/csv',
-    txt: 'text/plain',
-  }
-  return mimeMap[ext || ''] || 'application/octet-stream'
-}
-
 // ── API Route ────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
@@ -340,6 +326,7 @@ export async function POST(request: NextRequest) {
       documents: 0,
     }
 
+    // As long as the route may run: the photos are re-encoded inside.
     await db.$transaction(
       async (tx) => {
         // ── Create a single placeholder vehicle for all imported invoices ──
@@ -506,21 +493,22 @@ export async function POST(request: NextRequest) {
 
             const targetDir = path.join(uploadsBase, 'services')
             await mkdir(targetDir, { recursive: true })
+            // A photo is fitted and re-encoded on the way, so it lands at
+            // the size an upload through the app would have.
             const safeName = doc.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-            const filename = `in-${invoice.number}-${safeName}`
-            const targetPath = path.join(targetDir, filename)
-            await writeFile(targetPath, fileData)
+            const prepared = await prepareImportedFile(`in-${invoice.number}-${safeName}`, fileData)
+            await writeFile(path.join(targetDir, prepared.name), prepared.data)
 
-            const fileUrl = `/api/protected/files/${organizationId}/services/${filename}`
-            const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.name)
+            const fileUrl = `/api/protected/files/${organizationId}/services/${prepared.name}`
 
             await tx.serviceAttachment.create({
               data: {
-                fileName: doc.name,
+                // The user's own name, with the extension the stored bytes now have.
+                fileName: prepared.compressed ? doc.name.replace(/\.[^.]+$/, '.jpg') : doc.name,
                 fileUrl,
-                fileType: getMimeType(doc.name),
-                fileSize: fileData.length,
-                category: isImage ? 'image' : 'diagnostic',
+                fileType: prepared.type,
+                fileSize: prepared.data.length,
+                category: prepared.type.startsWith('image/') ? 'image' : 'diagnostic',
                 serviceRecordId: record.id,
               },
             })
@@ -556,7 +544,7 @@ export async function POST(request: NextRequest) {
           }
         }
       },
-      { timeout: 120000 }
+      { timeout: maxDuration * 1000 }
     )
 
     return NextResponse.json({
