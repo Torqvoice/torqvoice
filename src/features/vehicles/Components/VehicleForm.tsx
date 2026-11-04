@@ -19,8 +19,10 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -482,403 +484,411 @@ export function VehicleForm({
     }
   }
 
+  // "AB 12345 · Volvo V70 2016": which car is open, under the title, when editing
+  const vehicleIdentity = vehicle
+    ? [vehicle.licensePlate, `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()]
+        .filter(Boolean)
+        .join(' · ')
+    : null
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+        <DialogContent className="max-h-[90vh] sm:max-w-5xl">
           <DialogHeader>
             <DialogTitle>{vehicle ? t('editTitle') : t('addTitle')}</DialogTitle>
             <DocsLink href="/docs/features/vehicles" variant="hint" className="self-start" />
-            <DialogDescription className="sr-only">
-              {vehicle ? t('editTitle') : t('addTitle')}
+            {/* Which vehicle is open, so the title line answers it before the fields do */}
+            <DialogDescription className={vehicleIdentity ? undefined : 'sr-only'}>
+              {vehicleIdentity ?? (vehicle ? t('editTitle') : t('addTitle'))}
             </DialogDescription>
           </DialogHeader>
 
-          <form
-            ref={formRef}
-            onSubmit={handleSubmit}
-            className="grid gap-x-6 gap-y-4 md:grid-cols-2"
-          >
-            {/* Scan the registration document and fill the form from it */}
-            <div className="md:col-span-2">
-              <ScanDocumentButton onScanned={applyScan} />
-            </div>
-
-            {/* Left: what the vehicle belongs to and where its data comes from */}
-            <div className="space-y-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t('sectionAssignment')}
-              </p>
-
-              {/* Image upload */}
-              <div className="space-y-2">
-                <Label>{t('photo')}</Label>
-                <div
-                  {...interactiveRow(() => fileRef.current?.click())}
-                  className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50"
-                >
-                  {preview ? (
-                    <>
-                      <Image
-                        src={preview}
-                        alt="Vehicle preview"
-                        fill
-                        unoptimized
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          clearImage()
-                        }}
-                        className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <Camera className="h-8 w-8" />
-                      <span className="text-sm">{t('clickToUpload')}</span>
-                      <span className="text-xs">{t('imageFormats')}</span>
-                    </div>
-                  )}
-                </div>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                />
+          <form ref={formRef} onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+            <DialogBody className="grid content-start gap-x-8 gap-y-4 md:grid-cols-2">
+              {/* Scan the registration document and fill the form from it */}
+              <div className="md:col-span-2">
+                <ScanDocumentButton onScanned={applyScan} />
               </div>
 
-              {/* Customer selector */}
-              <div className="space-y-2">
-                <Label>{t('customer')}</Label>
-                <CustomerCombobox
-                  value={selectedCustomerId === 'none' ? '' : selectedCustomerId}
-                  initialCustomer={selectedCustomer}
-                  // A customer given by id alone is named once the lookup below answers
-                  placeholder={
-                    selectedCustomerId !== 'none' && !selectedCustomer ? '…' : t('noCustomer')
-                  }
-                  searchPlaceholder={t('searchCustomers')}
-                  noneLabel={t('noCustomer')}
-                  emptyLabel={t('noCustomerFound')}
-                  onChange={(id, customer) => {
-                    setSelectedCustomerId(id || 'none')
-                    setSelectedCustomer(customer)
-                  }}
-                  footer={(close) => (
-                    <div className="border-t p-1">
-                      <button
-                        type="button"
-                        className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
-                        onClick={() => {
-                          close()
-                          setShowCustomerForm(true)
-                        }}
-                      >
-                        <Plus className="h-4 w-4" />
-                        {t('addCustomer')}
-                      </button>
-                    </div>
-                  )}
-                />
+              {/* Left: what the vehicle belongs to and where its data comes from */}
+              <div className="space-y-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t('sectionAssignment')}
+                </p>
 
-                {/* Keeper read off the papers who matches no customer yet */}
-                {scannedOwner?.name && selectedCustomerId === 'none' && (
-                  <div className="space-y-2 rounded-lg border border-dashed border-border bg-muted/30 p-3">
-                    <label className="flex cursor-pointer items-start gap-3">
-                      <Checkbox
-                        className="mt-0.5"
-                        checked={addOwner}
-                        onCheckedChange={(next) => setAddOwner(next === true)}
-                      />
-                      <span className="min-w-0">
-                        <span className="block text-sm">
-                          {t('addScannedOwner', { name: scannedOwner.name })}
-                        </span>
-                        {scannedOwner.address && (
-                          <span className="block truncate text-xs text-muted-foreground">
-                            {scannedOwner.address}
+                {/* Image upload */}
+                <div className="space-y-2">
+                  <Label>{t('photo')}</Label>
+                  <div
+                    {...interactiveRow(() => fileRef.current?.click())}
+                    className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50"
+                  >
+                    {preview ? (
+                      <>
+                        <Image
+                          src={preview}
+                          alt="Vehicle preview"
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            clearImage()
+                          }}
+                          className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Camera className="h-8 w-8" />
+                        <span className="text-sm">{t('clickToUpload')}</span>
+                        <span className="text-xs">{t('imageFormats')}</span>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/avif"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Customer selector */}
+                <div className="space-y-2">
+                  <Label>{t('customer')}</Label>
+                  <CustomerCombobox
+                    value={selectedCustomerId === 'none' ? '' : selectedCustomerId}
+                    initialCustomer={selectedCustomer}
+                    // A customer given by id alone is named once the lookup below answers
+                    placeholder={
+                      selectedCustomerId !== 'none' && !selectedCustomer ? '…' : t('noCustomer')
+                    }
+                    searchPlaceholder={t('searchCustomers')}
+                    noneLabel={t('noCustomer')}
+                    emptyLabel={t('noCustomerFound')}
+                    onChange={(id, customer) => {
+                      setSelectedCustomerId(id || 'none')
+                      setSelectedCustomer(customer)
+                    }}
+                    footer={(close) => (
+                      <div className="border-t p-1">
+                        <button
+                          type="button"
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                          onClick={() => {
+                            close()
+                            setShowCustomerForm(true)
+                          }}
+                        >
+                          <Plus className="h-4 w-4" />
+                          {t('addCustomer')}
+                        </button>
+                      </div>
+                    )}
+                  />
+
+                  {/* Keeper read off the papers who matches no customer yet */}
+                  {scannedOwner?.name && selectedCustomerId === 'none' && (
+                    <div className="space-y-2 rounded-lg border border-dashed border-border bg-muted/30 p-3">
+                      <label className="flex cursor-pointer items-start gap-3">
+                        <Checkbox
+                          className="mt-0.5"
+                          checked={addOwner}
+                          onCheckedChange={(next) => setAddOwner(next === true)}
+                        />
+                        <span className="min-w-0">
+                          <span className="block text-sm">
+                            {t('addScannedOwner', { name: scannedOwner.name })}
                           </span>
-                        )}
-                      </span>
-                    </label>
+                          {scannedOwner.address && (
+                            <span className="block truncate text-xs text-muted-foreground">
+                              {scannedOwner.address}
+                            </span>
+                          )}
+                        </span>
+                      </label>
 
-                    {ownerMatches.length > 0 && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => setShowOwnerMatch(true)}
-                      >
-                        {t('ownerMatchChoose')}
-                      </Button>
-                    )}
+                      {ownerMatches.length > 0 && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => setShowOwnerMatch(true)}
+                        >
+                          {t('ownerMatchChoose')}
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: the vehicle's own details */}
+              <div className="space-y-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t('sectionDetails')}
+                </p>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="make">{isMarine ? t('makeMarine') : t('make')}</Label>
+                    <Input
+                      id="make"
+                      name="make"
+                      placeholder={isMarine ? 'Boston Whaler' : 'Toyota'}
+                      defaultValue={vehicle?.make}
+                      required
+                    />
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right: the vehicle's own details */}
-            <div className="space-y-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t('sectionDetails')}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="make">{isMarine ? t('makeMarine') : t('make')}</Label>
-                  <Input
-                    id="make"
-                    name="make"
-                    placeholder={isMarine ? 'Boston Whaler' : 'Toyota'}
-                    defaultValue={vehicle?.make}
-                    required
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="model">{t('model')}</Label>
+                    <Input
+                      id="model"
+                      name="model"
+                      placeholder={isMarine ? 'Montauk 170' : 'Camry'}
+                      defaultValue={vehicle?.model}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="model">{t('model')}</Label>
-                  <Input
-                    id="model"
-                    name="model"
-                    placeholder={isMarine ? 'Montauk 170' : 'Camry'}
-                    defaultValue={vehicle?.model}
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="year">{t('year')}</Label>
-                  <Input
-                    id="year"
-                    name="year"
-                    type="number"
-                    placeholder="2024"
-                    defaultValue={vehicle?.year}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="year">{t('year')}</Label>
+                    <Input
+                      id="year"
+                      name="year"
+                      type="number"
+                      placeholder="2024"
+                      defaultValue={vehicle?.year}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mileage">{isMarine ? t('mileageMarine') : t('mileage')}</Label>
+                    <Input
+                      id="mileage"
+                      name="mileage"
+                      type="number"
+                      placeholder="0"
+                      defaultValue={vehicle?.mileage}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mileage">{isMarine ? t('mileageMarine') : t('mileage')}</Label>
-                  <Input
-                    id="mileage"
-                    name="mileage"
-                    type="number"
-                    placeholder="0"
-                    defaultValue={vehicle?.mileage}
-                  />
-                </div>
-              </div>
 
-              {/* Plate and VIN a row each: side by side, with a lookup button in each,
+                {/* Plate and VIN a row each: side by side, with a lookup button in each,
                   the VIN was too narrow to show all 17 characters. */}
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="licensePlate">
-                    {isMarine ? t('licensePlateMarine') : t('licensePlate')}
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="licensePlate"
-                      name="licensePlate"
-                      placeholder="ABC-1234"
-                      defaultValue={vehicle?.licensePlate ?? ''}
-                      className="flex-1"
-                    />
-                    {!isMarine && (
-                      <VehicleLookupButton
-                        by="plate"
-                        getValue={() => fieldValue('licensePlate')}
-                        onFound={(data, asked) => applyLookup(data, { by: 'plate', value: asked })}
-                        vehicleId={vehicle?.id}
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="licensePlate">
+                      {isMarine ? t('licensePlateMarine') : t('licensePlate')}
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="licensePlate"
+                        name="licensePlate"
+                        placeholder="ABC-1234"
+                        defaultValue={vehicle?.licensePlate ?? ''}
+                        className="flex-1"
                       />
-                    )}
+                      {!isMarine && (
+                        <VehicleLookupButton
+                          by="plate"
+                          getValue={() => fieldValue('licensePlate')}
+                          onFound={(data, asked) =>
+                            applyLookup(data, { by: 'plate', value: asked })
+                          }
+                          vehicleId={vehicle?.id}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="vin"
-                      name="vin"
-                      placeholder="1HGCM82633A004352"
-                      defaultValue={vehicle?.vin ?? ''}
-                      className="flex-1"
-                    />
-                    {!isMarine && (
-                      <VehicleLookupButton
-                        by="vin"
-                        getValue={() => fieldValue('vin')}
-                        onFound={(data, asked) => applyLookup(data, { by: 'vin', value: asked })}
-                        vehicleId={vehicle?.id}
+                  <div className="space-y-2">
+                    <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="vin"
+                        name="vin"
+                        placeholder="1HGCM82633A004352"
+                        defaultValue={vehicle?.vin ?? ''}
+                        className="flex-1"
                       />
-                    )}
+                      {!isMarine && (
+                        <VehicleLookupButton
+                          by="vin"
+                          getValue={() => fieldValue('vin')}
+                          onFound={(data, asked) => applyLookup(data, { by: 'vin', value: asked })}
+                          vehicleId={vehicle?.id}
+                        />
+                      )}
+                    </div>
                   </div>
+                  {/* Under both fields, since either button may have answered */}
+                  {lookupNote && (
+                    <p className="-mt-2 text-xs text-muted-foreground">
+                      {lookupNote.inspectionDue
+                        ? t('lookupInspectionDue', {
+                            source: lookupNote.source,
+                            date: format.dateTime(new Date(lookupNote.inspectionDue), {
+                              dateStyle: 'medium',
+                            }),
+                          })
+                        : t('lookupSource', { source: lookupNote.source })}
+                    </p>
+                  )}
                 </div>
-                {/* Under both fields, since either button may have answered */}
-                {lookupNote && (
-                  <p className="-mt-2 text-xs text-muted-foreground">
-                    {lookupNote.inspectionDue
-                      ? t('lookupInspectionDue', {
-                          source: lookupNote.source,
-                          date: format.dateTime(new Date(lookupNote.inspectionDue), {
-                            dateStyle: 'medium',
-                          }),
-                        })
-                      : t('lookupSource', { source: lookupNote.source })}
-                  </p>
-                )}
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="color">{t('color')}</Label>
-                  <Input
-                    id="color"
-                    name="color"
-                    placeholder="Silver"
-                    defaultValue={vehicle?.color ?? ''}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="color">{t('color')}</Label>
+                    <Input
+                      id="color"
+                      name="color"
+                      placeholder="Silver"
+                      defaultValue={vehicle?.color ?? ''}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fuelType">{t('fuelType')}</Label>
+                    <Select name="fuelType" value={fuelType} onValueChange={setFuelType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gasoline">{t('gasoline')}</SelectItem>
+                        <SelectItem value="diesel">{t('diesel')}</SelectItem>
+                        {!isMarine && (
+                          <>
+                            <SelectItem value="electric">{t('electric')}</SelectItem>
+                            <SelectItem value="hybrid">{t('hybrid')}</SelectItem>
+                          </>
+                        )}
+                        {isMarine && <SelectItem value="two-stroke">{t('twoStroke')}</SelectItem>}
+                        <SelectItem value="other">{t('other')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="fuelType">{t('fuelType')}</Label>
-                  <Select name="fuelType" value={fuelType} onValueChange={setFuelType}>
+                  <Label htmlFor="transmission">
+                    {isMarine ? t('transmissionMarine') : t('transmission')}
+                  </Label>
+                  <Select name="transmission" value={transmission} onValueChange={setTransmission}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="gasoline">{t('gasoline')}</SelectItem>
-                      <SelectItem value="diesel">{t('diesel')}</SelectItem>
-                      {!isMarine && (
+                      {isMarine ? (
                         <>
-                          <SelectItem value="electric">{t('electric')}</SelectItem>
-                          <SelectItem value="hybrid">{t('hybrid')}</SelectItem>
+                          <SelectItem value="outboard">{t('outboard')}</SelectItem>
+                          <SelectItem value="inboard">{t('inboard')}</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="automatic">{t('automatic')}</SelectItem>
+                          <SelectItem value="manual">{t('manual')}</SelectItem>
+                          <SelectItem value="cvt">{t('cvt')}</SelectItem>
                         </>
                       )}
-                      {isMarine && <SelectItem value="two-stroke">{t('twoStroke')}</SelectItem>}
-                      <SelectItem value="other">{t('other')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="transmission">
-                  {isMarine ? t('transmissionMarine') : t('transmission')}
-                </Label>
-                <Select name="transmission" value={transmission} onValueChange={setTransmission}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="engineSize">
+                      {isMarine ? t('engineSizeMarine') : t('engineSize')}
+                    </Label>
                     {isMarine ? (
-                      <>
-                        <SelectItem value="outboard">{t('outboard')}</SelectItem>
-                        <SelectItem value="inboard">{t('inboard')}</SelectItem>
-                      </>
+                      <Input
+                        id="engineSize"
+                        name="engineSize"
+                        placeholder="Mercury F 350 XXL Verado V-10 (350 hp)"
+                        defaultValue={vehicle?.engineSize ?? ''}
+                      />
                     ) : (
-                      <>
-                        <SelectItem value="automatic">{t('automatic')}</SelectItem>
-                        <SelectItem value="manual">{t('manual')}</SelectItem>
-                        <SelectItem value="cvt">{t('cvt')}</SelectItem>
-                      </>
+                      <EngineSizeInput
+                        key={vehicle?.id ?? 'new'}
+                        defaultValue={vehicle?.engineSize ?? ''}
+                      />
                     )}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="engineSize">
-                    {isMarine ? t('engineSizeMarine') : t('engineSize')}
-                  </Label>
-                  {isMarine ? (
-                    <Input
-                      id="engineSize"
-                      name="engineSize"
-                      placeholder="Mercury F 350 XXL Verado V-10 (350 hp)"
-                      defaultValue={vehicle?.engineSize ?? ''}
-                    />
-                  ) : (
-                    <EngineSizeInput
-                      key={vehicle?.id ?? 'new'}
-                      defaultValue={vehicle?.engineSize ?? ''}
-                    />
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="engineCode">{t('engineCode')}</Label>
-                  <Input
-                    id="engineCode"
-                    name="engineCode"
-                    placeholder="2AR-FE"
-                    defaultValue={vehicle?.engineCode ?? ''}
-                  />
-                </div>
-              </div>
-
-              {showTypeKey && (
-                <div className="space-y-2">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="hsn">{t('hsn')}</Label>
-                      <Input
-                        id="hsn"
-                        name="hsn"
-                        placeholder="0603"
-                        inputMode="numeric"
-                        maxLength={6}
-                        autoComplete="off"
-                        className="font-mono"
-                        defaultValue={vehicle?.hsn ?? ''}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="tsn">{t('tsn')}</Label>
-                      <Input
-                        id="tsn"
-                        name="tsn"
-                        placeholder="BFQ"
-                        maxLength={12}
-                        autoComplete="off"
-                        className="font-mono uppercase"
-                        defaultValue={vehicle?.tsn ?? ''}
-                      />
-                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">{t('typeKeyHint')}</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="engineCode">{t('engineCode')}</Label>
+                    <Input
+                      id="engineCode"
+                      name="engineCode"
+                      placeholder="2AR-FE"
+                      defaultValue={vehicle?.engineCode ?? ''}
+                    />
+                  </div>
                 </div>
-              )}
 
-              {!isMarine && (
-                <div className="space-y-2">
-                  <Label htmlFor="inspectionDueAt">{t('inspectionDue')}</Label>
-                  <Input
-                    id="inspectionDueAt"
-                    name="inspectionDueAt"
-                    type="date"
-                    defaultValue={openedInspectionDue}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {vehicle?.inspectionStatus?.source &&
-                    vehicle.inspectionStatus.source !== 'manual'
-                      ? t('inspectionDueFromRegistry')
-                      : t('inspectionDueHint')}
-                  </p>
-                </div>
-              )}
-            </div>
+                {showTypeKey && (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="hsn">{t('hsn')}</Label>
+                        <Input
+                          id="hsn"
+                          name="hsn"
+                          placeholder="0603"
+                          inputMode="numeric"
+                          maxLength={6}
+                          autoComplete="off"
+                          className="font-mono"
+                          defaultValue={vehicle?.hsn ?? ''}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="tsn">{t('tsn')}</Label>
+                        <Input
+                          id="tsn"
+                          name="tsn"
+                          placeholder="BFQ"
+                          maxLength={12}
+                          autoComplete="off"
+                          className="font-mono uppercase"
+                          defaultValue={vehicle?.tsn ?? ''}
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('typeKeyHint')}</p>
+                  </div>
+                )}
 
-            <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">
+                {!isMarine && (
+                  <div className="space-y-2">
+                    <Label htmlFor="inspectionDueAt">{t('inspectionDue')}</Label>
+                    <Input
+                      id="inspectionDueAt"
+                      name="inspectionDueAt"
+                      type="date"
+                      defaultValue={openedInspectionDue}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {vehicle?.inspectionStatus?.source &&
+                      vehicle.inspectionStatus.source !== 'manual'
+                        ? t('inspectionDueFromRegistry')
+                        : t('inspectionDueHint')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </DialogBody>
+
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {tc('cancel')}
               </Button>
@@ -886,7 +896,7 @@ export function VehicleForm({
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {vehicle ? tc('saveChanges') : t('addTitle')}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

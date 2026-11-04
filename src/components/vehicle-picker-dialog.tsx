@@ -1,11 +1,19 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type KeyboardEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 import { Loader2, Plus, Car, Search, ArrowLeft, UserPlus, ShoppingCart, Ship } from 'lucide-react'
 import { createVehicle, searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { createDraftCounterSale } from '@/features/vehicles/Actions/createDraftServiceRecord'
@@ -89,6 +97,7 @@ export function VehiclePickerDialog({
           const result = await searchVehicles(query || undefined, PAGE_SIZE)
           if (request !== requestRef.current) return
           setFilteredVehicles(result.success && result.data ? result.data : [])
+          setActiveIndex(0)
         } catch {
           if (request === requestRef.current) setFilteredVehicles([])
         } finally {
@@ -100,9 +109,35 @@ export function VehiclePickerDialog({
     return () => clearTimeout(timer)
   }, [open, pickerStep, vehicleSearch])
 
+  // The arrow keys walk the list from the search box and Enter picks the highlighted row,
+  // so the common case is type, Enter, done, without reaching for the mouse.
+  const [activeIndex, setActiveIndex] = useState(0)
+  const listRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    listRef.current
+      ?.querySelector<HTMLElement>('[data-active="true"]')
+      ?.scrollIntoView?.({ block: 'nearest' })
+  }, [activeIndex])
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (filteredVehicles.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActiveIndex((i) => Math.min(i + 1, filteredVehicles.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex((i) => Math.max(i - 1, 0))
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      const active = filteredVehicles[activeIndex]
+      if (active) handleSelect(active.id)
+    }
+  }
+
   const resetState = () => {
     setPickerStep('select')
     setVehicleSearch('')
+    setActiveIndex(0)
     setNewMake('')
     setNewModel('')
     setNewYear('')
@@ -229,78 +264,84 @@ export function VehiclePickerDialog({
           <>
             <DialogHeader>
               <DialogTitle>{displayTitle}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              {/* The search box is pinned above the list, so it never moves under the cursor */}
+              <div className="relative mt-1">
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder={isMarine ? t('searchPlaceholderMarine') : t('searchPlaceholder')}
                   value={vehicleSearch}
                   onChange={(e) => setVehicleSearch(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   className="pl-9"
                   autoFocus
                 />
-              </div>
-              <div className="max-h-[300px] overflow-y-auto">
-                {vehiclesLoading && filteredVehicles.length === 0 ? (
-                  <div className="flex justify-center py-6">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                  </div>
-                ) : filteredVehicles.length === 0 ? (
-                  <div className="py-6 text-center space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      {!vehicleSearch.trim()
-                        ? isMarine
-                          ? t('emptyMarine')
-                          : t('empty')
-                        : isMarine
-                          ? t('emptySearchMarine')
-                          : t('emptySearch')}
-                    </p>
-                    <Button variant="outline" onClick={() => setPickerStep('create')}>
-                      <Plus className="h-4 w-4 mr-1" />
-                      {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-1">
-                    {filteredVehicles.map((v) => (
-                      <button
-                        key={v.id}
-                        type="button"
-                        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted"
-                        onClick={() => handleSelect(v.id)}
-                      >
-                        {isMarine ? (
-                          <Ship className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        ) : (
-                          <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium">
-                            {v.year} {v.make} {v.model}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {[v.licensePlate, v.customer?.name].filter(Boolean).join(' · ') ||
-                              (isMarine ? t('noPlateMarine') : t('noPlate'))}
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                {/* A search in flight runs a thin bar under the box; the old rows stay in place */}
+                {vehiclesLoading && filteredVehicles.length > 0 && (
+                  <span className="search-progress" aria-hidden="true" />
                 )}
               </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('create')}>
-                  <Plus className="h-4 w-4 mr-1" />
-                  {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
-                </Button>
-                <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('sale')}>
-                  <ShoppingCart className="h-4 w-4 mr-1" />
-                  {t('partsSale')}
-                </Button>
-              </div>
-            </div>
+            </DialogHeader>
+            {/* One fixed height whatever the list holds, so the dialog never resizes or
+                re-centres while results, a spinner and the empty message take turns */}
+            <DialogBody ref={listRef} className="h-80 p-2">
+              {vehiclesLoading && filteredVehicles.length === 0 ? (
+                <div className="flex h-full items-center justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : filteredVehicles.length === 0 ? (
+                <div className="flex h-full items-center justify-center px-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {!vehicleSearch.trim()
+                      ? isMarine
+                        ? t('emptyMarine')
+                        : t('empty')
+                      : isMarine
+                        ? t('emptySearchMarine')
+                        : t('emptySearch')}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  className={cn('space-y-0.5 transition-opacity', vehiclesLoading && 'opacity-60')}
+                >
+                  {filteredVehicles.map((v, index) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      data-active={index === activeIndex}
+                      className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors data-[active=true]:bg-muted"
+                      onMouseMove={() => setActiveIndex(index)}
+                      onClick={() => handleSelect(v.id)}
+                    >
+                      {isMarine ? (
+                        <Ship className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      ) : (
+                        <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
+                          {v.year} {v.make} {v.model}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {[v.licensePlate, v.customer?.name].filter(Boolean).join(' · ') ||
+                            (isMarine ? t('noPlateMarine') : t('noPlate'))}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </DialogBody>
+            <DialogFooter className="flex-row">
+              <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('create')}>
+                <Plus className="h-4 w-4 mr-1" />
+                {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
+              </Button>
+              <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('sale')}>
+                <ShoppingCart className="h-4 w-4 mr-1" />
+                {t('partsSale')}
+              </Button>
+            </DialogFooter>
           </>
         ) : pickerStep === 'sale' ? (
           <>

@@ -7,7 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { DocsLink } from '@/components/docs-link'
 import { useGlassModal } from '@/components/glass-modal'
 import { createLaborPreset, updateLaborPreset } from '../Actions/laborPresetActions'
@@ -367,7 +374,7 @@ export function LaborPresetForm({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="max-h-[90vh] overflow-y-auto sm:max-w-2xl"
+        className="max-h-[90vh] sm:max-w-2xl"
         aria-describedby={undefined}
       >
         <DialogHeader>
@@ -377,10 +384,9 @@ export function LaborPresetForm({
             variant="hint"
             className="self-start"
           />
-        </DialogHeader>
 
-        {/* Mode tabs */}
-        <div className="flex rounded-lg border p-0.5 bg-muted/50">
+          {/* Mode tabs, pinned with the title so the switch is always in reach */}
+          <div className="mt-1 flex rounded-lg border bg-muted/50 p-0.5">
           <button
             type="button"
             className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
@@ -403,9 +409,11 @@ export function LaborPresetForm({
           >
             {t('form.package')}
           </button>
-        </div>
+          </div>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <DialogBody className="space-y-4">
           {mode === 'single' ? (
             <div className="space-y-2">
               <div className="hidden grid-cols-[2fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
@@ -590,7 +598,9 @@ export function LaborPresetForm({
             </>
           )}
 
-          <div className="flex justify-end gap-3 pt-4">
+          </DialogBody>
+
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('form.cancel')}
             </Button>
@@ -598,7 +608,7 @@ export function LaborPresetForm({
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {preset ? t('form.saveChanges') : t('form.create')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

@@ -16,7 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
@@ -564,11 +571,11 @@ export default function RecurringInvoicesClient({
 
       {/* Create dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-h-[85vh] sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('recurring.dialogTitle')}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <DialogBody className="space-y-4">
             {/* Basic info */}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -805,7 +812,8 @@ export default function RecurringInvoicesClient({
             </Card>
 
             {/* Actions */}
-            <div className="flex justify-end gap-2 pt-2">
+          </DialogBody>
+          <DialogFooter>
               <Button
                 variant="outline"
                 onClick={() => {
@@ -819,8 +827,7 @@ export default function RecurringInvoicesClient({
                 {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
                 {t('recurring.create')}
               </Button>
-            </div>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
