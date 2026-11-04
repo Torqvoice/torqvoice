@@ -25,6 +25,12 @@ interface Vehicle {
   customer: { id: string; name: string } | null
 }
 
+interface CustomerOption {
+  id: string
+  name: string
+  company: string | null
+}
+
 // Enough recent vehicles to pick from at a glance; anything else is a search away.
 const PAGE_SIZE = 30
 
@@ -56,7 +62,10 @@ export function VehiclePickerDialog({
   const [newModel, setNewModel] = useState('')
   const [newYear, setNewYear] = useState('')
   const [newPlate, setNewPlate] = useState('')
-  const [selectedCustomerId, setSelectedCustomerId] = useState('')
+  // Kept as the whole customer, not just its id: the combobox remounts when the
+  // step changes and needs the customer to show who the record will be saved to.
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerOption | null>(null)
+  const selectedCustomerId = selectedCustomer?.id ?? ''
   const [showNewCustomer, setShowNewCustomer] = useState(false)
   const [newCustomerName, setNewCustomerName] = useState('')
   const [newCustomerPhone, setNewCustomerPhone] = useState('')
@@ -98,7 +107,7 @@ export function VehiclePickerDialog({
     setNewModel('')
     setNewYear('')
     setNewPlate('')
-    setSelectedCustomerId('')
+    setSelectedCustomer(null)
     setShowNewCustomer(false)
     setNewCustomerName('')
     setNewCustomerPhone('')
@@ -320,7 +329,8 @@ export function VehiclePickerDialog({
                       value={selectedCustomerId}
                       placeholder={t('selectCustomer')}
                       noneLabel={t('none')}
-                      onChange={(id) => setSelectedCustomerId(id)}
+                      initialCustomer={selectedCustomer}
+                      onChange={(_id, customer) => setSelectedCustomer(customer)}
                     />
                     <Button
                       variant="ghost"
@@ -328,7 +338,7 @@ export function VehiclePickerDialog({
                       className="h-8 px-2 text-xs text-muted-foreground"
                       onClick={() => {
                         setShowNewCustomer(true)
-                        setSelectedCustomerId('')
+                        setSelectedCustomer(null)
                       }}
                     >
                       <UserPlus className="h-3.5 w-3.5 mr-1" />
@@ -463,7 +473,8 @@ export function VehiclePickerDialog({
                       value={selectedCustomerId}
                       placeholder={t('selectCustomer')}
                       noneLabel={t('none')}
-                      onChange={(id) => setSelectedCustomerId(id)}
+                      initialCustomer={selectedCustomer}
+                      onChange={(_id, customer) => setSelectedCustomer(customer)}
                     />
                     <Button
                       variant="ghost"
@@ -471,7 +482,7 @@ export function VehiclePickerDialog({
                       className="h-8 px-2 text-xs text-muted-foreground"
                       onClick={() => {
                         setShowNewCustomer(true)
-                        setSelectedCustomerId('')
+                        setSelectedCustomer(null)
                       }}
                     >
                       <UserPlus className="h-3.5 w-3.5 mr-1" />

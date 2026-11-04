@@ -181,6 +181,13 @@ export function ReminderFormDialog({
     }
   }, [open, reminder, defaultDueDate, defaultDueTime, timezone])
 
+  // Another customer's list must not stay on offer: picking from it would
+  // switch the customer back. Drop it, and any search still on its way.
+  useEffect(() => {
+    vehicleRequestRef.current++
+    setVehicleOptions([])
+  }, [formCustomerId])
+
   // Search as the user types, within the chosen customer's vehicles if there is one
   useEffect(() => {
     if (!vehicleOpen) return
@@ -220,6 +227,10 @@ export function ReminderFormDialog({
     )
     return () => clearTimeout(timer)
   }, [vehicleOpen, vehicleSearch, formCustomerId])
+
+  const shownVehicles = formCustomerId
+    ? vehicleOptions.filter((v) => v.customerId === formCustomerId)
+    : vehicleOptions
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -309,7 +320,7 @@ export function ReminderFormDialog({
                     onValueChange={setVehicleSearch}
                   />
                   <CommandList>
-                    {vehiclesLoading && vehicleOptions.length === 0 ? (
+                    {vehiclesLoading && shownVehicles.length === 0 ? (
                       <div className="flex items-center justify-center py-6">
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                       </div>
@@ -333,7 +344,7 @@ export function ReminderFormDialog({
                         />
                         {t('noneOption')}
                       </CommandItem>
-                      {vehicleOptions.map((v) => (
+                      {shownVehicles.map((v) => (
                         <CommandItem
                           key={v.id}
                           value={v.id}

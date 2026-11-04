@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { nameSimilarity, normalizeName } from '@/lib/name-similarity'
+import { NAME_FOLD, foldName, nameSimilarity, normalizeName } from '@/lib/name-similarity'
 
 const THRESHOLD = 0.9
 
@@ -57,5 +57,34 @@ describe('nameSimilarity', () => {
 
   it('treats an empty name as no match', () => {
     expect(nameSimilarity('', 'Manuel Lücking')).toBe(0)
+  })
+})
+
+describe('foldName and NAME_FOLD', () => {
+  // What Postgres makes of a stored name: translate() with the table, then lower()
+  const inDatabase = (stored: string) => {
+    let out = ''
+    for (const letter of stored) {
+      const at = NAME_FOLD.from.indexOf(letter)
+      out += at === -1 ? letter : NAME_FOLD.to[at]
+    }
+    return out.toLowerCase()
+  }
+
+  it('pairs every letter with the one it becomes', () => {
+    expect([...NAME_FOLD.from]).toHaveLength([...NAME_FOLD.to].length)
+  })
+
+  it.each([
+    ['Jürgen Müller', 'Jurgen Muller'],
+    ['José Núñez', 'Jose Nunez'],
+    ['Øyvind Ærø', 'Oyvind Æro'],
+    ['ŁUKASZ Żółć', 'Lukasz Zolc'],
+  ])('finds %s in the database for papers that say %s, or the same with accents', (stored, read) => {
+    for (const papers of [stored, read]) {
+      for (const word of foldName(normalizeName(papers)).split(' ')) {
+        expect(inDatabase(stored)).toContain(word)
+      }
+    }
   })
 })

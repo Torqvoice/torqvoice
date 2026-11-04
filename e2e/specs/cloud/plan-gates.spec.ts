@@ -124,8 +124,7 @@ test.describe('the free plan', () => {
     await page.locator('#new-make').fill('Volvo')
     await page.locator('#new-model').fill('V70')
     await page.locator('#new-year').fill('2015')
-    await page.getByRole('combobox').filter({ hasText: 'Select a customer (optional)' }).click()
-    await page.getByRole('option', { name: 'Create new customer' }).click()
+    await page.getByRole('button', { name: 'Create new customer' }).click()
     await page.locator('#new-customer-name').fill(`E2E Work order customer ${stamp}`)
     await page.getByRole('button', { name: 'Create & Continue' }).click()
 

@@ -22,6 +22,46 @@ export function normalizeName(value: string): string {
     .join(' ')
 }
 
+/**
+ * Letters a name search treats as plain ones, as two strings of equal length
+ * for SQL `translate()`: each accented Latin letter and each capital beside
+ * the letter it becomes, plus the few that carry a stroke rather than an
+ * accent (Ł, Ø, Đ...), which papers and OCR write plain just as often.
+ *
+ * `foldName` applies the same table in the browser or on the server, so a
+ * word folded here is found in a column folded in the database: "Muller"
+ * finds "Müller", and "Lukasz" finds "Łukasz", with no extension installed.
+ */
+export const NAME_FOLD: { from: string; to: string } = (() => {
+  let from = ''
+  let to = ''
+  const strokes: Record<string, string> = { ł: 'l', ø: 'o', đ: 'd', ħ: 'h', ı: 'i', ŧ: 't' }
+  for (let code = 0xc0; code <= 0x24f; code++) {
+    const letter = String.fromCharCode(code)
+    const plain = letter
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const folded = strokes[plain] ?? plain
+    if (folded !== letter && folded.length === 1) {
+      from += letter
+      to += folded
+    }
+  }
+  return { from, to }
+})()
+
+/** Lowercases and folds letters with `NAME_FOLD`, as the database search does. */
+export function foldName(value: string): string {
+  return [...value]
+    .map((letter) => {
+      const at = NAME_FOLD.from.indexOf(letter)
+      return at === -1 ? letter : NAME_FOLD.to[at]
+    })
+    .join('')
+    .toLowerCase()
+}
+
 /** Levenshtein distance, iterative with a single row of state. */
 function editDistance(a: string, b: string): number {
   if (a === b) return 0

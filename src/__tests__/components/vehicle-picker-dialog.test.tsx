@@ -16,14 +16,32 @@ vi.mock('next/navigation', () => ({
 }))
 const searchVehicles = vi.hoisted(() => vi.fn())
 vi.mock('@/features/vehicles/Actions/vehicleActions', () => ({
-  createVehicle: vi.fn(),
+  createVehicle,
   searchVehicles,
 }))
 vi.mock('@/features/vehicles/Actions/createDraftServiceRecord', () => ({
   createDraftCounterSale: vi.fn(),
 }))
+const createVehicle = vi.hoisted(() => vi.fn())
 vi.mock('@/features/customers/Actions/customerActions', () => ({ createCustomer: vi.fn() }))
-vi.mock('@/features/quotes/Components/CustomerCombobox', () => ({ CustomerCombobox: () => null }))
+// Stands in for the server search: one button picks a customer, and it names
+// whoever it was handed, which is what a user sees in the real one.
+vi.mock('@/features/quotes/Components/CustomerCombobox', () => ({
+  CustomerCombobox: ({
+    initialCustomer,
+    onChange,
+  }: {
+    initialCustomer?: { name: string } | null
+    onChange: (id: string, c: { id: string; name: string; company: null }) => void
+  }) => (
+    <button
+      type="button"
+      onClick={() => onChange('c1', { id: 'c1', name: 'Ann Berg', company: null })}
+    >
+      {initialCustomer?.name ?? 'Select a customer (optional)'}
+    </button>
+  ),
+}))
 vi.mock('@/components/upgrade-gate', () => ({ handleGated: () => false }))
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
 
@@ -77,6 +95,25 @@ describe('VehiclePickerDialog, automotive', () => {
       target: { value: ' smith ' },
     })
     await waitFor(() => expect(searchVehicles).toHaveBeenCalledWith('smith', 30))
+  })
+
+  it('names the customer a new vehicle will be saved to, after going back and forth', async () => {
+    renderPicker('automotive')
+    createVehicle.mockReset()
+    createVehicle.mockResolvedValue({ success: true, data: { id: 'v9' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Parts-Only Sale' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select a customer (optional)' }))
+    fireEvent.click(screen.getAllByRole('button')[0]) // back
+    fireEvent.click(screen.getByRole('button', { name: 'Add New Vehicle' }))
+
+    expect(screen.getByRole('button', { name: 'Ann Berg' })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Make *'), { target: { value: 'Volvo' } })
+    fireEvent.change(screen.getByLabelText('Model *'), { target: { value: 'V70' } })
+    fireEvent.change(screen.getByLabelText('Year *'), { target: { value: '2015' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Create & Continue' }))
+    await waitFor(() =>
+      expect(createVehicle).toHaveBeenCalledWith(expect.objectContaining({ customerId: 'c1' }))
+    )
   })
 
   it('keeps its vehicle wording on the create step', () => {

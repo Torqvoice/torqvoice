@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -28,7 +28,13 @@ interface CustomerComboboxProps {
   onChange: (id: string, customer: CustomerOption | null) => void
   initialCustomer?: CustomerOption | null
   placeholder?: string
+  /** What the search box says; the placeholder when left out */
+  searchPlaceholder?: string
   noneLabel?: string
+  /** What the list says when nothing matches */
+  emptyLabel?: string
+  /** Shown under the list, e.g. a way to add a customer; `close` shuts the list */
+  footer?: (close: () => void) => ReactNode
 }
 
 export function CustomerCombobox({
@@ -36,7 +42,10 @@ export function CustomerCombobox({
   onChange,
   initialCustomer,
   placeholder = 'Select customer...',
+  searchPlaceholder,
   noneLabel = 'None',
+  emptyLabel = 'No customers found.',
+  footer,
 }: CustomerComboboxProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -98,6 +107,11 @@ export function CustomerCombobox({
     if (initialCustomer) setSelected(initialCustomer)
   }, [initialCustomer])
 
+  // Parent can clear the selection (e.g. the form was reset); drop the label too
+  useEffect(() => {
+    if (!value) setSelected(null)
+  }, [value])
+
   // Infinite scroll
   const handleScroll = useCallback(() => {
     const el = listRef.current
@@ -126,14 +140,18 @@ export function CustomerCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder={placeholder} value={search} onValueChange={setSearch} />
+          <CommandInput
+            placeholder={searchPlaceholder ?? placeholder}
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList ref={listRef} onScroll={handleScroll}>
             {searching && options.length === 0 && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
             )}
-            <CommandEmpty>No customers found.</CommandEmpty>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
@@ -168,6 +186,7 @@ export function CustomerCombobox({
               </div>
             )}
           </CommandList>
+          {footer?.(() => setOpen(false))}
         </Command>
       </PopoverContent>
     </Popover>
