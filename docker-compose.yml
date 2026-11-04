@@ -29,9 +29,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: torqvoice
-      # Set POSTGRES_PASSWORD in .env before the first start. Postgres keeps the
-      # password it was created with, so changing it later means changing it
-      # in the database as well (ALTER USER torqvoice PASSWORD '...').
+      # Set POSTGRES_PASSWORD in .env before the first start. The same value
+      # goes into the app's DATABASE_URL above as it is, with no escaping, so
+      # keep it to letters and digits (`openssl rand -hex 24`): a `/`, `@`, `#`
+      # or `%` in it breaks the URL. Postgres keeps the password it was
+      # created with, so changing it later means changing it in the database
+      # as well (ALTER USER torqvoice PASSWORD '...').
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-torqvoice}
       POSTGRES_DB: torqvoice
     ports:
