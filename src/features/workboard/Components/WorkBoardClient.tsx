@@ -57,8 +57,6 @@ import {
 import { Users, Wrench, ClipboardCheck, Columns3, Inbox, Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { timeToMinutes } from '../utils/datetime'
 import { useDateSettings } from '@/components/date-settings-context'
 
@@ -200,19 +198,6 @@ export function WorkBoardClient({
     unassignedJob?: { job: Record<string, unknown>; type: 'serviceRecord' | 'inspection' }
   } | null>(null)
   const [vehiclePickerOpen, setVehiclePickerOpen] = useState(false)
-  const [vehiclePickerVehicles, setVehiclePickerVehicles] = useState<
-    {
-      id: string
-      make: string
-      model: string
-      year: number
-      licensePlate: string | null
-      customer: { id: string; name: string; company: string | null } | null
-    }[]
-  >([])
-  const [vehiclePickerCustomers, setVehiclePickerCustomers] = useState<
-    { id: string; name: string; company: string | null }[]
-  >([])
   const [boardContext, setBoardContext] = useState<Record<string, string>>({})
 
   const weekDropResolver = useRef<
@@ -389,22 +374,6 @@ export function WorkBoardClient({
 
   const openVehiclePicker = useCallback(async (context: Record<string, string>) => {
     setBoardContext(context)
-    const [vehiclesResult, customersResult] = await Promise.all([getVehicles(), getCustomersList()])
-    setVehiclePickerVehicles(
-      vehiclesResult.success && vehiclesResult.data
-        ? vehiclesResult.data.map((v) => ({
-            id: v.id,
-            make: v.make,
-            model: v.model,
-            year: v.year,
-            licensePlate: v.licensePlate,
-            customer: v.customer,
-          }))
-        : []
-    )
-    setVehiclePickerCustomers(
-      customersResult.success && customersResult.data ? customersResult.data : []
-    )
     setVehiclePickerOpen(true)
   }, [])
 
@@ -884,8 +853,6 @@ export function WorkBoardClient({
           setVehiclePickerOpen(open)
           if (!open) setBoardContext({})
         }}
-        vehicles={vehiclePickerVehicles}
-        customers={vehiclePickerCustomers}
         redirectQuery={boardContext}
       />
     </div>

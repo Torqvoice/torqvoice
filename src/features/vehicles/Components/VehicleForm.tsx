@@ -3,7 +3,7 @@
 import { useEngineSizeUnit } from '@/components/engine-size-context'
 import { engineSizeHint, engineSizePlaceholder, engineSizeToSave } from '@/lib/engine-size'
 import { interactiveRow } from '@/lib/interactive-row'
-import { useState, useRef, useMemo, useEffect, useId } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -16,16 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
 import {
   Dialog,
   DialogContent,
@@ -45,10 +36,15 @@ import { ScanDocumentButton } from './ScanDocumentButton'
 import { VehicleLookupButton } from './VehicleLookupButton'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { nameSimilarity } from '@/lib/name-similarity'
-import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
+import { Camera, Loader2, Plus, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
-import { createCustomer } from '@/features/customers/Actions/customerActions'
+import {
+  createCustomer,
+  findOwnerCandidates,
+  getCustomerOption,
+} from '@/features/customers/Actions/customerActions'
+import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
@@ -63,8 +59,14 @@ import { handleGated } from '@/components/upgrade-gate'
  */
 const OWNER_MATCH_THRESHOLD = 0.9
 
+interface CustomerOption {
+  id: string
+  name: string
+  company: string | null
+}
+
 interface OwnerMatch {
-  customer: { id: string; name: string; company: string | null }
+  customer: CustomerOption
   score: number
 }
 
@@ -88,11 +90,14 @@ interface VehicleFormProps {
     tsn?: string | null
     imageUrl?: string | null
     customerId?: string | null
+    /** The owner, so the selector can name them without loading every customer */
+    customer?: CustomerOption | null
     inspectionStatus?: { dueAt: Date | string | null; source?: string } | null
   }
-  customers?: { id: string; name: string; company: string | null }[]
   /** Preselects the customer when creating a new vehicle (ignored when editing) */
   defaultCustomerId?: string
+  /** The preselected customer itself, when the caller has it, to name it without a lookup */
+  defaultCustomer?: CustomerOption | null
   /**
    * What a registry already said about the plate, for a form opened from the
    * plate lookup: filled in as if the search button had been pressed.
@@ -104,8 +109,8 @@ export function VehicleForm({
   open,
   onOpenChange,
   vehicle,
-  customers,
   defaultCustomerId,
+  defaultCustomer,
   initialLookup,
 }: VehicleFormProps) {
   const serviceType = useServiceType()
@@ -125,9 +130,14 @@ export function VehicleForm({
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>(
     vehicle?.customerId || defaultCustomerId || 'none'
   )
-  const [customerOpen, setCustomerOpen] = useState(false)
   const [showCustomerForm, setShowCustomerForm] = useState(false)
-  const [localCustomers, setLocalCustomers] = useState(customers || [])
+  // The customer list is searched on the server: a workshop can have tens of
+  // thousands, and loading them all slowed every page that offers this form.
+  const initialCustomer =
+    vehicle?.customer ??
+    (!vehicle && defaultCustomer?.id === defaultCustomerId ? defaultCustomer : null) ??
+    null
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerOption | null>(initialCustomer)
   const [fuelType, setFuelType] = useState(vehicle?.fuelType ?? 'gasoline')
   const defaultTransmission = vehicle?.transmission ?? (isMarine ? 'outboard' : 'automatic')
   const [transmission, setTransmission] = useState(defaultTransmission)
@@ -149,12 +159,27 @@ export function VehicleForm({
   /** Whether saving should also create the keeper as a customer. */
   const [addOwner, setAddOwner] = useState(true)
   const [showOwnerMatch, setShowOwnerMatch] = useState(false)
+  // The keeper is looked up on the server. Saving waits for the answer, or a
+  // quick save would add them again; a newer scan, another vehicle or closing
+  // the form makes an answer still on its way stale, and it is dropped.
+  const [ownerLookupPending, setOwnerLookupPending] = useState(false)
+  const ownerLookupRef = useRef(0)
+  const dropOwnerLookup = () => {
+    ownerLookupRef.current++
+    setOwnerLookupPending(false)
+    setShowOwnerMatch(false)
+  }
   const fileRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
   useEffect(() => {
     setSelectedCustomerId(vehicle?.customerId || defaultCustomerId || 'none')
+    setSelectedCustomer(
+      vehicle?.customer ??
+        (!vehicle && defaultCustomer?.id === defaultCustomerId ? defaultCustomer : null) ??
+        null
+    )
     setPreview(vehicle?.imageUrl ?? null)
     setImageFile(null)
     setFuelType(vehicle?.fuelType ?? 'gasoline')
@@ -163,6 +188,7 @@ export function VehicleForm({
     setScannedOwner(null)
     setOwnerMatches([])
     setAddOwner(true)
+    dropOwnerLookup()
   }, [
     vehicle?.id,
     vehicle?.customerId,
@@ -171,14 +197,23 @@ export function VehicleForm({
     vehicle?.transmission,
     isMarine,
     defaultCustomerId,
+    defaultCustomer?.id,
+    vehicle?.customer?.id,
   ])
 
-  const selectedCustomerLabel = useMemo(() => {
-    if (!selectedCustomerId || selectedCustomerId === 'none') return t('noCustomer')
-    const c = localCustomers.find((c) => c.id === selectedCustomerId)
-    if (!c) return t('noCustomer')
-    return c.name + (c.company ? ` (${c.company})` : '')
-  }, [selectedCustomerId, localCustomers, t])
+  // A customer preselected by id alone (a link with ?customerId=) still needs a name
+  useEffect(() => {
+    if (!open || selectedCustomerId === 'none' || selectedCustomer?.id === selectedCustomerId)
+      return
+    let cancelled = false
+    getCustomerOption(selectedCustomerId).then((result) => {
+      if (cancelled || !result.success || !result.data) return
+      setSelectedCustomer(result.data)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, selectedCustomerId, selectedCustomer?.id])
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -252,22 +287,32 @@ export function VehicleForm({
     // Near-identical names are still a judgement call: two brothers at one
     // address differ by a first name. Offer the close ones and let the user say.
     const ownerName = data.owner.name
-    const candidates = localCustomers
-      .map((c) => ({
-        customer: c,
-        // Papers naming a business may match the company field rather than the
-        // contact saved as the customer's name.
-        score: Math.max(
-          nameSimilarity(ownerName, c.name),
-          c.company ? nameSimilarity(ownerName, c.company) : 0
-        ),
-      }))
-      .filter((m) => m.score >= OWNER_MATCH_THRESHOLD)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
+    const lookup = ++ownerLookupRef.current
+    setOwnerLookupPending(true)
+    setOwnerMatches([])
+    void findOwnerCandidates(ownerName)
+      .then((result) => {
+        if (lookup !== ownerLookupRef.current) return
+        const candidates = (result.success && result.data ? result.data : [])
+          .map((c) => ({
+            customer: c,
+            // Papers naming a business may match the company field rather than the
+            // contact saved as the customer's name.
+            score: Math.max(
+              nameSimilarity(ownerName, c.name),
+              c.company ? nameSimilarity(ownerName, c.company) : 0
+            ),
+          }))
+          .filter((m) => m.score >= OWNER_MATCH_THRESHOLD)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5)
 
-    setOwnerMatches(candidates)
-    if (candidates.length > 0) setShowOwnerMatch(true)
+        setOwnerMatches(candidates)
+        if (candidates.length > 0) setShowOwnerMatch(true)
+      })
+      .finally(() => {
+        if (lookup === ownerLookupRef.current) setOwnerLookupPending(false)
+      })
   }
 
   /**
@@ -325,11 +370,14 @@ export function VehicleForm({
     if (!open) {
       appliedLookupRef.current = null
       lookupRef.current = null
+      dropOwnerLookup()
     }
   }, [open])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    // The save shortcut and Enter reach here past the disabled button
+    if (ownerLookupPending) return
     const formData = new FormData(e.currentTarget)
 
     // Caught here rather than by the server, which could only answer in English.
@@ -510,75 +558,36 @@ export function VehicleForm({
               {/* Customer selector */}
               <div className="space-y-2">
                 <Label>{t('customer')}</Label>
-                <Popover open={customerOpen} onOpenChange={setCustomerOpen} modal={true}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={customerOpen}
-                      className="w-full justify-between font-normal"
-                    >
-                      <span className="truncate">{selectedCustomerLabel}</span>
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-(--radix-popover-trigger-width) min-w-64 p-0"
-                    align="start"
-                  >
-                    <Command>
-                      <CommandInput placeholder={t('searchCustomers')} />
-                      <CommandList className="max-h-60 overflow-y-auto">
-                        <CommandEmpty>{t('noCustomerFound')}</CommandEmpty>
-                        <CommandGroup>
-                          <CommandItem
-                            value="no-customer"
-                            onSelect={() => {
-                              setSelectedCustomerId('none')
-                              setCustomerOpen(false)
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${selectedCustomerId === 'none' ? 'opacity-100' : 'opacity-0'}`}
-                            />
-                            {t('noCustomer')}
-                          </CommandItem>
-                          {localCustomers.map((c) => {
-                            const label = c.name + (c.company ? ` (${c.company})` : '')
-                            return (
-                              <CommandItem
-                                key={c.id}
-                                value={label}
-                                onSelect={() => {
-                                  setSelectedCustomerId(c.id)
-                                  setCustomerOpen(false)
-                                }}
-                              >
-                                <Check
-                                  className={`mr-2 h-4 w-4 ${selectedCustomerId === c.id ? 'opacity-100' : 'opacity-0'}`}
-                                />
-                                {label}
-                              </CommandItem>
-                            )
-                          })}
-                        </CommandGroup>
-                      </CommandList>
-                      <div className="border-t p-1">
-                        <button
-                          type="button"
-                          className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
-                          onClick={() => {
-                            setCustomerOpen(false)
-                            setShowCustomerForm(true)
-                          }}
-                        >
-                          <Plus className="h-4 w-4" />
-                          {t('addCustomer')}
-                        </button>
-                      </div>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                <CustomerCombobox
+                  value={selectedCustomerId === 'none' ? '' : selectedCustomerId}
+                  initialCustomer={selectedCustomer}
+                  // A customer given by id alone is named once the lookup below answers
+                  placeholder={
+                    selectedCustomerId !== 'none' && !selectedCustomer ? '…' : t('noCustomer')
+                  }
+                  searchPlaceholder={t('searchCustomers')}
+                  noneLabel={t('noCustomer')}
+                  emptyLabel={t('noCustomerFound')}
+                  onChange={(id, customer) => {
+                    setSelectedCustomerId(id || 'none')
+                    setSelectedCustomer(customer)
+                  }}
+                  footer={(close) => (
+                    <div className="border-t p-1">
+                      <button
+                        type="button"
+                        className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                        onClick={() => {
+                          close()
+                          setShowCustomerForm(true)
+                        }}
+                      >
+                        <Plus className="h-4 w-4" />
+                        {t('addCustomer')}
+                      </button>
+                    </div>
+                  )}
+                />
 
                 {/* Keeper read off the papers who matches no customer yet */}
                 {scannedOwner?.name && selectedCustomerId === 'none' && (
@@ -873,7 +882,7 @@ export function VehicleForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {tc('cancel')}
               </Button>
-              <Button data-save-shortcut type="submit" disabled={loading}>
+              <Button data-save-shortcut type="submit" disabled={loading || ownerLookupPending}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {vehicle ? tc('saveChanges') : t('addTitle')}
               </Button>
@@ -900,6 +909,7 @@ export function VehicleForm({
                 className="flex w-full items-center justify-between gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-accent"
                 onClick={() => {
                   setSelectedCustomerId(customer.id)
+                  setSelectedCustomer(customer)
                   setScannedOwner(null)
                   setShowOwnerMatch(false)
                 }}
@@ -942,7 +952,7 @@ export function VehicleForm({
         onOpenChange={setShowCustomerForm}
         defaults={scannedOwner ?? undefined}
         onCreated={(created) => {
-          setLocalCustomers((prev) => [...prev, created])
+          setSelectedCustomer(created)
           setSelectedCustomerId(created.id)
           setScannedOwner(null)
         }}

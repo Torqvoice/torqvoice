@@ -3,7 +3,6 @@ import { getTranslations } from 'next-intl/server'
 import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
 import { getNotesPaginated } from '@/features/vehicles/Actions/noteActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getVehiclePredictedMileage } from '@/features/vehicles/Actions/predictedMaintenanceActions'
@@ -58,7 +57,6 @@ export default async function VehicleDetailPage({
 
   const [
     result,
-    customersResult,
     serviceResult,
     notesResult,
     settingsResult,
@@ -70,7 +68,6 @@ export default async function VehicleDetailPage({
     tireSetsResult,
   ] = await Promise.all([
     getVehicle(id),
-    getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
     getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
@@ -203,7 +200,6 @@ export default async function VehicleDetailPage({
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <VehicleDetailClient
           vehicle={result.data}
-          customers={customersResult.data ?? []}
           paginatedServices={paginatedServices}
           paginatedNotes={paginatedNotes}
           serviceSearch={search}

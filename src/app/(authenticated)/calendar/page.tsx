@@ -1,7 +1,5 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
@@ -60,25 +58,9 @@ export default async function CalendarPage({
         }
   const rangeKeys = { start: toLocalDateStr(range.start), end: toLocalDateStr(range.end) }
 
-  const [eventsResult, vehiclesResult, customersResult] = await Promise.all([
-    getCalendarEvents(rangeKeys),
-    getVehicles(),
-    getCustomersList(),
-  ])
+  const eventsResult = await getCalendarEvents(rangeKeys)
 
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data.map((v) => ({
-          id: v.id,
-          make: v.make,
-          model: v.model,
-          year: v.year,
-          licensePlate: v.licensePlate,
-          customer: v.customer,
-        }))
-      : []
-  const customers = customersResult.success && customersResult.data ? customersResult.data : []
 
   return (
     <>
@@ -90,8 +72,6 @@ export default async function CalendarPage({
           initialView={view}
           initialDate={toLocalDateStr(date)}
           todayStr={todayStr}
-          vehicles={vehicles}
-          customers={customers}
           currencyCode={currencyCode}
           messageChannels={messageChannels}
         />

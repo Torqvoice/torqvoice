@@ -417,7 +417,7 @@ export function ModernHero({
         <NewInspectionDialog
           open={showStartInspection}
           onOpenChange={setShowStartInspection}
-          preselectedVehicleId={vehicle.id}
+          preselectedVehicle={vehicle}
           serviceRecordId={record.id}
         />
       )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect, useMemo, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -15,23 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import { Check, ChevronsUpDown, Loader2, Settings } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Loader2, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
 import { createInspection } from '../Actions/inspectionActions'
 import { getTemplates } from '../Actions/templateActions'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 
 interface TemplateOption {
   id: string
@@ -51,14 +41,14 @@ export function NewInspectionDialog({
   open,
   onOpenChange,
   templates: givenTemplates,
-  preselectedVehicleId,
+  preselectedVehicle,
   serviceRecordId,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** The workshop's templates; fetched here when the opener has none to hand. */
   templates?: TemplateOption[]
-  preselectedVehicleId?: string
+  preselectedVehicle?: VehicleOption
   /** The booked job this inspection is started from; it is linked to the inspection. */
   serviceRecordId?: string
 }) {
@@ -66,8 +56,6 @@ export function NewInspectionDialog({
   const router = useRouter()
   const serviceType = useServiceType()
   const [isPending, startTransition] = useTransition()
-  const [vehicles, setVehicles] = useState<VehicleOption[]>([])
-  const [loadingVehicles, setLoadingVehicles] = useState(false)
   const [fetchedTemplates, setFetchedTemplates] = useState<TemplateOption[]>([])
   const templates = givenTemplates ?? fetchedTemplates
 
@@ -87,38 +75,26 @@ export function NewInspectionDialog({
   }, [open, givenTemplates])
 
   const defaultTemplate = templates.find((t) => t.isDefault)
-  const [vehicleId, setVehicleId] = useState(preselectedVehicleId || '')
+  const [vehicleId, setVehicleId] = useState(preselectedVehicle?.id || '')
   const [templateId, setTemplateId] = useState(defaultTemplate?.id || '')
   const [mileage, setMileage] = useState('')
-  const [vehiclePopoverOpen, setVehiclePopoverOpen] = useState(false)
-
-  useEffect(() => {
-    if (open && vehicles.length === 0) {
-      setLoadingVehicles(true)
-      getVehicles().then((result) => {
-        if (result.success && result.data) {
-          setVehicles(
-            result.data.map((v) => ({
-              id: v.id,
-              make: v.make,
-              model: v.model,
-              year: v.year,
-              licensePlate: v.licensePlate,
-            }))
-          )
-        }
-        setLoadingVehicles(false)
-      })
-    }
-  }, [open, vehicles.length])
+  // The combobox's own shape; the owner only matters to its list
+  const initialVehicle = useMemo(
+    () => (preselectedVehicle ? { ...preselectedVehicle, customerId: null, customer: null } : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [preselectedVehicle?.id]
+  )
 
   useEffect(() => {
     if (open) {
-      setVehicleId(preselectedVehicleId || '')
+      setVehicleId(preselectedVehicle?.id || '')
       setTemplateId(defaultTemplate?.id || '')
       setMileage('')
     }
-  }, [open, preselectedVehicleId, defaultTemplate?.id])
+    // Keyed on the id: an opener that rebuilds the vehicle object each render
+    // would otherwise reset the choice while the dialog is open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, preselectedVehicle?.id, defaultTemplate?.id])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -150,67 +126,15 @@ export function NewInspectionDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>{t('vehicle')}</Label>
-            {loadingVehicles ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {t('loadingVehicles')}
-              </div>
-            ) : (
-              <Popover open={vehiclePopoverOpen} onOpenChange={setVehiclePopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={vehiclePopoverOpen}
-                    className="w-full justify-between font-normal"
-                  >
-                    {vehicleId
-                      ? (() => {
-                          const v = vehicles.find((v) => v.id === vehicleId)
-                          return v
-                            ? `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
-                            : 'Select vehicle'
-                        })()
-                      : 'Select vehicle'}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-(--radix-popover-trigger-width) min-w-64 p-0"
-                  align="start"
-                >
-                  <Command>
-                    <CommandInput placeholder={t('searchVehicles')} />
-                    <CommandList>
-                      <CommandEmpty>{t('noVehicles')}</CommandEmpty>
-                      <CommandGroup>
-                        {vehicles.map((v) => {
-                          const label = `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
-                          return (
-                            <CommandItem
-                              key={v.id}
-                              value={label}
-                              onSelect={() => {
-                                setVehicleId(v.id)
-                                setVehiclePopoverOpen(false)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  vehicleId === v.id ? 'opacity-100' : 'opacity-0'
-                                )}
-                              />
-                              {label}
-                            </CommandItem>
-                          )
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            )}
+            <VehicleCombobox
+              value={vehicleId}
+              initialVehicle={initialVehicle}
+              placeholder="Select vehicle"
+              searchPlaceholder={t('searchVehicles')}
+              emptyLabel={t('noVehicles')}
+              allowNone={false}
+              onChange={(id) => setVehicleId(id)}
+            />
           </div>
 
           <div className="space-y-2">

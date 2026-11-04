@@ -32,7 +32,13 @@ interface VehicleComboboxProps {
   onChange: (id: string, vehicle: VehicleOption | null) => void
   initialVehicle?: VehicleOption | null
   placeholder?: string
+  /** What the search box says; the placeholder when left out */
+  searchPlaceholder?: string
   noneLabel?: string
+  /** Off where a vehicle is required, so "none" is not offered */
+  allowNone?: boolean
+  /** What the list says when nothing matches */
+  emptyLabel?: string
   /** When set, only this customer's vehicles are offered */
   customerId?: string
 }
@@ -46,7 +52,10 @@ export function VehicleCombobox({
   onChange,
   initialVehicle,
   placeholder = 'Select vehicle...',
+  searchPlaceholder,
   noneLabel = 'None',
+  allowNone = true,
+  emptyLabel = 'No vehicles found.',
   customerId,
 }: VehicleComboboxProps) {
   const [open, setOpen] = useState(false)
@@ -170,25 +179,31 @@ export function VehicleCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder={placeholder} value={search} onValueChange={setSearch} />
+          <CommandInput
+            placeholder={searchPlaceholder ?? placeholder}
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList ref={listRef} onScroll={handleScroll}>
             {searching && options.length === 0 && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
             )}
-            <CommandEmpty>No vehicles found.</CommandEmpty>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>
-              <CommandItem
-                onSelect={() => {
-                  onChange('', null)
-                  setSelected(null)
-                  setOpen(false)
-                }}
-              >
-                <Check className={cn('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
-                {noneLabel}
-              </CommandItem>
+              {allowNone && (
+                <CommandItem
+                  onSelect={() => {
+                    onChange('', null)
+                    setSelected(null)
+                    setOpen(false)
+                  }}
+                >
+                  <Check className={cn('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
+                  {noneLabel}
+                </CommandItem>
+              )}
               {options.map((v) => (
                 <CommandItem
                   key={v.id}
