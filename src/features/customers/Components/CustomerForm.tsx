@@ -20,8 +20,10 @@ import {
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -193,14 +195,20 @@ export function CustomerForm({
     setLoading(false)
   }
 
+  // "Kari Nordmann · Nordmann AS": who is open, under the title, when editing
+  const customerIdentity = customer
+    ? [customer.name, customer.company].filter(Boolean).join(' · ')
+    : null
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+      <DialogContent className="max-h-[90vh] sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>{customer ? t('editTitle') : t('addTitle')}</DialogTitle>
           <DocsLink href="/docs/features/customers" variant="hint" className="self-start" />
-          <DialogDescription className="sr-only">
-            {customer ? t('editTitle') : t('addTitle')}
+          {/* Which customer is open, so the title line answers it before the fields do */}
+          <DialogDescription className={customerIdentity ? undefined : 'sr-only'}>
+            {customerIdentity ?? (customer ? t('editTitle') : t('addTitle'))}
           </DialogDescription>
         </DialogHeader>
 
@@ -208,168 +216,170 @@ export function CustomerForm({
           key={customer?.id ?? `${defaults?.name ?? ''}|${defaults?.address ?? ''}`}
           ref={formRef}
           onSubmit={handleSubmit}
-          className="grid gap-x-6 gap-y-4 md:grid-cols-2"
+          className="flex min-h-0 flex-1 flex-col"
         >
-          {/* The keeper on a registration document is a customer waiting to be typed in */}
-          <div className="space-y-3 md:col-span-2">
-            <ScanDocumentButton onScanned={applyScan} />
+          <DialogBody className="grid content-start gap-x-8 gap-y-4 md:grid-cols-2">
+            {/* The keeper on a registration document is a customer waiting to be typed in */}
+            <div className="space-y-3 md:col-span-2">
+              <ScanDocumentButton onScanned={applyScan} />
 
-            {scannedVehicle && (
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 p-3">
-                <Checkbox
-                  checked={addVehicle}
-                  onCheckedChange={(next) => setAddVehicle(next === true)}
-                />
-                <span className="text-sm">
-                  {t('addScannedVehicle', { vehicle: vehicleLabel(scannedVehicle) })}
-                </span>
-              </label>
-            )}
-          </div>
-
-          {/* Left: who the customer is and how to reach them */}
-          <div className="space-y-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {t('sectionContact')}
-            </p>
-
-            <div className="grid grid-cols-[1fr_120px] gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">{t('nameRequired')}</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder={t('namePlaceholder')}
-                  defaultValue={customer?.name ?? defaults?.name ?? ''}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
-                <Input
-                  id="customerNumber"
-                  name="customerNumber"
-                  placeholder={t('customerNumberAuto')}
-                  defaultValue={customer?.customerNumber ?? ''}
-                  maxLength={20}
-                />
-              </div>
+              {scannedVehicle && (
+                <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 p-3">
+                  <Checkbox
+                    checked={addVehicle}
+                    onCheckedChange={(next) => setAddVehicle(next === true)}
+                  />
+                  <span className="text-sm">
+                    {t('addScannedVehicle', { vehicle: vehicleLabel(scannedVehicle) })}
+                  </span>
+                </label>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">{tc('form.email')}</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t('emailPlaceholder')}
-                  defaultValue={customer?.email ?? ''}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">{tc('form.phone')}</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  placeholder={t('phonePlaceholder')}
-                  defaultValue={customer?.phone ?? ''}
-                />
-              </div>
-            </div>
+            {/* Left: who the customer is and how to reach them */}
+            <div className="space-y-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('sectionContact')}
+              </p>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">{tc('form.address')}</Label>
-              {/* An address is street, postcode and town, and it prints on
+              <div className="grid grid-cols-[1fr_120px] gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">{t('nameRequired')}</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder={t('namePlaceholder')}
+                    defaultValue={customer?.name ?? defaults?.name ?? ''}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
+                  <Input
+                    id="customerNumber"
+                    name="customerNumber"
+                    placeholder={t('customerNumberAuto')}
+                    defaultValue={customer?.customerNumber ?? ''}
+                    maxLength={20}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">{tc('form.email')}</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder={t('emailPlaceholder')}
+                    defaultValue={customer?.email ?? ''}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">{tc('form.phone')}</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    placeholder={t('phonePlaceholder')}
+                    defaultValue={customer?.phone ?? ''}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="address">{tc('form.address')}</Label>
+                {/* An address is street, postcode and town, and it prints on
                   the invoice the way it is typed here. One row until there
                   is more, so the form does not open with a tall empty box. */}
-              <Textarea
-                id="address"
-                name="address"
-                placeholder={t('addressPlaceholder')}
-                rows={2}
-                className="min-h-9 resize-none"
-                defaultValue={customer?.address ?? defaults?.address ?? ''}
-              />
-            </div>
-          </div>
-
-          {/* Right: who they are on an invoice */}
-          <div className="space-y-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {t('sectionBilling')}
-            </p>
-
-            <div className="space-y-2">
-              <Label htmlFor="company">{tc('form.company')}</Label>
-              <Input
-                id="company"
-                name="company"
-                placeholder={t('companyPlaceholder')}
-                defaultValue={customer?.company ?? ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="taxId">{t('taxId')}</Label>
-              <Input
-                id="taxId"
-                name="taxId"
-                placeholder={t('taxIdPlaceholder')}
-                defaultValue={customer?.taxId ?? ''}
-              />
-              <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
-            </div>
-
-            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <Label>{t('taxExempt')}</Label>
-                <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
+                <Textarea
+                  id="address"
+                  name="address"
+                  placeholder={t('addressPlaceholder')}
+                  rows={2}
+                  className="min-h-9 resize-none"
+                  defaultValue={customer?.address ?? defaults?.address ?? ''}
+                />
               </div>
-              <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
             </div>
 
-            {designOptions.length > 0 && (
+            {/* Right: who they are on an invoice */}
+            <div className="space-y-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('sectionBilling')}
+              </p>
+
               <div className="space-y-2">
-                <Label>{t('invoiceDesign')}</Label>
-                <Select value={invoiceDesignId} onValueChange={setInvoiceDesignId}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={FOLLOW_DEFAULT}>{t('invoiceDesignDefault')}</SelectItem>
-                    {designOptions.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">{t('invoiceDesignHint')}</p>
+                <Label htmlFor="company">{tc('form.company')}</Label>
+                <Input
+                  id="company"
+                  name="company"
+                  placeholder={t('companyPlaceholder')}
+                  defaultValue={customer?.company ?? ''}
+                />
               </div>
-            )}
 
-            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <Label>{t('reminderOptOut')}</Label>
-                <p className="text-xs text-muted-foreground">{t('reminderOptOutHint')}</p>
+              <div className="space-y-2">
+                <Label htmlFor="taxId">{t('taxId')}</Label>
+                <Input
+                  id="taxId"
+                  name="taxId"
+                  placeholder={t('taxIdPlaceholder')}
+                  defaultValue={customer?.taxId ?? ''}
+                />
+                <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
               </div>
-              <Switch checked={reminderOptOut} onCheckedChange={setReminderOptOut} />
+
+              <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label>{t('taxExempt')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
+                </div>
+                <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
+              </div>
+
+              {designOptions.length > 0 && (
+                <div className="space-y-2">
+                  <Label>{t('invoiceDesign')}</Label>
+                  <Select value={invoiceDesignId} onValueChange={setInvoiceDesignId}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={FOLLOW_DEFAULT}>{t('invoiceDesignDefault')}</SelectItem>
+                      {designOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {option.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">{t('invoiceDesignHint')}</p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label>{t('reminderOptOut')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('reminderOptOutHint')}</p>
+                </div>
+                <Switch checked={reminderOptOut} onCheckedChange={setReminderOptOut} />
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="notes">{tc('form.notes')}</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              placeholder={t('notesPlaceholder')}
-              rows={3}
-              defaultValue={customer?.notes ?? ''}
-            />
-          </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="notes">{tc('form.notes')}</Label>
+              <Textarea
+                id="notes"
+                name="notes"
+                placeholder={t('notesPlaceholder')}
+                rows={3}
+                defaultValue={customer?.notes ?? ''}
+              />
+            </div>
+          </DialogBody>
 
-          <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {tc('buttons.cancel')}
             </Button>
@@ -377,7 +387,7 @@ export function CustomerForm({
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {customer ? tc('buttons.saveChanges') : t('addTitle')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
