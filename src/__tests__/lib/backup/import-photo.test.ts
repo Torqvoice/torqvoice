@@ -1,6 +1,23 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { mkdtemp, readFile, rm } from 'fs/promises'
+import { tmpdir } from 'os'
+import path from 'path'
 import sharp from 'sharp'
-import { IMPORTED_PHOTO_SIDE, isPhotoName, prepareImportedFile } from '@/lib/backup/import-photo'
+import {
+  IMPORTED_PHOTO_SIDE,
+  isPhotoName,
+  prepareImportedFile,
+  writeImportedFile,
+} from '@/lib/backup/import-photo'
+import { isGeneratedName } from '@/lib/files/manager'
+
+// Only the manager's name rule is used here; nothing reaches the database.
+vi.mock('@/lib/files/references', () => ({
+  referencedSuffixes: async () => new Set(),
+  allReferencedSuffixes: async () => new Set(),
+  existingOrganizationIds: async () => new Set(),
+  hasAnyOrganization: async () => false,
+}))
 
 /**
  * What an importer stores for each kind of attachment: a phone-sized photo
@@ -33,18 +50,26 @@ describe('prepareImportedFile', () => {
     expect(Math.max(meta.width ?? 0, meta.height ?? 0)).toBe(IMPORTED_PHOTO_SIDE)
   })
 
-  it('adds .jpg to a PNG photo once re-encoded', async () => {
+  it('renames a PNG photo to .jpg once re-encoded', async () => {
     const original = await photo(3000, 2000, 'png')
     const out = await prepareImportedFile('in-0064-Service_km_stand.PNG', original)
     expect(out.compressed).toBe(true)
-    expect(out.name).toBe('in-0064-Service_km_stand.PNG.jpg')
+    expect(out.name).toBe('in-0064-Service_km_stand.jpg')
     expect(out.type).toBe('image/jpeg')
   })
 
-  it('stores a PNG and a JPEG of the same name as two files', async () => {
-    const png = await prepareImportedFile('scan.png', await photo(3000, 2000, 'png'))
-    const jpg = await prepareImportedFile('scan.jpg', await photo(3000, 2000))
-    expect(png.name).not.toBe(jpg.name)
+  it('keeps every frame of an animated image', async () => {
+    const frames = [await photo(200, 150, 'png'), await photo(200, 150, 'png')]
+    const original = await sharp(frames, { join: { animated: true } })
+      .gif()
+      .toBuffer()
+    const out = await prepareImportedFile('walkaround.gif', original)
+    expect(out).toEqual({
+      data: original,
+      name: 'walkaround.gif',
+      type: 'image/gif',
+      compressed: false,
+    })
   })
 
   it('never enlarges a small photo nor makes it bigger on disk', async () => {
@@ -80,5 +105,37 @@ describe('prepareImportedFile', () => {
     expect(isPhotoName('a.heic')).toBe(true)
     expect(isPhotoName('a.pdf')).toBe(false)
     expect(isPhotoName('a.docx')).toBe(false)
+  })
+})
+
+describe('writeImportedFile', () => {
+  let dir: string
+  beforeEach(async () => {
+    dir = await mkdtemp(path.join(tmpdir(), 'import-photo-'))
+  })
+  afterEach(async () => {
+    await rm(dir, { recursive: true, force: true })
+  })
+
+  it('stores the file under a name the file manager sweeps', async () => {
+    const stored = await writeImportedFile(dir, 'in-0064-scan.JPG', Buffer.from('scan'))
+    expect(stored).toMatch(/\.jpg$/)
+    expect(isGeneratedName(stored)).toBe(true)
+    expect(await readFile(path.join(dir, stored), 'utf8')).toBe('scan')
+  })
+
+  it('gives two files of the same name a file each', async () => {
+    const first = await writeImportedFile(dir, 'in-0064-scan.jpg', Buffer.from('first'))
+    const second = await writeImportedFile(dir, 'in-0064-scan.jpg', Buffer.from('second'))
+    expect(first).not.toBe(second)
+    expect(await readFile(path.join(dir, first), 'utf8')).toBe('first')
+    expect(await readFile(path.join(dir, second), 'utf8')).toBe('second')
+  })
+
+  it('still gives a name the sweep knows to a file without a usable extension', async () => {
+    expect(isGeneratedName(await writeImportedFile(dir, 'notes', Buffer.from('a')))).toBe(true)
+    expect(isGeneratedName(await writeImportedFile(dir, 'a.backup2023', Buffer.from('b')))).toBe(
+      true
+    )
   })
 })

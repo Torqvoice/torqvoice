@@ -1,5 +1,9 @@
 import 'server-only'
 
+import { randomUUID } from 'crypto'
+import { writeFile } from 'fs/promises'
+import path from 'path'
+import sharp from 'sharp'
 import { compressPhoto } from '@/lib/image-upload.server'
 
 /**
@@ -10,15 +14,15 @@ import { compressPhoto } from '@/lib/image-upload.server'
  * MB a photo, and the browser-side compression every upload form runs never
  * sees them. A workshop's first platform restore point was mostly those
  * files. So a photo is fitted to IMPORTED_PHOTO_SIDE and saved as a JPEG,
- * under a name that says so; anything else, a PDF, a document, or an image
- * sharp cannot read, is stored as it came.
+ * under a name that says so; anything else, a PDF, a document, an image
+ * with several pages or frames, or an image sharp cannot read, is stored as
+ * it came.
  */
 
 /** Longest side of an imported photo; a little above the forms' 1200 so a document photo stays legible. */
 export const IMPORTED_PHOTO_SIDE = 1600
 
 const PHOTO_NAME = /\.(jpe?g|png|webp|gif|heic|heif|avif|tiff?)$/i
-const JPEG_NAME = /\.jpe?g$/i
 
 export interface ImportedFile {
   data: Buffer
@@ -54,6 +58,11 @@ export function isPhotoName(name: string): boolean {
 export async function prepareImportedFile(name: string, data: Buffer): Promise<ImportedFile> {
   if (!isPhotoName(name)) return { data, name, type: mimeFor(name), compressed: false }
   try {
+    // A JPEG holds one page, so a scanned multi-page TIFF or an animated
+    // GIF or WebP would lose everything after the first.
+    const { pages } = await sharp(data).metadata()
+    if ((pages ?? 1) > 1) return { data, name, type: mimeFor(name), compressed: false }
+
     const photo = await compressPhoto(data, IMPORTED_PHOTO_SIDE)
     // Only a smaller file is worth the re-encode; a small, already-fitted
     // photo keeps its bytes and its format.
@@ -62,9 +71,7 @@ export async function prepareImportedFile(name: string, data: Buffer): Promise<I
     }
     return {
       data: photo.data,
-      // `.jpg` is added rather than swapped in, so `scan.png` and `scan.jpg`
-      // on the same job stay two files instead of one overwriting the other.
-      name: JPEG_NAME.test(name) ? name : `${name}.jpg`,
+      name: name.replace(PHOTO_NAME, '.jpg'),
       type: 'image/jpeg',
       compressed: true,
     }
@@ -72,4 +79,18 @@ export async function prepareImportedFile(name: string, data: Buffer): Promise<I
     // Not an image sharp can read: kept as it came, like any other document.
     return { data, name, type: mimeFor(name), compressed: false }
   }
+}
+
+/**
+ * Writes an imported file into `dir` under a generated name, a random UUID
+ * with `name`'s extension, and returns that name. It is the shape the upload
+ * routes give their files, so the file manager's sweep finds an imported file
+ * nothing uses any more, and two attachments never share one file. The name
+ * the user knows the file by is kept on its row.
+ */
+export async function writeImportedFile(dir: string, name: string, data: Buffer): Promise<string> {
+  const ext = path.extname(name).slice(1).toLowerCase()
+  const stored = `${randomUUID()}.${/^[a-z0-9]{1,8}$/.test(ext) ? ext : 'bin'}`
+  await writeFile(path.join(dir, stored), data, { flag: 'wx' })
+  return stored
 }

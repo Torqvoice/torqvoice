@@ -8,7 +8,7 @@ import { isDemoMode } from '@/lib/demo'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
-import { mkdir, writeFile, rm } from 'fs/promises'
+import { mkdir, rm } from 'fs/promises'
 import path from 'path'
 import os from 'os'
 import {
@@ -20,7 +20,8 @@ import {
 } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
-import { prepareImportedFile } from '@/lib/backup/import-photo'
+import { prepareImportedFile, writeImportedFile } from '@/lib/backup/import-photo'
+import { releaseFiles } from '@/lib/files/manager'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -224,6 +225,8 @@ export async function POST(request: NextRequest) {
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
   let upload: SpooledUpload | null = null
+  // Every file this import writes, so a run that fails hands them back.
+  const importedFileUrls: string[] = []
 
   try {
     // The zip goes to disk as it arrives; nothing of it is held in memory
@@ -494,12 +497,15 @@ export async function POST(request: NextRequest) {
             const targetDir = path.join(uploadsBase, 'services')
             await mkdir(targetDir, { recursive: true })
             // A photo is fitted and re-encoded on the way, so it lands at
-            // the size an upload through the app would have.
+            // the size an upload through the app would have, and the file is
+            // stored under a generated name like an upload's, so the file
+            // manager keeps track of it.
             const safeName = doc.name.replace(/[^a-zA-Z0-9._-]/g, '_')
             const prepared = await prepareImportedFile(`in-${invoice.number}-${safeName}`, fileData)
-            await writeFile(path.join(targetDir, prepared.name), prepared.data)
+            const storedName = await writeImportedFile(targetDir, prepared.name, prepared.data)
 
-            const fileUrl = `/api/protected/files/${organizationId}/services/${prepared.name}`
+            const fileUrl = `/api/protected/files/${organizationId}/services/${storedName}`
+            importedFileUrls.push(fileUrl)
 
             await tx.serviceAttachment.create({
               data: {
@@ -554,6 +560,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[import-invoice-ninja] Error:', error)
     console.error('[backup import]', error)
+    // The rows were rolled back, so nothing uses the files this run wrote.
+    await releaseFiles(importedFileUrls, { organizationId, reason: 'import failed' }).catch((err) =>
+      console.error('[backup import] could not release imported files:', err)
+    )
     const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {

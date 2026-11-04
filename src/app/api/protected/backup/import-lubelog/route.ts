@@ -8,7 +8,7 @@ import { isDemoMode } from '@/lib/demo'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
-import { mkdir, writeFile, stat, readdir, rm } from 'fs/promises'
+import { mkdir, stat, readdir, rm } from 'fs/promises'
 import { readFileSync } from 'fs'
 import path from 'path'
 import os from 'os'
@@ -16,7 +16,8 @@ import { BSON } from 'bson'
 import { extractEntry, openZip, spoolUpload, type SpooledUpload } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
-import { prepareImportedFile } from '@/lib/backup/import-photo'
+import { prepareImportedFile, writeImportedFile } from '@/lib/backup/import-photo'
+import { releaseFiles } from '@/lib/files/manager'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -214,6 +215,8 @@ export async function POST(request: NextRequest) {
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
   let upload: SpooledUpload | null = null
+  // Every file this import writes, so a run that fails hands them back.
+  const importedFileUrls: string[] = []
 
   try {
     // The zip comes as the raw body and goes to disk as it arrives
@@ -291,8 +294,8 @@ export async function POST(request: NextRequest) {
 
     // ── Copy a file from the backup to the uploads directory ──────────────
     // A photo is fitted and re-encoded on the way, so it lands at the size an
-    // upload through the app would have; the name it is stored under then
-    // ends in .jpg, whatever the backup called it.
+    // upload through the app would have, and every file is stored under a
+    // generated name like an upload's, so the file manager keeps track of it.
     async function copyFile(
       sourcePath: string,
       category: string,
@@ -324,8 +327,9 @@ export async function POST(request: NextRequest) {
       }
 
       const prepared = await prepareImportedFile(filename, fileData)
-      await writeFile(path.join(targetDir, prepared.name), prepared.data)
-      const fileUrl = `/api/protected/files/${organizationId}/${category}/${prepared.name}`
+      const storedName = await writeImportedFile(targetDir, prepared.name, prepared.data)
+      const fileUrl = `/api/protected/files/${organizationId}/${category}/${storedName}`
+      importedFileUrls.push(fileUrl)
       return {
         fileUrl,
         fileSize: prepared.data.length,
@@ -453,6 +457,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[import-lubelog] Error:', error)
     console.error('[backup import]', error)
+    // The rows were rolled back, so nothing uses the files this run wrote.
+    await releaseFiles(importedFileUrls, { organizationId, reason: 'import failed' }).catch((err) =>
+      console.error('[backup import] could not release imported files:', err)
+    )
     const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {
