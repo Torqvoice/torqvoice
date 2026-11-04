@@ -413,6 +413,23 @@ html body[data-scroll-locked] {
   display: none;
 }
 
+/* Scroll-edge shadows: a soft shadow at the top or bottom edge only while content is
+   hidden in that direction. Pure CSS: the covering gradients scroll with the content
+   (attachment: local) and slide off the fixed shadows as soon as there is more to see. */
+.scroll-shadows {
+  --scroll-shadow: color-mix(in oklab, var(--foreground) 9%, transparent);
+  background:
+    linear-gradient(var(--background) 40%, transparent) center top / 100% 32px local,
+    linear-gradient(transparent, var(--background) 60%) center bottom / 100% 32px local,
+    radial-gradient(farthest-side at 50% 0, var(--scroll-shadow), transparent) center top / 100% 12px scroll,
+    radial-gradient(farthest-side at 50% 100%, var(--scroll-shadow), transparent) center bottom / 100% 12px scroll;
+  background-repeat: no-repeat;
+  background-color: var(--background);
+}
+.dark .scroll-shadows {
+  --scroll-shadow: color-mix(in oklab, var(--foreground) 14%, transparent);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
